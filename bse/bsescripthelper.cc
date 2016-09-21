@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsescripthelper.hh"
-
-#include "topconfig.h"
+#include "../configure.h"
 #include "bsecategories.hh"
 #include "bsejanitor.hh"
 #include "bseserver.hh"
@@ -14,7 +13,7 @@
 /* --- prototypes --- */
 static void		bse_script_procedure_init	(BseScriptProcedureClass *klass,
 							 BseScriptData		 *sdata);
-static BseErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
+static Bse::Error	bse_script_procedure_exec	(BseProcedureClass	 *proc,
 							 const GValue		 *in_values,
 							 GValue			 *out_values);
 static GParamSpec*	bse_script_param_spec		(gchar			 *pspec_desc,
@@ -89,8 +88,8 @@ bse_script_proc_register (const gchar *script_file,
   gchar *tname;
   GType type;
 
-  g_return_val_if_fail (script_file != NULL, 0);
-  g_return_val_if_fail (name != NULL, 0);
+  assert_return (script_file != NULL, 0);
+  assert_return (name != NULL, 0);
   if (sfi_ring_length (params) > BSE_PROCEDURE_MAX_IN_PARAMS)
     {
       g_message ("not registering script \"%s\" which needs more than %u parameters",
@@ -124,7 +123,7 @@ bse_script_proc_register (const gchar *script_file,
   return type;
 }
 
-static BseErrorType
+static Bse::Error
 bse_script_procedure_exec (BseProcedureClass *proc,
 			   const GValue      *in_values,
 			   GValue            *out_values)
@@ -134,7 +133,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   BseServer *server = bse_server_get ();
   SfiRing *params = NULL;
   BseJanitor *janitor;
-  BseErrorType error;
+  Bse::Error error;
   gchar *shellpath;
   guint i;
 
@@ -143,13 +142,13 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     "(apply %s (bse-script-fetch-args))",
 						     sdata->script_file,
 						     sdata->name));
-  shellpath = g_strdup_format ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
+  shellpath = g_strdup_format ("%s/%s", bse_main_args->path_binaries, "bsescm");
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
   sfi_ring_free_deep (params, g_free);
 
-  if (error)
+  if (error != 0)
     g_message ("failed to start script \"%s::%s\": %s",
 	       sdata->script_file, BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
   else
@@ -184,7 +183,7 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
       GValue *retval;
       const guint vargs_pos = 8;
 
-      if (!seq || seq->n_elements < vargs_pos || !sfi_seq_check (seq, SFI_TYPE_STRING))
+      if (!seq || seq->n_elements < vargs_pos || !sfi_seq_check (seq, SFI_TYPE_SFI_STRING))
 	retval = sfi_value_string ("invalid arguments supplied");
       else
 	{
@@ -232,7 +231,7 @@ bse_script_path_list_files (void)
     }
   if (1)
     {
-      files = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
+      files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
     }
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])
@@ -243,19 +242,19 @@ bse_script_path_list_files (void)
   return ring;
 }
 
-BseErrorType
+Bse::Error
 bse_script_file_register (const gchar *file_name,
 			  BseJanitor **janitor_p)
 {
   BseServer *server = bse_server_get ();
   SfiRing *params = NULL;
   const char *proc_name = "registration hook";
-  BseErrorType error;
+  Bse::Error error;
 
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_format ("(load \"%s\")", file_name));
-  char *shellpath = g_strdup_format ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
+  char *shellpath = g_strdup_format ("%s/%s", bse_main_args->path_binaries, "bsescm");
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);

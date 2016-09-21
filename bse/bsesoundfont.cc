@@ -104,7 +104,7 @@ bse_sound_font_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-BseErrorType
+Bse::Error
 bse_sound_font_load_blob (BseSoundFont    *self,
                           BseStorageBlob  *blob,
 			  gboolean         init_presets)
@@ -115,9 +115,9 @@ bse_sound_font_load_blob (BseSoundFont    *self,
       g_object_ref (self->sfrepo);
     }
 
-  g_return_val_if_fail (blob != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (self->sfrepo != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (self->sfont_id == -1, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (blob != NULL, Bse::Error::INTERNAL);
+  g_return_val_if_fail (self->sfrepo != NULL, Bse::Error::INTERNAL);
+  g_return_val_if_fail (self->sfont_id == -1, Bse::Error::INTERNAL);
 
   bse_storage_blob_ref (blob);
   if (self->blob)
@@ -128,7 +128,7 @@ bse_sound_font_load_blob (BseSoundFont    *self,
 
   fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (self->sfrepo);
   int sfont_id = fluid_synth_sfload (fluid_synth, bse_storage_blob_file_name (blob), 0);
-  BseErrorType error;
+  Bse::Error error;
   if (sfont_id != -1)
     {
       if (init_presets)
@@ -149,12 +149,12 @@ bse_sound_font_load_blob (BseSoundFont    *self,
 	}
       self->sfont_id = sfont_id;
       self->blob = blob;
-      error = BSE_ERROR_NONE;
+      error = Bse::Error::NONE;
     }
   else
     {
       bse_storage_blob_unref (blob);
-      error = BSE_ERROR_WAVE_NOT_FOUND;
+      error = Bse::Error::WAVE_NOT_FOUND;
     }
   bse_sound_font_repo_unlock_fluid_synth (self->sfrepo);
   return error;
@@ -174,10 +174,10 @@ bse_sound_font_unload (BseSoundFont *sound_font)
   sound_font->sfont_id = -1;
 }
 
-BseErrorType
+Bse::Error
 bse_sound_font_reload (BseSoundFont *sound_font)
 {
-  g_return_val_if_fail (sound_font->sfont_id == -1, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (sound_font->sfont_id == -1, Bse::Error::INTERNAL);
 
   return bse_sound_font_load_blob (sound_font, sound_font->blob, FALSE);
 }
@@ -222,7 +222,7 @@ bse_sound_font_restore_private (BseObject  *object,
   if (quark == quark_load_sound_font)
     {
       BseStorageBlob *blob;
-      BseErrorType error;
+      Bse::Error error;
 
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
@@ -247,7 +247,7 @@ bse_sound_font_restore_private (BseObject  *object,
 	}
       parse_or_return (scanner, ')');
       error = bse_sound_font_load_blob (sound_font, blob, FALSE);
-      if (error)
+      if (error != 0)
 	bse_storage_warn (storage, "failed to load sound font \"%s\": %s",
 				    bse_storage_blob_file_name (blob), bse_error_blurb (error));
       bse_storage_blob_unref (blob);

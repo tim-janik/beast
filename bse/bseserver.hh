@@ -10,7 +10,7 @@ G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
-#define BSE_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
+#define BSE_SERVER_CAST(object)      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
 #define BSE_SERVER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SERVER, BseServerClass))
 #define BSE_IS_SERVER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SERVER))
 #define BSE_IS_SERVER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SERVER))
@@ -36,15 +36,13 @@ struct BseServerClass : BseContainerClass
 {};
 
 BseServer*	bse_server_get				(void);
-BseProject*	bse_server_create_project		(BseServer	*server,
-							 const gchar	*name);
 BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
 void    	bse_server_stop_recording		(BseServer	*server);
 void            bse_server_start_recording              (BseServer      *server,
                                                          const char     *wave_file,
                                                          double          n_seconds);
-BseErrorType	bse_server_open_devices			(BseServer	*server);
+Bse::Error	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
@@ -84,7 +82,7 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-BseErrorType	bse_server_run_remote			(BseServer	    *server,
+Bse::Error	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
 							 const gchar        *script_name,
@@ -96,18 +94,53 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 G_END_DECLS
 
 
+#define BSE_SERVER      (Bse::ServerImpl::instance())
+
 namespace Bse {
 
-class ServerImpl : public ServerIface {
+class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
   TestObjectImplP    test_object_;
-  friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
-  explicit           ServerImpl ();
-  virtual           ~ServerImpl ();
+  virtual                 ~ServerImpl ();
 public:
-  virtual TestObjectIface* get_test_object ();
-  static ServerImpl&       instance        ();
-  void                     send_user_message (const UserMessage &umsg);
+  explicit                 ServerImpl       (BseObject*);
+  virtual TestObjectIfaceP get_test_object  () override;
+  virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
+  virtual String        get_mp3_version     () override;
+  virtual String        get_vorbis_version  () override;
+  virtual String        get_ladspa_path     () override;
+  virtual String        get_plugin_path     () override;
+  virtual String        get_script_path     () override;
+  virtual String        get_instrument_path () override;
+  virtual String        get_sample_path     () override;
+  virtual String        get_effect_path     () override;
+  virtual String        get_demo_path       () override;
+  virtual String        get_version         () override;
+  virtual String        get_custom_effect_dir () override;
+  virtual String        get_custom_instrument_dir () override;
+  virtual void   save_preferences        () override;
+  virtual void   register_ladspa_plugins () override;
+  virtual void   register_core_plugins   () override;
+  virtual void   start_recording         (const String &wave_file, double n_seconds) override;
+  virtual void   register_scripts        () override;
+  virtual bool   preferences_locked      () override;
+  virtual int    n_scripts               () override;
+  virtual bool   can_load                (const String &file_name) override;
+  virtual ProjectIfaceP create_project   (const String &project_name) override;
+  virtual void          destroy_project  (ProjectIface &project) override;
+  virtual AuxDataSeq list_module_types      () override;
+  virtual AuxData    find_module_type       (const String &module_type) override;
+  virtual Icon       module_type_icon       (const String &module_type) override;
+  virtual SampleFileInfo sample_file_info   (const String &filename) override;
+  virtual NoteDescription note_describe_from_freq (MusicalTuning musical_tuning, double freq) override;
+  virtual NoteDescription note_describe    (MusicalTuning musical_tuning, int note, int fine_tune) override;
+  virtual NoteDescription note_construct   (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune) override;
+  virtual NoteDescription note_from_string (MusicalTuning musical_tuning, const String &name) override;
+  virtual int             note_from_freq   (MusicalTuning musical_tuning, double frequency) override;
+  virtual double          note_to_freq     (MusicalTuning musical_tuning, int note, int fine_tune) override;
+  void               send_user_message      (const UserMessage &umsg);
+  static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
+  static ServerImpl& instance               ();
 };
 
 } // Bse

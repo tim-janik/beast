@@ -6,6 +6,10 @@
 #include <glib-object.h>
 #include <rapicorn-core.hh>     // for Rapicorn::string_format
 
+using Rapicorn::printout;
+using Rapicorn::printerr;
+using Rapicorn::string_format;
+
 G_BEGIN_DECLS
 
 #if (GLIB_SIZEOF_LONG > 4)
@@ -61,7 +65,6 @@ void g_object_disconnect_any (gpointer object,
 #define g_strdup_format(...)            g_strdup (Rapicorn::string_format (__VA_ARGS__).c_str())
 
 /* --- string functions --- */
-const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
 				   const gchar	 *new_str);
 gchar**		g_strslistv	  (GSList	 *slist);
@@ -73,8 +76,6 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
 
-gchar*          g_path_concat     (const gchar   *first_path,
-                                   ...) G_GNUC_NULL_TERMINATED;
 GString*        g_string_prefix_lines (GString     *gstring,
                                        const gchar *pstr);
 
@@ -131,6 +132,7 @@ gchar*  g_type_name_to_cname            (const gchar    *type_name);
 gchar*  g_type_name_to_sname            (const gchar    *type_name);
 gchar*  g_type_name_to_cupper           (const gchar    *type_name);
 gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
+bool    g_sname_equals                  (const std::string &s1, const std::string &s2);
 
 
 /* --- simple main loop source --- */
@@ -169,7 +171,7 @@ g_bit_matrix_change (GBitMatrix     *matrix,
                      gboolean        bit_set)
 {
   guint32 cons, index, shift;
-  g_return_if_fail (matrix && x < matrix->width && y < matrix->height);
+  RAPICORN_ASSERT_RETURN (matrix && x < matrix->width && y < matrix->height);
   cons = y * matrix->width + x;
   index = cons >> 5; /* / 32 */
   shift = cons & 0x1f;  /* % 32 */
@@ -301,7 +303,6 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
 
-
 G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
@@ -327,4 +328,47 @@ constexpr GConnectFlags  operator|  (GConnectFlags  s1, GConnectFlags s2) { retu
 inline    GConnectFlags& operator|= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 | s2; return s1; }
 constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return GConnectFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
+
+
+// == Fundamental BSE Utilities ==
+// these definitions need to move into bse/utils or similar
+namespace Bse {
+
+// import helpers from Rapicorn
+using Rapicorn::String;
+namespace Path = Rapicorn::Path;
+
+// == INSTALLPATH ==
+// See also configure.ac, this function is here because beast and all libs include this file.
+enum InstallpathType {
+  INSTALLPATH_BSEINCLUDEDIR = 1,
+  INSTALLPATH_BINDIR,
+  INSTALLPATH_LOCALEBASE,
+  INSTALLPATH_LADSPA,
+  INSTALLPATH_DOCDIR,
+  INSTALLPATH_USER_DATA,
+  INSTALLPATH_BSELIBDIR,
+  INSTALLPATH_BSELIBDIR_PLUGINS,
+  INSTALLPATH_BSELIBDIR_DRIVERS,
+  INSTALLPATH_DATADIR,
+  INSTALLPATH_DATADIR_DEMO,
+  INSTALLPATH_DATADIR_SAMPLES,
+  INSTALLPATH_DATADIR_EFFECTS,
+  INSTALLPATH_DATADIR_INSTRUMENTS,
+  INSTALLPATH_DATADIR_SCRIPTS,
+  INSTALLPATH_DATADIR_IMAGES,
+  INSTALLPATH_DATADIR_KEYS,
+  INSTALLPATH_DATADIR_SKINS,
+  INSTALLPATH_BEASTEXECDIR,
+  INSTALLPATH_PYBEASTDIR,
+};
+/// Provide installation directories and searchpaths for various types of data.
+String installpath          (InstallpathType installpath_type);
+void   installpath_override (const String &topdir);
+
+/// Provide a string containing the BSE library version number.
+std::string version ();
+
+} // Bse
+
 #endif /* __SFI_GLIB_EXTRA_H__ */

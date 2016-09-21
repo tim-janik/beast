@@ -2,7 +2,8 @@
 #ifndef __BSE_ITEM_H__
 #define __BSE_ITEM_H__
 
-#include        <bse/bseobject.hh>
+#include <bse/bseobject.hh>
+#include <bse/bseundostack.hh>
 
 G_BEGIN_DECLS
 
@@ -33,7 +34,6 @@ typedef enum                            /*< skip >*/
 struct BseItem : BseObject {
   guint         use_count;
   BseItem      *parent;
-  BseParasite  *parasite;
 };
 
 struct BseItemClass : BseObjectClass {
@@ -64,14 +64,14 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseItemSeq*    bse_item_gather_items         (BseItem                *item,
-                                              BseItemSeq             *iseq,
+BseIt3mSeq*    bse_item_gather_items         (BseItem                *item,
+                                              BseIt3mSeq             *iseq,
                                               GType                   base_type,
                                               BseItemCheckContainer   ccheck,
                                               BseItemCheckProxy       pcheck,
                                               gpointer                data);
-BseItemSeq*    bse_item_gather_items_typed   (BseItem                *item,
-                                              BseItemSeq             *iseq,
+BseIt3mSeq*    bse_item_gather_items_typed   (BseItem                *item,
+                                              BseIt3mSeq             *iseq,
                                               GType                   proxy_type,
                                               GType                   container_type,
                                               gboolean                allow_ancestor);
@@ -108,10 +108,10 @@ BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);
 void            bse_item_set_parent          (BseItem         *item,
                                               BseItem         *parent);
-BseErrorType    bse_item_exec                (gpointer         item,
+Bse::Error    bse_item_exec                (gpointer         item,
                                               const gchar     *procedure,
                                               ...);
-BseErrorType    bse_item_exec_void           (gpointer         item,
+Bse::Error    bse_item_exec_void           (gpointer         item,
                                               const gchar     *procedure,
                                               ...); /* ignore return values */
 /* undo-aware functions */
@@ -143,8 +143,97 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 /* convenience */
 #define bse_item_set             bse_item_set_undoable
 #define bse_item_get             g_object_get
-BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
+Bse::MusicalTuning bse_item_current_musical_tuning (BseItem *self);
 
 G_END_DECLS
+
+namespace Bse {
+
+class ItemImpl : public ObjectImpl, public virtual ItemIface {
+public: typedef std::function<Error (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
+private:
+  void push_item_undo (const String &blurb, const UndoLambda &lambda);
+  struct UndoDescriptorData {
+    ptrdiff_t projectid;
+    String    upath;
+    UndoDescriptorData() : projectid (0) {}
+  };
+  UndoDescriptorData make_undo_descriptor_data    (ItemImpl &item);
+  ItemImpl&          resolve_undo_descriptor_data (const UndoDescriptorData &udd);
+protected:
+  virtual           ~ItemImpl        ();
+public:
+  explicit           ItemImpl        (BseObject*);
+  ContainerImpl*     parent          ();
+  virtual ItemIfaceP common_ancestor (ItemIface &other) override;
+  virtual Icon       icon            () const override;
+  virtual void       icon            (const Icon&) override;
+  /// Save the value of @a property_name onto the undo stack.
+  void               push_property_undo (const String &property_name);
+  /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
+  template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, Error (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    RAPICORN_ASSERT_RETURN (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return (self.*function) (args...);
+    };
+    push_item_undo (blurb, lambda);
+  }
+  /// Push an undo @a function like push_undo(), but ignore the return value of @a function.
+  template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    RAPICORN_ASSERT_RETURN (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      (self.*function) (args...); // ignoring return type R
+      return Error::NONE;
+    };
+    push_item_undo (blurb, lambda);
+  }
+  /// Push an undo lambda, using the signature: Error lambda (TypeDerivedFromItem&, BseUndoStack*);
+  template<typename ItemT, typename ItemTLambda> void
+  push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
+  {
+    const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    RAPICORN_ASSERT_RETURN (this == &self);
+    UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return undo_lambda (self, ustack);
+    };
+    push_item_undo (blurb, lambda);
+  }
+  /// Push an undo step, that when executed, pushes @a itemt_lambda to the redo stack.
+  template<typename ItemT, typename ItemTLambda> void
+  push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
+  { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
+    const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    RAPICORN_ASSERT_RETURN (this == &self);
+    auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> Error {
+      self.push_undo (blurb, self, undo_lambda);
+      return Error::NONE;
+    };
+    push_undo (blurb, self, lambda);
+  }
+  /// UndoDescriptor - type safe object handle to persist undo/redo steps
+  template<class Obj>
+  class UndoDescriptor {
+    friend class ItemImpl;
+    UndoDescriptorData data_;
+    UndoDescriptor (const UndoDescriptorData &d) : data_ (d) {}
+  public:
+    typedef Obj Type;
+  };
+  /// Create an object descriptor that persists undo/redo steps.
+  template<class Obj>
+  UndoDescriptor<Obj> undo_descriptor (Obj &item)            { return UndoDescriptor<Obj> (make_undo_descriptor_data (item)); }
+  /// Resolve an undo descriptor back to an object, see also undo_descriptor().
+  template<class Obj>
+  Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
+};
+
+} // Bse
 
 #endif /* __BSE_ITEM_H__ */

@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
+#include "../configure.h" // BEAST_EXEC_POSTFIX
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +11,8 @@ custom_find_executable (int    *argc_p,
 {
   const char *bindir = BINDIR;
   const char *name = "beast";
-  const char *version = BIN_VERSION;
-  int l = 1 + strlen (bindir) + 1 + strlen (name) + 1 + strlen (version);
+  const char *postfix = BEAST_EXEC_POSTFIX;
+  int l = 1 + strlen (bindir) + 1 + strlen (name) + strlen (postfix);
   char *string = malloc (l);
   if (!string)
     {
@@ -23,8 +23,7 @@ custom_find_executable (int    *argc_p,
   strcat (string, bindir);
   strcat (string, "/");
   strcat (string, name);
-  strcat (string, "-");
-  strcat (string, version);
+  strcat (string, postfix);
   return string;
 }
 

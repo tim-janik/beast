@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
@@ -10,6 +10,6 @@ scripts_DATA = $(strip			\
 	part-harmonic-transposer.scm	\
 	mixer-splitup-by-track.scm	\
 )
-scriptsdir = $(bsescriptdir)
+scriptsdir = $(datadir)/scripts
 
 EXTRA_DIST += $(scripts_DATA)

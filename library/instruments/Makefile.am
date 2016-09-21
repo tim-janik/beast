@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
@@ -10,6 +10,6 @@ instruments_DATA = $(strip	\
 	illus-vtremolo.bse		\
 	stw-iron-string.bse		\
 )
-instrumentsdir = $(bseinstrumentdir)
+instrumentsdir = $(datadir)/instruments
 
 EXTRA_DIST += $(instruments_DATA)

@@ -1,4 +1,4 @@
-# GXK - Gtk+ Extension Kit
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =
@@ -113,7 +113,7 @@ libgxk_a_SOURCES = $(gxk_c_sources)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
-	$(top_builddir)/sfi/libsfi.la $(SFI_LIBS) 		\
+	$(top_builddir)/sfi/libsfi-@MAJOR@.la $(SFI_LIBS) 	\
 	$(RAPICORN_LIBS) $(BIRNET_LIBS)				\
 )
 

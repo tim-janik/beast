@@ -88,7 +88,7 @@ bst_track_view_new (SfiProxy song)
 {
   GtkWidget *track_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   track_view = gtk_widget_new (BST_TYPE_TRACK_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (track_view), song);
@@ -121,7 +121,7 @@ track_view_fill_value (BstItemView *iview,
       gboolean vbool;
       SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       SfiSeq *seq;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
@@ -158,14 +158,14 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_OUTPUTS:
       bse_proxy_get (item, "outputs", &seq, NULL);
-      iseq = bse_item_seq_from_seq (seq);
+      iseq = bse_it3m_seq_from_seq (seq);
       if (iseq && iseq->n_items == 1)
         g_value_take_string (value, g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0])));
       else if (iseq && iseq->n_items > 1)
         g_value_take_string (value, g_strdup_format ("#%u", iseq ? iseq->n_items : 0));
       else
         g_value_set_string (value, "");
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
       break;
     case COL_POST_SYNTH:
       snet = 0;
@@ -184,7 +184,7 @@ track_view_synth_edited (BstTrackView *self,
 			 const gchar  *strpath,
 			 const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -223,7 +223,7 @@ track_view_post_synth_edited (BstTrackView *self,
                               const gchar  *strpath,
                               const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -280,7 +280,7 @@ track_view_synth_popup (BstTrackView         *self,
 			const gchar          *text,
 			GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -312,7 +312,7 @@ track_view_post_synth_popup (BstTrackView         *self,
                              const gchar          *text,
                              GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -350,12 +350,12 @@ track_view_outputs_cleanup (gpointer data)
 
 static void
 track_view_outputs_changed (gpointer              data,
-                            BseItemSeq           *iseq,
+                            BseIt3mSeq           *iseq,
                             BstItemSeqDialog     *isdialog)
 {
   OutputsPopup *odata = (OutputsPopup*) data;
   gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
-  SfiSeq *seq = bse_item_seq_to_seq (iseq);
+  SfiSeq *seq = bse_it3m_seq_to_seq (iseq);
   GValue *value = sfi_value_seq (seq);
   sfi_seq_unref (seq);
   bse_proxy_set_property (odata->item, "outputs", value);
@@ -368,7 +368,7 @@ track_view_outputs_popup (BstTrackView         *self,
                           const gchar          *text,
                           GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -378,13 +378,13 @@ track_view_outputs_popup (BstTrackView         *self,
       GParamSpec *pspec = bse_proxy_get_pspec (item, "outputs");
       const GValue *value = bse_proxy_get_property (item, "outputs");
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
-      BseItemSeq *iseq = bse_item_seq_from_seq (seq);
+      BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
       OutputsPopup odata = { self, pcell, item };
       GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
                                                      pc->label, pc->tooltip, pc->items,
                                                      g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
 }
@@ -394,7 +394,7 @@ track_view_mute_toggled (BstTrackView          *self,
 			 const gchar           *strpath,
 			 GtkCellRendererToggle *tcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -416,7 +416,7 @@ track_view_voice_edited (BstTrackView *self,
                          const gchar  *strpath,
                          const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -436,7 +436,7 @@ track_view_midi_channel_edited (BstTrackView *self,
                                 const gchar  *strpath,
                                 const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -451,11 +451,12 @@ track_view_midi_channel_edited (BstTrackView *self,
     }
 }
 
-static SfiProxy
-get_track (gpointer data,
-	   gint     row)
+static Bse::TrackH
+get_track (void *data, int row)
 {
-  return bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  SfiProxy proxy = bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (proxy));
+  return track;
 }
 
 static void
@@ -722,34 +723,38 @@ track_view_action_exec (gpointer data,
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
 
+  Bse::TrackH track;
   switch (action)
     {
       SfiProxy item;
-      guint i;
     case ACTION_ADD_TRACK:
-      bse_item_group_undo (song, "Add Track");
-      item = bse_song_create_track (song);
-      if (item)
+      bse_item_group_undo (song.proxy_id(), "Add Track");
+      track = song.create_track();
+      if (track)
 	{
-	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (item));
-	  bse_item_set_name (item, string);
+	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (track.proxy_id()));
+	  bse_item_set_name (track.proxy_id(), string);
 	  g_free (string);
-	  bst_item_view_select (item_view, item);
-          bse_track_ensure_output (item);
+	  bst_item_view_select (item_view, track.proxy_id());
+          track.ensure_output();
 	}
-      bse_item_ungroup_undo (song);
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
-      bse_item_group_undo (song, "Delete Track");
-      BseItemSeq *iseq = bse_track_list_parts_uniq (item);
-      bse_song_remove_track (song, item);
-      for (i = 0; i < iseq->n_items; i++)
-        if (!bse_song_find_any_track_for_part (song, iseq->items[i]))
-          bse_song_remove_part (song, iseq->items[i]);
-      bse_item_ungroup_undo (song);
+      track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
+      bse_item_group_undo (song.proxy_id(), "Delete Track");
+      Bse::PartSeq pseq = track.list_parts_uniq();
+      song.remove_track (track);
+      for (const auto &part : pseq)
+        {
+          Bse::PartH p = part;
+          if (!song.find_any_track_for_part (p))
+            song.remove_part (p);
+        }
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     }
   gxk_widget_update_actions_downwards (self);

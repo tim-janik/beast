@@ -9,6 +9,7 @@
 #include "bsemidireceiver.hh"
 #include "bsemain.hh"
 #include "bseieee754.hh"
+#include "bsestartup.hh"        // for TaskRegistry
 #include <sys/poll.h>
 #include <errno.h>
 #include <string.h>
@@ -48,7 +49,7 @@ public:
   fill_pfds (guint    n_pfds,
              GPollFD *pfds)
   {
-    g_assert (n_pfds == watch_pfds.size());
+    assert (n_pfds == watch_pfds.size());
     copy (watch_pfds.begin(), watch_pfds.end(), pfds);
     for (guint i = 0; i < watches.size(); i++)
       watches[i].notify_pfds = pfds + watches[i].index;
@@ -131,7 +132,7 @@ public:
 void
 Sequencer::add_io_watch (uint n_pfds, const GPollFD *pfds, BseIOWatch watch_func, void *watch_data)
 {
-  g_return_if_fail (watch_func != NULL);
+  assert_return (watch_func != NULL);
   BSE_SEQUENCER_LOCK();
   poll_pool_->add_watch (n_pfds, pfds, watch_func, watch_data);
   BSE_SEQUENCER_UNLOCK();
@@ -145,7 +146,7 @@ static bool       current_watch_needs_remove2 = false;
 void
 Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
 {
-  g_return_if_fail (watch_func != NULL);
+  assert_return (watch_func != NULL);
   /* removal requirements:
    * - any thread should be able to remove an io watch (once)
    * - a watch_func() should be able to remove its own io watch
@@ -185,7 +186,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
     }
   BSE_SEQUENCER_UNLOCK();
   if (!removal_success)
-    g_warning ("%s: failed to remove %p(%p)", G_STRFUNC, watch_func, watch_data);
+    g_warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
 }
 
 bool
@@ -200,7 +201,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
   BSE_SEQUENCER_UNLOCK();
   int result = poll ((struct pollfd*) pfds, n_pfds, timeout_ms);
   if (result < 0 && errno != EINTR)
-    g_printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+    printerr ("%s: poll() error: %s\n", __func__, g_strerror (errno));
   BSE_SEQUENCER_LOCK();
   if (result > 0 && pfds[0].revents)
     {
@@ -214,7 +215,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
       GPollFD *watch_pfds;
       while (poll_pool_->fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
         {
-          g_assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
           BSE_SEQUENCER_UNLOCK();
           bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
           BSE_SEQUENCER_LOCK();
@@ -235,10 +236,10 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
 void
 Sequencer::start_song (BseSong *song, uint64 start_stamp)
 {
-  g_return_if_fail (BSE_IS_SONG (song));
-  g_return_if_fail (BSE_SOURCE_PREPARED (song));
-  g_return_if_fail (song->sequencer_start_request_SL == 0);
-  g_assert (song->sequencer_owns_refcount_SL == false);
+  assert_return (BSE_IS_SONG (song));
+  assert_return (BSE_SOURCE_PREPARED (song));
+  assert_return (song->sequencer_start_request_SL == 0);
+  assert (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
 
   g_object_ref (song);
@@ -263,11 +264,11 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
 void
 Sequencer::remove_song (BseSong *song)
 {
-  g_return_if_fail (BSE_IS_SONG (song));
-  g_return_if_fail (BSE_SOURCE_PREPARED (song));
+  assert_return (BSE_IS_SONG (song));
+  assert_return (BSE_SOURCE_PREPARED (song));
   if (song->sequencer_start_request_SL == 0)
     {
-      g_assert (song->sequencer_owns_refcount_SL == false);
+      assert (song->sequencer_owns_refcount_SL == false);
       return;   // uncontained
     }
   BSE_SEQUENCER_LOCK();
@@ -305,7 +306,7 @@ sequencer_remove_song_async (gpointer data) /* UserThread */
 static void
 sequencer_queue_remove_song_SL (BseSong *song)
 {
-  g_return_if_fail (song->sequencer_owns_refcount_SL == true);
+  assert_return (song->sequencer_owns_refcount_SL == true);
   song->sequencer_owns_refcount_SL = false;     // g_object_unref() in sequencer_remove_song_async()
   // queue a job into the BSE core for immediate execution
   bse_idle_now (sequencer_remove_song_async, song);
@@ -322,6 +323,8 @@ Sequencer::thread_lagging (uint n_blocks)
   BSE_SEQUENCER_UNLOCK();
   return lagging;
 }
+
+static std::atomic<bool> sequencer_thread_running { false };
 
 void
 Sequencer::sequencer_thread ()
@@ -369,7 +372,7 @@ Sequencer::sequencer_thread ()
                 {
                   gchar *dh = bse_object_strdup_debug_handle (song);    /* thread safe */
                   /* if (!song->sequencer_underrun_detected_SL) */
-                  g_printerr ("BseSequencer: underrun by %lld blocks for song: %s\n",
+                  printerr ("BseSequencer: underrun by %lld blocks for song: %s\n",
                               uint64 ((cur_stamp - old_song_pos) / bse_engine_block_size() + 1),
                               dh);
                   song->sequencer_underrun_detected_SL = TRUE;
@@ -380,7 +383,7 @@ Sequencer::sequencer_thread ()
       stamp_ = next_stamp;
       wakeup->awake_after (cur_stamp + bse_engine_block_size ());
     }
-  while (pool_poll_Lm (-1));
+  while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
@@ -518,7 +521,7 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
         {
           BseMidiEvent *event = bse_midi_event_signal (midi_channel,
                                                        bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
-                                                       BseMidiSignalType (cev->ctype), cev->value);
+                                                       Bse::MidiSignal (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
           SDEBUG ("control:  tick=%llu midisignal=%-3d value=%f now=%llu",
                   uint64 (event->delta_time), cev->ctype, cev->value, Bse::TickStamp::current());
@@ -540,10 +543,23 @@ Sequencer::Sequencer() :
 }
 
 void
+Sequencer::reap_thread ()
+{
+  assert_return (sequencer_thread_running == true);
+  sequencer_thread_running = false;
+  singleton_->wakeup();
+  singleton_->thread_.join();
+}
+
+void
 Sequencer::_init_threaded ()
 {
   assert (singleton_ == NULL);
+  assert (sequencer_thread_running == false);
   singleton_ = new Sequencer();
+  if (std::atexit (Sequencer::reap_thread) != 0)
+    fatal ("BSE: failed to install sequencer thread reaper");
+  sequencer_thread_running = true;
   singleton_->thread_ = std::thread (&Sequencer::sequencer_thread, singleton_); // FIXME: join on exit
 }
 

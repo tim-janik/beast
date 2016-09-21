@@ -15,9 +15,9 @@ static GSList *msg_windows = NULL;
 const char*
 bst_msg_type_ident (BstMsgType bmt)
 {
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_value_find (Rapicorn::Aida::enum_value_list<Bse::UserMessageType>(), bmt);
-  if (ev && ev->ident)
-    return ev->ident;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
+  if (ev.ident)
+    return ev.ident;
   switch (bmt)
     {
     case BST_MSG_SCRIPT:        return "script";
@@ -268,7 +268,7 @@ static void
 bst_msg_dialog_janitor_update (GxkDialog        *dialog,
                                SfiProxy          janitor)
 {
-  g_return_if_fail (BSE_IS_JANITOR (janitor));
+  assert_return (BSE_IS_JANITOR (janitor));
 
   guint i, n = bse_janitor_n_actions (janitor);
   for (i = 0; i < n; i++)
@@ -321,7 +321,7 @@ bst_msg_bit_create_choice (guint                   id,
                            const gchar            *options)
 {
   int saved_errno = errno;
-  // g_return_val_if_fail (options && options[0], NULL);
+  // assert_return (options && options[0], NULL);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = id;
   mbit->text = g_strdup (name);
@@ -483,7 +483,7 @@ message_fill_from_script (BstMessage    *msg,
     {
       BseCategorySeq *cseq = bse_categories_match_typed ("*", proc_name);
       if (cseq->n_cats)
-        proc_title = cseq->cats[0]->category + cseq->cats[0]->lindex + 1;
+        proc_title = cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
     }
   msg->title = g_strdup (proc_title);
   msg->primary = g_strdup (primary ? primary : proc_title);
@@ -742,28 +742,27 @@ server_script_error (SfiProxy     server,
 static void
 server_user_message (const Bse::UserMessage &umsg)
 {
-  const Rapicorn::Aida::EnumValue *evalues = Rapicorn::Aida::enum_value_list<Bse::UserMessageType>();
   auto convert_msg_type = [] (Bse::UserMessageType mtype) {
     switch (mtype)
       {
-      case Bse::ERROR:          return BST_MSG_ERROR;
-      case Bse::WARNING:        return BST_MSG_WARNING;
-      case Bse::DEBUG:          return BST_MSG_DEBUG;
+      case Bse::UserMessageType::ERROR:          return BST_MSG_ERROR;
+      case Bse::UserMessageType::WARNING:        return BST_MSG_WARNING;
+      case Bse::UserMessageType::DEBUG:          return BST_MSG_DEBUG;
       default:
-      case Bse::INFO:           return BST_MSG_INFO;
+      case Bse::UserMessageType::INFO:           return BST_MSG_INFO;
       }
   };
   BstMessage msg = { 0, };
   msg.log_domain = "BSE";
-  msg.type = convert_msg_type (umsg.type);
+  msg.type = convert_msg_type (umsg.utype);
   msg.title = umsg.title.c_str();
   msg.primary = umsg.text1.c_str();
   msg.secondary = umsg.text2.c_str();
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_value_find (evalues, umsg.type);
-  msg.ident = ev ? ev->ident : NULL;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
+  msg.ident = ev.ident;
   msg.label = NULL;
   msg.janitor = 0;
   msg.process = 0;

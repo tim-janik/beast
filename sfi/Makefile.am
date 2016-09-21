@@ -1,4 +1,4 @@
-# SFI - Synthesis Fusion Kit Interface
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS   = . tests
@@ -11,7 +11,8 @@ sfi_public_headers = $(strip \
 	glib-extra.hh			sfiwrapper.hh	 \
 	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
 	sfinote.hh	sfiparams.hh	sfiprimitives.hh	sfiserial.hh	\
-	sfitime.hh	sfitypes.hh	sfivalues.hh	sfiustore.hh	\
+	sfitime.hh	sfitypes.hh	sfivalues.hh	\
+	sfivisitors.hh	sfiustore.hh	\
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
 	sfitests.hh	sfi.hh						\
 	gbsearcharray.hh \
@@ -21,7 +22,8 @@ sfi_all_sources = $(strip \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
-	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
+	sfitime.cc	sfitypes.cc	sfivalues.cc	\
+	sfivisitors.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
 )
 sfi_extra_sources = $(strip \
@@ -32,12 +34,12 @@ sfi_built_sources = $(strip \
 $(sfi_all_sources): $(sfi_built_sources)
 
 # SFI library
-noinst_LTLIBRARIES    = libsfi.la
-libsfiincludedir      = $(includedir)/sfi
-libsfiinclude_HEADERS = $(sfi_public_headers)
-libsfi_la_SOURCES     = $(sfi_all_sources)
-libsfi_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined # -Wl,-Bsymbolic
-libsfi_la_LIBADD      = $(SFI_LIBS) -lm
+noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
+libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
+libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
+libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
+libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS) -lm
+libsfi_@MAJOR@_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined -version-info $(LT_VERSION_INFO)
 
 #
 # programs to build

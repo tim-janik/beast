@@ -58,13 +58,12 @@ bst_part_view_init (BstPartView *self)
 static void
 popup_part_dialog (BstPartView *part_view)
 {
-  SfiProxy part;
   GtkWidget *pdialog;
 
-  part = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
+  Bse::PartH part = bst_item_view_get_current_part (BST_ITEM_VIEW (part_view));
   pdialog = (GtkWidget*) g_object_new (BST_TYPE_PART_DIALOG, NULL);
 
-  bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), part);
+  bst_part_dialog_set_part (BST_PART_DIALOG (pdialog), part);
   g_signal_connect_object (part_view, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
   gtk_widget_show (pdialog);
 }
@@ -74,7 +73,7 @@ bst_part_view_new (SfiProxy song)
 {
   GtkWidget *part_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   part_view = gtk_widget_new (BST_TYPE_PART_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (part_view), song);
@@ -88,17 +87,20 @@ part_view_action_exec (gpointer                data,
 {
   BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  SfiProxy songid = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+  Bse::PartH part;
   switch (action)
     {
       SfiProxy item;
     case ACTION_ADD_PART:
-      item = bse_song_create_part (song);
-      bst_item_view_select (item_view, item);
+      part = song.create_part();
+      bst_item_view_select (item_view, part.proxy_id());
       break;
     case ACTION_DELETE_PART:
       item = bst_item_view_get_current (item_view);
-      bse_song_remove_part (song, item);
+      part = Bse::PartH::down_cast (bse_server.from_proxy (item));
+      song.remove_part (part);
       break;
     case ACTION_EDIT_PART:
       popup_part_dialog (self);

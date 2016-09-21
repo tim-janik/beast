@@ -2,10 +2,6 @@
 
 // Deprecated compatibility types
 namespace Sfi {
-typedef bool    Bool;
-typedef int32   Int;
-typedef int64   Num;
-typedef float64 Real;
 Const SFI_MAXNUM = 9223372036854775807;
 Const KAMMER_FREQ = 440.0;
 Const BSE_KAMMER_FREQUENCY = KAMMER_FREQ;

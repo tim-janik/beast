@@ -2,20 +2,12 @@
 #ifndef __BSE_H__
 #define __BSE_H__
 
-#include <sfi/sfi.hh>
-#include <bse/bseconfig.h>
-#include <bse/bsecore.hh>
+#include <bse/bsestartup.hh>
+#include <bse/bseclientapi.hh>
 
-G_BEGIN_DECLS
-
-/* library versioning */
-extern const guint   bse_major_version;
-extern const guint   bse_minor_version;
-extern const guint   bse_micro_version;
-extern const gchar  *bse_version;
-const char*          bse_check_version	(guint           required_major,
-					 guint           required_minor,
-					 guint           required_micro);
-G_END_DECLS
+namespace Bse { // clientapi glue code, see bsestartup.cc
+ServerHandle                      init_server_instance   ();
+Rapicorn::Aida::ClientConnectionP init_server_connection ();
+} // Bse
 
 #endif /* __BSE_H__ */

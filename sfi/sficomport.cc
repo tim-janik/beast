@@ -57,7 +57,7 @@ sfi_com_port_from_child (const gchar *ident,
 {
   SfiComPort *port;
 
-  g_return_val_if_fail (ident != NULL, NULL);
+  assert_return (ident != NULL, NULL);
 
   port = g_new0 (SfiComPort, 1);
   port->ref_count = 1;
@@ -98,7 +98,7 @@ sfi_com_port_from_pipe (const gchar *ident,
 			gint         remote_input,
 			gint         remote_output)
 {
-  g_return_val_if_fail (ident != NULL, NULL);
+  assert_return (ident != NULL, NULL);
 
   return sfi_com_port_from_child (ident,
 				  remote_input,
@@ -111,9 +111,9 @@ sfi_com_port_create_linked (const gchar *ident1, std::function<void()> wakeup1, 
 			    const gchar *ident2, std::function<void()> wakeup2, SfiComPort **port2)
 {
   SfiComPortLink *link;
-  g_return_if_fail (wakeup1 && ident1);
-  g_return_if_fail (wakeup2 && ident2);
-  g_return_if_fail (port1 && port2);
+  assert_return (wakeup1 && ident1);
+  assert_return (wakeup2 && ident2);
+  assert_return (port1 && port2);
   link = new SfiComPortLink();
   link->port1 = sfi_com_port_from_child (ident1, -1, -1, -1);
   link->wakeup1 = wakeup1;
@@ -131,8 +131,8 @@ sfi_com_port_create_linked (const gchar *ident1, std::function<void()> wakeup1, 
 static void
 sfi_com_port_link_destroy (SfiComPortLink *link)
 {
-  g_return_if_fail (link->ref_count == 0);
-  g_return_if_fail (link->port1== NULL && link->port2 == NULL);
+  assert_return (link->ref_count == 0);
+  assert_return (link->port1== NULL && link->port2 == NULL);
 
   while (link->p1queue)
     sfi_value_free ((GValue*) sfi_ring_pop_head (&link->p1queue));
@@ -144,8 +144,8 @@ sfi_com_port_link_destroy (SfiComPortLink *link)
 SfiComPort*
 sfi_com_port_ref (SfiComPort *port)
 {
-  g_return_val_if_fail (port != NULL, NULL);
-  g_return_val_if_fail (port->ref_count > 0, NULL);
+  assert_return (port != NULL, NULL);
+  assert_return (port->ref_count > 0, NULL);
 
   port->ref_count++;
   return port;
@@ -156,7 +156,7 @@ sfi_com_port_set_close_func (SfiComPort          *port,
 			     SfiComPortClosedFunc func,
 			     gpointer             close_data)
 {
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
 
   port->close_func = func;
   port->close_data = func ? close_data : NULL;
@@ -193,7 +193,7 @@ void
 sfi_com_port_close_remote (SfiComPort *port,
 			   gboolean    terminate_child)
 {
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
 
   port->connected = FALSE;
   if (port->pfd[0].fd >= 0)
@@ -253,7 +253,7 @@ sfi_com_port_close_remote (SfiComPort *port,
 static void
 sfi_com_port_destroy (SfiComPort *port)
 {
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
 
   sfi_com_port_close_remote (port, FALSE);
   if (port->scanner)
@@ -269,8 +269,8 @@ sfi_com_port_destroy (SfiComPort *port)
 void
 sfi_com_port_unref (SfiComPort *port)
 {
-  g_return_if_fail (port != NULL);
-  g_return_if_fail (port->ref_count > 0);
+  assert_return (port != NULL);
+  assert_return (port->ref_count > 0);
 
   port->ref_count--;
   if (!port->ref_count)
@@ -345,10 +345,10 @@ sfi_com_port_send_bulk (SfiComPort   *port,
                         SfiRing      *value_ring)
 {
   SfiRing *ring;
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
   if (!value_ring || !port->connected)
     return;
-  g_return_if_fail (port->link || port->pfd[1].fd >= 0);
+  assert_return (port->link || port->pfd[1].fd >= 0);
 
   if (port->link)
     {
@@ -406,8 +406,8 @@ sfi_com_port_send (SfiComPort   *port,
 		   const GValue *value)
 {
   SfiRing *ring;
-  g_return_if_fail (port != NULL);
-  g_return_if_fail (value != NULL);
+  assert_return (port != NULL);
+  assert_return (value != NULL);
   ring = sfi_ring_append (NULL, (GValue*) value);
   sfi_com_port_send_bulk (port, ring);
   sfi_ring_free (ring);
@@ -453,13 +453,13 @@ com_port_read_pending (SfiComPort *port)
 		  port->rbuffer.header[2] != ((SFI_COM_PORT_MAGIC >> 8) & 0xff) ||
 		  port->rbuffer.header[3] != (SFI_COM_PORT_MAGIC & 0xff))
 		{
-		  g_printerr ("ComPort:%s: received data with invalid magic", port->ident);
+		  printerr ("ComPort:%s: received data with invalid magic", port->ident);
 		  return FALSE;
 		}
 	      /* check length */
 	      if (port->rbuffer.dlen < 1 || port->rbuffer.dlen > 10 * 1024 * 1024)
 		{
-		  g_printerr ("ComPort:%s: received data with excessive length", port->ident);
+		  printerr ("ComPort:%s: received data with excessive length", port->ident);
 		  return FALSE;
 		}
 	    }
@@ -497,7 +497,7 @@ com_port_scanner_msg (GScanner *scanner,
 		      gboolean  error)
 {
   SfiComPort *port = (SfiComPort*) scanner->user_data;
-  g_printerr ("ComPort:%s: while processing data: %s", port->ident, message);
+  printerr ("ComPort:%s: while processing data: %s", port->ident, message);
 }
 
 static void
@@ -603,10 +603,10 @@ sfi_com_port_recv_intern (SfiComPort *port,
 GValue*
 sfi_com_port_recv (SfiComPort *port)
 {
-  g_return_val_if_fail (port != NULL, NULL);
+  assert_return (port != NULL, NULL);
   if (!port->connected)
     return NULL;
-  g_return_val_if_fail (port->link || port->pfd[0].fd >= 0, NULL);
+  assert_return (port->link || port->pfd[0].fd >= 0, NULL);
 
   return sfi_com_port_recv_intern (port, FALSE);
 }
@@ -614,10 +614,10 @@ sfi_com_port_recv (SfiComPort *port)
 GValue*
 sfi_com_port_recv_blocking (SfiComPort *port)
 {
-  g_return_val_if_fail (port != NULL, NULL);
+  assert_return (port != NULL, NULL);
   if (!port->connected)
     return NULL;
-  g_return_val_if_fail (port->link || port->pfd[0].fd >= 0, NULL);
+  assert_return (port->link || port->pfd[0].fd >= 0, NULL);
 
   return sfi_com_port_recv_intern (port, TRUE);
 }
@@ -629,8 +629,8 @@ sfi_com_port_get_poll_fds (SfiComPort *port,
   GPollFD *pfds = NULL;
   guint n = 0;
 
-  g_return_val_if_fail (port != NULL, NULL);
-  g_return_val_if_fail (n_pfds != NULL, NULL);
+  assert_return (port != NULL, NULL);
+  assert_return (n_pfds != NULL, NULL);
 
   if (port->pfd[1].fd >= 0)
     {
@@ -649,7 +649,7 @@ sfi_com_port_get_poll_fds (SfiComPort *port,
 gboolean
 sfi_com_port_io_pending (SfiComPort *port)
 {
-  g_return_val_if_fail (port != NULL, FALSE);
+  assert_return (port != NULL, FALSE);
 
   /* maintain poll fds */
   port->pfd[0].events = port->pfd[0].fd >= 0 ? G_IO_IN : 0;
@@ -678,7 +678,7 @@ sfi_com_port_io_pending (SfiComPort *port)
 void
 sfi_com_port_process_io (SfiComPort *port)
 {
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
 
   if (!com_port_read_pending (port) ||
       !com_port_write_queued (port))
@@ -691,7 +691,7 @@ void
 sfi_com_port_reap_child (SfiComPort *port,
                          gboolean    kill_child)
 {
-  g_return_if_fail (port != NULL);
+  assert_return (port != NULL);
 
   com_port_try_reap (port, !kill_child);
   if (kill_child &&
@@ -708,7 +708,7 @@ sfi_com_port_reap_child (SfiComPort *port,
 gboolean
 sfi_com_port_test_reap_child (SfiComPort *port)
 {
-  g_return_val_if_fail (port != NULL, FALSE);
+  assert_return (port != NULL, FALSE);
   com_port_try_reap (port, FALSE);
   return port->reaped;
 }

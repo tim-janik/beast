@@ -16,7 +16,7 @@ typedef struct {
   gfloat           obj_velocity;
   guint		   xoffset;
   guint		   tick_bound;
-  BsePartNoteSeq  *sel_pseq;
+  Bse::PartNoteSeq sel_pseq;
   /* tool data */
   guint		   tool_index;
   /* tool selections */
@@ -35,8 +35,8 @@ BstPianoRollController*	bst_piano_roll_controller_ref		 (BstPianoRollController 
 void			bst_piano_roll_controller_unref		 (BstPianoRollController *self);
 guint                   bst_piano_roll_controller_quantize       (BstPianoRollController *self,
                                                                  guint                    fine_tick);
-void			bst_piano_roll_controller_set_clipboard  (BsePartNoteSeq	 *pseq);
-BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	 (void);
+void			bst_piano_roll_controller_set_clipboard  (const Bse::PartNoteSeq *pseq);
+Bse::PartNoteSeq*	bst_piano_roll_controller_get_clipboard	 (void);
 GxkActionList*          bst_piano_roll_controller_select_actions (BstPianoRollController *self);
 GxkActionList*          bst_piano_roll_controller_canvas_actions (BstPianoRollController *self);
 GxkActionList*          bst_piano_roll_controller_note_actions   (BstPianoRollController *self);

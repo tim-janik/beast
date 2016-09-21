@@ -123,7 +123,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
 			      PROP_NOTE,
 			      sfi_pspec_note ("note", _("Note"), _("Filter cutoff frequency as note, "
                                                                    "converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY * 2),
+					      bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, BSE_KAMMER_FREQUENCY * 2),
 					      BSE_MIN_NOTE, BSE_MAX_NOTE,
 					      FALSE,
 					      SFI_PARAM_GUI));
@@ -169,15 +169,15 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
 					      SFI_PARAM_STANDARD ":scale"));
 
   channel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Audio Signal"));
-  g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
+  assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
   channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Center Frequency Input"));
-  g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ);
+  assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ);
   channel_id = bse_source_class_add_ichannel (source_class, "freq-mod-in", _("Freq Mod In"), _("Frequency Modulation Input"));
-  g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD);
+  assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD);
   channel_id = bse_source_class_add_ichannel (source_class, "gain-mod-in", _("Gain Mod In"), _("Gain Modulation Input"));
-  g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
+  assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
   channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Audio Signal"));
-  g_assert (channel_id == BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
+  assert (channel_id == BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
 }
 
 static void

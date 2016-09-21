@@ -4,7 +4,7 @@
 
 /* --- SfiProxy parameter editors --- */
 typedef struct {
-  BseItemSeq *iseq;
+  BseIt3mSeq *iseq;
   gchar      **paths;
   gchar       *prefix;
 } ParamProxyPopulation;
@@ -14,7 +14,7 @@ param_proxy_free_population (gpointer p)
   ParamProxyPopulation *pop = (ParamProxyPopulation*) p;
   g_strfreev (pop->paths);
   g_free (pop->prefix);
-  bse_item_seq_free (pop->iseq);
+  bse_it3m_seq_free (pop->iseq);
   g_free (pop);
 }
 
@@ -39,7 +39,7 @@ param_proxy_populate (GtkWidget *chunter,
   if (pc && pc->items)
     {
       pop = g_new (ParamProxyPopulation, 1);
-      pop->iseq = bse_item_seq_copy_shallow (pc->items);
+      pop->iseq = bse_it3m_seq_copy_shallow (pc->items);
       pop->paths = NULL;
       pop->prefix = NULL;
       /* go from object to path name */
@@ -166,7 +166,7 @@ bst_item_seq_list_match (GSList      *item_seq_slist,
   l = strlen (text);
   for (slist = item_seq_slist; slist; slist = slist->next)
     {
-      BseItemSeq *iseq = (BseItemSeq*) slist->data;
+      BseIt3mSeq *iseq = (BseIt3mSeq*) slist->data;
       for (i = 0; i < iseq->n_items; i++)
 	{
 	  const gchar *path = bse_item_get_uname_path (iseq->items[i]);

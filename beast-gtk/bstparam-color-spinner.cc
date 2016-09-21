@@ -96,9 +96,16 @@ param_color_spinner_update (GxkParam  *param,
   gtk_editable_set_editable (GTK_EDITABLE (widget), param->editable);
 }
 
-static GxkParamEditor param_color_spinner = {
+static GxkParamEditor param_color_spinner_int = {
   { "color-spinner",    N_("Color Entry"), },
   { G_TYPE_INT, },
+  { "rgb",              +10,    TRUE, },        /* options, rating, editing */
+  param_color_spinner_create, param_color_spinner_update,
+};
+
+static GxkParamEditor param_color_spinner_num = {
+  { "color-spinner",    N_("Color Entry"), },
+  { SFI_TYPE_NUM, },
   { "rgb",              +10,    TRUE, },        /* options, rating, editing */
   param_color_spinner_create, param_color_spinner_update,
 };

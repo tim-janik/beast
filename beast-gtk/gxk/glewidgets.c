@@ -1077,7 +1077,7 @@ gtk_hwrap_box_size_request (GtkWidget      *widget,
 	  requisition->height = layout_height;
 	}
 
-      /* g_print ("ratio for width %d height %d = %f\n",
+      /* printout ("ratio for width %d height %d = %f\n",
 	 (gint) layout_width,
 	 (gint) layout_height,
 	 ratio);
@@ -1087,7 +1087,7 @@ gtk_hwrap_box_size_request (GtkWidget      *widget,
 
   requisition->width += GTK_CONTAINER (wbox)->border_width * 2; /*<h2v-skip>*/
   requisition->height += GTK_CONTAINER (wbox)->border_width * 2; /*<h2v-skip>*/
-  /* g_print ("choosen: width %d, height %d\n",
+  /* printout ("choosen: width %d, height %d\n",
      requisition->width,
      requisition->height);
   */
@@ -1275,10 +1275,10 @@ layout_row (GtkWrapBox    *wbox,
 	    }
 	  else
 	    {
-	      /* g_print ("child_allocation.x %d += %d * %f ",
+	      /* printout ("child_allocation.x %d += %d * %f ",
 		       child_allocation.x, n_children, extra); */
 	      child_allocation.x += n_children * extra;
-	      /* g_print ("= %d\n",
+	      /* printout ("= %d\n",
 		       child_allocation.x); */
 	      child_allocation.width = MIN (child_requisition.width,
 					    area->width - child_allocation.x + area->x);
@@ -1452,7 +1452,7 @@ gtk_hwrap_box_size_allocate (GtkWidget     *widget,
   area.height = MAX (1, (gint) allocation->height - border * 2);
 
   /*<h2v-off>*/
-  /* g_print ("got: width %d, height %d\n",
+  /* printout ("got: width %d, height %d\n",
      allocation->width,
      allocation->height);
   */
@@ -1732,7 +1732,7 @@ gtk_vwrap_box_size_request (GtkWidget      *widget,
 	  requisition->width = layout_width;
 	}
 
-      /* g_print ("ratio for height %d width %d = %f\n",
+      /* printout ("ratio for height %d width %d = %f\n",
 	 (gint) layout_height,
 	 (gint) layout_width,
 	 ratio);
@@ -1742,7 +1742,7 @@ gtk_vwrap_box_size_request (GtkWidget      *widget,
 
   requisition->width += GTK_CONTAINER (wbox)->border_width * 2; /*<h2v-skip>*/
   requisition->height += GTK_CONTAINER (wbox)->border_width * 2; /*<h2v-skip>*/
-  /* g_print ("choosen: height %d, width %d\n",
+  /* printout ("choosen: height %d, width %d\n",
      requisition->height,
      requisition->width);
   */
@@ -1930,10 +1930,10 @@ layout_col (GtkWrapBox    *wbox,
 	    }
 	  else
 	    {
-	      /* g_print ("child_allocation.y %d += %d * %f ",
+	      /* printout ("child_allocation.y %d += %d * %f ",
 		       child_allocation.y, n_children, extra); */
 	      child_allocation.y += n_children * extra;
-	      /* g_print ("= %d\n",
+	      /* printout ("= %d\n",
 		       child_allocation.y); */
 	      child_allocation.height = MIN (child_requisition.height,
 					    area->height - child_allocation.y + area->y);
@@ -2107,7 +2107,7 @@ gtk_vwrap_box_size_allocate (GtkWidget     *widget,
   area.width = MAX (1, (gint) allocation->width - border * 2);
 
   /*<h2v-off>*/
-  /* g_print ("got: width %d, height %d\n",
+  /* printout ("got: width %d, height %d\n",
      allocation->width,
      allocation->height);
   */

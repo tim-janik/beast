@@ -2,12 +2,10 @@
 #include "sfidl-options.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
-#include "topconfig.h"
 #include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
 
-/* FIXME: should be filled out and written into topconfig.h by configure */
 #define SFIDL_VERSION        BST_VERSION
 #define SFIDL_PRG_NAME	     "sfidl"
 
@@ -16,7 +14,7 @@ using namespace Sfidl;
 static Options *Options_the = 0;
 
 Options *Options::the() {
-  g_return_val_if_fail (Options_the != 0, 0);
+  assert_return (Options_the != 0, 0);
 
   return Options_the;
 };
@@ -42,9 +40,9 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   char **argv;
   unsigned int i, e;
 
-  g_return_val_if_fail (argc_p != NULL, false);
-  g_return_val_if_fail (argv_p != NULL, false);
-  g_return_val_if_fail (*argc_p >= 0, false);
+  assert_return (argc_p != NULL, false);
+  assert_return (argv_p != NULL, false);
+  assert_return (*argc_p >= 0, false);
 
   argc = *argc_p;
   argv = *argv_p;
@@ -170,14 +168,13 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   /* add std include path */
   if (!noStdInc)
     {
-      char *x = g_strdup (SFIDL_PATH_STDINC);
-      char *dir = strtok (x, G_SEARCHPATH_SEPARATOR_S);
+      const std::string stdinc_path = Bse::installpath (Bse::INSTALLPATH_BSEINCLUDEDIR);
+      char *dir = strtok (const_cast<char*> (stdinc_path.c_str()), G_SEARCHPATH_SEPARATOR_S);
       while (dir && dir[0])
 	{
 	  includePath.push_back (dir);
 	  dir = strtok (NULL, G_SEARCHPATH_SEPARATOR_S);
 	}
-      g_free (x);
     }
 
   /* option validation */
@@ -202,7 +199,7 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 
   if (printVersion)
     {
-      printf ("%s %s\n", SFIDL_PRG_NAME, SFIDL_VERSION);
+      printf ("%s %s\n", SFIDL_PRG_NAME, Bse::version().c_str());
       return true;
     }
 

@@ -128,17 +128,17 @@ bse_track_dispose (GObject *object)
   /* we may assert removal here, since if these assertions fail,
    * our parent (BseSong) doesn't properly implement track support
    */
-  g_assert (self->sub_synth == NULL);
+  assert (self->sub_synth == NULL);
 
   /* check uncrossed references */
-  g_assert (self->snet == NULL);
-  g_assert (self->pnet == NULL);
-  g_assert (self->n_entries_SL == 0);
+  assert (self->snet == NULL);
+  assert (self->pnet == NULL);
+  assert (self->n_entries_SL == 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 }
 
 static void
@@ -146,9 +146,9 @@ bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 
-  g_assert (self->n_entries_SL == 0);
+  assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
   bse_id_free (self->channel_id);
 
@@ -167,11 +167,11 @@ track_add_entry (BseTrack *self,
 {
   guint n, size;
 
-  g_return_val_if_fail (index <= self->n_entries_SL, NULL);
+  assert_return (index <= self->n_entries_SL, NULL);
   if (index > 0)
-    g_return_val_if_fail (self->entries_SL[index - 1].tick < tick, NULL);
+    assert_return (self->entries_SL[index - 1].tick < tick, NULL);
   if (index < self->n_entries_SL)
-    g_return_val_if_fail (self->entries_SL[index].tick > tick, NULL);
+    assert_return (self->entries_SL[index].tick > tick, NULL);
 
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL++;
@@ -195,7 +195,7 @@ static void
 track_delete_entry (BseTrack *self,
 		    guint     index)
 {
-  g_return_if_fail (index < self->n_entries_SL);
+  assert_return (index < self->n_entries_SL);
 
   BsePart *part = self->entries_SL[index].part;
   bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
@@ -250,8 +250,9 @@ track_uncross_part (BseItem *owner,
       {
         guint tick = self->entries_SL[i].tick;
 	XREF_DEBUG ("uncrossing[start]: %p %p (%d)", self, part, tick);
-        /* delete track via procedure so deletion is recorded to undo */
-        bse_item_exec_void (owner, "remove-tick", tick);
+        // delete track via TrackImpl so deletion is recorded to undo
+        Bse::TrackImpl *track = owner->as<Bse::TrackImpl*>();
+        track->remove_tick (tick);
 	XREF_DEBUG ("uncrossing[done]: %p %p (%d)", self, part, tick);
 	return;
       }
@@ -296,7 +297,7 @@ bse_track_get_candidates (BseItem               *item,
       bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
       /* remove existing outputs */
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_remove (pc->items, (BseItem*) ring->data);
+        bse_it3m_seq_remove (pc->items, (BseItem*) ring->data);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -371,7 +372,7 @@ static void
 create_wnet (BseTrack *self,
 	     BseWave  *wave)
 {
-  g_return_if_fail (self->wnet == NULL);
+  assert_return (self->wnet == NULL);
 
   const gchar *play_type = bse_xinfos_get_value (wave->xinfos, "play-type");
   const gchar *synthesis_network = play_type ? play_type : "adsr-wave-1";
@@ -452,7 +453,7 @@ create_sound_font_net (BseTrack           *self,
 static void
 clear_snet_and_wave_and_sfpreset (BseTrack *self)
 {
-  g_return_if_fail (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
+  assert_return (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
 
   if (self->sub_synth)
     g_object_set (self->sub_synth, /* no undo */
@@ -601,7 +602,7 @@ bse_track_set_property (GObject      *object,
 	}
       break;
     case PROP_OUTPUTS:
-      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseItemSeq*) g_value_get_boxed (value));
+      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseIt3mSeq*) g_value_get_boxed (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -619,7 +620,7 @@ bse_track_get_property (GObject    *object,
 
   switch (param_id)
     {
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       SfiRing *ring;
     case PROP_MUTED:
       sfi_value_set_bool (value, self->muted_SL);
@@ -631,9 +632,9 @@ bse_track_get_property (GObject    *object,
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_OUTPUTS:
-      iseq = bse_item_seq_new();
+      iseq = bse_it3m_seq_new();
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_append (iseq, (BseItem*) ring->data);
+        bse_it3m_seq_append (iseq, (BseItem*) ring->data);
       g_value_take_boxed (value, iseq);
       break;
     case PROP_WAVE:
@@ -661,8 +662,8 @@ bse_track_insert_part (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_PART (part), BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_TRACK (self), 0);
+  assert_return (BSE_IS_PART (part), 0);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -683,7 +684,7 @@ bse_track_remove_tick (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_if_fail (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_TRACK (self));
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -695,50 +696,48 @@ bse_track_remove_tick (BseTrack *self,
     }
 }
 
-static BseTrackPartSeq*
-bse_track_list_parts_intern (BseTrack *self,
-                             BsePart  *part)
+static Bse::TrackPartSeq
+bse_track_list_parts_intern (BseTrack *self, BsePart *part)
 {
   BseItem *item = BSE_ITEM (self);
   BseSong *song = NULL;
   if (BSE_IS_SONG (item->parent))
     song = BSE_SONG (item->parent);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
   bse_song_timing_get_default (&timing);
-  BseTrackPartSeq *tps = bse_track_part_seq_new ();
+  Bse::TrackPartSeq tps;
   gint i;
   for (i = 0; i < self->n_entries_SL; i++)
     {
       BseTrackEntry *entry = self->entries_SL + i;
       if (entry->part && (entry->part == part || !part))
 	{
-	  BseTrackPart tp = { 0, };
+          Bse::TrackPart tp;
 	  tp.tick = entry->tick;
-	  tp.part = entry->part;
+	  tp.part = entry->part->as<Bse::PartIfaceP>();
 	  if (song)
 	    bse_song_get_timing (song, tp.tick, &timing);
-	  tp.duration = MAX (timing.tpt, entry->part->last_tick_SL);
+	  tp.duration = MAX (uint (timing.tpt), entry->part->last_tick_SL);
 	  if (i + 1 < self->n_entries_SL)
-	    tp.duration = MIN (tp.duration, entry[1].tick - entry->tick);
-	  bse_track_part_seq_append (tps, &tp);
+	    tp.duration = MIN (uint (tp.duration), entry[1].tick - entry->tick);
+	  tps.push_back (tp);
 	}
     }
   return tps;
 }
 
-BseTrackPartSeq*
+Bse::TrackPartSeq
 bse_track_list_parts (BseTrack *self)
 {
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), Bse::TrackPartSeq());
   return bse_track_list_parts_intern (self, NULL);
 }
 
-BseTrackPartSeq*
-bse_track_list_part (BseTrack *self,
-                     BsePart  *part)
+Bse::TrackPartSeq
+bse_track_list_part (BseTrack *self, BsePart *part)
 {
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
-  g_return_val_if_fail (BSE_IS_PART (part), NULL);
+  assert_return (BSE_IS_TRACK (self), Bse::TrackPartSeq());
+  assert_return (BSE_IS_PART (part), Bse::TrackPartSeq());
   return bse_track_list_parts_intern (self, part);
 }
 
@@ -749,8 +748,8 @@ bse_track_find_part (BseTrack *self,
 {
   guint i;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), FALSE);
-  g_return_val_if_fail (BSE_IS_PART (part), FALSE);
+  assert_return (BSE_IS_TRACK (self), FALSE);
+  assert_return (BSE_IS_PART (part), FALSE);
 
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].part == part)
@@ -768,7 +767,7 @@ bse_track_lookup_tick (BseTrack               *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -782,7 +781,7 @@ bse_track_find_link (BseTrack *self,
 {
   guint i;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].id == id)
@@ -798,7 +797,7 @@ bse_track_get_part_SL (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   /* we return the nearest part with start <= tick and
    * set *next to the start of the following part if any
@@ -825,10 +824,10 @@ bse_track_add_modules (BseTrack        *self,
 		       BseContainer    *container,
                        BseMidiReceiver *midi_receiver)
 {
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (self->sub_synth == NULL);
-  g_return_if_fail (midi_receiver != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (self->sub_synth == NULL);
+  assert_return (midi_receiver != NULL);
 
   /* midi voice input */
   self->voice_input = (BseSource*) bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
@@ -913,7 +912,7 @@ bse_track_get_last_tick (BseTrack *self)
   if (part)
     {
       BseItem *item = BSE_ITEM (self);
-      BseSongTiming timing;
+      Bse::SongTiming timing;
       g_object_get (part, "last-tick", &last_tick, NULL);
       if (BSE_IS_SONG (item->parent))
         bse_song_get_timing (BSE_SONG (item->parent), offset, &timing);
@@ -932,11 +931,11 @@ static void
 bse_track_update_midi_channel (BseTrack *self)
 {
   if (self->voice_switch)
-  {
-    bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->sub_synth), self->midi_channel_SL);
-    bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->postprocess), self->midi_channel_SL);
-    bse_midi_voice_switch_set_midi_channel (BSE_MIDI_VOICE_SWITCH (self->voice_switch), self->midi_channel_SL);
-  }
+    {
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->sub_synth), self->midi_channel_SL);
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->postprocess), self->midi_channel_SL);
+      bse_midi_voice_switch_set_midi_channel (BSE_MIDI_VOICE_SWITCH (self->voice_switch), self->midi_channel_SL);
+    }
 }
 
 static void
@@ -969,9 +968,9 @@ void
 bse_track_remove_modules (BseTrack     *self,
                           BseContainer *container)
 {
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (self->sub_synth != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (self->sub_synth != NULL);
 
   bse_container_remove_item (container, BSE_ITEM (self->sub_synth));
   self->sub_synth = NULL;
@@ -992,9 +991,10 @@ bse_track_clone_voices (BseTrack       *self,
 {
   guint i;
 
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (trans != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (trans != NULL);
+
   if (!self->sound_font_preset)
     {
       for (i = 0; i < self->max_voices - 1; i++)
@@ -1143,6 +1143,137 @@ bse_track_class_init (BseTrackClass *klass)
                               PROP_OUTPUTS,
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for this track"),
-                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_GUI ":item-sequence"));
+                                                    BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
+
+namespace Bse {
+
+TrackImpl::TrackImpl (BseObject *bobj) :
+  ContextMergerImpl (bobj)
+{}
+
+TrackImpl::~TrackImpl ()
+{}
+
+SongTiming
+TrackImpl::get_timing (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  SongTiming timing;
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  else
+    bse_song_timing_get_default (&timing);
+  return timing;
+}
+
+int
+TrackImpl::insert_part (int tick, PartIface &parti)
+{
+  BseTrack *self = as<BseTrack*>();
+  PartImpl &part = dynamic_cast<PartImpl&> (parti);
+  assert_return (parent() != NULL && parent() == part.parent(), 0); // parent is SongImpl
+  uint id = bse_track_insert_part (self, tick, part.as<BsePart*>());
+  if (id)
+    {
+      // can't use remove_link() here, since id will have changed after undo
+      push_undo (__func__, *this, &TrackImpl::remove_tick, tick);
+    }
+  return id;
+}
+
+void
+TrackImpl::remove_tick (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_lookup_tick (self, tick);
+  if (entry)
+    {
+      // undoing part removal needs an undo_descriptor b/c future deletions may invalidate the part handle
+      const uint utick = entry->tick;
+      UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*entry->part->as<PartImpl*>());
+      auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> Error {
+        PartImpl &part = self.undo_resolve (part_descriptor);
+        const uint id = self.insert_part (utick, part);
+        return id ? Error::NONE : Error::INVALID_OVERLAP;
+      };
+      bse_track_remove_tick (self, tick);
+      push_undo (__func__, *this, lambda);
+    }
+}
+
+void
+TrackImpl::remove_link (int link_id)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_find_link (self, link_id);
+  if (entry)
+    remove_tick (entry->tick);
+}
+
+PartSeq
+TrackImpl::list_parts_uniq ()
+{
+  BseTrack *self = as<BseTrack*>();
+  const TrackPartSeq &tpseq = bse_track_list_parts (self);
+  PartSeq parts;
+  for (const auto &tp : tpseq)
+    parts.push_back (tp.part);
+  std::sort (parts.begin(), parts.end());
+  parts.erase (std::unique (parts.begin(), parts.end()), parts.end());
+  return parts;
+}
+
+TrackPartSeq
+TrackImpl::list_parts ()
+{
+  BseTrack *self = as<BseTrack*>();
+  return bse_track_list_parts (self);
+}
+
+PartIfaceP
+TrackImpl::get_part (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_lookup_tick (self, tick);
+  return entry ? entry->part->as<PartIfaceP>() : NULL;
+}
+
+int
+TrackImpl::get_last_tick ()
+{
+  BseTrack *self = as<BseTrack*>();
+  return bse_track_get_last_tick (self);
+}
+
+Error
+TrackImpl::ensure_output ()
+{
+  BseTrack *self = as<BseTrack*>();
+  Error error = Error::NONE;
+  BseItem *bparent = self->parent;
+  if (BSE_IS_SONG (bparent) && !self->bus_outputs)
+    {
+      BseSong *song = BSE_SONG (bparent);
+      BseBus *bmaster = bse_song_find_master (song);
+      if (bmaster)
+        {
+          BusImpl &master = *bmaster->as<BusImpl*>();
+          error = master.connect_track (*this);
+        }
+    }
+  return error;
+}
+
+SourceIfaceP
+TrackImpl::get_output_source ()
+{
+  BseTrack *self = as<BseTrack*>();
+  BseSource *child = bse_track_get_output (self);
+  return child->as<SourceIfaceP>();
+  return child->as<SourceIfaceP>();
+}
+
+} // Bse

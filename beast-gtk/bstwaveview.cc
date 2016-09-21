@@ -66,7 +66,7 @@ bst_wave_view_new (SfiProxy wrepo)
 {
   GtkWidget *wave_view;
 
-  g_return_val_if_fail (BSE_IS_WAVE_REPO (wrepo), NULL);
+  assert_return (BSE_IS_WAVE_REPO (wrepo), NULL);
 
   wave_view = gtk_widget_new (BST_TYPE_WAVE_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (wave_view), wrepo);
@@ -114,7 +114,7 @@ bst_wave_view_set_editable (BstWaveView *self,
 {
   BstItemView *iview = BST_ITEM_VIEW (self);
 
-  g_return_if_fail (BST_IS_WAVE_VIEW (self));
+  assert_return (BST_IS_WAVE_VIEW (self));
 
   self->editable = enabled != FALSE;
   if (iview->tree)

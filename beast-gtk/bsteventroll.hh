@@ -38,9 +38,9 @@ struct _BstEventRoll
 {
   GxkScrollCanvas parent_instance;
 
-  SfiProxy	 proxy;
-  BseMidiSignalType control_type;
-  GtkWidget     *child;
+  Bse::PartH          part;
+  Bse::MidiSignal control_type;
+  GtkWidget          *child;
 
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */
@@ -90,8 +90,7 @@ struct _BstEventRollClass
 
 /* --- prototypes --- */
 GType       bst_event_roll_get_type              (void);
-void        bst_event_roll_set_proxy             (BstEventRoll   *self,
-                                                  SfiProxy        proxy);
+void        bst_event_roll_set_part              (BstEventRoll *self, Bse::PartH part = Bse::PartH());
 gfloat      bst_event_roll_set_hzoom             (BstEventRoll   *self,
                                                   gfloat          hzoom);
 void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
@@ -100,7 +99,7 @@ void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
 void        bst_event_roll_set_vpanel_width_hook (BstEventRoll   *self,
                                                   gint          (*fetch_vpanel_width) (gpointer data),
                                                   gpointer        data);
-void        bst_event_roll_set_control_type      (BstEventRoll *self, BseMidiSignalType control_type);
+void        bst_event_roll_set_control_type      (BstEventRoll *self, Bse::MidiSignal control_type);
 void        bst_event_roll_init_segment          (BstEventRoll   *self,
                                                   BstSegmentType  type);
 void        bst_event_roll_segment_start         (BstEventRoll   *self,

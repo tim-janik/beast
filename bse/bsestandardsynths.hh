@@ -7,7 +7,6 @@
 G_BEGIN_DECLS
 
 
-GSList*	bse_standard_synth_get_list	(void);
 gchar*	bse_standard_synth_inflate	(const gchar	*synth_name,
 					 guint		*text_len);
 

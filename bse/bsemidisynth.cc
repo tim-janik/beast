@@ -26,7 +26,6 @@ enum
   PROP_VOLUME_f,
   PROP_VOLUME_dB,
   PROP_VOLUME_PERC,
-  PROP_AUTO_ACTIVATE
 };
 
 
@@ -458,9 +457,15 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
 					     bse_db_to_factor (0) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, _("Playback Settings"),
-			      PROP_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", NULL, NULL,
-					      TRUE, /* change default */
-					      /* override parent property: 0 */ "w"));
 }
+
+namespace Bse {
+
+MidiSynthImpl::MidiSynthImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+MidiSynthImpl::~MidiSynthImpl ()
+{}
+
+} // Bse

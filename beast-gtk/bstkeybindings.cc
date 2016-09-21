@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"  /* BST_PATH_KEYS */
 #include "bstkeybindings.hh"
 #include "bstauxdialogs.hh"
 #include "bstpatternctrl.hh"
@@ -72,11 +71,11 @@ key_bindings_load_file (GtkWidget   *dialog,
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
   GSList slist = { kbinding, NULL };
-  BseErrorType error = bst_key_binding_parse (file, &slist);
+  Bse::Error error = bst_key_binding_parse (file, &slist);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
-  if (error)
-    g_message ("failed to load \"%s\": %s", file, bse_error_blurb (error));
+  if (error != 0)
+    g_message ("failed to load \"%s\": %s", file, Bse::error_blurb (error));
 }
 
 static void
@@ -217,13 +216,13 @@ key_bindings_exec_action (gpointer data,
         static GtkWidget *load_dialog = NULL;
         if (!load_dialog)
           load_dialog = bst_file_dialog_create();
-        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), BST_PATH_KEYS);
+        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
         gxk_widget_showraise (load_dialog);
         bst_file_dialog_set_handler (BST_FILE_DIALOG (load_dialog), key_bindings_load_file, self, NULL);
       }
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     }
   gxk_status_window_pop ();
@@ -256,7 +255,7 @@ key_bindings_check_action (gpointer data,
     case ACTION_LOAD:
       return TRUE;
     default:
-      g_warning ("%s: unknown action: %lu", G_STRFUNC, action);
+      g_warning ("%s: unknown action: %lu", __func__, action);
       return FALSE;
     }
 }
@@ -313,7 +312,7 @@ key_binding_fill_binding_value (GtkWidget      *self,
                                 GxkListWrapper *lwrapper)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
-  gint nb = row;
+  guint nb = row;
   if (nb >= kbinding->n_keys)
     {
       sfi_value_set_string (value, "<BUG: invalid row count>");
@@ -449,22 +448,21 @@ bst_key_binding_box (const gchar                 *binding_name,
 }
 
 void
-bst_key_binding_box_set (GtkWidget                   *self,
-                         BstKeyBindingItemSeq        *kbseq)
+bst_key_binding_box_set (GtkWidget *self, Bst::KeyBindingItemSeq *kbseq)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
-  bst_key_binding_set_item_seq (kbinding, kbseq);
+  bst_key_binding_set_it3m_seq (kbinding, *kbseq);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
 }
 
-BstKeyBindingItemSeq*
-bst_key_binding_box_get (GtkWidget *self)
+Bst::KeyBindingItemSeq*
+bst_key_binding_box_get_new (GtkWidget *self)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
-  return bst_key_binding_get_item_seq (kbinding);
+  return bst_key_binding_get_new_it3m_seq (kbinding);
 }
 
 BstKeyBindingKey*
@@ -520,28 +518,27 @@ key_binding_find_function (BstKeyBinding *kbinding,
 }
 
 void
-bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
-                              BstKeyBindingItemSeq *seq)
+bst_key_binding_set_it3m_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq)
 {
   BstKeyBindingKey *key;
   guint i;
   /* reset */
   kbinding->n_keys = 0;
   /* raise capacity */
-  kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * seq->n_items);
+  kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * seq.size());
   /* convert picewise */
   key = kbinding->keys;
-  for (i = 0; i < seq->n_items; i++)
+  for (i = 0; i < seq.size(); i++)
     {
-      gtk_accelerator_parse (seq->items[i]->key_name, &key->keyval, &key->modifier);
-      key->func_index = key_binding_find_function (kbinding, seq->items[i]->func_name);
+      gtk_accelerator_parse (seq[i].key_name.c_str(), &key->keyval, &key->modifier);
+      key->func_index = key_binding_find_function (kbinding, seq[i].func_name.c_str());
       if (key->func_index < kbinding->n_funcs && bst_key_combo_valid (key->keyval, key->modifier))
         {
-          key->param = key_binding_clamp_param (kbinding->funcs[key->func_index].ptype, seq->items[i]->func_param);
+          key->param = key_binding_clamp_param (kbinding->funcs[key->func_index].ptype, seq[i].func_param);
           key++;
         }
       else
-        g_message ("ignoring unknown key-binding function: %s", seq->items[i]->func_name);
+        g_message ("ignoring unknown key-binding function: %s", seq[i].func_name.c_str());
     }
   /* admit registration */
   kbinding->n_keys = key - kbinding->keys;
@@ -549,20 +546,20 @@ bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
   kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * kbinding->n_keys);
 }
 
-BstKeyBindingItemSeq*
-bst_key_binding_get_item_seq (BstKeyBinding *kbinding)
+Bst::KeyBindingItemSeq*
+bst_key_binding_get_new_it3m_seq (BstKeyBinding *kbinding)
 {
-  BstKeyBindingItemSeq *iseq = bst_key_binding_item_seq_new ();
-  guint i;
-  for (i = 0; i < kbinding->n_keys; i++)
+  Bst::KeyBindingItemSeq *iseq = new Bst::KeyBindingItemSeq();
+  for (size_t i = 0; i < kbinding->n_keys; i++)
     {
       BstKeyBindingKey *key = kbinding->keys + i;
-      BstKeyBindingItem item;
-      item.key_name = gtk_accelerator_name (key->keyval, key->modifier);
+      Bst::KeyBindingItem item;
+      gchar *freeme = gtk_accelerator_name (key->keyval, key->modifier);
+      item.key_name = freeme;
       item.func_name = (char*) kbinding->funcs[key->func_index].function_name;
       item.func_param = key->param;
-      bst_key_binding_item_seq_append (iseq, &item);
-      g_free (item.key_name);
+      iseq->push_back (item);
+      g_free (freeme);
     }
   return iseq;
 }
@@ -573,7 +570,8 @@ bst_key_binding_item_pspec (void)
   static GParamSpec *pspec = NULL;
   if (!pspec)
     {
-      pspec = sfi_pspec_rec ("key", NULL, NULL, bst_key_binding_item_fields, SFI_PARAM_STANDARD);
+      Bst::KeyBindingItem kbitem;
+      pspec = sfi_pspec_rec ("key", NULL, NULL, Bse::sfi_pspecs_rec_fields_from_visitable (kbitem), SFI_PARAM_STANDARD);
       g_param_spec_ref (pspec);
       g_param_spec_sink (pspec);
     }
@@ -585,7 +583,6 @@ bst_key_binding_item_pspec (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 const gchar*
 bst_key_binding_rcfile (void)
@@ -596,7 +593,7 @@ bst_key_binding_rcfile (void)
   return key_binding_rc;
 }
 
-BseErrorType
+Bse::Error
 bst_key_binding_dump (const gchar *file_name,
                       GSList      *kbindings)
 {
@@ -604,31 +601,31 @@ bst_key_binding_dump (const gchar *file_name,
   GSList *slist;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
              O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
              0666);
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+    return errno == EEXIST ? Bse::Error::FILE_EXISTS : Bse::Error::IO;
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", Bse::version().c_str());
 
-  /* store BstSkinConfig */
+  /* store BstKeyBinding */
   sfi_wstore_puts (wstore, "\n");
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;
-      BstKeyBindingItemSeq *iseq = bst_key_binding_get_item_seq (kbinding);
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (kbinding);
       GParamSpec *pspec = sfi_pspec_seq (kbinding->binding_name, NULL, NULL, bst_key_binding_item_pspec(), SFI_PARAM_STANDARD);
-      SfiSeq *seq = bst_key_binding_item_seq_to_seq (iseq);
+      SfiSeq *seq = Bse::sfi_seq_new_from_visitable (*iseq);
       GValue *value = sfi_value_seq (seq);
       sfi_wstore_put_param (wstore, value, pspec);
       g_param_spec_unref (pspec);
-      bst_key_binding_item_seq_free (iseq);
+      delete iseq;
       sfi_value_free (value);
       sfi_seq_unref (seq);
       sfi_wstore_puts (wstore, "\n");
@@ -638,7 +635,7 @@ bst_key_binding_dump (const gchar *file_name,
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? Bse::Error::IO : Bse::Error::NONE;
 }
 
 static GTokenType
@@ -648,7 +645,7 @@ key_binding_try_statement (gpointer   context_data,
                            gpointer   user_data)
 {
   GSList *slist, *kbindings = (GSList*) context_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;
@@ -664,9 +661,9 @@ key_binding_try_statement (gpointer   context_data,
           seq = sfi_value_get_seq (value);
           if (token == G_TOKEN_NONE && seq)
             {
-              BstKeyBindingItemSeq *iseq = bst_key_binding_item_seq_from_seq (seq);
-              bst_key_binding_set_item_seq (kbinding, iseq);
-              bst_key_binding_item_seq_free (iseq);
+              Bst::KeyBindingItemSeq iseq;
+              Bse::sfi_seq_to_visitable (seq, iseq);
+              bst_key_binding_set_it3m_seq (kbinding, iseq);
             }
           sfi_value_free (value);
           return token;
@@ -675,15 +672,15 @@ key_binding_try_statement (gpointer   context_data,
   return SFI_TOKEN_UNMATCHED;
 }
 
-BseErrorType
+Bse::Error
 bst_key_binding_parse (const gchar *file_name,
                        GSList      *kbindings)
 {
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   SfiRStore *rstore;
   gchar *absname;
   gint fd;
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);
@@ -691,13 +688,13 @@ bst_key_binding_parse (const gchar *file_name,
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
+              Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
     }
 
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   if (sfi_rstore_parse_all (rstore, kbindings, key_binding_try_statement, absname) > 0)
-    error = BSE_ERROR_PARSE_ERROR;
+    error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   g_free (absname);

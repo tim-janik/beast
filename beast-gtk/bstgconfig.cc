@@ -4,7 +4,7 @@
 #include	<string.h>
 
 /* --- variables --- */
-static BstGConfig *bst_global_config = NULL;
+static Bst::GConfig *bst_global_config = NULL;
 static GParamSpec *pspec_global_config = NULL;
 
 
@@ -12,15 +12,16 @@ static GParamSpec *pspec_global_config = NULL;
 void
 _bst_gconfig_init (void)
 {
-  BstGConfig *gconfig;
   GValue *value;
   SfiRec *rec;
 
-  g_return_if_fail (bst_global_config == NULL);
+  assert_return (bst_global_config == NULL);
 
   /* global config record description */
+  Bst::GConfig gconfig;
   pspec_global_config = sfi_pspec_rec ("beast-preferences-v1", NULL, NULL,
-				       bst_gconfig_fields, SFI_PARAM_STANDARD);
+                                       Bse::sfi_pspecs_rec_fields_from_visitable (gconfig),
+                                       SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
   /* create empty config record */
@@ -29,8 +30,8 @@ _bst_gconfig_init (void)
   /* fill out missing values with defaults */
   g_param_value_validate (pspec_global_config, value);
   /* install global config */
-  gconfig = bst_gconfig_from_rec (rec);
-  bst_global_config = gconfig;
+  Bse::sfi_rec_to_visitable (rec, gconfig);
+  bst_global_config = new Bst::GConfig (gconfig);
   /* cleanup */
   sfi_value_free (value);
   sfi_rec_unref (rec);
@@ -42,40 +43,29 @@ bst_gconfig_pspec (void)
   return pspec_global_config;
 }
 
-BstGConfig*
+Bst::GConfig*
 bst_gconfig_get_global (void)
 {
   return bst_global_config;
 }
 
-static BstGConfig*
-copy_gconfig (BstGConfig *src_config)
-{
-  SfiRec *rec = bst_gconfig_to_rec (src_config);
-  BstGConfig *gconfig = bst_gconfig_from_rec (rec);
-  sfi_rec_unref (rec);
-  return gconfig;
-}
-
 static void
-set_gconfig (BstGConfig *gconfig)
+set_gconfig (const Bst::GConfig &gconfig)
 {
-  BstGConfig *oldconfig = bst_global_config;
-  bst_global_config = gconfig;
-  bst_gconfig_free (oldconfig);
+  Bst::GConfig *oldconfig = bst_global_config;
+  bst_global_config = new Bst::GConfig (gconfig);
+  delete oldconfig;
 }
 
 void
 bst_gconfig_apply (SfiRec *rec)
 {
-  SfiRec *vrec;
-  BstGConfig *gconfig;
+  assert_return (rec != NULL);
 
-  g_return_if_fail (rec != NULL);
-
-  vrec = sfi_rec_copy_deep (rec);
+  SfiRec *vrec = sfi_rec_copy_deep (rec);
   sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_global_config));
-  gconfig = bst_gconfig_from_rec (vrec);
+  Bst::GConfig gconfig;
+  Bse::sfi_rec_to_visitable (vrec, gconfig);
   sfi_rec_unref (vrec);
   set_gconfig (gconfig);
   bst_gconfig_push_updates();
@@ -84,11 +74,9 @@ bst_gconfig_apply (SfiRec *rec)
 void
 bst_gconfig_set_rc_version (const gchar *rc_version)
 {
-  BstGConfig *gconfig;
+  Bst::GConfig gconfig (*bst_global_config);
 
-  gconfig = copy_gconfig (bst_global_config);
-  g_free (gconfig->rc_version);
-  gconfig->rc_version = g_strdup (rc_version);
+  gconfig.rc_version = rc_version;
   set_gconfig (gconfig);
   bst_gconfig_push_updates();
 }
@@ -112,7 +100,6 @@ bst_gconfig_push_updates (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"		/* BST_VERSION */
 #include <sfi/sfistore.hh>	/* we rely on internal API here */
 static void
 accel_map_print (gpointer        data,
@@ -147,7 +134,7 @@ accel_map_print (gpointer        data,
   g_string_free (gstring, TRUE);
 }
 
-BseErrorType
+Bse::Error
 bst_rc_dump (const gchar *file_name)
 {
   SfiWStore *wstore;
@@ -155,7 +142,7 @@ bst_rc_dump (const gchar *file_name)
   SfiRec *rec;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -163,15 +150,15 @@ bst_rc_dump (const gchar *file_name)
 	     0666);
 
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+    return errno == EEXIST ? Bse::Error::FILE_EXISTS : Bse::Error::IO;
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", Bse::version().c_str());
 
   /* store BstGConfig */
   sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");
-  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   value = sfi_value_rec (rec);
   sfi_wstore_put_param (wstore, value, bst_gconfig_pspec());
   sfi_value_free (value);
@@ -191,7 +178,7 @@ bst_rc_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? Bse::Error::IO : Bse::Error::NONE;
 }
 
 static GTokenType
@@ -200,7 +187,7 @@ rc_file_try_statement (gpointer   context_data,
 		       GScanner  *scanner,
 		       gpointer   user_data)
 {
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp (bst_gconfig_pspec ()->name, scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
@@ -227,24 +214,24 @@ rc_file_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-BseErrorType
+Bse::Error
 bst_rc_parse (const gchar *file_name)
 {
   SfiRStore *rstore;
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   fd = open (file_name, O_RDONLY, 0);
   if (fd < 0)
     return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-	    BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
+	    Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
 
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, file_name);
   if (sfi_rstore_parse_all (rstore, NULL, rc_file_try_statement, NULL) > 0)
-    error = BSE_ERROR_PARSE_ERROR;
+    error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   return error;

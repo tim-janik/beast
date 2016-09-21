@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttreestores.hh"
-#include "topconfig.h"
 #include <string.h>
 
 typedef void (*ListenerFunc) (GtkTreeModel *model, SfiProxy item, gboolean added);
@@ -61,17 +60,16 @@ file_store_idle_handler (gpointer data)
       GtkTreePath *path = gtk_tree_path_new_from_indices (n_completed, -1);
       const gchar *filename = NULL;
       GtkTreeIter iter;
-      BseSampleFileInfo *info;
-      const gchar *loader, *name = NULL;
+      String loader, name;
       gchar *nstr = NULL;
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_path_free (path);
       gtk_tree_model_get (model, &iter,
                           BST_FILE_STORE_COL_FILE, &filename,
                           -1);
-      info = bse_sample_file_info (filename);
+      Bse::SampleFileInfo info = bse_server.sample_file_info (filename);
       const gchar *dsep = strrchr (filename, G_DIR_SEPARATOR);
-      if (info->error == BSE_ERROR_FILE_IS_DIR)
+      if (info.error == Bse::Error::FILE_IS_DIR)
         {
           loader = "Directory";
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
@@ -79,10 +77,10 @@ file_store_idle_handler (gpointer data)
       else
         {
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
-          loader = info->error ? bse_error_blurb (BseErrorType (info->error)) : info->loader;
+          loader = info.error != 0 ? Bse::error_blurb (info.error) : info.loader;
           guint l = strlen (filename);
-          if (info->error == BSE_ERROR_FORMAT_UNKNOWN &&
-              l >= 4 && g_strcasecmp (filename + l - 4, ".bse") == 0)
+          if (info.error == Bse::Error::FORMAT_UNKNOWN &&
+              l >= 4 && strcasecmp (filename + l - 4, ".bse") == 0)
             {
               nstr = bst_file_scan_find_key (filename, "container-child", NULL);
               if (nstr)
@@ -92,21 +90,21 @@ file_store_idle_handler (gpointer data)
                     {
                       name = col + 1;
                       loader = "BSE Project";
-                      info->error = 0;
+                      info.error = Bse::Error (0);
                     }
                 }
             }
         }
-      if (info->waves->n_strings)
-        name = info->waves->strings[0];
-      gchar *tstr = sfi_time_to_string (info->mtime);
+      if (info.waves.size())
+        name = info.waves[0];
+      gchar *tstr = sfi_time_to_string (info.mtime);
       gtk_tree_store_set (store, &iter,
-                          BST_FILE_STORE_COL_WAVE_NAME, name,   /* real wave name */
-                          BST_FILE_STORE_COL_SIZE, (guint) info->size,
-                          BST_FILE_STORE_COL_TIME_USECS, info->mtime,
+                          BST_FILE_STORE_COL_WAVE_NAME, name.c_str(),   /* real wave name */
+                          BST_FILE_STORE_COL_SIZE, size_t (info.size),
+                          BST_FILE_STORE_COL_TIME_USECS, info.mtime,
                           BST_FILE_STORE_COL_TIME_STR, tstr,
-                          BST_FILE_STORE_COL_LOADER, loader,
-                          BST_FILE_STORE_COL_LOADABLE, info->error == 0 && info->loader,
+                          BST_FILE_STORE_COL_LOADER, loader.c_str(),
+                          BST_FILE_STORE_COL_LOADABLE, info.error == 0 && !info.loader.empty(),
                           -1);
       g_free (tstr);
       g_free (nstr);
@@ -146,7 +144,7 @@ bst_file_store_update_list (GtkTreeModel *model,
   SfiFileCrawler *crawler = sfi_file_crawler_new ();
   glong l;
 
-  g_return_if_fail (search_path != NULL);
+  assert_return (search_path != NULL);
 
   sfi_file_crawler_add_search_path (crawler, search_path, filter);
   g_object_set_data_full ((GObject*) store, "file-crawler", crawler, (GDestroyNotify) sfi_file_crawler_destroy);
@@ -330,7 +328,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
   if (parent)
     {
       ProxyStore *ps = g_new0 (ProxyStore, 1);
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       guint i;
       ps->self = self;
       ps->row_from_proxy = child_list_wrapper_row_from_proxy;
@@ -433,7 +431,7 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
       const gchar *string;
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
-      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", seqid));
+      g_value_take_string (value, g_strdup_format ("%03u", seqid));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_child_list_wrapper_get_proxy (self, row);
@@ -480,7 +478,7 @@ item_seq_store_fill_value (GxkListWrapper *self,
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
       item = bst_item_seq_store_get_proxy (model, row);
-      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", bse_item_get_seqid (item)));
+      g_value_take_string (value, g_strdup_format ("%03u", bse_item_get_seqid (item)));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_item_seq_store_get_proxy (model, row);
@@ -565,7 +563,7 @@ proxy_cmp_sorted (gconstpointer   value1,
 
 void
 bst_item_seq_store_set (GtkTreeModel   *model,
-                        BseItemSeq     *iseq)
+                        BseIt3mSeq     *iseq)
 {
   g_object_set_data ((GObject*) model, "ProxyStore", NULL);
   if (iseq)
@@ -664,14 +662,14 @@ bst_item_seq_store_lower (GtkTreeModel   *model,
   return row;
 }
 
-BseItemSeq*
+BseIt3mSeq*
 bst_item_seq_store_dup (GtkTreeModel   *model)
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
-  BseItemSeq *iseq = bse_item_seq_new ();
+  BseIt3mSeq *iseq = bse_it3m_seq_new ();
   SfiRing *ring;
   for (ring = ps->u.pq.items; ring; ring = sfi_ring_walk (ring, ps->u.pq.items))
-    bse_item_seq_append (iseq, (SfiProxy) ring->data);
+    bse_it3m_seq_append (iseq, (SfiProxy) ring->data);
   return iseq;
 }
 

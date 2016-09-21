@@ -22,7 +22,7 @@ bst_server_monitor_get_type (void)
     {
       GtkTypeInfo server_monitor_info =
       {
-	"BstServerMonitor",
+	(char*) "BstServerMonitor",
 	sizeof (BstServerMonitor),
 	sizeof (BstServerMonitorClass),
 	(GtkClassInitFunc) bst_server_monitor_class_init,
@@ -70,7 +70,7 @@ bst_server_monitor_finalize (GObject *object)
 void
 bst_server_monitor_rebuild (BstServerMonitor *smon)
 {
-  g_return_if_fail (BST_IS_SERVER_MONITOR (smon));
+  assert_return (BST_IS_SERVER_MONITOR (smon));
 
   bst_server_monitor_update (smon);
 }
@@ -78,6 +78,6 @@ bst_server_monitor_rebuild (BstServerMonitor *smon)
 void
 bst_server_monitor_update (BstServerMonitor *smon)
 {
-  g_return_if_fail (BST_IS_SERVER_MONITOR (smon));
+  assert_return (BST_IS_SERVER_MONITOR (smon));
 
 }

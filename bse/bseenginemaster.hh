@@ -16,10 +16,12 @@ class MasterThread {
   std::thread           thread_;
   EventFd               event_fd_;
   std::function<void()> caller_wakeup_;
-  void          master_thread   ();
+  static void reap_master_thread ();
+  void        master_thread      ();
+  explicit    MasterThread       (const std::function<void()> &caller_wakeup);
 public:
-  explicit      MasterThread    (const std::function<void()> &caller_wakeup);
-  void          wakeup          ()      { event_fd_.wakeup(); }
+  static void wakeup             ();
+  static void start              (const std::function<void()> &caller_wakeup);
 };
 
 } // Bse

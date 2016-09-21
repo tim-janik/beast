@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 #include "compiler.hh"
-#include <assert.h>
 #include <ctype.h>
 
 using std::vector;

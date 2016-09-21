@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemain.hh>
-#include "topconfig.h"
 #include <bse/gslmagic.hh>
 #include <bse/gslcommon.hh>
 #include <bse/bseloader.hh>
@@ -68,33 +67,33 @@ main (gint   argc,
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
 
-	  g_print ("%s:", argv[i]);
+	  printout ("%s:", argv[i]);
 	  pad = g_strnfill (MAX (40, l) - l, ' ');
-	  g_print ("%s", pad);
+	  printout ("%s", pad);
 	  g_free (pad);
 	  if (!magic && !loader)
-	    g_print (" no magic/loader found");
+	    printout (" no magic/loader found");
 	  else
 	    {
 	      if (magic)
-		g_print (" MAGIC: %s", (char*) magic->data);
+		printout (" MAGIC: %s", (char*) magic->data);
 	      if (loader)
                 {
                   if (test_open)
                     {
                       BseWaveFileInfo *wfi;
-                      BseErrorType error = BSE_ERROR_NONE;
-                      g_print ("\n  LOADER: %s\n", loader->name);
+                      Bse::Error error = Bse::Error::NONE;
+                      printout ("\n  LOADER: %s\n", loader->name);
                       wfi = bse_wave_file_info_load (argv[i], &error);
                       if (wfi)
                         bse_wave_file_info_unref (wfi);
-                      g_print ("  ERROR: %s", bse_error_blurb (error));
+                      printout ("  ERROR: %s", bse_error_blurb (error));
                     }
                   else
-                    g_print (" LOADER: %s", loader->name);
+                    printout (" LOADER: %s", loader->name);
                 }
 	    }
-	  g_print ("\n");
+	  printout ("\n");
 	}
     }
 

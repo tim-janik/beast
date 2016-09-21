@@ -43,7 +43,7 @@ run_loop_test (GslWaveLoopType loop_type,
   GslDataCache *dcache;
   GslWaveChunkBlock block = { 0, };
   GslWaveChunk *wchunk;
-  BseErrorType error;
+  Bse::Error error;
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   dcache = gsl_data_cache_new (myhandle, 1);
   gsl_data_handle_unref (myhandle);
@@ -51,11 +51,11 @@ run_loop_test (GslWaveLoopType loop_type,
                                44100.0, 44.0,
 			       loop_type, loop_first, loop_last, loop_count);
   error = gsl_wave_chunk_open (wchunk);
-  if (error)
+  if (error != 0)
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
-    g_print ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
+    printout ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
 	     wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, play_dir);
   gsl_wave_chunk_debug_block (wchunk, - DEBUG_SIZE / 2, DEBUG_SIZE, cmpblock - DEBUG_SIZE / 2);
   block.play_dir = play_dir;
@@ -86,7 +86,7 @@ run_loop_test (GslWaveLoopType loop_type,
 	      verbosity = 99;
 	    }
 	  if (verbosity >= VERBOSITY_CHECKS)
-	    g_print ("%s: offset=%d (block.offset=%lld) value=%.16f found=%.16f\n",
+	    printout ("%s: offset=%d (block.offset=%lld) value=%.16f found=%.16f\n",
 		     fabs (cmpblock[i] - v) > 1e-15 ? "MISMATCH" : "match",
 		     i, (i - block.offset), cmpblock[i], v);
 	}
@@ -112,47 +112,47 @@ print_block (GslWaveChunk      *wchunk,
   guint i;
   if (verbosity >= VERBOSITY_BLOCKS)
     {
-      g_print ("BLOCK:");
-      g_print (" offset=%lld", block->offset);
-      g_print (" length=%lld", block->length);
-      g_print (" dirstride=%d", block->dirstride);
+      printout ("BLOCK:");
+      printout (" offset=%lld", block->offset);
+      printout (" length=%lld", block->length);
+      printout (" dirstride=%d", block->dirstride);
     }
   if (verbosity >= VERBOSITY_PADDING)
     {
-      g_print (" {prepad:");
+      printout (" {prepad:");
       i = wchunk->n_pad_values;
       p = block->start - (block->dirstride > 0 ? i : -i);
       while (i--)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_DATA)
     {
-      g_print (" {data:");
+      printout (" {data:");
       p = block->start;
       while (p != block->end)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_PADDING)
     {
       i = wchunk->n_pad_values;
-      g_print (" {postpad:");
+      printout (" {postpad:");
       while (i--)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_BLOCKS)
-    g_print ("\n");
+    printout ("\n");
 }
 static void
 reversed_datahandle_test (void)
@@ -160,7 +160,7 @@ reversed_datahandle_test (void)
   GslDataHandle *myhandle;
   GslDataHandle *rhandle1, *rhandle2;
   GslLong o, l, i, e;
-  BseErrorType error;
+  Bse::Error error;
   TSTART ("reversed datahandle");
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   rhandle1 = gsl_data_handle_new_reverse (myhandle);
@@ -168,7 +168,7 @@ reversed_datahandle_test (void)
   rhandle2 = gsl_data_handle_new_reverse (rhandle1);
   gsl_data_handle_unref (rhandle1);
   error = gsl_data_handle_open (rhandle2);
-  if (error)
+  if (error != 0)
     g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
   gsl_data_handle_unref (rhandle2);
   TASSERT (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
@@ -261,7 +261,7 @@ multi_channel_test_one (int pingpong,
   GslDataHandle *myhandle;
   GslDataCache *dcache;
   GslWaveChunk *wchunk;
-  BseErrorType error;
+  Bse::Error error;
   const int LOOP_COUNT = 20;
   const int LOOP_TYPE = pingpong ? GSL_WAVE_LOOP_PINGPONG : GSL_WAVE_LOOP_JUMP;
   size_t my_data_length = channels * frames;
@@ -277,7 +277,7 @@ multi_channel_test_one (int pingpong,
                                44100.0, 44.0,
                                GslWaveLoopType (LOOP_TYPE), loop_start * channels, loop_end * channels, LOOP_COUNT);
   error = gsl_wave_chunk_open (wchunk);
-  if (error)
+  if (error != 0)
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   float *expect = (float*) malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));

@@ -1,4 +1,4 @@
-# beast/tests
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . latency scripts bse audio filecheck
@@ -12,29 +12,6 @@ SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
-
-# === rules to generate built sources ===
-#
-# bsecxxapi.hh
-GENERATED_CLEANFILES += bsecxxapi.hh
-$(srcdir)/perftest.cc: bsecxxapi.hh
-bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-# bsecxxapi.cc
-GENERATED_CLEANFILES += bsecxxapi.cc
-$(srcdir)/perftest.cc: bsecxxapi.cc
-bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-
-
 # === generation targets ===
 # convenience targets for generated source files
 .PHONY: generated clean-generated
@@ -45,23 +22,19 @@ generated: clean-generated $(GENERATED)
 
 # === test programs ===
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 # testwavechunk
-TESTS                += testwavechunk
+TAPTESTS             += testwavechunk
 SLOWTESTS            += testwavechunk
 testwavechunk_SOURCES = testwavechunk.cc
 testwavechunk_LDADD = $(progs_ldadd)
-# perftest
-TESTS           += perftest
-perftest_SOURCES = perftest.cc bsecxxapi.cc
-perftest_LDADD   = $(progs_ldadd)
 # testresampler
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD   = $(progs_ldadd)
 # testresamplerq
-TESTS                 += testresamplerq
+TAPTESTS              += testresamplerq
 testresamplerq_SOURCES = testresamplerq.cc
 testresamplerq_LDADD   = $(progs_ldadd)
 
@@ -144,7 +117,3 @@ resampler-perf:
 	./testresampler perf       --precision=24 --down
 	./testresampler perf       --precision=24 --subsample
 	./testresampler perf       --precision=24 --oversample
-
-# perf tests
-perf:
-	./perftest

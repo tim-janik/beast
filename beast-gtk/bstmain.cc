@@ -10,8 +10,9 @@
 #include "bstusermessage.hh"
 #include "bstparam.hh"
 #include "bstpreferences.hh"
-#include "topconfig.h"
 #include "data/beast-images.h"
+#include "../configure.h"
+#include <Python.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -20,7 +21,8 @@
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
 /* --- prototypes --- */
-static void			bst_early_parse_args	(int *argc_p, char **argv);
+static void			bst_args_parse_early	(int *argc_p, char **argv);
+static void			bst_args_process        (int *argc_p, char **argv);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
 static void                     bst_init_aida_idl       ();
@@ -28,7 +30,6 @@ static void                     bst_init_aida_idl       ();
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
-gboolean            bst_main_loop_running = TRUE;
 static GtkWidget   *beast_splash = NULL;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
@@ -59,15 +60,34 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_argv0_installpaths (const char *argv0);
+static void     main_init_bse (int *argc, char *argv[]);
+static void     main_init_sfi_glue();
+static void     main_init_gxk();
+static void     main_init_bst_systems();
+static void     main_load_rc_files();
+static void     main_show_splash_image();
+static void     main_init_core_plugins();
+static void     main_init_ladspa();
+static void     main_sleep4gdb();
+static void     main_init_scripts();
+static void     main_init_dialogs();
+static BstApp*  main_open_files (int filesc, char **filesv);
+static BstApp*  main_open_default_window();
+static void     main_show_release_notes();
+static void     main_splash_down ();
+static int      main_run_event_loop ();
+static bool     force_saving_rc_files = false;
+static void     main_save_rc_files ();
+static void     main_cleanup ();
+
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
-  GdkPixbufAnimation *anim;
-  gchar *string;
-  GSource *source;
+  main_init_argv0_installpaths (argv[0]);
+
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -77,52 +97,155 @@ main (int   argc,
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
 
+  // setup Python
+  Py_Initialize();
+
   // initialize threading and GLib types
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
-  g_type_init ();
   /* initialize Birnet/Sfi */
-  sfi_init (&argc, argv, "BEAST");
+  sfi_init (&argc, argv);
   /* ensure SFI can wake us up */
-  /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, argv);
-  gtk_init (&argc, &argv);
+
+  // early arg parsing without remote calls
+  bst_args_parse_early (&argc, argv);
+
+  // startup Gtk+ *lightly*
+  if (!gtk_parse_args (&argc, &argv))
+    {
+      printerr ("%s: failed to setup Gtk+\n", Rapicorn::program_argv0());
+      exit (7);
+    }
+
+  main_init_bse (&argc, argv);
+
+  // now that the BSE thread runs, drop scheduling priorities if we have any
+  setpriority (PRIO_PROCESS, getpid(), 0);
+
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+
+  // arg processing with BSE available, --help, --version
+  bst_args_process (&argc, argv);
+
+  PySys_SetArgvEx (argc, argv, 0);
+
+  main_init_sfi_glue();
+
+  main_init_gxk();
+  main_init_bst_systems();
+  main_load_rc_files();
+  main_show_splash_image();
+  main_init_core_plugins();
+  main_init_ladspa();
+  main_sleep4gdb();
+  main_init_scripts();
+  main_init_dialogs();
+  BstApp *app = main_open_files (argc - 1, &argv[1]);
+  if (!app)
+    app = main_open_default_window();
+  main_show_release_notes();
+  main_splash_down();
+
+  const int exitcode = main_run_event_loop();
+
+  main_save_rc_files();
+  main_cleanup();
+
+  return exitcode;
+}
+
+static void
+main_init_argv0_installpaths (const char *argv0)
+{
+  // Rapicorn and Python both need accurate argv0 excutable names
+  Rapicorn::program_argv0_init (argv0);
+  Py_SetProgramName (const_cast<char*> (argv0));
+  // check for a libtool-linked, uninstalled executable (name)
+  const char *const exe = argv0;
+  const char *const slash = strrchr (exe, '/');
+  if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
+    {
+      using namespace Rapicorn;
+      // use source dir relative installpaths for uninstalled executables
+      const String program_abspath = Path::abspath (argv0);
+      const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
+      Bse::installpath_override (Path::realpath (dirpath));
+    }
+}
+
+static void
+main_init_bse (int *argc, char *argv[])
+{
+  // startup BSE, allow remote calls
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+}
+
+static void
+main_init_sfi_glue()
+{
+  // setup SFI glue context and its wakeup
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
+  GSource *source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
+                                     (GSourcePending) sfi_glue_context_pending,
+                                     (GSourceDispatch) sfi_glue_context_dispatch,
+                                     NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
+}
+
+static void
+main_init_gxk()
+{
+  // late Gtk+ initialization, args have been parsed with gtk_parse_args()
+  gtk_init (NULL, NULL);
   GDK_THREADS_ENTER ();
-  /* initialize Gtk+ Extension Kit */
+  // initialize Gtk+ Extensions
   gxk_init ();
-  /* documentation search paths */
-  gxk_text_add_tsm_path (BST_PATH_DOCS);
-  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  // documentation search paths
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
-  /* now, we can popup the splash screen */
+  // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (beast_splash,
 		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
-                                                "<b>The Better Audio System</b>\n"
+                                                "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
                                                 "<b>Version %s (%s)</b>\n",
                                                 BST_VERSION, BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
+}
 
-  /* BEAST initialization */
+static void
+main_init_bst_systems()
+{
   bst_splash_update_item (beast_splash, _("Initializers"));
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
   _bst_skin_config_init ();
   _bst_msg_absorb_config_init ();
+}
 
-  /* parse rc file */
+static void
+main_load_rc_files()
+{
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
+}
 
+static void
+main_show_splash_image()
+{
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
-  anim = gdk_pixbuf_animation_new_from_file (string, NULL);
+  gchar *string = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
   if (anim)
@@ -130,28 +253,16 @@ main (int   argc,
       bst_splash_set_animation (beast_splash, anim);
       g_object_unref (anim);
     }
+}
 
-  /* start BSE core and connect */
+static void
+main_init_core_plugins()
+{
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
-  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
-			    (GSourcePending) sfi_glue_context_pending,
-			    (GSourceDispatch) sfi_glue_context_dispatch,
-			    NULL, NULL, NULL);
-  g_source_attach (source, NULL);
-  g_source_unref (source);
-
-  /* now that the BSE thread runs, drop scheduling priorities if we have any */
-  setpriority (PRIO_PROCESS, getpid(), 0);
-
-  /* watch registration notifications on server */
+  // watch registration notifications on server
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
 		     NULL);
-
-  /* register core plugins */
   if (register_core_plugins)
     {
       bst_splash_update_entity (beast_splash, _("Plugins"));
@@ -160,7 +271,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_core_plugins (BSE_SERVER);
+      bse_server.register_core_plugins();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -169,8 +280,11 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+}
 
-  /* register LADSPA plugins */
+static void
+main_init_ladspa()
+{
   if (register_ladspa_plugins)
     {
       bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
@@ -179,7 +293,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_ladspa_plugins (BSE_SERVER);
+      bse_server.register_ladspa_plugins();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -188,8 +302,11 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+}
 
-  /* debugging hook */
+static void
+main_sleep4gdb()
+{
   const char *estring = g_getenv ("BEAST_SLEEP4GDB");
   if (estring && atoi (estring) > 0)
     {
@@ -197,7 +314,11 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
+}
 
+static void
+main_init_scripts()
+{
   /* register BSE scripts */
   if (register_scripts)
     {
@@ -207,7 +328,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_scripts (BSE_SERVER);
+      bse_server.register_scripts();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -216,58 +337,62 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
-  /* listen to BseServer notification */
+}
+
+static void
+main_init_dialogs()
+{
   bst_splash_update_entity (beast_splash, _("Dialogs"));
-
-  // hook up Bse aida IDL with main loop
-  bst_init_aida_idl();
-
-  bst_message_connect_to_server ();
+  bst_message_connect_to_server (); // listen to BseServer notification
   _bst_init_radgets ();
-  /* open files given on command line */
-  if (argc > 1)
+}
+
+static BstApp*
+main_open_files (int filesc, char **filesv)
+{
+  // open files given on command line
+  if (filesc > 0)
     bst_splash_update_entity (beast_splash, _("Loading..."));
   BstApp *app = NULL;
-  gboolean merge_with_last = FALSE;
-  for (int i = 1; i < argc; i++)
+  bool merge_with_last = false;
+  for (int i = 0; i < filesc; i++)
     {
       bst_splash_update ();
 
       /* parse non-file args */
-      if (strcmp (argv[i], "--merge") == 0)
+      if (strcmp (filesv[i], "--merge") == 0)
         {
-          merge_with_last = TRUE;
+          merge_with_last = true;
           continue;
         }
 
       /* load waves into the last project */
-      if (bse_server_can_load (BSE_SERVER, argv[i]))
+      if (bse_server.can_load (filesv[i]))
 	{
 	  if (app)
 	    {
-	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
-	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
-              bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
-              if (error)
-                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
+	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
+              if (error != 0)
+                sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
-	      SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
-	      SfiProxy wrepo = bse_project_get_wave_repo (project);
-	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
-	      if (!error)
+              Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
+	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
+	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+	      if (error == 0)
 		{
 		  app = bst_app_new (project);
 		  gxk_idle_show_widget (GTK_WIDGET (app));
-		  bse_item_unuse (project);
 		  gtk_widget_hide (beast_splash);
 		}
               else
                 {
-                  bse_item_unuse (project);
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+		  bse_server.destroy_project (project);
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
                 }
 	    }
           continue;
@@ -275,61 +400,62 @@ main (int   argc,
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
-          BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          Bse::ProjectH project = bse_server.create_project (filesv[i]);
+          Bse::Error error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
-              Rapicorn::printerr ("%s: loading: %s\n", argv[i], bse_error_blurb (error));
-              if (error)
+              Rapicorn::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
+              if (error != 0)
                 exit (1);
-              if (unlink (argv[i]) < 0)
+              if (unlink (filesv[i]) < 0)
                 {
-                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", filesv[i]).c_str());
                   exit (2);
                 }
-              error = bse_project_store_bse (project, 0, argv[i], TRUE);
-              Rapicorn::printerr ("%s: writing: %s\n", argv[i], bse_error_blurb (error));
-              if (error)
+              error = bse_project_store_bse (project.proxy_id(), 0, filesv[i], TRUE);
+              Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
+              if (error != 0)
                 exit (3);
               exit (0);
             }
-          if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
+          if (error == 0 || error == Bse::Error::FILE_NOT_FOUND)
             {
-              error = BseErrorType (0);
+              error = Bse::Error::NONE;
               app = bst_app_new (project);
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
             }
-          bse_item_unuse (project);
-          if (error)
-            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
+          else
+            bse_server.destroy_project (project);
+          if (error != 0)
+            sfi_error (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
       else
         {
-          BseErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
-          if (error)
-            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
+          Bse::Error error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
+          if (error != 0)
+            sfi_error (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
     }
+  return app;
+}
 
-  /* open default app window
-   */
-  if (!app)
-    {
-      SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+static BstApp*
+main_open_default_window ()
+{
+  Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
+  bse_project_get_wave_repo (project.proxy_id());
+  BstApp *app = bst_app_new (project);
+  gxk_idle_show_widget (GTK_WIDGET (app));
+  if (beast_splash)
+    gtk_widget_hide (beast_splash);
+  return app;
+}
 
-      bse_project_get_wave_repo (project);
-      app = bst_app_new (project);
-      bse_item_unuse (project);
-      gxk_idle_show_widget (GTK_WIDGET (app));
-      gtk_widget_hide (beast_splash);
-    }
-  /* splash screen is definitely hidden here (still grabbing) */
-
-  /* fire up release notes dialog
-   */
-  gboolean update_rc_files = FALSE;
-  if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
+static void
+main_show_release_notes ()
+{
+  if (BST_RC_VERSION != BST_VERSION)
     {
       const char *release_notes_title =
         "BEAST/BSE Release Notes";
@@ -364,24 +490,67 @@ main (int   argc,
       gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
       gxk_scroll_text_rewind (sctext);
       gxk_idle_show_widget (rndialog);
-      update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
+      force_saving_rc_files = true;
     }
+}
 
-  /* release splash grab */
+static void
+main_splash_down ()
+{
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
+}
 
-  /* away into the main loop */
-  while (bst_main_loop_running)
+#define Py_None_INCREF()        ({ Py_INCREF (Py_None); Py_None;  })
+
+static PyObject*
+main_quit (PyObject *self, PyObject *args)
+{
+  int exit_code = 0;
+  if (PyTuple_Check (args) && PyTuple_GET_SIZE (args) > 0)
     {
-      sfi_glue_gc_run ();
-      GDK_THREADS_LEAVE ();
-      g_main_iteration (TRUE);
-      GDK_THREADS_ENTER ();
+      if (!PyArg_ParseTuple (args, "i:main_quit", &exit_code))
+        return NULL;
     }
+  Bst::event_loop_quit (exit_code);
+  return Py_None_INCREF();
+}
+
+static PyObject*
+main_loop (PyObject *self, PyObject *args)
+{
+  if (!PyArg_ParseTuple (args, ":main_loop"))
+    return NULL;
+  const int quit_code = Bst::event_loop_run();
+  return Py_BuildValue ("i", quit_code);
+}
+
+static PyMethodDef embedded_bst_methods[] = {
+  { "main_quit", main_quit, METH_VARARGS, "Quit the currently running main event loop." },
+  { "main_loop", main_loop, METH_VARARGS, "Run the main event loop until main_quit()." },
+  { NULL, NULL, 0, NULL }
+};
+
+static int
+main_run_event_loop ()
+{
+  // register embedded methods
+  static __unused bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
+
+  // run main loop from Python
+  String pyfile = Bse::Path::join (Bse::installpath (Bse::INSTALLPATH_PYBEASTDIR), "main.py");
+  FILE *fp = fopen (pyfile.c_str(), "r");
+  if (!fp)
+    {
+      perror (string_format ("%s: failed to open file %s", Rapicorn::program_argv0(), Rapicorn::string_to_cquote (pyfile)).c_str());
+      exit (7);
+    }
+  const int pyexitcode = PyRun_AnyFileExFlags (fp, pyfile.c_str(), false, NULL);
+  fclose (fp);
+
+  // run pending cleanup handlers
   bst_message_dialogs_popdown ();
-  /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {
@@ -391,19 +560,30 @@ main (int   argc,
     }
   GDK_THREADS_ENTER ();
 
-  /* save BSE configuration */
-  if (update_rc_files && !bst_preferences_saved())
+  return pyexitcode;
+}
+
+static void
+main_save_rc_files ()
+{
+  if (!force_saving_rc_files)
+    return;
+  if (!bst_preferences_saved())
     {
       if (may_auto_update_bse_rc_file)
-        bse_server_save_preferences (BSE_SERVER);
+        bse_server.save_preferences();
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
-      BseErrorType error = bst_rc_dump (file_name);
-      if (error)
-	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+      Bse::Error error = bst_rc_dump (file_name);
+      if (error != 0)
+	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }
+}
 
+static void
+main_cleanup ()
+{
   // perform necessary cleanup cycles
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
@@ -413,11 +593,13 @@ main (int   argc,
       GDK_THREADS_LEAVE ();
     }
 
+  // Python cleanup
+  Py_Finalize();
+
   // misc cleanups
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
-  return 0;
 }
 
 /// wake up the main context used by the Beast main event looop.
@@ -430,39 +612,44 @@ bst_main_loop_wakeup ()
 static void
 echo_test_handler (const std::string &msg)
 {
-  g_print ("BST-Thread: got signal with message: %s\n", msg.c_str());
+  printout ("BST-Thread: got signal with message: %s\n", msg.c_str());
 }
 
 static void
 bst_init_aida_idl()
 {
+  using namespace Rapicorn::Aida;
   assert (bse_server == NULL);
+  // connect to BSE thread and fetch server handle
+  ClientConnectionP connection = Bse::init_server_connection();
+  assert (connection != NULL);
+  bse_server = Bse::init_server_instance();
+  assert (bse_server != NULL);
+  assert (bse_server.proxy_id() == BSE_SERVER);
+  assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
   // hook Aida connection into our main loop
-  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
+  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (connection.get());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
-  // fetch initial remote object reference
-  auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
-  Rapicorn::Aida::RemoteHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
-  bse_server = Rapicorn::Aida::RemoteHandle::__aida_reinterpret_down_cast__<Bse::ServerH> (smh);
-  assert (bse_server != NULL);
 
-  // performa Bse Aida test
+  // perform Bse Aida tests
   if (0)
     {
+      Rapicorn::printerr ("bse_server: %s\n", bse_server.debug_name());
       Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
-      g_assert (test_result == 3);
+      assert (test_result == 3);
     }
 }
 
+static bool initialize_bse_and_exit = false;
+
 static void
-bst_early_parse_args (int *argc_p, char **argv)
+bst_args_parse_early (int *argc_p, char **argv)
 {
   uint argc = *argc_p;
   uint i, e;
-  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
@@ -473,7 +660,7 @@ bst_early_parse_args (int *argc_p, char **argv)
       else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
-	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
+	  printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
 	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
@@ -532,66 +719,12 @@ bst_early_parse_args (int *argc_p, char **argv)
         { /* handled by priviledged launcher */
           argv[i] = NULL;
         }
-      else if (strcmp ("-h", argv[i]) == 0 ||
-	       strcmp ("--help", argv[i]) == 0)
-	{
-	  bst_print_blurb ();
-          argv[i] = NULL;
-	  exit (0);
-	}
-      else if (strcmp ("-v", argv[i]) == 0 ||
-	       strcmp ("--version", argv[i]) == 0)
-	{
-	  bst_exit_print_version ();
-	  argv[i] = NULL;
-	  exit (0);
-	}
       else if (strcmp ("--skinrc", argv[i]) == 0 ||
 	       strncmp ("--skinrc=", argv[i], 9) == 0)
         {
           const char *arg = argv[i][9 - 1] == '=' ? argv[i] + 9 : (argv[i + 1] ? argv[i + 1] : "");
           bst_skin_config_set_rcfile (arg);
         }
-      else if (strcmp ("--print-dir", argv[i]) == 0 ||
-	       strncmp ("--print-dir=", argv[i], 12) == 0)
-	{
-	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
-          char *freeme = NULL;
-	  if (strcmp (arg, "prefix") == 0)
-	    g_print ("%s\n", BST_PATH_PREFIX);
-	  else if (strcmp (arg, "docs") == 0)
-	    g_print ("%s\n", BST_PATH_DOCS);
-	  else if (strcmp (arg, "images") == 0)
-	    g_print ("%s\n", BST_PATH_IMAGES);
-	  else if (strcmp (arg, "locale") == 0)
-	    g_print ("%s\n", BST_PATH_LOCALE);
-	  else if (strcmp (arg, "skins") == 0)
-	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
-	  else if (strcmp (arg, "keys") == 0)
-	    g_print ("%s\n", BST_PATH_KEYS);
-	  else if (strcmp (arg, "ladspa") == 0)
-	    g_print ("%s\n", BSE_PATH_LADSPA);
-	  else if (strcmp (arg, "plugins") == 0)
-	    g_print ("%s\n", BSE_PATH_PLUGINS);
-	  else if (strcmp (arg, "samples") == 0)
-	    g_print ("%s\n", bse_server_get_sample_path (BSE_SERVER));
-	  else if (strcmp (arg, "effects") == 0)
-	    g_print ("%s\n", bse_server_get_effect_path (BSE_SERVER));
-	  else if (strcmp (arg, "scripts") == 0)
-	    g_print ("%s\n", bse_server_get_script_path (BSE_SERVER));
-	  else if (strcmp (arg, "instruments") == 0)
-	    g_print ("%s\n", bse_server_get_instrument_path (BSE_SERVER));
-	  else if (strcmp (arg, "demo") == 0)
-	    g_print ("%s\n", bse_server_get_demo_path (BSE_SERVER));
-	  else
-	    {
-	      if (arg[0])
-                g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: prefix, docs, images, keys, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
-	    }
-          g_free (freeme);
-	  exit (0);
-	}
       else if (strcmp ("--bse-latency", argv[i]) == 0 ||
                strncmp ("--bse-latency=", argv[i], 14) == 0)
         {
@@ -621,7 +754,7 @@ bst_early_parse_args (int *argc_p, char **argv)
         }
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
         {
-          initialize_bse_and_exit = TRUE;
+          initialize_bse_and_exit = true;
           /* leave args for BSE */
         }
       else if (strcmp ("-p", argv[i]) == 0)
@@ -646,61 +779,132 @@ bst_early_parse_args (int *argc_p, char **argv)
           argv[i] = NULL;
       }
   *argc_p = e;
+}
+
+static void
+bst_args_process (int *argc_p, char **argv)
+{
+  assert (bse_server != NULL); // BSE must be initialized by now
   if (initialize_bse_and_exit)
+    exit (0);
+  uint argc = *argc_p;
+  uint i;
+  for (i = 1; i < argc; i++)
     {
-      Bse::init_async (argc_p, argv, "BEAST");
-      exit (0);
+      if (strcmp (argv[i], "--") == 0)
+        {
+          argv[i] = NULL;
+          break;
+        }
+      else if (strcmp ("--print-dir", argv[i]) == 0 ||
+	       strncmp ("--print-dir=", argv[i], 12) == 0)
+	{
+	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
+          char *freeme = NULL;
+          if (strcmp (arg, "docs") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+	  else if (strcmp (arg, "images") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+	  else if (strcmp (arg, "locale") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+	  else if (strcmp (arg, "skins") == 0)
+	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
+	  else if (strcmp (arg, "keys") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+	  else if (strcmp (arg, "ladspa") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str());
+	  else if (strcmp (arg, "plugins") == 0)
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
+	  else if (strcmp (arg, "samples") == 0)
+	    printout ("%s\n", bse_server.get_sample_path());
+	  else if (strcmp (arg, "effects") == 0)
+	    printout ("%s\n", bse_server.get_effect_path());
+	  else if (strcmp (arg, "scripts") == 0)
+	    printout ("%s\n", bse_server.get_script_path());
+	  else if (strcmp (arg, "instruments") == 0)
+	    printout ("%s\n", bse_server.get_instrument_path());
+	  else if (strcmp (arg, "demo") == 0)
+	    printout ("%s\n", bse_server.get_demo_path());
+	  else
+	    {
+	      if (arg[0])
+                g_message ("no such resource path: %s", arg);
+	      g_message ("supported resource paths: prefix, docs, images, keys, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
+	    }
+          g_free (freeme);
+	  exit (0);
+	}
+      else if (strcmp ("-h", argv[i]) == 0 ||
+	       strcmp ("--help", argv[i]) == 0)
+	{
+	  bst_print_blurb ();
+          argv[i] = NULL;
+	  exit (0);
+	}
+      else if (strcmp ("-v", argv[i]) == 0 ||
+	       strcmp ("--version", argv[i]) == 0)
+	{
+	  bst_exit_print_version ();
+	  argv[i] = NULL;
+	  exit (0);
+	}
     }
+  uint e = 1;
+  for (i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
-  const gchar *c;
+  assert (bse_server != NULL); // we need BSE
+  String s;
   gchar *freeme = NULL;
-  /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  Bse::init_async (NULL, NULL, "BEAST");
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
-  g_print ("Libraries: ");
-  g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-  g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-  c = bse_server_get_vorbis_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
-  c = bse_server_get_mp3_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
-  g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
+  printout ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  printout ("Libraries: ");
+  printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
+  printout (", BSE %s", BST_VERSION);
+  s = bse_server.get_vorbis_version();
+  if (!s.empty())
+    printout (", %s", s);
+  s = bse_server.get_mp3_version();
+  if (!s.empty())
+    printout (", %s", s);
+  printout (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
 #ifdef BST_WITH_XKB
-  g_print (", XKBlib");
+  printout (", XKBlib");
 #endif
-  g_print (", GXK %s", BST_VERSION);
-  g_print ("\n");
-  g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
-  g_print ("Intrinsic code selected according to runtime CPU detection:\n");
-  g_print ("%s", Rapicorn::cpu_info().c_str());
-  g_print ("\n");
-  g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
-  g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
-  g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
-  g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
-  g_print ("Keyrc Path:      %s\n", BST_PATH_KEYS);
-  g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
-  g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
-  g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
-  g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
-  g_print ("Instrument Path: %s\n", bse_server_get_instrument_path (BSE_SERVER));
-  g_print ("Demo Path:       %s\n", bse_server_get_demo_path (BSE_SERVER));
-  g_print ("Plugin Path:     %s\n", bse_server_get_plugin_path (BSE_SERVER));
-  g_print ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server_get_ladspa_path (BSE_SERVER));
-  g_print ("\n");
-  g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
-  g_print ("You may redistribute copies of BEAST under the terms of\n");
-  g_print ("the GNU Lesser General Public License which can be found in\n");
-  g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.testbit.eu/.\n");
+  printout (", GXK %s", BST_VERSION);
+  printout ("\n");
+  printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
+  printout ("Intrinsic code selected according to runtime CPU detection:\n");
+  printout ("%s", Rapicorn::cpu_info().c_str());
+  printout ("\n");
+  printout ("Binaries:        %s\n", Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
+  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+  printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
+  printout ("Sample Path:     %s\n", bse_server.get_sample_path());
+  printout ("Script Path:     %s\n", bse_server.get_script_path());
+  printout ("Effect Path:     %s\n", bse_server.get_effect_path());
+  printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
+  printout ("Demo Path:       %s\n", bse_server.get_demo_path());
+  printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
+  printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
+  printout ("\n");
+  printout ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
+  printout ("You may redistribute copies of BEAST under the terms of\n");
+  printout ("the GNU Lesser General Public License which can be found in\n");
+  printout ("the BEAST source package. Sources, examples and contact\n");
+  printout ("information are available at http://beast.testbit.eu/.\n");
   g_free (freeme);
   exit (0);
 }
@@ -708,57 +912,57 @@ bst_exit_print_version (void)
 static void
 bst_print_blurb (void)
 {
-  g_print ("Usage: beast [options] [files...]\n");
+  printout ("Usage: beast [options] [files...]\n");
   /*        12345678901234567890123456789012345678901234567890123456789012345678901234567890 */
 #ifdef BST_WITH_XKB
-  g_print ("  --force-xkb             force XKB keytable queries\n");
+  printout ("  --force-xkb             force XKB keytable queries\n");
 #endif
-  g_print ("  --skinrc[=FILENAME]     Skin resource file name\n");
-  g_print ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
-  g_print ("  --merge                 Merge the following files into the previous project\n");
-  g_print ("  --devel                 Enrich the GUI with hints useful for developers,\n");
-  g_print ("                          enable unstable plugins and experimental code\n");
-  g_print ("  -h, --help              Show this help message\n");
-  g_print ("  -v, --version           Print version and file paths\n");
-  g_print ("  -n NICELEVEL            Run with priority NICELEVEL (for suid wrapper beast)\n");
-  g_print ("  -N                      Disable renicing\n");
-  g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
-  g_print ("  --bse-latency=USECONDS  Specify synthesis latency in milliseconds\n");
-  g_print ("  --bse-mixing-freq=FREQ  Specify synthesis mixing frequency in Hz \n");
-  g_print ("  --bse-control-freq=FREQ Specify control frequency in Hz\n");
-  g_print ("  --bse-force-fpu         Disable loading of SSE or similarly optimized plugins\n");
-  g_print ("  --bse-pcm-driver DRIVERCONF\n");
-  g_print ("  -p DRIVERCONF           Try to use the PCM driver DRIVERCONF, multiple\n");
-  g_print ("                          options may be supplied to try a variety of\n");
-  g_print ("                          drivers. Uunless -p auto is given, only the\n");
-  g_print ("                          drivers listed by -p options are used; each\n");
-  g_print ("                          DRIVERCONF consists of a driver name and may be\n");
-  g_print ("                          assigned an optional comma seperated list of\n");
-  g_print ("                          arguments, e.g.: -p oss=/dev/dsp2,rw\n");
-  g_print ("  --bse-midi-driver DRIVERCONF\n");
-  g_print ("  -m DRIVERCONF           Try to use the MIDI driver DRIVERCONF, multiple\n");
-  g_print ("                          options may be specified similarly to the\n");
-  g_print ("                          option handling for --bse-pcm-driver\n");
-  g_print ("  --bse-driver-list       List available PCM and MIDI drivers\n");
-  g_print ("Development Options:\n");
-  g_print ("  -:[Flags]               [Flags] can be any combination of:\n");
-  g_print ("                          f - fatal warnings\n");
-  g_print ("                          N - disable script and plugin registration\n");
-  g_print ("                          p - enable core plugin registration\n");
-  g_print ("                          P - disable core plugin registration\n");
-  g_print ("                          l - enable LADSPA plugin registration\n");
-  g_print ("                          L - disable LADSPA plugin registration\n");
-  g_print ("                          s - enable script registration\n");
-  g_print ("                          S - disable script registration\n");
-  g_print ("                          d - enable debugging extensions (harmfull)\n");
-  g_print ("Gtk+ Options:\n");
-  g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
-  g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
-  g_print ("  --gtk-module=MODULE     Load additional Gtk+ modules\n");
-  g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
-  g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
-  g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
-  g_print ("  --sync                  Do all X calls synchronously\n");
+  printout ("  --skinrc[=FILENAME]     Skin resource file name\n");
+  printout ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
+  printout ("  --merge                 Merge the following files into the previous project\n");
+  printout ("  --devel                 Enrich the GUI with hints useful for developers,\n");
+  printout ("                          enable unstable plugins and experimental code\n");
+  printout ("  -h, --help              Show this help message\n");
+  printout ("  -v, --version           Print version and file paths\n");
+  printout ("  -n NICELEVEL            Run with priority NICELEVEL (for suid wrapper beast)\n");
+  printout ("  -N                      Disable renicing\n");
+  printout ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
+  printout ("  --bse-latency=USECONDS  Specify synthesis latency in milliseconds\n");
+  printout ("  --bse-mixing-freq=FREQ  Specify synthesis mixing frequency in Hz \n");
+  printout ("  --bse-control-freq=FREQ Specify control frequency in Hz\n");
+  printout ("  --bse-force-fpu         Disable loading of SSE or similarly optimized plugins\n");
+  printout ("  --bse-pcm-driver DRIVERCONF\n");
+  printout ("  -p DRIVERCONF           Try to use the PCM driver DRIVERCONF, multiple\n");
+  printout ("                          options may be supplied to try a variety of\n");
+  printout ("                          drivers. Uunless -p auto is given, only the\n");
+  printout ("                          drivers listed by -p options are used; each\n");
+  printout ("                          DRIVERCONF consists of a driver name and may be\n");
+  printout ("                          assigned an optional comma seperated list of\n");
+  printout ("                          arguments, e.g.: -p oss=/dev/dsp2,rw\n");
+  printout ("  --bse-midi-driver DRIVERCONF\n");
+  printout ("  -m DRIVERCONF           Try to use the MIDI driver DRIVERCONF, multiple\n");
+  printout ("                          options may be specified similarly to the\n");
+  printout ("                          option handling for --bse-pcm-driver\n");
+  printout ("  --bse-driver-list       List available PCM and MIDI drivers\n");
+  printout ("Development Options:\n");
+  printout ("  -:[Flags]               [Flags] can be any combination of:\n");
+  printout ("                          f - fatal warnings\n");
+  printout ("                          N - disable script and plugin registration\n");
+  printout ("                          p - enable core plugin registration\n");
+  printout ("                          P - disable core plugin registration\n");
+  printout ("                          l - enable LADSPA plugin registration\n");
+  printout ("                          L - disable LADSPA plugin registration\n");
+  printout ("                          s - enable script registration\n");
+  printout ("                          S - disable script registration\n");
+  printout ("                          d - enable debugging extensions (harmfull)\n");
+  printout ("Gtk+ Options:\n");
+  printout ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
+  printout ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
+  printout ("  --gtk-module=MODULE     Load additional Gtk+ modules\n");
+  printout ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
+  printout ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
+  printout ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
+  printout ("  --sync                  Do all X calls synchronously\n");
 }
 
 void

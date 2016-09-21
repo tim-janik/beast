@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecategories.hh"
-
 #include "bseutils.hh"
+#include "bseserver.hh"
 #include <string.h>
 
 
@@ -18,7 +18,7 @@ struct _CEntry
   GQuark   category;
   guint    mindex, lindex;
   GType    type;
-  BseIcon *icon;
+  BseIc0n *icon;
 };
 
 
@@ -33,7 +33,7 @@ static SfiUStore *category_ustore = NULL;
 void
 _bse_init_categories (void)
 {
-  g_return_if_fail (category_ustore == NULL);
+  assert_return (category_ustore == NULL);
 
   category_ustore = sfi_ustore_new ();
 }
@@ -181,16 +181,35 @@ bse_categories_register (const gchar  *category,
                          const guint8 *pixstream)
 {
   CEntry *centry;
-  g_return_if_fail (category != NULL);
+  assert_return (category != NULL);
   centry = centry_new (RAPICORN_SIMPLE_FUNCTION, category, type);
   check_type (type);
   if (centry)
     {
       centry->type = type;
       if (pixstream)
-        centry->icon = bse_icon_from_pixstream (pixstream);
+        centry->icon = bse_ic0n_from_pixstream (pixstream);
       else
         centry->icon = NULL;
+    }
+  if (g_type_is_a (centry->type, BSE_TYPE_SOURCE))
+    {
+      // parse "/Modules////tag1/tag2/tag3///Title" into tags and title
+      const char *name = i18n_category ? i18n_category : category;
+      if (strncmp (name, "/Modules/", 9) == 0)
+        name += 9;
+      while (name[0] == '/')
+        ++name;
+      const char *title = strrchr (name, '/'), *end = title ? title : name;
+      title = title ? title + 1 : name;
+      while (end > name && end[-1] == '/')
+        --end;
+      Rapicorn::StringVector tags;
+      if (name < end)
+        tags = Rapicorn::string_split (String (name, end - name), "/");
+      Bse::ServerImpl::register_source_module (g_type_name (centry->type), title,
+                                               Rapicorn::string_join (";", tags),
+                                               pixstream);
     }
 }
 
@@ -199,7 +218,7 @@ bse_categories_register_stock_module (const gchar      *untranslated_category_tr
                                       GType             type,
                                       const guint8     *pixstream)
 {
-  g_return_if_fail (untranslated_category_trunk != NULL);
+  assert_return (untranslated_category_trunk != NULL);
   const gchar *category = sfi_category_concat ("/Modules", untranslated_category_trunk);
   const gchar *i18n_category = sfi_category_concat ("/Modules", _(untranslated_category_trunk));
   bse_categories_register (category, i18n_category, type, pixstream);
@@ -265,7 +284,7 @@ categories_match (const gchar      *pattern,
 	  cat.category_id = centry->category_id;
 	  cat.mindex = centry->mindex;
 	  cat.lindex = centry->lindex;
-	  cat.type = const_cast<char*>  (g_type_name (centry->type));
+	  cat.otype = const_cast<char*>  (g_type_name (centry->type));
 	  cat.icon = centry->icon ? centry->icon : NULL;
           if (!check || check (&cat, data))
             bse_category_seq_append (cseq, &cat);
@@ -282,7 +301,7 @@ bse_categories_match (const gchar      *pattern,
                       BseCategoryCheck  check,
                       gpointer          data)
 {
-  g_return_val_if_fail (pattern != NULL, NULL);
+  assert_return (pattern != NULL, NULL);
 
   cats_sort ();
 
@@ -293,7 +312,7 @@ BseCategorySeq*
 bse_categories_match_typed (const gchar *pattern,
 			    GType        base_type)
 {
-  g_return_val_if_fail (pattern != NULL, NULL);
+  assert_return (pattern != NULL, NULL);
 
   cats_sort ();
 
@@ -314,35 +333,9 @@ bse_categories_from_type (GType type)
 	cat.category_id = centry->category_id;
 	cat.mindex = centry->mindex;
 	cat.lindex = centry->lindex;
-	cat.type = const_cast<char*> (g_type_name (centry->type));
+	cat.otype = const_cast<char*> (g_type_name (centry->type));
 	cat.icon = centry->icon ? centry->icon : NULL;
 	bse_category_seq_append (cseq, &cat);
       }
   return cseq;
-}
-
-BseCategory*
-bse_category_from_id (guint id)
-{
-  CEntry *centry;
-
-  g_return_val_if_fail (id > 0, NULL);
-
-  centry = (CEntry*) sfi_ustore_lookup (category_ustore, id);
-  if (centry)
-    {
-      BseCategory *cat = bse_category_new ();
-      g_free (cat->category);
-      cat->category = g_strdup (g_quark_to_string (centry->category));
-      cat->category_id = centry->category_id;
-      cat->mindex = centry->mindex;
-      cat->lindex = centry->lindex;
-      g_free (cat->type);
-      cat->type = g_strdup (g_type_name (centry->type));
-      if (cat->icon)
-        bse_icon_free (cat->icon);
-      cat->icon = centry->icon ? bse_icon_copy_shallow (centry->icon) : NULL;
-      return cat;
-    }
-  return NULL;
 }

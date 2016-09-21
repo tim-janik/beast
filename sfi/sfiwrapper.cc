@@ -43,18 +43,17 @@ bse_flipper_check (const char *key)
 
 /* --- initialization --- */
 void
-sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector &args)
+sfi_init (int *argcp, char **argv, const Bse::StringVector &args)
 {
   static bool initialized = false;
   if (initialized)
     return;
   char *prg_name = argcp && *argcp ? g_path_get_basename (argv[0]) : NULL;
   if (args.size() == 1 && args[0] == "rapicorn-test-initialization=1")
-    Rapicorn::init_core_test (app_name ? app_name : prg_name, argcp, argv);
+    Rapicorn::init_core_test (prg_name, argcp, argv);
   else
-    Rapicorn::init_core (app_name ? app_name : prg_name, argcp, argv);
+    Rapicorn::parse_init_args (argcp, argv);
 
-  g_type_init ();       /* just in case this hasn't been called already */
   _sfi_init_values ();
   _sfi_init_params ();
   _sfi_init_time ();

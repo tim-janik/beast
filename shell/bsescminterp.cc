@@ -134,9 +134,9 @@ bse_scm_enter_gc (SCM           *scm_gc_list,
 {
   BseScmGCCell *gc_cell;
   SCM s_cell = 0;
-  g_return_if_fail (scm_gc_list != NULL);
-  g_return_if_fail (free_func != NULL);
-  // g_printerr ("GCCell allocating %u bytes (%p).\n", size_hint, free_func);
+  assert_return (scm_gc_list != NULL);
+  assert_return (free_func != NULL);
+  // printerr ("GCCell allocating %u bytes (%p).\n", size_hint, free_func);
   gc_cell = g_new (BseScmGCCell, 1);
   gc_cell->data = data;
   gc_cell->free_func = free_func;
@@ -149,7 +149,7 @@ static SCM
 bse_scm_mark_gc_cell (SCM scm_gc_cell) /* called from any thread */
 {
   // BseScmGCCell *gc_cell = (BseScmGCCell*) SCM_CDR (scm_gc_cell);
-  // g_printerr ("GCCell mark %u bytes (%p).\n", gc_cell->size_hint, gc_cell->free_func);
+  // printerr ("GCCell mark %u bytes (%p).\n", gc_cell->size_hint, gc_cell->free_func);
   /* scm_gc_mark (gc_cell->something); */
   return SCM_BOOL_F;
 }
@@ -158,7 +158,7 @@ static scm_sizet
 bse_scm_free_gc_cell (SCM scm_gc_cell) /* called from any thread */
 {
   BseScmGCCell *gc_cell = SCM_GET_GLUE_GC_CELL (scm_gc_cell);
-  // g_printerr ("GCCell freeing %u bytes (%p).\n", size, gc_cell->free_func);
+  // printerr ("GCCell freeing %u bytes (%p).\n", size, gc_cell->free_func);
   gc_cell->free_func (gc_cell->data);
   g_free (gc_cell);
   return 0;
@@ -191,12 +191,12 @@ void
 bse_scm_destroy_gc_plateau (SCM s_gcplateau)
 {
   GcPlateau *gp;
-  g_assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
+  assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
   gp = SCM_GET_GLUE_GC_PLATEAU (s_gcplateau);
   if (gp->active_plateau)
     {
       gp->active_plateau = FALSE;
-      g_assert (scm_glue_gc_plateau_blocker > 0);
+      assert (scm_glue_gc_plateau_blocker > 0);
       scm_glue_gc_plateau_blocker--;
       if (scm_glue_gc_plateau_blocker == 0)
 	sfi_glue_gc_run ();
@@ -222,7 +222,7 @@ bse_scm_from_glue_rec (SfiRec *rec)
 {
   SCM s_rec = 0;
 
-  g_return_val_if_fail (rec != NULL, SCM_UNSPECIFIED);
+  assert_return (rec != NULL, SCM_UNSPECIFIED);
 
   sfi_rec_ref (rec);
   SCM_NEWSMOB (s_rec, tc_glue_rec, rec);
@@ -371,10 +371,9 @@ bse_scm_proxy_print (SCM              scm_p1,
                      scm_print_state *pstate)
 {
   SfiProxy p1 = SCM_GET_GLUE_PROXY (scm_p1);
-  char buffer[128];
-  g_snprintf (buffer, sizeof (buffer), "%08lx (ID:%04lx)", (unsigned long) SCM_SMOB_DATA (scm_p1), (unsigned long) p1);
+  String str = string_format ("%08lx (ID:%04lx)", (unsigned long) SCM_SMOB_DATA (scm_p1), (unsigned long) p1);
   scm_puts ("#<SfiProxy ", port);
-  scm_puts (buffer, port);
+  scm_puts (str.c_str(), port);
   scm_puts (">", port);
   return 1;
 }
@@ -669,17 +668,18 @@ static SCM
 signal_marshal_sproc (void *data)
 {
   SignalData *sdata = (SignalData*) data;
-  SCM s_ret, args = SCM_EOL;
+  SCM args = SCM_EOL;
   guint i;
 
   i = sdata->n_args;
-  g_return_val_if_fail (sdata->n_args > 0, SCM_UNSPECIFIED);
+  assert_return (sdata->n_args > 0, SCM_UNSPECIFIED);
   sdata->n_args = 0;
 
   while (i--)
     args = gh_cons (bse_scm_from_value (sdata->args + i), args);
 
-  s_ret = scm_apply (sdata->s_lambda, args, SCM_EOL);
+  SCM s_ret = scm_apply (sdata->s_lambda, args, SCM_EOL);
+  (void) s_ret;
 
   return SCM_UNSPECIFIED;
 }
@@ -973,9 +973,8 @@ bse_scm_script_register (SCM s_name,
       else
         sfi_seq_append (seq, val = sfi_value_string ("Scheme"));
       sfi_value_free (val);
-      char buffer[64] = "";
-      g_snprintf (buffer, 64, "%u", (int) (IS_SCM_SFI_NUM (s_line) ? num_from_scm (s_line) + 1 : 0));
-      sfi_seq_append (seq, val = sfi_value_string (buffer));
+      String str = string_format ("%u", (int) (IS_SCM_SFI_NUM (s_line) ? num_from_scm (s_line) + 1 : 0));
+      sfi_seq_append (seq, val = sfi_value_string (str.c_str()));
       sfi_value_free (val);
       sfi_seq_append (seq, val = string_value_from_scm (s_author));
       sfi_value_free (val);

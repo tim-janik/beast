@@ -67,7 +67,7 @@ test_time (void)
   /* test error returns */
   TASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
   TASSERT (error != NULL);
-  // g_print ("{%s}", error);
+  // printout ("{%s}", error);
   g_free (error);
   for (i = 0; size_t (i) < G_N_ELEMENTS (time_strings); i++)
     {
@@ -75,7 +75,7 @@ test_time (void)
       if (!error)
 	TICK ();
       else
-	g_print ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
+	printout ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
       str = sfi_time_to_string (t);
       TASSERT (sfi_time_from_string_err (str, &error) == t);
@@ -131,19 +131,19 @@ test_com_ports (void)
   sfi_com_port_unref (port2);
   TDONE ();
 }
-#define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
+#define SCANNER_ASSERT64(scanner, needprint, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
-  if (printout) g_print ("{scanner.v_int64:%llu}", (long long unsigned int) (scanner->value.v_int64)); \
+  if (needprint) printout ("{scanner.v_int64:%llu}", (long long unsigned int) (scanner->value.v_int64)); \
   TASSERT (scanner->value.v_int64 == svalue); \
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
-#define SCANNER_ASSERTf(scanner, printout, vtoken, text, svalue) { \
+#define SCANNER_ASSERTf(scanner, needprint, vtoken, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   if (g_scanner_get_next_token (scanner) != vtoken) \
     g_scanner_unexp_token (scanner, vtoken, NULL, NULL, NULL, NULL, TRUE); \
   TASSERT (scanner->token == vtoken); \
-  if (printout) g_print ("{scanner.v_float:%17g}", scanner->value.v_float); \
+  if (needprint) printout ("{scanner.v_float:%17g}", scanner->value.v_float); \
   TASSERT (scanner->value.v_float == svalue); \
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
@@ -195,14 +195,14 @@ serial_pspec_check (GParamSpec *pspec,
   token = sfi_value_parse_typed (&rvalue, scanner);
   if (token != G_TOKEN_NONE)
     {
-      g_print ("{while parsing pspec \"%s\":\n\t%s\n", pspec->name, s1->str);
+      printout ("{while parsing pspec \"%s\":\n\t%s\n", pspec->name, s1->str);
       g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
 			     g_strdup_format ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
     }
   TASSERT (token == G_TOKEN_NONE);
   sfi_value_store_typed (&rvalue, s2);
   if (strcmp (s1->str, s2->str))
-    g_print ("{while comparing pspecs \"%s\":\n\t%s\n\t%s\n", pspec->name, s1->str, s2->str);
+    printout ("{while comparing pspecs \"%s\":\n\t%s\n\t%s\n", pspec->name, s1->str, s2->str);
   TASSERT (strcmp (s1->str, s2->str) == 0);
   g_value_unset (&rvalue);
   sfi_value_free (value);
@@ -243,10 +243,10 @@ serialize_cmp (GValue     *value,
 	    token = GTokenType ('(');
 	}
       if (0)
-	g_print ("{parsing:%s}", gstring->str);
+	printout ("{parsing:%s}", gstring->str);
       if (token != G_TOKEN_NONE)
 	{
-	  g_print ("{while parsing \"%s\":\n\t%s\n", pspec->name, gstring->str);
+	  printout ("{while parsing \"%s\":\n\t%s\n", pspec->name, gstring->str);
 	  g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
 				 g_strdup_format ("failed to serialize \"%s\"", pspec->name), TRUE);
 	}
@@ -254,8 +254,8 @@ serialize_cmp (GValue     *value,
       cmp = g_param_values_cmp (pspec, value, &rvalue);
       if (cmp)
 	{
-	  g_print ("{after parsing:\n\t%s\n", gstring->str);
-	  g_print ("while comparing:\n\t%s\nwith:\n\t%s\nresult:\n\t%d\n",
+	  printout ("{after parsing:\n\t%s\n", gstring->str);
+	  printout ("while comparing:\n\t%s\nwith:\n\t%s\nresult:\n\t%d\n",
 		   g_strdup_value_contents (value),
 		   g_strdup_value_contents (&rvalue),
 		   cmp);
@@ -269,7 +269,7 @@ serialize_cmp (GValue     *value,
 	}
       TASSERT (cmp == 0);
       if (0) /* generate testoutput */
-	g_print ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str);
+	printout ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str);
     }
   g_scanner_destroy (scanner);
   g_string_free (gstring, TRUE);
@@ -490,7 +490,7 @@ test_notes (void)
     }
   sfi_note_from_string_err ("NeverNote", &error);
   TASSERT (error != NULL);
-  // g_print ("{%s}", error);
+  // printout ("{%s}", error);
   g_free (error);
   TDONE ();
 }
@@ -534,29 +534,29 @@ generate_vmarshal (guint sig)
     *--s = '0' + (i & 3);
   if (!vmarshal_switch)
     {
-      g_print ("static void /* %u */\nsfi_vmarshal_%s (gpointer func, gpointer arg0, Arg *alist)\n{\n",
+      printout ("static void /* %u */\nsfi_vmarshal_%s (gpointer func, gpointer arg0, Arg *alist)\n{\n",
 	       vmarshal_count, s);
-      g_print ("  void (*f) (gpointer");
+      printout ("  void (*f) (gpointer");
       for (i = 0; s[i]; i++)
 	switch (s[i] - '0')
 	  {
-	  case 1:	g_print (", guint32");		break;
-	  case 2:	g_print (", guint64");		break;
-	  case 3:	g_print (", double");		break;
+	  case 1:	printout (", guint32");		break;
+	  case 2:	printout (", guint64");		break;
+	  case 3:	printout (", double");		break;
 	  }
-      g_print (", gpointer) = func;\n");
-      g_print ("  f (arg0");
+      printout (", gpointer) = func;\n");
+      printout ("  f (arg0");
       for (i = 0; s[i]; i++)
 	switch (s[i] - '0')
 	  {
-	  case 1:	g_print (", alist[%u].v32", i);		break;
-	  case 2:	g_print (", alist[%u].v64", i);		break;
-	  case 3:	g_print (", alist[%u].vdbl", i);	break;
+	  case 1:	printout (", alist[%u].v32", i);		break;
+	  case 2:	printout (", alist[%u].v64", i);		break;
+	  case 3:	printout (", alist[%u].vdbl", i);	break;
 	  }
-      g_print (", alist[%u].vpt);\n}\n", i);
+      printout (", alist[%u].vpt);\n}\n", i);
     }
   else
-    g_print ("    case 0x%03x: return sfi_vmarshal_%s; /* %u */\n", sig, s, vmarshal_count);
+    printout ("    case 0x%03x: return sfi_vmarshal_%s; /* %u */\n", sig, s, vmarshal_count);
 }
 
 static void
@@ -596,11 +596,11 @@ generate_vmarshal_code (void)
   vmarshal_switch = FALSE;
   generate_vmarshal_loop ();
   vmarshal_switch = TRUE;
-  g_print ("static VMarshal\nsfi_vmarshal_switch (guint sig)\n{\n");
-  g_print ("  switch (sig)\n    {\n");
+  printout ("static VMarshal\nsfi_vmarshal_switch (guint sig)\n{\n");
+  printout ("  switch (sig)\n    {\n");
   generate_vmarshal_loop ();
-  g_print ("    default: g_assert_not_reached (); return NULL;\n");
-  g_print ("    }\n}\n");
+  printout ("    default: assert_unreached (); return NULL;\n");
+  printout ("    }\n}\n");
 }
 static const char *pointer1 = "huhu";
 static const char *pointer2 = "haha";

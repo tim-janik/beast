@@ -7,6 +7,7 @@
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
+#include "subnormals.hh"
 
 #if 1
 inline float  test1f (float v) { return v;     }
@@ -33,11 +34,11 @@ test_correct_subnormal_elimination (const char* algo_name)
   for (int i = 1; i < n; i++)
     {
       float value = BSE_FLOAT_MAX_SUBNORMAL * i / n;
-      g_assert (BSE_FLOAT_IS_SUBNORMAL (value));
+      assert (BSE_FLOAT_IS_SUBNORMAL (value));
       float normalized_positive_value = Func (value);
-      g_assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_positive_value));
+      assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_positive_value));
       float normalized_negative_value = Func (-value);
-      g_assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
+      assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
       if (i % 100000 == 0)
         TOK();
     }
@@ -52,11 +53,11 @@ test_correct_subnormal_elimination (const char* algo_name)
   for (int i = 1; i < n; i++)
     {
       double value = BSE_DOUBLE_MAX_SUBNORMAL * i / n;
-      g_assert (BSE_DOUBLE_IS_SUBNORMAL (value));
+      assert (BSE_DOUBLE_IS_SUBNORMAL (value));
       double normalized_positive_value = Func (value);
-      g_assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_positive_value));
+      assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_positive_value));
       double normalized_negative_value = Func (-value);
-      g_assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
+      assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
       if (i % 100000 == 0)
         TOK();
     }
@@ -165,15 +166,15 @@ benchmark_subnormal_eliminations ()
   TOK();
   TDONE();
   if (0)
-    g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
-             test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
+    printout ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
+              test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
   constexpr const char *format = "    %-28s : %+.14f milliseconds";
-  TMSG (format, "Subnormals-keep",         test1_time * 1000);
-  TMSG (format, "Subnormals-bse-zap",      test2_time * 1000);
-  TMSG (format, "Subnormals-inlined-cond", test3_time * 1000);
-  TMSG (format, "Subnormals-if-cond",      test4_time * 1000);
-  TMSG (format, "Subnormals-arithmetic",   test5_time * 1000);
-  TMSG (format, "Subnormals-bse-flush",    test6_time * 1000);
+  TPASS (format, "Subnormals-keep",         test1_time * 1000);
+  TPASS (format, "Subnormals-bse-zap",      test2_time * 1000);
+  TPASS (format, "Subnormals-inlined-cond", test3_time * 1000);
+  TPASS (format, "Subnormals-if-cond",      test4_time * 1000);
+  TPASS (format, "Subnormals-arithmetic",   test5_time * 1000);
+  TPASS (format, "Subnormals-bse-flush",    test6_time * 1000);
 }
 bool
 check_denormals_are_zero()
@@ -195,9 +196,9 @@ main (int   argc,
       char *argv[])
 {
   bse_init_test (&argc, argv);
-  g_printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
+  printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
-  g_printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
+  printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
   if (!daz_mode)
     {
       test_correct_subnormal_elimination<test2f> ("zap");

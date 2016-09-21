@@ -70,10 +70,10 @@ static Bse::Mutex global_midi_mutex;
 /* --- midi controls --- */
 struct ControlKey {
   guint                  midi_channel;
-  BseMidiSignalType      type;
+  Bse::MidiSignal      type;
   explicit
   ControlKey (guint             _mc,
-              BseMidiSignalType _tp) :
+              Bse::MidiSignal _tp) :
     midi_channel (_mc),
     type (_tp) {}
   bool
@@ -139,7 +139,7 @@ struct ControlHandler {
   }
   ~ControlHandler()
   {
-    g_return_if_fail (modules.size() == 0);
+    assert_return (modules.size() == 0);
     if (user_free)
       bse_engine_add_user_callback (user_data, user_free);
     user_free = NULL;
@@ -192,7 +192,7 @@ struct ControlValue {
                   BseModule            *module)
   {
     HandlerList::iterator it = handlers.find (ControlHandler (handler_func, handler_data));
-    g_return_if_fail (it != handlers.end());
+    assert_return (it != handlers.end());
     ControlHandler *ch = const_cast<ControlHandler*> (&(*it));
     ch->remove_module (module);
     if (ch->modules.size() == 0)
@@ -200,7 +200,7 @@ struct ControlValue {
   }
   void
   notify_handlers (guint64           tick_stamp,
-                   BseMidiSignalType signal_type,
+                   Bse::MidiSignal signal_type,
                    BseTrans         *trans)
   {
     for (HandlerList::iterator it = handlers.begin(); it != handlers.end(); it++)
@@ -209,7 +209,7 @@ struct ControlValue {
   }
   ~ControlValue()
   {
-    g_return_if_fail (cmodules == NULL);
+    assert_return (cmodules == NULL);
   }
 };
 
@@ -348,7 +348,7 @@ public:
   }
   ~MidiReceiver()
   {
-    g_assert (ref_count == 0);
+    assert (ref_count == 0);
     for (Channels::iterator it = midi_channels.begin(); it != midi_channels.end(); it++)
       delete *it;
     while (events)
@@ -386,7 +386,7 @@ public:
 private:
   ControlValue*
   get_control_value (guint             midi_channel,
-                     BseMidiSignalType type)
+                     Bse::MidiSignal type)
   {
     Controls::iterator it = controls.find (ControlKey (midi_channel, type));
     if (it != controls.end())
@@ -398,7 +398,7 @@ private:
 public:
   gfloat
   get_control (guint             midi_channel,
-               BseMidiSignalType type)
+               Bse::MidiSignal type)
   {
     Controls::iterator it = controls.find (ControlKey (midi_channel, type));
     return it != controls.end() ? it->second.value : bse_midi_signal_default (type);
@@ -406,7 +406,7 @@ public:
   GSList*
   set_control (guint             midi_channel,
                guint64           tick_stamp,
-               BseMidiSignalType signal_type,
+               Bse::MidiSignal signal_type,
                gfloat            value,
                BseTrans         *trans)
   {
@@ -422,7 +422,7 @@ public:
   }
   void
   add_control (guint             midi_channel,
-               BseMidiSignalType type,
+               Bse::MidiSignal type,
                BseModule        *module)
   {
     ControlValue *cv = get_control_value (midi_channel, type);
@@ -430,7 +430,7 @@ public:
   }
   void
   remove_control (guint             midi_channel,
-                  BseMidiSignalType type,
+                  Bse::MidiSignal type,
                   BseModule        *module)
   {
     ControlValue *cv = get_control_value (midi_channel, type);
@@ -438,7 +438,7 @@ public:
   }
   bool
   add_control_handler (guint                 midi_channel,
-                       BseMidiSignalType     signal_type,
+                       Bse::MidiSignal     signal_type,
                        BseMidiControlHandler handler_func,
                        gpointer              handler_data,
                        BseModule            *module)
@@ -448,7 +448,7 @@ public:
   }
   void
   set_control_handler_data (guint                 midi_channel,
-                            BseMidiSignalType     signal_type,
+                            Bse::MidiSignal     signal_type,
                             BseMidiControlHandler handler_func,
                             gpointer              handler_data,
                             gpointer              extra_data,
@@ -459,7 +459,7 @@ public:
   }
   void
   remove_control_handler (guint                 midi_channel,
-                          BseMidiSignalType     signal_type,
+                          Bse::MidiSignal     signal_type,
                           BseMidiControlHandler handler_func,
                           gpointer              handler_data,
                           BseModule            *module)
@@ -493,7 +493,7 @@ typedef struct
 {
   guint             midi_channel;
   gfloat            values[BSE_MIDI_CONTROL_MODULE_N_CHANNELS];
-  BseMidiSignalType signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS];
+  Bse::MidiSignal signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS];
   guint             ref_count;
 } MidiCModuleData;
 
@@ -512,7 +512,7 @@ midi_control_module_process_U (BseModule *module, /* vswitch->smodule */
 static BseModule*
 create_midi_control_module_L (MidiReceiver      *self,
                               guint              midi_channel,
-                              BseMidiSignalType  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
+                              Bse::MidiSignal  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
 {
   static const BseModuleClass midi_cmodule_class = {
     0,                                  /* n_istreams */
@@ -528,7 +528,7 @@ create_midi_control_module_L (MidiReceiver      *self,
   BseModule *module;
   guint i;
 
-  g_return_val_if_fail (signals != NULL, NULL);
+  assert_return (signals != NULL, NULL);
 
   cdata = g_new0 (MidiCModuleData, 1);
   cdata->midi_channel = midi_channel;
@@ -544,7 +544,7 @@ create_midi_control_module_L (MidiReceiver      *self,
 }
 
 typedef struct {
-  BseMidiSignalType signal;
+  Bse::MidiSignal signal;
   gfloat            value;
 } MidiCModuleAccessData;
 
@@ -564,7 +564,7 @@ midi_control_module_access_U (BseModule *module,
 static void
 change_midi_control_modules_L (GSList           *modules,
                                guint64           tick_stamp,
-                               BseMidiSignalType signal,
+                               Bse::MidiSignal signal,
                                gfloat            value,
                                BseTrans         *trans)
 {
@@ -587,7 +587,7 @@ change_midi_control_modules_L (GSList           *modules,
 static gboolean
 match_midi_control_module_L (BseModule         *cmodule,
                              guint              midi_channel,
-                             BseMidiSignalType  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
+                             Bse::MidiSignal  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
 {
   MidiCModuleData *cdata = (MidiCModuleData *) cmodule->user_data;
   gboolean match = TRUE;
@@ -711,7 +711,7 @@ voice_input_remove_from_table_L (VoiceInput *vinput)    /* UserThread */
             vinput->queue_state = VSTATE_IDLE;
             return;
           }
-      g_assert_not_reached ();
+      assert_unreached ();
     }
 }
 
@@ -801,34 +801,34 @@ change_voice_input_L (VoiceInput      *vinput,
         g_warning ("%s: VOICE_ON: vinput->queue_state == VSTATE_BUSY", G_STRLOC);
       if (vinput->table)
         {
-          g_return_if_fail (vinput->iter == vinput->table->end());
+          assert_return (vinput->iter == vinput->table->end());
           vinput->next = (*vinput->table)[freq_value];
           vinput->iter = vinput->table->find (freq_value);
-          g_assert (vinput->iter != vinput->table->end());
+          assert (vinput->iter != vinput->table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
       break;
     case VOICE_PRESSURE:
       if (vinput->table)
-        g_return_if_fail (vinput->iter != vinput->table->end());
+        assert_return (vinput->iter != vinput->table->end());
       break;
     case VOICE_SUSTAIN:
       if (vinput->table)
-        g_return_if_fail (vinput->iter != vinput->table->end());
+        assert_return (vinput->iter != vinput->table->end());
       vinput->queue_state = VSTATE_SUSTAINED;
       break;
     case VOICE_OFF:
       if (vinput->table)
-        g_return_if_fail (vinput->iter != vinput->table->end());
+        assert_return (vinput->iter != vinput->table->end());
       vinput->queue_state = VSTATE_IDLE;
       break;
     case VOICE_KILL_SUSTAIN:
-      g_return_if_fail (vinput->queue_state == VSTATE_SUSTAINED);
+      assert_return (vinput->queue_state == VSTATE_SUSTAINED);
       vinput->queue_state = VSTATE_IDLE;
       break;
     case VOICE_KILL:
-      g_return_if_fail (vinput->queue_state != VSTATE_IDLE);
+      assert_return (vinput->queue_state != VSTATE_IDLE);
       vinput->queue_state = VSTATE_IDLE;
       break;
     }
@@ -848,7 +848,7 @@ voice_input_module_free_U (gpointer        data,
                            const BseModuleClass *klass)
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  g_assert (vinput->next == NULL);
+  assert (vinput->next == NULL);
   delete vinput;
 }
 
@@ -890,7 +890,7 @@ static void
 destroy_voice_input_L (VoiceInput      *vinput,
                        BseTrans        *trans)
 {
-  g_return_if_fail (vinput->ref_count == 0);
+  assert_return (vinput->ref_count == 0);
 
   if (vinput->table && vinput->iter != vinput->table->end())
     voice_input_remove_from_table_L (vinput);
@@ -972,7 +972,7 @@ activate_voice_switch_L (VoiceSwitch *vswitch,
                          guint64      tick_stamp,
                          BseTrans    *trans)
 {
-  g_return_if_fail (vswitch->disconnected == TRUE);
+  assert_return (vswitch->disconnected == TRUE);
   /* make sure the module is connected before tick_stamp */
   bse_trans_add (trans, bse_job_boundary_access (vswitch->smodule, tick_stamp, voice_switch_module_boundary_check_U, NULL, NULL));
   /* make sure the module is not suspended at tick_stamp */
@@ -1035,8 +1035,8 @@ destroy_voice_switch_L (VoiceSwitch *vswitch,
 {
   BseTrans *tmp_trans;
 
-  g_return_if_fail (vswitch->ref_count == 0);
-  g_return_if_fail (vswitch->n_vinputs == 0);
+  assert_return (vswitch->ref_count == 0);
+  assert_return (vswitch->n_vinputs == 0);
 
   tmp_trans = bse_trans_open ();
   bse_trans_add (tmp_trans, bse_job_boundary_discard (vswitch->smodule));
@@ -1120,7 +1120,7 @@ MidiChannel::start_note (guint64         tick_stamp,
   VoiceSwitch *vswitch, *override_candidate = NULL;
   guint i;
 
-  g_return_if_fail (freq > 0);
+  assert_return (freq > 0);
 
   /* adjust channel global mono synth */
   if (mchannel->vinput)
@@ -1145,7 +1145,7 @@ MidiChannel::start_note (guint64         tick_stamp,
         }
   /* grab voice to override */
   if (!vswitch)
-    ; // FIXME: voice = override_candidate;
+    (void) override_candidate; // FIXME: voice = override_candidate;
 
   if (vswitch && vswitch->n_vinputs)
     {
@@ -1176,7 +1176,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
   VoiceInput *vinput = NULL;
 
-  g_return_if_fail (freq > 0 && velocity >= 0);
+  assert_return (freq > 0 && velocity >= 0);
 
   /* adjust channel global mono synth */
   if (mchannel->vinput)
@@ -1272,8 +1272,8 @@ events_cmp (gconstpointer a,
 void
 bse_midi_receiver_enter_farm (BseMidiReceiver *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) == farm_residents.end());
+  assert_return (self != NULL);
+  assert_return (find (farm_residents.begin(), farm_residents.end(), self) == farm_residents.end());
 
   BSE_MIDI_RECEIVER_LOCK ();
   farm_residents.push_back (self);
@@ -1283,7 +1283,7 @@ bse_midi_receiver_enter_farm (BseMidiReceiver *self)
 void
 bse_midi_receiver_farm_distribute_event (BseMidiEvent *event)
 {
-  g_return_if_fail (event != NULL);
+  assert_return (event != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   for (vector<BseMidiReceiver*>::iterator it = farm_residents.begin(); it != farm_residents.end(); it++)
@@ -1309,8 +1309,8 @@ bse_midi_receiver_farm_process_events (guint64 max_tick_stamp)
 void
 bse_midi_receiver_leave_farm (BseMidiReceiver *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
+  assert_return (self != NULL);
+  assert_return (find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
 
   BSE_MIDI_RECEIVER_LOCK ();
   farm_residents.erase (find (farm_residents.begin(), farm_residents.end(), self));
@@ -1321,8 +1321,8 @@ void
 bse_midi_receiver_push_event (BseMidiReceiver *self,
 			      BseMidiEvent    *event)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (event != NULL);
+  assert_return (self != NULL);
+  assert_return (event != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->events = sfi_ring_insert_sorted (self->events, event, events_cmp, NULL);
@@ -1335,7 +1335,7 @@ bse_midi_receiver_process_events (BseMidiReceiver *self,
 {
   gboolean seen_event;
 
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   do
     {
@@ -1360,8 +1360,8 @@ bse_midi_receiver_new (const gchar *receiver_name)  // FIXME
 BseMidiReceiver*
 bse_midi_receiver_ref (BseMidiReceiver *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count > 0, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count > 0, NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->ref_count++;
@@ -1375,8 +1375,8 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
 {
   gboolean need_destroy, leave_farm;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count > 0);
+  assert_return (self != NULL);
+  assert_return (self->ref_count > 0);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->ref_count--;
@@ -1399,7 +1399,7 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
 {
   BseMidiNotifier *old_notifier;
 
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   old_notifier = self->notifier;
@@ -1429,7 +1429,7 @@ bse_midi_receiver_fetch_notify_events (BseMidiReceiver *self)
 {
   SfiRing *ring;
 
-  g_return_val_if_fail (self != NULL, NULL);
+  assert_return (self != NULL, NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   ring = self->notifier_events;
@@ -1442,15 +1442,15 @@ bse_midi_receiver_fetch_notify_events (BseMidiReceiver *self)
 BseModule*
 bse_midi_receiver_retrieve_control_module (BseMidiReceiver  *self,
 					   guint             midi_channel,
-					   BseMidiSignalType signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
+					   Bse::MidiSignal signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
 					   BseTrans         *trans)
 {
   BseModule *cmodule;
   guint i;
 
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
-  g_return_val_if_fail (signals != NULL, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (midi_channel > 0, NULL);
+  assert_return (signals != NULL, NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   for (i = 0; i < self->n_cmodules; i++)
@@ -1487,8 +1487,8 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 {
   guint i;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (module != NULL);
+  assert_return (self != NULL);
+  assert_return (module != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   for (i = 0; i < self->n_cmodules; i++)
@@ -1497,11 +1497,11 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
       if (cmodule == module)
         {
           MidiCModuleData *cdata = (MidiCModuleData *) cmodule->user_data;
-          g_return_if_fail (cdata->ref_count > 0);
+          assert_return (cdata->ref_count > 0);
           cdata->ref_count--;
           if (!cdata->ref_count)
             {
-	      BseMidiSignalType *signals = cdata->signals;
+	      Bse::MidiSignal *signals = cdata->signals;
 	      guint midi_channel = cdata->midi_channel;
               self->n_cmodules--;
               self->cmodules[i] = self->cmodules[self->n_cmodules];
@@ -1525,15 +1525,15 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 gboolean
 bse_midi_receiver_add_control_handler (BseMidiReceiver      *self,
                                        guint                 midi_channel,
-                                       BseMidiSignalType     signal_type,
+                                       Bse::MidiSignal     signal_type,
                                        BseMidiControlHandler handler_func,
                                        gpointer              handler_data,
                                        BseModule            *module)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
-  g_return_val_if_fail (midi_channel > 0, FALSE);
-  g_return_val_if_fail (handler_func != NULL, FALSE);
-  g_return_val_if_fail (module != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
+  assert_return (midi_channel > 0, FALSE);
+  assert_return (handler_func != NULL, FALSE);
+  assert_return (module != NULL, FALSE);
 
   BSE_MIDI_RECEIVER_LOCK ();
   gboolean has_data = self->add_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
@@ -1544,15 +1544,15 @@ bse_midi_receiver_add_control_handler (BseMidiReceiver      *self,
 void
 bse_midi_receiver_set_control_handler_data (BseMidiReceiver      *self,
                                             guint                 midi_channel,
-                                            BseMidiSignalType     signal_type,
+                                            Bse::MidiSignal     signal_type,
                                             BseMidiControlHandler handler_func,
                                             gpointer              handler_data,
                                             gpointer              extra_data,
                                             BseFreeFunc           extra_free)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (handler_func != NULL);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (handler_func != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->set_control_handler_data (midi_channel, signal_type, handler_func, handler_data, extra_data, extra_free);
@@ -1562,15 +1562,15 @@ bse_midi_receiver_set_control_handler_data (BseMidiReceiver      *self,
 void
 bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
                                           guint                 midi_channel,
-                                          BseMidiSignalType     signal_type,
+                                          Bse::MidiSignal     signal_type,
                                           BseMidiControlHandler handler_func,
                                           gpointer              handler_data,
                                           BseModule            *module)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (handler_func != NULL);
-  g_return_if_fail (module != NULL);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (handler_func != NULL);
+  assert_return (module != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->remove_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
@@ -1615,8 +1615,8 @@ void
 bse_midi_receiver_channel_enable_poly (BseMidiReceiver *self,
                                        guint            midi_channel)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
 
   BSE_MIDI_RECEIVER_LOCK ();
   MidiChannel *mchannel = self->get_channel (midi_channel);
@@ -1628,8 +1628,8 @@ void
 bse_midi_receiver_channel_disable_poly (BseMidiReceiver *self,
                                         guint            midi_channel)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
 
   BSE_MIDI_RECEIVER_LOCK ();
   MidiChannel *mchannel = self->get_channel (midi_channel);
@@ -1644,8 +1644,8 @@ bse_midi_receiver_retrieve_mono_voice (BseMidiReceiver *self,
 {
   MidiChannel *mchannel;
 
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (midi_channel > 0, NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
@@ -1665,8 +1665,8 @@ bse_midi_receiver_discard_mono_voice (BseMidiReceiver *self,
 {
   MidiChannel *mchannel;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (fmodule != NULL);
+  assert_return (self != NULL);
+  assert_return (fmodule != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
@@ -1693,8 +1693,8 @@ bse_midi_receiver_create_poly_voice (BseMidiReceiver *self,
   MidiChannel *mchannel;
   guint i;
 
-  g_return_val_if_fail (self != NULL, 0);
-  g_return_val_if_fail (midi_channel > 0, 0);
+  assert_return (self != NULL, 0);
+  assert_return (midi_channel > 0, 0);
 
   BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
@@ -1723,9 +1723,9 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
   MidiChannel *mchannel;
   VoiceSwitch *vswitch;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (voice_id > 0);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (voice_id > 0);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK ();
@@ -1733,7 +1733,7 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   if (vswitch)
     {
-      g_return_if_fail (vswitch->ref_count > 0);
+      assert_return (vswitch->ref_count > 0);
       vswitch->ref_count--;
       if (!vswitch->ref_count)
         {
@@ -1755,9 +1755,9 @@ bse_midi_receiver_get_poly_voice_input (BseMidiReceiver   *self,
   VoiceSwitch *vswitch;
   BseModule *module;
 
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
-  g_return_val_if_fail (voice_id > 0, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (midi_channel > 0, NULL);
+  assert_return (voice_id > 0, NULL);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK ();
@@ -1777,9 +1777,9 @@ bse_midi_receiver_get_poly_voice_output (BseMidiReceiver   *self,
   VoiceSwitch *vswitch;
   BseModule *module;
 
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
-  g_return_val_if_fail (voice_id > 0, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (midi_channel > 0, NULL);
+  assert_return (voice_id > 0, NULL);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK ();
@@ -1800,9 +1800,9 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
   VoiceSwitch *vswitch;
   BseModule *module = NULL;
 
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
-  g_return_val_if_fail (voice_id > 0, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (midi_channel > 0, NULL);
+  assert_return (voice_id > 0, NULL);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK ();
@@ -1831,10 +1831,10 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
   VoiceSwitch *vswitch;
   guint i, need_unref = FALSE;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (fmodule != NULL);
-  g_return_if_fail (voice_id > 0);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (fmodule != NULL);
+  assert_return (voice_id > 0);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK ();
@@ -1876,8 +1876,8 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
   SfiRing *ring = NULL;
   guint i, active = 0;
 
-  g_return_val_if_fail (self != NULL, FALSE);
-  g_return_val_if_fail (midi_channel > 0, FALSE);
+  assert_return (self != NULL, FALSE);
+  assert_return (midi_channel > 0, FALSE);
 
   if (self->events)
     return TRUE;
@@ -1909,7 +1909,7 @@ static inline void
 update_midi_signal_L (BseMidiReceiver  *self,
 		      guint             channel,
 		      guint64           tick_stamp,
-		      BseMidiSignalType signal,
+		      Bse::MidiSignal signal,
 		      gfloat            value,
 		      BseTrans         *trans)
 {
@@ -1928,9 +1928,9 @@ static inline void
 update_midi_signal_continuous_msb_L (BseMidiReceiver  *self,
 				     guint             channel,
 				     guint64           tick_stamp,
-				     BseMidiSignalType continuous_signal,
+				     Bse::MidiSignal continuous_signal,
 				     gfloat            value,
-				     BseMidiSignalType lsb_signal,
+				     Bse::MidiSignal lsb_signal,
 				     BseTrans         *trans)
 {
   gint ival;
@@ -1947,8 +1947,8 @@ static inline void
 update_midi_signal_continuous_lsb_L (BseMidiReceiver  *self,
 				     guint             channel,
 				     guint64           tick_stamp,
-				     BseMidiSignalType continuous_signal,
-				     BseMidiSignalType msb_signal,
+				     Bse::MidiSignal continuous_signal,
+				     Bse::MidiSignal msb_signal,
 				     gfloat            value,
 				     BseTrans         *trans)
 {
@@ -1978,24 +1978,24 @@ process_midi_control_L (BseMidiReceiver *self,
 
   if (extra_continuous)
     {
-      /* internal BSE_MIDI_SIGNAL_CONTINUOUS_* change */
-      update_midi_signal_L (self, channel, tick_stamp, static_cast<BseMidiSignalType> (64 + control), value, trans);
+      /* internal Bse::MIDI_SIGNAL_CONTINUOUS_* change */
+      update_midi_signal_L (self, channel, tick_stamp, static_cast<Bse::MidiSignal> (64 + control), value, trans);
       return;
     }
 
-  /* all MIDI controls are passed literally as BSE_MIDI_SIGNAL_CONTROL_* */
-  update_midi_signal_L (self, channel, tick_stamp, static_cast<BseMidiSignalType> (128 + control), value, trans);
+  /* all MIDI controls are passed literally as Bse::MIDI_SIGNAL_CONTROL_* */
+  update_midi_signal_L (self, channel, tick_stamp, static_cast<Bse::MidiSignal> (128 + control), value, trans);
 
   if (control < 32)		/* MSB part of continuous 14bit signal */
     update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
-					 static_cast<BseMidiSignalType> (control + 64),		/* continuous signal */
+					 static_cast<Bse::MidiSignal> (control + 64),		/* continuous signal */
 					 value,							/* MSB value */
-					 static_cast<BseMidiSignalType> (128 + control + 32),	/* LSB signal */
+					 static_cast<Bse::MidiSignal> (128 + control + 32),	/* LSB signal */
 					 trans);
   else if (control < 64)	/* LSB part of continuous 14bit signal */
     update_midi_signal_continuous_lsb_L (self, channel, tick_stamp,
-					 static_cast<BseMidiSignalType> (control + 32),		/* continuous signal */
-					 static_cast<BseMidiSignalType> (128 + control - 32),	/* MSB signal */
+					 static_cast<Bse::MidiSignal> (control + 32),		/* continuous signal */
+					 static_cast<Bse::MidiSignal> (128 + control - 32),	/* MSB signal */
 					 value,							/* LSB value */
 					 trans);
   else switch (control)
@@ -2008,29 +2008,29 @@ process_midi_control_L (BseMidiReceiver *self,
       break;
     case 98:			/* Non-Registered Parameter MSB */
       update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
-					   BSE_MIDI_SIGNAL_NON_PARAMETER,	/* continuous signal */
+					   Bse::MidiSignal::NON_PARAMETER,	/* continuous signal */
 					   value,                 		/* MSB value */
-					   BSE_MIDI_SIGNAL_CONTROL_99,		/* LSB signal */
+					   Bse::MidiSignal::CONTROL_99,		/* LSB signal */
 					   trans);
       break;
     case 99:			/* Non-Registered Parameter LSB */
       update_midi_signal_continuous_lsb_L (self, channel, tick_stamp,
-					   BSE_MIDI_SIGNAL_NON_PARAMETER,	/* continuous signal */
-					   BSE_MIDI_SIGNAL_CONTROL_98,		/* MSB signal */
+					   Bse::MidiSignal::NON_PARAMETER,	/* continuous signal */
+					   Bse::MidiSignal::CONTROL_98,		/* MSB signal */
 					   value,                 		/* LSB value */
 					   trans);
       break;
     case 100:			/* Registered Parameter MSB */
       update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
-					   BSE_MIDI_SIGNAL_PARAMETER,		/* continuous signal */
+					   Bse::MidiSignal::PARAMETER,		/* continuous signal */
 					   value,                 		/* MSB value */
-					   BSE_MIDI_SIGNAL_CONTROL_101,		/* LSB signal */
+					   Bse::MidiSignal::CONTROL_101,		/* LSB signal */
 					   trans);
       break;
     case 101:			/* Registered Parameter LSB */
       update_midi_signal_continuous_lsb_L (self, channel, tick_stamp,
-					   BSE_MIDI_SIGNAL_PARAMETER,		/* continuous signal */
-					   BSE_MIDI_SIGNAL_CONTROL_100,		/* MSB signal */
+					   Bse::MidiSignal::PARAMETER,		/* continuous signal */
+					   Bse::MidiSignal::CONTROL_100,		/* MSB signal */
 					   value,                 		/* LSB value */
 					   trans);
       break;
@@ -2093,7 +2093,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 		{
 		  gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
 					    (BSE_GCONFIG (invert_sustain) ^
-					     (self->get_control (event->channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
+					     (self->get_control (event->channel, Bse::MidiSignal::CONTROL_64) >= 0.5));
 		  mchannel->adjust_note (event->delta_time,
 					 event->data.note.frequency, event->status,
 					 event->data.note.velocity, sustained_note, trans);
@@ -2119,21 +2119,21 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 	      EDEBUG ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
                       event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
 	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
+				    Bse::MidiSignal::PROGRAM, event->data.program / (gfloat) 0x7f,
 				    trans);
 	      break;
 	    case BSE_MIDI_CHANNEL_PRESSURE:
 	      EDEBUG ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
                       event->data.intensity, event->delta_time);
 	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
+				    Bse::MidiSignal::PRESSURE, event->data.intensity,
 				    trans);
 	      break;
 	    case BSE_MIDI_PITCH_BEND:
 	      EDEBUG ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
                       event->data.pitch_bend, event->delta_time);
 	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
+				    Bse::MidiSignal::PITCH_BEND, event->data.pitch_bend,
 				    trans);
 	      break;
 	    default:

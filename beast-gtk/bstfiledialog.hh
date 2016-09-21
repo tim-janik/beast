@@ -62,7 +62,8 @@ struct _BstFileDialog
   gchar            *search_path;
   const gchar      *search_filter;
   GtkWindow	   *parent_window;
-  SfiProxy	    proxy, super;
+  SfiProxy	    super, wave_repo, sound_font_repo;
+  Bse::ProjectH     project;
 };
 struct _BstFileDialogClass
 {
@@ -73,24 +74,14 @@ struct _BstFileDialogClass
 /* --- prototypes --- */
 GType		bst_file_dialog_get_type		(void);
 GtkWidget*	bst_file_dialog_popup_open_project	(gpointer	   parent_widget);
-GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
-							 SfiProxy	   project);
-GtkWidget*	bst_file_dialog_popup_import_midi	(gpointer	   parent_widget,
-							 SfiProxy	   project);
-GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
-							 SfiProxy	   project,
-                                                         gboolean          query_project_name,
-                                                         gboolean          apply_project_name);
-GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer          parent_widget,
-                                                         SfiProxy          project);
-GtkWidget*	bst_file_dialog_popup_save_effect	(gpointer	   parent_widget,
-							 SfiProxy	   project,
-                                                         SfiProxy          super);
-GtkWidget*	bst_file_dialog_popup_save_instrument	(gpointer	   parent_widget,
-							 SfiProxy	   project,
-                                                         SfiProxy          super);
-GtkWidget*      bst_file_dialog_popup_merge_instrument  (gpointer          parent_widget,
-                                                         SfiProxy          project);
+GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer parent_widget, Bse::ProjectH project);
+GtkWidget*	bst_file_dialog_popup_import_midi	(gpointer parent_widget, Bse::ProjectH project);
+GtkWidget*	bst_file_dialog_popup_save_project	(gpointer parent_widget, Bse::ProjectH project,
+                                                         gboolean query_project_name, gboolean apply_project_name);
+GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer parent_widget, Bse::ProjectH project);
+GtkWidget*	bst_file_dialog_popup_save_effect	(gpointer parent_widget, Bse::ProjectH project, SfiProxy super);
+GtkWidget*	bst_file_dialog_popup_save_instrument	(gpointer parent_widget, Bse::ProjectH project, SfiProxy super);
+GtkWidget*      bst_file_dialog_popup_merge_instrument  (gpointer parent_widget, Bse::ProjectH project);
 GtkWidget*	bst_file_dialog_popup_select_file  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
@@ -99,11 +90,9 @@ GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
 GtkWidget*	bst_file_dialog_popup_load_sound_font   (gpointer          parent_widget,
                                                          SfiProxy          sound_font_repo,
                                                          gboolean          show_lib);
-void		bst_file_dialog_set_mode		(BstFileDialog	  *self,
-							 gpointer          parent_widget,
-							 BstFileDialogMode mode,
-							 const gchar	  *fs_title,
-							 SfiProxy	   project);
+void		bst_file_dialog_set_mode		(BstFileDialog *self, gpointer parent_widget, BstFileDialogMode mode,
+                                                         const gchar *fs_title, Bse::ProjectH project = Bse::ProjectH(),
+                                                         SfiProxy wave_repo = 0, SfiProxy sound_font_repo = 0);
 GtkWidget*      bst_file_dialog_create                  (void);
 void            bst_file_dialog_setup                   (GtkWidget        *widget,
                                                          gpointer          parent_widget,

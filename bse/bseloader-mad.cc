@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
+#include "../configure.h"
 #include "bse/bseloader.hh"
 #include "gsldatahandle-mad.hh"
 
@@ -21,15 +21,15 @@ typedef struct
 static BseWaveFileInfo*
 mad_load_file_info (void         *data,
 		    const char   *file_name,
-		    BseErrorType *error_p)
+		    Bse::Error *error_p)
 {
   FileInfo *fi;
   uint n_channels;
   float mix_freq;
-  BseErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
-  if (error)
+  if (error != 0)
     {
       *error_p = error;
       return NULL;
@@ -64,7 +64,7 @@ static BseWaveDsc*
 mad_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
 		   uint             nth_wave,
-		   BseErrorType    *error_p)
+		   Bse::Error    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
@@ -95,12 +95,12 @@ static GslDataHandle*
 mad_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wdsc,
 			 uint          nth_chunk,
-			 BseErrorType *error_p)
+			 Bse::Error *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_data_handle_new_mad_err (fi->wfi.file_name, wdsc->chunks[0].osc_freq, error_p);
   if (dhandle && wdsc->chunks[0].xinfos)
@@ -109,8 +109,8 @@ mad_create_chunk_handle (void         *data,
       dhandle = gsl_data_handle_new_add_xinfos (dhandle, wdsc->chunks[0].xinfos);
       gsl_data_handle_unref (tmp_handle);
     }
-  if (!dhandle && !*error_p)
-    *error_p = BSE_ERROR_FILE_OPEN_FAILED;
+  if (!dhandle && 0 == *error_p)
+    *error_p = Bse::Error::FILE_OPEN_FAILED;
   return dhandle;
 }
 
@@ -195,7 +195,7 @@ _gsl_init_loader_mad (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   if (BSE_HAVE_LIBMAD)

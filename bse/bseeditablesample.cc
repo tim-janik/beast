@@ -45,7 +45,7 @@ BSE_BUILTIN_TYPE (BseEditableSample)
     (GInstanceInitFunc) bse_editable_sample_init,
   };
 
-  g_assert (BSE_EDITABLE_SAMPLE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_EDITABLE_SAMPLE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
 
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseEditableSample",
@@ -116,7 +116,7 @@ bse_editable_sample_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (self->wchunk == NULL);
+  assert_return (self->wchunk == NULL);
 }
 
 static gboolean
@@ -159,7 +159,7 @@ void
 bse_editable_sample_set_wchunk (BseEditableSample *self,
 				GslWaveChunk      *wchunk)
 {
-  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (self));
+  assert_return (BSE_IS_EDITABLE_SAMPLE (self));
 
   if (self->wchunk)
     {
@@ -171,3 +171,14 @@ bse_editable_sample_set_wchunk (BseEditableSample *self,
   self->wchunk = wchunk ? gsl_wave_chunk_ref (wchunk) : NULL;
   changed_notify_add (self);
 }
+
+namespace Bse {
+
+EditableSampleImpl::EditableSampleImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+EditableSampleImpl::~EditableSampleImpl ()
+{}
+
+} // Bse

@@ -1,0 +1,17 @@
+usr/bin/beast*
+usr/share/man/man1/beast*.1
+usr/bin/bsescm
+usr/share/man/man1/bsescm.1
+usr/bin/bsewavetool
+usr/share/beast
+usr/share/doc/beast/NEWS
+usr/share/doc/beast/README.md
+usr/share/man/man1/bsewavetool.1
+usr/share/application-registry/beast.applications
+usr/share/applications/beast.desktop
+usr/share/pixmaps/beast.png
+usr/share/pixmaps/beast-audio-x-bse.png
+usr/share/mime-info/bse.keys
+usr/share/mime-info/bse.mime
+usr/share/mime/packages/beast.xml
+usr/lib/*/beast-*/pybeast/

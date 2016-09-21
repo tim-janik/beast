@@ -79,11 +79,11 @@ main (int   argc,
   parse_args (&argc, &argv);
   if (argc != 3)
     {
-      g_printerr ("usage: cutvorbis infile.ogg [{-s|-k|-p} <cutpoint>] [-S <serialno>] outfile.ogg\n");
-      g_printerr ("  -S <serialno>  only process data from the Ogg/Vorbis stream with <serialno>\n");
-      g_printerr ("  -s <cutpoint>  cut the Ogg/Vorbis stream at sample <cutpoint>\n");
-      g_printerr ("  -k <cutpoint>  same as -s, but cut at vorbis packet boundary\n");
-      g_printerr ("  -p <cutpoint>  same as -s, but cut at ogg page boundary\n");
+      printerr ("usage: cutvorbis infile.ogg [{-s|-k|-p} <cutpoint>] [-S <serialno>] outfile.ogg\n");
+      printerr ("  -S <serialno>  only process data from the Ogg/Vorbis stream with <serialno>\n");
+      printerr ("  -s <cutpoint>  cut the Ogg/Vorbis stream at sample <cutpoint>\n");
+      printerr ("  -k <cutpoint>  same as -s, but cut at vorbis packet boundary\n");
+      printerr ("  -p <cutpoint>  same as -s, but cut at ogg page boundary\n");
       exit (1);
     }
   ifile = argv[1];
@@ -97,13 +97,13 @@ main (int   argc,
   ifd = open (ifile, O_RDONLY);
   if (ifd < 0)
     {
-      g_printerr ("Error: failed to open \"%s\": %s\n", ifile, g_strerror (errno));
+      printerr ("Error: failed to open \"%s\": %s\n", ifile, g_strerror (errno));
       exit (1);
     }
   ofd = open (ofile, O_CREAT | O_TRUNC | O_WRONLY, 0666);
   if (ofd < 0)
     {
-      g_printerr ("Error: failed to open \"%s\": %s\n", ofile, g_strerror (errno));
+      printerr ("Error: failed to open \"%s\": %s\n", ofile, g_strerror (errno));
       exit (1);
     }
 
@@ -119,7 +119,7 @@ main (int   argc,
           const char *errstr = g_strerror (errno);
           if (!errno && j == 0)
             errstr = "End of File";
-          g_printerr ("Error: failed to read from \"%s\": %s\n", ifile, errstr);
+          printerr ("Error: failed to read from \"%s\": %s\n", ifile, errstr);
           exit (1);
         }
       gsl_vorbis_cutter_write_ogg (cutter, j, buffer);
@@ -129,7 +129,7 @@ main (int   argc,
       while (j < 0 && errno == EINTR);
       if (j < 0)
         {
-          g_printerr ("Error: failed to write to \"%s\": %s\n", ofile, g_strerror (errno));
+          printerr ("Error: failed to write to \"%s\": %s\n", ofile, g_strerror (errno));
           exit (1);
         }
     }
@@ -137,10 +137,10 @@ main (int   argc,
   close (ifd);
   if (close (ofd) < 0)
     {
-      g_printerr ("Error: failed to flush \"%s\": %s\n", ofile, g_strerror (errno));
+      printerr ("Error: failed to flush \"%s\": %s\n", ofile, g_strerror (errno));
       exit (1);
     }
-  g_print ("done\n");
+  printout ("done\n");
 
   return 0;
 }

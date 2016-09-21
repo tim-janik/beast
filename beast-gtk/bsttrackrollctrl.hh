@@ -15,8 +15,9 @@ typedef struct {
   SfiProxy	    song;
   guint		    note_length;
   /* drag data */
-  SfiProxy	    obj_track, obj_part;
-  guint		    obj_tick, obj_duration;
+  Bse::TrackH       obj_track;
+  Bse::PartH        obj_part;
+  int		    obj_tick, obj_duration;
   guint		    xoffset;
   guint		    tick_bound;
   /* tool data */

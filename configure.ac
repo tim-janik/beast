@@ -1,4 +1,4 @@
-# Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
+dnl # Beast & Bse                                    -*- Mode: shell-script; -*-
 
 # include various m4 macros
 m4_include(acbeast.m4)dnl # include special macros
@@ -11,52 +11,96 @@ m4_include(autotools/glib-gettext.m4)
 #
 AC_PREREQ(2.57)
 # VERSION: MAJOR.MINOR.MICRO-RC:
-# * MAJOR, MINOR: increment on ABI/API changes
-# * MICRO: increment when ABI compatible, development versions are odd
-# * RC: release candidate, may be rc[0-9]+ or empty
-AC_INIT([beast], [0.9.1]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+# * MAJOR:           Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
+# * MINOR:           Increment for significant changes or ABI breaks, resets MICRO
+# * MICRO:           Increment with every release, increments must *not* break ABI
+# * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
+# * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
+# * -RC:             Release candidate, may contain -rc[0-9]+ or nothing
+AC_INIT([beast], [0.10.1]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+:;   ABI_VERSION=[0.10.0]
+BST_VERSION_HINT=alpha
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
 AC_CANONICAL_TARGET					# architecture information
-AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
+AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign)
 AM_CONFIG_HEADER(configure.h)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
-[BST_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
-[BST_MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
-[BST_MICRO_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
-[BIN_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.\3/'`]
-case "$BST_VERSION" in
-0.99.*)     BST_VERSION_HINT=BETA ;;
-0.*)        BST_VERSION_HINT="ALPHA" ;;
-*)          BST_VERSION_HINT="Stable Release"
-            test `expr $BST_MICRO_VERSION \% 2` = 1 && BST_VERSION_HINT="Development Build" ;;
-esac
-AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
-AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
+[MAJOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+[MINOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+[MICRO=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+AC_SUBST(BEAST_VERSION)
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
+AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [Beast Version])
 AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
-AC_SUBST(BST_VERSION)
-AC_SUBST(BST_MAJOR_VERSION)
-AC_SUBST(BST_MINOR_VERSION)
-AC_SUBST(BST_MICRO_VERSION)
-AC_SUBST(BIN_VERSION)
+AC_DEFINE_UNQUOTED(BSE_MAJOR_VERSION, $MAJOR, [Beast/Bse Major Version])
+AC_DEFINE_UNQUOTED(BSE_MINOR_VERSION, $MINOR, [Beast/Bse Minor Version])
+AC_DEFINE_UNQUOTED(BSE_MICRO_VERSION, $MICRO, [Beast/Bse Micro Version])
+AC_DEFINE_UNQUOTED(BEAST_EXEC_POSTFIX, "-$MAJOR.$MINOR.$MICRO", [Beast executable postfix])
+# For automake, we need to easily provide MAJOR.MINOR.MICRO and MAJOR_MINOR_MICRO:
+AC_SUBST(MAJOR)
+AC_SUBST(MINOR)
+AC_SUBST(MICRO)
+# calculate ABI age
+ABI_MAJOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+ABI_MINOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+ABI_MICRO=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+test "$ABI_MAJOR" = "$MAJOR" || {
+  AC_MSG_ERROR([ABI_VERSION must match MAJOR version: $ABI_MAJOR == $MAJOR])
+}
+test "$ABI_MINOR" -le "$MINOR" || {
+  AC_MSG_ERROR([ABI_VERSION must predate MINOR version: $ABI_MINOR <= $MINOR])
+}
+test "$ABI_MICRO" -eq 0 || {
+  AC_MSG_ERROR([ABI_VERSION must not indicate ABI break in MICRO releases: $ABI_MINOR.$ABI_MICRO <= $MINOR.0])
+}
+ABI_AGE=$(($MINOR - $ABI_MINOR))
+# https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
+# Note, Beast provides backwards binary compatibility only within
+# MINOR.MICRO increments, and only since ABI_VERSION.
+# Interface additions occour with pretty much every release.
+# For libtool this means:
+# - the library name needs to encode MAJOR
+# - the '-release X.Y' option cannot be used, because it's ignored for naming .a, .la, .so files.
+# - lt_current=MINOR  # disallow forward compatible builds, i.e. enforce runtime-lib >= build-time-lib
+# - lt_age=ABI_AGE    # allow backward compatibility between ABI_VERSION .. VERSION
+# - lt_revision=MICRO # pick the latest SO revision for unchanged MAJOR.MINOR,
+#                     # see also: https://autotools.io/libtool/version.html
+lt_current=$MINOR ; lt_age=$ABI_AGE ; lt_revision=$MICRO
+LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
+AC_SUBST(LT_VERSION_INFO)
 
-# compute libtool versions
-LT_RELEASE=$BST_MAJOR_VERSION.$BST_MINOR_VERSION
-LT_CURRENT=$BST_MICRO_VERSION
-LT_REVISION=0
-LT_AGE=$BST_MICRO_VERSION
-AC_SUBST(LT_RELEASE)
-AC_SUBST(LT_CURRENT)
-AC_SUBST(LT_REVISION)
-AC_SUBST(LT_AGE)
-if test 1 = $(($BST_MICRO_VERSION & 1)) ; then
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
-else
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
-fi
-AC_SUBST(DEFINE__FILE_DIR__)
+# Define package directories per major/minor version
+bseincludedir="\${includedir}/bse-$MAJOR"
+bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
+beastexecdir="\${libexecdir}/beast-$MAJOR.$MINOR.$MICRO"
+datadir="\${datarootdir}/beast"
+docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
+# Substitute directories in Makefiles
+AC_SUBST(bseincludedir)
+AC_SUBST(bselibdir)
+AC_SUBST(beastexecdir)
+AC_SUBST(datadir)
+AC_SUBST(docdir)
+# Provide directories for C++
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"; bak_libexecdir="$libexecdir"
+bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
+test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
+libdir=`eval echo "${libdir}"` ; libexecdir=`eval echo "${libexecdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
+datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTEXECDIR, ["`eval echo ${beastexecdir}`"], [Directory under whic to install Beast executable files])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
+datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
 
 # Build tree checks
 AC_MSG_CHECKING([for git repository])
@@ -65,41 +109,13 @@ AC_SUBST(INGIT)
 result=$(test -z "$INGIT" && echo yes || echo no)
 AC_MSG_RESULT($result)
 
-dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
-AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
-
 # We have subdirectories.
 AC_PROG_MAKE_SET
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging, default=yes],,enable_debug=yes)
-AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
-AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
-
-# set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
-BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
-test "$enable_distcheck_tests" = yes && BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS:distcheck-tests:"
-AC_SUBST(BEAST_BUILD_DEFAULTS)
-
-dnl # setup DEBUG defaults
-if test "x$enable_debug" = "xyes"; then
-  DEBUG_FLAGS="-g -DG_ENABLE_DEBUG"
-else if test "x$enable_debug" = "xno"; then
-  DEBUG_FLAGS="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" # -DG_DISABLE_ASSERT
-else
-  DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
-fi fi
-if test -z "$CFLAGS"; then
-  CFLAGS="$DEBUG_FLAGS"
-else
-  CFLAGS="$CFLAGS $DEBUG_FLAGS"
-fi
-if test -z "$CXXFLAGS"; then
-  CXXFLAGS="$DEBUG_FLAGS"
-else
-  CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
-fi
+AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
+AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
 
 dnl # Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
@@ -118,12 +134,18 @@ AC_PROG_LD
 AC_LANG_CPLUSPLUS	# use CXX for compilation tests
 AC_LIB_PROG_LD
 AC_LIB_PROG_LD_GNU
-ACX_PROG_LD_GNU_SYMBOLIC
-AC_SUBST([SYMBOLIC_LDFLAGS])
-ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
-AC_SUBST([DYNAMIC_LIST_CPP_NEW_LDFLAGS])
 AM_PROG_LIBTOOL
 AC_LIBTOOL_DLOPEN
+ACX_PROG_LD_GNU_SYMBOLIC
+# SYMBOLIC_LDFLAGS is included in DYNAMIC_LIST_CPP_NEW_LDFLAGS
+ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
+MC_EVAR_ADD(AM_LDFLAGS, $DYNAMIC_LIST_CPP_NEW_LDFLAGS)
+MC_EVAR_ADD(AM_LDFLAGS, -pthread)
+MC_EVAR_ADD(AM_LDFLAGS, -lrt)
+MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
+if ${LD} --help 2>&1 | grep -q -- '-export-dynamic\b' ; then
+  MC_EVAR_ADD(AM_LDFLAGS, [-Wl,-export-dynamic])
+fi
 
 # AM_LDFLAGS, optimize linker to use faster ELF symbol hashing if we have compiler and linker support
 AC_MSG_CHECKING([whether CC and LD support gnu.hash sections])
@@ -134,21 +156,14 @@ if ${CC-cc} -dumpspecs | grep -q -- '--hash-style=\(both\|gnu\).*--as-needed' &&
 else
   AC_MSG_RESULT(no)
 fi
-MC_EVAR_ADD(AM_LDFLAGS, -pthread)
-MC_EVAR_ADD(AM_LDFLAGS, -lrt)
-MC_EVAR_ADD(AM_LDFLAGS, -Wl,--no-undefined)
 AC_SUBST(AM_LDFLAGS)
-
-# Pick C++ dialect, needed in CXXFLAGS for compile tests
-MC_CXX_TRY_OPTION(CXXFLAGS,  -std=gnu++0x)
 
 # AM_CFLAGS & AM_CXXFLAGS
 MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
 BOTHCCXXFLAGS=
 if test "x$enable_debug" = "xyes"; then
   MC_EVAR_ADD(BOTHCCXXFLAGS,      -DG_ENABLE_DEBUG)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ggdb3)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g3)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fno-omit-frame-pointer)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fverbose-asm)
   dnl # MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Q -ftime-report -fmem-report)
@@ -157,8 +172,6 @@ elif test "x$enable_debug" = "xno"; then
 else
   : # minimum debugging
 fi
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fmessage-length=0)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fdiagnostics-color=auto)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wall)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wdeprecated)
 MC_CC_TRY_OPTION(AM_CFLAGS,     -Wmissing-prototypes)
@@ -188,16 +201,16 @@ AC_SUBST(AM_CPPFLAGS)
 # Intel Pentium 3: CMOV MMX SSE (1999)
 # VIA C3 Nehemiah: CMOV MMX SSE (2003)
 # Athlon Palomino: CMOV MMX SSE 3DNow (2001)
-MMX_SSE_FLAGS=
-MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -mmmx)
-MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -msse)
+SIMD_FLAGS=
+MC_CC_TRY_OPTION(SIMD_FLAGS, -mmmx)
+MC_CC_TRY_OPTION(SIMD_FLAGS, -msse)
 # Note, -mfpmath=sse can harm FPU-algorithm performance
 # Note, -funroll-loops can harm SSE loop performance
-#MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -funroll-loops)
-#AC_SUBST(MMX_SSE_FLAGS)
+#MC_CC_TRY_OPTION(SIMD_FLAGS, -funroll-loops)
+#AC_SUBST(SIMD_FLAGS)
 # Expect the target architecture to support MMX/SSE if the compiler does it.
-MC_EVAR_ADD(AM_CFLAGS,   "$MMX_SSE_FLAGS")
-MC_EVAR_ADD(AM_CXXFLAGS, "$MMX_SSE_FLAGS")
+MC_EVAR_ADD(AM_CFLAGS,   "$SIMD_FLAGS")
+MC_EVAR_ADD(AM_CXXFLAGS, "$SIMD_FLAGS")
 # Newer vectorization instruction sets, should be optionally supported
 # SSE >= 2, AVX
 SSEAVX_FLAGS=
@@ -233,11 +246,11 @@ MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -fivopts)
 AC_SUBST(FAST_MATH_FLAGS)
 MC_CXX_TRY_OPTION(FPU_FLAGS, -funroll-loops)
 AC_SUBST(FPU_FLAGS)
-MMX_SSE_FLAGS="$MMX_SSE_FLAGS"
-AC_SUBST(MMX_SSE_FLAGS)
+SIMD_FLAGS="$SIMD_FLAGS"
+AC_SUBST(SIMD_FLAGS)
 
 # == SSE Build Conditionals ==
-lacking_mmx_sse=`echo "$MMX_SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
+lacking_mmx_sse=`echo "$SIMD_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
 AM_CONDITIONAL(WITH_MMX_SSE, test 0 == $lacking_mmx_sse)
 AC_DEFINE_UNQUOTED(BSE_WITH_MMX_SSE, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
 
@@ -256,32 +269,19 @@ MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.fr
 dnl #
 dnl # Define package requirements.
 dnl #
-AC_DEFUN([AC_I18N_REQUIREMENTS],
+AC_DEFUN([MC_I18N_REQUIREMENTS],
 [
   # LINGUAS
   ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
   AC_SUBST(ALL_LINGUAS)
   AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
 
-  # versioned BEAST gettext domain (po/)
-  BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
+  # for simplicity, Beast and Bse translations are currently in the same domain
+  BST_GETTEXT_DOMAIN="beast-bse-$MAJOR.$MINOR.$MICRO"
   AC_SUBST(BST_GETTEXT_DOMAIN)
   AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
   GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
   AC_SUBST(GETTEXT_PACKAGE)
-
-  # locale directory for all domains
-  # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
-  saved_prefix="$prefix"		; saved_exec_prefix="$exec_prefix"
-  test "x$prefix" = xNONE && prefix="$ac_default_prefix"
-  test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-  if test "x$CATOBJEXT" = "x.mo" ; then
-    beastlocaledir=`eval echo "${libdir}/locale"`
-  else
-    beastlocaledir=`eval echo "${datadir}/locale"`
-  fi
-  exec_prefix="$saved_exec_prefix"	; prefix="$saved_prefix"
-  AC_SUBST(beastlocaledir)
 
   # check for proper gettext support
   AM_GLIB_GNU_GETTEXT([external])
@@ -299,7 +299,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   INTLMERGE='$(top_builddir)/$(ac_aux_dir)/intltool-merge'
   AC_SUBST(INTLMERGE) dnl # AC_PATH_PROG(INTLMERGE, intltool-merge, intltool-merge)
 ])
-AC_DEFUN([AC_SFI_REQUIREMENTS],
+AC_DEFUN([MC_SFI_REQUIREMENTS],
 [
     dnl # check for GLib libs
     PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
@@ -312,19 +312,21 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
-
-    dnl # --- SFI directories ---
-    sfidlstdincdir=${includedir}
-    AC_SUBST(sfidlstdincdir)
 ])
-AC_DEFUN([AC_BSE_REQUIREMENTS],
+AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.0)
-    MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
+    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.1)
+    MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
+    MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
-    PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
+    PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
+    AC_MSG_CHECKING([for Vorbisfile versions with buggy pcm_seek])
+    vorbisfile_badseek=0 # pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
+    PKG_CHECK_EXISTS(vorbisfile <= 1.3.4, vorbisfile_badseek=1)
+    AC_MSG_RESULT([$(test $vorbisfile_badseek = 1 && echo yes || echo no)])
+    AC_DEFINE_UNQUOTED(VORBISFILE_BADSEEK, [$vorbisfile_badseek], [buggy Vorbisfile pcm_seek])
 
     dnl # --- FLAC check ---
     PKG_CHECK_MODULES(FLAC, flac)
@@ -360,7 +362,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     dnl # --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
-    if echo " $OV_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
+    if echo " $OGGVORBIS_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
       AC_MSG_RESULT([complete])
     else
       AC_MSG_RESULT([])
@@ -372,7 +374,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     dnl # --- complete CFLAGS/LIBS setup ---
     BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CPPFLAGS"
-    BSE_LIBS="$OV_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
+    BSE_LIBS="$OGGVORBIS_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
     BSE_CFLAGS="$FLUID_CFLAGS $BSE_CFLAGS"
     BSE_LIBS="$FLUID_LIBS $BSE_LIBS"
     AC_SUBST(BSE_CFLAGS)
@@ -384,7 +386,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl #	BSE_PC_REQUIRE=mad
     dnl #fi
     BSE_PC_CFLAGS=
-    BSE_PC_LIBS="$OV_LIBS"
+    BSE_PC_LIBS="$OGGVORBIS_LIBS"
     AC_SUBST(BSE_PC_REQUIRE)
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
@@ -418,31 +420,8 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- math.h glibc extensions
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
-
-    # --- setup BSE search/install paths ---
-    bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
-    AC_SUBST(bseplugindir)
-    bsedriverdir=\${libdir}/bse/v$BIN_VERSION/drivers
-    AC_SUBST(bsedriverdir)
-    bseladspapath=${libdir}/ladspa
-    AC_SUBST(bseladspapath)
-    bseunversionedsampledir=\${datadir}/bse/samples
-    AC_SUBST(bseunversionedsampledir)
-    bsedatadir=\${datadir}/bse/v$BIN_VERSION
-    bseeffectdir=$bsedatadir/effects
-    AC_SUBST(bseeffectdir)
-    bseinstrumentdir=$bsedatadir/instruments
-    AC_SUBST(bseinstrumentdir)
-    bsesampledir=$bsedatadir/samples
-    AC_SUBST(bsesampledir)
-    bsescriptdir=$bsedatadir/scripts
-    AC_SUBST(bsescriptdir)
-    bsedemodir=$bsedatadir/demo
-    AC_SUBST(bsedemodir)
-    bseuserdatadir='~/beast'
-    AC_SUBST(bseuserdatadir)
 ])
-AC_DEFUN([AC_ASOUND_CHECK],
+AC_DEFUN([MC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
     saved_cxxflags="$CXXFLAGS"
@@ -477,13 +456,9 @@ AC_DEFUN([AC_ASOUND_CHECK],
     dnl --- check for -lasound ---
     found_libasound=0
     dnl snd_asoundlib_version() was introduced in ALSA 1.0.5
-    cflags=$CFLAGS
-    ldflags=$LDFLAGS
-    CFLAGS=""
-    LDFLAGS=""
+    CFLAGS=""  # kept in saved_cflags
+    LDFLAGS="" # kept in saved_ldflags
     AC_CHECK_LIB(asound, snd_asoundlib_version, ALSA_LIBS="-lasound"; found_libasound=1)
-    CFLAGS="$cflags"
-    LDFLAGS="$ldflags"
     if test $found_libasound = 0; then
 	AC_MSG_ERROR([ALSA version 1.0.5 is required to build this package])
     fi
@@ -494,7 +469,7 @@ AC_DEFUN([AC_ASOUND_CHECK],
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
 ])
-AC_DEFUN([AC_BSESCM_REQUIREMENTS],
+AC_DEFUN([MC_BSESCM_REQUIREMENTS],
 [
     BSESCM_CFLAGS="$BSE_CFLAGS"
     BSESCM_LIBS="$BSE_LIBS"
@@ -527,7 +502,7 @@ AC_DEFUN([AC_BSESCM_REQUIREMENTS],
     AC_SUBST(BSESCM_CFLAGS)
     AC_SUBST(BSESCM_LIBS)
 ])
-AC_DEFUN([AC_GXK_REQUIREMENTS],
+AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
     PKG_CHECK_MODULES(LIBPANGO, pangoft2 >= 1.4.0)
@@ -539,7 +514,7 @@ AC_DEFUN([AC_GXK_REQUIREMENTS],
     AC_SUBST(GXK_CFLAGS)
     AC_SUBST(GXK_LIBS)
 ])
-AC_DEFUN([AC_BEAST_REQUIREMENTS],
+AC_DEFUN([MC_BEAST_REQUIREMENTS],
 [
     dnl # start where GXK left off
     BEAST_CFLAGS="$GXK_CFLAGS"
@@ -562,23 +537,14 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
-
-    # --- BEAST paths ---
-    beastbasedir=\${datadir}/beast
-    beastimagesdir=$beastbasedir/v$BIN_VERSION/images
-    AC_SUBST(beastimagesdir)
-    beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
-    AC_SUBST(beastkeysdir)
-    beastskinsdir=$beastbasedir/v$BIN_VERSION/skins
-    AC_SUBST(beastskinsdir)
 ])
-AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
+AC_DEFUN([MC_SUIDMAIN_REQUIREMENTS],
 [
     dnl # figure everything required by the suid wrapper
     AC_CHECK_FUNCS(seteuid)
     AC_CHECK_FUNCS(setreuid)
 ])
-AC_DEFUN([AC_BSE_SNDDEV_CHECK],
+AC_DEFUN([MC_BSE_SNDDEV_CHECK],
 [
     dnl # OSS-Lite driver check
     AC_CHECK_HEADERS(sys/soundcard.h soundcard.h, have_oss_header=yes, have_oss_header=no)
@@ -648,37 +614,52 @@ AC_DEFUN([AC_BSE_SNDDEV_CHECK],
 	AC_MSG_WARN([failed to detect proper sound device files])
     fi
 ])
-AC_DEFUN([AC_DOC_REQUIREMENTS],
+AC_DEFUN([MC_DOC_REQUIREMENTS],
 [
 ])
 
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
-# --enable-devel-mode: check for development build rules, i.e. autogen.sh
-# based builds with .git repository; these enable additional build rules
-# for files that are pre-packaged in tarballs.
+# == ENABLE_DEVEL_MODE ==
+# check for development build rules, which require acess to .git/
+AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
+[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" && enable_devel_mode=yes]
+test x"$enable_devel_mode" = xyes || enable_devel_mode=no
+AC_MSG_RESULT([$enable_devel_mode])
+AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 if test x"$enable_devel_mode" = xyes ; then
-  TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
-  TEST_BUILDDIR=$(cd . ; /bin/pwd)
-  test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
-    AC_MSG_ERROR([development build rules require srcdir == builddir])
-  }
-  git cat-file commit af82337c966c1182e 2>&1 | fgrep -q bb4f6e48724a6731 || { # 0.8.0
+  git show HEAD:configure.ac 2>&1 | grep -q 'AC'_'INIT.*\bbeast\b.*,' || {
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
-  DEVELMODE="" ; NOTDEVELMODE="#"
-  # devel mode build tools
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
-  MC_ASSERT_PROG(PYTHON, python2.7)
-  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-     AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
-  fi
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"' # full debugging paths for devel-mode
 else
-  DEVELMODE="#"; NOTDEVELMODE=""
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
 fi
-AC_SUBST(DEVELMODE)
-AC_SUBST(NOTDEVELMODE)
+AC_SUBST(DEFINE__FILE_DIR__)
+
+dnl # MC_PYTHON_REQUIREMENTS() - python checks
+AC_DEFUN([MC_PYTHON_REQUIREMENTS],
+[
+  PYTHON_REQUIRED=2.7
+  AM_PATH_PYTHON($PYTHON_REQUIRED)
+  dnl # AC_REQUIRE([AC_PYTHON_DEVEL]) # AC_PYTHON_DEVEL is usually provided by autoconf-archive
+  AC_PYTHON_DEVEL([>= $PYTHON_REQUIRED])
+  AC_MSG_CHECKING([for working Python extension compilation])
+  PYTHON_CPPFLAGS="$PYTHON_CPPFLAGS -fno-strict-aliasing" # needed by Python headers
+  saved_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS -Wall -Werror"     # verify sane Python module builds
+  AC_TRY_COMPILE([#include <Python.h>], [Py_InitModule(0,0);], py_build=ok, py_build=failed)
+  CPPFLAGS="$saved_CPPFLAGS"
+  AC_MSG_RESULT($py_build)
+  if test "$py_build" != "ok" ; then
+    AC_MSG_ERROR([failed to build extension against Python (>=$PYTHON_REQUIRED) headers])
+  fi
+  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+    AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
+  fi
+])
 
 AC_MSG_CHECKING(whether source dir equals build dir)
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
@@ -702,45 +683,40 @@ AC_SUBST(PERLRULE)
 AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 
 # Check requirement sets
-AC_I18N_REQUIREMENTS
-AC_SFI_REQUIREMENTS
-AC_BSE_REQUIREMENTS
-AC_ASOUND_CHECK
-AC_BSESCM_REQUIREMENTS
-AC_BSE_SNDDEV_CHECK
-AC_GXK_REQUIREMENTS
-AC_BEAST_REQUIREMENTS
-AC_SUIDMAIN_REQUIREMENTS
-AC_DOC_REQUIREMENTS
-
-# Automake @VARIABLE@ exports.
-AC_SUBST(CFLAGS)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
-
+MC_I18N_REQUIREMENTS
+MC_SFI_REQUIREMENTS
+MC_BSE_REQUIREMENTS
+MC_ASOUND_CHECK
+MC_BSESCM_REQUIREMENTS
+MC_BSE_SNDDEV_CHECK
+MC_PYTHON_REQUIREMENTS
+MC_GXK_REQUIREMENTS
+MC_BEAST_REQUIREMENTS
+MC_SUIDMAIN_REQUIREMENTS
+MC_DOC_REQUIREMENTS
 
 # create output files
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
-data/bse.pc
 data/beast.applications
 sfi/Makefile
 sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
-bse/zintern/Makefile
+bse/res/Makefile
+bse/pybse/Makefile
 bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
 drivers/Makefile
 shell/Makefile
+pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
-beast-gtk/dialogs/Makefile
+beast-gtk/res/Makefile
 beast-gtk/icons/Makefile
 launchers/Makefile
 library/Makefile

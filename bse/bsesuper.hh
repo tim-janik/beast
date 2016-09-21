@@ -38,4 +38,16 @@ struct BseSuperClass : BseContainerClass {
 };
 
 G_END_DECLS
+
+namespace Bse {
+
+class SuperImpl : public ContainerImpl, public virtual SuperIface {
+protected:
+  virtual           ~SuperImpl         ();
+public:
+  explicit           SuperImpl         (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_SUPER_H__ */

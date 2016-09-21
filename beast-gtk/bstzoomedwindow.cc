@@ -50,7 +50,7 @@ bst_zoomed_window_get_type (void)
     {
       GtkTypeInfo zoomed_window_info =
       {
-	"BstZoomedWindow",
+	(char*) "BstZoomedWindow",
 	sizeof (BstZoomedWindow),
 	sizeof (BstZoomedWindowClass),
 	(GtkClassInitFunc) bst_zoomed_window_class_init,

@@ -587,55 +587,54 @@ static const double semitone_table265_young_temperament[132 + 1 + 132] = {
 };
 
 const double*
-bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning)
+bse_semitone_table_from_tuning (Bse::MusicalTuning musical_tuning)
 {
   switch (musical_tuning)
     {
       /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
     default:
-    case BSE_MUSICAL_TUNING_12_TET:
+    case Bse::MusicalTuning::OD_12_TET:
       return 132 + semitone_table265_equal_temperament_12_tet;
-    case BSE_MUSICAL_TUNING_7_TET:
+    case Bse::MusicalTuning::OD_7_TET:
       return 132 + semitone_table265_equal_temperament_7_tet;
-    case BSE_MUSICAL_TUNING_5_TET:
+    case Bse::MusicalTuning::OD_5_TET:
       return 132 + semitone_table265_equal_temperament_5_tet;
       /* Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation */
-    case BSE_MUSICAL_TUNING_DIATONIC_SCALE:
+    case Bse::MusicalTuning::DIATONIC_SCALE:
       return 132 + semitone_table265_diatonic_scale;
-    case BSE_MUSICAL_TUNING_INDIAN_SCALE:
+    case Bse::MusicalTuning::INDIAN_SCALE:
       return 132 + semitone_table265_indian_scale;
-    case BSE_MUSICAL_TUNING_PYTHAGOREAN_TUNING:
+    case Bse::MusicalTuning::PYTHAGOREAN_TUNING:
       return 132 + semitone_table265_pythagorean_tuning;
-    case BSE_MUSICAL_TUNING_PENTATONIC_5_LIMIT:
+    case Bse::MusicalTuning::PENTATONIC_5_LIMIT:
       return 132 + semitone_table265_pentatonic_5_limit;
-    case BSE_MUSICAL_TUNING_PENTATONIC_BLUES:
+    case Bse::MusicalTuning::PENTATONIC_BLUES:
       return 132 + semitone_table265_pentatonic_blues;
-    case BSE_MUSICAL_TUNING_PENTATONIC_GOGO:
+    case Bse::MusicalTuning::PENTATONIC_GOGO:
       return 132 + semitone_table265_pentatonic_gogo;
       /* Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament */
-    case BSE_MUSICAL_TUNING_QUARTER_COMMA_MEANTONE:
+    case Bse::MusicalTuning::QUARTER_COMMA_MEANTONE:
       return 132 + semitone_table265_quarter_comma_meantone;
-    case BSE_MUSICAL_TUNING_SILBERMANN_SORGE:
+    case Bse::MusicalTuning::SILBERMANN_SORGE:
       return 132 + semitone_table265_silbermann_sorge_temperament;
       /* Well Temperament: http://en.wikipedia.org/wiki/Well_temperament */
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_3:
+    case Bse::MusicalTuning::WERCKMEISTER_3:
       return 132 + semitone_table265_werckmeister3_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_4:
+    case Bse::MusicalTuning::WERCKMEISTER_4:
       return 132 + semitone_table265_werckmeister4_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_5:
+    case Bse::MusicalTuning::WERCKMEISTER_5:
       return 132 + semitone_table265_werckmeister5_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_6:
+    case Bse::MusicalTuning::WERCKMEISTER_6:
       return 132 + semitone_table265_werckmeister6_temperament;
-    case BSE_MUSICAL_TUNING_KIRNBERGER_3:
+    case Bse::MusicalTuning::KIRNBERGER_3:
       return 132 + semitone_table265_kirnberger_temperament;
-    case BSE_MUSICAL_TUNING_YOUNG:
+    case Bse::MusicalTuning::YOUNG:
       return 132 + semitone_table265_young_temperament;
     }
 }
 
 double
-bse_transpose_factor (BseMusicalTuningType musical_tuning,
-                      int                  index /* [-132..+132] */)
+bse_transpose_factor (Bse::MusicalTuning musical_tuning, int index /* [-132..+132] */)
 {
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   return table[CLAMP (index, -132, +132)];
@@ -653,7 +652,7 @@ bse_approx_atan1_prescale (double boost_amount)
   double recip_tan_1_div_0_75 = 0.24202942695518667705824990442766; /* 1/tan(1/0.75) */
   double scale;
 
-  g_return_val_if_fail (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
+  assert_return (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
 
   /* scale boost_amount from [0..1] to -1..1 */
   boost_amount = boost_amount * 2 - 1.0;
@@ -707,7 +706,7 @@ main (int   argc,
   if (1)	/* print errors */
     for (x = -3; x < 3.01; x += 0.1)
       {
-	g_print ("%+f %+1.20f \t (%.20f - %.20f)\n",
+	printout ("%+f %+1.20f \t (%.20f - %.20f)\n",
 		 x, exp (x * BSE_LN2) - bse_approx5_exp2 (x),
 		 exp (x * BSE_LN2), bse_approx5_exp2 (x));
       }
@@ -719,7 +718,7 @@ main (int   argc,
 	// dummy += exp2f (x);
       }
 
-  g_print ("%f\r                            \n", dummy);
+  printout ("%f\r                            \n", dummy);
 
   return 0;
 }

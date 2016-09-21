@@ -5,12 +5,12 @@
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
-#include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <complex>
 #include <vector>
 
+using namespace Rapicorn::Test;
 using Rapicorn::string_format;
 using std::vector;
 using std::min;
@@ -26,11 +26,11 @@ read_through (GslDataHandle *handle)
       // we don't use 1024 here, because we know that it is the FIR handle internal buffer size
       gfloat values[700];
       int64 values_read = gsl_data_handle_read (handle, offset, 700, values);
-      g_assert (values_read > 0);
+      assert (values_read > 0);
       offset += values_read;
     }
 
-  g_assert (offset == n_values);
+  assert (offset == n_values);
 }
 
 static double
@@ -55,7 +55,7 @@ band_min (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  g_assert (scanned_freq.size() == scanned_values.size());
+  assert (scanned_freq.size() == scanned_values.size());
 
   bool	  init = false;
   double  min_value = 1e19;
@@ -72,7 +72,7 @@ band_min (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  g_assert (init);
+  assert (init);
   return min_value;
 }
 
@@ -82,7 +82,7 @@ band_max (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  g_assert (scanned_freq.size() == scanned_values.size());
+  assert (scanned_freq.size() == scanned_values.size());
 
   bool	  init = false;
   double  max_value = -1e19;
@@ -99,7 +99,7 @@ band_max (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  g_assert (init);
+  assert (init);
   return max_value;
 }
 
@@ -116,7 +116,7 @@ handle_name (FirHandleType type)
     {
       case FIR_HIGHPASS:  return "Highpass";
       case FIR_LOWPASS:	  return "Lowpass";
-      default:		  g_assert_not_reached();
+      default:		  assert_unreached();
     }
 }
 
@@ -163,7 +163,7 @@ test_with_sine_sweep (FirHandleType type)
       fir_handle_cos = bse_data_handle_new_fir_lowpass (ihandle_cos, 6000.0, order);
     }
 
-  BseErrorType error;
+  Bse::Error error;
   error = gsl_data_handle_open (fir_handle_sin);
   TASSERT (error == 0);
   error = gsl_data_handle_open (fir_handle_cos);
@@ -233,32 +233,22 @@ test_with_sine_sweep (FirHandleType type)
       TCMP (band_max (scanned_freq, scanned_abs_phase_diff, 0, 5500), <, 0.00002);
     }
   TDONE();
-  /* test speed */
-  double samples_per_second = 0;
-  if (Rapicorn::Test::slow())
-    {
-      const guint RUNS = 10;
-      GTimer *timer = g_timer_new();
-      const guint dups = TEST_CALIBRATION (50.0, read_through (fir_handle_sin));
 
-      double m = 9e300;
-      for (guint i = 0; i < RUNS; i++)
-        {
-          g_timer_start (timer);
-          for (guint j = 0; j < dups; j++)
-            read_through (fir_handle_sin);
-          g_timer_stop (timer);
-          double e = g_timer_elapsed (timer, NULL);
-          if (e < m)
-            m = e;
-        }
-      samples_per_second = sweep_sin.size() / (m / dups);
-      TMSG ("    %-28s : %+.14f samples/second",
-            string_format ("%s O64 mono", handle_name (type)).c_str(),
-            samples_per_second);
-      TMSG ("    %-28s : %+.14f streams",
-            string_format ("CPU %s mono", handle_name (type)).c_str(),
-            samples_per_second / 44100.0);
+  /* test speed */
+  if (1)
+    {
+      const uint RUNS = 3;
+      const uint bytes_per_run = sizeof (float) * gsl_data_handle_n_values (fir_handle_sin);
+      auto loop = [&fir_handle_sin] () {
+        for (uint j = 0; j < RUNS; j++)
+          read_through (fir_handle_sin);
+      };
+      Rapicorn::Test::Timer timer (0.03);
+      const double bench_time = timer.benchmark (loop);
+      String name = string_format ("%s O64 mono", handle_name (type));
+      const double samples_per_second = RUNS * sweep_sin.size() / bench_time;
+      TPASS ("%-20s benchmark # timing: %+.1f streams, throughput=%.1fMB/s\n",
+             name, samples_per_second / 44100.0, RUNS * bytes_per_run / bench_time / 1048576.);
     }
 }
 
@@ -319,7 +309,7 @@ test_multi_channel (FirHandleType type)
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
 
-      BseErrorType error;
+      Bse::Error error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
 
@@ -333,9 +323,9 @@ test_multi_channel (FirHandleType type)
 	      worst_diff = max (filtered - expected[i], worst_diff);
 	    }
 	  double worst_diff_db = bse_db_from_factor (worst_diff, -200);
-	  TOUT ("n_channels = %d: linear(%dst read) read worst_diff = %f (%f dB)\n",
-                n_channels, repeat, worst_diff, worst_diff_db);
-	  TASSERT (worst_diff_db < -90);
+          double max_db = -90;
+	  TCHECK (worst_diff_db < -90, "MultiChannel worst_diff check, n=%d r=%d d=%f db: %f < %f",
+                  n_channels, repeat, worst_diff, worst_diff_db, max_db);
 	}
     }
   TDONE();
@@ -365,7 +355,7 @@ test_seek (FirHandleType type)
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
 
-      BseErrorType error;
+      Bse::Error error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
 

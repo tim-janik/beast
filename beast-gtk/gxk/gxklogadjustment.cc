@@ -36,8 +36,8 @@ gxk_adapter_adjustment_from_adj (GtkAdjustment           *client,
                                  gpointer                 data,
                                  GDestroyNotify           destroy)
 {
-  g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
-  g_return_val_if_fail (conv_func != NULL, NULL);
+  assert_return (GTK_IS_ADJUSTMENT (client), NULL);
+  assert_return (conv_func != NULL, NULL);
   GxkAdapterAdjustment *self = (GxkAdapterAdjustment*) g_object_new (GXK_TYPE_ADAPTER_ADJUSTMENT, NULL);
   gxk_adapter_adjustment_set_client (self, client);
   gxk_adapter_adjustment_setup (self, conv_func, data, destroy);
@@ -106,7 +106,7 @@ adapter_adjustment_adjust_ranges (GxkAdapterAdjustment *self)
       if (0)
         {
           GtkAdjustment *client = self->client;
-          g_printerr ("Tadj(%p): range-changed: [%f %f] (%f %f %f), client(%p): [%f %f] (%f %f %f)\n",
+          printerr ("Tadj(%p): range-changed: [%f %f] (%f %f %f), client(%p): [%f %f] (%f %f %f)\n",
                       self, adj->lower, adj->upper, adj->step_increment, adj->page_increment, adj->page_size,
                       client, client->lower, client->upper, client->step_increment, client->page_increment, client->page_size);
         }
@@ -136,7 +136,7 @@ adapter_adjustment_client_value_changed (GxkAdapterAdjustment *self)
       adj->value = adapter_adjustment_convert (self, GXK_ADAPTER_ADJUSTMENT_CONVERT_FROM_CLIENT, client->value);
       adj->value = CLAMP (adj->value, adj->lower, adj->upper - adj->page_size);
       if (0)
-        g_printerr ("Tadj(%p): value-changed: [%f %f] %g client(%p): [%f %f] %g\n",
+        printerr ("Tadj(%p): value-changed: [%f %f] %g client(%p): [%f %f] %g\n",
                     self, adj->lower, adj->upper, adj->value,
                     client, client->lower, client->upper, client->value);
       if (!self->block_client)
@@ -152,9 +152,9 @@ void
 gxk_adapter_adjustment_set_client (GxkAdapterAdjustment *self,
                                    GtkAdjustment        *client)
 {
-  g_return_if_fail (GXK_IS_ADAPTER_ADJUSTMENT (self));
+  assert_return (GXK_IS_ADAPTER_ADJUSTMENT (self));
   if (client)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (client));
+    assert_return (GTK_IS_ADJUSTMENT (client));
   if (client)
     g_object_ref (client);
 
@@ -185,7 +185,7 @@ gxk_adapter_adjustment_setup (GxkAdapterAdjustment    *self,
                               gpointer                 data,
                               GDestroyNotify           destroy)
 {
-  g_return_if_fail (GXK_IS_ADAPTER_ADJUSTMENT (self));
+  assert_return (GXK_IS_ADAPTER_ADJUSTMENT (self));
   GtkAdjustment *adj = GTK_ADJUSTMENT (self);
   gpointer odata = self->data;
   GDestroyNotify odestroy = self->destroy;
@@ -301,7 +301,7 @@ gxk_log_adjustment_from_adj (GtkAdjustment *client)
 {
   GxkLogAdjustment *self;
 
-  g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
+  assert_return (GTK_IS_ADJUSTMENT (client), NULL);
 
   self = (GxkLogAdjustment*) g_object_new (GXK_TYPE_LOG_ADJUSTMENT, NULL);
   gxk_log_adjustment_set_client (self, client);
@@ -313,9 +313,9 @@ void
 gxk_log_adjustment_set_client (GxkLogAdjustment *self,
 			       GtkAdjustment    *client)
 {
-  g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
+  assert_return (GXK_IS_LOG_ADJUSTMENT (self));
   if (client)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (client));
+    assert_return (GTK_IS_ADJUSTMENT (client));
 
   g_object_ref (self);
   if (self->client)
@@ -345,9 +345,9 @@ gxk_log_adjustment_setup (GxkLogAdjustment *self,
 {
   GtkAdjustment *adj;
 
-  g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
-  g_return_if_fail (n_steps > 0);
-  g_return_if_fail (base > 0);
+  assert_return (GXK_IS_LOG_ADJUSTMENT (self));
+  assert_return (n_steps > 0);
+  assert_return (base > 0);
 
   adj = GTK_ADJUSTMENT (self);
   self->center = center;
@@ -406,7 +406,7 @@ log_adjustment_adjust_ranges (GxkLogAdjustment *self)
   if (0)
     {
       GtkAdjustment *client = self->client;
-      g_printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
+      printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
                   adj->lower, adj->upper,
                   adj->step_increment, adj->page_increment, adj->page_size,
                   self->center,
@@ -432,7 +432,7 @@ log_adjustment_client_value_changed (GxkLogAdjustment *self)
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
 
   if (0)
-    g_printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
+    printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
                 adj->lower, adj->upper, adj->value,
                 client->lower, client->upper, client->value);
 

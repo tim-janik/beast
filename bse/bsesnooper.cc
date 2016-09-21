@@ -90,7 +90,7 @@ bse_snooper_class_init (BseSnooperClass *klass)
 					     SFI_PARAM_STANDARD));
 
   ichannel = bse_source_class_add_ichannel (source_class, "signal-in", _("Signal In"), _("Snoop Signal"));
-  g_assert (ichannel == BSE_SNOOPER_ICHANNEL_MONO);
+  assert (ichannel == BSE_SNOOPER_ICHANNEL_MONO);
 }
 
 static void
@@ -179,16 +179,16 @@ snooper_process (BseModule *module,
 		 seen_subn = TRUE;
 	}
       avg /= (gdouble) n_values;
-      g_print ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-	       data->context_id,
-	       max, min, avg,
-	       n_values,
-	       first, last,
-	       BSE_FREQ_FROM_VALUE (avg),
-	       seen_nan ? " +NAN" : "",
-	       seen_pinf ? " +PINF" : "",
-	       seen_ninf ? " +NINF" : "",
-	       seen_subn ? " +SUBNORM" : "");
+      printout ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                data->context_id,
+                max, min, avg,
+                n_values,
+                first, last,
+                BSE_FREQ_FROM_VALUE (avg),
+                seen_nan ? " +NAN" : "",
+                seen_pinf ? " +PINF" : "",
+                seen_ninf ? " +NINF" : "",
+                seen_subn ? " +SUBNORM" : "");
     }
 }
 

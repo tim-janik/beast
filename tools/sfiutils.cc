@@ -26,7 +26,7 @@ parse_arguments (gint              *argc_p,
 
   for (i = 0; i < n_arguments; i++)
     {
-      g_return_val_if_fail (arguments[i].value_p != NULL, NULL);
+      assert_return (arguments[i].value_p != NULL, NULL);
 
       lengths[i] = arguments[i].long_opt ? strlen (arguments[i].long_opt) : 0;
     }
@@ -149,18 +149,18 @@ parse_arguments (gint              *argc_p,
   if (unknown_short || missing < n_arguments || extraneous < n_arguments || extraneous_arg)
     {
       if (unknown_short)
-        g_printerr ("unknown short options: \"%s\"\n", unknown_short);
+        printerr ("unknown short options: \"%s\"\n", unknown_short);
       if (missing < n_arguments)
         if (arguments[missing].long_opt)
-          g_printerr ("missing option argument for \"--%s\"\n", arguments[missing].long_opt);
+          printerr ("missing option argument for \"--%s\"\n", arguments[missing].long_opt);
         else
-          g_printerr ("missing option argument for \"-%c\"\n", arguments[missing].short_opt);
+          printerr ("missing option argument for \"-%c\"\n", arguments[missing].short_opt);
       else
         ;
       if (extraneous < n_arguments)
-        g_printerr ("extraneous argument to option \"%s\"\n", arguments[extraneous].long_opt);
+        printerr ("extraneous argument to option \"%s\"\n", arguments[extraneous].long_opt);
       if (extraneous_arg)
-        g_printerr ("extraneous argument: \"%s\"\n", extraneous_arg);
+        printerr ("extraneous argument: \"%s\"\n", extraneous_arg);
       exit (127);
     }
 
@@ -212,8 +212,8 @@ sfi_util_file_name_subst_ext (const gchar *file_name,
 {
   gchar *p, *name;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (new_extension != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (new_extension != NULL, NULL);
 
   name = g_strdup (file_name);
   p = strrchr (name, '.');
@@ -339,8 +339,8 @@ sfi_util_file_list_read_simple (const gchar *file_name,
   guint i;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (n_formats < 1000, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (n_formats < 1000, NULL);
 
   fd = open (file_name, O_RDONLY);
   if (fd < 0)

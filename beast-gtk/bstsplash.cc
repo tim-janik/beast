@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsplash.hh"
 #include <gdk/gdkkeysyms.h>
-#include "topconfig.h"
 #include <string.h>
 
 
@@ -276,7 +275,7 @@ bst_splash_release_grab (GtkWidget      *widget)
 void
 bst_splash_update_entity (GtkWidget *widget, const std::string &message)
 {
-  g_return_if_fail (BST_IS_SPLASH (widget));
+  assert_return (BST_IS_SPLASH (widget));
 
   BstSplash *self = BST_SPLASH (widget);
 
@@ -288,7 +287,7 @@ bst_splash_update_entity (GtkWidget *widget, const std::string &message)
 void
 bst_splash_update_item (GtkWidget *widget, const std::string &message)
 {
-  g_return_if_fail (BST_IS_SPLASH (widget));
+  assert_return (BST_IS_SPLASH (widget));
 
   BstSplash *self = BST_SPLASH (widget);
 
@@ -318,7 +317,7 @@ bst_splash_set_text (GtkWidget *widget, const std::string &message)
 {
   BstSplash *self;
 
-  g_return_if_fail (BST_IS_SPLASH (widget));
+  assert_return (BST_IS_SPLASH (widget));
 
   self = BST_SPLASH (widget);
   gtk_container_foreach (GTK_CONTAINER (self->splash_box), (GtkCallback) gtk_widget_destroy, NULL);
@@ -352,7 +351,7 @@ bst_splash_set_animation (GtkWidget          *widget,
 {
   BstSplash *self;
 
-  g_return_if_fail (BST_IS_SPLASH (widget));
+  assert_return (BST_IS_SPLASH (widget));
 
   self = BST_SPLASH (widget);
   gtk_container_foreach (GTK_CONTAINER (self->splash_box), (GtkCallback) gtk_widget_destroy, NULL);

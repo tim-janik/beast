@@ -78,8 +78,8 @@ bst_param_create_gmask_intern (GxkParam    *param,
   gboolean expand_action;
   gchar *tooltip;
 
-  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
-  g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
+  assert_return (GXK_IS_PARAM (param), NULL);
+  assert_return (GTK_IS_CONTAINER (parent), NULL);
 
   gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_homogeneous_sizes : NULL);
   group = sfi_pspec_get_group (param->pspec);
@@ -305,8 +305,8 @@ void
 bst_param_set_proxy (GxkParam *param,
                      SfiProxy  proxy)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding == &proxy_binding);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding == &proxy_binding);
 
   proxy_binding_destroy (param);
   param->bdata[0].v_long = proxy;
@@ -322,11 +322,18 @@ bst_param_set_proxy (GxkParam *param,
 SfiProxy
 bst_param_get_proxy (GxkParam *param)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), 0);
+  assert_return (GXK_IS_PARAM (param), 0);
 
   if (param->binding == &proxy_binding)
     return param->bdata[0].v_long;
   return 0;
+}
+
+bool
+bst_param_is_proxy (GxkParam *param)
+{
+  assert_return (GXK_IS_PARAM (param), 0);
+  return param->binding == &proxy_binding;
 }
 
 
@@ -369,8 +376,135 @@ bst_param_new_rec (GParamSpec *pspec,
                    SfiRec     *rec)
 {
   GxkParam *param = gxk_param_new (pspec, &record_binding, (gpointer) FALSE);
-  g_return_val_if_fail (rec != NULL, NULL);
+  assert_return (rec != NULL, NULL);
   param->bdata[0].v_pointer = sfi_rec_ref (rec);
+  gxk_param_set_size_group (param, param_size_group);
+  return param;
+}
+
+
+// == Aida::Parameter binding ==
+static void
+aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
+{
+  Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Any any;
+  switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
+    {
+    case G_TYPE_BOOLEAN:        // sfi_pspec_bool
+      any.set<bool> (g_value_get_boolean (value));
+      break;
+    case G_TYPE_INT64:          // sfi_pspec_num
+      any.set (g_value_get_int64 (value));
+      break;
+    case G_TYPE_DOUBLE:         // sfi_pspec_real
+      any.set (g_value_get_double (value));
+      break;
+    case G_TYPE_STRING:
+      if (G_VALUE_TYPE (value) == SFI_TYPE_CHOICE)      // sfi_pspec_choice
+        {
+          const Rapicorn::Aida::EnumInfo &enum_info = *(const Rapicorn::Aida::EnumInfo*) param->bdata[1].v_pointer;
+          assert_return (NULL != &enum_info);
+          any.set_enum (enum_info, enum_info.value_from_string (sfi_value_get_choice (value)));
+        }
+      else                      // sfi_pspec_string
+        any.set (g_value_get_string (value));
+      break;
+    default:
+      critical ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
+      return;
+    }
+  apa->set (any);
+}
+
+static void
+aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
+{
+  Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Any any = apa->get();
+  GValue value = { 0, };
+  switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
+    {
+    case G_TYPE_BOOLEAN:        // sfi_pspec_bool
+      g_value_init (&value, G_TYPE_BOOLEAN);
+      g_value_set_boolean (&value, any.get<bool>());
+      break;
+    case G_TYPE_INT64:          // sfi_pspec_num
+      g_value_init (&value, G_TYPE_INT64);
+      g_value_set_int64 (&value, any.get<int64>());
+      break;
+    case G_TYPE_DOUBLE:         // sfi_pspec_real
+      g_value_init (&value, G_TYPE_DOUBLE);
+      g_value_set_double (&value, any.get<double>());
+      break;
+    case G_TYPE_STRING:
+      if (G_PARAM_SPEC_VALUE_TYPE (param->pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
+        {
+          const Rapicorn::Aida::EnumInfo &enum_info = any.get_enum_info();
+          g_value_init (&value, SFI_TYPE_CHOICE);
+          sfi_value_set_choice (&value, enum_info.value_to_string (any.as_int64()).c_str());
+          param->bdata[1].v_pointer = (void*) &enum_info;
+        }
+      else                      // sfi_pspec_string
+        {
+          g_value_init (&value, G_TYPE_STRING);
+          g_value_set_string (&value, any.get<String>().c_str());
+        }
+      break;
+    default:
+      critical ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
+      return;
+    }
+  if (G_VALUE_TYPE (&value))
+    {
+      g_value_transform (&value, param_value);
+      g_value_unset (&value);
+    }
+}
+
+static void
+aida_parameter_binding_destroy (GxkParam *param)
+{
+  Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  param->bdata[0].v_pointer = NULL;
+  delete cxxparam;
+}
+
+static gboolean
+aida_parameter_binding_check_writable (GxkParam *param)
+{
+  // Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  // assert (cxxparam);
+  return true;
+}
+
+static GxkParamBinding aida_parameter_binding = {
+  2, // Aida::Parameter*, const Aida::EnumInfo*
+  NULL,
+  aida_parameter_binding_set_value,
+  aida_parameter_binding_get_value,
+  aida_parameter_binding_destroy,
+  aida_parameter_binding_check_writable,
+};
+
+GxkParam*
+bst_param_new_aida_parameter (GParamSpec *pspec, const Rapicorn::Aida::Parameter &aparameter)
+{
+  GxkParam *param = gxk_param_new (pspec, &aida_parameter_binding, NULL);
+  Rapicorn::Aida::Parameter *cxxparam = new Rapicorn::Aida::Parameter (aparameter);
+  param->bdata[0].v_pointer = cxxparam;
+  param->bdata[1].v_pointer = NULL;
+  auto handler = [param] (const String &what) {
+    bool match = what == param->pspec->name;
+    if (!match && what.size() == strlen (param->pspec->name))
+      {
+        const String pname = Rapicorn::string_canonify (Rapicorn::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
+        match = what == pname;
+      }
+    if (match)
+      gxk_param_update (param);
+  };
+  cxxparam->sig_changed() += handler; // disconnected by delete cxxparam
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
@@ -381,7 +515,7 @@ static gboolean
 bst_param_xframe_check_button (GxkParam *param,
                                guint     button)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), FALSE);
+  assert_return (GXK_IS_PARAM (param), FALSE);
 #if 0
   if (bparam->binding->rack_item)
     {
@@ -420,7 +554,7 @@ bst_param_xframe_check_button (GxkParam *param,
 void
 _bst_init_params (void)
 {
-  g_assert (quark_null_group == 0);
+  assert (quark_null_group == 0);
 
   quark_null_group = g_quark_from_static_string ("bst-param-null-group");
   quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");
@@ -430,11 +564,13 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_choice3, NULL);
   gxk_param_register_editor (&param_choice4, NULL);
   gxk_param_register_aliases (param_choice_aliases1);
-  gxk_param_register_editor (&param_color_spinner, NULL);
+  gxk_param_register_editor (&param_color_spinner_int, NULL);
+  gxk_param_register_editor (&param_color_spinner_num, NULL);
   gxk_param_register_editor (&param_note_sequence, NULL);
-  gxk_param_register_editor (&param_note_spinner, NULL);
+  gxk_param_register_editor (&param_note_spinner_int, NULL);
+  gxk_param_register_editor (&param_note_spinner_num, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
-  gxk_param_register_editor (&param_item_seq, NULL);
+  gxk_param_register_editor (&param_it3m_seq, NULL);
   gxk_param_register_editor (&param_automation, NULL);
   gxk_param_register_editor (&param_scale1, NULL);
   gxk_param_register_editor (&param_scale2, NULL);

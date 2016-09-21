@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
 #include "sfitime.hh"
 #include "sfiring.hh"
 #include "sfiprimitives.hh"
@@ -36,7 +35,7 @@ _sfi_init_time (void)
   time_t t;
   gint error;
 
-  g_assert (initialized++ == FALSE);
+  assert (initialized++ == FALSE);
 
   tzset ();
   error = gettimeofday (&tv, NULL);
@@ -238,7 +237,7 @@ sfi_time_from_string_err (const gchar *time_string,
   SfiRing *ring, *warnings = NULL;
   guint i;
 
-  g_return_val_if_fail (time_string != NULL, 0);
+  assert_return (time_string != NULL, 0);
 
   /* here, we support several date formats by making several attempts
    * to match a string and pick the best one. if we acquire a full match
@@ -296,8 +295,8 @@ sfi_time_from_string_err (const gchar *time_string,
 				 minute[(index)] <= 59 &&	\
 				 second[(index)] >= 0 &&	\
 				 second[(index)] <= 61)
-  /* g_print ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string,
-   *          year[i], month[i], day[i], hour[i], minute[i], second[i]);
+  /* printout ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string,
+   *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
    */
   if (!finished) /* parse "yyyy-mm-dd hh:mm:ss" e.g. "1998-04-16 23:59:59" */
     {
@@ -617,7 +616,7 @@ sfi_time_from_string_err (const gchar *time_string,
       ustime *= SFI_USEC_FACTOR;
       ustime = MAX (ustime, 0);
 
-      /* g_print ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
+      /* printout ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
        *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
        */
 

@@ -62,7 +62,7 @@ typedef enum    /*< skip >*/
 void               bse_part_set_semitone_table        (BsePart           *self,
                                                        const double      *semitone_table);
 void               bse_part_links_changed             (BsePart           *self);
-BsePartLinkSeq*    bse_part_list_links                (BsePart           *self);
+Bse::PartLinkSeq   bse_part_list_links                (BsePart *self);
 gboolean           bse_part_delete_control            (BsePart           *self,
                                                        guint              id);
 gboolean           bse_part_delete_note               (BsePart           *self,
@@ -77,7 +77,7 @@ guint              bse_part_insert_note               (BsePart           *self,
                                                        gfloat             velocity);
 guint              bse_part_insert_control            (BsePart           *self,
                                                        guint              tick,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignal  ctype,
                                                        gfloat             value);
 gboolean           bse_part_change_note               (BsePart           *self,
                                                        guint              id,
@@ -90,29 +90,28 @@ gboolean           bse_part_change_note               (BsePart           *self,
 gboolean           bse_part_change_control            (BsePart           *self,
                                                        guint              id,
                                                        guint              tick,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignal  ctype,
                                                        gfloat             value);
-BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
+Bse::PartNoteSeq   bse_part_list_notes                (BsePart           *self,
                                                        guint              channel,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,
                                                        gint               max_note,
                                                        gboolean           include_crossings);
-BsePartControlSeq* bse_part_list_controls             (BsePart           *self,
+Bse::PartControlSeq bse_part_list_controls           (BsePart           *self,
                                                        guint              channel, /* for note events */
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype);
+                                                       Bse::MidiSignal  ctype);
 void               bse_part_queue_notes_within        (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,
                                                        gint               max_note);
 #define            bse_part_queue_controls(p,t,d)          bse_part_queue_notes_within (p, t, d, BSE_MIN_NOTE, BSE_MAX_NOTE)
-BsePartNoteSeq*    bse_part_list_selected_notes       (BsePart           *self);
-BsePartControlSeq* bse_part_list_selected_controls    (BsePart           *self,
-                                                       BseMidiSignalType  ctype);
+Bse::PartNoteSeq    bse_part_list_selected_notes      (BsePart           *self);
+Bse::PartControlSeq bse_part_list_selected_controls  (BsePart *self, Bse::MidiSignal ctype);
 void               bse_part_select_notes              (BsePart           *self,
                                                        guint              channel,
                                                        guint              tick,
@@ -123,7 +122,7 @@ void               bse_part_select_notes              (BsePart           *self,
 void               bse_part_select_controls           (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignal  ctype,
                                                        gboolean           selected);
 void               bse_part_select_notes_exclusive    (BsePart           *self,
                                                        guint              channel,
@@ -134,7 +133,7 @@ void               bse_part_select_notes_exclusive    (BsePart           *self,
 void               bse_part_select_controls_exclusive (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype);
+                                                       Bse::MidiSignal  ctype);
 gboolean           bse_part_set_note_selected         (BsePart           *self,
                                                        guint              id,
                                                        guint              channel,
@@ -157,7 +156,7 @@ struct BsePartQueryEvent {
   gfloat            fine_tune_value;
   gfloat            velocity_value;
   /* control */
-  BseMidiSignalType control_type;
+  Bse::MidiSignal control_type;
   gfloat            control_value;
 };
 
@@ -170,8 +169,8 @@ BsePartEventType   bse_part_query_event         (BsePart           *self,
 #define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
-#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
-                                         (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
+#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == Bse::MidiSignal::VELOCITY || \
+                                         (ctype) == Bse::MidiSignal::FINE_TUNE)
 
 /* --- BsePartControlChannel --- */
 struct BsePartEventControl;
@@ -183,7 +182,7 @@ struct BsePartEventControl {
   BsePartEventControl   *next;
   guint                  id : 31;
   guint                  selected : 1;
-  guint                  ctype; /* BseMidiSignalType */
+  guint                  ctype; /* Bse::MidiSignal */
   gfloat                 value;         /* -1 .. 1 */
 };
 
@@ -266,5 +265,47 @@ void              bse_part_note_channel_remove        (BsePartNoteChannel *self,
 void              bse_part_note_channel_destroy       (BsePartNoteChannel *self);
 
 G_END_DECLS
+
+namespace Bse {
+
+class PartImpl : public ItemImpl, public virtual PartIface {
+protected:
+  virtual               ~PartImpl               ();
+public:
+  explicit               PartImpl               (BseObject*);
+  virtual PartNoteSeq    list_notes_crossing    (int tick, int duration) override;
+  virtual PartNoteSeq    list_notes_within      (int channel, int tick, int duration) override;
+  virtual PartNoteSeq    list_selected_notes    () override;
+  virtual PartNoteSeq    check_overlap          (int tick, int duration, int note) override;
+  virtual PartNoteSeq    get_notes              (int tick, int note) override;
+  virtual PartControlSeq list_selected_controls (MidiSignal control_type) override;
+  virtual PartControlSeq list_controls          (int tick, int duration, MidiSignal control_type) override;
+  virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignal control_type) override;
+  virtual PartControlSeq get_controls           (int tick, MidiSignal control_type) override;
+  virtual PartLinkSeq    list_links             () override;
+  virtual SongTiming     get_timing             (int tick) override;
+  virtual int            get_max_note           () override;
+  virtual int            get_min_note           () override;
+  virtual Error      change_control         (int id, int tick, MidiSignal control_type, double value) override;
+  virtual Error      change_note            (int id, int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual Error      delete_event           (int id) override;
+  virtual void deselect_controls         (int tick, int duration, MidiSignal control_type) override;
+  virtual void deselect_event            (int id) override;
+  virtual void deselect_notes            (int tick, int duration, int min_note, int max_note) override;
+  virtual bool is_event_selected         (int id) override;
+  virtual void select_controls           (int tick, int duration, MidiSignal control_type) override;
+  virtual void select_controls_exclusive (int tick, int duration, MidiSignal control_type) override;
+  virtual void select_event              (int id) override;
+  virtual void select_notes              (int tick, int duration, int min_note, int max_note) override;
+  virtual void select_notes_exclusive    (int tick, int duration, int min_note, int max_note) override;
+  virtual int  insert_control            (int tick, MidiSignal control_type, double value) override;
+  virtual int  insert_note               (int channel, int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual int  insert_note_auto          (int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual void queue_controls            (int tick, int duration) override;
+  virtual void queue_notes               (int tick, int duration, int min_note, int max_note) override;
+};
+
+} // Bse
+
 
 #endif /* __BSE_PART_H__ */

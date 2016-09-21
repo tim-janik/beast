@@ -1,7 +1,13 @@
-#0 List of source files to scan for translatable strings
+#0 List of translatable source files to skip
 #0 Please keep alphabetically sorted
 beast-gtk/bstgentypes.cc
+beast-gtk/bstserverapi.cc
+beast-gtk/bstserverapi.hh
 beast-gtk/bststest.cc
+bse/bseclientapi.cc
+bse/bseclientapi.hh
+bse/bseserverapi.cc
+bse/bseserverapi.hh
 plugins/bsefirfilter.c
 plugins/davguitar.c
 plugins/evaluator/bseevaluator.idl

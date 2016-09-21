@@ -36,7 +36,7 @@ struct FileInfo
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
   FileInfo (const gchar  *file_name,
-            BseErrorType *error_p)
+            Bse::Error *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
@@ -46,14 +46,14 @@ struct FileInfo
     FLAC__StreamDecoder* decoder = FLAC__stream_decoder_new();
     if (!decoder)
       {
-        *error_p = BSE_ERROR_INTERNAL;  // should not happen
+        *error_p = Bse::Error::INTERNAL;  // should not happen
         return;
       }
     error_occurred = false;
     int r = FLAC__stream_decoder_init_file (decoder, file_name, flac_write_callback, NULL, flac_error_callback, this);
     if (r != 0)
       {
-        *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+        *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
         return;
       }
 
@@ -65,7 +65,7 @@ struct FileInfo
 
     if (error_occurred || FLAC__stream_decoder_get_channels (decoder) == 0)
       {
-        *error_p = BSE_ERROR_IO;
+        *error_p = Bse::Error::IO;
         return;
       }
 
@@ -108,10 +108,10 @@ struct FileInfo
 static BseWaveFileInfo*
 flac_load_file_info (gpointer      data,
 		     const gchar  *file_name,
-		     BseErrorType *error_p)
+		     Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
-  if (*error_p)
+  if (*error_p != 0)
     {
       delete file_info;
       return NULL;
@@ -131,7 +131,7 @@ static BseWaveDsc*
 flac_load_wave_dsc (gpointer         data,
 		    BseWaveFileInfo *wave_file_info,
 		    guint            nth_wave,
-		    BseErrorType    *error_p)
+		    Bse::Error    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
@@ -147,9 +147,9 @@ static GslDataHandle*
 flac_create_chunk_handle (gpointer      data,
 			  BseWaveDsc   *wave_dsc,
 			  guint         nth_chunk,
-			  BseErrorType *error_p)
+			  Bse::Error *error_p)
 {
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
@@ -182,7 +182,7 @@ bse_init_loader_flac (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

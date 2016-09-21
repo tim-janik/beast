@@ -30,7 +30,7 @@ thread_info_cell_fill_value (GtkWidget *profiler,
                              guint      row,
                              GValue    *value)
 {
-  g_return_if_fail (row < cached_task_list.size());
+  assert_return (row < cached_task_list.size());
   TaskStatus *info = &cached_task_list[row];
   switch (column)
     {

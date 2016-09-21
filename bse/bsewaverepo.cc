@@ -189,3 +189,17 @@ bse_wave_repo_remove_item (BseContainer *container,
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
+
+namespace Bse {
+
+WaveRepoImpl::WaveRepoImpl (BseObject *bobj) :
+  SuperImpl (bobj)
+{}
+
+WaveRepoImpl::~WaveRepoImpl ()
+{}
+
+// BseWaveRepo *self = as<BseWaveRepo*>();
+// other->as<WaveRepoIfaceP>();
+
+} // Bse

@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
 #include "bstapp.hh"
 #include "bstparam.hh"
 #include "bstskinconfig.hh"
@@ -7,9 +6,7 @@
 #include "bstfiledialog.hh"
 #include "bstgconfig.hh"
 #include "bstpreferences.hh"
-#include "bstprocbrowser.hh"
 #include "bstservermonitor.hh"
-#include "bstrackeditor.hh"
 #include "bstmenus.hh"
 #include "bstprocedure.hh"
 #include "bstprojectctrl.hh"
@@ -19,8 +16,7 @@
 
 
 /* --- prototypes --- */
-static void           bst_app_run_script_proc     (gpointer     data,
-                                                   size_t       category_id);
+static void           bst_app_run_script_proc     (gpointer data, size_t action_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
@@ -39,7 +35,6 @@ enum {
   ACTION_SHOW_PROC_BROWSER,
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
-  ACTION_RACK_EDITOR,
 #define ACTION_HELP_FIRST   ACTION_HELP_INDEX
   ACTION_HELP_INDEX,
   ACTION_HELP_FAQ,
@@ -106,8 +101,6 @@ static const GxkStockAction undo_dvl_actions[] = {
 static const GxkStockAction dialog_actions[] = {
   { N_("Procedure _Browser"),   NULL,           N_("Display an overview of all procedures"),
     ACTION_SHOW_PROC_BROWSER, },
-  { N_("Rack Editor"),          NULL,           NULL,
-    ACTION_RACK_EDITOR, },
   { N_("Profiler"),             NULL,           N_("Display statistics and timing information"),
     ACTION_SHOW_PROFILER, },
   { N_("New View"),             NULL,           N_("Create an extra view of the project"),
@@ -204,6 +197,7 @@ bst_app_unregister (BstApp *app)
 static void
 bst_app_init (BstApp *self)
 {
+  new (&self->project) Bse::ProjectH();
   GtkWidget *widget = GTK_WIDGET (self);
   BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
@@ -331,14 +325,14 @@ bst_app_destroy (GtkObject *object)
   if (self->project)
     {
       if (self->pcontrols)
-        bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), 0);
-      bse_project_deactivate (self->project);
-      bse_proxy_disconnect (self->project,
+        bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), Bse::ProjectH());
+      self->project.deactivate();
+      bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      bse_item_unuse (self->project);
-      self->project = 0;
+      bse_server.destroy_project (self->project);
+      self->project = Bse::ProjectH(); // NULL
     }
 
   if (self->ppages)
@@ -351,7 +345,7 @@ bst_app_destroy (GtkObject *object)
   if (!bst_app_class->apps && bst_app_class->seen_apps)
     {
       bst_app_class->seen_apps = FALSE;
-      BST_MAIN_LOOP_QUIT ();
+      Bst::event_loop_quit ();
     }
 }
 
@@ -362,12 +356,11 @@ bst_app_finalize (GObject *object)
 
   if (self->project)
     {
-      bse_proxy_disconnect (self->project,
+      bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      bse_item_unuse (self->project);
-      self->project = 0;
+      self->project = Bse::ProjectH(); // NULL
     }
   if (self->ppages)
     {
@@ -377,25 +370,26 @@ bst_app_finalize (GObject *object)
     }
 
   G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
+  using namespace Bse;
+  self->project.~ProjectH();
 }
 
 BstApp*
-bst_app_new (SfiProxy project)
+bst_app_new (Bse::ProjectH project)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  assert_return (project, NULL);
 
   BstApp *self = (BstApp*) g_object_new (BST_TYPE_APP, NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
-  bse_item_use (self->project);
-  bse_proxy_connect (self->project,
+  bse_proxy_connect (self->project.proxy_id(),
                      "swapped_signal::item-added", bst_app_reload_pages, self,
                      "swapped_signal::item-remove", bst_app_reload_pages, self,
                      "swapped_signal::state-changed", gxk_widget_update_actions, self,
                      "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
                      NULL);
-  bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project, "%s");
+  bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project.proxy_id(), "%s");
   if (self->pcontrols)
     bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), self->project);
 
@@ -413,13 +407,13 @@ bst_app_find (SfiProxy project)
 {
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  assert_return (BSE_IS_PROJECT (project), NULL);
 
   for (slist = bst_app_class->apps; slist; slist = slist->next)
     {
       BstApp *app = (BstApp*) slist->data;
 
-      if (app->project == project)
+      if (app->project.proxy_id() == int64_t (project))
         return app;
     }
   return NULL;
@@ -428,14 +422,14 @@ bst_app_find (SfiProxy project)
 static SfiProxy
 bst_app_get_current_super (BstApp *app)
 {
-  g_return_val_if_fail (BST_IS_APP (app), 0);
+  assert_return (BST_IS_APP (app), 0);
   if (app->notebook && app->notebook->cur_page)
     {
       GtkWidget *shell = gtk_notebook_current_widget (app->notebook);
       if (BST_IS_SUPER_SHELL (shell))
         {
           BstSuperShell *super_shell = BST_SUPER_SHELL (shell);
-          return super_shell->super;
+          return super_shell->super.proxy_id();
         }
     }
   return 0;
@@ -540,7 +534,7 @@ proxyp_cmp_items (gconstpointer v1,
 static void
 bst_app_reload_pages (BstApp *self)
 {
-  g_return_if_fail (BST_IS_APP (self));
+  assert_return (BST_IS_APP (self));
 
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
@@ -548,7 +542,7 @@ bst_app_reload_pages (BstApp *self)
   SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
 
   /* collect page objects */
-  BseItemSeq *iseq = bse_project_get_supers (self->project);
+  BseIt3mSeq *iseq = bse_project_get_supers (self->project.proxy_id());
   SfiRing *ring, *proxies = NULL;
   guint i;
   for (i = 0; i < iseq->n_items; i++)
@@ -617,13 +611,13 @@ bst_app_handle_delete_event (GtkWidget   *widget,
                              GdkEventAny *event)
 {
   BstApp *self = BST_APP (widget);
-  if (bse_project_is_dirty (self->project))
+  if (self->project.is_dirty())
     {
       uint result = bst_msg_dialog (BST_MSG_WARNING,
-                                    BST_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project)),
+                                    BST_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project.proxy_id())),
                                     BST_MSG_TEXT1 (_("The project has been modified.")),
                                     BST_MSG_TEXT2 (_("Changes were made to project \"%s\" since the last time it was saved to disk."),
-                                                   bse_item_get_name (self->project)),
+                                                   bse_item_get_name (self->project.proxy_id())),
                                     BST_MSG_TEXT2 (_("Save the project before closing its window?")),
                                     BST_MSG_CHOICE   (2, _("Save Changes"), BST_STOCK_SAVE),
                                     BST_MSG_CHOICE   (1, _("Discard Changes"), BST_STOCK_DELETE),
@@ -645,15 +639,11 @@ bst_app_handle_delete_event (GtkWidget   *widget,
 static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
-  SfiProxy proxy;
+  assert_return (BST_IS_SUPER_SHELL (super_shell));
 
-  g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
-
-  proxy = super_shell->super;
-  bse_item_use (proxy);
-  bst_super_shell_set_super (super_shell, 0);
-  bst_super_shell_set_super (super_shell, proxy);
-  bse_item_unuse (proxy);
+  Bse::SuperH super = super_shell->super;
+  bst_super_shell_set_super (super_shell, Bse::SuperH());
+  bst_super_shell_set_super (super_shell, super);
 }
 
 typedef struct {
@@ -678,7 +668,7 @@ demo_entries_setup (void)
 {
   if (!demo_entries)
     {
-      SfiRing *files = sfi_file_crawler_list_files (bse_server_get_demo_path (BSE_SERVER), "*.bse", GFileTest (0));
+      SfiRing *files = sfi_file_crawler_list_files (bse_server.get_demo_path().c_str(), "*.bse", GFileTest (0));
       while (files)
         {
           char *file = (char*) sfi_ring_pop_head (&files);
@@ -709,21 +699,23 @@ demo_play_song (gpointer data,
                 size_t   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
-  SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
-  BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
-  if (error)
-    bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+  Bse::ProjectH project = bse_server.create_project (file_name);
+  Bse::Error error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
+  if (error != 0)
+    {
+      bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+      bse_server.destroy_project (project);
+    }
   else
     {
       BstApp *app;
-      bse_project_get_wave_repo (project);
+      bse_project_get_wave_repo (project.proxy_id());
       app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       gxk_status_window_pop ();
       gxk_idle_show_widget (GTK_WIDGET (app));
     }
-  bse_item_unuse (project);
 }
 
 static GxkActionList*
@@ -778,7 +770,7 @@ load_skin (gpointer data,
            size_t   callback_action)
 {
   const gchar *file_name = skin_entries[callback_action - BST_ACTION_LOAD_SKIN_0000].file;
-  BseErrorType error = bst_skin_parse (file_name);
+  Bse::Error error = bst_skin_parse (file_name);
   bst_status_eprintf (error, _("Loading skin `%s'"), file_name);
 }
 
@@ -796,11 +788,10 @@ skin_entries_create (BstApp *app)
 }
 
 static void
-bst_app_run_script_proc (gpointer data,
-                         size_t   category_id)
+bst_app_run_script_proc (gpointer data, size_t action_id)
 {
   BstApp *self = BST_APP (data);
-  BseCategory *cat = bse_category_from_id (category_id);
+  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
   SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
 
@@ -815,8 +806,8 @@ bst_app_run_script_proc (gpointer data,
         csynth = "custom-synth";
     }
 
-  bst_procedure_exec_auto (cat->type,
-                           "project", SFI_TYPE_PROXY, self->project,
+  bst_procedure_exec_auto (cat->otype,
+                           "project", SFI_TYPE_PROXY, self->project.proxy_id(),
                            song, SFI_TYPE_PROXY, super,
                            wave_repo, SFI_TYPE_PROXY, super,
                            snet, SFI_TYPE_PROXY, super,
@@ -863,12 +854,9 @@ app_action_exec (gpointer data,
     case BST_ACTION_NEW_PROJECT:
       if (1)
         {
-          SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
-          BstApp *new_app;
-
-          bse_project_get_wave_repo (project);
-          new_app = bst_app_new (project);
-          bse_item_unuse (project);
+          Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
+          bse_project_get_wave_repo (project.proxy_id());
+          BstApp *new_app = bst_app_new (project);
 
           gxk_idle_show_widget (GTK_WIDGET (new_app));
         }
@@ -903,57 +891,40 @@ app_action_exec (gpointer data,
       bst_file_dialog_popup_save_instrument (self, self->project, bst_app_get_current_super (self));
       break;
     case BST_ACTION_NEW_SONG:
-      bse_item_group_undo (self->project, "Create Song");
-      proxy = bse_project_create_song (self->project, NULL);
+      bse_item_group_undo (self->project.proxy_id(), "Create Song");
+      proxy = bse_project_create_song (self->project.proxy_id(), NULL);
       bse_song_ensure_master_bus (proxy);
-      bse_item_ungroup_undo (self->project);
+      bse_item_ungroup_undo (self->project.proxy_id());
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:
-      proxy = bse_project_create_csynth (self->project, NULL);
+      proxy = bse_project_create_csynth (self->project.proxy_id(), NULL);
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_MIDI_SYNTH:
-      proxy = bse_project_create_midi_synth (self->project, NULL);
+      proxy = bse_project_create_midi_synth (self->project.proxy_id(), NULL);
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_REMOVE_SYNTH:
       proxy = bst_app_get_current_super (self);
-      if (BSE_IS_SNET (proxy) && !bse_project_is_active (self->project))
-        bse_project_remove_snet (self->project, proxy);
+      if (BSE_IS_SNET (proxy) && !self->project.is_active())
+        bse_project_remove_snet (self->project.proxy_id(), proxy);
       self->select_unseen_super = FALSE;
       break;
     case BST_ACTION_CLEAR_UNDO:
-      bse_project_clear_undo (self->project);
+      self->project.clear_undo();
       break;
     case BST_ACTION_UNDO:
-      bse_project_undo (self->project);
+      self->project.undo();
       break;
     case BST_ACTION_REDO:
-      bse_project_redo (self->project);
+      self->project.redo();
       break;
     case BST_ACTION_START_PLAYBACK:
       bst_project_ctrl_play (BST_PROJECT_CTRL (self->pcontrols));
       break;
     case BST_ACTION_STOP_PLAYBACK:
       bst_project_ctrl_stop (BST_PROJECT_CTRL (self->pcontrols));
-      break;
-    case ACTION_RACK_EDITOR:
-      if (!self->rack_dialog)
-        {
-          BstRackEditor *ed = (BstRackEditor*) g_object_new (BST_TYPE_RACK_EDITOR,
-                                            "visible", TRUE,
-                                            NULL);
-
-          self->rack_editor = (GtkWidget*) g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &self->rack_editor, NULL);
-          bst_rack_editor_set_rack_view (ed, bse_project_get_data_pocket (self->project, "BEAST-Rack-View"));
-          self->rack_dialog = (GtkWidget*) gxk_dialog_new (&self->rack_dialog,
-                                                           GTK_OBJECT (self),
-                                                           GxkDialogFlags (0), // FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-                                                           _("Rack editor"),
-                                                           self->rack_editor);
-        }
-      gxk_widget_showraise (self->rack_dialog);
       break;
     case ACTION_SHOW_PREFERENCES:
       if (!bst_preferences)
@@ -1015,14 +986,14 @@ app_action_exec (gpointer data,
           }
         for (i = 0; i < n_buckets; i++)
           {
-            g_printerr ("bucket[%u] = %u\n", i, buckets[i]);
+            printerr ("bucket[%u] = %u\n", i, buckets[i]);
             max = MAX (max, buckets[i]);
             min = MIN (min, buckets[i]);
             avg += buckets[i];
             if (!buckets[i])
               empty++;
           }
-        g_printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
+        printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
                     avg, min, max, empty, avg / n_buckets);
         g_slist_free (olist);
       }
@@ -1049,7 +1020,7 @@ app_action_exec (gpointer data,
     BROWSE_LOCAL_URL:
       if (docs_url)
         {
-          gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
+          gchar *local_url = g_strconcat ("file://", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str(), "/", docs_url, NULL);
           sfi_url_show (local_url);
           g_free (local_url);
         }
@@ -1101,11 +1072,10 @@ app_action_exec (gpointer data,
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
                       BST_MSG_TEXT3 ("Demo-Dialog-Type: %s",
-                                     Rapicorn::Aida::enum_value_find (Rapicorn::Aida::enum_value_list<Bse::UserMessageType> (),
-                                                                      demo_type)->ident));
+                                     Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (demo_type).ident));
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     }
 
@@ -1125,7 +1095,7 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       guint i;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
@@ -1137,33 +1107,32 @@ app_action_check (gpointer data,
     case BST_ACTION_CLOSE_PROJECT:
       return TRUE;
     case BST_ACTION_SAVE_PROJECT:
-      return bse_project_is_dirty (self->project);
+      return self->project.is_dirty();
     case BST_ACTION_NEW_SONG:
-      iseq = bse_container_list_children (self->project);
+      iseq = bse_container_list_children (self->project.proxy_id());
       for (i = 0; i < iseq->n_items; i++)
         if (BSE_IS_SONG (iseq->items[i]))
           return FALSE;
       return TRUE;
     case BST_ACTION_REMOVE_SYNTH:
       super = bst_app_get_current_super (self);
-      return BSE_IS_SNET (super) && !bse_project_is_active (self->project);
+      return BSE_IS_SNET (super) && !self->project.is_active();
     case BST_ACTION_CLEAR_UNDO:
-      return bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
+      return self->project.undo_depth() + self->project.redo_depth() > 0;
     case BST_ACTION_UNDO:
-      return bse_project_undo_depth (self->project) > 0;
+      return self->project.undo_depth() > 0;
     case BST_ACTION_REDO:
-      return bse_project_redo_depth (self->project) > 0;
+      return self->project.redo_depth() > 0;
     case BST_ACTION_REBUILD:
       return TRUE;
     case BST_ACTION_START_PLAYBACK:
-      if (self->project && bse_project_can_play (self->project))
+      if (self->project && self->project.can_play())
         return TRUE;
       return FALSE;
     case BST_ACTION_STOP_PLAYBACK:
-      if (self->project && bse_project_is_playing (self->project))
+      if (self->project && self->project.is_playing())
         return TRUE;
       return FALSE;
-    case ACTION_RACK_EDITOR:
     case ACTION_SHOW_PROC_BROWSER:
       return FALSE;
     case ACTION_SHOW_PREFERENCES:
@@ -1172,11 +1141,11 @@ app_action_check (gpointer data,
       return TRUE;
     case BST_ACTION_MERGE_EFFECT:
     case BST_ACTION_MERGE_INSTRUMENT:
-      return !bse_project_is_active (self->project);
+      return !self->project.is_active();
     case BST_ACTION_SAVE_EFFECT:
     case BST_ACTION_SAVE_INSTRUMENT:
       super = bst_app_get_current_super (self);
-      return BSE_IS_CSYNTH (super) && !bse_project_is_active (self->project);
+      return BSE_IS_CSYNTH (super) && !self->project.is_active();
     case ACTION_HELP_INDEX:
     case ACTION_HELP_RELEASE_NOTES:
     case ACTION_HELP_QUICK_START:

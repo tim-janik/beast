@@ -4,6 +4,7 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bseeditablesample.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
@@ -22,16 +23,16 @@ METHOD (BseWaveOsc, request-pcm-position) {
 
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   bse_wave_osc_request_pcm_position (self);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
   HELP	= "Seek a list of wave oscillators to a pcm position given in percentage. The oscillators will seek to the given position syncronously.";
-  IN    = bse_param_spec_boxed ("wosc-seq", "Wave Oscilators", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD); // FIXME: using BseItemSeq because BseWaveOscSeq requires idl+C++
+  IN    = bse_param_spec_boxed ("wosc-seq", "Wave Oscilators", NULL, BSE_TYPE_IT3M_SEQ, SFI_PARAM_STANDARD); // FIXME: using BseIt3mSeq because BseWaveOscSeq requires idl+C++
   IN	= sfi_pspec_real ("pos_perc", NULL, NULL,
 			  0, 0, 100, 1,
 			  SFI_PARAM_STANDARD);
@@ -40,19 +41,19 @@ PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItemSeq *iseq = (BseItemSeq*) bse_value_get_boxed (in_values++);
+  BseIt3mSeq *iseq = (BseIt3mSeq*) bse_value_get_boxed (in_values++);
   gfloat      pos  = sfi_value_get_real (in_values++);
   guint i, n = iseq ? iseq->n_items : 0;
   BseWaveOsc **woscs = (BseWaveOsc**) g_alloca (sizeof (BseWaveOsc*) * n);
   for (i = 0; i < n; i++)
     if (!BSE_IS_WAVE_OSC (iseq->items[i]))      /* check parameters */
-      return BSE_ERROR_PROC_PARAM_INVAL;
+      return Bse::Error::PROC_PARAM_INVAL;
     else
       woscs[i] = (BseWaveOsc*) iseq->items[i];
   if (n)
     bse_wave_osc_mass_seek (n, woscs, pos);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseWaveOsc, set-from-editable-sample) {
@@ -71,9 +72,9 @@ METHOD (BseWaveOsc, set-from-editable-sample) {
 
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   bse_wave_osc_set_from_esample (self, esample);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }

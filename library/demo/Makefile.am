@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
@@ -7,6 +7,6 @@ demo_DATA = $(strip		\
 	stereo-through.bse	\
 	x2-midi-test.bse	\
 )
-demodir = $(bsedemodir)
+demodir = $(datadir)/demo
 
 EXTRA_DIST += $(demo_DATA)

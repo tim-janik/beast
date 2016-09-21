@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseplugin.hh"
-
+#include "../configure.h"
 #include "bsecategories.hh"
 #include "bseprocedure.hh"
 #include "bseobject.hh"
@@ -72,7 +72,7 @@ bse_plugin_dispose (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
+    g_warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
@@ -84,7 +84,7 @@ bse_plugin_finalize (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
+    g_warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
@@ -137,7 +137,7 @@ bse_plugin_init_builtins (void)
           if (chain)
             {
               /* create resident plugin struct */
-              BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+              BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
               g_object_ref (plugin);
               plugin->use_count = 1;
               plugin->fname = g_strdup ("BSE-BUILTIN");
@@ -150,7 +150,7 @@ bse_plugin_init_builtins (void)
       if (bse_builtin_export_identity.export_chain)
         {
           /* create resident plugin struct */
-          BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+          BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
           g_object_ref (plugin);
           plugin->use_count = 1;
           plugin->fname = g_strdup ("BSE-CXX-BUILTIN");
@@ -193,7 +193,7 @@ static BsePlugin *startup_plugin = NULL;
 void
 bse_plugin_make_resident()
 {
-  g_assert (startup_plugin != NULL);
+  assert (startup_plugin != NULL);
   startup_plugin->resident_types = TRUE;
 }
 
@@ -202,7 +202,7 @@ bse_exports__add_node (const BseExportIdentity *identity,
                        BseExportNode           *enode)
 {
   if (!startup_plugin)
-    g_error ("%s: plugin startup called without plugin", G_STRFUNC);
+    g_error ("%s: plugin startup called without plugin", __func__);
   if (!enode || enode->next)
     return NULL;
   if (identity->major != BST_MAJOR_VERSION ||
@@ -250,7 +250,7 @@ static void
 bse_plugin_use (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  g_return_if_fail (plugin != NULL);
+  assert_return (plugin != NULL);
   g_object_ref (G_OBJECT (plugin));
   if (!plugin->use_count)
     {
@@ -279,7 +279,7 @@ bse_exports__del_node (BsePlugin               *plugin,
 {
   if (!plugin || !enode)
     {
-      g_warning ("%s: invalid plugin shutdown", G_STRFUNC);
+      g_warning ("%s: invalid plugin shutdown", __func__);
       return;
     }
   BseExportNode *last = NULL, *link;
@@ -297,9 +297,9 @@ bse_exports__del_node (BsePlugin               *plugin,
 static void
 bse_plugin_unload (BsePlugin *plugin)
 {
-  g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
-  g_return_if_fail (plugin->use_count == 0);
-  g_return_if_fail (plugin->resident_types == 0);
+  assert_return (plugin->gmodule != NULL && plugin->fname != NULL);
+  assert_return (plugin->use_count == 0);
+  assert_return (plugin->resident_types == 0);
   bse_plugin_uninit_types (plugin);
   g_module_close ((GModule*) plugin->gmodule);
   plugin->gmodule = NULL;
@@ -312,7 +312,7 @@ static void
 bse_plugin_unuse (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  g_return_if_fail (plugin->use_count > 0);
+  assert_return (plugin->use_count > 0);
   plugin->use_count--;
   if (!plugin->use_count)
     {
@@ -354,8 +354,8 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
   BseExportNode *node;
 
-  g_return_if_fail (plugin != NULL);
-  g_return_if_fail (plugin->use_count > 0);
+  assert_return (plugin != NULL);
+  assert_return (plugin->use_count > 0);
 
   for (node = plugin->chain; node && node->ntype; node = node->next)
     if (node->type == type)
@@ -577,7 +577,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   gchar *error = NULL;
   const gchar *cerror = NULL;
 
-  g_return_val_if_fail (const_file_name != NULL, NULL);
+  assert_return (const_file_name != NULL, NULL);
 
   if (0)        /* want to read .la files? */
     {
@@ -587,7 +587,7 @@ bse_plugin_check_load (const gchar *const_file_name)
       gint fd = open (const_file_name, O_RDONLY, 0);
       if (fd < 0)
         return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-                bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
+                bse_error_blurb (Bse::Error::FILE_NOT_FOUND) :
                 "Unable to access plugin");
 
       /* and search libtool's dlname specification */
@@ -628,7 +628,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     file_name = g_strdup (const_file_name);
   PDEBUG ("register: %s", file_name);
   /* load module */
-  BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+  BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
   plugin->fname = g_strdup (file_name);
   startup_plugin = plugin;
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
@@ -694,8 +694,6 @@ bse_plugin_check_load (const gchar *const_file_name)
   return error;
 }
 
-#include "topconfig.h"
-
 static bool
 plugin_extension_filter (const char  *fname,
                          guint        n,
@@ -735,16 +733,16 @@ bse_plugin_path_list_files (gboolean include_drivers,
     {
       if (include_drivers)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])

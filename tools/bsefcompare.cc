@@ -7,13 +7,10 @@
 #include <bse/gslfft.hh>
 #include <stdio.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
-
-#include "topconfig.h"
 
 #include <map>
 #include <string>
@@ -49,8 +46,8 @@ check_arg (uint         argc,
            const char  *opt,              /* for example: --foo */
            const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_return_val_if_fail (opt != NULL, false);
-  g_return_val_if_fail (*nth < argc, false);
+  assert_return (opt != NULL, false);
+  assert_return (*nth < argc, false);
 
   const char *arg = argv[*nth];
   if (!arg)
@@ -98,7 +95,7 @@ Options::parse (int   *argc_p,
   gchar **argv = *argv_p;
   unsigned int i;
 
-  g_return_if_fail (argc >= 0);
+  assert_return (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefcompare all the time,
    *  but basically this should be done (to allow renaming the binary):
@@ -119,7 +116,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
+          printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--compact"))
@@ -222,21 +219,6 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
 
   return diff / f1len / f2len;
 }
-
-static string string_printf (const char *format, ...) G_GNUC_PRINTF (1, 2);
-
-static string
-string_printf (const char *format, ...)
-{
-  va_list ap;
-  va_start(ap, format);
-  char *c_str = g_strdup_vprintf (format, ap);
-  va_end(ap);
-  string str = c_str;
-  g_free (c_str);
-  return str;
-}
-
 
 static  GScannerConfig  scanner_config_template = {
   const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
@@ -414,7 +396,7 @@ public:
   void
   register_strategy (const string& feature_name)
   {
-    g_return_if_fail (!m_strategies[feature_name]);
+    assert_return (!m_strategies[feature_name]);
 
     m_strategies[feature_name] = this;
   }
@@ -427,7 +409,7 @@ public:
     // produce a warning for a strategy with the right feature name but a wrong type
     if (s)
       {
-	g_return_val_if_fail (type == s->type(), 0);
+	assert_return (type == s->type(), 0);
       }
     return s;
   }
@@ -490,7 +472,7 @@ FeatureValueVector::parse (GScanner *scanner)
 string
 FeatureValueVector::printable_type() const
 {
-  return string_printf ("%d element vector", n);
+  return string_format ("%d element vector", n);
 }
 
 double
@@ -547,7 +529,7 @@ FeatureValueMatrix::parse (GScanner *scanner)
 string
 FeatureValueMatrix::printable_type() const
 {
-  return string_printf ("%d x %d matrix", m, n);
+  return string_format ("%d x %d matrix", m, n);
 }
 
 double
@@ -638,7 +620,7 @@ FeatureValueFile::parseFeatureValue (GScanner *scanner)
 void
 FeatureValueFile::parse (const string& filename)
 {
-  g_return_if_fail (this->filename == "");
+  assert_return (this->filename == "");
   this->filename = filename;
 
   GScanner *scanner = g_scanner_new64 (&scanner_config_template);
@@ -696,9 +678,9 @@ main (int argc, char **argv)
 
   if (file1.feature_values.size() != file2.feature_values.size())
     {
-      g_printerr ("%s: can't compare files\n", options.program_name.c_str());
-      g_printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
-      g_printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
+      printerr ("%s: can't compare files\n", options.program_name.c_str());
+      printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
+      printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
       exit (1);
     }
 
@@ -710,10 +692,10 @@ main (int argc, char **argv)
       double s = f1->similarity (f2);
       if (s < 0)
 	{
-	  g_printerr ("%s: can't compare features:\n", options.program_name.c_str());
-	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	  printerr ("%s: can't compare features:\n", options.program_name.c_str());
+	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f1->name.c_str(), f1->printable_type().c_str(), file1.filename.c_str());
-	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f2->name.c_str(), f2->printable_type().c_str(), file2.filename.c_str());
 	  return 1;
 	}
@@ -724,7 +706,7 @@ main (int argc, char **argv)
   double min_s = similarity.empty() ? 0.0 : similarity[0];
   double max_s = min_s;
 
-  printf ("similarities: ");
+  printf ("%s: similarities: ", argv[1]);
   for (size_t i = 0; i < similarity.size(); i++)
     {
       if (!options.compact)
@@ -759,7 +741,7 @@ main (int argc, char **argv)
       rating = "similarity below threshold";
       result = 1;
     }
-  printf ("average similarity rating (%s): %.3f%%\n", rating.c_str(), average_similarity);
+  printf ("%s: average similarity rating (%s): %.3f%%\n", argv[1], rating.c_str(), average_similarity);
   return result;
 }
 
@@ -780,7 +762,7 @@ public:
     const FeatureValueVector *vec1 = static_cast<const FeatureValueVector *> (value1);
     const FeatureValueVector *vec2 = static_cast<const FeatureValueVector *> (value2);
 
-    g_printerr ("using custom TimingComparisionStrategy\n");
+    printerr ("using custom TimingComparisionStrategy\n");
 
     // the sizes of the two vectors can be different
     uint   size = min (vec1->data.size(), vec2->data.size());

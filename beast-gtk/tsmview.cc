@@ -1,8 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <gxk/gxk.hh>
-
-#include "topconfig.h"
-
 #include <string.h>
 
 #define PRGNAME "tsmview"
@@ -30,13 +27,12 @@ main (int   argc,
   GxkScrollTextFlags flags = GxkScrollTextFlags (0);
   /* initialize modules
    */
-  g_type_init ();
   gtk_init (&argc, &argv);
   gxk_init ();
 
   gxk_text_register_textget_handler ("textget-label", textget_handler, NULL);
 
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     if (!flags && strcmp (argv[i], "--edit") == 0)
       {
 	flags = GXK_SCROLL_TEXT_EDITABLE;
@@ -54,11 +50,11 @@ main (int   argc,
   if (!title)
     title = g_strdup (".");
   gxk_text_add_tsm_path (".");
-  gxk_text_add_tsm_path (BST_PATH_DOCS);
-  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE | flags, NULL);
   gxk_scroll_text_enter (sctext, title);
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     if (argv[i])
       {
 	gxk_scroll_text_enter (sctext, argv[i]);

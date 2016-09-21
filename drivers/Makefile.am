@@ -1,4 +1,4 @@
-# BSE-Plugins - Better Sound Engine dynamic Plugins
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
@@ -6,10 +6,10 @@ DEFS        += @DEFINE__FILE_DIR__@ $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 # Plugin bsedevice-alsa
-driversdir          = $(bsedriverdir)
+driversdir          = $(bselibdir)/drivers
 drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 drivers_ldflags     = -avoid-version
-drivers_libs        = $(top_builddir)/bse/libbse.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
+drivers_libs        = $(top_builddir)/bse/libbse-@MAJOR@.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 
 # Plugin bsepcmdevice-alsa
 bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.cc

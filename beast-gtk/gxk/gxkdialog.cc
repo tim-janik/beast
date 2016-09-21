@@ -336,7 +336,7 @@ void
 gxk_dialog_set_title (GxkDialog   *dialog,
 		      const gchar *title)
 {
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
+  assert_return (GXK_IS_DIALOG (dialog));
 
   g_object_set (dialog, "title", title, NULL);
 }
@@ -353,7 +353,7 @@ gxk_dialog_add_flags (GxkDialog     *dialog,
 {
   gint f;
 
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
+  assert_return (GXK_IS_DIALOG (dialog));
 
   f = dialog->flags;
   f |= flags;
@@ -372,7 +372,7 @@ gxk_dialog_clear_flags (GxkDialog     *dialog,
 {
   gint f;
 
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
+  assert_return (GXK_IS_DIALOG (dialog));
 
   f = dialog->flags;
   f &= ~flags;
@@ -387,7 +387,7 @@ gxk_dialog_clear_flags (GxkDialog     *dialog,
 GtkWidget*
 gxk_dialog_get_child (GxkDialog *dialog)
 {
-  g_return_val_if_fail (GXK_IS_DIALOG (dialog), NULL);
+  assert_return (GXK_IS_DIALOG (dialog), NULL);
   /* return the single child that was passed to gxk_dialog_new() if any */
   return dialog->child;
 }
@@ -403,7 +403,7 @@ void
 gxk_dialog_set_child (GxkDialog *dialog,
 		      GtkWidget *child)
 {
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
+  assert_return (GXK_IS_DIALOG (dialog));
 
   gtk_container_foreach (GTK_CONTAINER (dialog->vbox), (GtkCallback) gtk_widget_destroy, NULL);
   if (dialog->child)
@@ -428,7 +428,7 @@ void
 gxk_dialog_set_focus (GxkDialog *self,
 		      GtkWidget *focus_widget)
 {
-  g_return_if_fail (GXK_IS_DIALOG (self));
+  assert_return (GXK_IS_DIALOG (self));
 
   if (self->focus_widget)
     g_signal_handlers_disconnect_by_func (self->focus_widget, (void*) g_nullify_pointer, &self->focus_widget);
@@ -448,7 +448,7 @@ void
 gxk_dialog_set_default (GxkDialog *self,
 			GtkWidget *default_widget)
 {
-  g_return_if_fail (GXK_IS_DIALOG (self));
+  assert_return (GXK_IS_DIALOG (self));
 
   if (self->default_widget)
     g_signal_handlers_disconnect_by_func (self->default_widget, (void*) g_nullify_pointer, &self->default_widget);
@@ -603,7 +603,7 @@ gxk_dialog_get_status_window (void)
 void
 gxk_dialog_remove_actions (GxkDialog *dialog)
 {
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
+  assert_return (GXK_IS_DIALOG (dialog));
 
   if (dialog->hbox)
     gtk_container_foreach (GTK_CONTAINER (dialog->hbox), (GtkCallback) gtk_widget_destroy, NULL);
@@ -628,8 +628,8 @@ gxk_dialog_action_multi (GxkDialog          *self,
 {
   GtkWidget *button = NULL;
 
-  g_return_val_if_fail (GXK_IS_DIALOG (self), NULL);
-  g_return_val_if_fail (action != NULL, NULL);
+  assert_return (GXK_IS_DIALOG (self), NULL);
+  assert_return (action != NULL, NULL);
 
   if (self->sep)
     gtk_widget_show (self->sep);

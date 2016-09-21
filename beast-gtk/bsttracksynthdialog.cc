@@ -167,7 +167,7 @@ bst_track_synth_dialog_setup (BstTrackSynthDialog *self,
 {
   GtkWindow *window = GTK_WINDOW (self);
 
-  g_return_if_fail (BST_IS_TRACK_SYNTH_DIALOG (self));
+  assert_return (BST_IS_TRACK_SYNTH_DIALOG (self));
 
   self->selected_callback = NULL;
   GxkFreeFunc selected_cleanup = self->selected_cleanup;
@@ -220,7 +220,7 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
                               SfiProxy     track,
                               const gchar *candidate_label,
                               const gchar *candidate_tooltip,
-                              BseItemSeq  *candidates,
+                              BseIt3mSeq  *candidates,
                               const gchar *wrepo_label,
                               const gchar *wrepo_tooltip,
                               SfiProxy     wrepo,
@@ -265,11 +265,11 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
 
 void
 bst_track_synth_dialog_set (BstTrackSynthDialog *self,
-                            BseItemSeq          *iseq,
+                            BseIt3mSeq          *iseq,
                             SfiProxy             wrepo,
 			    SfiProxy		 sfrepo)
 {
-  g_return_if_fail (BST_IS_TRACK_SYNTH_DIALOG (self));
+  assert_return (BST_IS_TRACK_SYNTH_DIALOG (self));
 
   bst_item_view_set_container (BST_ITEM_VIEW (self->wpage), wrepo);
   bst_item_view_set_container (BST_ITEM_VIEW (self->sfont_page), sfrepo);

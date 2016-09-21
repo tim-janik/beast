@@ -6,7 +6,6 @@
 #include <bse/bsemain.hh>
 #include <bse/gslfilter.hh> // FIXME
 #include <bse/bseglobals.hh> // FIXME
-#include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -100,7 +99,7 @@ filter_zp_response (const BseIIRFilterDesign *fdes,
   return freq_magnitude;
 }
 
-bool
+static bool
 bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
                              const char               *fname,
                              uint                      n_consts,
@@ -184,9 +183,9 @@ noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   consts[n_consts++] = 0.0;
   bool success = bse_iir_filter_dump_gnuplot (fdes, fname, n_consts, consts, n_arrows, arrows, 55555);
   TASSERT (success == true);
-  g_printerr ("Filter: %s\n", bse_iir_filter_request_string (fireq));
-  g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
-  g_printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
+  printerr ("Filter: %s\n", bse_iir_filter_request_string (fireq));
+  printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
+  printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
 }
 
 static void
@@ -220,7 +219,7 @@ max_band_damping_zp (const BseIIRFilterDesign *fdes,
     eps = min (eps, filter_zp_response (fdes, g_random_double_range (start_freq, end_freq)));
   if (0)
     for (double f = start_freq; f < end_freq; f += delta * 30)
-      g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
+      printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
 
@@ -240,7 +239,7 @@ min_band_damping_zp (const BseIIRFilterDesign *fdes,
     eps = max (eps, filter_zp_response (fdes, g_random_double_range (start_freq, end_freq)));
   if (0)
     for (double f = start_freq; f < end_freq; f += delta * 30)
-      g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
+      printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
 
@@ -289,8 +288,8 @@ butterwoth_tests ()
     success = bse_iir_filter_design (&req, &fdes);
     if (0)
       {
-        g_printerr ("Filter: %s\n", bse_iir_filter_request_string (&req));
-        g_printerr ("Design: %s\n", bse_iir_filter_design_string (&fdes));
+        printerr ("Filter: %s\n", bse_iir_filter_request_string (&req));
+        printerr ("Design: %s\n", bse_iir_filter_design_string (&fdes));
       }
     TASSERT (success == true);
     TCMP (min_band_damping (&fdes, 0, 2000), <, gaineps);

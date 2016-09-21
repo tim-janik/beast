@@ -20,13 +20,10 @@
 enum
 {
   PROP_0,
-  PROP_MUSICAL_TUNING,
   PROP_TPQN,
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
-  PROP_BPM,
   PROP_PNET,
-  PROP_AUTO_ACTIVATE,
   PROP_LOOP_ENABLED,
   PROP_LOOP_LEFT,
   PROP_LOOP_RIGHT,
@@ -70,9 +67,9 @@ BSE_BUILTIN_TYPE (BseSong)
 }
 
 void
-bse_song_timing_get_default (BseSongTiming *timing)
+bse_song_timing_get_default (Bse::SongTiming *timing)
 {
-  g_return_if_fail (timing != NULL);
+  assert_return (timing != NULL);
 
   timing->tick = 0;
   timing->bpm = 120;
@@ -152,19 +149,6 @@ bse_song_set_property (GObject      *object,
       gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
-    case PROP_MUSICAL_TUNING:
-      if (!BSE_SOURCE_PREPARED (self))
-        {
-          self->musical_tuning = (BseMusicalTuningType) g_value_get_enum (value);
-          SfiRing *ring;
-          for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-            bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
-        }
-      break;
-    case PROP_BPM:
-      self->bpm = sfi_value_get_real (value);
-      bse_song_update_tpsi_SL (self);
-      break;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -268,12 +252,6 @@ bse_song_get_property (GObject     *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-    case PROP_MUSICAL_TUNING:
-      g_value_set_enum (value, self->musical_tuning);
-      break;
-    case PROP_BPM:
-      sfi_value_set_real (value, self->bpm);
-      break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
@@ -305,12 +283,10 @@ bse_song_get_property (GObject     *object,
 }
 
 void
-bse_song_get_timing (BseSong       *self,
-		     guint          tick,
-		     BseSongTiming *timing)
+bse_song_get_timing (BseSong *self, uint tick, Bse::SongTiming *timing)
 {
-  g_return_if_fail (BSE_IS_SONG (self));
-  g_return_if_fail (timing != NULL);
+  assert_return (BSE_IS_SONG (self));
+  assert_return (timing != NULL);
 
   timing->tick = 0;
   timing->bpm = self->bpm;
@@ -330,8 +306,8 @@ bse_song_lookup (BseProject  *project,
 {
   BseItem *item;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (project), NULL);
+  assert_return (name != NULL, NULL);
 
   item = bse_container_lookup_item (BSE_CONTAINER (project), name);
 
@@ -520,7 +496,7 @@ bse_song_reset (BseSource *source)
   Bse::Sequencer::instance().remove_song (self);
   // chain parent class' handler
   BSE_SOURCE_CLASS (parent_class)->reset (source);
-  g_assert (self->sequencer_start_request_SL == 0);
+  assert (self->sequencer_start_request_SL == 0);
   /* outside of sequencer reach, so no locks needed */
   self->sequencer_start_SL = 0;
   self->sequencer_done_SL = 0;
@@ -537,9 +513,9 @@ bse_song_create_summation (BseSong *self)
 {
   GType type = g_type_from_name ("BseSummation");
   if (!g_type_is_a (type, BSE_TYPE_SOURCE))
-    g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", G_STRFUNC, "BseSummation");
+    g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", __func__, "BseSummation");
   BseSource *summation = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
-  g_assert (summation != NULL);
+  assert (summation != NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
 }
@@ -573,14 +549,14 @@ static void
 bse_song_init (BseSong *self)
 {
   BseSNet *snet = BSE_SNET (self);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   bse_song_timing_get_default (&timing);
 
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 
-  self->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
+  self->musical_tuning = Bse::MusicalTuning::OD_12_TET;
 
   self->tpqn = timing.tpqn;
   self->numerator = timing.numerator;
@@ -626,16 +602,39 @@ master_bus_name (void)
 BseSource*
 bse_song_ensure_master (BseSong *self)
 {
+  Bse::SongImpl *this_ = self->as<Bse::SongImpl*>();
   BseSource *child = (BseSource*) bse_song_find_master (self);
   if (!child)
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
+      BseUndoStack *ustack = bse_item_undo_open (self, "Create Master");
       child = (BseSource*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
-      g_object_set (child, "master-output", TRUE, NULL); /* no undo */
-      bse_item_push_undo_proc (self, "remove-bus", child);
+      g_object_set (child, "master-output", TRUE, NULL); // not-undoable
+      Bse::BusImpl *bus = child->as<Bse::BusImpl*>();
+      Bse::ItemImpl::UndoDescriptor<Bse::BusImpl> bus_descriptor = this_->undo_descriptor (*bus);
+      auto lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::Error {
+        Bse::BusImpl &bus = self.undo_resolve (bus_descriptor);
+        self.remove_bus (bus);
+        return Bse::Error::NONE;
+      };
+      this_->push_undo (__func__, *this_, lambda);
       bse_item_undo_close (ustack);
     }
   return child;
+}
+
+BseTrack*
+bse_song_find_first_track (BseSong *self, BsePart *part)
+{
+  SfiRing *ring;
+  /* action */
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = (BseTrack*) ring->data;
+      guint start;
+      if (bse_track_find_part (track, part, &start))
+        return track;
+    }
+  return NULL;
 }
 
 static void
@@ -669,8 +668,8 @@ bse_song_compat_finish (BseSuper       *super,
       BseSource *master = bse_song_ensure_master (self);
       for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
         {
-          BseErrorType error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
-          if (error)
+          Bse::Error error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
+          if (error != 0)
             sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
           clear_undo = TRUE;
         }
@@ -693,7 +692,7 @@ bse_song_class_init (BseSongClass *klass)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
@@ -717,16 +716,6 @@ bse_song_class_init (BseSongClass *klass)
 
   bse_song_timing_get_default (&timing);
 
-  bse_object_class_add_param (object_class, _("Tuning"),
-			      PROP_MUSICAL_TUNING,
-                              bse_param_spec_enum ("musical_tuning", _("Musical Tuning"),
-                                                   _("The tuning system which specifies the tones or pitches to be used. "
-                                                     "Due to the psychoacoustic properties of tones, various pitch combinations can "
-                                                     "sound \"natural\" or \"pleasing\" when used in combination, the musical "
-                                                     "tuning system defines the number and spacing of frequency values applied."),
-                                                   BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE,
-                                                   SFI_PARAM_STANDARD ":unprepared:skip-default"));
-
   bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),
@@ -739,22 +728,10 @@ bse_song_class_init (BseSongClass *klass)
 			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", _("Denominator"), _("Measure denominator, must be a power of 2"),
 					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_BPM,
-			      sfi_pspec_real ("bpm", _("Beats per minute"), NULL,
-					      timing.bpm,
-					      BSE_MIN_BPM, BSE_MAX_BPM,
-                                              10,
-					      SFI_PARAM_STANDARD ":scale"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Playback Settings"),
-			      PROP_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", NULL, NULL,
-					      TRUE, /* change default */
-					      /* override parent property: 0 */ "w"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
@@ -778,3 +755,207 @@ bse_song_class_init (BseSongClass *klass)
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
+
+namespace Bse {
+
+SongImpl::SongImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+SongImpl::~SongImpl ()
+{}
+
+TrackIfaceP
+SongImpl::find_any_track_for_part (PartIface &part)
+{
+  BseSong *self = as<BseSong*>();
+  assert_return (dynamic_cast<ItemImpl*> (&part)->parent() == this, NULL);
+  BsePart *bpart = part.as<BsePart*>();
+  BseTrack *track = bse_song_find_first_track (self, bpart);
+  return track->as<TrackIfaceP> ();
+}
+
+BusIfaceP
+SongImpl::create_bus ()
+{
+  BseSong *self = as<BseSong*>();
+  if (BSE_SOURCE_PREPARED (self))
+    return NULL;
+  BusImpl *bus = ((BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL))->as<BusImpl*>();
+  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
+  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    BusImpl &bus = self.undo_resolve (bus_descriptor);
+    self.remove_bus (bus);
+    return Error::NONE;
+  };
+  push_undo (__func__, *this, lambda);
+  return bus->as<BusIfaceP>();
+}
+
+void
+SongImpl::remove_bus (BusIface &bus_iface)
+{
+  BseSong *self = as<BseSong*>();
+  BusImpl *bus = dynamic_cast<BusImpl*> (&bus_iface);
+  return_unless (bus->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = bus->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Bus");
+  // reset ::master-output property undoable
+  bse_item_set (child, "master-output", FALSE, NULL);
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
+  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    BusImpl &bus = self.undo_resolve (bus_descriptor);
+    self.remove_bus (bus);
+    return Error::NONE;
+  };
+  push_undo_to_redo (__func__, *this, lambda);
+  // backup and remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+PartIfaceP
+SongImpl::create_part ()
+{
+  BseSong *self = as<BseSong*>();
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
+  PartImpl *part = child->as<PartImpl*>();
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return Error::NONE;
+  };
+  push_undo (__func__, *this, lambda);
+  return part->as<PartIfaceP>();
+}
+
+void
+SongImpl::remove_part (PartIface &part_iface)
+{
+  BseSong *self = as<BseSong*>();
+  PartImpl *part = dynamic_cast<PartImpl*> (&part_iface);
+  return_unless (part->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = part->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Part");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return Error::NONE;
+  };
+  push_undo_to_redo (__func__, *this, lambda);
+  // remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+TrackIfaceP
+SongImpl::create_track ()
+{
+  BseSong *self = as<BseSong*>();
+  return_unless (BSE_SOURCE_PREPARED (self) == false, NULL);
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+  TrackImpl *track = child->as<TrackImpl*>();
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return Error::NONE;
+  };
+  push_undo (__func__, *this, lambda);
+  return track->as<TrackIfaceP>();
+}
+
+void
+SongImpl::remove_track (TrackIface &track_iface)
+{
+  BseSong *self = as<BseSong*>();
+  TrackImpl *track = dynamic_cast<TrackImpl*> (&track_iface);
+  return_unless (track->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = track->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Track");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return Error::NONE;
+  };
+  push_undo_to_redo (__func__, *this, lambda);
+  // remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+SongTiming
+SongImpl::get_timing (int tick)
+{
+  BseSong *self = as<BseSong*>();
+  SongTiming timing;
+  bse_song_get_timing (self, tick, &timing);
+  return timing;
+}
+
+double
+SongImpl::bpm () const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+  return self->bpm;
+}
+
+void
+SongImpl::bpm (double val)
+{
+  BseSong *self = as<BseSong*>();
+  if (self->bpm != val)
+    {
+      const char prop[] = "bpm";
+      push_property_undo (prop);
+      self->bpm = val;
+      bse_song_update_tpsi_SL (self);
+      changed (prop);
+    }
+}
+
+MusicalTuning
+SongImpl::musical_tuning () const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+  return self->musical_tuning;
+}
+
+void
+SongImpl::musical_tuning (MusicalTuning tuning)
+{
+  BseSong *self = as<BseSong*>();
+  if (!BSE_SOURCE_PREPARED (self) && self->musical_tuning != tuning)
+    {
+      const char prop[] = "musical_tuning";
+      push_property_undo (prop);
+      self->musical_tuning = tuning;
+      SfiRing *ring;
+      for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+        bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+      changed (prop);
+    }
+}
+
+} // Bse

@@ -7,7 +7,6 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfft.hh>
-#include "topconfig.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -135,8 +134,8 @@ check_arg (uint         argc,
            const char  *opt,              /* for example: --foo */
            const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_return_val_if_fail (opt != NULL, false);
-  g_return_val_if_fail (*nth < argc, false);
+  assert_return (opt != NULL, false);
+  assert_return (*nth < argc, false);
 
   const char *arg = argv[*nth];
   if (!arg)
@@ -184,7 +183,7 @@ Options::parse (int   *argc_p,
   gchar **argv = *argv_p;
   unsigned int i;
 
-  g_return_if_fail (argc >= 0);
+  assert_return (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefcompare all the time,
    *  but basically this should be done (to allow renaming the binary):
@@ -205,7 +204,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
+          printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--block-size", &opt_arg))
@@ -214,13 +213,13 @@ Options::parse (int   *argc_p,
 	  if ((block_size & 1) == 1)
 	    {
 	      block_size++;
-	      g_printerr ("testresampler: block size needs to be even (fixed: using %d as block size)\n", block_size);
+	      printerr ("testresampler: block size needs to be even (fixed: using %d as block size)\n", block_size);
 	    }
 
 	  if (block_size < 2)
 	    {
 	      block_size = 2;
-	      g_printerr ("testresampler: block size needs to be at least 2 (fixed: using %d as block size)\n", block_size);
+	      printerr ("testresampler: block size needs to be at least 2 (fixed: using %d as block size)\n", block_size);
 	    }
 	}
       else if (check_arg (argc, argv, &i, "--precision", &opt_arg))
@@ -234,7 +233,7 @@ Options::parse (int   *argc_p,
 	    case 20:
 	    case 24: precision = static_cast<BseResampler2Precision> (p);
 	      break;
-	    default: g_printerr ("testresampler: unsupported precision: %d\n", p);
+	    default: printerr ("testresampler: unsupported precision: %d\n", p);
 		     exit (1);
 	    }
 	}
@@ -257,7 +256,7 @@ Options::parse (int   *argc_p,
 	    }
 	  if (freq_inc < 1)
 	    {
-	      g_printerr ("testresampler: invalid frequency scanning specification\n");
+	      printerr ("testresampler: invalid frequency scanning specification\n");
 	      exit (1);
 	    }
 	  g_free (oa);
@@ -519,14 +518,14 @@ perform_test()
 	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
 	  if (options.max_threshold_db < 0)
 	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
-	  g_assert (max_diff_db < options.max_threshold_db);
+	  assert (max_diff_db < options.max_threshold_db);
 	}
       else if (TEST == TEST_ERROR_SPECTRUM)
 	{
 	  const guint FFT_SIZE = 16384;
 	  if (error_spectrum_error.size() < FFT_SIZE)
 	    {
-	      g_printerr ("too few values for computing error spectrum, increase block size\n");
+	      printerr ("too few values for computing error spectrum, increase block size\n");
 	    }
 	  else
 	    {
@@ -668,7 +667,7 @@ main (int argc, char **argv)
 	test_type = TEST_FILTER_IMPL;
       else
 	{
-	  g_printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
+	  printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
 	  exit (1);
 	}
     }
@@ -679,7 +678,7 @@ main (int argc, char **argv)
     }
   else
     {
-      g_printerr ("testresampler: too many arguments\n");
+      printerr ("testresampler: too many arguments\n");
       exit (1);
     }
   return perform_test();

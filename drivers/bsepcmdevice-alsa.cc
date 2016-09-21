@@ -36,7 +36,7 @@ typedef struct
 /* --- prototypes --- */
 static void             bse_pcm_device_alsa_class_init  (BsePcmDeviceALSAClass  *klass);
 static void             bse_pcm_device_alsa_init        (BsePcmDeviceALSA       *self);
-static BseErrorType     alsa_device_setup               (AlsaPcmHandle          *alsa,
+static Bse::Error     alsa_device_setup               (AlsaPcmHandle          *alsa,
                                                          snd_pcm_t              *phandle,
                                                          guint                   latency_ms,
                                                          guint                  *mix_freq,
@@ -124,10 +124,9 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   while (cindex >= 0)
     {
       snd_ctl_card_info_clear (cinfo);
-      char hwid[128];
-      g_snprintf (hwid, 128, "hw:CARD=%u", cindex);
+      String hwid = string_format ("hw:CARD=%u", cindex);
       snd_ctl_t *chandle = NULL;
-      if (snd_ctl_open (&chandle, hwid, SND_CTL_NONBLOCK) < 0 || !chandle)
+      if (snd_ctl_open (&chandle, hwid.c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
         continue;
       if (snd_ctl_card_info (chandle, cinfo) < 0)
         {
@@ -200,7 +199,7 @@ silent_error_handler (const char *file,
 {
 }
 
-static BseErrorType
+static Bse::Error
 bse_pcm_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -225,7 +224,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   snd_lib_error_set_handler (NULL);
   /* try setup */
   const guint period_size = BSE_PCM_DEVICE (device)->req_block_length;
-  BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
+  Bse::Error error = !aerror ? Bse::Error::NONE : bse_error_from_errno (-aerror, Bse::Error::FILE_OPEN_FAILED);
   guint rh_freq = BSE_PCM_DEVICE (device)->req_mix_freq, rh_n_periods = 0, rh_period_size = period_size;
   if (!aerror && alsa->read_handle)
     error = alsa_device_setup (alsa, alsa->read_handle, BSE_PCM_DEVICE (device)->req_latency_ms, &rh_freq, &rh_n_periods, &rh_period_size);
@@ -233,23 +232,23 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   if (!aerror && alsa->write_handle)
     error = alsa_device_setup (alsa, alsa->write_handle, BSE_PCM_DEVICE (device)->req_latency_ms, &wh_freq, &wh_n_periods, &wh_period_size);
   /* check duplex */
-  if (!error && alsa->read_handle && alsa->write_handle && rh_freq != wh_freq)
-    error = BSE_ERROR_DEVICES_MISMATCH;
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_freq != wh_freq)
+    error = Bse::Error::DEVICES_MISMATCH;
   handle->mix_freq = alsa->read_handle ? rh_freq : wh_freq;
-  if (!error && alsa->read_handle && alsa->write_handle && rh_n_periods != wh_n_periods)
-    error = BSE_ERROR_DEVICES_MISMATCH;
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_n_periods != wh_n_periods)
+    error = Bse::Error::DEVICES_MISMATCH;
   alsa->n_periods = alsa->read_handle ? rh_n_periods : wh_n_periods;
-  if (!error && alsa->read_handle && alsa->write_handle && rh_period_size != wh_period_size)
-    error = BSE_ERROR_DEVICES_MISMATCH;
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_period_size != wh_period_size)
+    error = Bse::Error::DEVICES_MISMATCH;
   alsa->period_size = alsa->read_handle ? rh_period_size : wh_period_size;
-  if (!error && alsa->read_handle && alsa->write_handle &&
+  if (error == 0 && alsa->read_handle && alsa->write_handle &&
       snd_pcm_link (alsa->read_handle, alsa->write_handle) < 0)
-    error = BSE_ERROR_DEVICES_MISMATCH;
-  if (!error && snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle) < 0)
-    error = BSE_ERROR_FILE_OPEN_FAILED;
+    error = Bse::Error::DEVICES_MISMATCH;
+  if (error == 0 && snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle) < 0)
+    error = Bse::Error::FILE_OPEN_FAILED;
 
   /* setup PCM handle or shutdown */
-  if (!error)
+  if (error == 0)
     {
       alsa->period_buffer = (gint16*) g_malloc (alsa->period_size * alsa->frame_size);
       bse_device_set_opened (device, dname, handle->readable, handle->writable);
@@ -305,7 +304,7 @@ bse_pcm_device_alsa_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseErrorType
+static Bse::Error
 alsa_device_setup (AlsaPcmHandle       *alsa,
                    snd_pcm_t           *phandle,
                    guint                latency_ms,
@@ -316,61 +315,61 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
   BsePcmHandle *handle = &alsa->handle;
   /* turn on blocking behaviour since we may end up in read() with an unfilled buffer */
   if (snd_pcm_nonblock (phandle, 0) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   /* setup hardware configuration */
   snd_pcm_hw_params_t *hparams = alsa_alloca0 (snd_pcm_hw_params);
   if (snd_pcm_hw_params_any (phandle, hparams) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   if (snd_pcm_hw_params_set_channels (phandle, hparams, handle->n_channels) < 0)
-    return BSE_ERROR_DEVICE_CHANNELS;
+    return Bse::Error::DEVICE_CHANNELS;
   if (snd_pcm_hw_params_set_access (phandle, hparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0)
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::Error::DEVICE_FORMAT;
   if (snd_pcm_hw_params_set_format (phandle, hparams, SND_PCM_FORMAT_S16_HE) < 0)
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::Error::DEVICE_FORMAT;
   if (alsa->frame_size != handle->n_channels * 2) /* 16bit samples */
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::Error::DEVICE_FORMAT;
   unsigned int rate = *mix_freq;
   if (snd_pcm_hw_params_set_rate_near (phandle, hparams, &rate, NULL) < 0)
-    return BSE_ERROR_DEVICE_FREQUENCY;
+    return Bse::Error::DEVICE_FREQUENCY;
   if (MAX (rate, *mix_freq) - MIN (rate, *mix_freq) > *mix_freq / 100)
-    return BSE_ERROR_DEVICE_FREQUENCY;
+    return Bse::Error::DEVICE_FREQUENCY;
   snd_pcm_uframes_t period_size = *period_sizep;
   if (snd_pcm_hw_params_set_period_size_near (phandle, hparams, &period_size, 0) < 0)
-    return BSE_ERROR_DEVICE_LATENCY;
+    return Bse::Error::DEVICE_LATENCY;
   guint buffer_time_us = latency_ms * 1000;
   if (snd_pcm_hw_params_set_buffer_time_near (phandle, hparams, &buffer_time_us, NULL) < 0)
-    return BSE_ERROR_DEVICE_LATENCY;
+    return Bse::Error::DEVICE_LATENCY;
   if (snd_pcm_hw_params (phandle, hparams) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   /* verify hardware settings */
   unsigned int nperiods = 0;
   if (snd_pcm_hw_params_get_periods (hparams, &nperiods, NULL) < 0 || nperiods < 2)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::Error::DEVICE_BUFFER;
   snd_pcm_uframes_t buffer_size = 0;
   if (snd_pcm_hw_params_get_buffer_size (hparams, &buffer_size) < 0 || buffer_size != nperiods * period_size)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::Error::DEVICE_BUFFER;
   /* setup software configuration */
   snd_pcm_sw_params_t *sparams = alsa_alloca0 (snd_pcm_sw_params);
   if (snd_pcm_sw_params_current (phandle, sparams) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   if (snd_pcm_sw_params_set_start_threshold (phandle, sparams, (buffer_size / period_size) * period_size) < 0)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::Error::DEVICE_BUFFER;
   if (snd_pcm_sw_params_set_avail_min (phandle, sparams, period_size) < 0)
-    return BSE_ERROR_DEVICE_LATENCY;
+    return Bse::Error::DEVICE_LATENCY;
   snd_pcm_uframes_t boundary;
   if (snd_pcm_sw_params_get_boundary (sparams, &boundary) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   gboolean stop_on_xrun = FALSE;                                                /* ignore XRUN */
   guint threshold = stop_on_xrun ? buffer_size : MIN (buffer_size * 2, boundary);
   // constrain boundary for stop_threshold, to work around 64bit alsa lib setting boundary to 0x5000000000000000
   if (snd_pcm_sw_params_set_stop_threshold (phandle, sparams, threshold) < 0)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::Error::DEVICE_BUFFER;
   if (snd_pcm_sw_params_set_silence_threshold (phandle, sparams, 0) < 0 ||
       snd_pcm_sw_params_set_silence_size (phandle, sparams, boundary) < 0)      /* play silence on XRUN */
-    return BSE_ERROR_DEVICE_BUFFER;
-  // if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0) return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::Error::DEVICE_BUFFER;
+  // if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0) return Bse::Error::DEVICE_BUFFER;
   if (snd_pcm_sw_params (phandle, sparams) < 0)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
   /* assign out values */
   *mix_freq = rate;
   *n_periodsp = nperiods;
@@ -384,7 +383,7 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
           (guint) (nperiods * period_size),
           (guint) buffer_size);
   // snd_pcm_dump (phandle, snd_output);
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 static void
 alsa_device_retrigger (AlsaPcmHandle *alsa)
@@ -439,7 +438,7 @@ alsa_device_check_io (BsePcmHandle *handle,
           ws = snd_pcm_state (alsa->write_handle);
         }
       guint wn = snd_pcm_status_get_avail (stat);
-      g_printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
+      printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
                   rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
                   wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
                   handle->block_length,

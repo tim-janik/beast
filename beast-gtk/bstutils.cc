@@ -21,11 +21,40 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
-/* --- generated enums --- */
-#include "bstenum_arrays.cc"     /* enum string value arrays plus include directives */
 
-/* --- prototypes --- */
-static void     _bst_init_idl                   (void);
+
+namespace Bst {
+
+static const uint16 EVENT_LOOP_RUNNING   = 0xffff;
+static uint16       event_loop_quit_code = EVENT_LOOP_RUNNING;
+
+int
+event_loop_run ()
+{
+  // run main event loop until main_quit()
+  while (event_loop_quit_code == EVENT_LOOP_RUNNING)
+    {
+      sfi_glue_gc_run ();
+      GDK_THREADS_LEAVE ();
+      g_main_iteration (TRUE);
+      GDK_THREADS_ENTER ();
+    }
+  // return exit status and reset state to allow restarts
+  const int quit_code = event_loop_quit_code;
+  event_loop_quit_code = EVENT_LOOP_RUNNING;
+  return quit_code;
+}
+
+void
+event_loop_quit (uint8 exit_code)
+{
+  if (event_loop_quit_code == EVENT_LOOP_RUNNING)
+    event_loop_quit_code = exit_code;
+}
+
+} // Bst                                                                                                 |
+
+
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;
 Bse::ServerH bse_server;
@@ -34,37 +63,9 @@ Bse::ServerH bse_server;
 void
 _bst_init_utils (void)
 {
-  g_assert (stock_icon_factory == NULL);
+  assert (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
-  /* initialize generated type ids */
-  {
-    static struct {
-      const char       *type_name;
-      GType             parent;
-      GType            *type_id;
-      gconstpointer     pointer1;
-    } builtin_info[] = {
-#include "bstenum_list.cc"       /* type entries */
-    };
-    guint i;
-    for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
-      {
-        GType type_id = 0;
-
-        if (builtin_info[i].parent == G_TYPE_ENUM)
-          type_id = g_enum_register_static (builtin_info[i].type_name, (const GEnumValue*) builtin_info[i].pointer1);
-        else if (builtin_info[i].parent == G_TYPE_FLAGS)
-          type_id = g_flags_register_static (builtin_info[i].type_name, (const GFlagsValue*) builtin_info[i].pointer1);
-        else
-          g_assert_not_reached ();
-        g_assert (g_type_name (type_id) != NULL);
-        *builtin_info[i].type_id = type_id;
-      }
-  }
-
-  /* initialize IDL types */
-  _bst_init_idl ();
 
   /* initialize stock icons (included above) */
   {
@@ -88,11 +89,10 @@ _bst_init_utils (void)
   }
 }
 
-#include "beast-gtk/dialogs/beast-xml-zfiles.cc"
+#include "beast-gtk/res/beast-resources.cc"
 void
 _bst_init_radgets (void)
 {
-  gchar *text;
   gxk_radget_define_widget_type (BST_TYPE_TRACK_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_HGROW_BAR);
   gxk_radget_define_widget_type (BST_TYPE_VGROW_BAR);
@@ -110,12 +110,11 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_SCROLLGRAPH);
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
-  text = gxk_zfile_uncompress (BST_RADGETS_STANDARD_SIZE, BST_RADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_RADGETS_STANDARD_DATA));
-  gxk_radget_parse_text ("beast", text, -1, NULL, NULL);
-  g_free (text);
-  text = gxk_zfile_uncompress (BST_RADGETS_BEAST_SIZE, BST_RADGETS_BEAST_DATA, G_N_ELEMENTS (BST_RADGETS_BEAST_DATA));
-  gxk_radget_parse_text ("beast", text, -1, NULL, NULL);
-  g_free (text);
+  Rapicorn::Blob blob;
+  blob = Rapicorn::Res ("@res radgets-standard.xml");
+  gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
+  blob = Rapicorn::Res ("@res radgets-beast.xml");
+  gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
 }
 
 GtkWidget*
@@ -154,8 +153,8 @@ bst_stock_register_icon (const gchar    *stock_id,
                          guint           rowstride,
                          const guint8   *pixels)
 {
-  g_return_if_fail (bytes_per_pixel == 3 || bytes_per_pixel == 4);
-  g_return_if_fail (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
+  assert_return (bytes_per_pixel == 3 || bytes_per_pixel == 4);
+  assert_return (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
 
   if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
     {
@@ -173,10 +172,10 @@ bst_stock_register_icon (const gchar    *stock_id,
 
 /* --- beast/bse specific extensions --- */
 void
-bst_status_set_error (BseErrorType error, const std::string &message)
+bst_status_set_error (Bse::Error error, const std::string &message)
 {
-  if (error)
-    gxk_status_set (GXK_STATUS_ERROR, message.c_str(), bse_error_blurb (error));
+  if (error != 0)
+    gxk_status_set (GXK_STATUS_ERROR, message.c_str(), Bse::error_blurb (error));
   else
     gxk_status_set (GXK_STATUS_DONE, message.c_str(), NULL);
 }
@@ -184,7 +183,7 @@ bst_status_set_error (BseErrorType error, const std::string &message)
 void
 bst_gui_error_bell (gpointer widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (GTK_WIDGET_DRAWABLE (widget) && BST_GUI_ENABLE_ERROR_BELL)
     {
@@ -234,12 +233,12 @@ bst_window_sync_title_to_proxy (gpointer     window,
 {
   const char *p;
 
-  g_return_if_fail (GTK_IS_WINDOW (window));
+  assert_return (GTK_IS_WINDOW (window));
   if (proxy)
     {
-      g_return_if_fail (BSE_IS_ITEM (proxy));
-      g_return_if_fail (title_format != NULL);
-      /* g_return_if_fail (strstr (title_format, "%s") != NULL); */
+      assert_return (BSE_IS_ITEM (proxy));
+      assert_return (title_format != NULL);
+      /* assert_return (strstr (title_format, "%s") != NULL); */
     }
   p = title_format ? strstr (title_format, "%s") : NULL;
   if (proxy && p)
@@ -318,7 +317,7 @@ bst_background_handler_add (gboolean       (*handler) (gpointer data),
                             void           (*free_func) (gpointer data),
                             gint             prio)
 {
-  g_return_if_fail (handler != NULL);
+  assert_return (handler != NULL);
   BackgroundHandler *bgh = g_new0 (BackgroundHandler, 1);
   bgh->handler = handler;
   bgh->data = data;
@@ -492,8 +491,8 @@ bst_action_list_add_cat (GxkActionList          *alist,
 
   if (cat->icon)
     {
-      BseIcon *icon = cat->icon;
-      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
+      BseIc0n *icon = cat->icon;
+      assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
       bst_stock_register_icon (cat->category, 4,
                                icon->width, icon->height,
                                icon->width * 4,
@@ -512,7 +511,36 @@ bst_action_list_add_cat (GxkActionList          *alist,
 
   gxk_action_list_add_translated (alist, NULL, p, NULL,
                                   gxk_factory_path_get_leaf (cat->category),
-                                  cat->category_id, stock_id,
+                                  g_quark_from_string (cat->category), stock_id,
+                                  acheck, aexec, user_data);
+}
+
+void
+bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
+                            GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data)
+{
+  const char *stock_id;
+  if (icon.width && icon.height)
+    {
+      assert (icon.width * icon.height == int (icon.pixels.size()));
+      bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
+      stock_id = ad.entity.c_str();
+    }
+  else
+    stock_id = stock_fallback;
+
+  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  if (title.empty())
+    title = ad.entity;
+  Rapicorn::StringVector tags = Rapicorn::string_split_any (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
+  if (tags.size())
+    {
+      tags.push_back (title);
+      title = Rapicorn::string_join ("/", tags);
+    }
+  gxk_action_list_add_translated (alist, NULL, title.c_str(), NULL,
+                                  ad.entity.c_str(), // tooltip
+                                  g_quark_from_string (ad.entity.c_str()), stock_id,
                                   acheck, aexec, user_data);
 }
 
@@ -529,7 +557,7 @@ bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
   GxkActionList *alist = gxk_action_list_create ();
   guint i;
 
-  g_return_val_if_fail (cseq != NULL, alist);
+  assert_return (cseq != NULL, alist);
 
   for (i = 0; i < cseq->n_cats; i++)
     if (!predicate || predicate (predicate_data, cseq->cats[i]))
@@ -590,14 +618,14 @@ gmask_form (GtkWidget   *parent,
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_TABLE (parent), NULL);
-  g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
+  assert_return (GTK_IS_TABLE (parent), NULL);
+  assert_return (GTK_IS_WIDGET (action), NULL);
 
   if (!gmask_quark)
     gmask_quark = g_quark_from_static_string ("GMask");
 
   gmask = GMASK_GET (action);
-  g_return_val_if_fail (gmask == NULL, NULL);
+  assert_return (gmask == NULL, NULL);
 
   gmask = g_new0 (GMask, 1);
   g_object_set_qdata_full (G_OBJECT (action), gmask_quark, gmask, gmask_destroy);
@@ -684,9 +712,9 @@ bst_gmask_set_tip (BstGMask    *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   g_free (gmask->tip);
   gmask->tip = g_strdup (tip_text);
@@ -704,10 +732,10 @@ bst_gmask_set_prompt (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->prompt)
     g_object_unref (gmask->prompt);
@@ -727,10 +755,10 @@ bst_gmask_set_aux1 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux1)
     g_object_unref (gmask->aux1);
@@ -752,10 +780,10 @@ bst_gmask_set_aux2 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux2)
     g_object_unref (gmask->aux2);
@@ -775,10 +803,10 @@ bst_gmask_set_aux3 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux3)
     g_object_unref (gmask->aux3);
@@ -799,9 +827,9 @@ bst_gmask_set_column (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   gmask->column = column;
 }
@@ -817,9 +845,9 @@ bst_gmask_get_prompt (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->prompt;
 }
@@ -835,9 +863,9 @@ bst_gmask_get_aux1 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux1;
 }
@@ -853,9 +881,9 @@ bst_gmask_get_aux2 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux2;
 }
@@ -871,9 +899,9 @@ bst_gmask_get_aux3 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux3;
 }
@@ -889,9 +917,9 @@ bst_gmask_get_action (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->action;
 }
@@ -912,10 +940,10 @@ bst_gmask_foreach (BstGMask *mask,
   GMask *gmask;
   GtkCallback callback = GtkCallback (func);
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (func != NULL);
+  assert_return (gmask != NULL);
+  assert_return (func != NULL);
 
   if (gmask->prompt)
     callback (gmask->prompt, data);
@@ -994,9 +1022,9 @@ bst_gmask_pack (BstGMask *mask)
   guint row, n, c, dislodge_columns;
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   /* GUI mask layout:
    * row: |Prompt|Aux1| Aux2 |Aux3| PreAction#Action#PostAction|
@@ -1195,11 +1223,11 @@ bst_container_set_named_child (GtkWidget *container,
 {
   NChildren *children;
 
-  g_return_if_fail (GTK_IS_CONTAINER (container));
-  g_return_if_fail (qname > 0);
-  g_return_if_fail (GTK_IS_WIDGET (child));
+  assert_return (GTK_IS_CONTAINER (container));
+  assert_return (qname > 0);
+  assert_return (GTK_IS_WIDGET (child));
   if (child)
-    g_return_if_fail (gtk_widget_is_ancestor (child, container));
+    assert_return (gtk_widget_is_ancestor (child, container));
 
   if (!quark_container_named_children)
     quark_container_named_children = g_quark_from_static_string ("BstContainer-named_children");
@@ -1224,8 +1252,8 @@ bst_container_get_named_child (GtkWidget *container,
 {
   NChildren *children;
 
-  g_return_val_if_fail (GTK_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (qname > 0, NULL);
+  assert_return (GTK_IS_CONTAINER (container), NULL);
+  assert_return (qname > 0, NULL);
 
   children = quark_container_named_children ? (NChildren*) g_object_get_qdata (G_OBJECT (container), quark_container_named_children) : NULL;
   if (children)
@@ -1251,8 +1279,8 @@ bst_xpm_view_create (const gchar **xpm,
   GdkPixmap *pixmap;
   GdkBitmap *mask;
 
-  g_return_val_if_fail (xpm != NULL, NULL);
-  g_return_val_if_fail (GTK_IS_WIDGET (colormap_widget), NULL);
+  assert_return (xpm != NULL, NULL);
+  assert_return (GTK_IS_WIDGET (colormap_widget), NULL);
 
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (colormap_widget),
                                                   &mask, NULL, (gchar**) xpm);
@@ -1265,109 +1293,6 @@ bst_xpm_view_create (const gchar **xpm,
   return pix;
 }
 
-
-/* --- misc utils --- */
-gint
-bst_fft_size_to_int (BstFFTSize fft_size)
-{
-  switch (fft_size)
-    {
-#if 0
-    case BST_FFT_SIZE_1:          return 1;
-#endif
-    case BST_FFT_SIZE_2:          return 2;
-    case BST_FFT_SIZE_4:          return 4;
-    case BST_FFT_SIZE_8:          return 8;
-    case BST_FFT_SIZE_16:         return 16;
-    case BST_FFT_SIZE_32:         return 32;
-    case BST_FFT_SIZE_64:         return 64;
-    case BST_FFT_SIZE_128:        return 128;
-    case BST_FFT_SIZE_256:        return 256;
-    case BST_FFT_SIZE_512:        return 512;
-    case BST_FFT_SIZE_1024:       return 1024;
-    case BST_FFT_SIZE_2048:       return 2048;
-    case BST_FFT_SIZE_4096:       return 4096;
-    case BST_FFT_SIZE_8192:       return 8192;
-    case BST_FFT_SIZE_16384:      return 16384;
-    case BST_FFT_SIZE_32768:      return 32768;
-    case BST_FFT_SIZE_65536:      return 65536;
-#if 0
-    case BST_FFT_SIZE_131072:     return 131072;
-    case BST_FFT_SIZE_262144:     return 262144;
-    case BST_FFT_SIZE_524288:     return 524288;
-    case BST_FFT_SIZE_1048576:    return 1048576;
-    case BST_FFT_SIZE_2097152:    return 2097152;
-    case BST_FFT_SIZE_4194304:    return 4194304;
-    case BST_FFT_SIZE_8388608:    return 8388608;
-    case BST_FFT_SIZE_16777216:   return 16777216;
-    case BST_FFT_SIZE_33554432:   return 33554432;
-    case BST_FFT_SIZE_67108864:   return 67108864;
-    case BST_FFT_SIZE_134217728:  return 134217728;
-    case BST_FFT_SIZE_268435456:  return 268435456;
-    case BST_FFT_SIZE_536870912:  return 536870912;
-    case BST_FFT_SIZE_1073741824: return 1073741824;
-    case BST_FFT_SIZE_2147483648: return 2147483648;
-    case BST_FFT_SIZE_4294967296: return 4294967296;
-#endif
-    default:                      return 0;
-    }
-}
-
-BstFFTSize
-bst_fft_size_from_int (guint sz)
-{
-  const struct { BstFFTSize fft_size; guint sz; } sizes[] = {
-#if 0
-    { BST_FFT_SIZE_1, 1 },
-#endif
-    { BST_FFT_SIZE_2, 2 },
-    { BST_FFT_SIZE_4, 4 },
-    { BST_FFT_SIZE_8, 8 },
-    { BST_FFT_SIZE_16,    16 },
-    { BST_FFT_SIZE_32,    32 },
-    { BST_FFT_SIZE_64,    64 },
-    { BST_FFT_SIZE_128,   128 },
-    { BST_FFT_SIZE_256,   256 },
-    { BST_FFT_SIZE_512,   512 },
-    { BST_FFT_SIZE_1024,  1024 },
-    { BST_FFT_SIZE_2048,  2048 },
-    { BST_FFT_SIZE_4096,  4096 },
-    { BST_FFT_SIZE_8192,  8192 },
-    { BST_FFT_SIZE_16384, 16384 },
-    { BST_FFT_SIZE_32768, 32768 },
-    { BST_FFT_SIZE_65536, 65536 },
-#if 0
-    { BST_FFT_SIZE_131072,     131072 },
-    { BST_FFT_SIZE_262144,     262144 },
-    { BST_FFT_SIZE_524288,     524288 },
-    { BST_FFT_SIZE_1048576,    1048576 },
-    { BST_FFT_SIZE_2097152,    2097152 },
-    { BST_FFT_SIZE_4194304,    4194304 },
-    { BST_FFT_SIZE_8388608,    8388608 },
-    { BST_FFT_SIZE_16777216,   16777216 },
-    { BST_FFT_SIZE_33554432,   33554432 },
-    { BST_FFT_SIZE_67108864,   67108864 },
-    { BST_FFT_SIZE_134217728,  134217728 },
-    { BST_FFT_SIZE_268435456,  268435456 },
-    { BST_FFT_SIZE_536870912,  536870912 },
-    { BST_FFT_SIZE_1073741824, 1073741824 },
-    { BST_FFT_SIZE_2147483648, 2147483648 },
-    { BST_FFT_SIZE_4294967296, 4294967296 },
-#endif
-  };
-  /* find size via bisection */
-  guint offset = 0, n = G_N_ELEMENTS (sizes);
-  while (offset + 1 < n)
-    {
-      guint i = (offset + n) >> 1;
-      if (sz < sizes[i].sz)
-        n = i;
-      else
-        offset = i;
-    }
-  return sizes[offset].fft_size;
-}
-
 #include <sfi/sfistore.hh>
 
 gchar*
@@ -1377,7 +1302,7 @@ bst_file_scan_find_key (const gchar *file,
 {
   SfiRStore *rstore;
 
-  g_return_val_if_fail (file != NULL, NULL);
+  assert_return (file != NULL, NULL);
 
   rstore = sfi_rstore_new_open (file);
   if (rstore)
@@ -1413,56 +1338,6 @@ bst_file_scan_find_key (const gchar *file,
 /* --- generated marshallers --- */
 #include "bstmarshal.cc"
 
-
-/* --- IDL pspecs --- */
-#define sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
-#define sfidl_pspec_Bool_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints) \
-  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
-#define sfidl_pspec_Int_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_UInt(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints), group)
-#define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints) \
-  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
-#define sfidl_pspec_Real_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Note(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, hints), group)
-#define sfidl_pspec_Choice(group, name, nick, blurb, dval, options, cvalues) \
-  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Choice_default(group, name, cvalues) \
-  sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_String(group, name, nick, blurb, dflt, options) \
-  sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
-#define sfidl_pspec_String_default(group, name) \
-  sfidl_pspec_String (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_BBlock(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, options), group)
-#define sfidl_pspec_BBlock_default(group, name) \
-  sfidl_pspec_BBlock (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_FBlock(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_fblock (name, nick, blurb, options), group)
-#define sfidl_pspec_FBlock_default(group, name) \
-  sfidl_pspec_FBlock (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_Rec(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_rec_generic (name, nick, blurb, options), group)
-#define sfidl_pspec_Rec_default(group, name, fields) \
-  sfidl_pspec_Rec (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_Record(group, name, nick, blurb, options, fields) \
-  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, options), group)
-#define sfidl_pspec_Record_default(group, name, fields) \
-  sfidl_pspec_Record (group, name, NULL, NULL, SFI_PARAM_STANDARD, fields)
-#define sfidl_pspec_Sequence(group, name, nick, blurb, options, element) \
-  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element, options), group)
-#define sfidl_pspec_Sequence_default(group, name, element) \
-  sfidl_pspec_Sequence (group, name, NULL, NULL, SFI_PARAM_STANDARD, element)
-#define sfidl_pspec_Proxy_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
-/* --- generated type IDs and SFIDL types --- */
-#include "bstgentypes.cc"       /* type id defs */
 
 // == mouse button checks ==
 static bool
@@ -1513,3 +1388,6 @@ bst_mouse_button_context (GdkEvent *event)
 {
   return button_event (event) && event->button.button == 3;
 }
+
+// == bstserverapi.hh ==
+#include "bstserverapi.cc"      // compile types and bindings generated for bstapi.idl

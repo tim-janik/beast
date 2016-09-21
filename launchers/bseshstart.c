@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
+#include "../configure.h"       // BIN_VERSION
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@ custom_find_executable (int    *argc_p,
 {
   const char *bindir = BINDIR;
   const char *name = "bsescm";
-  const char *version = BIN_VERSION;
+  const char *version = BSE_MAJOR_VERSION_STR;
   int l = 1 + strlen (bindir) + 1 + strlen (name) + 1 + strlen (version);
   char *string = malloc (l);
   if (!string)

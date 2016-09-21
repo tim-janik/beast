@@ -66,11 +66,11 @@ gsl_magic_list_brute_match (SfiRing     *magic_list,
 {
   BFile bfile = { -1, };
 
-  g_return_if_fail (file_name != NULL);
+  assert_return (file_name != NULL);
   if (ext_matches)
-    g_return_if_fail (*ext_matches == NULL);
+    assert_return (*ext_matches == NULL);
   if (other_matches)
-    g_return_if_fail (*other_matches == NULL);
+    assert_return (*other_matches == NULL);
 
   if (!ext_matches && !other_matches)
     return;
@@ -118,7 +118,7 @@ gsl_magic_list_match_file_skip (SfiRing     *magic_list,
   GslMagic *rmagic = NULL;
   BFile bfile = { -1, };
 
-  g_return_val_if_fail (file_name != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
 
   if (bfile_open (&bfile, file_name, skip_offset))
     {
@@ -197,7 +197,7 @@ gsl_magic_create (gpointer     data,
   GslRealMagic *match_list;
   gchar *magic_string;
 
-  g_return_val_if_fail (magic_spec != NULL, NULL);
+  assert_return (magic_spec != NULL, NULL);
 
   magic_string = g_strdup (magic_spec);
   match_list = magic_create (magic_string, magic_spec);
@@ -611,7 +611,7 @@ magic_read_data (BFile *bfile, GslRealMagic *magic, MagicData *data)
 	    data->v_int32 = (signed) uint8;
 	}
       else
-	g_assert_not_reached ();
+	assert_unreached ();
     }
 
   return TRUE;
@@ -620,8 +620,8 @@ magic_read_data (BFile *bfile, GslRealMagic *magic, MagicData *data)
 static gboolean
 magic_match_file (BFile *bfile, GslRealMagic *magics)
 {
-  g_return_val_if_fail (bfile != NULL, FALSE);
-  g_return_val_if_fail (magics != NULL, FALSE);
+  assert_return (bfile != NULL, FALSE);
+  assert_return (magics != NULL, FALSE);
 
   do
     {
@@ -653,9 +653,9 @@ bfile_open (BFile       *bfile,
   struct stat buf = { 0, };
   gint ret;
 
-  g_return_val_if_fail (bfile != NULL, FALSE);
-  g_return_val_if_fail (bfile->fd < 0, FALSE);
-  g_return_val_if_fail (file_name != NULL, FALSE);
+  assert_return (bfile != NULL, FALSE);
+  assert_return (bfile->fd < 0, FALSE);
+  assert_return (file_name != NULL, FALSE);
 
   bfile->fd = open (file_name, O_RDONLY);
   if (bfile->fd < 0)
@@ -713,8 +713,8 @@ bfile_read (BFile *bfile,
   guint end = offset + n_bytes;
   gint ret;
 
-  g_return_val_if_fail (bfile != NULL, FALSE);
-  g_return_val_if_fail (n_bytes < BFILE_BSIZE / 2, FALSE);
+  assert_return (bfile != NULL, FALSE);
+  assert_return (n_bytes < BFILE_BSIZE / 2, FALSE);
 
   if (end > bfile->file_size || bfile->fd < 0)
     return FALSE;
@@ -759,7 +759,7 @@ bfile_read (BFile *bfile,
 static guint
 bfile_get_size (BFile *bfile)
 {
-  g_return_val_if_fail (bfile != NULL, 0);
+  assert_return (bfile != NULL, 0);
 
   return bfile->fd >= 0 ? bfile->file_size : 0;
 }
@@ -767,7 +767,7 @@ bfile_get_size (BFile *bfile)
 static void
 bfile_close (BFile *bfile)
 {
-  g_return_if_fail (bfile != NULL);
+  assert_return (bfile != NULL);
 
   if (bfile->fd >= 0)
     close (bfile->fd);

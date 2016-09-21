@@ -19,13 +19,13 @@ namespace Bse {
 static Bse::Mutex               global_tick_stamp_mutex;
 static uint64	                tick_stamp_system_time = 0;
 static uint64                   tick_stamp_leaps = 0;
-Rapicorn::Atomic<uint64>        TickStamp::global_tick_stamp = 0;       // initialized to 1 from gsl_init(), so 0 == invalid
+std::atomic<uint64>             TickStamp::global_tick_stamp { 0 }; // initialized to 1 from gsl_init(), so 0 == invalid
 static std::list<TickStampWakeupP> tick_stamp_wakeups;
 
 void
 TickStamp::_init_forgsl()
 {
-  g_return_if_fail (global_tick_stamp == 0);    // assert we're uninitialized
+  assert_return (global_tick_stamp == 0);    // assert we're uninitialized
   global_tick_stamp = 1;
 }
 
@@ -39,7 +39,7 @@ TickStamp::_set_leap (uint64 ticks)
 void
 TickStamp::_increment ()
 {
-  g_return_if_fail (tick_stamp_leaps > 0);
+  assert_return (tick_stamp_leaps > 0);
   volatile guint64 newstamp;
   uint64 systime;
   systime = sfi_time_system ();
@@ -142,7 +142,7 @@ TickStamp::Wakeup::awake_after (uint64 stamp)
 void
 TickStamp::Wakeup::awake_before (uint64 stamp)
 {
-  g_return_if_fail (stamp > 0);
+  assert_return (stamp > 0);
   if (stamp > tick_stamp_leaps)
     stamp -= tick_stamp_leaps;
   awake_after (stamp);
@@ -174,7 +174,7 @@ TickStamp::Wakeup::_emit_wakeups (uint64 wakeup_stamp)
 const gchar*
 gsl_byte_order_to_string (guint byte_order)
 {
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+  assert_return (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
   if (byte_order == G_LITTLE_ENDIAN)
     return "little-endian";
   if (byte_order == G_BIG_ENDIAN)
@@ -184,7 +184,7 @@ gsl_byte_order_to_string (guint byte_order)
 guint
 gsl_byte_order_from_string (const gchar *string)
 {
-  g_return_val_if_fail (string != NULL, 0);
+  assert_return (string != NULL, 0);
   while (*string == ' ')
     string++;
   if (strncasecmp (string, "little", 6) == 0)
@@ -194,46 +194,46 @@ gsl_byte_order_from_string (const gchar *string)
   return 0;
 }
 
-BseErrorType
+Bse::Error
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
   if (birnet_file_check (file_name, mode))
-    return BSE_ERROR_NONE;
-  return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    return Bse::Error::NONE;
+  return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }
 
-BseErrorType
+Bse::Error
 gsl_error_from_errno (gint         sys_errno,
-		      BseErrorType fallback)
+		      Bse::Error fallback)
 {
   switch (sys_errno)
     {
-    case 0:             return BSE_ERROR_NONE;
+    case 0:             return Bse::Error::NONE;
     case ELOOP:
     case ENAMETOOLONG:
-    case ENOENT:        return BSE_ERROR_FILE_NOT_FOUND;
-    case EISDIR:        return BSE_ERROR_FILE_IS_DIR;
+    case ENOENT:        return Bse::Error::FILE_NOT_FOUND;
+    case EISDIR:        return Bse::Error::FILE_IS_DIR;
     case EROFS:
     case EPERM:
-    case EACCES:        return BSE_ERROR_PERMS;
+    case EACCES:        return Bse::Error::PERMS;
 #ifdef ENODATA  /* GNU/kFreeBSD lacks this */
     case ENODATA:
 #endif
-    case ENOMSG:        return BSE_ERROR_FILE_EOF;
-    case ENOMEM:	return BSE_ERROR_NO_MEMORY;
-    case ENOSPC:	return BSE_ERROR_NO_SPACE;
-    case ENFILE:	return BSE_ERROR_NO_FILES;
-    case EMFILE:	return BSE_ERROR_MANY_FILES;
+    case ENOMSG:        return Bse::Error::FILE_EOF;
+    case ENOMEM:	return Bse::Error::NO_MEMORY;
+    case ENOSPC:	return Bse::Error::NO_SPACE;
+    case ENFILE:	return Bse::Error::NO_FILES;
+    case EMFILE:	return Bse::Error::MANY_FILES;
     case EFBIG:
     case ESPIPE:
-    case EIO:           return BSE_ERROR_IO;
-    case EEXIST:        return BSE_ERROR_FILE_EXISTS;
+    case EIO:           return Bse::Error::IO;
+    case EEXIST:        return Bse::Error::FILE_EXISTS;
     case ETXTBSY:
-    case EBUSY:         return BSE_ERROR_FILE_BUSY;
+    case EBUSY:         return Bse::Error::FILE_BUSY;
     case EAGAIN:
-    case EINTR:		return BSE_ERROR_TEMP;
-    case EFAULT:        return BSE_ERROR_INTERNAL;
+    case EINTR:		return Bse::Error::TEMP;
+    case EFAULT:        return Bse::Error::INTERNAL;
     case EBADF:
     case ENOTDIR:
     case ENODEV:
@@ -243,16 +243,16 @@ gsl_error_from_errno (gint         sys_errno,
 }
 
 static guint
-score_error (BseErrorType error)
+score_error (Bse::Error error)
 {
   /* errors are sorted by increasing descriptiveness */
-  static const BseErrorType error_score[] = {
-    BSE_ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
-    BSE_ERROR_UNKNOWN, BSE_ERROR_INTERNAL, BSE_ERROR_TEMP,
-    BSE_ERROR_IO, BSE_ERROR_FILE_EOF,
-    BSE_ERROR_FILE_OPEN_FAILED, BSE_ERROR_FILE_SEEK_FAILED,
-    BSE_ERROR_FILE_READ_FAILED, BSE_ERROR_FILE_WRITE_FAILED,
-    BSE_ERROR_FILE_NOT_FOUND, BSE_ERROR_WAVE_NOT_FOUND,
+  static const Bse::Error error_score[] = {
+    Bse::Error::NONE /* least descriptive, indicates 0-initialized error variable */,
+    Bse::Error::UNKNOWN, Bse::Error::INTERNAL, Bse::Error::TEMP,
+    Bse::Error::IO, Bse::Error::FILE_EOF,
+    Bse::Error::FILE_OPEN_FAILED, Bse::Error::FILE_SEEK_FAILED,
+    Bse::Error::FILE_READ_FAILED, Bse::Error::FILE_WRITE_FAILED,
+    Bse::Error::FILE_NOT_FOUND, Bse::Error::WAVE_NOT_FOUND,
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (error_score); i++)
@@ -261,12 +261,12 @@ score_error (BseErrorType error)
   return i;
 }
 
-BseErrorType
+Bse::Error
 gsl_error_select (guint           n_errors,
-                  BseErrorType    first_error,
+                  Bse::Error    first_error,
                   ...)
 {
-  BseErrorType *errors = g_new (BseErrorType, MAX (1, n_errors));
+  Bse::Error *errors = g_new (Bse::Error, MAX (1, n_errors));
   va_list args;
   guint i, score;
   /* function used to select a descriptive error in
@@ -276,12 +276,12 @@ gsl_error_select (guint           n_errors,
   for (i = 0; i < n_errors; i++)
     {
       if (i)
-        first_error = (BseErrorType) va_arg (args, int); // BseErrorType
+        first_error = (Bse::Error) va_arg (args, int); // Bse::Error
       errors[i] = first_error;
     }
   va_end (args);
   /* grab first error, unless followed by an error with higher score */
-  BseErrorType e = errors[0];
+  Bse::Error e = errors[0];
   score = score_error (e);
   for (i = 1; i < n_errors; i++)
     {
@@ -322,7 +322,7 @@ gsl_progress_notify (GslProgressState *pstate,
 {
   gboolean need_update;
 
-  g_return_if_fail (pstate != NULL);
+  assert_return (pstate != NULL);
 
   if (pval >= 0)
     {
@@ -356,7 +356,7 @@ gsl_progress_notify (GslProgressState *pstate,
 void
 gsl_progress_wipe (GslProgressState *pstate)
 {
-  g_return_if_fail (pstate != NULL);
+  assert_return (pstate != NULL);
 
   if (pstate->wipe_length)
     {
@@ -364,7 +364,7 @@ gsl_progress_wipe (GslProgressState *pstate)
       memset (wstr, ' ', pstate->wipe_length);
       wstr[pstate->wipe_length] = '\r';
       wstr[pstate->wipe_length + 1] = 0;
-      g_printerr ("%s", wstr);
+      printerr ("%s", wstr);
       g_free (wstr);
       pstate->wipe_length = 0;
     }
@@ -388,7 +388,7 @@ gsl_progress_printerr (gpointer          message,
                          detail ? detail : "",
                          detail ? ")" : "");
   l = strlen (str);
-  g_printerr ("%s            \r", str);
+  printerr ("%s            \r", str);
   g_free (str);
   return l;
 }
@@ -396,7 +396,7 @@ gsl_progress_printerr (gpointer          message,
 void
 gsl_init (void)
 {
-  g_return_if_fail (Bse::TickStamp::current() == 0);     // assert single initialization
+  assert_return (Bse::TickStamp::current() == 0);     // assert single initialization
   struct Internal : Bse::TickStamp { using TickStamp::_init_forgsl; };
   Internal::_init_forgsl();
   /* initialize subsystems */

@@ -185,7 +185,7 @@ void
 gxk_notebook_set_assortment (GxkNotebook    *self,
                              GxkAssortment  *assortment)
 {
-  g_return_if_fail (GXK_IS_NOTEBOOK (self));
+  assert_return (GXK_IS_NOTEBOOK (self));
   GtkNotebook *notebook = GTK_NOTEBOOK (self);
   if (self->assortment == assortment)
     return;

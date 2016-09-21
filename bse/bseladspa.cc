@@ -105,7 +105,7 @@ static void
 ladspa_plugin_unload (BseLadspaPlugin *self)
 {
   guint i;
-  g_return_if_fail (self->gmodule != NULL);
+  assert_return (self->gmodule != NULL);
   g_module_close (self->gmodule);
   self->gmodule = NULL;
   for (i = 0; i < self->n_types; i++)
@@ -120,7 +120,7 @@ static void
 ladspa_plugin_unuse (GTypePlugin *gplugin)
 {
   BseLadspaPlugin *self = BSE_LADSPA_PLUGIN (gplugin);
-  g_return_if_fail (self->use_count > 0);
+  assert_return (self->use_count > 0);
   self->use_count--;
   if (!self->use_count)
     ladspa_plugin_unload (self);
@@ -435,7 +435,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
   PortCounter pcounter = { 0, 1, 1, 1, 1 };
   bool seen_control_output = false, seen_audio_output = false;
 
-  g_return_val_if_fail (cld != NULL, NULL);
+  assert_return (cld != NULL, NULL);
 
   bli->file_path = g_strdup (file_path);
   if (!file_path)
@@ -559,7 +559,7 @@ bse_ladspa_info_free (BseLadspaInfo *bli)
 {
   guint i;
 
-  g_return_if_fail (bli != NULL);
+  assert_return (bli != NULL);
 
   for (i = 0; i < bli->n_cports; i++)
     {
@@ -598,7 +598,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   const gchar *error;
   GModule *gmodule;
 
-  g_return_val_if_fail (file_name != NULL, "Internal Error");
+  assert_return (file_name != NULL, "Internal Error");
 
   if (ladspa_plugin_find (file_name))
     return "Plugin already registered";
@@ -616,7 +616,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
     }
 
   /* create plugin and register types */
-  self = (BseLadspaPlugin*) g_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
+  self = (BseLadspaPlugin*) bse_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
   self->fname = g_strdup (file_name);
   self->gmodule = gmodule;
   error = ladspa_plugin_init_type_ids (self, ldf);
@@ -634,15 +634,13 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   return error;
 }
 
-#include "topconfig.h"
-
 extern "C" SfiRing*
 bse_ladspa_plugin_path_list_files (void)
 {
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
   const gchar *paths;
 
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", GFileTest (0));
+  ring1 = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str(), "*.so", GFileTest (0));
   ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   paths = g_getenv ("LADSPA_PATH");
@@ -688,7 +686,7 @@ ladspa_test_load (const gchar *file)
 	    break;
 	  bli = bse_ladspa_info_assemble (file, cld);
 	  if (!bli->broken)
-	    g_print ("LADSPA: found %s\n", bli->ident);
+	    printout ("LADSPA: found %s\n", bli->ident);
 	}
       if (i == 0)
 	error = "missing LADSPA descriptor";

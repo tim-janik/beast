@@ -13,8 +13,8 @@ interface Evaluator : Bse::Effect {
   IStream input     = (_("Audio In"), _("Audio input"));
   OStream output    = (_("Audio Out"), _("Audio output"));
   group _("Parameters") {
-    String source  = String (_("Source code"), _("The source code"), "output = input", STANDARD);
-    String status  = String (_("Status"), _("Status used to output error messages"), "", GUI_RDONLY);
+    SfiString source  = SfiString (_("Source code"), _("The source code"), "output = input", STANDARD);
+    SfiString status  = SfiString (_("Status"), _("Status used to output error messages"), "", GUI_RDONLY);
   };
 };
 

@@ -31,8 +31,8 @@ bse_db_from_factor (double factor,
 long
 bse_time_range_to_ms (BseTimeRangeType time_range)
 {
-  g_return_val_if_fail (time_range >= BSE_TIME_RANGE_SHORT, 0);
-  g_return_val_if_fail (time_range <= BSE_TIME_RANGE_LONG, 0);
+  assert_return (time_range >= BSE_TIME_RANGE_SHORT, 0);
+  assert_return (time_range <= BSE_TIME_RANGE_LONG, 0);
 
   switch (time_range)
     {
@@ -204,7 +204,7 @@ bse_idle_remove (uint id)
 {
   GSource *source;
 
-  g_return_val_if_fail (id > 0, FALSE);
+  assert_return (id > 0, FALSE);
 
   source = g_main_context_find_source_by_id (bse_main_context, id);
   if (source)

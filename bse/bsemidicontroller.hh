@@ -18,7 +18,7 @@ G_BEGIN_DECLS
 
 struct BseMidiController : BseSource {
   guint		     midi_channel;
-  BseMidiSignalType  controls[4];
+  Bse::MidiSignal  controls[4];
 };
 struct BseMidiControllerClass : BseSourceClass
 {};

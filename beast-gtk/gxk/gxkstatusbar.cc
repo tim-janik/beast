@@ -275,9 +275,9 @@ gxk_status_set (gfloat       percentage,
 void
 gxk_status_window_push (gpointer widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   widget = gtk_widget_get_toplevel ((GtkWidget*) widget);
-  g_return_if_fail (GTK_IS_WINDOW (widget) == TRUE);
+  assert_return (GTK_IS_WINDOW (widget) == TRUE);
 
   gtk_widget_ref ((GtkWidget*) widget);
   status_window_stack = g_slist_prepend (status_window_stack, widget);
@@ -290,7 +290,7 @@ gxk_status_window_push (gpointer widget)
 void
 gxk_status_window_pop (void)
 {
-  g_return_if_fail (status_window_stack != NULL);
+  assert_return (status_window_stack != NULL);
 
   gtk_widget_unref ((GtkWidget*) status_window_stack->data);
   status_window_stack = g_slist_remove (status_window_stack, status_window_stack->data);

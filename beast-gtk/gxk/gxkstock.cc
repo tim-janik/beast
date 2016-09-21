@@ -106,7 +106,7 @@ gxk_stock_button (const gchar *stock_id,
 {
   GtkWidget *button, *alignment;
 
-  g_return_val_if_fail (stock_id != NULL, NULL);
+  assert_return (stock_id != NULL, NULL);
 
   button = (GtkWidget*) g_object_new (GTK_TYPE_BUTTON,
                                       "visible", TRUE,
@@ -134,7 +134,7 @@ gxk_stock_button_child (const gchar *stock_id,
 {
   GtkWidget *alignment, *hbox, *image;
 
-  g_return_val_if_fail (stock_id != NULL, NULL);
+  assert_return (stock_id != NULL, NULL);
 
   alignment = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
   hbox = gtk_hbox_new (FALSE, 2);
@@ -166,7 +166,7 @@ gxk_stock_register_icon (const GxkStockIcon *icon)
   GdkPixbuf *pixbuf;
   GtkIconSet *iset;
 
-  g_return_if_fail (icon != NULL);
+  assert_return (icon != NULL);
 
   pixbuf = gdk_pixbuf_new_from_inline (-1, icon->inlined_pixbuf, FALSE, NULL);
   iset = gtk_icon_set_new_from_pixbuf (pixbuf);
@@ -189,7 +189,7 @@ gxk_stock_register_icons (guint               n_icons,
     {
       guint i;
 
-      g_return_if_fail (icons != NULL);
+      assert_return (icons != NULL);
 
       for (i = 0; i < n_icons; i++)
 	gxk_stock_register_icon (icons + i);
@@ -211,9 +211,9 @@ gxk_stock_register_item (const GxkStockItem *item)
 {
   GtkStockItem tkitem = { NULL, };
 
-  g_return_if_fail (item != NULL);
-  g_return_if_fail (item->stock_id != NULL);
-  g_return_if_fail (item->label != NULL || item->stock_fallback != NULL);
+  assert_return (item != NULL);
+  assert_return (item->stock_id != NULL);
+  assert_return (item->label != NULL || item->stock_fallback != NULL);
 
   tkitem.stock_id = (gchar*) item->stock_id;
   if (item->label)
@@ -247,7 +247,7 @@ gxk_stock_register_items (guint               n_items,
     {
       guint i;
 
-      g_return_if_fail (items != NULL);
+      assert_return (items != NULL);
 
       for (i = 0; i < n_items; i++)
 	gxk_stock_register_item (items + i);
@@ -260,7 +260,7 @@ gxk_stock_item (const gchar *stock_id)
   const gchar *item = NULL;
   GtkStockItem tkitem;
 
-  g_return_val_if_fail (stock_id != NULL, NULL);
+  assert_return (stock_id != NULL, NULL);
 
   if (gtk_stock_lookup (stock_id, &tkitem))
     item = tkitem.label;
@@ -285,7 +285,7 @@ gxk_stock_fallback_pixbuf (const gchar *stock_id)
   static GData *stock_pixbuf_repo = NULL;
   GdkPixbuf *pixbuf;
 
-  g_return_val_if_fail (stock_id != NULL, NULL);
+  assert_return (stock_id != NULL, NULL);
 
   pixbuf = (GdkPixbuf*) g_datalist_get_data (&stock_pixbuf_repo, stock_id);
   if (!pixbuf)
@@ -314,7 +314,7 @@ gdk_pixbuf_create_bitmap_data (GdkPixbuf *pixbuf,
   guint width, height, rowstride, x, y;
   guint8 *data, *buffer;
 
-  g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
+  assert_return (GDK_IS_PIXBUF (pixbuf), NULL);
 
   width = gdk_pixbuf_get_width (pixbuf);
   height = gdk_pixbuf_get_height (pixbuf);
@@ -358,7 +358,7 @@ gxk_stock_icon_window (const gchar *stock_id)
   guint8 *bitmap_data;
   gint width = 0, height = 0;
 
-  g_return_val_if_fail (stock_id != NULL, NULL);
+  assert_return (stock_id != NULL, NULL);
 
   pixbuf = gxk_stock_fallback_pixbuf (stock_id);
   if (!pixbuf)

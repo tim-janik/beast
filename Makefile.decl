@@ -1,7 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
-# Copyright (C) 2006 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST & BSE						-*-mode:makefile;-*-
 
 # declare variables that we might want to use += on.
 EXTRA_HEADERS=
@@ -21,6 +18,12 @@ QSTDERR = $(Q:@=2>/dev/null)
 AM_CFLAGS   += -D_BIRNET_SOURCE_EXTENSIONS
 AM_CXXFLAGS += -D_BIRNET_SOURCE_EXTENSIONS
 
+# == GITSTAMPS ==
+# list of stamp files touched by commits
+GITSTAMPS = $(shell test -e "$${GIT_DIR:-.git}" && \
+		ls 2>/dev/null "$${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || \
+		echo HEAD`" "$${GIT_DIR:-.git}/packed-refs" "$${GIT_DIR:-.git}/HEAD")
+
 # == download ==
 # recursive rule supported by all Makefiles to download files hosted online
 .PHONY: download download-recursive download-local
@@ -33,26 +36,57 @@ download-recursive:
 # listed as DISTFILES. this asserts a writable file named $DISTFILE_LIST.
 .PHONY: distfile-list
 distfile-list:
-	@if test ! -f "$(DISTFILE_LIST)" ; then				\
-		echo 'distfile-list: $$(DISTFILE_LIST) is unwritable' ;	\
-		exit 1 ;						\
-	fi
+	$(AM_V_GEN)
+	$(Q) test -w "$(DISTFILE_LIST)" || \
+	  { echo '$$(DISTFILE_LIST): failed to write' >/dev/stderr ; false ; }
 	@for subdir in $(SUBDIRS) ; do				\
 	  test "$$subdir" = '.' ||				\
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) $@ ||		\
 	    exit 1 ;						\
 	done
-	for file in $(DISTFILES) ; do				\
-	  test -e "$$file" &&					\
-	    echo "$(subdir)/$$file" >> $(DISTFILE_LIST) ;	\
-	done ; true
+	$(Q) for file in $(DISTFILES) ; do			\
+	  if [[ "$$file" = /* ]] && test -e "$$file" ; then	\
+	    echo "$$file" >> $(DISTFILE_LIST) ;			\
+	  elif test -e "$(abs_builddir)/$$file" ; then		\
+	    echo "$(abs_builddir)/$$file" >> $(DISTFILE_LIST) ;	\
+	  elif test -e "$(abs_srcdir)/$$file" ; then		\
+	    echo "$(abs_srcdir)/$$file" >> $(DISTFILE_LIST) ;	\
+	  fi ; done ; true
 
 # === check: check-before / check-after ===
-.PHONY: check-before check-after
+.PHONY: check-before check-after check-devel
 check-am: check-before
 check-local: check-after
 check-local: ; @:
-TESTS=
+check-devel: ; @:
+
+# == check-devel ==
+if ENABLE_DEVEL_MODE
+check-after: check-devel
+endif
+
+# == TAPTESTS ==
+# tests run through taptool.sh
+TAPTESTS =
+TAPRUNS  = $(addsuffix .taprun, $(basename $(TAPTESTS)))
+.PHONY: taptests $(TAPRUNS)
+taptests: $(top_srcdir)/taptool.sh
+	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(TAPRUNS)
+$(TAPRUNS): %.taprun: % # static pattern rule - also works for phony targets
+	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
+	$(Q) TST="$(@:%.taprun=%)"; $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
+check: taptests
+
+# == X11TESTS ==
+X11TESTS =
+X11RUNS  = $(addsuffix .x11run, $(basename $(X11TESTS)))
+.PHONY: x11tests $(X11RUNS)
+x11tests: $(top_srcdir)/taptool.sh
+	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(X11RUNS)
+$(X11RUNS): %.x11run: % # static pattern rule - also works for phony targets
+	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
+	$(Q) TST="$(@:%.x11run=%)"; $(X11_ENV) $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
+check: x11tests
 
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
@@ -95,7 +129,7 @@ perf-PERFTESTS:
 PERFTESTS=
 
 # === ALLTESTS ===
-ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+ALLTESTS = $(TESTS) $(TAPTESTS) $(X11TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
 
 # === report ===
 .PHONY: report

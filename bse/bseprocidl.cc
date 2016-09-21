@@ -9,6 +9,8 @@
 #include <string>
 #include <set>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+
 std::set<std::string> needTypes;
 std::set<std::string> needClasses;
 std::set<std::string> excludeTypes;
@@ -155,7 +157,7 @@ std::string idlType (GType g)
     case G_TYPE_UINT64:         return "Num";
     case G_TYPE_INT:
     case G_TYPE_UINT:           return "Int";
-    case G_TYPE_STRING:         return "String";
+    case G_TYPE_STRING:         return "SfiString";
     case G_TYPE_FLOAT:
     case G_TYPE_DOUBLE:         return "Real";
     case G_TYPE_BOOLEAN:        return "Bool";
@@ -220,12 +222,12 @@ void printMethods (const std::string& iface)
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
-      GType type_id = g_type_from_name (cseq->cats[i]->type);
+      GType type_id = g_type_from_name (cseq->cats[i]->otype);
       const gchar *blurb = bse_type_get_blurb (type_id);
       BseProcedureClass *klass = (BseProcedureClass *)g_type_class_ref (type_id);
 
       /* procedures */
-      std::string t = cseq->cats[i]->type;
+      std::string t = cseq->cats[i]->otype;
       std::string iname = getInterface (t);
       std::string mname = getMethod (t);
       std::string rtype = klass->n_out_pspecs ?
@@ -357,7 +359,7 @@ printChoices (void)
     {
       const gchar *name = g_type_name (children[i]);
       GEnumClass *eclass = (GEnumClass *)g_type_class_ref (children[i]);
-      gboolean regular_choice = strcmp (name, "BseErrorType") != 0;
+      gboolean regular_choice = strcmp (name, "Bse::Error") != 0;
       GEnumValue *val;
 
       if (needTypes.count (name) && !excludeTypes.count (name))
@@ -400,7 +402,7 @@ int
 main (int argc, char **argv)
 {
   /* exclude all types given in a file, passed as first argument, from generation */
-  if (argc == 2)
+  if (argc >= 2)
     {
       FILE *excludefile = fopen (argv[1], "r");
       if (!excludefile)

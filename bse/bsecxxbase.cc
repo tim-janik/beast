@@ -240,7 +240,7 @@ CxxBaseClass::add_param (const char *group,
                          guint       prop_id,
                          GParamSpec *pspec)
 {
-  g_return_if_fail (pspec->owner_type == 0);
+  assert_return (pspec->owner_type == 0);
   if (pspec->flags & G_PARAM_WRITABLE)
     pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
   bse_object_class_add_property ((BseObjectClass*) this, group, prop_id, pspec);
@@ -250,7 +250,7 @@ void
 CxxBaseClass::add_param (guint       prop_id,
                          GParamSpec *grouped_pspec)
 {
-  g_return_if_fail (grouped_pspec->owner_type == 0);
+  assert_return (grouped_pspec->owner_type == 0);
   if (grouped_pspec->flags & G_PARAM_WRITABLE)
     grouped_pspec->flags = (GParamFlags) (grouped_pspec->flags | G_PARAM_CONSTRUCT);
   bse_object_class_add_grouped_property ((BseObjectClass*) this, prop_id, grouped_pspec);
@@ -283,8 +283,8 @@ CxxBaseClass::add_signal (const gchar *signal_name,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -307,7 +307,7 @@ CxxBaseClass::add_ochannel (const char *ident,
 {
   int channel_id = bse_source_class_add_ochannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    g_assert (assert_id == channel_id);
+    assert (assert_id == channel_id);
 }
 
 void
@@ -318,7 +318,7 @@ CxxBaseClass::add_ichannel (const char *ident,
 {
   int channel_id = bse_source_class_add_ichannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    g_assert (assert_id == channel_id);
+    assert (assert_id == channel_id);
 }
 
 void
@@ -329,7 +329,7 @@ CxxBaseClass::add_jchannel (const char *ident,
 {
   int channel_id = bse_source_class_add_jchannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    g_assert (assert_id == channel_id);
+    assert (assert_id == channel_id);
 }
 
 } // Bse

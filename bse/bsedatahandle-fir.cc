@@ -45,7 +45,7 @@ public:
     m_a (order + 1),
     m_init_ok (false)
   {
-    g_return_if_fail (src_handle != NULL);
+    assert_return (src_handle != NULL);
 
     memset (&m_dhandle, 0, sizeof (m_dhandle));
     m_init_ok = gsl_data_handle_common_init (&m_dhandle, NULL);
@@ -64,11 +64,11 @@ public:
       }
   }
 
-  BseErrorType
+  Bse::Error
   open (GslDataHandleSetup *setup)
   {
-    BseErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != BSE_ERROR_NONE)
+    Bse::Error error = gsl_data_handle_open (m_src_handle);
+    if (error != Bse::Error::NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -85,7 +85,7 @@ public:
 
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
 
-    return BSE_ERROR_NONE;
+    return Bse::Error::NONE;
   }
 
   void
@@ -121,7 +121,7 @@ public:
   seek (int64 voffset)
   {
     int64 i = 0;
-    g_return_val_if_fail (voffset % m_block_size == 0, -1);
+    assert_return (voffset % m_block_size == 0, -1);
 
     // if this is a consecutive read, the history can be built from the values
     // we already read last time
@@ -174,7 +174,7 @@ public:
 	  return l;
       }
 
-    g_assert (ivoffset == m_input_voffset);
+    assert (ivoffset == m_input_voffset);
 
     voffset -= ivoffset;
     n_values = min (n_values, m_block_size - voffset);
@@ -187,7 +187,7 @@ public:
   {
     int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
     // m_src_handle must be opened and have valid state size
-    g_return_val_if_fail (source_state_length >= 0, 0);  
+    assert_return (source_state_length >= 0, 0);  
 
     return source_state_length + m_history;
   }
@@ -238,7 +238,7 @@ public:
   }
 private:
 /* for the "C" API (vtable) */
-  static BseErrorType
+  static Bse::Error
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

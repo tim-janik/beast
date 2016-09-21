@@ -43,7 +43,7 @@ struct BseWaveClass : BseSourceClass
 {};
 
 void		bse_wave_clear                  (BseWave	*wave);
-BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
+Bse::Error	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
 						 BseFreqArray	*list_array,
@@ -67,5 +67,16 @@ GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
                                                  gfloat          velocity);
 
 G_END_DECLS
+
+namespace Bse {
+
+class WaveImpl : public SourceImpl, public virtual WaveIface {
+protected:
+  virtual  ~WaveImpl ();
+public:
+  explicit  WaveImpl (BseObject*);
+};
+
+} // Bse
 
 #endif /* __BSE_WAVE_H__ */

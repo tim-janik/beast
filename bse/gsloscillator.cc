@@ -158,9 +158,9 @@ gsl_osc_process (GslOscData   *osc,
 		 gfloat       *mono_out,
 		 gfloat       *sync_out)
 {
-  g_return_if_fail (osc != NULL);
-  g_return_if_fail (n_values > 0);
-  g_return_if_fail (mono_out != NULL);
+  assert_return (osc != NULL);
+  assert_return (n_values > 0);
+  assert_return (mono_out != NULL);
 
   if (osc->last_mode & OSC_FLAG_PULSE_OSC)
     osc->last_mode = OSC_FLAG_INVAL;
@@ -179,9 +179,9 @@ gsl_osc_process_pulse (GslOscData   *osc,
 		       gfloat       *mono_out,
 		       gfloat       *sync_out)
 {
-  g_return_if_fail (osc != NULL);
-  g_return_if_fail (n_values > 0);
-  g_return_if_fail (mono_out != NULL);
+  assert_return (osc != NULL);
+  assert_return (n_values > 0);
+  assert_return (mono_out != NULL);
 
   if (!(osc->last_mode & OSC_FLAG_PULSE_OSC))
     osc->last_mode = OSC_FLAG_INVAL;
@@ -194,9 +194,9 @@ void
 gsl_osc_config (GslOscData   *osc,
 		GslOscConfig *config)
 {
-  g_return_if_fail (osc != NULL);
-  g_return_if_fail (config != NULL);
-  g_return_if_fail (config->table != NULL);
+  assert_return (osc != NULL);
+  assert_return (config != NULL);
+  assert_return (config->table != NULL);
 
   osc->config = *config;
   osc->last_mode = OSC_FLAG_INVAL;
@@ -205,7 +205,7 @@ gsl_osc_config (GslOscData   *osc,
 void
 gsl_osc_reset (GslOscData *osc)
 {
-  g_return_if_fail (osc != NULL);
+  assert_return (osc != NULL);
 
   osc->cur_pos = 0;
   osc->last_pos = 0;

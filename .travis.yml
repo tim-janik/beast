@@ -1,0 +1,78 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+#
+# http://docs.travis-ci.com/user/customizing-the-build/
+# http://lint.travis-ci.org/
+
+os: linux
+dist: trusty
+sudo: required
+services: docker
+language: c
+
+env:
+  global:
+    #- http_proxy="http://example.com"
+    - INTENT="package" # default intent
+  matrix:
+    # package: build packages for distribution $DIST
+    - DIST="ubuntu:wily"
+    - DIST="debian:jessie"
+    - DIST="debian:testing"
+    - DIST="ubuntu:xenial"
+    # distcheck: succeed in 'make distcheck'
+    - INTENT="distcheck" DIST="ubuntu:wily"
+matrix:
+  allow_failures:
+    - env: DIST="debian:testing"
+    - env: DIST="ubuntu:xenial"
+    - env: INTENT="distcheck" DIST="ubuntu:wily"
+  fast_finish: true
+
+before_install:
+  # buildtool.sh requires complete history for monotonic revisioning
+  - travis_retry git fetch --unshallow
+  # Build variable setup; example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie BTREPO=devel
+  # Uses `buildtool.sh` to determine the version dependent bintray repository name
+  - true &&
+    export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" BTREPO="`./buildtool.sh ifdevel devel deb`" &&
+    export BEASTAPTSOURCE="deb [trusted=yes] https://dl.bintray.com/beast-team/$BTREPO $DISTRELEASE main" &&
+    echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BEASTAPTSOURCE='$BEASTAPTSOURCE'"
+  # Sample environment
+  - uname -a
+  - cat /etc/os-release
+  - pwd
+  - free -tm
+  - make --version
+  - python --version
+  - $CC --version
+
+install:
+  # Configure Dockerfile by substituting @VAR@ with $VAR
+  - ./buildtool.sh applyenv .travis.docker > Dockerfile
+  # Build and run tests, create packages
+  - docker build -t beast .
+
+script:
+  # Upload packages
+  - ([ $INTENT = package ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
+      "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $BTREPO/beast $DISTRELEASE *.deb")
+  # Test package installation from remote location
+  - ([ $INTENT = package ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
+        "set -x && retry apt-get update && retry apt-get -y install beast libbse-dev")
+  - docker ps -a
+
+after_success:
+  - echo "Done, all OK!"
+
+notifications:
+  irc:
+    channels:
+      - "irc.gimp.org#beast"
+    on_success: always
+    on_failure: always
+    skip_join: true
+  email: false
+    #recipients:
+    #  - beast@gnome.org
+    #on_success: never
+    #on_failure: change

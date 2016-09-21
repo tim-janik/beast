@@ -2,8 +2,7 @@
 #ifndef __BST_DIAL_H__
 #define __BST_DIAL_H__
 
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkwidget.h>
+#include "bstutils.hh"
 
 
 #ifdef __cplusplus

@@ -60,6 +60,7 @@ static void
 bse_csynth_init (BseCSynth *self)
 {
   BSE_OBJECT_SET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
+  BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 }
 
 static void
@@ -102,3 +103,18 @@ bse_csynth_get_property (GObject     *object,
       break;
     }
 }
+
+
+namespace Bse {
+
+CSynthImpl::CSynthImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+CSynthImpl::~CSynthImpl ()
+{}
+
+// BseCSynth *self = as<BseCSynth*>();
+// other->as<CSynthIfaceP> ();
+
+} // Bse

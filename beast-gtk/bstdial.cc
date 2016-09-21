@@ -104,7 +104,7 @@ bst_dial_destroy (GtkObject *object)
 {
   BstDial *dial;
 
-  g_return_if_fail (BST_IS_DIAL (object));
+  assert_return (BST_IS_DIAL (object));
 
   dial = BST_DIAL (object);
 
@@ -215,8 +215,8 @@ static gint
 bst_dial_expose (GtkWidget      *widget,
                  GdkEventExpose *event)
 {
-  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
+  assert_return (BST_IS_DIAL (widget), FALSE);
+  assert_return (event != NULL, FALSE);
 
   /* since we redraw the whole widget from scratch, we ignore
    * intermediate expose events
@@ -288,7 +288,7 @@ bst_dial_paint (BstDial *dial)
       n_steps = 8;
       thick_step = 2;
     }
-  for (i = 0; i < n_steps + 1; i++)
+  for (i = 0; i < uint (n_steps + 1); i++)
     {
       theta = M_PI - (i * M_PI / ((double) n_steps));
       s = sin (theta);
@@ -413,7 +413,7 @@ bst_dial_mouse_update (BstDial *dial,
   gint xc, yc;
   gdouble angle;
 
-  g_return_if_fail (BST_IS_DIAL (dial));
+  assert_return (BST_IS_DIAL (dial));
 
   widget = GTK_WIDGET (dial);
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
@@ -493,7 +493,7 @@ bst_dial_new (GtkAdjustment *adjustment)
   GtkWidget *dial;
 
   if (adjustment)
-    g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), NULL);
+    assert_return (GTK_IS_ADJUSTMENT (adjustment), NULL);
   else
     adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 250.0, 0.0, 0.0, 0.0);
 
@@ -507,7 +507,7 @@ bst_dial_new (GtkAdjustment *adjustment)
 GtkAdjustment*
 bst_dial_get_adjustment (BstDial *dial)
 {
-  g_return_val_if_fail (BST_IS_DIAL (dial), NULL);
+  assert_return (BST_IS_DIAL (dial), NULL);
 
   return GTK_ADJUSTMENT (dial->adjustment);
 }
@@ -516,7 +516,7 @@ void
 bst_dial_set_update_policy (BstDial      *dial,
                             GtkUpdateType policy)
 {
-  g_return_if_fail (BST_IS_DIAL (dial));
+  assert_return (BST_IS_DIAL (dial));
 
   if (dial->update_policy != policy)
     {
@@ -540,8 +540,8 @@ void
 bst_dial_set_adjustment (BstDial       *dial,
                          GtkAdjustment *adjustment)
 {
-  g_return_if_fail (BST_IS_DIAL (dial));
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (BST_IS_DIAL (dial));
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
 
   if (dial->adjustment)
     {
@@ -577,8 +577,8 @@ bst_dial_adjustment_changed (GtkAdjustment *adjustment,
 {
   BstDial *dial;
 
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  g_return_if_fail (data != NULL);
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (data != NULL);
 
   dial = BST_DIAL (data);
 
@@ -602,8 +602,8 @@ bst_dial_adjustment_value_changed (GtkAdjustment *adjustment,
 {
   BstDial *dial;
 
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  g_return_if_fail (data != NULL);
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (data != NULL);
 
   dial = BST_DIAL (data);
 
@@ -622,7 +622,7 @@ bst_dial_update (BstDial *dial)
   GtkWidget *widget;
   gdouble new_value;
 
-  g_return_if_fail (BST_IS_DIAL (dial));
+  assert_return (BST_IS_DIAL (dial));
 
   widget = GTK_WIDGET (dial);
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
@@ -632,8 +632,8 @@ bst_dial_update (BstDial *dial)
   if (new_value != adjustment->value)
     {
       if (0)
-	g_print ("dial-adjustment: %f <= %f <= %f, adjust: %f\n",
-		 adjustment->lower, adjustment->value, adjustment->upper, new_value);
+	printout ("dial-adjustment: %f <= %f <= %f, adjust: %f\n",
+                  adjustment->lower, adjustment->value, adjustment->upper, new_value);
       adjustment->value = new_value;
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
     }
@@ -650,14 +650,14 @@ bst_dial_set_align_widget (BstDial   *dial,
 			   gboolean   width_align,
 			   gboolean   height_align)
 {
-  g_return_if_fail (BST_IS_DIAL (dial));
+  assert_return (BST_IS_DIAL (dial));
   if (widget)
     {
-      g_return_if_fail (GTK_IS_WIDGET (widget));
-      g_return_if_fail (widget != GTK_WIDGET (dial));
+      assert_return (GTK_IS_WIDGET (widget));
+      assert_return (widget != GTK_WIDGET (dial));
       width_align = width_align != FALSE;
       height_align = height_align != FALSE;
-      g_return_if_fail (width_align ^ height_align);
+      assert_return (width_align ^ height_align);
     }
 
   if (dial->align_widget)

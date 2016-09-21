@@ -24,7 +24,6 @@ BseCategorySeq* bse_categories_match           (const gchar      *pattern,
 BseCategorySeq* bse_categories_match_typed     (const gchar      *pattern,
                                                 GType             base_type);
 BseCategorySeq* bse_categories_from_type       (GType             type);
-BseCategory*    bse_category_from_id           (guint             id);
 void      bse_categories_register_stock_module (const gchar      *untranslated_category_trunk,
                                                 GType             type,
                                                 const guint8     *pixstream);

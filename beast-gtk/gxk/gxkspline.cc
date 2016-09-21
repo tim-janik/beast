@@ -87,7 +87,7 @@ gxk_spline_new (guint                   n_points,
                 double                  dy_start,
                 double                  dy_end)
 {
-  g_return_val_if_fail (n_points >= 2, NULL);
+  assert_return (n_points >= 2, NULL);
   GxkSpline *spline = (GxkSpline*) g_malloc (sizeof (spline[0]) + n_points * sizeof (spline->segs[0]));
   /* initialize segments */
   spline->n_segs = n_points;
@@ -197,7 +197,7 @@ gxk_spline_eval (const GxkSpline *spline,
       else
         first = i;
     }
-  g_assert (first + 1 == last);
+  assert (first + 1 == last);
   /* eval polynomials */
   double y = segment_eval (spline->segs + first, x, yd1);
   return y;
@@ -366,7 +366,7 @@ gxk_spline_findx (const GxkSpline *spline,
       static guint caller_sum, caller_times;
       caller_sum += iteration_counter;
       caller_times++;
-      g_printerr ("spline_findx: iters=%u (avg=%f) x=%.17g y=%.17g approx=%.17g dx=%.17g dy=%.17g\n",
+      printerr ("spline_findx: iters=%u (avg=%f) x=%.17g y=%.17g approx=%.17g dx=%.17g dy=%.17g\n",
                   iteration_counter, caller_sum / (double) caller_times, x, y, z, xmax-xmin, z-y);
     }
   return x;
@@ -380,7 +380,7 @@ gxk_spline_findx (const GxkSpline *spline,
 void
 gxk_spline_free (GxkSpline *spline)
 {
-  g_return_if_fail (spline != NULL);
+  assert_return (spline != NULL);
   g_free (spline);
 }
 
@@ -392,38 +392,38 @@ gxk_spline_free (GxkSpline *spline)
 void
 gxk_spline_dump (GxkSpline *spline)
 {
-  g_printerr ("GxkSpline[%u] = {\n", spline->n_segs);
-  g_printerr ("  // x, y, yd2, ymin, ymax, ex1, ex2\n");
+  printerr ("GxkSpline[%u] = {\n", spline->n_segs);
+  printerr ("  // x, y, yd2, ymin, ymax, ex1, ex2\n");
   guint i;
   for (i = 0; i < spline->n_segs; i++)
     {
       GxkSplineSegment *seg = spline->segs + i;
-      g_printerr ("  { %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g },",
+      printerr ("  { %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g, %-+.17g },",
                   seg->x, seg->y, seg->yd2, seg->ymin, seg->ymax, seg->ex1, seg->ex2);
       const double test_epsilon = 0.0000001;
       if (isfinite (seg->ex1))
         {
-          g_printerr ("\n    ");
+          printerr ("\n    ");
           double s1 = gxk_spline_y (spline, seg->ex1 - test_epsilon);
           double s2 = gxk_spline_y (spline, seg->ex1);
           double s3 = gxk_spline_y (spline, seg->ex1 - test_epsilon);
           const char *judge = (s2 - s1) * (s2 - s3) < 0 ? "FAIL" : "OK";
           if (s2 - s1 == 0 || s2 - s3 == 0)
             judge = "BROKEN";   /* test_epsilon too small */
-          g_printerr ("// extremum%u check: %s", 1, judge);
+          printerr ("// extremum%u check: %s", 1, judge);
         }
       if (isfinite (seg->ex2))
         {
-          g_printerr ("\n    ");
+          printerr ("\n    ");
           double s1 = gxk_spline_y (spline, seg->ex2 - test_epsilon);
           double s2 = gxk_spline_y (spline, seg->ex2);
           double s3 = gxk_spline_y (spline, seg->ex2 - test_epsilon);
           const char *judge = (s2 - s1) * (s2 - s3) < 0 ? "FAIL" : "OK";
           if (s2 - s1 == 0 || s2 - s3 == 0)
             judge = "BROKEN";   /* test_epsilon too small */
-          g_printerr ("// extremum%u check: %s", 2, judge);
+          printerr ("// extremum%u check: %s", 2, judge);
         }
-      g_printerr ("\n");
+      printerr ("\n");
     }
-  g_printerr ("};\n");
+  printerr ("};\n");
 }

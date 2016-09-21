@@ -88,7 +88,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *klass)
   bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_FREQ,
                               bse_param_spec_freq ("filter_freq", _("Frequency"),
                                                    _("Reflection cutoff frequency"),
-                                                   bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, SFI_NOTE_C (+3)),
+                                                   bse_note_to_freq (Bse::MusicalTuning::OD_12_TET, SFI_NOTE_C (+3)),
                                                    BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_NOTE,
@@ -97,13 +97,13 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *klass)
                                                      SFI_PARAM_GUI));
 
   channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));
-  g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
+  assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
   channel = bse_source_class_add_ichannel (source_class, "right-in", _("Right In"), _("Right Audio Input"));
-  g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_RIGHT);
+  assert (channel == DAV_CANYON_DELAY_ICHANNEL_RIGHT);
   channel = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), _("Left Audio Output"));
-  g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_LEFT);
+  assert (channel == DAV_CANYON_DELAY_OCHANNEL_LEFT);
   channel = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), _("Right Audio Output"));
-  g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_RIGHT);
+  assert (channel == DAV_CANYON_DELAY_OCHANNEL_RIGHT);
 }
 
 static void

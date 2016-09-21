@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
+#include "../configure.h"  // HAVE_SETEUID, HAVE_SETREUID
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -54,9 +54,17 @@ main (int    argc,
   if (euid != uid)
     {
 #if     HAVE_SETEUID
-      seteuid (uid);
+      if (seteuid (uid) < 0)
+        {
+          perror ("seteuid()");
+          _exit (127);
+        }
 #elif   HAVE_SETREUID
-      setreuid (-1, uid);
+      if (setreuid (-1, uid) < 0)
+        {
+          perror ("setreuid()");
+          _exit (127);
+        }
 #else
 #error platform misses facility to drop privileges
 #endif

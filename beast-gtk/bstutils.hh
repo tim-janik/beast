@@ -6,16 +6,25 @@
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
-#include "bstgentypes.h"
+#include "bstserverapi.hh"
+
+namespace Bst {
+
+// == event loop ==
+int  event_loop_run  ();
+void event_loop_quit (uint8 exit_code = 0);
+
+} // Bst
 
 
 // == Bse Server (BSE remote origin) ==
 extern Bse::ServerH bse_server;
 
+
 G_BEGIN_DECLS
 
 /* --- GUI utilities --- */
-void           bst_status_set_error           (BseErrorType error, const std::string &message);
+void           bst_status_set_error           (Bse::Error error, const String &message);
 #define        bst_status_eprintf(error, ...)  bst_status_set_error (error, Rapicorn::string_format (__VA_ARGS__))
 void           bst_gui_error_bell             (gpointer         widget);
 void           bst_window_sync_title_to_proxy (gpointer         window,
@@ -36,13 +45,10 @@ GtkWidget*     bst_vpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_hpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
-void           bst_action_list_add_cat        (GxkActionList   *alist,
-                                               BseCategory     *cat,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback,
-                                               GxkActionCheck   acheck,
-                                               GxkActionExec    aexec,
-                                               gpointer         user_data);
+void bst_action_list_add_cat    (GxkActionList *alist, BseCategory *cat, uint skip_levels, const char *stock_fallback,
+                                 GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
+void bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
+                                 GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
 GxkActionList* bst_action_list_from_cats      (BseCategorySeq  *cseq,
                                                guint            skip_levels,
                                                const gchar     *stock_fallback,
@@ -85,8 +91,6 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 
 
 /* --- misc utils --- */
-gint            bst_fft_size_to_int     (BstFFTSize    fft_size);
-BstFFTSize      bst_fft_size_from_int   (guint         sz);
 gchar*          bst_file_scan_find_key  (const gchar  *file,
                                          const gchar  *key,
                                          const gchar  *value_prefix);
@@ -210,7 +214,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 /* icon stock IDs */
 #include "beast-gtk/icons/bst-stock-gen.h"
 /* --- config values --- */
-BstGConfig*     bst_gconfig_get_global (void);
+Bst::GConfig*   bst_gconfig_get_global (void);
 #define BST_GCONFIG(field) (* bst_gconfig_get_global ()) . field
 /* --- internal --- */
 void            _bst_init_utils         (void);

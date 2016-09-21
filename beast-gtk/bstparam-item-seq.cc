@@ -5,14 +5,14 @@
 #include "bstitemseqdialog.hh"
 static void
 param_item_seq_changed (gpointer             data,
-                        BseItemSeq          *iseq,
+                        BseIt3mSeq          *iseq,
                         BstItemSeqDialog    *isdialog)
 {
   GxkParam *param = (GxkParam*) data;
   SfiProxy proxy = bst_param_get_proxy (param);
   if (proxy)
     {
-      SfiSeq *seq = bse_item_seq_to_seq (iseq);
+      SfiSeq *seq = bse_it3m_seq_to_seq (iseq);
       sfi_value_take_seq (&param->value, seq);
       gxk_param_apply_value (param);
     }
@@ -27,13 +27,13 @@ param_item_seq_popup_editor (GtkWidget *widget,
     {
       BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (&param->value);
-      BseItemSeq *iseq = bse_item_seq_from_seq (seq);
+      BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
       bst_item_seq_dialog_popup (widget, proxy,
                                  pc->label, pc->tooltip, pc->items,
                                  g_param_spec_get_nick (param->pspec), g_param_spec_get_blurb (param->pspec), iseq,
                                  param_item_seq_changed,
                                  param, NULL);
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
     }
 }
 
@@ -87,7 +87,7 @@ param_item_seq_update (GxkParam  *param,
     {
       BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (&param->value);
-      BseItemSeq *iseq = seq ? bse_item_seq_from_seq (seq) : NULL;
+      BseIt3mSeq *iseq = seq ? bse_it3m_seq_from_seq (seq) : NULL;
       if (iseq)
         {
           if (iseq->n_items == 1)
@@ -116,7 +116,7 @@ param_item_seq_update (GxkParam  *param,
                 g_string_append_printf (gstring, " & #%u", other);
               content = g_string_free (gstring, FALSE);
             }
-          bse_item_seq_free (iseq);
+          bse_it3m_seq_free (iseq);
         }
     }
   GtkWidget *label = (GtkWidget*) g_object_get_data ((GObject*) widget, "beast-GxkParam-label");
@@ -126,7 +126,7 @@ param_item_seq_update (GxkParam  *param,
   g_free (content);
 }
 
-static GxkParamEditor param_item_seq = {
+static GxkParamEditor param_it3m_seq = {
   { "item-list",        N_("Item List"), },
   { G_TYPE_BOXED,       "SfiSeq", },
   { "item-sequence",    +5,     TRUE, },        /* options, rating, editing */

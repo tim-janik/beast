@@ -16,6 +16,7 @@
 #include "bsemidinotifier.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
+#include "bsemidifile.hh"
 #include "bsesoundfontrepo.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -283,7 +284,7 @@ bse_project_get_undo (BseItem *item)
 void
 bse_project_clear_undo (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
   if (!self->in_undo && !self->in_redo)
     {
       bse_undo_stack_clear (self->undo_stack);
@@ -295,7 +296,7 @@ bse_project_clear_undo (BseProject *self)
 void
 bse_project_clean_dirty (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
   bse_undo_stack_clean_dirty (self->undo_stack);
   bse_undo_stack_clean_dirty (self->redo_stack);
   g_object_notify ((GObject*) self, "dirty");
@@ -318,7 +319,7 @@ project_undo_do_deactivate_free (BseUndoStep *ustep)
 void
 bse_project_push_undo_silent_deactivate (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   /* certain things work only (can only be undone/redone) in deactivated projects,
    * so we need to push an undo step here. this step isn't required however
@@ -443,46 +444,6 @@ bse_project_retrieve_child (BseContainer *container,
     }
 }
 
-static gboolean
-add_item_upaths (BseItem *item,
-		 gpointer data_p)
-{
-  gpointer *data = (void**) data_p;
-  BseStringSeq *sseq = (BseStringSeq*) data[0];
-  GType item_type = (GType) data[1];
-  BseContainer *container = (BseContainer*) data[2];
-
-  if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
-    {
-      gchar *upath = bse_container_make_upath (container, item);
-      bse_string_seq_append (sseq, upath);
-      g_free (upath);
-    }
-  if (BSE_IS_CONTAINER (item))
-    bse_container_forall_items (BSE_CONTAINER (item), add_item_upaths, data);
-
-  return TRUE;
-}
-
-BseStringSeq*
-bse_project_list_upaths (BseProject *self,
-			 GType       item_type)
-{
-  gpointer data[3];
-  BseStringSeq *sseq;
-
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
-
-  sseq = bse_string_seq_new ();
-  data[0] = sseq;
-  data[1] = (gpointer) item_type;
-  data[2] = self;
-  bse_container_forall_items (BSE_CONTAINER (self), add_item_upaths, data);
-
-  return sseq;
-}
-
 static GSList*
 compute_missing_supers (BseProject *self,
                         BseStorage *storage)
@@ -500,7 +461,7 @@ compute_missing_supers (BseProject *self,
   return targets;
 }
 
-BseErrorType
+Bse::Error
 bse_project_store_bse (BseProject  *self,
                        BseSuper    *super,
 		       const gchar *bse_file,
@@ -512,19 +473,19 @@ bse_project_store_bse (BseProject  *self,
   guint l, flags;
   gint fd;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
   if (super)
     {
-      g_return_val_if_fail (BSE_IS_SUPER (super), BSE_ERROR_INTERNAL);
-      g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), BSE_ERROR_INTERNAL);
+      assert_return (BSE_IS_SUPER (super), Bse::Error::INTERNAL);
+      assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::Error::INTERNAL);
     }
-  g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
+  assert_return (bse_file != NULL, Bse::Error::INTERNAL);
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
-    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 
-  storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+  storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
@@ -547,27 +508,27 @@ bse_project_store_bse (BseProject  *self,
   while (l < 0 && errno == EINTR);
   g_free (string);
 
-  BseErrorType error = bse_storage_flush_fd (storage, fd);
-  if (close (fd) < 0 && error == BSE_ERROR_NONE)
-    error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
+  Bse::Error error = bse_storage_flush_fd (storage, fd);
+  if (close (fd) < 0 && error == Bse::Error::NONE)
+    error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
   bse_storage_reset (storage);
   g_object_unref (storage);
 
   return error;
 }
 
-BseErrorType
+Bse::Error
 bse_project_restore (BseProject *self,
 		     BseStorage *storage)
 {
   GScanner *scanner;
   GTokenType expected_token = G_TOKEN_NONE;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
+  assert_return (BSE_IS_STORAGE (storage), Bse::Error::INTERNAL);
 
   scanner = bse_storage_get_scanner (storage);
-  g_return_val_if_fail (scanner != NULL, BSE_ERROR_INTERNAL);
+  assert_return (scanner != NULL, Bse::Error::INTERNAL);
 
   g_object_ref (self);
 
@@ -591,8 +552,8 @@ bse_project_restore (BseProject *self,
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?
-	  BSE_ERROR_PARSE_ERROR :
-	  BSE_ERROR_NONE);
+	  Bse::Error::PARSE_ERROR :
+	  Bse::Error::NONE);
 }
 
 BseObject*
@@ -606,8 +567,8 @@ bse_project_upath_resolver (gpointer     func_data,
 
   if (error_p)
     *error_p = NULL;
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (upath != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (upath != NULL, NULL);
 
   /* FIXME: need error handling, warnings.... */
 
@@ -626,8 +587,8 @@ bse_project_lookup_typed_item (BseProject  *self,
 {
   BseItem *item;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (uname != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (uname != NULL, NULL);
 
   item = bse_container_lookup_item (BSE_CONTAINER (self), uname);
   if (item && G_OBJECT_TYPE (item) == item_type)
@@ -639,7 +600,7 @@ bse_project_lookup_typed_item (BseProject  *self,
 BseWaveRepo*
 bse_project_get_wave_repo (BseProject *self)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
@@ -661,7 +622,7 @@ bse_project_get_sound_font_repo (BseProject *self)
 BseSong*
 bse_project_get_song (BseProject *self)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_SONG (slist->data))
@@ -696,28 +657,28 @@ bse_project_create_intern_synth (BseProject  *self,
   BseItem *synth = NULL;
   gchar *bse_synth;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (synth_name != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (synth_name != NULL, NULL);
 
   bse_synth = bse_standard_synth_inflate (synth_name, NULL);
   if (bse_synth)
     {
-      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
-      BseErrorType error = BSE_ERROR_NONE;
+      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+      Bse::Error error = Bse::Error::NONE;
       StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata ((GObject*) self, quark_storage_trap, &strap);
       strap.max_items = 1;
       strap.base_type = check_type;
       strap.items = NULL;
-      if (!error)
+      if (error == 0)
 	error = bse_project_restore (self, storage);
       bse_storage_reset (storage);
       g_object_unref (storage);
       g_free (bse_synth);
-      if (error || !strap.items)
+      if (error != 0 || !strap.items)
 	g_warning ("failed to create internal synth \"%s\": %s",
-		   synth_name, bse_error_blurb (error ? error : BSE_ERROR_NO_ENTRY));
+		   synth_name, bse_error_blurb (error != 0 ? error : Bse::Error::NO_ENTRY));
       else
 	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);
@@ -779,7 +740,7 @@ void
 bse_project_state_changed (BseProject     *self,
 			   BseProjectState state)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->deactivate_timer)
     {
@@ -802,7 +763,7 @@ void
 bse_project_keep_activated (BseProject *self,
 			    guint64     min_tick)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (min_tick > self->deactivate_min_tick)
     {
@@ -812,22 +773,22 @@ bse_project_keep_activated (BseProject *self,
     }
 }
 
-BseErrorType
+Bse::Error
 bse_project_activate (BseProject *self)
 {
-  BseErrorType error;
+  Bse::Error error;
   BseTrans *trans;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
 
   if (self->state != BSE_PROJECT_INACTIVE)
-    return BSE_ERROR_NONE;
+    return Bse::Error::NONE;
 
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self) == FALSE, BSE_ERROR_INTERNAL);
+  assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::Error::INTERNAL);
 
   error = bse_server_open_devices (bse_server_get ());
-  if (error)
+  if (error != 0)
     return error;
 
   bse_source_prepare (BSE_SOURCE (self));
@@ -851,7 +812,7 @@ bse_project_activate (BseProject *self)
     }
   bse_trans_commit (trans);
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 void
@@ -861,11 +822,11 @@ bse_project_start_playback (BseProject *self)
   GSList *slist;
   guint seen_synth = 0;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state != BSE_PROJECT_ACTIVE)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   SfiRing *songs = NULL;
   trans = bse_trans_open ();
@@ -906,11 +867,11 @@ bse_project_stop_playback (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state != BSE_PROJECT_PLAYING)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
@@ -937,7 +898,7 @@ bse_project_stop_playback (BseProject *self)
 void
 bse_project_check_auto_stop (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state == BSE_PROJECT_PLAYING)
     {
@@ -961,11 +922,11 @@ bse_project_deactivate (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state == BSE_PROJECT_INACTIVE)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   bse_project_stop_playback (self);
 
@@ -988,3 +949,257 @@ bse_project_deactivate (BseProject *self)
 
   bse_server_close_devices (bse_server_get ());
 }
+
+namespace Bse {
+
+ProjectImpl::ProjectImpl (BseObject *bobj) :
+  ContainerImpl (bobj)
+{}
+
+ProjectImpl::~ProjectImpl ()
+{}
+
+void
+ProjectImpl::change_name (const String &name)
+{
+  BseProject *self = as<BseProject*>();
+  g_object_set (self, "uname", name.c_str(), NULL); /* no undo */
+}
+
+Error
+ProjectImpl::play ()
+{
+  BseProject *self = as<BseProject*>();
+  BseProjectState state_before = self->state;
+  Bse::Error error = bse_project_activate (self);
+  if (error == 0)
+    {
+      if (self->state == BSE_PROJECT_PLAYING)
+        bse_project_stop_playback (self);
+      bse_project_start_playback (self);
+    }
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      // some things work only (can only be undone) in deactivated projects
+      bse_project_push_undo_silent_deactivate (self);
+    }
+  return Bse::Error (error);
+}
+
+Error
+ProjectImpl::activate ()
+{
+  BseProject *self = as<BseProject*>();
+  BseProjectState state_before = self->state;
+  Bse::Error error = bse_project_activate (self);
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      // some things work only (can only be undone) in deactivated projects
+      bse_project_push_undo_silent_deactivate (self);
+    }
+  return Bse::Error (error);
+}
+
+bool
+ProjectImpl::can_play ()
+{
+  BseProject *self = as<BseProject*>();
+  /* playback works if we have supers other than wave repo */
+  gpointer wrepo = bse_project_get_wave_repo (self);
+  return self->supers->data != wrepo || self->supers->next;
+}
+
+bool
+ProjectImpl::is_playing ()
+{
+  BseProject *self = as<BseProject*>();
+  return self->state == BSE_PROJECT_PLAYING;
+}
+
+bool
+ProjectImpl::is_active ()
+{
+  BseProject *self = as<BseProject*>();
+  return self->state != BSE_PROJECT_INACTIVE;
+}
+
+void
+ProjectImpl::start_playback ()
+{
+  BseProject *self = as<BseProject*>();
+  BseProjectState state_before = self->state;
+  bse_project_start_playback (self);
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      // some things work only (can only be undone) in deactivated projects
+      bse_project_push_undo_silent_deactivate (self);
+    }
+}
+
+void
+ProjectImpl::stop_playback ()
+{
+  BseProject *self = as<BseProject*>();
+  bse_project_stop_playback (self);
+}
+
+void
+ProjectImpl::deactivate ()
+{
+  BseProject *self = as<BseProject*>();
+  bse_project_deactivate (self);
+}
+
+void
+ProjectImpl::stop ()
+{
+  BseProject *self = as<BseProject*>();
+  bse_project_deactivate (self);
+}
+
+void
+ProjectImpl::auto_deactivate (int msec_delay)
+{
+  BseProject *self = as<BseProject*>();
+  self->deactivate_usecs = msec_delay < 0 ? -1 : msec_delay * 1000;
+}
+
+int
+ProjectImpl::undo_depth ()
+{
+  BseProject *self = as<BseProject*>();
+  return bse_undo_stack_depth (self->undo_stack);
+}
+
+void
+ProjectImpl::undo ()
+{
+  BseProject *self = as<BseProject*>();
+  if (!self->in_undo && !self->in_redo)
+    {
+      const gchar *name = bse_undo_stack_peek (self->undo_stack);
+      if (name)
+        {
+          self->in_undo = true;         // swap undo<=>redo
+          bse_undo_group_open (self->redo_stack, name);
+          bse_undo_stack_undo (self->undo_stack);
+          bse_undo_group_close (self->redo_stack);
+          self->in_undo = false;        // swap undo<=>redo
+        }
+    }
+}
+
+int
+ProjectImpl::redo_depth ()
+{
+  BseProject *self = as<BseProject*>();
+  return bse_undo_stack_depth (self->redo_stack);
+}
+
+void
+ProjectImpl::redo ()
+{
+  BseProject *self = as<BseProject*>();
+  if (!self->in_undo && !self->in_redo)
+    {
+      const gchar *name = bse_undo_stack_peek (self->redo_stack);
+      if (name)
+        {
+          self->in_redo = true;         // disable redo-stack clearing
+          bse_undo_group_open (self->undo_stack, name);
+          bse_undo_stack_undo (self->redo_stack);
+          bse_undo_group_close (self->undo_stack);
+          self->in_redo = false;        // enable redo-stack clearing
+        }
+    }
+}
+
+void
+ProjectImpl::clear_undo ()
+{
+  BseProject *self = as<BseProject*>();
+  bse_project_clear_undo (self);
+}
+
+void
+ProjectImpl::clean_dirty ()
+{
+  BseProject *self = as<BseProject*>();
+  bse_project_clean_dirty (self);
+}
+
+bool
+ProjectImpl::is_dirty ()
+{
+  BseProject *self = as<BseProject*>();
+  gboolean dirty = false;
+  g_object_get (self, "dirty", &dirty, NULL);
+  return dirty;
+}
+
+void
+ProjectImpl::inject_midi_control (int midi_channel, int midi_control, double control_value)
+{
+  BseProject *self = as<BseProject*>();
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      // construct event
+      BseMidiEvent *event = bse_midi_alloc_event ();
+      event->status = BSE_MIDI_CONTROL_CHANGE;
+      event->channel = midi_channel;
+      event->delta_time = bse_engine_tick_stamp_from_systime (sfi_time_system ());
+      // midi control data portion
+      event->data.control.control = midi_control;
+      event->data.control.value = control_value;
+      // send event
+      bse_midi_receiver_push_event (self->midi_receiver, event);
+      bse_midi_receiver_process_events (self->midi_receiver, event->delta_time);
+    }
+}
+
+Error
+ProjectImpl::import_midi_file (const String &file_name)
+{
+  BseProject *self = as<BseProject*>();
+  Bse::Error error = Bse::Error::NONE;
+  BseMidiFile *smf = bse_midi_file_load (file_name.c_str(), &error);
+  if (error == 0)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "import-midi-file");
+      BseSong *song = bse_project_get_song (self);
+      if (!song)
+	{
+	  gchar *basename = g_path_get_basename (file_name.c_str());
+	  bse_item_exec (self, "create-song", basename, &song);
+	  g_free (basename);
+	}
+      bse_midi_file_setup_song (smf, song);
+      bse_item_undo_close (ustack);
+      bse_project_clear_undo (self); // FIXME: why can't we undo MIDI imports?
+    }
+  if (smf)
+    bse_midi_file_free (smf);
+  return Bse::Error (error);
+}
+
+Error
+ProjectImpl::restore_from_file (const String &file_name)
+{
+  BseProject *self = as<BseProject*>();
+  Bse::Error error;
+  if (!self->in_undo && !self->in_redo)
+    {
+      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+      error = bse_storage_input_file (storage, file_name.c_str());
+      if (error == 0)
+        error = bse_project_restore (self, storage);
+      bse_storage_reset (storage);
+      g_object_unref (storage);
+      bse_project_clear_undo (self);
+    }
+  else
+    error = Bse::Error::PROC_BUSY;
+  return Bse::Error (error);
+}
+
+} // Bse

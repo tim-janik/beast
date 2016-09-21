@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 #define	BSE_MIDI_VOICE_N_CHANNELS			   (3)
 typedef void   (*BseMidiControlHandler)                    (gpointer           handler_data,
                                                             guint64            tick_stamp,
-                                                            BseMidiSignalType  signal_type,
+                                                            Bse::MidiSignal  signal_type,
                                                             gfloat             control_value,
                                                             guint              n_modules,
                                                             BseModule  *const *modules,
@@ -33,27 +33,27 @@ void             bse_midi_receiver_process_events          (BseMidiReceiver   *s
                                                             guint64            max_tick_stamp);
 BseModule*       bse_midi_receiver_retrieve_control_module (BseMidiReceiver   *self,
                                                             guint              midi_channel,
-                                                            BseMidiSignalType  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
+                                                            Bse::MidiSignal  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
                                                             BseTrans          *trans);
 void             bse_midi_receiver_discard_control_module  (BseMidiReceiver   *self,
                                                             BseModule         *cmodule,
                                                             BseTrans          *trans);
 gboolean         bse_midi_receiver_add_control_handler     (BseMidiReceiver   *self,
                                                             guint              midi_channel,
-                                                            BseMidiSignalType  signal_type,
+                                                            Bse::MidiSignal  signal_type,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
                                                             BseModule         *module);
 void             bse_midi_receiver_set_control_handler_data(BseMidiReceiver   *self,
                                                             guint              midi_channel,
-                                                            BseMidiSignalType  signal_type,
+                                                            Bse::MidiSignal  signal_type,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
                                                             gpointer           extra_data,
                                                             BseFreeFunc        extra_free); /* UserThread */
 void             bse_midi_receiver_remove_control_handler  (BseMidiReceiver   *self,
                                                             guint              midi_channel,
-                                                            BseMidiSignalType  signal_type,
+                                                            Bse::MidiSignal  signal_type,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
                                                             BseModule         *module);

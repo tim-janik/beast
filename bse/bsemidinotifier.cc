@@ -52,12 +52,7 @@ bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
   gobject_class->finalize = bse_midi_notifier_finalize;
 
   for (i = 0; i < BSE_MIDI_MAX_CHANNELS; i++)
-    {
-      gchar buffer[32];
-
-      g_snprintf (buffer, 32, "%u", i);
-      number_quarks[i] = g_quark_from_string (buffer);
-    }
+    number_quarks[i] = g_quark_from_string (string_format ("%u", i).c_str());
 
   signal_midi_event = bse_object_class_add_dsignal (object_class, "midi-event",
 						    G_TYPE_NONE, 1,
@@ -187,7 +182,7 @@ bse_midi_notifier_notify_event (BseMidiNotifier *self,
 void
 bse_midi_notifier_dispatch (BseMidiNotifier *self)
 {
-  g_return_if_fail (BSE_IS_MIDI_NOTIFIER (self));
+  assert_return (BSE_IS_MIDI_NOTIFIER (self));
   if (!self->midi_receiver)
     return;
   SfiRing *ring = bse_midi_receiver_fetch_notify_events (self->midi_receiver);
@@ -272,3 +267,14 @@ bse_midi_notifiers_wakeup (void)
 {
   bse_main_wakeup();
 }
+
+namespace Bse {
+
+MidiNotifierImpl::MidiNotifierImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+MidiNotifierImpl::~MidiNotifierImpl ()
+{}
+
+} // Bse

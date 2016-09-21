@@ -358,14 +358,14 @@ public:
       case NUM:         return "Sfi::Num";
       case REAL:        return "Sfi::Real";
       case CHOICE:      return make_fqtn (type);
-      case STRING:      return "Sfi::String";
+      case STRING:      return "Sfi::SfiString";
       case BBLOCK:      return "Sfi::BBlock";
       case FBLOCK:      return "Sfi::FBlock";
       case SFIREC:      return "Sfi::Rec";
       case RECORD:      return make_fqtn (type, "Handle");
       case SEQUENCE:    return make_fqtn (type);
       case OBJECT:      return is_cxx_class (type) ? make_fqtn (type, "*") : make_PrefixedTypeName (type, "*");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -386,7 +386,7 @@ public:
       case RECORD:
       case SEQUENCE:    return intern (String ("const ") + TypeField (type) + " &");
       case OBJECT:      return TypeField (type);
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -409,7 +409,7 @@ public:
       case REAL:        return "sfi_value_set_real";
       case CHOICE:      return intern (s + "sfi_value_set_enum_auto " +
                                        "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS2");
-      case STRING:      return "::Sfi::String::value_set_string";
+      case STRING:      return "::Sfi::SfiString::value_set_string";
       case BBLOCK:      return "::Sfi::BBlock::value_set_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
       case SFIREC:      return "::Sfi::Rec::value_set_rec";
@@ -420,7 +420,7 @@ public:
           return intern (String() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
         else
           return intern (String() + "::Bse::CxxBase::value_set_gobject");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -435,7 +435,7 @@ public:
       case REAL:        return "sfi_value_get_real";
       case CHOICE:      return intern (s + "(" + make_fqtn (type) + ") sfi_value_get_enum_auto " +
                                        "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS1");
-      case STRING:      return "::Sfi::String::value_get_string";
+      case STRING:      return "::Sfi::SfiString::value_get_string";
       case BBLOCK:      return "::Sfi::BBlock::value_get_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_get_fblock";
       case SFIREC:      return "::Sfi::Rec::value_get_rec";
@@ -447,7 +447,7 @@ public:
                          "::Bse::CxxBase::value_get_object< " + make_fqtn (type) + "Base* >");
         else
           return intern (String ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -532,10 +532,12 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *name = nspace.printable_form (ci->name);
+        printf("#ifndef SFIDL_SKIPDEF__%s\n", name);
         printf ("enum %s {\n", name);
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
           printf ("  %s = %d,\n", pure_UPPER (vi->name), vi->value);
         printf ("};\n");
+        printf("#endif // SFIDL_SKIPDEF__%s\n", name);
       }
   }
   void
@@ -1238,7 +1240,7 @@ public:
         printf (");\n");
 
         /* marshal */
-        printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
+        printf ("  static Bse::Error marshal (BseProcedureClass *procedure,\n"
                 "                               const GValue      *in_values,\n"
                 "                               GValue            *out_values)\n");
         printf ("  {\n");
@@ -1256,12 +1258,12 @@ public:
           printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result.type));
         printf ("    } catch (std::exception &e) {\n");
         printf ("      sfi_diag (\"%%s: %%s\", \"%s\", e.what());\n", name);
-        printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+        printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    } catch (...) {\n");
         printf ("      sfi_diag (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
-        printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+        printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    }\n");
-        printf ("    return BSE_ERROR_NONE;\n");
+        printf ("    return Bse::Error::NONE;\n");
         printf ("  }\n");
 
         /* init */
@@ -1286,7 +1288,7 @@ public:
     printf ("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 
     /* standard includes */
-    printf ("\n#include <bse/bse-internals.hh>\n");
+    printf ("\n#include <bse/effectbase.hh>\n");
 
     /* reset auxillary structures */
     images.resize (0);
@@ -1353,11 +1355,11 @@ public:
         String cmd = String() + "gdk-pixbuf-csource " + "--name=local_pixstream " + ii->file;
         g_spawn_command_line_sync (cmd.c_str(), &out, &err, &estatus, &error);
         if (err && *err)
-          g_printerr ("gdk-pixbuf-csource: %s", err);
+          printerr ("gdk-pixbuf-csource: %s", err);
         if (error || estatus)
           {
             if (error)
-              g_printerr ("failed to convert image file \"%s\" with gdk-pixbuf-csource%c %s",
+              printerr ("failed to convert image file \"%s\" with gdk-pixbuf-csource%c %s",
                           ii->file.c_str(), error ? ':' : ' ', error->message);
             exit (estatus & 255 ? estatus : 1);
           }

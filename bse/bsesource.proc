@@ -6,6 +6,7 @@
 #include <bse/bseieee754.hh>
 #include <bse/bsemidievent.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -22,7 +23,7 @@ METHOD (BseSource, set-input-by-id) {
   IN	= sfi_pspec_int ("output-channel", "Output Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -34,22 +35,22 @@ BODY (BseProcedureClass *proc,
   guint ichannel     = sfi_value_get_int (in_values++);
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
-  BseErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* connect */
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
-  if (error == BSE_ERROR_NONE)
+  if (error == Bse::Error::NONE)
     bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, set-input) {
@@ -63,7 +64,7 @@ METHOD (BseSource, set-input) {
   IN	= sfi_pspec_string ("output-channel", "Output Channel", NULL,
 			    NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -76,25 +77,25 @@ BODY (BseProcedureClass *proc,
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
-  BseErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
       !ichannel_ident || !ochannel_ident)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* connect */
   ichannel = bse_source_find_ichannel (isource, ichannel_ident);
   ochannel = bse_source_find_ochannel (osource, ochannel_ident);
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
-  if (error == BSE_ERROR_NONE)
+  if (error == Bse::Error::NONE)
     bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, unset-input-by-id) {
@@ -108,7 +109,7 @@ METHOD (BseSource, unset-input-by-id) {
   IN	= sfi_pspec_int ("output-channel", "Output Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -120,15 +121,15 @@ BODY (BseProcedureClass *proc,
   guint ichannel     = sfi_value_get_int (in_values++);
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* disconnect */
   error = bse_source_check_input (isource, ichannel, osource, ochannel);
-  if (error == BSE_ERROR_NONE)
+  if (error == Bse::Error::NONE)
     {
       BseUndoStack *ustack = bse_item_undo_open (isource, "unset-input-by-id");
       bse_source_input_backup_to_undo (isource, ichannel, osource, ochannel);
@@ -138,9 +139,9 @@ BODY (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, unset-input) {
@@ -154,7 +155,7 @@ METHOD (BseSource, unset-input) {
   IN    = sfi_pspec_string ("output-channel", "Output Channel", NULL,
 			    NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -167,18 +168,18 @@ BODY (BseProcedureClass *proc,
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       !ichannel_ident || !ochannel_ident)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* disconnect */
   ichannel = bse_source_find_ichannel (isource, ichannel_ident);
   ochannel = bse_source_find_ochannel (osource, ochannel_ident);
   error = bse_source_check_input (isource, ichannel, osource, ochannel);
-  if (error == BSE_ERROR_NONE)
+  if (error == Bse::Error::NONE)
     {
       BseUndoStack *ustack = bse_item_undo_open (isource, "unset-input-by-id");
       bse_source_input_backup_to_undo (isource, ichannel, osource, ochannel);
@@ -188,9 +189,9 @@ BODY (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, clear-inputs) {
@@ -208,7 +209,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* disconnect */
   ustack = bse_item_undo_open (isource, "clear-inputs %s", bse_object_debug_name (isource));
@@ -217,7 +218,7 @@ BODY (BseProcedureClass *proc,
   bse_item_undo_close (ustack);
   bse_source_clear_ichannels (isource);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, clear-outputs) {
@@ -235,7 +236,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* disconnect */
   ustack = bse_item_undo_open (isource, "clear-outputs %s", bse_object_debug_name (isource));
@@ -244,7 +245,7 @@ BODY (BseProcedureClass *proc,
   bse_item_undo_close (ustack);
   bse_source_clear_ochannels (isource);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, has-output) {
@@ -263,12 +264,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_bool (out_values++, bse_source_has_output (source, ochannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, has-outputs) {
@@ -287,12 +288,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_bool (out_values++, source->outputs != NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, n-ichannels) {
@@ -311,12 +312,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, BSE_SOURCE_N_ICHANNELS (source));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ichannel-label) {
@@ -338,12 +339,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_LABEL (source, ichannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ichannel-ident) {
@@ -365,12 +366,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_IDENT (source, ichannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ichannel-blurb) {
@@ -392,12 +393,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, is-joint-ichannel-by-id) {
@@ -419,12 +420,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, is-joint-ichannel) {
@@ -447,14 +448,14 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !ichannel)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   id = bse_source_find_ichannel (source, ichannel);
   sfi_value_set_bool (out_values++,
 		      id < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_IS_JOINT_ICHANNEL (source, id) : FALSE);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ichannel-get-n-joints) {
@@ -477,7 +478,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
@@ -486,44 +487,7 @@ BODY (BseProcedureClass *proc,
   else
     sfi_value_set_int (out_values++, input->idata.osource ? 1 : 0);
 
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseSource, ichannel-get-osource) {
-  HELP	= "Retrieve output module connected to a specific joint of an input channel";
-  IN	= bse_param_spec_object ("module", "Module", NULL,
-				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
-			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("input-joint", "Input Joint", NULL,
-			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_object ("osource", "Output Source", NULL,
-				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
-  guint ichannel    = sfi_value_get_int (in_values++);
-  guint joint       = sfi_value_get_int (in_values++);
-  BseSourceInput *input;
-
-  /* check parameters */
-  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  input = BSE_SOURCE_INPUT (source, ichannel);
-  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
-    bse_value_set_object (out_values++, input->jdata.joints[joint].osource);
-  else if (joint < 1)
-    bse_value_set_object (out_values++, input->idata.osource);
-  else
-    bse_value_set_object (out_values++, NULL);
-
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ichannel-get-ochannel) {
@@ -549,7 +513,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
@@ -560,7 +524,7 @@ BODY (BseProcedureClass *proc,
   else
     sfi_value_set_int (out_values++, G_MAXINT);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, n-ochannels) {
@@ -579,12 +543,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, BSE_SOURCE_N_OCHANNELS (source));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ochannel-label) {
@@ -606,12 +570,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_LABEL (source, ochannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ochannel-ident) {
@@ -633,12 +597,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_IDENT (source, ochannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, ochannel-blurb) {
@@ -660,12 +624,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_BLURB (source, ochannel));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, set-pos) {
@@ -694,7 +658,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || BSE_DOUBLE_IS_NANINF (xpos) || BSE_DOUBLE_IS_NANINF (ypos))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   if (fabs (xpos - source->pos_x) > epsilon ||
@@ -708,7 +672,7 @@ BODY (BseProcedureClass *proc,
       bse_item_undo_close (ustack);
     }
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, set-automation) {
@@ -721,7 +685,7 @@ METHOD (BseSource, set-automation) {
                          0, 0, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD ":scale:unprepared");
   IN    = bse_param_spec_genum ("control_type", _("Control Type"), _("The type of control events used for automation"),
                                 BSE_TYPE_MIDI_CONTROL_TYPE, BSE_MIDI_CONTROL_CONTINUOUS_16, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_genum ("error", "Error", NULL, BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL, BSE_TYPE_ERROR_TYPE, Bse::Error::NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -731,28 +695,28 @@ BODY (BseProcedureClass *proc,
   BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   const char *property = sfi_value_get_string (in_values++);
   guint      midi_channel = sfi_value_get_int (in_values++);
-  BseMidiSignalType control_type = (BseMidiSignalType) g_value_get_enum (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::MidiSignal control_type = (Bse::MidiSignal) g_value_get_enum (in_values++);
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* connect */
   guint old_midi_channel = 0;
-  BseMidiSignalType old_control_type = BseMidiSignalType (0);
+  Bse::MidiSignal old_control_type = Bse::MidiSignal (0);
   bse_source_get_automation_property (source, property, &old_midi_channel, &old_control_type);
   if (old_midi_channel != midi_channel || old_control_type != control_type)
     {
       error = bse_source_set_automation_property (source, property, midi_channel, control_type);
-      if (error == BSE_ERROR_NONE)
+      if (error == Bse::Error::NONE)
         bse_item_push_undo_proc (source, "set-automation", property, old_midi_channel, old_control_type);
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, get-automation-channel) {
@@ -773,7 +737,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* connect */
   guint midi_channel = 0;
@@ -781,7 +745,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_int (out_values++, midi_channel);
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, get-automation-control) {
@@ -802,15 +766,15 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* connect */
-  BseMidiSignalType control_type = BseMidiSignalType (0);
+  Bse::MidiSignal control_type = Bse::MidiSignal (0);
   bse_source_get_automation_property (source, property, NULL, &control_type);
   /* set output parameters */
-  g_value_set_enum (out_values++, control_type);
+  g_value_set_enum (out_values++, int (control_type));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSource, is-prepared) {
@@ -827,10 +791,10 @@ METHOD (BseSource, is-prepared) {
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_SOURCE_PREPARED (source));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }

@@ -18,8 +18,7 @@ G_BEGIN_DECLS
 /* --- typedefs & enums --- */
 typedef struct _BstTrackRoll              BstTrackRoll;
 typedef struct _BstTrackRollClass         BstTrackRollClass;
-typedef SfiProxy (*BstTrackRollTrackFunc)   (gpointer proxy_data,
-                                             gint     row);
+typedef Bse::TrackH (*BstTrackRollTrackFunc) (void *proxy_data, int row);
 
 
 /* --- structures & typedefs --- */
@@ -30,19 +29,21 @@ typedef enum    /*< skip >*/
   BST_TRACK_ROLL_MARKER_LOOP,
   BST_TRACK_ROLL_MARKER_SELECT
 } BstTrackRollMarkerType;
-typedef struct {
+struct BstTrackRollDrag {
   GXK_SCROLL_CANVAS_DRAG_FIELDS;
-  guint         start_row;
-  SfiProxy      start_track;
-  guint         start_tick;
-  gboolean      start_valid;
-  guint         current_row;
-  SfiProxy      current_track;
-  guint         current_tick;
-  gboolean      current_valid;
-  /* convenience: */
+  uint          start_row;
+  Bse::TrackH   start_track;
+  uint          start_tick;
+  bool          start_valid;
+  uint          current_row;
+  Bse::TrackH   current_track;
+  uint          current_tick;
+  bool          current_valid;
+  // convenience:
   BstTrackRoll *troll;
-} BstTrackRollDrag;
+  BstTrackRollDrag() : start_row (~uint (0)), start_tick (0), start_valid (0),
+                       current_row (~uint (0)), current_tick (0), current_valid (0), troll (NULL) {}
+};
 struct _BstTrackRoll
 {
   GxkScrollCanvas   parent_instance;
@@ -76,10 +77,10 @@ struct _BstTrackRoll
   BstTrackRollTrackFunc get_track;
 
   /* last drag state */
-  guint         start_row;
-  SfiProxy      start_track;
-  guint         start_tick;
-  gboolean      start_valid;
+  uint          start_row;
+  Bse::TrackH   start_track;
+  uint          start_tick;
+  bool          start_valid;
 };
 struct _BstTrackRollClass
 {
@@ -112,8 +113,7 @@ void    bst_track_roll_set_track_callback  (BstTrackRoll           *self,
                                             BstTrackRollTrackFunc   get_track);
 void    bst_track_roll_check_update_scopes (BstTrackRoll           *self);
 void    bst_track_roll_reselect            (BstTrackRoll           *self);
-void    bst_track_roll_queue_row_change    (BstTrackRoll           *self,
-                                            guint                   row);
+void    bst_track_roll_queue_row_change    (BstTrackRoll *self, int row);
 void    bst_track_roll_set_prelight_row    (BstTrackRoll           *self,
                                             guint                   row);
 void    bst_track_roll_start_edit          (BstTrackRoll           *self,

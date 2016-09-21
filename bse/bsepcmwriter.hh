@@ -27,7 +27,7 @@ struct BsePcmWriter : BseItem {
 struct BsePcmWriterClass : BseItemClass
 {};
 
-BseErrorType	bse_pcm_writer_open		(BsePcmWriter		*pdev,
+Bse::Error	bse_pcm_writer_open		(BsePcmWriter		*pdev,
 						 const gchar		*file,
 						 guint			 n_channels,
 						 guint			 sample_freq,
@@ -42,5 +42,16 @@ void		bse_pcm_writer_write		(BsePcmWriter		*pdev,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+namespace Bse {
+
+class PcmWriterImpl : public ItemImpl, public virtual PcmWriterIface {
+protected:
+  virtual  ~PcmWriterImpl ();
+public:
+  explicit  PcmWriterImpl (BseObject*);
+};
+
+} // Bse
 
 #endif /* __BSE_PCM_WRITER_H__ */

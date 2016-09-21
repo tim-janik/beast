@@ -1,17 +1,9 @@
 #!/bin/bash
 
-CONFIGURE_OPTIONS=--enable-devel-mode=yes
+set -xe # be verbose and abort on errors
 
-echo "$0: Cleaning configure caches..."
-rm -rf autom4te.cache/
-rm -f  config.cache
+rm -rf autom4te.cache/ config.cache
 
-# automake *requires* ChangeLog
-echo "$0: Enforce ChangeLog presence"
-test -e ChangeLog || TZ=GMT0 touch ChangeLog -t 190112132145.52
+autoreconf -vfsi
 
-echo "$0: autoreconf -vfsi -Wno-portability"
-autoreconf -vfsi -Wno-portability || exit $?
-
-echo "$0: ./configure $CONFIGURE_OPTIONS $@"
-./configure $CONFIGURE_OPTIONS "$@" || exit $?
+./configure --enable-devel-mode=yes "$@"

@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -72,7 +72,7 @@ all: $(GMOFILES)
 # compile translation catalogs
 %.gmo: %.po
 	@echo $(ECHO_N) "$(@F): " \
-	&& $(GMSGFMT) --statistics --directory=$(srcdir) -o xgen-$(@F) $< \
+	&& $(GMSGFMT) --statistics --directory=$(srcdir) -o xgen-$(@F) $(<F) \
 	&& mv xgen-$(@F) $@
 
 # install translation catalogs
@@ -80,7 +80,7 @@ install: install-data
 install-data: $(GMOFILES)
 	@echo "Installing localised message files..."
 	@for lang in $(TRANSLATIONS); do \
-	  $(mkinstalldirs) "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/"; \
+	  $(mkinstalldirs) "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/" || exit ; \
 	  test ! -r "$$lang.gmo" || { \
 	    printf "  %-12s -> %s\n" "$$lang.gmo" ".../$$lang/$(BST_GETTEXT_DOMAIN).mo" ; \
             $(INSTALL_DATA) "$$lang.gmo" \
@@ -165,15 +165,28 @@ update-po: Makefile
 	@echo "Merging messages.pot into po files..."
 	@for i in $(POFILES) ; do \
 	  printf "%12s: " "$$i" ; \
-	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.pot || exit 1 ; \
+	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.pot || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
-DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
-$(DISTDIR_HOOK): $(shell test -w $(srcdir)/messages.pot && echo 'update-po')
+check-update-po: Makefile $(srcdir)/messages.pot
+	$(Q) rm -f check-messages.pot # force rebuild
+	$(Q) $(MAKE) --no-print-directory check-messages.pot
+	@echo -n "Checking for updated po files: "
+	$(Q) for i in $(POFILES) ; do \
+	  echo -n '.' ; \
+	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.pot || exit ; \
+	  cmp -s $(srcdir)/$$i xtmp-$$i || \
+	  { echo ; echo "$$i: error: message updates missing, run 'update-po' first" >&2 ; exit 1 ; } ; \
+	  rm -f xtmp-$$i ; \
+	done ; echo
+	$(Q) rm -f check-messages.pot
+.PHONY: check-update-po
 
-$(srcdir)/messages.pot: POTSCAN
-	@echo "Rebuilding $(@F)..."
+CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
+
+$(srcdir)/messages.pot check-messages.pot: POTSCAN
+	@echo "Building $(@F)..."
 	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
 	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < POTSCAN > $(POTLIST) \
 	&& cp $(POTLIST) $(TMPLIST) && mkdir -p $(TMPDIR)/
@@ -200,17 +213,15 @@ split_lines = test -e $(1) -a -w . && { \
 }
 # (prepare_pot_source, POSRC_TYPE, INFILE)
 define prepare_pot_source
-	DOING=$(if $(POSRC_$(strip $(1))_FILTER),"Preparing","Listing"); \
+	DOING=$(if $(POSRC_$(strip $(1))_FILTER),"Preparing","Listing") ; \
 	printf "  %-32s" "$$DOING $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
-	$(call split_lines, $(2), "potlist$$$$.tmp", $(POSRC_$(strip $(1))_PATTERN)) ; \
-	wc -l < "potlist$$$$.tmp" ; \
+	$(call split_lines, $(2), "potlist$$$$.tmp", $(POSRC_$(strip $(1))_PATTERN)) && \
+	wc -l < "potlist$$$$.tmp" || exit ; \
 	$(if $(POSRC_$(strip $(1))_FILTER), \
-	  cat "potlist$$$$.tmp" | \
 	  while read file ; do \
-	    d=`dirname "$$file"` ; mkdir -p "$(TMPDIR)/$$d" || exit $$? ; \
-	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" \
-	    || exit $$? ; \
-	  done \
+	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
+	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	  done < "potlist$$$$.tmp" \
 	, \
 	  : \
 	) ; rm -f "potlist$$$$.tmp"
@@ -223,7 +234,7 @@ unlisted:
 	@ # list possible POT sources...
 	@(cd $(top_srcdir) && find . $(FIND_NOHIDDEN) -type f -print) | sed 's,^\./,,' \
 	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
-	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)" ; :
+	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
 	@ # scanning file types...
 	@$(foreach TYPE, $(POSRC_TYPES), \
 	  $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
@@ -237,7 +248,7 @@ DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 define test_unlisted
-	printf "  %-32s" "Scanning $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
+	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
 	grep $(POSRC_$(strip $(1))_PATTERN) $(2) | \
 	  $(if $(POSRC_$(strip $(1))_FILTER), \
 	    while read file ; do \

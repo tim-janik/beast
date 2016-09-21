@@ -94,7 +94,7 @@ image_cache_create_item (const gchar    *file_name,
 static void
 image_cache_item_unuse (GxkImageCacheItem *citem)
 {
-  g_return_if_fail (citem->use_count > 0);
+  assert_return (citem->use_count > 0);
   citem->use_count--;
   if (citem->use_count)
     return;
@@ -180,5 +180,5 @@ gxk_image_cache_unuse_pixmap (GdkPixmap *pixmap)
           return;
         }
     }
-  g_warning ("%s: no such pixmap: %p", G_STRFUNC, pixmap);
+  g_warning ("%s: no such pixmap: %p", __func__, pixmap);
 }

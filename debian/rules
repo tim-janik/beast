@@ -1,105 +1,45 @@
 #!/usr/bin/make -f
 
-#export DH_VERBOSE=1
+# https://www.debian.org/doc/manuals/maint-guide/dreq.html#customrules
 
-export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+DH_VERBOSE = 1
 
-CFLAGS = -Wall -g
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-  CFLAGS += -O0
-else 
-  CFLAGS += -O3
-endif
+# see EXAMPLES in dpkg-buildflags(1) and read /usr/share/dpkg/*
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
 
-confflags = --prefix=/usr --mandir=/usr/share/man
-ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-confflags += $(DEB_HOST_GNU_TYPE)
-else
-confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
-endif
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Remove stuff
-	rm -f config.cache config.log
-	# Touch timestamps
-	touch aclocal.m4
-	touch configure
-	touch configure.h.in bse/bseconfig.h.in
-	touch `find -name Makefile.in` dummy-stamp
-	# Configure the package.
-	CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" ./configure \
-	  --enable-devdsp --enable-devmidi \
-	  --enable-osspcm=/dev/dsp --enable-ossmidi=/dev/midi \
-	  $(confflags)
-	touch configure-stamp
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
-build: configure-stamp build-stamp
-build-stamp:
-	dh_testdir
-	# Compile the package.
-	$(MAKE)
-	touch build-stamp
+# main packaging script based on dh7 syntax
+%:
+	dh $@ --parallel --with autoreconf --with python2
 
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp configure-stamp
-	# Clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f data/beast-audio-x-bse.png
-	rm -f bse/bsegencore.cc beast-gtk/gxk/gxkgentypes.stamp
-	rm -f po/de.gmo
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k
-	dh_installdirs
-	# Install the package into debian/beast
-	$(MAKE) DESTDIR=$(CURDIR)/debian/beast install
-	ln -s beast.1.gz debian/beast/usr/share/man/man1/beast-0.6.6.1.gz
-	ln -s bsescm.1.gz debian/beast/usr/share/man/man1/bsescm-0.6.6.1.gz
-	convert debian/beast/usr/share/pixmaps/beast.png -geometry 32x32 debian/beast/usr/share/pixmaps/beast.xpm
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs NEWS README
-	dh_installexamples test/*.bse
-#	dh_install
-	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-#	dh_undocumented
-	dh_installman
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-#	dh_perl
-#	dh_python
-	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps -ldebian/beast/usr/lib
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install
+# debmake generated override targets
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-static
+override_dh_install:
+	dh_install --fail-missing
+override_dh_auto_install:
+	dh_auto_install
+	@ # https://wiki.debian.org/ReleaseGoals/LAFileRemoval
+	find debian/tmp -name '*.la' -delete
+	@ # fix package-installs-python-bytecode
+	find debian/tmp -name '*.py[co]' -delete
+	@ # fix binary-without-manpage usr/bin/beast-0.9.3
+	LNK=`basename debian/tmp/usr/bin/beast-*` && \
+	ln -s beast.1 debian/tmp/usr/share/man/man1/$$LNK.1
+override_dh_makeshlibs: # for -X<findpattern>, see: fgrep -C5 EXCLUDE_FIND /usr/share/perl5/Debian/Debhelper/Dh_Lib.pm
+	dh_makeshlibs '-X/bse-[0-9.]+/drivers/'
+override_dh_installdocs-indep:
+	dh_installdocs --indep
+	@ # remove unused doxygen files
+	dh_doxygen --indep

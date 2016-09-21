@@ -1,4 +1,4 @@
-#0 List of source files to scan for translatable strings
+#0 Patterns source files to ignore in translation
 #0 Please keep alphabetically sorted
 .*\.genidl\.hh
 .*\.genprc\.c

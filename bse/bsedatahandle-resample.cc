@@ -41,7 +41,7 @@ protected:
     m_filter_order (0),			  // unnecessary, but makes debugging easier - just in case
     m_init_ok (false)
   {
-    g_return_if_fail (src_handle != NULL);
+    assert_return (src_handle != NULL);
 
     memset (&m_dhandle, 0, sizeof (m_dhandle));
     m_init_ok = gsl_data_handle_common_init (&m_dhandle, NULL);
@@ -123,11 +123,11 @@ protected:
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
-  BseErrorType
+  Bse::Error
   open (GslDataHandleSetup *setup)
   {
-    BseErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != BSE_ERROR_NONE)
+    Bse::Error error = gsl_data_handle_open (m_src_handle);
+    if (error != Bse::Error::NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -142,7 +142,7 @@ public:
       case BSE_RESAMPLER2_MODE_DOWNSAMPLE:  setup->mix_freq /= 2.0;
 					    setup->n_values = (setup->n_values + 1) / 2;
 					    break;
-      default:				    g_assert_not_reached();
+      default:				    assert_unreached();
       }
 
     m_frame_size = 1024 * setup->n_channels;
@@ -153,11 +153,11 @@ public:
     for (guint i = 0; i < setup->n_channels; i++)
       {
 	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	g_assert (resampler);
+	assert (resampler);
 
 	m_resamplers.push_back (resampler);
       }
-    g_assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
+    assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
     m_filter_order = m_resamplers[0]->order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
@@ -178,7 +178,7 @@ public:
 	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
 	m_filter_delay_input = 0;
       }
-    return BSE_ERROR_NONE;
+    return Bse::Error::NONE;
   }
   void
   close()
@@ -209,10 +209,10 @@ public:
 	if (l < 0)
 	  return l;
       }
-    g_assert (m_pcm_frame == frame);
+    assert (m_pcm_frame == frame);
 
     voffset -= m_pcm_frame * m_frame_size;
-    g_assert (voffset >= 0);
+    assert (voffset >= 0);
 
     n_values = std::min (n_values, m_frame_size - voffset);
     for (int64 i = 0; i < n_values; i++)
@@ -225,7 +225,7 @@ public:
   {
     int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
     // m_src_handle must be opened and have valid state size
-    g_return_val_if_fail (source_state_length >= 0, 0);  
+    assert_return (source_state_length >= 0, 0);  
 
     if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
       source_state_length *= 2;
@@ -233,7 +233,7 @@ public:
       source_state_length = (source_state_length + 1) / 2;
 
     // we must be opened => n_channels > 0, 1 Resampler per Channel
-    g_return_val_if_fail (!m_resamplers.empty(), 0);
+    assert_return (!m_resamplers.empty(), 0);
 
     /* For fractional delays, a delay of 10.5 for instance means that input[0]
      * affects samples 10 and 11, and thus the state length we assume for
@@ -275,7 +275,7 @@ private:
     return static_cast<CDataHandleResample2 *> (dhandle)->cxx_dh;
     //return reinterpret_cast<DataHandleResample2 *> (dhandle);
   }
-  static BseErrorType
+  static Bse::Error
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

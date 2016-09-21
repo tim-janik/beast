@@ -1,11 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
 #include "bstutils.hh"
 #include "bse/bse.hh"
 #include "bstdbmeter.hh"
 #include "bstparam.hh"
 #include "bstgconfig.hh"
 #include "bstskinconfig.hh"
+#include "../configure.h"
 
 /* --- FIXME: --- */
 gboolean            bst_developer_hints = FALSE;
@@ -75,15 +75,13 @@ main (int   argc,
       char *argv[])
 {
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
 
-  /* initialize GLib */
-  g_type_init ();
   /* initialize Sfi */
-  sfi_init (&argc, argv, "TestGUI");
+  sfi_init (&argc, argv);
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("testgui");            /* override Gdk's program name */
@@ -92,8 +90,8 @@ main (int   argc,
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* add documentation search paths */
-  gxk_text_add_tsm_path (BST_PATH_DOCS);
-  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   /* initialize BEAST GUI components */
   _bst_init_utils ();

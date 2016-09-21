@@ -291,7 +291,7 @@ simple_label_mnemonic_activate (GtkWidget *widget,
           GTK_IS_MENU_ITEM (parent))
         {
           gboolean cc = gtk_widget_mnemonic_activate (parent, group_cycling);
-          g_print ("simple_label_mnemonic_activate: %s: %u (%d %d %d %d)\n", G_OBJECT_TYPE_NAME (parent), cc,
+          printout ("simple_label_mnemonic_activate: %s: %u (%d %d %d %d)\n", G_OBJECT_TYPE_NAME (parent), cc,
                    GTK_WIDGET_CAN_FOCUS (parent), GTK_WIDGET_GET_CLASS (parent)->activate_signal,
                    (parent->parent && GTK_IS_NOTEBOOK (parent->parent)),
                    GTK_IS_MENU_ITEM (parent));
@@ -359,9 +359,9 @@ void
 gxk_simple_label_set_mnemonic_widget (GxkSimpleLabel  *self,
                                       GtkWidget       *widget)
 {
-  g_return_if_fail (GXK_IS_SIMPLE_LABEL (self));
+  assert_return (GXK_IS_SIMPLE_LABEL (self));
   if (widget)
-    g_return_if_fail (GTK_IS_WIDGET (widget));
+    assert_return (GTK_IS_WIDGET (widget));
 
   if (self->mnemonic_widget)
     g_object_weak_unref (G_OBJECT (self->mnemonic_widget),

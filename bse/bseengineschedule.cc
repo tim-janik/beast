@@ -40,8 +40,8 @@ _engine_schedule_new (void)
 static inline void
 unschedule_virtual (EngineSchedule *sched, EngineNode *vnode)
 {
-  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (vnode) == TRUE);
-  g_return_if_fail (sched->n_items > 0);
+  assert_return (ENGINE_NODE_IS_SCHEDULED (vnode) == TRUE);
+  assert_return (sched->n_items > 0);
 
   /* SCHED_DEBUG ("unschedule_virtual(%p)", vnode); */
   sched->vnodes = sfi_ring_remove (sched->vnodes, vnode);
@@ -54,10 +54,10 @@ unschedule_node (EngineSchedule *sched, EngineNode *node)
 {
   guint leaf_level;
 
-  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (node) == TRUE);
+  assert_return (ENGINE_NODE_IS_SCHEDULED (node) == TRUE);
   leaf_level = node->sched_leaf_level;
-  g_return_if_fail (leaf_level <= sched->leaf_levels);
-  g_return_if_fail (sched->n_items > 0);
+  assert_return (leaf_level <= sched->leaf_levels);
+  assert_return (sched->n_items > 0);
 
   /* SCHED_DEBUG ("unschedule_node(%p,%u)", node, leaf_level); */
   sched->nodes[leaf_level] = sfi_ring_remove (sched->nodes[leaf_level], node);
@@ -75,10 +75,10 @@ unschedule_cycle (EngineSchedule *sched,
   guint leaf_level;
   SfiRing *walk;
 
-  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (ENGINE_NODE (ring->data)) == TRUE);
+  assert_return (ENGINE_NODE_IS_SCHEDULED (ENGINE_NODE (ring->data)) == TRUE);
   leaf_level = ENGINE_NODE (ring->data)->sched_leaf_level;
-  g_return_if_fail (leaf_level <= sched->leaf_levels);
-  g_return_if_fail (sched->n_items > 0);
+  assert_return (leaf_level <= sched->leaf_levels);
+  assert_return (sched->n_items > 0);
 
   /* SCHED_DEBUG ("unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring); */
   sched->nodes[leaf_level] = sfi_ring_remove (sched->nodes[leaf_level], ring);
@@ -98,16 +98,16 @@ unschedule_cycle (EngineSchedule *sched,
 static void
 _engine_schedule_debug_dump (EngineSchedule *sched)
 {
-  g_printerr ("sched(%p) = {\n", sched);
+  printerr ("sched(%p) = {\n", sched);
   if (sched)
     {
       guint i;
 
-      g_printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
+      printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
 		  sched->n_items, sfi_ring_length (sched->vnodes), sched->leaf_levels, sched->secured);
-      g_printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
+      printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
 		  sched->in_pqueue, sched->cur_leaf_level);
-      g_printerr ("  cur_node=%p, cur_cycle=%p,\n",
+      printerr ("  cur_node=%p, cur_cycle=%p,\n",
 		  sched->cur_node, sched->cur_cycle);
       for (i = 0; i < sched->leaf_levels; i++)
 	{
@@ -115,20 +115,20 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
 
 	  if (!head)
 	    continue;
-	  g_printerr ("  { leaf_level=%u:", i);
+	  printerr ("  { leaf_level=%u:", i);
 	  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
-	    g_printerr (" node(%p(i:%u,s:%u))", ring->data,
+	    printerr (" node(%p(i:%u,s:%u))", ring->data,
 			((EngineNode*) ring->data)->integrated,
 			((EngineNode*) ring->data)->sched_tag);
-	  g_printerr (" },\n");
+	  printerr (" },\n");
 	}
       SfiRing *ring;
-      g_printerr ("  { vnodes:");
+      printerr ("  { vnodes:");
       for (ring = sched->vnodes; ring; ring = sfi_ring_walk (ring, sched->vnodes))
-        g_printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
-      g_printerr (" },\n");
+        printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
+      printerr (" },\n");
     }
-  g_printerr ("};\n");
+  printerr ("};\n");
 }
 
 
@@ -137,9 +137,9 @@ _engine_schedule_clear (EngineSchedule *sched)
 {
   guint i;
 
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
-  g_return_if_fail (sched->in_pqueue == FALSE);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
+  assert_return (sched->in_pqueue == FALSE);
 
   while (sched->vnodes)
     unschedule_virtual (sched, (EngineNode*) sched->vnodes->data);
@@ -150,15 +150,15 @@ _engine_schedule_clear (EngineSchedule *sched)
       while (sched->cycles[i])
 	unschedule_cycle (sched, (SfiRing*) sched->cycles[i]->data);
     }
-  g_return_if_fail (sched->n_items == 0);
+  assert_return (sched->n_items == 0);
 }
 
 void
 _engine_schedule_destroy (EngineSchedule *sched)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
-  g_return_if_fail (sched->in_pqueue == FALSE);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
+  assert_return (sched->in_pqueue == FALSE);
 
   _engine_schedule_clear (sched);
   g_free (sched->nodes);
@@ -191,11 +191,11 @@ static void
 schedule_virtual (EngineSchedule *sched,
 		  EngineNode     *vnode)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
-  g_return_if_fail (vnode != NULL);
-  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (vnode));
-  g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (vnode));
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
+  assert_return (vnode != NULL);
+  assert_return (ENGINE_NODE_IS_VIRTUAL (vnode));
+  assert_return (!ENGINE_NODE_IS_SCHEDULED (vnode));
 
   /* SCHED_DEBUG ("schedule_virtual(%p)", vnode); */
   vnode->sched_tag = TRUE;
@@ -216,10 +216,10 @@ schedule_node (EngineSchedule *sched,
 	       EngineNode     *node,
 	       guint           leaf_level)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
+  assert_return (node != NULL);
+  assert_return (!ENGINE_NODE_IS_SCHEDULED (node));
 
   /* SCHED_DEBUG ("schedule_node(%p,%u)", node, leaf_level); */
   node->sched_leaf_level = leaf_level;
@@ -239,14 +239,14 @@ schedule_cycle (EngineSchedule *sched,
 		guint           leaf_level)
 {
   SfiRing *walk;
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
-  g_return_if_fail (cycle_nodes != NULL);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
+  assert_return (cycle_nodes != NULL);
 
   for (walk = cycle_nodes; walk; walk = sfi_ring_walk (walk, cycle_nodes))
     {
       EngineNode *node = (EngineNode*) walk->data;
-      g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
+      assert_return (!ENGINE_NODE_IS_SCHEDULED (node));
       node->sched_leaf_level = leaf_level;
       node->sched_tag = TRUE;
       node->cleared_ostreams = FALSE;
@@ -261,11 +261,11 @@ schedule_cycle (EngineSchedule *sched,
 void
 _engine_schedule_restart (EngineSchedule *sched)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == TRUE);
-  g_return_if_fail (sched->cur_leaf_level == sched->leaf_levels);
-  g_return_if_fail (sched->cur_node == NULL);
-  g_return_if_fail (sched->cur_cycle == NULL);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == TRUE);
+  assert_return (sched->cur_leaf_level == sched->leaf_levels);
+  assert_return (sched->cur_node == NULL);
+  assert_return (sched->cur_cycle == NULL);
 
   sched->cur_leaf_level = 0;
   if (sched->leaf_levels > 0)
@@ -277,8 +277,8 @@ _engine_schedule_restart (EngineSchedule *sched)
 void
 _engine_schedule_secure (EngineSchedule *sched)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == FALSE);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == FALSE);
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
   if (CHECK_DEBUG())
@@ -301,9 +301,9 @@ schedule_advance (EngineSchedule *sched)
 EngineNode*
 _engine_schedule_pop_node (EngineSchedule *sched)
 {
-  g_return_val_if_fail (sched != NULL, NULL);
-  g_return_val_if_fail (sched->secured == TRUE, NULL);
-  g_return_val_if_fail (sched->cur_leaf_level <= sched->leaf_levels, NULL);
+  assert_return (sched != NULL, NULL);
+  assert_return (sched->secured == TRUE, NULL);
+  assert_return (sched->cur_leaf_level <= sched->leaf_levels, NULL);
   do
     {
       uint leaf_level = sched->cur_leaf_level;
@@ -323,9 +323,9 @@ _engine_schedule_pop_node (EngineSchedule *sched)
 SfiRing*
 _engine_schedule_pop_cycle (EngineSchedule *sched)
 {
-  g_return_val_if_fail (sched != NULL, NULL);
-  g_return_val_if_fail (sched->secured == TRUE, NULL);
-  g_return_val_if_fail (sched->cur_leaf_level <= sched->leaf_levels, NULL);
+  assert_return (sched != NULL, NULL);
+  assert_return (sched->secured == TRUE, NULL);
+  assert_return (sched->cur_leaf_level <= sched->leaf_levels, NULL);
   do
     {
       guint leaf_level = sched->cur_leaf_level;
@@ -345,12 +345,12 @@ _engine_schedule_pop_cycle (EngineSchedule *sched)
 void
 _engine_schedule_unsecure (EngineSchedule *sched)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == TRUE);
-  g_return_if_fail (sched->in_pqueue == FALSE);
-  g_return_if_fail (sched->cur_leaf_level == sched->leaf_levels);
-  g_return_if_fail (sched->cur_node == NULL);
-  g_return_if_fail (sched->cur_cycle == NULL);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == TRUE);
+  assert_return (sched->in_pqueue == FALSE);
+  assert_return (sched->cur_leaf_level == sched->leaf_levels);
+  assert_return (sched->cur_node == NULL);
+  assert_return (sched->cur_cycle == NULL);
 
   sched->secured = FALSE;
   sched->cur_leaf_level = ~0;
@@ -362,15 +362,15 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 {
   EngineQuery query = { 0, };
 
-  g_return_if_fail (schedule != NULL);
-  g_return_if_fail (schedule->secured == FALSE);
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node));
-  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (schedule != NULL);
+  assert_return (schedule->secured == FALSE);
+  assert_return (node != NULL);
+  assert_return (ENGINE_NODE_IS_CONSUMER (node));
+  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
 
   subschedule_query_node (schedule, node, &query);
-  g_assert (query.cycles == NULL);	/* paranoid */
-  g_assert (query.cycle_nodes == NULL);	/* paranoid */
+  assert (query.cycles == NULL);	/* paranoid */
+  assert (query.cycle_nodes == NULL);	/* paranoid */
   schedule_node (schedule, node, query.leaf_level);
 }
 
@@ -379,8 +379,8 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 static gboolean
 determine_suspension_reset (EngineNode *node)
 {
-  g_return_val_if_fail (node->update_suspend == FALSE, FALSE);
-  g_return_val_if_fail (node->in_suspend_call == FALSE, FALSE);
+  assert_return (node->update_suspend == FALSE, FALSE);
+  assert_return (node->in_suspend_call == FALSE, FALSE);
 
   if (!ENGINE_NODE_IS_VIRTUAL (node))
     return node->needs_reset;
@@ -406,7 +406,7 @@ determine_suspension_state (EngineNode *node,
 {
   gboolean seen_cycle = FALSE;
   guint64 stamp;
-  g_assert (node->in_suspend_call == FALSE);
+  assert (node->in_suspend_call == FALSE);
   if (node->update_suspend)
     {
       node->in_suspend_call = TRUE;
@@ -467,13 +467,13 @@ merge_untagged_node_lists_uniq (SfiRing *ring1,
   for (walk = ring2; walk; walk = sfi_ring_walk (walk, ring2))
     {
       EngineNode *node = (EngineNode*) walk->data;
-      g_assert (node->sched_recurse_tag == FALSE);
+      assert (node->sched_recurse_tag == FALSE);
     }
   /* tag all nodes in ring1 first */
   for (walk = ring1; walk; walk = sfi_ring_walk (walk, ring1))
     {
       EngineNode *node = (EngineNode*) walk->data;
-      g_assert (node->sched_recurse_tag == FALSE);	/* paranoid check */
+      assert (node->sched_recurse_tag == FALSE);	/* paranoid check */
       node->sched_recurse_tag = TRUE;
     }
   /* merge list with missing (untagged) nodes */
@@ -521,7 +521,7 @@ master_resolve_cycles (EngineQuery *query,
 {
   SfiRing *walk;
   gboolean all_resolved = TRUE;
-  g_assert (query->cycles != NULL);	/* paranoid */
+  assert (query->cycles != NULL);	/* paranoid */
   walk = query->cycles;
   while (walk)
     {
@@ -529,8 +529,8 @@ master_resolve_cycles (EngineQuery *query,
       EngineCycle *cycle = (EngineCycle*) walk->data;
       if (resolve_cycle (cycle, node, &query->cycle_nodes))
 	{
-	  g_assert (cycle->last == NULL);	/* paranoid */
-	  g_assert (cycle->nodes == NULL);	/* paranoid */
+	  assert (cycle->last == NULL);	/* paranoid */
+	  assert (cycle->nodes == NULL);	/* paranoid */
 	  sfi_delete_struct (EngineCycle, cycle);
 	  query->cycles = sfi_ring_remove_node (query->cycles, walk);
 	}
@@ -539,7 +539,7 @@ master_resolve_cycles (EngineQuery *query,
       walk = next;
     }
   if (all_resolved)
-    g_assert (query->cycles == NULL);	/* paranoid */
+    assert (query->cycles == NULL);	/* paranoid */
   return all_resolved;
 }
 
@@ -562,7 +562,7 @@ query_merge_cycles (EngineQuery *query,
 		    EngineNode  *node)
 {
   SfiRing *walk;
-  g_assert (child_query->cycles != NULL);	/* paranoid */
+  assert (child_query->cycles != NULL);	/* paranoid */
   /* add node to all child cycles */
   for (walk = child_query->cycles; walk; walk = sfi_ring_walk (walk, child_query->cycles))
     {
@@ -635,7 +635,7 @@ subschedule_child (EngineSchedule *schedule,
 		   EngineNode     *child,
 		   guint           child_ostream)
 {
-  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
 
   /* flag connected ostream */
   clean_ostreams (child);
@@ -654,18 +654,18 @@ subschedule_child (EngineSchedule *schedule,
       query->leaf_level = MAX (query->leaf_level, child_query.leaf_level + 1);
       if (!child_query.cycles)
 	{
-	  g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
+	  assert (child_query.cycle_nodes == NULL);	/* paranoid */
 	  schedule_node (schedule, child, child_query.leaf_level);
 	}
       else if (master_resolve_cycles (&child_query, child))
 	{
-	  g_assert (child == child_query.cycle_nodes->data);	/* paranoid */
+	  assert (child == child_query.cycle_nodes->data);	/* paranoid */
 	  schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
 	  child_query.cycle_nodes = NULL;
 	}
       else
 	query_merge_cycles (query, &child_query, node);
-      g_assert (child_query.cycles == NULL && child_query.cycle_nodes == NULL);	/* paranoid */
+      assert (child_query.cycles == NULL && child_query.cycle_nodes == NULL);	/* paranoid */
     }
 }
 
@@ -676,9 +676,9 @@ subschedule_query_node (EngineSchedule *schedule,
 {
   guint i, j;
 
-  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
-  g_return_if_fail (node->sched_recurse_tag == FALSE);
-  g_return_if_fail (query->leaf_level == 0);
+  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (node->sched_recurse_tag == FALSE);
+  assert_return (query->leaf_level == 0);
 
   /* update suspension state if necessary */
   update_suspension_state (node);

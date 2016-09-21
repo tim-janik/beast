@@ -35,11 +35,11 @@ struct BseBusClass : BseSubSynthClass
 {};
 
 /* --- API --- */
-BseErrorType    bse_bus_connect                 (BseBus         *self,
+Bse::Error    bse_bus_connect                 (BseBus         *self,
                                                  BseItem        *item);
-BseErrorType    bse_bus_connect_unchecked       (BseBus         *self,
+Bse::Error    bse_bus_connect_unchecked       (BseBus         *self,
                                                  BseItem        *item);
-BseErrorType    bse_bus_disconnect              (BseBus         *self,
+Bse::Error    bse_bus_disconnect              (BseBus         *self,
                                                  BseItem        *item);
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);
 SfiRing*        bse_bus_list_outputs            (BseBus         *self);
@@ -47,20 +47,20 @@ gboolean        bse_bus_get_stack               (BseBus         *self,
                                                  BseContainer  **snet,
                                                  BseSource     **vin,
                                                  BseSource     **vout);
-BseErrorType    bse_bus_insert_slot             (BseBus         *self,
+Bse::Error    bse_bus_insert_slot             (BseBus         *self,
                                                  guint           slot);
-BseErrorType    bse_bus_delete_slot             (BseBus         *self,
+Bse::Error    bse_bus_delete_slot             (BseBus         *self,
                                                  guint           slot);
-BseErrorType    bse_bus_replace_effect          (BseBus         *self,
+Bse::Error    bse_bus_replace_effect          (BseBus         *self,
                                                  guint           slot,
                                                  const gchar    *etype);
 void            bse_bus_change_solo             (BseBus         *self,
                                                  gboolean        solo_muted);
 #define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
 void    bse_bus_or_track_list_output_candidates (BseItem        *trackbus,
-                                                 BseItemSeq     *iseq);
+                                                 BseIt3mSeq     *iseq);
 void    bse_bus_or_track_set_outputs            (BseItem        *trackbus,
-                                                 BseItemSeq     *iseq);
+                                                 BseIt3mSeq     *iseq);
 
 /* --- channels --- */
 enum
@@ -76,7 +76,22 @@ enum
   BSE_BUS_N_OCHANNELS
 };
 
-
 G_END_DECLS
+
+namespace Bse {
+
+class BusImpl : public SubSynthImpl, public virtual BusIface {
+protected:
+  virtual          ~BusImpl          ();
+public:
+  explicit          BusImpl          (BseObject*);
+  virtual Error ensure_output    () override;
+  virtual Error connect_bus      (BusIface &bus) override;
+  virtual Error connect_track    (TrackIface &track) override;
+  virtual Error disconnect_bus   (BusIface &bus) override;
+  virtual Error disconnect_track (TrackIface &track) override;
+};
+
+} // Bse
 
 #endif /* __BSE_BUS_H__ */

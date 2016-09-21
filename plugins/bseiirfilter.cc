@@ -71,7 +71,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
   bse_object_class_add_param (object_class, _("Filter Choice"),
 			      PARAM_FILTER_ALGO,
 			      bse_param_spec_genum ("filter_algorithm", _("Filter Algorithm"), _("The filter design type"),
-						    BSE_TYPE_IIR_FILTER_ALGORITHM,
+						    BSE_TYPE_IIR_FILTER_KIND,
 						    BSE_IIR_FILTER_BUTTERWORTH,
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Filter Choice"),
@@ -99,7 +99,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
 			      PARAM_CUT_OFF_NOTE1,
 			      bse_pspec_note ("cut_off_note", _("Note"),
                                               _("Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2),
+					      bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, BSE_KAMMER_FREQUENCY / 2),
 					      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_FREQ2,
@@ -110,13 +110,13 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
 			      PARAM_CUT_OFF_NOTE2,
 			      bse_pspec_note ("cut_off_note_2", _("Note"),
                                               _("Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
+					      bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
 					      SFI_PARAM_GUI));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Input"));
-  g_assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
+  assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
   ochannel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Output"));
-  g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
+  assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
 }
 
 static void
@@ -142,7 +142,7 @@ bse_iir_filter_set_property (GObject	  *object,
   switch (param_id)
     {
     case PARAM_FILTER_ALGO:
-      self->filter_algo = (BseIIRFilterAlgorithm) g_value_get_enum (value);
+      self->filter_algo = (BseIIRFilterKind) g_value_get_enum (value);
       self->algo_type_change = TRUE;
       bse_iir_filter_update_modules (self);
       break;
@@ -301,41 +301,41 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_butter_lp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_LOW_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_tscheb1_lp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_LOW_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_tscheb2_lp (filt->order, freq1, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_butter_hp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_HIGH_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_tscheb1_hp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_HIGH_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_tscheb2_hp (filt->order, freq1, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_butter_bp (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_BAND_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_tscheb1_bp (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_BAND_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_tscheb2_bp (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_butter_bs (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_BAND_STOP:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_tscheb1_bs (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_BAND_STOP:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_tscheb2_bs (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	default:
-	  g_assert_not_reached ();
+	  assert_unreached ();
 	}
 
       fmod->iir.order = filt->order;

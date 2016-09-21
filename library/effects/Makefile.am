@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
@@ -8,6 +8,6 @@ effects_DATA = $(strip			\
 	bqs-reverb.bse			\
 	bqs-saturation-and-reverb.bse	\
 )
-effectsdir = $(bseeffectdir)
+effectsdir = $(datadir)/effects
 
 EXTRA_DIST += $(effects_DATA)

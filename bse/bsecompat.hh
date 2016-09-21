@@ -9,7 +9,7 @@ G_BEGIN_DECLS
 
 /* --- parameter changes --- */
 #define bse_param_spec_genum(name,nick,blurb, genum_type, default_value, hints) \
-   bse_param_spec_enum (name,nick,blurb, default_value, genum_type, hints)
+  bse_param_spec_enum (name,nick,blurb, int (default_value), genum_type, hints)
 #define bse_param_spec_freq_simple(name, nick, blurb, hints) \
   bse_param_spec_freq (name, nick, blurb, BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY, hints)
 #define bse_param_spec_fine_tune(name, nick, blurb)	\

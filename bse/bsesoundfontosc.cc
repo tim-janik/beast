@@ -499,7 +499,7 @@ sound_font_osc_process_midi (gpointer            null,
 {
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
   bse_sound_font_repo_lock_fluid_synth (flmod->config.sfrepo);
-  int note = bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, event->data.note.frequency);
+  int note = bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
   switch (event->status)
     {

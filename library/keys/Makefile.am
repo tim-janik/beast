@@ -1,10 +1,10 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 keys_DATA = $(strip		\
 	keyrc.de		\
 	keyrc.us		\
 )
-keysdir = $(beastkeysdir)
+keysdir = $(datadir)/keys
 
 EXTRA_DIST += $(keys_DATA)

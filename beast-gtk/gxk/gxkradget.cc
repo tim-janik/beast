@@ -199,7 +199,7 @@ clone_node_intern (Node        *source,
     }
   if (source->xdef_node)
     {
-      g_assert (!inherit);
+      assert (!inherit);
       node->xdef_node = clone_list_find (clist, source->xdef_node);
       node->xdef_depth = source->xdef_depth;
     }
@@ -228,7 +228,7 @@ clone_node_intern (Node        *source,
       else
         node->children = last = g_slist_new (child);
     }
-  g_assert (source->call_stack == NULL);
+  assert (source->call_stack == NULL);
   return node;
 }
 
@@ -462,7 +462,7 @@ parse_formula (const gchar *c,
     }
   args = g_slist_prepend (args, g_strndup (last, c - last));
   if (!*c)
-    g_printerr ("malformed formula: $(%s\n", start);
+    printerr ("malformed formula: $(%s\n", start);
   else
     c++;        /* ')' */
   if (args)
@@ -680,7 +680,7 @@ node_define (Domain       *domain,
     {
       node = clone_node (source, domain->domain, node_name, inherit);
       node->xdef_node = xdef_node;
-      g_assert (xdef_node && !xdef_node->xdef_node);
+      assert (xdef_node && !xdef_node->xdef_node);
       node->xdef_depth = node->xdef_node->depth;
     }
   else for (i = 0; attribute_names[i]; i++)     /* node inheritance */
@@ -965,7 +965,7 @@ gxk_radget_parse_text (const gchar    *domain_name,
 {
   Domain *domain;
   GError *myerror = NULL;
-  g_return_if_fail (text != NULL);
+  assert_return (text != NULL);
   domain = domain_name ? (Domain*) g_datalist_get_data (&domains, domain_name) : standard_domain;
   if (!domain)
     {
@@ -1011,7 +1011,7 @@ radget_widget_hierarchy_changed (GtkWidget *widget,
   if (!hgroup && !vgroup && !bgroup)
     return;
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  g_assert (GTK_WIDGET_TOPLEVEL (toplevel));
+  assert (GTK_WIDGET_TOPLEVEL (toplevel));
   if (hgroup)
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, hgroup, 'h');
@@ -1120,7 +1120,7 @@ property_value_from_string (GtkType      widget_type,
       break;
     }
   if (0 && G_VALUE_TYPE (value) && strchr (pvalue, '$'))
-    g_print ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
+    printout ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
   g_free (exvalue);
 }
 
@@ -1354,7 +1354,7 @@ radget_add_to_parent (GxkRadget    *parent,
                 }
             }
           else
-            g_printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (radget), pname);
+            printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (radget), pname);
         }
       gxk_radget_free_args (args);
     }
@@ -1405,7 +1405,7 @@ radget_apply_hooks (GxkRadget    *radget,
             }
         }
       else
-        g_printerr ("GXK: no such hook property: %s (radget=%s)\n", hname, G_OBJECT_TYPE_NAME (radget));
+        printerr ("GXK: no such hook property: %s (radget=%s)\n", hname, G_OBJECT_TYPE_NAME (radget));
     }
   /* cleanup */
   while (n_pops--)
@@ -1547,7 +1547,7 @@ gxk_radget_args_set (GxkRadgetArgs  *args,
 {
   GQuark quark = g_quark_from_string (name);
   guint i;
-  g_return_val_if_fail (name != NULL, args);
+  assert_return (name != NULL, args);
   if (!args)
     args = gxk_radget_args (NULL);
   for (i = 0; i < ARGS_N_ENTRIES (args); i++)
@@ -1650,12 +1650,12 @@ gxk_radget_creator (GxkRadget          *radget,
                     GSList             *call_args,
                     GSList             *env_args)
 {
-  g_return_val_if_fail (domain_name != NULL, NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (domain_name != NULL, NULL);
+  assert_return (name != NULL, NULL);
   if (radget)
     {
       Node *radget_node = (Node*) g_object_get_qdata ((GObject*) radget, quark_radget_node);
-      g_return_val_if_fail (radget_node == NULL, NULL);
+      assert_return (radget_node == NULL, NULL);
     }
   return radget_creator (radget, domain_name, name, parent, call_args, env_args);
 }
@@ -1727,7 +1727,7 @@ const gchar*
 gxk_radget_get_domain (GxkRadget *radget)
 {
   Node *radget_node = (Node*) g_object_get_qdata ((GObject*) radget, quark_radget_node);
-  g_return_val_if_fail (radget_node != NULL, NULL);
+  assert_return (radget_node != NULL, NULL);
   return radget_node->domain;
 }
 
@@ -1764,8 +1764,8 @@ gxk_radget_find (GxkRadget      *radget,
 {
   const gchar *next, *c = name;
 
-  g_return_val_if_fail (radget != NULL, NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (radget != NULL, NULL);
+  assert_return (name != NULL, NULL);
 
   if (!GTK_IS_WIDGET (radget))
     return NULL;
@@ -1819,7 +1819,7 @@ gxk_radget_add (GxkRadget      *radget,
                 const gchar    *area,
                 gpointer        widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   radget = gxk_radget_find_area (radget, area);
   if (GTK_IS_CONTAINER (radget))
     gtk_container_add ((GtkContainer*) radget, (GtkWidget*) widget);
@@ -1850,7 +1850,7 @@ void
 gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
-  g_assert (quark_radget_type == 0);
+  assert (quark_radget_type == 0);
   quark_id = g_quark_from_static_string ("id");
   quark_name = g_quark_from_static_string ("name");
   quark_radget_type = g_quark_from_static_string ("GxkRadget-type");
@@ -1902,9 +1902,9 @@ gxk_radget_define_type (GType                type,
   const gchar *attribute_names[1] = { NULL };
   const gchar *attribute_values[1] = { NULL };
 
-  g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
-  g_return_if_fail (G_TYPE_IS_OBJECT (type));
-  g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
+  assert_return (!G_TYPE_IS_ABSTRACT (type));
+  assert_return (G_TYPE_IS_OBJECT (type));
+  assert_return (g_type_get_qdata (type, quark_radget_type) == NULL);
 
   g_type_set_qdata (type, quark_radget_type, (gpointer) ggtype);
   radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
@@ -2019,9 +2019,9 @@ gxk_radget_define_widget_type (GType type)
   const gchar *attribute_values[G_N_ELEMENTS (widget_def) + G_N_ELEMENTS (container_def) + 1];
   guint i, j = 0;
 
-  g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
-  g_return_if_fail (g_type_is_a (type, GTK_TYPE_WIDGET));
-  g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
+  assert_return (!G_TYPE_IS_ABSTRACT (type));
+  assert_return (g_type_is_a (type, GTK_TYPE_WIDGET));
+  assert_return (g_type_get_qdata (type, quark_radget_type) == NULL);
 
   g_type_set_qdata (type, quark_radget_type, (gpointer) &widget_info);
   for (i = 0; i < G_N_ELEMENTS (widget_def); i++)
@@ -2094,15 +2094,15 @@ gxk_radget_register_hook (GParamSpec   *pspec,
                           guint         property_id,
                           GxkRadgetHook hook_func)
 {
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (pspec->flags & G_PARAM_WRITABLE);
-  g_return_if_fail (property_id > 0);
-  g_return_if_fail (pspec->param_id == 0);
-  g_return_if_fail (pspec->owner_type == 0);
-  g_return_if_fail (hook_func != NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (pspec->flags & G_PARAM_WRITABLE);
+  assert_return (property_id > 0);
+  assert_return (pspec->param_id == 0);
+  assert_return (pspec->owner_type == 0);
+  assert_return (hook_func != NULL);
   if (find_hook (pspec->name, NULL))
     {
-      g_printerr ("GXK: not re-registering hook property: %s\n", pspec->name);
+      printerr ("GXK: not re-registering hook property: %s\n", pspec->name);
       return;
     }
   RadgetHook *hook = g_new0 (RadgetHook, 1);
@@ -2398,10 +2398,10 @@ mf_println (GSList *args,
   while (argiter)
     {
       gchar *arg = argiter_exp (&argiter, env);
-      g_print ("%s", arg ? arg : "(null)");
+      printout ("%s", arg ? arg : "(null)");
       g_free (arg);
     }
-  g_print ("\n");
+  printout ("\n");
   return NULL;
 }
 

@@ -17,7 +17,7 @@
 
 enum {
   ROUTER_TOOL_EDIT              = 0,
-  ROUTER_TOOL_CREATE_LINK       = G_MAXINT - 1024,      /* don't clash with category IDs */
+  ROUTER_TOOL_CREATE_LINK       = G_MAXINT - 1024,      /* don't clash with category IDs / GQuarks */
   ROUTER_TOOL_TOGGLE_PALETTE,
   ROUTER_TOOL_CHANNEL_HINTS
 };
@@ -45,16 +45,15 @@ static BstSNetRouterClass *bst_snet_router_class = NULL;
 /* --- functions --- */
 G_DEFINE_TYPE (BstSNetRouter, bst_snet_router, GNOME_TYPE_CANVAS);
 
-static gboolean
-filter_popup_modules (gpointer         predicate_data,
-                      BseCategory     *cat)
+static bool
+filter_popup_modules (const Bse::AuxData &ad)
 {
-  const gchar *options = bse_type_options (cat->type);
-  if (g_option_check (options, "deprecated") && !BST_DVL_HINTS)
-    return FALSE;
-  if (g_option_check (options, "unstable") && !BST_DVL_HINTS)
-    return FALSE;
-  return TRUE;
+  String ahints = Rapicorn::string_vector_find_value (ad.attributes, "hints=");
+  if (Rapicorn::string_option_check (ahints, "deprecated") && !BST_DVL_HINTS)
+    return false;
+  if (Rapicorn::string_option_check (ahints, "unstable") && !BST_DVL_HINTS)
+    return false;
+  return true;
 }
 
 static void
@@ -112,7 +111,7 @@ bst_snet_router_destroy (GtkObject *object)
 
   bst_snet_router_reset_tool (self);
   bst_snet_router_destroy_contents (self);
-  bst_snet_router_set_snet (self, 0);
+  bst_snet_router_set_snet (self, Bse::SNetH());
 
   gxk_action_group_dispose (self->canvas_tool);
   gxk_action_group_dispose (self->channel_toggle);
@@ -132,6 +131,8 @@ bst_snet_router_finalize (GObject *object)
   g_object_unref (self->channel_toggle);
 
   G_OBJECT_CLASS (bst_snet_router_parent_class)->finalize (object);
+  using namespace Bse;
+  self->snet.~SNetH();
 }
 
 static void
@@ -160,7 +161,11 @@ bst_snet_router_update_links (BstSNetRouter   *self,
       guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
       for (j = 0; j < n_joints; j++)
         {
-          SfiProxy osource = bse_source_ichannel_get_osource (csource->source, i, j);
+          Bse::ObjectH obj = bse_server.from_proxy (csource->source);
+          assert (obj != NULL);
+          Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+          assert (isource != NULL);
+          SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
           guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);
@@ -245,11 +250,11 @@ bst_snet_router_queue_link_update (BstSNetRouter   *self,
 }
 
 GtkWidget*
-bst_snet_router_new (SfiProxy snet)
+bst_snet_router_new (Bse::SNetH snet)
 {
   GtkWidget *router;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  assert_return (snet != NULL, NULL);
 
   router = gtk_widget_new (BST_TYPE_SNET_ROUTER,
                            "aa", BST_SNET_ANTI_ALIASED,
@@ -281,37 +286,26 @@ bst_snet_router_item_added (BstSNetRouter *self,
 }
 
 void
-bst_snet_router_set_snet (BstSNetRouter *self,
-                          SfiProxy       snet)
+bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
 {
-  g_return_if_fail (BST_IS_SNET_ROUTER (self));
-  if (snet)
-    g_return_if_fail (BSE_IS_SNET (snet));
+  assert_return (BST_IS_SNET_ROUTER (self));
 
   if (self->snet)
     {
       bst_snet_router_destroy_contents (self);
-      bse_proxy_disconnect (self->snet,
+      bse_proxy_disconnect (self->snet.proxy_id(),
                             "any_signal", bst_snet_router_item_added, self,
                             NULL);
-      bse_item_unuse (self->snet);
-      self->snet = 0;
+      self->snet = Bse::SNetH();
     }
   self->snet = snet;
   if (self->snet)
     {
-      bse_item_use (self->snet);      // FIXME: should we hold a use-count on the snet?
-      bse_proxy_connect (self->snet,
+      bse_proxy_connect (self->snet.proxy_id(),
                          "swapped_signal::item_added", bst_snet_router_item_added, self,
                          NULL);
-
       bst_snet_router_update (self);
       bst_snet_router_adjust_region (self);
-#if 0
-      float zoom;
-      if (bse_parasite_get_floats (self->snet, "BstRouterZoom", 1, &zoom) == 1)
-        gtk_adjustment_set_value (self->adjustment, zoom);
-#endif
     }
 }
 
@@ -326,30 +320,29 @@ static void
 bst_router_run_method (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
-  BseCategory *cat = bse_category_from_id (action_id);
-  bst_procedure_exec_auto (cat->type,
-                           "synth-net", SFI_TYPE_PROXY, self->snet,
-                           BSE_IS_CSYNTH (self->snet) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet,
+  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
+  bst_procedure_exec_auto (cat->otype,
+                           "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
+                           BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            NULL);
 }
 
 void
 bst_snet_router_update (BstSNetRouter *self)
 {
-  GnomeCanvasItem *csource;
   GnomeCanvas *canvas;
-  BseItemSeq *iseq;
+  BseIt3mSeq *iseq;
   GSList *slist, *csources = NULL;
   guint i;
 
-  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+  assert_return (BST_IS_SNET_ROUTER (self));
 
   canvas = GNOME_CANVAS (self);
 
   /* destroy all canvas sources */
   bst_snet_router_destroy_contents (self);
 
-  if (0)
+#if 0
     {
       /* add canvas source for the snet itself */
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), self->snet);
@@ -359,9 +352,10 @@ bst_snet_router_update (BstSNetRouter *self)
                         NULL);
       csources = g_slist_prepend (csources, csource);
     }
+#endif
 
   /* walk all child sources */
-  iseq = bse_container_list_children (self->snet);
+  iseq = bse_container_list_children (self->snet.proxy_id());
   for (i = 0; i < iseq->n_items; i++)
     {
       SfiProxy item = iseq->items[i];
@@ -410,14 +404,6 @@ bst_snet_router_adjust_zoom (BstSNetRouter *router)
   GtkObject *object = GTK_OBJECT (router);
   double *d = (double*) gtk_object_get_data (object, "zoom_d");
 
-  if (router->snet)
-    {
-#if 0
-      gfloat zoom = router->adjustment->value;
-      bse_parasite_set_floats (router->snet, "BstRouterZoom", 1, &zoom);
-#endif
-    }
-
   if (!d)
     {
       d = g_new (gdouble, 1);
@@ -439,7 +425,7 @@ bst_snet_router_adjust_region (BstSNetRouter *router)
   GnomeCanvas *canvas;
   gdouble x1, y1, x2, y2;
 
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  assert_return (BST_IS_SNET_ROUTER (router));
 
   canvas = GNOME_CANVAS (router);
   layout = GTK_LAYOUT (router);
@@ -477,8 +463,8 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
   GnomeCanvasGroup *root;
   GList *list;
 
-  g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  assert_return (BST_IS_SNET_ROUTER (router), NULL);
+  assert_return (BSE_IS_SOURCE (source), NULL);
 
   canvas = GNOME_CANVAS (router);
   root = GNOME_CANVAS_GROUP (canvas->root);
@@ -582,7 +568,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
           bst_mouse_button_activate (event) &&
           ROUTER_TOOL (self) == 0)                                      /* start link (or popup property dialog) */
         {
-          g_return_val_if_fail (self->tmp_line == NULL, FALSE);
+          assert_return (self->tmp_line == NULL, FALSE);
           self->drag_is_input = ichannel != ~uint (0);
           if (csource && at_channel && self->drag_is_input &&  /* ichannel in use */
               !bst_canvas_source_ichannel_free (csource, ichannel))
@@ -617,7 +603,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 gxk_status_set (GXK_STATUS_WAIT, _("Create Link"), _("Select input module"));
               handled = TRUE;
             }
-          else if (csource && csource->source != self->snet)
+          else if (csource && csource->source != (SfiProxy) self->snet.proxy_id())
             {
               if (bst_mouse_button_activate2 (event))
                 bst_canvas_source_toggle_info (csource);
@@ -637,9 +623,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
-              BseErrorType error;
+              Bse::Error error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
-                error = self->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+                error = self->drag_is_input ? Bse::Error::SOURCE_NO_SUCH_OCHANNEL : Bse::Error::SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
                 error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
                                                     csource->source, ochannel);
@@ -685,14 +671,14 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
                                                 BST_CHOICE_SUBMENU (_("Output Signal Monitor"), choice, SIGNAL),
                                                 BST_CHOICE_SEPERATOR,
-                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != self->snet),
+                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != (SfiProxy) self->snet.proxy_id()),
                                                 BST_CHOICE_END);
               g_free (source_name);
               int i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
                   GtkWidget *dialog;
-                  BseErrorType error;
+                  Bse::Error error;
                 case 2:
                   bst_canvas_source_popup_params (csource);
                   break;
@@ -709,7 +695,10 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_popup_info (csource);
                   break;
                 case 1:
-                  error = bse_snet_remove_source (self->snet, csource->source);
+                  {
+                    Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+                    error = self->snet.remove_source (source);
+                  }
                   bst_status_eprintf (error, _("Remove Module"));
                   break;
                 case 0: break;
@@ -738,7 +727,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
-                  BseErrorType error;
+                  Bse::Error error;
                 case 1:
                   error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
                                                         clink->ocsource->source, clink->ochannel);
@@ -773,30 +762,29 @@ bst_snet_router_event (GtkWidget *widget,
           ROUTER_TOOL (self) &&
           ROUTER_TOOL (self) != ROUTER_TOOL_CREATE_LINK) /* add new source */
         {
-          BseErrorType error;
-          BseCategory *cat = bse_category_from_id (ROUTER_TOOL (self));
+          const Bse::AuxData &ad = bse_server.find_module_type (g_quark_to_string (ROUTER_TOOL (self)));
+          assert_return (ad.entity.empty() == false, false);
 
-          handled = TRUE;
           gnome_canvas_window_to_world (canvas,
                                         event->button.x, event->button.y,
                                         &self->world_x, &self->world_y);
 
-          error = bse_snet_can_create_source (self->snet, cat->type);
-          if (!error)
+          Bse::Error error = self->snet.can_create_source (ad.entity);
+          if (error == 0)
             {
-              SfiProxy module;
-              bse_item_group_undo (self->snet, "Create Module");
-              module = bse_snet_create_source (self->snet, cat->type);
+              bse_item_group_undo (self->snet.proxy_id(), "Create Module");
+              SfiProxy module = self->snet.create_source (ad.entity).proxy_id();
               bse_source_set_pos (module,
                                   self->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
                                   self->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
-              bse_item_ungroup_undo (self->snet);
+              bse_item_ungroup_undo (self->snet.proxy_id());
             }
           if (BST_SNET_EDIT_FALLBACK)
             gxk_action_group_select (self->canvas_tool, ROUTER_TOOL_EDIT);
           self->world_x = 0;
           self->world_y = 0;
           bst_status_eprintf (error, _("Insert Module"));
+          handled = TRUE;
         }
       else if (!bst_mouse_button_activate1 (event) && ROUTER_TOOL (self) == ROUTER_TOOL_CREATE_LINK)
         {
@@ -844,42 +832,42 @@ static void
 snet_router_tool2text (BstSNetRouter *self)
 {
   GtkLabel *label = (GtkLabel*) gxk_radget_find (self->palette, "type-label");
-  BseCategory *cat = ROUTER_TOOL (self) ? bse_category_from_id (ROUTER_TOOL (self)) : 0;
-  const gchar *blurb = cat ? bse_type_blurb (cat->type) : NULL;
-  const gchar *authors = cat ? bse_type_authors (cat->type) : NULL;
-  const gchar *license = cat ? bse_type_license (cat->type) : NULL;
-  const gchar *name = cat ? gxk_factory_path_get_leaf (cat->category) : NULL;
-  if (authors && !authors[0])
-    authors = NULL;
-  if (license && !license[0])
-    license = NULL;
-  if (!blurb)
+  const char *router_tool_name = g_quark_to_string (ROUTER_TOOL (self));
+  if (!router_tool_name)
+    router_tool_name = "";
+  const Bse::AuxData &ad = bse_server.find_module_type (router_tool_name);
+  const String authors = Rapicorn::string_vector_find_value (ad.attributes, "authors=");
+  const String license = Rapicorn::string_vector_find_value (ad.attributes, "license=");
+  String blurb = Rapicorn::string_vector_find_value (ad.attributes, "blurb=");
+  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  if (title.empty())
+    title = ad.entity;
+  if (blurb.empty())
     {
-      guint i;
-      for (i = 0; i < G_N_ELEMENTS (tool_blurbs); i++)
+      for (uint i = 0; i < G_N_ELEMENTS (tool_blurbs); i++)
         if (tool_blurbs[i].action_id == ROUTER_TOOL (self))
           blurb = tool_blurbs[i].blurb;
-      for (i = 0; i < G_N_ELEMENTS (router_canvas_tools); i++)
+      for (uint i = 0; i < G_N_ELEMENTS (router_canvas_tools); i++)
         if (router_canvas_tools[i].action_id == ROUTER_TOOL (self))
-          name = router_canvas_tools[i].name;
+          title = router_canvas_tools[i].name;
     }
-  gxk_scroll_text_set (self->palette_text, blurb);
-  if (blurb && (authors || license))
+  gxk_scroll_text_set (self->palette_text, blurb.c_str());
+  if (!blurb.empty() && (!authors.empty() || !license.empty()))
     gxk_scroll_text_append (self->palette_text, "\n");
-  if (authors)
+  if (!authors.empty())
     {
       gxk_scroll_text_append (self->palette_text, "\n");
       gxk_scroll_text_append (self->palette_text, "Authors: ");
-      gxk_scroll_text_append (self->palette_text, authors);
+      gxk_scroll_text_append (self->palette_text, authors.c_str());
       gxk_scroll_text_append (self->palette_text, "\n");
     }
-  if (license)
+  if (!license.empty())
     {
       gxk_scroll_text_append (self->palette_text, "\n");
       gxk_scroll_text_append (self->palette_text, "License: ");
-      gxk_scroll_text_append (self->palette_text, license);
+      gxk_scroll_text_append (self->palette_text, license.c_str());
     }
-  g_object_set (label, "label", name, NULL);
+  g_object_set (label, "label", title.c_str(), NULL);
 }
 
 static void
@@ -930,7 +918,7 @@ snet_router_action_exec (gpointer        user_data,
 }
 
 BstSNetRouter*
-bst_snet_router_build_page (SfiProxy snet)
+bst_snet_router_build_page (Bse::SNetH snet)
 {
   static const char *zoom_xpm[] = {
     "12 12 2 1", "  c None", "# c #000000",
@@ -953,7 +941,7 @@ bst_snet_router_build_page (SfiProxy snet)
   GdkBitmap *mask;
   GxkRadget *radget;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  assert_return (snet != NULL, NULL);
 
   /* main radget */
   radget = gxk_radget_create ("beast", "snet-view", NULL);
@@ -997,14 +985,13 @@ bst_snet_router_build_page (SfiProxy snet)
 static void
 bst_snet_router_init (BstSNetRouter      *self)
 {
+  new (&self->snet) Bse::SNetH();
   GnomeCanvas *canvas = GNOME_CANVAS (self);
   GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules, *palette_modules;
-  BseCategorySeq *cseq;
-  guint i, n;
+  uint i, n;
 
   self->palette = NULL;
   self->adjustment = NULL;
-  self->snet = 0;
   self->world_x = 0;
   self->world_y = 0;
   self->drag_is_input = FALSE;
@@ -1031,6 +1018,7 @@ bst_snet_router_init (BstSNetRouter      *self)
                     NULL);
 
   /* CSynth & SNet utilities */
+  BseCategorySeq *cseq;
   cseq = bse_categories_match ("/CSynth/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al1);
@@ -1047,13 +1035,13 @@ bst_snet_router_init (BstSNetRouter      *self)
   gxk_widget_publish_actions (self, "router-toolbar-actions",
                               G_N_ELEMENTS (router_toolbar_actions), router_toolbar_actions,
                               NULL, NULL, snet_router_action_exec);
+  cseq = NULL;
 
-  /* construct module type action lists */
+  // construct module type action lists
   canvas_modules = gxk_action_list_create_grouped (self->canvas_tool);
   palette_modules = gxk_action_list_create_grouped (self->canvas_tool);
   toolbar_modules = gxk_action_list_create_grouped (self->canvas_tool);
-  cseq = bse_categories_match ("/Modules/*");
-  /* toolbar module types */
+  // toolbar module types
   static struct { const char *type, *name, *tip; } toolbar_types[] = {
     { "BsePcmInput",        N_("Input"),      N_("PCM Input module") },
     { "BseStandardOsc",     N_("Oscillator"), N_("Standard oscillator module") },
@@ -1061,54 +1049,54 @@ bst_snet_router_init (BstSNetRouter      *self)
     { "BseAmplifier",       N_("DCA"),        N_("Standard amplifier module") },
     { "BsePcmOutput",       N_("Output"),     N_("PCM Output module") },
   };
-  BseCategory *tbcats[G_N_ELEMENTS (toolbar_types)] = { 0, };
-  for (i = 0; i < cseq->n_cats; i++)
+  Bse::AuxDataSeq ads = bse_server.list_module_types ();
+  const Bse::AuxData *tbmodules[G_N_ELEMENTS (toolbar_types)] = { NULL, };
+  for (i = 0; i < ads.size(); i++)
     {
-      const gchar *stock_fallback = NULL;
-      BseCategory *cat = cseq->cats[i];
-      /* filter inappropriate modules */
-      if (!filter_popup_modules (NULL, cat))
+      const char *stock_fallback = NULL;
+      const Bse::AuxData &ad = ads[i];
+      // filter inappropriate modules
+      if (!filter_popup_modules (ad))
         continue;
-      /* provide module as canvas tool */
-      if (strncmp (cat->type, "BseLadspaModule_", 16) == 0)
+      // fetch icon, default for LADSPA
+      Bse::Icon icon;
+      if (strncmp (ad.entity.c_str(), "BseLadspaModule_", 16) == 0)
         stock_fallback = BST_STOCK_LADSPA;
-      bst_action_list_add_cat (canvas_modules, cat, 1, stock_fallback, NULL, bst_router_popup_select, self);
-      /* provide selected modules in the palette */
-      if (cat->icon && (cat->icon->width + cat->icon->height) > 0)
-        bst_action_list_add_cat (palette_modules, cat, 1, stock_fallback, NULL, bst_router_popup_select, self);
-      /* remember toolbar types */
+      else
+        icon = bse_server.module_type_icon (ad.entity);
+      // provide module as canvas tool
+      bst_action_list_add_module (canvas_modules, ad, icon, stock_fallback, NULL, bst_router_popup_select, self);
+      // provide selected modules in the palette
+      if (icon.width > 0 && icon.height > 0)
+        bst_action_list_add_module (palette_modules, ad, icon, stock_fallback, NULL, bst_router_popup_select, self);
+      // identify modules to be provided in the toolbar
       for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
-        if (strcmp (toolbar_types[n].type, cat->type) == 0)
-          tbcats[n] = cat;
+        if (ad.entity == toolbar_types[n].type)
+          tbmodules[n] = &ad;
     }
   /* provide certain variants in the toolbar */
   for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
-    if (tbcats[n])
+    if (tbmodules[n])
       {
-        BseCategory *cat = tbcats[n];
-        const gchar *stock_fallback = NULL;
-        if (strncmp (cat->type, "BseLadspaModule_", 16) == 0)
+        const Bse::AuxData &ad = *tbmodules[n];
+        const char *stock_fallback = NULL;
+        Bse::Icon icon;
+        if (strncmp (ad.entity.c_str(), "BseLadspaModule_", 16) == 0)
           stock_fallback = BST_STOCK_LADSPA;
-        const gchar *stock_id;
+        else
+          icon = bse_server.module_type_icon (ad.entity);
 
-        if (cat->icon)
+        const char *stock_id;
+        if (icon.width && icon.height)
           {
-            BseIcon *icon = cat->icon;
-            g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
-            bst_stock_register_icon (cat->category, 4,
-                                     icon->width, icon->height,
-                                     icon->width * 4,
-                                     (guchar*) icon->pixel_seq->pixels);
-            stock_id = cat->category;
+            assert (icon.width * icon.height == int (icon.pixels.size()));
+            bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
+            stock_id = ad.entity.c_str();
           }
         else
           stock_id = stock_fallback;
-        gxk_action_list_add_translated (toolbar_modules, cat->type,
-                                        _(toolbar_types[n].name), NULL,
-                                        _(toolbar_types[n].tip),
-                                        cat->category_id,
-                                        stock_id,
-                                        NULL, bst_router_popup_select, self);
+        gxk_action_list_add_translated (toolbar_modules, ad.entity.c_str(), _(toolbar_types[n].name), NULL, _(toolbar_types[n].tip),
+                                        g_quark_from_string (ad.entity.c_str()), stock_id, NULL, bst_router_popup_select, self);
       }
   /* polish and publish */
   gxk_action_list_sort (canvas_modules);

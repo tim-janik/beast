@@ -103,13 +103,11 @@ controller_reset_hpanel_cursor (BstTrackRollController *self)
 BstTrackRollController*
 bst_track_roll_controller_new (BstTrackRoll *troll)
 {
-  BstTrackRollController *self;
+  assert_return (BST_IS_TRACK_ROLL (troll), NULL);
 
-  g_return_val_if_fail (BST_IS_TRACK_ROLL (troll), NULL);
-
-  self = g_new0 (BstTrackRollController, 1);
-  self->troll = troll;
+  BstTrackRollController *self = new BstTrackRollController();
   self->ref_count = 1;
+  self->troll = troll;
   self->note_length = 1;
   self->current_tool = NULL;
   g_signal_connect_data (troll, "drag",
@@ -258,8 +256,8 @@ canvas_button_tool (BstTrackRollController *self,
 BstTrackRollController*
 bst_track_roll_controller_ref (BstTrackRollController *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -269,8 +267,8 @@ bst_track_roll_controller_ref (BstTrackRollController *self)
 void
 bst_track_roll_controller_unref (BstTrackRollController *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)
@@ -281,7 +279,7 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
       g_object_unref (self->hpanel_rtools);
       gxk_action_group_dispose (self->quant_rtools);
       g_object_unref (self->quant_rtools);
-      g_free (self);
+      delete self;
     }
 }
 
@@ -289,8 +287,8 @@ void
 bst_track_roll_controller_set_song (BstTrackRollController *self,
 				    SfiProxy                song)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   if (BSE_IS_SONG (song))
     self->song = song;
@@ -302,24 +300,24 @@ guint
 bst_track_roll_controller_quantize (BstTrackRollController *self,
 				    guint                   fine_tick)
 {
-  BseSongTiming *timing;
   guint quant, tick, qtick;
 
-  g_return_val_if_fail (self != NULL, fine_tick);
+  assert_return (self != NULL, fine_tick);
 
-  timing = bse_song_get_timing (self->song, fine_tick);
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+  Bse::SongTiming timing = song.get_timing (fine_tick);
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
   else if (QUANTIZATION (self) == BST_QUANTIZE_TACT)
-    quant = timing->tpt;
+    quant = timing.tpt;
   else
-    quant = timing->tpqn * 4 / QUANTIZATION (self);
-  tick = fine_tick - timing->tick;
+    quant = timing.tpqn * 4 / QUANTIZATION (self);
+  tick = fine_tick - timing.tick;
   qtick = tick / quant;
   qtick *= quant;
   if (tick - qtick > quant / 2)
     qtick += quant;
-  tick = timing->tick + qtick;
+  tick = timing.tick + qtick;
   return tick;
 }
 
@@ -386,7 +384,7 @@ edit_name_start (BstTrackRollController *self,
 				      "visible", TRUE,
 				      "has_frame", FALSE,
 				      NULL);
-      const gchar *name = bse_item_get_name (self->obj_part);
+      const gchar *name = bse_item_get_name (self->obj_part.proxy_id());
       if (name)
 	gtk_entry_set_text (entry, name);
       bst_track_roll_start_edit (self->troll, drag->current_row,
@@ -408,7 +406,7 @@ controller_stop_edit (BstTrackRollController *self,
 {
   if (!canceled)
     {
-      bse_item_set_name (self->obj_part, gtk_entry_get_text (GTK_ENTRY (ecell)));
+      bse_item_set_name (self->obj_part.proxy_id(), gtk_entry_get_text (GTK_ENTRY (ecell)));
       gxk_status_set (GXK_STATUS_DONE, _("Edit Part"), NULL);
     }
   controller_reset_canvas_cursor (self);
@@ -421,17 +419,19 @@ insert_start (BstTrackRollController *self,
   if (drag->current_track && drag->current_valid && !self->obj_part)
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      SfiProxy item = bse_track_get_part (drag->current_track, tick);
-      if (!item)
+      Bse::TrackH track = drag->current_track;
+      Bse::PartH part = track.get_part (tick);
+      if (!part)
 	{
-	  SfiProxy song = bse_item_get_parent (drag->current_track);
-          bse_item_group_undo (song, "Insert part");
-	  item = bse_song_create_part (song);
-	  if (item && bse_track_insert_part (drag->current_track, tick, item) > 0)
+	  SfiProxy songid = bse_item_get_parent (drag->current_track.proxy_id());
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+          bse_item_group_undo (song.proxy_id(), "Insert part");
+          Bse::PartH part = song.create_part();
+	  if (part && track.insert_part (tick, part) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
-          bse_item_ungroup_undo (song);
+          bse_item_ungroup_undo (song.proxy_id());
 	  drag->state = GXK_DRAG_HANDLED;
 	}
       else
@@ -453,11 +453,13 @@ delete_start (BstTrackRollController *self,
 {
   if (self->obj_part)	/* got part to delete */
     {
-      bse_item_group_undo (self->song, "Delete Part");
-      bse_track_remove_tick (self->obj_track, self->obj_tick);
-      if (!bse_song_find_any_track_for_part (self->song, self->obj_part))
-        bse_song_remove_part (self->song, self->obj_part);
-      bse_item_ungroup_undo (self->song);
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      bse_item_group_undo (song.proxy_id(), "Delete Part");
+      Bse::TrackH track = self->obj_track;
+      track.remove_tick (self->obj_tick);
+      if (!song.find_any_track_for_part (self->obj_part))
+        song.remove_part (self->obj_part);
+      bse_item_ungroup_undo (song.proxy_id());
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
@@ -501,22 +503,22 @@ link_start (BstTrackRollController *self,
 }
 
 static void
-move_motion (BstTrackRollController *self,
-	     BstTrackRollDrag       *drag)
+move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
 {
   const gchar *action = self->skip_deletion ? _("Link Part") : _("Move Part");
-  gint new_tick;
+  int new_tick;
 
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
   new_tick = bst_track_roll_controller_quantize (self, new_tick);
   // track_changed = self->obj_track != drag->current_track;
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
-      bse_item_group_undo (drag->current_track, "Move part");
-      if (bse_track_insert_part (drag->current_track, new_tick, self->obj_part) > 0)
+      Bse::TrackH track = drag->current_track;
+      bse_item_group_undo (track.proxy_id(), "Move part");
+      if (track.insert_part (new_tick, self->obj_part) > 0)
 	{
 	  if (!self->skip_deletion)
-	    bse_track_remove_tick (self->obj_track, self->obj_tick);
+            self->obj_track.remove_tick (self->obj_tick);
 	  else
 	    {
 	      self->skip_deletion = FALSE;
@@ -526,8 +528,8 @@ move_motion (BstTrackRollController *self,
 	  self->obj_tick = new_tick;
 	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
-      /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", bse_error_blurb (error)); */
-      bse_item_ungroup_undo (drag->current_track);
+      /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", Bse::error_blurb (error)); */
+      bse_item_ungroup_undo (track.proxy_id());
     }
 }
 
@@ -545,7 +547,7 @@ editor_create (BstTrackRollController *self,
   if (self->obj_part)	/* got part */
     {
       GtkWidget *pdialog = (GtkWidget*) g_object_new (BST_TYPE_PART_DIALOG, NULL);
-      bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), self->obj_part);
+      bst_part_dialog_set_part (BST_PART_DIALOG (pdialog), self->obj_part);
       g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
       gxk_status_set (GXK_STATUS_DONE, _("Start Editor"), NULL);
       gxk_idle_show_widget (pdialog);
@@ -623,10 +625,8 @@ controller_drag (BstTrackRollController *self,
   if (drag->type == GXK_DRAG_START)
     {
       BstCommonRollTool obj_tool, tool;
-      BseTrackPart *tpart = NULL;
       const BstTrackRollUtil *tool_table;
       guint i, n_tools;
-      BseTrackPartSeq *tps;
 
       self->current_tool = NULL;	/* paranoid */
 
@@ -650,21 +650,20 @@ controller_drag (BstTrackRollController *self,
 
       /* setup drag data */
       if (!drag->start_valid)
-	drag->start_track = 0;
-      tps = drag->start_track ? bse_track_list_parts (drag->start_track) : NULL;
-      if (tps && tps->n_tparts)	/* FIXME: BSE should have a convenience function to find a part */
-	{
-	  gint j;
-	  for (j = 0; j < tps->n_tparts; j++)
-	    if (tps->tparts[j]->tick <= drag->start_tick &&
-		tps->tparts[j]->tick + tps->tparts[j]->duration > drag->start_tick)
-	      {
-		tpart = tps->tparts[j];
-		break;
-	      }
-	}
+	drag->start_track = Bse::TrackH();
+      Bse::TrackPartSeq tps;
+      if (drag->start_track)
+        tps = drag->start_track.list_parts();
+      const Bse::TrackPart *tpart = NULL;
+      for (const auto &tp : tps) // FIXME: BSE could have a convenience function to find a part
+        if (tp.tick <= int (drag->start_tick) &&
+            tp.tick + tp.duration > int (drag->start_tick))
+          {
+            tpart = &tp;
+            break;
+          }
       self->obj_track = drag->start_track;
-      self->obj_part = tpart ? tpart->part : 0;
+      self->obj_part = tpart ? Bse::PartH (tpart->part) : Bse::PartH();
       self->obj_tick = tpart ? tpart->tick : 0;
       self->obj_duration = tpart ? tpart->duration : 0;
       self->xoffset = 0;

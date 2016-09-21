@@ -191,7 +191,7 @@ _sfi_glue_context_clear_proxies (SfiGlueContext *context)
 {
   GSList *plist = NULL;
 
-  g_return_if_fail (context != NULL);
+  assert_return (context != NULL);
 
   /* this is called during context destruction, so remote is probably down already */
 
@@ -217,7 +217,7 @@ sfi_glue_proxy_release (SfiGlueContext *context,
 			SfiProxy        proxy)
 {
   Proxy *p = peek_proxy (context, proxy);
-  g_return_if_fail (proxy != 0);
+  assert_return (proxy != 0);
   if (p)
     destroy_glue_proxy (context, p, TRUE);
   else
@@ -231,7 +231,7 @@ sfi_glue_proxy_signal (SfiGlueContext *context,
 {
   Proxy *p;
 
-  g_return_if_fail (proxy > 0 && signal);
+  assert_return (proxy > 0 && signal);
 
   p = peek_proxy (context, proxy);
   if (p)
@@ -271,9 +271,9 @@ default_glue_marshal (GClosure       *closure,
 {
   gpointer arg0, argN;
 
-  g_return_if_fail (return_value == NULL);
-  g_return_if_fail (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
-  g_return_if_fail (SFI_VALUE_HOLDS_PROXY (param_values));
+  assert_return (return_value == NULL);
+  assert_return (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
+  assert_return (SFI_VALUE_HOLDS_PROXY (param_values));
 
   arg0 = (gpointer) sfi_value_get_proxy (param_values);
   if (G_CCLOSURE_SWAP_DATA (closure))
@@ -299,9 +299,9 @@ sfi_glue_signal_connect_closure (SfiProxy       proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p;
 
-  g_return_val_if_fail (proxy > 0, 0);
-  g_return_val_if_fail (signal != NULL, 0);
-  g_return_val_if_fail (closure != NULL, 0);
+  assert_return (proxy > 0, 0);
+  assert_return (signal != NULL, 0);
+  assert_return (closure != NULL, 0);
 
   g_closure_ref (closure);
   g_closure_sink (closure);
@@ -360,8 +360,8 @@ sfi_glue_signal_disconnect (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p;
 
-  g_return_if_fail (proxy > 0);
-  g_return_if_fail (connection_id > 0);
+  assert_return (proxy > 0);
+  assert_return (connection_id > 0);
 
   p = peek_proxy (context, proxy);
   if (!p)
@@ -405,8 +405,8 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
   GSList *ids = NULL;
   Proxy *p;
 
-  g_return_val_if_fail (proxy > 0, NULL);
-  g_return_val_if_fail (search_data != NULL, NULL);
+  assert_return (proxy > 0, NULL);
+  assert_return (search_data != NULL, NULL);
 
   p = peek_proxy (context, proxy);
   if (p && signal)
@@ -452,7 +452,7 @@ sfi_glue_proxy_connect (SfiProxy     proxy,
 {
   va_list var_args;
 
-  g_return_if_fail (proxy > 0);
+  assert_return (proxy > 0);
 
   va_start (var_args, signal);
   while (signal)
@@ -493,7 +493,7 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   va_list var_args;
 
-  g_return_if_fail (proxy > 0);
+  assert_return (proxy > 0);
 
   va_start (var_args, signal);
   while (signal)
@@ -538,8 +538,8 @@ sfi_glue_proxy_pending (SfiProxy     proxy,
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_val_if_fail (proxy > 0, FALSE);
-  g_return_val_if_fail (callback != NULL, FALSE);
+  assert_return (proxy > 0, FALSE);
+  assert_return (callback != NULL, FALSE);
 
   GSList *slist = _sfi_glue_signal_find_closures (context, proxy, signal, data, (void*) callback, FALSE);
   g_slist_free (slist);
@@ -551,7 +551,7 @@ _sfi_glue_proxy_watch_release (SfiProxy proxy)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_val_if_fail (proxy != 0, FALSE);
+  assert_return (proxy != 0, FALSE);
 
   return context->table.proxy_watch_release (context, proxy);
 }
@@ -561,7 +561,7 @@ _sfi_glue_proxy_processed_notify (guint notify_id)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_if_fail (notify_id != 0);
+  assert_return (notify_id != 0);
 
   return context->table.proxy_processed_notify (context, notify_id);
 }
@@ -573,7 +573,7 @@ sfi_glue_proxy_get_qdata (SfiProxy proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p = peek_proxy (context, proxy);
 
-  g_return_val_if_fail (proxy != 0, NULL);
+  assert_return (proxy != 0, NULL);
 
   return p && quark ? g_datalist_id_get_data (&p->qdata, quark) : NULL;
 }
@@ -585,7 +585,7 @@ sfi_glue_proxy_steal_qdata (SfiProxy proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p = peek_proxy (context, proxy);
 
-  g_return_val_if_fail (proxy != 0, NULL);
+  assert_return (proxy != 0, NULL);
 
   return p && quark ? g_datalist_id_remove_no_notify (&p->qdata, quark) : NULL;
 }
@@ -599,8 +599,8 @@ sfi_glue_proxy_set_qdata_full (SfiProxy       proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p;
 
-  g_return_if_fail (proxy != 0);
-  g_return_if_fail (quark != 0);
+  assert_return (proxy != 0);
+  assert_return (quark != 0);
 
   p = fetch_proxy (context, proxy);
   if (!p)
@@ -650,8 +650,8 @@ sfi_glue_proxy_weak_ref (SfiProxy        proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p;
 
-  g_return_if_fail (proxy > 0);
-  g_return_if_fail (weak_notify != NULL);
+  assert_return (proxy > 0);
+  assert_return (weak_notify != NULL);
 
   p = fetch_proxy (context, proxy);
   if (!p)
@@ -693,8 +693,8 @@ sfi_glue_proxy_weak_unref (SfiProxy        proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   Proxy *p;
 
-  g_return_if_fail (proxy > 0);
-  g_return_if_fail (weak_notify != NULL);
+  assert_return (proxy > 0);
+  assert_return (weak_notify != NULL);
 
   p = peek_proxy (context, proxy);
   if (!p)
@@ -732,7 +732,7 @@ sfi_glue_proxy_iface (SfiProxy proxy)
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar *iface;
 
-  g_return_val_if_fail (proxy != 0, NULL);
+  assert_return (proxy != 0, NULL);
 
   iface = context->table.proxy_iface (context, proxy);
 
@@ -745,7 +745,7 @@ gboolean
 sfi_glue_proxy_is_a (SfiProxy     proxy,
 		     const gchar *type)
 {
-  g_return_val_if_fail (type != NULL, FALSE);
+  assert_return (type != NULL, FALSE);
 
   if (proxy)
     {
@@ -763,8 +763,8 @@ sfi_glue_proxy_get_pspec (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   GParamSpec *pspec;
 
-  g_return_val_if_fail (proxy != 0, NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (proxy != 0, NULL);
+  assert_return (name != NULL, NULL);
 
   pspec = context->table.proxy_get_pspec (context, proxy, name);
   if (pspec)
@@ -778,8 +778,8 @@ sfi_glue_proxy_get_pspec_scategory (SfiProxy     proxy,
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_val_if_fail (proxy != 0, SfiSCategory (0));
-  g_return_val_if_fail (name != NULL, SfiSCategory (0));
+  assert_return (proxy != 0, SfiSCategory (0));
+  assert_return (name != NULL, SfiSCategory (0));
 
   return context->table.proxy_get_pspec_scategory (context, proxy, name);
 }
@@ -793,7 +793,7 @@ sfi_glue_proxy_list_properties (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar **props;
 
-  g_return_val_if_fail (proxy != 0, NULL);
+  assert_return (proxy != 0, NULL);
 
   if (first_ancestor && !first_ancestor[0])
     first_ancestor = NULL;
@@ -816,9 +816,9 @@ sfi_glue_proxy_set_property (SfiProxy      proxy,
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_if_fail (proxy != 0);
-  g_return_if_fail (prop != NULL);
-  g_return_if_fail (G_IS_VALUE (value));
+  assert_return (proxy != 0);
+  assert_return (prop != NULL);
+  assert_return (G_IS_VALUE (value));
 
   context->table.proxy_set_property (context, proxy, prop, value);
 }
@@ -830,8 +830,8 @@ sfi_glue_proxy_get_property (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   GValue *value;
 
-  g_return_val_if_fail (proxy != 0, NULL);
-  g_return_val_if_fail (prop != NULL, NULL);
+  assert_return (proxy != 0, NULL);
+  assert_return (prop != NULL, NULL);
 
   value = context->table.proxy_get_property (context, proxy, prop);
   if (value)
@@ -847,7 +847,7 @@ sfi_glue_proxy_set (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   va_list var_args;
 
-  g_return_if_fail (proxy != 0);
+  assert_return (proxy != 0);
 
   va_start (var_args, prop);
   while (prop)
@@ -885,7 +885,7 @@ sfi_glue_proxy_get (SfiProxy     proxy,
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   va_list var_args;
 
-  g_return_if_fail (proxy != 0);
+  assert_return (proxy != 0);
 
   va_start (var_args, prop);
   while (prop)
@@ -916,7 +916,7 @@ _sfi_glue_proxy_dispatch_event (SfiSeq *event)
   static gboolean glue_proxy_dispatching = FALSE;
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
 
-  g_return_if_fail (glue_proxy_dispatching == FALSE);
+  assert_return (glue_proxy_dispatching == FALSE);
 
   glue_proxy_dispatching = TRUE;
 

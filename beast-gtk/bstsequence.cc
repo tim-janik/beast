@@ -99,7 +99,7 @@ void
 bst_sequence_set_seq (BstSequence     *seq,
 		      BseNoteSequence *sdata)
 {
-  g_return_if_fail (BST_IS_SEQUENCE (seq));
+  assert_return (BST_IS_SEQUENCE (seq));
 
   bse_note_sequence_free (seq->sdata);
   if (sdata)
@@ -155,7 +155,7 @@ darea_expose_event (BstSequence    *seq,
   GdkGC *hl_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
   gint width, height, maxx, maxy;
   gfloat nwidth, row_height;
-  gint i, j;
+  gint j;
 
   gdk_window_get_size (widget->window, &width, &height);
   maxx = width - 1;
@@ -173,7 +173,7 @@ darea_expose_event (BstSequence    *seq,
   /* draw rectangles */
   row_height = maxy / (gfloat) seq->n_rows;
   nwidth = maxx / (gfloat) sdata->notes->n_notes;
-  for (i = 0; i < sdata->notes->n_notes; i++)
+  for (uint i = 0; i < sdata->notes->n_notes; i++)
     for (j = 0; j < seq->n_rows; j++)
       {
 	gboolean ncheck = sdata->notes->notes[i] == (seq->n_rows - 1 - j) + sdata->offset;
@@ -215,7 +215,7 @@ darea_button_event (BstSequence    *seq,
 	  dx = event->x / nwidth;
 	  dy = event->y / row_height;
 	  dy = seq->n_rows - 1 - CLAMP (dy, 0, seq->n_rows - 1);
-	  if (dx >= 0 && dx < sdata->notes->n_notes &&
+	  if (dx >= 0 && dx < int (sdata->notes->n_notes) &&
 	      sdata->notes->notes[dx] != dy + sdata->offset)
 	    {
 	      sdata->notes->notes[dx] = dy + sdata->offset;
@@ -263,7 +263,7 @@ darea_motion_event (BstSequence    *seq,
       dx = event->x / nwidth;
       dy = event->y / row_height;
       dy = seq->n_rows - 1 - CLAMP (dy, 0, seq->n_rows - 1);
-      if (dx >= 0 && dx < sdata->notes->n_notes &&
+      if (dx >= 0 && dx < int (sdata->notes->n_notes) &&
 	  sdata->notes->notes[dx] != dy + sdata->offset)
 	{
 	  sdata->notes->notes[dx] = dy + sdata->offset;

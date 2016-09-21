@@ -5,12 +5,48 @@
 #include "bsemathsignal.hh"
 #include <string.h>
 #include <sfi/sfi.hh>
+
+
 /* --- functions --- */
+int
+bse_note_from_string (const String &note_string)
+{
+  return sfi_note_from_string (note_string.c_str());
+}
+
+Bse::NoteDescription
+bse_note_description (Bse::MusicalTuning musical_tuning, int note, int finetune)
+{
+  Bse::NoteDescription info;
+  info.musical_tuning = musical_tuning;
+  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
+    {
+      char letter;
+      info.note = note;
+      int black_semitone = false;
+      bse_note_examine (info.note,
+                        &info.octave,
+                        &info.semitone,
+                        &black_semitone,
+                        &letter);
+      info.upshift = black_semitone;
+      info.letter = letter;
+      info.finetune = CLAMP (finetune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
+      info.freq = bse_note_to_tuned_freq (musical_tuning, info.note, info.finetune);
+      info.name = bse_note_to_string (info.note);
+    }
+  else
+    {
+      info.note = BSE_NOTE_VOID;
+      info.name = "";
+    }
+  return info;
+}
+
 namespace {
 struct FreqCmp {
   inline int
-  operator() (float f1,
-              float f2)
+  operator() (float f1, float f2)
   {
     return f1 < f2 ? -1 : f1 > f2;
   }
@@ -18,8 +54,7 @@ struct FreqCmp {
 } // Anon
 
 int
-bse_note_from_freq (BseMusicalTuningType musical_tuning,
-                    double               freq)
+bse_note_from_freq (Bse::MusicalTuning musical_tuning, double freq)
 {
   freq /= BSE_KAMMER_FREQUENCY;
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
@@ -42,7 +77,7 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
 #endif
   /* transform to note */
   if (0)
-    g_printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
+    printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
                 freq - m[-1], freq - m[0], m[1] - freq);
   int note = m - table + BSE_KAMMER_NOTE;
   /* yield VOID when exceeding corner cases */
@@ -52,8 +87,7 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
 }
 
 int
-bse_note_from_freq_bounded (BseMusicalTuningType musical_tuning,
-                            double               freq)
+bse_note_from_freq_bounded (Bse::MusicalTuning musical_tuning, double freq)
 {
   int note = bse_note_from_freq (musical_tuning, freq);
   if (note != BSE_NOTE_VOID)
@@ -63,9 +97,7 @@ bse_note_from_freq_bounded (BseMusicalTuningType musical_tuning,
 }
 
 int
-bse_note_fine_tune_from_note_freq (BseMusicalTuningType musical_tuning,
-                                   int                  note,
-				   double               freq)
+bse_note_fine_tune_from_note_freq (Bse::MusicalTuning musical_tuning, int note, double freq)
 {
   double semitone_factor = bse_transpose_factor (musical_tuning, CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE) - SFI_KAMMER_NOTE);
   freq /= BSE_KAMMER_FREQUENCY * semitone_factor;
@@ -76,8 +108,7 @@ bse_note_fine_tune_from_note_freq (BseMusicalTuningType musical_tuning,
 }
 
 double
-bse_note_to_freq (BseMusicalTuningType musical_tuning,
-                  int                  note)
+bse_note_to_freq (Bse::MusicalTuning musical_tuning, int note)
 {
   if (note < BSE_MIN_NOTE || note > BSE_MAX_NOTE)
     return 0.0;
@@ -86,9 +117,7 @@ bse_note_to_freq (BseMusicalTuningType musical_tuning,
 }
 
 double
-bse_note_to_tuned_freq (BseMusicalTuningType musical_tuning,
-                        int                  note,
-			int                  fine_tune)
+bse_note_to_tuned_freq (Bse::MusicalTuning musical_tuning, int note, int fine_tune)
 {
   if (note < BSE_MIN_NOTE || note > BSE_MAX_NOTE)
     return 0.0;
@@ -118,7 +147,7 @@ bse_freq_array_new (guint prealloc)
 void
 bse_freq_array_free (BseFreqArray *farray)
 {
-  g_return_if_fail (farray != NULL);
+  assert_return (farray != NULL);
 
   g_free (farray->values);
   g_free (farray);
@@ -127,7 +156,7 @@ bse_freq_array_free (BseFreqArray *farray)
 guint
 bse_freq_array_n_values (BseFreqArray *farray)
 {
-  g_return_val_if_fail (farray != NULL, 0);
+  assert_return (farray != NULL, 0);
 
   return farray->n_values;
 }
@@ -136,8 +165,8 @@ gdouble
 bse_freq_array_get (BseFreqArray *farray,
                     guint         index)
 {
-  g_return_val_if_fail (farray != NULL, 0);
-  g_return_val_if_fail (index < farray->n_values, 0);
+  assert_return (farray != NULL, 0);
+  assert_return (index < farray->n_values, 0);
 
   return farray->values[index];
 }
@@ -149,8 +178,8 @@ bse_freq_array_insert (BseFreqArray *farray,
 {
   guint i;
 
-  g_return_if_fail (farray != NULL);
-  g_return_if_fail (index <= farray->n_values);
+  assert_return (farray != NULL);
+  assert_return (index <= farray->n_values);
 
   i = farray->n_values;
   i = farray->n_values += 1;
@@ -177,8 +206,8 @@ bse_freq_array_set (BseFreqArray *farray,
                     guint         index,
                     gdouble       value)
 {
-  g_return_if_fail (farray != NULL);
-  g_return_if_fail (index < farray->n_values);
+  assert_return (farray != NULL);
+  assert_return (index < farray->n_values);
 
   farray->values[index] = value;
 }

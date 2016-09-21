@@ -84,9 +84,9 @@ bse_sequencer_class_init (BseSequencerClass *klass)
 					      SFI_PARAM_STANDARD ":f:scale"));
 
   ochannel = bse_source_class_add_ochannel (source_class, "freq-out", _("Freq Out"), _("Frequency Signal"));
-  g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);
+  assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);
   ochannel = bse_source_class_add_ochannel (source_class, "note-sync", _("Note Sync"), _("Note Sync Signal"));
-  g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
+  assert (ochannel == BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
 }
 
 static void
@@ -133,11 +133,11 @@ bse_sequencer_set_property (BseSequencer *seq,
       sdata = (BseNoteSequence*) bse_value_get_boxed (value);
       if (sdata)
 	{
-	  guint i, l, mnote = SFI_MAX_NOTE;
+	  int mnote = SFI_MAX_NOTE;
 	  seq->sdata = bse_note_sequence_copy_shallow (sdata);
 	  /* fixup offset */
-	  l = bse_note_sequence_length (seq->sdata);
-	  for (i = 0; i < l; i++)
+	  uint l = bse_note_sequence_length (seq->sdata);
+	  for (uint i = 0; i < l; i++)
 	    mnote = MIN (mnote, seq->sdata->notes->notes[i]);
 	  if (l && ABS (mnote - seq->sdata->offset) >= 12)
 	    seq->sdata->offset = (mnote < SFI_NOTE_A (SFI_NOTE_OCTAVE (mnote)) ?
@@ -194,9 +194,7 @@ bse_sequencer_get_property (BseSequencer *seq,
 }
 
 static gfloat*
-freq_values_from_seq (BseMusicalTuningType musical_tuning,
-                      BseNoteSequence     *sdata,
-		      gint                 transpose)
+freq_values_from_seq (Bse::MusicalTuning musical_tuning, BseNoteSequence *sdata, int transpose)
 {
   gfloat *v = g_new (gfloat, bse_note_sequence_length (sdata));
   guint i;

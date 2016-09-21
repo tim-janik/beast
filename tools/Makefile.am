@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . scripts
@@ -8,7 +8,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CON
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 #
 # tools to build
@@ -20,7 +20,7 @@ bsewavetool_LDADD   = $(progs_ldadd)
 EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 
 noinst_PROGRAMS  += cutvorbis
-cutvorbis_SOURCES = cutvorbis.cc cxxdummy.cc
+cutvorbis_SOURCES = cutvorbis.cc
 cutvorbis_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS    += bsefextract
@@ -32,11 +32,11 @@ bsefcompare_SOURCES = bsefcompare.cc
 bsefcompare_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS  += magictest
-magictest_SOURCES = magictest.cc cxxdummy.cc
+magictest_SOURCES = magictest.cc
 magictest_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS += mathtool
-mathtool_SOURCES = mathtool.cc cxxdummy.cc
+mathtool_SOURCES = mathtool.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===

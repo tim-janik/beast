@@ -52,7 +52,7 @@ GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_
                                             SfiProxy                     track,
                                             const gchar                 *candidate_label,
                                             const gchar                 *candidate_tooltip,
-                                            BseItemSeq                  *candidates,
+                                            BseIt3mSeq                  *candidates,
                                             const gchar                 *wrepo_label,
                                             const gchar                 *wrepo_tooltip,
                                             SfiProxy                     wrepo,
@@ -63,7 +63,7 @@ GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_
                                             gpointer                     selected_data,
                                             GxkFreeFunc                  selected_cleanup);
 void       bst_track_synth_dialog_set      (BstTrackSynthDialog         *self,
-                                            BseItemSeq                  *iseq,
+                                            BseIt3mSeq                  *iseq,
                                             SfiProxy                     wrepo,
 					    SfiProxy			 sfrepo);
 

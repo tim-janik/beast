@@ -3,7 +3,6 @@
 #include "cpu.hh"
 
 #include <algorithm>
-#include <assert.h>
 
 using std::vector;
 using std::max;
@@ -70,8 +69,8 @@ void CPU::execute()
 
 void CPU::execute_1_1_block(int sreg, int dreg, const float *sdata, float *ddata, int samples)
 {
-    assert(sreg >= 0 && sreg <= n_registers); /* g_return_if_fail */
-    assert(dreg >= 0 && dreg <= n_registers); /* g_return_if_fail */
+    assert(sreg >= 0 && sreg <= n_registers); /* assert_return */
+    assert(dreg >= 0 && dreg <= n_registers); /* assert_return */
 
     for(int i = 0; i < samples; i++)
     {

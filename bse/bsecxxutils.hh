@@ -16,7 +16,7 @@ typedef SfiTime     Time;
 typedef SfiNote     Note;
 typedef SfiReal     Real;
 typedef SfiChoice   Choice;
-typedef std::string String;  /* not using SfiString resp. gchar* here */
+typedef std::string String;
 typedef SfiBBlock   BBlock;
 typedef SfiFBlock   FBlock;
 typedef SfiSeq      Seq;
@@ -72,7 +72,7 @@ struct InvalidArgument2 : Exception {
   InvalidArgument2 (const char *where, const char *item) : Exception (where), item (item) {};
   const char* what() const throw() { return g_intern_strconcat ("invalid argument: ", item, NULL); }
 };
-#define InvalidArgument(WHAT)   InvalidArgument2 (G_STRFUNC, #WHAT)
+#define InvalidArgument(WHAT)   InvalidArgument2 (__func__, #WHAT)
 struct WrongTypeGValue : Exception {
   WrongTypeGValue (const char *where) : Exception (where) {};
   const char* what() const throw() { return "GValue contains wrong type for this kind of use"; }
@@ -158,7 +158,7 @@ bse_type_id_wrapper (const char *type_name)
   if (!type)
     {
       type = g_type_from_name (type_name);
-      g_assert (type);
+      RAPICORN_ASSERT (type);
     }
   return type;
 }

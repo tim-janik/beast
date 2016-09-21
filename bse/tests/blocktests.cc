@@ -2,13 +2,6 @@
 #include <bse/bseblockutils.hh>
 #include <sfi/sfitests.hh>
 #include <bse/bsemain.hh>
-#include "topconfig.h"
-
-static void
-report_usecs (const char *what, double usecs)
-{
-  TMSG ("    %-28s : %+.14f µseconds", what, usecs);
-}
 
 template<typename T> static bool
 block_check (guint    n,
@@ -156,7 +149,7 @@ test_square_sum (void)
 	fblock[i] = sin (i * 2 * M_PI / 1024);
       energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
       energy_db = 10 * log10 (energy);
-      TOUT ("sine wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TPASS ("sine wave: energy = %f, energy_db = %f\n", energy, energy_db);
       TASSERT (fabs (energy - 0.5) < 0.0000001);
       energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
       TASSERT (fabs (energy - 0.5) < 0.0000001);
@@ -164,7 +157,7 @@ test_square_sum (void)
 	fblock[i] = i < 512 ? -1 : 1;
       energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
       energy_db = 10 * log10 (energy);
-      TOUT ("square wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TPASS ("square wave: energy = %f, energy_db = %f\n", energy, energy_db);
       TASSERT (fabs (energy - 1.0) < 0.0000001);
       energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
       TASSERT (fabs (energy - 1.0) < 0.0000001);
@@ -212,38 +205,24 @@ test_scale (void)
   TASSERT (block_check (1024, fblock2, 3.f) == true);
   TDONE();
 }
-#define RUNS    11
+
+#define RUNS        11
+#define MAX_SECONDS 0.1
 const int BLOCK_SIZE = 1024;
-/*
- * to make benchmarks with different blocksizes comparable,
- * results will be scaled to a standard block size (1024)
- */
-const double BENCH_SCALE = 1024. / BLOCK_SIZE;
-static inline void
-bench_fill (void)
+
+static void
+bench_fill ()
 {
   float fblock[BLOCK_SIZE];
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::fill (BLOCK_SIZE, fblock, 2.f));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::fill (BLOCK_SIZE, fblock, 2.f);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  report_usecs ("Block::fill", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock) * RUNS;
+  auto loop = [&fblock] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::fill (BLOCK_SIZE, fblock, 2.f);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::fill       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -252,28 +231,15 @@ bench_copy (void)
   float src_fblock[BLOCK_SIZE], dest_fblock[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, src_fblock, 2.f);
   Bse::Block::fill (BLOCK_SIZE, dest_fblock, 0.f);
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  g_assert (dest_fblock[0] == 2.f);
-  report_usecs ("Block::copy", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (src_fblock) * RUNS;
+  auto loop = [&dest_fblock, &src_fblock] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::copy       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -282,27 +248,15 @@ bench_add (void)
   float fblock1[BLOCK_SIZE], fblock2[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, fblock1, 2.f);
   Bse::Block::fill (BLOCK_SIZE, fblock2, 3.f);
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::add (BLOCK_SIZE, fblock1, fblock2));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::add (BLOCK_SIZE, fblock1, fblock2);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  report_usecs ("Block::add", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock1) * RUNS;
+  auto loop = [&fblock1, &fblock2] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::add (BLOCK_SIZE, fblock1, fblock2);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::add        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -311,27 +265,15 @@ bench_sub (void)
   float fblock1[BLOCK_SIZE], fblock2[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, fblock1, 2.f);
   Bse::Block::fill (BLOCK_SIZE, fblock2, 3.f);
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::sub (BLOCK_SIZE, fblock1, fblock2));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::sub (BLOCK_SIZE, fblock1, fblock2);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  report_usecs ("Block::sub", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock1) * RUNS;
+  auto loop = [&fblock1, &fblock2] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::sub (BLOCK_SIZE, fblock1, fblock2);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::sub        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -339,29 +281,16 @@ bench_mul (void)
 {
   float fblock1[BLOCK_SIZE], fblock2[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, fblock1, 2.f);
-  Bse::Block::fill (BLOCK_SIZE, fblock2, 1.0000001); /* use a small factor to avoid inf after many block multiplications */
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::mul (BLOCK_SIZE, fblock1, fblock2));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
+  Bse::Block::fill (BLOCK_SIZE, fblock2, 1.0000001); // use a small factor to avoid inf after many block multiplications
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::mul (BLOCK_SIZE, fblock1, fblock2);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  g_assert (fblock1[0] < 1e30); /* not close to infinity */
-  report_usecs ("Block::mul", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock1) * RUNS;
+  auto loop = [&fblock1, &fblock2] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::mul (BLOCK_SIZE, fblock1, fblock2);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::mul        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -370,27 +299,15 @@ bench_scale (void)
   float fblock1[BLOCK_SIZE], fblock2[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, fblock1, 0.f);
   Bse::Block::fill (BLOCK_SIZE, fblock2, 3.f);
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::scale (BLOCK_SIZE, fblock1, fblock2, 2.f));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::scale (BLOCK_SIZE, fblock1, fblock2, 2.f);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  report_usecs ("Block::scale", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock1) * RUNS;
+  auto loop = [&fblock1, &fblock2] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::scale (BLOCK_SIZE, fblock1, fblock2, 2.f);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::scale      # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -406,29 +323,16 @@ bench_range (void)
   /* shuffle block into quasi random order */
   block_shuffle (BLOCK_SIZE, fblock);
 
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range (BLOCK_SIZE, fblock, min_value, max_value));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
-
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::range (BLOCK_SIZE, fblock, min_value, max_value);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  g_assert (min_value == correct_min_value);
-  g_assert (max_value == correct_max_value);
-  report_usecs ("Block::range", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock) * RUNS;
+  auto loop = [&fblock, &min_value, &max_value] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::range (BLOCK_SIZE, fblock, min_value, max_value);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  assert (min_value == correct_min_value);
+  assert (max_value == correct_max_value);
+  TPASS ("Block::range      # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -436,27 +340,15 @@ bench_square_sum (void)
 {
   float fblock[BLOCK_SIZE];
   Bse::Block::fill (BLOCK_SIZE, fblock, 2.f);
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::square_sum (BLOCK_SIZE, fblock));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::square_sum (BLOCK_SIZE, fblock);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  report_usecs ("Block::square_sum", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock) * RUNS;
+  auto loop = [&fblock] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::square_sum (BLOCK_SIZE, fblock);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  TPASS ("Block::sum²       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static inline void
@@ -472,29 +364,16 @@ bench_range_and_square_sum (void)
   /* shuffle block into quasi random order */
   block_shuffle (BLOCK_SIZE, fblock);
 
-  GTimer *timer = g_timer_new();
-  g_timer_start (timer);
-  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range_and_square_sum (BLOCK_SIZE, fblock, min_value, max_value));
-  g_timer_stop (timer);
-  double c = g_timer_elapsed (timer, NULL);
-
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
-    {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-        Bse::Block::range_and_square_sum (BLOCK_SIZE, fblock, min_value, max_value);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
-    }
-  g_assert (min_value == correct_min_value);
-  g_assert (max_value == correct_max_value);
-  report_usecs ("Block::range_and_square_sum", 1000000.0 * m / dups * BENCH_SCALE);
-  if (0)
-    g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  const uint bytes_per_loop = sizeof (fblock) * RUNS;
+  auto loop = [&fblock, &min_value, &max_value] () {
+    for (uint j = 0; j < RUNS; j++)
+      Bse::Block::range_and_square_sum (BLOCK_SIZE, fblock, min_value, max_value);
+  };
+  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  const double bench_time = timer.benchmark (loop);
+  assert (min_value == correct_min_value);
+  assert (max_value == correct_max_value);
+  TPASS ("Block::range+sum² # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
 static void
@@ -509,18 +388,16 @@ run_tests()
   /* the next two functions test the range_and_square_sum function, too */
   test_range();
   test_square_sum();
-  if (Rapicorn::Test::slow())
-    {
-      bench_fill();
-      bench_copy();
-      bench_add();
-      bench_sub();
-      bench_mul();
-      bench_scale();
-      bench_range();
-      bench_square_sum();
-      bench_range_and_square_sum();
-    }
+  // benchmarks
+  bench_fill();
+  bench_copy();
+  bench_add();
+  bench_sub();
+  bench_mul();
+  bench_scale();
+  bench_range();
+  bench_square_sum();
+  bench_range_and_square_sum();
 }
 
 int
@@ -531,7 +408,7 @@ main (int   argc,
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   TSTART ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());

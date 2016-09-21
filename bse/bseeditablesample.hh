@@ -33,4 +33,16 @@ void	bse_editable_sample_set_wchunk	(BseEditableSample	*self,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+namespace Bse {
+
+class EditableSampleImpl : public ItemImpl, public virtual EditableSampleIface {
+protected:
+  virtual  ~EditableSampleImpl ();
+public:
+  explicit  EditableSampleImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_EDITABLE_SAMPLE_H__ */

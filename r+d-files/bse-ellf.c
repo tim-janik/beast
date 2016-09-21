@@ -1,4 +1,4 @@
-/* BSE - Better Sound Engine
+/* BSE - Beast Sound Engine
  * Copyright (C) 2006 Tim Janik
  * Copyright (C) 1984, 1987, 1988, 1989, 1995, 2000 Stephen L. Moshier
  *
@@ -54,9 +54,9 @@ double sinh(), cosh(), atan(), exp();
 #include <math.h>
 #endif
 
-#define code_printf(...)     fprintf (stdout, __VA_ARGS__)
-#define ellf_printf(...)     fprintf (stderr, __VA_ARGS__)
-#define ellf_debugf(...)     fprintf (stderr, __VA_ARGS__)
+#define code_printf(...)        printout (__VA_ARGS__)
+#define ellf_printf(...)        printerr (__VA_ARGS__)
+#define ellf_debugf(...)        printerr (__VA_ARGS__)
 
 /* === ellf.doc - start === */
 /*                        ellf.c

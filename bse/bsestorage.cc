@@ -7,7 +7,6 @@
 #include "gsldatautils.hh"
 #include "gslcommon.hh"
 #include "bseproject.hh"
-#include "bseparasite.hh"
 #include "bsecxxplugin.hh"
 #include <unistd.h>
 #include <fcntl.h>
@@ -100,7 +99,7 @@ BSE_BUILTIN_TYPE (BseStorage)
     (GInstanceInitFunc) bse_storage_init,
   };
 
-  g_assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
 
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
@@ -171,12 +170,12 @@ bse_storage_turn_readable (BseStorage  *self,
   gchar *text;
   guint n_dblocks, n_blobs, l;
 
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (BSE_STORAGE_DBLOCK_CONTAINED (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (self->wstore->flushed == FALSE);
-  g_return_if_fail (self->wstore->bblocks == NULL);
-  g_return_if_fail (self->free_me == NULL);
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (BSE_STORAGE_DBLOCK_CONTAINED (self));
+  assert_return (self->wstore);
+  assert_return (self->wstore->flushed == FALSE);
+  assert_return (self->wstore->bblocks == NULL);
+  assert_return (self->free_me == NULL);
 
   bse_storage_break (self);
 
@@ -205,7 +204,7 @@ bse_storage_reset (BseStorage *self)
 {
   guint i;
 
-  g_return_if_fail (BSE_IS_STORAGE (self));
+  assert_return (BSE_IS_STORAGE (self));
 
   if (self->rstore)
     {
@@ -303,7 +302,7 @@ void
 bse_storage_prepare_write (BseStorage    *self,
                            BseStorageMode mode)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
+  assert_return (BSE_IS_STORAGE (self));
 
   bse_storage_reset (self);
   self->wstore = sfi_wstore_new ();
@@ -322,7 +321,7 @@ bse_storage_input_text (BseStorage  *self,
                         const gchar *text,
                         const gchar *text_name)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
+  assert_return (BSE_IS_STORAGE (self));
 
   if (!text)
     text = "";
@@ -335,22 +334,22 @@ bse_storage_input_text (BseStorage  *self,
   self->restorable_objects = sfi_ppool_new ();
 }
 
-BseErrorType
+Bse::Error
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_STORAGE (self), Bse::Error::INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new_open (file_name);
   if (!self->rstore)
-    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   self->rstore->parser_this = self;
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   self->restorable_objects = sfi_ppool_new ();
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static GTokenType
@@ -392,7 +391,7 @@ storage_parse_bse_version (BseStorage *self)
     bse_storage_warn (self, "ignoring invalid version string: %s", scanner->value.v_string);
   parse_or_return (scanner, ')');               /* eat closing paren */
   if (0)
-    g_printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
+    printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
                 BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,
                 self->major_version, self->minor_version, self->micro_version,
                 BSE_STORAGE_VERSION (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
@@ -422,11 +421,11 @@ void
 bse_storage_add_restorable (BseStorage             *self,
                             BseObject              *object)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->rstore);
-  g_return_if_fail (self->restorable_objects);
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (BSE_OBJECT_IN_RESTORE (object));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->rstore);
+  assert_return (self->restorable_objects);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (BSE_OBJECT_IN_RESTORE (object));
 
   sfi_ppool_set (self->restorable_objects, object);
 }
@@ -444,8 +443,8 @@ storage_restorable_objects_foreach (gpointer        data,
 void
 bse_storage_finish_parsing (BseStorage *self)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->rstore != NULL);
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->rstore != NULL);
 
   while (self->item_links)
     {
@@ -648,14 +647,176 @@ item_link_resolved (gpointer     data,
     }
 }
 
-static GTokenType item_restore_try_statement (gpointer item, BseStorage *self, GScanner *scanner, gpointer user_data);
+/// Retrive the value of @a field.key through aux_vector_find() and convert the value to @a ValueType.
+template<typename ValueType = String> ValueType
+aux_vector_get (const std::vector<String> &auxvector, const String &field, const String &key, const String &fallback = "")
+{
+  return Rapicorn::string_to_type<ValueType> (Rapicorn::Aida::aux_vector_find (auxvector, field, key, fallback));
+}
+
+static bool
+any_set_from_string (BseStorage *self, Any &any, const String &string)
+{
+  using namespace Rapicorn;
+  switch (any.kind())
+    {
+    case Aida::BOOL:
+      if (string.size() == 2 && string.data()[0] == '#')
+        any.set (bool (string.data()[1] == 't' || string.data()[1] == 'T'));
+      else
+        any.set (string_to_bool (string));
+      break;
+    case Aida::INT64:           any.set (string_to_int (string));        break;
+    case Aida::FLOAT64:         any.set (string_to_double (string));     break;
+    case Aida::STRING:          any.set (string_from_cquote (string));   break;
+    case Aida::ENUM:
+      {
+        const Aida::EnumInfo &einfo = any.get_enum_info();
+        const int64 v = einfo.value_from_string (string);
+        if (!einfo.find_value (v).ident) // 'v' is no valid enum value
+          {
+            const Aida::EnumValueVector evv = einfo.value_vector();
+            if (evv.size())
+              any.set_enum (einfo, evv[0].value);
+            bse_storage_warn (self, "fixing invalid enum value: %s (%d) -> %s", einfo.name(), v, evv[0].ident);
+          }
+        else
+          any.set_enum (einfo, v);
+        break;
+      }
+    default:                    fatal ("unhandled Any: %s; string=%s", any.repr(), string);
+    }
+  return true;
+}
+
 static GTokenType
-restore_item_property (BseItem    *item,
-                       BseStorage *self)
+scanner_parse_paren_rest (GScanner *scanner, String *result)
+{
+  // configure scanner to pass through most characters, so we can delay parsing
+  const GScannerConfig saved_config = *scanner->config;
+  scanner->config->cset_skip_characters = (char*) " \t\r\n";
+  scanner->config->scan_identifier = true;
+  scanner->config->scan_identifier_1char = false;
+  scanner->config->identifier_2_string = false;
+  scanner->config->scan_symbols = false;
+  scanner->config->scan_binary = false;
+  scanner->config->scan_octal = false;
+  scanner->config->scan_float = false;
+  scanner->config->scan_hex = false;
+  scanner->config->scan_hex_dollar = false;
+  scanner->config->char_2_token = false;
+  GTokenType expected_token = G_TOKEN_NONE, token = g_scanner_get_next_token (scanner);
+  uint level = 1; // need one ')' to terminate
+  String rest;
+  while (token && expected_token == G_TOKEN_NONE)
+    {
+      if (token == G_TOKEN_CHAR)
+        {
+          if (scanner->value.v_char == '(')
+            level += 1;
+          else if (scanner->value.v_char == ')')
+            {
+              level -= 1;
+              if (level == 0)
+                break;
+            }
+          else
+            rest += scanner->value.v_char;
+        }
+      else if (token == G_TOKEN_STRING)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += Rapicorn::string_to_cquote (scanner->value.v_string);
+        }
+      else if (token == G_TOKEN_IDENTIFIER)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += scanner->value.v_string;
+        }
+      else if (token == G_TOKEN_INT)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += Rapicorn::string_from_int (scanner->value.v_int);
+        }
+      else
+        {
+          expected_token = G_TOKEN_RIGHT_PAREN; // was expecting a char, got something unknown
+          break;
+        }
+      token = g_scanner_get_next_token (scanner);
+    }
+  *scanner->config = saved_config;
+  if (result && expected_token == G_TOKEN_NONE)
+    *result = rest;
+  return expected_token; // G_TOKEN_NONE on success
+}
+
+static GTokenType
+storage_parse_property_value (BseStorage *self, const String &name, Any &any, const std::vector<std::string> &aux_data)
+{
+  using namespace Rapicorn;
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  GScanner *scanner = bse_storage_get_scanner (self);
+  String rest;
+  GTokenType expected_token = scanner_parse_paren_rest (scanner, &rest);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
+  const bool any_from_string_conversion = any_set_from_string (self, any, rest);
+  if (any_from_string_conversion)
+    return G_TOKEN_NONE;
+  else
+    {
+      bse_storage_error (self, "failed to parse Any from: \"%s\"", rest.c_str());
+      return G_TOKEN_ERROR;
+    }
+}
+
+static GTokenType
+restore_cxx_item_property (BseItem *bitem, BseStorage *self)
+{
+  using namespace Rapicorn;
+  GScanner *scanner = bse_storage_get_scanner (self);
+  Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
+  // need identifier
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return SFI_TOKEN_UNMATCHED;
+  String identifier = scanner->next_value.v_identifier;
+  for (size_t i = 0; i < identifier.size(); i++)
+    if (identifier.data()[i] == '-')
+      identifier[i] = '_';
+  // find identifier in item, we could search __aida_dir__, but *getting* is simpler
+  Any any = item->__aida_get__ (identifier);
+  if (any.kind())
+    {
+      const std::vector<String> auxvector = item->__aida_aux_data__();
+      // FIXME: need special casing of object references, see bse_storage_parse_item_link
+      parse_or_return (scanner, G_TOKEN_IDENTIFIER);    // eat pspec name
+      // parse Any value, including the closing ')'
+      GTokenType expected_token = storage_parse_property_value (self, identifier, any, auxvector);
+      if (expected_token != G_TOKEN_NONE)
+        return expected_token;
+      if (Rapicorn::Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
+        {
+          item->__aida_set__ (identifier, any);
+        }
+      else
+        bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",
+                          identifier, Aida::type_kind_name (any.kind()));
+      return G_TOKEN_NONE;
+    }
+  return SFI_TOKEN_UNMATCHED;
+}
+
+static GTokenType item_restore_try_statement (gpointer item, BseStorage *self, GScanner *scanner, gpointer user_data);
+
+static GTokenType
+restore_item_property (BseItem *item, BseStorage *self)
 {
   GScanner *scanner = bse_storage_get_scanner (self);
   GTokenType expected_token;
-  GParamSpec *pspec;
   GValue value = { 0, };
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
@@ -667,9 +828,9 @@ restore_item_property (BseItem    *item,
    * them to SFI_PARAM_SERVE_STORAGE and SFI_PARAM_SERVE_GUI
    * at some point...)
    */
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->next_value.v_identifier);
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->next_value.v_identifier);
   if (!pspec)
-    return SFI_TOKEN_UNMATCHED;
+    return restore_cxx_item_property (item, self);
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);        /* eat pspec name */
   /* parse value, special casing object references */
   if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
@@ -701,7 +862,7 @@ restore_item_property (BseItem    *item,
     g_object_set_property (G_OBJECT (item), /* no undo */
                            pspec->name, &value);
   else
-    bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type `%s'",
+    bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",
                       pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   g_value_unset (&value);
   return G_TOKEN_NONE;
@@ -735,8 +896,8 @@ restore_source_automation (BseItem    *item,
   BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
   /* close statement */
   parse_or_return (scanner, ')');
-  BseErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, BseMidiSignalType (control_type));
-  if (error)
+  Bse::Error error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignal (control_type));
+  if (error != 0)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
 }
@@ -828,8 +989,6 @@ item_restore_try_statement (gpointer    _item,
     expected_token = restore_source_automation (item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED)
     expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private ((BseObject*) item, self, scanner);
-  if (expected_token == SFI_TOKEN_UNMATCHED)
-    expected_token = bse_parasite_restore ((BseObject*) item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED && BSE_IS_CONTAINER (item))
     expected_token = restore_container_child ((BseContainer*) item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED && strcmp (scanner->next_value.v_identifier, "bse-version") == 0)
@@ -842,8 +1001,8 @@ bse_storage_restore_item (BseStorage *self,
                           gpointer    item)
 {
   GTokenType expected_token;
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_IS_ITEM (item), G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (BSE_IS_ITEM (item), G_TOKEN_ERROR);
   g_object_ref (self);
   g_object_ref (item);
   expected_token = sfi_rstore_parse_until (self->rstore, G_TOKEN_EOF, item,
@@ -859,15 +1018,15 @@ bse_storage_parse_rest (BseStorage     *self,
                         BseTryStatement try_statement,
                         gpointer        user_data)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore != NULL, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore != NULL, G_TOKEN_ERROR);
   return sfi_rstore_parse_until (self->rstore, GTokenType (')'), context_data, (SfiStoreParser) try_statement, user_data);
 }
 
 gboolean
 bse_storage_check_parse_negate (BseStorage *self)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), FALSE);
+  assert_return (BSE_IS_STORAGE (self), FALSE);
   if (g_scanner_peek_next_token (bse_storage_get_scanner (self)) == '-')
     {
       g_scanner_get_next_token (bse_storage_get_scanner (self));
@@ -882,10 +1041,10 @@ bse_storage_put_param (BseStorage   *self,
                        const GValue *value,
                        GParamSpec   *pspec)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
+  assert_return (G_IS_VALUE (value));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   sfi_wstore_put_param (self->wstore, value, pspec);
 }
 
@@ -894,8 +1053,8 @@ bse_storage_parse_param_value (BseStorage *self,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore, G_TOKEN_ERROR);
   return sfi_rstore_parse_param (self->rstore, value, pspec);
 }
 
@@ -904,10 +1063,10 @@ bse_storage_put_item_link (BseStorage *self,
                            BseItem    *from_item,
                            BseItem    *to_item)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (BSE_IS_ITEM (from_item));
-  g_return_if_fail (BSE_IS_ITEM (to_item));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
+  assert_return (BSE_IS_ITEM (from_item));
+  assert_return (BSE_IS_ITEM (to_item));
   if (!to_item)                                         /* special case (1) */
     {
       bse_storage_puts (self, SFI_SERIAL_NULL_TOKEN);
@@ -917,9 +1076,9 @@ bse_storage_put_item_link (BseStorage *self,
       BseItem *tmp, *common_ancestor;
       guint pbackup = 0;
       gchar *upath, *epath;
-      g_return_if_fail (BSE_IS_ITEM (to_item));
+      assert_return (BSE_IS_ITEM (to_item));
       common_ancestor = bse_item_common_ancestor (from_item, to_item);
-      g_return_if_fail (BSE_IS_CONTAINER (common_ancestor));
+      assert_return (BSE_IS_CONTAINER (common_ancestor));
       sfi_ppool_set (self->referenced_items, to_item);
       /* figure number of parent backup levels to reach common ancestor */
       for (tmp = from_item; tmp != common_ancestor; tmp = tmp->parent)
@@ -975,10 +1134,10 @@ bse_storage_parse_item_link (BseStorage           *self,
   GScanner *scanner;
   BseStorageItemLink *ilink;
   GTokenType expected_token;
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore, G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_IS_ITEM (from_item), G_TOKEN_ERROR);
-  g_return_val_if_fail (restore_link != NULL, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore, G_TOKEN_ERROR);
+  assert_return (BSE_IS_ITEM (from_item), G_TOKEN_ERROR);
+  assert_return (restore_link != NULL, G_TOKEN_ERROR);
   scanner = bse_storage_get_scanner (self);
 #define parse_or_goto(etoken,label) \
   { expected_token = (etoken); if (g_scanner_get_next_token (scanner) != expected_token) goto label; }
@@ -1031,19 +1190,19 @@ bse_storage_parse_item_link (BseStorage           *self,
 void
 bse_storage_warn_str (BseStorage *self, const std::string &string)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
+  assert_return (BSE_IS_STORAGE (self));
   if (self->rstore)
     sfi_rstore_warn (self->rstore, string);
   else
-    g_printerr ("BseStorage: while storing: %s", string.c_str());
+    printerr ("BseStorage: while storing: %s", string.c_str());
 }
 
 GTokenType
 bse_storage_skip (BseStorage *self, const std::string &string)
 {
   GTokenType token;
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore != NULL, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore != NULL, G_TOKEN_ERROR);
   token = sfi_rstore_warn_skip (self->rstore, string);
   return token;
 }
@@ -1051,11 +1210,11 @@ bse_storage_skip (BseStorage *self, const std::string &string)
 void
 bse_storage_error_str (BseStorage *self, const std::string &string)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
+  assert_return (BSE_IS_STORAGE (self));
   if (self->rstore)
     sfi_rstore_error (self->rstore, string);
   else
-    g_printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
+    printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
 }
 
 static void
@@ -1086,7 +1245,7 @@ bse_source_store_automation (BseSource  *source,
                              GParamSpec *pspec)
 {
   guint midi_channel = 0;
-  BseMidiSignalType signal_type = BseMidiSignalType (0);
+  Bse::MidiSignal signal_type = Bse::MidiSignal (0);
   bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
   BseMidiControlType control_type = BseMidiControlType (signal_type);
   if (control_type)
@@ -1124,18 +1283,68 @@ store_item_properties (BseItem    *item,
   g_free (pspecs);
 }
 
+static void
+storage_store_property_value (BseStorage *self, const String &property_name, Any any, const std::vector<std::string> &aux_data)
+{
+  using namespace Rapicorn;
+  if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
+    {
+      const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
+      const String dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
+      if (dflt_val != invalid)
+        {
+          Any dflt = any; // copy type
+          const bool any_from_string_conversion = any_set_from_string (self, dflt, dflt_val);
+          if (any_from_string_conversion && dflt == any)
+            return;     // skip storing default value
+        }
+    }
+  String target;
+  switch (any.kind())
+    {
+    case Aida::BOOL:            target = string_from_bool (any.get<bool>());            break;
+    case Aida::INT64:           target = string_from_int (any.get<int64>());            break;
+    case Aida::FLOAT64:         target = string_from_double (any.get<double>());        break;
+    case Aida::STRING:          target = string_to_cquote (any.get<String>());          break;
+    case Aida::ENUM:
+      {
+        const Aida::EnumInfo &einfo = any.get_enum_info();
+        target = einfo.value_to_string (any.as_int64());
+        break;
+      }
+    default:                    assert (!"reached");
+    }
+  assert (!target.empty());
+  bse_storage_break (self);
+  bse_storage_putc (self, '(');
+  bse_storage_puts (self, property_name.c_str());
+  bse_storage_putc (self, ' ');
+  bse_storage_puts (self, target.c_str());
+  bse_storage_putc (self, ')');
+}
+
+static void
+store_cxx_item_properties (BseItem *bitem, BseStorage *self)
+{
+  Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
+  const std::vector<String> auxvector = item->__aida_aux_data__();
+  for (const String &pname : item->__aida_dir__())
+    if (Rapicorn::Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
+      storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
+}
+
 void
 bse_storage_store_item (BseStorage *self, BseItem *item)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (BSE_IS_ITEM (item));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
+  assert_return (BSE_IS_ITEM (item));
   g_object_ref (self);
   g_object_ref (item);
   sfi_ppool_set (self->stored_items, item);
+  store_cxx_item_properties (item, self);
   store_item_properties (item, self);
   BSE_OBJECT_GET_CLASS (item)->store_private (BSE_OBJECT (item), self);
-  bse_parasite_store (BSE_OBJECT (item), self);
   if (BSE_IS_CONTAINER (item))
     bse_container_store_children ((BseContainer*) item, self);
   g_object_unref (item);
@@ -1146,9 +1355,9 @@ void
 bse_storage_store_child (BseStorage *self, BseItem *item)
 {
   gchar *uname;
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (BSE_IS_ITEM (item));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
+  assert_return (BSE_IS_ITEM (item));
   uname = g_strescape (BSE_OBJECT_UNAME (item), NULL);
   bse_storage_break (self);
   bse_storage_printf (self, "(%s \"%s::%s\"", "container-child", G_OBJECT_TYPE_NAME (item), uname);
@@ -1163,8 +1372,8 @@ void
 bse_storage_putf (BseStorage *self,
                   gfloat      vfloat)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
   sfi_wstore_putf (self->wstore, vfloat);
 }
 
@@ -1172,8 +1381,8 @@ void
 bse_storage_putd (BseStorage *self,
                   gdouble     vdouble)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
   sfi_wstore_putd (self->wstore, vdouble);
 }
 
@@ -1182,8 +1391,8 @@ bse_storage_putr (BseStorage     *self,
                   SfiReal         vreal,
                   const gchar    *hints)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
   if (hints && g_option_check (hints, "f"))     /* check float option */
     bse_storage_putf (self, vreal);
   else
@@ -1309,8 +1518,8 @@ wstore_data_handle_reader (gpointer data,
   GslLong n;
   if (!wh->opened)
     {
-      BseErrorType error = gsl_data_handle_open (wh->dhandle);
-      if (error)
+      Bse::Error error = gsl_data_handle_open (wh->dhandle);
+      if (error != 0)
         {
           bse_storage_error (wh->storage, "failed to open data handle: %s", bse_error_blurb (error));
           return -ENOENT;
@@ -1337,10 +1546,10 @@ bse_storage_put_data_handle (BseStorage    *self,
                              guint          significant_bits,
                              GslDataHandle *dhandle)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (dhandle != NULL);
-  g_return_if_fail (GSL_DATA_HANDLE_OPENED (dhandle));
+  assert_return (BSE_IS_STORAGE (self));
+  assert_return (self->wstore);
+  assert_return (dhandle != NULL);
+  assert_return (GSL_DATA_HANDLE_OPENED (dhandle));
   if (BSE_STORAGE_DBLOCK_CONTAINED (self))
     {
       /* stored as binary data block in memory for undo storage */
@@ -1593,9 +1802,9 @@ bse_storage_parse_data_handle (BseStorage     *self,
                                gfloat         *mix_freq_p,
                                gfloat         *osc_freq_p)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore, G_TOKEN_ERROR);
-  g_return_val_if_fail (data_handle_p != NULL, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore, G_TOKEN_ERROR);
+  assert_return (data_handle_p != NULL, G_TOKEN_ERROR);
   return parse_data_handle_trampoline (self, FALSE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
@@ -1606,9 +1815,9 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
                                     gfloat         *mix_freq_p,
                                     gfloat         *osc_freq_p)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (self->rstore, G_TOKEN_ERROR);
-  g_return_val_if_fail (data_handle_p != NULL, G_TOKEN_ERROR);
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  assert_return (self->rstore, G_TOKEN_ERROR);
+  assert_return (data_handle_p != NULL, G_TOKEN_ERROR);
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
@@ -1915,16 +2124,16 @@ return_with_error:
   return G_TOKEN_ERROR;
 }
 
-BseErrorType
+Bse::Error
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (self->wstore, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (fd >= 0, BSE_ERROR_INTERNAL);
+  assert_return (BSE_IS_STORAGE (self), Bse::Error::INTERNAL);
+  assert_return (self->wstore, Bse::Error::INTERNAL);
+  assert_return (fd >= 0, Bse::Error::INTERNAL);
   bse_storage_break (self);
   gint nerrno = sfi_wstore_flush_fd (self->wstore, fd);
-  return bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
+  return bse_error_from_errno (-nerrno, Bse::Error::FILE_WRITE_FAILED);
 }
 
 void

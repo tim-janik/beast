@@ -146,10 +146,10 @@ typedef struct
   guint          tail_detected : 1;             /* found tail_samples silence */
   guint          clipped_head : 1;
   guint          clipped_tail : 1;
-  BseErrorType   error;
+  Bse::Error   error;
 } GslDataClipResult;
 
-BseErrorType    gsl_data_clip_sample    (GslDataHandle     *dhandle,
+Bse::Error    gsl_data_clip_sample    (GslDataHandle     *dhandle,
                                          GslDataClipConfig *cconfig,
                                          GslDataClipResult *result);
 
@@ -373,7 +373,7 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values * 4;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
       return 0;
     }
 }
@@ -604,7 +604,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
       return 0;
     }
 }
@@ -823,7 +823,7 @@ gsl_conv_to_float (GslWaveFormatType format,
       while (u32dest < u32bound);
       break;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
     }
 }
 
@@ -1030,7 +1030,7 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
       return 0;
     }
 }
@@ -1261,7 +1261,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
       return 0;
     }
 }
@@ -1430,7 +1430,7 @@ gsl_conv_to_double (GslWaveFormatType format,
       while (u32dest < u32bound);
       break;
     default:
-      g_assert_not_reached ();
+      RAPICORN_ASSERT_UNREACHED();
     }
 }
 

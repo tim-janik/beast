@@ -161,7 +161,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      }
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
-	    g_assert (n_vectors > 0);
+	    assert (n_vectors > 0);
 	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    __m128 min_m = ivalues_m[0];
@@ -213,7 +213,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
           square_sum += ivalues[upos] * ivalues[upos];
 	/* n_vectors must be >= 1 if n_values was > 8 */
         n_vectors = (n_values - upos) / 4;
-	g_assert (n_vectors > 0);
+	assert (n_vectors > 0);
         /* loop while ivalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	__m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
@@ -256,7 +256,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      }
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
-	    g_assert (n_vectors > 0);
+	    assert (n_vectors > 0);
 	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    n_vectors = (n_values - upos) / 4;

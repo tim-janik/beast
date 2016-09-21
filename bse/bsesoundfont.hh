@@ -24,11 +24,11 @@ struct BseSoundFont : BseContainer {
 struct BseSoundFontClass : BseContainerClass
 {};
 
-BseErrorType    bse_sound_font_load_blob	(BseSoundFont       *sound_font,
+Bse::Error      bse_sound_font_load_blob	(BseSoundFont       *sound_font,
 						 BseStorageBlob     *blob,
 						 gboolean            init_presets);
 void		bse_sound_font_unload           (BseSoundFont       *sound_font);
-BseErrorType    bse_sound_font_reload           (BseSoundFont       *sound_font);
+Bse::Error      bse_sound_font_reload           (BseSoundFont       *sound_font);
 
 G_END_DECLS
 

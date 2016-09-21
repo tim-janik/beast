@@ -53,7 +53,7 @@ void
 _gsl_init_data_caches (void)
 {
   static gboolean initialized = FALSE;
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized++;
   RAPICORN_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
 }
@@ -63,11 +63,11 @@ gsl_data_cache_new (GslDataHandle *dhandle,
 {
   guint node_size = CONFIG_NODE_SIZE () / sizeof (GslDataType);
   GslDataCache *dcache;
-  g_return_val_if_fail (dhandle != NULL, NULL);
-  g_return_val_if_fail (padding > 0, NULL);
-  g_return_val_if_fail (dhandle->name != NULL, NULL);
-  g_assert (node_size == sfi_alloc_upper_power2 (node_size));
-  g_return_val_if_fail (padding < node_size / 2, NULL);
+  assert_return (dhandle != NULL, NULL);
+  assert_return (padding > 0, NULL);
+  assert_return (dhandle->name != NULL, NULL);
+  assert (node_size == sfi_alloc_upper_power2 (node_size));
+  assert_return (padding < node_size / 2, NULL);
   /* allocate new closed dcache if necessary */
   dcache = sfi_new_struct (GslDataCache, 1);
   new (&dcache->mutex) Bse::Mutex();
@@ -89,14 +89,14 @@ gsl_data_cache_new (GslDataHandle *dhandle,
 void
 gsl_data_cache_open (GslDataCache *dcache)
 {
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (dcache->ref_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (dcache->ref_count > 0);
   dcache->mutex.lock();
   if (!dcache->open_count)
     {
-      BseErrorType error;
+      Bse::Error error;
       error = gsl_data_handle_open (dcache->dhandle);
-      if (error)
+      if (error != 0)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
 	  sfi_diag ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, bse_error_blurb (error));
@@ -116,9 +116,9 @@ void
 gsl_data_cache_close (GslDataCache *dcache)
 {
   gboolean need_unref;
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (dcache->ref_count > 0);
-  g_return_if_fail (dcache->open_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (dcache->ref_count > 0);
+  assert_return (dcache->open_count > 0);
   dcache->mutex.lock();
   dcache->open_count--;
   need_unref = !dcache->open_count;
@@ -134,8 +134,8 @@ gsl_data_cache_close (GslDataCache *dcache)
 GslDataCache*
 gsl_data_cache_ref (GslDataCache *dcache)
 {
-  g_return_val_if_fail (dcache != NULL, NULL);
-  g_return_val_if_fail (dcache->ref_count > 0, NULL);
+  assert_return (dcache != NULL, NULL);
+  assert_return (dcache->ref_count > 0, NULL);
   /* we might get invoked with global_dcache_spinlock locked */
   dcache->mutex.lock();
   dcache->ref_count++;
@@ -146,8 +146,8 @@ static void
 dcache_free (GslDataCache *dcache)
 {
   guint i;
-  g_return_if_fail (dcache->ref_count == 0);
-  g_return_if_fail (dcache->open_count == 0);
+  assert_return (dcache->ref_count == 0);
+  assert_return (dcache->open_count == 0);
   gsl_data_handle_unref (dcache->dhandle);
   for (i = 0; i < dcache->n_nodes; i++)
     {
@@ -164,12 +164,12 @@ dcache_free (GslDataCache *dcache)
 void
 gsl_data_cache_unref (GslDataCache *dcache)
 {
-  g_return_if_fail (dcache != NULL);
+  assert_return (dcache != NULL);
  restart:
-  g_return_if_fail (dcache->ref_count > 0);
+  assert_return (dcache->ref_count > 0);
   if (dcache->ref_count == 1)	/* possible destruction, need global lock */
     {
-      g_return_if_fail (dcache->open_count == 0);
+      assert_return (dcache->open_count == 0);
       global_dcache_spinlock.lock();
       dcache->mutex.lock();
       if (dcache->ref_count != 1)
@@ -339,10 +339,10 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 {
   GslDataCacheNode **node_p, *node;
   guint insertion_pos;
-  g_return_val_if_fail (dcache != NULL, NULL);
-  g_return_val_if_fail (dcache->ref_count > 0, NULL);
-  g_return_val_if_fail (dcache->open_count > 0, NULL);
-  g_return_val_if_fail (offset < gsl_data_handle_length (dcache->dhandle), NULL);
+  assert_return (dcache != NULL, NULL);
+  assert_return (dcache->ref_count > 0, NULL);
+  assert_return (dcache->open_count > 0, NULL);
+  assert_return (offset < gsl_data_handle_length (dcache->dhandle), NULL);
   dcache->mutex.lock();
   node_p = data_cache_lookup_nextmost_node_L (dcache, offset);
   if (node_p)
@@ -372,7 +372,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	    while (!node->data)
 	      global_dcache_cond_node_filled.wait (dcache->mutex);
 	  dcache->mutex.unlock();
-	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
+	  /* printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 	  if (rejuvenate_node)
 	    {
 	      global_dcache_spinlock.lock(); /* different lock */
@@ -384,7 +384,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
       insertion_pos = NODEP_INDEX (dcache, node_p);	/* insert before neighbour */
       if (offset > node->offset)			/* insert after neighbour */
 	insertion_pos += 1;
-      /* g_printerr ("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
+      /* printerr ("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
     }
   else
     insertion_pos = 0;	/* insert at start */
@@ -403,7 +403,7 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   guint i, rejuvenate, size;
   guint n_freed = 0;
 
-  g_return_val_if_fail (dcache != NULL, TRUE);
+  assert_return (dcache != NULL, TRUE);
 
   /* it doesn't make sense to free nodes below the jitter that
    * AGE_EPSILON attempts to prevent.
@@ -414,8 +414,8 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
 
   rejuvenate = dcache->max_age - max_lru;
   if (0)
-    g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
-	     dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
+    printout ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
+              dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
   size = dcache->node_size + (dcache->padding << 1);
   slot_p = NULL;
   for (i = 0; i < dcache->n_nodes; i++)
@@ -451,7 +451,7 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
       global_dcache_spinlock.unlock();
     }
   if (0)
-    g_printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
+    printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
 		n_freed, n_freed * CONFIG_NODE_SIZE (),
 		global_dcache_n_aged_nodes * CONFIG_NODE_SIZE (),
 		dcache->n_nodes);
@@ -463,12 +463,12 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 {
   GslDataCacheNode **node_p;
   gboolean check_cache;
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (node->ref_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (node != NULL);
+  assert_return (node->ref_count > 0);
   dcache->mutex.lock();
   node_p = data_cache_lookup_nextmost_node_L (dcache, node->offset);
-  g_assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
+  assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
   node->ref_count -= 1;
   check_cache = !node->ref_count;
   if (!node->ref_count &&
@@ -523,7 +523,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
             }
 #if DEBUG_TRASHING
           if (dcache->dhandle->open_count)
-            g_printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
+            printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
                         dcache->dhandle, gsl_data_handle_name (dcache->dhandle),
                         dcache->high_persistency,
                         -(gint) node_size * (debug_gnaged - global_dcache_n_aged_nodes),
@@ -540,7 +540,7 @@ void
 gsl_data_cache_free_olders (GslDataCache *dcache,
 			    guint         max_age)
 {
-  g_return_if_fail (dcache != NULL);
+  assert_return (dcache != NULL);
   dcache->mutex.lock();
   bool needs_unlock = data_cache_free_olders_Lunlock (dcache, max_age);
   if (needs_unlock)
@@ -551,7 +551,7 @@ gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
 			     guint          min_padding)
 {
   SfiRing *ring;
-  g_return_val_if_fail (dhandle != NULL, NULL);
+  assert_return (dhandle != NULL, NULL);
   global_dcache_spinlock.lock();
   for (ring = global_dcache_list; ring; ring = sfi_ring_walk (ring, global_dcache_list))
     {

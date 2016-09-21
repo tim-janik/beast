@@ -1,4 +1,4 @@
-# launchers - Beast program starters
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
@@ -8,16 +8,16 @@ AM_CXXFLAGS += $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 #
 # programs to build
 #
-bin_PROGRAMS   = beast bsescm
+bin_PROGRAMS   = beast
 beast_SOURCES  = suidmain.c beaststart.c
-bsescm_SOURCES = suidmain.c bseshstart.c
 EXTRA_DIST    += suidmain.h
+# shell_SOURCES = suidmain.c bseshstart.c
 
 #
-# make beast and bsescm wrapper suid to allow renicing
+# make beast wrapper suid to allow renicing
 #
 install-exec-hook:	# runs after install-binPROGRAMS
 	true \
-	&& ( chown root $(DESTDIR)$(bindir)/beast $(DESTDIR)$(bindir)/bsescm   \
-	&&   chmod 4755 $(DESTDIR)$(bindir)/beast $(DESTDIR)$(bindir)/bsescm ) \
-	|| ( echo "*** WARNING *** beast and bsescm need to be installed as root to allow renicing ***" && sleep 5 )
+	&& ( chown root $(DESTDIR)$(bindir)/beast   \
+	&&   chmod 4755 $(DESTDIR)$(bindir)/beast ) \
+	|| ( echo "*** WARNING *** $(DESTDIR)$(bindir)/beast needs to be installed as root to allow renicing ***" && sleep 5 )

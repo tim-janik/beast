@@ -128,7 +128,7 @@ bse_glue_context_intern (const char *user)
   };
   BContext *bcontext;
 
-  g_return_val_if_fail (user != NULL, NULL);
+  assert_return (user != NULL, NULL);
   if (!quark_original_enum)
     {
       quark_original_enum = g_quark_from_static_string ("bse-glue-original-enum");
@@ -223,7 +223,7 @@ bcontext_queue_signal (BContext     *bcontext,
 {
   SfiSeq *seq;
 
-  g_return_if_fail (args != NULL && args->n_elements > 0 && SFI_VALUE_HOLDS_PROXY (args->elements));
+  assert_return (args != NULL && args->n_elements > 0 && SFI_VALUE_HOLDS_PROXY (args->elements));
 
   seq = sfi_seq_new ();
   sfi_seq_append_int (seq, SFI_GLUE_EVENT_NOTIFY);
@@ -284,7 +284,7 @@ bglue_value_from_serializable (const GValue *svalue,
   if (!dtype || !sfi_value_transform (svalue, value))
     {
       if (0)
-        g_printerr ("from=%s to=%s, transformable=%u\n",
+        printerr ("from=%s to=%s, transformable=%u\n",
                     g_type_name (G_VALUE_TYPE (svalue)),
                     g_type_name (dtype),
                     g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));
@@ -301,8 +301,8 @@ bse_value_from_sfi (const GValue *value,
 {
   GValue *rvalue;
 
-  g_return_val_if_fail (SFI_IS_VALUE (value), NULL);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (SFI_IS_VALUE (value), NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
 
   rvalue = bglue_value_from_serializable (value, pspec);
   return rvalue ? rvalue : sfi_value_clone_shallow (value);
@@ -357,7 +357,7 @@ bglue_value_to_serializable (const GValue *svalue)
 GValue*
 bse_value_to_sfi (const GValue *value)
 {
-  g_return_val_if_fail (G_IS_VALUE (value), NULL);
+  assert_return (G_IS_VALUE (value), NULL);
 
   return bglue_value_to_serializable (value);
 }
@@ -375,8 +375,8 @@ bse_glue_boxed_to_value (GType    boxed_type,
    * by the GC.
    */
 
-  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), NULL);
-  g_return_val_if_fail (boxed != NULL, NULL);
+  assert_return (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), NULL);
+  assert_return (boxed != NULL, NULL);
 
   b2rec = (BseGlueBoxedToRec) g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToRec"));
   b2seq = (BseGlueBoxedToSeq) g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToSeq"));
@@ -403,7 +403,7 @@ bse_glue_boxed_to_value (GType    boxed_type,
 GType
 bse_glue_pspec_get_original_enum (GParamSpec *pspec)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
   return (GType) g_param_spec_get_qdata (pspec, quark_original_enum);
 }
 
@@ -472,8 +472,8 @@ bse_glue_enum_index (GType enum_type,
   GEnumValue *ev;
   uint index;
 
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), G_MAXINT);
-  g_return_val_if_fail (G_TYPE_IS_DERIVED (enum_type), G_MAXINT);
+  assert_return (G_TYPE_IS_ENUM (enum_type), G_MAXINT);
+  assert_return (G_TYPE_IS_DERIVED (enum_type), G_MAXINT);
 
   eclass = (GEnumClass*) g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
@@ -532,7 +532,7 @@ bglue_list_proc_names (SfiGlueContext *context)
 
   p = g_new (char*, cseq->n_cats + 1);
   for (i = 0; i < cseq->n_cats; i++)
-    p[i] = g_strdup (cseq->cats[i]->type);
+    p[i] = g_strdup (cseq->cats[i]->otype);
   p[i] = NULL;
   bse_category_seq_free (cseq);
 
@@ -558,8 +558,8 @@ bglue_list_method_names (SfiGlueContext *context,
   p = g_new (char*, cseq->n_cats + 1);
   n_procs = 0;
   for (i = 0; i < cseq->n_cats; i++)
-    if (strncmp (cseq->cats[i]->type, prefix, l) == 0)
-      p[n_procs++] = g_strdup (cseq->cats[i]->type + l);
+    if (strncmp (cseq->cats[i]->otype, prefix, l) == 0)
+      p[n_procs++] = g_strdup (cseq->cats[i]->otype + l);
   p[n_procs] = NULL;
   bse_category_seq_free (cseq);
   g_free (prefix);
@@ -595,7 +595,7 @@ bglue_iface_children (SfiGlueContext *context,
   return childnames;
 }
 
-static BseErrorType
+static Bse::Error
 bglue_marshal_proc (void              *marshal_data,
 		    BseProcedureClass *proc,
 		    const GValue      *ivalues,
@@ -618,7 +618,7 @@ bglue_exec_proc (SfiGlueContext *context,
       GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
       GSList *ilist = NULL, *olist = NULL, *clearlist = NULL;
       uint i, sl = sfi_seq_length (params);
-      BseErrorType error;
+      Bse::Error error;
 
       for (i = 0; i < proc->n_in_pspecs; i++)
 	{
@@ -655,7 +655,7 @@ bglue_exec_proc (SfiGlueContext *context,
 	sfi_value_free ((GValue*) ilist->data);
       g_slist_free (clearlist);
 
-      if (error)
+      if (error != 0)
         g_warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
@@ -1026,7 +1026,8 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	  else
 	    p->closures = slist->next;
 	  g_slist_free_1 (slist);
-	  g_signal_handler_disconnect (item, bclosure->handler_id);
+          if (g_signal_handler_is_connected (item, bclosure->handler_id))
+            g_signal_handler_disconnect (item, bclosure->handler_id);
 	  g_closure_invalidate (closure);
 	  g_closure_unref (closure);
 	  return FALSE;

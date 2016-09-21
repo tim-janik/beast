@@ -69,7 +69,7 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   const gchar            *choice_name,
 					   gpointer                choice_id,
 					   const gchar		  *icon_stock_id,
-					   BseIcon		  *bse_icon);
+					   BseIc0n		  *bse_icon);
 
 G_END_DECLS
 

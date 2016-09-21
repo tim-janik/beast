@@ -163,10 +163,10 @@ add_plates (BstRackTable *rtable)
 	{
 	  cover = make_cover (GTK_WIDGET (rtable));
 	  plate_list = g_slist_prepend (plate_list, cover);
-	  g_assert (k < GTK_TABLE (rtable)->ncols);
-	  g_assert (l < GTK_TABLE (rtable)->nrows);
-	  g_assert (k + m <= GTK_TABLE (rtable)->ncols);
-	  g_assert (l + n <= GTK_TABLE (rtable)->nrows);
+	  assert (k < GTK_TABLE (rtable)->ncols);
+	  assert (l < GTK_TABLE (rtable)->nrows);
+	  assert (k + m <= GTK_TABLE (rtable)->ncols);
+	  assert (l + n <= GTK_TABLE (rtable)->nrows);
 	  bst_rack_widget_set_info (cover, k, l, m, n);
 	  gtk_container_add (GTK_CONTAINER (rtable), cover);
 	}

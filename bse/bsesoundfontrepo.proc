@@ -27,7 +27,7 @@
 
 
 /* --- auxlillary functions --- */
-static BseErrorType
+static Bse::Error
 load_file (BseSoundFontRepo *sfrepo,
 	   const gchar      *file_name,
            BseSoundFont    **sound_font_p)
@@ -38,9 +38,9 @@ load_file (BseSoundFontRepo *sfrepo,
   bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
 
   BseStorageBlob *blob = bse_storage_blob_new_from_file (file_name, FALSE);
-  BseErrorType error = bse_sound_font_load_blob (sound_font, blob, TRUE);
+  Bse::Error error = bse_sound_font_load_blob (sound_font, blob, TRUE);
   bse_storage_blob_unref (blob);
-  if (error == BSE_ERROR_NONE)
+  if (error == Bse::Error::NONE)
     {
       *sound_font_p = sound_font;
     }
@@ -65,7 +65,7 @@ METHOD (BseSoundFontRepo, load-file) {
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to import sound fonts from",
 			    NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -76,12 +76,12 @@ BODY (BseProcedureClass *proc,
   BseSoundFontRepo *self    = (BseSoundFontRepo*) bse_value_get_object (in_values++);
   const gchar *file_name    = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
-  BseErrorType error;
+  Bse::Error error;
   BseSoundFont *sound_font;
 
   /* check parameters */
   if (!BSE_IS_SOUND_FONT_REPO (self) || !file_name)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   if (BSE_SOURCE_PREPARED (self))
     {
@@ -90,7 +90,7 @@ BODY (BseProcedureClass *proc,
        * lock would be locked for a very long time, which would stall
        * the audio production ...
        */
-      error = BSE_ERROR_SOURCE_BUSY;
+      error = Bse::Error::SOURCE_BUSY;
     }
   else
     {
@@ -102,9 +102,9 @@ BODY (BseProcedureClass *proc,
    }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
-  return BSE_ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSoundFontRepo, remove-sound-font) {
@@ -121,19 +121,19 @@ METHOD (BseSoundFontRepo, remove-sound-font) {
   BseSoundFontRepo *self = (BseSoundFontRepo*) bse_value_get_object (in_values++);
   BseItem *child         = (BseItem*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
-  BseErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_SOUND_FONT_REPO (self) || !BSE_IS_SOUND_FONT (child) ||
       child->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   if (BSE_SOURCE_PREPARED (self))
     {
       /* Don't allow unloading sound fonts which could be required by engine
        * modules in the DSP thread currently producing audio output.
        */
-      error = BSE_ERROR_SOURCE_BUSY;
+      error = Bse::Error::SOURCE_BUSY;
     }
   else
     {
@@ -148,7 +148,7 @@ METHOD (BseSoundFontRepo, remove-sound-font) {
       /* done */
       bse_item_undo_close (ustack);
 
-      error = BSE_ERROR_NONE;
+      error = Bse::Error::NONE;
     }
 
   return error;

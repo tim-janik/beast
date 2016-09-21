@@ -2,7 +2,7 @@
 #include "bsegconfig.hh"
 #include "bseserver.hh"
 #include "bsepcmdevice.hh"	/* for frequency alignment */
-#include "data/config-paths.h"
+#include "../configure.h"
 #include <sys/types.h>
 #include <regex.h>
 
@@ -22,7 +22,7 @@ _bse_gconfig_init (void)
   GValue *value;
   SfiRec *rec;
 
-  g_return_if_fail (bse_global_config == NULL);
+  assert_return (bse_global_config == NULL);
 
   /* global config record description */
   pspec_global_config = sfi_pspec_rec ("bse-preferences", NULL, NULL,
@@ -45,7 +45,7 @@ _bse_gconfig_init (void)
 static const char*
 intern_path_user_data ()
 {
-  return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), "", NULL);
+  return g_intern_strconcat (Bse::installpath (Bse::INSTALLPATH_USER_DATA).c_str(), "", NULL);
 }
 
 static const char*
@@ -80,7 +80,7 @@ static const Substitutions subs[] = {
 static char*
 expand_sub14 (char *gstr)
 {
-  g_return_val_if_fail (gstr, gstr);
+  assert_return (gstr, gstr);
   static regex_t preg = { 0, };
   int rc;
   if (UNLIKELY (!preg.re_nsub))
@@ -89,7 +89,7 @@ expand_sub14 (char *gstr)
       // UTF-8: "\xef\xbf\xb9\x1a\xef\xbf\xba{{...}}\xef\xbf\xbb";
       const char *pattern = "\357\277\271\357\277\272\\{\\{([^{}]*)\\}\\}\357\277\273";
       rc = regcomp (&preg, pattern, REG_EXTENDED); // FIXME: should be atomic
-      g_assert (rc == 0 && preg.re_nsub);
+      assert (rc == 0 && preg.re_nsub);
       // if non-static: regfree (&preg);
     }
   regmatch_t pm[2] = { { 0, }, };
@@ -146,7 +146,7 @@ set_gconfig (BseGConfig *gconfig)
       GValue *v = sfi_value_rec (prec);
       GString *gstring = g_string_new (NULL);
       sfi_value_store_param (v, gstring, pspec_global_config, 2);
-      g_print ("CONFIG:\n%s\n", gstring->str);
+      printout ("CONFIG:\n%s\n", gstring->str);
       g_string_free (gstring, TRUE);
       sfi_value_free (v);
       sfi_rec_unref (prec);
@@ -156,7 +156,7 @@ set_gconfig (BseGConfig *gconfig)
 void
 bse_gconfig_apply (SfiRec *rec)
 {
-  g_return_if_fail (rec != NULL);
+  assert_return (rec != NULL);
 
   if (!bse_gconfig_locked ())
     {
@@ -186,7 +186,7 @@ bse_gconfig_lock (void)
 void
 bse_gconfig_unlock (void)
 {
-  g_return_if_fail (gconfig_lock_count > 0);
+  assert_return (gconfig_lock_count > 0);
   if (gconfig_lock_count)
     {
       gconfig_lock_count--;

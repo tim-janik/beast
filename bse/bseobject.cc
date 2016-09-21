@@ -3,13 +3,52 @@
 
 #include "bseexports.hh"
 #include "bsestorage.hh"
-#include "bseparasite.hh"
 #include "bsecategories.hh"
 #include "bsegconfig.hh"
 #include "bsesource.hh"		/* debug hack */
 #include <string.h>
 
 #define LDEBUG(...)     BSE_KEY_DEBUG ("leaks", __VA_ARGS__)
+
+namespace Bse {
+ObjectImpl::ObjectImpl (BseObject *bobj) :
+  gobject_ (bobj)
+{
+  assert (gobject_);
+  assert (gobject_->cxxobject_ == NULL);
+  g_object_ref (gobject_);
+  gobject_->cxxobject_ = this;
+}
+
+ObjectImpl::~ObjectImpl ()
+{
+  assert (gobject_->cxxobject_ == this);
+  gobject_->cxxobject_ = NULL;
+  g_object_unref (gobject_);
+  // ObjectImpl keeps BseObject alive until it is destroyed
+  // BseObject keeps ObjectImpl alive until dispose()
+}
+
+std::string
+ObjectImpl::debug_name ()
+{
+  return bse_object_debug_name (this->as<BseObject*>());
+}
+
+int64_t
+ObjectImpl::proxy_id ()
+{
+  BseObject *bo = *this;
+  return bo->unique_id;
+}
+
+void
+ObjectImpl::changed (const String &what)
+{
+  sig_changed.emit (what);
+}
+
+} // Bse
 
 enum
 {
@@ -20,7 +59,7 @@ enum
 enum
 {
   SIGNAL_RELEASE,
-  SIGNAL_ICON_CHANGED,
+  SIGNAL_IC0N_CHANGED,
   SIGNAL_LAST
 };
 
@@ -120,9 +159,14 @@ object_unames_ht_insert (BseObject *object)
   g_hash_table_insert (object_unames_ht, BSE_OBJECT_UNAME (object_slist->data), object_slist);
 }
 
+static __thread uint in_bse_object_new = 0;
+
 static void
 bse_object_init (BseObject *object)
 {
+  assert (in_bse_object_new);
+  object->cxxobject_ = NULL;
+  object->cxxobjref_ = NULL;
   object->flags = 0;
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
@@ -162,6 +206,13 @@ bse_object_do_dispose (GObject *gobject)
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 
   BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
+
+  if (object->cxxobjref_)
+    {
+      object->cxxobjref_->reset();
+      delete object->cxxobjref_;
+      object->cxxobjref_ = NULL;
+    }
 }
 
 static void
@@ -267,9 +318,9 @@ bse_object_class_add_grouped_property (BseObjectClass *klass,
                                        guint	       property_id,
                                        GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (property_id > 0);
+  assert_return (BSE_IS_OBJECT_CLASS (klass));
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (property_id > 0);
 
   g_object_class_install_property (G_OBJECT_CLASS (klass), property_id, pspec);
 }
@@ -280,9 +331,9 @@ bse_object_class_add_property (BseObjectClass *klass,
 			       guint	       property_id,
 			       GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (sfi_pspec_get_group (pspec) == NULL);
+  assert_return (BSE_IS_OBJECT_CLASS (klass));
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (sfi_pspec_get_group (pspec) == NULL);
 
   sfi_pspec_set_group (pspec, property_group);
   bse_object_class_add_grouped_property (klass, property_id, pspec);
@@ -298,9 +349,9 @@ bse_object_marshal_signal (GClosure       *closure,
 {
   gpointer arg0, argN;
 
-  g_return_if_fail (return_value == NULL);
-  g_return_if_fail (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
-  g_return_if_fail (G_VALUE_HOLDS_OBJECT (param_values));
+  assert_return (return_value == NULL);
+  assert_return (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
+  assert_return (G_VALUE_HOLDS_OBJECT (param_values));
 
   arg0 = g_value_get_object (param_values);
   if (G_CCLOSURE_SWAP_DATA (closure))
@@ -327,9 +378,9 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -354,9 +405,9 @@ bse_object_class_add_asignal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -381,9 +432,9 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -404,10 +455,10 @@ bse_object_lock (gpointer _object)
   BseObject *object = (BseObject*) _object;
   GObject *gobject = (GObject*) _object;
 
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (gobject->ref_count > 0);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (gobject->ref_count > 0);
 
-  g_assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
+  assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
 
   if (!object->lock_count)
     {
@@ -427,8 +478,8 @@ bse_object_unlock (gpointer _object)
 {
   BseObject *object = (BseObject*) _object;
 
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (object->lock_count > 0);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (object->lock_count > 0);
 
   object->lock_count -= 1;
 
@@ -444,10 +495,10 @@ bse_object_unlock (gpointer _object)
     }
 }
 
-gpointer
+BseObject*
 bse_object_from_id (guint unique_id)
 {
-  return sfi_ustore_lookup (object_id_ustore, unique_id);
+  return (BseObject*) sfi_ustore_lookup (object_id_ustore, unique_id);
 }
 
 GList*
@@ -456,7 +507,7 @@ bse_objects_list_by_uname (GType	type,
 {
   GList *object_list = NULL;
 
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
+  assert_return (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
 
   if (object_unames_ht)
     {
@@ -485,7 +536,7 @@ list_objects (gpointer key,
 GList* /* list_free result */
 bse_objects_list (GType	  type)
 {
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
+  assert_return (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
   if (object_unames_ht)
     {
       gpointer data[2] = { NULL, (gpointer) type, };
@@ -521,17 +572,17 @@ bse_object_editable_property (gpointer        object,
 void
 bse_object_notify_icon_changed (BseObject *object)
 {
-  g_return_if_fail (BSE_IS_OBJECT (object));
+  assert_return (BSE_IS_OBJECT (object));
 
-  g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
+  g_signal_emit (object, object_signals[SIGNAL_IC0N_CHANGED], 0);
 }
 
-BseIcon*
+BseIc0n*
 bse_object_get_icon (BseObject *object)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
 
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  assert_return (BSE_IS_OBJECT (object), NULL);
 
   g_object_ref (object);
 
@@ -542,14 +593,14 @@ bse_object_get_icon (BseObject *object)
   return icon;
 }
 
-static BseIcon*
+static BseIc0n*
 bse_object_do_get_icon (BseObject *object)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
 
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  assert_return (BSE_IS_OBJECT (object), NULL);
 
-  icon = (BseIcon*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
+  icon = (BseIc0n*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
   if (!icon)
     {
       BseCategorySeq *cseq;
@@ -562,8 +613,8 @@ bse_object_do_get_icon (BseObject *object)
       for (i = 0; i < cseq->n_cats; i++)
 	if (cseq->cats[i]->icon)
 	  {
-	    icon = bse_icon_copy_shallow (cseq->cats[i]->icon);
-	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_icon_free);
+	    icon = bse_ic0n_copy_shallow (cseq->cats[i]->icon);
+	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_ic0n_free);
 	    break;
 	  }
       bse_category_seq_free (cseq);
@@ -581,7 +632,7 @@ void
 bse_object_restore_start (BseObject  *object,
                           BseStorage *storage)
 {
-  g_return_if_fail (BSE_IS_STORAGE (storage));
+  assert_return (BSE_IS_STORAGE (storage));
   if (!BSE_OBJECT_IN_RESTORE (object))
     {
       BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
@@ -748,7 +799,7 @@ bse_object_remove_reemit (gpointer     src_object,
       e = (EClosure*) g_hash_table_lookup (eclosures_ht, &key);
       if (e)
 	{
-	  g_return_if_fail (e->erefs > 0);
+	  assert_return (e->erefs > 0);
 
 	  e->erefs--;
 	  if (!e->erefs)
@@ -830,7 +881,7 @@ bse_object_class_init (BseObjectClass *klass)
 
   object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release",
 								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
+  object_signals[SIGNAL_IC0N_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
 								     G_TYPE_NONE, 0);
 }
 
@@ -855,4 +906,96 @@ BSE_BUILTIN_TYPE (BseObject)
                                      "BSE Object Hierarchy base type",
                                      __FILE__, __LINE__,
                                      &object_info);
+}
+
+// == BseObject -> C++ class Glue ==
+GObject*
+bse_object_new (GType object_type, const gchar *first_property_name, ...)
+{
+  assert_return (G_TYPE_IS_OBJECT (object_type), NULL);
+  va_list var_args;
+  va_start (var_args, first_property_name);
+  GObject *object = bse_object_new_valist (object_type, first_property_name, var_args);
+  va_end (var_args);
+  return object;
+}
+
+#include "bseserver.hh"
+#include "bseproject.hh"
+#include "bsepcmwriter.hh"
+#include "bseeditablesample.hh"
+#include "bsesong.hh"
+#include "bsecsynth.hh"
+#include "bsetrack.hh"
+#include "bsecontextmerger.hh"
+#include "bsewave.hh"
+#include "bsemidinotifier.hh"
+#include "bsemidisynth.hh"
+#include "bsewaverepo.hh"
+#include "bsebus.hh"
+#include "bsesnet.hh"
+#include "bsepart.hh"
+
+GObject*
+bse_object_new_valist (GType object_type, const gchar *first_property_name, va_list var_args)
+{
+  if (!g_type_is_a (object_type, BSE_TYPE_OBJECT)) // e.g. BsePlugin
+    return g_object_new_valist (object_type, first_property_name, var_args);
+  // object_type is derived from BSE_TYPE_OBJECT from here on
+  in_bse_object_new++;
+  BseObject *object = (BseObject*) g_object_new_valist (object_type, first_property_name, var_args);
+  in_bse_object_new--;
+  assert (object->cxxobject_ == NULL);
+  assert (object->cxxobjref_ == NULL);
+  Bse::ObjectImpl *cxxo;
+  if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
+    cxxo = new Bse::ServerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_PCM_WRITER))
+    cxxo = new Bse::PcmWriterImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_PROJECT))
+    cxxo = new Bse::ProjectImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SONG))
+    cxxo = new Bse::SongImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_EDITABLE_SAMPLE))
+    cxxo = new Bse::EditableSampleImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE))
+    cxxo = new Bse::WaveImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE_REPO))
+    cxxo = new Bse::WaveRepoImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_MIDI_NOTIFIER))
+    cxxo = new Bse::MidiNotifierImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_MIDI_SYNTH))
+    cxxo = new Bse::MidiSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CSYNTH))
+    cxxo = new Bse::CSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SNET))
+    cxxo = new Bse::SNetImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SUPER))
+    cxxo = new Bse::SuperImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
+    cxxo = new Bse::ContainerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_TRACK))
+    cxxo = new Bse::TrackImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTEXT_MERGER))
+    cxxo = new Bse::ContextMergerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_PART))
+    cxxo = new Bse::PartImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_BUS))
+    cxxo = new Bse::BusImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SUB_SYNTH))
+    cxxo = new Bse::SubSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))
+    cxxo = new Bse::SourceImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_ITEM))
+    cxxo = new Bse::ItemImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))
+    cxxo = new Bse::ObjectImpl (object);
+  else
+    assert (!"reached");
+  assert (object->cxxobject_ == cxxo);
+  assert (object->cxxobjref_ == NULL);
+  object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
+  assert (cxxo == *object);
+  assert (object == *cxxo);
+  return object;
 }

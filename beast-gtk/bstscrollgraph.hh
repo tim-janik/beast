@@ -20,8 +20,8 @@ typedef struct _BstScrollgraphClass BstScrollgraphClass;
 struct _BstScrollgraph
 {
   GtkBin          parent_instance;
-  BstDirection    direction;
-  guint           window_size : 24;
+  Bst::Direction  direction;
+  uint            window_size;
   guint           flip : 1;
   guint           delete_toplevel : 1;  /* upon proxy::release */
   guint           mix_freq;
@@ -38,8 +38,7 @@ struct _BstScrollgraph
 struct _BstScrollgraphClass
 {
   GtkBinClass parent_class;
-  void  (*resize_values) (BstScrollgraph *self,
-                          BstDirection    direction);
+  void  (*resize_values) (BstScrollgraph *self, Bst::Direction direction);
 };
 
 /* --- public methods --- */

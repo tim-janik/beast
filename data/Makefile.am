@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -12,12 +12,12 @@ public_images = $(strip         \
 	beast-splash.png	\
 )
 images_DATA = ${public_images}
-imagesdir = ${beastimagesdir}
+imagesdir = $(datadir)/images
 EXTRA_DIST += $(private_images) $(public_images)
 
 # generate image header files
 noinst_build_sources = beast-images.h
-beast-images.h:	Makefile ${public_images}
+beast-images.h: ${public_images}
 	cd . \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \
 	&& echo >> xgen-bstih \
@@ -28,22 +28,26 @@ beast-images.h:	Makefile ${public_images}
 	&& echo "/* Generated data ends here */" >> xgen-bstih \
 	&& (cp xgen-bstih $@) \
 	&& rm -f xgen-bstih
+noinst_DATA = $(noinst_build_sources)
+CLEANFILES += $(noinst_build_sources)
 
 
 # install pkg-config files
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bse.pc # sfi.pc
-$(pkgconfig_DATA): $(top_builddir)/config.status
-CLEANFILES += bse.pc sfi.pc
-EXTRA_DIST += bse.pc.in # sfi.pc.in
+pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
+bse.pc: bse.pc.in $(top_builddir)/config.status
+	$(AM_V_GEN)
+	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
+EXTRA_DIST += bse.pc.in
+CLEANFILES += bse.pc
 
 # install .applications files
-dotapplicationsdir = $(datadir)/application-registry
+dotapplicationsdir = $(datarootdir)/application-registry
 dotapplications_DATA = beast.applications
 EXTRA_DIST += $(dotapplications_DATA)
 
 # install related pixmaps
-sharedpixmapsdir = $(datadir)/pixmaps
+sharedpixmapsdir = $(datarootdir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
@@ -63,7 +67,7 @@ $(INTLMERGE_CACHE): $(PODEPS)
 	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
 
 # generate and install .desktop file
-dotdesktopdir = $(datadir)/applications
+dotdesktopdir = $(datarootdir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 beast.desktop: beast.desktop.in
@@ -71,7 +75,7 @@ CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
-sharedmimedir = $(datadir)/mime
+sharedmimedir = $(datarootdir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
@@ -80,7 +84,7 @@ beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # generate and install .mime and .keys files
-mimedir = $(datadir)/mime-info
+mimedir = $(datarootdir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
@@ -92,34 +96,3 @@ install-data-hook:
 	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 uninstall-local: uninstall-sharedmimepackageDATA
 	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
-
-
-noinst_DATA = $(noinst_build_sources)
-CLEANFILES += $(noinst_build_sources)
-noinst_build_sources += config-paths.h
-config-paths.h: $(top_builddir)/config.status Makefile
-	cd . \
-	&& echo "/* Generated data from $< (by make $@) */" > xgen-cph \
-	&& echo >> xgen-cph \
-	&& echo "#define SFIDL_PATH_STDINC        \"${sfidlstdincdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_LADSPA          \"${bseladspapath}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_PLUGINS         \"${bseplugindir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_DRIVERS         \"${bsedriverdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_DEMOS           \"${bsedemodir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_SAMPLES         \"${bsesampledir}:${bseunversionedsampledir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_EFFECTS         \"${bseeffectdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_INSTRUMENTS     \"${bseinstrumentdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_SCRIPTS         \"${bsescriptdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_USER_DATA(dir)  \"${bseuserdatadir}\" dir" >> xgen-cph \
-	&& echo "#define BST_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_DOCS            \"${docdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_IMAGES          \"${beastimagesdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_KEYS            \"${beastkeysdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_SKINS           \"${beastskinsdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_PREFIX          \"${prefix}\"" >> xgen-cph \
-	&& echo >> xgen-cph \
-	&& echo "/* Generated data ends here */" >> xgen-cph \
-	&& (cp xgen-cph $@) \
-	&& rm -f xgen-cph

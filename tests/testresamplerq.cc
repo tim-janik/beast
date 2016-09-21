@@ -9,7 +9,6 @@
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 using Bse::Resampler::Resampler2;
 using Rapicorn::AlignedArray;
 using std::vector;
@@ -172,7 +171,7 @@ band_err (BseResampler2Precision p)
       case BSE_RESAMPLER2_PREC_96DB:    return -95;
       case BSE_RESAMPLER2_PREC_120DB:   return -120;
       case BSE_RESAMPLER2_PREC_144DB:   return -144;
-      default:                          g_assert_not_reached();
+      default:                          assert_unreached();
     }
 }
 
@@ -222,7 +221,7 @@ main (int argc, char **argv)
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   if (argc > 1)
     {
@@ -234,7 +233,7 @@ main (int argc, char **argv)
     }
   assert (options.rand_samples <= options.test_size / 2);
   assert (options.test_size >= 128);
-  g_print ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
+  printout ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
            options.test_size, options.rand_samples);
   run_tests ("FPU");
 

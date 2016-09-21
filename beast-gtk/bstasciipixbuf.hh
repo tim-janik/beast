@@ -2,7 +2,7 @@
 #ifndef __BST_ASCII_PIXBUF_H__
 #define __BST_ASCII_PIXBUF_H__
 
-#include <gtk/gtk.h>
+#include "bstutils.hh"
 
 #ifdef __cplusplus
 extern "C" {

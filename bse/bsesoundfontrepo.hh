@@ -55,7 +55,7 @@ struct BseSoundFontRepoClass : BseSuperClass
 
 /* --- prototypes --- */
 void	       bse_sound_font_repo_list_all_presets   (BseSoundFontRepo *sfrepo,
-						       BseItemSeq       *items);
+						       BseIt3mSeq       *items);
 fluid_synth_t *bse_sound_font_repo_lock_fluid_synth   (BseSoundFontRepo *sfrepo);
 void           bse_sound_font_repo_unlock_fluid_synth (BseSoundFontRepo *sfrepo);
 int	       bse_sound_font_repo_add_osc            (BseSoundFontRepo *sfrepo,

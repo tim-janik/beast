@@ -15,8 +15,8 @@ typedef void (*BstPlayBackNotify)	(gpointer	data,
 					 guint		pcm_position);
 typedef struct
 {
-  SfiProxy project;
-  SfiProxy snet;
+  Bse::ProjectH project;
+  Bse::SNetH    snet;
   SfiProxy speaker;
   SfiProxy wosc1, wosc2;
   SfiProxy constant;

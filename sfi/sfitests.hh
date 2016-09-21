@@ -8,7 +8,7 @@
 static void RAPICORN_UNUSED
 sfi_init_test (int *argcp, char **argv)
 {
-  sfi_init (argcp, argv, RAPICORN_PRETTY_FILE, Bse::cstrings_to_vector ("rapicorn-test-initialization=1", NULL));
+  sfi_init (argcp, argv, Bse::cstrings_to_vector ("rapicorn-test-initialization=1", NULL));
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
 }
@@ -46,7 +46,7 @@ sfi_init_test (int *argcp, char **argv)
   if (calibration_timer)                                                                \
     g_timer_start (calibration_timer);                                                  \
   GTimer *timer = g_timer_new();                                                        \
-  guint   dups = 1;                                                                     \
+  uint   dups = 1;                                                                      \
   /* birnet_thread_yield(); * on some OSes, this can stabelize the loop benches */	\
   do                                                                                    \
     {                                                                                   \
@@ -74,12 +74,12 @@ sfi_init_test (int *argcp, char **argv)
       g_timer_stop (calibration_timer);                                                 \
       double calibration_time_ms = g_timer_elapsed (calibration_timer, NULL) * 1000;    \
       g_timer_destroy (calibration_timer);                                              \
-      g_printerr ("TEST_CALIBRATION: this system can do %d dups in %.6f milliseconds\n",\
-                  (guint) (dups * factor), ms * factor);                                \
-      g_printerr ("TEST_CALIBRATION: calibration took %.6f milliseconds\n",		\
-                  calibration_time_ms); 						\
+      printerr ("TEST_CALIBRATION: this system can do %d dups in %.6f milliseconds\n",  \
+                guint (dups * factor), ms * factor);                                    \
+      printerr ("TEST_CALIBRATION: calibration took %.6f milliseconds\n",		\
+                calibration_time_ms); 						        \
     }                                                                                   \
-  dups = MAX ((uint) (dups * factor), 1);                                               \
+  dups = MAX (uint (dups * factor), 1);                                                 \
   dups;                                                                                 \
 })
 

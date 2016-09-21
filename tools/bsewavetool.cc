@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewavetool.hh"
-#include "topconfig.h"
 #include "bwtwave.hh"
+#include "../configure.h"
 #include <bse/bsemain.hh>	/* for bse_init_intern() */
 #include <bse/bseloader.hh>
 #include <bse/gslvorbis-enc.hh>
@@ -48,7 +48,7 @@ Command::Command (const char *command_name) :
 void
 Command::blurb (bool bshort)
 {
-  g_print ("\n");
+  printout ("\n");
   if (bshort)
     return;
 }
@@ -116,9 +116,9 @@ main (int   argc,
     }
 
   /* load wave file */
-  g_printerr ("LOAD: %s\n", input_file.c_str());
+  printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   if (!wave)
     {
       BseWaveFileInfo *winfo = bse_wave_file_info_load (input_file.c_str(), &error);
@@ -137,7 +137,7 @@ main (int   argc,
                       sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
                                    wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
                       if (skip_errors)
-                        error = BSE_ERROR_NONE;
+                        error = Bse::Error::NONE;
                       else
                         {
                           delete wave;
@@ -157,30 +157,30 @@ main (int   argc,
             {
               sfi_warning ("failed to load wave description from file \"%s\": %s (loader: %s)",
                            input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
-              error = BSE_ERROR_NONE;
+              error = Bse::Error::NONE;
             }
           bse_wave_file_info_unref (winfo);
         }
     }
-  if (!wave && !error)
-    error = BSE_ERROR_IO;       /* unknown */
-  if (error)
+  if (!wave && error == 0)
+    error = Bse::Error::IO;       /* unknown */
+  if (error != 0)
     {
       sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
       exit (1);
     }
 
   /* process */
-  g_printerr ("EXEC: %s\n", command_name.c_str());
+  printerr ("EXEC: %s\n", command_name.c_str());
   bool needs_saving = command->exec (wave);
 
   /* save */
   if (needs_saving)
     {
-      g_printerr ("SAVE: %s\n", output_file.c_str());
+      printerr ("SAVE: %s\n", output_file.c_str());
       wave->sort();
       error = wave->store (output_file);
-      if (error)
+      if (error != 0)
         {
           sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
           exit (1);
@@ -198,13 +198,13 @@ main (int   argc,
 static void
 wavetool_print_version (void)
 {
-  g_print ("bsewavetool version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
-  g_print ("Refer to beast --version for more version information.\n");
-  g_print ("bsewavetool comes with ABSOLUTELY NO WARRANTY.\n");
-  g_print ("You may redistribute copies of bsewavetool under the terms\n");
-  g_print ("of the GNU Lesser General Public License which can be found in\n");
-  g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.testbit.eu/.\n");
+  printout ("bsewavetool version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  printout ("Refer to beast --version for more version information.\n");
+  printout ("bsewavetool comes with ABSOLUTELY NO WARRANTY.\n");
+  printout ("You may redistribute copies of bsewavetool under the terms\n");
+  printout ("of the GNU Lesser General Public License which can be found in\n");
+  printout ("the BEAST source package. Sources, examples and contact\n");
+  printout ("information are available at http://beast.testbit.eu/.\n");
 }
 
 static void
@@ -218,20 +218,20 @@ wavetool_print_blurb (bool bshort)
    * The only exceptions are -o, -h and -v, which are global but short options,
    * since these are common practice.
    */
-  g_print ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
-  g_print ("Tool options:\n");
-  g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
-  g_print ("  --silent              suppress extra processing information\n");
-  g_print ("  --skip-errors         skip errors (may overwrite bsewave files after load\n");
-  g_print ("                        errors occoured for part of its contents)\n");
-  g_print ("  -h, --help            show elaborated help message with command documentation\n");
-  g_print ("  -v, --version         print version information\n");
+  printout ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
+  printout ("Tool options:\n");
+  printout ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
+  printout ("  --silent              suppress extra processing information\n");
+  printout ("  --skip-errors         skip errors (may overwrite bsewave files after load\n");
+  printout ("                        errors occoured for part of its contents)\n");
+  printout ("  -h, --help            show elaborated help message with command documentation\n");
+  printout ("  -v, --version         print version information\n");
   /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
-  g_print ("Commands:\n");
+  printout ("Commands:\n");
   for (list<Command*>::iterator it = Command::registry.begin(); it != Command::registry.end(); it++)
     {
       Command *cmd = *it;
-      g_print ("  %s ", cmd->name.c_str());
+      printout ("  %s ", cmd->name.c_str());
       cmd->blurb (bshort);
     }
 }
@@ -367,7 +367,7 @@ public:
           key_string += 'a' + digit - 10 - 26;
         key_uint /= 62;
       }
-    g_assert (key_uint == 0);
+    assert (key_uint == 0);
 
     return key_string;
   }
@@ -616,14 +616,14 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("\n");
+    printout ("\n");
     if (bshort)
       return;
-    g_print ("    Store the input bsewave as output bsewave. If both file names are the same,\n");
-    g_print ("    the bsewave file is simply rewritten. Allthough no explicit modifications\n");
-    g_print ("    are performed on the bsewave, externally referenced sample files will be\n");
-    g_print ("    inlined, chunks may be reordered, and other changes related to the bsewave\n");
-    g_print ("    storage process may occour.\n");
+    printout ("    Store the input bsewave as output bsewave. If both file names are the same,\n");
+    printout ("    the bsewave file is simply rewritten. Allthough no explicit modifications\n");
+    printout ("    are performed on the bsewave, externally referenced sample files will be\n");
+    printout ("    inlined, chunks may be reordered, and other changes related to the bsewave\n");
+    printout ("    storage process may occour.\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
 } cmd_store ("store");
@@ -638,13 +638,13 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("<n_channels> [options]\n");
+    printout ("<n_channels> [options]\n");
     if (bshort)
       return;
-    g_print ("    Create an empty bsewave file, <n_channels>=1 (mono) and <n_channels>=2\n");
-    g_print ("    (stereo) are currently supported. Options:\n");
-    g_print ("    -N <wave-name>      name of the wave stored inside of <output.bsewave>\n");
-    g_print ("    -f                  force creation even if the file exists already\n");
+    printout ("    Create an empty bsewave file, <n_channels>=1 (mono) and <n_channels>=2\n");
+    printout ("    (stereo) are currently supported. Options:\n");
+    printout ("    -N <wave-name>      name of the wave stored inside of <output.bsewave>\n");
+    printout ("    -f                  force creation even if the file exists already\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   string wave_name;
@@ -715,12 +715,12 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    printout ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
-    g_print ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
-    g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
+    printout ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
+    printout ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
+    printout ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -767,8 +767,8 @@ public:
         gsl_vorbis_encoder_set_quality (enc, quality);
         gsl_vorbis_encoder_set_n_channels (enc, wave->n_channels);
         gsl_vorbis_encoder_set_sample_freq (enc, guint (gsl_data_handle_mix_freq (dhandle)));
-        BseErrorType error = gsl_vorbis_encoder_setup_stream (enc, gsl_vorbis_make_serialno());
-        if (error)
+        Bse::Error error = gsl_vorbis_encoder_setup_stream (enc, gsl_vorbis_make_serialno());
+        if (error != 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -816,7 +816,7 @@ public:
                   }
               }
             if (!silent_infos)
-              g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
+              printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
                           gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                           n * 99.999999 / l);
           }
@@ -843,7 +843,7 @@ public:
         gsl_vorbis_encoder_destroy (enc);
         guint n_bytes = (gsl_data_handle_bit_depth (dhandle) + 7) / 8;
         if (!silent_infos)
-          g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
+          printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                   n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
         if (close (tmpfd) < 0)
@@ -854,7 +854,7 @@ public:
             exit (1);
           }
         error = chunk->set_dhandle_from_file (temp_file, gsl_data_handle_osc_freq (dhandle), dhandle->setup.xinfos);
-        if (error)
+        if (error != 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -923,7 +923,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options] {-m=midi-note|-f=osc-freq} <sample-file> ...\n");
+    printout ("[options] {-m=midi-note|-f=osc-freq} <sample-file> ...\n");
     if (!bshort && !load_raw)
       blurb_auto();
     else if (!bshort && load_raw)
@@ -932,22 +932,22 @@ public:
   void
   blurb_auto ()
   {
-    g_print ("    Add a new chunk containing <sample-file> to the wave file. For each chunk,\n");
-    g_print ("    a unique oscillator frequency must be given to determine what note the\n");
-    g_print ("    chunk is to be played back for. Multi oscillator frequency + sample-file\n");
-    g_print ("    option combinations may be given on the command line to add multiple wave\n");
-    g_print ("    chunks. The -f and -m options can be omitted for a sample file, if the\n");
-    g_print ("    oscillator frequency can be determined through auto extract options.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency for the next chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --auto-extract-midi-note <nth>\n");
-    g_print ("                        automatically retrieve the midi note by extracting the\n");
-    g_print ("                        <nth> number from the base name of <sample-file>\n");
-    g_print ("    --auto-extract-osc-freq <nth>\n");
-    g_print ("                        automatically retrieve the oscillator frequency by\n");
-    g_print ("                        extracting the <nth> number from the base name\n");
-    g_print ("                        of <sample-file>\n");
+    printout ("    Add a new chunk containing <sample-file> to the wave file. For each chunk,\n");
+    printout ("    a unique oscillator frequency must be given to determine what note the\n");
+    printout ("    chunk is to be played back for. Multi oscillator frequency + sample-file\n");
+    printout ("    option combinations may be given on the command line to add multiple wave\n");
+    printout ("    chunks. The -f and -m options can be omitted for a sample file, if the\n");
+    printout ("    oscillator frequency can be determined through auto extract options.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency for the next chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --auto-extract-midi-note <nth>\n");
+    printout ("                        automatically retrieve the midi note by extracting the\n");
+    printout ("                        <nth> number from the base name of <sample-file>\n");
+    printout ("    --auto-extract-osc-freq <nth>\n");
+    printout ("                        automatically retrieve the oscillator frequency by\n");
+    printout ("                        extracting the <nth> number from the base name\n");
+    printout ("                        of <sample-file>\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1008,15 +1008,15 @@ public:
   void
   blurb_raw ()
   {
-    g_print ("    Add a new chunk just like with \"add-chunk\", but load raw sample data.\n");
-    g_print ("    Additional raw sample format options are supported.\n");
-    g_print ("    Raw sample format options:\n");
-    g_print ("    -R <mix-freq>       mixing frequency for the next chunk [44100]\n");
-    g_print ("    -F <format>         raw sample format, supported formats are:\n");
-    g_print ("                        alaw, ulaw, float, signed-8, signed-12, signed-16,\n");
-    g_print ("                        unsigned-8, unsigned-12, unsigned-16 [signed-16]\n");
-    g_print ("    -B <byte-order>     raw sample byte order, supported types:\n");
-    g_print ("                        little-endian, big-endian [little-endian]\n");
+    printout ("    Add a new chunk just like with \"add-chunk\", but load raw sample data.\n");
+    printout ("    Additional raw sample format options are supported.\n");
+    printout ("    Raw sample format options:\n");
+    printout ("    -R <mix-freq>       mixing frequency for the next chunk [44100]\n");
+    printout ("    -F <format>         raw sample format, supported formats are:\n");
+    printout ("                        alaw, ulaw, float, signed-8, signed-12, signed-16,\n");
+    printout ("                        unsigned-8, unsigned-12, unsigned-16 [signed-16]\n");
+    printout ("    -B <byte-order>     raw sample byte order, supported types:\n");
+    printout ("                        little-endian, big-endian [little-endian]\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   static gdouble
@@ -1043,7 +1043,7 @@ public:
   }
   GslDataHandle*
   load_file_auto (const OptChunk &opt,
-                  BseErrorType   &error)
+                  Bse::Error   &error)
   {
     GslDataHandle *dhandle = NULL;
     const char *sample_file = opt.sample_file;
@@ -1055,12 +1055,12 @@ public:
         if (wdsc && wdsc->n_chunks == 1)
           dhandle = bse_wave_handle_create (wdsc, 0, &error);
         else if (wdsc)
-          error = BSE_ERROR_FORMAT_INVALID;
+          error = Bse::Error::FORMAT_INVALID;
         if (wdsc)
           bse_wave_dsc_free (wdsc);
       }
     else if (winfo)
-      error = BSE_ERROR_FORMAT_INVALID;
+      error = Bse::Error::FORMAT_INVALID;
     if (winfo)
       bse_wave_file_info_unref (winfo);
     return dhandle;
@@ -1069,7 +1069,7 @@ public:
   load_file_raw (const OptChunk &opt,
                  guint           n_channels,
                  gfloat          osc_freq,
-                 BseErrorType   &error)
+                 Bse::Error   &error)
   {
     GslDataHandle *dhandle = NULL;
     const char *sample_file = opt.sample_file;
@@ -1077,7 +1077,7 @@ public:
     dhandle = gsl_wave_handle_new (sample_file, n_channels,
                                    opt.load_format, opt.load_byte_order, opt.load_mix_freq, osc_freq,
                                    0, -1, NULL);
-    error = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
+    error = dhandle ? Bse::Error::NONE : Bse::Error::IO;
     return dhandle;
   }
   bool
@@ -1141,7 +1141,7 @@ public:
               exit (1);
             }
           /* add sample file */
-          BseErrorType error = BSE_ERROR_NONE;
+          Bse::Error error = Bse::Error::NONE;
           GslDataHandle *dhandle;
           sfi_info ("LOAD: osc-freq=%g file=%s", osc_freq, ochunk.sample_file);
           if (load_raw)
@@ -1153,7 +1153,7 @@ public:
               error = wave->add_chunk (dhandle, xinfos);
               gsl_data_handle_unref (dhandle);
             }
-          if (error)
+          if (error != 0)
             {
               String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error));
@@ -1175,15 +1175,15 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks}\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks}\n");
     if (bshort)
       return;
-    g_print ("    Removes one or more chunks from the bsewave file.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        delete all chunks\n");
+    printout ("    Removes one or more chunks from the bsewave file.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        delete all chunks\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1237,20 +1237,20 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} key=[value] ...\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} key=[value] ...\n");
     if (bshort)
       return;
-    g_print ("    Add, change or remove an XInfo string of a bsewave file.\n");
-    g_print ("    Omission of [value] deletes the XInfo associated with the key.\n");
-    g_print ("    Key and value pairs may be specified multiple times, optionally preceeded\n");
-    g_print ("    by location options to control what portion of a bsewave file (the wave,\n");
-    g_print ("    individual wave chunks or all wave chunks) should be affected.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        apply XInfo modification to all chunks\n");
-    g_print ("    --wave              apply XInfo modifications to the wave itself\n");
+    printout ("    Add, change or remove an XInfo string of a bsewave file.\n");
+    printout ("    Omission of [value] deletes the XInfo associated with the key.\n");
+    printout ("    Key and value pairs may be specified multiple times, optionally preceeded\n");
+    printout ("    by location options to control what portion of a bsewave file (the wave,\n");
+    printout ("    individual wave chunks or all wave chunks) should be affected.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        apply XInfo modification to all chunks\n");
+    printout ("    --wave              apply XInfo modifications to the wave itself\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1418,49 +1418,49 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} [options]\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} [options]\n");
     if (bshort)
       return;
-    g_print ("    Print information about the chunks of a bsewave file.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --all-chunks        show information for all chunks (default)\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --wave              show information for the wave\n");
-    g_print ("    --pretty=medium     use human readable format (default)\n");
-    g_print ("    --pretty=full       use human readable format with all details\n");
-    g_print ("    --script <field1>,<field2>,<field3>,...,<fieldN>\n");
-    g_print ("                        use script readable line based space separated output\n");
-    g_print ("    Valid wave or chunk fields:\n");
-    g_print ("      channels          number of channels\n");
-    g_print ("      label             user interface label\n");
-    g_print ("      blurb             associated comment\n");
-    g_print ("    Valid wave fields:\n");
-    g_print ("      authors           authors who participated in creating the wave file\n");
-    g_print ("      license           license specifying redistribution and other legal terms\n");
-    g_print ("      play-type         set of required play back facilities for a wave\n");
-    g_print ("    Valid chunk fields:\n");
-    g_print ("      osc-freq          frequency of the chunk\n");
-    g_print ("      mix-freq          sampling rate of the chunk\n");
-    g_print ("      midi-note         midi note of a chunk\n");
-    g_print ("      length            length of the chunk in sample frames\n");
-    g_print ("      volume            volume at which the chunk is to be played\n");
-    g_print ("      format            storage format used to save the chunk data\n");
-    g_print ("      loop-type         whether the chunk is to be looped\n");
-    g_print ("      loop-start        offset in sample frames for the start of the loop\n");
-    g_print ("      loop-end          offset in sample frames for the end of the loop\n");
-    g_print ("      loop-count        maximum limit for how often the loop should be repeated\n");
-    g_print ("    Chunk fields that can be computed for the signal:\n");
-    g_print ("      +avg-energy-raw   average signal energy (dB) of the raw data of the chunk\n");
-    g_print ("      +avg-energy       average signal energy (dB) using volume xinfo\n");
-    g_print ("    The script output consists of one line per chunk. The individual fields\n");
-    g_print ("    of a line are separated by a single space. Special characters are escaped,\n");
-    g_print ("    such as spaces, tabs, newlines and backslashes. So each line of script\n");
-    g_print ("    parsable output can be parsed using the read(P) shell command.\n");
-    g_print ("    Optional fields will printed as a single (escaped) space.\n");
-    g_print ("    The human readable output formats (--pretty) may vary in future versions\n");
-    g_print ("    and are not recommended as script input.\n");
+    printout ("    Print information about the chunks of a bsewave file.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --all-chunks        show information for all chunks (default)\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --wave              show information for the wave\n");
+    printout ("    --pretty=medium     use human readable format (default)\n");
+    printout ("    --pretty=full       use human readable format with all details\n");
+    printout ("    --script <field1>,<field2>,<field3>,...,<fieldN>\n");
+    printout ("                        use script readable line based space separated output\n");
+    printout ("    Valid wave or chunk fields:\n");
+    printout ("      channels          number of channels\n");
+    printout ("      label             user interface label\n");
+    printout ("      blurb             associated comment\n");
+    printout ("    Valid wave fields:\n");
+    printout ("      authors           authors who participated in creating the wave file\n");
+    printout ("      license           license specifying redistribution and other legal terms\n");
+    printout ("      play-type         set of required play back facilities for a wave\n");
+    printout ("    Valid chunk fields:\n");
+    printout ("      osc-freq          frequency of the chunk\n");
+    printout ("      mix-freq          sampling rate of the chunk\n");
+    printout ("      midi-note         midi note of a chunk\n");
+    printout ("      length            length of the chunk in sample frames\n");
+    printout ("      volume            volume at which the chunk is to be played\n");
+    printout ("      format            storage format used to save the chunk data\n");
+    printout ("      loop-type         whether the chunk is to be looped\n");
+    printout ("      loop-start        offset in sample frames for the start of the loop\n");
+    printout ("      loop-end          offset in sample frames for the end of the loop\n");
+    printout ("      loop-count        maximum limit for how often the loop should be repeated\n");
+    printout ("    Chunk fields that can be computed for the signal:\n");
+    printout ("      +avg-energy-raw   average signal energy (dB) of the raw data of the chunk\n");
+    printout ("      +avg-energy       average signal energy (dB) using volume xinfo\n");
+    printout ("    The script output consists of one line per chunk. The individual fields\n");
+    printout ("    of a line are separated by a single space. Special characters are escaped,\n");
+    printout ("    such as spaces, tabs, newlines and backslashes. So each line of script\n");
+    printout ("    parsable output can be parsed using the read(P) shell command.\n");
+    printout ("    Optional fields will printed as a single (escaped) space.\n");
+    printout ("    The human readable output formats (--pretty) may vary in future versions\n");
+    printout ("    and are not recommended as script input.\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   static vector<String>
@@ -1546,7 +1546,7 @@ public:
     int64 n_channels = gsl_data_handle_n_channels (dhandle);
     int64 n_frames = n_values / n_channels;
 
-    g_return_val_if_fail (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
+    assert_return (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
     return n_frames;
   }
   static double
@@ -1554,7 +1554,7 @@ public:
                       double         volume_adjustment)
   {
     const double min_db = -200;
-    g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
+    assert_return (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
 
     /* We do not take into account that a data handle can contain many separate
      * channels, so we're effectively averaging over all channels here.
@@ -1582,8 +1582,8 @@ public:
     while (*s)
       {
         if (*s == ' ' || *s == '\t' || *s == '\n' || *s == '\\')  /* shell IFS and backslash */
-          g_print ("\\");
-        g_print ("%c", *s++);
+          printout ("\\");
+        printout ("%c", *s++);
       }
   }
   void
@@ -1597,7 +1597,7 @@ public:
                       const char  *what)
   {
     if (bse_xinfos_get_value (xinfos, what))
-      g_print ("%lld", bse_xinfos_get_num (xinfos, what));
+      printout ("%lld", bse_xinfos_get_num (xinfos, what));
     else
       script_output_escaped (NULL);
   }
@@ -1612,10 +1612,10 @@ public:
         for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
           {
             if (fi != m_fields.begin()) // not first field
-              g_print (" ");
+              printout (" ");
 
             if (*fi == "channels")
-              g_print ("%d", wave->n_channels);
+              printout ("%d", wave->n_channels);
             else if (*fi == "label")
               script_output_escaped (wave->name.c_str());
             else if (*fi == "blurb")
@@ -1632,27 +1632,27 @@ public:
                 exit (1);
               }
           }
-        g_print ("\n");
+        printout ("\n");
       }
     else if (m_output_format != SCRIPT)
       {
-        g_print ("\n");
-        g_print ("Wave\n");
+        printout ("\n");
+        printout ("Wave\n");
 
         if (wave->name != "")
-          g_print ("  Label                  %s\n", wave->name.c_str());
+          printout ("  Label                  %s\n", wave->name.c_str());
         const char *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
         if (blurb)
-          g_print ("  Comment                %s\n", blurb);
+          printout ("  Comment                %s\n", blurb);
         const char *authors = bse_xinfos_get_value (wave->wave_xinfos, "authors");
         if (authors)
-          g_print ("  Authors                %s\n", authors);
+          printout ("  Authors                %s\n", authors);
         const char *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
         if (license)
-          g_print ("  License                %s\n", license);
+          printout ("  License                %s\n", license);
 
-        g_print ("  Channels         %7d\n", wave->n_channels);
-        g_print ("\n");
+        printout ("  Channels         %7d\n", wave->n_channels);
+        printout ("\n");
       }
 
     /* get the wave into storage order */
@@ -1668,22 +1668,22 @@ public:
               for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
                 {
                   if (fi != m_fields.begin()) // not first field
-                    g_print (" ");
+                    printout (" ");
 
                   if (*fi == "channels")
-                    g_print ("%d", wave->n_channels);
+                    printout ("%d", wave->n_channels);
                   else if (*fi == "length")
-                    g_print ("%lld", dhandle_n_frames (dhandle));
+                    printout ("%lld", dhandle_n_frames (dhandle));
                   else if (*fi == "osc-freq")
-                    g_print ("%.3f", gsl_data_handle_osc_freq (dhandle));
+                    printout ("%.3f", gsl_data_handle_osc_freq (dhandle));
                   else if (*fi == "mix-freq")
-                    g_print ("%.3f", gsl_data_handle_mix_freq (dhandle));
+                    printout ("%.3f", gsl_data_handle_mix_freq (dhandle));
                   else if (*fi == "chunk-key")
-                    g_print ("%s", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
+                    printout ("%s", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
                   else if (*fi == "volume")
-                    g_print ("%.3f", gsl_data_handle_volume (dhandle));
+                    printout ("%.3f", gsl_data_handle_volume (dhandle));
                   else if (*fi == "format")
-                    g_print ("%s", dhandle_storage_format (dhandle).c_str());
+                    printout ("%s", dhandle_storage_format (dhandle).c_str());
                   else if (*fi == "label")
                     script_output_xstr (dhandle->setup.xinfos, "label");
                   else if (*fi == "blurb")
@@ -1699,69 +1699,69 @@ public:
                   else if (*fi == "midi-note")
                     script_output_xnum (dhandle->setup.xinfos, "midi-note");
                   else if (*fi == "+avg-energy-raw")
-                    g_print ("%.3f", feature_avg_energy (dhandle, 1.0));
+                    printout ("%.3f", feature_avg_energy (dhandle, 1.0));
                   else if (*fi == "+avg-energy")
-                    g_print ("%.3f", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
+                    printout ("%.3f", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
                   else
                     {
                       sfi_error ("info command: invalid field for --script format: %s", fi->c_str());
                       exit (1);
                     }
                 }
-              g_print ("\n");
+              printout ("\n");
             }
           else  // MEDIUM or FULL output
             {
-              g_print ("Chunk '%s'\n", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
+              printout ("Chunk '%s'\n", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
               const char *label = bse_xinfos_get_value (dhandle->setup.xinfos, "label");
               if (label)
-                g_print ("  Label                  %s\n", label);
+                printout ("  Label                  %s\n", label);
               const char *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
               if (blurb)
-                g_print ("  Comment                %s\n", blurb);
+                printout ("  Comment                %s\n", blurb);
 
-              g_print ("  Osc Freq   %13.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
-              g_print ("  Mix Freq   %13.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
+              printout ("  Osc Freq   %13.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
+              printout ("  Mix Freq   %13.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
               if (bse_xinfos_get_value (dhandle->setup.xinfos, "midi-note"))
                 {
                   int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
                   char *note_str = bse_note_to_string (note);
-                  g_print ("  MIDI Note        %7d     (%s)\n", note, note_str);
+                  printout ("  MIDI Note        %7d     (%s)\n", note, note_str);
                   g_free (note_str);
                 }
               if (m_output_format == FULL)
                 {
-                  g_print ("  Sample Frames %10lld     (%.2f s)\n",
+                  printout ("  Sample Frames %10lld     (%.2f s)\n",
                            dhandle_n_frames (dhandle),
                            dhandle_n_frames (dhandle) / gsl_data_handle_mix_freq (dhandle));
                   if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
                     {
                       const double volume = gsl_data_handle_volume (dhandle);
                       const double volume_db = bse_db_from_factor (volume, -200);
-                      g_print ("  Volume           %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
+                      printout ("  Volume           %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
                     }
-                  g_print ("  Stored as       %s data\n", dhandle_storage_format (dhandle).c_str());
-                  g_print ("  Avg Energy %+13.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
+                  printout ("  Stored as       %s data\n", dhandle_storage_format (dhandle).c_str());
+                  printout ("  Avg Energy %+13.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
                   if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
-                    g_print ("  (%.2f dB before volume adjustment)",
+                    printout ("  (%.2f dB before volume adjustment)",
                              feature_avg_energy (dhandle, 1.0));
-                  g_print ("\n");
+                  printout ("\n");
                 }
               const char *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
               if (loop_type && m_output_format == FULL)
                 {
-                  g_print ("  Loop type %14s", loop_type);
+                  printout ("  Loop type %14s", loop_type);
                   if (strcmp (loop_type, "none") != 0)
                     {
                       SfiNum loop_start = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-start");
                       SfiNum loop_end = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-end");
-                      g_print ("     (start: %lld, end: %lld, ", loop_start, loop_end);
+                      printout ("     (start: %lld, end: %lld, ", loop_start, loop_end);
 
                       SfiNum loop_count = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-count");
                       if (!loop_count)
-                        g_print ("forever)\n");
+                        printout ("forever)\n");
                       else
-                        g_print ("count: %lld)\n", loop_count);
+                        printout ("count: %lld)\n", loop_count);
                     }
                 }
             }
@@ -1790,35 +1790,35 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
     if (bshort)
       return;
-    g_print ("    Clip head and or tail of a wave chunk and produce fade-in ramps at the\n");
-    g_print ("    beginning. Wave chunks which are clipped to an essential 0-length will\n");
-    g_print ("    automatically be deleted.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        try to clip all chunks\n");
+    printout ("    Clip head and or tail of a wave chunk and produce fade-in ramps at the\n");
+    printout ("    beginning. Wave chunks which are clipped to an essential 0-length will\n");
+    printout ("    automatically be deleted.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        try to clip all chunks\n");
 #if 0
-    g_print ("    --config=\"s h t f p r\"\n");
-    g_print ("                        clipping configuration, consisting of space-seperated\n");
-    g_print ("                        configuration values:\n");
-    g_print ("                        s) minimum signal threshold [%u]\n", guint (threshold * 32767));
-    g_print ("                        h) silence samples to verify at head [%u]\n", head_samples);
-    g_print ("                        t) silence samples to verify at tail [%u]\n", tail_samples);
-    g_print ("                        f) samples to fade-in before signal starts [%u]\n", fade_samples);
-    g_print ("                        p) padding samples after signal ends [%u]\n", pad_samples);
-    g_print ("                        r) silence samples required at tail for clipping [%u]\n", tail_silence);
+    printout ("    --config=\"s h t f p r\"\n");
+    printout ("                        clipping configuration, consisting of space-seperated\n");
+    printout ("                        configuration values:\n");
+    printout ("                        s) minimum signal threshold [%u]\n", guint (threshold * 32767));
+    printout ("                        h) silence samples to verify at head [%u]\n", head_samples);
+    printout ("                        t) silence samples to verify at tail [%u]\n", tail_samples);
+    printout ("                        f) samples to fade-in before signal starts [%u]\n", fade_samples);
+    printout ("                        p) padding samples after signal ends [%u]\n", pad_samples);
+    printout ("                        r) silence samples required at tail for clipping [%u]\n", tail_silence);
 #endif
-    g_print ("    -s=<threshold>      set the minimum signal threshold (0..32767) [%u]\n", guint (threshold * 32767));
-    g_print ("    -h=<head-samples>   number of silence samples to verify at head [%u]\n", head_samples);
-    g_print ("    -t=<tail-samples>   number of silence samples to verify at tail [%u]\n", tail_samples);
-    g_print ("    -f=<fade-samples>   number of samples to fade-in before signal starts [%u]\n", fade_samples);
-    g_print ("    -p=<pad-samples>    number of padding samples after signal ends [%u]\n", pad_samples);
-    g_print ("    -r=<tail-silence>   number of silence samples required at tail to allow\n");
-    g_print ("                        tail clipping [%u]\n", tail_silence);
+    printout ("    -s=<threshold>      set the minimum signal threshold (0..32767) [%u]\n", guint (threshold * 32767));
+    printout ("    -h=<head-samples>   number of silence samples to verify at head [%u]\n", head_samples);
+    printout ("    -t=<tail-samples>   number of silence samples to verify at tail [%u]\n", tail_samples);
+    printout ("    -f=<fade-samples>   number of samples to fade-in before signal starts [%u]\n", fade_samples);
+    printout ("    -p=<pad-samples>    number of padding samples after signal ends [%u]\n", pad_samples);
+    printout ("    -r=<tail-silence>   number of silence samples required at tail to allow\n");
+    printout ("                        tail clipping [%u]\n", tail_silence);
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1869,15 +1869,15 @@ public:
           cconfig.tail_silence = tail_silence;
           GslDataClipResult cresult;
           GslDataHandle *dhandle = chunk->dhandle;
-          BseErrorType error;
+          Bse::Error error;
           error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
-          if (error == BSE_ERROR_DATA_UNMATCHED && cresult.clipped_to_0length)
+          if (error == Bse::Error::DATA_UNMATCHED && cresult.clipped_to_0length)
             {
               sfi_info ("Deleting 0-length chunk");
               deleted.push_back (it);
-              error = BSE_ERROR_NONE;
+              error = Bse::Error::NONE;
             }
-          else if (error)
+          else if (error != 0)
             {
               const gchar *reason = bse_error_blurb (error);
               if (!cresult.tail_detected)
@@ -1894,12 +1894,12 @@ public:
               if (cresult.dhandle != chunk->dhandle)
                 {
                   error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-                  if (error)
+                  if (error != 0)
                     sfi_error ("level clipping failed: %s", bse_error_blurb (error));
                 }
               g_strfreev (xinfos);
             }
-          if (error && !skip_errors)
+          if (error != 0 && !skip_errors)
             exit (1);
         }
     /* really delete chunks */
@@ -1925,17 +1925,17 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
     if (bshort)
       return;
-    g_print ("    Normalize wave chunk. This is used to extend (or compress) the signal\n");
-    g_print ("    range to optimally fit the available unclipped dynamic range.\n");
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        try to normalize all chunks\n");
-    g_print ("    --volume-xinfo      keep original sample data, only set volume xinfo\n");
+    printout ("    Normalize wave chunk. This is used to extend (or compress) the signal\n");
+    printout ("    range to optimally fit the available unclipped dynamic range.\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        try to normalize all chunks\n");
+    printout ("    --volume-xinfo      keep original sample data, only set volume xinfo\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1967,7 +1967,7 @@ public:
           sfi_info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
-          BseErrorType error = BSE_ERROR_NONE;
+          Bse::Error error = Bse::Error::NONE;
           if (absmax > 4.6566e-10) /* 32bit threshold */
             {
               if (use_volume_xinfo)
@@ -1980,13 +1980,13 @@ public:
                 {
                   GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
                   error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-                  if (error)
+                  if (error != 0)
                     sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
                   gsl_data_handle_unref (shandle);
                 }
             }
           g_strfreev (xinfos);
-          if (error && !skip_errors)
+          if (error != 0 && !skip_errors)
             exit (1);
         }
     return true;
@@ -2005,20 +2005,20 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
+    printout ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
     if (bshort)
       return;
-    g_print ("    Find suitable loop points.\n");
+    printout ("    Find suitable loop points.\n");
     /* bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
      *         don't loop chunks with loop-type=unloopable xinfos
      *         automatically add xinfos with looping errors.
      *         allow ogg/vorbis package cutting at end-loop point
      */
-    g_print ("    Options:\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        try to loop all chunks\n");
+    printout ("    Options:\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        try to loop all chunks\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2074,8 +2074,8 @@ public:
 	      xinfos = bse_xinfos_add_value (xinfos, "loop-algorithm", loop_algorithm);
 
 	      gsl_data_handle_ref (dhandle);
-	      BseErrorType error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
-	      if (error)
+	      Bse::Error error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
+	      if (error != 0)
 		sfi_error ("looping failed: %s", bse_error_blurb (error));
 	      g_strfreev (xinfos);
 	    }
@@ -2100,10 +2100,10 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-s=max_total_size|-e=max_chunk_error|-g=gal_iterations} [options]\n");
+    printout ("{-s=max_total_size|-e=max_chunk_error|-g=gal_iterations} [options]\n");
     if (bshort)
       return;
-    g_print (
+    printout (
 "    Thin out bsewave file by omitting some chunks. It currently only is useful\n"
 "    if the input wave contains one chunk per midi note, and these notes were looped,\n"
 "    so that xinfos[\"loop-score\"] of each chunk contains a loop error that can\n"
@@ -2138,10 +2138,10 @@ public:
 "    (which can be increased using the -g option), there is no guarantee that\n"
 "    the resulting chunk set fulfills all conditions; the optimizer will only try\n"
 "    to produce the best possible result.\n");
-    g_print ("    Options:\n");
-    g_print ("    -s <max-total-size>     restrict the resulting bsewave file to a max size\n");
-    g_print ("    -e <max-chunk-error>    ensure that no chunk exceeds this error margin\n");
-    g_print ("    -g <gal-iterations>     iterations for genetic algorithm optimizer [5000]\n");
+    printout ("    Options:\n");
+    printout ("    -s <max-total-size>     restrict the resulting bsewave file to a max size\n");
+    printout ("    -e <max-chunk-error>    ensure that no chunk exceeds this error margin\n");
+    printout ("    -g <gal-iterations>     iterations for genetic algorithm optimizer [5000]\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2239,8 +2239,8 @@ public:
 	chunk_data.iterators.push_back (it);
       }
 
-    g_assert (chunk_data.sizes.size() > 0);
-    g_assert (chunk_data.sizes.size() == chunk_data.errors.size());
+    assert (chunk_data.sizes.size() > 0);
+    assert (chunk_data.sizes.size() == chunk_data.errors.size());
 
     ChunkSet chunk_set;
     init_empty_set (chunk_data, chunk_set);
@@ -2475,12 +2475,12 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    printout ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Apply %s filter to wave data\n", name.c_str());
-    g_print ("    --cutoff-freq <f>   filter cutoff frequency in Hz\n");
-    g_print ("    --order <o>         filter order [%u]\n", m_order);
+    printout ("    Apply %s filter to wave data\n", name.c_str());
+    printout ("    --cutoff-freq <f>   filter cutoff frequency in Hz\n");
+    printout ("    --order <o>         filter order [%u]\n", m_order);
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2501,11 +2501,11 @@ public:
       }
     return (m_cutoff_freq <= 0); // missing args
   }
-  BseErrorType
+  Bse::Error
   print_effective_stopband_start (GslDataHandle *fir_handle)
   {
-    BseErrorType error = gsl_data_handle_open (fir_handle);
-    if (error)
+    Bse::Error error = gsl_data_handle_open (fir_handle);
+    if (error != 0)
       return error;
     int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
@@ -2525,7 +2525,7 @@ public:
 	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
     gsl_data_handle_close (fir_handle);
 
-    return BSE_ERROR_NONE;
+    return Bse::Error::NONE;
   }
   bool
   exec (Wave *wave)
@@ -2548,11 +2548,11 @@ public:
 	  {
 	    GslDataHandle *fir_handle = create_fir_handle (dhandle);
 
-	    BseErrorType error = print_effective_stopband_start (fir_handle);
-	    if (!error)
+	    Bse::Error error = print_effective_stopband_start (fir_handle);
+	    if (error == 0)
 	      error = chunk->change_dhandle (fir_handle, 0, 0);
 
-	    if (error)
+	    if (error != 0)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
 			   gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -2608,17 +2608,17 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    printout ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Resample wave data to twice the sampling frequency.\n");
-    g_print ("    --precision <bits>      set resampler precision bits [%d]\n", m_precision_bits);
-    g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
-    g_print ("                            1 is a special value for linear interpolation\n");
-    g_print ("    -f <osc-freq>           oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>          alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>       select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks            upsample all chunks\n");
+    printout ("    Resample wave data to twice the sampling frequency.\n");
+    printout ("    --precision <bits>      set resampler precision bits [%d]\n", m_precision_bits);
+    printout ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
+    printout ("                            1 is a special value for linear interpolation\n");
+    printout ("    -f <osc-freq>           oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>          alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>       select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks            upsample all chunks\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2656,8 +2656,8 @@ public:
           sfi_info ("  using resampler precision: %s\n",
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
-          BseErrorType error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
-          if (error)
+          Bse::Error error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
+          if (error != 0)
             {
               sfi_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -2684,17 +2684,17 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    printout ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Resample wave data to half the sampling frequency.\n");
-    g_print ("    --precision <bits>      set resampler precision bits [%d]\n", m_precision_bits);
-    g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
-    g_print ("                            1 is a special value for linear interpolation\n");
-    g_print ("    -f <osc-freq>           oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>          alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>       select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks            downsample all chunks\n");
+    printout ("    Resample wave data to half the sampling frequency.\n");
+    printout ("    --precision <bits>      set resampler precision bits [%d]\n", m_precision_bits);
+    printout ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
+    printout ("                            1 is a special value for linear interpolation\n");
+    printout ("    -f <osc-freq>           oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>          alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>       select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks            downsample all chunks\n");
      /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2732,8 +2732,8 @@ public:
           sfi_info ("  using resampler precision: %s\n",
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
-          BseErrorType error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
-          if (error)
+          Bse::Error error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
+          if (error != 0)
             {
               sfi_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -2759,20 +2759,20 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|-x=filename} [options]\n");
+    printout ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|-x=filename} [options]\n");
     if (bshort)
       return;
-    g_print ("    Export chunks from bsewave as WAV file.\n");
-    g_print ("    Options:\n");
-    g_print ("    -x <filename>       set export filename (supports %%N %%F and %%C, see below)\n");
-    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
-    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
-    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
-    g_print ("    --all-chunks        try to export all chunks\n");
-    g_print ("    The export filename can contain the following extra information:\n");
-    g_print ("      %%F  -  the frequency of the chunk\n");
-    g_print ("      %%N  -  the midi note of the chunk\n");
-    g_print ("      %%C  -  cent detuning of the midi note\n");
+    printout ("    Export chunks from bsewave as WAV file.\n");
+    printout ("    Options:\n");
+    printout ("    -x <filename>       set export filename (supports %%N %%F and %%C, see below)\n");
+    printout ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    printout ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    printout ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    printout ("    --all-chunks        try to export all chunks\n");
+    printout ("    The export filename can contain the following extra information:\n");
+    printout ("      %%F  -  the frequency of the chunk\n");
+    printout ("      %%N  -  the midi note of the chunk\n");
+    printout ("      %%C  -  cent detuning of the midi note\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2884,8 +2884,8 @@ public:
 
 	  if (!note)
 	    {
-	      note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, gsl_data_handle_osc_freq (dhandle));
-	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
+	      note = bse_note_from_freq_bounded (Bse::MusicalTuning::OD_12_TET, gsl_data_handle_osc_freq (dhandle));
+	      cent = bse_note_fine_tune_from_note_freq (Bse::MusicalTuning::OD_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
 
 	  name_addon = g_strdup_format ("%d", note);
@@ -2918,14 +2918,14 @@ public:
 	  int fd = open (filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	  if (fd < 0)
 	    {
-	      BseErrorType error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+	      Bse::Error error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 
 	  int xerrno = gsl_data_handle_dump_wav (dhandle, fd, 16, dhandle->setup.n_channels, (guint) dhandle->setup.mix_freq);
 	  if (xerrno)
 	    {
-	      BseErrorType error = bse_error_from_errno (xerrno, BSE_ERROR_FILE_WRITE_FAILED);
+	      Bse::Error error = bse_error_from_errno (xerrno, Bse::Error::FILE_WRITE_FAILED);
 	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 	  close (fd);
@@ -2943,17 +2943,17 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    printout ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Prints a list of chunk keys of the chunks contained in the bsewave file.\n");
-    g_print ("    A chunk key for a given chunk identifies the chunk uniquely and stays valid\n");
-    g_print ("    if other chunks are inserted and deleted.\n");
-    g_print ("    This bash script shows the length of all chunks (like info --all-chunks):\n");
-    g_print ("      for key in `bsewavetool list-chunks foo.bsewave`\n");
-    g_print ("      do\n");
-    g_print ("        bsewavetool info foo.bsewave --chunk-key $key --script length\n");
-    g_print ("      done\n");
+    printout ("    Prints a list of chunk keys of the chunks contained in the bsewave file.\n");
+    printout ("    A chunk key for a given chunk identifies the chunk uniquely and stays valid\n");
+    printout ("    if other chunks are inserted and deleted.\n");
+    printout ("    This bash script shows the length of all chunks (like info --all-chunks):\n");
+    printout ("      for key in `bsewavetool list-chunks foo.bsewave`\n");
+    printout ("      do\n");
+    printout ("        bsewavetool info foo.bsewave --chunk-key $key --script length\n");
+    printout ("      done\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2972,7 +2972,7 @@ public:
         WaveChunk     *chunk = &*it;
         WaveChunkKey   chunk_key (gsl_data_handle_osc_freq (chunk->dhandle));
 
-        g_print ("%s\n", chunk_key.as_string().c_str());
+        printout ("%s\n", chunk_key.as_string().c_str());
       }
     return true;
   }

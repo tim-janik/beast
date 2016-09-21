@@ -66,8 +66,6 @@ main (int   argc,
     {
       double d;
 
-      TSTART ("Testing fft code for size %u", i);
-
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
       // memset (ref_fft_aout, 0, MAX_FFT_SIZE * sizeof (ref_fft_aout[0]));
@@ -91,45 +89,21 @@ main (int   argc,
 
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
-      if (d)
-	fatal ("Reference record was modified");
-      else
-        TOK();
+      TCHECK (d == 0, "FFT-%u reference record is unmodified", i);
       d = diff (i << 1, 0, ref_fft_aout, work_fft_aout, "Reference analysis against GSL analysis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, ref_fft_sout, work_fft_sout, "Reference synthesis against GSL synthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, ref_fft_in, ref_fft_back, "Reference analysis and re-synthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, work_fft_in, work_fft_back, "GSL analysis and re-synthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, work_fft_in, scaled_fft_back, "GSL analysis and scaled re-synthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, ref_fft_back, work_fft_back, "Reference re-synthesis vs. GSL");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i << 1, 0, ref_fft_back, scaled_fft_back, "Reference re-synthesis vs. scaled GSL");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       /* test with real data */
       make_real (i << 1, ref_fft_in);
       extract_real (i << 1, ref_fft_in, work_fft_in);
@@ -141,21 +115,11 @@ main (int   argc,
       scale_block (i, work_fft_back, 1.0 / i);
       gsl_power2_fftsr_scale (i, work_fft_aout, scaled_fft_back);
       d = diff (i, 0, ref_fft_aout, work_fft_aout, "Reference real analysis vs. real GSL");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i, 0, work_fft_in, scaled_fft_back, "Real input vs. scaled real GSL resynthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
       d = diff (i, 0, work_fft_in, work_fft_back, "Real input vs. real GSL resynthesis");
-      if (fabs (d) > EPSILON)
-	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
-      TDONE();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
     }
   static double dft_in[MAX_DFT_SIZE] = { 0, };
   static double dft_aout[MAX_DFT_SIZE] = { 0, };
@@ -163,7 +127,6 @@ main (int   argc,
   for (i = 2; i <= MAX_DFT_SIZE >> 1; i <<= 1)
     {
       double d;
-      TSTART ("Checking reference fft for size %u", i);
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
       memcpy (dft_in, ref_fft_in, MAX_DFT_SIZE * sizeof (dft_in[0]));
@@ -171,16 +134,9 @@ main (int   argc,
       reference_dftc (i, dft_in, dft_aout);
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, dft_in, "Checking input record");
-      if (d)
-	fatal ("Input record was modified");
-      else
-        TOK();
+      TCHECK (d == 0, "FFT-%u reference record is unmodified", i);
       d = diff (i << 1, 0, ref_fft_aout, dft_aout, "Reference FFT analysis against reference DFT analysis");
-      if (fabs (d) > EPSILON)
-        fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
-      else
-        TOK();
-      TDONE();
+      TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
     }
   return 0;
 }
@@ -222,34 +178,29 @@ scale_block (guint    n,
 }
 
 static double
-diff (guint         m,
-      guint         p,
-      double       *a1,
-      double       *a2,
-      const gchar  *str)
+diff (uint m, uint p, double *a1, double *a2, const char *str)
 {
   double d = 0, max = 0, min = 1e+32;
   guint n;
-  TMSG ("%s\n", str);
   for (n = 0; n < m; n++)
     {
       double a =  ABS (a1[n] - a2[n]);
       if (n < p)
-	TMSG ("%3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
-                n, ((float) n) / (float) m,
-                a1[n], a2[n],
-                a1[n] - a2[n],
-                a1[n] / a2[n]);
+        Rapicorn::Test::tprintout ("  TESTFFT  %3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
+                                   n, ((float) n) / (float) m,
+                                   a1[n], a2[n],
+                                   a1[n] - a2[n],
+                                   a1[n] / a2[n]);
       d += a;
       max = MAX (max, a);
       min = MIN (min, a);
     }
-  TMSG ("Diff sum: %.9f, ", d);
-  TMSG ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
-  TMSG ("noise: %u %u %u\n",
-        g_bit_storage (1. / min),
-        g_bit_storage (m / d),
-        g_bit_storage (1. / max));
+  Rapicorn::Test::tprintout ("  TESTFFT  Diff sum: %.9f, ", d);
+  Rapicorn::Test::tprintout ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
+  Rapicorn::Test::tprintout ("noise: %u %u %u\n",
+                             g_bit_storage (1. / min),
+                             g_bit_storage (m / d),
+                             g_bit_storage (1. / max));
   return d;
 }
 

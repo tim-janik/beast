@@ -109,7 +109,7 @@ protected:
       taps[i] = d[i] * scaling;
 
     Resampler2 *filter = new Filter (taps);
-    g_assert (order == filter->order());
+    RAPICORN_ASSERT (order == filter->order());
     return filter;
   }
   /* creates the actual implementation; specifying USE_SSE=true will use

@@ -175,14 +175,14 @@ void
 bse_wave_osc_set_from_esample (BseWaveOsc        *self,
                                BseEditableSample *esample)
 {
-  g_return_if_fail (BSE_WAVE_OSC (self));
+  assert_return (BSE_WAVE_OSC (self));
 
   clear_wave_and_esample (self);
   if (esample)
     {
-      g_return_if_fail (BSE_EDITABLE_SAMPLE (esample));
+      assert_return (BSE_EDITABLE_SAMPLE (esample));
 
-      if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == BSE_ERROR_NONE)
+      if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == Bse::Error::NONE)
         {
           self->esample_wchunk = esample->wchunk;
           bse_wave_osc_update_config_wchunk (self);
@@ -481,12 +481,12 @@ bse_wave_osc_mass_seek (guint              n_woscs,
                         gfloat             perc)
 {
   guint i;
-  g_return_if_fail (perc >= 0 && perc <= 100);
+  assert_return (perc >= 0 && perc <= 100);
   BseTrans *trans = bse_trans_open();
   for (i = 0; i < n_woscs; i++)
     {
       BseWaveOsc *wosc = woscs[i];
-      g_return_if_fail (BSE_IS_WAVE_OSC (wosc));
+      assert_return (BSE_IS_WAVE_OSC (wosc));
       if (BSE_SOURCE_PREPARED (wosc))
         {
           PcmPos *pos = g_new (PcmPos, 1);
@@ -505,7 +505,7 @@ bse_wave_osc_mass_seek (guint              n_woscs,
 void
 bse_wave_osc_request_pcm_position (BseWaveOsc *self)
 {
-  g_return_if_fail (BSE_IS_WAVE_OSC (self));
+  assert_return (BSE_IS_WAVE_OSC (self));
 
   if (BSE_SOURCE_PREPARED (self))
     {
@@ -573,15 +573,15 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
                                                             G_TYPE_INT);
 
   ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
+  assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
   ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
+  assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
   ichannel = bse_source_class_add_ichannel (source_class, "mod-in", _("Mod In"), _("Modulation Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
+  assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
   ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Wave Output"));
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
+  assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
   ochannel = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), _("Gate Output"));
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
+  assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
   ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("Done Output"));
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_DONE);
+  assert (ochannel == BSE_WAVE_OSC_OCHANNEL_DONE);
 }

@@ -1,10 +1,10 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
 sample_DATA = $(strip			\
 	retrokit.bsewave		\
 )
-sampledir = $(bsesampledir)
+sampledir = $(datadir)/samples
 
 EXTRA_DIST += $(sample_DATA)

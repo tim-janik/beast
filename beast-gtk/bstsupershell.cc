@@ -6,7 +6,6 @@
 #include "bstbusmixer.hh"
 #include "bstbusview.hh"
 #include "bstwaveview.hh"
-#include "bstrackview.hh"
 #include "bstsoundfontview.hh"
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
@@ -61,7 +60,7 @@ bst_super_shell_class_init (BstSuperShellClass *klass)
 static void
 bst_super_shell_init (BstSuperShell *self)
 {
-  self->super = 0;
+  new (&self->super) Bse::SuperH();
   gtk_widget_set (GTK_WIDGET (self),
                   "visible", TRUE,
 		  "homogeneous", FALSE,
@@ -77,11 +76,13 @@ bst_super_shell_set_property (GObject         *object,
 			      GParamSpec      *pspec)
 {
   BstSuperShell *self = BST_SUPER_SHELL (object);
+  Bse::SuperH super;
 
   switch (prop_id)
     {
     case PROP_SUPER:
-      bst_super_shell_set_super (self, sfi_value_get_proxy (value));
+      super = Bse::SuperH::down_cast (bse_server.from_proxy (sfi_value_get_proxy (value)));
+      bst_super_shell_set_super (self, super);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -100,7 +101,7 @@ bst_super_shell_get_property (GObject         *object,
   switch (prop_id)
     {
     case PROP_SUPER:
-      sfi_value_set_proxy (value, self->super);
+      sfi_value_set_proxy (value, self->super.proxy_id());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -114,7 +115,7 @@ bst_super_shell_destroy (GtkObject *object)
   BstSuperShell *self = BST_SUPER_SHELL (object);
 
   if (self->super)
-    bst_super_shell_set_super (self, 0);
+    bst_super_shell_set_super (self, Bse::SuperH());
 
   GTK_OBJECT_CLASS (bst_super_shell_parent_class)->destroy (object);
 }
@@ -122,32 +123,25 @@ bst_super_shell_destroy (GtkObject *object)
 static void
 bst_super_shell_finalize (GObject *object)
 {
-  // BstSuperShell *self = BST_SUPER_SHELL (object);
+  BstSuperShell *self = BST_SUPER_SHELL (object);
 
   G_OBJECT_CLASS (bst_super_shell_parent_class)->finalize (object);
+  using namespace Bse;
+  self->super.~SuperH();
 }
 
 void
-bst_super_shell_set_super (BstSuperShell *self,
-			   SfiProxy       super)
+bst_super_shell_set_super (BstSuperShell *self, Bse::SuperH super)
 {
-  g_return_if_fail (BST_IS_SUPER_SHELL (self));
-  if (super)
-    g_return_if_fail (BSE_IS_SUPER (super));
+  assert_return (BST_IS_SUPER_SHELL (self));
 
   if (super != self->super)
     {
       if (self->super)
-	{
-          gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
-	  bse_item_unuse (self->super);
-	}
+        gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
       self->super = super;
       if (self->super)
-	{
-	  bse_item_use (self->super);
-          super_shell_add_views (self);
-	}
+        super_shell_add_views (self);
     }
 }
 
@@ -161,7 +155,8 @@ static void
 super_shell_build_song (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  SfiProxy song = self->super;
+  Bse::SuperH super = self->super;
+  SfiProxy song = super.proxy_id();
 
   gtk_notebook_append_page (notebook,
                             bst_track_view_new (song),
@@ -182,7 +177,7 @@ super_shell_build_song (BstSuperShell *self,
                               gxk_notebook_create_tabulator (_("Busses"), BST_STOCK_BUS, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),
+                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (Bse::SNetH::down_cast (super)))),
                               gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, NULL));
 }
 
@@ -190,28 +185,25 @@ static void
 super_shell_build_snet (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  SfiProxy snet = self->super;
+  Bse::SNetH snet = Bse::SNetH::down_cast (self->super);
   GtkWidget *param_view;
 
-  if (BST_DBG_EXT && bse_snet_supports_user_synths (snet))
-    gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (bst_rack_view_new (snet)),
-                              gxk_notebook_create_tabulator (_("Rack"), NULL, NULL));
-  if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
+  if (snet.supports_user_synths() || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
                               gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, _("Add, edit and connect synthesizer mesh components")));
-  param_view = bst_param_view_new (snet);
+  param_view = bst_param_view_new (snet.proxy_id());
   gtk_notebook_append_page (notebook,
-                            bst_param_view_new (snet),
+                            bst_param_view_new (snet.proxy_id()),
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall synthesizer behaviour")));
+  (void) param_view;
 }
 
 static void
 super_shell_build_wave_repo (BstSuperShell *self,
                              GtkNotebook   *notebook)
 {
-  SfiProxy wrepo = self->super;
+  SfiProxy wrepo = self->super.proxy_id();
 
   gtk_notebook_append_page (notebook,
                             bst_wave_view_new (wrepo),
@@ -225,7 +217,7 @@ static void
 super_shell_build_sound_font_repo (BstSuperShell *self,
                                    GtkNotebook   *notebook)
 {
-  SfiProxy sfrepo = self->super;
+  SfiProxy sfrepo = self->super.proxy_id();
 
   gtk_notebook_append_page (notebook,
                             bst_sound_font_view_new (sfrepo),
@@ -255,11 +247,11 @@ create_notebook (BstSuperShell *self)
 static void
 super_shell_add_views (BstSuperShell *self)
 {
-  if (BSE_IS_SONG (self->super))
+  if (BSE_IS_SONG (self->super.proxy_id()))
     super_shell_build_song (self, create_notebook (self));
-  else if (BSE_IS_WAVE_REPO (self->super))
+  else if (BSE_IS_WAVE_REPO (self->super.proxy_id()))
     super_shell_build_wave_repo (self, create_notebook (self));
-  else if (BSE_IS_SOUND_FONT_REPO (self->super))
+  else if (BSE_IS_SOUND_FONT_REPO (self->super.proxy_id()))
     super_shell_build_sound_font_repo (self, create_notebook (self));
   else /* BSE_IS_SNET (self->super) */
     super_shell_build_snet (self, create_notebook (self));

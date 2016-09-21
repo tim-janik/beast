@@ -1,22 +1,21 @@
 ; BseProject
 
-(bse-version "0.8.0")
+(bse-version "0.9.3")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2013-03-24 18:57:20")
+  (modification-time "2015-09-25 07:17:02")
   (creation-time "2002-02-02 11:09:01")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Oscillator_test"
-  (auto-activate #t)
-  (modification-time "2013-03-24 18:57:20")
+  (auto_activate 1)
+  (modification-time "2015-09-25 07:17:02")
   (creation-time "1999-12-31 03:01:29")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik")
   (pos-y -0.11)
   (pos-x 1.76)
   (blurb "strange isn't it\077 ;)")
-  (parasite f "BstRouterZoom" 1 1)
   (container-child "BseAdder::BseAdder-1"
     (pos-y 1)
     (pos-x -2)

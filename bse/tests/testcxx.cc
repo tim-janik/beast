@@ -11,11 +11,11 @@ struct FooTest : public CxxBase {};
 struct Foo {
   void bar (GParamSpec *p,int,float,int,int,int,int,int)
   {
-    g_print ("notify: %s\n", p->name);
+    printout ("notify: %s\n", p->name);
   }
   float baz (int, String s)
   {
-    g_print ("notify: \"%s\"\n", s.c_str());
+    printout ("notify: \"%s\"\n", s.c_str());
     return 0;
   }
 };
@@ -50,7 +50,7 @@ main (int   argc,
   errorarg.token();
 #endif
 
-  GObject *o = (GObject*) g_object_new (BSE_TYPE_BUS_MODULE, NULL);
+  GObject *o = (GObject*) bse_object_new (BSE_TYPE_BUS_MODULE, NULL);
   CxxBase *b = cast (o);
   Foo f;
   b->connect ("notify", Closure (&f, &Foo::bar));

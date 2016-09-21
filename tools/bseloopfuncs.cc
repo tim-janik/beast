@@ -119,13 +119,13 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
   gfloat *block;
   gboolean found_loop = FALSE;
 
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (config != NULL, FALSE);
-  g_return_val_if_fail (frame <= config->block_start, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (config != NULL, FALSE);
+  assert_return (frame <= config->block_start, FALSE);
   config->n_details = 0;
 
   /* check out data handle */
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 
@@ -241,7 +241,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
         }
     }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
+  printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               bstart, bstart + blength, blength,
               config->score, score_pcount * 100.0 / pdist);
@@ -267,12 +267,12 @@ gsl_data_find_loop4 (GslDataHandle     *dhandle,
   const gfloat *block;
   gboolean found_loop = FALSE;
 
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (config != NULL, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (config != NULL, FALSE);
   config->n_details = 0;
 
   /* check out data handle */
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 
@@ -358,7 +358,7 @@ gsl_data_find_loop4 (GslDataHandle     *dhandle,
                              config->score, config->loop_length, lstart, llength);
       }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
+  printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               bstart, bstart + blength, blength,
               config->score, score_pcount * 100.0 / pdist);
@@ -383,11 +383,11 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
   gdouble pdist;
   gboolean found_loop = FALSE;
 
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (config != NULL, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -400,7 +400,7 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
   if (config->repetitions != CLAMP (config->repetitions, 2, config->block_length))
     return FALSE;
   /* current implementation supports just repetitions == 2 */
-  g_return_val_if_fail (config->repetitions == 2, FALSE);
+  assert_return (config->repetitions == 2, FALSE);
 
   /* provide fully cached area for comparisons */
   block = g_new (gfloat, config->block_length);
@@ -410,11 +410,11 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
   /* test every possible loop size at every possible position */
   maxll = config->block_length / 2;
   minll = maxll * 0.91;
-  g_return_val_if_fail (maxll > minll, FALSE); // FIXME
+  assert_return (maxll > minll, FALSE); // FIXME
   cstart = block + config->block_length / 2;
   config->score = G_MAXDOUBLE;
   pcount = 0, pdist = (maxll * 1.0 - minll * 1.0 + 2.0) * (maxll * 1.0 - minll * 1.0 + 1.0) / 2.;
-  g_printerr ("pdist: %f\n", pdist);
+  printerr ("pdist: %f\n", pdist);
   for (sp = block; sp < cstart - minll; sp++)
     for (ep = sp + minll; ep < cstart; ep++)
       {
@@ -427,7 +427,7 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
             found_loop = TRUE;
           }
         gsl_progress_notify (&pstate, ++pcount * 100.0 / pdist, "score:%+g (pos:%6lu)", config->score, sp - block);
-        // g_printerr ("processed: %7.3f (score:%+g)            \r", ++pcount * 100.0 / pdist, config->score);
+        // printerr ("processed: %7.3f (score:%+g)            \r", ++pcount * 100.0 / pdist, config->score);
       }
 
   g_free (block);
@@ -448,11 +448,11 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
   gdouble pdist;
   gboolean found_loop = FALSE;
 
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (config != NULL, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -465,7 +465,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
   if (config->repetitions != CLAMP (config->repetitions, 2, config->block_length))
     return FALSE;
   /* current implementation supports just repetitions == 2 */
-  g_return_val_if_fail (config->repetitions == 2, FALSE);
+  assert_return (config->repetitions == 2, FALSE);
 
   /* provide fully cached area for comparisons */
   block = g_new (gfloat, config->block_length);
@@ -477,7 +477,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
   /* find best loop size at one position */
   maxll = config->block_length / 2;
   minll = 1;
-  g_return_val_if_fail (maxll > minll, FALSE); // FIXME
+  assert_return (maxll > minll, FALSE); // FIXME
   cstart = block + config->block_length / 2;
   config->score = G_MAXDOUBLE;
   pcount = 0, pdist = (maxll * 1.0 - minll * 1.0 + 2.0) * (maxll * 1.0 - minll * 1.0 + 1.0) / 2.;
@@ -496,22 +496,22 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
     }
   gsl_progress_wipe (&pstate);
   ll = config->loop_length;
-  g_printerr ("loop size: %llu\n", ll);
+  printerr ("loop size: %llu\n", ll);
 
   /* test every possible position */
   minll = ll;
   maxll = ll + 1;
-  g_return_val_if_fail (maxll > minll, FALSE); // FIXME
+  assert_return (maxll > minll, FALSE); // FIXME
   cstart = block + config->block_length / 2;
   config->score = G_MAXDOUBLE;
   pcount = 0, pdist = (maxll * 1.0 - minll * 1.0 + 2.0) * (maxll * 1.0 - minll * 1.0 + 1.0) / 2.;
-  g_printerr ("pdist: %f\n", pdist);
+  printerr ("pdist: %f\n", pdist);
   for (sp = block; sp < cstart - minll; sp++)
     {
       ep = sp + minll;
       {
         gdouble score = score_headloop (dhandle, sp, ep - sp, config->block_length / 2, G_MAXDOUBLE);
-        g_print ("%zu %.17g\n", size_t (sp - block), score);
+        printout ("%zu %.17g\n", size_t (sp - block), score);
         continue;
         if (score <= config->score)
           {
@@ -530,17 +530,17 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
   /* test every possible loop size */
   maxll = config->block_length / 2;
   minll = 1;
-  g_return_val_if_fail (maxll > minll, FALSE); // FIXME
+  assert_return (maxll > minll, FALSE); // FIXME
   cstart = block + config->block_length / 2;
   config->score = G_MAXDOUBLE;
   pcount = 0, pdist = (maxll * 1.0 - minll * 1.0 + 2.0) * (maxll * 1.0 - minll * 1.0 + 1.0) / 2.;
-  g_printerr ("pdist: %f\n", pdist);
+  printerr ("pdist: %f\n", pdist);
   for (sp = block + 99999; sp < cstart - minll; sp++)
     {
       for (ep = sp + minll; ep < cstart; ep++)
         {
           gdouble score = score_headloop (dhandle, sp, ep - sp, config->block_length / 2, config->score);
-          g_print ("%zu %.17g\n", size_t (ep - sp), score);
+          printout ("%zu %.17g\n", size_t (ep - sp), score);
           continue;
           if (score <= config->score)
             {
@@ -569,7 +569,7 @@ dcache_headloop_score (GslDataCache     *dcache,
                        GslDataCacheNode **cnp,
                        gboolean           weighted)
 {
-  gsize node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+  ssize_t node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
   GslDataCacheNode *lnode = *lnp, *cnode = *cnp;
   gdouble wmax = clength, score = 0.0;
   GslLong i = 0, loop_length = cstart - lstart;
@@ -632,11 +632,11 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
   gdouble pdist;
   gboolean found_loop = FALSE;
 
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (config != NULL, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -683,7 +683,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
   gsl_progress_wipe (&pstate);
   if (!found_loop)
     goto seek_loop_done;
-  g_printerr ("  lLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g)\n",
+  printerr ("  lLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               config->block_start, config->block_start + config->block_length, config->block_length,
               config->score);
@@ -711,7 +711,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
         }
     }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  pLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (weighted-frame-score:%+g)\n",
+  printerr ("  pLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (weighted-frame-score:%+g)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               config->block_start, config->block_start + config->block_length, config->block_length,
               config->score);
@@ -745,7 +745,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
           gsl_progress_notify (&pstate, ++pcount * 100.0 / pdist, "frame-score:%+g", config->score);
         }
       gsl_progress_wipe (&pstate);
-      g_printerr ("  sLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (frame[%d]-score:%+g)\n",
+      printerr ("  sLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (frame[%d]-score:%+g)\n",
                   config->loop_start, config->loop_start + config->loop_length, config->loop_length,
                   config->block_start, config->block_start + config->block_length, config->block_length,
                   frame, config->score);
@@ -768,8 +768,8 @@ tailloop_score (GslDataCache          *dcache,
 		GslLong	               loopsize,
 		gfloat                 worstscore)
 {
-  gsize node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
-  GslLong looppos, i, compare = cfg->pre_loop_compare;
+  ssize_t node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+  GslLong looppos, compare = cfg->pre_loop_compare;
   gfloat score = 0.0;
   GslDataCacheNode *snode, *lnode;
 
@@ -784,7 +784,7 @@ tailloop_score (GslDataCache          *dcache,
 
   snode = gsl_data_cache_ref_node (dcache, loopstart - compare, GSL_DATA_CACHE_DEMAND_LOAD);
   lnode = gsl_data_cache_ref_node (dcache, looppos, GSL_DATA_CACHE_DEMAND_LOAD);
-  for (i = loopstart - compare; i < loopstart;)
+  for (ssize_t i = loopstart - compare; i < loopstart;)
     {
       GslLong sdiff, ldiff, slen, llen, loop_len, compare_len, j;
       gfloat *sb, *lb;
@@ -852,21 +852,21 @@ gsl_data_find_loop0 (GslDataHandle         *dhandle,
   GslLong loopsize, bestloopsize = 0;
   gdouble bestscore;
 
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (cfg != NULL, 0);
-  g_return_val_if_fail (loop_start_p != NULL, 0);
-  g_return_val_if_fail (loop_end_p != NULL, 0);
-  g_return_val_if_fail (cfg->min_loop >= 1, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (cfg != NULL, 0);
+  assert_return (loop_start_p != NULL, 0);
+  assert_return (loop_end_p != NULL, 0);
+  assert_return (cfg->min_loop >= 1, 0);
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return 0;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 
-  g_return_val_if_fail (cfg->pre_loop_compare < dhandle_n_values - 1, 0);
+  assert_return (cfg->pre_loop_compare < dhandle_n_values - 1, 0);
   cfg_max_loop = cfg->max_loop < 0 ? dhandle_n_values - 1 - cfg->pre_loop_compare : cfg->max_loop;
-  g_return_val_if_fail (cfg_max_loop >= cfg->min_loop, 0);
-  g_return_val_if_fail (cfg->pre_loop_compare + cfg_max_loop < dhandle_n_values, 0);
-  g_return_val_if_fail (cfg->cmp_strategy == GSL_DATA_TAIL_LOOP_CMP_LEAST_SQUARE ||
+  assert_return (cfg_max_loop >= cfg->min_loop, 0);
+  assert_return (cfg->pre_loop_compare + cfg_max_loop < dhandle_n_values, 0);
+  assert_return (cfg->cmp_strategy == GSL_DATA_TAIL_LOOP_CMP_LEAST_SQUARE ||
 			cfg->cmp_strategy == GSL_DATA_TAIL_LOOP_CMP_CORRELATION, 0);
 
   dcache = gsl_data_cache_new (dhandle, 1);
@@ -899,10 +899,10 @@ gsl_data_find_loop0 (GslDataHandle         *dhandle,
 	{
 	  perc_count = 0;
 	  perc_val++;
-	  g_printerr ("processed %llu%%       \r", perc_val);
+	  printerr ("processed %llu%%       \r", perc_val);
 	}
     }
-  g_printerr ("\nbest match (%s): len in samples=%lld, len=%lld, score=%f\n",
+  printerr ("\nbest match (%s): len in samples=%lld, len=%lld, score=%f\n",
 	      (cfg->cmp_strategy == GSL_DATA_TAIL_LOOP_CMP_CORRELATION) ? "correlation" : "least squares",
 	      bestloopsize, bestloopsize, bestscore);
 

@@ -27,7 +27,7 @@ bse_undo_stack_new (BseProject   *project,
 {
   BseUndoStack *self;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  assert_return (BSE_IS_PROJECT (project), NULL);
 
   self = g_new0 (BseUndoStack, 1);
   self->ignore_steps = 0; /* reset dummy specific value */
@@ -98,7 +98,7 @@ void
 bse_undo_group_open (BseUndoStack   *self,
                      const gchar    *name)
 {
-  g_return_if_fail (name != NULL);
+  assert_return (name != NULL);
 
   if (!self->n_open_groups)
     {
@@ -124,8 +124,8 @@ bse_undo_stack_push (BseUndoStack *self,
 {
   const char *debug_name = self->debug_names ? (const char*) self->debug_names->data : "-";
 
-  g_return_if_fail (self->n_open_groups > 0);
-  g_return_if_fail (ustep != NULL);
+  assert_return (self->n_open_groups > 0);
+  assert_return (ustep != NULL);
 
   if (self->ignore_steps)
     {
@@ -144,7 +144,7 @@ void
 bse_undo_stack_push_add_on (BseUndoStack *self,
                             BseUndoStep  *ustep)
 {
-  g_return_if_fail (ustep != NULL);
+  assert_return (ustep != NULL);
 
   /* add-ons are generally used as state-guards. that is, if a an already added
    * undo-steps requires the object to be in a certain state, an add-on step
@@ -161,7 +161,7 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
   else if (self->undo_groups)
     {
       BseUndoGroup *group = (BseUndoGroup*) self->undo_groups->data;    /* fetch last group */
-      g_return_if_fail (group->undo_steps != NULL);     /* empty groups are not allowed */
+      assert_return (group->undo_steps != NULL);     /* empty groups are not allowed */
       UDEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to last group]", ustep->undo_func);
       ustep->debug_name = g_strdup ("AddOn");
       group->undo_steps = sfi_ring_push_head (group->undo_steps, ustep);
@@ -176,14 +176,14 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
 void
 bse_undo_stack_unignore_steps (BseUndoStack *self)
 {
-  g_return_if_fail (self->ignore_steps > 0);
+  assert_return (self->ignore_steps > 0);
   self->ignore_steps--;
 }
 
 void
 bse_undo_group_close (BseUndoStack *self)
 {
-  g_return_if_fail (self->n_open_groups > 0);
+  assert_return (self->n_open_groups > 0);
 
   g_free (g_slist_pop_head (&self->debug_names));
   self->n_open_groups--;
@@ -253,7 +253,7 @@ void
 bse_undo_stack_add_merger (BseUndoStack   *self,
                            const gchar    *name)
 {
-  g_return_if_fail (name != NULL);
+  assert_return (name != NULL);
 
   self->n_merge_requests++;
   if (!self->merge_name)
@@ -292,7 +292,7 @@ void
 bse_undo_stack_undo (BseUndoStack *self)
 {
   if (self->group)
-    g_return_if_fail (self->group->undo_steps == NULL);
+    assert_return (self->group->undo_steps == NULL);
 
   BseUndoGroup *group = (BseUndoGroup*) sfi_ring_pop_head (&self->undo_groups);
   if (group)
@@ -322,7 +322,7 @@ bse_undo_stack_undo (BseUndoStack *self)
     }
 
   if (self->group)
-    g_return_if_fail (self->group->undo_steps == NULL);
+    assert_return (self->group->undo_steps == NULL);
 }
 
 BseUndoStep*
@@ -330,7 +330,7 @@ bse_undo_step_new (BseUndoFunc     undo_func,
                    BseUndoFree     free_func,
                    guint           n_data_fields)
 {
-  g_return_val_if_fail (undo_func != NULL, NULL);
+  assert_return (undo_func != NULL, NULL);
 
   BseUndoStep *ustep = (BseUndoStep*) g_malloc0 (sizeof (BseUndoStep) + sizeof (ustep->data) * (MAX (n_data_fields, 1) - 1));
   ustep->undo_func = undo_func;
@@ -360,7 +360,8 @@ gchar*
 bse_undo_pointer_pack (gpointer      _item,
                        BseUndoStack *ustack)
 {
-  g_return_val_if_fail (ustack != NULL, NULL);
+  // sync with ItemImpl::make_undo_descriptor_data
+  assert_return (ustack != NULL, NULL);
   if (!_item)
     return NULL;
   BseItem *item = BSE_ITEM (_item);
@@ -369,7 +370,7 @@ bse_undo_pointer_pack (gpointer      _item,
     return NULL;
 
   BseProject *project = bse_item_get_project (item);
-  g_return_val_if_fail (project != NULL, NULL);
+  assert_return (project != NULL, NULL);
 
   /* upaths start out with chars >= 7 */
   if (item == (BseItem*) project)
@@ -382,9 +383,10 @@ gpointer
 bse_undo_pointer_unpack (const gchar  *packed_pointer,
                          BseUndoStack *ustack)
 {
+  // sync with ItemImpl::resolve_undo_descriptor_data
   gpointer item;
 
-  g_return_val_if_fail (ustack != NULL, NULL);
+  assert_return (ustack != NULL, NULL);
 
   if (!packed_pointer)
     return NULL;
@@ -397,7 +399,7 @@ bse_undo_pointer_unpack (const gchar  *packed_pointer,
 
   item = bse_container_resolve_upath (BSE_CONTAINER (ustack->project), packed_pointer);
 
-  g_return_val_if_fail (item != NULL, NULL);
+  assert_return (item != NULL, NULL);
 
   return item;
 }

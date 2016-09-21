@@ -234,7 +234,7 @@ menu_button_max_size (GxkMenuButton *self)
     {
       GList *list, *children = GTK_MENU_SHELL (self->menu)->children;
       GtkRequisition child_requisition = { 0, };
-      guint width = 0, height = 0;
+      int width = 0, height = 0;
       for (list = children; list; list = list->next)
         {
           GtkWidget *mitem = (GtkWidget*) list->data;
@@ -545,7 +545,7 @@ static GtkWidget*
 menu_button_create_button (GxkMenuButton *self,
                            gpointer       child)
 {
-  g_return_val_if_fail (self->button == NULL, NULL);
+  assert_return (self->button == NULL, NULL);
   self->button = (GtkWidget*) g_object_new (GTK_TYPE_BUTTON,
                                             "relief", self->relief,
                                             "child", child ? gtk_widget_get_toplevel ((GtkWidget*) child) : NULL,

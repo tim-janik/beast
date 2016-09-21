@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
 #include "bseutils.hh"
 #include "gsldatautils.hh"
 
@@ -14,104 +13,31 @@
 
 
 /* --- record utils --- */
-BseNoteDescription*
-bse_note_description (BseMusicalTuningType   musical_tuning,
-                      int                    note,
-                      int                    fine_tune)
+Bse::PartNote
+bse_part_note (uint id, uint channel, uint tick, uint duration, int note, int fine_tune, double velocity, bool selected)
 {
-  BseNoteDescription *info = bse_note_description_new ();
-
-  info->musical_tuning = musical_tuning;
-  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    {
-      gchar letter;
-      info->note = note;
-      gboolean black_semitone = false;
-      bse_note_examine (info->note,
-                        &info->octave,
-                        &info->semitone,
-                        &black_semitone,
-                        &letter);
-      info->upshift = black_semitone;
-      info->letter = letter;
-      info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
-      info->freq = bse_note_to_tuned_freq (musical_tuning, info->note, info->fine_tune);
-      info->name = bse_note_to_string (info->note);
-      info->max_fine_tune = BSE_MAX_FINE_TUNE;
-      info->kammer_note = BSE_KAMMER_NOTE;
-    }
-  else
-    {
-      info->note = BSE_NOTE_VOID;
-      info->name = NULL;
-      info->max_fine_tune = BSE_MAX_FINE_TUNE;
-      info->kammer_note = BSE_KAMMER_NOTE;
-    }
-  return info;
-}
-
-BsePartNote*
-bse_part_note (guint    id,
-	       guint    channel,
-	       guint    tick,
-	       guint    duration,
-	       gint     note,
-	       gint     fine_tune,
-	       gfloat   velocity,
-	       gboolean selected)
-{
-  BsePartNote *pnote = bse_part_note_new ();
-
-  pnote->id = id;
-  pnote->channel = channel;
-  pnote->tick = tick;
-  pnote->duration = duration;
-  pnote->note = note;
-  pnote->fine_tune = fine_tune;
-  pnote->velocity = velocity;
-  pnote->selected = selected != FALSE;
-
+  Bse::PartNote pnote;
+  pnote.id = id;
+  pnote.channel = channel;
+  pnote.tick = tick;
+  pnote.duration = duration;
+  pnote.note = note;
+  pnote.fine_tune = fine_tune;
+  pnote.velocity = velocity;
+  pnote.selected = selected != false;
   return pnote;
 }
 
-void
-bse_part_note_seq_take_append (BsePartNoteSeq *seq,
-			       BsePartNote    *element)
+Bse::PartControl
+bse_part_control (uint id, uint tick, Bse::MidiSignal control_type, double value, bool selected)
 {
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (element != NULL);
-
-  bse_part_note_seq_append (seq, element);
-  bse_part_note_free (element);
-}
-
-BsePartControl*
-bse_part_control (guint              id,
-                  guint              tick,
-                  BseMidiSignalType  ctype,
-                  gfloat             value,
-                  gboolean           selected)
-{
-  BsePartControl *pctrl = bse_part_control_new ();
-
-  pctrl->id = id;
-  pctrl->tick = tick;
-  pctrl->control_type = ctype;
-  pctrl->value = value;
-  pctrl->selected = selected != FALSE;
-
+  Bse::PartControl pctrl;
+  pctrl.id = id;
+  pctrl.tick = tick;
+  pctrl.control_type = control_type;
+  pctrl.value = value;
+  pctrl.selected = selected != false;
   return pctrl;
-}
-
-void
-bse_part_control_seq_take_append (BsePartControlSeq *seq,
-                                  BsePartControl    *element)
-{
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (element != NULL);
-
-  bse_part_control_seq_append (seq, element);
-  bse_part_control_free (element);
 }
 
 void
@@ -143,7 +69,7 @@ bse_property_candidate_relabel (BsePropertyCandidates *pc,
 }
 
 void
-bse_item_seq_remove (BseItemSeq *iseq,
+bse_it3m_seq_remove (BseIt3mSeq *iseq,
                      BseItem    *item)
 {
   guint i;
@@ -158,7 +84,7 @@ bse_item_seq_remove (BseItemSeq *iseq,
 }
 
 SfiRing*
-bse_item_seq_to_ring (BseItemSeq *iseq)
+bse_it3m_seq_to_ring (BseIt3mSeq *iseq)
 {
   SfiRing *ring = NULL;
   guint i;
@@ -168,13 +94,13 @@ bse_item_seq_to_ring (BseItemSeq *iseq)
   return ring;
 }
 
-BseItemSeq*
-bse_item_seq_from_ring (SfiRing *ring)
+BseIt3mSeq*
+bse_it3m_seq_from_ring (SfiRing *ring)
 {
-  BseItemSeq *iseq = bse_item_seq_new();
+  BseIt3mSeq *iseq = bse_it3m_seq_new();
   SfiRing *node;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    bse_item_seq_append (iseq, (BseItem*) node->data);
+    bse_it3m_seq_append (iseq, (BseItem*) node->data);
   return iseq;
 }
 
@@ -266,13 +192,13 @@ typedef struct
   guint          height : 12;
   const guint8  *encoded_pix_data;
 } BsePixdata;
-static BseIcon*
-bse_icon_from_pixdata (const BsePixdata *pixdata)
+static BseIc0n*
+bse_ic0n_from_pixdata (const BsePixdata *pixdata)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
   guint bpp, encoding;
 
-  g_return_val_if_fail (pixdata != NULL, NULL);
+  assert_return (pixdata != NULL, NULL);
 
   if (pixdata->width < 1 || pixdata->width > 128 ||
       pixdata->height < 1 || pixdata->height > 128)
@@ -292,10 +218,10 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     }
   if (!pixdata->encoded_pix_data)
     return NULL;
-  icon = bse_icon_new ();
+  icon = bse_ic0n_new ();
   icon->width = pixdata->width;
   icon->height = pixdata->height;
-  bse_pixel_seq_resize (icon->pixel_seq, icon->width * icon->height);
+  bse_p1xel_seq_resize (icon->pixel_seq, icon->width * icon->height);
   guint8 *image_buffer = (guint8*) icon->pixel_seq->pixels;
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
@@ -357,13 +283,13 @@ get_uint32 (const guint8 *stream, guint *result)
   *result = (stream[0] << 24) + (stream[1] << 16) + (stream[2] << 8) + stream[3];
   return stream + 4;
 }
-BseIcon*
-bse_icon_from_pixstream (const guint8 *pixstream)
+BseIc0n*
+bse_ic0n_from_pixstream (const guint8 *pixstream)
 {
   BsePixdata pixd;
   const guint8 *s = pixstream;
   guint len, type, rowstride, width, height;
-  g_return_val_if_fail (pixstream != NULL, NULL);
+  assert_return (pixstream != NULL, NULL);
   if (strncmp ((const char*) s, "GdkP", 4) != 0)
     return NULL;
   s += 4;
@@ -383,7 +309,7 @@ bse_icon_from_pixstream (const guint8 *pixstream)
   pixd.width = width;
   pixd.height = height;
   pixd.encoded_pix_data = s;
-  return bse_icon_from_pixdata (&pixd);
+  return bse_ic0n_from_pixdata (&pixd);
 }
 /* --- ID allocator --- */
 #define	ID_WITHHOLD_BUFFER_SIZE		59
@@ -397,7 +323,7 @@ static gulong *free_id_buffer = NULL;
 void
 bse_id_free (gulong id)
 {
-  g_return_if_fail (id > 0);
+  assert_return (id > 0);
 
   /* release oldest withheld id */
   if (n_buffer_ids >= ID_WITHHOLD_BUFFER_SIZE)
@@ -447,7 +373,7 @@ bse_xinfos_add_value (gchar          **xinfos,
                       const gchar     *key,
                       const gchar     *value)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  assert_return (key != NULL && strchr (key, '=') == NULL, xinfos);
   if (!value || !value[0])
     return bse_xinfos_del_value (xinfos, key);
   else
@@ -482,7 +408,7 @@ gchar**
 bse_xinfos_parse_assignment (gchar          **xinfos,
                              const gchar     *assignment)
 {
-  g_return_val_if_fail (assignment != NULL, xinfos);
+  assert_return (assignment != NULL, xinfos);
   const gchar *e = strchr (assignment, '=');
   if (e && e > assignment)
     {
@@ -501,7 +427,7 @@ gchar**
 bse_xinfos_del_value (gchar       **xinfos,
                       const gchar  *key)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  assert_return (key != NULL && strchr (key, '=') == NULL, xinfos);
   if (xinfos)
     {
       gchar *ckey = canonify_xinfo_key (key);
@@ -539,16 +465,14 @@ bse_xinfos_add_num (gchar          **xinfos,
                     const gchar     *key,
                     SfiNum           num)
 {
-  gchar buffer[128];
-  g_snprintf (buffer, sizeof (buffer), "%lld", num);
-  return bse_xinfos_add_value (xinfos, key, buffer);
+  return bse_xinfos_add_value (xinfos, key, string_format ("%d", num).c_str());
 }
 
 const gchar*
 bse_xinfos_get_value (gchar          **xinfos,
                       const gchar     *key)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, NULL);
+  assert_return (key != NULL && strchr (key, '=') == NULL, NULL);
   if (xinfos)
     {
       guint i, l = strlen (key);
@@ -670,5 +594,101 @@ bse_string_equals (gconstpointer string1,
     return string1 == string2;
 }
 
-#include "bseclientapi.cc"
-#include "bseserverapi.cc"      // build AIDA IDL stubs
+namespace Bse {
+
+/// Create a Bse::Icon from a GdkPixbuf pixstream.
+Icon
+icon_from_pixstream (const uint8 *pixstream)
+{
+  const Icon none;
+  assert_return (pixstream != NULL, none);
+  const uint8 *s = pixstream;
+  if (strncmp ((const char*) s, "GdkP", 4) != 0)
+    return none;
+  s += 4;
+  uint len = 0, type = 0, rowstride = 0, width = 0, height = 0;
+  s = get_uint32 (s, &len);
+  if (len < 24)
+    return none;
+  s = get_uint32 (s, &type);
+  if (type != 0x02010002 &&     /* RLE/8bit/RGBA */
+      type != 0x01010002)       /* RAW/8bit/RGBA */
+    return none;
+  const int bpp = 4; // RGBA
+  const bool rle_encoded = type >> 24 == 2;
+  s = get_uint32 (s, &rowstride);
+  s = get_uint32 (s, &width);
+  s = get_uint32 (s, &height);
+  const uint8 *const encoded_pix_data = s;
+  if (width < 1 || height < 1 || width > 128 || height > 128)
+    return none;
+  Bse::Icon icon;
+  icon.width = width;
+  icon.height = height;
+  icon.pixels.resize (icon.width * icon.height);
+  static_assert (sizeof (icon.pixels[0]) == 4, "sizeof (pixel) == bpp"); // == bpp
+  uint8 *image_buffer = (uint8*) &icon.pixels[0];
+  if (bpp != BSE_PIXDATA_RGB && bpp != BSE_PIXDATA_RGBA)
+    return none;
+  if (rle_encoded)
+    {
+      const uint8 *const image_limit = image_buffer + icon.width * icon.height * bpp;
+      const uint8 *rle_buffer = encoded_pix_data;
+      while (image_buffer < image_limit)
+	{
+	  uint length = *(rle_buffer++);
+          bool check_overrun = false;
+	  if (length & 128)
+	    {
+	      length = length - 128;
+	      check_overrun = image_buffer + length * bpp > image_limit;
+	      if (check_overrun)
+		length = (image_limit - image_buffer) / bpp;
+	      if (bpp < 4)
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 3);
+                    image_buffer[3] = 0xff;
+		    image_buffer += 4;
+		  }
+		while (--length);
+	      else
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 4);
+		    image_buffer += 4;
+		  }
+		while (--length);
+	      rle_buffer += bpp;
+	    }
+	  else
+	    {
+	      length *= bpp;
+	      check_overrun = image_buffer + length > image_limit;
+	      if (check_overrun)
+		length = image_limit - image_buffer;
+              for (uint i = 0; i < length / bpp; i++)
+                {
+                  memcpy (image_buffer + i * 4, rle_buffer + i * bpp, bpp);
+                  if (bpp == 3)
+                    *(image_buffer + i * 4 + 3) = 0xff;
+                }
+	      image_buffer += length;
+	      rle_buffer += length;
+	    }
+          if (check_overrun)
+            {
+              critical ("%s: pixdata with invalid encoding", RAPICORN_SIMPLE_FUNCTION);
+              return none;
+            }
+        }
+    }
+  else
+    memcpy (image_buffer, encoded_pix_data, icon.width * icon.height * bpp);
+  return icon;
+}
+
+} // Bse
+
+
+#include "bseserverapi.cc"      // build IDL server interface

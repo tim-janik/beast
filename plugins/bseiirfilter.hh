@@ -2,6 +2,7 @@
 #ifndef __BSE_IIR_FILTER_H__
 #define __BSE_IIR_FILTER_H__
 #include <bse/bsesource.hh>
+#include <bse/bseenums.hh>
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -19,7 +20,7 @@ struct BseIIRFilterVars {
   gdouble b[BSE_IIR_FILTER_MAX_ORDER];
 };
 struct BseIIRFilter : BseSource {
-  BseIIRFilterAlgorithm filter_algo;
+  BseIIRFilterKind      filter_algo;
   BseIIRFilterType      filter_type;
   guint		        algo_type_change : 1;
   guint		order;

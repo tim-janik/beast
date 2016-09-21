@@ -48,7 +48,6 @@ struct BseMidiSynthClass;
 struct BseMidiContext;
 struct BseObject;
 struct BseObjectClass;
-struct BseParasite;
 struct BsePart;
 struct BsePartClass;
 struct BsePcmWriter;
@@ -142,5 +141,19 @@ const gchar* bse_gettext (const gchar *text);
 #define N_(str) (str)
 
 G_END_DECLS
+
+namespace Bse {
+
+class ObjectImpl;
+class ItemImpl;
+class SourceImpl;
+class ContainerImpl;
+class SuperImpl;
+class PartImpl;
+class SNetImpl;
+class ProjectImpl;
+class ServerImpl;
+
+} // Bse
 
 #endif /* __BSE_DEFS_H__ */

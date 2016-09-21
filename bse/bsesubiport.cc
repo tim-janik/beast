@@ -237,7 +237,7 @@ bse_sub_iport_update_modules (BseSubIPort   *self,
   BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
 
-  g_return_if_fail (BSE_SOURCE_PREPARED (self));
+  assert_return (BSE_SOURCE_PREPARED (self));
 
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)
@@ -278,7 +278,7 @@ bse_sub_iport_class_init (BseSubIPortClass *klass)
       ident = g_strdup_format ("output-%u", i + 1);
       label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
-      g_assert (channel_id == i);
+      assert (channel_id == i);
       g_free (ident);
       g_free (label);
 

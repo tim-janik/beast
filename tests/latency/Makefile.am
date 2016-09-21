@@ -1,4 +1,4 @@
-# BSE - Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
@@ -11,7 +11,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 
 # IDL generation rule for plugins
-%.genidl.hh: %.idl $(BSEPGEN) $(SFIDL)
+%.genidl.hh: %.idl $(BSEPGEN) # $(SFIDL)
 	$(SFIDL) $(SFIDL_INC) --plugin --macro $(<F) $< > $@ || (rm $@ ; exit 1 )
 
 #
@@ -20,7 +20,7 @@ BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 # bselatencytest:
 bselatencytest_la_SOURCES = bselatencytest.cc
 bselatencytest_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
+bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.genidl.hh

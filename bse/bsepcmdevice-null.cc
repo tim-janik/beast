@@ -36,7 +36,7 @@ bse_pcm_device_null_list_devices (BseDevice *device)
   return ring;
 }
 
-static BseErrorType
+static Bse::Error
 bse_pcm_device_null_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -62,8 +62,8 @@ bse_pcm_device_null_open (BseDevice     *device,
   else
     null->sleep_us = 10 * 1000;
   BSE_PCM_DEVICE (device)->handle = handle;
-  PDEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
-  return BSE_ERROR_NONE;
+  PDEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (Bse::Error::NONE));
+  return Bse::Error::NONE;
 }
 
 static void

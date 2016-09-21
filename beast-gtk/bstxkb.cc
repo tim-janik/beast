@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstxkb.hh"
-
-#include "topconfig.h"
 #include <string.h>
 
 #ifdef	BST_WITH_XKB
@@ -26,8 +24,8 @@ bst_xkb_open (const gchar *const_display,
   int ext_major = XkbMajorVersion;
   int ext_minor = XkbMinorVersion;
 
-  g_return_val_if_fail (display != NULL, FALSE);
-  g_return_val_if_fail (bst_xkb_display == NULL, FALSE);
+  assert_return (display != NULL, FALSE);
+  assert_return (bst_xkb_display == NULL, FALSE);
 
   bst_xkb_display = XkbOpenDisplay (display,
 				    &ext_base_event,
@@ -69,7 +67,7 @@ bst_xkb_open (const gchar *const_display,
 void
 bst_xkb_close (void)
 {
-  g_return_if_fail (bst_xkb_display != NULL);
+  assert_return (bst_xkb_display != NULL);
 
   XkbFreeKeyboard (bst_xkb_desc, XkbAllComponentsMask, True);
   bst_xkb_desc = NULL;
@@ -82,7 +80,7 @@ bst_xkb_get_symbol (gboolean physical)
 {
   gchar *name;
 
-  g_return_val_if_fail (bst_xkb_desc != NULL, NULL);
+  assert_return (bst_xkb_desc != NULL, NULL);
 
   if (physical)
     name = bst_xkb_desc->names->phys_symbols ? XGetAtomName (bst_xkb_display, bst_xkb_desc->names->phys_symbols) : "";
@@ -95,7 +93,7 @@ bst_xkb_get_symbol (gboolean physical)
 void
 bst_xkb_dump (void)
 {
-  g_return_if_fail (bst_xkb_desc != NULL);
+  assert_return (bst_xkb_desc != NULL);
 
   g_message ("XKB: keycodes: %s types: %s "
 	     "symbols: %s phys_symbols: %s "

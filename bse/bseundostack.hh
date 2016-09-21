@@ -87,7 +87,6 @@ gchar*             bse_undo_pointer_pack         (gpointer        item,
                                                   BseUndoStack   *ustack);
 gpointer           bse_undo_pointer_unpack       (const gchar    *packed_pointer,
                                                   BseUndoStack   *ustack);
-
 const BseUndoStep* bse_undo_group_peek_last_atom (BseUndoStack   *self,
                                                   SfiTime        *stamp_p);
 

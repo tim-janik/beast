@@ -1,5 +1,4 @@
-# Birnet
-# Copyright (C) 2006 Tim Janik
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
@@ -8,28 +7,28 @@ AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
 progs_nosfi_ldadd = $(RAPICORN_LIBS) $(SFI_LIBS) -lm
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
+progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
-TESTS       += ring
+TAPTESTS    += ring
 ring_SOURCES = ring.cc
 ring_LDADD   = $(progs_ldadd)
 
 # misctests
-TESTS	          += misctests
+TAPTESTS          += misctests
 misctests_SOURCES  = misctests.cc
 misctests_LDADD	   = $(progs_ldadd)
 $(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
-TESTS	       += testcxx
+TAPTESTS	       += testcxx
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD   = $(progs_ldadd)
 $(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
-TESTS	         += testsfidl
+TAPTESTS         += testsfidl
 testsfidl_SOURCES = testsfidl.cc
 testsfidl_LDADD   = $(progs_nosfi_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c

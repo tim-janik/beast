@@ -69,9 +69,9 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
 #define	BSE_TYPE_ID(BseTypeName)	(bse_type_builtin_id_##BseTypeName)
 #ifdef BSE_COMPILATION
 #  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
-#  define BSE_BUILTIN_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName); EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
-#  define BSE_DUMMY_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName) { return 0; } \
-                                         EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
+#  define BSE_BUILTIN_TYPE(BseTypeName)	 extern "C" BSE_BUILTIN_PROTO (BseTypeName); extern "C" BSE_BUILTIN_PROTO (BseTypeName)
+#  define BSE_DUMMY_TYPE(BseTypeName)	 extern "C" BSE_BUILTIN_PROTO (BseTypeName); \
+                                         extern "C" BSE_BUILTIN_PROTO (BseTypeName) { return 0; }
 #endif /* BSE_COMPILATION */
 
 
@@ -148,11 +148,10 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, #dval, cvalues, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Choice_default(group, locfile, locline, name, cvalues) \
   sfidl_pspec_Choice (group, locfile, locline, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_String sfidl_pspec_SfiString
 #define sfidl_pspec_SfiString(group, locfile, locline, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
-#define sfidl_pspec_String_default(group, locfile, locline, name) \
-  sfidl_pspec_String (group, locfile, locline, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
+#define sfidl_pspec_SfiString_default(group, locfile, locline, name) \
+  sfidl_pspec_SfiString (group, locfile, locline, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
 #define sfidl_pspec_BBlock(group, locfile, locline, name, nick, blurb, options) \
   sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, options), group)
 #define sfidl_pspec_BBlock_default(group, locfile, locline, name) \

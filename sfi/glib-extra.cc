@@ -8,8 +8,8 @@ g_object_disconnect_any (gpointer object,
                          gpointer function,
                          gpointer data)
 {
-  g_return_if_fail (G_IS_OBJECT (object));
-  g_return_if_fail (function != NULL);
+  assert_return (G_IS_OBJECT (object));
+  assert_return (function != NULL);
   /* FIXME: the only reason we have this function is that
    * g_object_disconnect() throws a warning for an any-signal::
    * disconnection that does not exist (it may do so for all-signals
@@ -22,32 +22,6 @@ g_object_disconnect_any (gpointer object,
 
 
 /* --- string functions --- */
-const gchar*
-g_printf_find_localised_directive (const gchar *format)
-{
-  static const gchar *pass_flags = "#0- +0123456789*$hlLqjzt";
-  static const gchar *locale_flags = "I'";
-  static const gchar *pass_conversion = "%diouxXcCsSpn";
-  static const gchar *locale_conversion = "eEfFgGaA";
-  if (format)
-    {
-      const gchar *perc = strchr (format, '%');
-      while (perc)
-        {
-          const gchar *p = perc + 1;
-          while (strchr (pass_flags, *p))
-            p++;
-          if (strchr (locale_flags, *p) ||
-              strchr (locale_conversion, *p))
-            return perc;
-          if (!strchr (pass_conversion, *p))
-            return perc;        /* unable to determine directive specifier */
-          perc = strchr (p + 1, '%');
-        }
-    }
-  return NULL;
-}
-
 gchar**
 g_straddv (gchar      **str_array,
 	   const gchar *new_str)
@@ -198,18 +172,6 @@ g_intern_strconcat (const gchar *first_string,
   return c;
 }
 
-gchar*
-g_path_concat (const gchar *first_path,
-               ...)
-{
-  va_list args;
-  gchar *s;
-  va_start (args, first_path);
-  s = delim_concat_varargs (first_path, G_SEARCHPATH_SEPARATOR, args);
-  va_end (args);
-  return s;
-}
-
 GString*
 g_string_prefix_lines (GString     *gstring,
                        const gchar *pstr)
@@ -250,7 +212,7 @@ g_option_find_value (const gchar *option_string,
   const gchar *p, *match = NULL;
   gint l = strlen (option);
 
-  g_return_val_if_fail (l > 0, NULL);
+  assert_return (l > 0, NULL);
 
   if (!option_string)
     return NULL;        /* option not found */
@@ -364,7 +326,7 @@ g_param_spec_set_options (GParamSpec  *pspec,
 {
   if (!quark_pspec_options)
     quark_pspec_options = g_quark_from_static_string ("GParamSpec-options");
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   if (options)
     g_param_spec_set_qdata (pspec, quark_pspec_options, (gchar*) g_intern_string (options));
   /* pspec->flags &= ~G_PARAM_MASK; */
@@ -376,7 +338,7 @@ g_param_spec_check_option (GParamSpec  *pspec,
                            const gchar *option)
 {
   const gchar *poptions;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
   poptions = g_param_spec_get_options (pspec);
   return g_option_check (poptions, option);
 }
@@ -388,9 +350,9 @@ g_param_spec_add_option (GParamSpec  *pspec,
 {
   const gchar *options;
   guint append = 0;
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (option != NULL && !strchr (option, ':'));
-  g_return_if_fail (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (option != NULL && !strchr (option, ':'));
+  assert_return (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
   options = g_param_spec_get_options (pspec);
   if (!options)
     options = "";
@@ -418,8 +380,8 @@ g_param_spec_provides_options (GParamSpec  *pspec,
                                const gchar *options)
 {
   const gchar *p;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
-  g_return_val_if_fail (options != NULL, FALSE);
+  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
+  assert_return (options != NULL, FALSE);
  recurse:
   while (options[0] == ':')
     options++;
@@ -444,7 +406,7 @@ const gchar*
 g_param_spec_get_options (GParamSpec *pspec)
 {
   const char *options;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
   options = (const char*) g_param_spec_get_qdata (pspec, quark_pspec_options);
   return options ? options : "";
 }
@@ -461,7 +423,7 @@ g_param_spec_set_istepping (GParamSpec  *pspec,
       quark_pspec_istepping = g_quark_from_static_string ("GParamSpec-istepping");
       quark_pspec_istepping64 = g_quark_from_static_string ("GParamSpec-istepping64");
     }
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   if (stepping >> 32)
     {
       guint64 *istepping64 = g_new (guint64, 1);
@@ -480,7 +442,7 @@ guint64
 g_param_spec_get_istepping (GParamSpec *pspec)
 {
   guint64 stepping;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
   stepping = size_t (g_param_spec_get_qdata (pspec, quark_pspec_istepping));
   if (!stepping)
     {
@@ -498,7 +460,7 @@ g_param_spec_set_fstepping (GParamSpec  *pspec,
 {
   if (!quark_pspec_fstepping)
     quark_pspec_fstepping = g_quark_from_static_string ("GParamSpec-fstepping");
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   if (stepping)
     {
       gdouble *fstepping = g_new (gdouble, 1);
@@ -513,7 +475,7 @@ gdouble
 g_param_spec_get_fstepping (GParamSpec *pspec)
 {
   double *fstepping;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
   fstepping = (double*) g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
   return fstepping ? *fstepping : 0;
 }
@@ -534,7 +496,7 @@ g_param_spec_set_log_scale (GParamSpec  *pspec,
 {
   if (!quark_pspec_log_scale)
     quark_pspec_log_scale = g_quark_from_static_string ("GParamSpec-log-scale");
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   if (n_steps > 0 && base > 0)
     {
       LogScale *lscale = g_new0 (LogScale, 1);
@@ -555,7 +517,7 @@ g_param_spec_get_log_scale (GParamSpec  *pspec,
                             gdouble     *n_steps)
 {
   LogScale *lscale;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
   lscale = (LogScale*) g_param_spec_get_qdata (pspec, quark_pspec_log_scale);
   if (lscale)
     {
@@ -577,7 +539,7 @@ g_slist_pop_head (GSList **slist_p)
 {
   gpointer data;
 
-  g_return_val_if_fail (slist_p != NULL, NULL);
+  assert_return (slist_p != NULL, NULL);
 
   if (!*slist_p)
     return NULL;
@@ -605,7 +567,7 @@ g_list_pop_head (GList **list_p)
 {
   gpointer data;
 
-  g_return_val_if_fail (list_p != NULL, NULL);
+  assert_return (list_p != NULL, NULL);
 
   if (!*list_p)
     return NULL;
@@ -750,7 +712,7 @@ type_name_to_cname (const gchar *type_name,
 gchar*
 g_type_name_to_cname (const gchar *type_name)
 {
-  g_return_val_if_fail (type_name != NULL, NULL);
+  assert_return (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '_', FALSE);
 }
@@ -758,7 +720,7 @@ g_type_name_to_cname (const gchar *type_name)
 gchar*
 g_type_name_to_sname (const gchar *type_name)
 {
-  g_return_val_if_fail (type_name != NULL, NULL);
+  assert_return (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '-', FALSE);
 }
@@ -766,7 +728,7 @@ g_type_name_to_sname (const gchar *type_name)
 gchar*
 g_type_name_to_cupper (const gchar *type_name)
 {
-  g_return_val_if_fail (type_name != NULL, NULL);
+  assert_return (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '_', TRUE);
 }
@@ -774,9 +736,23 @@ g_type_name_to_cupper (const gchar *type_name)
 gchar*
 g_type_name_to_type_macro (const gchar *type_name)
 {
-  g_return_val_if_fail (type_name != NULL, NULL);
+  assert_return (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
+}
+
+/// Check if @a s1 is equal to @a s2, while ignoring separator differences like '-' vs '_'.
+bool
+g_sname_equals (const std::string &s1, const std::string &s2)
+{
+  if (s1.size() != s2.size())
+    return false;
+  for (size_t i = 0; i < s1.size(); i++)
+    if (s1.data()[i] != s2.data()[i] &&
+        (s1.data()[i] == '_' ? '-' : s1.data()[i]) !=
+        (s2.data()[i] == '_' ? '-' : s2.data()[i]))
+      return false;
+  return true;
 }
 
 
@@ -853,8 +829,8 @@ g_source_simple (gint            priority,
   va_list var_args;
   GPollFD *pfd;
 
-  g_return_val_if_fail (pending != NULL, NULL);
-  g_return_val_if_fail (dispatch != NULL, NULL);
+  assert_return (pending != NULL, NULL);
+  assert_return (dispatch != NULL, NULL);
 
   source = g_source_new (&simple_source_funcs, sizeof (SimpleSource));
   g_source_set_priority (source, priority);
@@ -921,7 +897,7 @@ g_predicate_idle_add_full (gint            priority,
                            GDestroyNotify  notify)
 {
   static GSourceFuncs predicate_idle_funcs = { predicate_idle_prepare, predicate_idle_check, predicate_idle_dispatch, };
-  g_return_val_if_fail (predicate && function, 0);
+  assert_return (predicate && function, 0);
   GSource *source = g_source_new (&predicate_idle_funcs, sizeof (PredicateIdle));
   g_source_set_priority (source, priority);
   ((PredicateIdle*) source)->predicate = predicate;
@@ -1019,7 +995,7 @@ g_usignal_add_full (gint           priority,
   GUSignalData *usignal_data;
   guint s = 128 + usignal;
 
-  g_return_val_if_fail (function != NULL, 0);
+  assert_return (function != NULL, 0);
 
   usignal_data = g_new (GUSignalData, 1);
   usignal_data->index = s / 32;
@@ -1046,6 +1022,58 @@ GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {
   if (!config_templ->store_int64)
-    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", G_STRFUNC);
+    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", __func__);
   return g_scanner_new (config_templ);
 }
+
+
+#include "../configure.h"
+
+namespace Bse {
+
+// == BSE_INSTALLPATH ==
+static String installpath_topdir;
+
+void
+installpath_override (const String &topdir)
+{
+  installpath_topdir = topdir;
+}
+
+std::string
+installpath (InstallpathType installpath_type)
+{
+  const bool ovr = !installpath_topdir.empty();
+  switch (installpath_type)
+    {
+    case INSTALLPATH_BSEINCLUDEDIR:                     return CONFIGURE_INSTALLPATH_BSEINCLUDEDIR;
+    case INSTALLPATH_BINDIR:                            return CONFIGURE_INSTALLPATH_BINDIR;
+    case INSTALLPATH_LOCALEBASE:                        return CONFIGURE_INSTALLPATH_LOCALEBASE;
+    case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
+    case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
+    case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
+    case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
+    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/plugins";
+    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/drivers";
+    case INSTALLPATH_DATADIR:                           return CONFIGURE_INSTALLPATH_DATADIR;
+    case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/demo";
+    case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/samples";
+    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/effects";
+    case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/instruments";
+    case INSTALLPATH_DATADIR_SCRIPTS:                   return installpath (INSTALLPATH_DATADIR) + "/scripts";
+    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
+    case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
+    case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
+    case INSTALLPATH_BEASTEXECDIR:                      return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTEXECDIR;
+    case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTEXECDIR) + "/pybeast";
+    }
+  return "";
+}
+
+std::string
+version ()
+{
+  return PACKAGE_VERSION;
+}
+
+} // Bse

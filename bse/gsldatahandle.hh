@@ -37,7 +37,7 @@ typedef void (*GslDataHandleRecurse)	(GslDataHandle		*data_handle,
 					 gpointer		 data);
 struct _GslDataHandleFuncs
 {
-  BseErrorType	 (*open)		(GslDataHandle		*data_handle,
+  Bse::Error	 (*open)		(GslDataHandle		*data_handle,
 					 GslDataHandleSetup	*setup);
   int64		 (*read)		(GslDataHandle		*data_handle,
 					 int64			 voffset, /* in values */
@@ -54,7 +54,7 @@ struct _GslDataHandleFuncs
 /* --- standard functions --- */
 GslDataHandle*	  gsl_data_handle_ref		    (GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		    (GslDataHandle	  *dhandle);
-BseErrorType	  gsl_data_handle_open		    (GslDataHandle	  *dhandle);
+Bse::Error	  gsl_data_handle_open		    (GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		    (GslDataHandle	  *dhandle);
 int64		  gsl_data_handle_length	    (GslDataHandle	  *data_handle);
 #define	          gsl_data_handle_n_values(	     dh) \

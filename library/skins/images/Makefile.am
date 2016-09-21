@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 
@@ -9,6 +9,6 @@ images_DATA = $(strip		\
 	moonpaper.png		\
 	silvervein.png		\
 )
-imagesdir = $(beastskinsdir)/images
+imagesdir = $(datadir)/skins/images
 
 EXTRA_DIST += $(images_DATA)

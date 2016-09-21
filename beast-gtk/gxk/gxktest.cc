@@ -54,9 +54,6 @@ main (int   argc,
   GxkPolygonArc arcs[64];
   guint i;
 
-  /* GLib's thread and object systems */
-  g_type_init ();
-
   /* initialize Gtk+ and go into threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("GxkTest");	/* overriding Gdk's program name */

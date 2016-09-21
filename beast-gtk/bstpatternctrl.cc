@@ -15,36 +15,38 @@ static void
 pattern_controller_vraster_notify (gpointer             notify_data,
                                    GxkParam            *param)
 {
+  using namespace Bst; // for Bst::NOTE_LENGTH_*
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, ticks; } choices[] = {
-    { BST_NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
-    { BST_NOTE_LENGTH_2,         768 },
-    { BST_NOTE_LENGTH_4,         384 },
-    { BST_NOTE_LENGTH_8,         192 },
-    { BST_NOTE_LENGTH_16,         96 },
-    { BST_NOTE_LENGTH_32,         48 },
-    { BST_NOTE_LENGTH_64,         24 },
-    { BST_NOTE_LENGTH_128,        12 },
-    { BST_NOTE_LENGTH_1_P,      2304 }, /* 4 * 384 * 3 / 2 */
-    { BST_NOTE_LENGTH_2_P,      1152 },
-    { BST_NOTE_LENGTH_4_P,       576 },
-    { BST_NOTE_LENGTH_8_P,       288 },
-    { BST_NOTE_LENGTH_16_P,      144 },
-    { BST_NOTE_LENGTH_32_P,       72 },
-    { BST_NOTE_LENGTH_64_P,       36 },
-    { BST_NOTE_LENGTH_128_P,      18 },
-    { BST_NOTE_LENGTH_1_T,      1024 }, /* 4 * 384 * 2 / 3 */
-    { BST_NOTE_LENGTH_2_T,       512 },
-    { BST_NOTE_LENGTH_4_T,       256 },
-    { BST_NOTE_LENGTH_8_T,       128 },
-    { BST_NOTE_LENGTH_16_T,       64 },
-    { BST_NOTE_LENGTH_32_T,       32 },
-    { BST_NOTE_LENGTH_64_T,       16 },
-    { BST_NOTE_LENGTH_128_T,       8 },
+    { int64 (NoteLength::NOTE_LENGTH_1),        1536 }, /* 4 * 384 */
+    { int64 (NoteLength::NOTE_LENGTH_2),         768 },
+    { int64 (NoteLength::NOTE_LENGTH_4),         384 },
+    { int64 (NoteLength::NOTE_LENGTH_8),         192 },
+    { int64 (NoteLength::NOTE_LENGTH_16),         96 },
+    { int64 (NoteLength::NOTE_LENGTH_32),         48 },
+    { int64 (NoteLength::NOTE_LENGTH_64),         24 },
+    { int64 (NoteLength::NOTE_LENGTH_128),        12 },
+    { int64 (NoteLength::NOTE_LENGTH_1P),       2304 }, /* 4 * 384 * 3 / 2 */
+    { int64 (NoteLength::NOTE_LENGTH_2P),       1152 },
+    { int64 (NoteLength::NOTE_LENGTH_4P),        576 },
+    { int64 (NoteLength::NOTE_LENGTH_8P),        288 },
+    { int64 (NoteLength::NOTE_LENGTH_16P),       144 },
+    { int64 (NoteLength::NOTE_LENGTH_32P),        72 },
+    { int64 (NoteLength::NOTE_LENGTH_64P),        36 },
+    { int64 (NoteLength::NOTE_LENGTH_128P),       18 },
+    { int64 (NoteLength::NOTE_LENGTH_1T),       1024 }, /* 4 * 384 * 2 / 3 */
+    { int64 (NoteLength::NOTE_LENGTH_2T),        512 },
+    { int64 (NoteLength::NOTE_LENGTH_4T),        256 },
+    { int64 (NoteLength::NOTE_LENGTH_8T),        128 },
+    { int64 (NoteLength::NOTE_LENGTH_16T),        64 },
+    { int64 (NoteLength::NOTE_LENGTH_32T),        32 },
+    { int64 (NoteLength::NOTE_LENGTH_64T),        16 },
+    { int64 (NoteLength::NOTE_LENGTH_128T),        8 },
   };
-  int i, vraster = 384, vsval = bst_note_length_from_choice (sfi_value_get_choice (&self->vraster->value));
-  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+  int vraster = 384;
+  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value)));
+  for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
         vraster = choices[i].ticks;
@@ -58,28 +60,30 @@ static void
 pattern_controller_row_shading_notify (gpointer  notify_data,
                                        GxkParam *param)
 {
+  using namespace Bst; // for Bst::ROW_SHADING_*
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, r1, r2, r3, r4; } choices[] = {
-    { BST_ROW_SHADING_NONE,      0, 0, 0, 0 },
-    { BST_ROW_SHADING_2,         2 },
-    { BST_ROW_SHADING_4,         4 },
-    { BST_ROW_SHADING_8,         8 },
-    { BST_ROW_SHADING_16,       16 },
-    { BST_ROW_SHADING_2_4,       4, 2 },
-    { BST_ROW_SHADING_4_8,       8, 4 },
-    { BST_ROW_SHADING_4_12,     12, 4 },
-    { BST_ROW_SHADING_4_16,     16, 4 },
-    { BST_ROW_SHADING_8_16,     16, 8 },
-    { BST_ROW_SHADING_3,         3 },
-    { BST_ROW_SHADING_6,         6 },
-    { BST_ROW_SHADING_12,       12 },
-    { BST_ROW_SHADING_3_6,       6, 3 },
-    { BST_ROW_SHADING_3_12,     12, 3 },
-    { BST_ROW_SHADING_6_12,     12, 6 },
+    { int64 (RowShading::ROW_SHADING_NONE),      0, 0, 0, 0 },
+    { int64 (RowShading::ROW_SHADING_2),         2 },
+    { int64 (RowShading::ROW_SHADING_4),         4 },
+    { int64 (RowShading::ROW_SHADING_8),         8 },
+    { int64 (RowShading::ROW_SHADING_16),       16 },
+    { int64 (RowShading::ROW_SHADING_2_4),       4, 2 },
+    { int64 (RowShading::ROW_SHADING_4_8),       8, 4 },
+    { int64 (RowShading::ROW_SHADING_4_12),     12, 4 },
+    { int64 (RowShading::ROW_SHADING_4_16),     16, 4 },
+    { int64 (RowShading::ROW_SHADING_8_16),     16, 8 },
+    { int64 (RowShading::ROW_SHADING_3),         3 },
+    { int64 (RowShading::ROW_SHADING_6),         6 },
+    { int64 (RowShading::ROW_SHADING_12),       12 },
+    { int64 (RowShading::ROW_SHADING_3_6),       6, 3 },
+    { int64 (RowShading::ROW_SHADING_3_12),     12, 3 },
+    { int64 (RowShading::ROW_SHADING_6_12),     12, 6 },
   };
-  int i, r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = bst_row_shading_from_choice (sfi_value_get_choice (&self->row_shading->value));
-  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+  int r1 = 0, r2 = 0, r3 = 0, r4 = 0;
+  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<RowShading> (sfi_value_get_choice (&self->row_shading->value)));
+  for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
         r1 = choices[i].r1;
@@ -97,12 +101,14 @@ bst_pattern_controller_new (BstPatternView         *pview,
 {
   BstPatternController *self;
 
-  g_return_val_if_fail (BST_IS_PATTERN_VIEW (pview), NULL);
+  assert_return (BST_IS_PATTERN_VIEW (pview), NULL);
 
   self = g_new0 (BstPatternController, 1);
   self->vraster = gxk_param_new_value (sfi_pspec_choice ("vertical-raster", _("VZoom"),
                                                          _("The tick/note length per line"),
-                                                         "note-length-4", bst_note_length_get_values(), SFI_PARAM_STANDARD),
+                                                         "note-length-4",
+                                                         Bse::choice_values_from_enum<Bst::NoteLength>(),
+                                                         SFI_PARAM_STANDARD),
                                        pattern_controller_vraster_notify, self);
   self->steps = gxk_param_new_value (sfi_pspec_int ("steps", _("Steps"),
                                                     _("The number of cells to move across each time "
@@ -112,7 +118,7 @@ bst_pattern_controller_new (BstPatternView         *pview,
   self->step_dir = gxk_param_new_value (sfi_pspec_choice ("step_dir", _("Direction"),
                                                           _("The direction of cell movement each time "
                                                             "an event or note was edited"),
-                                                          "down", bst_direction_get_values(), SFI_PARAM_STANDARD),
+                                                          "down", Bse::choice_values_from_enum<Bst::Direction>(), SFI_PARAM_STANDARD),
                                         NULL, NULL);
   self->hwrap = gxk_param_new_value (sfi_pspec_bool ("hwrap", _("HWrap"),
                                                      _("Toggle whether horizontal movement of the focus cell will "
@@ -124,7 +130,9 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                            NULL, NULL);
   self->row_shading = gxk_param_new_value (sfi_pspec_choice ("row-shading", _("Row Shading"),
                                                              _("Adjust the number of rows between each shaded row"),
-                                                             "row-shading-4-16", bst_row_shading_get_values(), SFI_PARAM_STANDARD),
+                                                             "row-shading-4-16",
+                                                             Bse::choice_values_from_enum<Bst::RowShading>(),
+                                                             SFI_PARAM_STANDARD),
                                            pattern_controller_row_shading_notify, self);
   self->pview = pview;
   self->ref_count = 1;
@@ -145,8 +153,8 @@ bst_pattern_controller_new (BstPatternView         *pview,
 BstPatternController*
 bst_pattern_controller_ref (BstPatternController   *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -156,8 +164,8 @@ bst_pattern_controller_ref (BstPatternController   *self)
 void
 bst_pattern_controller_unref (BstPatternController   *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)
@@ -249,7 +257,6 @@ pattern_controller_key_press (BstPatternController *self,
       /* movement */
       switch (movement)
         {
-          guint d;
         case BST_PATTERN_MOVE_LEFT:     focus_col--;                                            break;
         case BST_PATTERN_MOVE_RIGHT:    focus_col++;                                            break;
         case BST_PATTERN_MOVE_UP:       focus_row--;                                            break;
@@ -263,11 +270,13 @@ pattern_controller_key_press (BstPatternController *self,
         case BST_PATTERN_JUMP_TOP:      focus_row = 0;                                          break;
         case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
-          d = bst_direction_from_choice (sfi_value_get_choice (&self->step_dir->value));
-          if (d == BST_LEFT || d == BST_RIGHT)
-            focus_col += (d == BST_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
-          else /* UP/DOWN */
-            focus_row += (d == BST_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          {
+            Bst::Direction d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
+            if (d == Bst::Direction::DIR_LEFT || d == Bst::Direction::DIR_RIGHT)
+              focus_col += (d == Bst::Direction::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
+            else /* UP/DOWN */
+              focus_row += (d == Bst::Direction::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          }
           break;
         case BST_PATTERN_SET_STEP_WIDTH:
           g_value_set_int (&self->steps->value, param);
@@ -377,25 +386,25 @@ pattern_controller_get_functions (gboolean want_piano,
     }
 }
 
-struct ConstKeyBindingItem {
-  const char* key_name;
-  const char* func_name;
-  SfiReal func_param;
+struct StaticKeyBindingItem {
+  const char *key_name;
+  const char *func_name;
+  double      func_param;
 };
-static BstKeyBindingItem*
-BstKeyBindingItem_from_ConstKeyBindingItem (const ConstKeyBindingItem *ckb)
+static Bst::KeyBindingItem
+key_binding_item_from_static (const StaticKeyBindingItem &skb)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (ConstKeyBindingItem) == sizeof (BstKeyBindingItem));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, key_name) == offsetof (BstKeyBindingItem, key_name));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_name) == offsetof (BstKeyBindingItem, func_name));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_param) == offsetof (BstKeyBindingItem, func_param));
-  return (BstKeyBindingItem*) ckb;
+  Bst::KeyBindingItem kbi;
+  kbi.key_name = skb.key_name;
+  kbi.func_name = skb.func_name;
+  kbi.func_param = skb.func_param;
+  return kbi;
 }
 
 BstKeyBinding*
 bst_pattern_controller_default_generic_keys (void)
 {
-  static ConstKeyBindingItem dflt_keys[] = {
+  static StaticKeyBindingItem dflt_keys[] = {
     /* move in cells */
     {                   "Up",                   "move-up",      	0 },
     {                   "KP_Up",                "move-up",      	0 },
@@ -493,15 +502,12 @@ bst_pattern_controller_default_generic_keys (void)
   static BstKeyBinding kbinding = { (char*) "pattern-controller-default-generic-keys", };
   if (!kbinding.n_funcs)
     {
-      BstKeyBindingItemSeq *iseq;
-      guint i;
       kbinding.funcs = pattern_controller_get_functions (FALSE, &kbinding.n_funcs);
-      /* setup default keys */
-      iseq = bst_key_binding_item_seq_new();
-      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
-        bst_key_binding_item_seq_append (iseq, BstKeyBindingItem_from_ConstKeyBindingItem (&dflt_keys[i]));
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      // setup default keys
+      Bst::KeyBindingItemSeq iseq;
+      for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
+      bst_key_binding_set_it3m_seq (&kbinding, iseq);
     }
   return &kbinding;
 }
@@ -509,22 +515,19 @@ bst_pattern_controller_default_generic_keys (void)
 BstKeyBinding*
 bst_pattern_controller_default_piano_keys (void)
 {
-  static ConstKeyBindingItem dflt_keys[] = {
+  static StaticKeyBindingItem dflt_keys[] = {
     /* events */
     {                   "space",                "remove-events",        0 },
   };
   static BstKeyBinding kbinding = { (char*) "pattern-controller-default-piano-keys", };
   if (!kbinding.n_funcs)
     {
-      BstKeyBindingItemSeq *iseq;
-      guint i;
       kbinding.funcs = pattern_controller_get_functions (TRUE, &kbinding.n_funcs);
-      /* setup default keys */
-      iseq = bst_key_binding_item_seq_new();
-      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
-        bst_key_binding_item_seq_append (iseq, BstKeyBindingItem_from_ConstKeyBindingItem (&dflt_keys[i]));
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      Bst::KeyBindingItemSeq iseq;
+      // setup default keys
+      for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
+      bst_key_binding_set_it3m_seq (&kbinding, iseq);
     }
   return &kbinding;
 }
@@ -536,12 +539,11 @@ bst_pattern_controller_generic_keys (void)
   if (!kbinding.n_funcs)
     {
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_generic_keys();
-      BstKeyBindingItemSeq *iseq;
       kbinding.funcs = pattern_controller_get_functions (FALSE, &kbinding.n_funcs);
-      /* copy keys */
-      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      // copy keys
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (dflt_kbinding);
+      bst_key_binding_set_it3m_seq (&kbinding, *iseq);
+      delete iseq;
     }
   return &kbinding;
 }
@@ -553,12 +555,11 @@ bst_pattern_controller_piano_keys (void)
   if (!kbinding.n_funcs)
     {
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_piano_keys();
-      BstKeyBindingItemSeq *iseq;
       kbinding.funcs = pattern_controller_get_functions (TRUE, &kbinding.n_funcs);
-      /* copy keys */
-      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      // copy keys
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (dflt_kbinding);
+      bst_key_binding_set_it3m_seq (&kbinding, *iseq);
+      delete iseq;
     }
   return &kbinding;
 }

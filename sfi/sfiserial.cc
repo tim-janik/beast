@@ -82,31 +82,6 @@ scanner_skip_statement (GScanner *scanner,
 }
 
 static String
-string_vprintf (const char *format, va_list vargs) // FIXME: move
-{
-  char *str = NULL;
-  if (vasprintf (&str, format, vargs) >= 0 && str)
-    {
-      String s = str;
-      free (str);
-      return s;
-    }
-  else
-    return format;
-}
-
-static String
-string_printf (const char *format, ...) // FIXME: move
-{
-  String str;
-  va_list args;
-  va_start (args, format);
-  str = string_vprintf (format, args);
-  va_end (args);
-  return str;
-}
-
-static String
 string_to_cescape (const String &str)   // FIXME: move
 {
   String buffer;
@@ -114,7 +89,7 @@ string_to_cescape (const String &str)   // FIXME: move
     {
       uint8 d = *it;
       if (d < 32 || d > 126 || d == '?')
-        buffer += string_printf ("\\%03o", d);
+        buffer += string_format ("\\%03o", d);
       else if (d == '\\')
         buffer += "\\\\";
       else if (d == '"')
@@ -128,7 +103,7 @@ string_to_cescape (const String &str)   // FIXME: move
 /* --- storage helpers --- */
 #define	gstring_puts(gstring, string)	g_string_append (gstring, string)
 #define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
-#define	gstring_printf(gstring, ...)	g_string_append (gstring, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define	gstring_format(gstring, ...)	g_string_append (gstring, Rapicorn::string_format (__VA_ARGS__).c_str())
 
 static void
 gstring_break (GString  *gstring,
@@ -207,7 +182,7 @@ sfi_serialize_rec_typed (SfiRec  *rec,
 	{
 	  if (i)
 	    gstring_putc (gstring, ' ');
-	  gstring_printf (gstring, "(%s ", rec->field_names[i]);
+	  gstring_format (gstring, "(%s ", rec->field_names[i]);
 	  sfi_value_store_typed (rec->fields + i, gstring);
 	  gstring_putc (gstring, ')');
 	}
@@ -303,9 +278,9 @@ sfi_serialize_primitives (SfiSCategory scat,
 	  SfiInt iv = sfi_value_get_int (value);
           if (g_option_check (hints, "hex") &&  /* hexadecimal hint */
               iv <= G_MAXINT)
-            gstring_printf (gstring, "0x%08x", iv);
+            gstring_format (gstring, "0x%08x", iv);
           else
-            gstring_printf (gstring, "%d", iv);
+            gstring_format (gstring, "%d", iv);
 	}
       else
 	{
@@ -320,7 +295,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  SfiNum num = sfi_value_get_num (value);
-	  gstring_printf (gstring, "%lld", num);
+	  gstring_format (gstring, "%lld", num);
 	}
       else
 	{
@@ -377,7 +352,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	  if (!cstring)
 	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	  else
-	    gstring_printf (gstring, "%s", cstring);
+	    gstring_format (gstring, "%s", cstring);
 	}
       else
 	{
@@ -394,7 +369,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  SfiProxy proxy = sfi_value_get_proxy (value);
-	  gstring_printf (gstring, "%lu", proxy);
+	  gstring_format (gstring, "%lu", proxy);
 	}
       else
 	{
@@ -416,9 +391,9 @@ sfi_serialize_primitives (SfiSCategory scat,
 	      guint i;
 	      gstring_puts (gstring, "(");
 	      if (bblock->n_bytes)
-		gstring_printf (gstring, "%u", bblock->bytes[0]);
+		gstring_format (gstring, "%u", bblock->bytes[0]);
 	      for (i = 1; i < bblock->n_bytes; i++)
-		gstring_printf (gstring, " %u", bblock->bytes[i]);
+		gstring_format (gstring, " %u", bblock->bytes[i]);
 	      gstring_puts (gstring, ")");
 	    }
 	}
@@ -454,9 +429,9 @@ sfi_serialize_primitives (SfiSCategory scat,
 	      guint i;
 	      gstring_puts (gstring, "(");
 	      if (fblock->n_values)
-                gstring_printf (gstring, "%.9g", fblock->values[0]);
+                gstring_format (gstring, "%.9g", fblock->values[0]);
 	      for (i = 1; i < fblock->n_values; i++)
-                gstring_printf (gstring, " %.9g", fblock->values[i]);
+                gstring_format (gstring, " %.9g", fblock->values[i]);
 	      gstring_puts (gstring, ")");
 	    }
 	}
@@ -518,7 +493,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  gchar *string = sfi_note_to_string (sfi_value_get_int (value));
-	  gstring_printf (gstring, "%s", string);
+	  gstring_format (gstring, "%s", string);
 	  g_free (string);
 	}
       else
@@ -545,7 +520,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  gchar *string = sfi_time_to_string (sfi_time_to_utc (sfi_value_get_num (value)));
-	  gstring_printf (gstring, "\"%s\"", string);
+	  gstring_format (gstring, "\"%s\"", string);
 	  g_free (string);
 	}
       else
@@ -580,8 +555,8 @@ sfi_value_store_typed (const GValue *value,
 {
   SfiSCategory scat;
 
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (gstring != NULL);
+  assert_return (G_IS_VALUE (value));
+  assert_return (gstring != NULL);
 
   scat = SfiSCategory (sfi_categorize_type (G_VALUE_TYPE (value)) & SFI_SCAT_TYPE_MASK);
   switch (scat)
@@ -598,12 +573,12 @@ sfi_value_store_typed (const GValue *value,
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
-      gstring_printf (gstring, "(%c ", scat);
+      gstring_format (gstring, "(%c ", scat);
       sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, NULL);
       gstring_putc (gstring, ')');
       break;
     case SFI_SCAT_SEQ:
-      gstring_printf (gstring, "(%c", scat);
+      gstring_format (gstring, "(%c", scat);
       seq = sfi_value_get_seq (value);
       if (!seq)
 	gstring_puts (gstring, " " SFI_SERIAL_NULL_TOKEN);
@@ -622,7 +597,7 @@ sfi_value_store_typed (const GValue *value,
       gstring_putc (gstring, ')');
       break;
     case SFI_SCAT_REC:
-      gstring_printf (gstring, "(%c ", scat);
+      gstring_format (gstring, "(%c ", scat);
       rec = sfi_value_get_rec (value);
       if (rec)
 	sfi_rec_sort (rec);
@@ -638,8 +613,8 @@ GTokenType
 sfi_value_parse_typed (GValue   *value,
 		       GScanner *scanner)
 {
-  g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
+  assert_return (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
+  assert_return (scanner != NULL, G_TOKEN_ERROR);
 
   parse_or_return (scanner, '(');
   char scat = g_scanner_get_next_token (scanner);
@@ -793,7 +768,7 @@ value_store_param (const GValue *value,
 		    }
 		  else
 		    gstring_break (gstring, needs_break, indent + 1);
-		  gstring_printf (gstring, "(%s ", fspecs.fields[i]->name); /* open field */
+		  gstring_format (gstring, "(%s ", fspecs.fields[i]->name); /* open field */
 		  value_store_param (fvalue, gstring, needs_break, FALSE, fspecs.fields[i], indent + 2 + 1);
 		  gstring_putc (gstring, ')'); /* close field */
 		}
@@ -817,13 +792,13 @@ sfi_value_store_param (const GValue *value,
 {
   gboolean needs_break = FALSE;
 
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (gstring != NULL);
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
+  assert_return (G_IS_VALUE (value));
+  assert_return (gstring != NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
 
   gstring_check_break (gstring, &needs_break, indent);
-  gstring_printf (gstring, "(%s ", pspec->name);
+  gstring_format (gstring, "(%s ", pspec->name);
   value_store_param (value, gstring, &needs_break, TRUE, pspec, indent + 2);
   gstring_putc (gstring, ')');
 }
@@ -952,13 +927,13 @@ sfi_value_parse_param_rest (GValue     *value,
 			    GScanner   *scanner,
 			    GParamSpec *pspec)
 {
-  g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+  assert_return (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
+  assert_return (scanner != NULL, G_TOKEN_ERROR);
+  assert_return (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
 
   /* the scanner better be at the pspec name */
-  g_return_val_if_fail (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
-  g_return_val_if_fail (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
+  assert_return (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
+  assert_return (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
 
   g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 
@@ -968,7 +943,7 @@ sfi_value_parse_param_rest (GValue     *value,
 gboolean
 sfi_serial_check_parse_null_token (GScanner *scanner)
 {
-  g_return_val_if_fail (scanner != NULL, FALSE);
+  assert_return (scanner != NULL, FALSE);
 
   if (scanner->token == '#' && g_scanner_peek_next_token (scanner) == 'f')
     {
@@ -984,6 +959,6 @@ sfi_value_store_stderr (const GValue *value)
 {
   GString *gstring = g_string_new ("");
   sfi_value_store_typed (value, gstring);
-  g_printerr ("((GValue*)%p)=%s\n", value, gstring->str);
+  printerr ("((GValue*)%p)=%s\n", value, gstring->str);
   g_string_free (gstring, TRUE);
 }

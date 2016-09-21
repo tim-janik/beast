@@ -26,14 +26,6 @@ typedef struct
   guint		   parent_context;
 } ContextData;
 
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_AUTO_ACTIVATE
-};
-
-
 /* --- prototypes --- */
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
@@ -71,15 +63,16 @@ static const GBSearchConfig port_array_config = {
 
 /* --- functions --- */
 static void
-bse_snet_init (BseSNet *snet)
+bse_snet_init (BseSNet *self)
 {
-  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
-  snet->sources = NULL;
-  snet->isources = NULL;
-  snet->iport_names = NULL;
-  snet->oport_names = NULL;
-  snet->port_array = NULL;
-  snet->port_unregistered_id = 0;
+  BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  self->sources = NULL;
+  self->isources = NULL;
+  self->iport_names = NULL;
+  self->oport_names = NULL;
+  self->port_array = NULL;
+  self->port_unregistered_id = 0;
 }
 
 /**
@@ -96,10 +89,10 @@ bse_snet_intern_child (BseSNet *self,
 {
   BseItem *item = (BseItem*) child;
 
-  g_return_if_fail (BSE_IS_SNET (self));
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->parent == (BseItem*) self);
-  g_return_if_fail (sfi_ring_find (self->sources, child) != NULL);
+  assert_return (BSE_IS_SNET (self));
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (item->parent == (BseItem*) self);
+  assert_return (sfi_ring_find (self->sources, child) != NULL);
 
   self->sources = sfi_ring_remove (self->sources, child);
   self->isources = sfi_ring_append (self->isources, child);
@@ -148,7 +141,7 @@ bse_snet_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (snet->port_unregistered_id == 0);
+  assert_return (snet->port_unregistered_id == 0);
 }
 
 static gboolean
@@ -169,47 +162,6 @@ bse_snet_queue_port_unregistered (BseSNet *snet)
 {
   if (!snet->port_unregistered_id)
     snet->port_unregistered_id = bse_idle_notify (snet_notify_port_unregistered, snet);
-}
-
-static void
-bse_snet_set_property (GObject      *object,
-		       guint         param_id,
-		       const GValue *value,
-		       GParamSpec   *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      if (sfi_value_get_bool (value))
-	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      else
-	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_snet_get_property (GObject    *object,
-		       guint       param_id,
-		       GValue     *value,
-		       GParamSpec *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      sfi_value_set_bool (value, BSE_SUPER_NEEDS_CONTEXT (self));
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
 }
 
 static void
@@ -298,8 +250,8 @@ bse_snet_iport_name_register (BseSNet     *snet,
   gchar *name;
   guint i;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (tmpl_name != NULL, NULL);
+  assert_return (BSE_IS_SNET (snet), NULL);
+  assert_return (tmpl_name != NULL, NULL);
 
   slist = snet_find_port_name (snet, tmpl_name, TRUE);
   name = NULL;
@@ -323,8 +275,8 @@ bse_snet_iport_name_registered (BseSNet     *snet,
 {
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), FALSE);
-  g_return_val_if_fail (name != NULL, FALSE);
+  assert_return (BSE_IS_SNET (snet), FALSE);
+  assert_return (name != NULL, FALSE);
 
   slist = snet_find_port_name (snet, name, TRUE);
 
@@ -337,11 +289,11 @@ bse_snet_iport_name_unregister (BseSNet     *snet,
 {
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
 
   slist = snet_find_port_name (snet, name, TRUE);
-  g_return_if_fail (slist != NULL);
+  assert_return (slist != NULL);
 
   g_free (slist->data);
   snet->iport_names = g_slist_delete_link (snet->iport_names, slist);
@@ -356,8 +308,8 @@ bse_snet_oport_name_register (BseSNet     *snet,
   gchar *name;
   guint i;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (tmpl_name != NULL, NULL);
+  assert_return (BSE_IS_SNET (snet), NULL);
+  assert_return (tmpl_name != NULL, NULL);
 
   slist = snet_find_port_name (snet, tmpl_name, FALSE);
   name = NULL;
@@ -381,8 +333,8 @@ bse_snet_oport_name_registered (BseSNet     *snet,
 {
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), FALSE);
-  g_return_val_if_fail (name != NULL, FALSE);
+  assert_return (BSE_IS_SNET (snet), FALSE);
+  assert_return (name != NULL, FALSE);
 
   slist = snet_find_port_name (snet, name, FALSE);
 
@@ -395,11 +347,11 @@ bse_snet_oport_name_unregister (BseSNet     *snet,
 {
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
 
   slist = snet_find_port_name (snet, name, FALSE);
-  g_return_if_fail (slist != NULL);
+  assert_return (slist != NULL);
 
   g_free (slist->data);
   snet->oport_names = g_slist_delete_link (snet->oport_names, slist);
@@ -448,7 +400,7 @@ port_insert (BseSNet     *snet,
   key.input = is_input != FALSE;
 
   port = (BseSNetPort*) g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
-  g_return_val_if_fail (port == NULL, port);	/* shouldn't fail */
+  assert_return (port == NULL, port);	/* shouldn't fail */
 
   key.name = g_strdup (key.name);
   key.src_omodule = NULL;
@@ -465,8 +417,8 @@ port_delete (BseSNet     *snet,
 {
   guint index = g_bsearch_array_get_index (snet->port_array, &port_array_config, port);
 
-  g_return_if_fail (index < g_bsearch_array_get_n_nodes (snet->port_array));
-  g_return_if_fail (port->src_omodule == NULL && port->dest_imodule == NULL);
+  assert_return (index < g_bsearch_array_get_n_nodes (snet->port_array));
+  assert_return (port->src_omodule == NULL && port->dest_imodule == NULL);
 
   g_free (port->name);
   g_bsearch_array_remove (snet->port_array, &port_array_config, index);
@@ -482,12 +434,12 @@ bse_snet_set_iport_src (BseSNet     *snet,
 {
   BseSNetPort *port;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
+  assert_return (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (omodule)
-    g_return_if_fail (ostream < BSE_MODULE_N_OSTREAMS (omodule));
-  g_return_if_fail (trans != NULL);
+    assert_return (ostream < BSE_MODULE_N_OSTREAMS (omodule));
+  assert_return (trans != NULL);
 
   port = port_lookup (snet, name, snet_context, TRUE);
   if (!port && !omodule)
@@ -518,12 +470,12 @@ bse_snet_set_iport_dest (BseSNet     *snet,
 {
   BseSNetPort *port;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
+  assert_return (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (imodule)
-    g_return_if_fail (istream < BSE_MODULE_N_ISTREAMS (imodule));
-  g_return_if_fail (trans != NULL);
+    assert_return (istream < BSE_MODULE_N_ISTREAMS (imodule));
+  assert_return (trans != NULL);
 
   port = port_lookup (snet, name, snet_context, TRUE);
   if (!port && !imodule)
@@ -554,12 +506,12 @@ bse_snet_set_oport_src (BseSNet     *snet,
 {
   BseSNetPort *port;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
+  assert_return (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (omodule)
-    g_return_if_fail (ostream < BSE_MODULE_N_OSTREAMS (omodule));
-  g_return_if_fail (trans != NULL);
+    assert_return (ostream < BSE_MODULE_N_OSTREAMS (omodule));
+  assert_return (trans != NULL);
 
   port = port_lookup (snet, name, snet_context, FALSE);
   if (!port && !omodule)
@@ -590,12 +542,12 @@ bse_snet_set_oport_dest (BseSNet     *snet,
 {
   BseSNetPort *port;
 
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (name != NULL);
+  assert_return (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (imodule)
-    g_return_if_fail (istream < BSE_MODULE_N_ISTREAMS (imodule));
-  g_return_if_fail (trans != NULL);
+    assert_return (istream < BSE_MODULE_N_ISTREAMS (imodule));
+  assert_return (trans != NULL);
 
   port = port_lookup (snet, name, snet_context, FALSE);
   if (!port && !imodule)
@@ -661,7 +613,7 @@ free_context_data (BseSource *source,
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = (ContextData*) data;
 
-  g_return_if_fail (cdata->n_branches == 0);
+  assert_return (cdata->n_branches == 0);
 
   bse_midi_receiver_unref (cdata->midi_receiver);
   bse_id_free (cdata->context_id);
@@ -670,7 +622,7 @@ free_context_data (BseSource *source,
       ContextData *pdata = find_context_data (self, cdata->parent_context);
       guint i, swap_context;
 
-      g_return_if_fail (pdata->n_branches > 0);
+      assert_return (pdata->n_branches > 0);
 
       pdata->n_branches--;
       swap_context = pdata->branches[pdata->n_branches];
@@ -693,13 +645,13 @@ bse_snet_create_context (BseSNet         *self,
   ContextData *cdata;
   guint cid;
 
-  g_return_val_if_fail (BSE_IS_SNET (self), 0);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
-  g_return_val_if_fail (mcontext.midi_receiver != NULL, 0);
-  g_return_val_if_fail (trans != NULL, 0);
+  assert_return (BSE_IS_SNET (self), 0);
+  assert_return (BSE_SOURCE_PREPARED (self), 0);
+  assert_return (mcontext.midi_receiver != NULL, 0);
+  assert_return (trans != NULL, 0);
 
   cid = bse_id_alloc ();
-  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
+  assert_return (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
 
   cdata = create_context_data (self, cid, 0, mcontext.midi_receiver, mcontext.midi_channel);
   bse_source_create_context_with_data (BSE_SOURCE (self), cid, cdata, free_context_data, trans);
@@ -717,14 +669,14 @@ bse_snet_context_clone_branch (BseSNet         *self,
   SfiRing *ring;
   guint bcid = 0;
 
-  g_return_val_if_fail (BSE_IS_SNET (self), 0);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
-  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), context), 0);
-  g_return_val_if_fail (BSE_IS_CONTEXT_MERGER (context_merger), 0);
-  g_return_val_if_fail (bse_source_has_context (context_merger, context), 0);
-  g_return_val_if_fail (BSE_ITEM (context_merger)->parent == BSE_ITEM (self), 0);
-  g_return_val_if_fail (mcontext.midi_receiver != NULL, 0);
-  g_return_val_if_fail (trans != NULL, 0);
+  assert_return (BSE_IS_SNET (self), 0);
+  assert_return (BSE_SOURCE_PREPARED (self), 0);
+  assert_return (bse_source_has_context (BSE_SOURCE (self), context), 0);
+  assert_return (BSE_IS_CONTEXT_MERGER (context_merger), 0);
+  assert_return (bse_source_has_context (context_merger, context), 0);
+  assert_return (BSE_ITEM (context_merger)->parent == BSE_ITEM (self), 0);
+  assert_return (mcontext.midi_receiver != NULL, 0);
+  assert_return (trans != NULL, 0);
 
   ring = bse_source_collect_inputs_recursive (context_merger);
   if (!BSE_SOURCE_COLLECTED (context_merger))
@@ -732,7 +684,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       ContextData *cdata;
       SfiRing *node;
 
-      g_assert (self->tmp_context_children == NULL);
+      assert (self->tmp_context_children == NULL);
       for (node = ring; node; node = sfi_ring_walk (node, ring))
 	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
@@ -740,7 +692,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       bcid = bse_id_alloc ();
       cdata = create_context_data (self, bcid, context, mcontext.midi_receiver, mcontext.midi_channel);
       bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
-      g_assert (self->tmp_context_children == NULL);
+      assert (self->tmp_context_children == NULL);
     }
   else
     {
@@ -758,9 +710,9 @@ bse_snet_context_is_branch (BseSNet *self,
 {
   ContextData *cdata;
 
-  g_return_val_if_fail (BSE_IS_SNET (self), FALSE);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), FALSE);
-  g_return_val_if_fail (context_id > 0, FALSE);
+  assert_return (BSE_IS_SNET (self), FALSE);
+  assert_return (BSE_SOURCE_PREPARED (self), FALSE);
+  assert_return (context_id > 0, FALSE);
 
   cdata = find_context_data (self, context_id);
   return cdata ? cdata->parent_context > 0 : FALSE;
@@ -790,7 +742,7 @@ bse_snet_get_midi_context (BseSNet *self,
   BseMidiContext mcontext = { 0, };
   ContextData *cdata;
 
-  g_return_val_if_fail (BSE_IS_SNET (self), mcontext);
+  assert_return (BSE_IS_SNET (self), mcontext);
 
   cdata = find_context_data (self, context_handle);
   if (cdata)
@@ -806,7 +758,7 @@ bse_snet_prepare (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
 
-  g_return_if_fail (snet->port_array == NULL);
+  assert_return (snet->port_array == NULL);
 
   bse_object_lock (BSE_OBJECT (snet));
   snet->port_array = g_bsearch_array_create (&port_array_config);
@@ -820,7 +772,7 @@ bse_snet_reset (BseSource *source)
 {
   BseSNet *self = BSE_SNET (source);
 
-  g_return_if_fail (self->port_array != NULL);
+  assert_return (self->port_array != NULL);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
@@ -851,7 +803,7 @@ bse_snet_context_create (BseSource *source,
       BseContextMerger *context_merger = (BseContextMerger*) self->tmp_context_children->data;
       ContextData *cdata = find_context_data (self, context_handle);
 
-      g_assert (BSE_IS_CONTEXT_MERGER (context_merger));
+      assert (BSE_IS_CONTEXT_MERGER (context_merger));
 
       bse_context_merger_set_merge_context (context_merger, cdata->parent_context);
       /* chain parent class' handler */
@@ -906,8 +858,6 @@ bse_snet_class_init (BseSNetClass *klass)
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
-  gobject_class->set_property = bse_snet_set_property;
-  gobject_class->get_property = bse_snet_get_property;
   gobject_class->dispose = bse_snet_dispose;
   gobject_class->finalize = bse_snet_finalize;
 
@@ -923,14 +873,7 @@ bse_snet_class_init (BseSNetClass *klass)
   container_class->context_children = snet_context_children;
   container_class->release_children = bse_snet_release_children;
 
-  bse_object_class_add_param (object_class, "Playback Settings",
-			      PARAM_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", "Auto Activate",
-					      "Automatic activation only needs to be enabled for synthesis networks "
-					      "that don't use virtual ports for their input and output",
-					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
-  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
-							  G_TYPE_NONE, 0);
+  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseSNet)
@@ -946,6 +889,99 @@ BSE_BUILTIN_TYPE (BseSNet)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snet_init,
   };
-  g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }
+
+namespace Bse {
+
+SNetImpl::SNetImpl (BseObject *bobj) :
+  SuperImpl (bobj)
+{}
+
+SNetImpl::~SNetImpl ()
+{}
+
+bool
+SNetImpl::supports_user_synths ()
+{
+  BseSNet *self = as<BseSNet*>();
+  return BSE_SNET_USER_SYNTH (self);
+}
+
+bool
+SNetImpl::auto_activate () const
+{
+  BseSNet *self = const_cast<SNetImpl*> (this)->as<BseSNet*>();
+  return BSE_SUPER_NEEDS_CONTEXT (self);
+}
+
+void
+SNetImpl::auto_activate (bool v)
+{
+  BseSNet *self = as<BseSNet*>();
+  if (v)
+    BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  else
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+}
+
+Error
+SNetImpl::can_create_source (const String &module_type)
+{
+  BseSNet *self = as<BseSNet*>();
+  GType type = g_type_from_name (module_type.c_str());
+  Error error = Error::NONE;
+  if (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT)
+    error = Error::NOT_OWNER;
+  else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
+	   g_type_is_a (type, BSE_TYPE_CONTAINER))
+    error = Error::SOURCE_TYPE_INVALID;
+  return error;
+}
+
+SourceIfaceP
+SNetImpl::create_source (const String &module_type)
+{
+  BseSNet *self = as<BseSNet*>();
+  if (can_create_source (module_type) != Error::NONE)
+    return NULL;
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  BseSource *child = (BseSource*) bse_container_new_child (self, g_type_from_name (module_type.c_str()), NULL);
+  if (child)
+    {
+      // an undo lambda is needed for wrapping object argument references
+      UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
+      auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> Error {
+        return self.remove_source (self.undo_resolve (child_descriptor));
+      };
+      push_undo (__func__, *this, lambda);
+    }
+  bse_item_undo_close (ustack);
+  return child ? child->as<SourceIfaceP>() : NULL;
+}
+
+Error
+SNetImpl::remove_source (SourceIface &module)
+{
+  BseSNet *self = as<BseSNet*>();
+  BseSource *child = module.as<BseSource*>();
+  Bse::Error error = Bse::Error::NONE;
+  if (!BSE_IS_SOURCE (child) || child->parent != self || (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
+    return Error::PROC_PARAM_INVAL;
+  BseUndoStack *ustack = bse_item_undo_open (self, string_format ("%s: %s", __func__, bse_object_debug_name (child)).c_str());
+  bse_container_uncross_undoable (self, child);
+  {
+    // an undo lambda is needed for wrapping object argument references
+    UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
+    auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> Error {
+      return self.remove_source (self.undo_resolve (child_descriptor));
+    };
+    push_undo_to_redo (__func__, *this, lambda); // how to get rid of the item once backed up
+  }
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack); // remove (without redo queueing)
+  bse_item_undo_close (ustack);
+  return error;
+}
+
+} // Bse

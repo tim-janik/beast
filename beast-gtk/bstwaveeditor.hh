@@ -33,7 +33,7 @@ struct _BstWaveEditor
   GtkWidget	    *gmask_parent;
   GtkAdjustment     *zoom_adjustment;
   GtkAdjustment     *vscale_adjustment;
-  guint		     draw_mode;
+  Bst::QSamplerDrawMode draw_mode;
 
   /* preview (playback) */
   BstPlayBackHandle *phandle;

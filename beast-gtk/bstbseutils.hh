@@ -2,8 +2,14 @@
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
 #include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
+#include "bstdefs.hh"
 G_BEGIN_DECLS
+#define SFIDL_SKIPDEF__BseErrorType             // replaced by Bse::Error
+#define BseErrorType Bse::Error
+#define SFIDL_SKIPDEF__BseMidiSignalType        // replaced by Bse::MidiSignal
+#define BseMidiSignalType Bse::MidiSignal
 #include "bstoldbseapi.h" /* include this within extern "C" */
+#undef BseErrorType
 /* --- BSE utilities --- */
 #define BSE_SERVER                              (1 /* HACK */ )
 #define bse_proxy_set_property                  sfi_glue_proxy_set_property
@@ -26,14 +32,21 @@ G_BEGIN_DECLS
 #define bse_proxy_set_data_full(p,n,d,f)        bse_proxy_set_qdata_full ((p), g_quark_from_string (n), (d), (f))
 
 /* --- BEAST utilities --- */
-BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
+Bse::Error    bst_project_restore_from_file   (Bse::ProjectH   project,
                                                  const gchar    *file_name,
                                                  bool            apply_project_file_name,
 						 bool            preserve_non_dirty);
-BseErrorType    bst_project_import_midi_file    (SfiProxy        project,
+Bse::Error    bst_project_import_midi_file    (Bse::ProjectH   project,
                                                  const gchar    *file_name);
 const gchar*    bst_procedure_get_title         (const gchar    *procedure);
+uint            bst_path_leaf_index             (const String &path, char separator = '/');
+BseCategory*    bse_category_find               (const gchar* pattern);
+
 
 G_END_DECLS
+
+namespace Bse {
+const char*     error_blurb (Bse::Error error_value); ///< Retrieve the description of an error value
+} // Bse
 
 #endif /* __BST_BSE_UTILS_H__ */
