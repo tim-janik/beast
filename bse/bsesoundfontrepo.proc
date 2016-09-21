@@ -33,7 +33,7 @@ load_file (BseSoundFontRepo *sfrepo,
            BseSoundFont    **sound_font_p)
 {
   gchar *fname = g_path_get_basename (file_name);
-  BseSoundFont *sound_font = (BseSoundFont *) g_object_new (BSE_TYPE_SOUND_FONT, "uname", fname, NULL);
+  BseSoundFont *sound_font = (BseSoundFont *) bse_object_new (BSE_TYPE_SOUND_FONT, "uname", fname, NULL);
   g_free (fname);
   bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
 

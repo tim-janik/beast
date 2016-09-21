@@ -140,9 +140,9 @@ bse_sound_font_load_blob (BseSoundFont    *self,
 	  while (fluid_sfont->iteration_next (fluid_sfont, &fluid_preset))
 	    {
 	      BseSoundFontPreset *sound_font_preset;
-              sound_font_preset = (BseSoundFontPreset *) g_object_new (BSE_TYPE_SOUND_FONT_PRESET,
-								       "uname", fluid_preset.get_name (&fluid_preset),
-								       NULL);
+              sound_font_preset = (BseSoundFontPreset *) bse_object_new (BSE_TYPE_SOUND_FONT_PRESET,
+								         "uname", fluid_preset.get_name (&fluid_preset),
+								         NULL);
 	      bse_container_add_item (BSE_CONTAINER (self), BSE_ITEM (sound_font_preset));
 	      bse_sound_font_preset_init_preset (sound_font_preset, &fluid_preset);
 	    }
