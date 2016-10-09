@@ -47,15 +47,6 @@ bse-app-test:
 installcheck-local: bse-app-test
 
 
-# == distcheck-checks ==
-distcheck-check-xz-opt:
-	$(Q) test "$$XZ_OPT" != '--fast' -a "$$XZ_OPT" != '-0' || \
-	{ echo "distcheck: error: bad compression option for distribution tarball: XZ_OPT=$$XZ_OPT" >&2 ; exit 1 ; }
-check-update-po:
-	$(Q) $(MAKE) -C po check-update-po
-DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
-$(DISTCHECK_HOOK): distcheck-check-xz-opt check-update-po
-
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
 distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
@@ -66,10 +57,6 @@ uninstall_filter_files = $(strip	\
 	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
 	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
 )
-
-# (test_option, INPUTSTRING, YESOPT, [NOOPT]) :- true if YESOPT is present
-test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
-      `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
 
 # == topbuildid.cc ==
 EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
@@ -93,3 +80,35 @@ ChangeLog: $(GITSTAMPS)
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
 EXTRA_DIST           += ChangeLog taptool.sh
+
+# == distcheck ==
+# distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
+# distcheck_uniqdir = $(shell printf distcheck-%d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
+distcheck_uniqdir = $(shell python -c "import os, md5; print ('distcheck-%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
+distcheck: dist
+	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
+	&& DDIR="$$TMPDIR/$(distcheck_uniqdir)" \
+	&& TARBALL=`readlink -f $(firstword $(DIST_ARCHIVES))` \
+	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DDIR" -a -n "$(distdir)" -a -n "$$TARBALL" \
+	&& mkdir -p "$$DDIR" \
+	&& set -x \
+	&& rm -rf "$$DDIR/$(distdir)/" \
+	&& cd "$$DDIR" \
+	&& tar xf "$$TARBALL" \
+	&& cd "$(distdir)" \
+	&& ./configure --prefix="`pwd`/_inst" $(AM_DISTCHECK_CONFIGURE_FLAGS) $(DISTCHECK_CONFIGURE_FLAGS) \
+	&& $(MAKE) $(AM_MAKEFLAGS) \
+	&& $(MAKE) $(AM_MAKEFLAGS) check \
+	&& $(MAKE) $(AM_MAKEFLAGS) install \
+	&& $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	&& $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	&& rm -rf "$$DDIR/$(distdir)/" \
+	&& { rmdir -p "$$DDIR" 2>/dev/null || true ; } \
+	&& echo "Archive OK: $$TARBALL"
+.PHONY: distcheck
+
+# == distcheck-checks ==
+check-update-po:
+	$(Q) $(MAKE) -C po check-update-po
+DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
+$(DISTCHECK_HOOK): check-update-po
