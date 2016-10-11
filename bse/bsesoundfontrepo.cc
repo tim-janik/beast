@@ -170,6 +170,8 @@ bse_sound_font_repo_prepare (BseSource *source)
       sfrepo->fluid_mix_freq = mix_freq;
 
       fluid_settings_setnum (sfrepo->fluid_settings, "synth.sample-rate", mix_freq);
+      /* soundfont instruments should be as loud as beast synthesis network instruments */
+      fluid_settings_setnum (sfrepo->fluid_settings, "synth.gain", 1.0);
       fluid_settings_setint (sfrepo->fluid_settings, "synth.midi-channels", channels_required);
       fluid_settings_setint (sfrepo->fluid_settings, "synth.audio-channels", channels_required);
       fluid_settings_setint (sfrepo->fluid_settings, "synth.audio-groups", channels_required);
