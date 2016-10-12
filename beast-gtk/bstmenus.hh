@@ -66,9 +66,9 @@ typedef enum
   BST_CHOICE_FLAG_MASK		= (~BST_CHOICE_TYPE_MASK)
 } BstChoiceFlags;
 BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
-					   const gchar            *choice_name,
-					   gpointer                choice_id,
-					   const gchar		  *icon_stock_id,
+					   const String           &choice_name,
+					   void                   *choice_id,
+					   const String 	  &icon_stock_id,
 					   const Bse::Icon	  &bseicon);
 
 G_END_DECLS

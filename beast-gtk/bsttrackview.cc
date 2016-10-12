@@ -277,11 +277,12 @@ track_view_synth_popup (BstTrackView         *self,
         {
           BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
           SynthPopup sdata = { self, pcell, };
+          Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (bse_item_get_project (item)));
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
                                                             pc->label, pc->tooltip, pc->items,
                                                             _("Available Waves"),
                                                             _("List of available waves to choose a track instrument from"),
-                                                            bse_project_get_wave_repo (bse_item_get_project (item)),
+                                                            project.get_wave_repo().proxy_id(),
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }

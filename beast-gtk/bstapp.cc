@@ -707,9 +707,8 @@ demo_play_song (gpointer data,
     }
   else
     {
-      BstApp *app;
-      bse_project_get_wave_repo (project.proxy_id());
-      app = bst_app_new (project);
+      project.get_wave_repo();
+      BstApp *app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       gxk_status_window_pop ();
@@ -854,9 +853,8 @@ app_action_exec (gpointer data,
       if (1)
         {
           Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-          bse_project_get_wave_repo (project.proxy_id());
+          project.get_wave_repo();
           BstApp *new_app = bst_app_new (project);
-
           gxk_idle_show_widget (GTK_WIDGET (new_app));
         }
       break;
@@ -891,26 +889,28 @@ app_action_exec (gpointer data,
       break;
     case BST_ACTION_NEW_SONG:
       bse_item_group_undo (self->project.proxy_id(), "Create Song");
-      proxy = bse_project_create_song (self->project.proxy_id(), NULL);
       {
-        Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (proxy));
+        Bse::SongH song = self->project.create_song ("");
         song.ensure_master_bus();
       }
       bse_item_ungroup_undo (self->project.proxy_id());
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:
-      proxy = bse_project_create_csynth (self->project.proxy_id(), NULL);
+      self->project.create_csynth ("");
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_MIDI_SYNTH:
-      proxy = bse_project_create_midi_synth (self->project.proxy_id(), NULL);
+      self->project.create_midi_synth ("");
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_REMOVE_SYNTH:
       proxy = bst_app_get_current_super (self);
       if (BSE_IS_SNET (proxy) && !self->project.is_active())
-        bse_project_remove_snet (self->project.proxy_id(), proxy);
+        {
+          Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (proxy));
+          self->project.remove_snet (snet);
+        }
       self->select_unseen_super = FALSE;
       break;
     case BST_ACTION_CLEAR_UNDO:

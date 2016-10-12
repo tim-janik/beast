@@ -6,9 +6,9 @@
 /* --- structures --- */
 struct BstChoice {
   BstChoiceFlags type_and_flags;
-  const gchar   *icon_stock_id;
+  String         icon_stock_id;
   Bse::Icon      bseicon;
-  const gchar   *name;
+  String         name;
   void          *p_id;
   BstChoice() : type_and_flags (BST_CHOICE_TYPE_SEPARATOR), icon_stock_id (NULL), name (NULL), p_id (NULL) {}
 };
@@ -22,11 +22,7 @@ static GtkWidget *current_popup_menu = NULL;
 
 /* --- functions --- */
 BstChoice*
-bst_choice_alloc (BstChoiceFlags type,
-		  const gchar   *choice_name,
-		  gpointer       choice_id,
-		  const gchar   *icon_stock_id,
-		  const Bse::Icon &bseicon)
+bst_choice_alloc (BstChoiceFlags type, const String &choice_name, void *choice_id, const String &icon_stock_id, const Bse::Icon &bseicon)
 {
   BstChoice *choice = new BstChoice();
   choice->type_and_flags = type;
@@ -131,13 +127,13 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
     gxk_menu_attach_as_submenu (GTK_MENU (choice->p_id), GTK_MENU_ITEM (item));
   else
     menu_item_add_activator (item, (void*) menu_choice_activate);
-  if (choice->name)
+  if (! choice->name.empty())
     {
       GtkWidget *any;
 
-      if (choice->icon_stock_id)
+      if (! choice->icon_stock_id.empty())
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item),
-				       gxk_stock_image (choice->icon_stock_id, GXK_ICON_SIZE_MENU));
+				       gxk_stock_image (choice->icon_stock_id.c_str(), GXK_ICON_SIZE_MENU));
       any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 			    "visible", TRUE,
 			    "label", choice->name,
@@ -276,9 +272,9 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	  gtk_widget_set (dialog, "title", choice->name, NULL);
 	  break;
 	case BST_CHOICE_TYPE_ITEM:
-	  any = gxk_dialog_action_multi (GXK_DIALOG (dialog), choice->name,
+	  any = gxk_dialog_action_multi (GXK_DIALOG (dialog), choice->name.c_str(),
 					 (void*) button_choice_activate, choice->p_id,
-					 choice->icon_stock_id,
+					 choice->icon_stock_id.c_str(),
 					 (choice_flags & BST_CHOICE_FLAG_DEFAULT) ? GXK_DIALOG_MULTI_DEFAULT : GxkDialogMultiFlags (0));
 	  if (choice_flags & BST_CHOICE_FLAG_INSENSITIVE)
 	    gtk_widget_set_sensitive (any, FALSE);

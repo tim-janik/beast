@@ -421,7 +421,7 @@ bst_file_dialog_open_project (BstFileDialog *self,
     }
   else
     {
-      bse_project_get_wave_repo (project.proxy_id());
+      project.get_wave_repo();
       BstApp *app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
@@ -480,12 +480,13 @@ bst_file_dialog_import_midi (BstFileDialog *self,
   return TRUE;
 }
 
-static gboolean
-store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, const gchar *saving_message_format,
-                gboolean self_contained, gboolean want_overwrite)
+static bool
+store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_name, const String &saving_message_format,
+                bool self_contained, bool want_overwrite)
 {
-  Bse::Error error = bse_project_store_bse (project.proxy_id(), super, file_name, self_contained);
-  gchar *title = g_strdup_format (saving_message_format, bse_item_get_name (super ? super : project.proxy_id()));
+  Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (super_proxy));
+  Bse::Error error = project.store_bse (super, file_name, self_contained);
+  const String title = Rapicorn::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
@@ -513,7 +514,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
               temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
               char *result = mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
               (void) result;
-              error = bse_project_store_bse (project.proxy_id(), super, temp_file, self_contained);
+              error = project.store_bse (super, temp_file, self_contained);
             }
           /* replace file by temporary file */
           if (error != Bse::Error::NONE)
@@ -521,7 +522,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
               unlink (temp_file); /* error != Bse::Error::FILE_EXISTS */
               msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
             }
-          else if (rename (temp_file, file_name) < 0)
+          else if (rename (temp_file, file_name.c_str()) < 0)
             {
               unlink (temp_file);
               msg = g_strdup_format (_("Failed to replace file\n`%s'\ndue to:\n%s"), file_name, g_strerror (errno));
@@ -548,7 +549,6 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
     }
   else if (handled) /* no error */
     bst_status_eprintf (Bse::Error::NONE, "%s", title);
-  g_free (title);
   return handled;
 }
 
