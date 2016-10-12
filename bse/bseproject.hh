@@ -16,13 +16,6 @@ G_BEGIN_DECLS
 #define BSE_PROJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PROJECT, BseProjectClass))
 
 
-/* --- BseProject object --- */
-typedef enum {
-  BSE_PROJECT_INACTIVE,
-  BSE_PROJECT_ACTIVE,
-  BSE_PROJECT_PLAYING
-} BseProjectState;
-
 struct BseProject : BseContainer {
   GSList	     *supers;
   GSList	     *items;
@@ -30,7 +23,7 @@ struct BseProject : BseContainer {
   guint               in_redo : 1;
   BseUndoStack       *undo_stack;
   BseUndoStack       *redo_stack;
-  BseProjectState     state;
+  Bse::ProjectState   state;
   guint		      deactivate_timer;
   gint64	      deactivate_usecs;
   guint64	      deactivate_min_tick;
@@ -49,7 +42,7 @@ void		bse_project_set_auto_deactivate	(BseProject	*project,
 void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
-						 BseProjectState state);
+						 Bse::ProjectState state);
 Bse::Error	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 Bse::Error	bse_project_store_bse		(BseProject	*project,
@@ -79,30 +72,39 @@ namespace Bse {
 
 class ProjectImpl : public ContainerImpl, public virtual ProjectIface {
 protected:
-  virtual          ~ProjectImpl ();
+  virtual                   ~ProjectImpl         ();
 public:
-  explicit          ProjectImpl         (BseObject*);
-  virtual void      change_name         (const String &name) override;
-  virtual Error play                () override;
-  virtual Error activate            () override;
-  virtual bool      can_play            () override;
-  virtual bool      is_playing          () override;
-  virtual bool      is_active           () override;
-  virtual void      start_playback      () override;
-  virtual void      stop_playback       () override;
-  virtual void      deactivate          () override;
-  virtual void      stop                () override;
-  virtual void      auto_deactivate     (int msec_delay) override;
-  virtual int       undo_depth          () override;
-  virtual void      undo                () override;
-  virtual int       redo_depth          () override;
-  virtual void      redo                () override;
-  virtual void      clear_undo          () override;
-  virtual void      clean_dirty         () override;
-  virtual bool      is_dirty            () override;
-  virtual void      inject_midi_control (int midi_channel, int midi_control, double control_value) override;
-  virtual Error import_midi_file    (const String &file_name) override;
-  virtual Error restore_from_file   (const String &file_name) override;
+  explicit                   ProjectImpl         (BseObject*);
+  virtual void               change_name         (const String &name) override;
+  virtual Error              play                () override;
+  virtual Error              activate            () override;
+  virtual bool               can_play            () override;
+  virtual bool               is_playing          () override;
+  virtual bool               is_active           () override;
+  virtual void               start_playback      () override;
+  virtual void               stop_playback       () override;
+  virtual void               deactivate          () override;
+  virtual void               stop                () override;
+  virtual void               auto_deactivate     (int msec_delay) override;
+  virtual int                undo_depth          () override;
+  virtual void               undo                () override;
+  virtual int                redo_depth          () override;
+  virtual void               redo                () override;
+  virtual void               clear_undo          () override;
+  virtual void               clean_dirty         () override;
+  virtual bool               is_dirty            () override;
+  virtual void               inject_midi_control (int midi_channel, int midi_control, double control_value) override;
+  virtual Error              import_midi_file    (const String &file_name) override;
+  virtual Error              restore_from_file   (const String &file_name) override;
+  virtual ProjectState       get_state           () override;
+  virtual SuperSeq           get_supers          () override;
+  virtual Error              store_bse           (SuperIface &super, const String &file_name, bool self_contained) override;
+  virtual SongIfaceP         create_song         (const String &name) override;
+  virtual WaveRepoIfaceP     get_wave_repo       () override;
+  virtual CSynthIfaceP       create_csynth       (const String &name) override;
+  virtual MidiSynthIfaceP    create_midi_synth   (const String &name) override;
+  virtual MidiNotifierIfaceP get_midi_notifier   () override;
+  virtual void               remove_snet         (SNetIface &snet) override;
 };
 
 } // Bse

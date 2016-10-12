@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include        "bsewaverepo.hh"
-
 #include        "bsewave.hh"
 
 
@@ -199,7 +198,67 @@ WaveRepoImpl::WaveRepoImpl (BseObject *bobj) :
 WaveRepoImpl::~WaveRepoImpl ()
 {}
 
-// BseWaveRepo *self = as<BseWaveRepo*>();
-// other->as<WaveRepoIfaceP>();
+static Error
+repo_load_file (BseWaveRepo *wrepo, const String &file_name, BseWave **wave_p)
+{
+  String fname = Path::basename (file_name);
+  BseWave *wave = (BseWave*) bse_object_new (BSE_TYPE_WAVE, "uname", fname.c_str(), NULL);
+  Error error = bse_wave_load_wave_file (wave, file_name.c_str(), NULL, NULL, NULL, TRUE);
+  if (wave->n_wchunks)
+    {
+      bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
+      *wave_p = wave;
+      error = Error::NONE;
+    }
+  else
+    {
+      if (error == 0)
+        error = Error::WAVE_NOT_FOUND;
+      *wave_p = NULL;
+    }
+  g_object_unref (wave);
+  return error;
+}
+
+Error
+WaveRepoImpl::load_file (const String &file_name)
+{
+  BseWaveRepo *self = as<BseWaveRepo*>();
+  BseWave *wave = NULL;
+  Bse::Error error = repo_load_file (self, file_name, &wave);
+  if (wave)
+    {
+      UndoDescriptor<WaveImpl> wave_descriptor = undo_descriptor (*wave->as<WaveImpl*>());
+      auto remove_wave_lambda = [wave_descriptor] (WaveRepoImpl &self, BseUndoStack *ustack) -> Error {
+        WaveImpl &wave = self.undo_resolve (wave_descriptor);
+        self.remove_wave (wave);
+        return Error::NONE;
+      };
+      push_undo (__func__, *this, remove_wave_lambda);
+    }
+  return error;
+}
+
+void
+WaveRepoImpl::remove_wave (WaveIface &wave_iface)
+{
+  BseWaveRepo *self = as<BseWaveRepo*>();
+  BseWave *wave = wave_iface.as<BseWave*>();
+  assert_return (wave->parent == self);
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  bse_container_uncross_undoable (self, wave);          // removes object references
+  if (wave)                                             // push undo for 'remove_backedup'
+    {
+      UndoDescriptor<WaveImpl> wave_descriptor = undo_descriptor (*wave->as<WaveImpl*>());
+      auto remove_wave_lambda = [wave_descriptor] (WaveRepoImpl &self, BseUndoStack *ustack) -> Error {
+        WaveImpl &wave = self.undo_resolve (wave_descriptor);
+        self.remove_wave (wave);
+        return Error::NONE;
+      };
+      push_undo_to_redo (__func__, *this, remove_wave_lambda);
+    }
+  bse_container_remove_backedup (self, wave, ustack);   // removes without undo
+  bse_item_undo_close (ustack);
+}
 
 } // Bse

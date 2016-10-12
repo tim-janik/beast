@@ -429,7 +429,7 @@ master_process_job (BseJob *job)
 	  master_need_reflow |= TRUE;
 	}
       break;
-    case ENGINE_JOB_IC0NNECT:
+    case ENGINE_JOB_ICONNECT:
       node = job->connection.dest_node;
       src_node = job->connection.src_node;
       istream = job->connection.dest_ijstream;

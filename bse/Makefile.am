@@ -115,10 +115,10 @@ idl_dummy_files = $(strip	\
 )
 # BSE procedure sources
 bse_proc_sources = $(strip \
-	bsecategories.proc	bsecontainer.proc				bseeditablesample.proc	\
-	bsejanitor.proc								bseproject.proc		\
-				bsesong.proc					bsesource.proc		\
-				bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc \
+	bseeditablesample.proc	\
+	bsejanitor.proc		\
+										bsesource.proc		\
+				bseitem.proc					bsewaveosc.proc		\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required

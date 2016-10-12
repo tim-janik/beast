@@ -247,7 +247,7 @@ bse_job_connect (BseModule *src_module,
   assert_return (dest_istream < dest_module->klass->n_istreams, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
-  job->job_id = ENGINE_JOB_IC0NNECT;
+  job->job_id = ENGINE_JOB_ICONNECT;
   job->connection.dest_node = ENGINE_NODE (dest_module);
   job->connection.dest_ijstream = dest_istream;
   job->connection.src_node = ENGINE_NODE (src_module);

@@ -104,7 +104,6 @@ bst_part_dialog_init (BstPartDialog *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkRange *srange;
-  BseCategorySeq *cseq;
   GxkActionList *al1;
   GtkObject *adjustment;
   GtkAdjustment *adj;
@@ -133,7 +132,7 @@ bst_part_dialog_init (BstPartDialog *self)
                                 NULL, part_dialog_action_check, part_dialog_action_exec);
 
   /* publish /Part/ scripts */
-  cseq = bse_categories_match ("/Part/*");
+  Bse::CategorySeq cseq = bse_server.category_match ("/Part/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, part_dialog_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (self, "part-scripts", al1);
@@ -324,10 +323,10 @@ static void
 part_dialog_run_script_proc (gpointer data, size_t action_id)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
-  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
+  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
   Bse::PartH part = self->proll->part;
 
-  bst_procedure_exec_auto (cat->otype,
+  bst_procedure_exec_auto (cat.otype.c_str(),
                            "project", SFI_TYPE_PROXY, bse_item_get_project (part.proxy_id()),
                            "part", SFI_TYPE_PROXY, part.proxy_id(),
                            NULL);

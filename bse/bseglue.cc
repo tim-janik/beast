@@ -526,15 +526,14 @@ bglue_describe_proc (SfiGlueContext *context,
 static char**
 bglue_list_proc_names (SfiGlueContext *context)
 {
-  BseCategorySeq *cseq = bse_categories_match_typed ("/Proc/""*", BSE_TYPE_PROCEDURE);
+  Bse::CategorySeq cseq = bse_categories_match_typed ("/Proc/""*", BSE_TYPE_PROCEDURE);
   char **p;
   uint i;
 
-  p = g_new (char*, cseq->n_cats + 1);
-  for (i = 0; i < cseq->n_cats; i++)
-    p[i] = g_strdup (cseq->cats[i]->otype);
+  p = g_new (char*, cseq.size() + 1);
+  for (i = 0; i < cseq.size(); i++)
+    p[i] = g_strdup (cseq[i].otype.c_str());
   p[i] = NULL;
-  bse_category_seq_free (cseq);
 
   return p;
 }
@@ -544,7 +543,6 @@ bglue_list_method_names (SfiGlueContext *context,
                          const char     *iface_name)
 {
   GType type = g_type_from_name (iface_name);
-  BseCategorySeq *cseq;
   char **p, *prefix;
   uint i, l, n_procs;
 
@@ -554,14 +552,13 @@ bglue_list_method_names (SfiGlueContext *context,
   prefix = g_strdup_format ("%s+", g_type_name (type));
   l = strlen (prefix);
 
-  cseq = bse_categories_match_typed ("/Methods/" "*", BSE_TYPE_PROCEDURE);
-  p = g_new (char*, cseq->n_cats + 1);
+  Bse::CategorySeq cseq = bse_categories_match_typed ("/Methods/" "*", BSE_TYPE_PROCEDURE);
+  p = g_new (char*, cseq.size() + 1);
   n_procs = 0;
-  for (i = 0; i < cseq->n_cats; i++)
-    if (strncmp (cseq->cats[i]->otype, prefix, l) == 0)
-      p[n_procs++] = g_strdup (cseq->cats[i]->otype + l);
+  for (i = 0; i < cseq.size(); i++)
+    if (strncmp (cseq[i].otype.c_str(), prefix, l) == 0)
+      p[n_procs++] = g_strdup (cseq[i].otype.c_str() + l);
   p[n_procs] = NULL;
-  bse_category_seq_free (cseq);
   g_free (prefix);
 
   return p;

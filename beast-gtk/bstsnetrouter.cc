@@ -320,8 +320,8 @@ static void
 bst_router_run_method (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
-  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
-  bst_procedure_exec_auto (cat->otype,
+  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
+  bst_procedure_exec_auto (cat.otype.c_str(),
                            "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            NULL);
@@ -331,9 +331,7 @@ void
 bst_snet_router_update (BstSNetRouter *self)
 {
   GnomeCanvas *canvas;
-  BseIt3mSeq *iseq;
   GSList *slist, *csources = NULL;
-  guint i;
 
   assert_return (BST_IS_SNET_ROUTER (self));
 
@@ -343,7 +341,7 @@ bst_snet_router_update (BstSNetRouter *self)
   bst_snet_router_destroy_contents (self);
 
 #if 0
-    {
+  {
       /* add canvas source for the snet itself */
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), self->snet);
       bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), CHANNEL_HINTS (self));
@@ -351,14 +349,14 @@ bst_snet_router_update (BstSNetRouter *self)
                         "swapped_signal::update_links", bst_snet_router_queue_link_update, self,
                         NULL);
       csources = g_slist_prepend (csources, csource);
-    }
+  }
 #endif
 
   /* walk all child sources */
-  iseq = bse_container_list_children (self->snet.proxy_id());
-  for (i = 0; i < iseq->n_items; i++)
+  Bse::ItemSeq items = self->snet.list_children();
+  for (size_t i = 0; i < items.size(); i++)
     {
-      SfiProxy item = iseq->items[i];
+      SfiProxy item = items[i].proxy_id();
 
       if (BSE_IS_SOURCE (item))
         {
@@ -1018,11 +1016,10 @@ bst_snet_router_init (BstSNetRouter      *self)
                     NULL);
 
   /* CSynth & SNet utilities */
-  BseCategorySeq *cseq;
-  cseq = bse_categories_match ("/CSynth/*");
+  Bse::CategorySeq cseq = bse_server.category_match ("/CSynth/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al1);
-  cseq = bse_categories_match ("/SNet/*");
+  cseq = bse_server.category_match ("/SNet/*");
   al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
@@ -1035,7 +1032,6 @@ bst_snet_router_init (BstSNetRouter      *self)
   gxk_widget_publish_actions (self, "router-toolbar-actions",
                               G_N_ELEMENTS (router_toolbar_actions), router_toolbar_actions,
                               NULL, NULL, snet_router_action_exec);
-  cseq = NULL;
 
   // construct module type action lists
   canvas_modules = gxk_action_list_create_grouped (self->canvas_tool);

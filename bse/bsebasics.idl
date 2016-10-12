@@ -262,25 +262,6 @@ record NoteSequence
 sequence P1xelSeq {
   Int	pixels;
 };
-record Ic0n
-{
-  Info     blurb     = "BSE icon representation.";
-  Int      width     = SfiInt ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  Int      height    = SfiInt ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  P1xelSeq pixel_seq = SfiSeq ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
-};
-record Category
-{
-  Int    category_id = SfiInt ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
-  SfiString category;
-  Int    mindex;
-  Int    lindex;
-  SfiString otype;
-  Ic0n   icon;
-};
-sequence CategorySeq {
-  Category cats;
-};
 /* BSE Part structures */
 interface Part;
 interface Track;

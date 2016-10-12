@@ -371,9 +371,9 @@ main_open_files (int filesc, char **filesv)
 	{
 	  if (app)
 	    {
-	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
+              Bse::WaveRepoH wrepo = app->project.get_wave_repo ();
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
-	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              Bse::Error error = wrepo.load_file (filesv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
               if (error != 0)
                 sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
@@ -381,8 +381,8 @@ main_open_files (int filesc, char **filesv)
           else
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              Bse::WaveRepoH wrepo = project.get_wave_repo ();
+              Bse::Error error = wrepo.load_file (filesv[i]);
 	      if (error == 0)
 		{
 		  app = bst_app_new (project);
@@ -412,7 +412,8 @@ main_open_files (int filesc, char **filesv)
                   perror (Rapicorn::string_format ("%s: failed to remove", filesv[i]).c_str());
                   exit (2);
                 }
-              error = bse_project_store_bse (project.proxy_id(), 0, filesv[i], TRUE);
+              Bse::SuperH any_super; // FIXME: bad API here
+              error = project.store_bse (any_super, filesv[i], TRUE);
               Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
               if (error != 0)
                 exit (3);
@@ -444,7 +445,7 @@ static BstApp*
 main_open_default_window ()
 {
   Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-  bse_project_get_wave_repo (project.proxy_id());
+  project.get_wave_repo();
   BstApp *app = bst_app_new (project);
   gxk_idle_show_widget (GTK_WIDGET (app));
   if (beast_splash)

@@ -7,6 +7,7 @@
 #include "gsldatahandle.hh"
 #include "bseserver.hh"
 #include "bseloader.hh"
+#include "bseeditablesample.hh"
 
 #include <string.h>
 
@@ -865,5 +866,45 @@ WaveImpl::WaveImpl (BseObject *bobj) :
 
 WaveImpl::~WaveImpl ()
 {}
+
+double
+WaveImpl::chunk_get_mix_freq (int chunk_index)
+{
+  BseWave *self = as<BseWave*>();
+  GslWaveChunk *wchunk = (GslWaveChunk*) sfi_ring_nth_data (self->wave_chunks, chunk_index);
+  return wchunk ? wchunk->mix_freq : 0;
+}
+
+double
+WaveImpl::chunk_get_osc_freq (int chunk_index)
+{
+  BseWave *self = as<BseWave*>();
+  GslWaveChunk *wchunk = (GslWaveChunk*) sfi_ring_nth_data (self->wave_chunks, chunk_index);
+  return wchunk ? wchunk->osc_freq : 0;
+}
+
+int
+WaveImpl::n_wave_chunks ()
+{
+  BseWave *self = as<BseWave*>();
+  return self->n_wchunks;
+}
+
+EditableSampleIfaceP
+WaveImpl::use_editable (int chunk_index)
+{
+  BseWave *self = as<BseWave*>();
+  GslWaveChunk *wchunk = (GslWaveChunk*) sfi_ring_nth_data (self->wave_chunks, chunk_index);
+  BseEditableSample *esample = NULL;
+  if (wchunk)
+    {
+      esample = (BseEditableSample*) bse_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
+      bse_editable_sample_set_wchunk (esample, wchunk);
+      bse_item_use (BSE_ITEM (esample));
+      g_object_unref (esample);
+      return esample->as<EditableSampleIfaceP>();
+    }
+  return NULL;
+}
 
 } // Bse

@@ -56,7 +56,7 @@ bool	birnet_file_check (const char *file,
 bool	birnet_file_equals (const char *file1,
 			    const char *file2);
 /* --- messaging --- */
-#define         sfi_error(...)                   RAPICORN_FATAL (__VA_ARGS__)
+#define         sfi_error(...)                   RAPICORN_CRITICAL (__VA_ARGS__)
 #define         sfi_warning(...)                 RAPICORN_CRITICAL (__VA_ARGS__)
 #define         sfi_info(...)                    BSE_DEBUG (__VA_ARGS__)
 #define         sfi_diag(...)                    BSE_DEBUG (__VA_ARGS__)

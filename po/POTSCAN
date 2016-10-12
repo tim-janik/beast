@@ -48,8 +48,6 @@ beast-gtk/bstusermessage.cc
 beast-gtk/bstutils.cc
 beast-gtk/bstwaveeditor.cc
 beast-gtk/bstwaveview.cc
-beast-gtk/res/radgets-beast.xml
-beast-gtk/res/radgets-standard.xml
 beast-gtk/gxk/gxklistwrapper.cc
 beast-gtk/gxk/gxkparam-entry.cc
 beast-gtk/gxk/gxkparam-label.cc
@@ -57,13 +55,15 @@ beast-gtk/gxk/gxkparam-scale.cc
 beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
+beast-gtk/res/radgets-beast.xml
+beast-gtk/res/radgets-standard.xml
 bse/bseapi.idl
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bseconstant.cc
-bse/bsecontainer.proc
+bse/bsecsynth.cc
 bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc
@@ -85,7 +85,6 @@ bse/bsepcmoutput.cc
 bse/bseserver.cc
 bse/bsesnooper.cc
 bse/bsesong.cc
-bse/bsesong.proc
 bse/bsesource.proc
 bse/bsestandardosc.cc
 bse/bsesubiport.cc
@@ -112,7 +111,6 @@ plugins/bseamplifier.idl
 plugins/bseatandistort.cc
 plugins/bsebalance.idl
 plugins/bsecontribsampleandhold.idl
-# plugins/bsefirfilter.c
 plugins/bseiirfilter.cc
 plugins/bsemixer.cc
 plugins/bsemult.cc
@@ -124,7 +122,6 @@ plugins/bsesummation.idl
 plugins/davbassfilter.idl
 plugins/davcanyondelay.cc
 plugins/davchorus.idl
-# plugins/davguitar.c
 plugins/davorgan.idl
 plugins/davsyndrum.cc
 plugins/davxtalstrings.cc

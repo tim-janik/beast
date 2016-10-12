@@ -255,10 +255,9 @@ static ArgDescription dump_categories_options[] = {
 static String
 dump_categories (const ArgParser &ap)
 {
-  BseCategorySeq *cseq = bse_categories_match_typed ("*", 0);
-  for (uint i = 0; i < cseq->n_cats; i++)
-    printout ("%s\t(%s)\n", cseq->cats[i]->category, cseq->cats[i]->otype);
-  bse_category_seq_free (cseq);
+  Bse::CategorySeq cseq = bse_categories_match_typed ("*", 0);
+  for (size_t i = 0; i < cseq.size(); i++)
+    printout ("%s\t(%s)\n", cseq[i].category, cseq[i].otype);
   return "";
 }
 

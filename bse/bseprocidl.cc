@@ -216,18 +216,15 @@ void printPSpec (const char *dir, GParamSpec *pspec)
 
 void printMethods (const std::string& iface)
 {
-  BseCategorySeq *cseq;
-  guint i;
-
-  cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
-  for (i = 0; i < cseq->n_cats; i++)
+  Bse::CategorySeq cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
+  for (size_t i = 0; i < cseq.size(); i++)
     {
-      GType type_id = g_type_from_name (cseq->cats[i]->otype);
+      GType type_id = g_type_from_name (cseq[i].otype.c_str());
       const gchar *blurb = bse_type_get_blurb (type_id);
       BseProcedureClass *klass = (BseProcedureClass *)g_type_class_ref (type_id);
 
       /* procedures */
-      std::string t = cseq->cats[i]->otype;
+      std::string t = cseq[i].otype;
       std::string iname = getInterface (t);
       std::string mname = getMethod (t);
       std::string rtype = klass->n_out_pspecs ?
@@ -271,7 +268,6 @@ void printMethods (const std::string& iface)
 	}
       g_type_class_unref (klass);
     }
-  bse_category_seq_free (cseq);
 }
 
 /* FIXME: we might want to have a sfi_glue_iface_parent () method */

@@ -496,6 +496,11 @@ interface Item : Object {
   // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
 };
 
+/// A list of part note events.
+sequence ItemSeq {
+  Item items;
+};
+
 /// Part specific note event representation.
 record PartNote
 {
@@ -614,10 +619,17 @@ interface ContextMerger : Source {
 /// Base interface type for containers of Item derived types.
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
+  Item get_item    (String item_type, int32 seq_id); ///< Retrieve the immediate child of type @a item_type by its sequential id (the 'nth' child).
+  ItemSeq list_children (); ///< List all immediate children of a container.
 };
 
 /// Base interface type for Item managers.
 interface Super : Container {
+};
+
+/// A list of Super type objects.
+sequence SuperSeq {
+  Super supers;
 };
 
 /// Base interface type for all kinds of synthesis networks.
@@ -739,11 +751,12 @@ interface Song : SNet {
   void       remove_part             (Part part);   ///< Delete a Part from a Song.
   Track      create_track            ();            ///< Create a new Track for a Song.
   void       remove_track            (Track track); ///< Delete a Track from a Song.
-  // Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
-  // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
-  // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
-  // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
-  // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
+  Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
+  void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
+  Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
+  Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
+  /// Synthesize a note on a song of an active project.
+  void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
   // signal void   pointer_changed (int32 a);
   // group _("Timing") {
   // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
@@ -787,10 +800,16 @@ interface EditableSample : Item {
 
 /// Interface for PCM wave samples.
 interface Wave : Source {
+  float64        chunk_get_mix_freq    (int32 chunk_index); ///< Retrieve mixing frequency of a wave chunk.
+  float64        chunk_get_osc_freq    (int32 chunk_index); ///< Retrieve oscillating frequency of a wave chunk.
+  int32          n_wave_chunks         ();                  ///< Get the number of wave chunks of a wave.
+  EditableSample use_editable          (int32 chunk_index); ///< Retrieve an editable sample object for a wave chunk.
 };
 
 /// Interface serving as container for Wave objects.
 interface WaveRepo : Super {
+  Error load_file   (String file_name);         ///< Load wave from file.
+  void  remove_wave (Wave wave);                ///< Remove a wave from repository.
 };
 
 /// Interface for MIDI event notification.
@@ -801,31 +820,48 @@ interface MidiNotifier : Item {
 interface MidiSynth : SNet {
 };
 
+/// Enumeration describing the current activation and playback state of a project.
+enum ProjectState {
+  INACTIVE,     ///< The project is not yet hooked to the sound engine.
+  ACTIVE,       ///< The sound engine is activated (rnuning) for this project.
+  PLAYING       ///< The project is active and the sequencer is running.
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
-  void  change_name (String name); ///< Change a project name without recording undo steps.
-  Error play();     ///< Activate a project and start project playback (an already playing project is first halted).
-  Error activate(); ///< Activate a project, precondition to start playback.
-  //ProjectState get_state();     ///< Retrieve the current project activation/playback state.
-  bool  can_play();     ///< Check whether project playback would makes sense.
-  bool  is_playing();   ///< Check whether a project is currently playing (song sequencing).
-  bool  is_active ();   ///< Check whether a project is active (currently synthesizing).
-  void  start_playback(); ///< Start playback in an activated project.
-  void  stop_playback(); ///< Stop project playback.
-  void  deactivate();   ///< Deactivate the project, automatically stop playback.
-  void  stop();         ///< Stop project playback and deactivate project.
-  void  auto_deactivate (int32 msec_delay); ///< Automatically deactivate a few milliseconds after playback stopped.
-  int32 undo_depth();   ///< Check whether a project can perform undo steps.
-  void  undo();         ///< Undo a previous operation in a project.
-  int32 redo_depth();   ///< Get the number of times redo can be called on the project.
-  void  redo();         ///< Redo a previously undone operation in a project.
-  void  clear_undo();   ///< Delete all recorded undo or redo steps.
-  void  clean_dirty();  ///< Clear a project's dirty flags.
-  bool  is_dirty();     ///< Check whether a project needs saving.
+  signal void  state_changed       (ProjectState newstate); ///< Signal notifies of project state changes.
+  ProjectState get_state           (); ///< Retrieve the current project activation/playback state.
+  void         change_name         (String name); ///< Change a project name without recording undo steps.
+  Error        play                (); ///< Activate a project and start project playback (an already playing project is first halted).
+  Error        activate            (); ///< Activate a project, precondition to start playback.
+  bool         can_play            (); ///< Check whether project playback would makes sense.
+  bool         is_playing          (); ///< Check whether a project is currently playing (song sequencing).
+  bool         is_active           (); ///< Check whether a project is active (currently synthesizing).
+  void         start_playback      (); ///< Start playback in an activated project.
+  void         stop_playback       (); ///< Stop project playback.
+  void         deactivate          (); ///< Deactivate the project, automatically stop playback.
+  void         stop                (); ///< Stop project playback and deactivate project.
+  void         auto_deactivate     (int32 msec_delay); ///< Automatically deactivate a few milliseconds after playback stopped.
+  int32        undo_depth          (); ///< Check whether a project can perform undo steps.
+  void         undo                (); ///< Undo a previous operation in a project.
+  int32        redo_depth          (); ///< Get the number of times redo can be called on the project.
+  void         redo                (); ///< Redo a previously undone operation in a project.
+  void         clear_undo          (); ///< Delete all recorded undo or redo steps.
+  void         clean_dirty         (); ///< Clear a project's dirty flags.
+  bool         is_dirty            (); ///< Check whether a project needs saving.
+  SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
+  Error        store_bse           (Super super, String file_name, bool self_contained);
+  Song         create_song         (String name); ///< Create a song for this project.
+  WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.
+  CSynth       create_csynth       (String name); ///< Create a synthsizer network for this project.
+  MidiSynth    create_midi_synth   (String name); ///< Create a MIDI synthesizer network for this project.
+  MidiNotifier get_midi_notifier   ();            ///< Retrieve the project's midi notifier object.
+  void         remove_snet         (SNet snet);   ///< Remove an existing synthesizer network from this project.
+  Error        restore_from_file   (String file_name); ///< Load a project from file.
   /// Inject a MIDI control event into the project's MIDI receiver.
-  void  inject_midi_control (int32 midi_channel, int32 midi_control, float64 control_value);
+  void         inject_midi_control (int32 midi_channel, int32 midi_control, float64 control_value);
+  Error        import_midi_file    (String file_name); ///< Import a song from a MIDI file.
   //Item    find_item (String uname_path); ///< Find an item within a project, given its uname path.
-  //ItemSeq get_supers(); ///< Retrieve all Super type objects of this project.
   /// List uname paths for all items of a specified type within a project.
   /// By their uname paths, items are uniquely identifyable within a project.
   //StringSeq list_uname_paths (String item_type);
@@ -836,19 +872,27 @@ interface Project : Container {
   /// The references to other objects (e.g. samples) can be stored
   /// by reference (self_contained=false) or embedded in the output
   /// file (self_contained=true).
-  //Error store_bse (Super super, String file_name, bool self_contained);
-  Error import_midi_file (String file_name); ///< Import a song from a MIDI file.
-  Error restore_from_file (String file_name); ///< Load a project from file.
-  //Song create_song (String name); ///< Create a song for this project.
-  //WaveRepo get_wave_repo (); ///< Retrieve the project's unique wave repository.
-  //CSynth create_csynth (String name); ///< Create a synthsizer network for this project.
-  //MidiSynth create_midi_synth (String name); ///< Create a MIDI synthesizer network for this project.
-  //MidiNotifier get_midi_notifier(); ///< Retrieve the project's midi notifier object.
-  //void  remove_snet (SNet snet); ///< Remove an existing synthesizer network from this project.
+
 };
 
 /// Interface for writing PCM wave data.
 interface PcmWriter : Item {
+};
+
+/// Categories describe useful type entities.
+record Category
+{
+  int32  category_id = Num ("Category ID", "", ":readwrite");
+  String category;
+  int32  mindex;
+  int32  lindex;
+  String otype;
+  Icon   icon;
+};
+
+/// Sequence of Category records.
+sequence CategorySeq {
+  Category cats;
 };
 
 /** Main Bse remote origin object.
@@ -898,6 +942,9 @@ interface Server : Object {
   int32           note_from_freq (MusicalTuning musical_tuning, float64 frequency);
   /// Retrieve the frequency of a certain note.
   float64         note_to_freq (MusicalTuning musical_tuning, int32 note, int32 fine_tune);
+
+  CategorySeq category_match_typed (String pattern, String type_name); ///< List BSE categories according to a pattern and type match.
+  CategorySeq category_match       (String pattern);                   ///< List BSE categories according to a pattern match.
 
   // *** Old Janitor ***
   // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.

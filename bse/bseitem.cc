@@ -1362,15 +1362,7 @@ Icon
 ItemImpl::icon () const
 {
   BseItem *self = const_cast<ItemImpl*> (this)->as<BseItem*>();
-  const BseIc0n *ic0n = bse_object_get_icon (self);
-  Icon icon;
-  if (ic0n && ic0n->width && ic0n->height && ic0n->width * ic0n->height == ssize_t (ic0n->pixel_seq->n_pixels))
-    {
-      icon.width = ic0n->width;
-      icon.height = ic0n->height;
-      icon.pixels.insert (icon.pixels.end(), &ic0n->pixel_seq->pixels[0], &ic0n->pixel_seq->pixels[ic0n->pixel_seq->n_pixels]);
-    }
-  return icon;
+  return bse_object_get_icon (self);
 }
 
 void
