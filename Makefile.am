@@ -82,30 +82,50 @@ MAINTAINERCLEANFILES += ChangeLog
 EXTRA_DIST           += ChangeLog taptool.sh
 
 # == distcheck ==
+# Distcheck aims:
+# - use srcdir==builddir;
+# - build *outside* the original source tree to catch missing files or dirs, and without picking up parent directory contents;
+# - support parallel builds;
+# - verify that no CLEANFILES are shipped in dist tarball;
+# - check that $(DESTDIR) is properly honored in installation rules.
 # distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
-# distcheck_uniqdir = $(shell printf distcheck-%d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
-distcheck_uniqdir = $(shell python -c "import os, md5; print ('distcheck-%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
+# distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
+distcheck_uniqdir = distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
 distcheck: dist
 	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
-	&& DDIR="$$TMPDIR/$(distcheck_uniqdir)" \
+	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
 	&& TARBALL=`readlink -f $(firstword $(DIST_ARCHIVES))` \
-	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DDIR" -a -n "$(distdir)" -a -n "$$TARBALL" \
-	&& mkdir -p "$$DDIR" \
+	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distdir)" -a -n "$$TARBALL" \
+	&& { test ! -e "$$DCDIR/" || { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } ; } \
+	&& mkdir -p "$$DCDIR" \
 	&& set -x \
-	&& rm -rf "$$DDIR/$(distdir)/" \
-	&& cd "$$DDIR" \
+	&& cd "$$DCDIR" \
 	&& tar xf "$$TARBALL" \
 	&& cd "$(distdir)" \
-	&& ./configure --prefix="`pwd`/_inst" $(AM_DISTCHECK_CONFIGURE_FLAGS) $(DISTCHECK_CONFIGURE_FLAGS) \
-	&& $(MAKE) $(AM_MAKEFLAGS) \
+	&& ./configure --prefix="$$DCDIR/inst" $(AM_DISTCHECK_CONFIGURE_FLAGS) $(DISTCHECK_CONFIGURE_FLAGS) \
+	&& touch dc-buildtree-cleaned \
+	&& find . -print >dc-buildtree-files \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean \
+	&& find . -print >dc-buildtree-cleaned \
+	&& diff -u dc-buildtree-files dc-buildtree-cleaned \
+	&& $(MAKE) $(AM_MAKEFLAGS) -j`nproc` \
 	&& $(MAKE) $(AM_MAKEFLAGS) check \
 	&& $(MAKE) $(AM_MAKEFLAGS) install \
 	&& $(MAKE) $(AM_MAKEFLAGS) installcheck \
 	&& $(MAKE) $(AM_MAKEFLAGS) uninstall \
-	&& rm -rf "$$DDIR/$(distdir)/" \
-	&& { rmdir -p "$$DDIR" 2>/dev/null || true ; } \
-	&& echo "Archive OK: $$TARBALL"
-.PHONY: distcheck
+	&& $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck-hook \
+	&& $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck distuninstallcheck_dir="$$DCDIR/inst" \
+	&& chmod a-w -R "$$DCDIR/inst" \
+	&& mkdir -m 0700 "$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" install \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" uninstall \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck-hook \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck distuninstallcheck_dir="$$DCDIR/destdir" \
+	&& set +x \
+	&& cd "$(abs_top_builddir)" \
+	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
+	&& echo "OK: archive ready for distribution: $$TARBALL" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+.PHONY: distcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
 check-update-po:
