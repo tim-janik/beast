@@ -114,7 +114,7 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
 	$(top_builddir)/sfi/libsfi-@MAJOR@.la $(SFI_LIBS) 	\
-	$(RAPICORN_LIBS) $(BIRNET_LIBS)				\
+	$(RAPICORN_LIBS) $(SFI_LIBS) $(LIBZ_LIBS)		\
 )
 
 
