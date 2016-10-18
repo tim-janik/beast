@@ -26,7 +26,7 @@ static void	 bse_adder_get_property		(GObject        *object,
 						 guint           param_id,
 						 GValue         *value,
 						 GParamSpec     *pspec);
-static BseIc0n*	 bse_adder_do_get_icon		(BseObject	*object);
+static Bse::Icon bse_adder_do_get_icon		(BseObject	*object);
 static void      bse_adder_context_create       (BseSource      *source,
 						 guint           context_handle,
 						 BseTrans       *trans);
@@ -64,7 +64,7 @@ bse_adder_class_init (BseAdderClass *klass)
 
   source_class->context_create = bse_adder_context_create;
 
-  klass->sub_icon = bse_ic0n_from_pixstream (sub_pixstream);
+  klass->sub_icon = bse_icon_from_pixstream (sub_pixstream);
 
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
@@ -88,11 +88,10 @@ bse_adder_init (BseAdder *self)
   self->subtract = FALSE;
 }
 
-static BseIc0n*
+static Bse::Icon
 bse_adder_do_get_icon (BseObject *object)
 {
   BseAdder *self = BSE_ADDER (object);
-
   if (self->subtract)
     return BSE_ADDER_GET_CLASS (self)->sub_icon;
   else /* chain parent class' handler */

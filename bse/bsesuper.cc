@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bsesuper.hh"
-
 #include	"bseproject.hh"
 #include	<string.h>
-
 
 enum
 {
@@ -34,9 +32,10 @@ bse_super_init (BseSuper *super,
 
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
 
-  /* we want Unnamed-xxx default unames */
-  bse_item_set (super, "uname", "Unnamed", NULL);
-  /* default-fill fields */
+  // default to 'Unnamed-###' unames
+  bse_item_set (super, "uname", _("Unnamed"), NULL);
+
+  // default-fill fields
   const char *value = BSE_GCONFIG (author_default);
   if (value && value[0])
     bse_item_set (super, "author", value, NULL);

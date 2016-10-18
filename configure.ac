@@ -141,11 +141,16 @@ ACX_PROG_LD_GNU_SYMBOLIC
 ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
 MC_EVAR_ADD(AM_LDFLAGS, $DYNAMIC_LIST_CPP_NEW_LDFLAGS)
 MC_EVAR_ADD(AM_LDFLAGS, -pthread)
+MC_EVAR_ADD(AM_LDFLAGS, -lpthread)
 MC_EVAR_ADD(AM_LDFLAGS, -lrt)
 MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
 if ${LD} --help 2>&1 | grep -q -- '-export-dynamic\b' ; then
   MC_EVAR_ADD(AM_LDFLAGS, [-Wl,-export-dynamic])
 fi
+
+# == C++ Dialect ==
+CXX="$CXX -std=gnu++11"
+test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++11"
 
 # AM_LDFLAGS, optimize linker to use faster ELF symbol hashing if we have compiler and linker support
 AC_MSG_CHECKING([whether CC and LD support gnu.hash sections])
@@ -265,6 +270,14 @@ AC_PROG_LN_S
 
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
+
+# == Libraries ==
+# libz
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h, LIBZ_LIBS='-lz', LIBZ='')], LIBZ='')
+if test -z "$LIBZ_LIBS"; then
+    AC_MSG_ERROR([Compression library libz is missing, but required])
+fi
+AC_SUBST(LIBZ_LIBS)
 
 dnl #
 dnl # Define package requirements.

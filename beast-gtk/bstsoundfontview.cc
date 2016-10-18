@@ -110,7 +110,11 @@ sound_font_view_action_exec (gpointer                data,
       break;
     case ACTION_DELETE_SOUND_FONT:
       item = bst_item_view_get_current (BST_ITEM_VIEW (self));
-      bse_sound_font_repo_remove_sound_font (sfrepo, item);
+      {
+        Bse::SoundFontRepoH repo = Bse::SoundFontRepoH::down_cast (bse_server.from_proxy (sfrepo));
+        Bse::SoundFontH sound_font = Bse::SoundFontH::down_cast (bse_server.from_proxy (item));
+        repo.remove_sound_font (sound_font);
+      }
       break;
     default:
       break;

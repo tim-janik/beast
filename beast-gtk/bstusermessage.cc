@@ -481,9 +481,9 @@ message_fill_from_script (BstMessage    *msg,
   const gchar *proc_title = NULL;
   if (hastext (proc_name))
     {
-      BseCategorySeq *cseq = bse_categories_match_typed ("*", proc_name);
-      if (cseq->n_cats)
-        proc_title = cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", proc_name);
+      if (cseq.size())
+        proc_title = cseq[0].category.c_str() + bst_path_leaf_index (cseq[0].category);
     }
   msg->title = g_strdup (proc_title);
   msg->primary = g_strdup (primary ? primary : proc_title);

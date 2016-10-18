@@ -341,9 +341,9 @@ csource_info_update (BstCanvasSource *csource)
       /* type & category */
       gxk_scroll_text_push_indent (text);
       gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source));
-      BseCategorySeq *cseq = bse_categories_match_typed ("*", bse_item_get_type (csource->source));
-      if (cseq->n_cats)
-        gxk_scroll_text_aprintf (text, "Category: %s\n", cseq->cats[0]->category);
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", bse_item_get_type_name (csource->source));
+      if (cseq.size())
+        gxk_scroll_text_aprintf (text, "Category: %s\n", cseq[0].category);
       gxk_scroll_text_pop_indent (text);
 
       /* input channels */

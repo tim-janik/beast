@@ -13,6 +13,7 @@
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
 #include <string.h>
+#include <algorithm>
 
 
 /* --- prototypes --- */
@@ -199,7 +200,6 @@ bst_app_init (BstApp *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkWidget *widget = GTK_WIDGET (self);
-  BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
 
   g_object_set (self,
@@ -248,26 +248,26 @@ bst_app_init (BstApp *self)
     gxk_widget_publish_actions (self, "demo-dialogs", G_N_ELEMENTS (demo_dialogs), demo_dialogs,
                                 NULL, app_action_check, app_action_exec);
   /* Project utilities */
-  cseq = bse_categories_match ("/Project/*");
+  Bse::CategorySeq cseq = bse_server.category_match ("/Project/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-project", al1);
   /* Song scripts */
-  cseq = bse_categories_match ("/Song/*");
+  cseq = bse_server.category_match ("/Song/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-song", al1);
   /* CSynth & SNet utilities */
-  cseq = bse_categories_match ("/CSynth/*");
+  cseq = bse_server.category_match ("/CSynth/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
-  cseq = bse_categories_match ("/SNet/*");
+  cseq = bse_server.category_match ("/SNet/*");
   al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
   gxk_widget_publish_action_list (widget, "tools-synth", al1);
   /* WaveRepo utilities */
-  cseq = bse_categories_match ("/WaveRepo/*");
+  cseq = bse_server.category_match ("/WaveRepo/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
@@ -356,6 +356,8 @@ bst_app_finalize (GObject *object)
 
   if (self->project)
     {
+      self->project.sig_state_changed() -= self->sig_state_changed_id;
+      self->sig_state_changed_id = 0;
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
@@ -383,10 +385,13 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
+  self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
+    gxk_widget_update_actions (self);
+  };
+
   bse_proxy_connect (self->project.proxy_id(),
                      "swapped_signal::item-added", bst_app_reload_pages, self,
                      "swapped_signal::item-remove", bst_app_reload_pages, self,
-                     "swapped_signal::state-changed", gxk_widget_update_actions, self,
                      "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
                      NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project.proxy_id(), "%s");
@@ -433,20 +438,6 @@ bst_app_get_current_super (BstApp *app)
         }
     }
   return 0;
-}
-
-static gint
-proxy_rate_item (SfiProxy p)
-{
-  if (BSE_IS_WAVE_REPO (p))
-    return 1;
-  else if (BSE_IS_SONG (p))
-    return 2;
-  else if (BSE_IS_MIDI_SYNTH (p))
-    return 4;
-  else if (BSE_IS_CSYNTH (p))
-    return 3;
-  return 5;
 }
 
 static void
@@ -519,16 +510,24 @@ bst_app_add_page_item (BstApp  *self,
   g_free (tip);
 }
 
-static gint
-proxyp_cmp_items (gconstpointer v1,
-                  gconstpointer v2,
-                  gpointer      data)
+static int
+proxy_rate_item (SfiProxy p)
 {
-  const SfiProxy *p1 = (const SfiProxy*) v1;
-  const SfiProxy *p2 = (const SfiProxy*) v2;
-  if (*p1 == *p2)
-    return 0;
-  return proxy_rate_item (*p1) - proxy_rate_item (*p2);
+  if (BSE_IS_WAVE_REPO (p))
+    return 1;
+  else if (BSE_IS_SONG (p))
+    return 2;
+  else if (BSE_IS_MIDI_SYNTH (p))
+    return 4;
+  else if (BSE_IS_CSYNTH (p))
+    return 3;
+  return 5;
+}
+
+static bool
+super_rating_lesser (Bse::SuperH &a, Bse::SuperH &b)
+{
+  return proxy_rate_item (a.proxy_id()) < proxy_rate_item (b.proxy_id());
 }
 
 static void
@@ -539,31 +538,30 @@ bst_app_reload_pages (BstApp *self)
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
+  SfiProxy old_super = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
 
-  /* collect page objects */
-  BseIt3mSeq *iseq = bse_project_get_supers (self->project.proxy_id());
-  SfiRing *ring, *proxies = NULL;
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (!bse_item_internal (iseq->items[i]) || BST_DBG_EXT)
-      proxies = sfi_ring_append (proxies, iseq->items + i);
-  /* sort proxies */
-  proxies = sfi_ring_sort (proxies, proxyp_cmp_items, NULL);
+  // collect Super objects that need their own view
+  Bse::SuperSeq sseq = self->project.get_supers();
+  // sort out internal objects
+  for (Bse::SuperSeq::iterator it = sseq.begin(); it != sseq.end();)
+    if (!BST_DBG_EXT && bse_item_internal (it->proxy_id()))
+      it = sseq.erase (it);
+    else
+      ++it;
+  // sort Super objects according to UI display preference
+  std::sort (sseq.begin(), sseq.end(), super_rating_lesser);
 
-  /* remove outdated project pages */
+  // remove views for pruned Super objects
   SfiRing *outdated = NULL;
-  GSList *slist;
-  for (slist = self->ppages->entries; slist; slist = slist->next)
+  for (GSList *slist = self->ppages->entries; slist; slist = slist->next)
     {
       GxkAssortmentEntry *entry = (GxkAssortmentEntry*) slist->data;
-      for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies))
-        {
-          SfiProxy *pp = (SfiProxy*) ring->data, item = *pp;
-          if (item == (SfiProxy) entry->user_data)
-            break;
-        }
-      if (!ring)
+      const SfiProxy view_proxy = (SfiProxy) entry->user_data;
+      Bse::SuperH super;
+      for (auto &candidate : sseq)
+        if (candidate.proxy_id() == view_proxy)
+          super = candidate;
+      if (!super)
         outdated = sfi_ring_append (outdated, entry);
     }
   while (outdated)
@@ -572,31 +570,32 @@ bst_app_reload_pages (BstApp *self)
       gxk_assortment_remove (self->ppages, entry);
     }
 
-  /* add missing project pages */
+  // create views for new Super objects
   SfiProxy first_unseen = 0, first_synth = 0;
-  i = 0;
-  for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies), i++)
+  size_t pos = 0;
+  for (auto &super : sseq)
     {
-      SfiProxy *pp = (SfiProxy*) ring->data, item = *pp;
-      if (!gxk_assortment_find_data (self->ppages, (void*) item))
+      SfiProxy view_proxy = super.proxy_id();
+      if (!gxk_assortment_find_data (self->ppages, (void*) view_proxy))
         {
-          bst_app_add_page_item (self, i, item);
+          bst_app_add_page_item (self, pos, view_proxy);
           if (!first_unseen)
-            first_unseen = item;
+            first_unseen = view_proxy;
         }
-      if (!first_synth && BSE_IS_SNET (item))
-        first_synth = item;
+      if (!first_synth && BSE_IS_SNET (view_proxy))
+        first_synth = view_proxy;
+      pos++;
     }
 
-  /* select/restore current page */
+  // re-select current page
   if (first_unseen && self->select_unseen_super)
     gxk_assortment_select_data (self->ppages, (void*) first_unseen);
-  else if (old_item && gxk_assortment_find_data (self->ppages, (void*) old_item))
-    gxk_assortment_select_data (self->ppages, (void*) old_item);
+  else if (old_super && gxk_assortment_find_data (self->ppages, (void*) old_super))
+    gxk_assortment_select_data (self->ppages, (void*) old_super);
   else if (first_synth)
     gxk_assortment_select_data (self->ppages, (void*) first_synth);
   self->select_unseen_super = FALSE;
-  /* restore focus */
+  // restore focus
   if (old_focus)
     {
       if (gxk_widget_ancestry_viewable (old_focus) &&
@@ -708,9 +707,8 @@ demo_play_song (gpointer data,
     }
   else
     {
-      BstApp *app;
-      bse_project_get_wave_repo (project.proxy_id());
-      app = bst_app_new (project);
+      project.get_wave_repo();
+      BstApp *app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       gxk_status_window_pop ();
@@ -791,7 +789,7 @@ static void
 bst_app_run_script_proc (gpointer data, size_t action_id)
 {
   BstApp *self = BST_APP (data);
-  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
+  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
   SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
 
@@ -806,7 +804,7 @@ bst_app_run_script_proc (gpointer data, size_t action_id)
         csynth = "custom-synth";
     }
 
-  bst_procedure_exec_auto (cat->otype,
+  bst_procedure_exec_auto (cat.otype.c_str(),
                            "project", SFI_TYPE_PROXY, self->project.proxy_id(),
                            song, SFI_TYPE_PROXY, super,
                            wave_repo, SFI_TYPE_PROXY, super,
@@ -855,9 +853,8 @@ app_action_exec (gpointer data,
       if (1)
         {
           Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-          bse_project_get_wave_repo (project.proxy_id());
+          project.get_wave_repo();
           BstApp *new_app = bst_app_new (project);
-
           gxk_idle_show_widget (GTK_WIDGET (new_app));
         }
       break;
@@ -892,23 +889,28 @@ app_action_exec (gpointer data,
       break;
     case BST_ACTION_NEW_SONG:
       bse_item_group_undo (self->project.proxy_id(), "Create Song");
-      proxy = bse_project_create_song (self->project.proxy_id(), NULL);
-      bse_song_ensure_master_bus (proxy);
+      {
+        Bse::SongH song = self->project.create_song ("");
+        song.ensure_master_bus();
+      }
       bse_item_ungroup_undo (self->project.proxy_id());
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:
-      proxy = bse_project_create_csynth (self->project.proxy_id(), NULL);
+      self->project.create_csynth ("");
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_MIDI_SYNTH:
-      proxy = bse_project_create_midi_synth (self->project.proxy_id(), NULL);
+      self->project.create_midi_synth ("");
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_REMOVE_SYNTH:
       proxy = bst_app_get_current_super (self);
       if (BSE_IS_SNET (proxy) && !self->project.is_active())
-        bse_project_remove_snet (self->project.proxy_id(), proxy);
+        {
+          Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (proxy));
+          self->project.remove_snet (snet);
+        }
       self->select_unseen_super = FALSE;
       break;
     case BST_ACTION_CLEAR_UNDO:
@@ -1095,8 +1097,6 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
-      BseIt3mSeq *iseq;
-      guint i;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
@@ -1109,10 +1109,12 @@ app_action_check (gpointer data,
     case BST_ACTION_SAVE_PROJECT:
       return self->project.is_dirty();
     case BST_ACTION_NEW_SONG:
-      iseq = bse_container_list_children (self->project.proxy_id());
-      for (i = 0; i < iseq->n_items; i++)
-        if (BSE_IS_SONG (iseq->items[i]))
-          return FALSE;
+      {
+        Bse::ItemSeq items = self->project.list_children();
+        for (size_t i = 0; i < items.size(); i++)
+          if (BSE_IS_SONG (items[i].proxy_id()))
+            return FALSE;
+      }
       return TRUE;
     case BST_ACTION_REMOVE_SYNTH:
       super = bst_app_get_current_super (self);

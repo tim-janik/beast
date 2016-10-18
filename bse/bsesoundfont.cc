@@ -377,3 +377,14 @@ BSE_BUILTIN_TYPE (BseSoundFont)
                                    __FILE__, __LINE__,
                                    &sound_font_info);
 }
+
+namespace Bse {
+
+SoundFontImpl::SoundFontImpl (BseObject *bobj) :
+  ContainerImpl (bobj)
+{}
+
+SoundFontImpl::~SoundFontImpl ()
+{}
+
+} // Bse

@@ -387,3 +387,104 @@ bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
 
   sfrepo->oscs[osc_id] = 0;
 }
+
+namespace Bse {
+
+SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
+  SuperImpl (bobj)
+{}
+
+SoundFontRepoImpl::~SoundFontRepoImpl ()
+{}
+
+static Error
+repo_load_file (BseSoundFontRepo *sfrepo, const String &file_name, BseSoundFont **sound_font_p)
+{
+  String fname = Path::basename (file_name);
+  BseSoundFont *sound_font = (BseSoundFont*) bse_object_new (BSE_TYPE_SOUND_FONT, "uname", fname.c_str(), NULL);
+  bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
+
+  BseStorageBlob *blob = bse_storage_blob_new_from_file (file_name.c_str(), FALSE);
+  Error error = bse_sound_font_load_blob (sound_font, blob, TRUE);
+  bse_storage_blob_unref (blob);
+
+  if (error == Bse::Error::NONE)
+    {
+      *sound_font_p = sound_font;
+      error = Error::NONE;
+    }
+  else
+    {
+      bse_container_remove_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
+      *sound_font_p = NULL;
+    }
+  g_object_unref (sound_font);
+  return error;
+}
+
+
+Error
+SoundFontRepoImpl::load_file (const String &file_name)
+{
+  BseSoundFontRepo *self = as<BseSoundFontRepo*>();
+
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* In theory, its possible to allow loading sound fonts while
+       * the project is playing; in practice, the sound font repo
+       * lock would be locked for a very long time, which would stall
+       * the audio production ...
+       */
+      return Bse::Error::SOURCE_BUSY;
+    }
+
+  BseSoundFont *sound_font = NULL;
+  Bse::Error error = repo_load_file (self, file_name, &sound_font);
+  if (sound_font)
+    {
+      UndoDescriptor<SoundFontImpl> sound_font_descriptor = undo_descriptor (*sound_font->as<SoundFontImpl*>());
+      auto remove_sound_font_lambda = [sound_font_descriptor] (SoundFontRepoImpl &self, BseUndoStack *ustack) -> Error {
+        SoundFontImpl &sound_font = self.undo_resolve (sound_font_descriptor);
+        self.remove_sound_font (sound_font);
+        return Error::NONE;
+      };
+      push_undo (__func__, *this, remove_sound_font_lambda);
+    }
+  return error;
+}
+
+Error
+SoundFontRepoImpl::remove_sound_font (SoundFontIface &sound_font_iface)
+{
+  BseSoundFontRepo *self = as<BseSoundFontRepo*>();
+  BseSoundFont *sound_font = sound_font_iface.as<BseSoundFont*>();
+
+  assert_return (sound_font->parent == self, Bse::Error::INTERNAL);
+
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* Don't allow unloading sound fonts which could be required by engine
+       * modules in the DSP thread currently producing audio output.
+       */
+      return Bse::Error::SOURCE_BUSY;
+    }
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  bse_container_uncross_undoable (self, sound_font);    // removes object references
+  if (sound_font)                                       // push undo for 'remove_backedup'
+    {
+      UndoDescriptor<SoundFontImpl> sound_font_descriptor = undo_descriptor (*sound_font->as<SoundFontImpl*>());
+      auto remove_sound_font_lambda = [sound_font_descriptor] (SoundFontRepoImpl &self, BseUndoStack *ustack) -> Error {
+        SoundFontImpl &sound_font = self.undo_resolve (sound_font_descriptor);
+        self.remove_sound_font (sound_font);
+        return Error::NONE;
+      };
+      push_undo_to_redo (__func__, *this, remove_sound_font_lambda);
+    }
+  bse_container_remove_backedup (self, sound_font, ustack);   // removes without undo
+  bse_item_undo_close (ustack);
+
+  return Bse::Error::NONE;
+
+}
+
+} // Bse

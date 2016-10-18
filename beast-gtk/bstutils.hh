@@ -45,19 +45,18 @@ GtkWidget*     bst_vpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_hpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
-void bst_action_list_add_cat    (GxkActionList *alist, BseCategory *cat, uint skip_levels, const char *stock_fallback,
+void bst_action_list_add_cat    (GxkActionList *alist, const Bse::Category &cat, uint skip_levels, const char *stock_fallback,
                                  GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
 void bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
                                  GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
-GxkActionList* bst_action_list_from_cats      (BseCategorySeq  *cseq,
+GxkActionList* bst_action_list_from_cats      (const Bse::CategorySeq &cseq,
                                                guint            skip_levels,
                                                const gchar     *stock_fallback,
                                                GxkActionCheck   acheck,
                                                GxkActionExec    aexec,
                                                gpointer         user_data);
-typedef gboolean (*BstActionListCategoryP)    (gpointer         predicate_data,
-                                               BseCategory     *cat);
-GxkActionList* bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
+typedef gboolean (*BstActionListCategoryP)    (gpointer predicate_data, const Bse::Category &cat);
+GxkActionList* bst_action_list_from_cats_pred (const Bse::CategorySeq &cseq,
                                                guint            skip_levels,
                                                const gchar     *stock_fallback,
                                                GxkActionCheck   acheck,
@@ -77,12 +76,7 @@ void           bst_background_handler2_add    (gboolean       (*handler) (gpoint
 GtkWidget* bst_stock_button             (const gchar  *stock_id);
 GtkWidget* bst_stock_dbutton            (const gchar  *stock_id);
 GtkWidget* bst_stock_icon_button        (const gchar  *stock_id);
-void       bst_stock_register_icon      (const gchar  *stock_id,
-                                         guint         bytes_per_pixel,
-                                         guint         width,
-                                         guint         height,
-                                         guint         rowstride,
-                                         const guint8 *pixels);
+void       bst_stock_register_icon      (const String &stock_id, uint bytes_per_pixel, uint width, uint height, uint rowstride, const uint8 *pixels);
 
 /* --- pixbuf shortcuts --- */
 #define bst_pixbuf_no_icon()    gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)

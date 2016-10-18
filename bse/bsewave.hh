@@ -74,7 +74,11 @@ class WaveImpl : public SourceImpl, public virtual WaveIface {
 protected:
   virtual  ~WaveImpl ();
 public:
-  explicit  WaveImpl (BseObject*);
+  explicit                     WaveImpl           (BseObject*);
+  virtual double               chunk_get_mix_freq (int chunk_index) override;
+  virtual double               chunk_get_osc_freq (int chunk_index) override;
+  virtual int                  n_wave_chunks      () override;
+  virtual EditableSampleIfaceP use_editable       (int chunk_index) override;
 };
 
 } // Bse

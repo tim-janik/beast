@@ -175,8 +175,7 @@ bse_balance_set (double balance,
   *level2 = l2;
 }
 
-
-/* --- icons --- */
+// == BseIcon ==
 typedef enum                    /*< skip >*/
 {
   BSE_PIXDATA_RGB               = 3,
@@ -192,41 +191,34 @@ typedef struct
   guint          height : 12;
   const guint8  *encoded_pix_data;
 } BsePixdata;
-static BseIc0n*
-bse_ic0n_from_pixdata (const BsePixdata *pixdata)
+static Bse::Icon
+bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
-  BseIc0n *icon;
-  guint bpp, encoding;
-
-  assert_return (pixdata != NULL, NULL);
-
+  Bse::Icon icon;
   if (pixdata->width < 1 || pixdata->width > 128 ||
       pixdata->height < 1 || pixdata->height > 128)
     {
-      g_warning ("%s(): `pixdata' exceeds dimension limits (%ux%u)",
-                 RAPICORN_SIMPLE_FUNCTION, pixdata->width, pixdata->height);
-      return NULL;
+      critical ("%s: `pixdata' exceeds dimension limits (%ux%u)", RAPICORN_SIMPLE_FUNCTION, pixdata->width, pixdata->height);
+      return icon;
     }
-  bpp = pixdata->type & BSE_PIXDATA_RGB_MASK;
-  encoding = pixdata->type & BSE_PIXDATA_ENCODING_MASK;
+  const uint bpp = pixdata->type & BSE_PIXDATA_RGB_MASK;
+  const uint encoding = pixdata->type & BSE_PIXDATA_ENCODING_MASK;
   if ((bpp != BSE_PIXDATA_RGB && bpp != BSE_PIXDATA_RGBA) ||
       (encoding && encoding != BSE_PIXDATA_1BYTE_RLE))
     {
-      g_warning ("%s(): `pixdata' format/encoding unrecognized",
-                 RAPICORN_SIMPLE_FUNCTION);
-      return NULL;
+      critical ("%s: `pixdata' format/encoding unrecognized", RAPICORN_SIMPLE_FUNCTION);
+      return icon;
     }
   if (!pixdata->encoded_pix_data)
-    return NULL;
-  icon = bse_ic0n_new ();
-  icon->width = pixdata->width;
-  icon->height = pixdata->height;
-  bse_p1xel_seq_resize (icon->pixel_seq, icon->width * icon->height);
-  guint8 *image_buffer = (guint8*) icon->pixel_seq->pixels;
+    return icon;
+  icon.width = pixdata->width;
+  icon.height = pixdata->height;
+  icon.pixels.resize (icon.width * icon.height);
+  uint8 *image_buffer = (uint8*) &icon.pixels[0];
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
       const guint8 *rle_buffer = pixdata->encoded_pix_data;
-      guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
+      guint8 *image_limit = image_buffer + icon.width * icon.height * bpp;
       while (image_buffer < image_limit)
 	{
 	  guint length = *(rle_buffer++);
@@ -274,43 +266,46 @@ bse_ic0n_from_pixdata (const BsePixdata *pixdata)
         }
     }
   else
-    memcpy (image_buffer, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
+    memcpy (image_buffer, pixdata->encoded_pix_data, icon.width * icon.height * bpp);
   return icon;
 }
-static inline const guint8 *
-get_uint32 (const guint8 *stream, guint *result)
+static inline const uint8*
+get_uint32 (const uint8 *stream, uint *result)
 {
   *result = (stream[0] << 24) + (stream[1] << 16) + (stream[2] << 8) + stream[3];
   return stream + 4;
 }
-BseIc0n*
-bse_ic0n_from_pixstream (const guint8 *pixstream)
+
+Bse::Icon
+bse_icon_from_pixstream (const guint8 *pixstream)
 {
+  Bse::Icon icon;
   BsePixdata pixd;
-  const guint8 *s = pixstream;
-  guint len, type, rowstride, width, height;
-  assert_return (pixstream != NULL, NULL);
+  const uint8 *s = pixstream;
+  uint len, type, rowstride, width, height;
+  assert_return (pixstream != NULL, icon);
   if (strncmp ((const char*) s, "GdkP", 4) != 0)
-    return NULL;
+    return icon;
   s += 4;
   s = get_uint32 (s, &len);
   if (len < 24)
-    return NULL;
+    return icon;
   s = get_uint32 (s, &type);
   if (type != 0x02010002 &&     /* RLE/8bit/RGBA */
       type != 0x01010002)       /* RAW/8bit/RGBA */
-    return NULL;
+    return icon;
   s = get_uint32 (s, &rowstride);
   s = get_uint32 (s, &width);
   s = get_uint32 (s, &height);
   if (width < 1 || height < 1)
-    return NULL;
+    return icon;
   pixd.type = BsePixdataType (BSE_PIXDATA_RGBA | (type >> 24 == 2 ? BSE_PIXDATA_1BYTE_RLE : 0));
   pixd.width = width;
   pixd.height = height;
   pixd.encoded_pix_data = s;
-  return bse_ic0n_from_pixdata (&pixd);
+  return bse_icon_from_pixdata (&pixd);
 }
+
 /* --- ID allocator --- */
 #define	ID_WITHHOLD_BUFFER_SIZE		59
 static gulong  id_counter = 1;

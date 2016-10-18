@@ -381,35 +381,6 @@ bse_container_forall_items (BseContainer      *container,
 }
 
 static gboolean
-list_items (BseItem *item,
-            gpointer data)
-{
-  BseIt3mSeq *iseq = (BseIt3mSeq*) data;
-
-  bse_it3m_seq_append (iseq, item);
-
-  return TRUE;
-}
-
-BseIt3mSeq*
-bse_container_list_children (BseContainer *container)
-{
-  BseIt3mSeq *iseq;
-
-  assert_return (BSE_IS_CONTAINER (container), NULL);
-
-  iseq = bse_it3m_seq_new ();
-  if (container->n_items)
-    {
-      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
-
-      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, list_items, iseq);
-    }
-
-  return iseq;
-}
-
-static gboolean
 count_item_seqid (BseItem *item,
                   gpointer data_p)
 {
@@ -1358,6 +1329,33 @@ ContainerImpl::lookup_item (const String &uname)
   BseContainer *self = as<BseContainer*>();
   BseItem *child = bse_container_lookup_item (self, uname.c_str());
   return child->as<ItemIfaceP>();
+}
+
+ItemIfaceP
+ContainerImpl::get_item (const String &item_type, int seq_id)
+{
+  BseContainer *self = as<BseContainer*>();
+  GType type = g_type_from_name (item_type.c_str());
+  BseItem *child = bse_container_get_item (self, type, seq_id);
+  return child->as<ItemIfaceP>();
+}
+
+static gboolean
+item_seq_add (BseItem *item, void *data)
+{
+  ItemSeq *iseq = (ItemSeq*) data;
+  iseq->push_back (item->as<ItemIfaceP>());
+  return TRUE;
+}
+
+ItemSeq
+ContainerImpl::list_children()
+{
+  BseContainer *self = as<BseContainer*>();
+  ItemSeq iseq;
+  if (self->n_items)
+    BSE_CONTAINER_GET_CLASS (self)->forall_items (self, item_seq_add, &iseq);
+  return iseq;
 }
 
 } // Bse

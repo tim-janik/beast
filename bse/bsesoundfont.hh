@@ -32,4 +32,16 @@ Bse::Error      bse_sound_font_reload           (BseSoundFont       *sound_font)
 
 G_END_DECLS
 
+namespace Bse {
+
+class SoundFontImpl : public ContainerImpl, public virtual SoundFontIface {
+protected:
+  virtual  ~SoundFontImpl ();
+public:
+  explicit  SoundFontImpl (BseObject*);
+};
+
+} // Bse
+
+
 #endif /* __BSE_SOUND_FONT_HH__ */

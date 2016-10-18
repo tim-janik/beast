@@ -138,6 +138,8 @@ public:
   virtual NoteDescription note_from_string (MusicalTuning musical_tuning, const String &name) override;
   virtual int             note_from_freq   (MusicalTuning musical_tuning, double frequency) override;
   virtual double          note_to_freq     (MusicalTuning musical_tuning, int note, int fine_tune) override;
+  virtual CategorySeq     category_match_typed (const String &pattern, const String &type_name) override;
+  virtual CategorySeq     category_match       (const String &pattern) override;
   void               send_user_message      (const UserMessage &umsg);
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

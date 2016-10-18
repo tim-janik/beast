@@ -9,7 +9,7 @@ G_BEGIN_DECLS
 /* --- BstChoice --- */
 /* BstChoice are simple inlined popup menus for modal selections.
  */
-typedef struct _BstChoice BstChoice;
+struct BstChoice;
 
 GtkWidget* bst_choice_menu_createv        (const gchar		  *menu_path,
 					   BstChoice              *first_choice,
@@ -31,24 +31,24 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 
 /* --- BstChoice shortcuts --- */
 #define BST_CHOICE_TITLE(name)           (bst_choice_alloc (BST_CHOICE_TYPE_TITLE, \
-							    (name), NULL, BST_STOCK_NONE, 0))
+							    (name), NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE(id, name, bst_icon)   (bst_choice_alloc (BST_CHOICE_TYPE_ITEM, \
 							    (name), (void*) (size_t) (id), \
-                                                            BST_STOCK_ ## bst_icon, 0))
+                                                            BST_STOCK_ ## bst_icon, Bse::Icon()))
 #define BST_CHOICE_D(id, name, bst_icon) (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    BST_CHOICE_FLAG_DEFAULT, \
                                                             (name), (void*) (size_t) (id), \
-							    BST_STOCK_ ## bst_icon, 0))
+							    BST_STOCK_ ## bst_icon, Bse::Icon()))
 #define BST_CHOICE_S(id, name, icon, s)  (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    ((s) ? (BstChoiceFlags) 0 : BST_CHOICE_FLAG_INSENSITIVE), \
                                                             (name), (void*) (size_t) (id), \
-							    BST_STOCK_ ## icon, 0))
+							    BST_STOCK_ ## icon, Bse::Icon()))
 #define BST_CHOICE_SUBMENU(nam,menu,icn) (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
-							    (nam), (menu), BST_STOCK_ ## icn, 0))
+							    (nam), (menu), BST_STOCK_ ## icn, Bse::Icon()))
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
-							    (name), NULL, BST_STOCK_NONE, 0))
+							    (name), NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
-							    NULL, NULL, BST_STOCK_NONE, 0))
+							    NULL, NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE_END                   (NULL)
 
 
@@ -66,10 +66,10 @@ typedef enum
   BST_CHOICE_FLAG_MASK		= (~BST_CHOICE_TYPE_MASK)
 } BstChoiceFlags;
 BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
-					   const gchar            *choice_name,
-					   gpointer                choice_id,
-					   const gchar		  *icon_stock_id,
-					   BseIc0n		  *bse_icon);
+					   const String           &choice_name,
+					   void                   *choice_id,
+					   const String 	  &icon_stock_id,
+					   const Bse::Icon	  &bseicon);
 
 G_END_DECLS
 

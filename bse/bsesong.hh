@@ -87,6 +87,11 @@ public:
   virtual void              remove_part             (PartIface &part) override;
   virtual TrackIfaceP       create_track            () override;
   virtual void              remove_track            (TrackIface &track) override;
+  virtual BusIfaceP         ensure_master_bus       () override;
+  virtual void              ensure_track_links      () override;
+  virtual TrackIfaceP       find_track_for_part     (PartIface &part) override;
+  virtual BusIfaceP         get_master_bus          () override;
+  virtual void              synthesize_note         (TrackIface &track, int duration, int note, int fine_tune, double velocity) override;
 };
 
 } // Bse

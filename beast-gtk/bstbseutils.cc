@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbseutils.hh"
+#include "bstutils.hh"
 
 /* --- BEAST utilities --- */
 Bse::Error
@@ -10,16 +11,17 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (BSE_IS_SONG (iseq->items[i]))
-      {
-        /* fixup orphaned parts */
-        bse_song_ensure_track_links (iseq->items[i]);
-        /* songs always need a master bus */
-        bse_song_ensure_master_bus (iseq->items[i]);
-      }
+  Bse::ItemSeq items = project.list_children();
+  for (size_t i = 0; i < items.size(); i++)
+    {
+      SfiProxy item = items[i].proxy_id();
+      if (BSE_IS_SONG (item))
+        {
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          song.ensure_track_links();    // fixup orphaned parts
+          song.ensure_master_bus();     // songs always need a master bus
+        }
+    }
   if (error == 0 && apply_project_file_name)
     {
       bse_proxy_set_data_full (project.proxy_id(), "beast-project-file-name", g_strdup (file_name), g_free);
@@ -39,16 +41,17 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (BSE_IS_SONG (iseq->items[i]))
-      {
-        /* fixup orphaned parts */
-        bse_song_ensure_track_links (iseq->items[i]);
-        /* songs always need a master bus */
-        bse_song_ensure_master_bus (iseq->items[i]);
-      }
+  Bse::ItemSeq items = project.list_children();
+  for (size_t i = 0; i < items.size(); i++)
+    {
+      SfiProxy item = items[i].proxy_id();
+      if (BSE_IS_SONG (item))
+        {
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          song.ensure_track_links();    // fixup orphaned parts
+          song.ensure_master_bus();     // songs always need a master bus
+        }
+    }
   return error;
 }
 
@@ -57,23 +60,23 @@ bst_procedure_get_title (const gchar *procedure)
 {
   if (procedure)
     {
-      BseCategorySeq *cseq = bse_categories_match_typed ("*", procedure);
-      if (cseq->n_cats)
-        return cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", procedure);
+      if (cseq.size())
+        return cseq[0].category.c_str() + bst_path_leaf_index (cseq[0].category);
     }
   return NULL;
 }
 
 
-BseCategory*
-bse_category_find (const gchar* pattern)
+Bse::Category
+bst_category_find (const String &pattern)
 {
-  BseCategorySeq *cseq = NULL;
-  if (pattern)
-    cseq = bse_categories_match (pattern);
-  if (cseq && cseq->n_cats == 1)
-    return cseq->cats[0];
-  return NULL;
+  Bse::CategorySeq cseq;
+  if (!pattern.empty())
+    cseq = bse_server.category_match (pattern);
+  if (cseq.size() == 1)
+    return cseq[0];
+  return Bse::Category();
 }
 
 /// Return the character index of the last string segment not containing @a separator.

@@ -117,11 +117,10 @@ idl_dummy_files = $(strip	\
 )
 # BSE procedure sources
 bse_proc_sources = $(strip \
-	bsecategories.proc	bsecontainer.proc				bseeditablesample.proc	\
-	bsejanitor.proc								bseproject.proc		\
-				bsesong.proc					bsesource.proc		\
-				bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc \
-	bsesoundfontrepo.proc	\
+	bseeditablesample.proc	\
+	bsejanitor.proc		\
+										bsesource.proc		\
+				bseitem.proc					bsewaveosc.proc		\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required
@@ -360,7 +359,7 @@ bseprocidl_LDADD   = $(progs_LDADD)
 # == bsetool ==
 noinst_PROGRAMS += bsetool
 bsetool_SOURCES  = bsetool.cc
-bsetool_LDADD    = libbse-@MAJOR@.la $(RAPICORN_LIBS)
+bsetool_LDADD    = libbse-@MAJOR@.la $(BSE_LIBS) $(RAPICORN_LIBS)
 
 # == Tests ==
 EXTRA_DIST += oldidl.idl

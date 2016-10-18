@@ -1611,4 +1611,16 @@ ServerImpl::note_to_freq (MusicalTuning musical_tuning, int note, int fine_tune)
   return info.name.empty() ? 0 : info.freq;
 }
 
+CategorySeq
+ServerImpl::category_match_typed (const String &pattern, const String &type_name)
+{
+  return bse_categories_match_typed (pattern, g_type_from_name (type_name.c_str()));
+}
+
+CategorySeq
+ServerImpl::category_match (const String &pattern)
+{
+  return bse_categories_match_typed (pattern, 0);
+}
+
 } // Bse

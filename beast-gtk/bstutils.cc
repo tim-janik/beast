@@ -146,17 +146,12 @@ bst_stock_icon_button (const gchar *stock_id)
 }
 
 void
-bst_stock_register_icon (const gchar    *stock_id,
-                         guint           bytes_per_pixel,
-                         guint           width,
-                         guint           height,
-                         guint           rowstride,
-                         const guint8   *pixels)
+bst_stock_register_icon (const String &stock_id, uint bytes_per_pixel, uint width, uint height, uint rowstride, const uint8 *pixels)
 {
   assert_return (bytes_per_pixel == 3 || bytes_per_pixel == 4);
   assert_return (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
 
-  if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
+  if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id.c_str()))
     {
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data ((guchar*) g_memdup (pixels, rowstride * height),
                                                     GDK_COLORSPACE_RGB, bytes_per_pixel == 4,
@@ -165,7 +160,7 @@ bst_stock_register_icon (const gchar    *stock_id,
                                                     (GdkPixbufDestroyNotify) g_free, NULL);
       GtkIconSet *iset = gtk_icon_set_new_from_pixbuf (pixbuf);
       g_object_unref (pixbuf);
-      gtk_icon_factory_add (stock_icon_factory, stock_id, iset);
+      gtk_icon_factory_add (stock_icon_factory, stock_id.c_str(), iset);
       gtk_icon_set_unref (iset);
     }
 }
@@ -479,39 +474,34 @@ bst_hpack0 (const gchar *first_location,
 }
 
 void
-bst_action_list_add_cat (GxkActionList          *alist,
-                         BseCategory            *cat,
-                         guint                   skip_levels,
-                         const gchar            *stock_fallback,
-                         GxkActionCheck          acheck,
-                         GxkActionExec           aexec,
-                         gpointer                user_data)
+bst_action_list_add_cat (GxkActionList *alist, const Bse::Category &cat, uint skip_levels, const char *stock_fallback,
+                         GxkActionCheck acheck, GxkActionExec aexec, void *user_data)
 {
-  const gchar *p, *stock_id;
-
-  if (cat->icon)
+  const char *p;
+  String stock_id;
+  if (cat.icon.pixels.size())
     {
-      BseIc0n *icon = cat->icon;
-      assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
-      bst_stock_register_icon (cat->category, 4,
-                               icon->width, icon->height,
-                               icon->width * 4,
-                               (guchar*) icon->pixel_seq->pixels);
-      stock_id = cat->category;
+      const Bse::Icon &icon = cat.icon;
+      assert (icon.width * size_t (icon.height) == icon.pixels.size());
+      bst_stock_register_icon (cat.category, 4,
+                               icon.width, icon.height,
+                               icon.width * 4,
+                               (uint8*) &icon.pixels[0]);
+      stock_id = cat.category;
     }
   else
     stock_id = stock_fallback;
 
-  p = cat->category[0] == '/' ? cat->category + 1 : cat->category;
+  p = cat.category[0] == '/' ? cat.category.c_str() + 1 : cat.category.c_str();
   while (skip_levels--)
     {
-      const gchar *d = strchr (p, '/');
+      const char *d = strchr (p, '/');
       p = d ? d + 1 : p;
     }
 
   gxk_action_list_add_translated (alist, NULL, p, NULL,
-                                  gxk_factory_path_get_leaf (cat->category),
-                                  g_quark_from_string (cat->category), stock_id,
+                                  gxk_factory_path_get_leaf (cat.category.c_str()),
+                                  g_quark_from_string (cat.category.c_str()), stock_id.c_str(),
                                   acheck, aexec, user_data);
 }
 
@@ -545,7 +535,7 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
 }
 
 GxkActionList*
-bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
+bst_action_list_from_cats_pred (const Bse::CategorySeq &cseq,
                                 guint            skip_levels,
                                 const gchar     *stock_fallback,
                                 GxkActionCheck   acheck,
@@ -555,18 +545,14 @@ bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
                                 gpointer         predicate_data)
 {
   GxkActionList *alist = gxk_action_list_create ();
-  guint i;
-
-  assert_return (cseq != NULL, alist);
-
-  for (i = 0; i < cseq->n_cats; i++)
-    if (!predicate || predicate (predicate_data, cseq->cats[i]))
-      bst_action_list_add_cat (alist, cseq->cats[i], skip_levels, stock_fallback, acheck, aexec, user_data);
+  for (size_t i = 0; i < cseq.size(); i++)
+    if (!predicate || predicate (predicate_data, cseq[i]))
+      bst_action_list_add_cat (alist, cseq[i], skip_levels, stock_fallback, acheck, aexec, user_data);
   return alist;
 }
 
 GxkActionList*
-bst_action_list_from_cats (BseCategorySeq         *cseq,
+bst_action_list_from_cats (const Bse::CategorySeq &cseq,
                            guint                   skip_levels,
                            const gchar            *stock_fallback,
                            GxkActionCheck          acheck,

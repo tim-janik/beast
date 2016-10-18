@@ -65,4 +65,18 @@ void           bse_sound_font_repo_remove_osc         (BseSoundFontRepo *sfrepo,
 
 G_END_DECLS
 
+namespace Bse {
+
+class SoundFontRepoImpl : public SuperImpl, public virtual SoundFontRepoIface {
+protected:
+  virtual  ~SoundFontRepoImpl ();
+public:
+  explicit      SoundFontRepoImpl (BseObject*);
+  virtual Error load_file         (const String &file_name) override;
+  virtual Error remove_sound_font (SoundFontIface &wave) override;
+};
+
+} // Bse
+
+
 #endif /* __BSE_SOUND_FONT_REPO_HH__ */

@@ -124,13 +124,11 @@ bst_wave_view_set_editable (BstWaveView *self,
 }
 
 static void
-wave_view_action_exec (gpointer                data,
-                       size_t                  action)
+wave_view_action_exec (gpointer data, size_t action)
 {
   BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy wrepo = item_view->container;
-
   switch (action)
     {
       SfiProxy item;
@@ -142,7 +140,11 @@ wave_view_action_exec (gpointer                data,
       break;
     case ACTION_DELETE_WAVE:
       item = bst_item_view_get_current (BST_ITEM_VIEW (self));
-      bse_wave_repo_remove_wave (wrepo, item);
+      {
+        Bse::WaveRepoH repo = Bse::WaveRepoH::down_cast (bse_server.from_proxy (wrepo));
+        Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (item));
+        repo.remove_wave (wave);
+      }
       break;
     case ACTION_EDIT_WAVE:
       popup_wave_dialog (self);

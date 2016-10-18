@@ -30,7 +30,9 @@ class WaveRepoImpl : public SuperImpl, public virtual WaveRepoIface {
 protected:
   virtual  ~WaveRepoImpl ();
 public:
-  explicit  WaveRepoImpl (BseObject*);
+  explicit      WaveRepoImpl (BseObject*);
+  virtual Error load_file    (const String &file_name) override;
+  virtual void  remove_wave  (WaveIface &wave) override;
 };
 
 } // Bse
