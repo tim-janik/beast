@@ -20,7 +20,7 @@ G_BEGIN_DECLS
 
 struct BseFluidEvent {
   guint64            tick_stamp;
-  int                channel;
+  guint              channel;
   int		     command;
   int		     arg1;
   int		     arg2;
@@ -61,7 +61,7 @@ void           bse_sound_font_repo_unlock_fluid_synth (BseSoundFontRepo *sfrepo)
 int	       bse_sound_font_repo_add_osc            (BseSoundFontRepo *sfrepo,
 						       BseSoundFontOsc  *osc);
 void           bse_sound_font_repo_remove_osc         (BseSoundFontRepo *sfrepo,
-						       int               osc_id);
+						       guint             osc_id);
 
 G_END_DECLS
 

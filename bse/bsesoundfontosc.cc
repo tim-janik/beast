@@ -360,7 +360,6 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
   float **channel_values_right = (float **) g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
   float null_fx[BSE_STREAM_MAX_VALUES];
   float *channel_fx_null[2] = { null_fx, null_fx };
-  int i;
 
   g_return_if_fail (now_tick_stamp > sfrepo->channel_values_tick_stamp);
   sfrepo->channel_values_tick_stamp = now_tick_stamp;
@@ -368,7 +367,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
   /* Sample precise timing: If events don't occur at block boundary, the block
      is partially calculated, then the event is executed, and then the rest of
      the block (until the next event) is calculated, and so on */
-  for (i = 0; i < sfrepo->n_fluid_channels; i++)
+  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)
     {
       channel_values_left[i] = sfrepo->channel_values_left[i];
       channel_values_right[i] = sfrepo->channel_values_right[i];
@@ -421,7 +420,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 				    channel_fx_null, channel_fx_null);
 	  values_remaining -= values_todo;
 	  now_tick_stamp += values_todo;
-	  for (i = 0; i < sfrepo->n_fluid_channels; i++)          /* increment fluid synth output buffer pointers */
+	  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)          /* increment fluid synth output buffer pointers */
 	    {
 	      channel_values_left[i] += values_todo;
 	      channel_values_right[i] += values_todo;
@@ -444,7 +443,7 @@ sound_font_osc_process (BseModule *module,
 						flmod->config.sfont_id, flmod->config.bank, flmod->config.program);
       flmod->last_update_preset = flmod->config.update_preset;
     }
-  gint64 now_tick_stamp = Bse::TickStamp::current();
+  guint64 now_tick_stamp = Bse::TickStamp::current();
   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
     process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 

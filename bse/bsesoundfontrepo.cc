@@ -143,13 +143,13 @@ static void
 bse_sound_font_repo_prepare (BseSource *source)
 {
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
-  int i, channels_required = 0;
+  guint i, channels_required = 0;
   for (i = 0; i < sfrepo->n_oscs; i++)
     {
       if (sfrepo->oscs[i])
 	sfrepo->channel_map[i] = channels_required++;
     }
-  int mix_freq = bse_engine_sample_freq();
+  guint mix_freq = bse_engine_sample_freq();
   if (sfrepo->n_fluid_channels != channels_required || sfrepo->fluid_mix_freq != mix_freq)
     {
       for (i = channels_required; i < sfrepo->n_fluid_channels; i++) // n_fluid_channels > channels_required
@@ -206,7 +206,6 @@ static void
 bse_sound_font_repo_dispose (GObject *object)
 {
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (object);
-  int i;
 
   bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
 
@@ -224,7 +223,7 @@ bse_sound_font_repo_dispose (GObject *object)
   sfrepo->channel_map = NULL;
   g_free (sfrepo->oscs);
   sfrepo->oscs = NULL;
-  for (i = 0; i < sfrepo->n_fluid_channels; i++)
+  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)
     {
       g_free (sfrepo->channel_values_left[i]);
       g_free (sfrepo->channel_values_right[i]);
@@ -364,7 +363,7 @@ int
 bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
                              BseSoundFontOsc  *osc)
 {
-  int i;
+  guint i;
   for (i = 0; i < sfrepo->n_oscs; i++)
     {
       if (sfrepo->oscs[i] == 0)
@@ -381,9 +380,9 @@ bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
 
 void
 bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
-                                int               osc_id)
+                                guint             osc_id)
 {
-  g_return_if_fail (osc_id >= 0 && osc_id < sfrepo->n_oscs);
+  g_return_if_fail (osc_id < sfrepo->n_oscs);
 
   sfrepo->oscs[osc_id] = 0;
 }
