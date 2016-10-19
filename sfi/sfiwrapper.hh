@@ -50,11 +50,6 @@ typedef struct
 } SfiInitValue;
 void sfi_init (int *argcp, char **argv, const Bse::StringVector &args = Bse::StringVector());
 
-/* --- file tests --- */
-bool	birnet_file_check (const char *file,
-			   const char *mode);
-bool	birnet_file_equals (const char *file1,
-			    const char *file2);
 /* --- messaging --- */
 #define         sfi_error(...)                   RAPICORN_CRITICAL (__VA_ARGS__)
 #define         sfi_warning(...)                 RAPICORN_CRITICAL (__VA_ARGS__)

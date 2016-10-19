@@ -12,6 +12,7 @@
 #include "bstpreferences.hh"
 #include "data/beast-images.h"
 #include "../configure.h"
+#include "../topbuildid.hh"
 #include <Python.h>
 #include <unistd.h>
 #include <string.h>
@@ -216,7 +217,7 @@ main_init_gxk()
 		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
                                                 "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
                                                 "<b>Version %s (%s)</b>\n",
-                                                BST_VERSION, BST_VERSION_HINT));
+                                                Internal::buildid(), BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 }
@@ -456,16 +457,16 @@ main_open_default_window ()
 static void
 main_show_release_notes ()
 {
-  if (BST_RC_VERSION != BST_VERSION)
+  if (BST_GCONFIG (rc_version) != Internal::buildid())
     {
       const char *release_notes_title =
         "BEAST/BSE Release Notes";
-      const char *release_notes_contents =
+      const char *release_notes_contents_tmpl =
         "<tag-span-markup>"
         "<tagdef name=\"title\" weight=\"bold\" scale=\"1.5\"/>"
         "<tagdef name=\"hyperlink\" underline=\"single\" foreground=\"#0000ff\"/>"
         "<tagdef name=\"mono\" family=\"monospace\"/>"
-        "<span tag=\"title\">BEAST/BSE " BST_VERSION " Release Notes</span>"
+        "<span tag=\"title\">BEAST/BSE __BEAST_INTERNAL_BUILDID__ Release Notes</span>"
         "<newline/><newline/>"
         "This development series of Beast focusses on improving interoperability and feature integration. "
         "<newline/><newline/>"
@@ -485,13 +486,14 @@ main_show_release_notes ()
         "<newline/>"
         "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/\">http://beast.testbit.eu</xlink></span>"
         "</tag-span-markup>";
+      const String release_notes_contents = Rapicorn::string_replace (release_notes_contents_tmpl, "__BEAST_INTERNAL_BUILDID__", Internal::buildid());
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_CENTER, NULL);
-      gxk_scroll_text_set_tsm (sctext, release_notes_contents);
+      gxk_scroll_text_set_tsm (sctext, release_notes_contents.c_str());
       GtkWidget *rndialog = (GtkWidget*) gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, release_notes_title, sctext);
       gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
       gxk_scroll_text_rewind (sctext);
       gxk_idle_show_widget (rndialog);
-      bst_gconfig_set_rc_version (BST_VERSION);
+      bst_gconfig_set_rc_version (Internal::buildid());
       force_saving_rc_files = true;
     }
 }
@@ -661,7 +663,7 @@ bst_args_parse_early (int *argc_p, char **argv)
       else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
-	  printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
+	  printerr ("BEAST(%s): pid = %u\n", Internal::buildid(), getpid ());
 	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
@@ -867,10 +869,10 @@ bst_exit_print_version (void)
   assert (bse_server != NULL); // we need BSE
   String s;
   gchar *freeme = NULL;
-  printout ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  printout ("BEAST version %s (%s)\n", Internal::buildid(), BST_VERSION_HINT);
   printout ("Libraries: ");
   printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  printout (", BSE %s", BST_VERSION);
+  printout (", BSE %s", Bse::version());
   s = bse_server.get_vorbis_version();
   if (!s.empty())
     printout (", %s", s);
@@ -881,7 +883,7 @@ bst_exit_print_version (void)
 #ifdef BST_WITH_XKB
   printout (", XKBlib");
 #endif
-  printout (", GXK %s", BST_VERSION);
+  printout (", GXK %s", Internal::buildid());
   printout ("\n");
   printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
@@ -1052,7 +1054,7 @@ beast_show_about_box (void)
   if (!GTK_WIDGET_VISIBLE (beast_splash))
     {
       bst_splash_set_title (beast_splash, _("BEAST About"));
-      bst_splash_update_entity (beast_splash, Rapicorn::string_format (_("BEAST Version %s"), BST_VERSION));
+      bst_splash_update_entity (beast_splash, Rapicorn::string_format (_("BEAST Version %s"), Internal::buildid()));
       bst_splash_update_item (beast_splash, _("Contributions made by:"));
       bst_splash_animate_strings (beast_splash, contributors);
     }

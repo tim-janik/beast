@@ -5,7 +5,6 @@
       Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;	virtual*Sfi::*; VTT*Sfi::*;
       Rapicorn*::Aida::enum_info*;
     };
-    birnet_*;
     bse_*;
     gsl_*;
     sfi_*;
