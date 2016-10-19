@@ -58,6 +58,7 @@ bst_cc_sources = $(strip \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
 	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
 			       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
+	../topbuildid.cc \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
