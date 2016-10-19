@@ -695,9 +695,9 @@ public:
   bool
   exec (Wave *wave)
   {
-    if (!force_creation && birnet_file_check (output_file.c_str(), "e"))
+    if (!force_creation && Rapicorn::Path::check (output_file, "e"))
       {
-        sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
+        sfi_error ("not creating \"%s\": %s\n", output_file, g_strerror (EEXIST));
         exit (1);
       }
     return true;

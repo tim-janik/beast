@@ -556,7 +556,7 @@ sfi_path_get_filename (const gchar  *filename,
  *
  * This is the AND version of g_file_test(). That is, all file tests
  * specified in the @a test bits have to succed for this function to
- * return TRUE. This function is implemented via birnet_file_check(),
+ * return TRUE. This function is implemented via Rapicorn::Path::check(),
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
  * Here is the list of possible GFileTest flags:
@@ -570,7 +570,7 @@ gboolean
 g_file_test_all (const gchar  *file,
                  GFileTest     test)
 {
-  gchar buffer[65] = "";
+  char buffer[65] = "";
   if (test & G_FILE_TEST_EXISTS)
     strcat (buffer, "e");
   if (test & G_FILE_TEST_IS_EXECUTABLE)
@@ -583,7 +583,7 @@ g_file_test_all (const gchar  *file,
     strcat (buffer, "d");
   if (test & G_FILE_TEST_IS_EXECUTABLE)
     strcat (buffer, "x");
-  return birnet_file_check (file, buffer);
+  return Rapicorn::Path::check (file, buffer);
 }
 
 #include <pwd.h>
