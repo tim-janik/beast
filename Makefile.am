@@ -1,5 +1,8 @@
 # BEAST & BSE
+
+AUTOMAKE_OPTIONS = subdir-objects
 include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
 
 SUBDIRS = . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
 
@@ -70,6 +73,14 @@ uninstall_filter_files = $(strip	\
 # (test_option, INPUTSTRING, YESOPT, [NOOPT]) :- true if YESOPT is present
 test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
       `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
+
+# == topbuildid.cc ==
+EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
+topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
+topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
+CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
+buildid:
+	@echo $(topbuildid)
 
 # == ChangeLog & Release Rules ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
