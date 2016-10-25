@@ -5,7 +5,7 @@
 
 #define NOTE_LENGTH(self)       ((self)->note_rtools->action_id)
 #define QUANTIZATION(self)      ((self)->quant_rtools->action_id)
-#define HAVE_OBJECT             (1 << 31)
+#define HAVE_OBJECT             (unsigned (1) << 31)
 
 
 /* --- prototypes --- */
