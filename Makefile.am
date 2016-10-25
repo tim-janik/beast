@@ -121,6 +121,7 @@ distcheck: dist
 	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" uninstall \
 	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck-hook \
 	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck distuninstallcheck_dir="$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean \
 	&& set +x \
 	&& cd "$(abs_top_builddir)" \
 	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
