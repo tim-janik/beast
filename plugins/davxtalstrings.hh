@@ -3,10 +3,6 @@
 #define __DAV_XTAL_STRINGS_H__
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #define DAV_TYPE_XTAL_STRINGS		   (dav_xtal_strings_get_type())
 #define DAV_XTAL_STRINGS(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_XTAL_STRINGS, DavXtalStrings))
 #define DAV_XTAL_STRINGS_CLASS(class)	   (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_XTAL_STRINGS, DavXtalStringsClass))
@@ -46,9 +42,5 @@ enum
 };
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __DAV_XTAL_STRINGS_H__ */

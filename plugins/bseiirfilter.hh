@@ -3,10 +3,6 @@
 #define __BSE_IIR_FILTER_H__
 #include <bse/bsesource.hh>
 #include <bse/bseenums.hh>
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #define BSE_TYPE_IIR_FILTER              (bse_iir_filter_get_type())
 #define BSE_IIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_IIR_FILTER, BseIIRFilter))
 #define BSE_IIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
@@ -44,7 +40,4 @@ enum
   BSE_IIR_FILTER_N_OCHANNELS
 };
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 #endif /* __BSE_IIR_FILTER_H__ */

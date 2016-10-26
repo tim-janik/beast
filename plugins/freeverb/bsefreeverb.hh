@@ -5,8 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 #include "bsefreeverbcpp.hh"
-G_BEGIN_DECLS
-
 #define BSE_TYPE_FREE_VERB              (bse_free_verb_get_type())
 #define BSE_FREE_VERB(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_FREE_VERB, BseFreeVerb))
 #define BSE_FREE_VERB_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FREE_VERB, BseFreeVerbClass))
@@ -34,7 +32,5 @@ enum /*< skip >*/
   BSE_FREE_VERB_N_OCHANNELS
 };
 
-
-G_END_DECLS
 
 #endif /* __BSE_FREE_VERB_H__ */
