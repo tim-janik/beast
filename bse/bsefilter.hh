@@ -4,8 +4,6 @@
 #include <bse/bsemath.hh>
 #include <bse/bseenums.hh>
 
-extern "C" {
-
 typedef struct {
   BseIIRFilterKind      kind;
   BseIIRFilterType      type;
@@ -68,7 +66,5 @@ gchar*	bse_iir_filter_string		(const BseIIRFilter         *filter);
 /* --- internal prototypes --- */
 bool	_bse_filter_design_ellf 	(const BseIIRFilterRequest      *ifr,
 					 BseIIRFilterDesign             *fid);
-
-} // "C"
 
 #endif /* BSE_FILTER_H__ */	/* vim:set ts=8 sw=2 sts=2: */

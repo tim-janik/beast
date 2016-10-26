@@ -189,13 +189,13 @@ Block::Impl::substitute (Impl *substitute_impl)
 
 } // Bse
 
-extern "C" const char*
+const char*
 bse_block_impl_name (void)
 {
   return Bse::Block::impl_name();
 }
 
-extern "C" void
+void
 bse_block_add_floats (guint          n_values,
                       float         *ovalues,
                       const float   *ivalues)
@@ -203,7 +203,7 @@ bse_block_add_floats (guint          n_values,
   Bse::Block::add (n_values, ovalues, ivalues);
 }
 
-extern "C" void
+void
 bse_block_sub_floats (guint          n_values,
                       float         *ovalues,
                       const float   *ivalues)
@@ -211,7 +211,7 @@ bse_block_sub_floats (guint          n_values,
   Bse::Block::sub (n_values, ovalues, ivalues);
 }
 
-extern "C" void
+void
 bse_block_mul_floats (guint          n_values,
                       float         *ovalues,
                       const float   *ivalues)
@@ -228,7 +228,7 @@ bse_block_scale_floats (guint           n_values,
   Bse::Block::scale (n_values, ovalues, ivalues, level);
 }
 
-extern "C" void
+void
 bse_block_interleave2_floats (guint	   n_ivalues,
 			      float       *ovalues,	  /* length_ovalues = n_ivalues * 2 */
 			      const float *ivalues,
@@ -237,7 +237,7 @@ bse_block_interleave2_floats (guint	   n_ivalues,
   Bse::Block::interleave2 (n_ivalues, ovalues, ivalues, offset);
 }
 
-extern "C" void
+void
 bse_block_interleave2_add_floats (guint	       n_ivalues,
 				  float       *ovalues,	  /* length_ovalues = n_ivalues * 2 */
 				  const float *ivalues,
@@ -246,7 +246,7 @@ bse_block_interleave2_add_floats (guint	       n_ivalues,
   Bse::Block::interleave2_add (n_ivalues, ovalues, ivalues, offset);
 }
 
-extern "C" void
+void
 bse_block_calc_float_range (guint          n_values,
                             const float   *ivalues,
 			    float         *min_value,
@@ -255,14 +255,14 @@ bse_block_calc_float_range (guint          n_values,
   Bse::Block::range (n_values, ivalues, *min_value, *max_value);
 }
 
-extern "C" float
+float
 bse_block_calc_float_square_sum (guint          n_values,
                                  const float   *ivalues)
 {
   return Bse::Block::square_sum (n_values, ivalues);
 }
 
-extern "C" float
+float
 bse_block_calc_float_range_and_square_sum (guint          n_values,
                                            const float   *ivalues,
 					   float         *min_value,

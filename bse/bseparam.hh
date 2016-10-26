@@ -6,10 +6,6 @@
 #include        <bse/bseutils.hh>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object param specs --- */
 #define	    BSE_TYPE_PARAM_OBJECT		(G_TYPE_PARAM_OBJECT)
@@ -55,9 +51,5 @@ GParamSpec* bse_param_spec_freq         (const gchar  *name,
                                          SfiReal       max_freq,
 					 const gchar  *hints);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_PARAM_H__ */

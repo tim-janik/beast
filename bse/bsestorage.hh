@@ -5,8 +5,6 @@
 #include <bse/bseobject.hh>
 #include <bse/gsldefs.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_STORAGE                 (BSE_TYPE_ID (BseStorage))
 #define BSE_STORAGE(object)              (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STORAGE, BseStorage))
@@ -171,7 +169,5 @@ gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 #define bse_storage_putc(s,c)           sfi_wstore_putc ((s)->wstore, c)
 #define bse_storage_puts(s,b)           sfi_wstore_puts ((s)->wstore, b)
 #define bse_storage_printf(s, ...)      bse_storage_puts (s, Rapicorn::string_format (__VA_ARGS__).c_str())
-
-G_END_DECLS
 
 #endif /* __BSE_STORAGE_H__ */

@@ -23,8 +23,6 @@ typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 } // Bse
 
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_OBJECT              (BSE_TYPE_ID (BseObject))
 #define BSE_OBJECT(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_OBJECT, BseObject))
@@ -54,8 +52,6 @@ typedef enum				/*< skip >*/
 } BseObjectFlags;
 #define BSE_OBJECT_FLAGS_USHIFT	    (3)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
-
-G_END_DECLS // BseObject templates need C++ linkage
 
 /* --- typedefs & structures --- */
 struct BseObject : GObject {
@@ -88,8 +84,6 @@ struct BseObject : GObject {
     return impl ? Rapicorn::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
-
-G_BEGIN_DECLS // BseObject templates need C++ linkage
 
 struct BseObjectClass : GObjectClass {
   gboolean              (*editable_property)    (BseObject      *object, /* for set_property/get_property implementations */
@@ -197,7 +191,5 @@ void          bse_object_marshal_signal (GClosure       *closure,
                                          const GValue   *param_values,
                                          gpointer        invocation_hint,
                                          gpointer        marshal_data);
-
-G_END_DECLS
 
 #endif /* __BSE_OBJECT_H__ */

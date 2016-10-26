@@ -5,8 +5,6 @@
 #include <bse/bsesource.hh>
 #include <bse/bsemidievent.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_CONTROLLER	      (BSE_TYPE_ID (BseMidiController))
@@ -32,7 +30,5 @@ enum
   BSE_MIDI_CONTROLLER_N_OCHANNELS
 };
 
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_CONTROLLER_H__ */

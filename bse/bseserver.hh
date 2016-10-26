@@ -6,8 +6,6 @@
 #include <bse/bsemididevice.hh>
 #include <bse/testobject.hh>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
 #define BSE_SERVER_CAST(object)      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
@@ -91,8 +89,6 @@ Bse::Error	bse_server_run_remote			(BseServer	    *server,
 void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
-G_END_DECLS
-
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 

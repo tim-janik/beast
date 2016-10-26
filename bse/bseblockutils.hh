@@ -9,7 +9,6 @@ template<class TYPE> inline
 void    bse_block_fill_0                          (size_t        n_values,        /* 4-byte variant of memset */
                                                    TYPE         *values);
 /* --- C API --- */
-G_BEGIN_DECLS
 const
 char*   bse_block_impl_name                       (void);
 static inline
@@ -59,8 +58,6 @@ float   bse_block_calc_float_range_and_square_sum (guint          n_values,
                                                    const float   *ivalues,
 	                                           float         *min_value,
 	                                           float         *max_value);
-
-G_END_DECLS
 
 #ifdef  __cplusplus
 #include <bse/bseresampler.hh>
@@ -215,8 +212,6 @@ Block::copy (guint         n_values,
 #endif  /* __cplusplus */
 
 /* --- C implementation bits --- */
-G_BEGIN_DECLS
-
 static inline void
 bse_block_fill_uint32 (guint    n_values,
 		       guint32 *values,
@@ -255,8 +250,6 @@ bse_block_copy_float (guint	    n_values,
   RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
-G_END_DECLS
-
 // == C++ Implementations ==
 template<class TYPE> inline void
 bse_block_fill_0 (size_t n_values, TYPE *values)

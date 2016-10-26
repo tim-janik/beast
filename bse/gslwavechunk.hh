@@ -6,8 +6,6 @@
 #include <bse/gsldatacache.hh>
 #include <bse/gsldatahandle.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs & structures --- */
 typedef enum /*< skip >*/
 {
@@ -104,7 +102,5 @@ GslWaveChunk*	_gsl_wave_chunk_copy		(GslWaveChunk		*wchunk);
 const gchar*	gsl_wave_loop_type_to_string	(GslWaveLoopType	 wave_loop);
 GslWaveLoopType	gsl_wave_loop_type_from_string	(const gchar		*string);
 
-
-G_END_DECLS
 
 #endif /* __GSL_WAVE_CHUNK_H__ */

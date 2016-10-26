@@ -4,8 +4,6 @@
 
 #include <bse/bsedevice.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_DEVICE              (BSE_TYPE_ID (BsePcmDevice))
 #define BSE_PCM_DEVICE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_DEVICE, BsePcmDevice))
@@ -73,7 +71,5 @@ guint           bse_pcm_handle_latency          (BsePcmHandle           *handle)
 /* --- misc utils --- */
 guint		bse_pcm_device_frequency_align 	(gint                    mix_freq);
 
-
-G_END_DECLS
 
 #endif /* __BSE_PCM_DEVICE_H__ */

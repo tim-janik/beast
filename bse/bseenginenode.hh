@@ -5,8 +5,6 @@
 #include "bseengine.hh"
 #include "gslcommon.hh"
 
-G_BEGIN_DECLS
-
 #define	ENGINE_NODE(module)		((EngineNode*) (module))
 #define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
 #define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
@@ -197,7 +195,5 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*toplevel_next;	        /* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
   SfiRing	*output_nodes;	        /* EngineNode* ring of nodes in ->outputs[] */
 };
-
-G_END_DECLS
 
 #endif /* __BSE_ENGINE_NODE_H__ */

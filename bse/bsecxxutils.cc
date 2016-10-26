@@ -97,8 +97,7 @@ TypeRegistry::init_types()
 
 } // Bse
 
-
-extern "C" void
+void
 bse_cxx_init (void)  // prototyped in bseutils.hh
 {
   // FIXME: delete: init_exception_handler ();

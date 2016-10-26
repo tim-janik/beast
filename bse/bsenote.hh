@@ -5,8 +5,6 @@
 #include <bse/bseglobals.hh>
 #include <bse/bseenums.hh>
 
-G_BEGIN_DECLS
-
 // == Sfi imports ==
 #define BSE_MIN_NOTE            SFI_MIN_NOTE
 #define BSE_MAX_NOTE            SFI_MAX_NOTE
@@ -80,7 +78,5 @@ void            bse_freq_array_set              (BseFreqArray   *farray,
 gboolean        bse_freq_arrays_match_freq      (gfloat          match_freq,
                                                  BseFreqArray   *inclusive_set,
                                                  BseFreqArray   *exclusive_set);
-
-G_END_DECLS
 
 #endif /* __BSE_NOTE_H__ */

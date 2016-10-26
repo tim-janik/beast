@@ -599,7 +599,7 @@ pat_create_chunk_handle (gpointer      data,
 
 } // namespace
 
-extern "C" void
+void
 bse_init_loader_gus_patch (void)
 {
   static const gchar *file_exts[] = { "pat", NULL, };

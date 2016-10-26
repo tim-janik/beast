@@ -4,8 +4,6 @@
 
 #include	<bse/bsedefs.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs --- */
 #define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
 
@@ -194,7 +192,5 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define sfidl_pspec_TypedObject(group, locfile, locline, name, nick, blurb, options, otype) \
   sfi_pspec_set_group (bse_param_spec_object (name, nick, blurb, otype, options), group)
 
-
-G_END_DECLS
 
 #endif /* __BSE_TYPE_H__ */

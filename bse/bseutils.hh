@@ -8,8 +8,6 @@
 #include <bse/bseglobals.hh>
 #include <bse/bsecompat.hh>
 
-G_BEGIN_DECLS
-
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
 /* --- record utils --- */
@@ -83,8 +81,6 @@ gint          bse_xinfo_stub_compare            (const gchar     *xinfo1,  /* mu
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
-G_END_DECLS
-
 
 namespace Bse {
 

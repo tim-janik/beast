@@ -5,10 +5,6 @@
 #include <bse/gsldefs.hh>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 
 /* --- structures --- */
@@ -55,9 +51,5 @@ void		gsl_magic_list_brute_match	(SfiRing	*magic_list,
 						 GslMagic	*skip_magic,
 						 SfiRing       **ext_matches,
 						 SfiRing       **other_matches);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_MAGIC_H__ */

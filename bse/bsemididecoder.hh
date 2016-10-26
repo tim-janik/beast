@@ -4,8 +4,6 @@
 
 #include        <bse/bsemidievent.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- BSE MIDI structs --- */
 typedef enum {
@@ -53,7 +51,5 @@ void            bse_midi_decoder_push_smf_data            (BseMidiDecoder       
                                                            uint8                *bytes);
 BseMidiEvent*   bse_midi_decoder_pop_event                (BseMidiDecoder       *self);
 SfiRing*        bse_midi_decoder_pop_event_list           (BseMidiDecoder       *self);
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_DECODER_H__ */

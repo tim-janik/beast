@@ -3,8 +3,6 @@
 #define __BSE_SUB_OPORT_H__
 #include <bse/bsesource.hh>
 #include <bse/bseengine.hh>
-G_BEGIN_DECLS
-
 #define BSE_TYPE_SUB_OPORT		(BSE_TYPE_ID (BseSubOPort))
 #define BSE_SUB_OPORT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SUB_OPORT, BseSubOPort))
 #define BSE_SUB_OPORT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SUB_OPORT, BseSubOPortClass))
@@ -18,7 +16,5 @@ struct BseSubOPort : BseSource {
 };
 struct BseSubOPortClass : BseSourceClass
 {};
-
-G_END_DECLS
 
 #endif /* __BSE_SUB_OPORT_H__ */

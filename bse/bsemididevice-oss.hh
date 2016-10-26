@@ -5,8 +5,6 @@
 #include	<bse/bsemididevice.hh>
 
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_DEVICE_OSS		(BSE_TYPE_ID (BseMidiDeviceOSS))
 #define BSE_MIDI_DEVICE_OSS(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_DEVICE_OSS, BseMidiDeviceOSS))
@@ -21,5 +19,4 @@ struct BseMidiDeviceOSS : BseMidiDevice {
 struct BseMidiDeviceOSSClass : BseMidiDeviceClass
 {};
 
-G_END_DECLS
 #endif /* __BSE_MIDI_DEVICE_OSS_H__ */

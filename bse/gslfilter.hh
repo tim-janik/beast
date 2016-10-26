@@ -4,10 +4,6 @@
 
 #include <bse/bsemath.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- transformations --- */
 static inline BseComplex bse_trans_s2z          (BseComplex     s);
@@ -257,9 +253,5 @@ bse_trans_freq2z (double w)
 }
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_FILTER_H__ */	/* vim:set ts=8 sw=2 sts=2: */

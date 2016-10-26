@@ -6,8 +6,6 @@
 #include <bse/bsemidireceiver.hh>
 
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_NOTIFIER              (BSE_TYPE_ID (BseMidiNotifier))
 #define BSE_MIDI_NOTIFIER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_NOTIFIER, BseMidiNotifier))
@@ -28,8 +26,6 @@ void bse_midi_notifier_set_receiver     (BseMidiNotifier      *self,
 void bse_midi_notifier_dispatch         (BseMidiNotifier      *self);
 void bse_midi_notifiers_attach_source   (void);
 void bse_midi_notifiers_wakeup          (void);
-
-G_END_DECLS
 
 namespace Bse {
 

@@ -4,8 +4,6 @@
 
 #include <bse/bsesubiport.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_INSTRUMENT_INPUT		(BSE_TYPE_ID (BseInstrumentInput))
 #define BSE_INSTRUMENT_INPUT(object)	       (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_INSTRUMENT_INPUT, BseInstrumentInput))
@@ -30,5 +28,4 @@ enum
   BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH
 };
 
-G_END_DECLS
 #endif /* __BSE_INSTRUMENT_INPUT_H__ */

@@ -4,8 +4,6 @@
 
 #include        <bse/bsesnet.hh>
 
-G_BEGIN_DECLS
-
 #define BSE_TYPE_CSYNTH              (BSE_TYPE_ID (BseCSynth))
 #define BSE_CSYNTH(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CSYNTH, BseCSynth))
 #define BSE_CSYNTH_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_CSYNTH, BseCSynthClass))
@@ -16,8 +14,6 @@ G_BEGIN_DECLS
 
 struct BseCSynth : BseSNet {};
 struct BseCSynthClass : BseSNetClass {};
-
-G_END_DECLS
 
 namespace Bse {
 

@@ -5,10 +5,6 @@
 #include <bse/gsldefs.hh>
 #include <bse/gslwavechunk.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 #define GSL_WAVE_OSC_FILTER_ORDER	(8)	/* <= GslConfig.wave_chunk_padding ! */
 
@@ -74,9 +70,5 @@ GslLong		gsl_wave_osc_cur_pos	(GslWaveOscData	*wosc);
  */
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_WAVE_OSC_H__ */

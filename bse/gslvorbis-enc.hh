@@ -4,8 +4,6 @@
 
 #include <bse/gslcommon.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs & enums --- */
 typedef struct _GslVorbisEncoder GslVorbisEncoder;
 /* rough quality to bitrate mappings at 44.1kHz mono:
@@ -60,7 +58,5 @@ void              gsl_vorbis_encoder_destroy            (GslVorbisEncoder       
 /* retrive vendor version string */
 String            gsl_vorbis_encoder_version            ();
 
-
-G_END_DECLS
 
 #endif /* __GSL_VORBIS_ENC_H__ */

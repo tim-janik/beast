@@ -6,8 +6,6 @@
 #include <sfi/sfistore.hh>
 
 
-G_BEGIN_DECLS
-
 /* --- forward decls --- */
 typedef struct _GslMagic		GslMagic;
 typedef struct _GslDataCache		GslDataCache;
@@ -42,8 +40,6 @@ typedef void     (*GslFreeFunc)         (gpointer        data);
 #  define GSL_GCC_RPREFETCH(addr) /* addr */
 #  define GSL_GCC_WPREFETCH(addr) /* addr */
 #endif
-
-G_END_DECLS
 
 #endif /* __GSL_DEFS_H__ */
 

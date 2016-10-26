@@ -6,8 +6,6 @@
 #include <bse/bseglobals.hh>
 #include <bse/bsetype.hh> // for BseMusicalTuningType
 
-G_BEGIN_DECLS
-
 /**
  * smallest value of a signal sample, greater than zero
  */
@@ -707,7 +705,5 @@ bse_cent_tune_fast (int fine_tune)
 {
   return bse_cent_table[CLAMP (fine_tune, -100, 100)];
 }
-
-G_END_DECLS
 
 #endif /* __BSE_SIGNAL_H__ */

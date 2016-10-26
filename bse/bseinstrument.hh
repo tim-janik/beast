@@ -5,10 +5,6 @@
 #include	<bse/bseitem.hh>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_INSTRUMENT		 (BSE_TYPE_ID (BseInstrument))
@@ -65,9 +61,5 @@ struct _BseInstrumentClass
 /* --- prototypes -- */
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_INSTRUMENT_H__ */

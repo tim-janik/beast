@@ -715,7 +715,6 @@ BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
 } // Bse
 /* --- bsesource.hh bits --- */
-extern "C" {    // from bsesource.hh
 using namespace Bse;
 
 void
@@ -742,5 +741,3 @@ bse_source_class_add_probe_signals (BseSourceClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   bse_source_signal_probes = bse_object_class_add_signal (object_class, "probes", G_TYPE_NONE, 1, BSE_TYPE_PROBE_SEQ);
 }
-
-};

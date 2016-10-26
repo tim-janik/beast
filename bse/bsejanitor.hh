@@ -4,8 +4,6 @@
 
 #include <bse/bseitem.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_JANITOR              (BSE_TYPE_ID (BseJanitor))
 #define BSE_JANITOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_JANITOR, BseJanitor))
@@ -59,8 +57,6 @@ void	     bse_janitor_remove_action	(BseJanitor	*self,
 					 const gchar	*action);
 void	     bse_janitor_trigger_action	(BseJanitor	*self,
 					 const gchar	*action);
-
-G_END_DECLS
 
 #endif /* __BSE_JANITOR_H__ */
 

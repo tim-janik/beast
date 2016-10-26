@@ -4,8 +4,6 @@
 
 #include	<bse/bseexports.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_PLUGIN              (BSE_TYPE_ID (BsePlugin))
@@ -37,6 +35,7 @@ const gchar*	bse_plugin_check_load		(const gchar	*file_name);
 void            bse_plugin_make_resident        ();
 /* --- implementation details --- */
 void		         bse_plugin_init_builtins       (void);
-extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.hh */
-G_END_DECLS
+
+extern "C" { extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.hh */ }
+
 #endif /* __BSE_PLUGIN_H__ */

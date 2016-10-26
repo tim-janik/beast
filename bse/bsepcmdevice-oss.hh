@@ -5,8 +5,6 @@
 #include	<bse/bsepcmdevice.hh>
 
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_DEVICE_OSS		     (BSE_TYPE_ID (BsePcmDeviceOSS))
@@ -22,5 +20,4 @@ struct BsePcmDeviceOSS : BsePcmDevice {
 struct BsePcmDeviceOSSClass : BsePcmDeviceClass
 {};
 
-G_END_DECLS
 #endif /* __BSE_PCM_DEVICE_OSS_H__ */

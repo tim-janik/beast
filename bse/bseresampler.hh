@@ -4,8 +4,6 @@
 
 #include <bse/bsecxxutils.hh>
 
-G_BEGIN_DECLS
-
 typedef struct BseResampler2 BseResampler2;
 
 typedef enum /*< skip >*/
@@ -36,7 +34,6 @@ double	       bse_resampler2_delay         (BseResampler2         *resampler);
 /* precision <-> bits conversion */
 BseResampler2Precision	bse_resampler2_find_precision_for_bits (guint		       bits);
 const char*		bse_resampler2_precision_name	       (BseResampler2Precision precision);
-G_END_DECLS
 #ifdef __cplusplus
 #include <vector>
 namespace Bse {

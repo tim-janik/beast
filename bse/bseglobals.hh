@@ -7,8 +7,6 @@
 #include <bse/bsenote.hh>
 #include <bse/bseconstvalues.hh>
 
-G_BEGIN_DECLS
-
 /* --- time ranges --- */ // FIXME: BSE_TIME_RANGE is deprecated
 typedef enum
 {
@@ -74,7 +72,5 @@ gdouble	bse_db_to_factor	(gdouble	dB);
 gdouble	bse_db_from_factor	(gdouble	factor,
                                  gdouble	min_dB);
 #define	BSE_MINDB               (-96)   /* 32bit:-192 24bit:-144 16bit:-96 */
-
-G_END_DECLS
 
 #endif /* __BSE_GLOBALS_H__ */

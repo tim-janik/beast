@@ -6,8 +6,6 @@
 #include <bse/bsemidievent.hh>
 
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_INPUT	         (BSE_TYPE_ID (BseMidiInput))
 #define BSE_MIDI_INPUT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_INPUT, BseMidiInput))
@@ -31,7 +29,5 @@ enum
   BSE_MIDI_INPUT_N_OCHANNELS
 };
 
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_INPUT_H__ */

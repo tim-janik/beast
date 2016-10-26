@@ -4,8 +4,6 @@
 
 #include	<bse/bseparam.hh>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define	BSE_PROCEDURE_TYPE(proc)	(G_TYPE_FROM_CLASS (proc))
 #define	BSE_IS_PROCEDURE_CLASS(proc)	(G_TYPE_CHECK_CLASS_TYPE ((proc), BSE_TYPE_PROCEDURE))
@@ -90,7 +88,5 @@ Bse::Error bse_procedure_execvl	  (BseProcedureClass	*proc,
 const gchar* bse_procedure_type_register (const gchar		*name,
 					  BsePlugin		*plugin,
 					  GType  		*ret_type);
-
-G_END_DECLS
 
 #endif /* __BSE_PROCEDURE_H__ */
