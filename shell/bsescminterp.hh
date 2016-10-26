@@ -5,8 +5,6 @@
 #include <bse/bse.hh>
 #include <guile/gh.h>
 
-G_BEGIN_DECLS
-
 typedef struct _BseSCMWire   BseSCMWire;
 
 
@@ -56,8 +54,6 @@ SCM     bse_scm_glue_rec_set            (SCM              scm_rec,
 SCM	bse_scm_glue_rec_print		(SCM		  scm_rec);
 SCM	bse_scm_make_gc_plateau		(guint		  size_hint);
 void	bse_scm_destroy_gc_plateau	(SCM		  s_gcplateau);
-
-G_END_DECLS
 
 
 #endif /* __BSE_SCM_INTERP_H__ */
