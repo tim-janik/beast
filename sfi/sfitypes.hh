@@ -5,8 +5,6 @@
 #include <sfi/glib-extra.hh>
 #include <sfi/sfiwrapper.hh>
 
-G_BEGIN_DECLS
-
 /* --- Sfi typedefs --- */
 typedef bool			SfiBool;
 typedef gint			SfiInt;
@@ -69,8 +67,6 @@ const char*  sfi_category_concat        (const char         *prefix,
 #define SFI_END_ARGS2(a,b)   a , b)
 #define SFI_END_ARGS3(a,b,c) a , b , c)
 
-
-G_END_DECLS
 
 #endif /* __SFI_TYPES_H__ */
 

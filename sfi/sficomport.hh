@@ -5,8 +5,6 @@
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
 
-G_BEGIN_DECLS
-
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)
 
 struct SfiComPort;
@@ -102,7 +100,5 @@ void		sfi_com_port_close_remote	(SfiComPort	*port,
 void		sfi_com_port_reap_child 	(SfiComPort	*port,
 						 gboolean	 kill_child);
 gboolean	sfi_com_port_test_reap_child 	(SfiComPort	*port);
-
-G_END_DECLS
 
 #endif /* __SFI_COM_PORT_H__ */

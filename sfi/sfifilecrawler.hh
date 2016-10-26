@@ -5,8 +5,6 @@
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
 
-G_BEGIN_DECLS
-
 typedef struct {
   SfiRing      *results;        /* end user results */
   /*< private >*/
@@ -54,8 +52,6 @@ gboolean        g_file_test_all                         (const gchar  *filename,
 
 /* --- implementations --- */
 void _sfi_init_file_crawler (void);
-
-G_END_DECLS
 
 #endif /* __SFI_FILE_CRAWLER_H__ */
 

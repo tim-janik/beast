@@ -10,8 +10,6 @@ using Rapicorn::printout;
 using Rapicorn::printerr;
 using Rapicorn::string_format;
 
-G_BEGIN_DECLS
-
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
 #else
@@ -302,8 +300,6 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #define g_scanner_freeze_symbol_table(scanner) ((void)0)
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

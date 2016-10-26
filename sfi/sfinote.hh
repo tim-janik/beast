@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- (MIDI) notes --- */
 /* notes are generally kept in signed integers. though they are zero
@@ -78,8 +76,6 @@ SfiInt	sfi_note_from_string	 (const gchar	*note_string);
 SfiInt	sfi_note_from_string_err (const gchar	*note_string,
 				  gchar        **error_p);
 
-
-G_END_DECLS
 
 #endif /* __SFI_NOTE_H__ */
 

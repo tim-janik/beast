@@ -4,8 +4,6 @@
 
 #include <sfi/sfivalues.hh>
 
-G_BEGIN_DECLS
-
 /* --- time (unix micro seconds) --- */
 #define	SFI_USEC_FACTOR		((SfiTime) 1000000)		/* 64bit wide */
 #define	SFI_MIN_TIME		(631152000 * SFI_USEC_FACTOR)	/* 1990-01-01 00:00:00 UTC */
@@ -27,8 +25,6 @@ SfiTime	sfi_time_from_string_err (const gchar	*time_string,
 /* --- internal --- */
 void	_sfi_init_time	(void);
 
-
-G_END_DECLS
 
 #endif /* __SFI_TIME_H__ */
 

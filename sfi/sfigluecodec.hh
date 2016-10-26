@@ -5,10 +5,6 @@
 #include <sfi/sfiglue.hh>
 #include <sfi/sficomport.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- encoder API --- */
 typedef struct
@@ -81,10 +77,6 @@ typedef enum /*< skip >*/
 } SfiGlueCodecCommands;
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __SFI_GLUE_CODEC_H__ */
 

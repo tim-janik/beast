@@ -4,8 +4,6 @@
 
 #include <sfi/sfiglue.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- typedefs --- */
 typedef enum /*< skip >*/
@@ -91,8 +89,6 @@ void	    sfi_glue_proxy_cancel_matched_event	(SfiSeq		*event,
 						 SfiProxy        proxy,
 						 GQuark		 signal_quark);
 
-
-G_END_DECLS
 
 #endif /* __SFI_GLUE_PROXY_H__ */
 
