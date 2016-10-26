@@ -5,8 +5,6 @@
 #include <bse/gsldatautils.hh>
 #include <bse/gslcommon.hh>
 
-G_BEGIN_DECLS
-
 
 typedef struct {
   /* block containing loop */
@@ -109,7 +107,5 @@ gdouble		gsl_data_find_loop0		(GslDataHandle          *dhandle,
  * #                n_samples compare area size (ahead of loop start) [8820]
  * TL_CFG="--loop=5000:-1:5000"
  */
-
-G_END_DECLS
 
 #endif  /* __BSE_LOOPFUNCS_H__ */

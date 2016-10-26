@@ -6,8 +6,6 @@
 #include <bse/gsldefs.hh>
 #include <sfi/sfi.hh>
 
-G_BEGIN_DECLS
-
 typedef struct
 {
   guint   line_number;
@@ -81,7 +79,5 @@ gboolean    sfi_arguments_read_num	(const gchar   **option,
 guint	    sfi_arguments_read_all_nums	(const gchar    *option,
 					 gdouble	*first,
 					 ...) G_GNUC_NULL_TERMINATED;
-
-G_END_DECLS
 
 #endif	/* __SFI_UTILS_H__ */
