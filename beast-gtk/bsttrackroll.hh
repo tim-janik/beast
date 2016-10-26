@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_TRACK_ROLL              (bst_track_roll_get_type ())
 #define BST_TRACK_ROLL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_TRACK_ROLL, BstTrackRoll))
@@ -128,7 +126,5 @@ void    bst_track_roll_set_marker          (BstTrackRoll           *self,
                                             guint                   position,
                                             BstTrackRollMarkerType  mtype);
 
-
-G_END_DECLS
 
 #endif /* __BST_TRACK_ROLL_H__ */

@@ -5,8 +5,6 @@
 #include "bstutils.hh"
 #include "bstwaveview.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_ITEM_SEQ_DIALOG            (bst_item_seq_dialog_get_type ())
 #define BST_ITEM_SEQ_DIALOG(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_ITEM_SEQ_DIALOG, BstItemSeqDialog))
@@ -60,7 +58,5 @@ void       bst_item_seq_dialog_set      (BstItemSeqDialog         *self,
                                          BseIt3mSeq               *iseq);
 
 
-
-G_END_DECLS
 
 #endif /* __BST_ITEM_SEQ_DIALOG_H__ */

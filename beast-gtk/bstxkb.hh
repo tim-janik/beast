@@ -4,10 +4,6 @@
 
 #include <glib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- prototypes --- */
 gboolean	bst_xkb_open		(const gchar	*display,
@@ -25,9 +21,5 @@ void		bst_xkb_parse_symbol	(const gchar	*symbol,
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_XKB_H__ */

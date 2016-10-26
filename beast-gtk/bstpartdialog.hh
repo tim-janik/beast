@@ -9,8 +9,6 @@
 #include	"bstpianorollctrl.hh"
 #include	"bsteventrollctrl.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_PART_DIALOG              (bst_part_dialog_get_type ())
 #define BST_PART_DIALOG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PART_DIALOG, BstPartDialog))
@@ -44,7 +42,5 @@ struct _BstPartDialogClass
 /* --- prototypes --- */
 GType		bst_part_dialog_get_type	(void);
 void		bst_part_dialog_set_part	(BstPartDialog *self, Bse::PartH part = Bse::PartH());
-
-G_END_DECLS
 
 #endif /* __BST_PART_DIALOG_H__ */

@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- enums --- */
 typedef enum /*< skip >*/
 {
@@ -147,8 +145,6 @@ BstPatternColumn* bst_pattern_column_create         (BstPatternLType   ltype,
                                                      gint              num,
                                                      BstPatternLFlags  lflags);
 gboolean          bst_pattern_column_has_notes      (BstPatternColumn *column);
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

@@ -5,8 +5,6 @@
 #include "bstutils.hh"
 #include "bstwaveview.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_TRACK_SYNTH_DIALOG            (bst_track_synth_dialog_get_type ())
@@ -62,7 +60,5 @@ void       bst_track_synth_dialog_set      (BstTrackSynthDialog         *self,
                                             SfiProxy                     wrepo);
 
 
-
-G_END_DECLS
 
 #endif /* __BST_TRACK_SYNTH_DIALOG_H__ */

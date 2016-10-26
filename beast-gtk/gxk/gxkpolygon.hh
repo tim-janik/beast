@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_POLYGON              (gxk_polygon_get_type ())
 #define GXK_POLYGON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_POLYGON, GxkPolygon))
@@ -67,7 +65,5 @@ extern GxkPolygonGraph gxk_polygon_play;
 extern GxkPolygonGraph gxk_polygon_forward;
 extern GxkPolygonGraph gxk_polygon_next;
 extern GxkPolygonGraph gxk_polygon_last;
-
-G_END_DECLS
 
 #endif  /* __GXK_POLYGON_H__ */

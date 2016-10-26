@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- access skin config --- */
 #define BST_SKIN_CONFIG(field)              (* bst_skin_config_get_global ()) . field
 #define BST_SKIN_CONFIG_STRDUP_PATH(field)  sfi_path_get_filename (BST_SKIN_CONFIG (field).c_str(), bst_skin_config_dirname())
@@ -29,7 +27,5 @@ const gchar*    bst_skin_config_dirname         (void);
 Bse::Error    bst_skin_dump                   (const gchar    *file_name);
 Bse::Error    bst_skin_parse                  (const gchar    *file_name);
 
-
-G_END_DECLS
 
 #endif /* __BST_SKIN_CONFIG_H__ */

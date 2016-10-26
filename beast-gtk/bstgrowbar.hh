@@ -5,8 +5,6 @@
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkrange.h>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_GROW_BAR              (bst_grow_bar_get_type ())
 #define BST_GROW_BAR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_GROW_BAR, BstGrowBar))
@@ -62,7 +60,5 @@ void            bst_grow_bar_set_tooltips       (BstGrowBar     *self,
                                                  const gchar    *shrink_tip,
                                                  const gchar    *scroll_tip,
                                                  const gchar    *grow_tip);
-
-G_END_DECLS
 
 #endif /* __BST_GROW_BAR_H__ */

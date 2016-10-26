@@ -4,8 +4,6 @@
 
 #include        "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- BstChoice --- */
 /* BstChoice are simple inlined popup menus for modal selections.
  */
@@ -70,8 +68,6 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   void                   *choice_id,
 					   const String 	  &icon_stock_id,
 					   const Bse::Icon	  &bseicon);
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

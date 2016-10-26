@@ -4,8 +4,6 @@
 
 #include	"bstitemview.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_WAVE_VIEW	      (bst_wave_view_get_type ())
@@ -35,7 +33,5 @@ GType		bst_wave_view_get_type          (void);
 GtkWidget*	bst_wave_view_new               (SfiProxy     wrepo);
 void            bst_wave_view_set_editable      (BstWaveView *self,
                                                  gboolean     enabled);
-
-G_END_DECLS
 
 #endif /* __BST_WAVE_VIEW_H__ */

@@ -4,8 +4,6 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SUPER_SHELL		(bst_super_shell_get_type ())
 #define	BST_SUPER_SHELL(object)		(GTK_CHECK_CAST ((object), BST_TYPE_SUPER_SHELL, BstSuperShell))
@@ -34,7 +32,5 @@ struct _BstSuperShellClass
 GType		bst_super_shell_get_type	(void);
 void		bst_super_shell_set_super	(BstSuperShell *super_shell, Bse::SuperH super);
 GtkWidget*      bst_super_shell_create_label    (BstSuperShell  *super_shell);
-
-G_END_DECLS
 
 #endif /* __BST_SUPER_SHELL_H__ */

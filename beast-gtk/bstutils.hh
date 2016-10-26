@@ -21,8 +21,6 @@ void event_loop_quit (uint8 exit_code = 0);
 extern Bse::ServerH bse_server;
 
 
-G_BEGIN_DECLS
-
 /* --- GUI utilities --- */
 void           bst_status_set_error           (Bse::Error error, const String &message);
 #define        bst_status_eprintf(error, ...)  bst_status_set_error (error, Rapicorn::string_format (__VA_ARGS__))
@@ -213,8 +211,6 @@ Bst::GConfig*   bst_gconfig_get_global (void);
 /* --- internal --- */
 void            _bst_init_utils         (void);
 void            _bst_init_radgets       (void);
-G_END_DECLS
-
 
 // == mouse button checks ==
 bool            bst_mouse_button_activate       (GdkEvent       *event);

@@ -5,8 +5,6 @@
 #include <sfi/glib-extra.hh>
 #include <gtk/gtk.h>
 
-G_BEGIN_DECLS
-
 /* --- i18n and gettext helpers --- */
 #ifdef GXK_COMPILATION
 #  define GXK_I18N_DOMAIN NULL
@@ -55,8 +53,6 @@ void	gxk_init_actions	(void);
 void	gxk_init_assortments	(void);
 void	gxk_init_radget_types	(void);
 
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

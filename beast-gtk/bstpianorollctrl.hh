@@ -4,8 +4,6 @@
 
 #include "bstpianoroll.hh"
 
-G_BEGIN_DECLS
-
 typedef struct {
   /* misc data */
   guint		   ref_count;
@@ -49,7 +47,5 @@ gboolean                bst_piano_roll_controller_clipboard_full (BstPianoRollCo
 gboolean                bst_piano_roll_controller_has_selection  (BstPianoRollController *self,
                                                                   guint64                 action_stamp);
 
-
-G_END_DECLS
 
 #endif /* __BST_PIANO_ROLL_CONTROLLER_H__ */

@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 #define GXK_TYPE_SIMPLE_LABEL		  (gxk_simple_label_get_type ())
 #define GXK_SIMPLE_LABEL(obj)		  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GXK_TYPE_SIMPLE_LABEL, GxkSimpleLabel))
 #define GXK_SIMPLE_LABEL_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_SIMPLE_LABEL, GxkSimpleLabelClass))
@@ -33,7 +31,5 @@ typedef GtkMiscClass GxkSimpleLabelClass;
 GType   gxk_simple_label_get_type             (void) G_GNUC_CONST;
 void    gxk_simple_label_set_mnemonic_widget  (GxkSimpleLabel  *self,
                                                GtkWidget       *widget);
-
-G_END_DECLS
 
 #endif /* __GXK_SIMPLE_LABEL_H__ */

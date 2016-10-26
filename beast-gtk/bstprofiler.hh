@@ -4,11 +4,7 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 GtkWidget* bst_profiler_window_get (void);
 
-
-G_END_DECLS
 
 #endif /* __BST_PROFILER_H__ */

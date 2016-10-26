@@ -5,10 +5,6 @@
 #include "bstutils.hh"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 #define BST_TYPE_DIAL			(bst_dial_get_type ())
 #define BST_DIAL(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_DIAL, BstDial))
@@ -71,10 +67,6 @@ void	       bst_dial_set_align_widget       (BstDial	      *dial,
 						GtkWidget     *widget,
 						gboolean       width_align,
 						gboolean       height_align);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_DIAL_H__ */
 

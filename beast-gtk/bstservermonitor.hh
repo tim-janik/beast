@@ -5,10 +5,6 @@
 #include	"bstparamview.hh"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SERVER_MONITOR		   (bst_server_monitor_get_type ())
@@ -41,9 +37,5 @@ GtkType		 bst_server_monitor_get_type	(void);
 void		 bst_server_monitor_update	(BstServerMonitor *smon);
 void		 bst_server_monitor_rebuild	(BstServerMonitor *smon);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_SERVER_MONITOR_H__ */

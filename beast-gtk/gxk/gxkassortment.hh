@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 #define GXK_ASSORTMENT_PRIORITY     (G_PRIORITY_HIGH - 10)
 
 /* --- assortment --- */
@@ -93,7 +91,5 @@ void    gxk_window_add_assortment_client        (GtkWindow              *window,
 void    gxk_window_remove_assortment_client     (GtkWindow              *window,
                                                  gpointer                client_data);
 
-
-G_END_DECLS
 
 #endif /* __GXK_ASSORTMENT_H__ */

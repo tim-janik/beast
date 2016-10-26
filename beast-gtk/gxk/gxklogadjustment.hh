@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_ADAPTER_ADJUSTMENT              (gxk_adapter_adjustment_get_type ())
 #define GXK_ADAPTER_ADJUSTMENT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_ADAPTER_ADJUSTMENT, GxkAdapterAdjustment))
@@ -97,6 +95,4 @@ void           gxk_log_adjustment_setup      (GxkLogAdjustment *self,
                                               gdouble           center,
                                               gdouble           base,
                                               gdouble           n_steps);
-G_END_DECLS
-
 #endif /* __GXK_LOG_ADJUSTMENT_H__ */

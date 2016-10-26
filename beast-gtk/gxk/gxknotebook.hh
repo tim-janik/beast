@@ -4,8 +4,6 @@
 
 #include "gxkassortment.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_NOTEBOOK              (gxk_notebook_get_type ())
 #define GXK_NOTEBOOK(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_NOTEBOOK, GxkNotebook))
@@ -30,7 +28,5 @@ typedef struct {
 GType		gxk_notebook_get_type		(void);
 void            gxk_notebook_set_assortment     (GxkNotebook    *self,
                                                  GxkAssortment  *assortment);
-
-G_END_DECLS
 
 #endif  /* __GXK_NOTEBOOK_H__ */

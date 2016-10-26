@@ -9,8 +9,6 @@
 // == G++ attributes ==
 #define __unused        __attribute__ ((unused))
 
-G_BEGIN_DECLS
-
 /* --- generic constants --- */
 typedef enum {
   BST_QUANTIZE_NONE		= 0,
@@ -81,7 +79,5 @@ void    beast_show_about_box (void);
 void    bst_main_loop_wakeup    ();
 extern gboolean bst_developer_hints;
 extern gboolean bst_debug_extensions;
-
-G_END_DECLS
 
 #endif /* __BST_DEFS_H__ */

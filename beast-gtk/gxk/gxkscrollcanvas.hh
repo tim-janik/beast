@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_SCROLL_CANVAS              (gxk_scroll_canvas_get_type ())
 #define GXK_SCROLL_CANVAS(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_SCROLL_CANVAS, GxkScrollCanvas))
@@ -229,7 +227,5 @@ void             gxk_scroll_canvas_move_marker             (GxkScrollCanvas     
                                                             guint                   x,
                                                             guint                   y);
 void             gxk_scroll_canvas_class_skin_changed      (GxkScrollCanvasClass*);
-
-G_END_DECLS
 
 #endif /* __GXK_SCROLL_CANVAS_H__ */

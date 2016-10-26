@@ -5,8 +5,6 @@
 #include	"bstcanvassource.hh"
 
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SNET_ROUTER		(bst_snet_router_get_type ())
 #define	BST_SNET_ROUTER(object)		(GTK_CHECK_CAST ((object), BST_TYPE_SNET_ROUTER, BstSNetRouter))
@@ -58,7 +56,5 @@ void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router, SfiProxy source);
 BstSNetRouter*	 bst_snet_router_build_page	      (Bse::SNetH     snet);
 
-
-G_END_DECLS
 
 #endif /* __BST_SNET_ROUTER_H__ */

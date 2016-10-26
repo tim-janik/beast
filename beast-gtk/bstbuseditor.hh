@@ -5,8 +5,6 @@
 #include "bstitemview.hh"
 #include "bstdbmeter.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_BUS_EDITOR              (bst_bus_editor_get_type ())
 #define BST_BUS_EDITOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_BUS_EDITOR, BstBusEditor))
@@ -37,7 +35,5 @@ GType		bst_bus_editor_get_type  (void);
 GtkWidget*      bst_bus_editor_new       (SfiProxy      song);
 void            bst_bus_editor_set_bus   (BstBusEditor *self,
                                           SfiProxy      item);
-
-G_END_DECLS
 
 #endif /* __BST_BUS_EDITOR_H__ */

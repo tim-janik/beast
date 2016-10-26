@@ -4,8 +4,6 @@
 
 #include	"bstitemview.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_PART_VIEW              (bst_part_view_get_type ())
 #define BST_PART_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PART_VIEW, BstPartView))
@@ -31,7 +29,5 @@ struct _BstPartViewClass
 /* --- prototypes --- */
 GType		bst_part_view_get_type	(void);
 GtkWidget*      bst_part_view_new       (SfiProxy song);
-
-G_END_DECLS
 
 #endif /* __BST_PART_VIEW_H__ */

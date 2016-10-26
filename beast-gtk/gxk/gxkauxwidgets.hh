@@ -5,8 +5,6 @@
 #include "gxkutils.hh"
 #include "gxkradget.hh"
 
-G_BEGIN_DECLS
-
 /* --- menu item --- */
 #define GXK_TYPE_MENU_ITEM              (gxk_menu_item_get_type ())
 #define GXK_MENU_ITEM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_ITEM, GxkMenuItem))
@@ -91,7 +89,5 @@ typedef GtkAlignmentClass GxkBackShadeClass;
 GType   gxk_back_shade_get_type          (void);
 
 
-
-G_END_DECLS
 
 #endif /* __GXK_AUX_WIDGETS_H__ */
