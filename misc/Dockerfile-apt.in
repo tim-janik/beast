@@ -62,8 +62,8 @@ WORKDIR /usr/src/$PROJECT
 # Carry out distcheck test if desired
 RUN : && \
     case $INTENT in \
-      clangbuild) nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
-      *)          nice ./autogen.sh --prefix=/usr ;; \
+      *clangbuild*) nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
+      *)            nice ./autogen.sh --prefix=/usr ;; \
     esac
 RUN nice make -j`nproc`
 RUN nice make check
