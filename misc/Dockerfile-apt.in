@@ -76,8 +76,7 @@ RUN nice make uninstall
 RUN `intent distcheck` && \
     nice make distcheck
 
-# Cleanup, show tarball
-RUN nice make clean
+# Show tarball
 RUN ls -l *.tar.xz
 
 # Create deb packages as follows:
