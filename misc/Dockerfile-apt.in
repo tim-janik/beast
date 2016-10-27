@@ -8,7 +8,8 @@ MAINTAINER Tim Janik <timj@gnu.org>
 ENV DEBIAN_FRONTEND noninteractive
 RUN echo '#!/bin/bash\n"$@" || { sleep 10 ; "$@" ; } || { sleep 90 ; "$@" ; }' > /bin/retry && \
     echo '#!/bin/sh\ncase "$INTENT" in *$1*) echo true ;; *) echo "exit 0" ;; esac' > /bin/intent && \
-    chmod +x /bin/retry /bin/intent && \
+    echo '#!/bin/sh\nprintf "\\033[31;1m"\nprintf %s "$*" | sed '\''1{h;s/./*/g;p;x;};${p;x}'\'' >&2\nprintf "\\033[0m\\n"' > /bin/warn && \
+    chmod +x /bin/retry /bin/intent /bin/warn && \
     echo '\n' \
     "\nalias ls='ls --color=auto' ; alias l='ls -al' ;" \
     "\nalias grep='grep --color=auto' ; alias fgrep='fgrep --color=auto' ; alias egrep='egrep --color=auto' ;" \
@@ -61,8 +62,8 @@ WORKDIR /usr/src/$PROJECT
 # Carry out distcheck test if desired
 RUN : && \
     case $INTENT in \
-      clangbuild) nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
-      *)          nice ./autogen.sh --prefix=/usr ;; \
+      *clangbuild*) nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
+      *)            nice ./autogen.sh --prefix=/usr ;; \
     esac
 RUN nice make -j`nproc`
 RUN nice make check
@@ -75,8 +76,7 @@ RUN nice make uninstall
 RUN `intent distcheck` && \
     nice make distcheck
 
-# Cleanup, show tarball
-RUN nice make clean
+# Show tarball
 RUN ls -l *.tar.xz
 
 # Create deb packages as follows:
@@ -132,7 +132,8 @@ RUN `intent bintrayup` && \
     sleep 60 && \
     echo "deb [trusted=yes] https://dl.bintray.com/$BINTRAY_REPO $DISTRELEASE main" | \
 	tee /etc/apt/sources.list.d/bintray-source-line.list && \
-    retry /bin/sh -c 'apt-get update && apt-get install -y beast libbse-dev'
+    retry /bin/sh -c 'apt-get update && apt-get install -y beast libbse-dev' || \
+	warn '* WARNING: Failed package installation after bintray.com upload *'
 
 # docker build -t @PROJECT@ .
 # docker run -ti --rm @PROJECT@ /bin/bash
