@@ -7,7 +7,7 @@ os: linux
 dist: trusty
 sudo: required
 services: docker
-language: c
+language: generic
 
 env:
   global:
@@ -19,16 +19,12 @@ env:
     - DIST="debian:testing"
     - DIST="ubuntu:xenial"
     - DIST="ubuntu:yakkety"
-    # distcheck: succeed in 'make distcheck'
-    - INTENT="distcheck" DIST="ubuntu:wily"
-    # clangbuild: succeed in using clang++ for builds
-    - INTENT="clangbuild" DIST="ubuntu:wily"
+    - DIST="ubuntu:wily" INTENT="clangbuild,distcheck"
 matrix:
   allow_failures:
+    - env: DIST="debian:testing"
     - env: DIST="ubuntu:xenial"
     - env: DIST="ubuntu:yakkety"
-    - env: DIST="debian:testing"
-    - env: INTENT="distcheck" DIST="ubuntu:wily"
   fast_finish: true
 
 before_install:
@@ -38,9 +34,6 @@ before_install:
   - cat /etc/os-release
   - pwd
   - free -tm
-  - $CC --version
-  - $CXX --version
-  - make --version
   - python --version
 
 install:
