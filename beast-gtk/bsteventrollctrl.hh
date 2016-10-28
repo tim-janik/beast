@@ -4,8 +4,6 @@
 
 #include "bsteventroll.hh"
 
-G_BEGIN_DECLS
-
 typedef struct {
   /* misc data */
   guint		     ref_count;
@@ -45,7 +43,5 @@ gboolean                bst_event_roll_controller_clipboard_full (BstEventRollCo
 gboolean                bst_event_roll_controller_has_selection  (BstEventRollController        *self,
                                                                   guint64                        action_stamp);
 
-
-G_END_DECLS
 
 #endif /* __BST_EVENT_ROLL_CONTROLLER_H__ */

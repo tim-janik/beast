@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 /* --- status percentages --- */
 #define	GXK_STATUS_PROGRESS	(+200.0)
 #define	GXK_STATUS_DONE		(+100.0)
@@ -42,7 +40,5 @@ void	   gxk_status_window_pop		(void);
 void	   gxk_status_push_progress_window	(gpointer        widget);
 void	   gxk_status_pop_progress_window	(void);
 
-
-G_END_DECLS
 
 #endif	/* __GXK_STATUS_BAR_H__ */

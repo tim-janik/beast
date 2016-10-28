@@ -39,8 +39,6 @@ using Rapicorn::int32;
 using Rapicorn::int64;
 using Rapicorn::unichar;
 
-extern "C" {
-
 /* --- initialization --- */
 typedef struct
 {
@@ -58,8 +56,6 @@ void sfi_init (int *argcp, char **argv, const Bse::StringVector &args = Bse::Str
 
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
-
-} // "C"
 
 #endif /* __SFI_WRAPPER_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

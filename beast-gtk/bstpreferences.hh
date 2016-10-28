@@ -4,8 +4,6 @@
 
 #include "bstparamview.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_PREFERENCES		(bst_preferences_get_type ())
 #define	BST_PREFERENCES(object)	        (GTK_CHECK_CAST ((object), BST_TYPE_PREFERENCES, BstPreferences))
@@ -56,7 +54,5 @@ void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
 void		 bst_preferences_create_buttons (BstPreferences *prefs,
 						 GxkDialog      *dialog);
-
-G_END_DECLS
 
 #endif /* __BST_PREFERENCES_H__ */

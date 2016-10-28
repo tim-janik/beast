@@ -5,10 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 /* --- object type macros --- */
 #define DAV_TYPE_GUITAR              (type_id_guitar)
 #define DAV_GUITAR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_GUITAR, DavGuitar))
@@ -42,7 +38,4 @@ enum
   DAV_GUITAR_OCHANNEL_MONO
 };
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 #endif /* __DAV_GUITAR_H__ */

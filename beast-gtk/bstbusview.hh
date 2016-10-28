@@ -4,8 +4,6 @@
 
 #include	"bstitemview.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_BUS_VIEW              (bst_bus_view_get_type ())
 #define BST_BUS_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_BUS_VIEW, BstBusView))
@@ -31,7 +29,5 @@ struct _BstBusViewClass
 /* --- prototypes --- */
 GType		bst_bus_view_get_type  (void);
 GtkWidget*      bst_bus_view_new       (SfiProxy song);
-
-G_END_DECLS
 
 #endif /* __BST_BUS_VIEW_H__ */

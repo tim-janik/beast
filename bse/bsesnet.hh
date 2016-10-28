@@ -5,8 +5,6 @@
 #include	<bse/bsesuper.hh>
 
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_SNET		   (BSE_TYPE_ID (BseSNet))
@@ -101,8 +99,6 @@ void             bse_snet_set_oport_dest        (BseSNet         *snet,
                                                  BseModule       *imodule,
                                                  guint            istream,
                                                  BseTrans        *trans);
-
-G_END_DECLS
 
 namespace Bse {
 

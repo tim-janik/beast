@@ -5,10 +5,6 @@
 #include <bse/gsldefs.hh>
 #include <bse/gslosctable.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- structures --- */
 typedef struct
@@ -61,9 +57,5 @@ void	gsl_osc_process_pulse	(GslOscData	*osc,
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_OSCILLATOR_H__ */

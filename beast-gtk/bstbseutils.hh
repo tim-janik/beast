@@ -3,7 +3,6 @@
 #define __BST_BSE_UTILS_H__
 #include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
 #include "bstdefs.hh"
-G_BEGIN_DECLS
 #define SFIDL_SKIPDEF__BseErrorType             // replaced by Bse::Error
 #define BseErrorType Bse::Error
 #define SFIDL_SKIPDEF__BseMidiSignalType        // replaced by Bse::MidiSignal
@@ -42,8 +41,6 @@ const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 uint            bst_path_leaf_index             (const String &path, char separator = '/');
 Bse::Category   bst_category_find               (const String &pattern);
 
-
-G_END_DECLS
 
 namespace Bse {
 const char*     error_blurb (Bse::Error error_value); ///< Retrieve the description of an error value

@@ -5,8 +5,6 @@
 #include        <bse/bsedevice.hh>
 #include        <bse/bsemidievent.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_DEVICE              (BSE_TYPE_ID (BseMidiDevice))
 #define BSE_MIDI_DEVICE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_DEVICE, BseMidiDevice))
@@ -31,5 +29,4 @@ struct BseMidiDeviceClass : BseDeviceClass
 {};
 
 void		bse_midi_handle_init		(BseMidiHandle		*handle);
-G_END_DECLS
 #endif /* __BSE_MIDI_DEVICE_H__ */

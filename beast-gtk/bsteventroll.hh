@@ -4,8 +4,6 @@
 
 #include	"bstsegment.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_EVENT_ROLL              (bst_event_roll_get_type ())
 #define BST_EVENT_ROLL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_EVENT_ROLL, BstEventRoll))
@@ -114,7 +112,5 @@ void        bst_event_roll_segment_tick_range    (BstEventRoll   *self,
 gdouble     bst_event_roll_segment_value         (BstEventRoll   *self,
                                                   guint           tick);
 void        bst_event_roll_clear_segment         (BstEventRoll   *self);
-
-G_END_DECLS
 
 #endif /* __BST_EVENT_ROLL_H__ */

@@ -5,8 +5,6 @@
 #include <bse/bsesource.hh>
 #include <bse/bsesnet.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_VOICE_INPUT	        (BSE_TYPE_ID (BseMidiVoiceInput))
 #define BSE_MIDI_VOICE_INPUT(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_VOICE_INPUT, BseMidiVoiceInput))
@@ -67,7 +65,5 @@ enum
   BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT,
   BSE_MIDI_VOICE_SWITCH_OCHANNEL_DISCONNECT
 };
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_VOICE_H__ */

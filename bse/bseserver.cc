@@ -1623,4 +1623,10 @@ ServerImpl::category_match (const String &pattern)
   return bse_categories_match_typed (pattern, 0);
 }
 
+int64
+ServerImpl::tick_stamp_from_systime (int64 systime_usecs)
+{
+  return bse_engine_tick_stamp_from_systime (systime_usecs);
+}
+
 } // Bse

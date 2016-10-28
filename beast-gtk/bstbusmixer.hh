@@ -4,8 +4,6 @@
 
 #include	"bstitemview.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_BUS_MIXER              (bst_bus_mixer_get_type ())
 #define BST_BUS_MIXER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_BUS_MIXER, BstBusMixer))
@@ -33,7 +31,5 @@ struct _BstBusMixerClass
 /* --- prototypes --- */
 GType		bst_bus_mixer_get_type  (void);
 GtkWidget*      bst_bus_mixer_new       (SfiProxy        song);
-
-G_END_DECLS
 
 #endif /* __BST_BUS_MIXER_H__ */

@@ -4,8 +4,6 @@
 
 #include        <bse/bsepcmdevice.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_DEVICE_NULL              (BSE_TYPE_ID (BsePcmDeviceNull))
 #define BSE_PCM_DEVICE_NULL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_DEVICE_NULL, BsePcmDeviceNull))
@@ -22,5 +20,4 @@ struct BsePcmDeviceNull : BsePcmDevice
 struct BsePcmDeviceNullClass : BsePcmDeviceClass
 {};
 
-G_END_DECLS
 #endif /* __BSE_PCM_DEVICE_NULL_H__ */

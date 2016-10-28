@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- file store --- */
 enum {
@@ -83,7 +81,5 @@ gboolean bst_child_list_wrapper_get_iter        (GxkListWrapper *self,
 void     bst_child_list_wrapper_proxy_changed   (GxkListWrapper *self,
                                                  SfiProxy        item);
 
-
-G_END_DECLS
 
 #endif /* __BST_TREE_STORES_H__ */

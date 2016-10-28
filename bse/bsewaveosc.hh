@@ -6,8 +6,6 @@
 #include <bse/bsewave.hh>
 #include <bse/gslwaveosc.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_WAVE_OSC              (BSE_TYPE_ID (BseWaveOsc))
 #define BSE_WAVE_OSC(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_WAVE_OSC, BseWaveOsc))
@@ -49,7 +47,5 @@ enum
   BSE_WAVE_OSC_OCHANNEL_DONE,
   BSE_WAVE_OSC_N_OCHANNELS
 };
-
-G_END_DECLS
 
 #endif /* __BSE_WAVE_OSC_H__ */

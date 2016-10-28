@@ -1154,8 +1154,7 @@ MidiChannel::debug_notes (guint64          tick_stamp,
     }
 }
 } // namespace anon
-/* --- BseMidiReceiver C API --- */
-extern "C" {
+
 struct BseMidiReceiver : public MidiReceiver {
   explicit BseMidiReceiver () :
     MidiReceiver () {}
@@ -2029,5 +2028,3 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 
   return TRUE;
 }
-
-} // "C"

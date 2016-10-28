@@ -5,8 +5,6 @@
 #include <sfi/sfivalues.hh>
 #include <sfi/sfiprimitives.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- Sfi param spec macros --- */
 #define SFI_TYPE_PARAM_BOOL		(G_TYPE_PARAM_BOOLEAN)
@@ -316,8 +314,6 @@ void		_sfi_init_params	(void);
 extern GType*	 sfi__param_spec_types;
 SfiRec*		sfi_pspec_to_rec	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
-
-G_END_DECLS
 
 namespace Bse { // bsecore
 

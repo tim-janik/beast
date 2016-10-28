@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- structures --- */
 #define GXK_RADGET    G_OBJECT
 #define GXK_IS_RADGET G_IS_OBJECT
@@ -105,7 +103,5 @@ GxkRadgetArgs* gxk_radget_data_copy_call_args    (GxkRadgetData       *gdgdata);
 GxkRadget*     gxk_radget_data_get_scope_radget  (GxkRadgetData       *gdgdata);
 gchar*         gxk_radget_data_dup_expand        (GxkRadgetData       *gdgdata,
                                                   const gchar         *expression);
-
-G_END_DECLS
 
 #endif /* __GXK_RADGET_H__ */

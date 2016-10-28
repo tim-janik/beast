@@ -5,8 +5,6 @@
 #include <bse/bsesource.hh>
 #include <sfi/gbsearcharray.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))
 #define BSE_CONTAINER(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
@@ -99,8 +97,6 @@ void          _bse_container_uncross		(BseContainer    *container,
 						 BseItem         *link);
 void          bse_container_debug_tree          (BseContainer    *container);
 
-
-G_END_DECLS
 
 namespace Bse {
 

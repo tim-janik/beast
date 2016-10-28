@@ -4,8 +4,6 @@
 
 #include "bstpatterncolumns.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_PATTERN_VIEW              (bst_pattern_view_get_type ())
 #define BST_PATTERN_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PATTERN_VIEW, BstPatternView))
@@ -131,7 +129,5 @@ const gchar*      bst_pattern_view_get_layout      (BstPatternView            *s
 guint             bst_pattern_view_set_layout      (BstPatternView            *self,
                                                     const gchar               *layout);
 
-
-G_END_DECLS
 
 #endif /* __BST_PATTERN_VIEW_H__ */

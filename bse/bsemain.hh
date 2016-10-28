@@ -2,8 +2,6 @@
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
 #include        <bse/bsetype.hh>
-G_BEGIN_DECLS
-
 // == BSE Initialization ==
 void bse_bindtextdomain ();
 void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
@@ -56,7 +54,5 @@ struct BseMainArgs {
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
 extern GMainContext    *bse_main_context;
-
-G_END_DECLS
 
 #endif /* __BSE_MAIN_H__ */

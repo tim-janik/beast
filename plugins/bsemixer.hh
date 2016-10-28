@@ -5,10 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIXER              (bse_mixer_get_type())
@@ -30,7 +26,4 @@ enum
 {
   BSE_MIXER_OCHANNEL_MONO
 };
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 #endif /* __BSE_MIXER_H__ */

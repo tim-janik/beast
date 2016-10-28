@@ -5,8 +5,6 @@
 #include <bse/bseutils.hh>
 #include <bse/gslwavechunk.hh>
 
-G_BEGIN_DECLS
-
 /* --- structures --- */
 struct BseWaveFileInfo {
   guint	   n_waves;
@@ -106,7 +104,5 @@ struct BseLoader {
 
 void	      bse_loader_register	        (BseLoader	 *loader);
 BseLoader*    bse_loader_match	                (const gchar	 *file_name);
-
-G_END_DECLS
 
 #endif /* __BSE_LOADER_H__ */

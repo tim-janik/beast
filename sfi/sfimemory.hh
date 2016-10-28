@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- macros --- */
 #define sfi_new_struct(type, n)		((type*) sfi_alloc_memblock (sizeof (type) * (n)))
@@ -33,6 +31,5 @@ void            sfi_alloc_report        (void);
 gulong    	sfi_alloc_upper_power2  (const gulong    number);
 void		_sfi_free_node_list	(gpointer	 mem,
 					 gsize		 node_size);
-G_END_DECLS
 #endif /* __SFI_MEMORY_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

@@ -4,8 +4,6 @@
 
 #include <bse/bseutils.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- macros --- */
 #define	GSL_DATA_HANDLE_OPENED(handle)	    (((GslDataHandle*) (handle))->open_count > 0)
@@ -176,7 +174,5 @@ gboolean	gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name);
 void		gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
 
-
-G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_H__ */

@@ -4,8 +4,6 @@
 
 #include        "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- text tools flags --- */
 typedef enum /*< skip >*/
 {
@@ -86,8 +84,6 @@ void    gxk_text_register_textget_handler    (const gchar          *element_name
 void    gxk_text_buffer_add_textgets_to_view (GtkTextBuffer        *tbuffer,
                                               GtkTextView          *tview);
 
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

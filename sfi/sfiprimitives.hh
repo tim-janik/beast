@@ -4,8 +4,6 @@
 
 #include <sfi/sfivalues.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- SfiBBlock primitive type --- */
 struct _SfiBBlock {
@@ -228,8 +226,6 @@ SfiRec*	     sfi_rec_get_rec	(SfiRec		*rec,
 				 const gchar	*field_name);
 SfiProxy     sfi_rec_get_proxy	(SfiRec		*rec,
 				 const gchar	*field_name);
-
-G_END_DECLS
 
 #endif /* __SFI_PRIMITIVES_H__ */
 

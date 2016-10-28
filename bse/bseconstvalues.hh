@@ -4,8 +4,6 @@
 
 #include <bse/bsedefs.hh>
 
-G_BEGIN_DECLS
-
 /* --- frequencies --- */
 /* kammer frequency, frequency of the note A of the standard piano
  * octave.slightly different values are used in different countries,
@@ -81,7 +79,5 @@ G_BEGIN_DECLS
 #define	BSE_RATING_DEFAULT		(50)
 #define	BSE_RATING_FALLBACK		(1)
 #define	BSE_RATING_NO_AUTO		(-1)
-
-G_END_DECLS
 
 #endif /* __BSE_CONST_VALUES_H__ */

@@ -4,10 +4,6 @@
 
 #include "bstutils.hh"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 void		bst_ascii_pixbuf_ref	(void);
 GdkPixbuf*	bst_ascii_pixbuf_new	(gchar character,
@@ -16,9 +12,5 @@ GdkPixbuf*	bst_ascii_pixbuf_new	(gchar character,
 void		bst_ascii_pixbuf_unref	(void);
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_ASCII_PIXBUF_H__ */

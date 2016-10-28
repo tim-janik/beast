@@ -3,7 +3,6 @@
 #define __GSL_COMMON_H__
 #include <bse/gsldefs.hh>
 #include <bse/bseenums.hh>
-G_BEGIN_DECLS
 /* --- initialization --- */
 void			gsl_init	(void);
 
@@ -57,8 +56,6 @@ void	_gsl_init_loader_mad		(void);
 void	bse_init_loader_gus_patch	(void);
 void	bse_init_loader_flac      	(void);
 #define		GSL_N_IO_RETRIES	(5)
-G_END_DECLS
-
 
 namespace Bse {
 

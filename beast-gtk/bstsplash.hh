@@ -4,8 +4,6 @@
 
 #include        "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_SPLASH              (bst_splash_get_type ())
 #define BST_SPLASH(object)           (GTK_CHECK_CAST ((object), BST_TYPE_SPLASH, BstSplash))
@@ -66,7 +64,5 @@ void		bst_splash_update_item		(GtkWidget *widget, const std::string &message);
 void            bst_splash_animate_strings      (GtkWidget      *splash,
                                                  const gchar   **strings);
 
-
-G_END_DECLS
 
 #endif  /* __BST_SPLASH_H__ */

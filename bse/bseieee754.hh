@@ -9,8 +9,6 @@
 #undef PI
 #define PI                            (3.141592653589793238462643383279502884197)    // pi
 
-G_BEGIN_DECLS
-
 /* IEEE 754 single precision floating point layout:
  *        31 30           23 22            0
  * +--------+---------------+---------------+
@@ -311,7 +309,5 @@ bse_dtoll (const double v)
 {
   return v < -0.0 ? (gint64) (v - 0.5) : (gint64) (v + 0.5);
 }
-
-G_END_DECLS
 
 #endif /* __BSE_IEEE754_H__ */		/* vim: set ts=8 sw=2 sts=2: */

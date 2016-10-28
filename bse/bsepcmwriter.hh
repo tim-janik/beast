@@ -4,8 +4,6 @@
 
 #include <bse/bseitem.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_WRITER              (BSE_TYPE_ID (BsePcmWriter))
 #define BSE_PCM_WRITER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_WRITER, BsePcmWriter))
@@ -37,11 +35,6 @@ void		bse_pcm_writer_close		(BsePcmWriter		*pdev);
 void		bse_pcm_writer_write		(BsePcmWriter		*pdev,
 						 gsize			 n_values,
 						 const gfloat		*values);
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 namespace Bse {
 

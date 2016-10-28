@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 typedef struct {
   gchar       *file_name;
   GdkColor     tint;
@@ -23,7 +21,5 @@ GdkPixmap*      gxk_image_cache_use_pixmap      (const gchar    *file_name,
                                                  GdkColormap    *colormap);
 void            gxk_image_cache_unuse_pixmap    (GdkPixmap      *pixmap);
 
-
-G_END_DECLS
 
 #endif /* __GXK_IMAGE_CACHE_H__ */

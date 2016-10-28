@@ -4,8 +4,6 @@
 
 #include <bse/bseitem.hh>
 
-G_BEGIN_DECLS
-
 
 #define BSE_UNDO_STACK_VOID(ustack)     ((ustack)->max_steps == 0)
 
@@ -89,7 +87,5 @@ gpointer           bse_undo_pointer_unpack       (const gchar    *packed_pointer
                                                   BseUndoStack   *ustack);
 const BseUndoStep* bse_undo_group_peek_last_atom (BseUndoStack   *self,
                                                   SfiTime        *stamp_p);
-
-G_END_DECLS
 
 #endif /* __BSE_UNDO_STACK_H__ */

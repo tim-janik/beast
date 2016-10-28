@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- Sfi value type aliases --- */
 #define	SFI_TYPE_BOOL		G_TYPE_BOOLEAN
@@ -171,8 +169,6 @@ gboolean     sfi_value_type_transformable (GType         src_type,
 void	     _sfi_init_values	(void);
 extern GType *sfi__value_types;
 gboolean      sfi_check_value	(const GValue	*value);
-
-G_END_DECLS
 
 #endif /* __SFI_VALUES_H__ */
 

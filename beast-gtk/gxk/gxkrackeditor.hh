@@ -4,8 +4,6 @@
 
 #include <gxk/gxkracktable.hh>
 
-G_BEGIN_DECLS
-
 struct _GxkRackEditor {
   GdkWindow     *iwindow;
   gint           rfx, rfy, rfw, rfh;
@@ -56,7 +54,5 @@ gboolean gxk_rack_table_handle_leave_notify   (GxkRackTable     *self,
 void     gxk_rack_table_adjust_editor         (GxkRackTable     *self);
 void     gxk_rack_table_unmap_editor          (GxkRackTable     *self);
 
-
-G_END_DECLS
 
 #endif /* __GXK_RACK_EDITOR_H__ */

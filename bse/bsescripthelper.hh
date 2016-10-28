@@ -4,10 +4,6 @@
 
 #include        <bse/bseprocedure.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- typedefs & structures --- */
 typedef struct
@@ -41,9 +37,5 @@ GValue*		bse_script_check_client_msg	(SfiGlueDecoder *decoder,
 						 BseJanitor	*janitor,
 						 const gchar    *message,
 						 const GValue   *value);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_SCRIPT_HELPER_H__ */

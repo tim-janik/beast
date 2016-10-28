@@ -461,7 +461,7 @@ public:
 
 using namespace Bse;
 
-extern "C" GslDataHandle*
+GslDataHandle*
 bse_data_handle_new_upsample2 (GslDataHandle *src_handle,
                                int            precision_bits)
 {
@@ -469,7 +469,7 @@ bse_data_handle_new_upsample2 (GslDataHandle *src_handle,
   return DataHandleResample2::dh_create (cxx_dh);
 }
 
-extern "C" GslDataHandle*
+GslDataHandle*
 bse_data_handle_new_downsample2 (GslDataHandle *src_handle,
                                  int            precision_bits)
 {

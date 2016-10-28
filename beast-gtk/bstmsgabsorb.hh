@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- access config file --- */
 #define BST_STRDUP_ABSORBRC_FILE()  (g_strconcat (g_get_home_dir (), "/.beast/absorbrc", NULL))
 
@@ -24,7 +22,5 @@ Bst::MsgAbsorbStringSeq* bst_msg_absorb_config_box_get    (GtkWidget *box);
 /* --- config file --- */
 void                   bst_msg_absorb_config_save       (void);
 void                   bst_msg_absorb_config_load       (void);
-
-G_END_DECLS
 
 #endif /* __BST_MSG_ABSORB_H__ */

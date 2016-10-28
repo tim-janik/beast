@@ -7,8 +7,6 @@
 #include <bse/bseserverapi.hh>
 
 
-G_BEGIN_DECLS
-
 
 /* --- enum definitions --- */
 typedef enum
@@ -314,8 +312,6 @@ Bse::Error	bse_error_from_errno		(gint v_errno, Bse::Error fallback);
                 __FILE__, __LINE__, bse_error_blurb (error));           \
        }                                                                \
 }G_STMT_END
-
-G_END_DECLS
 
 
 #endif /* __BSE_ENUMS_H__ */

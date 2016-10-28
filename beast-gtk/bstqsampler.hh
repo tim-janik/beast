@@ -4,8 +4,6 @@
 
 #include        "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_QSAMPLER            (bst_qsampler_get_type ())
 #define BST_QSAMPLER(object)         (GTK_CHECK_CAST ((object), BST_TYPE_QSAMPLER, BstQSampler))
@@ -178,7 +176,5 @@ void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
 						 SfiProxy		 esample,
 						 guint			 nth_channel);
-
-G_END_DECLS
 
 #endif /* __BST_QSAMPLER_H__ */

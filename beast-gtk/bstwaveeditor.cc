@@ -6,8 +6,6 @@
 #include	"bstmenus.hh"
 #include	<gdk/gdkkeysyms.h>
 
-extern "C" guint64 bse_engine_tick_stamp_from_systime (guint64 systime); // FIXME
-
 enum {
   SCROLL_NONE  = 0,
   SCROLL_BOTH  = 3,
@@ -369,7 +367,7 @@ playback_marker (gpointer data)
   self = BST_WAVE_EDITOR (data);
   if (self->tick_stamp)
     {
-      SfiNum tick_now = bse_engine_tick_stamp_from_systime (sfi_time_system ()); // FIXME!!!
+      uint64 tick_now = bse_server.tick_stamp_from_systime (sfi_time_system ()); // FIXME!!!
       guint pcm_pos = self->pcm_pos + (tick_now - self->tick_stamp) * self->pcm_per_tick;
       self->ignore_playpos = TRUE;
       gtk_adjustment_set_value (GTK_RANGE (self->qsampler_playpos)->adjustment,

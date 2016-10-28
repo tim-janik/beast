@@ -4,8 +4,6 @@
 
 #include	<bse/bsedefs.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs --- */
 #define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
 
@@ -69,9 +67,9 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
 #define	BSE_TYPE_ID(BseTypeName)	(bse_type_builtin_id_##BseTypeName)
 #ifdef BSE_COMPILATION
 #  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
-#  define BSE_BUILTIN_TYPE(BseTypeName)	 extern "C" BSE_BUILTIN_PROTO (BseTypeName); extern "C" BSE_BUILTIN_PROTO (BseTypeName)
-#  define BSE_DUMMY_TYPE(BseTypeName)	 extern "C" BSE_BUILTIN_PROTO (BseTypeName); \
-                                         extern "C" BSE_BUILTIN_PROTO (BseTypeName) { return 0; }
+#  define BSE_BUILTIN_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); BSE_BUILTIN_PROTO (BseTypeName)
+#  define BSE_DUMMY_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); \
+                                         BSE_BUILTIN_PROTO (BseTypeName) { return 0; }
 #endif /* BSE_COMPILATION */
 
 
@@ -194,7 +192,5 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define sfidl_pspec_TypedObject(group, locfile, locline, name, nick, blurb, options, otype) \
   sfi_pspec_set_group (bse_param_spec_object (name, nick, blurb, otype, options), group)
 
-
-G_END_DECLS
 
 #endif /* __BSE_TYPE_H__ */

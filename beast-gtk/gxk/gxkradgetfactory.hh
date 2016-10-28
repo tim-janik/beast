@@ -5,8 +5,6 @@
 #include "gxkradget.hh"
 #include "gxkaction.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- type macros --- */
 #define GXK_TYPE_RADGET_FACTORY              (gxk_radget_factory_get_type ())
@@ -71,7 +69,5 @@ GType   gxk_factory_branch_get_type          (void);
 extern const GxkRadgetType *gxk_radget_factory_def;
 extern const GxkRadgetType *gxk_factory_branch_def;
 
-
-G_END_DECLS
 
 #endif /* __GXK_RADGET_FACTORY_H__ */

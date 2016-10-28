@@ -4,10 +4,6 @@
 
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_OUTPUT		 (BSE_TYPE_ID (BsePcmOutput))
@@ -35,9 +31,5 @@ enum
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_PCM_OUTPUT_H__ */

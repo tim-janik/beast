@@ -5,8 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define DAV_TYPE_SYN_DRUM              (dav_syn_drum_get_type())
@@ -51,7 +49,5 @@ enum
   DAV_SYN_DRUM_OCHANNEL_MONO,
   DAV_SYN_DRUM_N_OCHANNELS
 };
-
-G_END_DECLS
 
 #endif /* __DAV_SYNDRUM_H__ */

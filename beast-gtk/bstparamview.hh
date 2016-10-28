@@ -4,8 +4,6 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_PARAM_VIEW              (bst_param_view_get_type ())
 #define BST_PARAM_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PARAM_VIEW, BstParamView))
@@ -51,7 +49,5 @@ void		bst_param_view_set_mask		(BstParamView	*param_view,
 						 const gchar	*match_pattern);
 
 
-
-G_END_DECLS
 
 #endif /* __BST_PARAM_VIEW_H__ */

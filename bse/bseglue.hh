@@ -4,8 +4,6 @@
 
 #include <bse/bsetype.hh>
 
-G_BEGIN_DECLS
-
 /* FIXME: creation of a new context source should be done
  * by a janitor constructor
  */
@@ -27,8 +25,6 @@ GValue*			bse_glue_boxed_to_value	 (GType		    boxed_type,
 GValue*	bse_value_to_sfi	(const GValue	*value);
 GValue*	bse_value_from_sfi	(const GValue	*value,
 				 GParamSpec	*pspec);
-
-G_END_DECLS
 
 #endif /* __BSE_GLUE_H__ */
 

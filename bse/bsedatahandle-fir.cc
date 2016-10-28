@@ -367,7 +367,7 @@ using namespace Bse;
  * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
  * @param order       number of filter coefficients
  */
-extern "C" GslDataHandle*
+GslDataHandle*
 bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
 				  gdouble        cutoff_freq,
 				  guint          order)
@@ -389,7 +389,7 @@ bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
  * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
  * @param order       number of filter coefficients
  */
-extern "C" GslDataHandle*
+GslDataHandle*
 bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
 				 gdouble        cutoff_freq,
 				 guint          order)
@@ -398,7 +398,7 @@ bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
   return DataHandleFir::dh_create (cxx_dh);
 }
 
-extern "C" gdouble
+gdouble
 bse_data_handle_fir_response_db (GslDataHandle *fir_handle,
                                  gdouble        freq)
 {

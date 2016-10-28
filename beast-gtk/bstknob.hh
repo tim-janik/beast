@@ -5,8 +5,6 @@
 #include <gtk/gtkadjustment.h>
 #include <gtk/gtkimage.h>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_KNOB			(bst_knob_get_type ())
 #define BST_KNOB(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_KNOB, BstKnob))
@@ -68,6 +66,4 @@ void           bst_knob_set_adjustment         (BstKnob       *knob,
 GtkAdjustment* bst_knob_get_adjustment         (BstKnob       *knob);
 void           bst_knob_set_update_policy      (BstKnob       *knob,
                                                 GtkUpdateType  policy);
-G_END_DECLS
-
 #endif /* __BST_KNOB_H__ */

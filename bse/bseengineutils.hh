@@ -4,8 +4,6 @@
 
 #include <bse/bseenginenode.hh>
 
-G_BEGIN_DECLS
-
 /* --- UserThread --- */
 void		_engine_free_trans		(BseTrans      *trans);
 BseOStream*	_engine_alloc_ostreams		(guint		n);
@@ -51,7 +49,5 @@ void	    _engine_push_processed_node		(EngineNode	*node);
 SfiRing*    _engine_pop_unprocessed_cycle	(void);
 void	    _engine_push_processed_cycle	(SfiRing	*cycle);
 void	    _engine_wait_on_unprocessed		(void);
-
-G_END_DECLS
 
 #endif /* __BSE_ENGINE_UTIL_H__ */

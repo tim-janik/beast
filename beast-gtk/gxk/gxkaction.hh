@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 
 #define GXK_ACTION_PRIORITY     (G_PRIORITY_HIGH - 10)
 
@@ -159,7 +157,5 @@ void            gxk_action_group_unlock         (GxkActionGroup        *agroup);
 void            gxk_action_group_dispose        (GxkActionGroup        *agroup);
 GxkActionGroup* gxk_action_toggle_new           (void);
 
-
-G_END_DECLS
 
 #endif /* __GXK_ACTION_H__ */

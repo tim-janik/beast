@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- list popup dialog --- */
 typedef void (*BstListPopupHandler)  (GtkWidget              *dialog,
                                       gchar                 **strings,
@@ -32,7 +30,5 @@ gboolean       bst_key_combo_popup   (const gchar            *function,
                                       guint                  *keyval,
                                       GdkModifierType        *modifier);
 
-
-G_END_DECLS
 
 #endif /* __BST_AUX_DIALOGS_H__ */

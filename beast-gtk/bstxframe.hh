@@ -4,10 +4,6 @@
 
 #include <gtk/gtkframe.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 #define BST_TYPE_XFRAME			(bst_xframe_get_type ())
 #define BST_XFRAME(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_XFRAME, BstXFrame))
@@ -43,10 +39,6 @@ GType	       bst_xframe_get_type		(void);
 void           bst_xframe_set_cover_widget	(BstXFrame      *xframe,
 						 GtkWidget	*widget,
 						 gboolean        steal_button);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_XFRAME_H__ */
 

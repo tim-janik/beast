@@ -5,8 +5,6 @@
 #include	<bse/bsesuper.hh>
 
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_WAVE_REPO	        (BSE_TYPE_ID (BseWaveRepo))
@@ -21,8 +19,6 @@ struct BseWaveRepo : BseSuper {
 };
 struct BseWaveRepoClass : BseSuperClass
 {};
-
-G_END_DECLS
 
 namespace Bse {
 

@@ -4,8 +4,6 @@
 
 #include <bse/gslcommon.hh>
 
-G_BEGIN_DECLS
-
 /* --- macros --- */
 #define	GSL_DATA_CACHE_NODE_SIZE(dcache)	(((GslDataCache*) (dcache))->node_size)
 
@@ -57,7 +55,5 @@ void		  gsl_data_cache_free_olders	(GslDataCache	    *dcache,
 						 guint		     max_age);
 GslDataCache*	  gsl_data_cache_from_dhandle	(GslDataHandle	    *dhandle,
 						 guint		     min_padding);
-
-G_END_DECLS
 
 #endif /* __GSL_DATA_CACHE_H__ */

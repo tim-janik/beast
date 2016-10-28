@@ -48,6 +48,27 @@ ObjectImpl::changed (const String &what)
   sig_changed.emit (what);
 }
 
+void
+objects_debug_leaks ()
+{
+  if (Bse::bse_debug_enabled ("leaks"))
+    {
+      GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
+      for (list = objects; list; list = list->next)
+	{
+	  BseObject *object = (BseObject*) list->data;
+	  LDEBUG ("stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
+                  G_OBJECT_TYPE_NAME (object),
+                  BSE_IS_SOURCE (object) && BSE_SOURCE_PREPARED (object),
+                  object->lock_count > 0,
+                  G_OBJECT (object)->ref_count,
+                  BSE_OBJECT_ID (object),
+                  object);
+	}
+      g_list_free (objects);
+    }
+}
+
 } // Bse
 
 enum
@@ -83,27 +104,6 @@ static guint       object_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
-void
-bse_object_debug_leaks (void)
-{
-  if (Bse::bse_debug_enabled ("leaks"))
-    {
-      GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
-      for (list = objects; list; list = list->next)
-	{
-	  BseObject *object = (BseObject*) list->data;
-	  LDEBUG ("stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
-                  G_OBJECT_TYPE_NAME (object),
-                  BSE_IS_SOURCE (object) && BSE_SOURCE_PREPARED (object),
-                  object->lock_count > 0,
-                  G_OBJECT (object)->ref_count,
-                  BSE_OBJECT_ID (object),
-                  object);
-	}
-      g_list_free (objects);
-    }
-}
-
 /**
  * @param object supposedly valid #GObject pointer
  * @return       newly allocated string

@@ -4,8 +4,6 @@
 
 #include <bse/bsemidievent.hh>
 
-G_BEGIN_DECLS
-
 typedef struct {
   guint          n_events;
   BseMidiEvent **events;
@@ -31,7 +29,5 @@ void         bse_midi_file_add_part_events (BseMidiFile  *smf,
                                             BseTrack     *ptrack);
 void         bse_midi_file_setup_song      (BseMidiFile  *smf,
                                             BseSong      *song);
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_FILE_H__ */

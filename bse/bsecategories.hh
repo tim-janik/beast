@@ -5,8 +5,6 @@
 #include <bse/bsetype.hh>
 #include <bse/bseutils.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- typedefs --- */
 typedef gboolean (BseCategoryCheck) (const Bse::Category *category, void *data);
@@ -17,7 +15,5 @@ Bse::CategorySeq bse_categories_match                 (const String &pattern, GT
 Bse::CategorySeq bse_categories_match_typed           (const String &pattern, GType base_type);
 Bse::CategorySeq bse_categories_from_type             (GType type);
 void             bse_categories_register_stock_module (const char *untranslated_category_trunk, GType type, const guint8 *pixstream);
-
-G_END_DECLS
 
 #endif /* __BSE_CATEGORIES_H__ */

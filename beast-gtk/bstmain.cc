@@ -19,8 +19,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-extern "C" void bse_object_debug_leaks (void); // FIXME
-
 /* --- prototypes --- */
 static void			bst_args_parse_early	(int *argc_p, char **argv);
 static void			bst_args_process        (int *argc_p, char **argv);
@@ -600,7 +598,7 @@ main_cleanup ()
   Py_Finalize();
 
   // misc cleanups
-  bse_object_debug_leaks ();
+  Bse::objects_debug_leaks();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
 }

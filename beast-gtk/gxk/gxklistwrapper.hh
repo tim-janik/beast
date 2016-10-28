@@ -4,8 +4,6 @@
 
 #include <gxk/gxkglobals.hh>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_LIST_WRAPPER              (gxk_list_wrapper_get_type ())
 #define GXK_LIST_WRAPPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_LIST_WRAPPER, GxkListWrapper))
@@ -65,7 +63,5 @@ guint		gxk_list_wrapper_get_index	(GxkListWrapper	*self,
 void		gxk_list_wrapper_get_iter_at	(GxkListWrapper	*self,
 						 GtkTreeIter	*iter,
 						 guint		 index);
-
-G_END_DECLS
 
 #endif /* __GXK_LIST_WRAPPER_H__ */

@@ -6,8 +6,6 @@
 #include <sfi/sfiring.hh>
 #include <sfi/sfiparams.hh>
 
-G_BEGIN_DECLS
-
 /* Glue proxy (object handle) description in terms of
  * supported interfaces and property names
  */
@@ -216,8 +214,6 @@ sfi_glue_fetch_context (const gchar *floc)
     g_error ("%s: SfiGlue function called without context (use sfi_glue_context_push())", floc);
   return context;
 }
-
-G_END_DECLS
 
 #endif /* __SFI_GLUE_H__ */
 

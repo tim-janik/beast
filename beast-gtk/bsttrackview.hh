@@ -6,8 +6,6 @@
 #include "bsttrackroll.hh"
 #include "bsttrackrollctrl.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_TRACK_VIEW	       (bst_track_view_get_type ())
 #define	BST_TRACK_VIEW(object)	       (GTK_CHECK_CAST ((object), BST_TYPE_TRACK_VIEW, BstTrackView))
@@ -38,7 +36,5 @@ GType		bst_track_view_get_type	(void);
 GtkWidget*	bst_track_view_new	(SfiProxy	song);
 
 
-
-G_END_DECLS
 
 #endif /* __BST_TRACK_VIEW_H__ */

@@ -5,8 +5,6 @@
 #include <bse/bseobject.hh>
 #include <bse/bseundostack.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_ITEM               (BSE_TYPE_ID (BseItem))
@@ -144,8 +142,6 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 #define bse_item_set             bse_item_set_undoable
 #define bse_item_get             g_object_get
 Bse::MusicalTuning bse_item_current_musical_tuning (BseItem *self);
-
-G_END_DECLS
 
 namespace Bse {
 
