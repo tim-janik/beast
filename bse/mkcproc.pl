@@ -35,7 +35,7 @@ sub func_name {
 
 if ($gen_externs) {
     for (@ARGV) {
-	print "extern \"C\" BseExportNode* ". func_name ($_) ." (void);\n";
+	print "BseExportNode* ". func_name ($_) ." (void);\n";
     }
     exit 0;
 } elsif ($gen_funcs) {
@@ -312,7 +312,7 @@ my $func = func_name ($file);
 if ($funcname) {
     $func = func_name ($funcname);
 }
-print "extern \"C\" BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
+print "BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
 
 
 print "\n/*\n * Generated data ends here\n */\n";

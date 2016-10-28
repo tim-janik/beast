@@ -36,6 +36,6 @@ void            bse_plugin_make_resident        ();
 /* --- implementation details --- */
 void		         bse_plugin_init_builtins       (void);
 
-extern "C" { extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.hh */ }
+extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.hh */
 
 #endif /* __BSE_PLUGIN_H__ */
