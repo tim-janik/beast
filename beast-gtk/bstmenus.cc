@@ -136,7 +136,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 				       gxk_stock_image (choice->icon_stock_id.c_str(), GXK_ICON_SIZE_MENU));
       any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 			    "visible", TRUE,
-			    "label", choice->name,
+			    "label", choice->name.c_str(),
 			    "parent", item,
 			    "accel_widget", item,
 			    "xalign", 0.0,
@@ -230,7 +230,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	  any = gtk_widget_new (GTK_TYPE_LABEL,
 				"visible", TRUE,
 				"justify", GTK_JUSTIFY_CENTER,
-				"label", choice->name,
+				"label", choice->name.c_str(),
 				"wrap", FALSE,
 				NULL);
 	  gtk_box_pack_start (GTK_BOX (vbox), any, TRUE, TRUE, 0);
@@ -269,7 +269,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	{
 	  GtkWidget *any;
 	case BST_CHOICE_TYPE_TITLE:
-	  gtk_widget_set (dialog, "title", choice->name, NULL);
+	  gtk_widget_set (dialog, "title", choice->name.c_str(), NULL);
 	  break;
 	case BST_CHOICE_TYPE_ITEM:
 	  any = gxk_dialog_action_multi (GXK_DIALOG (dialog), choice->name.c_str(),

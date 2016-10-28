@@ -70,20 +70,20 @@ private:
 struct InvalidArgument2 : Exception {
   const char *item;
   InvalidArgument2 (const char *where, const char *item) : Exception (where), item (item) {};
-  const char* what() const throw() { return g_intern_strconcat ("invalid argument: ", item, NULL); }
+  const char* what() const noexcept { return g_intern_strconcat ("invalid argument: ", item, NULL); }
 };
 #define InvalidArgument(WHAT)   InvalidArgument2 (__func__, #WHAT)
 struct WrongTypeGValue : Exception {
   WrongTypeGValue (const char *where) : Exception (where) {};
-  const char* what() const throw() { return "GValue contains wrong type for this kind of use"; }
+  const char* what() const noexcept { return "GValue contains wrong type for this kind of use"; }
 };
 struct DontReach : Exception {
   DontReach (const char *where) : Exception (where) {};
-  const char* what() const throw() { return "Code section should not be reached"; }
+  const char* what() const noexcept { return "Code section should not be reached"; }
 };
 struct InvalidConnection : Exception {
   InvalidConnection (const char *where) : Exception (where) {};
-  const char* what() const throw() { return "Function to be connected has invalid signature"; }
+  const char* what() const noexcept { return "Function to be connected has invalid signature"; }
 };
 
 /* --- records & sequences --- */
