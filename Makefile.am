@@ -1,6 +1,5 @@
 # BEAST & BSE
 
-AUTOMAKE_OPTIONS = subdir-objects
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
