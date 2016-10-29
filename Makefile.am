@@ -10,8 +10,6 @@ noinst_DATA = HACKING.html
 EXTRA_DIST += HACKING.html
 CLEANFILES += HACKING.html
 
-ACLOCAL_AMFLAGS  = -I autotools
-
 %.html: %.md
 	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \
 	  $< -o xgen-$(@F)

@@ -1,31 +1,28 @@
-dnl # Beast & Bse                                    -*- Mode: shell-script; -*-
+# Beast & Bse                                    -*- Mode: shell-script; -*-
 
-# include various m4 macros
-m4_include(acbeast.m4)dnl # include special macros
-m4_include(ld-symbolic.m4)dnl # include special macros
-m4_include(autotools/glib-gettext.m4)
+m4_include(acbeast.m4)
+m4_include(config/glib-gettext.m4)
 
-
-#
-# Configure script for BEAST/BSE
-#
 AC_PREREQ(2.57)
+
+# == Package & Version ==
 # VERSION: MAJOR.MINOR.MICRO-RC:
 # * MAJOR:           Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
 # * MINOR:           Increment for significant changes or ABI breaks, resets MICRO
 # * MICRO:           Increment with every release, increments must *not* break ABI
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
-# * -RC:             Release candidate, may contain -rc[0-9]+ or nothing
-AC_INIT([beast], [0.10.1~wip]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+# * ~RC:             Release candidate, may contain [~-]\w+[0-9]+ or nothing
+AC_INIT([beast], [0.10.1~wip])
 :;   ABI_VERSION=[0.10.0]
 BST_VERSION_HINT=alpha
-AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
-AC_CONFIG_AUX_DIR([autotools])
-AC_CONFIG_MACRO_DIR([autotools])
-AC_CANONICAL_TARGET					# architecture information
-AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign)
+AC_CONFIG_SRCDIR([bse/bseserver.cc])
+AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([config])
+AM_CONFIG_HEADER(config/config.h)
 AM_CONFIG_HEADER(configure.h)
+AC_CANONICAL_TARGET                                     # architecture information
+AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
 [MAJOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
@@ -54,11 +51,11 @@ test "$ABI_MINOR" -le "$MINOR" || {
   AC_MSG_ERROR([ABI_VERSION must predate MINOR version: $ABI_MINOR <= $MINOR])
 }
 test "$ABI_MICRO" -eq 0 || {
-  AC_MSG_ERROR([ABI_VERSION must not indicate ABI break in MICRO releases: $ABI_MINOR.$ABI_MICRO <= $MINOR.0])
+  AC_MSG_ERROR([ABI_VERSION must not indicate ABI break in MICRO releases: $ABI_MAJOR.$ABI_MINOR.$ABI_MICRO == $ABI_MAJOR.$ABI_MINOR])
 }
 ABI_AGE=$(($MINOR - $ABI_MINOR))
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-# Note, Beast provides backwards binary compatibility only within
+# Note, this package provides backwards binary compatibility only within
 # MINOR.MICRO increments, and only since ABI_VERSION.
 # Interface additions occour with pretty much every release.
 # For libtool this means:
@@ -68,9 +65,20 @@ ABI_AGE=$(($MINOR - $ABI_MINOR))
 # - lt_age=ABI_AGE    # allow backward compatibility between ABI_VERSION .. VERSION
 # - lt_revision=MICRO # pick the latest SO revision for unchanged MAJOR.MINOR,
 #                     # see also: https://autotools.io/libtool/version.html
+# On Linux this yields:
+# library:      libfoo-$MAJOR.so.$ABI_MINOR.$ABI_AGE.$MICRO
+# SONAME:       libfoo-$MAJOR.so.$ABI_MINOR
 lt_current=$MINOR ; lt_age=$ABI_AGE ; lt_revision=$MICRO
 LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
 AC_SUBST(LT_VERSION_INFO)
+
+# == Check srcdir == builddir ==
+echo "checking for srcdir==builddir... (#buildapi-variable-no-builddir)" # see https://github.com/cgwalters/build-api
+TEST_SRCDIR=`cd $srcdir ; /bin/pwd -P`
+TEST_BUILDDIR=`cd . ; /bin/pwd -P`
+test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
+  AC_MSG_ERROR([builds require builddir == srcdir (use e.g. git-worktree instead)])
+}
 
 # Define package directories per major/minor version
 bseincludedir="\${includedir}/bse-$MAJOR"
@@ -136,10 +144,6 @@ AC_LIB_PROG_LD
 AC_LIB_PROG_LD_GNU
 AM_PROG_LIBTOOL
 AC_LIBTOOL_DLOPEN
-ACX_PROG_LD_GNU_SYMBOLIC
-# SYMBOLIC_LDFLAGS is included in DYNAMIC_LIST_CPP_NEW_LDFLAGS
-ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
-MC_EVAR_ADD(AM_LDFLAGS, $DYNAMIC_LIST_CPP_NEW_LDFLAGS)
 MC_EVAR_ADD(AM_LDFLAGS, -pthread)
 MC_EVAR_ADD(AM_LDFLAGS, -lpthread)
 MC_EVAR_ADD(AM_LDFLAGS, -lrt)
