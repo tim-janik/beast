@@ -40,7 +40,7 @@ mathtool_SOURCES = mathtool.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===
-check-after: bsewavetool-tests
+check-local: bsewavetool-tests
 bsewavetool-tests:
 	./bsewavetool --unit-test
 
