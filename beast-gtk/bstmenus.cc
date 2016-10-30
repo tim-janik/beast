@@ -10,7 +10,7 @@ struct BstChoice {
   Bse::Icon      bseicon;
   String         name;
   void          *p_id;
-  BstChoice() : type_and_flags (BST_CHOICE_TYPE_SEPARATOR), icon_stock_id (NULL), name (NULL), p_id (NULL) {}
+  BstChoice() : type_and_flags (BST_CHOICE_TYPE_SEPARATOR), p_id (NULL) {}
 };
 
 

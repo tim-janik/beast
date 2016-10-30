@@ -181,7 +181,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 
 
 /* --- stock actions and aliases --- */
-#define BST_STOCK_NONE                  (NULL)
+#define BST_STOCK_NONE                  ("")
 #define BST_STOCK_APPLY                 GTK_STOCK_APPLY
 #define BST_STOCK_CANCEL                GTK_STOCK_CANCEL
 #define BST_STOCK_CDROM                 GTK_STOCK_CDROM
