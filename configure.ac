@@ -151,6 +151,7 @@ optimization_flags="-O3 -funroll-loops -ftree-vectorize"
 FAST_MATH_FLAGS="-ffast-math"
 gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im"
 gcc_fast_math="-fivopts"
+clang_fix_flags="-Qunused-arguments"		# avoid bogus -pthread warning (llvm#7798)
 x86_flags="-minline-all-stringops"
 x86_flags="$x86_flags -mmmx -msse -msse2"	# Intel since 2001, AMD since 2003
 x86_flags="$x86_flags -msse3"			# Intel since 2004, AMD since 2007
@@ -161,8 +162,8 @@ x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
 #x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then
-    AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags"
-    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags"
+    AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
+    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
     MC_ASSERT_VERSION($CXX --version, 3.5.0)
 elif ${CXX} --version 2>&1 | tr '\n' ' ' | grep -q -E '(g\++|GCC).*Free Software Foundation' ; then
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
