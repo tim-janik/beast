@@ -72,6 +72,11 @@ lt_current=$MINOR ; lt_age=$ABI_AGE ; lt_revision=$MICRO
 LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
 AC_SUBST(LT_VERSION_INFO)
 
+# == Argument parsing ==
+AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+# package library defaults
+enable_static=no ; enable_shared=yes
+
 # == Check srcdir == builddir ==
 echo "checking for srcdir==builddir... (#buildapi-variable-no-builddir)" # see https://github.com/cgwalters/build-api
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd -P`
@@ -110,156 +115,102 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
 datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
 
-# Build tree checks
+# == Check for git ==
 AC_MSG_CHECKING([for git repository])
-test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
+DOTGIT=`git rev-parse --git-dir 2>/dev/null` && INGIT= || INGIT='#'
 AC_SUBST(INGIT)
 result=$(test -z "$INGIT" && echo yes || echo no)
 AC_MSG_RESULT($result)
 
-# We have subdirectories.
-AC_PROG_MAKE_SET
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
-# declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
-AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
-
-dnl # Foreign defaults:
-MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
-MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
-
-# compiler, linker & libtool
-saved_CFLAGS="$CFLAGS"
-AC_PROG_CC
-CFLAGS="$saved_CFLAGS" 		# AC_PROG_CC_G called internally consistently breaks $CFLAGS
-saved_CXXFLAGS="$CFLAGS"
+# == Compiler, linker, libtool ==
+saved_CFLAGS="$CFLAGS" ; saved_CXXFLAGS="$CFLAGS" # the AC_PROG_C* macros mess up CFLAGS and CXXFLAGS
+AC_PROG_CC             # note, this must preceede AC_CHECK_LIB, AC_TRY_RUN, etc to preserve CFLAGS etc
 AC_PROG_CPP
-CXXFLAGS="$saved_CXXFLAGS"	# AC_PROG_CXX_G called internally consistently breaks $CXXFLAGS
 AC_PROG_CXX
 AC_PROG_CXXCPP
-AC_PROG_LD
 AC_LANG_CPLUSPLUS	# use CXX for compilation tests
+AC_PROG_LD
 AC_LIB_PROG_LD
 AC_LIB_PROG_LD_GNU
+CFLAGS="$saved_CFLAGS" ; CXXFLAGS="$saved_CXXFLAGS"
 AM_PROG_LIBTOOL
 AC_LIBTOOL_DLOPEN
-MC_EVAR_ADD(AM_LDFLAGS, -pthread)
-MC_EVAR_ADD(AM_LDFLAGS, -lpthread)
-MC_EVAR_ADD(AM_LDFLAGS, -lrt)
-MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
-if ${LD} --help 2>&1 | grep -q -- '-export-dynamic\b' ; then
-  MC_EVAR_ADD(AM_LDFLAGS, [-Wl,-export-dynamic])
-fi
 
 # == C++ Dialect ==
 CXX="$CXX -std=gnu++11"
 test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++11"
 
-# AM_LDFLAGS, optimize linker to use faster ELF symbol hashing if we have compiler and linker support
-AC_MSG_CHECKING([whether CC and LD support gnu.hash sections])
-if ${CC-cc} -dumpspecs | grep -q -- '--hash-style=\(both\|gnu\).*--as-needed' && \
-   ${LD-ld} --help     | grep -q -- '--hash-style=.*\(both\|gnu\)' ; then
-  MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--hash-style=both -Wl,--as-needed -Wl,-O1])
-  AC_MSG_RESULT(yes)
+# == Compiler flags ==
+# needs gcc >= 4.8, clang >= 3.4
+c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations" # -Wdate-time -Wconversion -Wshadow
+cxx_warnings="-Wsign-promo -Woverloaded-virtual" # -Wnon-virtual-dtor  -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
+c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
+gcc_c_only_flags="-fno-cond-mismatch -fdevirtualize-speculatively"
+compiler_flags="-pipe"
+optimization_flags="-O3 -funroll-loops -ftree-vectorize"
+FAST_MATH_FLAGS="-ffast-math"
+gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im"
+gcc_fast_math="-fivopts"
+x86_flags="-minline-all-stringops"
+x86_flags="$x86_flags -mmmx -msse -msse2"	# Intel since 2001, AMD since 2003
+x86_flags="$x86_flags -msse3"			# Intel since 2004, AMD since 2007
+#x86_flags="$x86_flags -mssse3"			# Intel since 2006, AMD since 2011
+x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
+#x86_64_flags="$x86_64_flags -msse4a"		# AMD since 2007
+#x86_64_flags="$x86_64_flags -msse4.1 -msse4.2"	# Intel since 2008, AMD since 2011
+#x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
+#x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
+if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then
+    AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags"
+    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags"
+    MC_ASSERT_VERSION($CXX --version, 3.5.0)
+elif ${CXX} --version 2>&1 | tr '\n' ' ' | grep -q -E '(g\++|GCC).*Free Software Foundation' ; then
+    AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
+    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
+    FAST_MATH_FLAGS="$FAST_MATH_FLAGS $gcc_fast_math"
+    MC_ASSERT_VERSION($CXX --version, 4.9.2)
 else
-  AC_MSG_RESULT(no)
+  AC_MSG_ERROR([unknown C++ compiler])
 fi
-AC_SUBST(AM_LDFLAGS)
+AC_SUBST(FAST_MATH_FLAGS)
+uname_m=`uname -m`
+if test "$uname_m" = x86_64 ; then	# AMD64
+    AM_CFLAGS="$AM_CFLAGS $x86_flags $x86_64_flags"
+    AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags $x86_64_flags"
+elif echo "$uname_m" | grep -q '^i.*86$' ; then
+    AM_CFLAGS="$AM_CFLAGS $x86_flags"
+    AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags"
+fi
 
-# AM_CFLAGS & AM_CXXFLAGS
-MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
-BOTHCCXXFLAGS=
-if test "x$enable_debug" = "xyes"; then
-  MC_EVAR_ADD(BOTHCCXXFLAGS,      -DG_ENABLE_DEBUG)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g3)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fno-omit-frame-pointer)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fverbose-asm)
-  dnl # MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Q -ftime-report -fmem-report)
-elif test "x$enable_debug" = "xno"; then
-  MC_EVAR_ADD(BOTHCCXXFLAGS, [-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS]) # -DG_DISABLE_ASSERT
-else
-  : # minimum debugging
-fi
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wall)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wdeprecated)
-MC_CC_TRY_OPTION(AM_CFLAGS,     -Wmissing-prototypes)
-MC_CC_TRY_OPTION(AM_CFLAGS,     -Wno-pointer-sign)
-MC_CC_TRY_OPTION(AM_CFLAGS,     -Wnested-externs)
-MC_CC_TRY_OPTION(AM_CFLAGS,     -fno-cond-mismatch)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wmissing-declarations)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wpointer-arith)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wredundant-decls)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Werror=format-security)
-MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Wsign-promo)
-MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Woverloaded-virtual)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -rdynamic)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -pipe)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -O2)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ftracer)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -mcx16)
-dnl # MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Wno-invalid-offsetof)
-MC_EVAR_ADD(AM_CFLAGS,   "$BOTHCCXXFLAGS")
-MC_EVAR_ADD(AM_CXXFLAGS, "$BOTHCCXXFLAGS")
+# == Debug flags ==
+case "_$enable_debug" in
+  _ubsan)
+    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=undefined"
+    AM_LDFLAGS="$AM_LDFLAGS -lubsan" ;;
+  _asan)
+    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=address"
+    AM_LDFLAGS="$AM_LDFLAGS -lasan" ;;
+  _tsan)
+    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=thread"
+    AM_LDFLAGS="$AM_LDFLAGS -ltsan" ;;
+  _lsan)
+    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=leak"
+    AM_LDFLAGS="$AM_LDFLAGS -llsan" ;;
+  _yes)
+    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer" ;;
+  _min*)
+    debug_flags="-DG_ENABLE_DEBUG -g1" ;;
+  _*)
+    debug_flags="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" ;; # -DG_DISABLE_ASSERT
+esac
+AM_CFLAGS="$AM_CFLAGS $debug_flags"
+AM_CXXFLAGS="$AM_CXXFLAGS $debug_flags"
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_CPPFLAGS)
 
-# == CPU Optimizations ==
-# MMX and SSE instruction sets have been introduced way more than a decade ago:
-# Intel Pentium 3: CMOV MMX SSE (1999)
-# VIA C3 Nehemiah: CMOV MMX SSE (2003)
-# Athlon Palomino: CMOV MMX SSE 3DNow (2001)
-SIMD_FLAGS=
-MC_CC_TRY_OPTION(SIMD_FLAGS, -mmmx)
-MC_CC_TRY_OPTION(SIMD_FLAGS, -msse)
-# Note, -mfpmath=sse can harm FPU-algorithm performance
-# Note, -funroll-loops can harm SSE loop performance
-#MC_CC_TRY_OPTION(SIMD_FLAGS, -funroll-loops)
-#AC_SUBST(SIMD_FLAGS)
-# Expect the target architecture to support MMX/SSE if the compiler does it.
-MC_EVAR_ADD(AM_CFLAGS,   "$SIMD_FLAGS")
-MC_EVAR_ADD(AM_CXXFLAGS, "$SIMD_FLAGS")
-# Newer vectorization instruction sets, should be optionally supported
-# SSE >= 2, AVX
-SSEAVX_FLAGS=
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse2)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse3)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mssse3)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4.1)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4.2)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4a)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mavx)
-MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mavx2)
-AC_SUBST(SSEAVX_FLAGS)
-
-# == OPTIMIZE_FAST ==
-# Some critical code paths should be optimized to run as fast as possible
-OPTIMIZE_FAST=
-MC_CC_TRY_OPTION(OPTIMIZE_FAST, -O3)
-MC_CC_TRY_OPTION(OPTIMIZE_FAST, -ftree-vectorize)
-MC_CC_TRY_OPTION(OPTIMIZE_FAST, -finline-functions)
-MC_CC_TRY_OPTION(OPTIMIZE_FAST, -minline-all-stringops)
-AC_SUBST(OPTIMIZE_FAST)
-
-# == Bse Plugin FLAGS ==
-# * -funroll-loops significantly boosts FPU performance
-# * -mfpmath=sse harms FPU-algorithm performance
-# * -funroll-loops harms SSE loop performance
-MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-ivcanon)
-MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-linear)
-MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-im)
-MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ffast-math)
-MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -fivopts)
-AC_SUBST(FAST_MATH_FLAGS)
-MC_CXX_TRY_OPTION(FPU_FLAGS, -funroll-loops)
-AC_SUBST(FPU_FLAGS)
-SIMD_FLAGS="$SIMD_FLAGS"
-AC_SUBST(SIMD_FLAGS)
-
 # == SSE Build Conditionals ==
-lacking_mmx_sse=`echo "$SIMD_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
+lacking_mmx_sse=`echo "$AM_CXXFLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
 AM_CONDITIONAL(WITH_MMX_SSE, test 0 == $lacking_mmx_sse)
 AC_DEFINE_UNQUOTED(BSE_WITH_MMX_SSE, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
 
@@ -268,12 +219,33 @@ AC_C_CONST
 AC_C_INLINE
 AC_HEADER_STDC
 
-# Checks for programs
-AC_PROG_INSTALL
-AC_PROG_LN_S
+# == Linker flags ==
+AM_LDFLAGS="$AM_LDFLAGS -lrt -pthread"
+ld_help_text=`${LD-ld} --help 2>&1 | tr '\n' ' '`
+check_ld_flags="-export-dynamic -O1 -Bsymbolic-functions --as-needed --no-undefined"
+for flag in $check_ld_flags ; do
+  echo " $ld_help_text" | grep -q -e "$flag" && AM_LDFLAGS="$AM_LDFLAGS -Wl,$flag"
+done
+echo " $ld_help_text" | grep -q -e "--hash-style" && AM_LDFLAGS="$AM_LDFLAGS -Wl,--hash-style=both"
+AC_SUBST(AM_LDFLAGS)
 
-# require pkg-config
-MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
+# == ENABLE_DEVEL_MODE ==
+# check for development build rules, which require acess to .git/
+enable_devel_mode=0
+if echo " $PACKAGE_VERSION" | grep -q '~wip' ; then
+    enable_devel_mode=1
+fi
+AC_DEFINE_UNQUOTED(ENABLE_DEVEL_MODE, $enable_devel_mode, [Add development aids to the build])
+AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = x1)
+DEFINE__FILE_DIR__=
+AC_SUBST(DEFINE__FILE_DIR__)
+
+# == Utilities and build tools ==
+AC_PROG_MAKE_SET()
+AM_SILENT_RULES([yes])
+AC_PROG_LN_S
+AC_PROG_INSTALL
+MC_ASSERT_PROG(PKG_CONFIG, pkg-config)
 
 # == Libraries ==
 # libz
@@ -336,6 +308,8 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.1)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
     MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
+    # librapicorn uses pthread functions in header files, forcing us to link against libpthread
+    RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
@@ -632,24 +606,6 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
-
-# == ENABLE_DEVEL_MODE ==
-# check for development build rules, which require acess to .git/
-AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
-[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" && enable_devel_mode=yes]
-test x"$enable_devel_mode" = xyes || enable_devel_mode=no
-AC_MSG_RESULT([$enable_devel_mode])
-AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
-if test x"$enable_devel_mode" = xyes ; then
-  git show HEAD:configure.ac 2>&1 | grep -q 'AC'_'INIT.*\bbeast\b.*,' || {
-    AC_MSG_ERROR([development build rules require a beast.git repository])
-  }
-  MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"' # full debugging paths for devel-mode
-else
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
-fi
-AC_SUBST(DEFINE__FILE_DIR__)
 
 dnl # MC_PYTHON_REQUIREMENTS() - python checks
 AC_DEFUN([MC_PYTHON_REQUIREMENTS],
