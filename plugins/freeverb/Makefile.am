@@ -10,7 +10,7 @@ plugindir = $(bselibdir)/plugins
 
 freeverb_la_SOURCES = allpass.cpp comb.cpp revmodel.cpp bsefreeverbcpp.cpp bsefreeverb.cc
 freeverb_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-freeverb_la_LIBADD  = $(top_builddir)/bse/libbse-@MAJOR@.la $(BSE_LIBS) -lm
+freeverb_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
 plugin_LTLIBRARIES = freeverb.la
 

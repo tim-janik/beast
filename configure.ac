@@ -246,14 +246,59 @@ AM_SILENT_RULES([yes])
 AC_PROG_LN_S
 AC_PROG_INSTALL
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config)
+MC_ASSERT_PROG(PANDOC, pandoc)
+MC_ASSERT_PROG(DOXYGEN, doxygen)
+MC_ASSERT_PROG(DOT, dot)
+MC_ASSERT_PROG(PYTHON2, python-2.7 python2.7 python2)
+MC_ASSERT_VERSION($PYTHON --version, 2.7)
+MC_ASSERT_PROG(CYTHON, cython)
+MC_ASSERT_VERSION($CYTHON --version, 0.20.1)
+MC_ASSERT_PROG(XMLLINT, xmllint)
+MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
-# == Libraries ==
-# libz
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h, LIBZ_LIBS='-lz', LIBZ='')], LIBZ='')
+# == Headers ==
+AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h guile/gh.h libguile/properties.h )
+
+# == pkg-config Libraries ==
+# librapicorn dependencies
+LIBBSE_REQUIRES="
+        glib-2.0        	>= 2.32.3
+	gobject-2.0		>= 2.32.3
+	gthread-2.0		>= 2.32.3
+	gmodule-no-export-2.0	>= 2.32.3
+	rapicorn		>= 16.0.1
+	ogg			>= 1.2.2
+	vorbis			>= 1.3.2
+	vorbisfile		>= 1.3.2
+	vorbisenc		>= 1.3.2
+	mad			>= 0.14.2
+	flac			>= 1.2.1
+	alsa			>= 1.0.5
+        pangoft2        	>= 1.30.0
+	gtk+-2.0		>= 2.12.12
+	libart-2.0		>= 2.3.8
+	libgnomecanvas-2.0	>= 2.4.0
+"
+LIBBSE_REQUIRES=`echo $LIBBSE_REQUIRES` # strip whitespaces
+AC_SUBST(LIBBSE_REQUIRES)
+# define LIBBSE_CFLAGS and LIBBSE_LIBS
+PKG_CHECK_MODULES(LIBBSE, [ $LIBBSE_REQUIRES ])
+# for calling pthread_ functions, '-lpthread' is needed in addition to '-pthread'
+LIBBSE_LIBS=`printf %s "$LIBBSE_LIBS" | sed 's/\(-pthread\b\)/\1 -lpthread/' `
+
+# == libz ==
+AC_CHECK_LIB(z, gzsetparams, [ LIBZ_LIBS='' ; test "$ac_cv_header_zlib_h" = yes && LIBZ_LIBS='-lz' ])
 if test -z "$LIBZ_LIBS"; then
     AC_MSG_ERROR([Compression library libz is missing, but required])
+else
+  LIBBSE_LIBS="$LIBBSE_LIBS $LIBZ_LIBS"
 fi
 AC_SUBST(LIBZ_LIBS)
+
+# == functions ==
+AC_CHECK_FUNCS(getpwnam_r getpwnam)
+AC_CHECK_FUNCS(timegm)
+
 
 dnl #
 dnl # Define package requirements.
@@ -288,20 +333,6 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
   INTLMERGE='$(top_builddir)/$(ac_aux_dir)/intltool-merge'
   AC_SUBST(INTLMERGE) dnl # AC_PATH_PROG(INTLMERGE, intltool-merge, intltool-merge)
 ])
-AC_DEFUN([MC_SFI_REQUIREMENTS],
-[
-    dnl # check for GLib libs
-    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
-    AC_SUBST(GLIB_GOMT_CFLAGS)
-    AC_SUBST(GLIB_GOMT_LIBS)
-    SFI_CPPFLAGS="$GLIB_GOMT_CFLAGS"
-    SFI_LIBS="$GLIB_GOMT_LIBS"
-    AC_SUBST(SFI_CPPFLAGS)
-    AC_SUBST(SFI_LIBS)
-
-    AC_CHECK_FUNCS(getpwnam_r getpwnam)
-    AC_CHECK_FUNCS(timegm)
-])
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
@@ -318,15 +349,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     PKG_CHECK_EXISTS(vorbisfile <= 1.3.4, vorbisfile_badseek=1)
     AC_MSG_RESULT([$(test $vorbisfile_badseek = 1 && echo yes || echo no)])
     AC_DEFINE_UNQUOTED(VORBISFILE_BADSEEK, [$vorbisfile_badseek], [buggy Vorbisfile pcm_seek])
-
-    dnl # --- FLAC check ---
-    PKG_CHECK_MODULES(FLAC, flac)
-
-    dnl # old FLAC versions use "-I/usr/.../include/FLAC" as pkg-config --cflags
-    dnl # new FLAC versions use "-I/usr/.../include" as pkg-config --cflags
-    dnl #
-    dnl # to support both, we strip /FLAC from FLAC_CFLAGS and use #include <FLAC/foo.h>
-    FLAC_CFLAGS=`echo $FLAC_CLFAGS | $SED "s/FLAC$//"`
 
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
@@ -361,8 +383,8 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     fi
 
     dnl # --- complete CFLAGS/LIBS setup ---
-    BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CPPFLAGS"
-    BSE_LIBS="$OGGVORBIS_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
+    BSE_CFLAGS="$SFI_CPPFLAGS"
+    BSE_LIBS="$OGGVORBIS_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
@@ -652,7 +674,6 @@ AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 
 # Check requirement sets
 MC_I18N_REQUIREMENTS
-MC_SFI_REQUIREMENTS
 MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
 MC_BSESCM_REQUIREMENTS

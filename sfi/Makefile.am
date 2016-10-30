@@ -1,10 +1,9 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS   = . tests
-AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) $(SFI_CPPFLAGS)
+SUBDIRS      = . tests
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip \
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
@@ -33,22 +32,23 @@ sfi_built_sources = $(strip \
 
 $(sfi_all_sources): $(sfi_built_sources)
 
-# SFI library
+# == libsfi-@MAJOR@.so ==
 noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
 libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
 libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
-libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS) -lm
-libsfi_@MAJOR@_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined -version-info $(LT_VERSION_INFO)
+libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
 
 #
 # programs to build
 #
 # source files
 
-bin_PROGRAMS = sfidl
-sfidl_SOURCES = sfidl.cc
-sfidl_LDADD = $(SFI_LIBS) $(RAPICORN_LIBS) -lm
+bin_PROGRAMS   = sfidl
+sfidl_SOURCES  = sfidl.cc
+sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+sfidl_LDADD    = $(LIBBSE_LIBS)
 # included files
 EXTRA_DIST += sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc
 EXTRA_DIST += sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc
