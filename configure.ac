@@ -15,7 +15,6 @@ AC_PREREQ(2.57)
 # * ~RC:             Release candidate, may contain [~-]\w+[0-9]+ or nothing
 AC_INIT([beast], [0.10.1~wip])
 :;   ABI_VERSION=[0.10.0]
-BST_VERSION_HINT=alpha
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
@@ -31,7 +30,6 @@ BST_VERSION="$PACKAGE_VERSION"
 AC_SUBST(BEAST_VERSION)
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [Beast Version])
-AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
 AC_DEFINE_UNQUOTED(BSE_MAJOR_VERSION, $MAJOR, [Beast/Bse Major Version])
 AC_DEFINE_UNQUOTED(BSE_MINOR_VERSION, $MINOR, [Beast/Bse Minor Version])
 AC_DEFINE_UNQUOTED(BSE_MICRO_VERSION, $MICRO, [Beast/Bse Micro Version])

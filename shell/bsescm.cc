@@ -265,7 +265,7 @@ shell_parse_args (int *argc_p, char **argv)
       else if (strcmp ("-v", argv[i]) == 0 ||
                strcmp ("--version", argv[i]) == 0)
         {
-          printout ("BSESCM version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+          printout ("BSESCM version %s\n", BST_VERSION);
           printout ("Libraries: ");
           printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
           printout (", SFI %s", BST_VERSION);

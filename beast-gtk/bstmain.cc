@@ -214,8 +214,8 @@ main_init_gxk()
   bst_splash_set_text (beast_splash,
 		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
                                                 "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
-                                                "<b>Version %s (%s)</b>\n",
-                                                Internal::buildid(), BST_VERSION_HINT));
+                                                "<b>Version %s</b>\n",
+                                                Internal::buildid()));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 }
@@ -867,7 +867,7 @@ bst_exit_print_version (void)
   assert (bse_server != NULL); // we need BSE
   String s;
   gchar *freeme = NULL;
-  printout ("BEAST version %s (%s)\n", Internal::buildid(), BST_VERSION_HINT);
+  printout ("BEAST version %s\n", Internal::buildid());
   printout ("Libraries: ");
   printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
   printout (", BSE %s", Bse::version());
