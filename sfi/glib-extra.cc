@@ -1027,7 +1027,7 @@ g_scanner_new64 (const GScannerConfig *config_templ)
 }
 
 
-#include "../configure.h"
+#include "../config/config.h"
 
 namespace Bse {
 

@@ -19,7 +19,6 @@ AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
 AM_CONFIG_HEADER(config/config.h)
-AM_CONFIG_HEADER(configure.h)
 AC_CANONICAL_TARGET                                     # architecture information
 AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign subdir-objects)
 # version handling

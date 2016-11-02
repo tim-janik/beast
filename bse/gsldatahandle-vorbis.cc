@@ -5,7 +5,7 @@
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
-#include "../configure.h"
+#include "../config/config.h"
 
 
 /* --- defines --- */

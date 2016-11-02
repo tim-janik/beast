@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsescminterp.hh"
-#include "../configure.h"
+#include "../config/config.h"
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>

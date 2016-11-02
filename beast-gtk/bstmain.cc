@@ -11,8 +11,8 @@
 #include "bstparam.hh"
 #include "bstpreferences.hh"
 #include "data/beast-images.h"
-#include "../configure.h"
 #include "../topbuildid.hh"
+#include "../config/config.h"
 #include <Python.h>
 #include <unistd.h>
 #include <string.h>

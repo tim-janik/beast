@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewavetool.hh"
 #include "bwtwave.hh"
-#include "../configure.h"
 #include "../topbuildid.hh"
 #include <bse/bsemain.hh>	/* for bse_init_intern() */
 #include <bse/bseloader.hh>

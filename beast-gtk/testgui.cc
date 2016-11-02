@@ -5,7 +5,7 @@
 #include "bstparam.hh"
 #include "bstgconfig.hh"
 #include "bstskinconfig.hh"
-#include "../configure.h"
+#include "../config/config.h"
 
 /* --- FIXME: --- */
 gboolean            bst_developer_hints = FALSE;
