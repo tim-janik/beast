@@ -695,20 +695,16 @@ bse_plugin_check_load (const gchar *const_file_name)
 }
 
 static bool
-plugin_extension_filter (const char  *fname,
-                         guint        n,
-                         const char **exts)
+plugin_extension_filter (const char *fname, uint n, const char **exts)
 {
-  const char *bname = strrchr (fname, G_DIR_SEPARATOR);
-  if (!bname)
-    bname = fname;
-  const char *ext = strchr (bname, '.');
-  if (!ext)
-    ext = bname + strlen (bname);
-  guint i;
-  for (i = 0; i < n; i++)
-    if (strcmp (ext, exts[i]) == 0)
-      return true;
+  const uint l = strlen (fname);
+  for (uint i = 0; i < n; i++)
+    {
+      const uint j = strlen (exts[i]);
+      const bool match = l >= j && strcmp (fname + l - j, exts[i]) == 0;
+      if (match)
+        return true;
+    }
   return false;
 }
 
@@ -719,69 +715,45 @@ plugin_extension_filter (const char  *fname,
 #endif
 
 SfiRing*
-bse_plugin_path_list_files (gboolean include_drivers,
-                            gboolean include_plugins)
+bse_plugin_path_list_files (gboolean include_drivers, gboolean include_plugins)
 {
-  SfiRing *files, *ring = NULL;
+  SfiRing *files = NULL;
   if (bse_main_args->override_plugin_globs)
     {
       /* expect filename globs */
       files = sfi_file_crawler_list_files (bse_main_args->override_plugin_globs, NULL, G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+      files = sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL);
     }
   else
     {
       if (include_drivers)
         {
-          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          SfiRing *ring = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          SfiRing *ring = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
         {
-          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.o", G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          /* allow file names in plugin_path */
-          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
-          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          SfiRing *ring = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
     }
-  if (true)
+  SfiRing *plugins = NULL;
+  const char *exts[] = { PLUGIN_EXTENSION, };
+  for (SfiRing *fname = files; fname; fname = sfi_ring_next (fname, files))
     {
-      const std::string cinfo = Rapicorn::cpu_info();
-      const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
-      if (BSE_WITH_MMX_SSE && !bse_main_args->force_fpu &&
-          cinfo.find (" MMX ") != cinfo.npos &&
-          cinfo.find (" SSE ") != cinfo.npos &&
-          cinfo.find (" SSESYS ") != cinfo.npos)
-        {
-          exts[0] = ".SSE" PLUGIN_EXTENSION;  /* !".FPU.so" / ".FPU.dll" */
-          exts[1] = ".SSE.la";  /* !".FPU.la" */
-        }
-      SfiRing *fname;
-      files = ring;
-      ring = NULL;
-      for (fname = files; fname; fname = sfi_ring_next (fname, files))
-        {
-          char *name = (char*) fname->data;
-          bool match = plugin_extension_filter (name, G_N_ELEMENTS (exts), exts);
-          PDEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
-          if (match)
-            ring = sfi_ring_append (ring, name);
-          else
-            g_free (name);
-        }
-      sfi_ring_free (files);
+      const char *name = (const char*) fname->data;
+      const bool match = plugin_extension_filter (name, G_N_ELEMENTS (exts), exts);
+      PDEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
+      if (match)
+        plugins = sfi_ring_append (plugins, (void*) name);
+      else
+        g_free ((void*) name);
     }
-  return ring;
+  sfi_ring_free (files);
+  return plugins;
 }
