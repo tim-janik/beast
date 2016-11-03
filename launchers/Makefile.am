@@ -11,7 +11,6 @@ AM_CXXFLAGS += $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 bin_PROGRAMS   = beast
 beast_SOURCES  = suidmain.c beaststart.c
 EXTRA_DIST    += suidmain.h
-# shell_SOURCES = suidmain.c bseshstart.c
 
 #
 # make beast wrapper suid to allow renicing
