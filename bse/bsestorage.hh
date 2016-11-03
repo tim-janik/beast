@@ -15,8 +15,6 @@
 
 
 /* --- macros --- */
-#define BSE_STORAGE_VERSION(self, vmaj, min, vmic)      ( /* whether file uses >=vARGS features */ \
-  BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) >= 0)
 #define BSE_STORAGE_COMPAT(self, vmaj, min, vmic)       ( /* whether file needs <=vARGS compat code */ \
   BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) <= 0)
 #define BSE_STORAGE_SELF_CONTAINED(st)   ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SELF_CONTAINED) != 0)
