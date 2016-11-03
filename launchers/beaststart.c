@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "suidmain.h"
-#include "../configure.h" // BEAST_EXEC_POSTFIX
+#include "../config/config.h"   // BEAST_EXEC_POSTFIX
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

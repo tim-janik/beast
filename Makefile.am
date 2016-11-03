@@ -1,6 +1,5 @@
 # BEAST & BSE
 
-AUTOMAKE_OPTIONS = subdir-objects
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
@@ -9,8 +8,6 @@ SUBDIRS = . data sfi bse plugins drivers shell pybeast beast-gtk launchers libra
 noinst_DATA = HACKING.html
 EXTRA_DIST += HACKING.html
 CLEANFILES += HACKING.html
-
-ACLOCAL_AMFLAGS  = -I autotools
 
 %.html: %.md
 	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \

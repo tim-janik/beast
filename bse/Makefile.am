@@ -3,13 +3,12 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons res . pybse tests
 
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
+AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
-AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
-DEFS        += @DEFINE__FILE_DIR__@ $(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, $(filter $(<F), $(bse_sources) $(bse_sources))) 
-AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
@@ -139,9 +138,10 @@ libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
+libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
-	$(AM_LDFLAGS) -no-undefined			\
+	$(AM_LDFLAGS)					\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\
 	-version-info $(LT_VERSION_INFO)		\
 )
@@ -347,17 +347,18 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD = libbse-@MAJOR@.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
-# source files
+progs_LDADD     = libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
-noinst_PROGRAMS   += bseprocidl
-bseprocidl_SOURCES = bseprocidl.cc
-bseprocidl_LDADD   = $(progs_LDADD)
+noinst_PROGRAMS    += bseprocidl
+bseprocidl_SOURCES  = bseprocidl.cc
+bseprocidl_LDADD    = $(progs_LDADD)
+bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS)
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
 bsetool_SOURCES  = bsetool.cc
-bsetool_LDADD    = libbse-@MAJOR@.la $(BSE_LIBS) $(RAPICORN_LIBS)
+bsetool_LDADD    = $(progs_LDADD)
+bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS)
 
 # == Tests ==
 EXTRA_DIST += oldidl.idl

@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include <bse/bseclientapi.hh>
 #include <bse/bse.hh>           // init_server_connection
-#include "../configure.h"       // BST_VERSION
+#include "../config/config.h"   // BST_VERSION
 
 namespace Bse {
 
