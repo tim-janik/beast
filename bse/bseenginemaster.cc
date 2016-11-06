@@ -908,8 +908,8 @@ engine_start_slaves ()
 {
   assert_return (slaves_running == false);
   slaves_running = true;
-  const uint n_cpus = 4; // FIXME: processors online?
-  const uint n_slaves = n_cpus - 1;
+  const uint n_cpus = Rapicorn::ThisThread::online_cpus();
+  const uint n_slaves = std::max (1u, n_cpus) - 1;
   for (uint i = 0; i < n_slaves; i++)
     slave_threads.push_back (new std::thread (engine_run_slave));
 }
