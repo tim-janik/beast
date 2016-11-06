@@ -390,13 +390,6 @@ storage_parse_bse_version (BseStorage *self)
   if (!parsed_version)
     bse_storage_warn (self, "ignoring invalid version string: %s", scanner->value.v_string);
   parse_or_return (scanner, ')');               /* eat closing paren */
-  if (0)
-    printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
-                BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,
-                self->major_version, self->minor_version, self->micro_version,
-                BSE_STORAGE_VERSION (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
-                BSE_STORAGE_COMPAT (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
-                BSE_STORAGE_COMPAT (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION - 1));
   return G_TOKEN_NONE;
 }
 

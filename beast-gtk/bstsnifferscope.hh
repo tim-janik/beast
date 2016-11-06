@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_SNIFFER_SCOPE              (bst_sniffer_scope_get_type ())
 #define BST_SNIFFER_SCOPE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_SNIFFER_SCOPE, BstSnifferScope))
@@ -40,7 +38,5 @@ void bst_source_queue_probe_request (SfiProxy              source,
 				     guint                 ochannel_id,
 				     BstSourceProbeFeature pfeature,
 				     gfloat                frequency);
-
-G_END_DECLS
 
 #endif /* __BST_SNIFFER_SCOPE_H__ */

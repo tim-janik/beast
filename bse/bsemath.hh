@@ -5,8 +5,6 @@
 #include <bse/bsedefs.hh>
 #include <bse/bseieee754.hh> 	/* provides math.h */
 
-G_BEGIN_DECLS
-
 /* --- constants --- */
 /* PI is defined in bseieee754.hh */
 #define BSE_1_DIV_PI                  (0.3183098861837906715377675267450287240689)   // 1/pi
@@ -478,7 +476,5 @@ bse_poly_eval (uint         degree,
     sum = sum * x + a[degree];
   return sum;
 }
-
-G_END_DECLS
 
 #endif /* __BSE_MATH_H__ */     /* vim: set ts=8 sw=2 sts=2: */

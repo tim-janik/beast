@@ -62,20 +62,6 @@ sfi_init (int *argcp, char **argv, const Bse::StringVector &args)
   initialized = true;
 }
 
-/* --- file testing --- */
-bool
-birnet_file_check (const char *file,
-                   const char *mode)
-{
-  return Rapicorn::Path::check (file ? file : "", mode ? mode : "");
-}
-bool
-birnet_file_equals (const char *file1,
-                    const char *file2)
-{
-  return Rapicorn::Path::equals (file1 ? file1 : "", file2 ? file2 : "");
-}
-
 /* --- url handling --- */
 void
 sfi_url_show (const char *url)

@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsescminterp.hh"
-#include "../configure.h"
+#include "../config/config.h"
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -265,7 +265,7 @@ shell_parse_args (int *argc_p, char **argv)
       else if (strcmp ("-v", argv[i]) == 0 ||
                strcmp ("--version", argv[i]) == 0)
         {
-          printout ("BSESCM version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+          printout ("BSESCM version %s\n", BST_VERSION);
           printout ("Libraries: ");
           printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
           printout (", SFI %s", BST_VERSION);

@@ -5,10 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 
 
@@ -55,9 +51,5 @@ enum
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_FIR_FILTER_H__ */

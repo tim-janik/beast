@@ -5,8 +5,6 @@
 #include "gxkutils.hh"
 #include "gxkassortment.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_MENU_BUTTON              (gxk_menu_button_get_type ())
 #define GXK_MENU_BUTTON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButton))
@@ -38,7 +36,5 @@ typedef GtkEventBoxClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);
 void    gxk_menu_button_update            (GxkMenuButton *self);
 
-
-G_END_DECLS
 
 #endif /* __GXK_MENU_BUTTON_H__ */

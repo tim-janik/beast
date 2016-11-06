@@ -3,8 +3,6 @@
 #define __DAV_CANYON_DELAY_H__
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
-G_BEGIN_DECLS
-
 #define DAV_TYPE_CANYON_DELAY              (dav_canyon_delay_get_type())
 #define DAV_CANYON_DELAY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelay))
 #define DAV_CANYON_DELAY_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
@@ -56,7 +54,5 @@ enum
 };
 
 
-
-G_END_DECLS
 
 #endif /* __DAV_CANYON_DELAY_H__ */

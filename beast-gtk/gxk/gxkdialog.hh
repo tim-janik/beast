@@ -4,8 +4,6 @@
 
 #include        "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_DIALOG              (gxk_dialog_get_type ())
 #define GXK_DIALOG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_DIALOG, GxkDialog))
@@ -111,8 +109,6 @@ GtkWidget*	gxk_dialog_action_multi		(GxkDialog	    *dialog,
 						 gpointer	     data,
 						 const gchar	    *icon_stock_id,
 						 GxkDialogMultiFlags multi_mode);
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

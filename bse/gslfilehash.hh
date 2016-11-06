@@ -5,10 +5,6 @@
 #include <bse/gsldefs.hh>
 #include <bse/gslcommon.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 
 /* --- typedefs & structures --- */
@@ -55,9 +51,5 @@ GslLong	  gsl_rfile_position	(GslRFile	*rfile);
 GslLong	  gsl_rfile_length	(GslRFile	*rfile);
 void	  gsl_rfile_close	(GslRFile	*rfile);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_FILE_HASH_H__ */

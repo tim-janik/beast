@@ -4,8 +4,6 @@
 
 #include        <bse/bseobject.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_DEVICE              (BSE_TYPE_ID (BseDevice))
 #define BSE_DEVICE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_DEVICE, BseDevice))
@@ -111,7 +109,5 @@ BseDevice*      bse_device_open_auto       (GType           base_type,
                                             gpointer        data,
                                             Bse::Error   *errorp);
 
-
-G_END_DECLS
 
 #endif /* __BSE_DEVICE_H__ */

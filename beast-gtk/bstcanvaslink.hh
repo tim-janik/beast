@@ -6,10 +6,6 @@
 #include	"bstcanvassource.hh"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_CANVAS_LINK            (bst_canvas_link_get_type ())
@@ -70,9 +66,5 @@ BstCanvasSource* bst_canvas_link_csource_at		(BstCanvasLink	  *clink,
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_CANVAS_LINK_H__ */

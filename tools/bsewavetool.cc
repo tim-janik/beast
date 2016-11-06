@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewavetool.hh"
 #include "bwtwave.hh"
-#include "../configure.h"
+#include "../topbuildid.hh"
 #include <bse/bsemain.hh>	/* for bse_init_intern() */
 #include <bse/bseloader.hh>
 #include <bse/gslvorbis-enc.hh>
@@ -198,7 +198,7 @@ main (int   argc,
 static void
 wavetool_print_version (void)
 {
-  printout ("bsewavetool version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  printout ("bsewavetool version %s\n", Internal::buildid());
   printout ("Refer to beast --version for more version information.\n");
   printout ("bsewavetool comes with ABSOLUTELY NO WARRANTY.\n");
   printout ("You may redistribute copies of bsewavetool under the terms\n");
@@ -695,9 +695,9 @@ public:
   bool
   exec (Wave *wave)
   {
-    if (!force_creation && birnet_file_check (output_file.c_str(), "e"))
+    if (!force_creation && Rapicorn::Path::check (output_file, "e"))
       {
-        sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
+        sfi_error ("not creating \"%s\": %s\n", output_file, g_strerror (EEXIST));
         exit (1);
       }
     return true;

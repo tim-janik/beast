@@ -20,7 +20,7 @@ BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 # bselatencytest:
 bselatencytest_la_SOURCES = bselatencytest.cc
 bselatencytest_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
+bselatencytest_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.genidl.hh

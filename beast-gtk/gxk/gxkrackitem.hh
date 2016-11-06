@@ -4,8 +4,6 @@
 
 #include <gxk/gxkracktable.hh>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_RACK_ITEM              (gxk_rack_item_get_type ())
 #define GXK_RACK_ITEM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_RACK_ITEM, GxkRackItem))
@@ -42,7 +40,5 @@ gboolean        gxk_rack_item_set_area          (GxkRackItem    *self,
                                                  gint            row,
                                                  gint            hspan,
                                                  gint            vspan);
-
-G_END_DECLS
 
 #endif /* __GXK_RACK_ITEM_H__ */

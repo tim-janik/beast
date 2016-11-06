@@ -4,8 +4,6 @@
 
 #include        <bse/bsecontainer.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- object type macros --- */
 #define	BSE_TYPE_PROJECT	      (BSE_TYPE_ID (BseProject))
@@ -110,7 +108,5 @@ public:
 };
 
 } // Bse
-
-G_END_DECLS
 
 #endif /* __BSE_PROJECT_H__ */

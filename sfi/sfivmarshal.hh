@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS
-
 /* --- hard limit --- */
 #define	SFI_VMARSHAL_MAX_ARGS	5
 
@@ -24,8 +22,6 @@ void	sfi_vmarshal_void	(void         *func,
 #else
 #define SFI_VMARSHAL_PTR_ID  2
 #endif
-
-G_END_DECLS
 
 #endif /* __SFI_VMARSHAL_H__ */
 

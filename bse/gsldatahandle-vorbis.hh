@@ -6,8 +6,6 @@
 #include <bse/gslcommon.hh>
 #include <bse/gsldatahandle.hh>
 
-G_BEGIN_DECLS
-
 /* --- reading vorbis files --- */
 GslDataHandle* gsl_data_handle_new_ogg_vorbis_muxed   (const gchar      *file_name,
                                                        guint	         lbitstream,
@@ -33,7 +31,5 @@ void              gsl_vorbis1_handle_destroy          (GslVorbis1Handle *vorbis1
 void              gsl_vorbis1_handle_put_wstore       (GslVorbis1Handle *vorbis1,
                                                        SfiWStore        *wstore);
 guint             gsl_vorbis_make_serialno            (void);
-
-G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_VORBIS_H__ */

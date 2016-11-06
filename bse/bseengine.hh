@@ -4,8 +4,6 @@
 
 #include <bse/bsedefs.hh>
 
-G_BEGIN_DECLS
-
 /* --- constants --- */
 #define BSE_STREAM_MAX_VALUES                   (1024 /* power of 2 and <= 16384 */)
 #define BSE_MODULE_N_OSTREAMS(module)           ((module)->klass->n_ostreams)
@@ -221,5 +219,4 @@ extern guint    bse_engine_exvar_block_size;
 extern guint    bse_engine_exvar_sample_freq;
 extern guint    bse_engine_exvar_control_mask;
 
-G_END_DECLS
 #endif /* __BSE_ENGINE_H__ */

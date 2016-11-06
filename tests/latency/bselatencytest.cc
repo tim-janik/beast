@@ -72,7 +72,7 @@ class LatencyTest : public LatencyTestBase {
     {
       close_devices();
 
-      if (birnet_file_check (midi_output_name.c_str(), "pw")) /* writable pipe */
+      if (Rapicorn::Path::check (midi_output_name, "pw")) /* writable pipe */
         midi_output_file = fopen (midi_output_name.c_str(), "w");
       if (!midi_output_file)
         sfi_error ("failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));

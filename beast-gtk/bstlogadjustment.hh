@@ -4,8 +4,6 @@
 
 #include	<gtk/gtkadjustment.h>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_LOG_ADJUSTMENT              (bst_log_adjustment_get_type ())
 #define BST_LOG_ADJUSTMENT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustment))
@@ -48,7 +46,5 @@ void		bst_log_adjustment_setup	(BstLogAdjustment	*ladj,
 						 gdouble		 center,
 						 gdouble		 base,
 						 gdouble		 n_steps);
-
-G_END_DECLS
 
 #endif /* __BST_LOG_ADJUSTMENT_H__ */

@@ -5,8 +5,6 @@
 #include "bstutils.hh"
 #include "bstapp.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- type macros --- */
 #define BST_TYPE_FILE_DIALOG              (bst_file_dialog_get_type ())
@@ -105,8 +103,6 @@ void            bst_file_dialog_set_handler             (BstFileDialog    *self,
                                                          BstFileDialogHandler handler,
                                                          gpointer          handler_data,
                                                          GDestroyNotify    destroy);
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

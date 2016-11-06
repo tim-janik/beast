@@ -5,10 +5,6 @@
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 typedef struct _SfiComWire SfiComWire;
 typedef gboolean (*SfiComDispatch)	(gpointer	 data,
@@ -159,9 +155,5 @@ const char*	sfi_com_spawn_async		(const gchar	*executable,
 						 gint		*command_output,
 						 SfiRing	*args);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __SFI_COM_WIRE_H__ */

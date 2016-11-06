@@ -5,8 +5,6 @@
 #include <bse/gsldefs.hh>
 #include <sfi/gbsearcharray.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- structures & enums --- */
 typedef enum    /*< skip >*/
@@ -78,7 +76,5 @@ void		gsl_osc_wave_adjust_range	(guint			 n_values,
 						 gfloat			 new_max);
 const gchar*	gsl_osc_wave_form_name		(GslOscWaveForm		 wave_form);
 
-
-G_END_DECLS
 
 #endif /* __GSL_OSC_TABLE_H__ */

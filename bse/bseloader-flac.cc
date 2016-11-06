@@ -157,7 +157,7 @@ flac_create_chunk_handle (gpointer      data,
   return dhandle;
 }
 
-extern "C" void
+void
 bse_init_loader_flac (void)
 {
   static const gchar *file_exts[] = { "flac", NULL, };

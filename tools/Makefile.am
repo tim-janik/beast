@@ -8,14 +8,14 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CON
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
 #
 # tools to build
 #
 
 bin_PROGRAMS        = bsewavetool
-bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc ../topbuildid.cc
 bsewavetool_LDADD   = $(progs_ldadd)
 EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 
@@ -40,7 +40,7 @@ mathtool_SOURCES = mathtool.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===
-check-after: bsewavetool-tests
+check-local: bsewavetool-tests
 bsewavetool-tests:
 	./bsewavetool --unit-test
 

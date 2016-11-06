@@ -5,10 +5,6 @@
 #include <bse/bsesuper.hh>
 #include <bse/gslwavechunk.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_EDITABLE_SAMPLE              (BSE_TYPE_ID (BseEditableSample))
@@ -30,10 +26,6 @@ struct BseEditableSampleClass : BseItemClass {
 };
 void	bse_editable_sample_set_wchunk	(BseEditableSample	*self,
 					 GslWaveChunk		*wchunk);
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
 namespace Bse {
 
 class EditableSampleImpl : public ItemImpl, public virtual EditableSampleIface {

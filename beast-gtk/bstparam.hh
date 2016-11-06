@@ -4,8 +4,6 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- parameters gmasks --- */
 BstGMask*    bst_param_create_gmask      (GxkParam    *param,
                                           const gchar *editor_name,
@@ -49,8 +47,6 @@ GxkParam* bst_param_new_aida_parameter (GParamSpec *pspec, const Rapicorn::Aida:
 void         _bst_init_params         (void);
 
 
-
-G_END_DECLS
 
 #endif /* __BST_PARAM_H__ */
 

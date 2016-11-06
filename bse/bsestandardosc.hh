@@ -3,8 +3,6 @@
 #define __BSE_STANDARD_OSC_H__
 #include <bse/bsesource.hh>
 #include <bse/gsloscillator.hh>
-G_BEGIN_DECLS
-
 #define BSE_TYPE_STANDARD_OSC              (BSE_TYPE_ID (BseStandardOsc))
 #define BSE_STANDARD_OSC(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STANDARD_OSC, BseStandardOsc))
 #define BSE_STANDARD_OSC_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_STANDARD_OSC, BseStandardOscClass))
@@ -49,7 +47,5 @@ enum
   BSE_STANDARD_OSC_OCHANNEL_SYNC,
   BSE_STANDARD_OSC_N_OCHANNELS
 };
-
-G_END_DECLS
 
 #endif /* __BSE_STANDARD_OSC_H__ */

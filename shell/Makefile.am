@@ -16,7 +16,7 @@ gen_sources = xgen-bsggc
 CLEANFILES += $(gen_sources)
 
 # libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS)
+programs_ldadd = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
 #
 # programs to build

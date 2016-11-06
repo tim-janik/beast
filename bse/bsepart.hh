@@ -5,8 +5,6 @@
 #include <bse/bseitem.hh>
 #include <sfi/gbsearcharray.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PART                   (BSE_TYPE_ID (BsePart))
 #define BSE_PART(object)                (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PART, BsePart))
@@ -263,8 +261,6 @@ void              bse_part_note_channel_change_note   (BsePartNoteChannel *self,
 void              bse_part_note_channel_remove        (BsePartNoteChannel *self,
                                                        guint               tick);
 void              bse_part_note_channel_destroy       (BsePartNoteChannel *self);
-
-G_END_DECLS
 
 namespace Bse {
 

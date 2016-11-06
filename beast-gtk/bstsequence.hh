@@ -5,10 +5,6 @@
 #include <gtk/gtk.h>
 #include "bstbseutils.hh"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- type macros --- */
 #define BST_TYPE_SEQUENCE              (bst_sequence_get_type ())
@@ -44,10 +40,6 @@ GType		bst_sequence_get_type	(void);
 void		bst_sequence_set_seq	(BstSequence	 *seq,
 					 BseNoteSequence *sdata);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_SEQUENCE_H__ */
 

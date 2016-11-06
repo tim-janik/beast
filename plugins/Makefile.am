@@ -8,8 +8,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 # == IDL C++ Plugins ==
-idl_plugins = $(strip			\
-	+++bseplugins 			\
+idl_files = $(strip			\
 	artscompressor.idl		\
 	bseamplifier.idl		\
 	bsebalance.idl			\
@@ -23,7 +22,7 @@ idl_plugins = $(strip			\
 	davchorus.idl			\
 	davorgan.idl			\
 )
-EXTRA_DIST += $(filter-out +++%, $(idl_plugins))
+EXTRA_DIST += $(idl_files)
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -42,11 +41,6 @@ cxxplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 cxxplugins_FPU_la_LIBADD   = $(plugins_libs)
 cxxplugins_FPU_la_CFLAGS   = $(FPU_PLUGIN_CFLAGS)
 cxxplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-cxxplugins_SSE_la_SOURCES  = $(cxx_plugin_sources)
-cxxplugins_SSE_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
-cxxplugins_SSE_la_LIBADD   = $(plugins_libs)
-cxxplugins_SSE_la_CFLAGS   = $(SSE_PLUGIN_CFLAGS)
-cxxplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
 
 # old/unported plugin list
 UNPORTED = $(strip		\
@@ -56,73 +50,86 @@ UNPORTED = $(strip		\
 
 # === plugin build rule setup ===
 plugins_ldflags 	  = -avoid-version
-plugins_libs    	  = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
-plugins_built_sources 	  = 	# listed in Makefile.plugins
+plugins_libs    	  = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+plugins_built_sources 	  =
 CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
-plugin_FPU_ltlibs	  =	# listed in Makefile.plugins
-plugin_FPU_LTLIBRARIES	  = $(plugin_FPU_ltlibs) cxxplugins.FPU.la
+plugin_FPU_LTLIBRARIES	  = cxxplugins.FPU.la
 plugin_FPUdir 	  	  = $(bselibdir)/plugins
 FPU_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
-# .SSE plugins
-plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
-plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs) cxxplugins.SSE.la
-plugin_SSEdir		  = $(bselibdir)/plugins
-SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(SIMD_FLAGS)
-SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(SIMD_FLAGS)
-if WITH_MMX_SSE
-plugin_SSE_cond_libs	  = $(plugin_SSE_ltlibs)
-else
-plugin_SSE_cond_libs	  =
-endif
 
-# === CoreHook plugin ===
-plugin_SSE_ltlibs            += bseblockutils.SSE.la
+# == SIMD bseblockutils ==
+if WITH_MMX_SSE
+plugin_FPU_LTLIBRARIES	     += bseblockutils.SSE.la
 bseblockutils_SSE_la_SOURCES  = bseblockutils.cc
 bseblockutils_SSE_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 bseblockutils_SSE_la_LIBADD   = $(plugins_libs)
-bseblockutils_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
+endif
 
-# === Makefile.plugins adds plugin rules ===
-include Makefile.plugins
-# === Makefile.plugins generation rules ===
-#### C++ Plugin bsefoo
-##$(srcdir)/bsefoo.cc: bsefoo.genidl.hh
-##plugins_built_sources += bsefoo.genidl.hh
-##plugin_FPU_ltlibs     += bsefoo.FPU.la
-##bsefoo_FPU_la_SOURCES  = bsefoo.cc
-##bsefoo_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
-##bsefoo_FPU_la_LIBADD   = $(plugins_libs)
-##bsefoo_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-.PHONY: refresh-Makefile.plugins
-refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
-	echo									 >xgen-$(@F)
-	: # generate C++ plugin rules
-	libname=""										;\
-	for name in $(idl_plugins:.idl=) ; do						 	 \
-	  [ "$${name:0:3}" = "+++" ] && {							 \
-            libname=`echo $${name:3} | sed 's/[^A-Za-z0-9]/_/g' `				;\
-	    echo -e "\n\n## === C++ Plugin Library $$libname === "		  >>xgen-$(@F) 	;\
-	    echo "plugin_FPU_ltlibs          += $$libname.FPU.la"		  >>xgen-$(@F)	;\
-	    echo "$$libname"'_FPU_la_SOURCES  ='				  >>xgen-$(@F)	;\
-	    echo "$$libname"'_FPU_la_CXXFLAGS = $$(FPU_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
-	    echo "$$libname"'_FPU_la_LDFLAGS  = $$(AM_LDFLAGS) -module $$(plugins_ldflags)'	  >>xgen-$(@F)	;\
-	    echo "$$libname"'_FPU_la_LIBADD   = $$(plugins_libs)'		  >>xgen-$(@F)	;\
-	    echo "plugin_SSE_ltlibs          += $$libname.SSE.la"		  >>xgen-$(@F)	;\
-	    echo "$$libname"'_SSE_la_SOURCES  = $$('"$$libname"'_FPU_la_SOURCES)' >>xgen-$(@F)	;\
-	    echo "$$libname"'_SSE_la_CXXFLAGS = $$(SSE_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
-	    echo "$$libname"'_SSE_la_LDFLAGS  = $$(AM_LDFLAGS) $$('"$$libname"'_FPU_la_LDFLAGS)' >>xgen-$(@F)	;\
-	    echo "$$libname"'_SSE_la_LIBADD   = $$('"$$libname"'_FPU_la_LIBADD)'  >>xgen-$(@F)	;\
-	    continue										;\
-	  }											;\
-	  _name=`echo $$name | sed 's/[^A-Za-z0-9]/_/g' `					;\
-	  echo -e "\n## C++ Plugin $$name"					>>xgen-$(@F) 	;\
-	  echo '$$(srcdir)/'"$$name.cc: $$name.genidl.hh # $$libname"		>>xgen-$(@F)	;\
-	  echo "plugins_built_sources      += $$name.genidl.hh"			>>xgen-$(@F)	;\
-	  echo "$$libname"'_FPU_la_SOURCES += '"$$name.cc"			>>xgen-$(@F)	;\
-	done
-	: # move Makefile.plugins in place
-	cp xgen-$(@F) Makefile.plugins
-	rm -f xgen-$(@F)
-# $ echo >Makefile.plugins && make refresh-Makefile.plugins && make Makefile
+# == C++ Plugin Library bseplugins ==
+plugin_FPU_LTLIBRARIES	  += bseplugins.FPU.la
+bseplugins_FPU_la_SOURCES  =
+bseplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
+bseplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+bseplugins_FPU_la_LIBADD   = $(plugins_libs)
+
+# == artscompressor ==
+bseplugins_FPU_la_SOURCES	+= artscompressor.cc
+plugins_built_sources		+= artscompressor.genidl.hh
+$(srcdir)/artscompressor.cc: artscompressor.genidl.hh
+
+# == bseamplifier ==
+bseplugins_FPU_la_SOURCES	+= bseamplifier.cc
+plugins_built_sources		+= bseamplifier.genidl.hh
+$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
+
+# == bsebalance ==
+bseplugins_FPU_la_SOURCES	+= bsebalance.cc
+plugins_built_sources		+= bsebalance.genidl.hh
+$(srcdir)/bsebalance.cc: bsebalance.genidl.hh
+
+# == bsenoise ==
+bseplugins_FPU_la_SOURCES	+= bsenoise.cc
+plugins_built_sources		+= bsenoise.genidl.hh
+$(srcdir)/bsenoise.cc: bsenoise.genidl.hh
+
+# == bsequantizer ==
+bseplugins_FPU_la_SOURCES	+= bsequantizer.cc
+plugins_built_sources		+= bsequantizer.genidl.hh
+$(srcdir)/bsequantizer.cc: bsequantizer.genidl.hh
+
+# == bsesummation ==
+bseplugins_FPU_la_SOURCES	+= bsesummation.cc
+plugins_built_sources		+= bsesummation.genidl.hh
+$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
+
+# == standardsaturator ==
+bseplugins_FPU_la_SOURCES	+= standardsaturator.cc
+plugins_built_sources		+= standardsaturator.genidl.hh
+$(srcdir)/standardsaturator.cc: standardsaturator.genidl.hh
+
+# == standardguspatchenvelope ==
+bseplugins_FPU_la_SOURCES	+= standardguspatchenvelope.cc
+plugins_built_sources		+= standardguspatchenvelope.genidl.hh
+$(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.genidl.hh
+
+# == bsecontribsampleandhold ==
+bseplugins_FPU_la_SOURCES	+= bsecontribsampleandhold.cc
+plugins_built_sources		+= bsecontribsampleandhold.genidl.hh
+$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh
+
+# == davbassfilter ==
+bseplugins_FPU_la_SOURCES	+= davbassfilter.cc
+plugins_built_sources		+= davbassfilter.genidl.hh
+$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
+
+# == davchorus ==
+bseplugins_FPU_la_SOURCES	+= davchorus.cc
+plugins_built_sources		+= davchorus.genidl.hh
+$(srcdir)/davchorus.cc: davchorus.genidl.hh
+
+# == davorgan ==
+bseplugins_FPU_la_SOURCES	+= davorgan.cc
+plugins_built_sources		+= davorgan.genidl.hh
+$(srcdir)/davorgan.cc: davorgan.genidl.hh

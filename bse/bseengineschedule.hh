@@ -4,8 +4,6 @@
 
 #include <bse/bseenginenode.hh>
 
-G_BEGIN_DECLS
-
 typedef struct
 {
   EngineNode *last;	/* resolve node */
@@ -45,7 +43,5 @@ EngineNode*	_engine_schedule_pop_node	(EngineSchedule	*schedule);
 SfiRing*	_engine_schedule_pop_cycle	(EngineSchedule	*schedule);
 void		_engine_schedule_restart	(EngineSchedule	*schedule);
 void		_engine_schedule_unsecure	(EngineSchedule	*schedule);
-
-G_END_DECLS
 
 #endif /* __BSE_ENGINE_SCHEDULE_H__ */

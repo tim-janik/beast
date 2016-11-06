@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- DB Setup --- */
 typedef struct {
   double db;
@@ -127,7 +125,5 @@ BstDBLabeling*  bst_db_meter_get_labeling       (BstDBMeter     *self,
                                                  guint           nth);
 void            bst_db_scale_hook_up_param      (GtkRange       *range,
                                                  GxkParam       *param);
-
-G_END_DECLS
 
 #endif /* __BST_DB_METER_H__ */

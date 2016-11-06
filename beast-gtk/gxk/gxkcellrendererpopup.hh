@@ -6,8 +6,6 @@
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkeventbox.h>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_CELL_RENDERER_POPUP              (gxk_cell_renderer_popup_get_type ())
 #define GXK_CELL_RENDERER_POPUP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_CELL_RENDERER_POPUP, GxkCellRendererPopup))
@@ -70,7 +68,5 @@ GType	gxk_proxy_editable_get_type		(void);
 void	gxk_proxy_editable_set_cell_editable	(GxkProxyEditable	*self,
 						 GtkCellEditable	*ecell);
 
-
-G_END_DECLS
 
 #endif	/* __GXK_CELL_RENDERER_POPUP_H__ */

@@ -4,8 +4,6 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_ITEM_VIEW	      (bst_item_view_get_type ())
 #define	BST_ITEM_VIEW(object)	      (GTK_CHECK_CAST ((object), BST_TYPE_ITEM_VIEW, BstItemView))
@@ -79,7 +77,5 @@ void		bst_item_view_enable_param_view	(BstItemView    *self,
 GtkTreeModel* bst_item_view_adapt_list_wrapper	(BstItemView	*self,
 						 GxkListWrapper *lwrapper);
 
-
-G_END_DECLS
 
 #endif /* __BST_ITEM_VIEW_H__ */

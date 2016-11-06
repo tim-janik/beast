@@ -5,10 +5,6 @@
 #include	<gtk/gtkscrolledwindow.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_ZOOMED_WINDOW	          (bst_zoomed_window_get_type ())
@@ -40,9 +36,5 @@ struct _BstZoomedWindowClass
 /* --- prototypes --- */
 GtkType		bst_zoomed_window_get_type		(void);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_ZOOMED_WINDOW_H__ */

@@ -6,10 +6,6 @@
 #include	<bse/bseeffect.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_PATTERN	      (BSE_TYPE_ID (BsePattern))
@@ -169,9 +165,5 @@ _bse_pattern_selection_unmark (guint32 *selection,
   selection[(n >> 5) + 2] &= ~(1 << (n & 0x1f));
 }
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_PATTERN_H__ */

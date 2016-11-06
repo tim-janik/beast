@@ -5,8 +5,6 @@
 #include	<bse/bsesnet.hh>
 #include	<bse/bsesubsynth.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_SYNTH	         (BSE_TYPE_ID (BseMidiSynth))
 #define BSE_MIDI_SYNTH(object)	         (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_SYNTH, BseMidiSynth))
@@ -30,8 +28,6 @@ struct BseMidiSynth : BseSNet {
 };
 struct BseMidiSynthClass : BseSNetClass
 {};
-
-G_END_DECLS
 
 namespace Bse {
 

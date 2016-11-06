@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_LED              (gxk_led_get_type ())
 #define GXK_LED(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_LED, GxkLed))
@@ -45,7 +43,5 @@ void		gxk_led_set_color		(GxkLed	*self,
 void		gxk_led_set_border_width	(GxkLed	*self,
 						 guint	 border_width);
 
-
-G_END_DECLS
 
 #endif  /* __GXK_LED_H__ */

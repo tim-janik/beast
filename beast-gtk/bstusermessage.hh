@@ -2,8 +2,6 @@
 #ifndef __BST_USER_MESSAGE_H__
 #define __BST_USER_MESSAGE_H__
 #include	"bstutils.hh"
-G_BEGIN_DECLS
-
 /* --- structures --- */
 typedef enum {
   BST_MSG_ERROR         = int64 (Bse::UserMessageType::ERROR),
@@ -78,7 +76,5 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
                                                    __result = bst_message_dialog_display ("BEAST",  \
                                                                __mt, RAPICORN_ARRAY_SIZE (__ba), __ba);         \
                                                    __result; })
-
-G_END_DECLS
 
 #endif	/* __BST_USER_MESSAGE_H__ */

@@ -4,8 +4,6 @@
 
 #include        <bse/bsecontainer.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define	BSE_TYPE_SUPER		    (BSE_TYPE_ID (BseSuper))
 #define BSE_SUPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SUPER, BseSuper))
@@ -36,8 +34,6 @@ struct BseSuperClass : BseContainerClass {
                                          guint           vminor,
                                          guint           vmicro);
 };
-
-G_END_DECLS
 
 namespace Bse {
 

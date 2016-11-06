@@ -4,8 +4,6 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_CANVAS_SOURCE              (bst_canvas_source_get_type ())
 #define BST_CANVAS_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSource))
@@ -84,7 +82,5 @@ void             bst_canvas_source_popup_info        (BstCanvasSource  *csource)
 void             bst_canvas_source_toggle_info       (BstCanvasSource  *csource);
 void             bst_canvas_source_set_channel_hints (BstCanvasSource  *csource,
                                                       gboolean          on_off);
-
-G_END_DECLS
 
 #endif /* __BST_CANVAS_SOURCE_H__ */

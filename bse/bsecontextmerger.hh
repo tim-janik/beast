@@ -4,8 +4,6 @@
 
 #include <bse/bsesource.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_CONTEXT_MERGER              (BSE_TYPE_ID (BseContextMerger))
 #define BSE_CONTEXT_MERGER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTEXT_MERGER, BseContextMerger))
@@ -23,8 +21,6 @@ struct BseContextMergerClass : BseSourceClass
 
 void	bse_context_merger_set_merge_context	(BseContextMerger	*self,
 						 guint			 merge_context);
-G_END_DECLS
-
 namespace Bse {
 
 class ContextMergerImpl : public SourceImpl, public virtual ContextMergerIface {

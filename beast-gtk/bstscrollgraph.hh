@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_SCROLLGRAPH		  (bst_scrollgraph_get_type ())
 #define BST_SCROLLGRAPH(object)		  (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_SCROLLGRAPH, BstScrollgraph))
@@ -50,7 +48,5 @@ void            bst_scrollgraph_set_source      (BstScrollgraph *self,
 GtkWidget*      bst_scrollgraph_build_dialog    (GtkWidget      *alive_object,
                                                  SfiProxy        source,
                                                  guint           ochannel);
-
-G_END_DECLS
 
 #endif /* __BST_SCROLLGRAPH_H__ */

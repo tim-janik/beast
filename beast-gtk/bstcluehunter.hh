@@ -4,10 +4,6 @@
 
 #include <gxk/gxk.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- type macros --- */
 #define	BST_TYPE_CLUE_HUNTER		(bst_clue_hunter_get_type ())
@@ -80,10 +76,6 @@ gpointer   bst_clue_hunter_from_entry		(gpointer	 entry);
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 
 #endif	/* __BST_CLUE_HUNTER_H__ */

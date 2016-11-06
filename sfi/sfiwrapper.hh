@@ -39,8 +39,6 @@ using Rapicorn::int32;
 using Rapicorn::int64;
 using Rapicorn::unichar;
 
-extern "C" {
-
 /* --- initialization --- */
 typedef struct
 {
@@ -50,11 +48,6 @@ typedef struct
 } SfiInitValue;
 void sfi_init (int *argcp, char **argv, const Bse::StringVector &args = Bse::StringVector());
 
-/* --- file tests --- */
-bool	birnet_file_check (const char *file,
-			   const char *mode);
-bool	birnet_file_equals (const char *file1,
-			    const char *file2);
 /* --- messaging --- */
 #define         sfi_error(...)                   RAPICORN_CRITICAL (__VA_ARGS__)
 #define         sfi_warning(...)                 RAPICORN_CRITICAL (__VA_ARGS__)
@@ -63,8 +56,6 @@ bool	birnet_file_equals (const char *file1,
 
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
-
-} // "C"
 
 #endif /* __SFI_WRAPPER_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

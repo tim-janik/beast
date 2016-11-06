@@ -4,8 +4,6 @@
 
 #include	<bse/bsesource.hh>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_WAVE		   (BSE_TYPE_ID (BseWave))
 #define BSE_WAVE(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_WAVE, BseWave))
@@ -65,8 +63,6 @@ void		bse_wave_drop_index		(BseWave	*wave);
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq,
                                                  gfloat          velocity);
-
-G_END_DECLS
 
 namespace Bse {
 

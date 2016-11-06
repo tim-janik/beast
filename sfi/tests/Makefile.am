@@ -6,8 +6,8 @@ DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID
 AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
-progs_nosfi_ldadd = $(RAPICORN_LIBS) $(SFI_LIBS) -lm
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
+progs_nosfi_ldadd = $(LIBBSE_LIBS)
+progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(progs_nosfi_ldadd)
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring

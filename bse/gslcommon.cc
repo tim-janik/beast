@@ -195,10 +195,9 @@ gsl_byte_order_from_string (const gchar *string)
 }
 
 Bse::Error
-gsl_file_check (const gchar *file_name,
-		const gchar *mode)
+gsl_file_check (const String &file_name, const String &mode)
 {
-  if (birnet_file_check (file_name, mode))
+  if (Rapicorn::Path::check (file_name, mode))
     return Bse::Error::NONE;
   return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }

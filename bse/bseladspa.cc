@@ -399,7 +399,7 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
   return TRUE;
 }
 
-extern "C" gchar*
+gchar*
 bse_ladspa_info_port_2str (BseLadspaPort *port)
 {
   gchar flags[64];
@@ -426,7 +426,7 @@ bse_ladspa_info_port_2str (BseLadspaPort *port)
 			  flags);
 }
 
-extern "C" BseLadspaInfo*
+BseLadspaInfo*
 bse_ladspa_info_assemble (const gchar  *file_path,
 			  gconstpointer ladspa_descriptor)
 {
@@ -554,7 +554,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
   return bli;
 }
 
-extern "C" void
+void
 bse_ladspa_info_free (BseLadspaInfo *bli)
 {
   guint i;
@@ -591,7 +591,7 @@ ladspa_plugin_find (const gchar *fname)
   return NULL;
 }
 
-extern "C" const gchar*
+const gchar*
 bse_ladspa_plugin_check_load (const gchar *file_name)
 {
   BseLadspaPlugin *self;
@@ -634,7 +634,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   return error;
 }
 
-extern "C" SfiRing*
+SfiRing*
 bse_ladspa_plugin_path_list_files (void)
 {
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;

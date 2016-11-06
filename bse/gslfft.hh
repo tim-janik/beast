@@ -4,10 +4,6 @@
 
 #include <bse/gsldefs.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /**
  * @param n_values      Number of complex values
@@ -183,9 +179,5 @@ void	gsl_power2_fftsr_scale_simple (const unsigned int n_values,
 				       float             *real_values);
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __GSL_FFT_H__ */   /* vim:set ts=8 sw=2 sts=2: */

@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- structures & typedefs --- */
 typedef enum {
@@ -58,7 +56,5 @@ void    bst_segment_expose      (BstSegment     *self);
 void    bst_segment_draw        (BstSegment     *self,
                                  GtkStyle       *style);
 void    bst_segment_clear       (BstSegment     *self);
-
-G_END_DECLS
 
 #endif /* __BST_SEGMENT_H__ */

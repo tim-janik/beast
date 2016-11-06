@@ -4,8 +4,6 @@
 
 #include <sfi/sfivalues.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- functions --- */
 GTokenType	sfi_value_parse_typed		(GValue		*value,
@@ -33,8 +31,6 @@ gboolean sfi_serial_check_parse_null_token	(GScanner	*scanner);
 /* --- GScanner config --- */
 extern const GScannerConfig *sfi_storage_scanner_config;
 
-
-G_END_DECLS
 
 #endif /* __SFI_SERIAL_H__ */
 

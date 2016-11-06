@@ -5,8 +5,6 @@
 #include <sfi/sfivalues.hh>
 #include <sfi/sfiring.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs and structures --- */
 typedef gint /* -errno || length */ (*SfiStoreReadBin)  (gpointer        data,
                                                          void           *buffer,
@@ -126,7 +124,5 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
       return _t;                                                        \
     }                                                                   \
 } G_STMT_END
-
-G_END_DECLS
 
 #endif /* __SFI_STORE_H__ */

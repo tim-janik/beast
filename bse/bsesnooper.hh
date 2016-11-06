@@ -4,8 +4,6 @@
 
 #include <bse/bsesource.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_SNOOPER              (BSE_TYPE_ID (BseSnooper))
 #define BSE_SNOOPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SNOOPER, BseSnooper))
@@ -28,5 +26,4 @@ enum
   BSE_SNOOPER_N_ICHANNELS
 };
 
-G_END_DECLS
 #endif /* __BSE_SNOOPER_H__ */

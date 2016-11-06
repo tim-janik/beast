@@ -28,9 +28,6 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
 #else   /* BSE internal "Plugins" */
 #define BSE_CXX_DEFINE_EXPORTS()
 #define BSE_CXX_EXPORT_IDENTITY    &bse_builtin_export_identity
-extern "C" {
-extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.hh */
-};
 #endif
 
 // == Resident Type Plugin Registration ==

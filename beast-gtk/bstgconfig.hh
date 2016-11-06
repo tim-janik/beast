@@ -4,10 +4,7 @@
 
 #include	"bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- BstGConfig - configurable defaults --- */
-#define	BST_RC_VERSION			BST_GCONFIG (rc_version)
 #define BST_GUI_ENABLE_ERROR_BELL   	BST_GCONFIG (gui_enable_error_bell)
 #define BST_SNET_ANTI_ALIASED		BST_GCONFIG (snet_anti_aliased)
 #define BST_SNET_EDIT_FALLBACK		BST_GCONFIG (snet_edit_fallback)
@@ -28,7 +25,5 @@ void		bst_gconfig_push_updates	(void);
 /* --- rc file --- */
 Bse::Error     bst_rc_dump                    (const gchar    *file_name);
 Bse::Error     bst_rc_parse                   (const gchar    *file_name);
-
-G_END_DECLS
 
 #endif /* __BST_GCONFIG_H__ */

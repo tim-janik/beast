@@ -13,7 +13,5 @@ Makefile
 /config.log
 /config.status
 /configure
-/configure.h
-/configure.h.in
 /libtool
 /stamp-h1

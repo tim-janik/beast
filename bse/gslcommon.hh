@@ -3,7 +3,6 @@
 #define __GSL_COMMON_H__
 #include <bse/gsldefs.hh>
 #include <bse/bseenums.hh>
-G_BEGIN_DECLS
 /* --- initialization --- */
 void			gsl_init	(void);
 
@@ -15,8 +14,7 @@ Bse::Error gsl_error_from_errno	(gint		 sys_errno,
 Bse::Error gsl_error_select           (guint           n_errors,
                                          Bse::Error    first_error,
                                          ...);
-Bse::Error gsl_file_check		(const gchar	*file_name,
-					 const gchar	*mode);
+Bse::Error gsl_file_check		(const String &file_name, const String &mode);
 
 
 /* --- progress notification --- */
@@ -58,8 +56,6 @@ void	_gsl_init_loader_mad		(void);
 void	bse_init_loader_gus_patch	(void);
 void	bse_init_loader_flac      	(void);
 #define		GSL_N_IO_RETRIES	(5)
-G_END_DECLS
-
 
 namespace Bse {
 

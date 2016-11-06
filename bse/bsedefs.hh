@@ -10,8 +10,6 @@
 #include <sfi/sficomwire.hh>	// FIXME
 #include <bse/bseconfig.h>
 
-G_BEGIN_DECLS
-
 
 /* --- some globally used macros --- */
 #define BSE_VERSION_CMP(v1_major, v1_minor, v1_micro, v2_major, v2_minor, v2_micro) ( \
@@ -139,8 +137,6 @@ typedef void          (*BseEngineAccessFunc) (BseModule         *module,
 const gchar* bse_gettext (const gchar *text);
 #define _(str)	bse_gettext (str)
 #define N_(str) (str)
-
-G_END_DECLS
 
 namespace Bse {
 

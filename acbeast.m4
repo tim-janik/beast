@@ -87,12 +87,12 @@ AC_DEFUN([MC_EVAR_SUPPLEMENT], [
 ])
 
 
-dnl # MC_CHECK_VERSION() extracts up to 6 decimal numbers out of given-version
-dnl and required-version, using any non-number letters as delimiters. it then
-dnl compares each of those 6 numbers in order 1..6 to each other, requirering
-dnl all of the 6 given-version numbers to be greater than, or at least equal
-dnl to the corresponding number of required-version.
-dnl MC_CHECK_VERSION(given-version, required-version [, match-action] [, else-action])
+dnl # MC_CHECK_VERSION() extracts up to 6 decimal numbers out of GIVEN_VERSION
+dnl # and REQUIRED_VERSION, using any non-number letters as delimiters. It then
+dnl # compares each of those 6 numbers in order 1..6 to each other, requirering
+dnl # all of the 6 given-version numbers to be greater than, or at least equal
+dnl # to the corresponding number of required-version.
+dnl # MC_CHECK_VERSION( GIVEN_VERSION, REQUIRED_VERSION [, MATCH_ACTION] [, ELSE_ACTION] )
 AC_DEFUN([MC_CHECK_VERSION], [
 [eval `echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
  -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_v1=\1 ac_v2=\2 ac_v3=\3 ac_v4=\4 ac_v5=\5 ac_v6=\6/' \
@@ -113,13 +113,21 @@ ac_vm=[`expr \( $ac_v1 \> $ac_r1 \) \| \( \( $ac_v1 \= $ac_r1 \) \& \(		\
 	     \) \)	`]
 case $ac_vm in
 [1)]
-	[$3]
+	$3
 	;;
 *[)]
-	[$4]
+	$4
 	;;
 esac
 ])
+
+dnl # MC_ASSERT_VERSION(versioncmd, requiredversion)
+AC_DEFUN([MC_ASSERT_VERSION], [
+	   ac_versionout=`( [$1] ) 2>&1 | tr '\n' ' ' | sed 's/^[^0-9]*//'`
+	   MC_CHECK_VERSION([$ac_versionout], [$2], [], [
+			      AC_MSG_ERROR([failed to detect version $2: $1])
+			    ])
+	 ])
 
 dnl # MC_ASSERT_NONEMPTY(variable, program, srcpackage)
 AC_DEFUN([MC_ASSERT_NONEMPTY], [
@@ -130,15 +138,16 @@ AC_DEFUN([MC_ASSERT_NONEMPTY], [
     esac
 ])
 
-dnl # MC_ASSERT_PROG(variable, program, srcpackage) - Find program
+dnl # MC_ASSERT_PROG(variable, programs)
 AC_DEFUN([MC_ASSERT_PROG], [
-    AC_PATH_PROG([$1], [$2], missing!)
-    case "_$[$1]" in
-    '_missing!')
-	AC_MSG_ERROR([failed to find $2 which is required for a functional build. $3])
-	;;
-    esac
+	   AC_PATH_PROGS([$1], [$2], :)
+	   case "_$[$1]" in
+	     '_:')
+	       AC_MSG_ERROR([failed to find program: $2])
+	       ;;
+	   esac
 ])
+
 dnl # MC_ASSERT_PROGS(variable, programs, srcpackage)
 AC_DEFUN([MC_ASSERT_PROGS], [
     AC_PATH_PROGS([$1], [$2], missing!)

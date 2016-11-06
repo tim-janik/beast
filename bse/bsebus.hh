@@ -4,8 +4,6 @@
 
 #include <bse/bsesubsynth.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_BUS               (BSE_TYPE_ID (BseBus))
 #define BSE_BUS(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_BUS, BseBus))
@@ -75,8 +73,6 @@ enum
   BSE_BUS_OCHANNEL_RIGHT,
   BSE_BUS_N_OCHANNELS
 };
-
-G_END_DECLS
 
 namespace Bse {
 

@@ -4,8 +4,6 @@
 
 #include <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_RACK_TABLE              (gxk_rack_table_get_type ())
 #define GXK_RACK_TABLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_RACK_TABLE, GxkRackTable))
@@ -73,7 +71,5 @@ void       gxk_rack_table_attach               (GxkRackTable *self,
 void       gxk_rack_table_cover_up             (GxkRackTable *self);
 void       gxk_rack_table_uncover              (GxkRackTable *self);
 
-
-G_END_DECLS
 
 #endif /* __GXK_RACK_TABLE_H__ */

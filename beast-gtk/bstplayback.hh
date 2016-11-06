@@ -4,10 +4,6 @@
 
 #include        "bstutils.hh"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- typedefs & structures --- */
 typedef void (*BstPlayBackNotify)	(gpointer	data,
@@ -51,9 +47,5 @@ void		   bst_play_back_handle_destroy		(BstPlayBackHandle	*handle);
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_PLAY_BACK_H__ */

@@ -5,10 +5,6 @@
 #include <bse/bsesource.hh>
 #include <bse/gslfilter.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- type macros --- */
 #define BSE_TYPE_BIQUAD_FILTER              (BSE_TYPE_ID (BseBiquadFilter))
@@ -63,9 +59,5 @@ enum
   BSE_BIQUAD_FILTER_N_OCHANNELS
 };
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_BIQUAD_FILTER_H__ */

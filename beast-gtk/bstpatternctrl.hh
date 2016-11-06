@@ -4,8 +4,6 @@
 
 #include "bstpatternview.hh"
 
-G_BEGIN_DECLS
-
 typedef struct {
   GxkParam        *vraster;
   GxkParam        *steps;
@@ -29,7 +27,5 @@ BstKeyBinding*        bst_pattern_controller_default_generic_keys (void);
 BstKeyBinding*        bst_pattern_controller_generic_keys         (void);
 BstKeyBinding*        bst_pattern_controller_default_piano_keys   (void);
 BstKeyBinding*        bst_pattern_controller_piano_keys           (void);
-
-G_END_DECLS
 
 #endif /* __BST_PATTERN_CONTROLLER_H__ */

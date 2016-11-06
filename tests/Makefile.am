@@ -22,7 +22,7 @@ generated: clean-generated $(GENERATED)
 
 # === test programs ===
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
 # testwavechunk
 TAPTESTS             += testwavechunk

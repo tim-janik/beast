@@ -4,8 +4,6 @@
 
 #include        "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_PIANO_ROLL              (bst_piano_roll_get_type ())
 #define BST_PIANO_ROLL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PIANO_ROLL, BstPianoRoll))
@@ -109,7 +107,5 @@ void    bst_piano_roll_set_marker               (BstPianoRoll          *self,
                                                  guint                  position,
                                                  BstPianoRollMarkerType mtype);
 
-
-G_END_DECLS
 
 #endif /* __BST_PIANO_ROLL_H__ */

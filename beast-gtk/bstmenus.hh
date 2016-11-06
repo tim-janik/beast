@@ -4,8 +4,6 @@
 
 #include        "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- BstChoice --- */
 /* BstChoice are simple inlined popup menus for modal selections.
  */
@@ -48,7 +46,7 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
 							    (name), NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
-							    NULL, NULL, BST_STOCK_NONE, Bse::Icon()))
+							    "", NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE_END                   (NULL)
 
 
@@ -70,8 +68,6 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   void                   *choice_id,
 					   const String 	  &icon_stock_id,
 					   const Bse::Icon	  &bseicon);
-
-G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus

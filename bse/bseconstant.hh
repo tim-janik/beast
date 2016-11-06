@@ -4,10 +4,6 @@
 
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 
 
@@ -28,7 +24,4 @@ struct BseConstant : BseSource {
 struct BseConstantClass : BseSourceClass
 {};
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 #endif /* __BSE_CONSTANT_H__ */

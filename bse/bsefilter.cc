@@ -3,8 +3,6 @@
 #include <sfi/sfi.hh>
 using namespace Rapicorn;
 
-extern "C" {
-
 const gchar*
 bse_iir_filter_kind_string (BseIIRFilterKind fkind)
 {
@@ -103,5 +101,3 @@ bse_iir_filter_design (const BseIIRFilterRequest  *filter_request,
     return _bse_filter_design_ellf (filter_request, filter_design);
   return false;
 }
-
-} // C

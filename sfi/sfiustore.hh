@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- typedefs --- */
 /* typedef struct _SfiUStore SfiUStore; */
@@ -65,8 +63,6 @@ GSList*		sfi_ppool_slist	        (SfiPPool	 *pool);
 void		sfi_ppool_destroy	(SfiPPool	 *pool);
 
 
-
-G_END_DECLS
 
 #endif /* __SFI_USTORE_H__ */
 

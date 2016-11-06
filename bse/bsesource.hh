@@ -5,8 +5,6 @@
 #include <bse/gsldefs.hh>
 #include <sfi/gbsearcharray.hh>
 
-G_BEGIN_DECLS
-
 /* --- BseSource type macros --- */
 #define BSE_TYPE_SOURCE              (BSE_TYPE_ID (BseSource))
 #define BSE_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOURCE, BseSource))
@@ -270,8 +268,6 @@ SfiRing*        bse_source_list_omodules        (BseSource      *source);
 void    bse_source_clear_probes                 (BseSource      *source);
 void    bse_source_class_add_probe_signals      (BseSourceClass *klass);
 void    bse_source_probes_modules_changed       (BseSource      *source);
-
-G_END_DECLS
 
 namespace Bse {
 

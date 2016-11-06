@@ -6,8 +6,6 @@
 #include <bse/bsemididevice.hh>
 #include <bse/testobject.hh>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
 #define BSE_SERVER_CAST(object)      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
@@ -91,8 +89,6 @@ Bse::Error	bse_server_run_remote			(BseServer	    *server,
 void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
-G_END_DECLS
-
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 
@@ -138,8 +134,9 @@ public:
   virtual NoteDescription note_from_string (MusicalTuning musical_tuning, const String &name) override;
   virtual int             note_from_freq   (MusicalTuning musical_tuning, double frequency) override;
   virtual double          note_to_freq     (MusicalTuning musical_tuning, int note, int fine_tune) override;
-  virtual CategorySeq     category_match_typed (const String &pattern, const String &type_name) override;
-  virtual CategorySeq     category_match       (const String &pattern) override;
+  virtual CategorySeq     category_match_typed    (const String &pattern, const String &type_name) override;
+  virtual CategorySeq     category_match          (const String &pattern) override;
+  virtual int64           tick_stamp_from_systime (int64 systime_usecs) override;
   void               send_user_message      (const UserMessage &umsg);
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

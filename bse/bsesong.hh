@@ -5,8 +5,6 @@
 #include        <bse/bsesnet.hh>
 
 
-G_BEGIN_DECLS
-
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SONG              (BSE_TYPE_ID (BseSong))
@@ -65,8 +63,6 @@ BseBus*    bse_song_find_master        (BseSong *self);
 BseSource* bse_song_ensure_master      (BseSong *self);
 void       bse_song_set_solo_bus       (BseSong *self, BseBus *bus);
 BseTrack*  bse_song_find_first_track   (BseSong *self, BsePart *part);
-
-G_END_DECLS
 
 namespace Bse {
 

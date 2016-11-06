@@ -4,8 +4,6 @@
 
 #include "gxkutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- macros --- */
 #define GXK_IS_PARAM(p) (p && G_IS_PARAM_SPEC (p->pspec))
 
@@ -171,8 +169,6 @@ GtkAdjustment* gxk_param_get_adjustment_with_stepping (GxkParam  *param,
                                                        gdouble    pstepping);
 GtkAdjustment* gxk_param_get_log_adjustment           (GxkParam  *param);
 GtkAdjustment* gxk_param_get_decibel_adjustment       (GxkParam  *param);
-
-G_END_DECLS
 
 #endif /* __GXK_PARAM_H__ */
 

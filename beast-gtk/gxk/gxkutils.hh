@@ -4,8 +4,6 @@
 
 #include        <gxk/gxkglobals.hh>
 
-G_BEGIN_DECLS
-
 /* --- generated includes --- */
 /* type IDs */
 #include <gxk/gxkgentypes.h>
@@ -344,7 +342,5 @@ gchar*  gxk_zfile_uncompress    (guint                uncompressed_size,
                                  const unsigned char *cdata,
                                  guint                cdata_size);
 
-
-G_END_DECLS
 
 #endif /* __GXK_UTILS_H__ */

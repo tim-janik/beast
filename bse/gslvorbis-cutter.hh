@@ -4,8 +4,6 @@
 
 #include <bse/gslcommon.hh>
 
-G_BEGIN_DECLS
-
 /* --- typedefs & enums --- */
 typedef struct _GslVorbisCutter  GslVorbisCutter;
 typedef enum
@@ -33,7 +31,5 @@ guint             gsl_vorbis_cutter_read_ogg            (GslVorbisCutter        
                                                          guint8                 *bytes);
 gboolean          gsl_vorbis_cutter_ogg_eos             (GslVorbisCutter        *self);
 void              gsl_vorbis_cutter_destroy             (GslVorbisCutter        *self);
-
-G_END_DECLS
 
 #endif /* __GSL_VORBIS_CUTTER_H__ */

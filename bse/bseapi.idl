@@ -956,6 +956,9 @@ interface Server : Object {
   CategorySeq category_match_typed (String pattern, String type_name); ///< List BSE categories according to a pattern and type match.
   CategorySeq category_match       (String pattern);                   ///< List BSE categories according to a pattern match.
 
+  /// Helper for Wave PCM positioning.
+  int64       tick_stamp_from_systime (int64 systime_usecs);
+
   // *** Old Janitor ***
   // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.
   // String get_script_name  (); ///< Retrieve the script name of this janitor.

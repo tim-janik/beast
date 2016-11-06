@@ -4,8 +4,6 @@
 
 #include <sfi/sfitypes.hh>
 
-G_BEGIN_DECLS;
-
 
 /* --- basic comparisons --- */
 typedef gint (*SfiCompareFunc)		(gconstpointer   value1,
@@ -156,8 +154,6 @@ gpointer    sfi_ring_min            	(const SfiRing  	*head,
 gpointer    sfi_ring_max           	(const SfiRing  	*head,
                                          SfiCompareFunc 	 cmp,
                                          gpointer       	 data);
-
-G_END_DECLS;
 
 #endif /* __SFI_RING_H__ */
 

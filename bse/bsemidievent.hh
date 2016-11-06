@@ -4,8 +4,6 @@
 
 #include <bse/bseobject.hh>
 
-G_BEGIN_DECLS
-
 /* --- MIDI constants --- */
 #define	BSE_MIDI_MAX_CHANNELS		(99)
 
@@ -138,7 +136,5 @@ BseMidiEvent* bse_midi_event_signal   (uint                midi_channel,
                                        float               value);
 double        bse_midi_signal_default (Bse::MidiSignal signal);
 const char*   bse_midi_signal_name    (Bse::MidiSignal signal);
-
-G_END_DECLS
 
 #endif /* __BSE_MIDI_EVENT_H__ */

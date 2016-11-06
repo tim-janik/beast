@@ -4,8 +4,6 @@
 
 #include	<bse/bseprocedure.hh>
 
-G_BEGIN_DECLS
-
 /* --- export node types --- */
 typedef enum {
   BSE_EXPORT_NODE_NONE,
@@ -163,7 +161,5 @@ void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
 #else
 #define BSE_EXPORT_CONFIG__SSE3  0
 #endif
-
-G_END_DECLS
 
 #endif /* __BSE_EXPORTS_H__ */

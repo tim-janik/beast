@@ -4,6 +4,7 @@
 
 #include <bse/bsecxxbase.hh>
 #include <bse/bseieee754.hh>
+#include <bse/bseengine.hh>
 
 namespace Bse {
 
@@ -192,11 +193,6 @@ auto_update_accessor (BseModule *bmodule,
 
 
 /* --- implementation details --- */
-namespace externC { extern "C" {
-extern guint bse_engine_exvar_sample_freq;
-extern guint bse_engine_exvar_block_size;
-extern guint64 bse_module_tick_stamp (BseModule*);
-} }
 inline BseModule*
 SynthesisModule::engine_module ()
 {
@@ -205,17 +201,17 @@ SynthesisModule::engine_module ()
 inline const uint
 SynthesisModule::mix_freq () const
 {
-  return externC::bse_engine_exvar_sample_freq;
+  return bse_engine_sample_freq();
 }
 inline const uint
 SynthesisModule::block_size () const
 {
-  return externC::bse_engine_exvar_block_size;
+  return bse_engine_block_size();
 }
 inline guint64
 SynthesisModule::tick_stamp ()
 {
-  return externC::bse_module_tick_stamp (engine_module());
+  return bse_module_tick_stamp (engine_module());
 }
 inline const IStream&
 SynthesisModule::istream (uint         istream_index) const

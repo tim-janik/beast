@@ -5,8 +5,6 @@
 
 #include "bsttrackroll.hh"
 
-G_BEGIN_DECLS
-
 typedef struct _BstTrackRollUtil BstTrackRollUtil;
 typedef struct {
   /* misc data */
@@ -44,7 +42,5 @@ GxkActionList*  bst_track_roll_controller_canvas_actions        (BstTrackRollCon
 GxkActionList*  bst_track_roll_controller_hpanel_actions        (BstTrackRollController *self);
 GxkActionList*  bst_track_roll_controller_quant_actions         (BstTrackRollController *self);
 
-
-G_END_DECLS
 
 #endif /* __BST_TRACK_ROLL_CONTROLLER_H__ */

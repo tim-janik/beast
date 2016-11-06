@@ -4,8 +4,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 typedef struct
 {
   /* runtime parameters */
@@ -48,8 +46,6 @@ void   bse_free_verb_cpp_save_config	(BseFreeVerbCpp		*cpp,
 void   bse_free_verb_cpp_restore_config	(BseFreeVerbCpp		*cpp,
 					 BseFreeVerbConfig	*config);
 
-
-G_END_DECLS
 
 
 #endif /* __BSE_FREE_VERB_CPP_H__ */

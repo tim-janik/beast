@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 
 /* --- typedefs & structures --- */
 typedef enum /*< skip >*/
@@ -71,7 +69,5 @@ Bse::Error                 bst_key_binding_dump         (const gchar            
 Bse::Error                 bst_key_binding_parse        (const gchar                 *file_name,
                                                            GSList                      *kbindings);
 GParamSpec*                  bst_key_binding_item_pspec   (void);
-
-G_END_DECLS
 
 #endif /* __BST_KEY_BINDINGS_H__ */

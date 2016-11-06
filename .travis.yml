@@ -7,62 +7,46 @@ os: linux
 dist: trusty
 sudo: required
 services: docker
-language: c
+language: generic
 
 env:
   global:
-    #- http_proxy="http://example.com"
-    - INTENT="package" # default intent
+    - INTENT="package,bintrayup" # default
   matrix:
     # package: build packages for distribution $DIST
     - DIST="ubuntu:wily"
     - DIST="debian:jessie"
     - DIST="debian:testing"
     - DIST="ubuntu:xenial"
-    # distcheck: succeed in 'make distcheck'
-    - INTENT="distcheck" DIST="ubuntu:wily"
+    - DIST="ubuntu:yakkety"
+    - DIST="ubuntu:wily" INTENT="clangbuild,distcheck"
 matrix:
   allow_failures:
     - env: DIST="debian:testing"
     - env: DIST="ubuntu:xenial"
-    - env: INTENT="distcheck" DIST="ubuntu:wily"
+    - env: DIST="ubuntu:yakkety"
   fast_finish: true
 
 before_install:
-  # buildtool.sh requires complete history for monotonic revisioning
-  - travis_retry git fetch --unshallow
-  # Build variable setup; example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie BTREPO=devel
-  # Uses `buildtool.sh` to determine the version dependent bintray repository name
-  - true &&
-    export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" BTREPO="`./buildtool.sh ifdevel devel deb`" &&
-    export BEASTAPTSOURCE="deb [trusted=yes] https://dl.bintray.com/beast-team/$BTREPO $DISTRELEASE main" &&
-    echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BEASTAPTSOURCE='$BEASTAPTSOURCE'"
-  # Sample environment
+  # Show build setup
+  - echo "INTENT=$INTENT DIST=$DIST"
   - uname -a
   - cat /etc/os-release
   - pwd
   - free -tm
-  - make --version
   - python --version
-  - $CC --version
 
 install:
-  # Configure Dockerfile by substituting @VAR@ with $VAR
-  - ./buildtool.sh applyenv .travis.docker > Dockerfile
-  # Build and run tests, create packages
-  - docker build -t beast .
+  # git describe requires complete history
+  - travis_retry git fetch --unshallow
 
 script:
-  # Upload packages
-  - ([ $INTENT = package ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
-      "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $BTREPO/beast $DISTRELEASE *.deb")
-  # Test package installation from remote location
-  - ([ $INTENT = package ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
-        "set -x && retry apt-get update && retry apt-get -y install beast libbse-dev")
+  # Build inside docker container
+  - misc/dockerbuild.sh "$DIST" "$INTENT"
   - docker ps -a
 
 after_success:
-  - echo "Done, all OK!"
+  - echo "OK, all done."
 
 notifications:
   irc:

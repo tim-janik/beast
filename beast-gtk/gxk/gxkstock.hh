@@ -4,8 +4,6 @@
 
 #include        <gxk/gxkutils.hh>
 
-G_BEGIN_DECLS
-
 /* --- icon sizes --- */
 #define GXK_ICON_SIZE_BUTTON	  (gxk_size_button)
 #define GXK_ICON_SIZE_BIG_BUTTON  (gxk_size_big_button)
@@ -59,7 +57,5 @@ extern GtkIconSize	gxk_size_tabulator;
 extern GtkIconSize	gxk_size_info_sign;
 extern GtkIconSize	gxk_size_palette;
 
-
-G_END_DECLS
 
 #endif /* __GXK_STOCK_H__ */

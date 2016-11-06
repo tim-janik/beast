@@ -5,10 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_MULT              (bse_mult_get_type())
@@ -39,9 +35,5 @@ enum
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_MULT_H__ */

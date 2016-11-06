@@ -4,11 +4,10 @@
       Bse::*;    vtable*Bse::*;    typeinfo*Bse::*;	virtual*Bse::*;	VTT*Bse::*;
       Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;	virtual*Sfi::*; VTT*Sfi::*;
       Rapicorn*::Aida::enum_info*;
+      bse_*;
+      gsl_*;
+      sfi_*;
+      g_*;
     };
-    birnet_*;
-    bse_*;
-    gsl_*;
-    sfi_*;
-    g_*;
   local: *;
 };

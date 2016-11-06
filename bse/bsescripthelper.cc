@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsescripthelper.hh"
-#include "../configure.h"
 #include "bsecategories.hh"
 #include "bsejanitor.hh"
 #include "bseserver.hh"

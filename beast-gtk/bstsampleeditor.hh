@@ -5,10 +5,6 @@
 #include	"bstqsampler.hh"
 #include	"bstplayback.hh"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SAMPLE_EDITOR		  (bst_sample_editor_get_type ())
@@ -53,9 +49,5 @@ void		bst_sample_editor_set_sample	(BstSampleEditor *sample_editor,
 						 SfiProxy	  editable_sample);
 void		bst_sample_editor_rebuild	(BstSampleEditor *sample_editor);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BST_SAMPLE_EDITOR_H__ */

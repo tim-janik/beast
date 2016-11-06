@@ -4,8 +4,6 @@
 
 #include	<bse/bsemididevice.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_DEVICE_NULL		(BSE_TYPE_ID (BseMidiDeviceNULL))
 #define BSE_MIDI_DEVICE_NULL(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_DEVICE_NULL, BseMidiDeviceNULL))
@@ -19,5 +17,4 @@ struct BseMidiDeviceNULL : BseMidiDevice
 struct BseMidiDeviceNULLClass : BseMidiDeviceClass
 {};
 
-G_END_DECLS
 #endif /* __BSE_MIDI_DEVICE_NULL_H__ */

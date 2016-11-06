@@ -5,10 +5,6 @@
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 
 /* --- object type macros --- */
 #define BSE_TYPE_SEQUENCER              (bse_sequencer_get_type())
@@ -36,9 +32,5 @@ enum
 };
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_SEQUENCER_H__ */

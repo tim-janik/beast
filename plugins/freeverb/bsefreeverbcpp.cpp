@@ -4,8 +4,6 @@
 #include "revmodel.hpp"
 
 
-G_BEGIN_DECLS
-
 /* --- functions --- */
 void
 bse_free_verb_cpp_create (BseFreeVerbCpp *cpp)
@@ -86,5 +84,3 @@ bse_free_verb_cpp_restore_config (BseFreeVerbCpp    *cpp,
 {
   *config = cpp->saved_config;
 }
-
-G_END_DECLS

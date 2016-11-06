@@ -4,8 +4,6 @@
 
 #include	"bstparamview.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_PROCEDURE_SHELL	    (bst_procedure_shell_get_type ())
 #define BST_PROCEDURE_SHELL(object)	    (GTK_CHECK_CAST ((object), BST_TYPE_PROCEDURE_SHELL, BstProcedureShell))
@@ -67,7 +65,5 @@ void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
 						 ...) G_GNUC_NULL_TERMINATED;
 GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
                                                  const gchar    *parameter);
-
-G_END_DECLS
 
 #endif /* __BST_PROCEDURE_H__ */

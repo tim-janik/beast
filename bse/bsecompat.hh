@@ -4,8 +4,6 @@
 
 #include        <bse/bseenums.hh>
 
-G_BEGIN_DECLS
-
 
 /* --- parameter changes --- */
 #define bse_param_spec_genum(name,nick,blurb, genum_type, default_value, hints) \
@@ -33,7 +31,5 @@ gchar*  bse_compat_rewrite_ochannel_ident       (BseStorage    *storage,
                                                  const gchar   *type_name,
                                                  const gchar   *ochannel_ident);
 
-
-G_END_DECLS
 
 #endif /* __BSE_COMPAT_H__ */

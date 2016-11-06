@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_APP            (bst_app_get_type ())
 #define BST_APP(object)         (GTK_CHECK_CAST ((object), BST_TYPE_APP, BstApp))
@@ -96,7 +94,5 @@ BstApp*         bst_app_new                     (Bse::ProjectH   project);
 void            bst_app_create_default          (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
 void            bst_app_show_release_notes      (BstApp         *app);
-
-G_END_DECLS
 
 #endif  /* __BST_APP_H__ */

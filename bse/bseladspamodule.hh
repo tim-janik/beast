@@ -5,8 +5,6 @@
 #include <bse/bsesource.hh>
 #include <bse/bseladspa.hh>
 
-G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_LADSPA_MODULE              (BSE_TYPE_ID (BseLadspaModule))
 #define BSE_LADSPA_MODULE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_LADSPA_MODULE, BseLadspaModule))
@@ -28,7 +26,5 @@ struct BseLadspaModuleClass : BseSourceClass {
 void	bse_ladspa_module_derived_type_info	(GType			type,
 						 BseLadspaInfo	       *bli,
 						 GTypeInfo	       *type_info);
-
-G_END_DECLS
 
 #endif /* __BSE_LADSPA_MODULE_H__ */

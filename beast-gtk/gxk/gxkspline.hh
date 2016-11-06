@@ -4,8 +4,6 @@
 
 #include        <gxk/gxkglobals.hh>
 
-G_BEGIN_DECLS
-
 typedef struct _GxkSpline GxkSpline;
 typedef struct {
   double x, y;
@@ -37,7 +35,5 @@ GxkSpline*      gxk_spline_copy         (GxkSpline              *spline);
 void            gxk_spline_free         (GxkSpline              *spline);
 
 
-
-G_END_DECLS
 
 #endif /* __GXK_SPLINE_H__ */

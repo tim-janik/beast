@@ -4,8 +4,6 @@
 
 #include "bstutils.hh"
 
-G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define BST_TYPE_PROJECT_CTRL              (bst_project_ctrl_get_type ())
 #define BST_PROJECT_CTRL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PROJECT_CTRL, BstProjectCtrl))
@@ -36,7 +34,5 @@ void		bst_project_ctrl_set_project	(BstProjectCtrl	*self, Bse::ProjectH project)
 void		bst_project_ctrl_play		(BstProjectCtrl *self);
 void		bst_project_ctrl_stop		(BstProjectCtrl *self);
 
-
-G_END_DECLS
 
 #endif /* __BST_PROJECT_CTRL_H__ */

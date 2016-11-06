@@ -5,8 +5,6 @@
 #include <bse/bsemath.hh>
 #include <bse/gsldatahandle.hh>
 
-G_BEGIN_DECLS
-
 /* --- structures --- */
 #define GSL_DATA_HANDLE_PEEK_BUFFER     (2048)
 typedef struct
@@ -1433,8 +1431,6 @@ gsl_conv_to_double (GslWaveFormatType format,
       RAPICORN_ASSERT_UNREACHED();
     }
 }
-
-G_END_DECLS
 
 #endif /* __GSL_DATA_UTILS_H__ */
 
