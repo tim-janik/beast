@@ -171,7 +171,7 @@ void       bse_transact                 (BseJob               *job,
                                          ...) G_GNUC_NULL_TERMINATED;
 
 /* --- module utilities (EngineThread functions) --- */
-gfloat*    bse_engine_const_values      (gfloat                value);
+float*     bse_engine_const_values      (float value);
 
 /* --- initialization & main loop --- */
 void       bse_engine_constrain         (guint                 latency_ms,
@@ -185,7 +185,7 @@ gboolean   bse_engine_configure         (guint                 latency_ms,
                                          guint                 control_freq);
 
 /* --- miscellaneous --- */
-gfloat*    bse_engine_const_zeros	      (guint	     smaller_than_BSE_STREAM_MAX_VALUES);
+float*     bse_engine_const_zeros	      (uint smaller_than_BSE_STREAM_MAX_VALUES);
 gboolean   bse_engine_has_garbage             (void);
 void       bse_engine_user_thread_collect     (void);
 void       bse_engine_free_ostreams	      (guint         n_ostreams,

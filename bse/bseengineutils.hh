@@ -9,12 +9,11 @@ void		_engine_free_trans		(BseTrans      *trans);
 BseOStream*	_engine_alloc_ostreams		(guint		n);
 #if 0	/* bseengine.hh: */
 void            bse_engine_user_thread_collect	(void);
-gfloat*		bse_engine_const_values		(gfloat		value);
 #endif
 
 
 /* --- MasterThread --- */
-void		_engine_recycle_const_values	(gboolean        nuke_all);
+void		_engine_recycle_const_values	(bool remove_all);
 void		_engine_node_collect_jobs	(EngineNode	*node);
 /* master node list */
 void		_engine_mnl_remove		(EngineNode	*node);
