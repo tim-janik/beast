@@ -24,4 +24,14 @@ public:
 
 } // Bse
 
+
+namespace BseInternal {
+
+void    engine_run_slave        ();
+void    engine_start_slaves     ();
+void    engine_stop_slaves      ();
+void    engine_wakeup_slaves    ();
+
+} // BseInternal
+
 #endif /* __BSE_ENGINE_MASTER_H__ */
