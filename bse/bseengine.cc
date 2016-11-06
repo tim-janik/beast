@@ -1194,11 +1194,10 @@ slave (gpointer data)
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 /* --- setup & trigger --- */
-static gboolean		bse_engine_initialized = FALSE;
-static gboolean		bse_engine_threaded = FALSE;
-guint			bse_engine_exvar_block_size = 0;
-guint			bse_engine_exvar_sample_freq = 0;
-guint			bse_engine_exvar_control_mask = 0;
+static bool     bse_engine_initialized = false;
+uint		bse_engine_exvar_sample_freq = 8000;
+uint		bse_engine_exvar_block_size = 4096;
+uint		bse_engine_exvar_control_mask = 4096 - 1;
 
 /**
  * @param latency_ms	calculation latency in milli seconds
@@ -1315,14 +1314,7 @@ bse_engine_configure (guint            latency_ms,
   sync_lock = FALSE;
   trans = bse_trans_open();
   bse_trans_add (trans, job);
-  if (bse_engine_threaded)
-    bse_trans_commit (trans);
-  else
-    {
-      bse_trans_dismiss (trans);
-      /* simulate master */
-      sync_lock = TRUE;
-    }
+  bse_trans_commit (trans);
   while (!sync_lock)
     sync_cond.wait (sync_mutex);
   sync_mutex.unlock();
@@ -1351,19 +1343,17 @@ bse_engine_configure (guint            latency_ms,
   bse_engine_user_thread_collect();
   if (success)
     EDEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
-            bse_engine_threaded ? "(threaded)" : "",
+            "(threaded)",
             bse_engine_sample_freq(), bse_engine_block_size(), bse_engine_control_raster(),
             bse_engine_sample_freq() / (float) bse_engine_control_raster());
   return success;
 }
-/**
- * @param run_threaded	whether the engine should be run threaded
- *
- * Initialize the BSE Engine, this function must be called prior to
- * any other engine related function and can only be invoked once.
+
+/** Initialize the BSE audio processing engine.
+ * This function must be called prior to any other engine related function and can only be invoked once.
  */
 void
-bse_engine_init (gboolean run_threaded)
+bse_engine_init()
 {
   assert_return (bse_engine_initialized == FALSE);
   bse_engine_initialized = TRUE;
@@ -1372,15 +1362,11 @@ bse_engine_init (gboolean run_threaded)
   assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
   assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
   assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
+  /* setup threading */
+  Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */
   bse_engine_configure (50, 44100, 50);
-  /* then setup threading */
-  bse_engine_threaded = run_threaded;
-  if (bse_engine_threaded)
-    {
-      Bse::MasterThread::start (bse_main_wakeup);
-      (void) slave; // FIXME: start slave ("DSP #2")
-    }
+  (void) slave; // FIXME: start slave ("DSP #2")
 }
 
 gboolean
@@ -1388,16 +1374,11 @@ bse_engine_prepare (BseEngineLoop *loop)
 {
   assert_return (loop != NULL, FALSE);
   assert_return (bse_engine_initialized == TRUE, FALSE);
-  if (!bse_engine_threaded)
-    return _engine_master_prepare (loop) || bse_engine_has_garbage ();
-  else
-    {
-      loop->timeout = -1;
-      loop->fds_changed = FALSE;
-      loop->n_fds = 0;
-      loop->revents_filled = FALSE;
-      return bse_engine_has_garbage ();
-    }
+  loop->timeout = -1;
+  loop->fds_changed = FALSE;
+  loop->n_fds = 0;
+  loop->revents_filled = FALSE;
+  return bse_engine_has_garbage ();
 }
 gboolean
 bse_engine_check (const BseEngineLoop *loop)
@@ -1405,10 +1386,7 @@ bse_engine_check (const BseEngineLoop *loop)
   assert_return (loop != NULL, FALSE);
   if (loop->n_fds)
     assert_return (loop->revents_filled == TRUE, FALSE);
-  if (!bse_engine_threaded)
-    return _engine_master_check (loop) || bse_engine_has_garbage ();
-  else
-    return bse_engine_has_garbage ();
+  return bse_engine_has_garbage ();
 }
 
 /**
@@ -1425,8 +1403,6 @@ void
 bse_engine_dispatch (void)
 {
   assert_return (bse_engine_initialized == TRUE);
-  if (!bse_engine_threaded)
-    _engine_master_dispatch ();
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
     bse_engine_user_thread_collect ();
 }
@@ -1489,10 +1465,6 @@ void
 bse_engine_wait_on_trans (void)
 {
   assert_return (bse_engine_initialized == TRUE);
-
-  /* non-threaded */
-  if (!bse_engine_threaded)
-    _engine_master_dispatch_jobs ();
 
   /* threaded */
   _engine_wait_on_trans ();

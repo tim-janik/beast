@@ -5,6 +5,7 @@
 #include "bseenginenode.hh"
 #include "bseengineschedule.hh"
 #include "bsemathsignal.hh"
+#include <unordered_map>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -475,10 +476,11 @@ _engine_pop_unprocessed_node (void)
   pqueue_mutex.lock();
   node = pqueue_schedule ? _engine_schedule_pop_node (pqueue_schedule) : NULL;
   if (node)
-    pqueue_n_nodes += 1;
+    {
+      pqueue_n_nodes += 1;
+      ENGINE_NODE_LOCK (node);
+    }
   pqueue_mutex.unlock();
-  if (node)
-    ENGINE_NODE_LOCK (node);
   return node;
 }
 static inline void
@@ -641,157 +643,41 @@ _engine_mnl_node_changed (EngineNode *node)
 
 
 /* --- const value blocks --- */
-float*
-bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
-{
-  static const float engine_const_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, };
-  /* this function is callable from any thread */
-  assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
-  return (float*) engine_const_zero_block;
-}
-
-typedef struct
-{
-  guint    n_nodes;
-  gfloat **nodes;
-  guint8  *nodes_used;
-} ConstValuesArray;
-
-static const guint8 CONST_VALUES_EXPIRE = 16;           /* expire value after being unused for 16 times */
-
-static inline gfloat**
-const_values_lookup_nextmost (ConstValuesArray *array,
-		              gfloat	        key_value)
-{
-  guint n_nodes = array->n_nodes;
-
-  if (n_nodes > 0)
-    {
-      gfloat **nodes = array->nodes;
-      gfloat **check;
-
-      nodes -= 1;
-      do
-	{
-	  guint i;
-	  register gfloat cmp;
-
-	  i = (n_nodes + 1) >> 1;
-	  check = nodes + i;
-	  cmp = key_value - **check;
-	  if (cmp > BSE_SIGNAL_EPSILON)
-	    {
-	      n_nodes -= i;
-	      nodes = check;
-	    }
-	  else if (cmp < -BSE_SIGNAL_EPSILON)
-	    n_nodes = i - 1;
-	  else /* cmp ~==~ 0.0 */
-	    return check;   /* matched */
-	}
-      while (n_nodes);
-
-      return check;  /* nextmost */
-    }
-
-  return NULL;
-}
-
-static inline guint
-upper_power2 (guint number)
-{
-  return sfi_alloc_upper_power2 (MAX (number, 8));
-}
-
-static inline void
-const_values_insert (ConstValuesArray *array,
-		     guint             index,
-		     gfloat	      *value_block)
-{
-  if (array->n_nodes == 0)
-    {
-      uint new_size = upper_power2 (sizeof (float*));
-      array->nodes = (float**) g_realloc (array->nodes, new_size);
-      array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
-      array->n_nodes = 1;
-      assert (index == 0);
-    }
-  else
-    {
-      uint n_nodes = array->n_nodes++;
-      if (*array->nodes[index] < *value_block)
-	index++;
-      if (1)
-	{
-	  uint new_size = upper_power2 (array->n_nodes * sizeof (gfloat*));
-	  uint old_size = upper_power2 (n_nodes * sizeof (gfloat*));
-	  if (new_size != old_size)
-	    {
-	      array->nodes = (float**) g_realloc (array->nodes, new_size);
-	      array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (float*));
-	    }
-	}
-      memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
-      memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
-    }
-  array->nodes[index] = value_block;
-  array->nodes_used[index] = CONST_VALUES_EXPIRE;
-}
-
-static ConstValuesArray cvalue_array = { 0, NULL, NULL };
+typedef std::unordered_map<float, const float*> FloatBlockMap;
+static std::mutex    engine_const_value_mutex;
+static FloatBlockMap engine_const_value_map;
+static const float   engine_const_values_0[BSE_STREAM_MAX_VALUES + 16] = { 0 }; // 0.0...
 
 float*
-bse_engine_const_values (gfloat value)
+bse_engine_const_values (float value)
 {
-  if (fabs (value) < BSE_SIGNAL_EPSILON)
-    return bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
-
-  float **block = const_values_lookup_nextmost (&cvalue_array, value);
-  /* found correct match? */
-  if (block && fabs (**block - value) < BSE_SIGNAL_EPSILON)
+  if (value == 0.0)
+    return const_cast<float*> (engine_const_values_0);
+  std::lock_guard<std::mutex> guard (engine_const_value_mutex);
+  const float *&block = engine_const_value_map[value];
+  if (block == NULL)
     {
-      cvalue_array.nodes_used[block - cvalue_array.nodes] = CONST_VALUES_EXPIRE;
-      return *block;
+      float *value_block = new float[BSE_STREAM_MAX_VALUES + 16];
+      bse_block_fill_float (BSE_STREAM_MAX_VALUES + 16, value_block, value);
+      block = value_block;
     }
-  else
-    {
-      /* create new value block */
-      gfloat *values = g_new (gfloat, bse_engine_block_size ());
-      bse_block_fill_float (bse_engine_block_size(), values, value);
-      if (block)
-	const_values_insert (&cvalue_array, block - cvalue_array.nodes, values);
-      else
-	const_values_insert (&cvalue_array, 0, values);
+  return const_cast<float*> (block);
+}
 
-      return values;
-    }
+float*
+bse_engine_const_zeros (uint smaller_than_BSE_STREAM_MAX_VALUES)
+{
+  assert_return (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES, NULL);
+  return const_cast<float*> (engine_const_values_0);
 }
 
 void
-_engine_recycle_const_values (gboolean nuke_all)
+_engine_recycle_const_values (bool remove_all)
 {
-  gfloat **nodes = cvalue_array.nodes;
-  guint8 *used = cvalue_array.nodes_used;
-  guint count = cvalue_array.n_nodes, e = 0, i;
-
-  for (i = 0; i < count; i++)
-    {
-      if (nuke_all)
-        used[i] = 0;
-      else
-        used[i]--;      /* invariant: use counts are never 0 */
-
-      if (used[i] == 0)
-	g_free (nodes[i]);
-      else /* preserve node */
-	{
-	  if (e < i)
-	    {
-	      nodes[e] = nodes[i];
-	      used[e] = used[i];
-	    }
-	  e++;
-	}
-    }
-  cvalue_array.n_nodes = e;
+  if (!remove_all)
+    return;
+  std::lock_guard<std::mutex> guard (engine_const_value_mutex);
+  for (const auto &it : engine_const_value_map)
+    delete[] it.second;
+  engine_const_value_map.clear();
 }
