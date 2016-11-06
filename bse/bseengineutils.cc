@@ -475,10 +475,11 @@ _engine_pop_unprocessed_node (void)
   pqueue_mutex.lock();
   node = pqueue_schedule ? _engine_schedule_pop_node (pqueue_schedule) : NULL;
   if (node)
-    pqueue_n_nodes += 1;
+    {
+      pqueue_n_nodes += 1;
+      ENGINE_NODE_LOCK (node);
+    }
   pqueue_mutex.unlock();
-  if (node)
-    ENGINE_NODE_LOCK (node);
   return node;
 }
 static inline void
