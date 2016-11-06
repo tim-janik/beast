@@ -1079,7 +1079,7 @@ engine_init (BseServer *server,
   if (!engine_is_initialized)
     {
       engine_is_initialized = true;
-      bse_engine_init (true);
+      bse_engine_init();
       // lower priority compared to engine if our priority range permits
       const int mypid = Rapicorn::ThisThread::thread_pid();
       int current_priority = getpriority (PRIO_PROCESS, mypid);
