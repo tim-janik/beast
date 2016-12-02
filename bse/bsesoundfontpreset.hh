@@ -5,8 +5,6 @@
 #include	<bse/bseitem.hh>
 #include        <fluidsynth.h>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SOUND_FONT_PRESET		(BSE_TYPE_ID (BseSoundFontPreset))
 #define BSE_SOUND_FONT_PRESET(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT_PRESET, BseSoundFontPreset))
@@ -24,7 +22,5 @@ struct BseSoundFontPresetClass : BseItemClass
 
 void   bse_sound_font_preset_init_preset (BseSoundFontPreset *self,
 					  fluid_preset_t     *fluid_preset);
-
-G_END_DECLS
 
 #endif /* __BSE_SOUND_FONT_PRESET_HH__ */

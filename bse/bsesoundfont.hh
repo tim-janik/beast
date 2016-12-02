@@ -5,8 +5,6 @@
 #include	<bse/bsecontainer.hh>
 #include        <bse/bsestorage.hh>
 
-G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SOUND_FONT		  (BSE_TYPE_ID (BseSoundFont))
 #define BSE_SOUND_FONT(object)		  (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT, BseSoundFont))
@@ -29,8 +27,6 @@ Bse::Error      bse_sound_font_load_blob	(BseSoundFont       *sound_font,
 						 gboolean            init_presets);
 void		bse_sound_font_unload           (BseSoundFont       *sound_font);
 Bse::Error      bse_sound_font_reload           (BseSoundFont       *sound_font);
-
-G_END_DECLS
 
 namespace Bse {
 

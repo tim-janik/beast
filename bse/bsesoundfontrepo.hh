@@ -7,8 +7,6 @@
 #include        <bse/bsesoundfontosc.hh>
 #include        <bse/bseengine.hh>
 
-G_BEGIN_DECLS
-
 #define BSE_TYPE_SOUND_FONT_REPO	        (BSE_TYPE_ID (BseSoundFontRepo))
 #define BSE_SOUND_FONT_REPO(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT_REPO, BseSoundFontRepo))
 #define BSE_SOUND_FONT_REPO_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SOUND_FONT_REPO, BseSoundFontRepoClass))
@@ -62,8 +60,6 @@ int	       bse_sound_font_repo_add_osc            (BseSoundFontRepo *sfrepo,
 						       BseSoundFontOsc  *osc);
 void           bse_sound_font_repo_remove_osc         (BseSoundFontRepo *sfrepo,
 						       guint             osc_id);
-
-G_END_DECLS
 
 namespace Bse {
 
