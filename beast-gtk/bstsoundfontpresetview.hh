@@ -4,8 +4,6 @@
 
 #include "bstitemview.hh"
 
-G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SOUND_FONT_PRESET_VIEW		     (bst_sound_font_preset_view_get_type ())
 #define	BST_SOUND_FONT_PRESET_VIEW(object)	     (GTK_CHECK_CAST ((object), BST_TYPE_SOUND_FONT_PRESET_VIEW, BstSoundFontPresetView))
@@ -32,5 +30,4 @@ struct _BstSoundFontPresetViewClass
 GType		bst_sound_font_preset_view_get_type          (void);
 GtkWidget*	bst_sound_font_preset_view_new               (void);
 
-G_END_DECLS
 #endif /* __BST_SOUND_FONT_PRESET_VIEW_HH__ */
