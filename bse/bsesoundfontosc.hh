@@ -5,10 +5,6 @@
 #include <bse/bsesource.hh>
 #include <bse/bsesoundfontpreset.hh>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #define BSE_TYPE_SOUND_FONT_OSC		      (BSE_TYPE_ID (BseSoundFontOsc))
 #define BSE_SOUND_FONT_OSC(object)	      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT_OSC, BseSoundFontOsc))
 #define BSE_SOUND_FONT_OSC_CLASS(class)	      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SOUND_FONT_OSC, BseSoundFontOscClass))
@@ -40,9 +36,5 @@ struct BseSoundFontOsc : BseSource {
 };
 struct BseSoundFontOscClass : BseSourceClass
 {};
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_SOUND_FONT_OSC_HH__ */
