@@ -113,9 +113,6 @@ bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
   sfrepo->fluid_mix_freq = 0;
 
   sfrepo->n_fluid_channels = 0;
-  sfrepo->channel_values_left = NULL;
-  sfrepo->channel_values_right = NULL;
-  sfrepo->n_silence_samples = NULL;
 
   sfrepo->n_channel_oscs_active = 0;
   sfrepo->channel_values_tick_stamp = 0;
@@ -143,6 +140,8 @@ static void
 bse_sound_font_repo_prepare (BseSource *source)
 {
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+
   guint i, channels_required = 0;
   for (i = 0; i < sfrepo->n_oscs; i++)
     {
@@ -152,20 +151,15 @@ bse_sound_font_repo_prepare (BseSource *source)
   guint mix_freq = bse_engine_sample_freq();
   if (sfrepo->n_fluid_channels != channels_required || sfrepo->fluid_mix_freq != mix_freq)
     {
-      for (i = channels_required; i < sfrepo->n_fluid_channels; i++) // n_fluid_channels > channels_required
-	{
-	  g_free (sfrepo->channel_values_left[i]);
-	  g_free (sfrepo->channel_values_right[i]);
-	}
-      sfrepo->channel_values_left = (float **)g_realloc (sfrepo->channel_values_left, sizeof (float *) * channels_required);
-      sfrepo->channel_values_right = (float **)g_realloc (sfrepo->channel_values_right, sizeof (float *) * channels_required);
-      sfrepo->n_silence_samples = (gint *) g_realloc (sfrepo->n_silence_samples, sizeof (gint) * channels_required);
-      for (i = sfrepo->n_fluid_channels; i < channels_required; i++) // n_fluid_channels < channels_required
-	{
-	  sfrepo->channel_values_left[i] = g_new0 (float, BSE_STREAM_MAX_VALUES);
-	  sfrepo->channel_values_right[i] = g_new0 (float, BSE_STREAM_MAX_VALUES);
-	  sfrepo->n_silence_samples[i] = 0;
-	}
+      sfrepo_impl->channel_state.resize (channels_required);
+
+      for (auto& cstate : sfrepo_impl->channel_state)
+        {
+          cstate.n_silence_samples = 0;
+          cstate.values_left.resize (BSE_STREAM_MAX_VALUES);
+          cstate.values_right.resize (BSE_STREAM_MAX_VALUES);
+        }
+
       sfrepo->n_fluid_channels = channels_required;
       sfrepo->fluid_mix_freq = mix_freq;
 
@@ -223,18 +217,7 @@ bse_sound_font_repo_dispose (GObject *object)
   sfrepo->channel_map = NULL;
   g_free (sfrepo->oscs);
   sfrepo->oscs = NULL;
-  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)
-    {
-      g_free (sfrepo->channel_values_left[i]);
-      g_free (sfrepo->channel_values_right[i]);
-    }
   sfrepo->n_fluid_channels = 0;
-  g_free (sfrepo->channel_values_left);
-  sfrepo->channel_values_left = NULL;
-  g_free (sfrepo->channel_values_right);
-  sfrepo->channel_values_right = NULL;
-  g_free (sfrepo->n_silence_samples);
-  sfrepo->n_silence_samples = NULL;
 
   if (sfrepo->fluid_events != NULL)
     g_warning (G_STRLOC ": fluid event queue should be empty in dispose");

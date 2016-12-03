@@ -33,10 +33,7 @@ struct BseSoundFontRepo : BseSuper {
   guint              fluid_mix_freq;
 
   guint              n_fluid_channels;
-  float		   **channel_values_left;     /* [0..n_fluid_channels-1] */
-  float		   **channel_values_right;    /* [0..n_fluid_channels-1] */
   guint64	     channel_values_tick_stamp;
-  gint              *n_silence_samples;       /* [0..n_fluid_channels-1] */
 
   guint              n_oscs;
   BseSoundFontOsc  **oscs;		      /* [0..n_oscs-1] */
@@ -64,7 +61,16 @@ void           bse_sound_font_repo_remove_osc         (BseSoundFontRepo *sfrepo,
 namespace Bse {
 
 class SoundFontRepoImpl : public SuperImpl, public virtual SoundFontRepoIface {
+public:
+  struct ChannelState {
+    std::vector<float>  values_left;
+    std::vector<float>  values_right;
+    int                 n_silence_samples;
+  };
+  std::vector<ChannelState> channel_state; /* [0..n_fluid_channels-1] */
+
 protected:
+
   virtual  ~SoundFontRepoImpl ();
 public:
   explicit      SoundFontRepoImpl (BseObject*);
