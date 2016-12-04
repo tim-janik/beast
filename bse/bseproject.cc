@@ -1138,9 +1138,8 @@ ProjectImpl::import_midi_file (const String &file_name)
       BseSong *song = bse_project_get_song (self);
       if (!song)
 	{
-	  gchar *basename = g_path_get_basename (file_name.c_str());
-	  bse_item_exec (self, "create-song", basename, &song);
-	  g_free (basename);
+          SongIfaceP song_iface = create_song (Path::basename (file_name));
+          song = song_iface->as<BseSong*>();
 	}
       bse_midi_file_setup_song (smf, song);
       bse_item_undo_close (ustack);
