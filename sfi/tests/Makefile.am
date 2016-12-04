@@ -6,8 +6,7 @@ DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID
 AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
-progs_nosfi_ldadd = $(LIBBSE_LIBS)
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(progs_nosfi_ldadd)
+progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
@@ -30,7 +29,7 @@ $(srcdir)/testcxx.cc: testidl.h testidl.c
 # testsfidl
 TAPTESTS         += testsfidl
 testsfidl_SOURCES = testsfidl.cc
-testsfidl_LDADD   = $(progs_nosfi_ldadd)
+testsfidl_LDADD   = $(progs_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 
 # testidl (generation test)
