@@ -11,7 +11,6 @@
 #include <sfi/gbsearcharray.hh>
 #include <map>
 #include <set>
-#include <list>
 
 namespace {
 using namespace Bse;
@@ -253,7 +252,7 @@ struct MidiChannel {
   guint           n_voices;
   VoiceSwitch   **voices;
   VoiceInputTable voice_input_table;
-  std::list<EventHandler> event_handlers;
+  std::vector<EventHandler> event_handlers;
   MidiChannel (guint mc) :
     midi_channel (mc),
     poly_enabled (0)
@@ -281,7 +280,7 @@ struct MidiChannel {
   void
   remove_event_handler (const EventHandler& handler)
   {
-    list<EventHandler>::iterator hi = find (event_handlers.begin(), event_handlers.end(), handler);
+    vector<EventHandler>::iterator hi = find (event_handlers.begin(), event_handlers.end(), handler);
     g_return_if_fail (hi != event_handlers.end());
     event_handlers.erase (hi);
   }
@@ -1085,8 +1084,7 @@ MidiChannel::call_event_handlers (BseMidiEvent *event,
                                   BseTrans     *trans)
 {
   bool success = false;
-  list<EventHandler>::iterator hi;
-  for (hi = event_handlers.begin(); hi != event_handlers.end(); hi++)
+  for (vector<EventHandler>::const_iterator hi = event_handlers.begin(); hi != event_handlers.end(); hi++)
     {
       int activated = 0;
       for (guint i = 0; i < n_voices; i++)
