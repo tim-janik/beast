@@ -439,7 +439,8 @@ sound_font_osc_process (BseModule *module,
   BseSoundFontRepo *sfrepo = flmod->config.sfrepo;
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sfrepo));
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sfrepo);
   if (flmod->config.update_preset != flmod->last_update_preset)
     {
       fluid_synth_program_select (fluid_synth,	sfrepo_impl->oscs[flmod->config.osc_id].channel,
@@ -478,8 +479,6 @@ sound_font_osc_process (BseModule *module,
       float done = (cstate.n_silence_samples > flmod->config.silence_bound && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
       BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).values = bse_engine_const_values (done);
     }
-
-  bse_sound_font_repo_unlock_fluid_synth (sfrepo);
 }
 
 static int
@@ -502,7 +501,7 @@ sound_font_osc_process_midi (gpointer            null,
                              BseTrans           *trans)
 {
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  bse_sound_font_repo_lock_fluid_synth (flmod->config.sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (flmod->config.sfrepo));
   Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   int note = bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
@@ -558,7 +557,6 @@ sound_font_osc_process_midi (gpointer            null,
       fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
       flmod->config.sfrepo->fluid_events = sfi_ring_insert_sorted (flmod->config.sfrepo->fluid_events, fluid_event, event_cmp, NULL);
     }
-  bse_sound_font_repo_unlock_fluid_synth (flmod->config.sfrepo);
 }
 
 typedef struct
@@ -635,11 +633,11 @@ bse_sound_font_osc_context_create (BseSource *source,
 
   /* reset fluid synth if necessary */
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (self->config.sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
   if (self->config.sfrepo->n_channel_oscs_active == 0)
     fluid_synth_system_reset (fluid_synth);
   self->config.sfrepo->n_channel_oscs_active++;
-  bse_sound_font_repo_unlock_fluid_synth (self->config.sfrepo);
 }
 
 static void
@@ -657,7 +655,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
                                           NULL,
                                           module);
   /* remove old events from the event queue */
-  bse_sound_font_repo_lock_fluid_synth (self->config.sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
   SfiRing *fluid_events = self->config.sfrepo->fluid_events;
   SfiRing *node = fluid_events;
   while (node)
@@ -673,7 +671,6 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
     }
   self->config.sfrepo->n_channel_oscs_active--;
   self->config.sfrepo->fluid_events = fluid_events;
-  bse_sound_font_repo_unlock_fluid_synth (self->config.sfrepo);
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }

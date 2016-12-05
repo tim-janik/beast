@@ -317,19 +317,17 @@ bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo,
   gather_presets (BSE_ITEM (sfrepo), items);
 }
 
-fluid_synth_t *
-bse_sound_font_repo_lock_fluid_synth (BseSoundFontRepo *sfrepo)
+Bse::Mutex&
+bse_sound_font_repo_mutex (BseSoundFontRepo *sfrepo)
 {
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  sfrepo_impl->fluid_synth_mutex.lock();
-  return sfrepo->fluid_synth;
+  return sfrepo_impl->fluid_synth_mutex;
 }
 
-void
-bse_sound_font_repo_unlock_fluid_synth (BseSoundFontRepo *sfrepo)
+fluid_synth_t*
+bse_sound_font_repo_fluid_synth (BseSoundFontRepo *sfrepo)
 {
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  sfrepo_impl->fluid_synth_mutex.unlock();
+  return sfrepo->fluid_synth;
 }
 
 int

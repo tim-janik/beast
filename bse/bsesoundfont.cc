@@ -126,7 +126,8 @@ bse_sound_font_load_blob (BseSoundFont    *self,
       self->blob = NULL;
     }
 
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (self->sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->sfrepo));
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->sfrepo);
   int sfont_id = fluid_synth_sfload (fluid_synth, bse_storage_blob_file_name (blob), 0);
   Bse::Error error;
   if (sfont_id != -1)
@@ -156,7 +157,6 @@ bse_sound_font_load_blob (BseSoundFont    *self,
       bse_storage_blob_unref (blob);
       error = Bse::Error::WAVE_NOT_FOUND;
     }
-  bse_sound_font_repo_unlock_fluid_synth (self->sfrepo);
   return error;
 }
 
@@ -167,9 +167,10 @@ bse_sound_font_unload (BseSoundFont *sound_font)
 
   if (sound_font->sfont_id != -1)
     {
-      fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (sound_font->sfrepo);
+      std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font->sfrepo));
+      fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font->sfrepo);
+
       fluid_synth_sfunload (fluid_synth, sound_font->sfont_id, 1 /* reset presets */);
-      bse_sound_font_repo_unlock_fluid_synth (sound_font->sfrepo);
     }
   sound_font->sfont_id = -1;
 }
