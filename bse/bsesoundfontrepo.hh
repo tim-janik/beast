@@ -35,10 +35,6 @@ struct BseSoundFontRepo : BseSuper {
   guint              n_fluid_channels;
   guint64	     channel_values_tick_stamp;
 
-  guint              n_oscs;
-  BseSoundFontOsc  **oscs;		      /* [0..n_oscs-1] */
-  guint		    *channel_map;	      /* [0..n_oscs-1] */
-
   int		     n_channel_oscs_active;	  /* SoundFontOscs with an active module in the engine thread */
 
   GList             *sound_fonts;
@@ -68,6 +64,12 @@ public:
     int                 n_silence_samples;
   };
   std::vector<ChannelState> channel_state; /* [0..n_fluid_channels-1] */
+
+  struct Osc {
+    BseSoundFontOsc *osc;
+    guint            channel;
+  };
+  std::vector<Osc> oscs;
 
 protected:
 

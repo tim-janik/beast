@@ -102,10 +102,6 @@ bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
 {
   new (&sfrepo->fluid_synth_mutex) Bse::Mutex();
 
-  sfrepo->n_oscs = 0;
-  sfrepo->oscs = NULL;
-  sfrepo->channel_map = NULL;
-
   sfrepo->fluid_settings = new_fluid_settings();
   sfrepo->fluid_synth = new_fluid_synth (sfrepo->fluid_settings);
   sfrepo->fluid_events = NULL;
@@ -142,11 +138,11 @@ bse_sound_font_repo_prepare (BseSource *source)
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  guint i, channels_required = 0;
-  for (i = 0; i < sfrepo->n_oscs; i++)
+  guint channels_required = 0;
+  for (auto& o : sfrepo_impl->oscs)
     {
-      if (sfrepo->oscs[i])
-	sfrepo->channel_map[i] = channels_required++;
+      if (o.osc)
+	o.channel = channels_required++;
     }
   guint mix_freq = bse_engine_sample_freq();
   if (sfrepo->n_fluid_channels != channels_required || sfrepo->fluid_mix_freq != mix_freq)
@@ -213,10 +209,6 @@ bse_sound_font_repo_dispose (GObject *object)
       delete_fluid_settings (sfrepo->fluid_settings);
       sfrepo->fluid_settings = NULL;
     }
-  g_free (sfrepo->channel_map);
-  sfrepo->channel_map = NULL;
-  g_free (sfrepo->oscs);
-  sfrepo->oscs = NULL;
   sfrepo->n_fluid_channels = 0;
 
   if (sfrepo->fluid_events != NULL)
@@ -346,28 +338,28 @@ int
 bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
                              BseSoundFontOsc  *osc)
 {
-  guint i;
-  for (i = 0; i < sfrepo->n_oscs; i++)
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+  for (guint i = 0; i < sfrepo_impl->oscs.size(); i++)
     {
-      if (sfrepo->oscs[i] == 0)
+      if (!sfrepo_impl->oscs[i].osc)
 	{
-	  sfrepo->oscs[i] = osc;
+	  sfrepo_impl->oscs[i].osc = osc;
 	  return i;
 	}
     }
-  sfrepo->oscs = (BseSoundFontOsc **)g_realloc (sfrepo->oscs, sizeof (BseSoundFontOsc *) * (i + 1));
-  sfrepo->oscs[i] = osc;
-  sfrepo->channel_map = (guint *) g_realloc (sfrepo->channel_map, sizeof (guint) * (i + 1));
-  return sfrepo->n_oscs++;
+  sfrepo_impl->oscs.push_back ({ osc, 0 });
+  return sfrepo_impl->oscs.size() - 1;
 }
 
 void
 bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
                                 guint             osc_id)
 {
-  g_return_if_fail (osc_id < sfrepo->n_oscs);
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  sfrepo->oscs[osc_id] = 0;
+  g_return_if_fail (osc_id < sfrepo_impl->oscs.size());
+
+  sfrepo_impl->oscs[osc_id].osc = nullptr;
 }
 
 namespace Bse {

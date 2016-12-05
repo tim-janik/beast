@@ -440,10 +440,9 @@ sound_font_osc_process (BseModule *module,
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
   fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (sfrepo);
-  guint i;
   if (flmod->config.update_preset != flmod->last_update_preset)
     {
-      fluid_synth_program_select (fluid_synth,	flmod->config.sfrepo->channel_map[flmod->config.osc_id],
+      fluid_synth_program_select (fluid_synth,	sfrepo_impl->oscs[flmod->config.osc_id].channel,
 						flmod->config.sfont_id, flmod->config.bank, flmod->config.program);
       flmod->last_update_preset = flmod->config.update_preset;
     }
@@ -451,8 +450,9 @@ sound_font_osc_process (BseModule *module,
   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
     process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 
-  float *left_output = &sfrepo_impl->channel_state[sfrepo->channel_map[flmod->config.osc_id]].values_left[0];
-  float *right_output = &sfrepo_impl->channel_state[sfrepo->channel_map[flmod->config.osc_id]].values_right[0];
+  auto& cstate = sfrepo_impl->channel_state[sfrepo_impl->oscs[flmod->config.osc_id].channel];
+  float *left_output = &cstate.values_left[0];
+  float *right_output = &cstate.values_right[0];
 
   int delta = bse_module_tick_stamp (module) - now_tick_stamp;
   if (delta + n_values <= bse_engine_block_size())    /* paranoid check, should always pass */
@@ -468,13 +468,14 @@ sound_font_osc_process (BseModule *module,
     }
   if (BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).connected)
     {
+      guint i;
       for (i = 0; i < n_values && left_output[i] == 0.0 && right_output[i] == 0.0; i++)
 	;
       if (i == n_values)
-	sfrepo_impl->channel_state[sfrepo->channel_map[flmod->config.osc_id]].n_silence_samples += n_values;
+	cstate.n_silence_samples += n_values;
       else
-	sfrepo_impl->channel_state[sfrepo->channel_map[flmod->config.osc_id]].n_silence_samples = 0;
-      float done = (sfrepo_impl->channel_state[sfrepo->channel_map[flmod->config.osc_id]].n_silence_samples > flmod->config.silence_bound && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
+	cstate.n_silence_samples = 0;
+      float done = (cstate.n_silence_samples > flmod->config.silence_bound && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
       BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).values = bse_engine_const_values (done);
     }
 
@@ -502,6 +503,7 @@ sound_font_osc_process_midi (gpointer            null,
 {
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
   bse_sound_font_repo_lock_fluid_synth (flmod->config.sfrepo);
+  Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   int note = bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
   switch (event->status)
@@ -553,7 +555,7 @@ sound_font_osc_process_midi (gpointer            null,
   if (fluid_event)
     {
       fluid_event->tick_stamp = event->delta_time;
-      fluid_event->channel = flmod->config.sfrepo->channel_map[flmod->config.osc_id];
+      fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
       flmod->config.sfrepo->fluid_events = sfi_ring_insert_sorted (flmod->config.sfrepo->fluid_events, fluid_event, event_cmp, NULL);
     }
   bse_sound_font_repo_unlock_fluid_synth (flmod->config.sfrepo);
@@ -579,10 +581,11 @@ event_handler_setup_func (BseModule *module,
 
   /* setup program before first midi event */
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
+  Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
 
   BseFluidEvent *fluid_event = g_new0 (BseFluidEvent, 1);
   fluid_event->command = BSE_FLUID_SYNTH_PROGRAM_SELECT;
-  fluid_event->channel = flmod->config.sfrepo->channel_map[flmod->config.osc_id];
+  fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
   fluid_event->arg1 = flmod->config.bank;
   fluid_event->arg2 = flmod->config.program;
   fluid_event->sfont_id = flmod->config.sfont_id;
@@ -645,6 +648,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
 			            BseTrans		 *trans)
 {
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
+  Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   BseModule *module = bse_source_get_context_omodule (source, context_handle);
   BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
   bse_midi_receiver_remove_event_handler (mc.midi_receiver,
@@ -660,7 +664,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
     {
       SfiRing *next_node = sfi_ring_walk (node, fluid_events);
       BseFluidEvent *event = (BseFluidEvent *) node->data;
-      if (event->channel == self->config.sfrepo->channel_map[self->config.osc_id])
+      if (event->channel == sfrepo_impl->oscs[self->config.osc_id].channel)
 	{
 	  g_free (event);
 	  fluid_events = sfi_ring_remove_node (fluid_events, node);
