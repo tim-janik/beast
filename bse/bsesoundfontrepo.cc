@@ -70,9 +70,7 @@ BSE_BUILTIN_TYPE (BseSoundFontRepo)
 static void
 bse_sound_font_repo_finalize (GObject *object)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (object);
   G_OBJECT_CLASS (parent_class)->finalize (object);
-  sfrepo->fluid_synth_mutex.~Mutex();
 }
 
 static void
@@ -100,8 +98,6 @@ bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
 static void
 bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
 {
-  new (&sfrepo->fluid_synth_mutex) Bse::Mutex();
-
   sfrepo->fluid_settings = new_fluid_settings();
   sfrepo->fluid_synth = new_fluid_synth (sfrepo->fluid_settings);
   sfrepo->fluid_events = NULL;
@@ -324,14 +320,16 @@ bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo,
 fluid_synth_t *
 bse_sound_font_repo_lock_fluid_synth (BseSoundFontRepo *sfrepo)
 {
-  sfrepo->fluid_synth_mutex.lock();
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+  sfrepo_impl->fluid_synth_mutex.lock();
   return sfrepo->fluid_synth;
 }
 
 void
 bse_sound_font_repo_unlock_fluid_synth (BseSoundFontRepo *sfrepo)
 {
-  sfrepo->fluid_synth_mutex.unlock();
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+  sfrepo_impl->fluid_synth_mutex.unlock();
 }
 
 int

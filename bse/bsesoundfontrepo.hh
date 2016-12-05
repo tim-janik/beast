@@ -26,7 +26,6 @@ struct BseFluidEvent {
 };
 
 struct BseSoundFontRepo : BseSuper {
-  Bse::Mutex	     fluid_synth_mutex;
   fluid_settings_t  *fluid_settings;
   fluid_synth_t     *fluid_synth;
   SfiRing           *fluid_events;
@@ -58,6 +57,7 @@ namespace Bse {
 
 class SoundFontRepoImpl : public SuperImpl, public virtual SoundFontRepoIface {
 public:
+  Bse::Mutex	     fluid_synth_mutex;
   struct ChannelState {
     std::vector<float>  values_left;
     std::vector<float>  values_right;
