@@ -42,14 +42,6 @@ struct _BseStorageItemLink
   BseItem              *to_item;
   gchar                *error;
 };
-struct _BseStorageBlob
-{
-  Bse::Mutex  mutex;
-  char       *file_name;
-  int	      ref_count;
-  gboolean    is_temp_file;
-  gulong      id;
-};
 
 /* --- prototypes --- */
 static void       bse_storage_init                 (BseStorage       *self);
@@ -241,8 +233,6 @@ bse_storage_reset (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
 
-  for (auto blob : self->data.blobs)
-    bse_storage_blob_unref (blob);
   self->data.blobs.clear();
 
   g_free (self->free_me);
@@ -274,10 +264,10 @@ bse_storage_add_dblock (BseStorage    *self,
 }
 
 static gulong
-bse_storage_add_blob (BseStorage     *self,
-                      BseStorageBlob *blob)
+bse_storage_add_blob (BseStorage       *self,
+                      BseStorage::BlobP blob)
 {
-  self->data.blobs.push_back (bse_storage_blob_ref (blob));
+  self->data.blobs.push_back (blob);
   return self->data.blobs.back()->id;
 }
 
@@ -1810,24 +1800,10 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
 
 // == blobs ==
 
-BseStorageBlob *
-bse_storage_blob_ref (BseStorageBlob *blob)
-{
-  g_return_val_if_fail (blob != NULL, NULL);
-  g_return_val_if_fail (blob->ref_count > 0, NULL);
-
-  blob->mutex.lock();
-  blob->ref_count++;
-  blob->mutex.unlock();
-
-  return blob;
-}
-
 const gchar *
-bse_storage_blob_file_name (BseStorageBlob *blob)
+bse_storage_blob_file_name (BseStorage::BlobP blob)
 {
   g_return_val_if_fail (blob != NULL, NULL);
-  g_return_val_if_fail (blob->ref_count > 0, NULL);
 
   blob->mutex.lock();
   const gchar *file_name = blob->file_name;
@@ -1836,29 +1812,16 @@ bse_storage_blob_file_name (BseStorageBlob *blob)
   return file_name;
 }
 
-void
-bse_storage_blob_unref (BseStorageBlob *blob)
+BseStorage::Blob::~Blob()
 {
-  g_return_if_fail (blob != NULL);
-  g_return_if_fail (blob->ref_count > 0);
-
-  blob->mutex.lock();
-  blob->ref_count--;
-  gboolean destroy = blob->ref_count == 0;
-  blob->mutex.unlock();
-  if (destroy)
+  if (is_temp_file)
     {
-      if (blob->is_temp_file)
-	{
-	  unlink (blob->file_name);
-	  /* FIXME: check error code and do what? */
-	}
-      g_free (blob->file_name);
-      blob->file_name = NULL;
-      bse_id_free (blob->id);
-      blob->mutex.~Mutex();
-      g_free (blob);
+      unlink (file_name);
+      /* FIXME: check error code and do what? */
     }
+  g_free (file_name);
+  file_name = NULL;
+  bse_id_free (id);
 }
 
 /* search in /tmp for files called "bse-<user>-<pid>*"
@@ -1893,24 +1856,21 @@ bse_storage_blob_clean_files()
     }
 }
 
-BseStorageBlob *
+BseStorage::BlobP
 bse_storage_blob_new_from_file (const char *file_name,
                                 gboolean    is_temp_file)
 {
-  BseStorageBlob *blob = g_new0 (BseStorageBlob, 1);
-  new (&blob->mutex) Bse::Mutex();
+  BseStorage::BlobP blob = std::make_shared<BseStorage::Blob>(); // FIXME: constructor
   blob->file_name = g_strdup (file_name);
-  blob->ref_count = 1;
   blob->is_temp_file = is_temp_file;
   blob->id = bse_id_alloc();
   return blob;
 }
 
 gboolean
-bse_storage_blob_is_temp_file (BseStorageBlob *blob)
+bse_storage_blob_is_temp_file (BseStorage::BlobP blob)
 {
   g_return_val_if_fail (blob != NULL, FALSE);
-  g_return_val_if_fail (blob->ref_count > 0, FALSE);
 
   blob->mutex.lock();
   gboolean is_temp_file = blob->is_temp_file;
@@ -1919,19 +1879,19 @@ bse_storage_blob_is_temp_file (BseStorageBlob *blob)
   return is_temp_file;
 }
 
-typedef struct
+struct WStoreBlob
 {
-  BseStorageBlob *blob;
-  BseStorage     *storage;
-  int             fd;
-} WStoreBlob;
+  BseStorage::BlobP blob;
+  BseStorage       *storage;
+  int               fd;
+};
 
 static WStoreBlob *
-wstore_blob_new (BseStorage *storage,
-                 BseStorageBlob *blob)
+wstore_blob_new (BseStorage        *storage,
+                 BseStorage::BlobP  blob)
 {
-  WStoreBlob *wsb = (WStoreBlob *) g_new0 (WStoreBlob, 1);
-  wsb->blob = bse_storage_blob_ref (blob);
+  WStoreBlob *wsb = new WStoreBlob();
+  wsb->blob = blob;
   wsb->storage = storage;
   wsb->fd = -1;
   return wsb;
@@ -1970,12 +1930,12 @@ wstore_blob_destroy (gpointer data)
   WStoreBlob *wblob = (WStoreBlob *) data;
   if (wblob->fd >= 0)
     close (wblob->fd);
-  bse_storage_blob_unref (wblob->blob);
+  delete wblob;
 }
 
 void
-bse_storage_put_blob (BseStorage      *self,
-                      BseStorageBlob  *blob)
+bse_storage_put_blob (BseStorage         *self,
+                      BseStorage::BlobP   blob)
 {
   if (BSE_STORAGE_DBLOCK_CONTAINED (self))
     {
@@ -1997,14 +1957,14 @@ bse_storage_put_blob (BseStorage      *self,
 
 GTokenType
 bse_storage_parse_blob (BseStorage             *self,
-                        BseStorageBlob        **blob)
+                        BseStorage::BlobP      &blob_out)
 {
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
   char *file_name = g_strdup_format ("%s/bse-%s-%u-%08x", g_get_tmp_dir(), g_get_user_name(), getpid(), g_random_int());
 
-  *blob = NULL; /* on error, the resulting blob should be NULL */
+  blob_out = nullptr; /* on error, the resulting blob should be NULL */
 
   parse_or_return (scanner, '(');
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
@@ -2072,7 +2032,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	}
       close (bse_fd);
       close (tmp_fd);
-      *blob = bse_storage_blob_new_from_file (file_name, TRUE);
+      blob_out = bse_storage_blob_new_from_file (file_name, TRUE);
       g_free (file_name);
     }
   else if (g_quark_try_string (scanner->value.v_identifier) == quark_blob_id)
@@ -2080,13 +2040,14 @@ bse_storage_parse_blob (BseStorage             *self,
       gulong id;
       parse_or_return (scanner, G_TOKEN_INT);
       id = scanner->value.v_int64;
-      *blob = NULL;
-      for (auto b : self->data.blobs)
+      blob_out = NULL;
+      for (auto blob : self->data.blobs)
 	{
-	  if (b->id == id)
-	    *blob = bse_storage_blob_ref (b);
+	  if (blob->id == id)
+	    blob_out = blob;
+;
 	}
-      if (!*blob)
+      if (!blob_out)
 	{
 	  g_warning ("failed to lookup storage blob with id=%ld\n", id);
 	  goto return_with_error;

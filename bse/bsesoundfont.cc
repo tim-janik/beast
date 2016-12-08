@@ -30,7 +30,6 @@ static GQuark      quark_load_sound_font = 0;
 static void
 bse_sound_font_init (BseSoundFont *sound_font)
 {
-  sound_font->blob = NULL;
   sound_font->sfont_id = -1;
   sound_font->sfrepo = NULL;
 }
@@ -56,11 +55,12 @@ bse_sound_font_get_property (GObject    *object,
 		             GParamSpec *pspec)
 {
   BseSoundFont *sound_font = BSE_SOUND_FONT (object);
+  Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
   switch (param_id)
     {
     case PARAM_FILE_NAME:
-      if (sound_font->blob)
-        sfi_value_set_string (value, bse_storage_blob_file_name (sound_font->blob));
+      if (sound_font_impl->blob)
+        sfi_value_set_string (value, bse_storage_blob_file_name (sound_font_impl->blob));
       else
         sfi_value_set_string (value, NULL);
       break;
@@ -90,14 +90,7 @@ bse_sound_font_finalize (GObject *object)
 {
   BseSoundFont *sound_font = BSE_SOUND_FONT (object);
 
-  /* free blob */
-  if (sound_font->blob)
-    {
-      bse_storage_blob_unref (sound_font->blob);
-      sound_font->blob = NULL;
-    }
-
-  if (sound_font->sfrepo != NULL || sound_font->blob != NULL || sound_font->sfont_id != -1)
+  if (sound_font->sfrepo != NULL || sound_font->sfont_id != -1)
     g_warning (G_STRLOC ": some resources could not be freed.");
 
   /* chain parent class' handler */
@@ -105,10 +98,12 @@ bse_sound_font_finalize (GObject *object)
 }
 
 Bse::Error
-bse_sound_font_load_blob (BseSoundFont    *self,
-                          BseStorageBlob  *blob,
-			  gboolean         init_presets)
+bse_sound_font_load_blob (BseSoundFont       *self,
+                          BseStorage::BlobP   blob,
+			  gboolean            init_presets)
 {
+  Bse::SoundFontImpl *sound_font_impl = self->as<Bse::SoundFontImpl *>();
+
   if (self->sfrepo == NULL)
     {
       self->sfrepo = BSE_SOUND_FONT_REPO (BSE_ITEM (self)->parent);
@@ -118,13 +113,6 @@ bse_sound_font_load_blob (BseSoundFont    *self,
   g_return_val_if_fail (blob != NULL, Bse::Error::INTERNAL);
   g_return_val_if_fail (self->sfrepo != NULL, Bse::Error::INTERNAL);
   g_return_val_if_fail (self->sfont_id == -1, Bse::Error::INTERNAL);
-
-  bse_storage_blob_ref (blob);
-  if (self->blob)
-    {
-      bse_storage_blob_unref (self->blob);
-      self->blob = NULL;
-    }
 
   std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->sfrepo);
@@ -149,12 +137,12 @@ bse_sound_font_load_blob (BseSoundFont    *self,
 	    }
 	}
       self->sfont_id = sfont_id;
-      self->blob = blob;
+      sound_font_impl->blob = blob;
       error = Bse::Error::NONE;
     }
   else
     {
-      bse_storage_blob_unref (blob);
+      sound_font_impl->blob = nullptr;
       error = Bse::Error::WAVE_NOT_FOUND;
     }
   return error;
@@ -178,9 +166,11 @@ bse_sound_font_unload (BseSoundFont *sound_font)
 Bse::Error
 bse_sound_font_reload (BseSoundFont *sound_font)
 {
+  Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
+
   g_return_val_if_fail (sound_font->sfont_id == -1, Bse::Error::INTERNAL);
 
-  return bse_sound_font_load_blob (sound_font, sound_font->blob, FALSE);
+  return bse_sound_font_load_blob (sound_font, sound_font_impl->blob, FALSE);
 }
 
 static void
@@ -188,19 +178,20 @@ bse_sound_font_store_private (BseObject  *object,
 			      BseStorage *storage)
 {
   BseSoundFont *sound_font = BSE_SOUND_FONT (object);
+  Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
   /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
 
-  if (!BSE_STORAGE_SELF_CONTAINED (storage) && !bse_storage_blob_is_temp_file (sound_font->blob))
+  if (!BSE_STORAGE_SELF_CONTAINED (storage) && !bse_storage_blob_is_temp_file (sound_font_impl->blob))
     {
       bse_storage_break (storage);
-      bse_storage_printf (storage, "(load-sound-font \"%s\")", bse_storage_blob_file_name (sound_font->blob));
+      bse_storage_printf (storage, "(load-sound-font \"%s\")", bse_storage_blob_file_name (sound_font_impl->blob));
     }
   else
     {
       bse_storage_break (storage);
       bse_storage_printf (storage, "(load-sound-font ");
-      bse_storage_put_blob (storage, sound_font->blob);
+      bse_storage_put_blob (storage, sound_font_impl->blob);
       bse_storage_printf (storage, ")");
     }
 }
@@ -222,7 +213,7 @@ bse_sound_font_restore_private (BseObject  *object,
   quark = g_quark_try_string (scanner->next_value.v_identifier);
   if (quark == quark_load_sound_font)
     {
-      BseStorageBlob *blob;
+      BseStorage::BlobP blob;
       Bse::Error error;
 
       g_scanner_get_next_token (scanner); /* eat quark identifier */
@@ -233,17 +224,12 @@ bse_sound_font_restore_private (BseObject  *object,
 	}
       else
 	{
-          GTokenType token = bse_storage_parse_blob (storage, &blob);
+          GTokenType token = bse_storage_parse_blob (storage, blob);
 	  if (token != G_TOKEN_NONE)
-	    {
-	      if (blob)
-	        bse_storage_blob_unref (blob);
-              return token;
-	    }
+            return token;
 	}
       if (g_scanner_peek_next_token (scanner) != ')')
 	{
-	  bse_storage_blob_unref (blob);
 	  return GTokenType (')');
 	}
       parse_or_return (scanner, ')');
@@ -251,7 +237,6 @@ bse_sound_font_restore_private (BseObject  *object,
       if (error != 0)
 	bse_storage_warn (storage, "failed to load sound font \"%s\": %s",
 				    bse_storage_blob_file_name (blob), bse_error_blurb (error));
-      bse_storage_blob_unref (blob);
       expected_token = G_TOKEN_NONE; /* got ')' */
     }
   else /* chain parent class' handler */

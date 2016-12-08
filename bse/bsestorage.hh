@@ -37,7 +37,6 @@ typedef enum    /*< skip >*/
 /* --- BseStorage --- */
 typedef struct _BseStorageDBlock   BseStorageDBlock;
 typedef struct _BseStorageItemLink BseStorageItemLink;
-typedef struct _BseStorageBlob     BseStorageBlob;
 typedef void (*BseStorageRestoreLink)   (gpointer        data,
                                          BseStorage     *storage,
                                          BseItem        *from_item,
@@ -65,13 +64,27 @@ struct BseStorage : BseObject {
   gfloat                 osc_freq;
   guint                  n_channels;
 
+  /* storage blob */
+  struct Blob {
+    Bse::Mutex  mutex;
+    char       *file_name;
+    gboolean    is_temp_file;
+    gulong      id;
+
+    ~Blob();
+  };
+
+  typedef std::shared_ptr<Blob> BlobP;
+
   /* C++ allocated data */
   struct Data {
-    std::vector<BseStorageBlob *> blobs;
+    std::vector<BlobP> blobs;
   } data;
 };
 struct BseStorageClass : BseObjectClass
 {};
+
+typedef struct BseStorage::Blob BseStorageBlob;
 
 /* --- compatibility file parsing --- */
 void         bse_storage_compat_dhreset         (BseStorage             *self);
@@ -121,7 +134,7 @@ void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  guint                   significant_bits,
                                                  GslDataHandle          *dhandle);
 void         bse_storage_put_blob               (BseStorage             *self,
-                                                 BseStorageBlob         *blob);
+                                                 BseStorage::BlobP       blob);
 void         bse_storage_put_xinfos             (BseStorage             *self,
                                                  gchar                 **xinfos);
 Bse::Error bse_storage_flush_fd               (BseStorage             *self,
@@ -164,18 +177,16 @@ GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  BseTryStatement         try_statement,
                                                  gpointer                user_data);
 GTokenType   bse_storage_parse_blob             (BseStorage             *self,
-                                                 BseStorageBlob        **blob);
+                                                 BseStorage::BlobP      &blob);
 gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
 /* --- bse storage blob --- */
 
-BseStorageBlob  *bse_storage_blob_ref               (BseStorageBlob         *self);
-const gchar     *bse_storage_blob_file_name         (BseStorageBlob         *self);
-gboolean         bse_storage_blob_is_temp_file      (BseStorageBlob         *self);
-void             bse_storage_blob_unref             (BseStorageBlob         *self);
-BseStorageBlob  *bse_storage_blob_new_from_file     (const gchar            *file_name,
+const gchar      *bse_storage_blob_file_name         (BseStorage::BlobP      self);
+gboolean          bse_storage_blob_is_temp_file      (BseStorage::BlobP      self);
+BseStorage::BlobP bse_storage_blob_new_from_file     (const gchar           *file_name,
                                                      gboolean                is_temp_file);
-void             bse_storage_blob_clean_files       (void);
+void              bse_storage_blob_clean_files       (void);
 
 /* --- short-hands --- */
 #define bse_storage_get_scanner(s)      ((s)->rstore->scanner)
