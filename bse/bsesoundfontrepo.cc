@@ -374,7 +374,7 @@ repo_load_file (BseSoundFontRepo *sfrepo, const String &file_name, BseSoundFont 
   BseSoundFont *sound_font = (BseSoundFont*) bse_object_new (BSE_TYPE_SOUND_FONT, "uname", fname.c_str(), NULL);
   bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
 
-  BseStorage::BlobP blob = bse_storage_blob_new_from_file (file_name.c_str(), FALSE);
+  BseStorage::BlobP blob = std::make_shared<BseStorage::Blob> (file_name, false);
   Error error = bse_sound_font_load_blob (sound_font, blob, TRUE);
 
   if (error == Bse::Error::NONE)

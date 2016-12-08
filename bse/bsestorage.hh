@@ -65,12 +65,17 @@ struct BseStorage : BseObject {
   guint                  n_channels;
 
   /* storage blob */
-  struct Blob {
-    Bse::Mutex  mutex;
-    char       *file_name;
-    gboolean    is_temp_file;
-    gulong      id;
+  class Blob {
+    std::string file_name_;
+    bool        is_temp_file_;
+    gulong      id_;
 
+  public:
+    bool        is_temp_file() const  { return is_temp_file_; }
+    std::string file_name() const     { return file_name_; }
+    gulong      id() const            { return id_; }
+
+    Blob (const std::string& file_name, bool is_temp_file);
     ~Blob();
   };
 
@@ -182,10 +187,6 @@ gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
 /* --- bse storage blob --- */
 
-const gchar      *bse_storage_blob_file_name         (BseStorage::BlobP      self);
-gboolean          bse_storage_blob_is_temp_file      (BseStorage::BlobP      self);
-BseStorage::BlobP bse_storage_blob_new_from_file     (const gchar           *file_name,
-                                                     gboolean                is_temp_file);
 void              bse_storage_blob_clean_files       (void);
 
 /* --- short-hands --- */

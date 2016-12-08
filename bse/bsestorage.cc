@@ -268,7 +268,7 @@ bse_storage_add_blob (BseStorage       *self,
                       BseStorage::BlobP blob)
 {
   self->data.blobs.push_back (blob);
-  return self->data.blobs.back()->id;
+  return self->data.blobs.back()->id();
 }
 
 static BseStorageDBlock*
@@ -1800,28 +1800,21 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
 
 // == blobs ==
 
-const gchar *
-bse_storage_blob_file_name (BseStorage::BlobP blob)
+BseStorage::Blob::Blob (const std::string& file_name, bool is_temp_file) :
+  file_name_ (file_name),
+  is_temp_file_ (is_temp_file)
 {
-  g_return_val_if_fail (blob != NULL, NULL);
-
-  blob->mutex.lock();
-  const gchar *file_name = blob->file_name;
-  blob->mutex.unlock();
-
-  return file_name;
+  id_ = bse_id_alloc();
 }
 
 BseStorage::Blob::~Blob()
 {
-  if (is_temp_file)
+  if (is_temp_file_)
     {
-      unlink (file_name);
+      unlink (file_name_.c_str());
       /* FIXME: check error code and do what? */
     }
-  g_free (file_name);
-  file_name = NULL;
-  bse_id_free (id);
+  bse_id_free (id_);
 }
 
 /* search in /tmp for files called "bse-<user>-<pid>*"
@@ -1856,29 +1849,6 @@ bse_storage_blob_clean_files()
     }
 }
 
-BseStorage::BlobP
-bse_storage_blob_new_from_file (const char *file_name,
-                                gboolean    is_temp_file)
-{
-  BseStorage::BlobP blob = std::make_shared<BseStorage::Blob>(); // FIXME: constructor
-  blob->file_name = g_strdup (file_name);
-  blob->is_temp_file = is_temp_file;
-  blob->id = bse_id_alloc();
-  return blob;
-}
-
-gboolean
-bse_storage_blob_is_temp_file (BseStorage::BlobP blob)
-{
-  g_return_val_if_fail (blob != NULL, FALSE);
-
-  blob->mutex.lock();
-  gboolean is_temp_file = blob->is_temp_file;
-  blob->mutex.unlock();
-
-  return is_temp_file;
-}
-
 struct WStoreBlob
 {
   BseStorage::BlobP blob;
@@ -1906,11 +1876,11 @@ wstore_blob_reader (gpointer data,
   if (wsb->fd == -1)
     {
       do
-	wsb->fd = open (bse_storage_blob_file_name (wsb->blob), O_RDONLY);
+	wsb->fd = open (wsb->blob->file_name().c_str(), O_RDONLY);
       while (wsb->fd == -1 && errno == EINTR);
       if (wsb->fd == -1)
 	{
-	  bse_storage_error (wsb->storage, "file %s could not be opened: %s", bse_storage_blob_file_name (wsb->blob), strerror (errno));
+	  bse_storage_error (wsb->storage, "file %s could not be opened: %s", wsb->blob->file_name().c_str(), strerror (errno));
 	  return -errno;
 	}
     }
@@ -2032,7 +2002,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	}
       close (bse_fd);
       close (tmp_fd);
-      blob_out = bse_storage_blob_new_from_file (file_name, TRUE);
+      blob_out = std::make_shared<BseStorage::Blob> (file_name, true);
       g_free (file_name);
     }
   else if (g_quark_try_string (scanner->value.v_identifier) == quark_blob_id)
@@ -2043,7 +2013,7 @@ bse_storage_parse_blob (BseStorage             *self,
       blob_out = NULL;
       for (auto blob : self->data.blobs)
 	{
-	  if (blob->id == id)
+	  if (blob->id() == id)
 	    blob_out = blob;
 ;
 	}

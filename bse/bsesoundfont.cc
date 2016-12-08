@@ -60,7 +60,7 @@ bse_sound_font_get_property (GObject    *object,
     {
     case PARAM_FILE_NAME:
       if (sound_font_impl->blob)
-        sfi_value_set_string (value, bse_storage_blob_file_name (sound_font_impl->blob));
+        sfi_value_set_string (value, sound_font_impl->blob->file_name().c_str());
       else
         sfi_value_set_string (value, NULL);
       break;
@@ -116,7 +116,7 @@ bse_sound_font_load_blob (BseSoundFont       *self,
 
   std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->sfrepo);
-  int sfont_id = fluid_synth_sfload (fluid_synth, bse_storage_blob_file_name (blob), 0);
+  int sfont_id = fluid_synth_sfload (fluid_synth, blob->file_name().c_str(), 0);
   Bse::Error error;
   if (sfont_id != -1)
     {
@@ -182,10 +182,10 @@ bse_sound_font_store_private (BseObject  *object,
   /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
 
-  if (!BSE_STORAGE_SELF_CONTAINED (storage) && !bse_storage_blob_is_temp_file (sound_font_impl->blob))
+  if (!BSE_STORAGE_SELF_CONTAINED (storage) && !sound_font_impl->blob->is_temp_file())
     {
       bse_storage_break (storage);
-      bse_storage_printf (storage, "(load-sound-font \"%s\")", bse_storage_blob_file_name (sound_font_impl->blob));
+      bse_storage_printf (storage, "(load-sound-font \"%s\")", sound_font_impl->blob->file_name().c_str());
     }
   else
     {
@@ -220,7 +220,7 @@ bse_sound_font_restore_private (BseObject  *object,
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
 	{
 	  parse_or_return (scanner, G_TOKEN_STRING);
-	  blob = bse_storage_blob_new_from_file (scanner->value.v_string, FALSE);
+	  blob = std::make_shared<BseStorage::Blob> (scanner->value.v_string, false);
 	}
       else
 	{
@@ -236,7 +236,7 @@ bse_sound_font_restore_private (BseObject  *object,
       error = bse_sound_font_load_blob (sound_font, blob, FALSE);
       if (error != 0)
 	bse_storage_warn (storage, "failed to load sound font \"%s\": %s",
-				    bse_storage_blob_file_name (blob), bse_error_blurb (error));
+				    blob->file_name().c_str(), bse_error_blurb (error));
       expected_token = G_TOKEN_NONE; /* got ')' */
     }
   else /* chain parent class' handler */
