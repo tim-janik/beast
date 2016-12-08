@@ -143,8 +143,8 @@ bse_storage_init (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
   self->free_me = NULL;
-  self->blobs = NULL;
-  self->n_blobs = 0;
+
+  new (&self->data) BseStorage::Data();
 
   bse_storage_reset (self);
 }
@@ -156,6 +156,8 @@ bse_storage_finalize (GObject *object)
 
   bse_storage_reset (self);
 
+  self->data.~Data();
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -165,10 +167,9 @@ bse_storage_turn_readable (BseStorage  *self,
                            const gchar *storage_name)
 {
   BseStorageDBlock *dblocks;
-  BseStorageBlob **blobs;
   const gchar *cmem;
   gchar *text;
-  guint n_dblocks, n_blobs, l;
+  guint n_dblocks, l;
 
   assert_return (BSE_IS_STORAGE (self));
   assert_return (BSE_STORAGE_DBLOCK_CONTAINED (self));
@@ -183,19 +184,16 @@ bse_storage_turn_readable (BseStorage  *self,
   text = (char*) g_memdup (cmem, l + 1);
   dblocks = self->dblocks;
   n_dblocks = self->n_dblocks;
-  blobs = self->blobs;
-  n_blobs = self->n_blobs;
   self->dblocks = NULL;
   self->n_dblocks = 0;
-  self->blobs = NULL;
-  self->n_blobs = 0;
+  auto blobs = self->data.blobs;
+  self->data.blobs.clear();
 
   bse_storage_input_text (self, text, storage_name);
   self->free_me = text;
   self->dblocks = dblocks;
   self->n_dblocks = n_dblocks;
-  self->blobs = blobs;
-  self->n_blobs = n_blobs;
+  self->data.blobs = blobs;
   BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_DBLOCK_CONTAINED);
 }
 
@@ -243,11 +241,9 @@ bse_storage_reset (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
 
-  for (i = 0; i < self->n_blobs; i++)
-    bse_storage_blob_unref (self->blobs[i]);
-  g_free (self->blobs);
-  self->blobs = NULL;
-  self->n_blobs = 0;
+  for (auto blob : self->data.blobs)
+    bse_storage_blob_unref (blob);
+  self->data.blobs.clear();
 
   g_free (self->free_me);
   self->free_me = NULL;
@@ -281,10 +277,8 @@ static gulong
 bse_storage_add_blob (BseStorage     *self,
                       BseStorageBlob *blob)
 {
-  guint i = self->n_blobs++;
-  self->blobs = g_renew (BseStorageBlob *, self->blobs, self->n_blobs);
-  self->blobs[i] = bse_storage_blob_ref (blob);
-  return self->blobs[i]->id;
+  self->data.blobs.push_back (bse_storage_blob_ref (blob));
+  return self->data.blobs.back()->id;
 }
 
 static BseStorageDBlock*
@@ -2087,10 +2081,10 @@ bse_storage_parse_blob (BseStorage             *self,
       parse_or_return (scanner, G_TOKEN_INT);
       id = scanner->value.v_int64;
       *blob = NULL;
-      for (size_t i = 0; i < self->n_blobs; i++)
+      for (auto b : self->data.blobs)
 	{
-	  if (self->blobs[i]->id == id)
-	    *blob = bse_storage_blob_ref (self->blobs[i]);
+	  if (b->id == id)
+	    *blob = bse_storage_blob_ref (b);
 	}
       if (!*blob)
 	{

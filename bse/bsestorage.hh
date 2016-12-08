@@ -59,13 +59,16 @@ struct BseStorage : BseObject {
   /* internal data */
   guint                  n_dblocks;
   BseStorageDBlock      *dblocks;
-  guint                  n_blobs;
-  BseStorageBlob       **blobs;
   gchar                 *free_me;
   /* compat */ // VERSION-FIXME: needed only for <= 0.5.1
   gfloat                 mix_freq;
   gfloat                 osc_freq;
   guint                  n_channels;
+
+  /* C++ allocated data */
+  struct Data {
+    std::vector<BseStorageBlob *> blobs;
+  } data;
 };
 struct BseStorageClass : BseObjectClass
 {};
