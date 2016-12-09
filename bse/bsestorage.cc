@@ -1817,15 +1817,25 @@ BseStorage::Blob::~Blob()
   bse_id_free (id_);
 }
 
-/* search in /tmp for files called "bse-<user>-<pid>*"
+static String
+bse_storage_blob_tmp_dir()
+{
+  String dirname = Rapicorn::Path::join (Rapicorn::Path::cache_home(), "libbse");
+  if (!Rapicorn::Path::check (dirname, "d"))
+    g_mkdir_with_parents (dirname.c_str(), 0755);
+  return dirname;
+}
+
+/* search in temp dir for files called "bse-<user>-<pid>*"
  * delete files if the pid does not exist any longer
  */
 void
 bse_storage_blob_clean_files()
 {
+  String tmp_dir = bse_storage_blob_tmp_dir();
+
   GError *error;
-  const char *tmp_dir = g_get_tmp_dir();
-  GDir *dir = g_dir_open (tmp_dir, 0, &error);
+  GDir *dir = g_dir_open (tmp_dir.c_str(), 0, &error);
   if (dir)
     {
       char *pattern = g_strdup_format ("bse-%s-", g_get_user_name());
@@ -1838,7 +1848,7 @@ bse_storage_blob_clean_files()
 
               if (kill (pid, 0) == -1 && errno == ESRCH)
 		{
-		  char *path = g_strdup_format ("%s/%s", tmp_dir, file_name);
+		  char *path = g_strdup_format ("%s/%s", tmp_dir.c_str(), file_name);
 		  unlink (path);
 		  g_free (path);
 		}
@@ -1932,7 +1942,7 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  char *file_name = g_strdup_format ("%s/bse-%s-%u-%08x", g_get_tmp_dir(), g_get_user_name(), getpid(), g_random_int());
+  char *file_name = g_strdup_format ("%s/bse-%s-%u-%08x", bse_storage_blob_tmp_dir().c_str(), g_get_user_name(), getpid(), g_random_int());
 
   blob_out = nullptr; /* on error, the resulting blob should be NULL */
 
