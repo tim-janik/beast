@@ -1838,7 +1838,7 @@ bse_storage_blob_clean_files()
   GDir *dir = g_dir_open (tmp_dir.c_str(), 0, &error);
   if (dir)
     {
-      char *pattern = g_strdup_format ("bse-%s-", g_get_user_name());
+      char *pattern = g_strdup_format ("bse-storage-blob-%s-", g_get_user_name());
       const char *file_name;
       while ((file_name = g_dir_read_name (dir)))
 	{
@@ -1942,7 +1942,11 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  char *file_name = g_strdup_format ("%s/bse-%s-%u-%08x", bse_storage_blob_tmp_dir().c_str(), g_get_user_name(), getpid(), g_random_int());
+  String file_name = string_format ("%s/bse-storage-blob-%s-%u", bse_storage_blob_tmp_dir(), g_get_user_name(), getpid());
+
+  // add enough randomness to ensure that collisions will not happen
+  for (int i = 0; i < 5; i++)
+    file_name += string_format ("-%08x", g_random_int());
 
   blob_out = nullptr; /* on error, the resulting blob should be NULL */
 
@@ -1962,7 +1966,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	  bse_storage_error (self, "couldn't open file %s for reading: %s\n", self->rstore->fname, strerror (errno));
 	  goto return_with_error;
 	}
-      tmp_fd = open (file_name, O_CREAT | O_WRONLY, 0600);
+      tmp_fd = open (file_name.c_str(), O_CREAT | O_WRONLY, 0600);
       if (tmp_fd < 0)
 	{
 	  bse_storage_error (self, "couldn't open file %s for writing: %s\n", file_name, strerror (errno));
@@ -2013,7 +2017,6 @@ bse_storage_parse_blob (BseStorage             *self,
       close (bse_fd);
       close (tmp_fd);
       blob_out = std::make_shared<BseStorage::Blob> (file_name, true);
-      g_free (file_name);
     }
   else if (g_quark_try_string (scanner->value.v_identifier) == quark_blob_id)
     {
@@ -2047,7 +2050,7 @@ return_with_error:
   if (tmp_fd != -1)
     {
       close (tmp_fd);
-      unlink (file_name);
+      unlink (file_name.c_str());
     }
   return G_TOKEN_ERROR;
 }
