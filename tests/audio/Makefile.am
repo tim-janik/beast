@@ -222,6 +222,17 @@ plain-wave-2-test:
 	$(Q) $(BSEFCOMPARE) $(srcdir)/plain-wave-2-test.ref $(@F).tmp --threshold 99.99
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
+# a test for soundfont loading|rendering
+FEATURE_TESTS += soundfont-test
+EXTRA_DIST += soundfont-test.bse soundfont-test.ref
+soundfont-test:
+	@$(AM_V_P) || echo "  WAVCHECK" $@;
+	$(Q) $(BSE2WAV) $(srcdir)/soundfont-test.bse $(@F).wav
+	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
+	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
+	$(Q) $(BSEFCOMPARE) $(srcdir)/soundfont-test.ref $(@F).tmp --threshold 99.99
+	$(Q) rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref

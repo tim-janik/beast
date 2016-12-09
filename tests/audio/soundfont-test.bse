@@ -1,0 +1,50 @@
+; BseProject
+
+(bse-version "0.10.1")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2016-12-09 13:36:29")
+  (creation-time "2016-12-09 13:36:29")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld"))
+(container-child "BseSoundFontRepo::Sound-Font-Repository"
+  (modification-time "2016-12-09 13:36:29")
+  (creation-time "2016-12-09 13:36:29")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BseSoundFont::minfluid.sf2"
+    (load-sound-font "minfluid.sf2")
+    (container-child "BseSoundFontPreset::Reed Organ"
+      (bank 0)
+      (program 20))))
+(container-child "BseSong::Titel"
+  (bpm 120)
+  (musical_tuning OD_12_TET)
+  (auto_activate 1)
+  (denominator 4)
+  (numerator 4)
+  (tpqn 384)
+  (modification-time "2016-12-09 13:36:50")
+  (creation-time "2016-12-09 13:36:50")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BsePart::Part-1"
+    (n-channels 1)
+    (insert-notes 0
+      (0x00000 0x0bf 43)
+      (0x00180 0x0bf 50)
+      (0x00300 0x0bf 55)
+      (0x00480 0x0bf 62)
+      (0x00600 0x0bf 67)
+      (0x00780 0x0bf 74)
+      (0x00900 0x0bf 79)
+      (0x00a80 0x0bf 86)))
+  (container-child "BseBus::Master-1"
+    (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
+    (bus-input (link 1 "Track-01")))
+  (container-child "BseTrack::Track-01"
+    (n-voices 16)
+    (sound-font-preset (link 2 "Sound-Font-Repository:minfluid.sf2:Reed Organ"))
+    (insert-part 0 (link 1 "Part-1"))))
