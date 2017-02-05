@@ -918,7 +918,9 @@ void
 engine_stop_slaves ()
 {
   assert_return (slaves_running == true);
+  slave_mutex.lock();
   slaves_running = false;
+  slave_mutex.unlock();
   while (!slave_threads.empty())
     {
       engine_wakeup_slaves();
