@@ -82,6 +82,34 @@ bse_sound_font_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static String
+use_searchpath (String file_name)
+{
+  /* abolute path: do nothing */
+  if (g_path_is_absolute (file_name.c_str()))
+    return file_name;
+
+  /* resolve relative path using search dir */
+  String sample_path;
+  String found_file;
+  SfiRing *files, *walk;
+  if (bse_main_args->override_sample_path)
+    sample_path = bse_main_args->override_sample_path;
+  else
+    sample_path = Rapicorn::Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+  files = sfi_file_crawler_list_files (sample_path.c_str(), file_name.c_str(), G_FILE_TEST_IS_REGULAR);
+
+  for (walk = files; walk; walk = sfi_ring_walk (files, walk))
+    {
+      char *fname = (char*) walk->data;
+      if (found_file.empty()) // we don't really try loading it here
+        found_file = fname;
+      g_free (fname);
+    }
+  sfi_ring_free (files);
+  return found_file.empty() ? file_name : found_file;
+}
+
 Bse::Error
 bse_sound_font_load_blob (BseSoundFont       *self,
                           BseStorage::BlobP   blob,
@@ -101,7 +129,7 @@ bse_sound_font_load_blob (BseSoundFont       *self,
 
   std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
-  int sfont_id = fluid_synth_sfload (fluid_synth, blob->file_name().c_str(), 0);
+  int sfont_id = fluid_synth_sfload (fluid_synth, use_searchpath (blob->file_name()).c_str(), 0);
   Bse::Error error;
   if (sfont_id != -1)
     {
