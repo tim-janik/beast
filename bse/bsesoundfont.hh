@@ -14,10 +14,6 @@
 #define BSE_SOUND_FONT_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT, BseSoundFontClass))
 
 struct BseSoundFont : BseContainer {
-  /* C++ allocated data */
-  struct Data {
-    std::vector<BseSoundFontPreset *> presets;
-  } data;
 };
 struct BseSoundFontClass : BseContainerClass
 {};
@@ -33,9 +29,10 @@ namespace Bse {
 
 class SoundFontImpl : public ContainerImpl, public virtual SoundFontIface {
 public:
-  BseSoundFontRepo *sfrepo;
-  int               sfont_id;
-  BseStorage::BlobP blob;
+  BseSoundFontRepo                 *sfrepo;
+  int                               sfont_id;
+  BseStorage::BlobP                 blob;
+  std::vector<BseSoundFontPreset *> presets;
 protected:
   virtual  ~SoundFontImpl ();
 public:
