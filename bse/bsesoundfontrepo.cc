@@ -98,13 +98,6 @@ bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
 static void
 bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
 {
-  sfrepo->fluid_events = NULL;
-  sfrepo->fluid_mix_freq = 0;
-
-  sfrepo->n_fluid_channels = 0;
-
-  sfrepo->n_channel_oscs_active = 0;
-  sfrepo->channel_values_tick_stamp = 0;
 }
 
 static gboolean
@@ -138,7 +131,7 @@ bse_sound_font_repo_prepare (BseSource *source)
 	o.channel = channels_required++;
     }
   guint mix_freq = bse_engine_sample_freq();
-  if (sfrepo->n_fluid_channels != channels_required || sfrepo->fluid_mix_freq != mix_freq)
+  if (sfrepo_impl->n_fluid_channels != channels_required || sfrepo_impl->fluid_mix_freq != mix_freq)
     {
       sfrepo_impl->channel_state.resize (channels_required);
 
@@ -149,8 +142,8 @@ bse_sound_font_repo_prepare (BseSource *source)
           cstate.values_right.resize (BSE_STREAM_MAX_VALUES);
         }
 
-      sfrepo->n_fluid_channels = channels_required;
-      sfrepo->fluid_mix_freq = mix_freq;
+      sfrepo_impl->n_fluid_channels = channels_required;
+      sfrepo_impl->fluid_mix_freq = mix_freq;
 
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
       /* soundfont instruments should be as loud as beast synthesis network instruments */
@@ -185,13 +178,6 @@ bse_sound_font_repo_release_children (BseContainer *container)
 static void
 bse_sound_font_repo_dispose (GObject *object)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (object);
-
-  sfrepo->n_fluid_channels = 0;
-
-  if (sfrepo->fluid_events != NULL)
-    g_warning (G_STRLOC ": fluid event queue should be empty in dispose");
-
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -354,6 +340,14 @@ SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
 {
   fluid_settings = new_fluid_settings();
   fluid_synth = new_fluid_synth (fluid_settings);
+
+  fluid_mix_freq = 0;
+  fluid_events = nullptr;
+
+  n_fluid_channels = 0;
+
+  n_channel_oscs_active = 0;
+  channel_values_tick_stamp = 0;
 }
 
 SoundFontRepoImpl::~SoundFontRepoImpl ()
@@ -378,6 +372,10 @@ SoundFontRepoImpl::~SoundFontRepoImpl ()
       delete_fluid_settings (fluid_settings);
       fluid_settings = NULL;
     }
+  n_fluid_channels = 0;
+
+  if (fluid_events != NULL)
+    g_warning (G_STRLOC ": fluid event queue should be empty in SoundFontRepoImpl destructor");
 }
 
 static Error

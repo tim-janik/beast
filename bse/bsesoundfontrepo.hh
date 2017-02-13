@@ -26,13 +26,6 @@ struct BseFluidEvent {
 };
 
 struct BseSoundFontRepo : BseSuper {
-  SfiRing           *fluid_events;
-  guint              fluid_mix_freq;
-
-  guint              n_fluid_channels;
-  guint64	     channel_values_tick_stamp;
-
-  int		     n_channel_oscs_active;	  /* SoundFontOscs with an active module in the engine thread */
 };
 
 struct BseSoundFontRepoClass : BseSuperClass
@@ -70,6 +63,14 @@ public:
 
   fluid_settings_t           *fluid_settings;
   fluid_synth_t              *fluid_synth;
+  guint                       fluid_mix_freq;
+
+  SfiRing                    *fluid_events;
+
+  guint                       n_fluid_channels;
+  guint64	              channel_values_tick_stamp;
+
+  int		              n_channel_oscs_active;	  /* SoundFontOscs with an active module in the engine thread */
 
 protected:
 

@@ -358,18 +358,18 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 {
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  float **channel_values_left = (float **) g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
-  float **channel_values_right = (float **) g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
+  float **channel_values_left = (float **) g_alloca (sfrepo_impl->n_fluid_channels * sizeof (float *));
+  float **channel_values_right = (float **) g_alloca (sfrepo_impl->n_fluid_channels * sizeof (float *));
   float null_fx[BSE_STREAM_MAX_VALUES];
   float *channel_fx_null[2] = { null_fx, null_fx };
 
-  g_return_if_fail (now_tick_stamp > sfrepo->channel_values_tick_stamp);
-  sfrepo->channel_values_tick_stamp = now_tick_stamp;
+  g_return_if_fail (now_tick_stamp > sfrepo_impl->channel_values_tick_stamp);
+  sfrepo_impl->channel_values_tick_stamp = now_tick_stamp;
 
   /* Sample precise timing: If events don't occur at block boundary, the block
      is partially calculated, then the event is executed, and then the rest of
      the block (until the next event) is calculated, and so on */
-  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)
+  for (guint i = 0; i < sfrepo_impl->n_fluid_channels; i++)
     {
       channel_values_left[i] = &sfrepo_impl->channel_state[i].values_left[0];
       channel_values_right[i] = &sfrepo_impl->channel_state[i].values_right[0];
@@ -380,9 +380,9 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
       /* get 1st event tick stamp */
       BseFluidEvent *event = NULL;
       guint64 event_tick_stamp;
-      if (sfrepo->fluid_events)
+      if (sfrepo_impl->fluid_events)
 	{
-	  event = (BseFluidEvent *) sfrepo->fluid_events->data;
+	  event = (BseFluidEvent *) sfrepo_impl->fluid_events->data;
 	  event_tick_stamp = event->tick_stamp;
 	}
       else
@@ -411,7 +411,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 							event->arg1, event->arg2);
 					break;
 	    }
-	  sfrepo->fluid_events = sfi_ring_remove_node (sfrepo->fluid_events, sfrepo->fluid_events);
+	  sfrepo_impl->fluid_events = sfi_ring_remove_node (sfrepo_impl->fluid_events, sfrepo_impl->fluid_events);
 	  g_free (event);
 	}
       else						     /* future event tick stamp: process audio until then */
@@ -422,7 +422,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 				    channel_fx_null, channel_fx_null);
 	  values_remaining -= values_todo;
 	  now_tick_stamp += values_todo;
-	  for (guint i = 0; i < sfrepo->n_fluid_channels; i++)          /* increment fluid synth output buffer pointers */
+	  for (guint i = 0; i < sfrepo_impl->n_fluid_channels; i++)          /* increment fluid synth output buffer pointers */
 	    {
 	      channel_values_left[i] += values_todo;
 	      channel_values_right[i] += values_todo;
@@ -448,7 +448,7 @@ sound_font_osc_process (BseModule *module,
       flmod->last_update_preset = flmod->config.update_preset;
     }
   guint64 now_tick_stamp = Bse::TickStamp::current();
-  if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
+  if (sfrepo_impl->channel_values_tick_stamp != now_tick_stamp)
     process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 
   auto& cstate = sfrepo_impl->channel_state[sfrepo_impl->oscs[flmod->config.osc_id].channel];
@@ -476,7 +476,7 @@ sound_font_osc_process (BseModule *module,
 	cstate.n_silence_samples += n_values;
       else
 	cstate.n_silence_samples = 0;
-      float done = (cstate.n_silence_samples > flmod->config.silence_bound && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
+      float done = (cstate.n_silence_samples > flmod->config.silence_bound && sfrepo_impl->fluid_events == NULL) ? 1.0 : 0.0;
       BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).values = bse_engine_const_values (done);
     }
 }
@@ -555,7 +555,7 @@ sound_font_osc_process_midi (gpointer            null,
     {
       fluid_event->tick_stamp = event->delta_time;
       fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
-      flmod->config.sfrepo->fluid_events = sfi_ring_insert_sorted (flmod->config.sfrepo->fluid_events, fluid_event, event_cmp, NULL);
+      sfrepo_impl->fluid_events = sfi_ring_insert_sorted (sfrepo_impl->fluid_events, fluid_event, event_cmp, NULL);
     }
 }
 
@@ -588,7 +588,7 @@ event_handler_setup_func (BseModule *module,
   fluid_event->arg2 = flmod->config.program;
   fluid_event->sfont_id = flmod->config.sfont_id;
   fluid_event->tick_stamp = 0; /* now */
-  flmod->config.sfrepo->fluid_events = sfi_ring_insert_sorted (flmod->config.sfrepo->fluid_events, fluid_event, event_cmp, NULL);
+  sfrepo_impl->fluid_events = sfi_ring_insert_sorted (sfrepo_impl->fluid_events, fluid_event, event_cmp, NULL);
 }
 
 static void
@@ -635,9 +635,10 @@ bse_sound_font_osc_context_create (BseSource *source,
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
   std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
-  if (self->config.sfrepo->n_channel_oscs_active == 0)
+  Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
+  if (sfrepo_impl->n_channel_oscs_active == 0)
     fluid_synth_system_reset (fluid_synth);
-  self->config.sfrepo->n_channel_oscs_active++;
+  sfrepo_impl->n_channel_oscs_active++;
 }
 
 static void
@@ -656,7 +657,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
                                           module);
   /* remove old events from the event queue */
   std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
-  SfiRing *fluid_events = self->config.sfrepo->fluid_events;
+  SfiRing *fluid_events = sfrepo_impl->fluid_events;
   SfiRing *node = fluid_events;
   while (node)
     {
@@ -669,8 +670,8 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
 	}
       node = next_node;
     }
-  self->config.sfrepo->n_channel_oscs_active--;
-  self->config.sfrepo->fluid_events = fluid_events;
+  sfrepo_impl->n_channel_oscs_active--;
+  sfrepo_impl->fluid_events = fluid_events;
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
