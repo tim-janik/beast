@@ -30,8 +30,6 @@ static GQuark      quark_load_sound_font = 0;
 static void
 bse_sound_font_init (BseSoundFont *sound_font)
 {
-  sound_font->sfont_id = -1;
-  sound_font->sfrepo = NULL;
 }
 
 static void
@@ -73,14 +71,6 @@ bse_sound_font_get_property (GObject    *object,
 static void
 bse_sound_font_dispose (GObject *object)
 {
-  BseSoundFont *sound_font = BSE_SOUND_FONT (object);
-  if (sound_font->sfont_id != -1)
-    bse_sound_font_unload (sound_font);
-  if (sound_font->sfrepo)
-    {
-      g_object_unref (sound_font->sfrepo);
-      sound_font->sfrepo = NULL;
-    }
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -88,11 +78,6 @@ bse_sound_font_dispose (GObject *object)
 static void
 bse_sound_font_finalize (GObject *object)
 {
-  BseSoundFont *sound_font = BSE_SOUND_FONT (object);
-
-  if (sound_font->sfrepo != NULL || sound_font->sfont_id != -1)
-    g_warning (G_STRLOC ": some resources could not be freed.");
-
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -104,18 +89,18 @@ bse_sound_font_load_blob (BseSoundFont       *self,
 {
   Bse::SoundFontImpl *sound_font_impl = self->as<Bse::SoundFontImpl *>();
 
-  if (self->sfrepo == NULL)
+  if (sound_font_impl->sfrepo == NULL)
     {
-      self->sfrepo = BSE_SOUND_FONT_REPO (BSE_ITEM (self)->parent);
-      g_object_ref (self->sfrepo);
+      sound_font_impl->sfrepo = BSE_SOUND_FONT_REPO (BSE_ITEM (self)->parent);
+      g_object_ref (sound_font_impl->sfrepo);
     }
 
   g_return_val_if_fail (blob != NULL, Bse::Error::INTERNAL);
-  g_return_val_if_fail (self->sfrepo != NULL, Bse::Error::INTERNAL);
-  g_return_val_if_fail (self->sfont_id == -1, Bse::Error::INTERNAL);
+  g_return_val_if_fail (sound_font_impl->sfrepo != NULL, Bse::Error::INTERNAL);
+  g_return_val_if_fail (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
 
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->sfrepo));
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->sfrepo);
+  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
   int sfont_id = fluid_synth_sfload (fluid_synth, blob->file_name().c_str(), 0);
   Bse::Error error;
   if (sfont_id != -1)
@@ -136,7 +121,7 @@ bse_sound_font_load_blob (BseSoundFont       *self,
 	      bse_sound_font_preset_init_preset (sound_font_preset, &fluid_preset);
 	    }
 	}
-      self->sfont_id = sfont_id;
+      sound_font_impl->sfont_id = sfont_id;
       sound_font_impl->blob = blob;
       error = Bse::Error::NONE;
     }
@@ -151,16 +136,18 @@ bse_sound_font_load_blob (BseSoundFont       *self,
 void
 bse_sound_font_unload (BseSoundFont *sound_font)
 {
-  g_return_if_fail (sound_font->sfrepo != NULL);
+  Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
 
-  if (sound_font->sfont_id != -1)
+  g_return_if_fail (sound_font_impl->sfrepo != NULL);
+
+  if (sound_font_impl->sfont_id != -1)
     {
-      std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font->sfrepo));
-      fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font->sfrepo);
+      std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
+      fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
 
-      fluid_synth_sfunload (fluid_synth, sound_font->sfont_id, 1 /* reset presets */);
+      fluid_synth_sfunload (fluid_synth, sound_font_impl->sfont_id, 1 /* reset presets */);
     }
-  sound_font->sfont_id = -1;
+  sound_font_impl->sfont_id = -1;
 }
 
 Bse::Error
@@ -168,9 +155,17 @@ bse_sound_font_reload (BseSoundFont *sound_font)
 {
   Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
 
-  g_return_val_if_fail (sound_font->sfont_id == -1, Bse::Error::INTERNAL);
+  g_return_val_if_fail (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
 
   return bse_sound_font_load_blob (sound_font, sound_font_impl->blob, FALSE);
+}
+
+int
+bse_sound_font_get_id (BseSoundFont *sound_font)
+{
+  Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
+
+  return sound_font_impl->sfont_id;
 }
 
 static void
@@ -310,7 +305,6 @@ bse_sound_font_release_children (BseContainer *container)
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
 
-
 static void
 bse_sound_font_class_init (BseSoundFontClass *klass)
 {
@@ -367,10 +361,26 @@ BSE_BUILTIN_TYPE (BseSoundFont)
 namespace Bse {
 
 SoundFontImpl::SoundFontImpl (BseObject *bobj) :
-  ContainerImpl (bobj)
+  ContainerImpl (bobj),
+  sfrepo (nullptr),
+  sfont_id (-1)
 {}
 
 SoundFontImpl::~SoundFontImpl ()
-{}
+{
+  BseSoundFont *sound_font = as<BseSoundFont *>();
+
+  if (sfont_id != -1)
+    bse_sound_font_unload (sound_font);
+
+  if (sfrepo)
+    {
+      g_object_unref (sfrepo);
+      sfrepo = nullptr;
+    }
+
+  if (sfrepo != NULL || sfont_id != -1)
+    g_warning (G_STRLOC ": some resources could not be freed.");
+}
 
 } // Bse

@@ -264,7 +264,7 @@ bse_sound_font_osc_set_property (GObject      *object,
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->preset), bse_sound_font_osc_uncross_preset);
               bse_object_proxy_notifies (self->preset, self, "notify::preset");
-	      self->config.sfont_id = BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent)->sfont_id;
+	      self->config.sfont_id = bse_sound_font_get_id (BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent));
 	      self->config.bank = self->preset->bank;
 	      self->config.program = self->preset->program;
 	      self->config.update_preset++;

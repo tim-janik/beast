@@ -14,8 +14,6 @@
 #define BSE_SOUND_FONT_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT, BseSoundFontClass))
 
 struct BseSoundFont : BseContainer {
-  int                sfont_id;
-  BseSoundFontRepo  *sfrepo;
   GList             *presets;
 };
 struct BseSoundFontClass : BseContainerClass
@@ -26,11 +24,14 @@ Bse::Error      bse_sound_font_load_blob	(BseSoundFont       *sound_font,
 						 gboolean            init_presets);
 void		bse_sound_font_unload           (BseSoundFont       *sound_font);
 Bse::Error      bse_sound_font_reload           (BseSoundFont       *sound_font);
+int             bse_sound_font_get_id           (BseSoundFont       *sound_font);
 
 namespace Bse {
 
 class SoundFontImpl : public ContainerImpl, public virtual SoundFontIface {
 public:
+  BseSoundFontRepo *sfrepo;
+  int               sfont_id;
   BseStorage::BlobP blob;
 protected:
   virtual  ~SoundFontImpl ();
