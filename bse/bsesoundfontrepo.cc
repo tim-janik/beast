@@ -98,8 +98,6 @@ bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
 static void
 bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
 {
-  sfrepo->fluid_settings = new_fluid_settings();
-  sfrepo->fluid_synth = new_fluid_synth (sfrepo->fluid_settings);
   sfrepo->fluid_events = NULL;
   sfrepo->fluid_mix_freq = 0;
 
@@ -154,20 +152,20 @@ bse_sound_font_repo_prepare (BseSource *source)
       sfrepo->n_fluid_channels = channels_required;
       sfrepo->fluid_mix_freq = mix_freq;
 
-      fluid_settings_setnum (sfrepo->fluid_settings, "synth.sample-rate", mix_freq);
+      fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
       /* soundfont instruments should be as loud as beast synthesis network instruments */
-      fluid_settings_setnum (sfrepo->fluid_settings, "synth.gain", 1.0);
-      fluid_settings_setint (sfrepo->fluid_settings, "synth.midi-channels", channels_required);
-      fluid_settings_setint (sfrepo->fluid_settings, "synth.audio-channels", channels_required);
-      fluid_settings_setint (sfrepo->fluid_settings, "synth.audio-groups", channels_required);
-      fluid_settings_setstr (sfrepo->fluid_settings, "synth.reverb.active", "no");
-      fluid_settings_setstr (sfrepo->fluid_settings, "synth.chorus.active", "no");
+      fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.gain", 1.0);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", channels_required);
+      fluid_settings_setstr (sfrepo_impl->fluid_settings, "synth.reverb.active", "no");
+      fluid_settings_setstr (sfrepo_impl->fluid_settings, "synth.chorus.active", "no");
 
       bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
-      if (sfrepo->fluid_synth)
-	delete_fluid_synth (sfrepo->fluid_synth);
+      if (sfrepo_impl->fluid_synth)
+	delete_fluid_synth (sfrepo_impl->fluid_synth);
 
-      sfrepo->fluid_synth = new_fluid_synth (sfrepo->fluid_settings);
+      sfrepo_impl->fluid_synth = new_fluid_synth (sfrepo_impl->fluid_settings);
       bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), reload_sound_font, sfrepo);
     }
 
@@ -189,16 +187,6 @@ bse_sound_font_repo_dispose (GObject *object)
 {
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (object);
 
-  if (sfrepo->fluid_synth)
-    {
-      delete_fluid_synth (sfrepo->fluid_synth);
-      sfrepo->fluid_synth = NULL;
-    }
-  if (sfrepo->fluid_settings)
-    {
-      delete_fluid_settings (sfrepo->fluid_settings);
-      sfrepo->fluid_settings = NULL;
-    }
   sfrepo->n_fluid_channels = 0;
 
   if (sfrepo->fluid_events != NULL)
@@ -327,7 +315,8 @@ bse_sound_font_repo_mutex (BseSoundFontRepo *sfrepo)
 fluid_synth_t*
 bse_sound_font_repo_fluid_synth (BseSoundFontRepo *sfrepo)
 {
-  return sfrepo->fluid_synth;
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+  return sfrepo_impl->fluid_synth;
 }
 
 int
@@ -362,7 +351,10 @@ namespace Bse {
 
 SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
   SuperImpl (bobj)
-{}
+{
+  fluid_settings = new_fluid_settings();
+  fluid_synth = new_fluid_synth (fluid_settings);
+}
 
 SoundFontRepoImpl::~SoundFontRepoImpl ()
 {
@@ -374,6 +366,18 @@ SoundFontRepoImpl::~SoundFontRepoImpl ()
   /* release children */
   while (!sound_fonts.empty())
     bse_container_remove_item (BSE_CONTAINER (sfrepo), sound_fonts.front());
+
+  /* destroy fluid synth stuff */
+  if (fluid_synth)
+    {
+      delete_fluid_synth (fluid_synth);
+      fluid_synth = NULL;
+    }
+  if (fluid_settings)
+    {
+      delete_fluid_settings (fluid_settings);
+      fluid_settings = NULL;
+    }
 }
 
 static Error

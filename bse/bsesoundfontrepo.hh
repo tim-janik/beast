@@ -26,8 +26,6 @@ struct BseFluidEvent {
 };
 
 struct BseSoundFontRepo : BseSuper {
-  fluid_settings_t  *fluid_settings;
-  fluid_synth_t     *fluid_synth;
   SfiRing           *fluid_events;
   guint              fluid_mix_freq;
 
@@ -69,6 +67,9 @@ public:
   };
   std::vector<Osc>            oscs;
   std::vector<BseSoundFont *> sound_fonts;
+
+  fluid_settings_t           *fluid_settings;
+  fluid_synth_t              *fluid_synth;
 
 protected:
 
