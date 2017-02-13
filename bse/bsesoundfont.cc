@@ -30,6 +30,16 @@ static GQuark      quark_load_sound_font = 0;
 static void
 bse_sound_font_init (BseSoundFont *sound_font)
 {
+  /* FIXME: Ideally the preset vector should be a data member of the
+   * SoundFontImpl object. However, it turns out that during destruction
+   *
+   *  - 1 - the SoundFontImpl object is destroyed
+   *  - 2 - bse_sound_font_release_children is called
+   *
+   * Since 2 requires the preset vector to operate properly, we can't put it into the
+   * SoundFontImpl object
+   */
+  new (&sound_font->data) BseSoundFont::Data();
 }
 
 static void
@@ -78,6 +88,10 @@ bse_sound_font_dispose (GObject *object)
 static void
 bse_sound_font_finalize (GObject *object)
 {
+  BseSoundFont *sound_font = BSE_SOUND_FONT (object);
+
+  sound_font->data.~Data();
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -248,7 +262,9 @@ bse_sound_font_add_item (BseContainer *container,
   BseSoundFont *sound_font = BSE_SOUND_FONT (container);
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOUND_FONT_PRESET))
-    sound_font->presets = g_list_append (sound_font->presets, item);
+    {
+      sound_font->data.presets.push_back (BSE_SOUND_FONT_PRESET (item));
+    }
   else
     g_warning ("BseSoundFont: cannot hold non-sound-font-preset item type `%s'",
 	       BSE_OBJECT_TYPE_NAME (item));
@@ -263,16 +279,10 @@ bse_sound_font_forall_items (BseContainer      *container,
 			     gpointer           data)
 {
   BseSoundFont *sound_font = BSE_SOUND_FONT (container);
-  GList *list;
 
-  list = sound_font->presets;
-  while (list)
+  for (auto preset : sound_font->data.presets)
     {
-      BseItem *item;
-
-      item = BSE_ITEM (list->data);
-      list = list->next;
-      if (!func (item, data))
+      if (!func (preset, data))
 	return;
     }
 }
@@ -284,7 +294,16 @@ bse_sound_font_remove_item (BseContainer *container,
   BseSoundFont *sound_font = BSE_SOUND_FONT (container);
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOUND_FONT_PRESET))
-    sound_font->presets = g_list_remove (sound_font->presets, item);
+    {
+      for (auto it = sound_font->data.presets.begin(); it != sound_font->data.presets.end(); it++)
+        {
+          if (*it == item)
+            {
+              sound_font->data.presets.erase (it);
+              break;
+            }
+        }
+    }
   else
     g_warning ("BseSoundFontRepo: cannot hold non-sound-font-preset item type `%s'",
 	       BSE_OBJECT_TYPE_NAME (item));
@@ -296,10 +315,10 @@ bse_sound_font_remove_item (BseContainer *container,
 static void
 bse_sound_font_release_children (BseContainer *container)
 {
-  BseSoundFont *self = BSE_SOUND_FONT (container);
+  BseSoundFont *sound_font = BSE_SOUND_FONT (container);
 
-  while (self->presets)
-    bse_container_remove_item (container, BSE_ITEM (self->presets->data));
+  while (!sound_font->data.presets.empty())
+    bse_container_remove_item (container, sound_font->data.presets.front());
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);

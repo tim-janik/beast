@@ -14,7 +14,10 @@
 #define BSE_SOUND_FONT_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT, BseSoundFontClass))
 
 struct BseSoundFont : BseContainer {
-  GList             *presets;
+  /* C++ allocated data */
+  struct Data {
+    std::vector<BseSoundFontPreset *> presets;
+  } data;
 };
 struct BseSoundFontClass : BseContainerClass
 {};
