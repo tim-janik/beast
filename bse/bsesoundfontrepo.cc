@@ -101,7 +101,6 @@ bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
   sfrepo->fluid_settings = new_fluid_settings();
   sfrepo->fluid_synth = new_fluid_synth (sfrepo->fluid_settings);
   sfrepo->fluid_events = NULL;
-  sfrepo->sound_fonts = NULL;
   sfrepo->fluid_mix_freq = 0;
 
   sfrepo->n_fluid_channels = 0;
@@ -179,10 +178,7 @@ bse_sound_font_repo_prepare (BseSource *source)
 static void
 bse_sound_font_repo_release_children (BseContainer *container)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (container);
-
-  while (sfrepo->sound_fonts)
-    bse_container_remove_item (container, BSE_ITEM (sfrepo->sound_fonts->data));
+  /* real release children: done in ~SoundFontRepoImpl() */
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -192,8 +188,6 @@ static void
 bse_sound_font_repo_dispose (GObject *object)
 {
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (object);
-
-  bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
 
   if (sfrepo->fluid_synth)
     {
@@ -248,10 +242,11 @@ static void
 bse_sound_font_repo_add_item (BseContainer *container,
 			      BseItem      *item)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (container);
+  BseSoundFontRepo       *sfrepo      = BSE_SOUND_FONT_REPO (container);
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOUND_FONT))
-    sfrepo->sound_fonts = g_list_append (sfrepo->sound_fonts, item);
+    sfrepo_impl->sound_fonts.push_back (BSE_SOUND_FONT (item));
   else
     g_warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'",
 	       BSE_OBJECT_TYPE_NAME (item));
@@ -265,17 +260,12 @@ bse_sound_font_repo_forall_items (BseContainer      *container,
 			          BseForallItemsFunc func,
 			          gpointer           data)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (container);
-  GList *list;
+  BseSoundFontRepo       *sfrepo      = BSE_SOUND_FONT_REPO (container);
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  list = sfrepo->sound_fonts;
-  while (list)
+  for (auto sound_font : sfrepo_impl->sound_fonts)
     {
-      BseItem *item;
-
-      item = BSE_ITEM (list->data);
-      list = list->next;
-      if (!func (item, data))
+      if (!func (sound_font, data))
 	return;
     }
 }
@@ -284,10 +274,20 @@ static void
 bse_sound_font_repo_remove_item (BseContainer *container,
 			         BseItem      *item)
 {
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (container);
+  BseSoundFontRepo       *sfrepo      = BSE_SOUND_FONT_REPO (container);
+  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOUND_FONT))
-    sfrepo->sound_fonts = g_list_remove (sfrepo->sound_fonts, item);
+    {
+      for (auto it = sfrepo_impl->sound_fonts.begin(); it != sfrepo_impl->sound_fonts.end(); it++)
+        {
+          if (*it == item)
+            {
+              sfrepo_impl->sound_fonts.erase (it);
+              break;
+            }
+        }
+    }
   else
     g_warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'",
 	       BSE_OBJECT_TYPE_NAME (item));
@@ -365,7 +365,16 @@ SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
 {}
 
 SoundFontRepoImpl::~SoundFontRepoImpl ()
-{}
+{
+  BseSoundFontRepo *sfrepo = as<BseSoundFontRepo *>();
+
+  /* unload all sound fonts */
+  bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
+
+  /* release children */
+  while (!sound_fonts.empty())
+    bse_container_remove_item (BSE_CONTAINER (sfrepo), sound_fonts.front());
+}
 
 static Error
 repo_load_file (BseSoundFontRepo *sfrepo, const String &file_name, BseSoundFont **sound_font_p)

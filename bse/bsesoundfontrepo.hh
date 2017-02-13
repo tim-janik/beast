@@ -35,8 +35,6 @@ struct BseSoundFontRepo : BseSuper {
   guint64	     channel_values_tick_stamp;
 
   int		     n_channel_oscs_active;	  /* SoundFontOscs with an active module in the engine thread */
-
-  GList             *sound_fonts;
 };
 
 struct BseSoundFontRepoClass : BseSuperClass
@@ -69,7 +67,8 @@ public:
     BseSoundFontOsc *osc;
     guint            channel;
   };
-  std::vector<Osc> oscs;
+  std::vector<Osc>            oscs;
+  std::vector<BseSoundFont *> sound_fonts;
 
 protected:
 
