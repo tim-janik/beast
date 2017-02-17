@@ -695,6 +695,7 @@ bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
 bse/res/Makefile
+ebeast/v8bse/Makefile
 bse/pybse/Makefile
 bse/tests/Makefile
 plugins/Makefile
