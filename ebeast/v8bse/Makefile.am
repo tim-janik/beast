@@ -35,7 +35,7 @@ NODE_GYP = $(strip \
 	$(if $(findstring 1, $(V)) , --verbose) \
 	--target=$(shell ./node_modules/electron/dist/electron --version) \
 )
-v8bse.node: v8bse.cc ./node_modules/electron/dist/electron
+v8bse.node: v8bse.cc ./nodemodule.cc ./node_modules/electron/dist/electron
 	$(AM_V_GEN)
 	$(Q) rm -f v8bse.node build/Release/v8bse.node
 	$(Q) $(NODE_GYP) rebuild --dist-url=https://atom.io/download/electron
