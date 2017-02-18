@@ -52,6 +52,12 @@ v8bse_register_module (v8::Local<v8::Object> exports)
   v8::Local<v8::Object> module_instance = bse_v8stub->module_.new_instance();
   v8::Maybe<bool> ok = exports->SetPrototype (context, module_instance);
   assert (ok.FromJust() == true);
+
+  // export server handle
+  V8ppType_BseServer &class_ = bse_v8stub->BseServer_class_;
+  v8::Local<v8::Object> v8_server = class_.import_external (isolate, new Bse::ServerH (bse_server));
+  module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"),
+                                      v8_server, v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
 }
 
 // node.js registration
