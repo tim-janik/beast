@@ -107,6 +107,12 @@ class Generator:
             b += 'v8pp::property (&%s::%s, &%s::%s))\n' % (cn, fname, cn, fname)
           elif tp.storage == Decls.RECORD:
             b += '    .set ("%s", &%s::%s)\n' % (fname, cn, fname)
+      # Class methods
+      if tp.storage == Decls.INTERFACE:
+        for mtp in tp.methods:
+          rtp, mname = mtp.rtype, mtp.name
+          b += '    .set ("%s", &%s::%s)\n' % (mname, cn, mname)
+      # output only non-empty bindings
       if b:
         s += '  %s\n' % v8ppclass (tp)
         s += b
