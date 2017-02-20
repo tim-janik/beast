@@ -467,7 +467,7 @@ interface Object {
 
 /// Base interface type for objects that can be added to a container.
 interface Item : Object {
-  Icon icon = Record ("Icon", "State dependent icon representation of this item", "r:G");
+  Icon icon = Record ("Icon", "State dependent icon representation of this item", "rw:G");
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 
   // bool   check_is_a        (String type_name); ///< Check whether an item has a certain type.
