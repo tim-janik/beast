@@ -6,7 +6,7 @@
 
 namespace Bse {
 
-class ObjectImpl : public virtual ObjectIface {
+class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
   BseObject             *gobject_;
 public:
   explicit               ObjectImpl (BseObject*);
