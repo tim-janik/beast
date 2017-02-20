@@ -6,6 +6,30 @@ More details at http://www.rapicorn.org/
 import Decls, re, sys, os
 
 # == Utilities ==
+def class_digest (class_info):
+  return digest2cbytes (class_info.type_hash())
+def digest2cbytes (digest):
+  return '0x%02x%02x%02x%02x%02x%02x%02x%02xULL, 0x%02x%02x%02x%02x%02x%02x%02x%02xULL' % digest
+def hasancestor (child, parent):
+  for p in child.prerequisites:
+    if p == parent or hasancestor (p, parent):
+      return True
+def inherit_reduce (type_list):
+  # find the type(s) we *directly* derive from
+  reduced = []
+  while type_list:
+    p = type_list.pop()
+    skip = 0
+    for c in type_list + reduced:
+      if c == p or hasancestor (c, p):
+        skip = 1
+        break
+    if not skip:
+      reduced = [ p ] + reduced
+  return reduced
+def bases (tp):
+  ancestors = [pr for pr in tp.prerequisites]
+  return inherit_reduce (ancestors)
 def type_namespace_names (tp):
   namespaces = tp.list_namespaces() # [ Namespace... ]
   return [d.name for d in namespaces if d.name]
@@ -94,8 +118,12 @@ class Generator:
     s += '{\n'
     # Class bindings
     for tp in v8pp_class_types:
-      b = ''
       cn = colon_typename (tp)
+      b = ''
+      # Class inheritance
+      if tp.storage == Decls.INTERFACE:
+        for tb in bases (tp):
+          b += '    .inherit<%s>()\n' % colon_typename (tb)
       # Class ctor
       if tp.storage == Decls.SEQUENCE or tp.storage == Decls.RECORD:
         b += '    .ctor()\n'
