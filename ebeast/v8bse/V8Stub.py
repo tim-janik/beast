@@ -95,10 +95,19 @@ class Generator:
         continue
       if tp.storage in (Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE):
         v8pp_class_types += [ tp ]
-    # C++ Classes
-    s += '\n// C++ Classes\n'
+    # C++ class type aliases for v8pp::class_
+    s += '\n// v8pp::class_ aliases\n'
     for tp in v8pp_class_types:
       s += 'typedef %-40s %s;\n' % ('v8pp::class_<%s>' % colon_typename (tp), v8ppclass_type (tp))
+    # C++ class specialisations for v8pp::convert
+    s += '\n// v8pp::convert<> specialisations\n'
+    s += 'namespace v8pp {\n'
+    for tp in v8pp_class_types:
+      if tp.storage == Decls.INTERFACE:
+        cn = colon_typename (tp)
+        s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s>  {};\n' % ('<%s>' % cn, cn)
+        s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s*> {};\n' % ('<%s*>' % cn, cn)
+    s += '} // v8pp\n'
     # V8stub - main binding stub
     s += '\n// Main binding stub\n'
     s += 'struct V8stub final {\n'
@@ -116,6 +125,13 @@ class Generator:
       s += '  %s (isolate),\n' % v8ppclass (tp)
     s += '  module_ (isolate)\n'
     s += '{\n'
+    # Wrapper registration
+    for tp in v8pp_class_types:
+      cn = colon_typename (tp)
+      if tp.storage == Decls.INTERFACE:
+        s += '  aida_remote_handle_wrapper_map (Aida::TypeHash '
+        s += '(%s), ' % class_digest (tp)
+        s += 'aida_remote_handle_wrapper_impl<%s>);\n' % cn
     # Class bindings
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
