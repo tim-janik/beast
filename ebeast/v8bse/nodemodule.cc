@@ -58,6 +58,10 @@ v8bse_register_module (v8::Local<v8::Object> exports)
   v8::Local<v8::Object> v8_server = class_.import_external (isolate, new Bse::ServerH (bse_server));
   module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"),
                                       v8_server, v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
+
+  // debugging aids:
+  if (0)
+    printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Rapicorn::ThisThread::process_pid());
 }
 
 // node.js registration
