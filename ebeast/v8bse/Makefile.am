@@ -5,6 +5,20 @@ AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISA
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 CLEANDIRS     =
 
+# == all: ==
+all:
+	@echo "make all -C $$(basename $$(pwd))"
+	@echo "	This is experimental code, which is not currently built by default. Usage:"
+	@echo "	make npm	install electron and build tools locally"
+	@echo "	make app	build the v8 Bse module and app files"
+	@echo "	make run	run the electron app in the current directory"
+	@echo "	make clean	remove build files"
+	@echo "	make npmclean	remove npm installations and make clean"
+
+# == run ==
+run:	# requires: npm app
+	./node_modules/electron/dist/electron .
+
 # == v8bse ==
 AIDASTDINC = $(shell ${AIDACC} -x V8Stub.py -G --print-include-path /dev/null)
 # v8 Bse bindings
@@ -26,9 +40,9 @@ v8bse.node: v8bse.cc ./node_modules/electron/dist/electron
 	$(Q) rm -f v8bse.node build/Release/v8bse.node
 	$(Q) $(NODE_GYP) rebuild --dist-url=https://atom.io/download/electron
 	$(Q) ln -sv build/Release/v8bse.node
-all: v8bse.node
 CLEANFILES += v8bse.node
 CLEANDIRS += build/
+app: v8bse.node
 
 # == electron ==
 npm:
@@ -37,6 +51,7 @@ npm:
 node_modules/: npm
 clean-node_modules:
 	rm -rf node_modules/
+npmclean: clean-node_modules clean
 
 # == clean ==
 clean-local: cleandirs # clean-node_modules
