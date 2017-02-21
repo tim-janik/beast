@@ -7,13 +7,9 @@ CLEANDIRS     =
 
 # == all: ==
 all:
-	@echo "$$(basename $$(pwd))/: experimental code, not built by default"
+	@echo "$$(basename $$(pwd))/: build via ../ebeast/ rules"
 
-# == run ==
-run:	# requires: npm app
-	./node_modules/electron/dist/electron .
-
-# == v8bse ==
+# == v8bse.cc ==
 AIDASTDINC = $(shell ${AIDACC} -x V8Stub.py -G --print-include-path /dev/null)
 # v8 Bse bindings
 v8bse.cc: ../../bse/bseapi.idl ./V8Stub.py
@@ -21,36 +17,20 @@ v8bse.cc: ../../bse/bseapi.idl ./V8Stub.py
 	$(Q) ${AIDACC} -x V8Stub.py $< -o $@ -G strip-path=$(abs_top_srcdir)/
 	@touch v8bse.cc # FIXME
 CLEANFILES += v8bse.cc *.pyc *.pyo
-# v8 'Bse' node module
+
+# == v8bse.node ==
 NODE_GYP = $(strip \
-	HOME=./node_modules/.electron-gyp \
+	HOME=../node_modules/.electron-gyp \
 	CXX="$(CXX)" CXXFLAGS="$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)" \
-	./node_modules/.bin/node-gyp \
+	../node_modules/.bin/node-gyp \
 	$(if $(findstring 1, $(V)) , --verbose) \
-	--target=$(shell ./node_modules/electron/dist/electron --version) \
+	--target=$(shell ../node_modules/electron/dist/electron --version) \
 )
-v8bse.node: v8bse.cc ./nodemodule.cc ./node_modules/electron/dist/electron
+v8bse.node: v8bse.cc ./nodemodule.cc ../node_modules/electron/dist/electron
 	$(AM_V_GEN)
 	$(Q) rm -f v8bse.node build/Release/v8bse.node
 	$(Q) $(NODE_GYP) rebuild --dist-url=https://atom.io/download/electron
 	$(Q) ln -sv build/Release/v8bse.node
 CLEANFILES += v8bse.node
-CLEANDIRS += build/
-app: v8bse.node
-
-# == electron ==
-npm:
-	npm install --save electron		# ./node_modules/electron/dist/electron
-	npm install --save-dev node-gyp		# builds build/Release/v8bse.node
-node_modules/: npm
-clean-node_modules:
-	rm -rf node_modules/
-npmclean: clean-node_modules clean
-
-# == clean ==
-clean-local: cleandirs # clean-node_modules
-cleandirs:
-	rm -rf $(CLEANDIRS)
-
-EXTRA_DIST += $(strip \
-)
+clean-local: clean-build
+clean-build: ; rm -rf build/

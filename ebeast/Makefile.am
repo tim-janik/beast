@@ -14,3 +14,20 @@ all:
 	@echo "	make run	# run the electron app in the current directory"
 	@echo "	make clean	# remove build files"
 	@echo "	make npmclean	# remove npm installations and make clean"
+
+# == electron ==
+npm:
+	npm install --save electron		# ./node_modules/electron/dist/electron
+	npm install --save-dev node-gyp		# builds build/Release/v8bse.node
+node_modules/: npm
+clean-node_modules:
+	rm -rf node_modules/
+npmclean: clean-node_modules clean
+
+# == app ==
+app:
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
+
+# == run ==
+run: app	# requires: npm
+	./node_modules/electron/dist/electron .
