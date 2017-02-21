@@ -23,13 +23,17 @@ node_modules/: npm
 clean-node_modules:
 	rm -rf node_modules/
 npmclean: clean-node_modules clean
+check-npm:
+	$(Q) test -d ./node_modules/ || { \
+	 echo "make $(MAKECMDGOALS): error: missing ./node_modules/ - first 'make npm'" ; \
+	 false ; }
 
 # == app ==
-app:
+app:	check-npm
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 
 # == run ==
-run: app	# requires: npm
+run: app
 	LD_PRELOAD="$(abs_top_builddir)/bse/.libs/libbse-@MAJOR@.so" \
 	./node_modules/electron/dist/electron .
 # NOTE, prefer LD_PRELOAD over LD_LIBRARY_PATH, to pick up $(builddir)/libbse *before* /usr/lib/libbse
