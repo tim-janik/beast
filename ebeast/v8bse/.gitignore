@@ -1,3 +1,4 @@
+/binding.gyp
 /v8bse.cc
 /v8bse.node
 /node_modules/
