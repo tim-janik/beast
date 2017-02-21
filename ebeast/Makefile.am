@@ -30,4 +30,6 @@ app:
 
 # == run ==
 run: app	# requires: npm
+	LD_PRELOAD="$(abs_top_builddir)/bse/.libs/libbse-@MAJOR@.so" \
 	./node_modules/electron/dist/electron .
+# NOTE, prefer LD_PRELOAD over LD_LIBRARY_PATH, to pick up $(builddir)/libbse *before* /usr/lib/libbse
