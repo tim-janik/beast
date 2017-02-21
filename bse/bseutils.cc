@@ -683,6 +683,27 @@ icon_from_pixstream (const uint8 *pixstream)
   return icon;
 }
 
+static const int max_icon_dim = 1024;
+
+/// Ensure consistency of the @a icon fields.
+bool
+icon_sanitize (Icon *icon)
+{
+  if (icon->width == 0 && icon->height == 0 && icon->pixels.size() == 0)
+    return false;
+  if (icon->width > 0 && icon->width <= max_icon_dim &&
+      icon->height > 0 && icon->height <= max_icon_dim &&
+      icon->pixels.size() == size_t (icon->width) * icon->height)
+    return false;
+  // sanitize
+  icon->width = CLAMP (icon->width, 0, max_icon_dim);
+  icon->height = CLAMP (icon->height, 0, max_icon_dim);
+  if (icon->width == 0 || icon->height == 0)
+    icon->width = icon->height = 0;
+  icon->pixels.resize (icon->width * icon->height);
+  return true; // indicate modifications
+}
+
 } // Bse
 
 

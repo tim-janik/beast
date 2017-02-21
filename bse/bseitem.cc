@@ -1358,16 +1358,31 @@ ItemImpl::common_ancestor (ItemIface &other)
   return common->as<ItemIfaceP>();
 }
 
+class CustomIconKey : public DataKey<Icon*> {
+  virtual void destroy (Icon *icon) override    { delete icon; }
+};
+static CustomIconKey custom_icon_key;
+
 Icon
 ItemImpl::icon () const
 {
   BseItem *self = const_cast<ItemImpl*> (this)->as<BseItem*>();
-  return bse_object_get_icon (self);
+  Icon *icon = get_data (&custom_icon_key);
+  return icon ? *icon : bse_object_get_icon (self);
 }
 
 void
-ItemImpl::icon (const Icon&)
+ItemImpl::icon (const Icon &icon)
 {
+  Icon *custom_icon = new Icon (icon);
+  icon_sanitize (custom_icon);
+  if (custom_icon->width != 0)
+    set_data (&custom_icon_key, custom_icon);
+  else
+    {
+      delete custom_icon;
+      delete_data (&custom_icon_key);
+    }
 }
 
 } // Bse

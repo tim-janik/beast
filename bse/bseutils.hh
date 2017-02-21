@@ -85,6 +85,7 @@ gint		bse_string_equals		(gconstpointer	 string1,
 namespace Bse {
 
 Icon icon_from_pixstream (const guint8 *pixstream);
+bool icon_sanitize (Icon *icon);
 
 } // Bse
 
