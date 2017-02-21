@@ -918,7 +918,9 @@ void
 engine_stop_slaves ()
 {
   assert_return (slaves_running == true);
+  slave_mutex.lock();
   slaves_running = false;
+  slave_mutex.unlock();
   while (!slave_threads.empty())
     {
       engine_wakeup_slaves();
@@ -944,6 +946,8 @@ engine_run_slave ()
     {
       thread_process_nodes (bse_engine_block_size(), NULL); // FIXME: merge profile data
       std::unique_lock<std::mutex> slave_lock (slave_mutex);
+      if (!slaves_running)
+        break;
       slave_condition.wait (slave_lock);
     }
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());

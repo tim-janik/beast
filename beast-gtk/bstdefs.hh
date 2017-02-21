@@ -6,9 +6,6 @@
 #include "bstzoomedwindow.hh"
 #include "bse/bse.hh"
 
-// == G++ attributes ==
-#define __unused        __attribute__ ((unused))
-
 /* --- generic constants --- */
 typedef enum {
   BST_QUANTIZE_NONE		= 0,
