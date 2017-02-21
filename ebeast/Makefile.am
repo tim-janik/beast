@@ -9,27 +9,20 @@ EXTRA_DIST += $(strip \
 # == all: ==
 all:
 	@echo "$$(basename $$(pwd))/: experimental code, not built by default. Usage:"
-	@echo "	make npm	# install electron and build tools locally"
 	@echo "	make app	# build the v8 Bse module and app files"
 	@echo "	make run	# run the electron app in the current directory"
 	@echo "	make clean	# remove build files"
-	@echo "	make npmclean	# remove npm installations and make clean"
 
-# == electron ==
-npm:
-	npm install --save electron		# ./node_modules/electron/dist/electron
-	npm install --save-dev node-gyp		# builds build/Release/v8bse.node
-node_modules/: npm
-clean-node_modules:
-	rm -rf node_modules/
-npmclean: clean-node_modules clean
-check-npm:
-	$(Q) test -d ./node_modules/ || { \
-	 echo "make $(MAKECMDGOALS): error: missing ./node_modules/ - first 'make npm'" ; \
-	 false ; }
+# == package.json ==
+package.json: package.json.in ../config.status
+	$(AM_V_GEN)
+	$(Q) ../config.status --file package.json
+	$(Q) npm install
+clean-local: clean-node_modules
+clean-node_modules: ; rm -rf node_modules/ package.json
 
 # == app ==
-app:	check-npm
+app:	package.json
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 
 # == run ==
