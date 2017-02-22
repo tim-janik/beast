@@ -107,6 +107,8 @@ class Generator:
       if tp.storage == Decls.INTERFACE:
         s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s>  {};\n' % ('<%s>' % cn, cn)
         s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s*> {};\n' % ('<%s*>' % cn, cn)
+        s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s>  {};\n' % ('<Aida::RemoteMember<%s>>' % cn, cn)
+        s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s*> {};\n' % ('<Aida::RemoteMember<%s>*>' % cn, cn)
       elif tp.storage == Decls.SEQUENCE:
         s += 'template<> struct convert%-40s : convert_AidaSequence<%s> {};\n' % ('<%s>' % cn, cn)
     s += '} // v8pp\n'
