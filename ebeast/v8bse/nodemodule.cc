@@ -66,22 +66,72 @@ aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Valu
   return nobject;
 }
 
+static v8::Isolate                                               *aida_remote_handle_idmap_isolate = NULL;
+static std::unordered_map<uint64_t, v8pp::persistent<v8::Object>> aida_remote_handle_idmap;
+
+static void
+aida_remote_handle_cache_add (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle, const v8::Local<v8::Object> &wrapobj)
+{
+  assert_return (isolate == aida_remote_handle_idmap_isolate);
+  // check handle consistency
+  Aida::RemoteHandle *whandle = aida_remote_handle_unwrap_native<Aida::RemoteHandle> (isolate, wrapobj);
+  assert_return (whandle && whandle->__aida_orbid__() == rhandle.__aida_orbid__());
+  // seal object, since property extensions could not survive GC
+  wrapobj->SetIntegrityLevel (isolate->GetCurrentContext(), v8::IntegrityLevel::kSealed);
+  // use v8::UniquePersistent to keep a unique v8::Object per OrbObject around
+  v8pp::persistent<v8::Object> po (isolate, wrapobj);
+  // get rid of the unique v8::Object once all JS code forgot about its identity
+  auto weak_callback = [] (const v8::WeakCallbackInfo<Aida::RemoteHandle> &data) {
+    // v8::Isolate *const isolate = data.GetIsolate();
+    Aida::RemoteHandle *whandle = data.GetParameter();
+    const uint64_t orbid = whandle->__aida_orbid__();
+    auto it = aida_remote_handle_idmap.find (orbid);
+    if (it != aida_remote_handle_idmap.end())
+      {
+        it->second.Reset();
+        aida_remote_handle_idmap.erase (it);
+      }
+  };
+  po.SetWeak (whandle, weak_callback, v8::WeakCallbackType::kParameter);
+  // enter per-isolate cache
+  aida_remote_handle_idmap.emplace (rhandle.__aida_orbid__(), std::move (po));
+}
+
+static v8::Local<v8::Object>
+aida_remote_handle_cache_find (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle)
+{
+  v8::Local<v8::Object> result;
+  assert_return (isolate == aida_remote_handle_idmap_isolate, result);
+  auto it = aida_remote_handle_idmap.find (rhandle.__aida_orbid__());
+  if (it != aida_remote_handle_idmap.end())
+    result = v8pp::to_local (isolate, it->second);
+  return result;
+}
+
 /// Create (or find) the corresponding down_cast() JS Object for a RemoteHandle.
 static v8::Local<v8::Object>
-aida_remote_handle_wrap_native (v8::Isolate *const isolate, Aida::RemoteHandle const &rhandle)
+aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle)
 {
   v8::EscapableHandleScope scope (isolate);
-  if (NULL != rhandle)
+  v8::Local<v8::Object> wrapobj;
+  if (AIDA_LIKELY (NULL != rhandle))
     {
-      Aida::TypeHashList thl = rhandle.__aida_typelist__();
-      for (const auto &th : thl)
+      wrapobj = aida_remote_handle_cache_find (isolate, rhandle);
+      if (AIDA_LIKELY (!wrapobj.IsEmpty()))
+        return scope.Escape (wrapobj);
+    }
+  Aida::TypeHashList thl = rhandle.__aida_typelist__();
+  for (const auto &th : thl)
+    {
+      AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
+      if (wrapper)
         {
-          AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
-          if (wrapper)
-            return scope.Escape (wrapper (isolate, rhandle));
+          wrapobj = wrapper (isolate, rhandle);
+          aida_remote_handle_cache_add (isolate, rhandle, wrapobj);
+          break;
         }
     }
-  return scope.Escape (v8::Local<v8::Object>());
+  return scope.Escape (wrapobj);
 }
 
 /// Helper to specialize v8pp::convert<> for all RemoteHandle types.
@@ -159,6 +209,9 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 {
   assert (bse_v8stub == NULL);
   v8::Isolate *const isolate = v8::Isolate::GetCurrent();
+  assert (aida_remote_handle_idmap_isolate == NULL);
+  aida_remote_handle_idmap_isolate = isolate;
+
   v8::HandleScope scope (isolate);
 
   // start Bse
