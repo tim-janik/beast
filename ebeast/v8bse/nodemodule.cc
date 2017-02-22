@@ -53,6 +53,19 @@ aida_remote_handle_wrapper_map (const Aida::TypeHash &thash, AidaRemoteHandleWra
   return NULL;
 }
 
+/// Retrieve the native RemoteHandle from a JS Object.
+template<class NativeClass> static NativeClass*
+aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Value> value)
+{
+  v8::HandleScope scope (isolate);
+  NativeClass *nobject = NULL;
+  if (!value.IsEmpty() && value->IsObject())
+    nobject = v8pp::class_<NativeClass>::unwrap_object (isolate, value);
+  if (!nobject)
+    throw std::runtime_error ("failed to unwrap C++ Aida::RemoteHandle");
+  return nobject;
+}
+
 /// Create (or find) the corresponding down_cast() JS Object for a RemoteHandle.
 static v8::Local<v8::Object>
 aida_remote_handle_wrap_native (v8::Isolate *const isolate, Aida::RemoteHandle const &rhandle)
@@ -71,19 +84,6 @@ aida_remote_handle_wrap_native (v8::Isolate *const isolate, Aida::RemoteHandle c
   return scope.Escape (v8::Local<v8::Object>());
 }
 
-/// Retrieve the native RemoteHandle from a JS Object.
-template<class NativeClass> static NativeClass&
-aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Value> value)
-{
-  v8::HandleScope scope (isolate);
-  NativeClass *nobject = NULL;
-  if (!value.IsEmpty() && value->IsObject())
-    nobject = v8pp::class_<NativeClass>::unwrap_object (isolate, value);
-  if (!nobject)
-    throw std::runtime_error ("failed to unwrap C++ Aida::RemoteHandle");
-  return *nobject;
-}
-
 /// Helper to specialize v8pp::convert<> for all RemoteHandle types.
 template<class DerivedHandle>
 struct convert_AidaRemoteHandle
@@ -91,7 +91,7 @@ struct convert_AidaRemoteHandle
   using N = DerivedHandle;              // native type, derived from Aida::RemoteHandle
   using J = v8::Local<v8::Object>;      // Javascript type
   static bool is_valid (v8::Isolate *const isolate, v8::Local<v8::Value> v) { return !v.IsEmpty() && v->IsObject(); }
-  static N&   from_v8  (v8::Isolate *const isolate, v8::Local<v8::Value> v) { return aida_remote_handle_unwrap_native<N> (isolate, v); }
+  static N&   from_v8  (v8::Isolate *const isolate, v8::Local<v8::Value> v) { return *aida_remote_handle_unwrap_native<N> (isolate, v); }
   static J    to_v8    (v8::Isolate *const isolate, const N &rhandle)       { return aida_remote_handle_wrap_native (isolate, rhandle); }
 };
 
