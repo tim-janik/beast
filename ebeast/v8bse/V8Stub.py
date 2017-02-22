@@ -97,11 +97,14 @@ class Generator:
         v8pp_class_types += [ tp ]
     # C++ class type aliases for v8pp::class_
     s += '\n// v8pp::class_ aliases\n'
+    s += 'typedef %-40s V8ppType_AidaRemoteHandle;\n' % 'v8pp::class_<Aida::RemoteHandle>'
     for tp in v8pp_class_types:
       s += 'typedef %-40s %s;\n' % ('v8pp::class_<%s>' % colon_typename (tp), v8ppclass_type (tp))
     # C++ class specialisations for v8pp::convert
     s += '\n// v8pp::convert<> specialisations\n'
     s += 'namespace v8pp {\n'
+    s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<Aida::RemoteHandle> {};\n' % '<Aida::RemoteHandle>'
+    s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<Aida::RemoteHandle*> {};\n' % '<Aida::RemoteHandle*>'
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
       if tp.storage == Decls.INTERFACE:
@@ -116,6 +119,7 @@ class Generator:
     s += '\n// Main binding stub\n'
     s += 'struct V8stub final {\n'
     s += '  v8::Isolate                             *const isolate_;\n'
+    s += '  %-40s %s;\n' % ('V8ppType_AidaRemoteHandle', 'AidaRemoteHandle_class_')
     for tp in v8pp_class_types:
       s += '  %-40s %s;\n' % (v8ppclass_type (tp), v8ppclass (tp))
     s += '  v8pp::module                             module_;\n'
@@ -125,6 +129,7 @@ class Generator:
     # V8stub ctor - begin
     s += '\nV8stub::V8stub (v8::Isolate *const isolate) :\n'
     s += '  isolate_ (isolate),\n'
+    s += '  AidaRemoteHandle_class_ (isolate),\n'
     for tp in v8pp_class_types:
       s += '  %s (isolate),\n' % v8ppclass (tp)
     s += '  module_ (isolate)\n'
@@ -144,6 +149,8 @@ class Generator:
       if tp.storage == Decls.INTERFACE:
         for tb in bases (tp):
           b += '    .inherit<%s>()\n' % colon_typename (tb)
+        if len (bases (tp)) == 0:
+          b += '    .inherit<%s>()\n' % 'Aida::RemoteHandle'
       # Class ctor
       if tp.storage == Decls.SEQUENCE or tp.storage == Decls.RECORD:
         b += '    .ctor()\n'
