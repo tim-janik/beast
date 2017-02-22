@@ -106,6 +106,43 @@ struct convert_AidaRemoteHandle<DerivedHandle*>
   static J    to_v8    (v8::Isolate *const isolate, const N *n)             { return !n ? J() : v8pp::convert<N>::to_v8 (isolate, *n); }
 };
 
+/// Helper to specialize v8pp::convert<> for all Sequence types.
+template<class Class>
+struct convert_AidaSequence
+{
+  using from_type = Class;
+  using value_type = typename Class::value_type;
+  using to_type = v8::Handle<v8::Array>;
+  static bool
+  is_valid (v8::Isolate*, v8::Handle<v8::Value> value)
+  {
+    return !value.IsEmpty() && value->IsArray();
+  }
+  static from_type
+  from_v8 (v8::Isolate *const isolate, v8::Handle<v8::Value> value)
+  {
+    v8::HandleScope scope (isolate);
+    if (!is_valid (isolate, value))
+      throw std::invalid_argument ("expected array object");
+    v8::Local<v8::Array> arr = value.As<v8::Array>();
+    const size_t arrlen = arr->Length();
+    from_type result;
+    result.reserve (arrlen);
+    for (size_t i = 0; i < arrlen; i++)
+      result.push_back (v8pp::from_v8<value_type> (isolate, arr->Get (i)));
+    return result;
+  }
+  static to_type
+  to_v8 (v8::Isolate *const isolate, from_type const &value)
+  {
+    v8::EscapableHandleScope scope (isolate);
+    v8::Local<v8::Array> arr = v8::Array::New (isolate, value.size());
+    for (size_t i = 0; i < value.size(); i++)
+      arr->Set (i, v8pp::to_v8 (isolate, value[i]));
+    return scope.Escape (arr);
+  }
+};
+
 #include "v8bse.cc"
 
 // v8pp binding for Bse

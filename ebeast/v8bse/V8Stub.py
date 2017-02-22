@@ -103,10 +103,12 @@ class Generator:
     s += '\n// v8pp::convert<> specialisations\n'
     s += 'namespace v8pp {\n'
     for tp in v8pp_class_types:
+      cn = colon_typename (tp)
       if tp.storage == Decls.INTERFACE:
-        cn = colon_typename (tp)
         s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s>  {};\n' % ('<%s>' % cn, cn)
         s += 'template<> struct convert%-40s : convert_AidaRemoteHandle<%s*> {};\n' % ('<%s*>' % cn, cn)
+      elif tp.storage == Decls.SEQUENCE:
+        s += 'template<> struct convert%-40s : convert_AidaSequence<%s> {};\n' % ('<%s>' % cn, cn)
     s += '} // v8pp\n'
     # V8stub - main binding stub
     s += '\n// Main binding stub\n'
