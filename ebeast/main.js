@@ -26,7 +26,7 @@ function create_window ()
   };
   win = new BrowserWindow (options);
   win.once ('ready-to-show', () => { win.show(); });
-  win.loadURL ('file:///' + __dirname + '/ebeast.html');
+  win.loadURL ('file:///' + __dirname + '/index.html');
   // win.webContents.openDevTools();
   win.on ('closed', () => { win = null });
 }
