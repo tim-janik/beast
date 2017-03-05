@@ -22,7 +22,7 @@ clean-local: clean-node_modules
 clean-node_modules: ; rm -rf node_modules/ package.json
 
 # == app ==
-app:	package.json xlint-html
+app:	package.json xlint-html xlint-js
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 
 # == run ==
@@ -48,3 +48,14 @@ xlint-html: $(HTML_LINT_FILES)
 	$(Q) cat $@.log ; test ! -s $@.log
 	$(Q) mv $@.log $@
 MOSTLYCLEANFILES += xlint-html xlint-html.log
+
+# == JS linting ==
+JS_LINT_FILES = *.js $(HTML_LINT_FILES)
+xlint-js: $(JS_LINT_FILES) package.json
+	$(AM_V_GEN)
+	$(Q) rm -f $@
+	$(Q) for file in $(JS_LINT_FILES) ; do \
+	  ./node_modules/.bin/eslint -f unix $$file || exit $$? ; \
+	done
+	$(Q) touch $@
+MOSTLYCLEANFILES += xlint-js

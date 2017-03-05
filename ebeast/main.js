@@ -1,11 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-const {app, BrowserWindow, ipcMain} = require ('electron');
+const {app, BrowserWindow} = require ('electron');
 
 // create the main ebeast window
 var win;
 function create_window ()
 {
-  options = {
+  const options = {
     width: 1820, height: 1024, // calling win.maximize() flickers, using a big size not
     webPreferences: {
       defaultEncoding:	'UTF-8',
@@ -28,7 +28,7 @@ function create_window ()
   win.once ('ready-to-show', () => { win.show(); });
   win.loadURL ('file:///' + __dirname + '/index.html');
   // win.webContents.openDevTools();
-  win.on ('closed', () => { win = null });
+  win.on ('closed', () => { win = null; });
 }
 app.on ('ready', create_window); // create window once everything is loaded
 

@@ -4,7 +4,8 @@
   "description":     "Beast - Music Synthesizer and Composer",
   "main":            "main.js",
   "dependencies":    { "electron": "^1.4.15" },
-  "devDependencies": { "node-gyp": "^3.5.0" },
+  "devDependencies": { "node-gyp": "^3.5.0",
+		       "eslint": "^3.16.1", "eslint-plugin-html": "^2.0.1" },
   "license":         "LGPL-3.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
