@@ -2,14 +2,18 @@
 <html>
 <head>
   <title>BEAST</title>
+
   <link rel="stylesheet" href="objects/app.css">
-  <script>
-   "use strict";
-   const app = require ('electron').remote.app;
-   const Bse = require ('./v8bse/v8bse.node');
-  </script>
+
 </head>
 <body>
+
+  <script>
+    'use strict';
+    const Electron = require ('electron').remote;
+    const Bse = require ('./v8bse/v8bse.node');
+    const Mithril = require ('mithril');
+  </script>
 
   <div style="margin: 1em auto; overflow: auto; max-height: 100%; max-width: 100%;">
     <h1 style="float:right; margin-top: 0">BEAST/BSE</h1>
@@ -17,7 +21,10 @@
      table.version-table th { text-align: right; padding-right: .5em; }
      table.version-table td { font-family: monospace; }
     </style>
-    <script> const os = require ('os'); </script>
+    <script>
+      const app = Electron.app;
+      const os = require ('os');
+    </script>
     <table class="version-table">
       <tr> <th> Application: </th> <td><script> document.write (app.getName() + ' ' + app.getVersion()); </script></td> </tr>
       <tr> <th> OS: </th>          <td><script> document.write (process.platform + ' ' + process.arch + ' (' + os.release() + ')'); </script></td> </tr>
