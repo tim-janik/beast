@@ -22,7 +22,7 @@ clean-local: clean-node_modules
 clean-node_modules: ; rm -rf node_modules/ package.json
 
 # == app ==
-app:	package.json xlint-html xlint-js objects/app.css
+app:	package.json xlint-html xlint-js objects/app.css objects/gradient-01.png
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 
 # == run ==
@@ -46,6 +46,18 @@ objects/app.css: app.less
 -include objects/.deps/app.P
 clean-local: clean-objects
 clean-objects: ; rm -rf objects/
+
+# == objects/gradient-01.png ==
+# generate non-banding gradient from gradient-01 { -im-convert: "..."; }
+# http://www.imagemagick.org/script/command-line-options.php#noise
+# http://www.imagemagick.org/Usage/canvas/
+objects/gradient-01.png: objects/app.css Makefile
+	$(AM_V_GEN)
+	$(Q) tr '\n' ' ' <objects/app.css \
+	| sed -nr 's/.*\bgradient-01\s*\{[^}]*-im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' >$@.tmp && test -s $@.tmp
+	$(Q) convert $$(cat $@.tmp) $@
+	$(Q) rm -f $@.tmp
+MOSTLYCLEANFILES += objects/gradient-01.png objects/gradient-01.*tmp
 
 # == HTML linting ==
 HTML_LINT_FILES = index.html
