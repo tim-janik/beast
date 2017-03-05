@@ -22,7 +22,7 @@ clean-local: clean-node_modules
 clean-node_modules: ; rm -rf node_modules/ package.json
 
 # == app ==
-app:	package.json xlint-html xlint-js
+app:	package.json xlint-html xlint-js objects/app.css
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 
 # == run ==
@@ -36,6 +36,16 @@ run: app
 # the BrowserWindow.darkTheme option. Here, we preselect a commonly installed dark Gtk+2
 # theme if it's present.
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
+
+# == CSS generation ==
+objects/app.css: app.less
+	$(AM_V_GEN)
+	$(Q) mkdir -p objects/.deps/
+	$(Q) ./node_modules/.bin/lessc $< $@ --source-map=$@.map
+	$(Q) ./node_modules/.bin/lessc $< $@ -M >objects/.deps/app.P
+-include objects/.deps/app.P
+clean-local: clean-objects
+clean-objects: ; rm -rf objects/
 
 # == HTML linting ==
 HTML_LINT_FILES = index.html

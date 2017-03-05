@@ -1,0 +1,54 @@
+
+/* == Settings == */
+@theme-foreground: 		#ffffff;
+@theme-background: 		#505050;
+@theme-border-radius:		3px;
+@panel-background-lg:		linear-gradient(to bottom, lighten(@theme-background, 4%) 0%, darken(@theme-background, 4%) 100%);
+@panel-background-border:	darken(@theme-background, 25%);
+@panel-background-light:	lighten(@theme-background, 9%);
+@panel-background-dark:		darken(@theme-background, 9%);
+@button-foreground:   		#dddddd;
+@button-light:   		#999999;
+@button-lg:      		linear-gradient(to bottom, #777777 0%, #707070 45%, #606060 55%, #555555 100%);
+@button-dark:    		#444444;
+@button-border:   		#555555;
+@button-hover:			fade(#ffffff, 10%);
+@button-active:			fade(#000000, 20%);
+@button-active-fg:		#bbbbbb;
+@button-active-border:		#333333;
+@glow-control:			#0080ff;
+@focus-outline:			1px solid @glow-control;
+
+/* == Body Styles == */
+BrowserWindowDefaults		{ ; /* used by main.js */
+				  backgroundColor:          @theme-background; /* #rrggbb needed */
+				  defaultFontSize:          14;              /* int needed */
+				  defaultMonospaceFontSize: 13;              /* int needed */ }
+html                 		{ font-family: sans; height: 100%; width: 100%; }
+body				{ font: inherit; padding: 0; margin: 0; color: @theme-foreground;
+				  overflow: hidden; width: 100vw; height: 100vh;
+				  background-color: @theme-background;
+				  background-image: @panel-background-lg; }
+body.window-inactive 		{ color: fade(@theme-foreground, 80%); }
+*				{ box-sizing: border-box; text-overflow: ellipsis; }
+
+/* == Resets == */
+input, textarea, keygen, select,
+button          		{ font: inherit; }
+button          		{ -webkit-appearance: normal; }
+
+/* == Button == */
+.theme-buttonframe 		{ border: 1px solid @button-border; }
+.theme-buttonshade 		{ background-image: @button-lg;
+				  border-top: 1px solid @button-light; border-left: 1px solid @button-light;
+				  border-bottom: 1px solid @button-dark; border-right: 1px solid @button-dark; }
+button                  	{ .theme-buttonframe; .theme-buttonshade;
+				  display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
+button:focus            	{ outline: @focus-outline; }
+button:hover            	{ box-shadow: inset 500px 500px @button-hover; }
+button.fake-active,
+button:active           	{ box-shadow: inset 500px 500px @button-active;
+				  border-color: @button-active-border; }
+button, button *        	{ color: @button-foreground; fill: @button-foreground !important; }
+button.fake-active *,		/* use '*' + fill!important to include svg elements in buttons */
+button:active *         	{ color: @button-active-fg; fill: @button-active-fg !important; }

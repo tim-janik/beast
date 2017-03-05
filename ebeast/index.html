@@ -1,15 +1,13 @@
 <!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 <html>
 <head>
-  <title>Untitled.bse (0 tracks, inactive) – BEAST</title>
+  <title>BEAST</title>
+  <link rel="stylesheet" href="objects/app.css">
   <script>
    "use strict";
    const app = require ('electron').remote.app;
    const Bse = require ('./v8bse/v8bse.node');
   </script>
-  <style>
-   html	{ color: #fff; }
-  </style>
 </head>
 <body>
 
@@ -36,6 +34,8 @@
       <tr> <th> Config Path: </th> <td><script> document.write (app.getPath ('userData')); </script></td> </tr>
       <tr> <th> Music Path: </th>  <td><script> document.write (app.getPath ('music')); </script></td> </tr>
     </table>
+
+    <button> Close </button>
   </div>
 
 </body>

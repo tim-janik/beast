@@ -1,5 +1,6 @@
-/package.json
 /config.log
+/package.json
 /node_modules/
+/objects/
 /xlint-html
 /xlint-js
