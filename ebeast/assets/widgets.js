@@ -10,3 +10,25 @@ module.exports.KeyCode = {
   VOLUMEMUTE: 173, VOLUMEDOWN: 174, VOLUMEUP: 175, MEDIANEXTTRACK: 176, MEDIAPREVIOUSTRACK: 177, MEDIASTOP: 178, MEDIAPLAYPAUSE: 179,
 };
 
+// == Utility Functions ==
+
+/// Wrap @a callback so it's only called once per AnimationFrame.
+function create_animation_callback (callback) {
+  return function() {
+    if (true === !callback.__create_animation_callback__pending__) {
+      const request_id = requestAnimationFrame (function (now_ms) {
+	callback.__create_animation_callback__pending__ = undefined;
+	callback (now_ms);
+      });
+      callback.__create_animation_callback__pending__ = request_id;
+    }
+  };
+}
+module.exports.create_animation_callback = create_animation_callback;
+
+/// Enqueue @a callback to be executed once at the next AnimationFrame.
+function queue_animation_callback (callback) {
+  const queue_callback = create_animation_callback (callback);
+  queue_callback();
+}
+module.exports.queue_animation_callback = queue_animation_callback;
