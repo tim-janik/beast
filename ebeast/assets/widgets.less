@@ -19,3 +19,19 @@ button:active           	{ box-shadow: inset 500px 500px @button-active;
 button, button *        	{ color: @button-foreground; fill: @button-foreground !important; }
 button.fake-active *,		/* use '*' + fill!important to include svg elements in buttons */
 button:active *         	{ color: @button-active-fg; fill: @button-active-fg !important; }
+
+/* == Layouts == */
+html .w100			{ width: 100%; }
+html .h100			{ height: 100%; }
+/* https://www.w3.org/TR/css-flexbox-1/#valdef-flex-basis-content
+ * https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+ */
+.hbox, .vbox			{ display: flex; flex-basis: auto;
+				  align-items: center; justify-content: center; }
+.hbox				{ flex-flow: row; width: auto; }
+.vbox				{ flex-flow: column; height: auto; }
+.minbox, .maxbox		{ display: flex; flex-shrink: 0; flex-basis: auto;
+				  max-height: 100%; max-width: 100%; }
+.minbox				{ flex-grow: 0; }
+.maxbox				{ flex-grow: 1; }
+html .shrinkbox			{ flex-shrink: 1; }
