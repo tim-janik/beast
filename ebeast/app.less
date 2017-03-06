@@ -29,14 +29,14 @@ BrowserWindowDefaults		{ ; /* used by main.js */
 				  defaultMonospaceFontSize: 13;              /* int needed */ }
 gradient-01			{ -im-convert: "-size 67x1080 -attenuate 0.2 +noise Uniform
 						gradient:@{panel-background-lg0}-@{panel-background-lg1}"; }
-.gradient-01-bg			{ background: url(gradient-01.png) center repeat-x; background-size: auto 100%; }
-html				{ width: 100vw; height: 100vh; font-family: sans; }
-body				{ width: 100%; height: 100%; overflow: hidden; font: inherit;
-				  padding: 0; margin: 0; color: @theme-foreground;
-				  background-color: @theme-background;
+.gradient-01-bg			{ background-color: @theme-background;
 				  /* gradient with banding */
 				  background-image: @panel-background-lg;
 				  /* gradient image with reduced banding */
+				  background: url(gradient-01.png) center repeat-x; background-size: auto 100%; }
+html				{ width: 100vw; height: 100vh; font-family: sans; }
+body				{ width: 100%; height: 100%; overflow: hidden; font: inherit;
+				  padding: 0; margin: 0; color: @theme-foreground;
 				  .gradient-01-bg; }
 body.window-inactive 		{ color: fade(@theme-foreground, 80%); }
 *				{ box-sizing: border-box; text-overflow: ellipsis; }
