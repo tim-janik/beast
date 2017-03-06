@@ -9,6 +9,7 @@ module.exports = {
     "Electron": false,
     "Mithril": false,
     "Bse": false,
+    "App": false,
     "module": true /* allow mods */
   },
   "rules": {

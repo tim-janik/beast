@@ -1,12 +1,9 @@
 <!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
-<html>
-<head>
+<html><head>
+
   <title>BEAST</title>
 
   <link rel="stylesheet" href="objects/app.css">
-
-</head>
-<body>
 
   <script>
     'use strict';
@@ -14,38 +11,44 @@
     const Bse = require ('./v8bse/v8bse.node');
     const Mithril = require ('mithril');
     window.$ = window.jQuery = require ('jquery');
+    const Dialogs = require ('./assets/dialogs.js');
+    "" + Bse; // FIXME 'unused' warnings
+    const App = {
+      show_about: true,
+      __proto__ : Electron.app
+    };
+    Object.preventExtensions (App);
   </script>
 
-  <div style="margin: 1em auto; overflow: auto; max-height: 100%; max-width: 100%;">
-    <h1 style="float:right; margin-top: 0">BEAST/BSE</h1>
-    <style>
-     table.version-table th { text-align: right; padding-right: .5em; }
-     table.version-table td { font-family: monospace; }
-    </style>
-    <script>
-      const app = Electron.app;
-      const os = require ('os');
-    </script>
-    <table class="version-table">
-      <tr> <th> Application: </th> <td><script> document.write (app.getName() + ' ' + app.getVersion()); </script></td> </tr>
-      <tr> <th> OS: </th>          <td><script> document.write (process.platform + ' ' + process.arch + ' (' + os.release() + ')'); </script></td> </tr>
-      <tr> <th> Electron: </th>    <td><script> document.write (process.versions.electron); </script></td> </tr>
-      <tr> <th> Chrome: </th>      <td><script> document.write (process.versions.chrome); </script></td> </tr>
-      <tr> <th> V8: </th>          <td><script> document.write (process.versions.v8); </script></td> </tr>
-      <tr> <th> Node.js: </th>     <td><script> document.write (process.versions.node); </script></td> </tr>
-      <tr> <th> Bse: </th>         <td><script> document.write (Bse.server.get_version()); </script></td> </tr>
-      <tr> <th> Vorbis: </th>      <td><script> document.write (Bse.server.get_vorbis_version()); </script></td> </tr>
-      <tr> <th> Libuv: </th>       <td><script> document.write (process.versions.uv); </script></td> </tr>
-      <tr> <th> Executable: </th>  <td><script> document.write (app.getPath ('exe')); </script></td> </tr>
-      <tr> <th> Working Dir: </th> <td><script> document.write (app.getAppPath()); </script></td> </tr>
-      <tr> <th> Desktop Dir: </th> <td><script> document.write (app.getPath ('desktop')); </script></td> </tr>
-      <tr> <th> Config Path: </th> <td><script> document.write (app.getPath ('userData')); </script></td> </tr>
-      <tr> <th> Music Path: </th>  <td><script> document.write (app.getPath ('music')); </script></td> </tr>
-    </table>
+</head><body>
 
-    <button> Close </button>
-  </div>
+  <script>
+    Dialogs.toggle_about = function() {
+      const m = Mithril;
+      return (
+	m ('button',
+	   { onclick: function () { App.show_about = !App.show_about; } },
+	   'Toggle About')
+      );
+    };
+  </script>
 
-</body>
-</html>
+  <script>
+    const MithrilApp = {
+      view: function () {
+	const m = Mithril;
+	const app_body = [
+	  Dialogs.toggle_about(),
+	  Dialogs.about_dialog(),
+	];
+	return (
+	  m ('div#mithril.Mithril', {
+	    style: 'position: absolute; top: 0; left: 0; right: 0; bottom: 0;',
+	  }, app_body)
+	);
+      }
+    };
+    Mithril.mount (document.body, MithrilApp);
+  </script>
 
+</body></html>
