@@ -15,7 +15,7 @@ function create_window ()
 	standard:	'Candara',	// 'Times New Roman',
 	serif:		'Constantia',	// 'Times New Roman',
 	sansSerif:	'Candara',	// 'Arial',
-	monospace:	'Courier',	// 'Courier New',
+	monospace:	'Consolas',	// 'Courier New',
 	cursive:	'Script',	// 'Script',
 	fantasy:	'Impact',	// 'Impact',
       },
