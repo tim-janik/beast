@@ -1,4 +1,5 @@
 'use strict';
+const Widgets = require ('./widgets.js');
 const m = Mithril;
 
 // == ModalDialog ==
@@ -8,13 +9,35 @@ const m = Mithril;
  * - title: dialog title vnode
  * - buttons: list of vnodes
  * - onclose: callback for dialog closing
+ * - closeonescape: boolean
  */
 const ModalDialog = {
+  oncreate: function (vnode) {
+    function document_keydown (event) {
+      if (vnode.attrs.closeonescape === false ||
+	  !vnode.attrs.onclose ||
+	  !event || event.defaultPrevented ||
+	  event.keyCode != Widgets.KeyCode.ESCAPE)
+	return;
+      event.preventDefault();
+      vnode.attrs.onclose.call (vnode.dom, event);
+      m.redraw();
+    }
+    vnode.state.document_keydown = document_keydown;
+    $(document.body).on ('keydown', vnode.state.document_keydown);
+  },
+  onremove: function (vnode) {
+    if (vnode.state.document_keydown) {
+      $(document.body).off ('keydown', vnode.state.document_keydown);
+      vnode.state.document_keydown = undefined;
+    }
+  },
   view: function (vnode) {
     const child_attrs = {
       title: undefined,
       buttons: undefined,
       onclose: undefined,
+      closeonescape: undefined,
       __proto__: vnode.attrs
     };
     let divs = [
