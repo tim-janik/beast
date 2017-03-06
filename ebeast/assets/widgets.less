@@ -1,0 +1,21 @@
+/* == Resets == */
+input, textarea, keygen, select,
+button          		{ font: inherit; }
+button          		{ -webkit-appearance: normal; }
+
+
+/* == Button == */
+.theme-buttonframe 		{ border: 1px solid @button-border; }
+.theme-buttonshade 		{ background-image: @button-lg;
+				  border-top: 1px solid @button-light; border-left: 1px solid @button-light;
+				  border-bottom: 1px solid @button-dark; border-right: 1px solid @button-dark; }
+button                  	{ .theme-buttonframe; .theme-buttonshade;
+				  display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
+button:focus            	{ outline: @focus-outline; }
+button:hover            	{ box-shadow: inset 500px 500px @button-hover; }
+button.fake-active,
+button:active           	{ box-shadow: inset 500px 500px @button-active;
+				  border-color: @button-active-border; }
+button, button *        	{ color: @button-foreground; fill: @button-foreground !important; }
+button.fake-active *,		/* use '*' + fill!important to include svg elements in buttons */
+button:active *         	{ color: @button-active-fg; fill: @button-active-fg !important; }
