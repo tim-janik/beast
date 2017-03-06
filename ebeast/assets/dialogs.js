@@ -109,6 +109,11 @@ function version_rows () {
     m ('tr', [ m ('th', 'Music Path:'),		m ('td', App.getPath ('music')) ]),
   ];
 }
+
+// Work around Mithril 1.0.1 m.redraw causing synchronous DOM updates during event handling
+const vnode_async_autofocus = function (vnode) {
+  Widgets.queue_animation_callback (function () { vnode.dom.focus() });
+};
 module.exports.about_dialog = function () {
   if (!App.show_about)
     return null;
@@ -121,7 +126,10 @@ module.exports.about_dialog = function () {
 		      onclose: doclose,
 		      buttons: [
 			m ('button', [ 'Toggle', ]),
-			m ('button[autofocus]', { onclick: doclose }, [ 'Close', ]),
+			m ('button', {
+			  oncreate: vnode_async_autofocus,
+			  onclick: doclose,
+			}, [ 'Close', ]),
 			m ('button', [ 'Help', ]),
 		      ] },
        m ('table', version_rows())
