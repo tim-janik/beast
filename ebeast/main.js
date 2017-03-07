@@ -5,17 +5,32 @@ const Electron = require ('electron');
 var win;
 function create_window ()
 {
+  const FS = require ('fs');
   // avoid menu flicker, leave menu construction to the window
   Electron.Menu.setApplicationMenu (null);
+  // find some CSS presets needed as BrowserWindow defaults
+  let appcss = FS.readFileSync ('objects/app.css', 'UTF-8');
+  let rex = /\bBrowserWindowDefaults\s*{([^}]*)}/m;
+  appcss = rex.exec (appcss)[1];       // extract BrowserWindowDefaults section
+  rex = /\/\*([^*]|\*[^\/])*\*\//;
+  appcss = appcss.replace (rex, ' ');  // remove comments
+  rex = /\bbackgroundColor\s*:\s*([^;}]*)\s*[;}]/mi;
+  const backgroundColor = rex.exec (appcss)[1];
+  rex = /\bdefaultFontSize\s*:\s*([^;}]*)\s*[;}]/mi;
+  const defaultFontSize = rex.exec (appcss)[1];
+  rex = /\bdefaultMonospaceFontSize\s*:\s*([^;}]*)\s*[;}]/mi;
+  const defaultMonospaceFontSize = rex.exec (appcss)[1];
   // window configuraiton
   const options = {
-    width: 1820, height: 1024, // calling win.maximize() flickers, using a big size not
+    width: 				1820, // calling win.maximize() causes flicker
+    height: 				1365, // using a big initial size avoids flickering
+    backgroundColor: 			backgroundColor,
     webPreferences: {
-      defaultEncoding:	'UTF-8',
-      defaultFontSize:   	15,
-      defaultMonospaceFontSize:	14,
+      defaultEncoding:			'UTF-8',
+      defaultFontSize:			parseInt (defaultFontSize),
+      defaultMonospaceFontSize:		parseInt (defaultMonospaceFontSize),
       defaultFontFamily: {
-	standard:	'Candara',	// 'Times New Roman',
+	standard:	'sans',		// 'Times New Roman',
 	serif:		'Constantia',	// 'Times New Roman',
 	sansSerif:	'Candara',	// 'Arial',
 	monospace:	'Consolas',	// 'Courier New',
@@ -25,7 +40,6 @@ function create_window ()
     },
     show: false, // avoid incremental load effect, see 'ready-to-show'
     darkTheme: true,
-    backgroundColor: '#333333',
   };
   win = new Electron.BrowserWindow (options);
   win.once ('ready-to-show', () => { win.show(); });
