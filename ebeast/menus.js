@@ -9,9 +9,13 @@ const view_menu = [
   { label: 'Toggle Fullscreen', 	role: 'toggle-fulscreen', 	accelerator: 'F11', },
   { label: 'Toggle Developer Tools', 	role: 'toggle-devtools',  	accelerator: 'Shift+Ctrl+I', },
 ];
+const help_menu = [
+  { label: '&About...',			role: 'about-dialog',		},
+];
 const menubar_menus = [
   { label: '&File', 			submenu: file_menu,		accelerator: 'Alt+F' },
   { label: '&View', 			submenu: view_menu,		accelerator: 'Alt+W' },
+  { label: '&Help', 			submenu: help_menu,		accelerator: 'Alt+H' },
 ];
 
 // add 'click' handlers to menu templates
@@ -51,6 +55,10 @@ function app_command (role, _data) {
     }, (result) => {
       console.log ('open-file: ' + result);
     });
+    break;
+  case 'about-dialog':
+    App.show_about = !App.show_about;
+    Mithril.redraw();
     break;
   }
 }
