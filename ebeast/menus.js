@@ -2,12 +2,12 @@
 
 // == Application Menu ==
 const file_menu = [
-  { label: 'Open...',			role: 'open-file',		accelerator: 'Ctrl+O', },
-  { label: 'Quit',			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
+  { label: '&Open...',			role: 'open-file',		accelerator: 'Ctrl+O', },
+  { label: '&Quit',			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
 ];
 const view_menu = [
-  { label: 'Toggle Fullscreen', 	role: 'toggle-fulscreen', 	accelerator: 'F11', },
-  { label: 'Toggle Developer Tools', 	role: 'toggle-devtools',  	accelerator: 'Shift+Ctrl+I', },
+  { label: 'Toggle &Fullscreen', 	role: 'toggle-fulscreen', 	accelerator: 'F11', },
+  { label: 'Toggle &Developer Tools', 	role: 'toggle-devtools',  	accelerator: 'Shift+Ctrl+I', },
 ];
 const help_menu = [
   { label: '&About...',			role: 'about-dialog',		},
