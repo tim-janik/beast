@@ -33,7 +33,9 @@ function assign_click (item, func) {
 assign_click (menubar_menus, (menuitem, _focusedBrowserWindow, _event) => {
   app_command (menuitem.role, menuitem.data);
 });
-Electron.Menu.setApplicationMenu (Electron.Menu.buildFromTemplate (menubar_menus));
+module.exports.build_menubar = function () {
+  return Electron.Menu.buildFromTemplate (menubar_menus);
+};
 
 // handle menu activations
 function app_command (role, _data) {

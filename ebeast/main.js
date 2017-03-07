@@ -1,10 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-const {app, BrowserWindow} = require ('electron');
+const Electron = require ('electron');
 
 // create the main ebeast window
 var win;
 function create_window ()
 {
+  // avoid menu flicker, leave menu construction to the window
+  Electron.Menu.setApplicationMenu (null);
+  // window configuraiton
   const options = {
     width: 1820, height: 1024, // calling win.maximize() flickers, using a big size not
     webPreferences: {
@@ -24,13 +27,13 @@ function create_window ()
     darkTheme: true,
     backgroundColor: '#333333',
   };
-  win = new BrowserWindow (options);
+  win = new Electron.BrowserWindow (options);
   win.once ('ready-to-show', () => { win.show(); });
   win.loadURL ('file:///' + __dirname + '/index.html');
   // win.webContents.openDevTools();
   win.on ('closed', () => { win = null; });
 }
-app.on ('ready', create_window); // create window once everything is loaded
+Electron.app.on ('ready', create_window); // create window once everything is loaded
 
 // quit when all windows are closed.
-app.on ('window-all-closed', app.quit);
+Electron.app.on ('window-all-closed', Electron.app.quit);

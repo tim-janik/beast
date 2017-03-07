@@ -7,50 +7,11 @@
 
   <script>
     'use strict';
-    const Electron = require ('electron').remote;
-    const Bse = require ('./v8bse/v8bse.node');
-    0 + Bse; // FIXME 'unused' warnings
-    const Mithril = require ('mithril');
+    /* Load application code right away, start application once DOM is ready */
     window.$ = window.jQuery = require ('jquery');
-    const Dialogs = require ('./assets/dialogs.js');
-    const Menus = require ('./menus.js');
-    0 + Menus; // FIXME 'unused' warnings
-    const App = {
-      show_about: false,
-      __proto__ : Electron.app
-    };
-    Object.preventExtensions (App);
+    $(require ('./app.js').start_app);
   </script>
 
-</head><body>
-
-  <script>
-    Dialogs.toggle_about = function() {
-      const m = Mithril;
-      return (
-	m ('button',
-	   { onclick: function () { App.show_about = !App.show_about; } },
-	   'Toggle About')
-      );
-    };
-  </script>
-
-  <script>
-    const MithrilApp = {
-      view: function () {
-	const m = Mithril;
-	const app_body = [
-	  Dialogs.toggle_about(),
-	  Dialogs.about_dialog(),
-	];
-	return (
-	  m ('div#mithril.Mithril', {
-	    style: 'position: absolute; top: 0; left: 0; right: 0; bottom: 0;',
-	  }, app_body)
-	);
-      }
-    };
-    Mithril.mount (document.body, MithrilApp);
-  </script>
-
-</body></html>
+</head>
+<body></body>
+</html>
