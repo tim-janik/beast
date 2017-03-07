@@ -9,10 +9,12 @@
     'use strict';
     const Electron = require ('electron').remote;
     const Bse = require ('./v8bse/v8bse.node');
+    0 + Bse; // FIXME 'unused' warnings
     const Mithril = require ('mithril');
     window.$ = window.jQuery = require ('jquery');
     const Dialogs = require ('./assets/dialogs.js');
-    "" + Bse; // FIXME 'unused' warnings
+    const Menus = require ('./menus.js');
+    0 + Menus; // FIXME 'unused' warnings
     const App = {
       show_about: true,
       __proto__ : Electron.app
