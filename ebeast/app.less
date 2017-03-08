@@ -15,6 +15,8 @@
 @panel-background-border:	darken(@theme-background, 25%);
 @panel-background-light:	lighten(@theme-background, 9%);
 @panel-background-dark:		darken(@theme-background, 9%);
+@toolbar-background:		#606060;
+@toolbar-background-lg:		linear-gradient(to bottom, #666666 0%, #5a5a5a 100%);
 @button-foreground:   		#dddddd;
 @button-light:   		#999999;
 @button-lg:      		linear-gradient(to bottom, #777777 0%, #707070 45%, #606060 55%, #555555 100%);
@@ -61,3 +63,8 @@ body.window-inactive 		{ color: fade(@theme-foreground, 80%); }
 						  /* background: fade(@glow-control, 20%); */
 						  -webkit-box-shadow: none; }
 
+/* == Application Widgets == */
+.PlayControls			{ padding: 1em; margin: 1em;
+				  background-color: @toolbar-background; background-image: @toolbar-background-lg; }
+.StatusBar			{ text-align: left; background-color: #000; }
+.StatusBar .StatusField		{ padding-left: 1em; }
