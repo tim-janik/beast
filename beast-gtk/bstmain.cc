@@ -537,7 +537,7 @@ static int
 main_run_event_loop ()
 {
   // register embedded methods
-  static __unused bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
+  static RAPICORN_UNUSED bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
 
   // run main loop from Python
   String pyfile = Bse::Path::join (Bse::installpath (Bse::INSTALLPATH_PYBEASTDIR), "main.py");

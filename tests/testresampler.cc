@@ -534,7 +534,7 @@ perform_test()
 
 	      for (guint i = 0; i < FFT_SIZE; i++)
 		{
-		  double w = bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
+		  double w = bse_window_blackman ((2.0 * i - FFT_SIZE) / FFT_SIZE);
 
 		  normalize += w;
 		  error_spectrum_error[i] *= w;
