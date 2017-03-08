@@ -9,16 +9,30 @@ button          		{ -webkit-appearance: normal; }
 .theme-buttonshade 		{ background-image: @button-lg;
 				  border-top: 1px solid @button-light; border-left: 1px solid @button-light;
 				  border-bottom: 1px solid @button-dark; border-right: 1px solid @button-dark; }
-button                  	{ .theme-buttonframe; .theme-buttonshade;
+.theme-buttonhover		{ box-shadow: inset 500px 500px @button-hover; }
+.theme-buttonactive		{ box-shadow: inset 500px 500px @button-active;
+				  background-image: @button-active-lg;
+				  border-color: @button-active-border; }
+button                  	{ .theme-buttonshade;
 				  display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
 button:focus            	{ outline: @focus-outline; }
-button:hover            	{ box-shadow: inset 500px 500px @button-hover; }
+button:hover            	{ .theme-buttonhover; }
 button.fake-active,
-button:active           	{ box-shadow: inset 500px 500px @button-active;
-				  border-color: @button-active-border; }
+button:active           	{ .theme-buttonactive; }
 button, button *        	{ color: @button-foreground; fill: @button-foreground !important; }
 button.fake-active *,		/* use '*' + fill!important to include svg elements in buttons */
 button:active *         	{ color: @button-active-fg; fill: @button-active-fg !important; }
+/* .IconButton */
+.IconButton			{ margin: 0 0; padding: 7px; }
+.IconButton .IconButtonIcon	{ font-size: 1.3em /*1.33333333em*/; }
+/* .ButtonBox */
+.ButtonBox			{ display: inline-flex; background-color: @button-border;
+				  border: 1px solid @button-border; }
+.ButtonBox button		{ margin: 0 0 0 1px; }
+.ButtonBox button:first-of-type	{ margin-left: 0; }
+.ButtonBox				{ border-radius: @button-radius; }
+.ButtonBox > button:first-of-type	{ border-top-left-radius: @button-radius; border-bottom-left-radius: @button-radius; }
+.ButtonBox > button:last-of-type	{ border-top-right-radius: @button-radius; border-bottom-right-radius: @button-radius; }
 
 /* == Layouts == */
 html .w100			{ width: 100%; }

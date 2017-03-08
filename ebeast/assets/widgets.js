@@ -1,7 +1,8 @@
 'use strict';
+const m = Mithril;
 
 // == Keys ==
-module.exports.KeyCode = {
+exports.KeyCode = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
   PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46,
   F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117, F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
@@ -24,11 +25,26 @@ function create_animation_callback (callback) {
     }
   };
 }
-module.exports.create_animation_callback = create_animation_callback;
+exports.create_animation_callback = create_animation_callback;
 
 /// Enqueue @a callback to be executed once at the next AnimationFrame.
 function queue_animation_callback (callback) {
   const queue_callback = create_animation_callback (callback);
   queue_callback();
 }
-module.exports.queue_animation_callback = queue_animation_callback;
+exports.queue_animation_callback = queue_animation_callback;
+
+// == IconButton ==
+const IconButton = {
+  view (vnode) {
+    if (vnode.children != false)
+      throw Error ('IconButton takes no children');
+    const iconname = vnode.attrs.icon || 'fa-fonticons';
+    const attrs = { icon: undefined, key: vnode.attrs.key || iconname, __proto__: vnode.attrs };
+    return (
+      m ('button.IconButton', attrs,
+	 m ('span.IconButtonIcon.fa.fa-lg.fa-fw', { class: iconname }))
+    );
+  },
+};
+exports.IconButton = IconButton;
