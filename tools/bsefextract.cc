@@ -515,7 +515,7 @@ struct AvgEnergyFeature : public Feature
     if (avg_energy_count)
       avg_energy /= avg_energy_count;
 
-    avg_energy = 10 * log (avg_energy) / log (10);
+    avg_energy = bse_db_from_factor (sqrt (avg_energy), -200);
   }
 
   void print_results() const
