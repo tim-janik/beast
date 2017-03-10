@@ -341,6 +341,18 @@ SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
   fluid_settings = new_fluid_settings();
   fluid_synth = new_fluid_synth (fluid_settings);
 
+  static bool log_init_done = false;
+  if (!log_init_done)
+    {
+      // disable unimportant fluid messages: only display FLUID_ERR and FLUID_PANIC
+
+      fluid_set_log_function (FLUID_DBG, nullptr, nullptr);
+      fluid_set_log_function (FLUID_INFO, nullptr, nullptr);
+      fluid_set_log_function (FLUID_WARN, nullptr, nullptr);
+
+      log_init_done = true;
+    }
+
   fluid_mix_freq = 0;
   fluid_events = nullptr;
 
