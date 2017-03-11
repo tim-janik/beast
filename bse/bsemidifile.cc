@@ -315,16 +315,15 @@ void
 bse_midi_file_setup_song (BseMidiFile    *smf,
                           BseSong        *bsong)
 {
-  BseBus *master_bus;
   uint i, j;
   bse_item_set_undoable (bsong,
                          "tpqn", smf->tpqn,
                          "numerator", smf->numerator,
                          "denominator", smf->denominator,
-                         "bpm", smf->bpm,
                          NULL);
-  bse_item_exec (bsong, "ensure-master-bus", &master_bus);
   Bse::SongImpl &song = *bsong->as<Bse::SongImpl*>();
+  song.bpm (smf->bpm);
+  song.ensure_master_bus();
   for (i = 0; i < smf->n_tracks; i++)
     {
       BseMidiFileTrack *track = smf->tracks + i;
