@@ -51,7 +51,7 @@ ObjectImpl::changed (const String &what)
 void
 objects_debug_leaks ()
 {
-  if (Bse::bse_debug_enabled ("leaks"))
+  if (Bse::debug_enabled ("leaks"))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       for (list = objects; list; list = list->next)

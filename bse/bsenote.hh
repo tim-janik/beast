@@ -53,7 +53,7 @@ double bse_note_to_freq                  (Bse::MusicalTuning musical_tuning, int
 double bse_note_to_tuned_freq            (Bse::MusicalTuning musical_tuning, int note, int fine_tune);
 
 Bse::NoteDescription bse_note_description (Bse::MusicalTuning musical_tuning, int note, int finetune);
-int    bse_note_from_string              (const String &note_string);
+int    bse_note_from_string              (const std::string &note_string);
 
 
 /* --- freq array --- */

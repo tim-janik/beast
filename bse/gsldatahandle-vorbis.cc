@@ -145,11 +145,11 @@ dh_vorbis_page_seek (VorbisHandle *vhandle, int64 pos)
   // so ov_pcm_seek and ov_pcm_seek_page cannot be used reliably, this is a crude workaround
   err = ov_raw_seek (&vhandle->ofile, 0);
   if (err != 0)
-    printerr ("%s: %s: %d\n", __func__, "ov_raw_seek", err);
+    Bse::printerr ("%s: %s: %d\n", __func__, "ov_raw_seek", err);
 #endif
   err = ov_pcm_seek_page (&vhandle->ofile, pos);
   if (err != 0)
-    printerr ("%s: %s: %d\n", __func__, "ov_pcm_seek_page", err);
+    Bse::printerr ("%s: %s: %d\n", __func__, "ov_pcm_seek_page", err);
   return err;
 }
 
@@ -189,11 +189,11 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   if (err < 0)
     {
       if (0)
-        printerr ("failed to open ogg at offset %d (real offset=%lld) (add-zoffset=%d): %s\n",
-                    vhandle->rfile_byte_offset,
-                    vfile->byte_offset,
-                    vhandle->rfile_add_zoffset,
-                    bse_error_blurb (ov_errno_to_error (err, Bse::Error::FILE_OPEN_FAILED)));
+        Bse::printerr ("failed to open ogg at offset %d (real offset=%lld) (add-zoffset=%d): %s\n",
+                       vhandle->rfile_byte_offset,
+                       vfile->byte_offset,
+                       vhandle->rfile_add_zoffset,
+                       bse_error_blurb (ov_errno_to_error (err, Bse::Error::FILE_OPEN_FAILED)));
       vfile_close (vfile);
       return ov_errno_to_error (err, Bse::Error::FILE_OPEN_FAILED);
     }
@@ -204,7 +204,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
       vhandle->bitstream_serialno = ov_serialnumber (&vhandle->ofile, vhandle->bitstream);
       vhandle->n_bitstreams = n;
       if (0)
-        printerr ("Ogg/Vorbis: opening ogg: bitstream=%d/%d serialno=%d\n", vhandle->bitstream, vhandle->n_bitstreams, vhandle->bitstream_serialno);
+        Bse::printerr ("Ogg/Vorbis: opening ogg: bitstream=%d/%d serialno=%d\n", vhandle->bitstream, vhandle->n_bitstreams, vhandle->bitstream_serialno);
     }
   else
     {
@@ -265,8 +265,8 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle, GslLong voffset)
       vhandle->pcm_length = 0;
     }
   if (0)
-    printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
-		opos, pos, vhandle->pcm_pos, pos - opos);
+    Bse::printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
+                   opos, pos, vhandle->pcm_pos, pos - opos);
 
   return vhandle->pcm_pos * dhandle->setup.n_channels;
 }

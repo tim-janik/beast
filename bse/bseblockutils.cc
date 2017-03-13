@@ -153,7 +153,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
     /* there is currently only a test for the SSE filter code, so in the
      * non-SSE-case we simply always return true
      */
-    printout ("SSE filter implementation not tested: no SSE support available\n");
+    Bse::printout ("SSE filter implementation not tested: no SSE support available\n");
     return true;
   }
 };

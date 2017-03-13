@@ -5,6 +5,8 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
 
+using namespace Bse;
+
 #define	FLF	"26.20"
 
 static void

@@ -139,7 +139,7 @@ create_block_for_offset (GslWaveChunk *wchunk,
   if (j >= 0)
     {
       k = j / loop_width;
-      /* printout ("endoffset-setup: j=%ld %%=%ld, k=%ld, k&1=%ld\n", j, j % loop_width, k, k & 1); */
+      /* Bse::printout ("endoffset-setup: j=%ld %%=%ld, k=%ld, k&1=%ld\n", j, j % loop_width, k, k & 1); */
       j %= loop_width;
       if (wchunk->loop_type == GSL_WAVE_LOOP_PINGPONG)
 	{
@@ -277,7 +277,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
       iter->rel_pos = wchunk->n_pad_values;
       iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, wchunk->head.first - pos);
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_UNDEF, pre-head %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	Bse::printout ("PHASE_UNDEF, pre-head %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
   if (UNLIKELY (pos > wchunk->tail.last))					/* outside wave boundaries */
@@ -286,14 +286,14 @@ wave_identify_offset (GslWaveChunk *wchunk,
       iter->rel_pos = wchunk->n_pad_values;
       iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.last);
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_UNDEF, post-tail %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	Bse::printout ("PHASE_UNDEF, post-tail %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
   if (pos <= wchunk->head.last)
     {
       iter->rel_pos = pos - wchunk->head.first;
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_HEAD %lld %lld %lld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
+	Bse::printout ("PHASE_HEAD %lld %lld %lld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
       return PHASE_HEAD (wchunk);
     }
   else if (pos <= wchunk->enter.last)					/* before loop */
@@ -302,21 +302,21 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->enter.first;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_ENTER %lld %lld %lld\n", wchunk->enter.first, iter->rel_pos, wchunk->enter.last);
+	    Bse::printout ("PHASE_ENTER %lld %lld %lld\n", wchunk->enter.first, iter->rel_pos, wchunk->enter.last);
 	  return PHASE_ENTER (wchunk);
 	}
       iter->rel_pos = pos - wchunk->head.last;
       iter->lbound = wchunk->head.last;
       iter->ubound = wchunk->enter.first;
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_NORM, pre-enter %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	Bse::printout ("PHASE_NORM, pre-enter %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   else if (pos >= wchunk->tail.first)
     {
       iter->rel_pos = pos - wchunk->tail.first;
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_TAIL %lld %lld %lld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
+	Bse::printout ("PHASE_TAIL %lld %lld %lld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
       return PHASE_TAIL (wchunk);
     }
   else if (pos >= wchunk->leave.first)				/* after loop */
@@ -325,7 +325,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->leave.first;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_LEAVE %lld %lld %lld\n", wchunk->leave.first, iter->rel_pos, wchunk->leave.last);
+	    Bse::printout ("PHASE_LEAVE %lld %lld %lld\n", wchunk->leave.first, iter->rel_pos, wchunk->leave.last);
 	  return PHASE_LEAVE (wchunk);
 	}
       iter->rel_pos = pos - wchunk->leave.last;
@@ -334,7 +334,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	  iter->lbound = wchunk->tail_start_norm;
 	  iter->ubound = wchunk->leave_end_norm;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_NORM_BACKWARD, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    Bse::printout ("PHASE_NORM_BACKWARD, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM_BACKWARD (wchunk);
 	}
       else
@@ -342,7 +342,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	  iter->lbound = wchunk->leave_end_norm;
 	  iter->ubound = wchunk->tail_start_norm;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_NORM, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    Bse::printout ("PHASE_NORM, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM (wchunk);
 	}
     }
@@ -358,35 +358,35 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	    {
 	      iter->rel_pos = wchunk->wrap.length - one - wchunk->wrap.last + pos;
 	      if (PRINT_DEBUG_INFO)
-		printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+		Bse::printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	      return PHASE_WRAP (wchunk);
 	    }
 	  if (pos >= wchunk->ppwrap.first)
 	    {
 	      iter->rel_pos = pos - wchunk->ppwrap.first;
 	      if (PRINT_DEBUG_INFO)
-		printout ("PHASE_PPWRAP %lld %lld %lld\n", wchunk->ppwrap.first, iter->rel_pos, wchunk->ppwrap.last);
+		Bse::printout ("PHASE_PPWRAP %lld %lld %lld\n", wchunk->ppwrap.first, iter->rel_pos, wchunk->ppwrap.last);
 	      return PHASE_PPWRAP (wchunk);
 	    }
 	  iter->ubound = wchunk->loop_last - one - wchunk->wrap.last;
 	  iter->lbound = wchunk->loop_last - one - wchunk->ppwrap.first;
 	  iter->rel_pos = pos - wchunk->wrap.last;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_NORM_BACKWARD, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    Bse::printout ("PHASE_NORM_BACKWARD, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM_BACKWARD (wchunk);
 	}
       if (pos >= wchunk->wrap.first)
 	{
 	  iter->rel_pos = pos - wchunk->wrap.first;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    Bse::printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       iter->rel_pos = pos - wchunk->ppwrap.last;
       iter->ubound = wchunk->loop_first + one + wchunk->wrap.first - loop_width;
       iter->lbound = wchunk->loop_first + one + wchunk->ppwrap.last - loop_width;
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_NORM, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	Bse::printout ("PHASE_NORM, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   else if (wchunk->loop_type == GSL_WAVE_LOOP_JUMP)		/* in jump loop */
@@ -399,28 +399,28 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->wrap.first;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    Bse::printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       if (pos <= wchunk->wrap.last)
 	{
 	  iter->rel_pos = wchunk->wrap.length - one - wchunk->wrap.last + pos;
 	  if (PRINT_DEBUG_INFO)
-	    printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    Bse::printout ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       iter->rel_pos = pos - wchunk->wrap.last;
       iter->lbound = wchunk->loop_first + wchunk->wrap.last;
       iter->ubound = wchunk->loop_first + wchunk->wrap.first;
       if (PRINT_DEBUG_INFO)
-	printout ("PHASE_NORM, jloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	Bse::printout ("PHASE_NORM, jloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   iter->rel_pos = pos - wchunk->head.last;
   iter->lbound = wchunk->head.last;
   iter->ubound = wchunk->enter.first;
   if (PRINT_DEBUG_INFO)
-    printout ("PHASE_NORM, noloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
+    Bse::printout ("PHASE_NORM, noloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
   return PHASE_NORM (wchunk);
 }
 

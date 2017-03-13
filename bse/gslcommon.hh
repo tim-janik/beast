@@ -14,7 +14,7 @@ Bse::Error gsl_error_from_errno	(gint		 sys_errno,
 Bse::Error gsl_error_select           (guint           n_errors,
                                          Bse::Error    first_error,
                                          ...);
-Bse::Error gsl_file_check		(const String &file_name, const String &mode);
+Bse::Error gsl_file_check		(const std::string &file_name, const std::string &mode);
 
 
 /* --- progress notification --- */

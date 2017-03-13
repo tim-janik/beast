@@ -9,6 +9,8 @@
 #endif
 #include "subnormals.hh"
 
+using namespace Bse;
+
 #if 1
 inline float  test1f (float v) { return v;     }
 inline float  test2f (float v) { return bse_float_zap_denormal (v); }

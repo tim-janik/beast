@@ -176,19 +176,19 @@ snooper_process (BseModule *module,
 	      seen_ninf |= BSE_FLOAT_IS_INF_POSITIVE (v);
 	    }
 	  else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
-		 seen_subn = TRUE;
+            seen_subn = TRUE;
 	}
       avg /= (gdouble) n_values;
-      printout ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-                data->context_id,
-                max, min, avg,
-                n_values,
-                first, last,
-                BSE_FREQ_FROM_VALUE (avg),
-                seen_nan ? " +NAN" : "",
-                seen_pinf ? " +PINF" : "",
-                seen_ninf ? " +NINF" : "",
-                seen_subn ? " +SUBNORM" : "");
+      Bse::printout ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                     data->context_id,
+                     max, min, avg,
+                     n_values,
+                     first, last,
+                     BSE_FREQ_FROM_VALUE (avg),
+                     seen_nan ? " +NAN" : "",
+                     seen_pinf ? " +PINF" : "",
+                     seen_ninf ? " +NINF" : "",
+                     seen_subn ? " +SUBNORM" : "");
     }
 }
 

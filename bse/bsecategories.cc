@@ -23,7 +23,7 @@ category_entries()
 }
 
 static inline const Bse::Category*
-centry_find (const String &category)
+centry_find (const std::string &category)
 {
   for (const auto &centry : category_entries())
     if (centry.category == category)
@@ -32,7 +32,7 @@ centry_find (const String &category)
 }
 
 static inline uint
-category_strip_toplevels (const String &category, GType type)
+category_strip_toplevels (const std::string &category, GType type)
 {
   static const struct { uint length; const char *prefix; } scripts[] = {
     {  9, "/Project/", },
@@ -76,7 +76,7 @@ category_strip_toplevels (const String &category, GType type)
 }
 
 static uint
-leaf_index (const String &string)
+leaf_index (const std::string &string)
 {
   bool in_quote = false;
   uint pos = 0;
@@ -91,7 +91,7 @@ leaf_index (const String &string)
 }
 
 static inline Bse::Category*
-centry_new (const char *caller, const String &category, GType type)
+centry_new (const char *caller, const std::string &category, GType type)
 {
   const uint mindex = category_strip_toplevels (category, type);
   if (!mindex)
@@ -130,7 +130,7 @@ check_type (GType type)
 }
 
 void
-bse_categories_register (const String &category, const char *i18n_category, GType type, const uint8 *pixstream)
+bse_categories_register (const std::string &category, const char *i18n_category, GType type, const uint8 *pixstream)
 {
   assert_return (!category.empty());
   Bse::Category *centry = centry_new (RAPICORN_SIMPLE_FUNCTION, category, type);
@@ -155,7 +155,7 @@ bse_categories_register (const String &category, const char *i18n_category, GTyp
         --end;
       Rapicorn::StringVector tags;
       if (name < end)
-        tags = Rapicorn::string_split (String (name, end - name), "/");
+        tags = Rapicorn::string_split (std::string (name, end - name), "/");
       Bse::ServerImpl::register_source_module (centry->otype, title,
                                                Rapicorn::string_join (";", tags),
                                                pixstream);
@@ -186,7 +186,7 @@ cats_sort (void)
 }
 
 static inline Bse::CategorySeq
-categories_match (const String &pattern, GType base_type, BseCategoryCheck check, gpointer data)
+categories_match (const std::string &pattern, GType base_type, BseCategoryCheck check, gpointer data)
 {
   Bse::CategorySeq cseq;
   GPatternSpec *pspec = g_pattern_spec_new (pattern.c_str());
@@ -204,14 +204,14 @@ categories_match (const String &pattern, GType base_type, BseCategoryCheck check
 }
 
 Bse::CategorySeq
-bse_categories_match (const String &pattern, GType base_type, BseCategoryCheck check, void *data)
+bse_categories_match (const std::string &pattern, GType base_type, BseCategoryCheck check, void *data)
 {
   cats_sort ();
   return categories_match (pattern, 0, check, data);
 }
 
 Bse::CategorySeq
-bse_categories_match_typed (const String &pattern, GType base_type)
+bse_categories_match_typed (const std::string &pattern, GType base_type)
 {
   cats_sort ();
   return categories_match (pattern, base_type, NULL, NULL);

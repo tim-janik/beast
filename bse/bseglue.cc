@@ -284,10 +284,10 @@ bglue_value_from_serializable (const GValue *svalue,
   if (!dtype || !sfi_value_transform (svalue, value))
     {
       if (0)
-        printerr ("from=%s to=%s, transformable=%u\n",
-                    g_type_name (G_VALUE_TYPE (svalue)),
-                    g_type_name (dtype),
-                    g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));
+        Bse::printerr ("from=%s to=%s, transformable=%u\n",
+                       g_type_name (G_VALUE_TYPE (svalue)),
+                       g_type_name (dtype),
+                       g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));
       g_warning ("unable to convert to value type `%s' from serializable (`%s')",
                  g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
                  g_type_name (stype));

@@ -454,10 +454,10 @@ gsl_vorbis_encoder_ogg_eos (GslVorbisEncoder *self)
   return self->eos && !self->dblocks;
 }
 
-String
+std::string
 gsl_vorbis_encoder_version ()
 {
-  String version = "unknown";
+  std::string version = "unknown";
   /* encode the first 3 header packets */
   vorbis_info vinfo = { 0 };
   vorbis_info_init (&vinfo);

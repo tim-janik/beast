@@ -9,7 +9,7 @@
 
 /* --- functions --- */
 int
-bse_note_from_string (const String &note_string)
+bse_note_from_string (const std::string &note_string)
 {
   return sfi_note_from_string (note_string.c_str());
 }
@@ -77,8 +77,8 @@ bse_note_from_freq (Bse::MusicalTuning musical_tuning, double freq)
 #endif
   /* transform to note */
   if (0)
-    printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
-                freq - m[-1], freq - m[0], m[1] - freq);
+    Bse::printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
+                   freq - m[-1], freq - m[0], m[1] - freq);
   int note = m - table + BSE_KAMMER_NOTE;
   /* yield VOID when exceeding corner cases */
   if (note + 1 < BSE_MIN_NOTE || note > BSE_MAX_NOTE + 1)

@@ -143,7 +143,7 @@ libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_s
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
-libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	$(AM_LDFLAGS)					\
@@ -356,13 +356,13 @@ progs_LDADD     = libbse-@MAJOR@.la $(LIBBSE_LIBS)
 noinst_PROGRAMS    += bseprocidl
 bseprocidl_SOURCES  = bseprocidl.cc
 bseprocidl_LDADD    = $(progs_LDADD)
-bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS)
+bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
 bsetool_SOURCES  = bsetool.cc
 bsetool_LDADD    = $(progs_LDADD)
-bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS)
+bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 
 # == Tests ==
 EXTRA_DIST += oldidl.idl

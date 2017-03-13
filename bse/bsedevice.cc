@@ -283,16 +283,16 @@ bse_device_dump_list (GType           base_type,
       if (klass != last_klass)
         {
           if (klass->driver_syntax)
-            printerr ("%s%s %s=%s\n", indent, klass->driver_name, klass->driver_name, klass->driver_syntax);
+            Bse::printerr ("%s%s %s=%s\n", indent, klass->driver_name, klass->driver_name, klass->driver_syntax);
           else
-            printerr ("%s%s\n", indent, klass->driver_name);
+            Bse::printerr ("%s%s\n", indent, klass->driver_name);
           if (klass->driver_blurb)
             {
               GString *gstring = g_string_new (klass->driver_blurb);
               while (gstring->len && gstring->str[gstring->len - 1] == '\n')
                 gstring->str[--gstring->len] = 0;
               g_string_prefix_lines (gstring, indent2);
-              printerr ("%s\n", gstring->str);
+              Bse::printerr ("%s\n", gstring->str);
               g_string_free (gstring, TRUE);
             }
           last_klass = klass;
@@ -300,7 +300,7 @@ bse_device_dump_list (GType           base_type,
         }
       if (entry->device_error)
         {
-          printerr ("%sError: %s\n", indent2, entry->device_error);
+          Bse::printerr ("%sError: %s\n", indent2, entry->device_error);
           last_topic = NULL;
         }
       else if (entry->device_blurb)
@@ -309,24 +309,24 @@ bse_device_dump_list (GType           base_type,
           if (!last_topic || strcmp (last_topic, topic) != 0)
             {
               if (topic[0])
-                printerr ("%sDevices (%s):\n", indent2, topic);
+                Bse::printerr ("%sDevices (%s):\n", indent2, topic);
               else
-                printerr ("%sDevices:\n", indent2);
+                Bse::printerr ("%sDevices:\n", indent2);
               last_topic = topic;
             }
-          printerr ("%s >        %s\n", indent, entry->device_blurb);
+          Bse::printerr ("%s >        %s\n", indent, entry->device_blurb);
         }
     }
   if (with_auto)
     {
-      printerr ("%sauto\n", indent);
+      Bse::printerr ("%sauto\n", indent);
       GString *gstring = g_string_new (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("Auto is a special driver, it acts as a placeholder for\n"
                                          "automatic driver selection."));
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         gstring->str[--gstring->len] = 0;
       g_string_prefix_lines (gstring, indent2);
-      printerr ("%s\n", gstring->str);
+      Bse::printerr ("%s\n", gstring->str);
       g_string_free (gstring, TRUE);
     }
   bse_device_entry_list_free (ring);

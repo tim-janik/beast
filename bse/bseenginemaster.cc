@@ -559,7 +559,7 @@ master_process_job (BseJob *job)
       if (job->data.message)
         {
           JOB_DEBUG ("debug");
-          printerr ("BSE-ENGINE: %s\n", job->data.message);
+          Bse::printerr ("BSE-ENGINE: %s\n", job->data.message);
         }
       else
         JOB_DEBUG ("nop");
@@ -940,7 +940,7 @@ engine_wakeup_slaves()
 void
 engine_run_slave ()
 {
-  String myid = string_format ("DSP #%u", ++slave_counter);
+  std::string myid = Bse::string_format ("DSP #%u", ++slave_counter);
   Bse::TaskRegistry::add (myid, Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   while (slaves_running)
     {
@@ -1010,13 +1010,13 @@ master_process_flow (void)
 	  if (profile->profile_node)
 	    {
 	      if (profile->profile_maxtime > uint64 (bse_profile_modules))
-		printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
-                          profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                          profile->profile_node->module.klass->process);
+		Bse::printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
+                               profile->profile_node, (long long unsigned int) profile->profile_maxtime,
+                               profile->profile_node->module.klass->process);
 	      else
-		printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
-                          profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                          profile->profile_node->module.klass->process);
+		Bse::printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
+                               profile->profile_node, (long long unsigned int) profile->profile_maxtime,
+                               profile->profile_node->module.klass->process);
 	    }
 	}
 
@@ -1235,7 +1235,7 @@ MasterThread::master_thread()
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)
-	    printerr ("%s: poll() error: %s\n", __func__, g_strerror (errno));
+	    Bse::printerr ("%s: poll() error: %s\n", __func__, g_strerror (errno));
 	  if (loop.revents_filled)
 	    need_dispatch = _engine_master_check (&loop);
 	}

@@ -272,7 +272,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
 
   // start main BSE thread
   if (std::atexit (reap_main_loop_thread) != 0)
-    fatal ("BSE: failed to install main thread reaper");
+    Bse::fatal ("BSE: failed to install main thread reaper");
   auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread

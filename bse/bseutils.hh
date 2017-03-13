@@ -2,8 +2,7 @@
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
 
-#include <rapicorn-core.hh>
-
+#include <bse/bsedefs.hh>
 #include <bse/bseenums.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsecompat.hh>
