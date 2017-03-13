@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+using namespace Bse;
+
 using std::string;
 using std::vector;
 using std::min;
@@ -296,13 +298,13 @@ Options::parse (int   *argc_p,
   *argc_p = e;
 }
 
-int
+static int
 test_filter_impl()
 {
   return Bse::Block::test_resampler2 (options.filter_impl_verbose) ? 0 : 1;
 }
 
-double
+static double
 gettime ()
 {
   timeval tv;
@@ -621,7 +623,7 @@ perform_test ()
     }
 }
 
-int
+static int
 perform_test()
 {
   switch (test_type)

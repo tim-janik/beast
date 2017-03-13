@@ -9,6 +9,9 @@
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
+
+using namespace Bse;
+
 using Bse::Resampler::Resampler2;
 using Rapicorn::AlignedArray;
 using std::vector;

@@ -63,7 +63,7 @@ minisong-test:
 	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
 	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $(@F).tmp
 	$(Q) $(BSEFCOMPARE) $(srcdir)/minisong.ref $(@F).tmp --threshold 98.00
-	$(Q) rm -f $(@F).tmp $(@F).wav
+#	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += syndrum-test
 EXTRA_DIST += syndrum.bse syndrum.ref

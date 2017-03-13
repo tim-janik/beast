@@ -10,6 +10,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
+
+using namespace Bse;
+
 enum {
   VERBOSITY_NONE,
   VERBOSITY_SETUP,
@@ -92,9 +95,9 @@ run_loop_test (GslWaveLoopType loop_type,
 	}
       if (abort)
 	{
-	  g_error ("mismatches occoured, setup: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d (length=%lld)",
-		   wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count,
-		   gsl_data_handle_length (wchunk->dcache->dhandle));
+          Bse::fatal ("mismatches occoured, setup: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d (length=%lld)",
+                      wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count,
+                      gsl_data_handle_length (wchunk->dcache->dhandle));
 	}
       gsl_wave_chunk_unuse_block (wchunk, &block);
       block.offset = block.next_offset;
