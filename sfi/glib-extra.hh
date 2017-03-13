@@ -4,11 +4,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <rapicorn-core.hh>     // for Rapicorn::string_format
+#include <string>
 
-using Rapicorn::printout;
-using Rapicorn::printerr;
-using Rapicorn::string_format;
+typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*64 in format strings.
 
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
@@ -168,11 +166,11 @@ g_bit_matrix_change (GBitMatrix     *matrix,
                      guint           y,
                      gboolean        bit_set)
 {
-  guint32 cons, index, shift;
-  RAPICORN_ASSERT_RETURN (matrix && x < matrix->width && y < matrix->height);
-  cons = y * matrix->width + x;
-  index = cons >> 5; /* / 32 */
-  shift = cons & 0x1f;  /* % 32 */
+  if (!(matrix && x < matrix->width && y < matrix->height))
+    return;
+  const guint32 cons = y * matrix->width + x;
+  const guint32 index = cons >> 5; /* / 32 */
+  const guint32 shift = cons & 0x1f;  /* % 32 */
   if (bit_set)
     matrix->bits[index] |= 1 << shift;
   else
@@ -330,10 +328,6 @@ constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return
 // these definitions need to move into bse/utils or similar
 namespace Bse {
 
-// import helpers from Rapicorn
-using Rapicorn::String;
-namespace Path = Rapicorn::Path;
-
 // == INSTALLPATH ==
 // See also configure.ac, this function is here because beast and all libs include this file.
 enum InstallpathType {
@@ -359,8 +353,8 @@ enum InstallpathType {
   INSTALLPATH_PYBEASTDIR,
 };
 /// Provide installation directories and searchpaths for various types of data.
-String installpath          (InstallpathType installpath_type);
-void   installpath_override (const String &topdir);
+std::string installpath          (InstallpathType installpath_type);
+void        installpath_override (const std::string &topdir);
 
 /// Provide a string containing the BSE library version number.
 std::string version ();

@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bcore.hh"
 #include <string.h>
-#include "glib-extra.hh"
-
 
 void
 g_object_disconnect_any (gpointer object,

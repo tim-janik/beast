@@ -89,7 +89,7 @@ string_to_cescape (const String &str)   // FIXME: move
     {
       uint8 d = *it;
       if (d < 32 || d > 126 || d == '?')
-        buffer += string_format ("\\%03o", d);
+        buffer += Bse::string_format ("\\%03o", d);
       else if (d == '\\')
         buffer += "\\\\";
       else if (d == '"')
@@ -959,6 +959,6 @@ sfi_value_store_stderr (const GValue *value)
 {
   GString *gstring = g_string_new ("");
   sfi_value_store_typed (value, gstring);
-  printerr ("((GValue*)%p)=%s\n", value, gstring->str);
+  Bse::printerr ("((GValue*)%p)=%s\n", value, gstring->str);
   g_string_free (gstring, TRUE);
 }
