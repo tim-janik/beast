@@ -2,7 +2,7 @@
 #ifndef __BST_LOG_ADJUSTMENT_H__
 #define __BST_LOG_ADJUSTMENT_H__
 
-#include	<gtk/gtkadjustment.h>
+#include "bstdefs.hh"
 
 /* --- type macros --- */
 #define BST_TYPE_LOG_ADJUSTMENT              (bst_log_adjustment_get_type ())

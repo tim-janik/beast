@@ -6,6 +6,13 @@
 #include "bstzoomedwindow.hh"
 #include "bse/bse.hh"
 
+// == using Bse types ==
+using Bse::Any;
+using Bse::String;
+using Bse::printout;
+using Bse::printerr;
+using Bse::string_format;
+
 /* --- generic constants --- */
 typedef enum {
   BST_QUANTIZE_NONE		= 0,

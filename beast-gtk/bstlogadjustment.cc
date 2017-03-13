@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <sfi/glib-extra.hh>
 #include "bstlogadjustment.hh"
 
 #include <math.h>
