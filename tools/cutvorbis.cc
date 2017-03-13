@@ -9,6 +9,8 @@
 #include <string.h>
 #include <errno.h>
 
+using namespace Bse;
+
 static GslVorbisCutterMode cutmode = GSL_VORBIS_CUTTER_NONE;
 static SfiNum              cutpoint = 0;
 static guint               filtered_serialno = 0;
