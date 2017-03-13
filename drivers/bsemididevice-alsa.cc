@@ -99,7 +99,7 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
   while (cindex >= 0)
     {
       snd_ctl_card_info_clear (cinfo);
-      String hwid = string_format ("hw:CARD=%u", cindex);
+      std::string hwid = Bse::string_format ("hw:CARD=%u", cindex);
       snd_ctl_t *chandle = NULL;
       if (snd_ctl_open (&chandle, hwid.c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
         continue;
@@ -207,20 +207,20 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (error == 0 && snd_rawmidi_params_current (alsa->read_handle, mparams) < 0)
         error = Bse::Error::FILE_OPEN_FAILED;
       if (0)
-        printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
-                    snd_rawmidi_params_get_buffer_size (mparams),
-                    !snd_rawmidi_params_get_no_active_sensing (mparams),
-                    snd_rawmidi_params_get_avail_min (mparams));
+        Bse::printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
+                       snd_rawmidi_params_get_buffer_size (mparams),
+                       !snd_rawmidi_params_get_no_active_sensing (mparams),
+                       snd_rawmidi_params_get_avail_min (mparams));
     }
   if (alsa->write_handle)
     {
       if (error == 0 && snd_rawmidi_params_current (alsa->write_handle, mparams) < 0)
         error = Bse::Error::FILE_OPEN_FAILED;
       if (0)
-        printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
-                    snd_rawmidi_params_get_buffer_size (mparams),
-                    !snd_rawmidi_params_get_no_active_sensing (mparams),
-                    snd_rawmidi_params_get_avail_min (mparams));
+        Bse::printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
+                       snd_rawmidi_params_get_buffer_size (mparams),
+                       !snd_rawmidi_params_get_no_active_sensing (mparams),
+                       snd_rawmidi_params_get_avail_min (mparams));
     }
   if (error == 0 && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) <= 0)
     error = Bse::Error::FILE_OPEN_FAILED;

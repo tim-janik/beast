@@ -123,7 +123,7 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   while (cindex >= 0)
     {
       snd_ctl_card_info_clear (cinfo);
-      String hwid = string_format ("hw:CARD=%u", cindex);
+      std::string hwid = Bse::string_format ("hw:CARD=%u", cindex);
       snd_ctl_t *chandle = NULL;
       if (snd_ctl_open (&chandle, hwid.c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
         continue;
@@ -437,11 +437,11 @@ alsa_device_check_io (BsePcmHandle *handle,
           ws = snd_pcm_state (alsa->write_handle);
         }
       guint wn = snd_pcm_status_get_avail (stat);
-      printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
-                  rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
-                  wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
-                  handle->block_length,
-                  rn >= handle->block_length ? "TRUE" : "FALSE");
+      Bse::printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
+                     rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
+                     wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
+                     handle->block_length,
+                     rn >= handle->block_length ? "TRUE" : "FALSE");
     }
 
   /* quick check for data availability */
