@@ -1958,8 +1958,8 @@ scroll_text_reload (GtkWidget *sctext)
                                                );
               while (n--)
                 {
-                  std::string istr = string_format ("&lt;%u&gt;                    ", flist[n]->d_ino);
-                  g_string_append (gstring, string_format ("  %.20s ", istr).c_str());
+                  std::string istr = Bse::string_format ("&lt;%u&gt;                    ", flist[n]->d_ino);
+                  g_string_append (gstring, Bse::string_format ("  %.20s ", istr).c_str());
                   g_string_append (gstring, "<span tag='hyperlink'><xlink ref='");
                   tmp = g_strconcat (file, "/", flist[n]->d_name, NULL);
                   g_string_add_xmlstr (gstring, tmp);

@@ -16,14 +16,14 @@ spline_test (GxkSpline *spline,
         double x = spline->segs[i - 1].x + k * (spline->segs[i].x - spline->segs[i - 1].x) / interval_steps;
         double y1 = gxk_spline_y (spline, x);
         if (!swap)
-          printout ("%-+24.18g %-+24.18g\n", x, y1);
+          gxk_printout ("%-+24.18g %-+24.18g\n", x, y1);
         else if (1)
-          printout ("%-+24.18g %-+24.18g\n", y1, x);
+          gxk_printout ("%-+24.18g %-+24.18g\n", y1, x);
         else
           {
             double z = gxk_spline_findx (spline, y1);
             double y2 = gxk_spline_y (spline, z);
-            printout ("%-+24.18g %-+24.18g # findx=%-+24.18g dx=%-+24.18f (%u) dy=%-+24.18g (%u)\n", x, y1, z, x-z, x==z, y1 - y2, y1==y2);
+            gxk_printout ("%-+24.18g %-+24.18g # findx=%-+24.18g dx=%-+24.18f (%u) dy=%-+24.18g (%u)\n", x, y1, z, x-z, x==z, y1 - y2, y1==y2);
           }
       }
 }
