@@ -77,6 +77,17 @@ class Signal
     return true;
   }
 
+  /* empty signal? */
+  bool empty()
+  {
+    if (m_length < m_n_channels)
+      {
+        assert (m_length == 0);
+        return true;
+      }
+    return false;
+  }
+
 public:
   Signal (GslDataHandle *data_handle) :
     m_data_handle (data_handle)
@@ -102,7 +113,7 @@ public:
     if (options.cut_zeros_head)
       {
 	/* cut_zeros head */
-	while (head_is_silent() && m_length > (GslLong) m_n_channels)
+	while (!empty() && head_is_silent())
 	  {
 	    m_offset += m_n_channels;
 	    m_length -= m_n_channels;
@@ -111,7 +122,7 @@ public:
     if (options.cut_zeros_tail)
       {
 	/* cut_zeros tail */
-	while (tail_is_silent() && m_length > (GslLong) m_n_channels)
+	while (!empty() && tail_is_silent())
 	  {
 	    m_length -= m_n_channels;
 	  }
@@ -515,7 +526,7 @@ struct AvgEnergyFeature : public Feature
     if (avg_energy_count)
       avg_energy /= avg_energy_count;
 
-    avg_energy = 10 * log (avg_energy) / log (10);
+    avg_energy = bse_db_from_factor (sqrt (avg_energy), -200);
   }
 
   void print_results() const
