@@ -11,12 +11,13 @@
 #include <sfi/gbsearcharray.hh>
 #include <map>
 #include <set>
+
 namespace {
 using namespace Bse;
 using namespace std;
 
-#define MDEBUG(...)     Bse::debug ("midi-receiver", __VA_ARGS__)
-#define EDEBUG(...)     Bse::debug ("midi-events", __VA_ARGS__)
+#define EDUMP(...)      Bse::dump ("midi-events", __VA_ARGS__)
+#define VDUMP(...)      Bse::dump ("midi-voice", __VA_ARGS__)
 
 /* --- variables --- */
 static Bse::Mutex global_midi_mutex;
@@ -680,10 +681,10 @@ voice_input_module_access_U (BseModule *module,
 {
   VoiceInput *vinput = (VoiceInput*) module->user_data;
   VoiceInputData *mdata = (VoiceInputData *) data;
-  MDEBUG ("Synth<%p:%08llx>: ProcessEvent=%s Freq=%.2fHz",
-          vinput, bse_module_tick_stamp (module),
-          voice_change_to_string (mdata->vtype),
-          BSE_FREQ_FROM_VALUE (mdata->freq_value));
+  VDUMP ("Synth<%p:%08llx>: ProcessEvent=%s Freq=%.2fHz",
+         vinput, bse_module_tick_stamp (module),
+         voice_change_to_string (mdata->vtype),
+         BSE_FREQ_FROM_VALUE (mdata->freq_value));
   switch (mdata->vtype)
     {
     case VOICE_ON:
@@ -778,10 +779,11 @@ change_voice_input_L (VoiceInput      *vinput,
   mdata.velocity = velocity;
   bse_trans_add (trans, bse_job_flow_access (vinput->fmodule, tick_stamp, voice_input_module_access_U, g_memdup (&mdata, sizeof (mdata)), g_free));
   vinput->tick_stamp = tick_stamp;
-  MDEBUG ("Synth<%p:%08llx>: QueueEvent=%s Freq=%.2fHz",
-          vinput, tick_stamp,
-          voice_change_to_string (vtype),
-          BSE_FREQ_FROM_VALUE (freq_value));
+  VDUMP ("Synth<%p:%08llx>: QueueEvent=%s Freq=%.2fHz%s",
+         vinput, tick_stamp,
+         voice_change_to_string (vtype),
+         BSE_FREQ_FROM_VALUE (freq_value),
+         Bse::TickStamp::current() >= tick_stamp ? " (late)" : "");
 }
 static void
 voice_input_module_free_U (gpointer        data,
@@ -1957,22 +1959,22 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
           MidiChannel *mchannel;
         case BSE_MIDI_NOTE_ON:
           mchannel = self->peek_channel (event->channel);
-	  EDEBUG ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
-                        event->data.note.frequency, event->data.note.velocity, event->delta_time);
+	  EDUMP ("MidiChannel[%u]: NoteOn  %fHz Velo=%f channel=%s (stamp:%llu)", event->channel,
+                 event->data.note.frequency, event->data.note.velocity, mchannel ? string_from_int (event->channel) : "<unknown>", event->delta_time);
 	  if (mchannel)
             mchannel->start_note (event->delta_time,
                                   event->data.note.frequency,
                                   event->data.note.velocity,
                                   trans);
-          else
+	  else
             sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
 	  break;
 	case BSE_MIDI_KEY_PRESSURE:
 	case BSE_MIDI_NOTE_OFF:
           mchannel = self->peek_channel (event->channel);
-          EDEBUG ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
-                        event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-                        event->data.note.frequency, event->delta_time);
+          EDUMP ("MidiChannel[%u]: %s %fHz channel=%s (stamp:%llu)", event->channel,
+                 event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
+                 event->data.note.frequency, mchannel ? string_from_int (event->channel) : "<unknown>", event->delta_time);
           if (mchannel)
             {
               gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
@@ -1984,15 +1986,15 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
             }
 	  break;
 	case BSE_MIDI_CONTROL_CHANGE:
-	  EDEBUG ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
-                        event->data.control.control, event->data.control.value, event->delta_time);
+	  EDUMP ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
+                 event->data.control.control, event->data.control.value, event->delta_time);
 	  process_midi_control_L (self, event->channel, event->delta_time,
 				  event->data.control.control, event->data.control.value,
 				  FALSE,
                                   trans);
 	  break;
 	case BSE_MIDI_X_CONTINUOUS_CHANGE:
-	  EDEBUG ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
+	  EDUMP ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
                         event->data.control.control, event->data.control.value, event->delta_time);
 	  process_midi_control_L (self, event->channel, event->delta_time,
 				  event->data.control.control, event->data.control.value,
@@ -2000,29 +2002,29 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 				  trans);
 	  break;
 	case BSE_MIDI_PROGRAM_CHANGE:
-	  EDEBUG ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
+	  EDUMP ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
                         event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
 				Bse::MidiSignal::PROGRAM, event->data.program / (gfloat) 0x7f,
 				trans);
 	  break;
 	case BSE_MIDI_CHANNEL_PRESSURE:
-	  EDEBUG ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
+	  EDUMP ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
                         event->data.intensity, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
 				Bse::MidiSignal::PRESSURE, event->data.intensity,
 				trans);
 	  break;
 	case BSE_MIDI_PITCH_BEND:
-	  EDEBUG ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
-                        event->data.pitch_bend, event->delta_time);
+	  EDUMP ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
+                 event->data.pitch_bend, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
 				Bse::MidiSignal::PITCH_BEND, event->data.pitch_bend,
 				trans);
 	  break;
 	default:
-	  EDEBUG ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
-                        event->status, event->delta_time);
+	  EDUMP ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
+                 event->status, event->delta_time);
 	  break;
 	}
       if (self->notifier)
