@@ -17,6 +17,7 @@
 #include <vector>
 
 #define SDEBUG(...)     Bse::debug ("sequencer", __VA_ARGS__)
+#define SDUMP(...)      Bse::dump ("sequencer-events", __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 
@@ -410,7 +411,7 @@ Sequencer::process_song_unlooped_SL (BseSong *song, uint n_ticks, bool force_act
       if (!track->track_done_SL || force_active_tracks)
 	{
 	  track->track_done_SL = FALSE;
-	  process_track_SL (track, current_stamp, song->tick_SL, tick_bound, stamps_per_tick, midi_receiver);
+	  process_track_SL (song, track, current_stamp, song->tick_SL, tick_bound, stamps_per_tick, midi_receiver);
 	}
       if (track->track_done_SL)
 	n_done_tracks++;
@@ -449,7 +450,7 @@ Sequencer::process_song_SL (BseSong *song, uint n_ticks)
 }
 
 void
-Sequencer::process_track_SL (BseTrack *track, double start_stamp, uint start_tick,
+Sequencer::process_track_SL (BseSong *song, BseTrack *track, double start_stamp, uint start_tick,
                              uint bound, /* start_tick + n_ticks */
                              double stamps_per_tick, BseMidiReceiver *midi_receiver)
 {
@@ -459,13 +460,14 @@ Sequencer::process_track_SL (BseTrack *track, double start_stamp, uint start_tic
   if (!part && next)
     {
       part = bse_track_get_part_SL (track, next, &start, &next);
-      SDEBUG ("trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, Bse::TickStamp::current());
+      SDEBUG ("trackjmp: tick=%u fast forward to first part part=%p late=%u",
+              start_tick, Bse::TickStamp::current() >= start_stamp);
     }
   if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
     {
       track->track_done_SL = !bse_midi_receiver_voices_pending (midi_receiver, track->midi_channel_SL);
-      SDEBUG ("trackchk: tick=%u next=%u part=%p done=%u now=%llu", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
-              start_tick, next, part, track->track_done_SL, Bse::TickStamp::current());
+      SDEBUG ("trackchk: tick=%u next=%u done=%u late=%u", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
+              start_tick, next, track->track_done_SL, Bse::TickStamp::current() >= start_stamp);
       part = NULL;
     }
   while (part && start < bound)
@@ -480,13 +482,13 @@ Sequencer::process_track_SL (BseTrack *track, double start_stamp, uint start_tic
       part_bound = next ? MIN (bound, next) : bound;
       part_bound -= start;
       if (!track->muted_SL)
-	process_part_SL (part, part_stamp, part_start, part_bound, stamps_per_tick, midi_receiver, track->midi_channel_SL);
+	process_part_SL (song, part, part_stamp, part_start, part_bound, stamps_per_tick, midi_receiver, track->midi_channel_SL);
       part = next ? bse_track_get_part_SL (track, next, &start, &next) : NULL;
     }
 }
 
 void
-Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
+Sequencer::process_part_SL (BseSong *song, BsePart *part, double start_stamp, uint start_tick,
                             uint tick_bound, /* start_tick + n_ticks */
                             double stamps_per_tick, BseMidiReceiver *midi_receiver, uint midi_channel)
 {
@@ -508,10 +510,12 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
                                           freq);
           bse_midi_receiver_push_event (midi_receiver, eon);
           bse_midi_receiver_push_event (midi_receiver, eoff);
-          SDEBUG ("note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                  uint64 (eon->delta_time),  note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
-          SDEBUG ("note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                  uint64 (eoff->delta_time), note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
+          SDUMP ("note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f late=%u",
+                 uint64 (eon->delta_time) - song->sequencer_start_SL,  note->note, bse_ftoi (note->velocity * 128), freq,
+                 Bse::TickStamp::current() >= eon->delta_time);
+          SDUMP ("note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f late=%u",
+                 uint64 (eoff->delta_time) - song->sequencer_start_SL, note->note, bse_ftoi (note->velocity * 128), freq,
+                 Bse::TickStamp::current() >= eoff->delta_time);
           note++;
         }
     }
@@ -527,8 +531,9 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
                                                        bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
                                                        Bse::MidiSignal (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
-          SDEBUG ("control:  tick=%llu midisignal=%-3d value=%f now=%llu",
-                  uint64 (event->delta_time), cev->ctype, cev->value, Bse::TickStamp::current());
+          SDUMP ("control:  tick=%llu midisignal=%-3d value=%f late=%u",
+                 uint64 (event->delta_time) - song->sequencer_start_SL, cev->ctype, cev->value,
+                 Bse::TickStamp::current() >= event->delta_time);
         }
       node++;
     }

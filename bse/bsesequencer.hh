@@ -22,10 +22,10 @@ private:
   static void   reap_thread      ();
   void          sequencer_thread ();
   bool          pool_poll_Lm     (int timeout_ms);
-  void          process_part_SL  (BsePart *part, double start_stamp, uint start_tick,
+  void          process_part_SL  (BseSong *song, BsePart *part, double start_stamp, uint start_tick,
                                   uint tick_bound, /* start_tick + n_ticks */
                                   double stamps_per_tick, BseMidiReceiver *midi_receiver, uint midi_channel);
-  void          process_track_SL (BseTrack *track, double start_stamp, uint start_tick,
+  void          process_track_SL (BseSong *song, BseTrack *track, double start_stamp, uint start_tick,
                                   uint bound, /* start_tick + n_ticks */
                                   double stamps_per_tick, BseMidiReceiver *midi_receiver);
   void          process_song_SL  (BseSong *song, uint n_ticks);
