@@ -267,7 +267,8 @@ struct MidiChannel {
   void  kill_notes      (guint64          tick_stamp,
                          gboolean         sustained_only,
                          BseTrans        *trans);
-  void  no_poly_voice   (const gchar     *event_name,
+  void  no_poly_voice   (bool             noteon,
+                         const gchar     *event_name,
                          gfloat           freq);
   void  debug_notes     (guint64          tick_stamp,
                          BseTrans        *trans);
@@ -1005,18 +1006,28 @@ check_voice_input_improvement_L (VoiceInput *vinput1, /* vinput1 better than vin
 }
 
 void
-MidiChannel::no_poly_voice (const gchar *event_name,
-                            gfloat       freq)
+MidiChannel::no_poly_voice (bool noteon, const char *event_name, float freq)
 {
   MidiChannel *mchannel = this;
-  /* check whether warning is appropriate */
-  VoiceSwitch *any_vswitch = mchannel->n_voices ? mchannel->voices[0] : NULL;
-  if (any_vswitch &&                                            /* poly voices are present */
-      !bse_module_is_scheduled (any_vswitch->vmodule))          /* but voices are (temporarily) disconnected */
-    return;
-  /* provide diagnostics */
-  sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)",
-            mchannel->midi_channel, event_name, freq);
+  assert_return (mchannel->poly_enabled);
+
+  if (!noteon)
+    warning ("MidiChannel(%u): failed to find voice for '%s' (%fHz)",
+             mchannel->midi_channel, event_name, freq);
+  else
+    {
+      size_t scheduled = 0, disconnected = 0;
+      for (size_t i = 0; i < mchannel->n_voices; i++)
+        {
+          if (bse_module_is_scheduled (mchannel->voices[i]->vmodule))
+            scheduled++;
+          if (check_voice_switch_available_L (mchannel->voices[i]))
+            disconnected++;
+        }
+      if (noteon)
+        warning ("MidiChannel(%u): failed to allocate voice for '%s' (%fHz), %d/%d voices disconnected (%d scheduled)",
+                 mchannel->midi_channel, event_name, freq, disconnected, mchannel->n_voices, scheduled);
+    }
 }
 
 void
@@ -1070,7 +1081,7 @@ MidiChannel::start_note (guint64         tick_stamp,
       change_voice_input_L (vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
-    no_poly_voice ("note-on", freq);
+    no_poly_voice (true, "note-on", freq);
 }
 
 void
@@ -1104,7 +1115,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   if (vinput)
     change_voice_input_L (vinput, tick_stamp, vctype, freq_val, velocity, trans);
   else
-    no_poly_voice (etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
+    no_poly_voice (false, etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
 }
 
 void
