@@ -16,6 +16,7 @@
 #include "bsemidinotifier.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
+#include "bsepcmwriter.hh"
 #include "bsemidifile.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -817,6 +818,8 @@ bse_project_start_playback (BseProject *self)
       if (BSE_IS_SONG (super))
 	songs = sfi_ring_append (songs, super);
     }
+  if (!songs) // start pcm-writer ASAP if no songs are present
+    Bse::PcmWriterImpl::trigger_tick (Bse::TickStamp::current());
   /* enfore MasterThread roundtrip */
   bse_trans_add (trans, bse_job_nop());
   bse_trans_commit (trans);
@@ -826,7 +829,7 @@ bse_project_start_playback (BseProject *self)
   if (seen_synth || songs)
     bse_project_state_changed (self, Bse::ProjectState::PLAYING);
   /* then, start the sequencer */
-  while (songs)
+  while (songs) // start_song will synchronize PcmWriterImpl::trigger_tick
     Bse::Sequencer::instance().start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
 }
 

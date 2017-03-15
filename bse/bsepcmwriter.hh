@@ -21,28 +21,26 @@ struct BsePcmWriter : BseItem {
   gint		fd;
   uint64	n_bytes;
   uint64        recorded_maximum;
+  uint64        start_tick;
 };
 struct BsePcmWriterClass : BseItemClass
 {};
 
-Bse::Error	bse_pcm_writer_open		(BsePcmWriter		*pdev,
-						 const gchar		*file,
-						 guint			 n_channels,
-						 guint			 sample_freq,
-                                                 uint64                  recorded_maximum);
-void		bse_pcm_writer_close		(BsePcmWriter		*pdev);
+Bse::Error bse_pcm_writer_open	(BsePcmWriter *pdev, const gchar *file, guint n_channels,
+                                 guint sample_freq, uint64 recorded_maximum);
+void	   bse_pcm_writer_close	(BsePcmWriter *pdev);
 /* writing is lock protected */
-void		bse_pcm_writer_write		(BsePcmWriter		*pdev,
-						 gsize			 n_values,
-						 const gfloat		*values);
+void	   bse_pcm_writer_write	(BsePcmWriter *pdev, size_t n_values,
+                                 const float *values, uint64 start_stamp);
 
 namespace Bse {
 
 class PcmWriterImpl : public ItemImpl, public virtual PcmWriterIface {
 protected:
-  virtual  ~PcmWriterImpl ();
+  virtual    ~PcmWriterImpl ();
 public:
-  explicit  PcmWriterImpl (BseObject*);
+  explicit    PcmWriterImpl (BseObject*);
+  static void trigger_tick  (uint64 start_tick);
 };
 
 } // Bse

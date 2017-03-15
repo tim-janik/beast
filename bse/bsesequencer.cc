@@ -8,6 +8,7 @@
 #include "bseproject.hh"
 #include "bsemidireceiver.hh"
 #include "bsemain.hh"
+#include "bsepcmwriter.hh"
 #include "bseieee754.hh"
 #include "bsestartup.hh"        // for TaskRegistry
 #include <sys/poll.h>
@@ -241,6 +242,9 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   assert_return (song->sequencer_start_request_SL == 0);
   assert (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
+
+  // synchornize pcm-writer output with song start
+  PcmWriterImpl::trigger_tick (start_stamp);
 
   g_object_ref (song);
   BSE_SEQUENCER_LOCK();
