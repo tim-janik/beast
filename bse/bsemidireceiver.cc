@@ -1146,8 +1146,7 @@ MidiChannel::kill_notes (guint64       tick_stamp,
 }
 
 void
-MidiChannel::debug_notes (guint64          tick_stamp,
-                          BseTrans        *trans)
+MidiChannel::debug_notes (guint64 tick_stamp, BseTrans *trans)
 {
   MidiChannel *mchannel = this;
   guint i, j;
@@ -1694,6 +1693,7 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
   BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  uint n = 0;
   if (vswitch)
     {
       guint i = vswitch->n_vinputs++;
@@ -1701,8 +1701,10 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
       vswitch->vinputs[i] = create_voice_input_L (&mchannel->voice_input_table, FALSE, trans);
       vswitch->ref_count++;
       module = vswitch->vinputs[i]->fmodule;
+      n = vswitch->n_vinputs;
     }
   BSE_MIDI_RECEIVER_UNLOCK ();
+  assert_return (n <= 1, module); // we don't actually ever create more than one vinput per vswitch
   return module;
 }
 
