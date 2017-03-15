@@ -2,17 +2,17 @@ Description: Leave mime updates to dh_installmime.
 Author: Tim Janik <timj@gnu.org>
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
-Index: ./configure.ac
+Index: beast/configure.ac
 ===================================================================
---- configure.ac
-+++ configure.ac
+--- beast/configure.ac
++++ beast/configure.ac
 @@ -625,1 +625,1 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 -AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 +dnl # AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
-Index: data/Makefile.am
+Index: beast/data/Makefile.am
 ===================================================================
---- data/Makefile.am
-+++ data/Makefile.am
+--- beast/data/Makefile.am
++++ beast/data/Makefile.am
 @@ -94,5 +94,5 @@ bse.keys: bse.keys.in
  # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
 -install-data-hook:
