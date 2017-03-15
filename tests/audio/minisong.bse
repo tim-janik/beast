@@ -475,12 +475,12 @@
       (0x05100 0x060 37)
       (0x05340 0x060 37)))
   (container-child "BseTrack::Track-01"
-    (n-voices 16)
+    (n-voices 32)
     (snet (link 2 "SimpleTri"))
     (blurb "Melodie")
     (insert-part 0 (link 1 "QuickMelodie")))
   (container-child "BseTrack::Track-02"
-    (n-voices 16)
+    (n-voices 32)
     (wave (link 2 "Wave-Repository:Frowzy Drums"))
     (blurb "Drums")
     (insert-part 0 (link 1 "Drums")))
