@@ -32,7 +32,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh		bseserverapi.hh		effectbase.hh			\
+	bseclientapi.hh					effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -136,7 +136,7 @@ EXTRA_DIST += $(strip \
 lib_LTLIBRARIES                      = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
-nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
+nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
@@ -325,7 +325,7 @@ bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
 	  --insertions $(srcdir)/bseserverinsert.hh $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-GENERATED += bseserverapi.hh
+GENERATED_CLEANFILES += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
