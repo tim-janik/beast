@@ -13,7 +13,7 @@ env:
   # INTENT: gccbuild clangbuild package bintrayup
   matrix:
     - DIST="ubuntu:wily"        INTENT="gccbuild,package,bintrayup"
-    - DIST="ubuntu:xenial"      INTENT="gccbuild,package,bintrayup,distcheck"
+    - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild,package,bintrayup"
     - DIST="debian:jessie"      INTENT="gccbuild,package,bintrayup"
     - DIST="ubuntu:yakkety"     INTENT="gccbuild,package,bintrayup"
     # test upcoming releases and get new compiler warnings
