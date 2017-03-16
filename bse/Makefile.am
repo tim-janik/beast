@@ -32,7 +32,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh					effectbase.hh			\
+							effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -136,7 +136,7 @@ EXTRA_DIST += $(strip \
 lib_LTLIBRARIES                      = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
-nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl
+nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
@@ -196,7 +196,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@)) // enum\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	      $(filter-out bsegentypes.h bseclientapi.hh, $(bse_public_headers)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	  && $(PERL) mktypes.pl --externs $(mktypes_bse_sources) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
@@ -209,8 +209,7 @@ bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
-	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	      $(filter-out bseclientapi.hh, $(bse_public_headers)) \
+	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" $(bse_public_headers) \
 	  && $(PERL) mktypes.pl --interns --export-proto $(mktypes_bse_sources) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -228,7 +227,7 @@ bseenum_arrays.cc: bsegentypes.h
 	    --vhead "static G@Type@Value @enum_name@_values[] = { // enum_values\n" \
 	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	    --vtail "  { 0, NULL, NULL }\n};\n" \
-	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -242,7 +241,7 @@ bseenum_list.cc: bsegentypes.h
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
