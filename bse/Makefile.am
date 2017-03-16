@@ -57,7 +57,7 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.cc		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+				gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
 	gslfilter.cc		gslcommon.cc \
 	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
@@ -138,7 +138,7 @@ libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
-nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources)
+nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
 libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
@@ -172,8 +172,9 @@ CLEANFILES += $(bse_proc_gen_sources)
 else
 MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
-# gslfft.cc
-GENERATED += gslfft.cc
+
+# == gslfft.cc ==
+GENERATED_CLEANFILES += gslfft.cc
 $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(AM_V_GEN)
 	$(Q) (cd . \
@@ -181,11 +182,12 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	&& $(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl $(if $(findstring 1, $(V)) ,, --no-verbose)' \"gslfft.hh\" \
 	) > xgen-$(@F) \
 	&& mv xgen-$(@F) $@
-# bsegentypes.h
-mktypes_bse_sources = $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources))
+
+# == bsegentypes.h ==
+mktypes_bse_sources = $(filter-out bsegentypes.cc, $(bse_sources))
 GENERATED_CLEANFILES += bsegentypes.h
 bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
