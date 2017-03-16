@@ -183,7 +183,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	&& mv xgen-$(@F) $@
 # bsegentypes.h
 mktypes_bse_sources = $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources))
-GENERATED_EXTRA_DIST += bsegentypes.h
+GENERATED_CLEANFILES += bsegentypes.h
 bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
@@ -200,7 +200,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& mv xgen-$(@F) $(srcdir)/bsegentypes.h
 # bsegentypes.cc
-GENERATED_EXTRA_DIST += bsegentypes.cc
+GENERATED_CLEANFILES += bsegentypes.cc
 $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.cc
 bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
@@ -245,7 +245,7 @@ bseenum_list.cc: bsegentypes.h
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bsegentype_array.cc
-GENERATED_EXTRA_DIST += bsegentype_array.cc
+GENERATED_CLEANFILES += bsegentype_array.cc
 $(libbse_@MAJOR@_la_OBJECTS): bsegentype_array.cc
 bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	$(AM_V_GEN)
@@ -254,7 +254,7 @@ bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_externs.cc
-GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
+GENERATED_CLEANFILES += bsebuiltin_externs.cc
 #$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_externs.cc
 bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
@@ -264,7 +264,7 @@ bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_array.cc
-GENERATED_EXTRA_DIST += bsebuiltin_array.cc
+GENERATED_CLEANFILES += bsebuiltin_array.cc
 #$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_array.cc
 bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
