@@ -7,9 +7,13 @@ SCRIPTDIR="$(dirname "$(readlink -f "$0")")"
 PROJECT=`basename "$(git rev-parse --show-toplevel)"`
 
 # parse args
-test $# -gt 0 || die 1 "Usage: dockerbuild.sh <DIST> [INTENT]"
+test $# -gt 0 || die 1 "Usage: dockerbuild.sh [--no-cache] <DIST> [INTENT]"
 DIST=debian:jessie
 INTENT=distcheck
+NOCACHE=
+case "$1" in
+  --no-cache)	NOCACHE=--no-cache; shift;;
+esac
 test $# -lt 1 || { DIST="$1"; shift; }
 test $# -lt 1 || { INTENT="$1"; shift; }
 DISTRELEASE="${DIST#*:}"
@@ -37,7 +41,7 @@ BUILD_ARG_HTTP_PROXY=
 test -z "$http_proxy" || BUILD_ARG_HTTP_PROXY="--build-arg=http_proxy=$http_proxy"
 
 # build project in docker container
-docker build $BUILD_ARG_HTTP_PROXY -t $PROJECT .
+docker build $NOCACHE $BUILD_ARG_HTTP_PROXY -t $PROJECT .
 echo -e "OK, EXAMINE:\n  docker run -ti --rm $PROJECT /bin/bash"
 
 # cleanup
