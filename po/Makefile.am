@@ -232,32 +232,39 @@ unlisted:
 	@echo "Creating source file list..."
 	@rm -f unlisted
 	@ # list possible POT sources...
-	@(cd $(top_srcdir) && find . $(FIND_NOHIDDEN) -type f -print) | sed 's,^\./,,' \
+	$(Q) (cd $(top_srcdir) && set -o pipefail \
+	&& find . $(FIND_NOHIDDEN) -type f -print) \
+	| sed 's,^\./,,' \
 	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
 	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
 	@ # scanning file types...
-	@$(foreach TYPE, $(POSRC_TYPES), \
-	  $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
+	$(foreach TYPE, $(POSRC_TYPES), \
+	  $(Q) $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
 	@rm -f "xgen-$(@F)"
 	@ # report...
 	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
 	@if test -e unlisted ; then \
-	  echo "Missing `wc -l <unlisted` untranslated file from POTSCAN, see:"; ls -l "`pwd`/unlisted" ; \
+	  echo "Missing `wc -l <unlisted` untranslated file(s) from POTSCAN, see:"; head -n7 -v "`pwd`/unlisted" ; \
 	else echo "Done, all files listed." ; fi
 DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
+# use 'readlink -ve' to catch missing files
 define test_unlisted
-	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
-	grep $(POSRC_$(strip $(1))_PATTERN) $(2) | \
+	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " && \
+	set -o pipefail && \
+	readlink -ve $(2) > /dev/null && \
+	{ grep $(POSRC_$(strip $(1))_PATTERN) $(2) || :; } | \
+	while read file ; do \
+	  readlink -ve "$(top_srcdir)/$$file" > /dev/null || exit $? ; \
 	  $(if $(POSRC_$(strip $(1))_FILTER), \
-	    while read file ; do \
-	       $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" | \
-	       grep -q $(INLTFIXPATTERN) && echo "$$file" ; \
-	    done \
-	  , \
-	    (cd $(top_srcdir) && xargs grep -l $(I18NPATTERN) ) \
-	  ) | tee -a $(3) | wc -l
+	    $(POSRC_$(strip $(1))_FILTER) "$(top_srcdir)/$$file" | \
+	    { grep -q $(INLTFIXPATTERN) && echo "$$file" || :; } \
+	    , \
+	    { grep -q $(I18NPATTERN) "$(top_srcdir)/$$file" && echo "$$file" || :; } \
+	  ); \
+	done \
+	| tee -a $(3) | wc -l
 	$(NEWLINE)
 endef # GNU Make needs an explicit last newline
 .PHONY: unlisted
