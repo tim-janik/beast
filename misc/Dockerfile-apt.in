@@ -63,7 +63,7 @@ WORKDIR /usr/src/$PROJECT
 RUN : && \
     case $INTENT in \
       *clangbuild*) nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
-      *)            nice ./autogen.sh --prefix=/usr ;; \
+      *gccbuild*)   nice ./autogen.sh --prefix=/usr ;; \
     esac
 RUN nice make -j`nproc`
 RUN nice make check
@@ -106,6 +106,7 @@ RUN `intent package` && \
     retry apt-get install -y $(dpkg-checkbuilddeps 2>&1 | sed 's/.*: //') && \
     nice debuild -j`nproc` -rfakeroot -us -uc && \
     cd .. && \
+    rm -r $TARDIR/ && \
     ls -al
 
 # Test package installation from /usr/src/ and removal locally
