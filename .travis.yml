@@ -10,21 +10,25 @@ services: docker
 language: generic
 
 env:
-  global:
-    - INTENT="package,bintrayup" # default
+  # INTENT: gccbuild clangbuild package bintrayup
   matrix:
-    # package: build packages for distribution $DIST
-    - DIST="ubuntu:wily"
-    - DIST="debian:jessie"
-    - DIST="debian:testing"
-    - DIST="ubuntu:xenial"
-    - DIST="ubuntu:yakkety"
-    - DIST="ubuntu:wily" INTENT="clangbuild,distcheck"
+    - DIST="ubuntu:wily"        INTENT="gccbuild,package,bintrayup"
+    - DIST="ubuntu:xenial"      INTENT="gccbuild,package,bintrayup,distcheck"
+    - DIST="debian:jessie"      INTENT="gccbuild,package,bintrayup"
+    - DIST="ubuntu:yakkety"     INTENT="gccbuild,package,bintrayup"
+    # test upcoming releases and get new compiler warnings
+    - DIST="debian:stretch"     INTENT="gccbuild,package,bintrayup"
+    - DIST="ubuntu:zesty"       INTENT="gccbuild"
+    - DIST="ubuntu:zesty"       INTENT="clangbuild"
+    - DIST="debian:unstable"    INTENT="gccbuild"
+    - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
-    - env: DIST="debian:testing"
-    - env: DIST="ubuntu:xenial"
-    - env: DIST="ubuntu:yakkety"
+    - env: DIST="debian:stretch"     INTENT="gccbuild,package,bintrayup"
+    - env: DIST="ubuntu:zesty"       INTENT="gccbuild"
+    - env: DIST="ubuntu:zesty"       INTENT="clangbuild"
+    - env: DIST="debian:unstable"    INTENT="gccbuild"
+    - env: DIST="debian:unstable"    INTENT="clangbuild"
   fast_finish: true
 
 before_install:
