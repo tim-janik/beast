@@ -3,24 +3,31 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS = . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
+SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
 
-noinst_DATA = HACKING.html
-EXTRA_DIST += HACKING.html
-CLEANFILES += HACKING.html
+# == make setup ==
+noinst_DATA	=
 
+# == doc/ install ==
+projectdocsdir   = $(docdir)/
+projectdocs_DATA = HACKING README NEWS COPYING
+EXTRA_DIST      += $(projectdocs_DATA)
+.SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
+MAINTAINERCLEANFILES += HACKING
+
+# == Markdown rules ==
+%: %.md
+	$(AM_V_GEN)
+	$(Q) rm -f $@		# work around read-only target
+	$(Q) $(PANDOC) -S -f markdown_github+pandoc_title_block-hard_line_breaks -t plain $< -o $@
+	$(Q) chmod a-w $@	# prevent accidental target file edits
 %.html: %.md
-	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \
-	  $< -o xgen-$(@F)
-	mv xgen-$(@F) $@
+	$(AM_V_GEN)
+	$(Q) rm -f $@		# work around read-only target
+	$(Q) $(PANDOC) -s --toc -N -S -f markdown_github+pandoc_title_block-hard_line_breaks -t html \
+		--email-obfuscation=javascript $< -o $@
+	$(Q) chmod a-w $@	# prevent accidental target file edits
 
-site site-preview site-update site-update-all site-update-pages site-update-galleries:
-	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
-
-# === doc/ files ===
-maindocsdir   = $(docdir)/
-maindocs_DATA = README.md NEWS
-EXTRA_DIST   += $(maindocs_DATA)
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
