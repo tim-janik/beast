@@ -52,7 +52,6 @@ sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
 CLEANFILES += beast-audio-x-bse.png
-EXTRA_DIST += $(sharedpixmaps_DATA)
 
 # intltool-merge translation rules
 PODEPS          = $(wildcard $(top_srcdir)/po/*.po)
