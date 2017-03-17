@@ -155,16 +155,20 @@ x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
 #x86_64_flags="$x86_64_flags -msse4.1 -msse4.2"	# Intel since 2008, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
+AC_MSG_CHECKING([for known C++ compiler])
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then
+    AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
     AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
     MC_ASSERT_VERSION($CXX --version, 3.5.0)
-elif ${CXX} --version 2>&1 | tr '\n' ' ' | grep -q -E '(g\++|GCC).*Free Software Foundation' ; then
+elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then
+    AC_MSG_RESULT([g++])
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
     AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
     FAST_MATH_FLAGS="$FAST_MATH_FLAGS $gcc_fast_math"
     MC_ASSERT_VERSION($CXX --version, 4.9.2)
 else
+  AC_MSG_RESULT([none])
   AC_MSG_ERROR([unknown C++ compiler])
 fi
 AC_SUBST(FAST_MATH_FLAGS)

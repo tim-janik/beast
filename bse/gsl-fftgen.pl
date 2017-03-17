@@ -455,7 +455,7 @@ bitreverse_fft2analysis (const unsigned int n,
 		    __0, __1);
     }
 }
-", $ieee_type, $ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type;
+", $ieee_type, $ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type, $ieee_type, $ieee_type;
 
     # testing:
     # define BUTTERFLY_10(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im) \
@@ -831,7 +831,7 @@ print " */\n";
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
     printf "%sregister uint butterfly, block, offset;\n", $indent;
-    printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type, $tmp_ieee_type;
+    printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
 
     my $seen_rule = 0;

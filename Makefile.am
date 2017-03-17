@@ -3,24 +3,31 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS = . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
+SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
 
-noinst_DATA = HACKING.html
-EXTRA_DIST += HACKING.html
-CLEANFILES += HACKING.html
+# == make setup ==
+noinst_DATA	=
 
+# == doc/ install ==
+projectdocsdir   = $(docdir)/
+projectdocs_DATA = HACKING README NEWS COPYING
+EXTRA_DIST      += $(projectdocs_DATA)
+.SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
+MAINTAINERCLEANFILES += HACKING
+
+# == Markdown rules ==
+%: %.md
+	$(AM_V_GEN)
+	$(Q) rm -f $@		# work around read-only target
+	$(Q) $(PANDOC) -S -f markdown_github+pandoc_title_block-hard_line_breaks -t plain $< -o $@
+	$(Q) chmod a-w $@	# prevent accidental target file edits
 %.html: %.md
-	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \
-	  $< -o xgen-$(@F)
-	mv xgen-$(@F) $@
+	$(AM_V_GEN)
+	$(Q) rm -f $@		# work around read-only target
+	$(Q) $(PANDOC) -s --toc -N -S -f markdown_github+pandoc_title_block-hard_line_breaks -t html \
+		--email-obfuscation=javascript $< -o $@
+	$(Q) chmod a-w $@	# prevent accidental target file edits
 
-site site-preview site-update site-update-all site-update-pages site-update-galleries:
-	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
-
-# === doc/ files ===
-maindocsdir   = $(docdir)/
-maindocs_DATA = README.md NEWS
-EXTRA_DIST   += $(maindocs_DATA)
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
@@ -47,15 +54,6 @@ bse-app-test:
 installcheck-local: bse-app-test
 
 
-# == distcheck-checks ==
-distcheck-check-xz-opt:
-	$(Q) test "$$XZ_OPT" != '--fast' -a "$$XZ_OPT" != '-0' || \
-	{ echo "distcheck: error: bad compression option for distribution tarball: XZ_OPT=$$XZ_OPT" >&2 ; exit 1 ; }
-check-update-po:
-	$(Q) $(MAKE) -C po check-update-po
-DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
-$(DISTCHECK_HOOK): distcheck-check-xz-opt check-update-po
-
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
 distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
@@ -66,10 +64,6 @@ uninstall_filter_files = $(strip	\
 	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
 	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
 )
-
-# (test_option, INPUTSTRING, YESOPT, [NOOPT]) :- true if YESOPT is present
-test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
-      `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
 
 # == topbuildid.cc ==
 EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
@@ -93,3 +87,56 @@ ChangeLog: $(GITSTAMPS)
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
 EXTRA_DIST           += ChangeLog taptool.sh
+
+# == distcheck ==
+# Distcheck aims:
+# - use srcdir==builddir;
+# - build *outside* the original source tree to catch missing files or dirs, and without picking up parent directory contents;
+# - support parallel builds;
+# - verify that no CLEANFILES are shipped in dist tarball;
+# - check that $(DESTDIR) is properly honored in installation rules.
+# distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
+# distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
+distcheck_uniqdir = distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
+distcheck: dist
+	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
+	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
+	&& TARBALL=`readlink -f $(firstword $(DIST_ARCHIVES))` \
+	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distdir)" -a -n "$$TARBALL" \
+	&& { test ! -e "$$DCDIR/" || { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } ; } \
+	&& mkdir -p "$$DCDIR" \
+	&& set -x \
+	&& cd "$$DCDIR" \
+	&& tar xf "$$TARBALL" \
+	&& cd "$(distdir)" \
+	&& ./configure --prefix="$$DCDIR/inst" $(AM_DISTCHECK_CONFIGURE_FLAGS) $(DISTCHECK_CONFIGURE_FLAGS) \
+	&& touch dc-buildtree-cleaned \
+	&& find . -print >dc-buildtree-files \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean \
+	&& find . -print >dc-buildtree-cleaned \
+	&& diff -u dc-buildtree-files dc-buildtree-cleaned \
+	&& $(MAKE) $(AM_MAKEFLAGS) -j`nproc` \
+	&& $(MAKE) $(AM_MAKEFLAGS) check \
+	&& $(MAKE) $(AM_MAKEFLAGS) install \
+	&& $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	&& $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	&& $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck-hook \
+	&& $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck distuninstallcheck_dir="$$DCDIR/inst" \
+	&& chmod a-w -R "$$DCDIR/inst" \
+	&& mkdir -m 0700 "$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" install \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" uninstall \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck-hook \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck distuninstallcheck_dir="$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean \
+	&& set +x \
+	&& cd "$(abs_top_builddir)" \
+	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
+	&& echo "OK: archive ready for distribution: $$TARBALL" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+.PHONY: distcheck distuninstallcheck-hook
+
+# == distcheck-checks ==
+check-update-po:
+	$(Q) $(MAKE) -C po check-update-po
+DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
+$(DISTCHECK_HOOK): check-update-po

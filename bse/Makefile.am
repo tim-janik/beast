@@ -22,9 +22,6 @@ bse_public_headers = $(strip \
 	gsldatahandle-vorbis.hh	gslvorbis-enc.hh	gsldatacache.hh	gslvorbis-cutter.hh \
 	gsldatahandle-mad.hh	           	gslfilehash.hh	gsldatautils.hh	\
 	gslwaveosc.hh		gslosctable.hh	gslmagic.hh	\
-	\
-	bsegentypes.h \
-	\
 	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
 	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
 	bsestartup.hh		\
@@ -32,7 +29,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh		bseserverapi.hh		effectbase.hh			\
+							effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -57,7 +54,7 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.cc		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+				gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
 	gslfilter.cc		gslcommon.cc \
 	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
@@ -135,9 +132,10 @@ EXTRA_DIST += $(strip \
 #
 lib_LTLIBRARIES                      = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
-libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
-nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
-libbse_@MAJOR@_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
+libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
+nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
+libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
+nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
 libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
@@ -171,8 +169,9 @@ CLEANFILES += $(bse_proc_gen_sources)
 else
 MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
-# gslfft.cc
-GENERATED += gslfft.cc
+
+# == gslfft.cc ==
+GENERATED_CLEANFILES += gslfft.cc
 $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(AM_V_GEN)
 	$(Q) (cd . \
@@ -180,11 +179,12 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	&& $(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl $(if $(findstring 1, $(V)) ,, --no-verbose)' \"gslfft.hh\" \
 	) > xgen-$(@F) \
 	&& mv xgen-$(@F) $@
-# bsegentypes.h
-mktypes_bse_sources = $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources))
-GENERATED_EXTRA_DIST += bsegentypes.h
+
+# == bsegentypes.h ==
+mktypes_bse_sources = $(filter-out bsegentypes.cc, $(bse_sources))
+GENERATED_CLEANFILES += bsegentypes.h
 bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc, $(bse_sources)) $(bse_public_headers)
 bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
@@ -192,22 +192,20 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@)) // enum\n" \
-	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	      $(filter-out bsegentypes.h bseclientapi.hh, $(bse_public_headers)) \
+	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" $(bse_public_headers) \
 	  && $(PERL) mktypes.pl --externs $(mktypes_bse_sources) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& mv xgen-$(@F) $(srcdir)/bsegentypes.h
 # bsegentypes.cc
-GENERATED_EXTRA_DIST += bsegentypes.cc
+GENERATED_CLEANFILES += bsegentypes.cc
 $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.cc
 bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
-	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	      $(filter-out bseclientapi.hh, $(bse_public_headers)) \
+	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" $(bse_public_headers) \
 	  && $(PERL) mktypes.pl --interns --export-proto $(mktypes_bse_sources) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -224,8 +222,7 @@ bseenum_arrays.cc: bsegentypes.h
 	    --vhead "/* @EnumName@\n */\n" \
 	    --vhead "static G@Type@Value @enum_name@_values[] = { // enum_values\n" \
 	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-	    --vtail "  { 0, NULL, NULL }\n};\n" \
-	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
+	    --vtail "  { 0, NULL, NULL }\n};\n" $(bse_public_headers) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -239,12 +236,12 @@ bseenum_list.cc: bsegentypes.h
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
+	      $(bse_public_headers) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bsegentype_array.cc
-GENERATED_EXTRA_DIST += bsegentype_array.cc
+GENERATED_CLEANFILES += bsegentype_array.cc
 $(libbse_@MAJOR@_la_OBJECTS): bsegentype_array.cc
 bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	$(AM_V_GEN)
@@ -253,7 +250,7 @@ bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_externs.cc
-GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
+GENERATED_CLEANFILES += bsebuiltin_externs.cc
 #$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_externs.cc
 bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
@@ -263,7 +260,7 @@ bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_array.cc
-GENERATED_EXTRA_DIST += bsebuiltin_array.cc
+GENERATED_CLEANFILES += bsebuiltin_array.cc
 #$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_array.cc
 bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
@@ -322,7 +319,7 @@ bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
 	  --insertions $(srcdir)/bseserverinsert.hh $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-GENERATED += bseserverapi.hh
+GENERATED_CLEANFILES += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)

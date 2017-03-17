@@ -58,7 +58,6 @@ bst_cc_sources = $(strip \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
 	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
 			       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
-	../topbuildid.cc \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
@@ -138,6 +137,7 @@ generated: clean-generated $(GENERATED)
 #
 bin_PROGRAMS = beast-@MAJOR@.@MINOR@.@MICRO@
 beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = $(bst_cc_sources) bstmain.cc
+nodist_beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = ../topbuildid.cc
 beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)
 beast_build_objects = $(beast_@MAJOR@_@MINOR@_@MICRO@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)

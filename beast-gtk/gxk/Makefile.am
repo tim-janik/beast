@@ -49,7 +49,7 @@ MAINTAINERCLEANFILES += $(CLEANSTAMPFILES)
 endif
 
 # gxkgentypes.h
-GENERATED_EXTRA_DIST += gxkgentypes.h
+GENERATED_CLEANFILES += gxkgentypes.h
 $(libgxk_a_OBJECTS): gxkgentypes.h
 gxkgentypes.h: @PERLRULE@ stamp-gxkgentypes.h ;
 CLEANSTAMPFILES += stamp-gxkgentypes.h

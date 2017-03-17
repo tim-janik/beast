@@ -1,4 +1,5 @@
-% BEAST/BSE HACKING
+BEAST/BSE HACKING
+=================
 
 The Beast + BSE code base origins date back to the 90ties, so hacking on it requires some knowledge about ancient aspects and mixings with newer technologies. The following gives a high-level overview of the pitfalls involved, this file can be discussed at beast@gnome.org.
 
@@ -60,6 +61,8 @@ Conversions
 ===========
 
 Conversion between object handles works as follows:
+
+~~~~cpp
   // In bse/
   BseServer *server = server_impl->as<BseObject*>();
   ServerImpl *server_impl = server->as<ServerImpl*>();
@@ -69,3 +72,4 @@ Conversion between object handles works as follows:
   ServerIface *server_iface;
   ObjectIfaceP server_iface->from_proxy (proxyid);
   SfiProxy proxy = server_iface->proxy_id();
+~~~~
