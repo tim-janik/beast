@@ -15,14 +15,15 @@ bse_doc_sources	  ::= $(shell make doc_sources.lst -C ../bse >&2 && cat ../bse/d
 plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../plugins/doc_sources.lst)
 gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
 bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
+tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
 man1_HTMLS          = docs/imports/beast.1.html docs/imports/bsescm.1.html docs/imports/bsewavetool.1.html docs/imports/sfidl.1.html
 man5_HTMLS          = docs/imports/bse.5.html
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
 docs_doxy_extra     = docs/main.dox
-docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources)
-docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk
+docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
+docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk tools
 docs_doxy_headers   = $(filter     %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_impls     = $(filter-out %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_tagsrcs   = $(strip \
