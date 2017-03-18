@@ -22,7 +22,7 @@ BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #include <string.h>
 #include <fcntl.h>
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-oss", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("midi-oss", __VA_ARGS__)
 
 /* --- structs --- */
 typedef struct

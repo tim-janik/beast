@@ -13,7 +13,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("mad", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("mad", __VA_ARGS__)
 
 RAPICORN_STATIC_ASSERT (BSE_HAVE_LIBMAD > 0); // ensure we can use libmad
 #if     BSE_HAVE_LIBMAD

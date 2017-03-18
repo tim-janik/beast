@@ -10,7 +10,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("aiff-loader", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("aiff-loader", __VA_ARGS__)
 
 /* audio file loader for the FORM/AIFF sample format, according to:
  * "Audio Interchange File Format AIFF, A Standard for Sampled Sound Files, Version 1.3"

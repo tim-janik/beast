@@ -6,7 +6,7 @@
 #include "bsemain.hh"
 #include <string.h>
 
-#define WDEBUG(...)     BSE_KEY_DEBUG ("waveosc", __VA_ARGS__)
+#define WDEBUG(...)     Bse::debug ("waveosc", __VA_ARGS__)
 
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)

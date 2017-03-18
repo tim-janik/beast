@@ -8,7 +8,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("wav-loader", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("wav-loader", __VA_ARGS__)
 
 #define FORMAT_IS_ALAW(f)       ((f) == 0x0006  /* Microsoft ALAW */ || \
                                  (f) == 0x0102) /* IBM ALAW */

@@ -9,7 +9,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#define EDEBUG(...)     BSE_KEY_DEBUG ("engine", __VA_ARGS__)
+#define EDEBUG(...)     Bse::debug ("engine", __VA_ARGS__)
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,

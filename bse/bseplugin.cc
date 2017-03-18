@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("plugins", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("plugins", __VA_ARGS__)
 
 /* --- prototypes --- */
 static void	    bse_plugin_init		(BsePlugin	  *plugin);

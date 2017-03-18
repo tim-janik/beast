@@ -7,7 +7,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define VDEBUG(...)     BSE_KEY_DEBUG ("vorbis", __VA_ARGS__)
+#define VDEBUG(...)     Bse::debug ("vorbis", __VA_ARGS__)
 
 /* --- structures --- */
 typedef struct {

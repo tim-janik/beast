@@ -2,7 +2,7 @@
 #include "bseengineschedule.hh"
 #include "bseengineutils.hh"
 
-#define SCHED_DEBUG(...) BSE_KEY_DEBUG ("sched", __VA_ARGS__)
+#define SCHED_DEBUG(...) Bse::debug ("sched", __VA_ARGS__)
 #define CHECK_DEBUG()    Bse::debug_enabled ("sched")
 
 /* --- prototypes --- */

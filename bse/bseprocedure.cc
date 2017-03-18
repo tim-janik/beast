@@ -8,7 +8,7 @@
 #include "bseexports.hh"
 #include <string.h>
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("procs", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("procs", __VA_ARGS__)
 #define CHECK_DEBUG()   Bse::debug_enabled ("procs")
 #define HACK_DEBUG /* very slow and leaks memory */ while (0) Bse::printerr
 

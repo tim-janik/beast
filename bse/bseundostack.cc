@@ -4,8 +4,8 @@
 #include "bsecontainer.hh"
 #include <string.h>
 
-#define UDEBUG(...)     BSE_KEY_DEBUG ("undo", __VA_ARGS__)
-#define CHECK_DEBUG()   Bse::bse_debug_enabled ("undo")
+#define UDEBUG(...)     Bse::debug ("undo", __VA_ARGS__)
+#define CHECK_DEBUG()   Bse::debug_enabled ("undo")
 
 /* --- functions --- */
 BseUndoStack*

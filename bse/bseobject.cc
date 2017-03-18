@@ -8,7 +8,7 @@
 #include "bsesource.hh"		/* debug hack */
 #include <string.h>
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("leaks", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
 
 namespace Bse {
 ObjectImpl::ObjectImpl (BseObject *bobj) :
