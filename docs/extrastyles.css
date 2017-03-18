@@ -1,0 +1,57 @@
+/* Fixup Doxygen font settings
+ * Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
+ */
+body				{ font: inherit; /* unset Doxygen line spacing, etc */
+				  font-family: "DejaVu Sans", "Bitstream Vera Sans", Candara, "Trebuchet MS", Verdana, sans-serif;
+				  font-size: 12pt; }
+table, div, p, dl, ol, ul	{ font: inherit; }
+
+/* Header font sizes */
+h1                      		{ margin: 0.6em 0; font-size: 1.25em; }
+h2                      		{ margin: 0.6em 0; font-size: 1.2em; }
+h3                      		{ margin: 0.6em 0; font-size: 1.15em; }
+h4                      		{ margin: 0.6em 0; font-size: 1.1em; }
+h5                      		{ margin: 0.6em 0; font-size: 1.05em; }
+h6                      		{ margin: .05em 0; font-size: 1.0em; }
+h1, h2, h3, h4, h5, h6			{ page-break-after: avoid; }
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a	{ font-weight: 600; page-break-after: avoid; }
+.title 					{ font-size: 150%; } /* page titles */
+#projectname 				{ font-weight:bold; font-size: 200%;
+					  font-family: Corbel, Verdana, "DejaVu Sans", "Bitstream Vera Sans", sans-serif; }
+
+/* Navigation */
+#nav-tree, .toc, .header .summary	{ font-family: "Nimbus Sans L", "DejaVu Sans Condensed", "Liberation Sans", Freesans, Arial, Helvetica, sans-serif;
+					  font-size: 90%;
+					}
+#nav-sync				{ display: none; }
+
+/* Doxygen project name and Tabs */
+#projectname a, #projectnumber		{ font: inherit; font-size: 100%; }
+#projectname #projectnumber		{ font-weight: normal; }
+.tabs, .tabs2, .tabs3			{ font-size: 106%; font-family: inherit; }
+.tabs2					{ font-size: 104%; }
+.tabs3					{ font-size: 102%; }
+
+/* function lists and descriptions */
+.memdoc, dl.reflist dd		{ box-shadow: none; border: none; background-image: none;
+				  border-bottom: 1px solid #bbbbbb; margin-bottom: 0.2em; }
+.memproto, dl.reflist dt	{ background-image: none; background-color: #eeeeff;
+				  border: 1px solid #aaaaff; border-radius: 0;
+				  color: #303030; }
+a				{ color: #303099; }
+.contents a:visited		{ color: #303080; }
+.memname			{ font-weight: normal; }
+td.mlabels-right		{ vertical-align: middle; }
+span.mlabel 			{ font-weight: normal; padding: 0 .2em;
+				  background-color: #7272c1; border: 1px solid #5353b4; }
+a.el				{ font-weight: normal; }
+td.memItemLeft, td.memTemplItemLeft		{ color: #808080; }
+td.memItemRight, td.memTemplItemRight		{ color: #808080; padding-left: .8em; }
+td.memItemRight a, td.memTemplItemRight a	{ font-weight: normal; }
+td.memItemRight b, td.memTemplItemRight b	{ color: #000000; font-weight: normal; }
+
+h2.groupheader			{ margin-bottom: 1em; }
+table.fieldtable		{ border: none; box-shadow: none; line-height: 1.5em; }
+table.fieldtable th		{ background-image: none; display: none; }
+table.fieldtable td.fieldname,
+table.fieldtable td.fielddoc	{ /*border-bottom: 1px solid #DEE4F0;*/ border: none; }
