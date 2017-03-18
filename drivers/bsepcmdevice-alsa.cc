@@ -14,7 +14,7 @@
 #error  unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm-alsa", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("pcm-alsa", __VA_ARGS__)
 
 static snd_output_t *snd_output = NULL; // only for debugging
 

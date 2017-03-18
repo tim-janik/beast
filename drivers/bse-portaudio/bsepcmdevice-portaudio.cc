@@ -12,7 +12,7 @@ using std::string;
 using std::vector;
 using std::max;
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm-portaudio", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("pcm-portaudio", __VA_ARGS__)
 
 /* --- PortAudio PCM handle --- */
 typedef struct

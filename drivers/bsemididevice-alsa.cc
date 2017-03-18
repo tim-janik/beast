@@ -7,7 +7,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-alsa", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("midi-alsa", __VA_ARGS__)
 
 /* --- structs --- */
 typedef struct
