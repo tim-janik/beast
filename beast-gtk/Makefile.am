@@ -70,6 +70,14 @@ beast_extra_files = $(strip 						\
 )
 EXTRA_DIST += $(beast_extra_files)
 
+doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
+
+# == doc_sources.lst ==
+doc_sources.lst: Makefile
+	$(AM_V_GEN)
+	$(Q) echo $(patsubst %, beast-gtk/%, $(doc_sources)) > $@
+
+
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
