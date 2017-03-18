@@ -39,6 +39,13 @@ gxk_extra_sources = $(strip \
 
 EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources)
 
+doc_sources = $(gxk_headers) $(gxk_c_sources) $(gxk_extra_sources)
+
+# == doc_sources.lst ==
+doc_sources.lst: Makefile
+	$(AM_V_GEN)
+	$(Q) echo $(patsubst %, beast-gtk/gxk/%, $(doc_sources)) > $@
+
 GLIB_MKENUMS = glib-mkenums
 
 CLEANSTAMPFILES =

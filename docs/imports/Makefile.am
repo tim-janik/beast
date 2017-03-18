@@ -1,10 +1,9 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-TAGFILES    = tagfile-rapicorn.xml
 MANMANS	    = beast.1 bse.5 bsescm.1 bsewavetool.1 sfidl.1
 HTMLMANS    = beast.1.html bse.5.html bsescm.1.html bsewavetool.1.html sfidl.1.html
-EXTRA_DIST += $(TAGFILES) $(MANMANS)
+EXTRA_DIST += $(MANMANS)
 # HTMLMANS are packaged as part of the doxygen docs
 
 # Install manual pages
@@ -13,8 +12,8 @@ man_MANS    = ${MANMANS} # automake-1.11 needs this expandable w/o patsubst
 # = Import Rule =
 import: check-tools
 	$(AM_V_GEN)
-	$(Q) rm -f $(TAGFILES) $(HTMLMANS) $(MANMANS)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(TAGFILES) $(HTMLMANS) $(MANMANS)
+	$(Q) rm -f $(HTMLMANS) $(MANMANS)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(HTMLMANS) $(MANMANS)
 .PHONY: import
 
 # = Check Tools =
@@ -23,11 +22,6 @@ CHECK_WH2M = { command -v wikihtml2man >/dev/null && { echo "11.09.1" ; wikihtml
 check-tools:
 	$(Q) ${CHECK_WGET} || { echo "$@: failed to detect recent version: wget"; exit 1; }
 	$(Q) ${CHECK_WH2M} || { echo "$@: failed to detect recent version: wikihtml2man"; exit 1; }
-
-# = Tagfile Imports =
-tagfile-rapicorn.xml:
-	$(Q) wget --progress=dot --output-document=- http://testbit.eu/pub/docs/rapicorn/latest/tagfile.xml > xtmp-${@F}
-	$(Q) mv xtmp-${@F} $@
 
 # = MANMANS =
 %.1 %.5:

@@ -23,6 +23,15 @@ idl_files = $(strip			\
 	davorgan.idl			\
 )
 EXTRA_DIST += $(idl_files)
+
+doc_sources = $(idl_files) $(DIST_SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
+
+# == doc_sources.lst ==
+doc_sources.lst: Makefile
+	$(AM_V_GEN)
+	$(Q) echo $(patsubst %, plugins/%, $(doc_sources)) > $@
+
+
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)

@@ -233,7 +233,7 @@ unlisted:
 	@rm -f unlisted
 	@ # list possible POT sources...
 	$(Q) (cd $(top_srcdir) && set -o pipefail \
-	&& find . $(FIND_NOHIDDEN) -type f -print) \
+	&& find . $(FIND_NOHIDDEN) -type f $(patsubst %, ! -path \*/%, $(IGNORE_UNLISTED)) -print) \
 	| sed 's,^\./,,' \
 	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
 	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
@@ -248,6 +248,9 @@ unlisted:
 	else echo "Done, all files listed." ; fi
 DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
+IGNORE_UNLISTED = $(strip		\
+	docs/doxy/*			\
+)
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 # use 'readlink -ve' to catch missing files
 define test_unlisted

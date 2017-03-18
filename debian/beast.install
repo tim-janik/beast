@@ -4,8 +4,10 @@ usr/bin/bsescm
 usr/share/man/man1/bsescm.1
 usr/bin/bsewavetool
 usr/share/beast
+usr/share/doc/beast/HACKING
+usr/share/doc/beast/COPYING
 usr/share/doc/beast/NEWS
-usr/share/doc/beast/README.md
+usr/share/doc/beast/README
 usr/share/man/man1/bsewavetool.1
 usr/share/application-registry/beast.applications
 usr/share/applications/beast.desktop

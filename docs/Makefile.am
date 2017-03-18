@@ -3,86 +3,121 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = imports images
 
-QPRINT = @printf '  %-7s%s\n'
-
-# Describe documentation version by real version number and git relative
-DSC_VERSION = $(shell git describe --always --match '[0-9]*' HEAD 2>/dev/null || echo tarball)
-DOC_VERSION = $(VERSION): $(DSC_VERSION)
+topdir = $(abs_top_srcdir)
+V_gen = @printf '  %-9s%s\n'
 
 # == Extra Tarball Files ==
 EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
 
-# == Doxygen Install Rules ==
-htmldocsbase  = $(docdir)
-htmldocsdir   = ${htmldocsbase}/html
-htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
-htmlparent    = $(if $(findstring \#, ..\@INGIT@..), $(srcdir), $(builddir))
-install-data-hook: @INGIT@ $(htmldocs_DATA)
-	umask 022 && cp -RP $(htmlparent)/html/ "$(DESTDIR)$(htmldocsbase)/"
-	chmod -R u+w "$(DESTDIR)$(htmldocsbase)/"
-# u+w is needed for uninstall (distcheck enforces read-only srcdir contents)
-uninstall-local:
-	rm -Rf "$(DESTDIR)$(htmldocsbase)/html/"
+# == Collect Doc Sources ==
+sfi_doc_sources	  ::= $(shell make doc_sources.lst -C ../sfi >&2 && cat ../sfi/doc_sources.lst)
+bse_doc_sources	  ::= $(shell make doc_sources.lst -C ../bse >&2 && cat ../bse/doc_sources.lst)
+plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../plugins/doc_sources.lst)
+gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
+bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
+tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
+man1_HTMLS          = docs/imports/beast.1.html docs/imports/bsescm.1.html docs/imports/bsewavetool.1.html docs/imports/sfidl.1.html
+man5_HTMLS          = docs/imports/bse.5.html
 
-# == html/ build rules ==
-include Makefile.doxygen
-git_index_file = $(shell test ! -x $(top_srcdir)/.git/ || echo $(top_srcdir)/.git/index)
-html/doc-version: @INGIT@ $(if $(NODOC),, $(git_index_file)) # conditionally rebuild, depending on HEAD changes
-	$(AM_V_GEN)
-	$(Q) test -e $@ && test "`cat $@`" = "$(DOC_VERSION)" \
-	|| $(MAKE) $(AM_MAKEFLAGS) --no-print-directory html-docs
-	$(Q) test -e $@ # created by 'html-docs'
-
-# == Doxygen Build Rules ==
-HTMLMAN_FILES     	= imports/beast.1.html imports/bse.5.html imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
-DOXYGEN_DOC_FILES	= docs/main.dox
-DOXYGEN_DOC_DIRS	= sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
-DOXYGEN_EXCLUDES	= rope/cpy2rope.cc rope/cxx-client.[hc][hc] rcore/signalvariants.hh
-DOXYGEN_CHANGELOG       = ChangeLog.tmp
-DOXYGEN_CHANGELOG_TITLE = "Development Changes"
-DOXYGEN_NEWS     	= $(top_srcdir)/NEWS
-DOXYGEN_PROJECT_LINK    = http://beast.testbit.eu/
-DOXYGEN_TAGFILES        = $(strip \
-	imports/tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/	\
-	imports/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/		\
+# == Configure docs ==
+docs_project_link   = http://beast.testbit.eu
+docs_doxy_extra     = docs/main.dox
+docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
+docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk tools
+docs_doxy_headers   = $(filter     %.h %.H %.hh, $(docs_doxy_sources))
+docs_doxy_impls     = $(filter-out %.h %.H %.hh, $(docs_doxy_sources))
+docs_doxy_tagsrcs   = $(strip \
+	tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/	\
+	tagfile-cppreference-15.xml=http://en.cppreference.com/w/		\
+	tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/		\
 )
-# imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/
-html-docs: doxygen-check
-	$(AM_V_GEN)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
-	$(QPRINT) "GEN" "Documentation Sources"
-	$(Q) $(GIT_CHANGELOG) > $(DOXYGEN_CHANGELOG)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-srctree
-	$(Q) rm -f $(DOXYGEN_CHANGELOG)
-	$(QPRINT) "GEN" "docs/docextract.dox"
-	$(Q) cd doxygen-srctree && \
-	  find . -type f -name \*[hcHC] -print | \
-	  $(PYTHON) $(abs_srcdir)/docextract.py > docs/docextract.dox
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-html
-	$(QPRINT) "GEN" "HTML manual pages..."
-	$(Q) cp $(HTMLMAN_FILES) doxygen-html/
-	$(QPRINT) "MOVE" "HTML Documentation..."
-	$(Q) rm -rf html/
-	$(Q) mv doxygen-html html/
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
-	$(Q) rm -f html/doc-version && echo "$(DOC_VERSION)" > html/doc-version
-EXTRA_DIST += html
-.PHONY: html-docs
-CLEANFILES += $(DOXYGEN_CHANGELOG)
-GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
-		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
-		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
-clean-html:
-	rm -rf html/
-clean-local: doxygen-clean @INGIT@ clean-html
+docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
+docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
+EXTRA_DIST         += $(patsubst %, ../%, $(docs_doxygen_tagbzs))
+docs_doxygen_werror = false
+EXTRA_DIST	   += $(patsubst %, ../%, $(docs_doxy_extra))
 
-# == Upload Rule ==
-CHECK_RSYNC = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
-# Upload stable versions as $BST_VERSION_STEM, otherwise upload as latest/
-upload-docs: html/doc-version
+# Build with dot files by default
+DOXYGEN_GRAPHICS  ?= NO # YES
+
+# == docs/srctree ==
+doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_doxygen_tagbzs))
 	$(AM_V_GEN)
-	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
-	$(Q) docdir=latest && test "@ENABLE_DEVEL_MODE_TRUE@" != "#" || docdir="${BST_VERSION_STEM}" && \
-	  set -x && rsync -zaHP --del "html/" "testbit:pub/docs/beast/$$docdir"
-upload: upload-docs
-.PHONY: upload upload-docs
+	$(Q) rm -Rf doxy/src doxy/src.tmp
+	$(Q) mkdir -p $(docs_doxy_src_dirs:%=doxy/src.tmp/%)
+	@: # copy source files *and* prefix each with an '@file' command
+	$(Q) cd $(topdir) && for file in $(docs_doxy_headers) $(docs_doxy_impls) ; do \
+	  sed "1,+0s,^,/** @file $$file */ ," $$file > docs/doxy/src.tmp/$$file \
+	  || exit $? ; done
+	@: # copy extra files verbatim
+	$(Q) cd $(topdir) && cp $(docs_doxy_extra) docs/doxy/src.tmp/
+	@: # avoid docu generation from enums residing in *[cC] files
+	$(Q) find doxy/src.tmp -type f -name '*[cC]' -exec sed 's/^\([^"]*\)\benum\b/\1Enum/' -i {} \;
+	@: # extract doxygen tag files
+	$(Q) for file in $(docs_doxy_tagstems) ; do \
+	  bunzip2 < ../docs/$$file.bz2 > doxy/$$file \
+	  || exit $? ; done
+	$(Q) mv doxy/src.tmp doxy/src
+
+# == docs/doxy/html ==
+docs_doxy_auxfiles = ../docs/extrastyles.css ../docs/footer.html ../docs/references.bib
+EXTRA_DIST	  += ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles)
+# rebuild documentation after commits, unless NODOC is set to be non-empty
+doxy/html: $(if $(NODOC), , ../topbuildid.cc)
+# use order-only prerequisite on docs/doxy/src to spare doxygen runs for source edits
+doxy/html: ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles) | doxy/src
+	$(V_gen) "PREPARE" $@
+	$(Q) rm -Rf doxy/html doxy/output
+	$(Q) mkdir -p doxy/output
+	$(Q) cp $(docs_doxy_auxfiles) doxy/
+	$(Q) (cat ../docs/doxygen.cfg \
+	&& echo "PROJECT_NUMBER		= $(topbuildid)" \
+	&& echo "HAVE_DOT		= $(DOXYGEN_GRAPHICS)" \
+	&& echo "CLASS_DIAGRAMS		= $(DOXYGEN_GRAPHICS)" \
+	&& echo "DOT_MULTI_TARGETS	= YES" \
+	&& echo "INPUT			= src/" \
+	&& echo "STRIP_FROM_PATH	= $$(pwd)/doxy/src" \
+	&& echo "OUTPUT_DIRECTORY	= output/" \
+	&& echo "GENERATE_TAGFILE	= output/html/tagfile.xml" \
+	&& echo "HTML_EXTRA_STYLESHEET	= extrastyles.css" \
+	&& echo "EXAMPLE_PATH		= $(topdir)/" \
+	&& echo "TAGFILES              += $(docs_doxy_tagsrcs)" \
+	) > doxy/Doxyfile
+	$(V_gen) "DOXYGEN" $@
+	$(Q) cd ../docs/doxy && $(DOXYGEN) Doxyfile > error.log 2>&1
+	$(Q) test ! -s doxy/error.log && rm -f doxy/error.log \
+	|| { echo "WARNING: doxygen issues encountered ($$(wc -l <doxy/error.log)): $$(pwd)/doxy/error.log" ; \
+	     ! grep -E -v -f $(srcdir)/../docs/error.ign doxy/error.log || ! $(docs_doxygen_werror) ; }
+	$(V_gen) "POLISH" $@
+	$(Q) sed -r $(docs_sed_accesskey_f) $(docs_sed_project_link) -i doxy/output/html/*.html
+	$(Q) mv doxy/output/html doxy/html
+docs_sed_accesskey_f  = -e 's;(<input [^>]*id="MSearchField"[^>]*accesskey=")S";\1F";'
+docs_sed_project_link = -e 's;<div id="projectname">((\w|[+_/~*%^-])+);<div id="projectname"><a href="$(docs_project_link)">\1</a>;'
+CLEANFILES += ../docs/error.log
+doxy/html/doc-version: doxy/html $(patsubst %, ../%, $(man1_HTMLS) $(man5_HTMLS))
+	$(AM_V_GEN)
+	$(Q) cd $(topdir) && test -z "$(man1_HTMLS)" || { $(MKDIR_P) docs/doxy/html/man1/ && cp $(man1_HTMLS) docs/doxy/html/man1/ ; }
+	$(Q) cd $(topdir) && test -z "$(man5_HTMLS)" || { $(MKDIR_P) docs/doxy/html/man5/ && cp $(man5_HTMLS) docs/doxy/html/man5/ ; }
+	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
+
+# == install docs/doxy/html ==
+docs_html_installbase	 = $(docdir)
+noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
+docs-html-install: $(docs_html_install_DATA)
+	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
+	umask 022 && $(MKDIR_P) "$(DESTDIR)$(docs_html_installbase)"
+	umask 022 && cp -RP doxy/html/ "$(DESTDIR)$(docs_html_installbase)"
+.PHONY: docs-html-install
+install-data-local: docs-html-install
+
+# == uninstall docs/doxy/html ==
+docs-html-uninstall:
+	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
+.PHONY: docs-html-uninstall
+uninstall-local: docs-html-uninstall
+
+# == clean docs/doxy/ ==
+clean-docs:
+	rm -Rf doxy/
+.PHONY: clean-docs
+clean-local: clean-docs
