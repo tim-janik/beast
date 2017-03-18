@@ -10,6 +10,13 @@ AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
+doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
+
+# == doc_sources.lst ==
+doc_sources.lst: Makefile
+	$(AM_V_GEN)
+	$(Q) echo $(patsubst %, tools/%, $(HEADERS) $(SOURCES)) > $@
+
 #
 # tools to build
 #
