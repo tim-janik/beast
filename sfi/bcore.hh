@@ -80,9 +80,6 @@ template<class ...Args> inline void dump              (const char *conditional, 
 template<class ...Args> inline void debug             (const char *conditional, const char *format, const Args &...args) RAPICORN_ALWAYS_INLINE;
 inline bool                         debug_enabled     (const char *conditional) RAPICORN_ALWAYS_INLINE BSE_PURE;
 
-// == Legacy ==
-inline bool BSE_DEPRECATED bse_debug_enabled (const char *k)    { return debug_enabled (k); }
-
 // == Internal Implementation Details ==
 namespace Internal {
 extern bool                         debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
