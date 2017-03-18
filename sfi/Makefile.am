@@ -32,6 +32,11 @@ sfi_built_sources = $(strip \
 
 $(sfi_all_sources): $(sfi_built_sources)
 
+# == doc_sources.lst ==
+doc_sources.lst: Makefile
+	$(AM_V_GEN)
+	$(Q) echo $(patsubst %, sfi/%, $(sfi_public_headers) $(sfi_all_sources)) > $@
+
 # == libsfi-@MAJOR@.so ==
 noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
 libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
