@@ -21,7 +21,6 @@ using Bse::unichar;
 #define sfi_warning(...)        Bse::warning (__VA_ARGS__)
 #define sfi_info(...)           Bse::info (__VA_ARGS__)
 #define sfi_diag(...)           Bse::warning (__VA_ARGS__)
-#define BSE_KEY_DEBUG(...)      Bse::debug (__VA_ARGS__)
 
 /* --- initialization --- */
 typedef struct

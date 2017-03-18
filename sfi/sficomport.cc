@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define CDEBUG(...)     BSE_KEY_DEBUG ("comport", __VA_ARGS__)
+#define CDEBUG(...)     Bse::debug ("comport", __VA_ARGS__)
 
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
