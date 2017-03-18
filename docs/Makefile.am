@@ -33,9 +33,9 @@ docs_doxy_tagsrcs   = $(strip \
 )
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
-EXTRA_DIST         += $(docs_doxygen_tagbzs)
+EXTRA_DIST         += $(patsubst %, ../%, $(docs_doxygen_tagbzs))
 docs_doxygen_werror = false
-EXTRA_DIST	   += $(docs_doxy_extra)
+EXTRA_DIST	   += $(patsubst %, ../%, $(docs_doxy_extra))
 
 # Build with dot files by default
 DOXYGEN_GRAPHICS  ?= NO # YES
