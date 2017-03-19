@@ -1,0 +1,15 @@
+<style type="text/css">
+  body { font-family: "DejaVu Serif", "Bitstream Vera Serif", Constantia, "Nimbus Roman No9 L", "Liberation Serif", Georgia, serif; }
+  p, dl, dd			{ margin-left: 5em; }
+  pre				{ margin-left: 7em; }
+  h6				{ font-size: 1.05em; }
+  h5				{ font-size: 1.10em; }
+  h4				{ font-size: 1.15em; }
+  h3				{ font-size: 1.20em; }
+  h2				{ font-size: 1.25em; }
+  h1				{ font-size: 1.30em; }
+  h1, h2, h3, h4, h5, h6	{ font-style: italic; }
+  h1.title { font-style: normal; text-decoration: underline; }
+  #TOC ul			{ list-style-type: none; margin-left: 0; padding-left: 0; }
+  #TOC				{  margin-bottom: 3p; border-bottom: 1px solid #555; }
+</style>

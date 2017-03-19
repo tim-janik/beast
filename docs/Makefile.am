@@ -17,8 +17,8 @@ plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../p
 gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
 bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
 tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
-man1_HTMLS          = docs/imports/beast.1.html docs/imports/bsescm.1.html docs/imports/bsewavetool.1.html docs/imports/sfidl.1.html
-man5_HTMLS          = docs/imports/bse.5.html
+man1_HTMLS          = imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
+man5_HTMLS          = imports/bse.5.html
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
@@ -95,10 +95,10 @@ doxy/html: ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles) | doxy/sr
 docs_sed_accesskey_f  = -e 's;(<input [^>]*id="MSearchField"[^>]*accesskey=")S";\1F";'
 docs_sed_project_link = -e 's;<div id="projectname">((\w|[+_/~*%^-])+);<div id="projectname"><a href="$(docs_project_link)">\1</a>;'
 CLEANFILES += ../docs/error.log
-doxy/html/doc-version: doxy/html $(patsubst %, ../%, $(man1_HTMLS) $(man5_HTMLS))
+doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(AM_V_GEN)
-	$(Q) cd $(topdir) && test -z "$(man1_HTMLS)" || { $(MKDIR_P) docs/doxy/html/man1/ && cp $(man1_HTMLS) docs/doxy/html/man1/ ; }
-	$(Q) cd $(topdir) && test -z "$(man5_HTMLS)" || { $(MKDIR_P) docs/doxy/html/man5/ && cp $(man5_HTMLS) docs/doxy/html/man5/ ; }
+	$(Q) test -z "$(man1_HTMLS)" || { $(MKDIR_P) doxy/html/man1/ && cp $(man1_HTMLS) doxy/html/man1/ ; }
+	$(Q) test -z "$(man5_HTMLS)" || { $(MKDIR_P) doxy/html/man5/ && cp $(man5_HTMLS) doxy/html/man5/ ; }
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
 # == install docs/doxy/html ==
@@ -159,8 +159,22 @@ clean-local: clean-revisions.lst
 	$(AM_V_GEN)
 	$(Q) $(PANDOC) -s -t man $< -o $@
 
+# == man.1.html (markdown) ==
+manpage_header.html:
+	$(Q) echo $$'<a href="../index.html">Return to Index</a>\n<hr>\n' > $@
+.INTERMEDIATE: manpage_header.html
+MOSTLYCLEANFILES += manpage_header.html
+manpage_footer.html:
+	$(Q) echo $$'<hr>\n<a href="../index.html">Return to Index</a>\n' > $@
+.INTERMEDIATE: manpage_footer.html
+MOSTLYCLEANFILES += manpage_footer.html
+EXTRA_DIST += ../docs/manpage.css
+%.1.html: %.1.revd.md manpage_header.html manpage_footer.html ../docs/manpage.css
+	$(AM_V_GEN)
+	$(Q) $(PANDOC) -s -t html -S --toc -H $(topdir)/docs/manpage.css -B manpage_header.html -A manpage_footer.html $< -o $@
 
 # == beast.1 ==
 revisioned_files	+= beast.1.md
 man1_MANS		+= beast.1
-MOSTLYCLEANFILES	+= beast.1
+man1_HTMLS		+= beast.1.html
+MOSTLYCLEANFILES	+= beast.1 beast.1.html
