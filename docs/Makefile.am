@@ -22,7 +22,7 @@ plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../p
 gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
 bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
 tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
-man1_HTMLS          = imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
+man1_HTMLS          = imports/bsescm.1.html imports/sfidl.1.html
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
@@ -190,6 +190,12 @@ revisioned_files	+= beast.1.md
 man1_MANS		+= beast.1
 man1_HTMLS		+= beast.1.html
 MOSTLYCLEANFILES	+= beast.1 beast.1.html
+
+# == bsewavetool.1 ==
+revisioned_files	+= bsewavetool.1.md
+man1_MANS		+= bsewavetool.1
+man1_HTMLS		+= bsewavetool.1.html
+MOSTLYCLEANFILES	+= bsewavetool.1 bsewavetool.1.html
 
 # == bse.5 ==
 revisioned_files	+= bse.5.md
