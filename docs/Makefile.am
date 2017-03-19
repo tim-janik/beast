@@ -3,6 +3,11 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = imports images
 
+MOSTLYCLEANFILES =
+man1_MANS =
+man5_MANS =
+man5_HTMLS =
+
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
@@ -18,7 +23,6 @@ gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && ca
 bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
 tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
 man1_HTMLS          = imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
-man5_HTMLS          = imports/bse.5.html
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
@@ -126,8 +130,6 @@ clean-local: clean-docs
 
 # == revisioned_files ==
 revisioned_files         = # files that need @FILE_REVISION@ substitution, see revisions.lst
-man1_MANS =
-MOSTLYCLEANFILES =
 
 # == revisions.lst ==
 noinst_DATA += revisions.lst
@@ -158,8 +160,12 @@ clean-local: clean-revisions.lst
 %.1: %.1.revd.md
 	$(AM_V_GEN)
 	$(Q) $(PANDOC) -s -t man $< -o $@
+# == man.5 (markdown) ==
+%.5: %.5.revd.md
+	$(AM_V_GEN)
+	$(Q) $(PANDOC) -s -t man $< -o $@
 
-# == man.1.html (markdown) ==
+# == man.*.html (markdown) ==
 manpage_header.html:
 	$(Q) echo $$'<a href="../index.html">Return to Index</a>\n<hr>\n' > $@
 .INTERMEDIATE: manpage_header.html
@@ -169,7 +175,13 @@ manpage_footer.html:
 .INTERMEDIATE: manpage_footer.html
 MOSTLYCLEANFILES += manpage_footer.html
 EXTRA_DIST += ../docs/manpage.css
+
+# == man.1.html (markdown) ==
 %.1.html: %.1.revd.md manpage_header.html manpage_footer.html ../docs/manpage.css
+	$(AM_V_GEN)
+	$(Q) $(PANDOC) -s -t html -S --toc -H $(topdir)/docs/manpage.css -B manpage_header.html -A manpage_footer.html $< -o $@
+# == man.5.html (markdown) ==
+%.5.html: %.5.revd.md manpage_header.html manpage_footer.html ../docs/manpage.css
 	$(AM_V_GEN)
 	$(Q) $(PANDOC) -s -t html -S --toc -H $(topdir)/docs/manpage.css -B manpage_header.html -A manpage_footer.html $< -o $@
 
@@ -178,3 +190,9 @@ revisioned_files	+= beast.1.md
 man1_MANS		+= beast.1
 man1_HTMLS		+= beast.1.html
 MOSTLYCLEANFILES	+= beast.1 beast.1.html
+
+# == bse.5 ==
+revisioned_files	+= bse.5.md
+man5_MANS		+= bse.5
+man5_HTMLS		+= bse.5.html
+MOSTLYCLEANFILES	+= bse.5 bse.5.html
