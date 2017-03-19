@@ -10,6 +10,6 @@
   h1				{ font-size: 1.30em; }
   h1, h2, h3, h4, h5, h6	{ font-style: italic; }
   h1.title { font-style: normal; text-decoration: underline; }
-  #TOC ul			{ list-style-type: none; margin-left: 0; padding-left: 0; }
+  #TOC > ul			{ margin-left: 0; padding-left: 1.5em; }
   #TOC				{  margin-bottom: 3p; border-bottom: 1px solid #555; }
 </style>
