@@ -101,8 +101,7 @@ docs_sed_project_link = -e 's;<div id="projectname">((\w|[+_/~*%^-])+);<div id="
 CLEANFILES += ../docs/error.log
 doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(AM_V_GEN)
-	$(Q) test -z "$(man1_HTMLS)" || { $(MKDIR_P) doxy/html/man1/ && cp $(man1_HTMLS) doxy/html/man1/ ; }
-	$(Q) test -z "$(man5_HTMLS)" || { $(MKDIR_P) doxy/html/man5/ && cp $(man5_HTMLS) doxy/html/man5/ ; }
+	$(Q) test -z "$(man1_HTMLS)$(man5_HTMLS)" || { $(MKDIR_P) doxy/html/man/ && cp $(man1_HTMLS) $(man5_HTMLS) doxy/html/man/ ; }
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
 # == install docs/doxy/html ==
