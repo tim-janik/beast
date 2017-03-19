@@ -5,6 +5,7 @@ SUBDIRS = imports images
 
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
+topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
 
 # == Extra Tarball Files ==
 EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
@@ -121,3 +122,35 @@ clean-docs:
 	rm -Rf doxy/
 .PHONY: clean-docs
 clean-local: clean-docs
+
+
+# == revisioned_files ==
+revisioned_files         = # files that need @FILE_REVISION@ substitution, see revisions.lst
+man1_MANS =
+MOSTLYCLEANFILES =
+
+# == revisions.lst ==
+noinst_DATA += revisions.lst
+EXTRA_DIST  += revisions.lst $(revisioned_files)
+revisions.lst: @INGIT@ $(revisioned_files) Makefile
+	$(AM_V_GEN)
+	$(Q) rm -f $@.tmplst
+	$(Q) for file in $(revisioned_files) ; do \
+	  git log --format="%ai $$file" -n 99 -- $$file > $@.tmp1 && \
+	  sort -rn $@.tmp1 > $@.tmp2 && \
+	  sed -n '1{ p; q}' $@.tmp2 >> $@.tmplst || exit $$? ; \
+	done
+	$(Q) mv $@.tmplst $@
+	$(Q) rm -f $@.tmp1 $@.tmp2 $@.tmplst
+clean-revisions.lst: # git is required to rebuild revisions.lst, so conditionalize cleaning
+	! git rev-parse --git-dir 2>/dev/null 1>&2 || rm -f revisions.lst
+.PHONY: clean-revisions.lst
+clean-local: clean-revisions.lst
+
+
+# == .revd.md (INTERMEDIATE) ==
+%.revd.md: %.md revisions.lst
+	$(AM_V_GEN)
+	$(Q) V=`sed -n '\| $<$$|{ s/ .*//; p; q; }' revisions.lst` \
+	&& sed "s/[@]FILE_REVISION[@]/$$V/g; s/[@]BUILDID[@]/$(topbuildid)/g" < $< > $@
+
