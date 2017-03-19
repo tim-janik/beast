@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-MANMANS	    = beast.1 bse.5 bsescm.1 bsewavetool.1 sfidl.1
+MANMANS	    = bse.5 bsescm.1 bsewavetool.1 sfidl.1
 HTMLMANS    = beast.1.html bse.5.html bsescm.1.html bsewavetool.1.html sfidl.1.html
 EXTRA_DIST += $(MANMANS)
 # HTMLMANS are packaged as part of the doxygen docs

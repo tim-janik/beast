@@ -154,3 +154,13 @@ clean-local: clean-revisions.lst
 	$(Q) V=`sed -n '\| $<$$|{ s/ .*//; p; q; }' revisions.lst` \
 	&& sed "s/[@]FILE_REVISION[@]/$$V/g; s/[@]BUILDID[@]/$(topbuildid)/g" < $< > $@
 
+# == man.1 (markdown) ==
+%.1: %.1.revd.md
+	$(AM_V_GEN)
+	$(Q) $(PANDOC) -s -t man $< -o $@
+
+
+# == beast.1 ==
+revisioned_files	+= beast.1.md
+man1_MANS		+= beast.1
+MOSTLYCLEANFILES	+= beast.1
