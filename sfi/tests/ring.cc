@@ -3,6 +3,8 @@
 #include <sfi/sfitests.hh>
 #include <sfi/sfi.hh>
 
+using namespace Bse;
+
 static void
 print_ring_ints (SfiRing *ring)
 {

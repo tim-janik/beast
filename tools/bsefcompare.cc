@@ -18,6 +18,8 @@
 #include <utility>
 #include <algorithm>
 
+using namespace Bse;
+
 using namespace std;
 
 struct Options {

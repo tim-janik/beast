@@ -2,7 +2,7 @@
 #include	"bsemididevice-null.hh"
 #include	"bseserver.hh"
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-null", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("midi-null", __VA_ARGS__)
 
 /* --- structs --- */
 typedef struct

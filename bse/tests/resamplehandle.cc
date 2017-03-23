@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 
+using namespace Bse;
+
 using std::vector;
 using std::string;
 using std::max;

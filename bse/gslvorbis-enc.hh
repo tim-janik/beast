@@ -56,7 +56,7 @@ gboolean          gsl_vorbis_encoder_ogg_eos            (GslVorbisEncoder       
 void              gsl_vorbis_encoder_destroy            (GslVorbisEncoder       *self);
 
 /* retrive vendor version string */
-String            gsl_vorbis_encoder_version            ();
+std::string       gsl_vorbis_encoder_version            ();
 
 
 #endif /* __GSL_VORBIS_ENC_H__ */

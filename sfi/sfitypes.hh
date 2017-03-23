@@ -2,7 +2,7 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <sfi/glib-extra.hh>
+#include <sfi/bcore.hh>
 #include <sfi/sfiwrapper.hh>
 
 /* --- Sfi typedefs --- */

@@ -113,7 +113,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   BseObjectClass *object_class = BSE_OBJECT_CLASS (ladspa_module_class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (ladspa_module_class);
   BseLadspaInfo *bli = ladspa_module_class->bli;
-  uint ochannel, ichannel, i;
+  uint ochannel, ichannel;
 
   assert (ladspa_module_class->bli != NULL &&
 	    gobject_class->set_property == NULL &&
@@ -122,7 +122,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   gobject_class->set_property = ladspa_derived_set_property;
   gobject_class->get_property = ladspa_derived_get_property;
 
-  for (i = 0; i < bli->n_cports; i++)
+  for (size_t i = 0; i < bli->n_cports; i++)
     {
       BseLadspaPort *port = bli->cports + i;
       GParamSpec *pspec, *pspec2 = NULL;
@@ -215,7 +215,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
     }
 
-  for (i = 0; i < bli->n_aports; i++)
+  for (size_t i = 0; i < bli->n_aports; i++)
     {
       BseLadspaPort *port = bli->aports + i;
       if (port->input)

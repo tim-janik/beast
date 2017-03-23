@@ -13,7 +13,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-file", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("midi-file", __VA_ARGS__)
 
 typedef struct {
   uint32       type;   /* four letter chunk identifier */

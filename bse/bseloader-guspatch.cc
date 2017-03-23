@@ -8,7 +8,7 @@
 
 #undef  WITH_GUSPATCH_XINFOS
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("gus-loader", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("gus-loader", __VA_ARGS__)
 
 using std::vector;
 using std::string;

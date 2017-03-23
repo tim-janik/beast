@@ -595,14 +595,14 @@ item_link_resolved (gpointer     data,
 }
 
 /// Retrive the value of @a field.key through aux_vector_find() and convert the value to @a ValueType.
-template<typename ValueType = String> ValueType
-aux_vector_get (const std::vector<String> &auxvector, const String &field, const String &key, const String &fallback = "")
+template<typename ValueType = std::string> ValueType
+aux_vector_get (const std::vector<std::string> &auxvector, const std::string &field, const std::string &key, const std::string &fallback = "")
 {
   return Rapicorn::string_to_type<ValueType> (Rapicorn::Aida::aux_vector_find (auxvector, field, key, fallback));
 }
 
 static bool
-any_set_from_string (BseStorage *self, Any &any, const String &string)
+any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
 {
   using namespace Rapicorn;
   switch (any.kind())
@@ -631,13 +631,13 @@ any_set_from_string (BseStorage *self, Any &any, const String &string)
           any.set_enum (einfo, v);
         break;
       }
-    default:                    fatal ("unhandled Any: %s; string=%s", any.repr(), string);
+    default:                    Bse::fatal ("unhandled Any: %s; string=%s", any.repr(), string);
     }
   return true;
 }
 
 static GTokenType
-scanner_parse_paren_rest (GScanner *scanner, String *result)
+scanner_parse_paren_rest (GScanner *scanner, std::string *result)
 {
   // configure scanner to pass through most characters, so we can delay parsing
   const GScannerConfig saved_config = *scanner->config;
@@ -654,7 +654,7 @@ scanner_parse_paren_rest (GScanner *scanner, String *result)
   scanner->config->char_2_token = false;
   GTokenType expected_token = G_TOKEN_NONE, token = g_scanner_get_next_token (scanner);
   uint level = 1; // need one ')' to terminate
-  String rest;
+  std::string rest;
   while (token && expected_token == G_TOKEN_NONE)
     {
       if (token == G_TOKEN_CHAR)
@@ -702,7 +702,7 @@ scanner_parse_paren_rest (GScanner *scanner, String *result)
 }
 
 static GTokenType
-storage_parse_property_value (BseStorage *self, const String &name, Any &any, const std::vector<std::string> &aux_data)
+storage_parse_property_value (BseStorage *self, const std::string &name, Bse::Any &any, const std::vector<std::string> &aux_data)
 {
   using namespace Rapicorn;
   assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
@@ -1141,7 +1141,7 @@ bse_storage_warn_str (BseStorage *self, const std::string &string)
   if (self->rstore)
     sfi_rstore_warn (self->rstore, string);
   else
-    printerr ("BseStorage: while storing: %s", string.c_str());
+    Bse::printerr ("BseStorage: while storing: %s", string.c_str());
 }
 
 GTokenType
@@ -1161,7 +1161,7 @@ bse_storage_error_str (BseStorage *self, const std::string &string)
   if (self->rstore)
     sfi_rstore_error (self->rstore, string);
   else
-    printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
+    Bse::printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
 }
 
 static void
@@ -1231,7 +1231,7 @@ store_item_properties (BseItem    *item,
 }
 
 static void
-storage_store_property_value (BseStorage *self, const String &property_name, Any any, const std::vector<std::string> &aux_data)
+storage_store_property_value (BseStorage *self, const std::string &property_name, Bse::Any any, const std::vector<std::string> &aux_data)
 {
   using namespace Rapicorn;
   if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
@@ -1274,8 +1274,8 @@ static void
 store_cxx_item_properties (BseItem *bitem, BseStorage *self)
 {
   Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
-  const std::vector<String> auxvector = item->__aida_aux_data__();
-  for (const String &pname : item->__aida_dir__())
+  const std::vector<std::string> auxvector = item->__aida_aux_data__();
+  for (const std::string &pname : item->__aida_dir__())
     if (Rapicorn::Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
       storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
 }

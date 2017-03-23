@@ -195,7 +195,7 @@ gsl_byte_order_from_string (const gchar *string)
 }
 
 Bse::Error
-gsl_file_check (const String &file_name, const String &mode)
+gsl_file_check (const std::string &file_name, const std::string &mode)
 {
   if (Rapicorn::Path::check (file_name, mode))
     return Bse::Error::NONE;
@@ -363,7 +363,7 @@ gsl_progress_wipe (GslProgressState *pstate)
       memset (wstr, ' ', pstate->wipe_length);
       wstr[pstate->wipe_length] = '\r';
       wstr[pstate->wipe_length + 1] = 0;
-      printerr ("%s", wstr);
+      Bse::printerr ("%s", wstr);
       g_free (wstr);
       pstate->wipe_length = 0;
     }
@@ -387,7 +387,7 @@ gsl_progress_printerr (gpointer          message,
                          detail ? detail : "",
                          detail ? ")" : "");
   l = strlen (str);
-  printerr ("%s            \r", str);
+  Bse::printerr ("%s            \r", str);
   g_free (str);
   return l;
 }

@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <sfi/glib-extra.hh>
 #include "bstgrowbar.hh"
 #include "bstdefs.hh"
 #include <gtk/gtkhbox.h>
@@ -8,6 +7,7 @@
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkvscrollbar.h>
 #include <gxk/gxkutils.hh>
+
 
 
 /* --- prototypes --- */

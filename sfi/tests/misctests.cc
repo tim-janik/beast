@@ -8,6 +8,8 @@
 #include <signal.h>	/* G_BREAKPOINT() */
 #include <math.h>
 
+using namespace Bse;
+
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
   sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)

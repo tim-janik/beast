@@ -263,7 +263,7 @@ bse_wave_load_wave_file (BseWave      *self,
 
   if (!g_path_is_absolute (file_name))	  /* resolve relative path using search dir */
     {
-      String sample_path;
+      std::string sample_path;
       SfiRing *files, *walk;
       if (bse_main_args->override_sample_path)
 	sample_path = bse_main_args->override_sample_path;
@@ -629,10 +629,10 @@ bse_wave_restore_private (BseObject  *object,
       if (expected_token == G_TOKEN_NONE && parsed_wchunk.data_handle)
 	{
 	  if (0)
-	    printerr ("restore-wave-chunk: nch=%u of=%f mf=%f dh=%p\n",
-                        parsed_wchunk.wh_n_channels,
-                        parsed_wchunk.wh_osc_freq, parsed_wchunk.wh_mix_freq,
-                        parsed_wchunk.data_handle);
+	    Bse::printerr ("restore-wave-chunk: nch=%u of=%f mf=%f dh=%p\n",
+                           parsed_wchunk.wh_n_channels,
+                           parsed_wchunk.wh_osc_freq, parsed_wchunk.wh_mix_freq,
+                           parsed_wchunk.data_handle);
           if (parsed_wchunk.data_handle && parsed_wchunk.xinfos)
             {
               GslDataHandle *tmp_handle = parsed_wchunk.data_handle;

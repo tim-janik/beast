@@ -2,7 +2,6 @@
 #ifndef __BST_UTILS_H__
 #define __BST_UTILS_H__
 #include "bstbseutils.hh"
-#include <gtk/gtk.h>
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */

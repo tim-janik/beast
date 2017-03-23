@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+using namespace Bse;
+
 using std::string;
 using std::vector;
 using std::set;

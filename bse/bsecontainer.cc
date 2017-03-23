@@ -243,10 +243,10 @@ bse_container_add_item (BseContainer *container,
             uname += 3;                 /* strip Bse namespace for convenient naming */
         }
 
-      String next_name;
+      std::string next_name;
       uint i = 0;
       do
-        next_name = string_format ("%s-%u", uname, ++i);
+        next_name = Bse::string_format ("%s-%u", uname, ++i);
       while (bse_container_lookup_item (container, next_name.c_str()));
 
       g_object_set (item, "uname", next_name.c_str(), NULL); /* no undo */

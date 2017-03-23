@@ -8,7 +8,7 @@
 #include "bsesource.hh"		/* debug hack */
 #include <string.h>
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("leaks", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
 
 namespace Bse {
 ObjectImpl::ObjectImpl (BseObject *bobj) :
@@ -51,7 +51,7 @@ ObjectImpl::changed (const String &what)
 void
 objects_debug_leaks ()
 {
-  if (Bse::bse_debug_enabled ("leaks"))
+  if (Bse::debug_enabled ("leaks"))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       for (list = objects; list; list = list->next)

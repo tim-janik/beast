@@ -5,7 +5,7 @@
 #include "gslfft.hh"
 #include <string.h>
 
-#define ODEBUG(...)     BSE_KEY_DEBUG ("osc", __VA_ARGS__)
+#define ODEBUG(...)     Bse::debug ("osc", __VA_ARGS__)
 
 #define	OSC_FREQ_EPSILON	(1e-3)	/* range within which frequencies are "equal" */
 /* compare mfreqs against each other, use an arbitrary sample rate

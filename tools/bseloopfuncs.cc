@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <math.h>
 
+using namespace Bse;
+
 typedef struct {
   gdouble score;
   GslLong loop_start;

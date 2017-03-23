@@ -7,7 +7,7 @@
 #include "ladspa.hh"
 using namespace Rapicorn;
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("ladspa", __VA_ARGS__)
+#define LDEBUG(...)     Bse::debug ("ladspa", __VA_ARGS__)
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"
 

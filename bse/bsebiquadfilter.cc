@@ -4,7 +4,7 @@
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 
-#define FDEBUG(...)     BSE_KEY_DEBUG ("biquadfilter", __VA_ARGS__)
+#define FDEBUG(...)     Bse::debug ("biquadfilter", __VA_ARGS__)
 
 #define FREQ_DELTA      0.1
 /* --- parameters --- */

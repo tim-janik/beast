@@ -642,21 +642,21 @@ param_score_editor (const GxkParamEditor *editor,
     }
 
   if (annotate)
-    printerr ("  %s(%s): fundamental=%s derived=%s%s%s editing=%s bonus=%+d%s%s: ",
-                editor->ident.name, editor->ident.nick,
-                g_type_name (editor->type_match.type),
-                editor->type_match.type_name ? editor->type_match.type_name : "<any>",
-                editor->type_match.all_int_nums ? "(all-ints)" : "",
-                editor->type_match.all_float_nums ? "(all-floats)" : "",
-                editor->features.editing ? "yes" : "no",
-                editor->features.rating,
-                editor->features.options ? " options=" : "",
-                editor->features.options ? editor->features.options : "");
+    gxk_printerr ("  %s(%s): fundamental=%s derived=%s%s%s editing=%s bonus=%+d%s%s: ",
+                  editor->ident.name, editor->ident.nick,
+                  g_type_name (editor->type_match.type),
+                  editor->type_match.type_name ? editor->type_match.type_name : "<any>",
+                  editor->type_match.all_int_nums ? "(all-ints)" : "",
+                  editor->type_match.all_float_nums ? "(all-floats)" : "",
+                  editor->features.editing ? "yes" : "no",
+                  editor->features.rating,
+                  editor->features.options ? " options=" : "",
+                  editor->features.options ? editor->features.options : "");
 
   if (type_mismatch || option_mismatch) /* bail out on mismatches */
     {
       if (annotate)
-        printerr ("%s mismatch\n", type_mismatch ? "type" : "option");
+        gxk_printerr ("%s mismatch\n", type_mismatch ? "type" : "option");
       return 0;
     }
 
@@ -674,7 +674,7 @@ param_score_editor (const GxkParamEditor *editor,
   rating += bonus;      /* bonus is provided for overcomming additional mismatch possibilities */
 
   if (annotate)
-    printerr ("%d\n", rating);
+    gxk_printerr ("%d\n", rating);
   return rating;
 }
 
@@ -732,12 +732,12 @@ gxk_param_editor_debug_score (GParamSpec *pspec)
   GSList *slist;
   assert_return (G_IS_PARAM_SPEC (pspec));
   const gchar *options = g_param_spec_get_options (pspec);
-  printerr ("GxkParamEditor: rating for pspec: name=%s fundamental=%s type=%s options=%s nick=\"%s\" blurb=\"%s\"\n",
-              pspec->name,
-              g_type_name (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec))),
-              g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-              options ? options : "",
-              g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec));
+  gxk_printerr ("GxkParamEditor: rating for pspec: name=%s fundamental=%s type=%s options=%s nick=\"%s\" blurb=\"%s\"\n",
+                pspec->name,
+                g_type_name (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec))),
+                g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                options ? options : "",
+                g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec));
   for (slist = _param_editor_list; slist; slist = slist->next)
     {
       GxkParamEditor *editor = (GxkParamEditor*) slist->data;

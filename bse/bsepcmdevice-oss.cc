@@ -29,7 +29,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("pcm", __VA_ARGS__)
 
 /* --- OSS PCM handle --- */
 typedef struct

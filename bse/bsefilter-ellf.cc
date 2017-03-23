@@ -51,10 +51,10 @@ typedef struct {
 #define ellf_outputf(...)       printout (__VA_ARGS__)
 #define ellf_inputf(...)        printout (__VA_ARGS__)
 #else
-#define error_printf(...)       while (0) { printerr (__VA_ARGS__); }
-#define ellf_debugf(...)        while (0) { printerr (__VA_ARGS__); }
-#define ellf_outputf(...)       while (0) { printout (__VA_ARGS__); }
-#define ellf_inputf(...)        while (0) { printout (__VA_ARGS__); }
+#define error_printf(...)       while (0) { Bse::printerr (__VA_ARGS__); }
+#define ellf_debugf(...)        while (0) { Bse::printerr (__VA_ARGS__); }
+#define ellf_outputf(...)       while (0) { Bse::printout (__VA_ARGS__); }
+#define ellf_inputf(...)        while (0) { Bse::printout (__VA_ARGS__); }
 #endif
 
 static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,

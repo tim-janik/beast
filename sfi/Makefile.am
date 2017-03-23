@@ -6,6 +6,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RET
 AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip \
+	bcore.hh	\
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
 	glib-extra.hh			sfiwrapper.hh	 \
 	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
@@ -17,6 +18,7 @@ sfi_public_headers = $(strip \
 	gbsearcharray.hh \
 )
 sfi_all_sources = $(strip \
+	bcore.cc	\
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
@@ -42,7 +44,7 @@ noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
 libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
 libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
-libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
 
 #
@@ -52,7 +54,7 @@ libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
 
 bin_PROGRAMS   = sfidl
 sfidl_SOURCES  = sfidl.cc
-sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DRAPICORN_CONVENIENCE
+sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 sfidl_LDADD    = $(LIBBSE_LIBS)
 # included files
 EXTRA_DIST += sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc

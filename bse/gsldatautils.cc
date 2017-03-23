@@ -426,8 +426,8 @@ gsl_data_detect_signal (GslDataHandle *handle,
        */
     }
   if (xcheck - minsamp > 0)
-    printerr("###################");
-  printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
+    Bse::printerr("###################");
+  Bse::printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
 
   /* release open reference */
   gsl_data_handle_close (handle);
@@ -615,7 +615,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	    {
 	      start = offset + l;
 	      end = offset + l + lsize - 1;
-	      printout ("\nimproved: %f < %f: [0x%llx..0x%llx] (%llu)\n", score, best_score, start, end, lsize);
+	      Bse::printout ("\nimproved: %f < %f: [0x%llx..0x%llx] (%llu)\n", score, best_score, start, end, lsize);
 	      best_score = score;
 	    }
 	  else
@@ -626,12 +626,12 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	  pcount = 100;
 	  pval = lsize - lspec->min_loop;
 	  pbound = (lspec->max_loop - lspec->min_loop + 1.);
-	  printout ("\rprocessed: %f%%                  \r", pval / pbound);
+	  Bse::printout ("\rprocessed: %f%%                  \r", pval / pbound);
 	}
     }
   gsl_data_handle_close (shandle);
 
-  printout ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
+  Bse::printout ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
 
   *loop_start_p = start;
   *loop_end_p = end;

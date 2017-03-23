@@ -2,8 +2,8 @@
 #ifndef __GXK_GLOBALS_H__
 #define __GXK_GLOBALS_H__
 
-#include <sfi/glib-extra.hh>
 #include <gtk/gtk.h>
+#include <sfi/bcore.hh>
 
 /* --- i18n and gettext helpers --- */
 #ifdef GXK_COMPILATION
@@ -15,8 +15,10 @@
 
 
 /* --- macros --- */
-#define	GXK_TOOLTIPS	(gxk_globals->tooltips)
-
+#define	GXK_TOOLTIPS	        (gxk_globals->tooltips)
+#define gxk_printout(...)       Bse::printerr (__VA_ARGS__)
+#define gxk_printerr(...)       Bse::printerr (__VA_ARGS__)
+#define gxk_warning(...)        Bse::printerr ("Gxk: warning: %s\n", Bse::string_format (__VA_ARGS__))
 
 /* --- typedefs & structures --- */
 typedef void (*GxkFreeFunc) (gpointer data);

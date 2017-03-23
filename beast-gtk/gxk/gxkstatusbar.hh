@@ -33,7 +33,7 @@ void       gxk_status_enable_error_bell         (gboolean        enable_error_be
 void	   gxk_status_set			(gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
-#define    gxk_status_printf(percentage, status_msg, ...)       gxk_status_set (percentage, status_msg, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define    gxk_status_printf(percentage, status_msg, ...)       gxk_status_set (percentage, status_msg, Bse::string_format (__VA_ARGS__).c_str())
 void	   gxk_status_clear			(void);
 void	   gxk_status_window_push		(gpointer        widget);
 void	   gxk_status_window_pop		(void);

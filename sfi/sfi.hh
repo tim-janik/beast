@@ -4,19 +4,11 @@
 
 
 // == Rapicorn Imports ==
-#include <rapicorn-core.hh>     // We move to Rapicorn core for low level stuff
-using Rapicorn::printerr;
-using Rapicorn::printout;
-using Rapicorn::string_format;
-using Rapicorn::Any;
-typedef std::string String;
+#include <sfi/sfiwrapper.hh>    // Introduces bcore.hh and Rapicorn
 
 namespace Sfi {
 using namespace Rapicorn;
 } // Sfi
-namespace Bse {
-using namespace Rapicorn;
-} // Bse
 
 /* no bin-compat: #include <sfi/sficomwire.hh> */
 #include <sfi/sficomport.hh>
@@ -38,7 +30,6 @@ using namespace Rapicorn;
 #include <sfi/sfivalues.hh>
 #include <sfi/sfivisitors.hh>
 #include <sfi/sfivmarshal.hh>
-#include <sfi/sfiwrapper.hh>
 
 #endif /* __SFI_H__ */
 

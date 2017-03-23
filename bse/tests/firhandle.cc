@@ -10,8 +10,9 @@
 #include <complex>
 #include <vector>
 
+using namespace Bse;
+
 using namespace Rapicorn::Test;
-using Rapicorn::string_format;
 using std::vector;
 using std::min;
 using std::max;

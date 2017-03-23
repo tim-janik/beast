@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+using namespace Bse;
+
 static gint
 help (gchar *arg)
 {

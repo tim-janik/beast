@@ -70,7 +70,7 @@ main (int   argc,
       sfi_com_port_set_close_func (bse_scm_port, port_closed, NULL);
       if (!bse_scm_port->connected)
 	{
-	  printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
+	  Bse::printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
 	  exit (BSE_EXIT_STATUS);
 	}
       bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
@@ -190,7 +190,7 @@ shell_parse_args (int *argc_p, char **argv)
 	  argv[i] = NULL;
 	  if (bse_scm_pipe[0] < 2 || bse_scm_pipe[1] < 2)
 	    {
-	      printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
+	      Bse::printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
 	      exit (BSE_EXIT_STATUS);
 	    }
 	}
@@ -205,7 +205,7 @@ shell_parse_args (int *argc_p, char **argv)
 	  argv[i] = NULL;
 	  if (!bse_scm_eval_expr)
 	    {
-	      printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
+	      Bse::printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
 	      exit (BSE_EXIT_STATUS);
 	    }
 	}
@@ -265,19 +265,19 @@ shell_parse_args (int *argc_p, char **argv)
       else if (strcmp ("-v", argv[i]) == 0 ||
                strcmp ("--version", argv[i]) == 0)
         {
-          printout ("BSESCM version %s\n", BST_VERSION);
-          printout ("Libraries: ");
-          printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-          printout (", SFI %s", BST_VERSION);
-          printout (", BSE %s", BST_VERSION);
-          printout (", Guile %u.%u.%u", SCM_MAJOR_VERSION, SCM_MINOR_VERSION, SCM_MICRO_VERSION);
-          printout ("\n");
-          printout ("Compiled for: %s\n", BST_ARCH_NAME);
-          printout ("BSESCM comes with ABSOLUTELY NO WARRANTY.\n");
-          printout ("You may redistribute copies of BSESCM under the terms of\n");
-          printout ("the GNU Lesser General Public License which can be found in\n");
-          printout ("the BEAST source package. Sources, examples and contact\n");
-          printout ("information are available at http://beast.testbit.eu/.\n");
+          Bse::printout ("BSESCM version %s\n", BST_VERSION);
+          Bse::printout ("Libraries: ");
+          Bse::printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
+          Bse::printout (", SFI %s", BST_VERSION);
+          Bse::printout (", BSE %s", BST_VERSION);
+          Bse::printout (", Guile %u.%u.%u", SCM_MAJOR_VERSION, SCM_MINOR_VERSION, SCM_MICRO_VERSION);
+          Bse::printout ("\n");
+          Bse::printout ("Compiled for: %s\n", BST_ARCH_NAME);
+          Bse::printout ("BSESCM comes with ABSOLUTELY NO WARRANTY.\n");
+          Bse::printout ("You may redistribute copies of BSESCM under the terms of\n");
+          Bse::printout ("the GNU Lesser General Public License which can be found in\n");
+          Bse::printout ("the BEAST source package. Sources, examples and contact\n");
+          Bse::printout ("information are available at http://beast.testbit.eu/.\n");
           exit (0);
         }
     }
@@ -300,47 +300,47 @@ shell_parse_args (int *argc_p, char **argv)
 static void
 shell_print_usage (void)
 {
-  printout ("Usage: bsescm [options] [files...]\n");
-  printout ("Play BSE files and evaluate Scheme code, interactively or from a script.\n");
-  printout ("  -h, --help              show this help message\n");
-  printout ("  -v, --version           print version and exit\n");
-  printout ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper bsescm)\n");
-  printout ("  -N                      disable renicing\n");
-  printout ("  --bse-pipe INFD OUTFD   remote operation filedescriptors\n");
-  printout ("  --bse-eval STRING       execute (eval-string STRING) and exit\n");
-  printout ("  --bse-enable-register   allow registration of BSE procedures\n");
-  printout ("  --bse-no-load           prevent automated plugin and script registration\n");
-  printout ("  --bse-no-play           prevent detection of BSE file command line arguments\n");
-  printout ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
-  printout ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");
-  printout ("  --bse-control-freq=FREQ specify control frequency in Hz\n");
-  printout ("  --bse-pcm-driver DRIVERCONF\n");
-  printout ("  -p DRIVERCONF           try to use the PCM driver DRIVERCONF, multiple\n");
-  printout ("                          options may be supplied to try a variety of\n");
-  printout ("                          drivers, unless -p auto is given, only the\n");
-  printout ("                          drivers listed by -p options are used; each\n");
-  printout ("                          DRIVERCONF consists of a driver name and an\n");
-  printout ("                          optional comma seperated list of arguments,\n");
-  printout ("                          e.g.: -p oss=/dev/dsp2,rw\n");
-  printout ("  --bse-midi-driver DRIVERCONF\n");
-  printout ("  -m DRIVERCONF           try to use the MIDI driver DRIVERCONF, multiple\n");
-  printout ("                          options may be specified similarly to the\n");
-  printout ("                          option handling for --bse-pcm-driver\n");
-  printout ("  --bse-driver-list       list available PCM and MIDI drivers\n");
-  printout ("Guile Options:\n");
-  printout ("  -s SCRIPT               load Scheme source code from FILE, and exit\n");
-  printout ("  -c EXPR                 evalute Scheme expression EXPR, and exit\n");
-  printout ("  --                      stop scanning arguments; run interactively\n");
-  printout ("The above switches stop argument processing, and pass all\n");
-  printout ("remaining arguments as the value of (command-line).\n");
-  printout ("  -l FILE                 load Scheme source code from FILE\n");
-  printout ("  -e FUNCTION             after reading script, apply FUNCTION to\n");
-  printout ("                          command line arguments\n");
-  printout ("  -ds                     do -s script at this point\n");
-  printout ("  --debug                 start with debugging evaluator and backtraces\n");
-  printout ("  -q                      inhibit loading of user init file\n");
-  printout ("  --emacs                 enable Emacs protocol (experimental)\n");
-  printout ("  --use-srfi=LS           load SRFI modules for the SRFIs in LS,\n");
-  printout ("                          which is a list of numbers like \"2,13,14\"\n");
-  printout ("  \\                       read arguments from following script lines\n");
+  Bse::printout ("Usage: bsescm [options] [files...]\n");
+  Bse::printout ("Play BSE files and evaluate Scheme code, interactively or from a script.\n");
+  Bse::printout ("  -h, --help              show this help message\n");
+  Bse::printout ("  -v, --version           print version and exit\n");
+  Bse::printout ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper bsescm)\n");
+  Bse::printout ("  -N                      disable renicing\n");
+  Bse::printout ("  --bse-pipe INFD OUTFD   remote operation filedescriptors\n");
+  Bse::printout ("  --bse-eval STRING       execute (eval-string STRING) and exit\n");
+  Bse::printout ("  --bse-enable-register   allow registration of BSE procedures\n");
+  Bse::printout ("  --bse-no-load           prevent automated plugin and script registration\n");
+  Bse::printout ("  --bse-no-play           prevent detection of BSE file command line arguments\n");
+  Bse::printout ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
+  Bse::printout ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");
+  Bse::printout ("  --bse-control-freq=FREQ specify control frequency in Hz\n");
+  Bse::printout ("  --bse-pcm-driver DRIVERCONF\n");
+  Bse::printout ("  -p DRIVERCONF           try to use the PCM driver DRIVERCONF, multiple\n");
+  Bse::printout ("                          options may be supplied to try a variety of\n");
+  Bse::printout ("                          drivers, unless -p auto is given, only the\n");
+  Bse::printout ("                          drivers listed by -p options are used; each\n");
+  Bse::printout ("                          DRIVERCONF consists of a driver name and an\n");
+  Bse::printout ("                          optional comma seperated list of arguments,\n");
+  Bse::printout ("                          e.g.: -p oss=/dev/dsp2,rw\n");
+  Bse::printout ("  --bse-midi-driver DRIVERCONF\n");
+  Bse::printout ("  -m DRIVERCONF           try to use the MIDI driver DRIVERCONF, multiple\n");
+  Bse::printout ("                          options may be specified similarly to the\n");
+  Bse::printout ("                          option handling for --bse-pcm-driver\n");
+  Bse::printout ("  --bse-driver-list       list available PCM and MIDI drivers\n");
+  Bse::printout ("Guile Options:\n");
+  Bse::printout ("  -s SCRIPT               load Scheme source code from FILE, and exit\n");
+  Bse::printout ("  -c EXPR                 evalute Scheme expression EXPR, and exit\n");
+  Bse::printout ("  --                      stop scanning arguments; run interactively\n");
+  Bse::printout ("The above switches stop argument processing, and pass all\n");
+  Bse::printout ("remaining arguments as the value of (command-line).\n");
+  Bse::printout ("  -l FILE                 load Scheme source code from FILE\n");
+  Bse::printout ("  -e FUNCTION             after reading script, apply FUNCTION to\n");
+  Bse::printout ("                          command line arguments\n");
+  Bse::printout ("  -ds                     do -s script at this point\n");
+  Bse::printout ("  --debug                 start with debugging evaluator and backtraces\n");
+  Bse::printout ("  -q                      inhibit loading of user init file\n");
+  Bse::printout ("  --emacs                 enable Emacs protocol (experimental)\n");
+  Bse::printout ("  --use-srfi=LS           load SRFI modules for the SRFIs in LS,\n");
+  Bse::printout ("                          which is a list of numbers like \"2,13,14\"\n");
+  Bse::printout ("  \\                       read arguments from following script lines\n");
 }

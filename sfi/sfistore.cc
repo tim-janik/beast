@@ -329,7 +329,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       while (foff < 0 && errno == EINTR);
       if (foff < 0 && errno)
         return -errno;
-      std::string str = string_format ("0x%08x 0x%08x", guint32 (bblock->offset - binary_offset), guint32 (bblock->length));
+      std::string str = Bse::string_format ("0x%08x 0x%08x", guint32 (bblock->offset - binary_offset), guint32 (bblock->length));
       do
 	l = write (fd, str.data(), str.size());
       while (l < 0 && errno == EINTR);

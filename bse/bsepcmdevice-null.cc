@@ -4,7 +4,7 @@
 #include "bseengine.hh"
 #include <string.h>
 
-#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm", __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("pcm", __VA_ARGS__)
 
 typedef struct
 {

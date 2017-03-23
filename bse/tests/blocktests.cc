@@ -3,6 +3,8 @@
 #include <sfi/sfitests.hh>
 #include <bse/bsemain.hh>
 
+using namespace Bse;
+
 template<typename T> static bool
 block_check (guint    n,
              const T *block,

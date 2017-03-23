@@ -15,7 +15,7 @@
 #include <string.h>
 #include <vector>
 
-#define SDEBUG(...)     BSE_KEY_DEBUG ("sequencer", __VA_ARGS__)
+#define SDEBUG(...)     Bse::debug ("sequencer", __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 

@@ -2,8 +2,8 @@
 #include "bseengineschedule.hh"
 #include "bseengineutils.hh"
 
-#define SCHED_DEBUG(...) BSE_KEY_DEBUG ("sched", __VA_ARGS__)
-#define CHECK_DEBUG()    Bse::bse_debug_enabled ("sched")
+#define SCHED_DEBUG(...) Bse::debug ("sched", __VA_ARGS__)
+#define CHECK_DEBUG()    Bse::debug_enabled ("sched")
 
 /* --- prototypes --- */
 static void	schedule_node		(EngineSchedule	*schedule,
@@ -98,37 +98,37 @@ unschedule_cycle (EngineSchedule *sched,
 static void
 _engine_schedule_debug_dump (EngineSchedule *sched)
 {
-  printerr ("sched(%p) = {\n", sched);
+  Bse::printerr ("sched(%p) = {\n", sched);
   if (sched)
     {
       guint i;
 
-      printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
-		  sched->n_items, sfi_ring_length (sched->vnodes), sched->leaf_levels, sched->secured);
-      printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
-		  sched->in_pqueue, sched->cur_leaf_level);
-      printerr ("  cur_node=%p, cur_cycle=%p,\n",
-		  sched->cur_node, sched->cur_cycle);
+      Bse::printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
+                     sched->n_items, sfi_ring_length (sched->vnodes), sched->leaf_levels, sched->secured);
+      Bse::printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
+                     sched->in_pqueue, sched->cur_leaf_level);
+      Bse::printerr ("  cur_node=%p, cur_cycle=%p,\n",
+                     sched->cur_node, sched->cur_cycle);
       for (i = 0; i < sched->leaf_levels; i++)
 	{
 	  SfiRing *ring, *head = sched->nodes[i];
 
 	  if (!head)
 	    continue;
-	  printerr ("  { leaf_level=%u:", i);
+	  Bse::printerr ("  { leaf_level=%u:", i);
 	  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
-	    printerr (" node(%p(i:%u,s:%u))", ring->data,
-			((EngineNode*) ring->data)->integrated,
-			((EngineNode*) ring->data)->sched_tag);
-	  printerr (" },\n");
+	    Bse::printerr (" node(%p(i:%u,s:%u))", ring->data,
+                           ((EngineNode*) ring->data)->integrated,
+                           ((EngineNode*) ring->data)->sched_tag);
+	  Bse::printerr (" },\n");
 	}
       SfiRing *ring;
-      printerr ("  { vnodes:");
+      Bse::printerr ("  { vnodes:");
       for (ring = sched->vnodes; ring; ring = sfi_ring_walk (ring, sched->vnodes))
-        printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
-      printerr (" },\n");
+        Bse::printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
+      Bse::printerr (" },\n");
     }
-  printerr ("};\n");
+  Bse::printerr ("};\n");
 }
 
 

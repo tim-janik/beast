@@ -15,8 +15,8 @@ namespace {
 using namespace Bse;
 using namespace std;
 
-#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-receiver", __VA_ARGS__)
-#define EDEBUG(...)     BSE_KEY_DEBUG ("midi-events", __VA_ARGS__)
+#define MDEBUG(...)     Bse::debug ("midi-receiver", __VA_ARGS__)
+#define EDEBUG(...)     Bse::debug ("midi-events", __VA_ARGS__)
 
 /* --- variables --- */
 static Bse::Mutex global_midi_mutex;

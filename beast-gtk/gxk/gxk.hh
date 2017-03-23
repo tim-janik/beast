@@ -2,8 +2,8 @@
 #ifndef __GXK_H__
 #define __GXK_H__
 
-#include <sfi/glib-extra.hh>
 #include <gtk/gtk.h>
+#include <sfi/bcore.hh>
 
 #include <gxk/glewidgets.h>
 #include <gxk/gxkaction.hh>

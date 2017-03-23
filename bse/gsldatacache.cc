@@ -414,8 +414,8 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
 
   rejuvenate = dcache->max_age - max_lru;
   if (0)
-    printout ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
-              dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
+    Bse::printout ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
+                   dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
   size = dcache->node_size + (dcache->padding << 1);
   slot_p = NULL;
   for (i = 0; i < dcache->n_nodes; i++)
@@ -451,10 +451,10 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
       global_dcache_spinlock.unlock();
     }
   if (0)
-    printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
-		n_freed, n_freed * CONFIG_NODE_SIZE (),
-		global_dcache_n_aged_nodes * CONFIG_NODE_SIZE (),
-		dcache->n_nodes);
+    Bse::printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
+                   n_freed, n_freed * CONFIG_NODE_SIZE (),
+                   global_dcache_n_aged_nodes * CONFIG_NODE_SIZE (),
+                   dcache->n_nodes);
   return FALSE;
 }
 void
@@ -523,11 +523,11 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
             }
 #if DEBUG_TRASHING
           if (dcache->dhandle->open_count)
-            printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
-                        dcache->dhandle, gsl_data_handle_name (dcache->dhandle),
-                        dcache->high_persistency,
-                        -(gint) node_size * (debug_gnaged - global_dcache_n_aged_nodes),
-                        node_size * dcache->n_nodes);
+            Bse::printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
+                           dcache->dhandle, gsl_data_handle_name (dcache->dhandle),
+                           dcache->high_persistency,
+                           -(gint) node_size * (debug_gnaged - global_dcache_n_aged_nodes),
+                           node_size * dcache->n_nodes);
 #endif
 	  if (needs_unlock)
 	    dcache->mutex.unlock();

@@ -18,7 +18,7 @@
 #include "bsecxxplugin.hh"
 #include <string.h>
 
-#define XREF_DEBUG(...) BSE_KEY_DEBUG ("xref", __VA_ARGS__)
+#define XREF_DEBUG(...) Bse::debug ("xref", __VA_ARGS__)
 
 #define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return		bse_storage_scanner_parse_or_return

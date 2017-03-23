@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define CDEBUG(...)     BSE_KEY_DEBUG ("comport", __VA_ARGS__)
+#define CDEBUG(...)     Bse::debug ("comport", __VA_ARGS__)
 
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
@@ -453,13 +453,13 @@ com_port_read_pending (SfiComPort *port)
 		  port->rbuffer.header[2] != ((SFI_COM_PORT_MAGIC >> 8) & 0xff) ||
 		  port->rbuffer.header[3] != (SFI_COM_PORT_MAGIC & 0xff))
 		{
-		  printerr ("ComPort:%s: received data with invalid magic", port->ident);
+		  Bse::printerr ("ComPort:%s: received data with invalid magic", port->ident);
 		  return FALSE;
 		}
 	      /* check length */
 	      if (port->rbuffer.dlen < 1 || port->rbuffer.dlen > 10 * 1024 * 1024)
 		{
-		  printerr ("ComPort:%s: received data with excessive length", port->ident);
+		  Bse::printerr ("ComPort:%s: received data with excessive length", port->ident);
 		  return FALSE;
 		}
 	    }
@@ -497,7 +497,7 @@ com_port_scanner_msg (GScanner *scanner,
 		      gboolean  error)
 {
   SfiComPort *port = (SfiComPort*) scanner->user_data;
-  printerr ("ComPort:%s: while processing data: %s", port->ident, message);
+  Bse::printerr ("ComPort:%s: while processing data: %s", port->ident, message);
 }
 
 static void
