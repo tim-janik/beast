@@ -5,6 +5,7 @@ SUBDIRS = images
 
 MOSTLYCLEANFILES =
 man1_MANS =
+man1_HTMLS =
 man5_MANS =
 man5_HTMLS =
 
@@ -15,14 +16,16 @@ topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
 # == Extra Tarball Files ==
 EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
 
-# == Collect Doc Sources ==
-sfi_doc_sources	  ::= $(shell make doc_sources.lst -C ../sfi >&2 && cat ../sfi/doc_sources.lst)
-bse_doc_sources	  ::= $(shell make doc_sources.lst -C ../bse >&2 && cat ../bse/doc_sources.lst)
-plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../plugins/doc_sources.lst)
-gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
-bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
-tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
-man1_HTMLS          =
+# == Collect Doxygen Sources ==
+# The following variable definitions create files as a side effect, which should be
+# avoided e.g. upon 'make clean'. So we confine the assignments to a rule execution.
+collect_docs_doxy_sources:
+	$(eval sfi_doc_sources	 ::= $(shell make doc_sources.lst -C ../sfi >&2 && cat ../sfi/doc_sources.lst) )
+	$(eval bse_doc_sources	 ::= $(shell make doc_sources.lst -C ../bse >&2 && cat ../bse/doc_sources.lst) )
+	$(eval plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../plugins/doc_sources.lst) )
+	$(eval gxk_doc_sources	 ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst) )
+	$(eval bst_doc_sources	 ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst) )
+	$(eval tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst) )
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
@@ -46,7 +49,7 @@ EXTRA_DIST	   += $(patsubst %, ../%, $(docs_doxy_extra))
 DOXYGEN_GRAPHICS  ?= NO # YES
 
 # == docs/srctree ==
-doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_doxygen_tagbzs))
+doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_doxygen_tagbzs)) | collect_docs_doxy_sources
 	$(AM_V_GEN)
 	$(Q) rm -Rf doxy/src doxy/src.tmp
 	$(Q) mkdir -p $(docs_doxy_src_dirs:%=doxy/src.tmp/%)
