@@ -22,7 +22,7 @@ plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../p
 gxk_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst)
 bst_doc_sources	  ::= $(shell make doc_sources.lst -C ../beast-gtk >&2 && cat ../beast-gtk/doc_sources.lst)
 tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst)
-man1_HTMLS          = imports/sfidl.1.html
+man1_HTMLS          =
 
 # == Configure docs ==
 docs_project_link   = http://beast.testbit.eu
@@ -207,3 +207,9 @@ revisioned_files	+= bsescm.1.md
 man1_MANS		+= bsescm.1
 man1_HTMLS		+= bsescm.1.html
 MOSTLYCLEANFILES	+= bsescm.1 bsescm.1.html
+
+# == sfidl.1 ==
+revisioned_files	+= sfidl.1.md
+man1_MANS		+= sfidl.1
+man1_HTMLS		+= sfidl.1.html
+MOSTLYCLEANFILES	+= sfidl.1 sfidl.1.html

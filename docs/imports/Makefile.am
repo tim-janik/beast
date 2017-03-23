@@ -1,8 +1,8 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-MANMANS	    = sfidl.1
-HTMLMANS    = sfidl.1.html
+MANMANS	    =
+HTMLMANS    =
 EXTRA_DIST += $(MANMANS)
 # HTMLMANS are packaged as part of the doxygen docs
 
