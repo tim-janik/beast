@@ -7,13 +7,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-/* --- prototypes --- */
+
+// == prototypes ==
 static void	   bse_pcm_writer_init			(BsePcmWriter      *pdev);
 static void	   bse_pcm_writer_class_init		(BsePcmWriterClass *klass);
 static void	   bse_pcm_writer_finalize		(GObject           *object);
-/* --- variables --- */
+
+// == variables ==
+static std::atomic<uint64> atomic_trigger_tick {-uint64 (1)};
 static gpointer parent_class = NULL;
-/* --- functions --- */
+
+// == functions ==
 BSE_BUILTIN_TYPE (BsePcmWriter)
 {
   static const GTypeInfo pcm_writer_info = {
@@ -77,6 +81,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
   self->mutex.lock();
   self->n_bytes = 0;
   self->recorded_maximum = recorded_maximum;
+  self->start_tick = atomic_trigger_tick;
   fd = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd < 0)
     {
@@ -119,16 +124,27 @@ bsethread_halt_recording (gpointer data)
 }
 
 void
-bse_pcm_writer_write (BsePcmWriter *self,
-		      gsize         n_values,
-		      const gfloat *values)
+bse_pcm_writer_write (BsePcmWriter *self, size_t n_values, const float *values, uint64 start_stamp)
 {
   assert_return (BSE_IS_PCM_WRITER (self));
   assert_return (self->open);
-  if (n_values)
-    assert_return (values != NULL);
-  else
-    return;
+  return_unless (n_values);
+  assert_return (values != NULL);
+  if (UNLIKELY (start_stamp + n_values <= self->start_tick))
+    {
+      self->mutex.lock();
+      self->start_tick = atomic_trigger_tick;
+      self->mutex.unlock();
+      if (start_stamp + n_values <= self->start_tick)
+        return; // writer not yet activated
+    }
+  if (self->start_tick > start_stamp)
+    {
+      const uint64 delta = self->start_tick - start_stamp;
+      n_values -= delta;
+      values += delta;
+      start_stamp += delta;
+    }
   self->mutex.lock();
   const uint bw = 2; /* 16bit */
   if (!self->broken && (!self->recorded_maximum || self->n_bytes < bw * self->recorded_maximum))
@@ -169,5 +185,17 @@ PcmWriterImpl::PcmWriterImpl (BseObject *bobj) :
 
 PcmWriterImpl::~PcmWriterImpl ()
 {}
+
+void
+PcmWriterImpl::trigger_tick (uint64 start_tick)
+{
+  /* FIXME: workaround for the lack of per-project engine instantiations.
+   * There really should be a single engine instance per-project, and a
+   * single pcm-writer instance per engine (if any). Then trigger_tick()
+   * becomes a method on the per-project pcm-writer instead of a static
+   * function that only works for WAV capturing of a single instance.
+   */
+  atomic_trigger_tick = start_tick;
+}
 
 } // Bse

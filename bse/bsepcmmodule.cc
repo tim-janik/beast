@@ -93,7 +93,8 @@ bse_pcm_omodule_process (BseModule *module,
 
   bse_pcm_handle_write (mdata->handle, mdata->n_values, mdata->buffer);
   if (mdata->pcm_writer)
-    bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer);
+    bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer,
+                          bse_module_tick_stamp (module));
 }
 
 static void

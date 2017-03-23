@@ -69,7 +69,7 @@
       (0x00a80 pitch-bend 0.1935484)
       (0x00b40 pitch-bend -0.03225806)))
   (container-child "BseTrack::Track-01"
-    (n-voices 16)
+    (n-voices 32)
     (snet (link 2 "SynthDrum"))
     (insert-part 0 (link 1 "Beat"))
     (insert-part 3072 (link 1 "Beat"))
