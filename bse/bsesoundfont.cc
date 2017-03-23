@@ -82,16 +82,16 @@ bse_sound_font_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static String
-use_searchpath (String file_name)
+static std::string
+use_searchpath (std::string file_name)
 {
   /* abolute path: do nothing */
   if (g_path_is_absolute (file_name.c_str()))
     return file_name;
 
   /* resolve relative path using search dir */
-  String sample_path;
-  String found_file;
+  std::string sample_path;
+  std::string found_file;
   SfiRing *files, *walk;
   if (bse_main_args->override_sample_path)
     sample_path = bse_main_args->override_sample_path;

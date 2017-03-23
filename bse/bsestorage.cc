@@ -1817,10 +1817,10 @@ BseStorage::Blob::~Blob()
   bse_id_free (id_);
 }
 
-static String
+static std::string
 bse_storage_blob_tmp_dir()
 {
-  String dirname = Rapicorn::Path::join (Rapicorn::Path::cache_home(), "libbse");
+  std::string dirname = Rapicorn::Path::join (Rapicorn::Path::cache_home(), "libbse");
   if (!Rapicorn::Path::check (dirname, "d"))
     g_mkdir_with_parents (dirname.c_str(), 0755);
   return dirname;
@@ -1832,7 +1832,7 @@ bse_storage_blob_tmp_dir()
 void
 bse_storage_blob_clean_files()
 {
-  String tmp_dir = bse_storage_blob_tmp_dir();
+  std::string tmp_dir = bse_storage_blob_tmp_dir();
 
   GError *error;
   GDir *dir = g_dir_open (tmp_dir.c_str(), 0, &error);
@@ -1942,11 +1942,11 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  String file_name = string_format ("%s/bse-storage-blob-%s-%u", bse_storage_blob_tmp_dir(), g_get_user_name(), getpid());
+  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%s-%u", bse_storage_blob_tmp_dir(), g_get_user_name(), getpid());
 
   // add enough randomness to ensure that collisions will not happen
   for (int i = 0; i < 5; i++)
-    file_name += string_format ("-%08x", g_random_int());
+    file_name += Bse::string_format ("-%08x", g_random_int());
 
   blob_out = nullptr; /* on error, the resulting blob should be NULL */
 
