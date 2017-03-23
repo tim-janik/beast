@@ -2061,91 +2061,89 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
       BseTrans *trans = bse_trans_open ();
       MidiChannel *mchannel = self->peek_channel (event->channel);
       self->events = sfi_ring_remove_node (self->events, self->events);
-
-      bool event_handled = false;
-      if (mchannel)
-	event_handled = mchannel->call_event_handlers (event, trans);
-
-      if (!event_handled)
-	{
-	  switch (event->status)
-	    {
-	    case BSE_MIDI_NOTE_ON:
-	      EDEBUG ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
-                      event->data.note.frequency, event->data.note.velocity, event->delta_time);
-	      if (mchannel)
-		mchannel->start_note (event->delta_time,
-				      event->data.note.frequency,
-				      event->data.note.velocity,
-				      trans);
-	      else
-		sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
-	      break;
-	    case BSE_MIDI_KEY_PRESSURE:
-	    case BSE_MIDI_NOTE_OFF:
-	      EDEBUG ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
-                      event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-                      event->data.note.frequency, event->delta_time);
-	      if (mchannel)
-		{
-		  gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
-					    (BSE_GCONFIG (invert_sustain) ^
-					     (self->get_control (event->channel, Bse::MidiSignal::CONTROL_64) >= 0.5));
-		  mchannel->adjust_note (event->delta_time,
-					 event->data.note.frequency, event->status,
-					 event->data.note.velocity, sustained_note, trans);
-		}
-	      break;
-	    case BSE_MIDI_CONTROL_CHANGE:
-	      EDEBUG ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
-                      event->data.control.control, event->data.control.value, event->delta_time);
-	      process_midi_control_L (self, event->channel, event->delta_time,
-				      event->data.control.control, event->data.control.value,
-				      FALSE,
-				      trans);
-	      break;
-	    case BSE_MIDI_X_CONTINUOUS_CHANGE:
-	      EDEBUG ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
-                      event->data.control.control, event->data.control.value, event->delta_time);
-	      process_midi_control_L (self, event->channel, event->delta_time,
-				      event->data.control.control, event->data.control.value,
-				      TRUE,
-				      trans);
-	      break;
-	    case BSE_MIDI_PROGRAM_CHANGE:
-	      EDEBUG ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
-                      event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
-	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    Bse::MidiSignal::PROGRAM, event->data.program / (gfloat) 0x7f,
-				    trans);
-	      break;
-	    case BSE_MIDI_CHANNEL_PRESSURE:
-	      EDEBUG ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
-                      event->data.intensity, event->delta_time);
-	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    Bse::MidiSignal::PRESSURE, event->data.intensity,
-				    trans);
-	      break;
-	    case BSE_MIDI_PITCH_BEND:
-	      EDEBUG ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
-                      event->data.pitch_bend, event->delta_time);
-	      update_midi_signal_L (self, event->channel, event->delta_time,
-				    Bse::MidiSignal::PITCH_BEND, event->data.pitch_bend,
-				    trans);
-	      break;
-	    default:
-	      EDEBUG ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
-                      event->status, event->delta_time);
-	      break;
-	    }
-	}
+      uint event_status = event->status;
+      if (mchannel && mchannel->call_event_handlers (event, trans))
+        event_status = 0; // already handled
+      switch (event_status)
+        {
+        case 0:
+          // already handled by call_event_handlers()
+          break;
+        case BSE_MIDI_NOTE_ON:
+          EDEBUG ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
+                  event->data.note.frequency, event->data.note.velocity, event->delta_time);
+          if (mchannel)
+            mchannel->start_note (event->delta_time,
+                                  event->data.note.frequency,
+                                  event->data.note.velocity,
+                                  trans);
+          else
+            sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
+          break;
+        case BSE_MIDI_KEY_PRESSURE:
+        case BSE_MIDI_NOTE_OFF:
+          EDEBUG ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
+                  event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
+                  event->data.note.frequency, event->delta_time);
+          if (mchannel)
+            {
+              gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
+                                        (BSE_GCONFIG (invert_sustain) ^
+                                         (self->get_control (event->channel, Bse::MidiSignal::CONTROL_64) >= 0.5));
+              mchannel->adjust_note (event->delta_time,
+                                     event->data.note.frequency, event->status,
+                                     event->data.note.velocity, sustained_note, trans);
+            }
+          break;
+        case BSE_MIDI_CONTROL_CHANGE:
+          EDEBUG ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
+                  event->data.control.control, event->data.control.value, event->delta_time);
+          process_midi_control_L (self, event->channel, event->delta_time,
+                                  event->data.control.control, event->data.control.value,
+                                  FALSE,
+                                  trans);
+          break;
+        case BSE_MIDI_X_CONTINUOUS_CHANGE:
+          EDEBUG ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
+                  event->data.control.control, event->data.control.value, event->delta_time);
+          process_midi_control_L (self, event->channel, event->delta_time,
+                                  event->data.control.control, event->data.control.value,
+                                  TRUE,
+                                  trans);
+          break;
+        case BSE_MIDI_PROGRAM_CHANGE:
+          EDEBUG ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
+                  event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
+          update_midi_signal_L (self, event->channel, event->delta_time,
+                                Bse::MidiSignal::PROGRAM, event->data.program / (gfloat) 0x7f,
+                                trans);
+          break;
+        case BSE_MIDI_CHANNEL_PRESSURE:
+          EDEBUG ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
+                  event->data.intensity, event->delta_time);
+          update_midi_signal_L (self, event->channel, event->delta_time,
+                                Bse::MidiSignal::PRESSURE, event->data.intensity,
+                                trans);
+          break;
+        case BSE_MIDI_PITCH_BEND:
+          EDEBUG ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
+                  event->data.pitch_bend, event->delta_time);
+          update_midi_signal_L (self, event->channel, event->delta_time,
+                                Bse::MidiSignal::PITCH_BEND, event->data.pitch_bend,
+                                trans);
+          break;
+        default:
+          EDEBUG ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
+                  event->status, event->delta_time);
+          break;
+        }
       if (self->notifier)
-	{
-	  self->notifier_events = sfi_ring_append (self->notifier_events, event);
-	  need_wakeup = TRUE;
-	}
+        {
+          self->notifier_events = sfi_ring_append (self->notifier_events, event);
+          need_wakeup = TRUE;
+        }
       else
-	bse_midi_free_event (event);
+        bse_midi_free_event (event);
       bse_trans_commit (trans);
     }
   else
