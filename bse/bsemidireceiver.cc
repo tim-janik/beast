@@ -212,6 +212,31 @@ struct ControlValue {
   }
 };
 
+struct EventHandler
+{
+  guint               midi_channel;
+  BseMidiEventHandler handler_func;
+  gpointer            handler_data;
+  BseModule          *module;
+
+  EventHandler (guint               midi_channel,
+                BseMidiEventHandler handler_func,
+                gpointer            handler_data,
+                BseModule          *module) :
+    midi_channel (midi_channel),
+    handler_func (handler_func),
+    handler_data (handler_data),
+    module (module)
+  {
+  }
+  bool operator == (const EventHandler& other)
+  {
+    return (midi_channel == other.midi_channel &&
+            handler_func == other.handler_func &&
+            handler_data == other.handler_data &&
+            module       == other.module);
+  }
+};
 
 /* --- voice prototypes --- */
 typedef struct VoiceSwitch          VoiceSwitch;
@@ -227,6 +252,7 @@ struct MidiChannel {
   guint           n_voices;
   VoiceSwitch   **voices;
   VoiceInputTable voice_input_table;
+  std::vector<EventHandler> event_handlers;
   MidiChannel (guint mc) :
     midi_channel (mc),
     poly_enabled (0)
@@ -246,6 +272,21 @@ struct MidiChannel {
     if (poly_enabled)
       poly_enabled--;
   }
+  void
+  add_event_handler (const EventHandler& handler)
+  {
+    event_handlers.push_back (handler);
+  }
+  void
+  remove_event_handler (const EventHandler& handler)
+  {
+    vector<EventHandler>::iterator hi = find (event_handlers.begin(), event_handlers.end(), handler);
+    g_return_if_fail (hi != event_handlers.end());
+    event_handlers.erase (hi);
+  }
+  bool
+  call_event_handlers (BseMidiEvent *event,
+                       BseTrans     *trans);
   ~MidiChannel()
   {
     if (vinput)
@@ -425,6 +466,24 @@ public:
   {
     ControlValue *cv = get_control_value (midi_channel, signal_type);
     cv->remove_handler (handler_func, handler_data, module);
+  }
+  void
+  add_event_handler (guint              midi_channel,
+		     BseMidiEventHandler handler_func,
+		     gpointer           handler_data,
+		     BseModule         *module)
+  {
+    MidiChannel *channel = get_channel (midi_channel);
+    channel->add_event_handler (EventHandler (midi_channel, handler_func, handler_data, module));
+  }
+  void
+  remove_event_handler (guint              midi_channel,
+			BseMidiEventHandler handler_func,
+			gpointer           handler_data,
+			BseModule         *module)
+  {
+    MidiChannel *channel = get_channel (midi_channel);
+    channel->remove_event_handler (EventHandler (midi_channel, handler_func, handler_data, module));
   }
 };
 
@@ -1032,6 +1091,34 @@ MidiChannel::no_poly_voice (bool noteon, const char *event_name, float freq)
     }
 }
 
+bool
+MidiChannel::call_event_handlers (BseMidiEvent *event,
+                                  BseTrans     *trans)
+{
+  bool success = false;
+  for (vector<EventHandler>::const_iterator hi = event_handlers.begin(); hi != event_handlers.end(); hi++)
+    {
+      int activated = 0;
+      for (guint i = 0; i < n_voices; i++)
+	{
+	  if (voices[i] && voices[i]->n_vinputs)
+	    {
+	      if (check_voice_switch_available_L (voices[i]))
+		{
+		  activated++;
+		  VoiceSwitch *vswitch = voices[i];
+		  activate_voice_switch_L (vswitch, event->delta_time, trans);
+		}
+	    }
+	}
+      if (!(activated <= 1))
+	g_warning (G_STRLOC ": midi event handling: assertion (activated <= 1) failed, activated = %d", activated);
+      hi->handler_func (hi->handler_data, hi->module, event, trans);
+      success = true;
+    }
+  return success;
+}
+
 void
 MidiChannel::start_note (guint64         tick_stamp,
                          gfloat          freq,
@@ -1499,6 +1586,40 @@ bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
 }
 
 void
+bse_midi_receiver_add_event_handler (BseMidiReceiver   *self,
+                                     guint              midi_channel,
+                                     BseMidiEventHandler handler_func,
+                                     gpointer           handler_data,
+                                     BseModule         *module)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  g_return_if_fail (handler_func != NULL);
+  g_return_if_fail (module != NULL);
+
+  BSE_MIDI_RECEIVER_LOCK ();
+  self->add_event_handler (midi_channel, handler_func, handler_data, module);
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
+bse_midi_receiver_remove_event_handler (BseMidiReceiver   *self,
+                                        guint              midi_channel,
+                                        BseMidiEventHandler handler_func,
+                                        gpointer           handler_data,
+                                        BseModule         *module)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  g_return_if_fail (handler_func != NULL);
+  g_return_if_fail (module != NULL);
+
+  BSE_MIDI_RECEIVER_LOCK ();
+  self->remove_event_handler (midi_channel, handler_func, handler_data, module);
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
 bse_midi_receiver_channel_enable_poly (BseMidiReceiver *self,
                                        guint            midi_channel)
 {
@@ -1953,12 +2074,17 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
   if (event->delta_time <= max_tick_stamp)
     {
       BseTrans *trans = bse_trans_open ();
+      MidiChannel *mchannel = self->peek_channel (event->channel);
       self->events = sfi_ring_remove_node (self->events, self->events);
-      switch (event->status)
+      uint event_status = event->status;
+      if (mchannel && mchannel->call_event_handlers (event, trans))
+        event_status = 0; // already handled
+      switch (event_status)
         {
-          MidiChannel *mchannel;
+        case 0:
+          // already handled by call_event_handlers()
+          break;
         case BSE_MIDI_NOTE_ON:
-          mchannel = self->peek_channel (event->channel);
           EDUMP ("MidiChannel[%u]: NoteOn  %fHz Velo=%f channel=%s (stamp:%llu)", event->channel,
                  event->data.note.frequency, event->data.note.velocity, mchannel ? string_from_int (event->channel) : "<unknown>", event->delta_time);
           if (mchannel)

@@ -4,6 +4,7 @@
 
 #include "bstutils.hh"
 #include "bstwaveview.hh"
+#include "bstsoundfontview.hh"
 
 
 /* --- Gtk+ type macros --- */
@@ -27,6 +28,7 @@ struct _BstTrackSynthDialog
   GtkNotebook   *notebook;
   GtkWidget     *wpage;         /* wave repo item view */
   GtkWidget     *spage;         /* synth list */
+  GtkWidget     *sfont_page;    /* sound font patch selection */
   GtkWidget     *ok;            /* ok button */
   GtkWindow     *parent_window;
   guint          ignore_activate : 1;
@@ -52,13 +54,16 @@ GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_
                                             const gchar                 *wrepo_label,
                                             const gchar                 *wrepo_tooltip,
                                             SfiProxy                     wrepo,
+                                            const gchar                 *sfrepo_label,
+                                            const gchar                 *sfrepo_tooltip,
+                                            SfiProxy                     sfrepo,
                                             BstTrackSynthDialogSelected  selected_callback,
                                             gpointer                     selected_data,
                                             GxkFreeFunc                  selected_cleanup);
 void       bst_track_synth_dialog_set      (BstTrackSynthDialog         *self,
                                             BseIt3mSeq                  *iseq,
-                                            SfiProxy                     wrepo);
-
+                                            SfiProxy                     wrepo,
+					    SfiProxy			 sfrepo);
 
 
 #endif /* __BST_TRACK_SYNTH_DIALOG_H__ */

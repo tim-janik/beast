@@ -40,6 +40,7 @@ beast-gtk/bstprojectctrl.cc
 beast-gtk/bstsampleeditor.cc
 beast-gtk/bstscrollgraph.cc
 beast-gtk/bstsnetrouter.cc
+beast-gtk/bstsoundfontview.cc
 beast-gtk/bstsupershell.cc
 beast-gtk/bsttrackrollctrl.cc
 beast-gtk/bsttracksynthdialog.cc
@@ -85,6 +86,7 @@ bse/bsepcmoutput.cc
 bse/bseserver.cc
 bse/bsesnooper.cc
 bse/bsesong.cc
+bse/bsesoundfontosc.cc
 bse/bsesource.proc
 bse/bsestandardosc.cc
 bse/bsesubiport.cc

@@ -917,6 +917,8 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 #include "bsemidinotifier.hh"
 #include "bsemidisynth.hh"
 #include "bsewaverepo.hh"
+#include "bsesoundfont.hh"
+#include "bsesoundfontrepo.hh"
 #include "bsebus.hh"
 #include "bsesnet.hh"
 #include "bsepart.hh"
@@ -947,6 +949,10 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::WaveImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_WAVE_REPO))
     cxxo = new Bse::WaveRepoImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SOUND_FONT))
+    cxxo = new Bse::SoundFontImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SOUND_FONT_REPO))
+    cxxo = new Bse::SoundFontRepoImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_MIDI_NOTIFIER))
     cxxo = new Bse::MidiNotifierImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_MIDI_SYNTH))

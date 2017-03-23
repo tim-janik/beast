@@ -63,9 +63,33 @@ struct BseStorage : BseObject {
   gfloat                 mix_freq;
   gfloat                 osc_freq;
   guint                  n_channels;
+
+  /* storage blob */
+  class Blob {
+    std::string file_name_;
+    bool        is_temp_file_;
+    gulong      id_;
+
+  public:
+    bool        is_temp_file() const  { return is_temp_file_; }
+    std::string file_name() const     { return file_name_; }
+    gulong      id() const            { return id_; }
+
+    Blob (const std::string& file_name, bool is_temp_file);
+    ~Blob();
+  };
+
+  typedef std::shared_ptr<Blob> BlobP;
+
+  /* C++ allocated data */
+  struct Data {
+    std::vector<BlobP> blobs;
+  } data;
 };
 struct BseStorageClass : BseObjectClass
 {};
+
+typedef struct BseStorage::Blob BseStorageBlob;
 
 /* --- compatibility file parsing --- */
 void         bse_storage_compat_dhreset         (BseStorage             *self);
@@ -114,6 +138,8 @@ void         bse_storage_put_item_link          (BseStorage             *self,
 void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  guint                   significant_bits,
                                                  GslDataHandle          *dhandle);
+void         bse_storage_put_blob               (BseStorage             *self,
+                                                 BseStorage::BlobP       blob);
 void         bse_storage_put_xinfos             (BseStorage             *self,
                                                  gchar                 **xinfos);
 Bse::Error bse_storage_flush_fd               (BseStorage             *self,
@@ -155,8 +181,13 @@ GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  gpointer                context_data,
                                                  BseTryStatement         try_statement,
                                                  gpointer                user_data);
+GTokenType   bse_storage_parse_blob             (BseStorage             *self,
+                                                 BseStorage::BlobP      &blob);
 gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
+/* --- bse storage blob --- */
+
+void              bse_storage_blob_clean_files       (void);
 
 /* --- short-hands --- */
 #define bse_storage_get_scanner(s)      ((s)->rstore->scanner)

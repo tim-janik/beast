@@ -55,6 +55,7 @@ BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 						 GType		 item_type,
 						 const gchar	*uname);
 BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
+BseSoundFontRepo* bse_project_get_sound_font_repo (BseProject   *project);
 BseSong*	bse_project_get_song    	(BseProject	*project);
 BseSNet*	bse_project_create_intern_synth	(BseProject	*project,
 						 const gchar	*synth_name,
@@ -99,6 +100,7 @@ public:
   virtual Error              store_bse           (SuperIface &super, const String &file_name, bool self_contained) override;
   virtual SongIfaceP         create_song         (const String &name) override;
   virtual WaveRepoIfaceP     get_wave_repo       () override;
+  virtual SoundFontRepoIfaceP get_sound_font_repo () override;
   virtual CSynthIfaceP       create_csynth       (const String &name) override;
   virtual MidiSynthIfaceP    create_midi_synth   (const String &name) override;
   virtual MidiNotifierIfaceP get_midi_notifier   () override;

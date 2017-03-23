@@ -11,6 +11,7 @@ RESOURCES = $(strip 		\
 	adsr-wave-2.bse		\
 	plain-wave-1.bse	\
 	plain-wave-2.bse	\
+        sound-font-snet.bse     \
 )
 
 gen_sources = xgen-bzc xgen-bzh

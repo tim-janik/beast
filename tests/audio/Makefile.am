@@ -178,6 +178,9 @@ artscompressor-test:
 # required wave files for sample based tests *-wave-[12]-test.bse
 EXTRA_DIST += pseudo-saw.bsewave pseudo-square-env.bsewave pseudo-stereo.bsewave pseudo-stereo-env.bsewave
 
+# required soundfonts
+EXTRA_DIST += minfluid.sf2 minfluid.sf2.LICENSE
+
 # a test for play-type=adsr-wave-1
 FEATURE_TESTS += adsr-wave-1-test
 EXTRA_DIST += adsr-wave-1-test.bse adsr-wave-1-test.ref
@@ -220,6 +223,17 @@ plain-wave-2-test:
 	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
 	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
 	$(Q) $(BSEFCOMPARE) $(srcdir)/plain-wave-2-test.ref $(@F).tmp --threshold 99.99
+	$(Q) rm -f $(@F).tmp $(@F).wav
+
+# a test for soundfont loading|rendering
+FEATURE_TESTS += soundfont-test
+EXTRA_DIST += soundfont-test.bse soundfont-test.ref
+soundfont-test:
+	@$(AM_V_P) || echo "  WAVCHECK" $@;
+	$(Q) $(BSE2WAV) $(srcdir)/soundfont-test.bse $(@F).wav
+	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
+	$(Q) $(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
+	$(Q) $(BSEFCOMPARE) $(srcdir)/soundfont-test.ref $(@F).tmp --threshold 99.99
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 # the BEAST demo song

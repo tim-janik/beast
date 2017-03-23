@@ -5,6 +5,7 @@
 #include "bstmenus.hh"
 #include "bsttrackview.hh"
 #include "bstwaveview.hh"
+#include "bstsoundfontview.hh"
 #include "bstpartview.hh"
 #include "bstbusmixer.hh"
 #include "bstbuseditor.hh"
@@ -15,6 +16,7 @@
 #include "bstgrowbar.hh"
 #include "bstdbmeter.hh"
 #include "bstscrollgraph.hh"
+
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -95,6 +97,7 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_HGROW_BAR);
   gxk_radget_define_widget_type (BST_TYPE_VGROW_BAR);
   gxk_radget_define_widget_type (BST_TYPE_WAVE_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_SOUND_FONT_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_PART_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_BUS_EDITOR);
   gxk_radget_define_widget_type (BST_TYPE_BUS_MIXER);

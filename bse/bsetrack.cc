@@ -15,7 +15,11 @@
 #include "bsemidivoice.hh"
 #include "bsemidireceiver.hh"
 #include "bsewaverepo.hh"
+#include "bsesoundfontrepo.hh"
+#include "bsesoundfontpreset.hh"
+#include "bsesoundfont.hh"
 #include "bsecxxplugin.hh"
+
 #include <string.h>
 
 #define XREF_DEBUG(...) Bse::debug ("xref", __VA_ARGS__)
@@ -29,6 +33,7 @@ enum {
   PROP_MUTED,
   PROP_SNET,
   PROP_WAVE,
+  PROP_SOUND_FONT_PRESET,
   PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
   PROP_PNET,
@@ -103,6 +108,9 @@ bse_track_init (BseTrack *self)
   BSE_OBJECT_SET_FLAGS (self, BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->snet = NULL;
   self->pnet = NULL;
+  self->sound_font_preset = NULL;
+  self->wave = NULL;
+  self->wnet = NULL;
   self->max_voices = 16;
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
@@ -270,6 +278,12 @@ bse_track_get_candidates (BseItem               *item,
 	  bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
       break;
+    case PROP_SOUND_FONT_PRESET:
+      bse_property_candidate_relabel (pc, _("Sound Fonts"), _("List of available sound font presets to choose as track instrument"));
+      project = bse_item_get_project (item);
+      if (project)
+	bse_sound_font_repo_list_all_presets (bse_project_get_sound_font_repo (project), pc->items);
+      break;
     case PROP_SNET:
       bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
       bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
@@ -328,6 +342,7 @@ set_amp_master_volume (BseSNet *snet, const char *amp_name, gchar **xinfos)
       g_object_set (amp, "master-volume", volume, NULL);
     }
 }
+
 static void
 set_adsr_params (BseSNet *snet, const char *adsr_name, gchar **xinfos)
 {
@@ -344,6 +359,15 @@ set_adsr_params (BseSNet *snet, const char *adsr_name, gchar **xinfos)
       g_object_set (adsr, "attack_time", g_ascii_strtod (adsr_attack_time, NULL), NULL);
     }
 }
+
+static void
+track_uncross_sound_font_preset (BseItem *owner,
+                                 BseItem *ref_item)
+{
+  BseTrack *self = BSE_TRACK (owner);
+  bse_item_set (self, "sound-font-preset", NULL, NULL);
+}
+
 static void
 create_wnet (BseTrack *self,
 	     BseWave  *wave)
@@ -404,7 +428,30 @@ create_wnet (BseTrack *self,
 }
 
 static void
-clear_snet_and_wave (BseTrack *self)
+create_sound_font_net (BseTrack           *self,
+                       BseSoundFontPreset *preset)
+{
+  g_return_if_fail (self->sound_font_net == NULL);
+
+  self->sound_font_net =  bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
+							   "sound-font-snet",
+							   BSE_TYPE_SNET);
+
+  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->sound_font_net), track_uncross_sound_font_preset);
+
+  if (self->sub_synth)
+    {
+      g_object_set (self->sub_synth, /* no undo */
+		    "snet", self->sound_font_net,
+		    NULL);
+    }
+
+  g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->sound_font_net), "sound-font-osc"), /* no undo */
+		"preset", preset,
+		NULL);
+}
+static void
+clear_snet_and_wave_and_sfpreset (BseTrack *self)
 {
   assert_return (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
 
@@ -433,6 +480,20 @@ clear_snet_and_wave (BseTrack *self)
       self->wnet = NULL;
       bse_container_remove_item (BSE_CONTAINER (bse_item_get_project (BSE_ITEM (self))), BSE_ITEM (wnet));
     }
+  if (self->sound_font_preset)
+    {
+      bse_object_unproxy_notifies (self->sound_font_preset, self, "changed");
+      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
+      self->sound_font_preset = NULL;
+      g_object_notify ((GObject *) self, "sound_font_preset");
+    }
+  if (self->sound_font_net)
+    {
+      BseSNet *sound_font_net = self->sound_font_net;
+      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->sound_font_net), track_uncross_sound_font_preset);
+      self->sound_font_net = NULL;
+      bse_container_remove_item (BSE_CONTAINER (bse_item_get_project (BSE_ITEM (self))), BSE_ITEM (sound_font_net));
+    }
 }
 
 static void
@@ -457,7 +518,7 @@ bse_track_set_property (GObject      *object,
 	  BseSNet *snet = (BseSNet*) bse_value_get_object (value);
 	  if (snet || self->snet)
 	    {
-	      clear_snet_and_wave (self);
+	      clear_snet_and_wave_and_sfpreset (self);
 	      self->snet = snet;
 	      if (self->snet)
 		{
@@ -477,7 +538,7 @@ bse_track_set_property (GObject      *object,
 	  BseWave *wave = (BseWave*) bse_value_get_object (value);
 	  if (wave || self->wave)
 	    {
-	      clear_snet_and_wave (self);
+	      clear_snet_and_wave_and_sfpreset (self);
 
 	      self->wave = wave;
 	      if (self->wave)
@@ -485,6 +546,24 @@ bse_track_set_property (GObject      *object,
 		  create_wnet (self, wave);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
 		  bse_object_proxy_notifies (self->wave, self, "changed");
+		}
+	    }
+	}
+      break;
+    case PROP_SOUND_FONT_PRESET:
+      if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
+	{
+	  BseSoundFontPreset *sound_font_preset = (BseSoundFontPreset *) bse_value_get_object (value);
+	  if (sound_font_preset || self->sound_font_preset)
+	    {
+	      clear_snet_and_wave_and_sfpreset (self);
+
+	      self->sound_font_preset = sound_font_preset;
+	      if (self->sound_font_preset)
+		{
+		  create_sound_font_net (self, sound_font_preset);
+		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
+		  bse_object_proxy_notifies (self->sound_font_preset, self, "changed");
 		}
 	    }
 	}
@@ -560,6 +639,9 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_WAVE:
       bse_value_set_object (value, self->wave);
+      break;
+    case PROP_SOUND_FONT_PRESET:
+      bse_value_set_object (value, self->sound_font_preset);
       break;
     case PROP_N_VOICES:
       sfi_value_set_int (value, self->max_voices);
@@ -884,7 +966,7 @@ bse_track_context_dismiss (BseSource      *source,
 
 void
 bse_track_remove_modules (BseTrack     *self,
-			  BseContainer *container)
+                          BseContainer *container)
 {
   assert_return (BSE_IS_TRACK (self));
   assert_return (BSE_IS_CONTAINER (container));
@@ -902,10 +984,10 @@ bse_track_remove_modules (BseTrack     *self,
 
 void
 bse_track_clone_voices (BseTrack       *self,
-			BseSNet        *snet,
-			guint           context,
+                        BseSNet        *snet,
+                        guint           context,
                         BseMidiContext  mcontext,
-			BseTrans       *trans)
+                        BseTrans       *trans)
 {
   guint i;
 
@@ -913,8 +995,11 @@ bse_track_clone_voices (BseTrack       *self,
   assert_return (BSE_IS_SNET (snet));
   assert_return (trans != NULL);
 
-  for (i = 0; i < self->max_voices - 1; i++)
-    bse_snet_context_clone_branch (snet, context, BSE_SOURCE (self), mcontext, trans);
+  if (!self->sound_font_preset)
+    {
+      for (i = 0; i < self->max_voices - 1; i++)
+	bse_snet_context_clone_branch (snet, context, BSE_SOURCE (self), mcontext, trans);
+    }
 }
 
 static void
@@ -1032,6 +1117,12 @@ bse_track_class_init (BseTrackClass *klass)
 			      PROP_WAVE,
 			      bse_param_spec_object ("wave", _("Wave"), _("Wave to be used as instrument"),
 						     BSE_TYPE_WAVE,
+						     SFI_PARAM_STANDARD ":unprepared"));
+  bse_object_class_add_param (object_class, _("Synth Input"),
+			      PROP_SOUND_FONT_PRESET,
+                              bse_param_spec_object (("sound_font_preset"), _("Sound Font Preset"),
+                                                     _("Sound font preset to be used as instrument"),
+						     BSE_TYPE_SOUND_FONT_PRESET,
 						     SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_N_VOICES,

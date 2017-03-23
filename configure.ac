@@ -272,6 +272,7 @@ LIBBSE_REQUIRES="
 	vorbisenc		>= 1.3.2
 	mad			>= 0.14.2
 	flac			>= 1.2.1
+	fluidsynth		>= 1.0.6
 	alsa			>= 1.0.5
         pangoft2        	>= 1.30.0
 	gtk+-2.0		>= 2.12.12
