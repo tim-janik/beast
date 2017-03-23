@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = imports images
+SUBDIRS = images
 
 MOSTLYCLEANFILES =
 man1_MANS =

@@ -727,7 +727,6 @@ tests/audio/Makefile
 tests/filecheck/Makefile
 docs/Makefile
 docs/images/Makefile
-docs/imports/Makefile
 ])
 
 AC_OUTPUT
