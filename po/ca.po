@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 01:41+0100\n"
+"POT-Creation-Date: 2017-03-23 22:18+0100\n"
 "PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
@@ -780,7 +780,7 @@ msgstr ""
 msgid "Add reeds sound"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:194
 #, fuzzy
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Afegeix, edita i connecta  components de la malla de sintetització"
@@ -818,11 +818,11 @@ msgstr "Ajusteu el balanç de sortida entre l'esquerra i la dreta"
 msgid "Adjust overall program behaviour"
 msgstr "Ajusta el comportament de tot el programa"
 
-#: beast-gtk/bstsupershell.cc:168
+#: beast-gtk/bstsupershell.cc:169
 msgid "Adjust overall song behaviour"
 msgstr "Ajusta el comportament global de la cançó"
 
-#: beast-gtk/bstsupershell.cc:197
+#: beast-gtk/bstsupershell.cc:198
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Ajusta el comportament global dels sintetitzadors"
 
@@ -853,7 +853,7 @@ msgstr "Escolliu si dibuixar valors en dB en comptes de línies"
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1022
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
 msgid "Adjustments"
 msgstr "Ajustaments"
 
@@ -983,7 +983,7 @@ msgid "Anti-Alias"
 msgstr "Suavitzat"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr ""
 "Aplica els canvis de configuració a la disposició de l'editor de patrons"
@@ -1279,23 +1279,33 @@ msgid "Available Inputs"
 msgstr "Entrades disponibles"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:235
+#: beast-gtk/res/radgets-beast.xml:254
 msgid "Available Items:"
 msgstr "Elements disponibles:"
 
-#: bse/bsebus.cc:131 bse/bsetrack.cc:282
+#: bse/bsebus.cc:131 bse/bsetrack.cc:296
 msgid "Available Outputs"
 msgstr "Sortides disponibles"
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr "Postprocessadors disponibles"
 
-#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
+#: bse/bsesoundfontosc.cc:311
+#, fuzzy
+msgid "Available Presets"
+msgstr "Ones disponibles"
+
+#: beast-gtk/bsttrackview.cc:300
+#, fuzzy
+msgid "Available Sound Fonts"
+msgstr "Entrades disponibles"
+
+#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:288
 msgid "Available Synthesizers"
 msgstr "Sintetitzadors disponibles"
 
-#: beast-gtk/bsttrackview.cc:283 bse/bsetrack.cc:265 bse/bsewaveosc.cc:112
+#: beast-gtk/bsttrackview.cc:297 bse/bsetrack.cc:273 bse/bsewaveosc.cc:112
 msgid "Available Waves"
 msgstr "Ones disponibles"
 
@@ -1483,7 +1493,7 @@ msgstr ""
 
 #. Name
 #. label=
-#: beast-gtk/res/radgets-beast.xml:297
+#: beast-gtk/res/radgets-beast.xml:316
 msgid "Bus Name"
 msgstr "Nom del bus"
 
@@ -1495,7 +1505,7 @@ msgstr ""
 "Implementació del bus per cançons, utilitzat per encaminar senyals de pistes "
 "d'àudio cap a la sortida mestre."
 
-#: beast-gtk/bstsupershell.cc:176
+#: beast-gtk/bstsupershell.cc:177
 msgid "Busses"
 msgstr "Busos"
 
@@ -1638,7 +1648,7 @@ msgstr "S'ha produït un error del còdec"
 msgid "Color Entry"
 msgstr "Entrada de color"
 
-#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:612
+#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
 #: bse/bseobject.cc:865
 msgid "Comment"
 msgstr "Comentari"
@@ -1652,12 +1662,12 @@ msgid "Compressed audio output 2"
 msgstr "Sortida d'àudio comprimida 2"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure"
 msgstr "Configura"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configura la disposició de les columnes de l'editor de patrons"
 
@@ -2098,7 +2108,7 @@ msgid "Control Type"
 msgstr "Tipus de control:"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:501
+#: beast-gtk/res/radgets-beast.xml:520
 msgid "Control Type:"
 msgstr "Tipus de control:"
 
@@ -2174,7 +2184,7 @@ msgid "Ctrl Out4"
 msgstr "Sortida de control 4"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:276
+#: beast-gtk/res/radgets-beast.xml:295
 msgid "Current Items:"
 msgstr "Elements actuals:"
 
@@ -2275,8 +2285,8 @@ msgstr ""
 #: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
 #: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
 #: beast-gtk/bstsnetrouter.cc:672 beast-gtk/bstsnetrouter.cc:723
-#: beast-gtk/bsttrackrollctrl.cc:35 beast-gtk/bsttrackview.cc:51
-#: beast-gtk/bstwaveview.cc:30
+#: beast-gtk/bstsoundfontview.cc:28 beast-gtk/bsttrackrollctrl.cc:35
+#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:30
 msgid "Delete"
 msgstr "Suprimeix"
 
@@ -2315,6 +2325,11 @@ msgstr "Suprimeix el bus seleccionat"
 #: beast-gtk/bstkeybindings.cc:41
 msgid "Delete the currently selected key binding"
 msgstr "Suprimeix la relació de tecles seleccionada"
+
+#: beast-gtk/bstsoundfontview.cc:28
+#, fuzzy
+msgid "Delete the currently selected sound font from project"
+msgstr "Suprimeix la pista seleccionada"
 
 #: beast-gtk/bsttrackview.cc:51
 msgid "Delete the currently selected track"
@@ -2413,7 +2428,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "Discard changes and close dialog"
 msgstr "Ignora els canvis i tanca el diàleg"
 
@@ -2477,12 +2492,12 @@ msgstr "Sortida d'àudio distorsionada"
 msgid "Document _Index..."
 msgstr "_Índex de documents..."
 
-#: bse/bsewaveosc.cc:585 plugins/bsesimpleadsr.cc:102
-#: plugins/standardguspatchenvelope.idl:31
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
+#: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
 msgid "Done Out"
 msgstr "Sortida feta"
 
-#: bse/bsewaveosc.cc:585
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
 #, fuzzy
 msgid "Done Output"
 msgstr "Sortida feta"
@@ -2690,7 +2705,7 @@ msgid "Error: "
 msgstr "Error: "
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:481
+#: beast-gtk/res/radgets-beast.xml:500
 msgid "Events"
 msgstr "Esdeveniments"
 
@@ -2828,7 +2843,12 @@ msgstr ""
 msgid "Failed to load project \"%s\": %s"
 msgstr "No s'ha pogut carregar el projecte «%s»: %s"
 
-#: beast-gtk/bstfiledialog.cc:735 beast-gtk/bstmain.cc:378
+#: beast-gtk/bstfiledialog.cc:778
+#, fuzzy, c-format
+msgid "Failed to load sound font \"%s\": %s"
+msgstr "No s'ha pogut carregar el projecte «%s»: %s"
+
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
 #: beast-gtk/bstmain.cc:394
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -2859,7 +2879,7 @@ msgstr "No s'ha pogut obrir el fitxer «%s» de sortida: %s"
 msgid "Failed to parse harmony list"
 msgstr "S'ha produït un error al iniciar la gravació a disc."
 
-#: beast-gtk/bstfiledialog.cc:528
+#: beast-gtk/bstfiledialog.cc:541
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -2876,7 +2896,7 @@ msgstr ""
 msgid "Failed to retrieve seek information"
 msgstr "No s'ha pogut recuperar la informació de cerca"
 
-#: beast-gtk/bstfiledialog.cc:497
+#: beast-gtk/bstfiledialog.cc:510
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -2892,7 +2912,7 @@ msgstr ""
 "%s"
 
 #. error != Bse::Error::FILE_EXISTS
-#: beast-gtk/bstfiledialog.cc:523 beast-gtk/bstfiledialog.cc:537
+#: beast-gtk/bstfiledialog.cc:536 beast-gtk/bstfiledialog.cc:550
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -3135,7 +3155,7 @@ msgid "Frequency shift ratio (assumed 1.0 if not connected)"
 msgstr "Relació de desplaçament de freqüència (val 1.0 si no està connectat)"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.cc:598
+#: beast-gtk/bstfiledialog.cc:611
 msgid "Fully include wave files"
 msgstr "Inclou els fitxers d'ona sencers"
 
@@ -3249,7 +3269,7 @@ msgid "HWrap"
 msgstr "Volta horitzontal"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:430
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
 msgid "HZoom"
 msgstr "Ampliació horitzontal"
 
@@ -3310,7 +3330,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr "Escala horitzontal (Logarítmica)"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:428
+#: beast-gtk/res/radgets-beast.xml:447
 msgid "Horizontal piano zoom"
 msgstr "Ampliació horitzontal del piano"
 
@@ -3350,7 +3370,7 @@ msgstr ""
 msgid "Image shade"
 msgstr "Imatge d'ombra"
 
-#: beast-gtk/bstfiledialog.cc:468
+#: beast-gtk/bstfiledialog.cc:481
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Importa un MIDI: %s"
@@ -3359,7 +3379,7 @@ msgstr "Importa un MIDI: %s"
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importa un fitxer MIDI estàndard dins del projecte actual"
 
-#: beast-gtk/bstfiledialog.cc:479
+#: beast-gtk/bstfiledialog.cc:492
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "S'està important el fitxer MIDI '%s'"
@@ -3475,7 +3495,7 @@ msgid "Input/output error"
 msgstr "Error d'entrada/sortida"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:300
+#: beast-gtk/res/radgets-beast.xml:319
 msgid "Inputs"
 msgstr "Entrades"
 
@@ -3689,7 +3709,7 @@ msgid "Latency [ms]"
 msgstr "Latència [ms]"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:549
+#: beast-gtk/res/radgets-beast.xml:568
 msgid "Layout:"
 msgstr "Disposició:"
 
@@ -3730,7 +3750,7 @@ msgstr "Entrada esquerra"
 msgid "Left Input"
 msgstr "Entrada esquerre"
 
-#: bse/bsemidivoice.cc:124 plugins/bsebalance.idl:21
+#: bse/bsemidivoice.cc:124 bse/bsesoundfontosc.cc:176 plugins/bsebalance.idl:21
 #: plugins/davcanyondelay.cc:103
 msgid "Left Out"
 msgstr "Sortida esquerre"
@@ -3765,7 +3785,7 @@ msgstr "Entrada de so esquerra"
 msgid "Level"
 msgstr "Etiqueta"
 
-#: beast-gtk/bstwaveview.cc:28
+#: beast-gtk/bstsoundfontview.cc:26 beast-gtk/bstwaveview.cc:28
 msgid "Lib..."
 msgstr "Biblioteca..."
 
@@ -3796,10 +3816,25 @@ msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 "Llista de busos de mesclador disponibles per utilitzar com a bus de sortida"
 
-#: bse/bsetrack.cc:282
+#: bse/bsetrack.cc:296
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 "Llista de busos de mescla disponibles per fer servir com a sortida de pista"
+
+#: bse/bsesoundfontosc.cc:311
+#, fuzzy
+msgid "List of available sound font presets to choose as fluid synth preset"
+msgstr "Llista de xarxes de síntesi disponibles on escollir-hi una sub-xarxa"
+
+#: bse/bsetrack.cc:282
+#, fuzzy
+msgid "List of available sound font presets to choose as track instrument"
+msgstr "Llista de ones disponibles per escollir com a instrument"
+
+#: beast-gtk/bsttrackview.cc:301
+#, fuzzy
+msgid "List of available sound fonts to choose track instrument from"
+msgstr "Llista de les ones disponibles on triar-hi una pista d'instrument"
 
 #: bse/bsemidisynth.cc:211
 msgid "List of available synthesis networks to choose a MIDI instrument from"
@@ -3807,7 +3842,7 @@ msgstr ""
 "Llista de les xarxes de síntesi disponibles per escollir-ne un instrument "
 "MIDI"
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 "Llista de xarxes de síntesi disponibles per escollir-ne un postprocessador"
@@ -3816,7 +3851,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr "Llista de xarxes de síntesi disponibles on escollir-hi una sub-xarxa"
 
-#: bse/bsetrack.cc:274
+#: bse/bsetrack.cc:288
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 "Llista de xarxes de síntesi disponibles per escollir-ne una pista com a "
@@ -3827,7 +3862,7 @@ msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 "Llista dels senyals de síntesi disponibles per utilitzar de bus d'entrada"
 
-#: beast-gtk/bsttrackview.cc:284
+#: beast-gtk/bsttrackview.cc:298
 msgid "List of available waves to choose a track instrument from"
 msgstr "Llista de les ones disponibles on triar-hi una pista d'instrument"
 
@@ -3835,7 +3870,7 @@ msgstr "Llista de les ones disponibles on triar-hi una pista d'instrument"
 msgid "List of available waves to choose as oscillator source"
 msgstr "Llista d'ones disponibles per escollir com a font de l'oscil·lador"
 
-#: bse/bsetrack.cc:265
+#: bse/bsetrack.cc:273
 msgid "List of available waves to choose as track instrument"
 msgstr "Llista de ones disponibles per escollir com a instrument"
 
@@ -3843,11 +3878,11 @@ msgstr "Llista de ones disponibles per escollir com a instrument"
 msgid "Load"
 msgstr "Carrega"
 
-#: beast-gtk/bstfiledialog.cc:617
+#: beast-gtk/bstfiledialog.cc:630
 msgid "Load Effect"
 msgstr "Carrega un efecte"
 
-#: beast-gtk/bstfiledialog.cc:668
+#: beast-gtk/bstfiledialog.cc:681
 msgid "Load Instrument"
 msgstr "Carrega un instrument"
 
@@ -3855,7 +3890,11 @@ msgstr "Carrega un instrument"
 msgid "Load Key Binding"
 msgstr "Carrega una vinculació de tecles"
 
-#: beast-gtk/bstfiledialog.cc:720
+#: beast-gtk/bstfiledialog.cc:763
+msgid "Load Sound Font"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.cc:733
 msgid "Load Wave"
 msgstr "Carrega una ona"
 
@@ -3871,12 +3910,22 @@ msgstr "Carrega un _instrument..."
 msgid "Load a key binding set"
 msgstr "Carrega un conjunt de vinculació de tecles"
 
+#: beast-gtk/bstsoundfontview.cc:24
+#, fuzzy
+msgid "Load a new sound font file from disk"
+msgstr "Carrega un nou fitxer d'ona del disc"
+
 #: beast-gtk/bstwaveview.cc:26
 msgid "Load a new wave file from disk"
 msgstr "Carrega un nou fitxer d'ona del disc"
 
 #: beast-gtk/bstwaveview.cc:28
 msgid "Load a new wave file from library paths"
+msgstr "Carrega un nou fitxer d'ona dels camins de les biblioteques"
+
+#: beast-gtk/bstsoundfontview.cc:26
+#, fuzzy
+msgid "Load a sound font file from library paths"
 msgstr "Carrega un nou fitxer d'ona dels camins de les biblioteques"
 
 #: beast-gtk/bstapp.cc:129
@@ -3887,7 +3936,7 @@ msgstr "Carrega una malla de sintetització del directori d'efectes"
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Carrega una malla de sintetització del directori d'instruments"
 
-#: beast-gtk/bstwaveview.cc:26
+#: beast-gtk/bstsoundfontview.cc:24 beast-gtk/bstwaveview.cc:26
 msgid "Load..."
 msgstr "Carrega..."
 
@@ -3901,7 +3950,12 @@ msgstr "S'està carregant «%s»"
 msgid "Loading skin `%s'"
 msgstr "S'està carregant l'aparença '%s'"
 
-#: beast-gtk/bstfiledialog.cc:730 beast-gtk/bstfiledialog.cc:733
+#: beast-gtk/bstfiledialog.cc:773 beast-gtk/bstfiledialog.cc:776
+#, fuzzy, c-format
+msgid "Loading sound font `%s'"
+msgstr "S'està carregant l'aparença '%s'"
+
+#: beast-gtk/bstfiledialog.cc:743 beast-gtk/bstfiledialog.cc:746
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "S'està carregant l'ona '%s'"
@@ -3932,7 +3986,7 @@ msgid "Lost Part"
 msgstr "Part perduda"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:304
 msgid "Lower"
 msgstr "Baixa"
 
@@ -3952,7 +4006,7 @@ msgstr "Freqüència del filtre passa baixos per al senyal de control"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1043
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
@@ -3961,8 +4015,8 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1041
-#: bse/bsetrack.cc:1047
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
+#: bse/bsetrack.cc:1138
 msgid "MIDI Instrument"
 msgstr "Instrument MIDI"
 
@@ -4035,11 +4089,11 @@ msgstr "Màster [dB]"
 msgid "Master [float]"
 msgstr "Màster [decimal]"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Max Voices"
 msgstr "Màxim de veus"
 
-#: beast-gtk/bsttrackview.cc:597 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Nombre màxim de veus per a una reproducció simultània"
 
@@ -4055,22 +4109,22 @@ msgstr "Mesura el numerador"
 msgid "Merge an existing project into the current project"
 msgstr "Fusiona un projecte existent amb el projecte actual"
 
-#: beast-gtk/bstfiledialog.cc:443
+#: beast-gtk/bstfiledialog.cc:456
 #, c-format
 msgid "Merge: %s"
 msgstr "Fusiona: %s"
 
-#: beast-gtk/bstfiledialog.cc:629
+#: beast-gtk/bstfiledialog.cc:642
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "S'està fusionant l'efecte '%s'"
 
-#: beast-gtk/bstfiledialog.cc:679
+#: beast-gtk/bstfiledialog.cc:692
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "S'està fusionant l'instrument '%s'"
 
-#: beast-gtk/bstfiledialog.cc:455
+#: beast-gtk/bstfiledialog.cc:468
 #, c-format
 msgid "Merging project `%s'"
 msgstr "S'està fusionant el projecte `%s'"
@@ -4105,12 +4159,12 @@ msgstr ""
 msgid "Middle Bar Color"
 msgstr "Color de la graella central"
 
-#: bse/bsetrack.cc:1044
+#: bse/bsetrack.cc:1135
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "Canal midi assignat a aquesta pista, 0 utilitza un canal intern per pista"
 
-#: beast-gtk/bsttrackview.cc:603
+#: beast-gtk/bsttrackview.cc:621
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "Canal midi assignat a aquesta pista, 0 utilitza un canal privat per pista"
@@ -4124,7 +4178,7 @@ msgstr "_Sintetitzador"
 msgid "Mix Out"
 msgstr "Sortida de la mescla"
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Mescla la sortida de la pista, ajusta el volum i afegeix efectes"
 
@@ -4132,11 +4186,11 @@ msgstr "Mescla la sortida de la pista, ajusta el volum i afegeix efectes"
 msgid "Mixed audio output"
 msgstr "Sortida d'àudio de la mescla"
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mixer"
 msgstr "Mesclador"
 
-#: beast-gtk/bsttrackview.cc:606
+#: beast-gtk/bsttrackview.cc:624
 msgid "Mixer busses connected to track output"
 msgstr "Busos del mesclador connectats a la sortida de la pista"
 
@@ -4144,7 +4198,7 @@ msgstr "Busos del mesclador connectats a la sortida de la pista"
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Mesclador de busos utilitzat com a sortida pels senyals de síntesi"
 
-#: bse/bsetrack.cc:1054
+#: bse/bsetrack.cc:1145
 msgid "Mixer busses used as output for this track"
 msgstr "Mesclador de busos utilitzat com a sortida per aquesta pista"
 
@@ -4256,12 +4310,12 @@ msgid "Move the current selection into clipboard"
 msgstr "Mou la selecció actual al porta-retalls"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/res/radgets-beast.xml:304
 msgid "Move the selection down by one position"
 msgstr "Mou la selecció una posició avall"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/res/radgets-beast.xml:302
 msgid "Move the selection up by one position"
 msgstr "Mou la selecció una posició amunt"
 
@@ -4298,7 +4352,7 @@ msgstr "Silenci"
 msgid "Mute: turn off the bus volume"
 msgstr "Silenci: apaga el volum del bus"
 
-#: bse/bsetrack.cc:1024
+#: bse/bsetrack.cc:1109
 msgid "Muted"
 msgstr "Mut"
 
@@ -4312,7 +4366,7 @@ msgid "N Wait Spins"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:591 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
 msgid "Name"
 msgstr "Nom"
 
@@ -4553,7 +4607,7 @@ msgid "Note Velocity"
 msgstr "Velocitat de nota"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:461
+#: beast-gtk/res/radgets-beast.xml:480
 msgid "Note _Length"
 msgstr "Durada de _la nota"
 
@@ -4570,7 +4624,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Notes i informació sobre aquest cicle de llançament"
 
-#: beast-gtk/bsttrackview.cc:594
+#: beast-gtk/bsttrackview.cc:612
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4636,7 +4690,7 @@ msgstr "A_juda d'escriptori en línia..."
 msgid "Only parts louder than threshold are compressed"
 msgstr "Només les parts més altes que el llindar són comprimides"
 
-#: beast-gtk/bstfiledialog.cc:376
+#: beast-gtk/bstfiledialog.cc:389
 msgid "Open Project"
 msgstr "Obre un projecte"
 
@@ -4684,7 +4738,7 @@ msgid "Open file browser"
 msgstr "Obre el navegador de fitxers"
 
 #: beast-gtk/bstapp.cc:705 beast-gtk/bstapp.cc:713
-#: beast-gtk/bstfiledialog.cc:419 beast-gtk/bstfiledialog.cc:427
+#: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "S'està obrint el projecte '%s'"
@@ -4798,7 +4852,7 @@ msgstr "Port de sortida %u"
 msgid "Output Signal Monitor"
 msgstr "Monitor del senyal de sortida"
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1053
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
 msgid "Output Signals"
 msgstr "Senyals de sortida"
 
@@ -4811,6 +4865,10 @@ msgstr "Volum esquerre"
 msgid "Output [dB]"
 msgstr "Sortida [dB]"
 
+#: bse/bsesoundfontosc.cc:176 bse/bsesoundfontosc.cc:178
+msgid "Output of the fluid synth soundfont synthesizer"
+msgstr ""
+
 #: bse/bsesubsynth.cc:506
 msgid "Output port name to interface from"
 msgstr "Nom del port de sortida amb què s'interactuarà"
@@ -4820,7 +4878,7 @@ msgid "Output stage amplification in decibel"
 msgstr "Amplificació de l'etapa de sortida en decibels"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:322
+#: beast-gtk/res/radgets-beast.xml:341
 msgid "Outputs"
 msgstr "Sortides"
 
@@ -4894,7 +4952,7 @@ msgstr "Error d'análisis"
 msgid "Part"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.cc:172
+#: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
 msgstr "Parts"
 
@@ -4962,7 +5020,7 @@ msgid "Piano Keys"
 msgstr "Tecles de piano"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:445
+#: beast-gtk/res/radgets-beast.xml:464
 msgid "Piano Notes"
 msgstr "Notes de piano"
 
@@ -5042,13 +5100,17 @@ msgstr "S'ha près la posició"
 msgid "Positive Value Color"
 msgstr "Color del valor positiu"
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1049
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
 msgid "Postprocessor"
 msgstr "Postprocessador"
 
 #: beast-gtk/bstapp.cc:940
 msgid "Preferences"
 msgstr "Preferències"
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Preset"
+msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
@@ -5119,9 +5181,9 @@ msgid ""
 "to time. It is a funny example though."
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:168
-#: beast-gtk/bstsupershell.cc:197 beast-gtk/bstsupershell.cc:212
-#: plugins/standardguspatchenvelope.idl:19
+#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
+#: beast-gtk/bstsupershell.cc:227 plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
 msgstr "Propietats"
 
@@ -5300,7 +5362,7 @@ msgid "RC Files"
 msgstr "Fitxers RC"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:302
 msgid "Raise"
 msgstr "Puja"
 
@@ -5499,7 +5561,7 @@ msgstr "Entrada dreta"
 msgid "Right Input"
 msgstr "Entrada dreta"
 
-#: bse/bsemidivoice.cc:126 plugins/bsebalance.idl:23
+#: bse/bsemidivoice.cc:126 bse/bsesoundfontosc.cc:178 plugins/bsebalance.idl:23
 #: plugins/davcanyondelay.cc:105
 msgid "Right Out"
 msgstr "Sortida dreta"
@@ -5539,7 +5601,7 @@ msgid ""
 "modules within a synthesis network."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:180 beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr "Encaminament"
 
@@ -5615,11 +5677,11 @@ msgstr "Desa com a instrument..."
 msgid "Save Changes"
 msgstr "Desa els canvis"
 
-#: beast-gtk/bstfiledialog.cc:642
+#: beast-gtk/bstfiledialog.cc:655
 msgid "Save Effect"
 msgstr "Desa un efecte"
 
-#: beast-gtk/bstfiledialog.cc:692
+#: beast-gtk/bstfiledialog.cc:705
 msgid "Save Instrument"
 msgstr "Desa un instrument"
 
@@ -5639,22 +5701,22 @@ msgstr "Desa la malla de sintetització al directori d'instruments"
 msgid "Save the project before closing its window?"
 msgstr "Voleu desar el projecte sense tancar-ne la finestra?"
 
-#: beast-gtk/bstfiledialog.cc:594
+#: beast-gtk/bstfiledialog.cc:607
 #, c-format
 msgid "Save: %s"
 msgstr "Desa: %s"
 
-#: beast-gtk/bstfiledialog.cc:655
+#: beast-gtk/bstfiledialog.cc:668
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "S'està desant l'efecte '%s'"
 
-#: beast-gtk/bstfiledialog.cc:705
+#: beast-gtk/bstfiledialog.cc:718
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "S'està desant l'instrument '%s'"
 
-#: beast-gtk/bstfiledialog.cc:560
+#: beast-gtk/bstfiledialog.cc:573
 #, c-format
 msgid "Saving project `%s'"
 msgstr "S'està desant el projecte '%s'"
@@ -5786,11 +5848,11 @@ msgstr "Selecciona"
 msgid "Select Color"
 msgstr "Selecciona un color"
 
-#: beast-gtk/bstfiledialog.cc:404
+#: beast-gtk/bstfiledialog.cc:417
 msgid "Select Directory"
 msgstr "Selecciona un directori"
 
-#: beast-gtk/bstfiledialog.cc:390
+#: beast-gtk/bstfiledialog.cc:403
 msgid "Select File"
 msgstr "Selecciona un fitxer"
 
@@ -5941,7 +6003,7 @@ msgstr "Entrada de senyal"
 msgid "Signal Inputs"
 msgstr "Senyals d'entrada"
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1051
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
 msgid "Signal Outputs"
 msgstr "Sortides de senyal"
 
@@ -6047,6 +6109,23 @@ msgstr "Ca_nçó"
 #, c-format
 msgid "Song: %s"
 msgstr "Cançó: %s"
+
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+msgid "Sound Font Preset"
+msgstr ""
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Sound Font Preset to be used during replay"
+msgstr ""
+
+#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:282
+msgid "Sound Fonts"
+msgstr ""
+
+#: bse/bsetrack.cc:1124
+#, fuzzy
+msgid "Sound font preset to be used as instrument"
+msgstr "Xarxa de síntesi per utilitzar com a instrument"
 
 #: beast-gtk/bstscrollgraph.cc:552 beast-gtk/bstscrollgraph.cc:555
 #: beast-gtk/bstscrollgraph.cc:559 beast-gtk/bstscrollgraph.cc:562
@@ -6162,7 +6241,7 @@ msgstr "Atura la reproducció del projecte"
 msgid "Stopping Playback"
 msgstr "S'està aturant la reproducció"
 
-#: beast-gtk/bstfiledialog.cc:599
+#: beast-gtk/bstfiledialog.cc:612
 msgid "Store references to wave files"
 msgstr "Emmagatzema referències a fitxers d'ona"
 
@@ -6217,7 +6296,7 @@ msgstr ""
 "relatiu al balanç."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:312
+#: beast-gtk/res/radgets-beast.xml:331
 msgid "Switches"
 msgstr "Interruptors"
 
@@ -6262,7 +6341,8 @@ msgstr "Freqüència de control del sintetitzador"
 msgid "Synth Done"
 msgstr "La sintetització ha acabat"
 
-#: bse/bsetrack.cc:1026 bse/bsetrack.cc:1031 bse/bsetrack.cc:1036
+#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
+#: bse/bsetrack.cc:1127
 msgid "Synth Input"
 msgstr "Entrada de síntesi"
 
@@ -6298,7 +6378,7 @@ msgstr "El mòdul de síntesi està ocupat"
 msgid "Synthesis module used internally by BseBus"
 msgstr "El mòdul de síntesi està ocupat"
 
-#: beast-gtk/bsttrackview.cc:600
+#: beast-gtk/bsttrackview.cc:618
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Xarxa de síntesi o ona a utilitzar com a instrument per aquesta pista"
 
@@ -6306,12 +6386,12 @@ msgstr "Xarxa de síntesi o ona a utilitzar com a instrument per aquesta pista"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Xarxa de síntesi a utilitzar com a instrument MIDI"
 
-#: bse/bsetrack.cc:1028
+#: bse/bsetrack.cc:1113
 msgid "Synthesis network to be used as instrument"
 msgstr "Xarxa de síntesi per utilitzar com a instrument"
 
-#: beast-gtk/bsttrackview.cc:609 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1049
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
+#: bse/bsetrack.cc:1140
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Xarxa de síntesi a utilitzar de postprocessador"
 
@@ -6327,12 +6407,12 @@ msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 "Senyals de síntesi (de les pistes i els busos) utilitzats com a bus d'entrada"
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1028
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
 msgid "Synthesizer"
 msgstr "Sintetitzador"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.cc:245
+#: beast-gtk/bsttracksynthdialog.cc:255
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Selecció del sintetitzador: %s"
@@ -6726,11 +6806,11 @@ msgstr "Massa fitxers oberts en el sistema"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks"
 msgstr "Pistes"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Pistes que contenen definicions d'instruments i parts amb notes"
 
@@ -6897,8 +6977,8 @@ msgstr "Amunt"
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:271 beast-gtk/bstutils.cc:293
-#: beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:299
 msgid "Updating View"
 msgstr "S'està actualitzant la vista"
 
@@ -6926,7 +7006,7 @@ msgid "VScale:"
 msgstr "Escala vertical:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:434
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
 msgid "VZoom"
 msgstr "Ampliació vertical"
 
@@ -6984,7 +7064,7 @@ msgid "Vertical Select"
 msgstr "Selecció vertical"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:432
+#: beast-gtk/res/radgets-beast.xml:451
 msgid "Vertical piano zoom"
 msgstr "Ampliació vertical del piano"
 
@@ -7019,7 +7099,7 @@ msgstr "Ajustament del volum del bus del canal dret en decibels"
 msgid "WAVE File"
 msgstr "Fitxer d'ONA"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1033 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Ona"
@@ -7042,7 +7122,7 @@ msgstr "Sortida d'ona"
 msgid "Wave Repository"
 msgstr "Magatzem d'ones"
 
-#: bse/bsetrack.cc:1033
+#: bse/bsetrack.cc:1118
 msgid "Wave to be used as instrument"
 msgstr "Ona a utilitzar com a instrument"
 
@@ -7051,11 +7131,11 @@ msgid "Wave used as oscillator source"
 msgstr "Ona utilitzada com a font de l'oscil·lador"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:634
+#: beast-gtk/res/radgets-beast.xml:653
 msgid "Wave_s"
 msgstr "O_nes"
 
-#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:209
+#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Ones"
 
@@ -7138,12 +7218,12 @@ msgid "_About..."
 msgstr "Qu_ant a..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:251
+#: beast-gtk/res/radgets-beast.xml:270
 msgid "_Add"
 msgstr "_Afegeix"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 msgid "_Apply"
 msgstr "_Aplica"
 
@@ -7162,7 +7242,7 @@ msgid "_Beast Website..."
 msgstr "Lloc web del _Beast..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
@@ -7175,7 +7255,7 @@ msgid "_Close"
 msgstr "Tan_ca"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:639
+#: beast-gtk/res/radgets-beast.xml:658
 msgid "_Demo"
 msgstr "_Demostració"
 
@@ -7185,8 +7265,8 @@ msgid "_Distortion"
 msgstr "_Distorsió"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:450 beast-gtk/res/radgets-beast.xml:486
-#: beast-gtk/res/radgets-beast.xml:599
+#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
+#: beast-gtk/res/radgets-beast.xml:618
 msgid "_Edit"
 msgstr "_Edita"
 
@@ -7200,7 +7280,7 @@ msgid "_FAQ..."
 msgstr "_PMF..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:592
+#: beast-gtk/res/radgets-beast.xml:611
 msgid "_File"
 msgstr "_Fitxer"
 
@@ -7220,7 +7300,7 @@ msgid "_Forward"
 msgstr "_Endavant"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:664
 msgid "_Help"
 msgstr "_Ajuda"
 
@@ -7274,12 +7354,12 @@ msgid "_Preferences..."
 msgstr "_Preferències..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:616
+#: beast-gtk/res/radgets-beast.xml:635
 msgid "_Project"
 msgstr "_Projecte"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:458 beast-gtk/res/radgets-beast.xml:494
+#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
 msgid "_Quantization"
 msgstr "_Quantificació"
 
@@ -7305,7 +7385,7 @@ msgid "_Reload"
 msgstr "To_rna a carregar"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:264
+#: beast-gtk/res/radgets-beast.xml:283
 msgid "_Remove"
 msgstr "Sup_rimeix"
 
@@ -7319,17 +7399,17 @@ msgid "_Save"
 msgstr "De_sa"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:455 beast-gtk/res/radgets-beast.xml:491
+#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
 msgid "_Select"
 msgstr "_Selecciona"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:609
+#: beast-gtk/res/radgets-beast.xml:628
 msgid "_Skins"
 msgstr "Aparence_s"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:647
 msgid "_Song"
 msgstr "Ca_nçó"
 
@@ -7343,18 +7423,18 @@ msgid "_Stop"
 msgstr "A_tura"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:631
+#: beast-gtk/res/radgets-beast.xml:650
 msgid "_Synth"
 msgstr "_Sintetitzador"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:621
+#: beast-gtk/res/radgets-beast.xml:640
 msgid "_Synthesizers"
 msgstr "_Sintetitzadors"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:447 beast-gtk/res/radgets-beast.xml:483
-#: beast-gtk/res/radgets-beast.xml:626
+#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
+#: beast-gtk/res/radgets-beast.xml:645
 msgid "_Tools"
 msgstr "_Eines"
 
@@ -7363,12 +7443,12 @@ msgid "_Undo"
 msgstr "_Desfés"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:465
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
 msgid "_Utilities"
 msgstr "_Utilitats"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:605
+#: beast-gtk/res/radgets-beast.xml:624
 msgid "_View"
 msgstr "_Vista"
 

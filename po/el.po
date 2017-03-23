@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 01:41+0100\n"
+"POT-Creation-Date: 2017-03-23 22:18+0100\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -764,7 +764,7 @@ msgstr ""
 msgid "Add reeds sound"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:194
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
@@ -802,11 +802,11 @@ msgstr ""
 msgid "Adjust overall program behaviour"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:168
+#: beast-gtk/bstsupershell.cc:169
 msgid "Adjust overall song behaviour"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:197
+#: beast-gtk/bstsupershell.cc:198
 msgid "Adjust overall synthesizer behaviour"
 msgstr ""
 
@@ -835,7 +835,7 @@ msgstr ""
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1022
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
 #, fuzzy
 msgid "Adjustments"
 msgstr "/Εργαλεία/Στοίχιση γεγονότων"
@@ -934,7 +934,7 @@ msgid "Anti-Alias"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr ""
 
@@ -1214,25 +1214,35 @@ msgid "Available Inputs"
 msgstr "Διαγραφή εισόδων"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:235
+#: beast-gtk/res/radgets-beast.xml:254
 msgid "Available Items:"
 msgstr ""
 
-#: bse/bsebus.cc:131 bse/bsetrack.cc:282
+#: bse/bsebus.cc:131 bse/bsetrack.cc:296
 #, fuzzy
 msgid "Available Outputs"
 msgstr "Διαγραφή εισόδων"
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr ""
 
-#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
+#: bse/bsesoundfontosc.cc:311
+#, fuzzy
+msgid "Available Presets"
+msgstr "Διαγραφή εισόδων"
+
+#: beast-gtk/bsttrackview.cc:300
+#, fuzzy
+msgid "Available Sound Fonts"
+msgstr "Διαγραφή εισόδων"
+
+#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:288
 #, fuzzy
 msgid "Available Synthesizers"
 msgstr "/_Synthesizers"
 
-#: beast-gtk/bsttrackview.cc:283 bse/bsetrack.cc:265 bse/bsewaveosc.cc:112
+#: beast-gtk/bsttrackview.cc:297 bse/bsetrack.cc:273 bse/bsewaveosc.cc:112
 msgid "Available Waves"
 msgstr ""
 
@@ -1404,7 +1414,7 @@ msgstr ""
 
 #. Name
 #. label=
-#: beast-gtk/res/radgets-beast.xml:297
+#: beast-gtk/res/radgets-beast.xml:316
 #, fuzzy
 msgid "Bus Name"
 msgstr "Όνομα"
@@ -1415,7 +1425,7 @@ msgid ""
 "master output."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:176
+#: beast-gtk/bstsupershell.cc:177
 msgid "Busses"
 msgstr ""
 
@@ -1563,7 +1573,7 @@ msgstr ""
 msgid "Color Entry"
 msgstr "Χαμένο γεγονός"
 
-#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:612
+#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
 #: bse/bseobject.cc:865
 msgid "Comment"
 msgstr "Σχόλιο"
@@ -1579,12 +1589,12 @@ msgid "Compressed audio output 2"
 msgstr "Διαγραφή εξόδων"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
@@ -2038,7 +2048,7 @@ msgid "Control Type"
 msgstr "Τύπος ελέγχου"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:501
+#: beast-gtk/res/radgets-beast.xml:520
 #, fuzzy
 msgid "Control Type:"
 msgstr "Τύπος ελέγχου"
@@ -2122,7 +2132,7 @@ msgid "Ctrl Out4"
 msgstr "Τύπος ελέγχου"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:276
+#: beast-gtk/res/radgets-beast.xml:295
 msgid "Current Items:"
 msgstr ""
 
@@ -2223,8 +2233,8 @@ msgstr ""
 #: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
 #: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
 #: beast-gtk/bstsnetrouter.cc:672 beast-gtk/bstsnetrouter.cc:723
-#: beast-gtk/bsttrackrollctrl.cc:35 beast-gtk/bsttrackview.cc:51
-#: beast-gtk/bstwaveview.cc:30
+#: beast-gtk/bstsoundfontview.cc:28 beast-gtk/bsttrackrollctrl.cc:35
+#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:30
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -2264,6 +2274,11 @@ msgstr "Διαγραφή του επιλεγμένου κομματιού"
 #: beast-gtk/bstkeybindings.cc:41
 #, fuzzy
 msgid "Delete the currently selected key binding"
+msgstr "Διαγραφή του επιλεγμένου κομματιού"
+
+#: beast-gtk/bstsoundfontview.cc:28
+#, fuzzy
+msgid "Delete the currently selected sound font from project"
 msgstr "Διαγραφή του επιλεγμένου κομματιού"
 
 #: beast-gtk/bsttrackview.cc:51
@@ -2367,7 +2382,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "Discard changes and close dialog"
 msgstr ""
 
@@ -2429,13 +2444,13 @@ msgstr "Διαγραφή εξόδων"
 msgid "Document _Index..."
 msgstr ""
 
-#: bse/bsewaveosc.cc:585 plugins/bsesimpleadsr.cc:102
-#: plugins/standardguspatchenvelope.idl:31
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
+#: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
 #, fuzzy
 msgid "Done Out"
 msgstr "Αριστερά"
 
-#: bse/bsewaveosc.cc:585
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
 #, fuzzy
 msgid "Done Output"
 msgstr "Αριστερά"
@@ -2651,7 +2666,7 @@ msgid "Error: "
 msgstr "Σφάλμα"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:481
+#: beast-gtk/res/radgets-beast.xml:500
 #, fuzzy
 msgid "Events"
 msgstr "Χαμένο γεγονός"
@@ -2797,7 +2812,16 @@ msgstr ""
 "λόγω:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.cc:735 beast-gtk/bstmain.cc:378
+#: beast-gtk/bstfiledialog.cc:778
+#, fuzzy, c-format
+msgid "Failed to load sound font \"%s\": %s"
+msgstr ""
+"Αποτυχία διαγραφής αρχείου\n"
+"`%s'\n"
+"λόγω:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
 #: beast-gtk/bstmain.cc:394
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -2847,7 +2871,7 @@ msgstr ""
 msgid "Failed to parse harmony list"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:528
+#: beast-gtk/bstfiledialog.cc:541
 #, fuzzy, c-format
 msgid ""
 "Failed to replace file\n"
@@ -2864,7 +2888,7 @@ msgstr ""
 msgid "Failed to retrieve seek information"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:497
+#: beast-gtk/bstfiledialog.cc:510
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -2880,7 +2904,7 @@ msgstr ""
 "%s"
 
 #. error != Bse::Error::FILE_EXISTS
-#: beast-gtk/bstfiledialog.cc:523 beast-gtk/bstfiledialog.cc:537
+#: beast-gtk/bstfiledialog.cc:536 beast-gtk/bstfiledialog.cc:550
 #, fuzzy, c-format
 msgid ""
 "Failed to save to file\n"
@@ -3126,7 +3150,7 @@ msgid "Frequency shift ratio (assumed 1.0 if not connected)"
 msgstr ""
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.cc:598
+#: beast-gtk/bstfiledialog.cc:611
 msgid "Fully include wave files"
 msgstr "Πλήρης συμπερίληψη αρχείων wave "
 
@@ -3245,7 +3269,7 @@ msgid "HWrap"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:430
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
 #, fuzzy
 msgid "HZoom"
 msgstr "Μεγέθυνση"
@@ -3311,7 +3335,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:428
+#: beast-gtk/res/radgets-beast.xml:447
 #, fuzzy
 msgid "Horizontal piano zoom"
 msgstr "Οριζόντια μεγέθυνση"
@@ -3350,7 +3374,7 @@ msgstr ""
 msgid "Image shade"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:468
+#: beast-gtk/bstfiledialog.cc:481
 #, c-format
 msgid "Import MIDI: %s"
 msgstr ""
@@ -3359,7 +3383,7 @@ msgstr ""
 msgid "Import a standard MIDI file into the current project"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:479
+#: beast-gtk/bstfiledialog.cc:492
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr ""
@@ -3480,7 +3504,7 @@ msgid "Input/output error"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:300
+#: beast-gtk/res/radgets-beast.xml:319
 #, fuzzy
 msgid "Inputs"
 msgstr "Εισαγωγή"
@@ -3704,7 +3728,7 @@ msgid "Latency [ms]"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:549
+#: beast-gtk/res/radgets-beast.xml:568
 msgid "Layout:"
 msgstr ""
 
@@ -3751,7 +3775,7 @@ msgstr "Αριστερά"
 msgid "Left Input"
 msgstr "Αριστερά"
 
-#: bse/bsemidivoice.cc:124 plugins/bsebalance.idl:21
+#: bse/bsemidivoice.cc:124 bse/bsesoundfontosc.cc:176 plugins/bsebalance.idl:21
 #: plugins/davcanyondelay.cc:103
 #, fuzzy
 msgid "Left Out"
@@ -3789,7 +3813,7 @@ msgstr "Μετακίνηση νότας"
 msgid "Level"
 msgstr ""
 
-#: beast-gtk/bstwaveview.cc:28
+#: beast-gtk/bstsoundfontview.cc:26 beast-gtk/bstwaveview.cc:28
 #, fuzzy
 msgid "Lib..."
 msgstr "Γίνεται φόρτωση..."
@@ -3821,15 +3845,27 @@ msgstr "Σύνδεση ή μετακίνηση μερών (κουμπί ποντ
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
-#: bse/bsetrack.cc:282
+#: bse/bsetrack.cc:296
 msgid "List of available mixer busses to be used as track output"
+msgstr ""
+
+#: bse/bsesoundfontosc.cc:311
+msgid "List of available sound font presets to choose as fluid synth preset"
+msgstr ""
+
+#: bse/bsetrack.cc:282
+msgid "List of available sound font presets to choose as track instrument"
+msgstr ""
+
+#: beast-gtk/bsttrackview.cc:301
+msgid "List of available sound fonts to choose track instrument from"
 msgstr ""
 
 #: bse/bsemidisynth.cc:211
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3837,7 +3873,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 
-#: bse/bsetrack.cc:274
+#: bse/bsetrack.cc:288
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
@@ -3845,7 +3881,7 @@ msgstr ""
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:284
+#: beast-gtk/bsttrackview.cc:298
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
@@ -3853,7 +3889,7 @@ msgstr ""
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: bse/bsetrack.cc:265
+#: bse/bsetrack.cc:273
 msgid "List of available waves to choose as track instrument"
 msgstr ""
 
@@ -3862,11 +3898,11 @@ msgstr ""
 msgid "Load"
 msgstr "Γίνεται φόρτωση..."
 
-#: beast-gtk/bstfiledialog.cc:617
+#: beast-gtk/bstfiledialog.cc:630
 msgid "Load Effect"
 msgstr "Φόρτωση εφέ"
 
-#: beast-gtk/bstfiledialog.cc:668
+#: beast-gtk/bstfiledialog.cc:681
 msgid "Load Instrument"
 msgstr "Φόρτωση οργάνου"
 
@@ -3874,7 +3910,11 @@ msgstr "Φόρτωση οργάνου"
 msgid "Load Key Binding"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:720
+#: beast-gtk/bstfiledialog.cc:763
+msgid "Load Sound Font"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.cc:733
 msgid "Load Wave"
 msgstr "Φόρτωση Wave"
 
@@ -3892,12 +3932,20 @@ msgstr "Φόρτωση οργάνου"
 msgid "Load a key binding set"
 msgstr ""
 
+#: beast-gtk/bstsoundfontview.cc:24
+msgid "Load a new sound font file from disk"
+msgstr ""
+
 #: beast-gtk/bstwaveview.cc:26
 msgid "Load a new wave file from disk"
 msgstr ""
 
 #: beast-gtk/bstwaveview.cc:28
 msgid "Load a new wave file from library paths"
+msgstr ""
+
+#: beast-gtk/bstsoundfontview.cc:26
+msgid "Load a sound font file from library paths"
 msgstr ""
 
 #: beast-gtk/bstapp.cc:129
@@ -3908,7 +3956,7 @@ msgstr ""
 msgid "Load synthesizer mesh from instruments folder"
 msgstr ""
 
-#: beast-gtk/bstwaveview.cc:26
+#: beast-gtk/bstsoundfontview.cc:24 beast-gtk/bstwaveview.cc:26
 #, fuzzy
 msgid "Load..."
 msgstr "Γίνεται φόρτωση..."
@@ -3923,7 +3971,12 @@ msgstr "Φόρτωση \"%s\""
 msgid "Loading skin `%s'"
 msgstr "Φόρτωση Wave `%s'"
 
-#: beast-gtk/bstfiledialog.cc:730 beast-gtk/bstfiledialog.cc:733
+#: beast-gtk/bstfiledialog.cc:773 beast-gtk/bstfiledialog.cc:776
+#, fuzzy, c-format
+msgid "Loading sound font `%s'"
+msgstr "Φόρτωση Wave `%s'"
+
+#: beast-gtk/bstfiledialog.cc:743 beast-gtk/bstfiledialog.cc:746
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Φόρτωση Wave `%s'"
@@ -3955,7 +4008,7 @@ msgid "Lost Part"
 msgstr "Χαμένο μέρος"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:304
 msgid "Lower"
 msgstr ""
 
@@ -3976,7 +4029,7 @@ msgstr ""
 msgid "MIDI"
 msgstr "ID"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1043
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "Κανάλι εισόδου σε χρήση"
@@ -3986,8 +4039,8 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1041
-#: bse/bsetrack.cc:1047
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
+#: bse/bsetrack.cc:1138
 #, fuzzy
 msgid "MIDI Instrument"
 msgstr "Αποθήκευση οργάνου"
@@ -4063,11 +4116,11 @@ msgstr "Gain [dB]"
 msgid "Master [float]"
 msgstr "Κανάλι εισόδου σε χρήση"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Max Voices"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:597 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
@@ -4083,22 +4136,22 @@ msgstr ""
 msgid "Merge an existing project into the current project"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:443
+#: beast-gtk/bstfiledialog.cc:456
 #, c-format
 msgid "Merge: %s"
 msgstr "Συγχώνευση: %s"
 
-#: beast-gtk/bstfiledialog.cc:629
+#: beast-gtk/bstfiledialog.cc:642
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Συγχώνευση εφέ`%s'"
 
-#: beast-gtk/bstfiledialog.cc:679
+#: beast-gtk/bstfiledialog.cc:692
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Συγχώνευση οργάνου `%s'"
 
-#: beast-gtk/bstfiledialog.cc:455
+#: beast-gtk/bstfiledialog.cc:468
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Συγχώνευση εργασίας %s"
@@ -4133,11 +4186,11 @@ msgstr ""
 msgid "Middle Bar Color"
 msgstr ""
 
-#: bse/bsetrack.cc:1044
+#: bse/bsetrack.cc:1135
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:603
+#: beast-gtk/bsttrackview.cc:621
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
@@ -4150,7 +4203,7 @@ msgstr "/_Synth"
 msgid "Mix Out"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr ""
 
@@ -4158,11 +4211,11 @@ msgstr ""
 msgid "Mixed audio output"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mixer"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:606
+#: beast-gtk/bsttrackview.cc:624
 msgid "Mixer busses connected to track output"
 msgstr ""
 
@@ -4170,7 +4223,7 @@ msgstr ""
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: bse/bsetrack.cc:1054
+#: bse/bsetrack.cc:1145
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4286,13 +4339,13 @@ msgid "Move the current selection into clipboard"
 msgstr "Διαγραφή του επιλεγμένου κομματιού"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/res/radgets-beast.xml:304
 #, fuzzy
 msgid "Move the selection down by one position"
 msgstr "Διαγραφή του επιλεγμένου κομματιού"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/res/radgets-beast.xml:302
 msgid "Move the selection up by one position"
 msgstr ""
 
@@ -4332,7 +4385,7 @@ msgstr ""
 msgid "Mute: turn off the bus volume"
 msgstr ""
 
-#: bse/bsetrack.cc:1024
+#: bse/bsetrack.cc:1109
 msgid "Muted"
 msgstr ""
 
@@ -4346,7 +4399,7 @@ msgid "N Wait Spins"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:591 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
 msgid "Name"
 msgstr "Όνομα"
 
@@ -4598,7 +4651,7 @@ msgid "Note Velocity"
 msgstr "Αριστερά"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:461
+#: beast-gtk/res/radgets-beast.xml:480
 msgid "Note _Length"
 msgstr ""
 
@@ -4615,7 +4668,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:594
+#: beast-gtk/bsttrackview.cc:612
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4681,7 +4734,7 @@ msgstr ""
 msgid "Only parts louder than threshold are compressed"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:376
+#: beast-gtk/bstfiledialog.cc:389
 msgid "Open Project"
 msgstr "Άνοιγμα εργασίας"
 
@@ -4718,7 +4771,7 @@ msgid "Open file browser"
 msgstr ""
 
 #: beast-gtk/bstapp.cc:705 beast-gtk/bstapp.cc:713
-#: beast-gtk/bstfiledialog.cc:419 beast-gtk/bstfiledialog.cc:427
+#: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Άνοιγμα εργασίας `%s'"
@@ -4835,7 +4888,7 @@ msgstr "'Εξοδος"
 msgid "Output Signal Monitor"
 msgstr "Εισαγωγή"
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1053
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
 #, fuzzy
 msgid "Output Signals"
 msgstr "Εισαγωγή"
@@ -4850,6 +4903,10 @@ msgstr "Αριστερά"
 msgid "Output [dB]"
 msgstr "'Εξοδος"
 
+#: bse/bsesoundfontosc.cc:176 bse/bsesoundfontosc.cc:178
+msgid "Output of the fluid synth soundfont synthesizer"
+msgstr ""
+
 #: bse/bsesubsynth.cc:506
 msgid "Output port name to interface from"
 msgstr ""
@@ -4860,7 +4917,7 @@ msgid "Output stage amplification in decibel"
 msgstr "Ώρα τελευταίας τροποποίησης"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:322
+#: beast-gtk/res/radgets-beast.xml:341
 #, fuzzy
 msgid "Outputs"
 msgstr "'Εξοδος"
@@ -4936,7 +4993,7 @@ msgstr ""
 msgid "Part"
 msgstr "Μέρη"
 
-#: beast-gtk/bstsupershell.cc:172
+#: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
 msgstr "Μέρη"
 
@@ -5006,7 +5063,7 @@ msgid "Piano Keys"
 msgstr "Αναπαραγωγή νότας"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:445
+#: beast-gtk/res/radgets-beast.xml:464
 #, fuzzy
 msgid "Piano Notes"
 msgstr "Αναπαραγωγή νότας"
@@ -5092,7 +5149,7 @@ msgstr "Θέση κατειλημένη"
 msgid "Positive Value Color"
 msgstr ""
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1049
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
 #, fuzzy
 msgid "Postprocessor"
 msgstr "Διαδικασία"
@@ -5100,6 +5157,10 @@ msgstr "Διαδικασία"
 #: beast-gtk/bstapp.cc:940
 msgid "Preferences"
 msgstr "Προτιμήσεις"
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Preset"
+msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
@@ -5167,9 +5228,9 @@ msgid ""
 "to time. It is a funny example though."
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:168
-#: beast-gtk/bstsupershell.cc:197 beast-gtk/bstsupershell.cc:212
-#: plugins/standardguspatchenvelope.idl:19
+#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
+#: beast-gtk/bstsupershell.cc:227 plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
 msgstr "Ιδιότητες"
 
@@ -5359,7 +5420,7 @@ msgid "RC Files"
 msgstr "Αρχείο RC"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:302
 #, fuzzy
 msgid "Raise"
 msgstr "Παλέτα"
@@ -5572,7 +5633,7 @@ msgstr "Δεξιά"
 msgid "Right Input"
 msgstr "Δεξιά"
 
-#: bse/bsemidivoice.cc:126 plugins/bsebalance.idl:23
+#: bse/bsemidivoice.cc:126 bse/bsesoundfontosc.cc:178 plugins/bsebalance.idl:23
 #: plugins/davcanyondelay.cc:105
 #, fuzzy
 msgid "Right Out"
@@ -5617,7 +5678,7 @@ msgid ""
 "modules within a synthesis network."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:180 beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr "Δρομολόγηση"
 
@@ -5698,11 +5759,11 @@ msgstr "Αποθήκευση οργάνου"
 msgid "Save Changes"
 msgstr "Εύρος σχήματος"
 
-#: beast-gtk/bstfiledialog.cc:642
+#: beast-gtk/bstfiledialog.cc:655
 msgid "Save Effect"
 msgstr "Αποθήκευση εφέ"
 
-#: beast-gtk/bstfiledialog.cc:692
+#: beast-gtk/bstfiledialog.cc:705
 msgid "Save Instrument"
 msgstr "Αποθήκευση οργάνου"
 
@@ -5723,22 +5784,22 @@ msgstr ""
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:594
+#: beast-gtk/bstfiledialog.cc:607
 #, c-format
 msgid "Save: %s"
 msgstr "Αποθήκευση: %s"
 
-#: beast-gtk/bstfiledialog.cc:655
+#: beast-gtk/bstfiledialog.cc:668
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Αποθήκευση εφέ `%s'"
 
-#: beast-gtk/bstfiledialog.cc:705
+#: beast-gtk/bstfiledialog.cc:718
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Αποθήκευση οργάνου `%s'"
 
-#: beast-gtk/bstfiledialog.cc:560
+#: beast-gtk/bstfiledialog.cc:573
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Αποθήκευση εργασίας `%s'"
@@ -5851,11 +5912,11 @@ msgstr "Επιλογή"
 msgid "Select Color"
 msgstr "Επιλογή"
 
-#: beast-gtk/bstfiledialog.cc:404
+#: beast-gtk/bstfiledialog.cc:417
 msgid "Select Directory"
 msgstr "Επιλογή καταλόγου"
 
-#: beast-gtk/bstfiledialog.cc:390
+#: beast-gtk/bstfiledialog.cc:403
 #, fuzzy
 msgid "Select File"
 msgstr "Επιλογή"
@@ -6011,7 +6072,7 @@ msgstr ""
 msgid "Signal Inputs"
 msgstr "Τύπος ελέγχου"
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1051
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "Τύπος ελέγχου"
@@ -6118,6 +6179,23 @@ msgstr "/Τρα_γούδι"
 #, fuzzy, c-format
 msgid "Song: %s"
 msgstr "Αποθήκευση: %s"
+
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+msgid "Sound Font Preset"
+msgstr ""
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Sound Font Preset to be used during replay"
+msgstr ""
+
+#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:282
+msgid "Sound Fonts"
+msgstr ""
+
+#: bse/bsetrack.cc:1124
+#, fuzzy
+msgid "Sound font preset to be used as instrument"
+msgstr "Αποθήκευση οργάνου"
 
 #: beast-gtk/bstscrollgraph.cc:552 beast-gtk/bstscrollgraph.cc:555
 #: beast-gtk/bstscrollgraph.cc:559 beast-gtk/bstscrollgraph.cc:562
@@ -6227,7 +6305,7 @@ msgstr ""
 msgid "Stopping Playback"
 msgstr "Διακοπή αναπαραγωγής"
 
-#: beast-gtk/bstfiledialog.cc:599
+#: beast-gtk/bstfiledialog.cc:612
 msgid "Store references to wave files"
 msgstr "Αποθήκευση αναφορών σε αρχεία wave "
 
@@ -6276,7 +6354,7 @@ msgid ""
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:312
+#: beast-gtk/res/radgets-beast.xml:331
 msgid "Switches"
 msgstr ""
 
@@ -6326,7 +6404,8 @@ msgstr "Συχνότητα κέντρου"
 msgid "Synth Done"
 msgstr "/_Synth"
 
-#: bse/bsetrack.cc:1026 bse/bsetrack.cc:1031 bse/bsetrack.cc:1036
+#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
+#: bse/bsetrack.cc:1127
 #, fuzzy
 msgid "Synth Input"
 msgstr "Αριστερά"
@@ -6366,7 +6445,7 @@ msgstr "Αρχείο σύνθεσης BSE"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Αρχείο σύνθεσης BSE"
 
-#: beast-gtk/bsttrackview.cc:600
+#: beast-gtk/bsttrackview.cc:618
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
@@ -6374,12 +6453,12 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: bse/bsetrack.cc:1028
+#: bse/bsetrack.cc:1113
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:609 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1049
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
+#: bse/bsetrack.cc:1140
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -6394,13 +6473,13 @@ msgstr ""
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1028
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
 #, fuzzy
 msgid "Synthesizer"
 msgstr "/_Synthesizers"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.cc:245
+#: beast-gtk/bsttracksynthdialog.cc:255
 #, fuzzy, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "/_Synthesizers"
@@ -6781,11 +6860,11 @@ msgstr ""
 msgid "Totals"
 msgstr "/Ερ_γαλεία"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks"
 msgstr "Κομμάτια"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 
@@ -6960,8 +7039,8 @@ msgstr ""
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:271 beast-gtk/bstutils.cc:293
-#: beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:299
 msgid "Updating View"
 msgstr ""
 
@@ -6988,7 +7067,7 @@ msgid "VScale:"
 msgstr "VΚλίμακα:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:434
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
 #, fuzzy
 msgid "VZoom"
 msgstr "Μεγέθυνση"
@@ -7052,7 +7131,7 @@ msgid "Vertical Select"
 msgstr "Κάθετη επιλογή"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:432
+#: beast-gtk/res/radgets-beast.xml:451
 #, fuzzy
 msgid "Vertical piano zoom"
 msgstr "Κάθετη περιοχή"
@@ -7088,7 +7167,7 @@ msgstr ""
 msgid "WAVE File"
 msgstr ""
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1033 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 #, fuzzy
 msgid "Wave"
@@ -7112,7 +7191,7 @@ msgstr "'Εξοδος"
 msgid "Wave Repository"
 msgstr ""
 
-#: bse/bsetrack.cc:1033
+#: bse/bsetrack.cc:1118
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Αποθήκευση οργάνου"
@@ -7122,12 +7201,12 @@ msgid "Wave used as oscillator source"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:634
+#: beast-gtk/res/radgets-beast.xml:653
 #, fuzzy
 msgid "Wave_s"
 msgstr "/Wave_s"
 
-#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:209
+#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Waves"
 
@@ -7214,13 +7293,13 @@ msgid "_About..."
 msgstr "/Βοήθεια/Πε_ρί..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:251
+#: beast-gtk/res/radgets-beast.xml:270
 #, fuzzy
 msgid "_Add"
 msgstr "Προσθήκη"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 #, fuzzy
 msgid "_Apply"
 msgstr "Εφαρμογή Loop"
@@ -7240,7 +7319,7 @@ msgid "_Beast Website..."
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "_Cancel"
 msgstr ""
 
@@ -7255,7 +7334,7 @@ msgid "_Close"
 msgstr "/Αρχείο/_Κλείσιμο"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:639
+#: beast-gtk/res/radgets-beast.xml:658
 #, fuzzy
 msgid "_Demo"
 msgstr "/_Demo"
@@ -7267,8 +7346,8 @@ msgid "_Distortion"
 msgstr "Περιγραφή"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:450 beast-gtk/res/radgets-beast.xml:486
-#: beast-gtk/res/radgets-beast.xml:599
+#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
+#: beast-gtk/res/radgets-beast.xml:618
 msgid "_Edit"
 msgstr "_Επεξεργασία"
 
@@ -7283,7 +7362,7 @@ msgid "_FAQ..."
 msgstr "/Βοήθεια/_FAQ..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:592
+#: beast-gtk/res/radgets-beast.xml:611
 #, fuzzy
 msgid "_File"
 msgstr "/_Αρχείο"
@@ -7306,7 +7385,7 @@ msgid "_Forward"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:664
 #, fuzzy
 msgid "_Help"
 msgstr "/_Βοήθεια"
@@ -7367,13 +7446,13 @@ msgid "_Preferences..."
 msgstr "Προτιμήσεις"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:616
+#: beast-gtk/res/radgets-beast.xml:635
 #, fuzzy
 msgid "_Project"
 msgstr "/Ε_ργασία"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:458 beast-gtk/res/radgets-beast.xml:494
+#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
 msgid "_Quantization"
 msgstr ""
 
@@ -7403,7 +7482,7 @@ msgid "_Reload"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:264
+#: beast-gtk/res/radgets-beast.xml:283
 #, fuzzy
 msgid "_Remove"
 msgstr "/_Demo"
@@ -7420,18 +7499,18 @@ msgid "_Save"
 msgstr "/Αρχείο/Αποθήκευ_ση"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:455 beast-gtk/res/radgets-beast.xml:491
+#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
 #, fuzzy
 msgid "_Select"
 msgstr "Επιλογή"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:609
+#: beast-gtk/res/radgets-beast.xml:628
 msgid "_Skins"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:647
 #, fuzzy
 msgid "_Song"
 msgstr "/Τρα_γούδι"
@@ -7446,20 +7525,20 @@ msgid "_Stop"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:631
+#: beast-gtk/res/radgets-beast.xml:650
 #, fuzzy
 msgid "_Synth"
 msgstr "/_Synth"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:621
+#: beast-gtk/res/radgets-beast.xml:640
 #, fuzzy
 msgid "_Synthesizers"
 msgstr "/_Synthesizers"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:447 beast-gtk/res/radgets-beast.xml:483
-#: beast-gtk/res/radgets-beast.xml:626
+#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
+#: beast-gtk/res/radgets-beast.xml:645
 #, fuzzy
 msgid "_Tools"
 msgstr "/Ερ_γαλεία"
@@ -7470,12 +7549,12 @@ msgid "_Undo"
 msgstr "/Επεξεργασία/Α_ναίρεση"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:465
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
 msgid "_Utilities"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:605
+#: beast-gtk/res/radgets-beast.xml:624
 #, fuzzy
 msgid "_View"
 msgstr "/_Προβολή"

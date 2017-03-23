@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 01:41+0100\n"
+"POT-Creation-Date: 2017-03-23 22:18+0100\n"
 "PO-Revision-Date: 2010-06-23 21:18+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -787,7 +787,7 @@ msgstr ""
 msgid "Add reeds sound"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:194
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Ajoute, édite et connecte les composants d'une trame de synthèse"
 
@@ -824,11 +824,11 @@ msgstr "Ajuste la balance de sortie entre droite et gauche"
 msgid "Adjust overall program behaviour"
 msgstr "Paramètre le comportement global du programme"
 
-#: beast-gtk/bstsupershell.cc:168
+#: beast-gtk/bstsupershell.cc:169
 msgid "Adjust overall song behaviour"
 msgstr "Ajuste le comportement général de la mélodie"
 
-#: beast-gtk/bstsupershell.cc:197
+#: beast-gtk/bstsupershell.cc:198
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Ajuste le comportement général du synthétiseur"
 
@@ -858,7 +858,7 @@ msgstr "Choisit d'écrire les valeurs en dB plutôt que des lignes"
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1022
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
 msgid "Adjustments"
 msgstr "Ajustements"
 
@@ -991,7 +991,7 @@ msgid "Anti-Alias"
 msgstr "Anti-crènelage "
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr ""
 "Applique les changements de configuration à la disposition de l'éditeur de "
@@ -1289,23 +1289,33 @@ msgid "Available Inputs"
 msgstr "Entrées disponibles"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:235
+#: beast-gtk/res/radgets-beast.xml:254
 msgid "Available Items:"
 msgstr "Éléments disponibles :"
 
-#: bse/bsebus.cc:131 bse/bsetrack.cc:282
+#: bse/bsebus.cc:131 bse/bsetrack.cc:296
 msgid "Available Outputs"
 msgstr "Sorties disponibles"
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr "Post-processeurs disponibles"
 
-#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
+#: bse/bsesoundfontosc.cc:311
+#, fuzzy
+msgid "Available Presets"
+msgstr "Sons disponibles"
+
+#: beast-gtk/bsttrackview.cc:300
+#, fuzzy
+msgid "Available Sound Fonts"
+msgstr "Entrées disponibles"
+
+#: bse/bsemidisynth.cc:211 bse/bsesubsynth.cc:141 bse/bsetrack.cc:288
 msgid "Available Synthesizers"
 msgstr "Synthétiseurs disponibles"
 
-#: beast-gtk/bsttrackview.cc:283 bse/bsetrack.cc:265 bse/bsewaveosc.cc:112
+#: beast-gtk/bsttrackview.cc:297 bse/bsetrack.cc:273 bse/bsewaveosc.cc:112
 msgid "Available Waves"
 msgstr "Sons disponibles"
 
@@ -1496,7 +1506,7 @@ msgstr ""
 
 #. Name
 #. label=
-#: beast-gtk/res/radgets-beast.xml:297
+#: beast-gtk/res/radgets-beast.xml:316
 msgid "Bus Name"
 msgstr "Nom du bus"
 
@@ -1508,7 +1518,7 @@ msgstr ""
 "Implémentation du bus pour les mélodies, utilisée pour diriger les signaux "
 "des pistes audio vers la sortie maître."
 
-#: beast-gtk/bstsupershell.cc:176
+#: beast-gtk/bstsupershell.cc:177
 msgid "Busses"
 msgstr "Bus"
 
@@ -1651,7 +1661,7 @@ msgstr "Échec du CODEC"
 msgid "Color Entry"
 msgstr "Saisie d'une couleur"
 
-#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:612
+#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
 #: bse/bseobject.cc:865
 msgid "Comment"
 msgstr "Commentaire"
@@ -1665,12 +1675,12 @@ msgid "Compressed audio output 2"
 msgstr "Sortie audio comprimée 2"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure"
 msgstr "Configurer"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:541
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configure la disposition de colonne de l'éditeur de motifs"
 
@@ -2112,7 +2122,7 @@ msgid "Control Type"
 msgstr "Type de contrôle :"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:501
+#: beast-gtk/res/radgets-beast.xml:520
 msgid "Control Type:"
 msgstr "Type de contrôle :"
 
@@ -2190,7 +2200,7 @@ msgid "Ctrl Out4"
 msgstr "Ctrl Out4"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:276
+#: beast-gtk/res/radgets-beast.xml:295
 msgid "Current Items:"
 msgstr "Éléments courants :"
 
@@ -2290,8 +2300,8 @@ msgstr "Retard (secondes)"
 #: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
 #: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
 #: beast-gtk/bstsnetrouter.cc:672 beast-gtk/bstsnetrouter.cc:723
-#: beast-gtk/bsttrackrollctrl.cc:35 beast-gtk/bsttrackview.cc:51
-#: beast-gtk/bstwaveview.cc:30
+#: beast-gtk/bstsoundfontview.cc:28 beast-gtk/bsttrackrollctrl.cc:35
+#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:30
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2330,6 +2340,11 @@ msgstr "Supprime la voix actuellement sélectionnée"
 #: beast-gtk/bstkeybindings.cc:41
 msgid "Delete the currently selected key binding"
 msgstr "Supprimer la combinaison de touches actuellement sélectionnée"
+
+#: beast-gtk/bstsoundfontview.cc:28
+#, fuzzy
+msgid "Delete the currently selected sound font from project"
+msgstr "Supprime la piste actuellement sélectionnée"
 
 #: beast-gtk/bsttrackview.cc:51
 msgid "Delete the currently selected track"
@@ -2429,7 +2444,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "Discard changes and close dialog"
 msgstr "Annule les modifications et ferme la boîte de dialogue"
 
@@ -2492,12 +2507,12 @@ msgstr "Sortie audio distordu"
 msgid "Document _Index..."
 msgstr "_Index des documents..."
 
-#: bse/bsewaveosc.cc:585 plugins/bsesimpleadsr.cc:102
-#: plugins/standardguspatchenvelope.idl:31
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
+#: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
 msgid "Done Out"
 msgstr "Sortie effectuée"
 
-#: bse/bsewaveosc.cc:585
+#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:585
 msgid "Done Output"
 msgstr "Sortie effectuée"
 
@@ -2703,7 +2718,7 @@ msgid "Error: "
 msgstr "Erreur :"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:481
+#: beast-gtk/res/radgets-beast.xml:500
 msgid "Events"
 msgstr "Événements"
 
@@ -2839,7 +2854,12 @@ msgstr "Échec lors de l'exécution de la procédure de script « %s » : %s"
 msgid "Failed to load project \"%s\": %s"
 msgstr "Échec lors du chargement de « %s » : %s"
 
-#: beast-gtk/bstfiledialog.cc:735 beast-gtk/bstmain.cc:378
+#: beast-gtk/bstfiledialog.cc:778
+#, fuzzy, c-format
+msgid "Failed to load sound font \"%s\": %s"
+msgstr "Échec lors du chargement de « %s » : %s"
+
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
 #: beast-gtk/bstmain.cc:394
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -2870,7 +2890,7 @@ msgstr "Échec de l'ouverture du fichier « %s » en sortie : %s"
 msgid "Failed to parse harmony list"
 msgstr "Échec du démarrage de l'enregistrement sur disque."
 
-#: beast-gtk/bstfiledialog.cc:528
+#: beast-gtk/bstfiledialog.cc:541
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -2887,7 +2907,7 @@ msgstr ""
 msgid "Failed to retrieve seek information"
 msgstr "Échec d'extraction de l'information recherchée"
 
-#: beast-gtk/bstfiledialog.cc:497
+#: beast-gtk/bstfiledialog.cc:510
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -2903,7 +2923,7 @@ msgstr ""
 "%s"
 
 #. error != Bse::Error::FILE_EXISTS
-#: beast-gtk/bstfiledialog.cc:523 beast-gtk/bstfiledialog.cc:537
+#: beast-gtk/bstfiledialog.cc:536 beast-gtk/bstfiledialog.cc:550
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -3146,7 +3166,7 @@ msgid "Frequency shift ratio (assumed 1.0 if not connected)"
 msgstr "Rapport de décalage de fréquence (1.0 supposé si non connecté)"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.cc:598
+#: beast-gtk/bstfiledialog.cc:611
 msgid "Fully include wave files"
 msgstr "Inclure complètement les fichiers son"
 
@@ -3260,7 +3280,7 @@ msgid "HWrap"
 msgstr "HWrap"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:430
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
 msgid "HZoom"
 msgstr "ZoomH"
 
@@ -3321,7 +3341,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr "Échelle horizontale (logarithmique)"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:428
+#: beast-gtk/res/radgets-beast.xml:447
 msgid "Horizontal piano zoom"
 msgstr "Zoom horizontal du clavier"
 
@@ -3361,7 +3381,7 @@ msgstr ""
 msgid "Image shade"
 msgstr "Ombrage de l'image"
 
-#: beast-gtk/bstfiledialog.cc:468
+#: beast-gtk/bstfiledialog.cc:481
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Importation MIDI : %s"
@@ -3370,7 +3390,7 @@ msgstr "Importation MIDI : %s"
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importe un fichier MIDI standard dans le projet actuel"
 
-#: beast-gtk/bstfiledialog.cc:479
+#: beast-gtk/bstfiledialog.cc:492
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importation du fichier MIDI « %s »"
@@ -3499,7 +3519,7 @@ msgid "Input/output error"
 msgstr "Erreur d'entrée/sortie"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:300
+#: beast-gtk/res/radgets-beast.xml:319
 msgid "Inputs"
 msgstr "Entrées"
 
@@ -3720,7 +3740,7 @@ msgid "Latency [ms]"
 msgstr "Latence [ms]"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:549
+#: beast-gtk/res/radgets-beast.xml:568
 msgid "Layout:"
 msgstr "Disposition :"
 
@@ -3761,7 +3781,7 @@ msgstr "Entrée gauche"
 msgid "Left Input"
 msgstr "Entrée gauche"
 
-#: bse/bsemidivoice.cc:124 plugins/bsebalance.idl:21
+#: bse/bsemidivoice.cc:124 bse/bsesoundfontosc.cc:176 plugins/bsebalance.idl:21
 #: plugins/davcanyondelay.cc:103
 msgid "Left Out"
 msgstr "Sortie gauche"
@@ -3795,7 +3815,7 @@ msgstr "Gauche à droite"
 msgid "Level"
 msgstr "Étiquette"
 
-#: beast-gtk/bstwaveview.cc:28
+#: beast-gtk/bstsoundfontview.cc:26 beast-gtk/bstwaveview.cc:28
 msgid "Lib..."
 msgstr "Bibliothèque..."
 
@@ -3826,17 +3846,34 @@ msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 "Liste des bus de la table de mixage disponibles pour utilisation en sortie"
 
-#: bse/bsetrack.cc:282
+#: bse/bsetrack.cc:296
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 "Liste des bus de mixage disponibles à utiliser en tant que sortie de piste"
+
+#: bse/bsesoundfontosc.cc:311
+#, fuzzy
+msgid "List of available sound font presets to choose as fluid synth preset"
+msgstr ""
+"Liste des réseaux de synthèse disponibles parmi lesquels il convient de "
+"choisir un sous-réseau"
+
+#: bse/bsetrack.cc:282
+#, fuzzy
+msgid "List of available sound font presets to choose as track instrument"
+msgstr "Liste des sons disponibles à choisir en tant que piste d'instrument "
+
+#: beast-gtk/bsttrackview.cc:301
+#, fuzzy
+msgid "List of available sound fonts to choose track instrument from"
+msgstr "Liste des sons disponibles pour le choix d'une piste d'instrument"
 
 #: bse/bsemidisynth.cc:211
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 "Liste des réseaux de synthèse disponibles pour le choix d'un instrument MIDI"
 
-#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:215 bse/bsesong.cc:123 bse/bsetrack.cc:292
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 "Liste des réseaux de synthèse disponibles pour le choix d'un post-processeur"
@@ -3847,7 +3884,7 @@ msgstr ""
 "Liste des réseaux de synthèse disponibles parmi lesquels il convient de "
 "choisir un sous-réseau"
 
-#: bse/bsetrack.cc:274
+#: bse/bsetrack.cc:288
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 "Liste des réseaux synthèse disponibles à partir desquels choisir une piste "
@@ -3858,7 +3895,7 @@ msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 "Liste des signaux de synthèse disponibles pour utilisation en entrée de bus"
 
-#: beast-gtk/bsttrackview.cc:284
+#: beast-gtk/bsttrackview.cc:298
 msgid "List of available waves to choose a track instrument from"
 msgstr "Liste des sons disponibles pour le choix d'une piste d'instrument"
 
@@ -3866,7 +3903,7 @@ msgstr "Liste des sons disponibles pour le choix d'une piste d'instrument"
 msgid "List of available waves to choose as oscillator source"
 msgstr "Liste des sons disponibles pour le choix d'une source d'oscillateur"
 
-#: bse/bsetrack.cc:265
+#: bse/bsetrack.cc:273
 msgid "List of available waves to choose as track instrument"
 msgstr "Liste des sons disponibles à choisir en tant que piste d'instrument "
 
@@ -3874,11 +3911,11 @@ msgstr "Liste des sons disponibles à choisir en tant que piste d'instrument "
 msgid "Load"
 msgstr "Charger"
 
-#: beast-gtk/bstfiledialog.cc:617
+#: beast-gtk/bstfiledialog.cc:630
 msgid "Load Effect"
 msgstr "Charger un effet"
 
-#: beast-gtk/bstfiledialog.cc:668
+#: beast-gtk/bstfiledialog.cc:681
 msgid "Load Instrument"
 msgstr "Charger un instrument"
 
@@ -3886,7 +3923,11 @@ msgstr "Charger un instrument"
 msgid "Load Key Binding"
 msgstr "Charge une combinaison de touche"
 
-#: beast-gtk/bstfiledialog.cc:720
+#: beast-gtk/bstfiledialog.cc:763
+msgid "Load Sound Font"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.cc:733
 msgid "Load Wave"
 msgstr "Charger un son"
 
@@ -3902,12 +3943,22 @@ msgstr "Charger un _instrument..."
 msgid "Load a key binding set"
 msgstr "Charge un jeu de combinaisons de touches"
 
+#: beast-gtk/bstsoundfontview.cc:24
+#, fuzzy
+msgid "Load a new sound font file from disk"
+msgstr "Charge une nouveau fichier de son à partir du disque"
+
 #: beast-gtk/bstwaveview.cc:26
 msgid "Load a new wave file from disk"
 msgstr "Charge une nouveau fichier de son à partir du disque"
 
 #: beast-gtk/bstwaveview.cc:28
 msgid "Load a new wave file from library paths"
+msgstr "Charge un nouveau fichier de son à partir des bibliothèques"
+
+#: beast-gtk/bstsoundfontview.cc:26
+#, fuzzy
+msgid "Load a sound font file from library paths"
 msgstr "Charge un nouveau fichier de son à partir des bibliothèques"
 
 #: beast-gtk/bstapp.cc:129
@@ -3918,7 +3969,7 @@ msgstr "Charge une trame de synthèse à partir du dossier des effets"
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Charge une trame de synthèse à partir du dossier des instruments"
 
-#: beast-gtk/bstwaveview.cc:26
+#: beast-gtk/bstsoundfontview.cc:24 beast-gtk/bstwaveview.cc:26
 msgid "Load..."
 msgstr "Charger..."
 
@@ -3932,7 +3983,12 @@ msgstr "Chargement de « %s »"
 msgid "Loading skin `%s'"
 msgstr "Chargement du thème « %s »"
 
-#: beast-gtk/bstfiledialog.cc:730 beast-gtk/bstfiledialog.cc:733
+#: beast-gtk/bstfiledialog.cc:773 beast-gtk/bstfiledialog.cc:776
+#, fuzzy, c-format
+msgid "Loading sound font `%s'"
+msgstr "Chargement du thème « %s »"
+
+#: beast-gtk/bstfiledialog.cc:743 beast-gtk/bstfiledialog.cc:746
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Chargement du son : « %s »"
@@ -3963,7 +4019,7 @@ msgid "Lost Part"
 msgstr "Mesure perdue"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:304
 msgid "Lower"
 msgstr "Descendre"
 
@@ -3985,7 +4041,7 @@ msgstr "Fréquence du filtre passe-bas pour le contrôle du signal"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1043
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
@@ -3994,8 +4050,8 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1041
-#: bse/bsetrack.cc:1047
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
+#: bse/bsetrack.cc:1138
 msgid "MIDI Instrument"
 msgstr "Instrument MIDI"
 
@@ -4071,11 +4127,11 @@ msgstr "Maître [dB]"
 msgid "Master [float]"
 msgstr "Maître [réel]"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Max Voices"
 msgstr "Voix max"
 
-#: beast-gtk/bsttrackview.cc:597 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1038
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Nombre maximum de voix pour une exécution simultanée"
 
@@ -4091,22 +4147,22 @@ msgstr "Numérateur du tempo des mesures"
 msgid "Merge an existing project into the current project"
 msgstr "Fusionne un projet existant au projet actuel"
 
-#: beast-gtk/bstfiledialog.cc:443
+#: beast-gtk/bstfiledialog.cc:456
 #, c-format
 msgid "Merge: %s"
 msgstr "Fusionner : %s"
 
-#: beast-gtk/bstfiledialog.cc:629
+#: beast-gtk/bstfiledialog.cc:642
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Fusionner l'effet « %s »"
 
-#: beast-gtk/bstfiledialog.cc:679
+#: beast-gtk/bstfiledialog.cc:692
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Fusionner l'instrument « %s »"
 
-#: beast-gtk/bstfiledialog.cc:455
+#: beast-gtk/bstfiledialog.cc:468
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Fusion du projet « %s »"
@@ -4141,12 +4197,12 @@ msgstr "Métallique de la corde"
 msgid "Middle Bar Color"
 msgstr "Couleur de la ligne intermédiaire"
 
-#: bse/bsetrack.cc:1044
+#: bse/bsetrack.cc:1135
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "Canal MIDI assigné à cette piste ; 0 utilise un canal interne par piste"
 
-#: beast-gtk/bsttrackview.cc:603
+#: beast-gtk/bsttrackview.cc:621
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Canal MIDI assigné à cette piste, 0 utilise un canal privé par piste"
 
@@ -4159,7 +4215,7 @@ msgstr "_Synthèse"
 msgid "Mix Out"
 msgstr "Mix Out"
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Mélange les pistes en sortie, ajuste le volume et ajoute des effets"
 
@@ -4167,11 +4223,11 @@ msgstr "Mélange les pistes en sortie, ajuste le volume et ajoute des effets"
 msgid "Mixed audio output"
 msgstr "Sortie audio mixée"
 
-#: beast-gtk/bstsupershell.cc:165
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mixer"
 msgstr "Table de mixage"
 
-#: beast-gtk/bsttrackview.cc:606
+#: beast-gtk/bsttrackview.cc:624
 msgid "Mixer busses connected to track output"
 msgstr "Bus de la table de mixage connectés à la sortie de la piste"
 
@@ -4181,7 +4237,7 @@ msgstr ""
 "Table de mixage des bus utilisés en tant que sortie pour les signaux "
 "synthétisés"
 
-#: bse/bsetrack.cc:1054
+#: bse/bsetrack.cc:1145
 msgid "Mixer busses used as output for this track"
 msgstr "Bus de mixage utilisés en tant que sortie pour cette piste"
 
@@ -4293,12 +4349,12 @@ msgid "Move the current selection into clipboard"
 msgstr "Déplace la sélection en cours dans le presse-papiers"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:285
+#: beast-gtk/res/radgets-beast.xml:304
 msgid "Move the selection down by one position"
 msgstr "Descendre la sélection d'une case"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/res/radgets-beast.xml:302
 msgid "Move the selection up by one position"
 msgstr "Monter la sélection d'une case"
 
@@ -4335,7 +4391,7 @@ msgstr "Muet"
 msgid "Mute: turn off the bus volume"
 msgstr "Muet : coupe le volume du bus"
 
-#: bse/bsetrack.cc:1024
+#: bse/bsetrack.cc:1109
 msgid "Muted"
 msgstr "Rendu muet "
 
@@ -4349,7 +4405,7 @@ msgid "N Wait Spins"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:591 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
 msgid "Name"
 msgstr "Nom"
 
@@ -4589,7 +4645,7 @@ msgid "Note Velocity"
 msgstr "Dynamique des notes"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:461
+#: beast-gtk/res/radgets-beast.xml:480
 msgid "Note _Length"
 msgstr "_Longueur de la note"
 
@@ -4609,7 +4665,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Notes et informations à propos du présent cycle de parution"
 
-#: beast-gtk/bsttrackview.cc:594
+#: beast-gtk/bsttrackview.cc:612
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4677,7 +4733,7 @@ msgstr "A_ssistance en ligne..."
 msgid "Only parts louder than threshold are compressed"
 msgstr "Seules les parties au dessus du seuil sont compressées"
 
-#: beast-gtk/bstfiledialog.cc:376
+#: beast-gtk/bstfiledialog.cc:389
 msgid "Open Project"
 msgstr "Ouvrir un projet"
 
@@ -4723,7 +4779,7 @@ msgid "Open file browser"
 msgstr "Ouvre le navigateur de fichiers"
 
 #: beast-gtk/bstapp.cc:705 beast-gtk/bstapp.cc:713
-#: beast-gtk/bstfiledialog.cc:419 beast-gtk/bstfiledialog.cc:427
+#: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Ouverture du projet « %s »"
@@ -4843,7 +4899,7 @@ msgstr "Port de sortie %u"
 msgid "Output Signal Monitor"
 msgstr "Moniteur du signal de sortie"
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1053
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
 msgid "Output Signals"
 msgstr "Signaux de sortie"
 
@@ -4856,6 +4912,10 @@ msgstr "Volume canal gauche"
 msgid "Output [dB]"
 msgstr "Sortie [dB]"
 
+#: bse/bsesoundfontosc.cc:176 bse/bsesoundfontosc.cc:178
+msgid "Output of the fluid synth soundfont synthesizer"
+msgstr ""
+
 #: bse/bsesubsynth.cc:506
 msgid "Output port name to interface from"
 msgstr "Nom du port de sortie à partir duquel s'interfacer"
@@ -4865,7 +4925,7 @@ msgid "Output stage amplification in decibel"
 msgstr "Amplification de l'étage final en décibels"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:322
+#: beast-gtk/res/radgets-beast.xml:341
 msgid "Outputs"
 msgstr "Sorties"
 
@@ -4942,7 +5002,7 @@ msgstr "Erreur d'analyse"
 msgid "Part"
 msgstr "Mesures"
 
-#: beast-gtk/bstsupershell.cc:172
+#: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
 msgstr "Mesures"
 
@@ -5011,7 +5071,7 @@ msgid "Piano Keys"
 msgstr "Touches de clavier"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:445
+#: beast-gtk/res/radgets-beast.xml:464
 msgid "Piano Notes"
 msgstr "Notes du clavier"
 
@@ -5090,13 +5150,17 @@ msgstr "Position prise"
 msgid "Positive Value Color"
 msgstr "Couleur d'une valeur positive"
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1049
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
 msgid "Postprocessor"
 msgstr "Post-processeur"
 
 #: beast-gtk/bstapp.cc:940
 msgid "Preferences"
 msgstr "Préférences"
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Preset"
+msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
@@ -5167,9 +5231,9 @@ msgid ""
 "to time. It is a funny example though."
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:168
-#: beast-gtk/bstsupershell.cc:197 beast-gtk/bstsupershell.cc:212
-#: plugins/standardguspatchenvelope.idl:19
+#: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
+#: beast-gtk/bstsupershell.cc:227 plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -5348,7 +5412,7 @@ msgid "RC Files"
 msgstr "Fichiers RC"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:283
+#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:302
 msgid "Raise"
 msgstr "Monter"
 
@@ -5548,7 +5612,7 @@ msgstr "Entrée droite"
 msgid "Right Input"
 msgstr "Entrée droite"
 
-#: bse/bsemidivoice.cc:126 plugins/bsebalance.idl:23
+#: bse/bsemidivoice.cc:126 bse/bsesoundfontosc.cc:178 plugins/bsebalance.idl:23
 #: plugins/davcanyondelay.cc:105
 msgid "Right Out"
 msgstr "Sortie droite"
@@ -5587,7 +5651,7 @@ msgid ""
 "modules within a synthesis network."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:180 beast-gtk/bstsupershell.cc:193
+#: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr "Routage"
 
@@ -5663,11 +5727,11 @@ msgstr "Enregistrer en tant qu'instrument..."
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
-#: beast-gtk/bstfiledialog.cc:642
+#: beast-gtk/bstfiledialog.cc:655
 msgid "Save Effect"
 msgstr "Enregistrer l'effet"
 
-#: beast-gtk/bstfiledialog.cc:692
+#: beast-gtk/bstfiledialog.cc:705
 msgid "Save Instrument"
 msgstr "Enregistrer l'instrument"
 
@@ -5687,22 +5751,22 @@ msgstr "Enregistre une trame de synthèse dans le dossier des instruments"
 msgid "Save the project before closing its window?"
 msgstr "Voulez-vous enregistrer le projet avant de fermer sa fenêtre ?"
 
-#: beast-gtk/bstfiledialog.cc:594
+#: beast-gtk/bstfiledialog.cc:607
 #, c-format
 msgid "Save: %s"
 msgstr "Enregistrer : %s"
 
-#: beast-gtk/bstfiledialog.cc:655
+#: beast-gtk/bstfiledialog.cc:668
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Enregistrement de l'effet « %s »"
 
-#: beast-gtk/bstfiledialog.cc:705
+#: beast-gtk/bstfiledialog.cc:718
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Enregistrement de l'instrument « %s »"
 
-#: beast-gtk/bstfiledialog.cc:560
+#: beast-gtk/bstfiledialog.cc:573
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Enregistrement du projet « %s »"
@@ -5835,11 +5899,11 @@ msgstr "Sélectionner"
 msgid "Select Color"
 msgstr "Choisir une couleur"
 
-#: beast-gtk/bstfiledialog.cc:404
+#: beast-gtk/bstfiledialog.cc:417
 msgid "Select Directory"
 msgstr "Sélectionner un répertoire"
 
-#: beast-gtk/bstfiledialog.cc:390
+#: beast-gtk/bstfiledialog.cc:403
 msgid "Select File"
 msgstr "Sélectionner un fichier"
 
@@ -5994,7 +6058,7 @@ msgstr "Signal d'entrée"
 msgid "Signal Inputs"
 msgstr "Entrées du signal"
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1051
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
 msgid "Signal Outputs"
 msgstr "Sorties du signal"
 
@@ -6100,6 +6164,23 @@ msgstr "_Mélodie"
 #, c-format
 msgid "Song: %s"
 msgstr "Mélodie : %s"
+
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+msgid "Sound Font Preset"
+msgstr ""
+
+#: bse/bsesoundfontosc.cc:173
+msgid "Sound Font Preset to be used during replay"
+msgstr ""
+
+#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:282
+msgid "Sound Fonts"
+msgstr ""
+
+#: bse/bsetrack.cc:1124
+#, fuzzy
+msgid "Sound font preset to be used as instrument"
+msgstr "Réseau de synthèse à utiliser en tant qu'instrument"
 
 #: beast-gtk/bstscrollgraph.cc:552 beast-gtk/bstscrollgraph.cc:555
 #: beast-gtk/bstscrollgraph.cc:559 beast-gtk/bstscrollgraph.cc:562
@@ -6216,7 +6297,7 @@ msgstr "Arrête l'exécution du projet"
 msgid "Stopping Playback"
 msgstr "Arrêter la lecture"
 
-#: beast-gtk/bstfiledialog.cc:599
+#: beast-gtk/bstfiledialog.cc:612
 msgid "Store references to wave files"
 msgstr "Stocker les références aux fichiers son"
 
@@ -6272,7 +6353,7 @@ msgstr ""
 "balance."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:312
+#: beast-gtk/res/radgets-beast.xml:331
 msgid "Switches"
 msgstr "Interrupteurs"
 
@@ -6317,7 +6398,8 @@ msgstr "Fréquence de contrôle de la synthèse"
 msgid "Synth Done"
 msgstr "Synthèse effectuée"
 
-#: bse/bsetrack.cc:1026 bse/bsetrack.cc:1031 bse/bsetrack.cc:1036
+#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
+#: bse/bsetrack.cc:1127
 msgid "Synth Input"
 msgstr "Entrée synthétiseur"
 
@@ -6354,7 +6436,7 @@ msgstr "Module de synthèse actuellement occupé"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Module de synthèse actuellement occupé"
 
-#: beast-gtk/bsttrackview.cc:600
+#: beast-gtk/bsttrackview.cc:618
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 "Réseau de synthèse ou son à utiliser en tant qu'instrument par cette piste"
@@ -6363,12 +6445,12 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Réseau de synthèse à utiliser en tant qu'instrument MIDI"
 
-#: bse/bsetrack.cc:1028
+#: bse/bsetrack.cc:1113
 msgid "Synthesis network to be used as instrument"
 msgstr "Réseau de synthèse à utiliser en tant qu'instrument"
 
-#: beast-gtk/bsttrackview.cc:609 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1049
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
+#: bse/bsetrack.cc:1140
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Réseau de synthèse utilisé en post-traitement"
 
@@ -6385,12 +6467,12 @@ msgstr ""
 "Signaux synthétisés (provenant des pistes et des bus) utilisés en entrée de "
 "bus"
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1028
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
 msgid "Synthesizer"
 msgstr "Synthétiseur"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.cc:245
+#: beast-gtk/bsttracksynthdialog.cc:255
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Sélection du synthétiseur : %s"
@@ -6818,11 +6900,11 @@ msgstr "Trop de fichiers ouverts dans le système"
 msgid "Totals"
 msgstr "Totaux"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks"
 msgstr "Pistes"
 
-#: beast-gtk/bstsupershell.cc:162
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 "Les pistes contiennent les définitions d'instruments et les mesures avec les "
@@ -6986,8 +7068,8 @@ msgstr "Haut"
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:271 beast-gtk/bstutils.cc:293
-#: beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
+#: beast-gtk/bstutils.cc:299
 msgid "Updating View"
 msgstr "Mise à jour de la vue"
 
@@ -7016,7 +7098,7 @@ msgid "VScale:"
 msgstr "ÉchelleVert :"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:434
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
 msgid "VZoom"
 msgstr "VZoom"
 
@@ -7073,7 +7155,7 @@ msgid "Vertical Select"
 msgstr "Sélection verticale"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:432
+#: beast-gtk/res/radgets-beast.xml:451
 msgid "Vertical piano zoom"
 msgstr "Zoom vertical sur le clavier"
 
@@ -7108,7 +7190,7 @@ msgstr "Ajustement du volume en décibels pour le bus du canal droit"
 msgid "WAVE File"
 msgstr "Fichier WAVE"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1033 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Son"
@@ -7131,7 +7213,7 @@ msgstr "Sortie onde"
 msgid "Wave Repository"
 msgstr "Magasin d'ondes"
 
-#: bse/bsetrack.cc:1033
+#: bse/bsetrack.cc:1118
 msgid "Wave to be used as instrument"
 msgstr "Son à utiliser en tant qu'instrument"
 
@@ -7140,11 +7222,11 @@ msgid "Wave used as oscillator source"
 msgstr "Son utilisée en tant que source d'oscillateur"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:634
+#: beast-gtk/res/radgets-beast.xml:653
 msgid "Wave_s"
 msgstr "Son_s"
 
-#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:209
+#: beast-gtk/bstapp.cc:481 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Ondes"
 
@@ -7227,12 +7309,12 @@ msgid "_About..."
 msgstr "À _propos..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:251
+#: beast-gtk/res/radgets-beast.xml:270
 msgid "_Add"
 msgstr "_Ajouter"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:574
 msgid "_Apply"
 msgstr "_Appliquer"
 
@@ -7251,7 +7333,7 @@ msgid "_Beast Website..."
 msgstr "Site Web de _Beast..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "_Cancel"
 msgstr "A_nnuler"
 
@@ -7264,7 +7346,7 @@ msgid "_Close"
 msgstr "_Fermer"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:639
+#: beast-gtk/res/radgets-beast.xml:658
 msgid "_Demo"
 msgstr "_Démo"
 
@@ -7274,8 +7356,8 @@ msgid "_Distortion"
 msgstr "_Distorsion"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:450 beast-gtk/res/radgets-beast.xml:486
-#: beast-gtk/res/radgets-beast.xml:599
+#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
+#: beast-gtk/res/radgets-beast.xml:618
 msgid "_Edit"
 msgstr "É_dition"
 
@@ -7289,7 +7371,7 @@ msgid "_FAQ..."
 msgstr "_FAQ..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:592
+#: beast-gtk/res/radgets-beast.xml:611
 msgid "_File"
 msgstr "_Fichier"
 
@@ -7309,7 +7391,7 @@ msgid "_Forward"
 msgstr "En a_vant"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:664
 msgid "_Help"
 msgstr "Aid_e"
 
@@ -7363,12 +7445,12 @@ msgid "_Preferences..."
 msgstr "_Préférences..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:616
+#: beast-gtk/res/radgets-beast.xml:635
 msgid "_Project"
 msgstr "_Projet"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:458 beast-gtk/res/radgets-beast.xml:494
+#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
 msgid "_Quantization"
 msgstr "_Calage temporel"
 
@@ -7394,7 +7476,7 @@ msgid "_Reload"
 msgstr "_Recharger"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:264
+#: beast-gtk/res/radgets-beast.xml:283
 msgid "_Remove"
 msgstr "Supprime_r"
 
@@ -7408,17 +7490,17 @@ msgid "_Save"
 msgstr "_Enregistrer"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:455 beast-gtk/res/radgets-beast.xml:491
+#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
 msgid "_Select"
 msgstr "_Sélectionner"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:609
+#: beast-gtk/res/radgets-beast.xml:628
 msgid "_Skins"
 msgstr "Apparence_s"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:647
 msgid "_Song"
 msgstr "_Mélodie"
 
@@ -7432,18 +7514,18 @@ msgid "_Stop"
 msgstr "_Arrêter"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:631
+#: beast-gtk/res/radgets-beast.xml:650
 msgid "_Synth"
 msgstr "_Synthèse"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:621
+#: beast-gtk/res/radgets-beast.xml:640
 msgid "_Synthesizers"
 msgstr "_Synthétiseurs"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:447 beast-gtk/res/radgets-beast.xml:483
-#: beast-gtk/res/radgets-beast.xml:626
+#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
+#: beast-gtk/res/radgets-beast.xml:645
 msgid "_Tools"
 msgstr "_Outils"
 
@@ -7452,12 +7534,12 @@ msgid "_Undo"
 msgstr "A_nnuler"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:465
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
 msgid "_Utilities"
 msgstr "_Utilitaires"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:605
+#: beast-gtk/res/radgets-beast.xml:624
 msgid "_View"
 msgstr "Afficha_ge"
 
