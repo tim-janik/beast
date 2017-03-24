@@ -35,10 +35,13 @@ CLEANFILES += v8bse.node
 clean-local: clean-build
 clean-build: ; rm -rf build/
 NODE_GYP = $(strip \
-	HOME=../node_modules/.electron-gyp \
+	sed -n '/^ \ "version":/s/.*"\([0-9.]\+\)".*/\1/p' ../node_modules/electron/package.json > $@.tmpev \
+	&& ELECTRON_VERSION=`grep '^[0-9.]\+$$' $@.tmpev` \
+	&& rm $@.tmpev \
+	&& HOME=../node_modules/.electron-gyp \
 	CXX="$(CXX)" CXXFLAGS="$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)" \
 	../node_modules/.bin/node-gyp \
-	--target=$(shell ../node_modules/electron/dist/electron --version) \
+	--target="$$ELECTRON_VERSION" \
 	$(if $(findstring 1, $(V)) , --verbose) \
 )
 
