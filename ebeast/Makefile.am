@@ -3,6 +3,8 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = v8bse .
 
+export ELECTRON_ENABLE_LOGGING=1
+
 EXTRA_DIST += $(strip \
 )
 

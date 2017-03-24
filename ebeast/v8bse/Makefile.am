@@ -5,6 +5,8 @@ AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISA
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 CLEANDIRS     =
 
+export ELECTRON_ENABLE_LOGGING=1
+
 # == all: ==
 all:
 	@echo "$$(basename $$(pwd))/: build via ../ebeast/ rules"
