@@ -300,14 +300,21 @@ AC_CHECK_FUNCS(getpwnam_r getpwnam)
 AC_CHECK_FUNCS(timegm)
 
 # == NPM ==
-AC_PATH_PROG([NPM], [npm])
-if test "y$NPM" != "y" ; then
-    AC_MSG_CHECKING([for npm version])
-    NPM_VERSION=`$NPM --version`
-    AC_MSG_RESULT([$NPM_VERSION])
-    MC_CHECK_VERSION([$NPM_VERSION], 1.4.21, with_npm=yes, with_npm=no)
+AC_ARG_WITH([npm], [  --without-npm           Disable npm based Beast package builds])
+with_usable_npm=no
+# only attempt npm builds if ebeast/ files are present in the current build tree
+if test -r ebeast/package.json.in ; then
+    if test "_$with_npm" != "_no" ; then
+	AC_PATH_PROG([NPM], [npm])
+	if test "_$NPM" != "_" ; then
+	    AC_MSG_CHECKING([for npm version])
+	    NPM_VERSION=`$NPM --version`
+	    AC_MSG_RESULT([$NPM_VERSION])
+	    MC_CHECK_VERSION([$NPM_VERSION], 1.4.21, with_usable_npm=yes)
+	fi
+    fi
 fi
-AM_CONDITIONAL(WITH_NPM, [test "$with_npm" = "yes"])
+AM_CONDITIONAL(WITH_NPM, [test "_$with_usable_npm" = "_yes"])
 
 dnl #
 dnl # Define package requirements.
