@@ -7,11 +7,16 @@ EXTRA_DIST += $(strip \
 )
 
 # == all: ==
-all:
-	@echo "$$(basename $$(pwd))/: experimental code, not built by default. Usage:"
+all: with_npm
+	@echo "$$(basename $$(pwd))/: experimental code. Usage:"
 	@echo "	make app	# build the v8 Bse module and app files"
 	@echo "	make run	# run the electron app in the current directory"
 	@echo "	make clean	# remove build files"
+if WITH_NPM
+with_npm: app
+else
+with_npm:
+endif
 
 # == package.json ==
 package.json: package.json.in ../config.status

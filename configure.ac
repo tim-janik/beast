@@ -299,6 +299,15 @@ AC_SUBST(LIBZ_LIBS)
 AC_CHECK_FUNCS(getpwnam_r getpwnam)
 AC_CHECK_FUNCS(timegm)
 
+# == NPM ==
+AC_PATH_PROG([NPM], [npm])
+if test "y$NPM" != "y" ; then
+    AC_MSG_CHECKING([for npm version])
+    NPM_VERSION=`$NPM --version`
+    AC_MSG_RESULT([$NPM_VERSION])
+    MC_CHECK_VERSION([$NPM_VERSION], 1.4.21, with_npm=yes, with_npm=no)
+fi
+AM_CONDITIONAL(WITH_NPM, [test "$with_npm" = "yes"])
 
 dnl #
 dnl # Define package requirements.
