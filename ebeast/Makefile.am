@@ -15,7 +15,9 @@ all: with_npm
 	@echo "	make run	# run the electron app in the current directory"
 	@echo "	make clean	# remove build files"
 if WITH_NPM
-with_npm: app
+with_npm:		.bundlestamp
+install-exec-local:	install-exec-bundle
+uninstall-local:	uninstall-bundle
 else
 with_npm:
 endif
@@ -27,10 +29,31 @@ package.json: package.json.in ../config.status
 	$(Q) npm install
 clean-local: clean-node_modules
 clean-node_modules: ; rm -rf node_modules/ package.json
+MOSTLYCLEANFILES += config.log # created by config.status
+
+# == ebeast bundle ==
+INSTALL_VERSION = @MAJOR@.@MINOR@.@MICRO@
+BUNDLEDIR       = ebeast-$(INSTALL_VERSION)
+.bundlestamp: .appstamp
+	$(AM_V_GEN)
+	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
+	$(Q) mkdir ebeast-bundle/
+	$(Q) ./node_modules/.bin/electron-packager . ebeast --out=ebeast-bundle/
+	$(Q) mv "`echo ebeast-bundle/*`" $(BUNDLEDIR) # rename <appname>-<platform>-<arch>/
+	$(Q) rmdir ebeast-bundle/
+	$(Q) test -x $(BUNDLEDIR)/ebeast
+	$(Q) touch $@
+clean-local: clean-ebeast-bundle
+clean-ebeast-bundle:
+	rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
 
 # == app ==
-app:	package.json xlint-html xlint-js objects/app.css objects/gradient-01.png
+app: .appstamp
+.appstamp: package.json xlint-html xlint-js objects/app.css objects/gradient-01.png
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
+	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
+	$(Q) touch $@
+MOSTLYCLEANFILES += .appstamp
 
 # == run ==
 run: app
@@ -88,3 +111,11 @@ xlint-js: $(JS_LINT_FILES) package.json
 	done
 	$(Q) touch $@
 MOSTLYCLEANFILES += xlint-js
+
+# == install ==
+install-exec-bundle: .bundlestamp
+	$(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)"
+	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"
+	cp -RP $(BUNDLEDIR) "$(DESTDIR)$(pkglibexecdir)/"
+uninstall-bundle:
+	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"

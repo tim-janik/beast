@@ -6,6 +6,7 @@
   "dependencies":    { "electron": "^1.4.15", "mithril": "^1.0.1",
 		       "jquery": "^3.1.1", "font-awesome": "^4.7.0" },
   "devDependencies": { "node-gyp": "^3.5.0", "less": "^2.7.2",
+		       "electron-packager": "^8.6.0",
 		       "eslint": "^3.16.1", "eslint-plugin-html": "^2.0.1" },
   "license":         "LGPL-3.0",
   "scripts": {
