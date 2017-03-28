@@ -1,0 +1,25 @@
+language: c++
+
+sudo: required
+dist: trusty
+
+compiler:
+  - gcc
+  - clang
+
+env: 
+  - V8_VERSION=4.10
+  - V8_VERSION=5.2
+  - V8_VERSION=5.4
+
+before_install:
+  - sudo add-apt-repository ppa:pinepain/libv8-"$V8_VERSION" -y
+  - sudo apt-get update -q
+  - sudo apt-get install libv8-"$V8_VERSION"-dev -y
+
+install:
+  - if [ "$CXX" == "clang++" ]; then export CXXFLAGS="-stdlib=libstdc++"; fi
+  
+script: make
+
+after_success: LD_LIBRARY_PATH=. ./v8pp_test -v --run-tests test/console.js test/file.js
