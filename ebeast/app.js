@@ -89,7 +89,7 @@ const Toolbar = {
 const MithrilApp = {
   document_title (vnode) {
     if (App.project) {
-      return App.project.debug_name() + // FIXME
+      return App.project.uname + // FIXME
       ' – BEAST';
     }
     return "Beast - Music Synthesizer and Composer";
