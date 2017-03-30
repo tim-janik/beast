@@ -48,6 +48,24 @@ ObjectImpl::changed (const String &what)
   sig_changed.emit (what);
 }
 
+std::string
+ObjectImpl::uname () const
+{
+  BseObject *object = *const_cast<ObjectImpl*> (this);
+  gchar *gstring = NULL;
+  g_object_get (object, "uname", &gstring, NULL);
+  std::string u = gstring ? gstring : "";
+  g_free (gstring);
+  return u;
+}
+
+void
+ObjectImpl::uname (const std::string &newname)
+{
+  BseObject *object = *this;
+  g_object_set (object, "uname", newname.c_str(), NULL);
+}
+
 void
 objects_debug_leaks ()
 {
