@@ -8,6 +8,7 @@ module.exports = {
   "globals": {
     "Electron": false,
     "Mithril": false,
+    "Vue": false,
     "Bse": false,
     "App": false,
     "module": true /* allow mods */
