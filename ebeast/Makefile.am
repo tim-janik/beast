@@ -44,9 +44,16 @@ clean-local: clean-ebeast-bundle
 clean-ebeast-bundle:
 	rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
 
+# == bundle.js ==
+objects/vc-bundle.js: vc/bundle.js vc/*.vue
+	$(AM_V_GEN)
+	$(Q) node_modules/.bin/browserify --ignore-missing --no-builtins --no-commondir \
+	  --insert-global-vars="global" --no-browser-field -d \
+	  -t vueify -e $< -o $@
+
 # == app ==
 app: .appstamp
-.appstamp: package.json xlint-html xlint-js objects/app.css objects/gradient-01.png
+.appstamp: package.json xlint-html xlint-js objects/app.css objects/gradient-01.png objects/vc-includes.js
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
