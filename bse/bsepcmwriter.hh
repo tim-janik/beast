@@ -19,19 +19,19 @@ struct BsePcmWriter : BseItem {
   guint		open : 1;
   guint		broken : 1;
   gint		fd;
-  uint64	n_bytes;
-  uint64        recorded_maximum;
-  uint64        start_tick;
+  Bse::uint64	n_bytes;
+  Bse::uint64   recorded_maximum;
+  Bse::uint64   start_tick;
 };
 struct BsePcmWriterClass : BseItemClass
 {};
 
 Bse::Error bse_pcm_writer_open	(BsePcmWriter *pdev, const gchar *file, guint n_channels,
-                                 guint sample_freq, uint64 recorded_maximum);
+                                 guint sample_freq, Bse::uint64 recorded_maximum);
 void	   bse_pcm_writer_close	(BsePcmWriter *pdev);
 /* writing is lock protected */
 void	   bse_pcm_writer_write	(BsePcmWriter *pdev, size_t n_values,
-                                 const float *values, uint64 start_stamp);
+                                 const float *values, Bse::uint64 start_stamp);
 
 namespace Bse {
 
