@@ -103,7 +103,7 @@ typedef struct {
 typedef struct {
   uint           major, minor, micro;
   uint           dummy1, dummy2, dummy3, dummy4, dummy5;
-  uint64         export_flags;
+  Bse::uint64    export_flags;
   BseExportNode *export_chain;
 } BseExportIdentity;
 #define BSE_EXPORT_IDENTITY(HEAD)                               \
