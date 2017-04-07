@@ -228,6 +228,7 @@ class Generator:
         s += b
         s += '  ;\n'
     # Class registration
+    s += '\n'
     for tp in v8pp_class_types:
       s += '  module_.set ("%s", %s);\n' % (tp.name, v8ppclass (tp))
     # V8stub ctor - end
