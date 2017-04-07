@@ -125,6 +125,12 @@ class Generator:
     s += '#include "v8pp/context.hpp"\n'
     s += '#include "v8pp/module.hpp"\n'
     s += '#include "v8pp/class.hpp"\n'
+    s += '#include "v8pp/call_v8.hpp"\n'
+    s += '\n'
+    s += '#define __v8return_exception(iso,args,what)  ({ args.GetReturnValue().Set (v8pp::throw_ex (iso, what)); return; })\n'
+    s += '\n'
+    s += 'typedef v8::Persistent<v8::Function, v8::CopyablePersistentTraits<v8::Function>> V8ppCopyablePersistentFunction;\n'
+    s += 'typedef v8::Persistent<v8::Object, v8::CopyablePersistentTraits<v8::Object>> V8ppCopyablePersistentObject;\n'
     # collect impl types
     namespaces = []
     types = []
@@ -179,15 +185,15 @@ class Generator:
       s += '  %-40s %s;\n' % (v8ppclass_type (tp), v8ppclass (tp))
     s += '  v8pp::module                             module_;\n'
     s += 'public:\n'
-    s += '  V8stub (v8::Isolate *const isolate);\n'
+    s += '  V8stub (v8::Isolate *const __v8isolate);\n'
     s += '};\n'
     # V8stub ctor - begin
-    s += '\nV8stub::V8stub (v8::Isolate *const isolate) :\n'
-    s += '  isolate_ (isolate),\n'
-    s += '  AidaRemoteHandle_class_ (isolate),\n'
+    s += '\nV8stub::V8stub (v8::Isolate *const __v8isolate) :\n'
+    s += '  isolate_ (__v8isolate),\n'
+    s += '  AidaRemoteHandle_class_ (__v8isolate),\n'
     for tp in v8pp_class_types:
-      s += '  %s (isolate),\n' % v8ppclass (tp)
-    s += '  module_ (isolate)\n'
+      s += '  %s (__v8isolate),\n' % v8ppclass (tp)
+    s += '  module_ (__v8isolate)\n'
     s += '{\n'
     # Wrapper registration
     for tp in v8pp_class_types:
@@ -199,7 +205,7 @@ class Generator:
     # Class bindings
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
-      b = ''
+      b, g = '', ''
       # Class inheritance
       if tp.storage == Decls.INTERFACE:
         for tb in bases (tp):
@@ -222,6 +228,39 @@ class Generator:
         for mtp in tp.methods:
           rtp, mname = mtp.rtype, mtp.name
           b += '    .set ("%s", &%s::%s)\n' % (mname, cn, mname)
+      # Class signal handlers
+      if tp.storage == Decls.INTERFACE:
+        for sg in tp.signals:
+          g += '  auto onsig_%d = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n' % self.idcounter
+          g += '    %s *__bsehandle = %s::unwrap_object (__v8isolate, __v8args.This());\n' % (colon_typename (tp), v8ppclass_type (tp))
+          g += '    if (!__bsehandle || __v8args.Length() != 1 || !__v8args[0]->IsFunction())\n'
+          g += '      __v8return_exception (__v8isolate, __v8args, "V8stub: on(): invalid invocation");\n'
+          g += '    V8ppCopyablePersistentObject __v8pthis (__v8isolate, __v8args[0]->ToObject());\n'
+          g += '    V8ppCopyablePersistentFunction __v8pfunc (__v8isolate, v8::Local<v8::Function>::Cast (__v8args[0]));\n'
+          l, k = [], []
+          for sa in sg.args:
+            l += [ self.A (sa[0], sa[1]) ]
+            k += [ sa[0] ]
+          rtype = self.R (sg.rtype)
+          g += '    auto sighandler = [__v8isolate, __bsehandle, __v8pthis, __v8pfunc] '
+          g += '(%s) -> %s {\n' % (', '.join (l), rtype)
+          g += '      v8::HandleScope __v8scope (__v8isolate);\n'
+          g += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
+          g += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'
+          g += '      v8::Local<v8::Value> __v8result = v8pp::call_v8 (__v8isolate, __v8func, %s);\n' % ', '.join ([ '__v8this' ] + k)
+          if sg.rtype.storage != Decls.VOID:
+            g += '      return v8pp::from_v8<%s> (__v8isolate, __v8result);\n' % rtype
+          else:
+            g += '      (void) __v8result;\n' # avoid 'unused' warnings
+          g += '    };\n'
+          g += '    __bsehandle->sig_%s() += sighandler;\n' % sg.name
+          g += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n' # FIXME: False
+          g += '  };\n'
+          b += '    .set ("__on_%s", onsig_%d)\n' % (sg.name, self.idcounter)
+          self.idcounter += 1
+      # output generated signal handlers
+      if g:
+        s += g
       # output only non-empty bindings
       if b:
         s += '  %s\n' % v8ppclass (tp)
