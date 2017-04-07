@@ -42,7 +42,7 @@ void    bse_balance_set         (double  balance,
 
 
 /* --- icons --- */
-Bse::Icon bse_icon_from_pixstream (const uint8 *pixstream);
+Bse::Icon bse_icon_from_pixstream (const Bse::uint8 *pixstream);
 
 
 /* --- ID allocator --- */
