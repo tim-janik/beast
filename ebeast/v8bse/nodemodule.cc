@@ -200,6 +200,8 @@ static V8stub *bse_v8stub = NULL;
 static uv_poll_t               bse_uv_watcher;
 static Aida::ClientConnectionP bse_client_connection;
 static Bse::ServerH            bse_server;
+static uv_async_t              bse_uv_dispatcher;
+static uv_prepare_t            bse_uv_preparer;
 
 // register bindings and start Bse
 static void
@@ -225,18 +227,40 @@ v8bse_register_module (v8::Local<v8::Object> exports)
   assert (bse_server != NULL);
 
   // hook BSE connection into libuv event loop
-  uv_loop_t *loop = uv_default_loop();
-  uv_poll_init (loop, &bse_uv_watcher, bse_client_connection->notify_fd());
-  auto bse_uv_callback = [] (uv_poll_t *watcher, int status, int revents) {
-    if (bse_client_connection && bse_client_connection->pending())
-      bse_client_connection->dispatch();
+  uv_loop_t *uvloop = uv_default_loop();
+  // Dispatch any pending events from uvlooop
+  auto uvdispatchcb = [] (uv_async_t*) {
+    if (bse_client_connection)
+      while (bse_client_connection->pending())
+        bse_client_connection->dispatch();
   };
-  uv_poll_start (&bse_uv_watcher, UV_READABLE, bse_uv_callback);
-
-  // hook BSE connection into GLib event loop
-  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (bse_client_connection.get());
-  g_source_set_priority (source, G_PRIORITY_DEFAULT);
-  g_source_attach (source, g_main_context_default());
+  uv_async_init (uvloop, &bse_uv_dispatcher, uvdispatchcb);
+  // Poll notify_fd, clear fd and queue dispatcher events
+  auto uvpollcb = [] (uv_poll_t*, int, int) {
+    if (bse_client_connection && bse_client_connection->pending())
+      uv_async_send (&bse_uv_dispatcher);
+  };
+  uv_poll_init (uvloop, &bse_uv_watcher, bse_client_connection->notify_fd());
+  uv_poll_start (&bse_uv_watcher, UV_READABLE, uvpollcb);
+  // Prevent libuv from waiting in poll if events are pending
+  auto uvpreparecb = [] (uv_prepare_t*) {
+    if (bse_client_connection && bse_client_connection->pending())
+      uv_async_send (&bse_uv_dispatcher);
+  };
+  uv_prepare_init (uvloop, &bse_uv_preparer);
+  uv_prepare_start (&bse_uv_preparer, uvpreparecb);
+  /* Electron drives the uvloop via UV_RUN_NOWAIT and outsources fd polling into
+   * a dedicated worker thread. And that means the bse_client_connection may be
+   * dispatching calls *and* fetching remote events or return values without
+   * notify_fd getting a chance to wakeup poll(2). So we use a notify_callback
+   * to check for pending events after each remote call.
+   */
+  auto bsenotfycb = [] (Rapicorn::Aida::ClientConnection &con) {
+    // bse_client_connection == &con
+    if (bse_client_connection && bse_client_connection->pending())
+      uv_async_send (&bse_uv_dispatcher);
+  };
+  bse_client_connection->notify_callback (bsenotfycb);
 
   // register v8stub
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
