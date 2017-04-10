@@ -122,7 +122,7 @@ xlint-html: $(HTML_LINT_FILES)
 MOSTLYCLEANFILES += xlint-html xlint-html.log
 
 # == JS linting ==
-JS_LINT_FILES = *.js $(HTML_LINT_FILES)
+JS_LINT_FILES = *.js vc/*.js $(HTML_LINT_FILES)
 xlint-js: $(JS_LINT_FILES) package.json
 	$(AM_V_GEN)
 	$(Q) rm -f $@
