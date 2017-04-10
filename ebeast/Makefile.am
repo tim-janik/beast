@@ -50,10 +50,26 @@ objects/vc-bundle.js: vc/bundle.js vc/*.vue
 	$(Q) node_modules/.bin/browserify --ignore-missing --no-builtins --no-commondir \
 	  --insert-global-vars="global" --no-browser-field -d \
 	  -t vueify -e $< -o $@
+MOSTLYCLEANFILES += objects/vc-bundle.js
+
+# == Docs for .vue files ==
+VUE_COMPONENTS_INPUTS = $(sort $(wildcard vc/*.vue))
+objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
+	$(AM_V_GEN)
+	$(Q) rm -f $(@:.html=.tmp1)
+	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
+	$(Q) for i in $(VUE_COMPONENTS_INPUTS) ; do \
+	  sed -n '1h;1!H;$${g; s|.*<docs>\(.*\)</docs>.*|\1|i; T; p }' < $$i >> $(@:.html=.tmp1) || exit $$? ; \
+	  echo >> $(@:.html=.tmp1) ; \
+	done
+	$(Q) sed 's/^  // ; s/^### /\n### /' < $(@:.html=.tmp1) > $(@:.html=.tmp2)
+	$(Q) pandoc --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $(@:.html=.tmp2)
+	$(Q) rm -f $(@:.html=.tmp*)
 
 # == app ==
 app: .appstamp
-.appstamp: package.json xlint-html xlint-js objects/app.css objects/gradient-01.png objects/vc-includes.js
+.appstamp: package.json xlint-html xlint-js
+.appstamp: objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
