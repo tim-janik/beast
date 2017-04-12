@@ -11,7 +11,7 @@
 </docs>
 
 <style lang="less">
-  @import 'styles.less';
+  @import 'mixins.less';
   .vc-button                  	{ .vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
   .vc-button:focus            	{ outline: @vc-focus-outline; }
   .vc-button:hover            	{ .vc-buttonhover; }

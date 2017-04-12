@@ -12,7 +12,7 @@
 </docs>
 
 <style lang="less">
-  @import 'styles.less';
+  @import 'mixins.less';
   .vc-icon-button			{ margin: 0 0; padding: 7px; }
   .vc-icon-button .vc-icon-button-icon	{ font-size: 1.3em /*1.33333333em*/; }
 </style>

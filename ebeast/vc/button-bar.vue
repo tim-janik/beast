@@ -9,7 +9,7 @@
 </docs>
 
 <style lang="less">
-  @import 'styles.less';
+  @import 'mixins.less';
   .vc-button-bar {
       display: inline-flex; background-color: @vc-button-border;
       border: 1px solid @vc-button-border;
