@@ -47,6 +47,13 @@ clean-ebeast-bundle:
 # == bundle.js ==
 objects/vc-bundle.js: vc/bundle.js vc/*.vue
 	$(AM_V_GEN)
+	@: # check all require('...') file references
+	$(Q) cd $(<D) && \
+	for f in $$(grep -o 'require *([^)]\+)' $(<F) | \
+		    sed "s/require *( *['\"]//g ; s/['\"])//g") ; do \
+	  test -r $$f || { echo $$(pwd -P)/: $$f: 'read error'; exit 1 ; } ; \
+	done
+	@: # all files present, generate bundle
 	$(Q) node_modules/.bin/browserify --ignore-missing --no-builtins --no-commondir \
 	  --insert-global-vars="global" --no-browser-field -d \
 	  -t vueify -e $< -o $@
