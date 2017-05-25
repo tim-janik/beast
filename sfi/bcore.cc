@@ -35,6 +35,8 @@ debug_key_enabled (const char *conditional)
                                   strncasecmp (flag + l, "=on", 3) == 0)))
             return true;
         }
+      else if (strstr (debug_flags, ":all:") != NULL)
+        return true;
     }
   return false;
 }
