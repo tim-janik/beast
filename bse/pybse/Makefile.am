@@ -35,9 +35,8 @@ CLEANFILES           += bseidlapi.pyx Bse.cc
 
 # call python with uninstalled or fully installed modules
 FPYTHON      = PYTHONPATH="$$PYTHONPATH:${pymodulesdir}" $(PYTHON)
-UPYTHON      = PYTHONPATH="$(abs_builddir)/${objdir}:$$PYTHONPATH" $(PYTHON)
-# Loading newly built Python modules requires accesss to libtool objdir
-objdir       = .libs
+UPYTHON      = PYTHONPATH="$(abs_builddir)/@objdir@:$$PYTHONPATH" $(PYTHON)
+# Loading newly built Python modules requires accesss to libtool $objdir
 python-call-info:
 	@echo '${FPYTHON} -ic "import Bse"'
 	@echo '${UPYTHON} -ic "import Bse"'
