@@ -1244,89 +1244,65 @@ ServerImpl::save_preferences ()
   close (fd);
 }
 
-static gboolean
-register_ladspa_plugins_handler (gpointer data)
-{
-  BseServer *server = (BseServer*) data;
-  SfiRing *lplugins = (SfiRing*) g_object_get_data ((GObject*) server, "ladspa-registration-queue");
-  const gchar *error;
-
-  if (g_object_get_data ((GObject*) server, "plugin-registration-queue"))
-    {
-      /* give precedence to core plugins until they're done registering */
-      return TRUE;
-    }
-
-  if (lplugins)
-    {
-      char *name = (char*) sfi_ring_pop_head (&lplugins);
-      g_object_set_data ((GObject*) server, "ladspa-registration-queue", lplugins);
-      error = bse_ladspa_plugin_check_load (name);
-      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
-      g_free (name);
-    }
-  else
-    {
-      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
-      return FALSE;
-    }
-  return TRUE;
-}
-
 void
 ServerImpl::register_ladspa_plugins ()
 {
-  static bool registration_done = false;
-  if (registration_done)
-    {
-      // always honor register_ladspa_plugins() with register_done signal
-      bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
-      return;
-    }
-  SfiRing *ring = bse_ladspa_plugin_path_list_files ();
-  BseServer *server = as<BseServer*>();
-  g_object_set_data (server, "ladspa-registration-queue", ring);
-  bse_idle_normal (register_ladspa_plugins_handler, server);
-  registration_done = true;
-}
-
-static gboolean
-register_core_plugins_handler (gpointer data)
-{
-  BseServer *server = (BseServer*) data;
-  SfiRing *plugins = (SfiRing*) g_object_get_data ((GObject*) server, "plugin-registration-queue");
-  const gchar *error;
-
-  if (plugins)
-    {
-      char *name = (char*) sfi_ring_pop_head (&plugins);
-      g_object_set_data ((GObject*) server, "plugin-registration-queue", plugins);
-      error = bse_plugin_check_load (name);
-      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
-      g_free (name);
-    }
-  else
-    {
-      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
-      return FALSE;
-    }
-  return TRUE;
+  load_assets();
+  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
 }
 
 void
 ServerImpl::register_core_plugins ()
 {
-  static gboolean registration_done = false;
-  BseServer *server = as<BseServer*>();
-  if (registration_done)
+  load_assets();
+  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
+}
+
+void
+ServerImpl::register_scripts ()
+{
+  load_assets();
+  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
+}
+
+void
+ServerImpl::load_assets ()
+{
+  static bool done_once = false;
+  return_unless (!done_once);
+  done_once = true;
+  SfiRing *ring;
+  // load Bse drivers & plugins
+  ring = bse_plugin_path_list_files (true, true);
+  while (ring)
     {
-      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
-      return;
+      gchar *name = (char*) sfi_ring_pop_head (&ring);
+      const char *error = bse_plugin_check_load (name);
+      if (error)
+        printerr ("%s: Bse plugin registration failed: %s\n", name, error);
+      g_free (name);
     }
-  SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
-  g_object_set_data (server, "plugin-registration-queue", ring);
-  bse_idle_normal (register_core_plugins_handler, server);
-  registration_done = true;
+  // load Bse scripts
+  ring = bse_script_path_list_files ();
+  while (ring)
+    {
+      gchar *script = (char*) sfi_ring_pop_head (&ring);
+      BseJanitor *janitor = NULL;
+      Bse::Error error = bse_script_file_register (script, &janitor);
+      if (!janitor)
+        printerr ("%s: Bse script registration failed: %s\n", script, bse_error_blurb (error));
+      g_free (script);
+    }
+  // load LADSPA plugins
+  ring = bse_ladspa_plugin_path_list_files ();
+  while (ring)
+    {
+      char *name = (char*) sfi_ring_pop_head (&ring);
+      const char *error = bse_ladspa_plugin_check_load (name);
+      if (error)
+        printerr ("%s: Bse LADSPA plugin registration failed: %s\n", name, error);
+      g_free (name);
+    }
 }
 
 void
@@ -1334,76 +1310,6 @@ ServerImpl::start_recording (const String &wave_file, double n_seconds)
 {
   BseServer *server = as<BseServer*>();
   bse_server_start_recording (server, wave_file.c_str(), n_seconds);
-}
-
-struct ScriptRegistration
-{
-  gchar         *script;
-  Bse::Error (*register_func) (const gchar *script, BseJanitor **janitor_p);
-  ScriptRegistration *next;
-};
-
-static gboolean	register_scripts_handler (gpointer data);
-
-static void
-script_janitor_closed (BseJanitor *janitor,
-		       BseServer  *server)
-{
-  bse_server_registration (server, BSE_REGISTER_SCRIPT, janitor->script_name, NULL);
-  bse_idle_normal (register_scripts_handler, server);
-}
-
-static gboolean
-register_scripts_handler (gpointer data)
-{
-  BseServer *server = (BseServer*) data;
-  ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
-  BseJanitor *janitor = NULL;
-  Bse::Error error;
-
-  if (!scr)
-    {
-      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
-      return FALSE;
-    }
-  g_object_set_data ((GObject*) server, "script-registration-queue", scr->next);
-
-  error = scr->register_func (scr->script, &janitor);
-  if (!janitor)
-    bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
-  else
-    g_object_connect (janitor, "signal::shutdown", script_janitor_closed, server, NULL);
-  g_free (scr->script);
-  g_free (scr);
-  return !janitor;
-}
-
-void
-ServerImpl::register_scripts ()
-{
-  static gboolean registration_done = false;
-  BseServer *server = as<BseServer*>();
-
-  if (registration_done)
-    {
-      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
-      return;
-    }
-  registration_done = true;
-
-  SfiRing *ring = bse_script_path_list_files ();
-  ScriptRegistration *scr_list = NULL;
-  while (ring)
-    {
-      ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
-      scr->script = (char*) sfi_ring_pop_head (&ring);
-      scr->register_func = bse_script_file_register;
-      scr->next = scr_list;
-      scr_list = scr;
-    }
-
-  g_object_set_data (server, "script-registration-queue", scr_list);
-  bse_idle_normal (register_scripts_handler, server);
 }
 
 bool
