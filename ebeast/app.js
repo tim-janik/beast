@@ -11,7 +11,8 @@ const AppMethods = {
   __proto__ : Electron.app
 };
 const App = {	// global App object with defaults
-  project: undefined,
+  current_project: undefined,
+  project: function () { return this.current_project; },
   show_about: false,
   __proto__ : AppMethods
 };
@@ -88,8 +89,8 @@ const Toolbar = {
 // == export start_app() ==
 const MithrilApp = {
   document_title (vnode) {
-    if (App.project) {
-      return App.project.uname + // FIXME
+    if (App.current_project) {
+      return App.project().uname + // FIXME
       ' – BEAST';
     }
     return "Beast - Music Synthesizer and Composer";
@@ -103,7 +104,7 @@ const MithrilApp = {
     ];
     const vtree = (
       m ('div#mithril.Mithril.vbox', {
-	style: 'position: absolute; top: 0; left: 0; right: 0; bottom: 0;',
+	style: 'position: relative; top: 0; left: 0; right: 0; bottom: 0;',
       }, app_body)
     );
     const newtitle = this.document_title (vtree);
@@ -113,7 +114,10 @@ const MithrilApp = {
   }
 };
 module.exports.start_app = function () { // application setup after onready
-  if (!App.project)
-    App.project = Bse.server.create_project ('Untitled');
-  m.mount (document.body, MithrilApp);
+  if (!App.current_project) {
+    App.current_project = Bse.server.create_project ('Untitled');
+    if (App.current_project)
+      App.current_project.restore_from_file ('../library/demo/partymonster.bse');
+  }
+  m.mount ($('#mount-mithril')[0], MithrilApp);
 };
