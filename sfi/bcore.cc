@@ -18,7 +18,8 @@ debug_key_enabled (const char *conditional)
     const char *f = getenv ("BSE_DEBUG");
     std::string flags = !f ? "" : ":" + std::string (f) + ":";
     char *result = new char [flags.size() + 1];
-    strcpy (result, flags.data());
+    if (result)
+      strcpy (result, flags.data());
     debug_any_enabled = result && result[0];
     return result;
   } ();
