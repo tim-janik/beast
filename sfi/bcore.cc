@@ -60,10 +60,10 @@ diagnostic (char kind, const std::string &message)
   case 'D':     prefix = "DEBUG: ";     break;
   case ' ':     prefix = "";            break;
   case 'F':
-    prefix = program_argv0() + ": FATAL: ";
+    prefix = program_alias() + ": FATAL: ";
     break;
   default:
-    prefix = program_argv0() + ": " + buf + ": ";
+    prefix = program_alias() + ": " + buf + ": ";
     break;
   }
   const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
