@@ -214,6 +214,10 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   v8::HandleScope scope (isolate);
 
+  // workaround electron concatenating argv[1:] in argv[0]
+  if (Bse::program_alias().find ("electron ") != std::string::npos)
+    Bse::program_alias (Bse::Path::cwd()); // a guess at the actual electron application
+
   // prepare Bse environment
   const char *canary = "library/demo/partymonster.bse";
   const std::string installpath = Bse::Path::realpath (Bse::Path::abspath ("..")); // ebeast/..
@@ -284,7 +288,7 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   // debugging aids:
   if (0)
-    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Bse::ThisThread::process_pid());
+    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::ThisThread::process_pid());
 
   // Ensure Bse has everything properly loaded
   bse_server.load_assets();
