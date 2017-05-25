@@ -71,7 +71,7 @@ $(document).keydown (function (event) {
     if ($.inArray (document.activeElement.type, navigation_types) >= 0 &&
 	$.inArray (event.keyCode, match_hotkey_event.navigation_keys) >= 0) {
       $('#statusarea').text ('IGNORE-NAV: ' + event.keyCode + ' (' + document.activeElement.tagName + ')');
-      return; // no navigation hotkey possible when a navigatable element has focu
+      return; // no navigation hotkey possible when a navigatable element has focus
     }
     const hotkeys = $(document).data()['hotkeys'];
     if (hotkeys === undefined)
