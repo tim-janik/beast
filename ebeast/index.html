@@ -5,13 +5,14 @@
 
   <link rel="stylesheet" href="objects/app.css">
 
-  <script src="objects/vc-includes.js">/* Vue + compoentns */</script>
-
   <script>
-    'use strict';
-    /* Load application code right away, start application once DOM is ready */
-    window.$ = window.jQuery = require ('jquery');
-    $(require ('./app.js').start_app);
+  'use strict';
+  // Load jQuery + utils + Vue + components
+  require ('./vc/includes.js');
+  Vue.config.productionTip = false;
+  Vue.config.silent = true;
+  // Load application code right away, start application once DOM is ready
+  $(require ('./app.js').start_app);
   </script>
 
 </head>
