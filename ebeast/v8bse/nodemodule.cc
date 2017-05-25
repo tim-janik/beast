@@ -214,6 +214,13 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   v8::HandleScope scope (isolate);
 
+  // prepare Bse environment
+  const char *canary = "library/demo/partymonster.bse";
+  const std::string installpath = Bse::Path::realpath (Bse::Path::abspath ("..")); // ebeast/..
+  if (!Bse::Path::check (Bse::Path::join (installpath, canary), "r"))
+    Bse::fatal ("%s: BSE: failed to locate library containing '%s'", installpath, canary);
+  Bse::installpath_override (installpath);
+
   // start Bse
   Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", 0);
   Bse::init_async (NULL, NULL, "BEAST", Bse::string_split (bseoptions, ":"));
@@ -278,6 +285,9 @@ v8bse_register_module (v8::Local<v8::Object> exports)
   // debugging aids:
   if (0)
     Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Bse::ThisThread::process_pid());
+
+  // Ensure Bse has everything properly loaded
+  bse_server.load_assets();
 }
 
 // node.js registration
