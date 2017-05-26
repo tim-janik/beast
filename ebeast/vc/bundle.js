@@ -9,6 +9,7 @@ const vue_components = [
   require ('./button.vue'),
   require ('./icon-button.vue'),
   require ('./button-bar.vue'),
+  require ('./playcontrols.vue'),
 ];
 
 // register components
