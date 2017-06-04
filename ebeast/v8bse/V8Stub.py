@@ -133,6 +133,7 @@ class Generator:
     s += 'typedef v8::Persistent<v8::Object, v8::CopyablePersistentTraits<v8::Object>> V8ppCopyablePersistentObject;\n'
     # collect impl types
     namespaces = []
+    base_objects = []
     types = []
     for tp in implementation_types:
       if tp.isimpl:
@@ -185,7 +186,8 @@ class Generator:
       s += '  %-40s %s;\n' % (v8ppclass_type (tp), v8ppclass (tp))
     s += '  v8pp::module                             module_;\n'
     s += 'public:\n'
-    s += '  V8stub (v8::Isolate *const __v8isolate);\n'
+    s += '  explicit    V8stub (v8::Isolate *const __v8isolate);\n'
+    s += '  void        jsinit (v8::Local<v8::Context> context, v8::Local<v8::Object> exports) const;\n'
     s += '};\n'
     # V8stub ctor - begin
     s += '\nV8stub::V8stub (v8::Isolate *const __v8isolate) :\n'
@@ -195,6 +197,7 @@ class Generator:
       s += '  %s (__v8isolate),\n' % v8ppclass (tp)
     s += '  module_ (__v8isolate)\n'
     s += '{\n'
+    s += '  v8::HandleScope __v8scope (__v8isolate);\n'
     # Wrapper registration
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
@@ -212,6 +215,7 @@ class Generator:
           b += '    .inherit<%s>()\n' % colon_typename (tb)
         if len (bases (tp)) == 0:
           b += '    .inherit<%s>()\n' % 'Aida::RemoteHandle'
+          base_objects += [ tp.name ]
       # Class ctor
       if tp.storage == Decls.SEQUENCE or tp.storage == Decls.RECORD:
         b += '    .ctor()\n'
@@ -254,9 +258,10 @@ class Generator:
             g += '      (void) __v8result;\n' # avoid 'unused' warnings
           g += '    };\n'
           g += '    __bsehandle->sig_%s() += sighandler;\n' % sg.name
-          g += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n' # FIXME: False
+          g += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n' # TODO: return handle for disconnect?
           g += '  };\n'
           b += '    .set ("__on_%s", onsig_%d)\n' % (sg.name, self.idcounter)
+          # TODO: provide a method to disconnect signal handlers, i.e. off()
           self.idcounter += 1
       # output generated signal handlers
       if g:
@@ -272,7 +277,43 @@ class Generator:
       s += '  module_.set ("%s", %s);\n' % (tp.name, v8ppclass (tp))
     # V8stub ctor - end
     s += '}\n'
+    # jsinit - begin
+    s += '\nvoid\n'
+    s += 'V8stub::jsinit (v8::Local<v8::Context> context, v8::Local<v8::Object> exports) const\n'
+    s += '{\n'
+    jsinit_def = '{ base_objects: [ %s ] }' % ', '.join ('exports.' + e for e in base_objects)
+    j = re.sub (r'@jsinit_def@', jsinit_def, jsinit)
+    j = re.sub (r'(["\\])', r'\\\1', j)
+    j = re.sub (r'\n', r'\\n"\n  "', j)
+    s += '  v8::Isolate *const isolate = context->GetIsolate();\n'
+    s += '  v8::HandleScope __v8scope (isolate);\n'
+    s += '  v8::ScriptOrigin org = v8::ScriptOrigin (v8pp::to_v8 (isolate, __FILE__),\n'
+    s += '                                           v8::Integer::New (isolate, __LINE__));\n'
+    s += '  const char *const script = "%s";\n' % j
+    s += '  v8::Local<v8::String> code = v8pp::to_v8 (isolate, script);\n'
+    s += '  v8::Local<v8::Value> bcode = v8::Script::Compile (context, code, &org).ToLocalChecked()->Run();\n'
+    s += '  v8::Local<v8::Function> fun = v8::Local<v8::Function>::Cast (bcode);\n'
+    s += '  assert (!fun.IsEmpty());\n'
+    s += '  v8::Local<v8::Value> args[] = { exports };\n'
+    s += '  fun->Call (context, context->Global(), sizeof (args) / sizeof (args[0]), args);\n'
+    # jsinit - end
+    s += '}\n'
     return s
+
+# Javacript code to be executed at v8stub setup
+jsinit = r"""
+(function (exports) {
+  const jsinit = @jsinit_def@;
+  jsinit.base_objects.forEach (obj => {
+    obj.prototype.on = function (signal, handler) {
+      const connector = this['__on_' + signal.replace (/[^a-z0-9]/gi, '_')];
+      if (connector instanceof Function)
+        return connector.call (this, handler);
+      throw new ReferenceError (signal + " is not a signal");
+    };
+  });
+})
+"""
 
 def generate (namespace_list, **args):
   import sys, tempfile, os
