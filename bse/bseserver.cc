@@ -1138,8 +1138,8 @@ ServerImpl::instance()
 void
 ServerImpl::send_user_message (const UserMessage &umsg)
 {
-  assert_return (umsg.text1.empty() == false);
-  sig_user_message.emit (umsg);
+  if (!umsg.text1.empty())
+    sig_user_message.emit (umsg);
 }
 
 String

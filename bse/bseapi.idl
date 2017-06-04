@@ -959,7 +959,8 @@ sequence CategorySeq {
  * used in the BSE context.
  */
 interface Server : Object {
-  signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
+  signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
+  void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.

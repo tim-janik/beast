@@ -138,7 +138,7 @@ public:
   virtual CategorySeq     category_match_typed    (const String &pattern, const String &type_name) override;
   virtual CategorySeq     category_match          (const String &pattern) override;
   virtual int64           tick_stamp_from_systime (int64 systime_usecs) override;
-  void               send_user_message      (const UserMessage &umsg);
+  virtual void            send_user_message       (const UserMessage &umsg) override;
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();
 };
