@@ -221,6 +221,7 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 SfiRing*
 bse_script_path_list_files (void)
 {
+  return NULL; // bsescm stopped working and trying load .scm files produces occasional hangs
   SfiRing *files, *ring = NULL;
   if (bse_main_args->override_script_path)
     {
