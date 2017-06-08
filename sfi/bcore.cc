@@ -18,7 +18,8 @@ debug_key_enabled (const char *conditional)
     const char *f = getenv ("BSE_DEBUG");
     std::string flags = !f ? "" : ":" + std::string (f) + ":";
     char *result = new char [flags.size() + 1];
-    strcpy (result, flags.data());
+    if (result)
+      strcpy (result, flags.data());
     debug_any_enabled = result && result[0];
     return result;
   } ();
@@ -34,6 +35,8 @@ debug_key_enabled (const char *conditional)
                                   strncasecmp (flag + l, "=on", 3) == 0)))
             return true;
         }
+      else if (strstr (debug_flags, ":all:") != NULL)
+        return true;
     }
   return false;
 }
@@ -57,10 +60,10 @@ diagnostic (char kind, const std::string &message)
   case 'D':     prefix = "DEBUG: ";     break;
   case ' ':     prefix = "";            break;
   case 'F':
-    prefix = program_argv0() + ": FATAL: ";
+    prefix = program_alias() + ": FATAL: ";
     break;
   default:
-    prefix = program_argv0() + ": " + buf + ": ";
+    prefix = program_alias() + ": " + buf + ": ";
     break;
   }
   const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";

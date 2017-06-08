@@ -119,6 +119,7 @@ public:
   virtual void   register_core_plugins   () override;
   virtual void   start_recording         (const String &wave_file, double n_seconds) override;
   virtual void   register_scripts        () override;
+  virtual void   load_assets             () override;
   virtual bool   preferences_locked      () override;
   virtual int    n_scripts               () override;
   virtual bool   can_load                (const String &file_name) override;

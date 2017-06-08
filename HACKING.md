@@ -38,11 +38,10 @@ Python-REPL
 **[PLANNED]** Add interactive REPL loop via Python interpreter, requires
 integration of multiple main loops.
 
-Python-Scripting
-----------------
-**[PLANNED]** Use Python scripts instead of Scheme scripts. As soon as it's
-possible to implement basic Python scripts, SCM scripts may be broken and
-shall be replaced.
+Scripting
+---------
+**[PLANNED]** Use Javascript or Python scripts instead of Scheme scripts.
+With several recent changes, SCM scripts are already broken and need replacements.
 
 Bstrecords-Migration
 --------------------

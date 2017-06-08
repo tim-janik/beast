@@ -466,6 +466,16 @@ static ArgDescription bsetool_options[] = {
 int
 main (int argc_int, char *argv[])
 {
+  // use top_builddir as Bse installpath
+  const char *const argv0_slash = strrchr (argv[0], '/');
+  if (argv0_slash && argv0_slash >= argv[0] + 6 && (strncmp (argv0_slash - 6, "/.libs/lt-", 10) == 0 ||
+                                                    strncmp (argv0_slash - 6, "/_libs/lt-", 10) == 0))
+    {
+      namespace Path = Bse::Path;
+      const String argv0_abspath = Path::abspath (argv[0]);
+      const String dirpath = Path::join (Path::dirname (argv0_abspath), "..", ".."); // topdir/subdir/.libs/../..
+      Bse::installpath_override (Path::realpath (dirpath));
+    }
   bse_init_inprocess (&argc_int, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
   const unsigned int argc = argc_int;
   // now that the BSE thread runs, drop scheduling priorities if we have any
