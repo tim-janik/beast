@@ -5,5 +5,4 @@
 /package.json
 /node_modules/
 /objects/
-/xlint-html
-/xlint-js
+/xlinting

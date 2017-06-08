@@ -75,7 +75,7 @@ objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
 
 # == app ==
 app: .appstamp
-.appstamp: package.json xlint-html xlint-js v8bse/v8bse.node
+.appstamp: package.json xlinting v8bse/v8bse.node
 .appstamp: objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
@@ -118,28 +118,15 @@ objects/gradient-01.png: objects/app.css Makefile
 	$(Q) rm -f $@.tmp
 MOSTLYCLEANFILES += objects/gradient-01.png objects/gradient-01.*tmp
 
-# == HTML linting ==
+# == Linting rules ==
 HTML_LINT_FILES = index.html
-xlint-html: $(HTML_LINT_FILES)
-	$(AM_V_GEN)
-	$(Q) rm -f $@.log $@
-	$(Q) for file in $(HTML_LINT_FILES) ; do \
-	  xmllint --html --noout --valid $$file >>$@.log 2>&1 ; \
-	done
-	$(Q) cat $@.log ; test ! -s $@.log
-	$(Q) mv $@.log $@
-MOSTLYCLEANFILES += xlint-html xlint-html.log
-
-# == JS linting ==
-JS_LINT_FILES = *.js vc/*.js $(HTML_LINT_FILES)
-xlint-js: $(JS_LINT_FILES) package.json
+JS_LINT_FILES = *.js vc/*.js vc/*.vue $(HTML_LINT_FILES)
+xlinting: $(JS_LINT_FILES) package.json
 	$(AM_V_GEN)
 	$(Q) rm -f $@
-	$(Q) for file in $(JS_LINT_FILES) ; do \
-	  ./node_modules/.bin/eslint -f unix $$file || exit $$? ; \
-	done
+	$(Q) ./node_modules/.bin/eslint -f unix $(JS_LINT_FILES)
 	$(Q) touch $@
-MOSTLYCLEANFILES += xlint-js
+MOSTLYCLEANFILES += xlinting
 
 # == install ==
 install-exec-bundle: .bundlestamp
