@@ -10,9 +10,10 @@ const vue_components = [
   require ('./icon-button.vue'),
   require ('./button-bar.vue'),
   require ('./playcontrols.vue'),
+  require ('./modaldialog.vue'),
 ];
 
 // register components
-vue_components.forEach ((c) => {
+vue_components.forEach (c => {
   Vue.component (c.name, c);
 });
