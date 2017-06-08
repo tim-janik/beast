@@ -97,7 +97,7 @@ run: app
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
 
 # == CSS generation ==
-objects/app.css: app.less */*.less package.json
+objects/app.css: app.less package.json
 	$(AM_V_GEN)
 	$(Q) mkdir -p objects/.deps/
 	$(Q) ./node_modules/.bin/lessc $< $@ --source-map=$@.map

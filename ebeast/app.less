@@ -1,5 +1,3 @@
-@import 'assets/widgets.less';
-@import 'assets/dialogs.less';
 @import 'vc/styles.less';
 
 /* == Settings == */
@@ -65,3 +63,14 @@ body.window-inactive 		{ color: fade(@theme-foreground, 80%); }
 				  background-color: @toolbar-background; background-image: @toolbar-background-lg; }
 .StatusBar			{ text-align: left; background-color: #000; }
 .StatusBar .StatusField		{ padding-left: 1em; }
+
+
+/* == Resets == */
+input, textarea, keygen, select,
+button          		{ font: inherit; }
+button          		{ -webkit-appearance: normal; }
+
+
+/* https://www.w3.org/TR/css-flexbox-1/#valdef-flex-basis-content
+ * https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+ */
