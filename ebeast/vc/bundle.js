@@ -11,6 +11,7 @@ const vue_components = [
   require ('./button-bar.vue'),
   require ('./playcontrols.vue'),
   require ('./modaldialog.vue'),
+  require ('./aboutdialog.vue'),
 ];
 
 // register components
