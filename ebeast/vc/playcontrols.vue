@@ -4,8 +4,6 @@
   ## vc-playcontrols - A container holding the play and seek controls for a song
   ### Props:
   - **project** - The BSE object providing playback API.
-  ### Events:
-  ### Slots:
 </docs>
 
 <style lang="less">

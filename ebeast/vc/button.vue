@@ -5,9 +5,9 @@
   ### Props:
   - **hotkey** - Keyboard accelerator to trigger a ''click'' event.
   ### Events:
-  - **click** - A ''click'' event is emitted for activation through mouse buttons, Space or Enter keys.
+  - **click** - A *click* event is emitted for activation through mouse buttons, Space or Enter keys.
   ### Slots:
-  - **slot** - All contents passed into this element will be rendered as contents of the button.
+  - **default** - All contents passed into this element will be rendered as contents of the button.
 </docs>
 
 <style lang="less">

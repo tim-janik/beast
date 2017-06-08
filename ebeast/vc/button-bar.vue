@@ -2,8 +2,6 @@
 
 <docs>
   ## vc-button-bar - A container for tight packing of buttons
-  ### Props:
-  ### Events:
   ### Slots:
   - **slot** - All contents passed into this element will be packed tightly and styled as buttons.
 </docs>
