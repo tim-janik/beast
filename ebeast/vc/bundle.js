@@ -12,6 +12,7 @@ const vue_components = [
   require ('./playcontrols.vue'),
   require ('./modaldialog.vue'),
   require ('./aboutdialog.vue'),
+  require ('./projectshell.vue'),
 ];
 
 // register components
