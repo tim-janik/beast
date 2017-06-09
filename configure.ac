@@ -752,6 +752,7 @@ plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
 plugins/spectmorph/Makefile
+plugins/spectmorph/gui/Makefile
 drivers/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
