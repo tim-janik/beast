@@ -529,6 +529,16 @@ AC_DEFUN([MC_BSESCM_REQUIREMENTS],
     AC_SUBST(BSESCM_CFLAGS)
     AC_SUBST(BSESCM_LIBS)
 ])
+AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
+[
+    dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
+    PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.2)
+    PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.2)
+    AC_SUBST(SPECTMORPH_CFLAGS)
+    AC_SUBST(SPECTMORPH_LIBS)
+    AC_SUBST(SPECTMORPHGUI_CFLAGS)
+    AC_SUBST(SPECTMORPHGUI_LIBS)
+])
 AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
@@ -698,6 +708,7 @@ MC_ASOUND_CHECK
 MC_BSESCM_REQUIREMENTS
 MC_BSE_SNDDEV_CHECK
 MC_PYTHON_REQUIREMENTS
+MC_SPECTMORPH_REQUIREMENTS
 MC_GXK_REQUIREMENTS
 MC_BEAST_REQUIREMENTS
 MC_SUIDMAIN_REQUIREMENTS
@@ -721,6 +732,7 @@ bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
+plugins/spectmorph/Makefile
 drivers/Makefile
 shell/Makefile
 pybeast/Makefile
