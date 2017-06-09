@@ -6,15 +6,15 @@ m4_include(config/glib-gettext.m4)
 AC_PREREQ(2.57)
 
 # == Package & Version ==
-# VERSION: MAJOR.MINOR.MICRO-RC:
+# VERSION: MAJOR.MINOR.MICRO~RC:
 # * MAJOR:           Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
 # * MINOR:           Increment for significant changes or ABI breaks, resets MICRO
 # * MICRO:           Increment with every release, increments must *not* break ABI
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
-# * ~RC:             Release candidate, may contain [~-]\w+[0-9]+ or nothing
-AC_INIT([beast], [0.10.1~wip])
-:;   ABI_VERSION=[0.10.0]
+# * ~RC:             Release candidate, may contain ~rc[0-9]+ or nothing
+AC_INIT([beast], [0.11.0~rc1])
+:;   ABI_VERSION=[0.11.0]
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
@@ -281,7 +281,7 @@ LIBBSE_REQUIRES="
 	gobject-2.0		>= 2.32.3
 	gthread-2.0		>= 2.32.3
 	gmodule-no-export-2.0	>= 2.32.3
-	rapicorn		>= 16.0.1
+	rapicorn		>= 17.0.0
 	ogg			>= 1.2.2
 	vorbis			>= 1.3.2
 	vorbisfile		>= 1.3.2
@@ -368,7 +368,7 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.1)
+    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
     MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
     # librapicorn uses pthread functions in header files, forcing us to link against libpthread
