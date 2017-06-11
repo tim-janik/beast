@@ -80,21 +80,21 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-bseincludedir="\${includedir}/bse-$MAJOR"
-bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
-datadir="\${datarootdir}/beast"
-docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
-# Provide directories for C++
-bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"; bak_libexecdir="$libexecdir"
-bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
-test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-libdir=`eval echo "${libdir}"` ; libexecdir=`eval echo "${libexecdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
-datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
+bseincludedir="\${beastdir}/include"
+bselibdir="\${beastdir}/lib"
+datadir="\${beastdir}"
+docdir="\${beastdir}/doc"
+# Provide directories for C++ and move Beast packagedir into libdir if under /usr
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
+test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
 case `eval echo "${exec_prefix}"` in
-  /usr|/usr/local)	beastdir="\${exec_prefix}/lib/beast-$MAJOR-$MINOR" ;;
+  /usr|/usr/local)	beastdir="\${libdir}/beast-$MAJOR-$MINOR" ;;
   *)            	beastdir="\${exec_prefix}/beast-$MAJOR-$MINOR" ;;
 esac
-bak_beastdir="$beastdir"
+bak_libdir="$libdir"; bak_datarootdir="$datarootdir"; bak_datadir="$datadir"
+bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
+libdir=`eval echo "${libdir}"`; datarootdir=`eval echo "${datarootdir}"`; datadir=`eval echo "${datadir}"`
+bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
@@ -104,14 +104,15 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"]
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
-datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"; beastdir="$bak_beastdir"
+bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
+libdir="$bak_libdir"; datarootdir="$bak_datarootdir"; datadir="$bak_datadir"
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
-AC_SUBST(beastdir)
 AC_SUBST(bseincludedir)
 AC_SUBST(bselibdir)
 AC_SUBST(datadir)
 AC_SUBST(docdir)
+AC_SUBST(beastdir)
 
 # == Check for git ==
 AC_MSG_CHECKING([for git repository])
