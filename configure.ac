@@ -80,6 +80,8 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
+localedir="\${beastdir}/locale"
+bindir="\${beastdir}/bin"
 bseincludedir="\${beastdir}/include"
 bselibdir="\${beastdir}/lib"
 datadir="\${beastdir}"
