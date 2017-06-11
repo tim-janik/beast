@@ -1,6 +1,6 @@
 #!/bin/bash
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-set -ex
+set -e # -x
 
 SCRIPTNAME=`basename $0`
 function die  { [ -n "$*" ] && echo "$SCRIPTNAME: $*" >&2; exit 127 ; }
@@ -46,6 +46,7 @@ test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 
 # build in ./tmpdeb/
 PREFIX=/opt
+BEASTDIR=$PREFIX/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
 DESTPREFIX=$DESTDIR$PREFIX
 DEBIAN=$DESTDIR/DEBIAN
@@ -64,6 +65,7 @@ echo "CC=$CC CFLAGS=$CFLAGS"
 echo "CXX=$CXX CXXFLAGS=$CXXFLAGS"
 echo "LDFLAGS=$LDFLAGS DISPLAY=$DISPLAY"
 echo "PREFIX=$PREFIX"
+echo "BEASTDIR=$BEASTDIR"
 echo "DESTDIR=$DESTDIR"
 echo "DESTPREFIX=$DESTPREFIX"
 echo "PATH=$PATH"
