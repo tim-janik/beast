@@ -48,32 +48,32 @@ test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 PREFIX=/opt
 BEASTDIR=$PREFIX/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
-DESTPREFIX=$DESTDIR$PREFIX
+RAPICORNPREFIXDIR=$DESTDIR$BEASTDIR
 DEBIAN=$DESTDIR/DEBIAN
 rm -rf $DEBIAN
 mkdir -p $DEBIAN
 
-export PATH="$DESTPREFIX/bin:$PATH"
-export LD_LIBRARY_PATH="$DESTPREFIX/lib"
-export PKG_CONFIG_RAPICORN_PREFIX=$DESTPREFIX
-export PKG_CONFIG_RAPICORN_16_PREFIX=$DESTPREFIX
-export PKG_CONFIG_BSE_PREFIX=$DESTPREFIX
-export PKG_CONFIG_PATH=$DESTPREFIX/lib/pkgconfig
+export PATH="$RAPICORNPREFIXDIR/bin:$PATH"
+export LD_LIBRARY_PATH="$RAPICORNPREFIXDIR/lib"
+export PKG_CONFIG_PATH=$RAPICORNPREFIXDIR/lib/pkgconfig
+export PKG_CONFIG_RAPICORN_PREFIX=$RAPICORNPREFIXDIR
+export PKG_CONFIG_RAPICORN_17_PREFIX=$RAPICORNPREFIXDIR
+export PKG_CONFIG_BSE_PREFIX=$DESTDIR$PREFIX
 export AIDACC_DESTDIR=$DESTDIR
 
+echo "DISPLAY=$DISPLAY LDFLAGS=$LDFLAGS"
 echo "CC=$CC CFLAGS=$CFLAGS"
 echo "CXX=$CXX CXXFLAGS=$CXXFLAGS"
-echo "LDFLAGS=$LDFLAGS DISPLAY=$DISPLAY"
 echo "PREFIX=$PREFIX"
 echo "BEASTDIR=$BEASTDIR"
 echo "DESTDIR=$DESTDIR"
-echo "DESTPREFIX=$DESTPREFIX"
+echo "RAPICORNPREFIXDIR=$RAPICORNPREFIXDIR"
 echo "PATH=$PATH"
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib"
-echo "PKG_CONFIG_RAPICORN_PREFIX=$PKG_CONFIG_RAPICORN_PREFIX"
-echo "PKG_CONFIG_RAPICORN_16_PREFIX=$PKG_CONFIG_RAPICORN_16_PREFIX"
-echo "PKG_CONFIG_BSE_PREFIX=$PKG_CONFIG_BSE_PREFIX"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+echo "PKG_CONFIG_RAPICORN_PREFIX=$PKG_CONFIG_RAPICORN_PREFIX"
+echo "PKG_CONFIG_RAPICORN_17_PREFIX=$PKG_CONFIG_RAPICORN_17_PREFIX"
+echo "PKG_CONFIG_BSE_PREFIX=$PKG_CONFIG_BSE_PREFIX"
 echo "AIDACC_DESTDIR=$AIDACC_DESTDIR"
 echo "DEBIAN=$DEBIAN"
 
@@ -85,8 +85,8 @@ if $REBUILD ; then
     # clone/update and build rapicorn
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
-    git_clone $R rapicorn e7411b30e0b73b421a02c0804f2808cb43db6632
-    build_checked rapicorn ./autogen.sh
+    git_clone $R rapicorn c013464a64a606fe2165f15396fb96f342d27eb1 # 17.0.0~rc1
+    PREFIX="$BEASTDIR" build_checked rapicorn ./autogen.sh
 
     # clone/update and build beast
     R=https://github.com/tim-janik/beast.git
@@ -108,7 +108,7 @@ D="$D, libasound2, libflac8 (>= 1.2.1), libfluidsynth1 (>= 1.0.6), libmad0"
 D="$D, libogg0, libvorbis0a (>= 1.3.2), libvorbisenc2, libvorbisfile3"
 D="$D, libglib2.0-0 (>= 2.32.3), libpango-1.0-0 (>= 1.14.0)"
 D="$D, libgdk-pixbuf2.0-0, libgtk2.0-0 (>= 2.12.12), libgnomecanvas2-0 (>= 2.4.0)"
-# D="$D, librapicorn-16-0 (>= 16.0.1~git5374), python-rapicorn, rapicorn, librapicorn-dev"
+# D="$D, librapicorn-17-0 (>= 17.0.0~rc1), python-rapicorn, rapicorn, librapicorn-dev"
 
 # DEBIAN/control
 cat >$DEBIAN/control <<-__EOF
