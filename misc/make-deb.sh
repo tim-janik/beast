@@ -170,3 +170,7 @@ fakeroot dpkg-deb $FASTZIP -b $DESTDIR $DESTDIR/..
 
 # check the package
 #lintian -i --no-tag-display-limit $DESTDIR/../$NAME''_$VERSION''_$ARCH.deb
+
+# Move the package
+mv $DESTDIR/../$NAME''_$VERSION''_$ARCH.deb .
+ls -al $NAME''_$VERSION''_$ARCH.deb
