@@ -41,10 +41,15 @@ bse.pc: bse.pc.in $(top_builddir)/config.status
 EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
-# install .applications files
+# install .applications files, from ancient GNOME:
+# GNOME 2.4 Desktop System Administration Guide - https://people.gnome.org/~shaunm/admin-guide/titlepage.html
 dotapplicationsdir = $(datarootdir)/application-registry
 dotapplications_DATA = beast.applications
 EXTRA_DIST += $(dotapplications_DATA)
+# mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3
+# mime_types=...,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2
+# mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
+# mime_types=...,audio/mpeg,audio/x-mpeg
 
 # install related pixmaps
 sharedpixmapsdir = $(datarootdir)/pixmaps
