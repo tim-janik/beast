@@ -77,8 +77,9 @@ echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
 echo "AIDACC_DESTDIR=$AIDACC_DESTDIR"
 echo "DEBIAN=$DEBIAN"
 
+BEASTEXE=$BEASTDIR/bin/beast
 REBUILD=false
-[ -x $DESTDIR/opt/bin/beast ] || REBUILD=true
+[ -x $DESTDIR/$BEASTEXE ] || REBUILD=true
 if $REBUILD ; then
 
     # clone/update and build rapicorn
@@ -93,6 +94,7 @@ if $REBUILD ; then
     git_clone $R beast
     build_checked beast ./autogen.sh
 fi
+[ -x $DESTDIR/$BEASTEXE ] || die "failed to build Beast executable: $BEASTEXE"
 
 NAME="beast"
 VERSION=$(./tmpdeb/beast/misc/mkbuildid.sh -p)
@@ -158,7 +160,36 @@ gzip -9 $DEBCHANGELOG
 cp debian/copyright $DEBDOCDIR
 
 # DEBIAN/postinst
-cp misc/postinst-deb.sh $DEBIAN/postinst
+cat <<-\__EOF |
+	#!/bin/bash
+	set -e
+	set_perms() {
+	  USER="$1"; GROUP="$2"; MODE="$3"; FILE="$4"
+	  # https://www.debian.org/doc/debian-policy/ch-files.html#s10.9.1
+	  if ! dpkg-statoverride --list "$FILE" > /dev/null ; then
+	    chown "$USER:$GROUP" "$FILE"
+	    chmod "$MODE" "$FILE"
+	  fi
+	}
+	# https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s-mscriptsinstact
+	case "$1" in
+	  configure)
+	    # https://www.debian.org/doc/debian-policy/ch-files.html#s-permissions-owners
+	    set_perms root root 4755 @BEASTEXE@	# wrapper which does renice -20
+	    # https://www.debian.org/doc/debian-policy/ch-sharedlibs.html#s-ldconfig
+	    ldconfig
+	    ;;
+	  abort-upgrade|abort-remove|abort-deconfigure)
+	    ;;
+	  *)
+	    # unkown action
+	    exit 1
+	    ;;
+	esac
+	exit 0
+__EOF
+sed "s|@BEASTEXE@|$BEASTEXE|g" > $DEBIAN/postinst
+chmod +x $DEBIAN/postinst
 
 # https://wiki.debian.org/ReleaseGoals/LAFileRemoval
 find $DEBIAN/../ -name '*.la' -delete
