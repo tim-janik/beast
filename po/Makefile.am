@@ -250,6 +250,7 @@ DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 IGNORE_UNLISTED = $(strip		\
 	docs/doxy/*			\
+	tmp*				\
 )
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 # use 'readlink -ve' to catch missing files
