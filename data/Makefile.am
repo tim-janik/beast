@@ -65,7 +65,7 @@ $(INTLMERGE_CACHE): $(PODEPS)
 %.keys: %.keys.in	$(INTLMERGE_CACHE)
 	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
 
-# generate and install .desktop file
+# generate and install .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
 dotdesktopdir = $(datarootdir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
@@ -73,7 +73,9 @@ beast.desktop: beast.desktop.in
 CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
-# generate and install .xml mime info file
+# generate and install .xml mime info file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
+# gvfs-info testfile.bse                # yields: standard::content-type: audio/x-bse
+# gvfs-mime --query audio/x-bse	        # yields: Registered applications: beast.desktop
 sharedmimedir = $(datarootdir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
