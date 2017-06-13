@@ -49,6 +49,7 @@ PREFIX=/opt
 BEASTDIR=$PREFIX/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
 RAPICORNPREFIXDIR=$DESTDIR$BEASTDIR
+DEBDOCDIR=$DESTDIR$BEASTDIR/doc
 DEBIAN=$DESTDIR/DEBIAN
 rm -rf $DEBIAN
 mkdir -p $DEBIAN
@@ -138,7 +139,6 @@ __EOF
 echo -n >$DEBIAN/conffiles
 
 # /opt/share/doc/$NAME/
-DEBDOCDIR=$DEBIAN/../opt/share/doc/$NAME/
 mkdir -p $DEBDOCDIR
 
 # changelog.Debian.gz
@@ -154,7 +154,7 @@ for msg in \
   DCHCREATE=
 done
 dch -c $DEBCHANGELOG -D stable -r ""
-gzip -9 $DEBCHANGELOG
+gzip --best $DEBCHANGELOG
 
 # copyright
 cp debian/copyright $DEBDOCDIR
