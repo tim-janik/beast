@@ -41,16 +41,6 @@ bse.pc: bse.pc.in $(top_builddir)/config.status
 EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
-# install .applications files, from ancient GNOME:
-# GNOME 2.4 Desktop System Administration Guide - https://people.gnome.org/~shaunm/admin-guide/titlepage.html
-dotapplicationsdir = $(datarootdir)/application-registry
-dotapplications_DATA = beast.applications
-EXTRA_DIST += $(dotapplications_DATA)
-# mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3
-# mime_types=...,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2
-# mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
-# mime_types=...,audio/mpeg,audio/x-mpeg
-
 # install related pixmaps
 sharedpixmapsdir = $(datarootdir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
@@ -78,7 +68,8 @@ beast.desktop: beast.desktop.in
 CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
-# generate and install .xml mime info file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
+# generate and install .xml mime info file, from shared-mime-info-spec-0.12.html (2003-10-09)
+# simple overview: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
 # gvfs-info testfile.bse                # yields: standard::content-type: audio/x-bse
 # gvfs-mime --query audio/x-bse	        # yields: Registered applications: beast.desktop
 sharedmimedir = $(datarootdir)/mime
@@ -89,13 +80,22 @@ CLEANFILES += beast.xml
 beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
-# generate and install .mime and .keys files
+# ANCIENT: generate and install .mime and .keys files, from shared-mime-info-spec-0.11.html (2003-04-17)
 mimedir = $(datarootdir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
 bse.keys: bse.keys.in
 EXTRA_DIST += $(mime_in_file)
+
+# ANCIENT: install .applications files, from "GNOME 2.4 Desktop System Administration Guide"
+dotapplicationsdir = $(datarootdir)/application-registry
+dotapplications_DATA = beast.applications
+EXTRA_DIST += $(dotapplications_DATA)
+# mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3
+# mime_types=...,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2
+# mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
+# mime_types=...,audio/mpeg,audio/x-mpeg
 
 # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
 install-data-hook:
