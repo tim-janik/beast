@@ -9,7 +9,7 @@ SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers libr
 noinst_DATA	=
 
 # == doc/ install ==
-projectdocsdir   = $(docdir)/
+projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
 EXTRA_DIST      += $(projectdocs_DATA)
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown

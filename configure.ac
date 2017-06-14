@@ -85,7 +85,7 @@ beastbindir="\${beastdir}/bin"
 bselibdir="\${beastdir}/lib"
 datarootdir="\${beastdir}/share"
 datadir="\${beastdir}"
-docdir="\${beastdir}/doc"
+beastdocdir="\${beastdir}/doc"
 bseincludedir="\${beastdir}/include"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
@@ -105,7 +105,7 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
 bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
 libdir="$bak_libdir"; datarootdir="$bak_datarootdir"; datadir="$bak_datadir"
@@ -114,7 +114,7 @@ prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 AC_SUBST(bseincludedir)
 AC_SUBST(beastbindir)
 AC_SUBST(bselibdir)
-AC_SUBST(docdir)
+AC_SUBST(beastdocdir)
 AC_SUBST(beastdir)
 
 # == Check for git ==

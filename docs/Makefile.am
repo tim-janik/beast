@@ -108,7 +108,7 @@ doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
 # == install docs/doxy/html ==
-docs_html_installbase	 = $(docdir)
+docs_html_installbase	 = $(beastdocdir)
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
 docs-html-install: $(docs_html_install_DATA)
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
