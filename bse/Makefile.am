@@ -139,7 +139,7 @@ doc_sources.lst: Makefile
 #
 # BSE library
 #
-lib_LTLIBRARIES                      = libbse-@MAJOR@.la
+bselib_LTLIBRARIES                   = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
@@ -164,7 +164,7 @@ SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
-	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(libdir)
+	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibdir)
 install-exec-hook: install-exec-ldconfig
 
 #

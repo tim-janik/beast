@@ -33,7 +33,7 @@ CLEANFILES += $(noinst_build_sources)
 
 
 # install pkg-config files
-pkgconfigdir = $(libdir)/pkgconfig
+pkgconfigdir = $(bselibdir)/pkgconfig
 pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
 bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)
