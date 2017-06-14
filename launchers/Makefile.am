@@ -19,4 +19,4 @@ install-exec-hook:	# runs after install-binPROGRAMS
 	true \
 	&& ( chown root $(DESTDIR)$(beastbindir)/beast   \
 	&&   chmod 4755 $(DESTDIR)$(beastbindir)/beast ) \
-	|| ( echo "*** WARNING *** $(DESTDIR)$(beastbindir)/beast needs to be installed as root to allow renicing ***" && sleep 5 )
+	|| ( echo -e "***\n*** WARNING: $(DESTDIR)$(beastbindir)/beast needs to be installed as root to allow renicing \\_(o.o)_/\n***" && sleep 1 )
