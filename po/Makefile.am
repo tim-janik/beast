@@ -68,7 +68,7 @@ TMPLIST      = $(abs_builddir)/POTLIST.tmp
 TMPDIR       = tmp-cpots
 I18NPATTERN  = '\b[NUQ]\?_[[:space:]]*([[:space:]]*"'
 INLTFIXPATTERN = '\b__INTLFIX__\b.*'$(I18NPATTERN)
-LOCALEDIR    = $(localedir)
+LOCALEDIR    = $(beastlocaledir)
 NEWLINE	    := $(shell echo)
 
 all: $(GMOFILES)

@@ -80,7 +80,7 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-localedir="\${beastdir}/locale"
+beastlocaledir="\${beastdir}/locale"
 beastbindir="\${beastdir}/bin"
 bselibdir="\${beastdir}/lib"
 datarootdir="\${beastdir}/share"
@@ -101,7 +101,7 @@ bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
@@ -111,6 +111,7 @@ bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
 libdir="$bak_libdir"; datarootdir="$bak_datarootdir"; datadir="$bak_datadir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
+AC_SUBST(beastlocaledir)
 AC_SUBST(bseincludedir)
 AC_SUBST(beastbindir)
 AC_SUBST(bselibdir)
