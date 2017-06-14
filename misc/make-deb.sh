@@ -37,10 +37,8 @@ umask 022
 # run in beast/
 test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 
-# TODO: add /usr/share/doc/beast -> ../../opt/beast-<version>/doc
 # TODO: add /usr/share/icons/hicolor/48x48/apps/beast.png ./usr/share/icons/hicolor/scalable/apps/beast.svg
 # TODO: add /usr/share/icons/hicolor/scalable/mimetypes/application-bse.svg
-# TODO: add doc/ files
 
 # build in ./tmpdeb/
 BEASTDIR=/opt/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
@@ -134,9 +132,6 @@ __EOF
 # DEBIAN/conffiles
 echo -n >$DEBIAN/conffiles
 
-# /opt/share/doc/$NAME/
-mkdir -p $DEBDOCDIR
-
 # changelog.Debian.gz
 DEBCHANGELOG=$DEBDOCDIR/changelog.Debian
 rm -f $DEBCHANGELOG.gz $DEBCHANGELOG
@@ -152,8 +147,8 @@ done
 dch -c $DEBCHANGELOG -D stable -r ""
 gzip --best $DEBCHANGELOG
 
-# copyright
-cp debian/copyright $DEBDOCDIR
+# provide mandatory Debian package docs via symlink
+(cd $DESTDIR && mkdir -p usr/share/doc/ && rm -f usr/share/doc/$NAME && ln -s $BEASTDIR/doc usr/share/doc/$NAME)
 
 # write out header and shell functions used by postinst or postrm
 write_pkgscript_header()
