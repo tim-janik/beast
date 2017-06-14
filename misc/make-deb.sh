@@ -20,9 +20,10 @@ git_clone()
 
 build_checked()
 {
-  REPO=$1 ; CONFIGURE="$2"
+  REPO="$1" && shift
+  CONFIGURE="$1" && shift
   ( cd ./tmpdeb/$REPO
-    $CONFIGURE --prefix=$PREFIX
+    $CONFIGURE "$@"
     nice -n15 make -j`nproc`
     make check
     make install "DESTDIR=$DESTDIR"
@@ -36,18 +37,13 @@ umask 022
 # run in beast/
 test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 
-# TODO: move everything into /opt/beast-<version>/...
-# TODO: add /usr/bin/beast -> ../../opt/beast-<version>/bin/beast
 # TODO: add /usr/share/doc/beast -> ../../opt/beast-<version>/doc
-# TODO: add /usr/share/man/man1/beast.1 -> ../../opt/beast-<version>/doc/beast.1
-# TODO: add /usr/share/applications/beast.desktop /usr/share/mime/packages/beast.xml
 # TODO: add /usr/share/icons/hicolor/48x48/apps/beast.png ./usr/share/icons/hicolor/scalable/apps/beast.svg
 # TODO: add /usr/share/icons/hicolor/scalable/mimetypes/application-bse.svg
 # TODO: add doc/ files
 
 # build in ./tmpdeb/
-PREFIX=/opt
-BEASTDIR=$PREFIX/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
+BEASTDIR=/opt/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
 RAPICORNPREFIXDIR=$DESTDIR$BEASTDIR
 DEBDOCDIR=$DESTDIR$BEASTDIR/doc
@@ -60,13 +56,12 @@ export LD_LIBRARY_PATH="$RAPICORNPREFIXDIR/lib"
 export PKG_CONFIG_PATH=$RAPICORNPREFIXDIR/lib/pkgconfig
 export PKG_CONFIG_RAPICORN_PREFIX=$RAPICORNPREFIXDIR
 export PKG_CONFIG_RAPICORN_17_PREFIX=$RAPICORNPREFIXDIR
-export PKG_CONFIG_BSE_PREFIX=$DESTDIR$PREFIX
+export PKG_CONFIG_BSE_BEASTDESTDIR=$DESTDIR
 export AIDACC_DESTDIR=$DESTDIR
 
 echo "DISPLAY=$DISPLAY LDFLAGS=$LDFLAGS"
 echo "CC=$CC CFLAGS=$CFLAGS"
 echo "CXX=$CXX CXXFLAGS=$CXXFLAGS"
-echo "PREFIX=$PREFIX"
 echo "BEASTDIR=$BEASTDIR"
 echo "DESTDIR=$DESTDIR"
 echo "RAPICORNPREFIXDIR=$RAPICORNPREFIXDIR"
@@ -88,13 +83,13 @@ if $REBUILD ; then
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
     git_clone $R rapicorn c013464a64a606fe2165f15396fb96f342d27eb1 # 17.0.0~rc1
-    PREFIX="$BEASTDIR" build_checked rapicorn ./autogen.sh --with-pkgroot=/opt
+    build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
 
     # clone/update and build beast
     R=https://github.com/tim-janik/beast.git
     R=`pwd`/.git/
     git_clone $R beast
-    build_checked beast ./autogen.sh
+    build_checked beast ./autogen.sh --with-pkgroot=/opt --prefix=/usr
 fi
 [ -x $DESTDIR/$BEASTEXE ] || die "failed to build Beast executable: $BEASTEXE"
 
