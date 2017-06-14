@@ -137,9 +137,9 @@ DEBCHANGELOG=$DEBDOCDIR/changelog.Debian
 rm -f $DEBCHANGELOG.gz $DEBCHANGELOG
 DCHCREATE="--create --package $NAME"
 for msg in \
-  "${NAME^} build, git commit $GITCOMMIT" \
+  "${NAME^} build: https://github.com/tim-janik/beast/" \
+  "git commit $GITCOMMIT" \
   "postinst: add setuid bit to the ${NAME^} launcher, so the audio processing can run at nice level -20 with soft realtime scheduling." \
-  "Debian package build setup for ${NAME^}, hosted at: https://github.com/tim-janik/beast/" \
   ; do
   dch -c $DEBCHANGELOG -v "$VERSION" $DCHCREATE "$msg"
   DCHCREATE=
