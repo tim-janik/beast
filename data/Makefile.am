@@ -81,8 +81,35 @@ EXTRA_DIST += $(dotapplications_DATA)
 # mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
 # mime_types=...,audio/mpeg,audio/x-mpeg
 
-# update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
+# $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
+INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$d" && ln -s $(1) $(2) )
+
+# Create links into standard filesystem hierarchy (FHS) and update system databases
+# * https://www.freedesktop.org/wiki/Howto_desktop_files/
+# * https://www.freedesktop.org/Standards/shared-mime-info-spec
 install-data-hook:
-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
+	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast.png')
+	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast-audio-x-bse.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast-audio-x-bse.png')
+	@$(call INSTALL_SYMLINK, '$(dotdesktopdir)/beast.desktop', '$(DESTDIR)$(datarootdir)/applications/beast.desktop')
+	@$(call INSTALL_SYMLINK, '$(dotapplicationsdir)/beast.applications', '$(DESTDIR)$(datarootdir)/application-registry/beast.applications')
+	@$(call INSTALL_SYMLINK, '$(sharedmimepackagedir)/beast.xml', '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml')
+	@$(call INSTALL_SYMLINK, '$(beastbindir)/beast', '$(DESTDIR)$(bindir)/beast')
+	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
+	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';
+beastmandir = ${beastsharedir}/man
+
 uninstall-local: uninstall-sharedmimepackageDATA
-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	rm -f '$(DESTDIR)$(mandir)/man1/beast.1'
+	rm -f '$(DESTDIR)$(mandir)/man1/bsewavetool.1'
+	rm -f '$(DESTDIR)$(mandir)/man5/bse.5'
+	rm -f '$(DESTDIR)$(datarootdir)/pixmaps/beast.png'
+	rm -f '$(DESTDIR)$(datarootdir)/pixmaps/beast-audio-x-bse.png'
+	rm -f '$(DESTDIR)$(datarootdir)/applications/beast.desktop'
+	rm -f '$(DESTDIR)$(datarootdir)/application-registry/beast.applications'
+	rm -f '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml'
+	rm -f '$(DESTDIR)$(bindir)/beast'
+	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
+	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';

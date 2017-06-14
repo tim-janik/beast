@@ -660,6 +660,7 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database)
 
 dnl # MC_PYTHON_REQUIREMENTS() - python checks
 AC_DEFUN([MC_PYTHON_REQUIREMENTS],
