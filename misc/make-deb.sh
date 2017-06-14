@@ -43,6 +43,7 @@ test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 # TODO: add /usr/share/applications/beast.desktop /usr/share/mime/packages/beast.xml
 # TODO: add /usr/share/icons/hicolor/48x48/apps/beast.png ./usr/share/icons/hicolor/scalable/apps/beast.svg
 # TODO: add /usr/share/icons/hicolor/scalable/mimetypes/application-bse.svg
+# TODO: add doc/ files
 
 # build in ./tmpdeb/
 PREFIX=/opt
@@ -159,8 +160,10 @@ gzip --best $DEBCHANGELOG
 # copyright
 cp debian/copyright $DEBDOCDIR
 
-# DEBIAN/postinst
-cat <<-\__EOF |
+# write out header and shell functions used by postinst or postrm
+write_pkgscript_header()
+{
+  cat <<-\__EOF
 	#!/bin/bash
 	set -e
 	set_perms() {
@@ -171,6 +174,16 @@ cat <<-\__EOF |
 	    chmod "$MODE" "$FILE"
 	  fi
 	}
+	update_usr_share() {
+	  [ ! -x /usr/bin/update-desktop-database ] || update-desktop-database -q /usr/share/applications
+	  [ ! -x /usr/bin/update-mime-database ] || update-mime-database /usr/share/mime
+	}
+__EOF
+}
+
+# DEBIAN/postinst
+write_pkgscript_header >$DEBIAN/postinst
+cat <<-\__EOF |
 	# https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s-mscriptsinstact
 	case "$1" in
 	  configure)
@@ -178,6 +191,7 @@ cat <<-\__EOF |
 	    set_perms root root 4755 @BEASTEXE@	# wrapper which does renice -20
 	    # https://www.debian.org/doc/debian-policy/ch-sharedlibs.html#s-ldconfig
 	    ldconfig
+	    update_usr_share
 	    ;;
 	  abort-upgrade|abort-remove|abort-deconfigure)
 	    ;;
@@ -188,8 +202,18 @@ cat <<-\__EOF |
 	esac
 	exit 0
 __EOF
-sed "s|@BEASTEXE@|$BEASTEXE|g" > $DEBIAN/postinst
+  sed "s|@BEASTEXE@|$BEASTEXE|g" >> $DEBIAN/postinst
 chmod +x $DEBIAN/postinst
+
+# DEBIAN/postrm
+write_pkgscript_header >$DEBIAN/postrm
+cat <<-\__EOF |
+	ldconfig
+	update_usr_share
+	exit 0
+__EOF
+  cat >>$DEBIAN/postrm
+chmod +x $DEBIAN/postrm
 
 # https://wiki.debian.org/ReleaseGoals/LAFileRemoval
 find $DEBIAN/../ -name '*.la' -delete
