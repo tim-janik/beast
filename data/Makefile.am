@@ -87,7 +87,9 @@ INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$
 # Create links into standard filesystem hierarchy (FHS) and update system databases
 # * https://www.freedesktop.org/wiki/Howto_desktop_files/
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
+# TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
 install-data-hook:
+	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(beastdocdir)/copyright'
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
@@ -102,6 +104,7 @@ install-data-hook:
 beastmandir = ${beastsharedir}/man
 
 uninstall-local: uninstall-sharedmimepackageDATA
+	rm -f '$(DESTDIR)$(beastdocdir)/copyright'
 	rm -f '$(DESTDIR)$(mandir)/man1/beast.1'
 	rm -f '$(DESTDIR)$(mandir)/man1/bsewavetool.1'
 	rm -f '$(DESTDIR)$(mandir)/man5/bse.5'
