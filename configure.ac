@@ -68,6 +68,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # == Argument parsing ==
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation directory inside DIR],,with_pkgroot=no)
 # package library defaults
 enable_static=no ; enable_shared=yes
 
@@ -90,9 +91,10 @@ bseincludedir="\${beastdir}/include"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
 test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
-case `eval echo "${exec_prefix}"` in
-  /usr|/usr/local)	beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
-  *)            	beastdir="\${exec_prefix}/beast-$MAJOR-$MINOR" ;;
+case "$with_pkgroot" in
+  no)			beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
+  */*)			beastdir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
+  *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
 esac
 bak_libdir="$libdir"
 bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"

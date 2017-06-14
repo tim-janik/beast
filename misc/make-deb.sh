@@ -88,7 +88,7 @@ if $REBUILD ; then
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
     git_clone $R rapicorn c013464a64a606fe2165f15396fb96f342d27eb1 # 17.0.0~rc1
-    PREFIX="$BEASTDIR" build_checked rapicorn ./autogen.sh
+    PREFIX="$BEASTDIR" build_checked rapicorn ./autogen.sh --with-pkgroot=/opt
 
     # clone/update and build beast
     R=https://github.com/tim-janik/beast.git
