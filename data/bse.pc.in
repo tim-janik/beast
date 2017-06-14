@@ -1,9 +1,10 @@
-prefix=@prefix@
+destdir=
+beastdestdir=
+prefix=${destdir}@prefix@
 exec_prefix=@exec_prefix@
-beastdir=@beastdir@
+beastdir=${beastdestdir}@beastdir@
 bselibdir=@bselibdir@
 datarootdir=@datarootdir@
-datadir=@datadir@
 bseincludedir=@bseincludedir@
 
 sfidl=@exec_prefix@/sfidl
