@@ -15,22 +15,6 @@ images_DATA = ${public_images}
 imagesdir = $(beastdatadir)/images
 EXTRA_DIST += $(private_images) $(public_images)
 
-# generate image header files
-noinst_build_sources = beast-images.h
-beast-images.h: ${public_images}
-	cd . \
-	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \
-	&& echo >> xgen-bstih \
-	&& echo "#define BST_SPLASH_IMAGE    \"beast-splash.png\"" >> xgen-bstih \
-	&& echo "#define BST_SPLASH_WIDTH    (300)" >> xgen-bstih \
-	&& echo "#define BST_SPLASH_HEIGHT   (350)" >> xgen-bstih \
-	&& echo >> xgen-bstih \
-	&& echo "/* Generated data ends here */" >> xgen-bstih \
-	&& (cp xgen-bstih $@) \
-	&& rm -f xgen-bstih
-noinst_DATA = $(noinst_build_sources)
-CLEANFILES += $(noinst_build_sources)
-
 
 # install pkg-config files
 pkgconfigdir = $(bselibdir)/pkgconfig

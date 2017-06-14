@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po tests docs
+SUBDIRS		= . sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po docs data tests
 
 # == make setup ==
 noinst_DATA	=
