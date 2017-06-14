@@ -16,7 +16,7 @@ plugindir=${bselibdir}/plugins
 driverdir=${bselibdir}/drivers
 
 Name: Beast & Bse
-Description: Beast & Bse are an audio tracker and audio synthesis engine.
+Description: Beast - Music Synthesizer and Composer
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0 rapicorn
 Version: @PACKAGE_VERSION@
 Libs: -L${bselibdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
