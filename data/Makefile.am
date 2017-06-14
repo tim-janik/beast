@@ -42,7 +42,7 @@ EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
 # install related pixmaps
-sharedpixmapsdir = $(datarootdir)/pixmaps
+sharedpixmapsdir = $(beastsharedir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
@@ -61,7 +61,7 @@ $(INTLMERGE_CACHE): $(PODEPS)
 	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
 
 # generate and install .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
-dotdesktopdir = $(datarootdir)/applications
+dotdesktopdir = $(beastsharedir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 beast.desktop: beast.desktop.in
@@ -72,7 +72,7 @@ EXTRA_DIST += $(dotdesktop_in_files)
 # simple overview: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
 # gvfs-info testfile.bse                # yields: standard::content-type: audio/x-bse
 # gvfs-mime --query audio/x-bse	        # yields: Registered applications: beast.desktop
-sharedmimedir = $(datarootdir)/mime
+sharedmimedir = $(beastsharedir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
@@ -81,7 +81,7 @@ beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # ANCIENT: generate and install .mime and .keys files, from shared-mime-info-spec-0.11.html (2003-04-17)
-mimedir = $(datarootdir)/mime-info
+mimedir = $(beastsharedir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
@@ -89,7 +89,7 @@ bse.keys: bse.keys.in
 EXTRA_DIST += $(mime_in_file)
 
 # ANCIENT: install .applications files, from "GNOME 2.4 Desktop System Administration Guide"
-dotapplicationsdir = $(datarootdir)/application-registry
+dotapplicationsdir = $(beastsharedir)/application-registry
 dotapplications_DATA = beast.applications
 EXTRA_DIST += $(dotapplications_DATA)
 # mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3

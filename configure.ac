@@ -83,7 +83,7 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 beastlocaledir="\${beastdir}/locale"
 beastbindir="\${beastdir}/bin"
 bselibdir="\${beastdir}/lib"
-datarootdir="\${beastdir}/share"
+beastsharedir="\${beastdir}/share"
 beastdatadir="\${beastdir}"
 beastdocdir="\${beastdir}/doc"
 bseincludedir="\${beastdir}/include"
@@ -94,9 +94,9 @@ case `eval echo "${exec_prefix}"` in
   /usr|/usr/local)	beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
   *)            	beastdir="\${exec_prefix}/beast-$MAJOR-$MINOR" ;;
 esac
-bak_libdir="$libdir"; bak_datarootdir="$datarootdir"
+bak_libdir="$libdir"
 bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
-libdir=`eval echo "${libdir}"`; datarootdir=`eval echo "${datarootdir}"`
+libdir=`eval echo "${libdir}"`
 bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
@@ -108,13 +108,14 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
 bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
-libdir="$bak_libdir"; datarootdir="$bak_datarootdir"
+libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
 AC_SUBST(beastlocaledir)
 AC_SUBST(bseincludedir)
 AC_SUBST(beastbindir)
 AC_SUBST(bselibdir)
+AC_SUBST(beastsharedir)
 AC_SUBST(beastdatadir)
 AC_SUBST(beastdocdir)
 AC_SUBST(beastdir)

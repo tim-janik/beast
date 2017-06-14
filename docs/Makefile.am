@@ -4,10 +4,13 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS = images
 
 MOSTLYCLEANFILES =
-man1_MANS =
-man1_HTMLS =
-man5_MANS =
-man5_HTMLS =
+beastmandir = ${beastsharedir}/man
+man1dir     = $(beastmandir)/man1
+man1_MANS   =
+man1_HTMLS  =
+man5dir     = $(beastmandir)/man5
+man5_MANS   =
+man5_HTMLS  =
 
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
