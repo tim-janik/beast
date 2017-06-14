@@ -3,18 +3,17 @@ beastdestdir=
 prefix=${destdir}@prefix@
 exec_prefix=@exec_prefix@
 beastdir=${beastdestdir}@beastdir@
+beastdatadir=@beastdatadir@
 bselibdir=@bselibdir@
-datarootdir=@datarootdir@
 bseincludedir=@bseincludedir@
 
-sfidl=@exec_prefix@/sfidl
-demodir=@datadir@/demo
-sampledir=@datadir@/samples
-scriptdir=@datadir@/scripts
-plugindir=${bselibdir}plugins
+demodir=@beastdatadir@/demo
+sampledir=@beastdatadir@/samples
+effectdir=@beastdatadir@/effects
+instrumentdir=@beastdatadir@/instruments
+scriptdir=@beastdatadir@/scripts
+plugindir=${bselibdir}/plugins
 driverdir=${bselibdir}/drivers
-effectdir=@datadir@/effects
-instrumentdir=@datadir@/instruments
 
 Name: Beast & Bse
 Description: Beast & Bse are an audio tracker and audio synthesis engine.
