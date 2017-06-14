@@ -21,7 +21,7 @@ doc_sources.lst: Makefile
 # tools to build
 #
 
-bin_PROGRAMS        = bsewavetool
+beastbin_PROGRAMS   = bsewavetool
 bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 nodist_bsewavetool_SOURCES = ../topbuildid.cc
 bsewavetool_LDADD   = $(progs_ldadd)

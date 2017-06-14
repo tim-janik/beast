@@ -52,7 +52,7 @@ libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
 #
 # source files
 
-bin_PROGRAMS   = sfidl
+beastbin_PROGRAMS = sfidl
 sfidl_SOURCES  = sfidl.cc
 sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 sfidl_LDADD    = $(LIBBSE_LIBS)
