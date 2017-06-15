@@ -84,7 +84,7 @@ RUN nice make uninstall
 
 # Carry out distcheck test if desired
 RUN `intent distcheck` && \
-    nice make distcheck
+    nice make distcheck DISTCHECK_PO=0
 
 # Show tarball
 RUN ls -l *.tar.xz

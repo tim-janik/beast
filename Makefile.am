@@ -136,7 +136,8 @@ distcheck: dist
 .PHONY: distcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
+DISTCHECK_PO = 1
 check-update-po:
-	$(Q) $(MAKE) -C po check-update-po
+	$(Q) [ "$(DISTCHECK_PO)" = "0" ] || $(MAKE) -C po check-update-po
 DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
 $(DISTCHECK_HOOK): check-update-po
