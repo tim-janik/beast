@@ -63,6 +63,7 @@ uninstall_filter_files = $(strip	\
 	./share/mime/version		./share/mime/icons		./share/mime/types	\
 	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
 	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
+	./share/applications/mimeinfo.cache	\
 )
 
 # == topbuildid.cc ==
