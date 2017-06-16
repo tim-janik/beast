@@ -21,9 +21,9 @@ programs_ldadd = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 #
 # programs to build
 #
-bin_PROGRAMS = bsescm
-bsescm_SOURCES = bsescm.cc bsescminterp.cc
-bsescm_LDADD = $(programs_ldadd) $(BSESCM_LIBS)
+beastbin_PROGRAMS = bsescm
+bsescm_SOURCES    = bsescm.cc bsescminterp.cc
+bsescm_LDADD      = $(programs_ldadd) $(BSESCM_LIBS)
 
 # source setups
 bsescminterp.cc: # bsescm-genglue.c
@@ -33,7 +33,7 @@ EXTRA_DIST += bsescminterp.hh
 #
 # scripts
 #
-shellscriptdir = $(datadir)/scripts
+shellscriptdir = $(beastdatadir)/scripts
 shellscript_DATA = bse-scm-glue.boot
 
 EXTRA_DIST += $(shellscript_DATA)
@@ -48,8 +48,8 @@ EXTRA_DIST += $(shellscript_DATA)
 installcheck-local: check-binary
 .PHONY: check-binary
 check-binary:
-	@for p in $(bin_PROGRAMS) ; do					\
-	  pp="$(DESTDIR)$(bindir)/$$p" ;				\
+	@for p in $(beastbin_PROGRAMS) ; do				\
+	  pp="$(DESTDIR)$(beastbindir)/$$p" ;				\
 	  echo "TEST: test -x \"$$pp\"" ;				\
 	  test -x "$$pp" ||						\
 	    { echo "Failed to verify installation of executable: $$pp";	\

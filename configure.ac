@@ -68,6 +68,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # == Argument parsing ==
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation directory inside DIR],,with_pkgroot=no)
 # package library defaults
 enable_static=no ; enable_shared=yes
 
@@ -80,34 +81,46 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-bseincludedir="\${includedir}/bse-$MAJOR"
-bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
-beastexecdir="\${libexecdir}/beast-$MAJOR.$MINOR.$MICRO"
-datadir="\${datarootdir}/beast"
-docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
-# Substitute directories in Makefiles
-AC_SUBST(bseincludedir)
-AC_SUBST(bselibdir)
-AC_SUBST(beastexecdir)
-AC_SUBST(datadir)
-AC_SUBST(docdir)
-# Provide directories for C++
-bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"; bak_libexecdir="$libexecdir"
-bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
-test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-libdir=`eval echo "${libdir}"` ; libexecdir=`eval echo "${libexecdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
-datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+beastlocaledir="\${beastdir}/locale"
+beastbindir="\${beastdir}/bin"
+bselibdir="\${beastdir}/lib"
+beastsharedir="\${beastdir}/share"
+beastdatadir="\${beastdir}"
+beastdocdir="\${beastdir}/doc"
+bseincludedir="\${beastdir}/include"
+# Provide directories for C++ and move Beast packagedir into libdir if under /usr
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
+test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
+case "$with_pkgroot" in
+  no)			beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
+  */*)			beastdir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
+  *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
+esac
+bak_libdir="$libdir"
+bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
+libdir=`eval echo "${libdir}"`
+bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTEXECDIR, ["`eval echo ${beastexecdir}`"], [Directory under whic to install Beast executable files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
-datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
+bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
+libdir="$bak_libdir"
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
+# Substitute directories in Makefiles
+AC_SUBST(beastlocaledir)
+AC_SUBST(bseincludedir)
+AC_SUBST(beastbindir)
+AC_SUBST(bselibdir)
+AC_SUBST(beastsharedir)
+AC_SUBST(beastdatadir)
+AC_SUBST(beastdocdir)
+AC_SUBST(beastdir)
 
 # == Check for git ==
 AC_MSG_CHECKING([for git repository])
@@ -647,6 +660,7 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database)
 
 dnl # MC_PYTHON_REQUIREMENTS() - python checks
 AC_DEFUN([MC_PYTHON_REQUIREMENTS],

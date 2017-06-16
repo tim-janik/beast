@@ -33,7 +33,7 @@ MOSTLYCLEANFILES += config.log # created by config.status
 
 # == ebeast bundle ==
 INSTALL_VERSION = @MAJOR@.@MINOR@.@MICRO@
-BUNDLEDIR       = ebeast-$(INSTALL_VERSION)
+BUNDLEDIR       = ebeast
 .bundlestamp: .appstamp
 	$(AM_V_GEN)
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
@@ -114,8 +114,8 @@ MOSTLYCLEANFILES += xlint-js
 
 # == install ==
 install-exec-bundle: .bundlestamp
-	$(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)"
-	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"
-	cp -RP $(BUNDLEDIR) "$(DESTDIR)$(pkglibexecdir)/"
+	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
+	rm -rf "$(DESTDIR)$(beastdir)/$(BUNDLEDIR)"
+	cp -RP $(BUNDLEDIR) "$(DESTDIR)$(beastdir)/"
 uninstall-bundle:
-	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"
+	rm -rf "$(DESTDIR)$(beastdir)/$(BUNDLEDIR)"

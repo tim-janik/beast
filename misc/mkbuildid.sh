@@ -1,4 +1,5 @@
 #!/bin/bash
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 set -e
 
 # Usage: mkbuildid.sh [-p] [ccfile] [hhfile]
@@ -17,18 +18,16 @@ BUILDID_HH="$2"
 DOTGIT=`git rev-parse --git-dir 2>/dev/null` || true
 
 gen_buildid() {
-  test -e "$DOTGIT" ||				# not in a git-tracked source tree
-      { printf %s "${FALLBACK_VERSION-0.0.0}-untracked" ; return ; }
+  test -e "$DOTGIT" ||				# Tarball: lacks git version info
+      { printf %s "${FALLBACK_VERSION-0.0.0}+tarball" ; return ; }
   COMMITID="${1-HEAD}"
   DESC=$(git describe --match '[0-9]*.*[0-9]' --abbrev=5 $COMMITID)
   test "$DESC" != "${DESC%%-*}" ||		# HEAD is on release tag
-      { echo "$DESC" ; return ; }
-  # HEAD has commits on top of last release tag, transform 0.0.0-7-gabc -> 0.0.1~7-gabc
-  MICRO=$(printf %s "$DESC" | sed 's/^[^-]*\b\([0-9]\+\)-.*/\1/')
-  [[ "$MICRO" =~ ^[0-9]+$ ]] || die 7 "failed to detect MICRO in $DESC"
-  MICRO=$(expr 1 + "$MICRO")
-  NEXT=$(printf %s "$DESC" | sed "s/^\([^-]*\)\b\([0-9]\+\)-/\1$MICRO~wip/")
-  printf %s "$NEXT"
+      { echo "$FALLBACK_VERSION" ; return ; }
+  # HEAD has commits on top of last release tag, transform 1.2.3-7-gabc into version postfix
+  GPOSTFIX="${DESC#*-}"		# 0.0.0-7-gabc -> 7-gabc
+  GPOSTFIX="+${GPOSTFIX//-/.}"	# 7-gabc -> +7.gabc
+  printf %s "$FALLBACK_VERSION$GPOSTFIX"
 }
 
 BUILDID=$(gen_buildid HEAD)

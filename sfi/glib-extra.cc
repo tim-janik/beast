@@ -1064,8 +1064,8 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
     case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
     case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
-    case INSTALLPATH_BEASTEXECDIR:                      return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTEXECDIR;
-    case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTEXECDIR) + "/pybeast";
+    case INSTALLPATH_BEASTDIR:                          return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTDIR;
+    case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTDIR) + "/pybeast";
     case INSTALLPATH_OBJDIR:                            return CONFIGURE_INSTALLPATH_OBJDIR;
     }
   return "";

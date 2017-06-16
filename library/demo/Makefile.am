@@ -7,6 +7,6 @@ demo_DATA = $(strip		\
 	stereo-through.bse	\
 	x2-midi-test.bse	\
 )
-demodir = $(datadir)/demo
+demodir = $(beastdatadir)/demo
 
 EXTRA_DIST += $(demo_DATA)

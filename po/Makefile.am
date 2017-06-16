@@ -4,6 +4,10 @@ AUTOMAKE_OPTIONS = -Wno-portability
 
 POSRC_TYPES =
 
+# Verbosity macros
+Qignore = $(if $(findstring 1, $(V)) ,, : )
+Vignore = $(if $(findstring 1, $(V)) , : ,)
+
 # Variables:
 # ALL_LINGUAS : setup by configure.ac from po/LINGUAS
 # PO_LINGUAS  : command line override for ALL_LINGUAS (subset)
@@ -64,7 +68,7 @@ TMPLIST      = $(abs_builddir)/POTLIST.tmp
 TMPDIR       = tmp-cpots
 I18NPATTERN  = '\b[NUQ]\?_[[:space:]]*([[:space:]]*"'
 INLTFIXPATTERN = '\b__INTLFIX__\b.*'$(I18NPATTERN)
-LOCALEDIR    = $(prefix)/$(DATADIRNAME)/locale
+LOCALEDIR    = $(beastlocaledir)
 NEWLINE	    := $(shell echo)
 
 all: $(GMOFILES)
@@ -82,9 +86,10 @@ install-data: $(GMOFILES)
 	@for lang in $(TRANSLATIONS); do \
 	  $(mkinstalldirs) "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/" || exit ; \
 	  test ! -r "$$lang.gmo" || { \
-	    printf "  %-12s -> %s\n" "$$lang.gmo" ".../$$lang/$(BST_GETTEXT_DOMAIN).mo" ; \
-            $(INSTALL_DATA) "$$lang.gmo" \
-	      "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" || exit 1 ; \
+	    echo "  INSTALL  " "$$lang.gmo" ; \
+	    ( $(Qignore) set -x ; \
+	      $(INSTALL_DATA) "$$lang.gmo" \
+	        "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ) || exit 1 ; \
 	  } ; \
 	done
 uninstall:
@@ -250,6 +255,7 @@ DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 IGNORE_UNLISTED = $(strip		\
 	docs/doxy/*			\
+	tmp*				\
 )
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 # use 'readlink -ve' to catch missing files

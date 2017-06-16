@@ -10,6 +10,6 @@ scripts_DATA = $(strip			\
 	part-harmonic-transposer.scm	\
 	mixer-splitup-by-track.scm	\
 )
-scriptsdir = $(datadir)/scripts
+scriptsdir = $(beastdatadir)/scripts
 
 EXTRA_DIST += $(scripts_DATA)

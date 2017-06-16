@@ -10,7 +10,6 @@
 #include "bstusermessage.hh"
 #include "bstparam.hh"
 #include "bstpreferences.hh"
-#include "data/beast-images.h"
 #include "../topbuildid.hh"
 #include "../config/config.h"
 #include <Python.h>
@@ -18,6 +17,10 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+
+#define BST_SPLASH_IMAGE        "beast-splash.png"      // see ../data/beast-splash.png
+#define BST_SPLASH_WIDTH        (300)
+#define BST_SPLASH_HEIGHT       (350)
 
 /* --- prototypes --- */
 static void			bst_args_parse_early	(int *argc_p, char **argv);

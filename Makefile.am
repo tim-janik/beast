@@ -3,13 +3,13 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po tests docs
+SUBDIRS		= . sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po docs data tests
 
 # == make setup ==
 noinst_DATA	=
 
 # == doc/ install ==
-projectdocsdir   = $(docdir)/
+projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
 EXTRA_DIST      += $(projectdocs_DATA)
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
@@ -44,11 +44,11 @@ bse-app-test:
 	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> tmpx.cc \
 	&& echo '  return 0; }'						>> tmpx.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
+	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) LD_LIBRARY_PATH="$(libdir):$$LD_LIBRARY_PATH" ./tmpx \
+	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(bselibdir):$$LD_LIBRARY_PATH" ./tmpx \
 		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$(Q) rm -f tmpx.o tmpx.cc tmpx
 installcheck-local: bse-app-test

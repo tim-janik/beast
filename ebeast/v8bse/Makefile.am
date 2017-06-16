@@ -58,7 +58,7 @@ binding.gyp: Makefile # binding.gyp needs Makefile variables
 	@echo "      'cflags_cc!':   [ $(patsubst %, '%'$(cma), $(v8bse_rmflags)) ],"	>>$@
 	@echo "      'include_dirs': [ $(patsubst %, '%'$(cma), $(v8bse_incdirs)) ],"	>>$@
 	@echo "      'libraries':    [ $(patsubst %, '%'$(cma), $(v8bse_libs))"		>>$@
-	@echo "                        '-Wl,-rpath,$(libdir)' ],"			>>$@
+	@echo "                        '-Wl,-rpath,$(bselibdir)' ],"			>>$@
 	@echo "    }"									>>$@
 	@echo "  ]"									>>$@
 	@echo "}"									>>$@

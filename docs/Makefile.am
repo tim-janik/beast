@@ -4,10 +4,13 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS = images
 
 MOSTLYCLEANFILES =
-man1_MANS =
-man1_HTMLS =
-man5_MANS =
-man5_HTMLS =
+beastmandir = ${beastsharedir}/man
+man1dir     = $(beastmandir)/man1
+man1_MANS   =
+man1_HTMLS  =
+man5dir     = $(beastmandir)/man5
+man5_MANS   =
+man5_HTMLS  =
 
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
@@ -108,7 +111,7 @@ doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
 # == install docs/doxy/html ==
-docs_html_installbase	 = $(docdir)
+docs_html_installbase	 = $(beastdocdir)
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
 docs-html-install: $(docs_html_install_DATA)
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
