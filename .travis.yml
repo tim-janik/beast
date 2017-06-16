@@ -12,19 +12,19 @@ language: generic
 env:
   # INTENT: gccbuild clangbuild package bintrayup
   matrix:
-    - DIST="ubuntu:wily"        INTENT="gccbuild,package,bintrayup"
-    - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild,package,bintrayup"
-    - DIST="debian:jessie"      INTENT="gccbuild,package,bintrayup"
-    - DIST="ubuntu:yakkety"     INTENT="gccbuild,package,bintrayup"
+    - DIST="ubuntu:wily"        INTENT="gccbuild"
+    - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild"
+    - DIST="debian:jessie"      INTENT="gccbuild"
+    - DIST="ubuntu:yakkety"     INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
-    - DIST="debian:stretch"     INTENT="gccbuild,package,bintrayup"
+    - DIST="debian:stretch"     INTENT="gccbuild"
     - DIST="ubuntu:zesty"       INTENT="gccbuild"
     - DIST="ubuntu:zesty"       INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
-    - env: DIST="debian:stretch"     INTENT="gccbuild,package,bintrayup"
+    - env: DIST="debian:stretch"     INTENT="gccbuild"
     - env: DIST="ubuntu:zesty"       INTENT="gccbuild"
     - env: DIST="ubuntu:zesty"       INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
