@@ -88,6 +88,7 @@ INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$
 # * https://www.freedesktop.org/wiki/Howto_desktop_files/
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
 # TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
+EXTRA_DIST += ../debian/copyright
 install-data-hook:
 	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(beastdocdir)/copyright'
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
