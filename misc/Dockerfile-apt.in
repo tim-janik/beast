@@ -79,7 +79,7 @@ RUN nice make -j`nproc`
 RUN nice make check
 RUN nice make install
 RUN nice make installcheck
-RUN nice make dist
+RUN nice make distgit
 RUN nice make uninstall
 
 # Carry out distcheck test if desired
