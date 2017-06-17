@@ -157,7 +157,15 @@ distcheck: distgit
 	&& cd "$(abs_top_builddir)" \
 	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
 	&& echo "OK: archive ready for distribution: $$TARBALL" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
-.PHONY: distcheck distuninstallcheck-hook
+distuninstallcheck:
+	@test -n '$(distuninstallcheck_dir)' || { echo '$@: missing distuninstallcheck_dir' >&2; false; }
+	@cd '$(distuninstallcheck_dir)' && \
+	test `$(distuninstallcheck_listfiles) | sed 's|^\./|$(prefix)/|' | wc -l` -eq 0 \
+	|| { echo "$@: ERROR: files left after uninstall:" ; \
+	     $(distuninstallcheck_listfiles) ; \
+	     false; } >&2
+distuninstallcheck_listfiles = find . -type f -print
+.PHONY: distcheck distuninstallcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
 DISTCHECK_PO = 1
