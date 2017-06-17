@@ -10,5 +10,3 @@ images_DATA = $(strip		\
 	silvervein.png		\
 )
 imagesdir = $(beastdatadir)/skins/images
-
-EXTRA_DIST += $(images_DATA)

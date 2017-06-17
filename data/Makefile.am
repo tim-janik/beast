@@ -13,7 +13,6 @@ public_images = $(strip         \
 )
 images_DATA = ${public_images}
 imagesdir = $(beastdatadir)/images
-EXTRA_DIST += $(private_images) $(public_images)
 
 
 # install pkg-config files
@@ -22,7 +21,6 @@ pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
 bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)
 	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
-EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
 # install related pixmaps
@@ -50,7 +48,6 @@ dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 beast.desktop: beast.desktop.in
 CLEANFILES += beast.desktop
-EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file, from shared-mime-info-spec-0.12.html (2003-10-09)
 # simple overview: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
@@ -62,7 +59,6 @@ sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
 CLEANFILES += beast.xml
 beast.xml: beast.xml.in
-EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # ANCIENT: generate and install .mime and .keys files, from shared-mime-info-spec-0.11.html (2003-04-17)
 mimedir = $(beastsharedir)/mime-info
@@ -70,12 +66,10 @@ mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
 bse.keys: bse.keys.in
-EXTRA_DIST += $(mime_in_file)
 
 # ANCIENT: install .applications files, from "GNOME 2.4 Desktop System Administration Guide"
 dotapplicationsdir = $(beastsharedir)/application-registry
 dotapplications_DATA = beast.applications
-EXTRA_DIST += $(dotapplications_DATA)
 # mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3
 # mime_types=...,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2
 # mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
@@ -88,7 +82,6 @@ INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$
 # * https://www.freedesktop.org/wiki/Howto_desktop_files/
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
 # TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
-EXTRA_DIST += ../debian/copyright
 install-data-hook:
 	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(beastdocdir)/copyright'
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')

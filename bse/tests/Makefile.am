@@ -7,8 +7,6 @@ AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(BSE_CFLAGS) $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
-EXTRA_DIST += arrows.gp filter-defs.gp
-
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
@@ -20,7 +18,6 @@ TAPTESTS          += filtertest
 SLOWTESTS         += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD   = $(progs_ldadd)
-EXTRA_DIST        += filtercatalog.cc
 
 TAPTESTS       += testfft
 testfft_SOURCES = testfft.cc
@@ -34,7 +31,6 @@ TAPTESTS           += subnormals
 subnormals_SOURCES  = subnormals.cc subnormals-aux.cc
 subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
-EXTRA_DIST         += subnormals.hh
 
 TAPTESTS          += loophandle
 loophandle_SOURCES = loophandle.cc

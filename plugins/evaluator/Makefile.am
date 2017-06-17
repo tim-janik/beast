@@ -38,8 +38,3 @@ include $(top_srcdir)/Makefile.decl
 ## test programs:
 #noinst_PROGRAMS = evaluateexpr
 #evaluateexpr_SOURCES = evaluateexpr.cc $(EVALUATE_SOURCES)
-#
-#EXTRA_DIST += $(strip		\
-#	bseevaluator.cc		\
-#	$(EXTRA_HEADERS)	\
-#)

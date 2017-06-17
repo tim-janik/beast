@@ -11,5 +11,3 @@ instruments_DATA = $(strip	\
 	stw-iron-string.bse		\
 )
 instrumentsdir = $(beastdatadir)/instruments
-
-EXTRA_DIST += $(instruments_DATA)

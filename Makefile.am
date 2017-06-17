@@ -11,7 +11,6 @@ noinst_DATA	=
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
-EXTRA_DIST      += $(projectdocs_DATA)
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
 MAINTAINERCLEANFILES += HACKING
 
@@ -67,7 +66,6 @@ uninstall_filter_files = $(strip	\
 )
 
 # == topbuildid.cc ==
-EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
 topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
 CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
@@ -87,7 +85,6 @@ ChangeLog: $(GITSTAMPS)
 	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
-EXTRA_DIST           += ChangeLog taptool.sh
 
 # == distgit ==
 distname      = $(PACKAGE)-$(VERSION)
