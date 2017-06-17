@@ -37,7 +37,8 @@ checklist-%-test: checklists
 	      && echo "  OK       Loading: $$tfile" ;		\
 	    fi ; done ; rm -f $(@F).log $(@F:-test=)
 checklists: distfiles.list # generate checklist-a .. checklist-e
-	$(Q) grep '\.bse$$' distfiles.list > checklist
+	$(Q) grep '\.bse$$' distfiles.list > checklist || \
+	{ echo '$@: error: distfiles.list is empty' >&2; exit 1; }
 	$(Q) split -n l/5 -a 1 checklist checklist-
 	$(Q) rm -f checklist
 CLEANFILES += checklists checklist-? checklist-?-test checklist-?-test.log
