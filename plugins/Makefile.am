@@ -24,7 +24,7 @@ idl_files = $(strip			\
 )
 EXTRA_DIST += $(idl_files)
 
-doc_sources = $(idl_files) $(DIST_SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
+doc_sources = $(idl_files) $(SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
 
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
