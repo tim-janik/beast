@@ -74,13 +74,13 @@ CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoi
 buildid:
 	@echo $(topbuildid)
 
-# == ChangeLog & Release Rules ==
+# == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
 ChangeLog: $(GITSTAMPS)
 	$(AM_V_GEN)
-	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --abbrev=11 \
-		--date=short --first-parent $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
+	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --first-parent \
+		--abbrev=11 --date=short $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
 	$(Q) sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i xgen-$(@F) # Tab-indent commit bodies, kill trailing whitespaces
 	$(Q) sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'                -i xgen-$(@F) # Compress multiple newlines
 	$(Q) mv xgen-$(@F) $@
