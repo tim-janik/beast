@@ -5,8 +5,6 @@ topdir = $(abs_top_srcdir)
 
 SUBDIRS		= . sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po docs data tests
 
-# == make setup ==
-noinst_DATA	=
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
@@ -93,7 +91,7 @@ dist: all
 	$(Q) rm -f $(distname).tar.xz && xz $(distname).tar && test -e $(distnamexz)
 	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
 .PHONY: dist
-EXTRA_DIST = ChangeLog README
+EXTRA_DIST += ChangeLog README
 
 # == distcheck ==
 # Distcheck aims:
@@ -147,7 +145,6 @@ distuninstallcheck:
 	|| { echo "$@: ERROR: files left after uninstall:" ; \
 	     $(distuninstallcheck_listfiles) ; \
 	     false; } >&2
-distuninstallcheck_listfiles = find . -type f -print
 .PHONY: distcheck distuninstallcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
