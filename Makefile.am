@@ -60,7 +60,7 @@ buildid:
 # == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
-ChangeLog: $(GITSTAMPS)
+ChangeLog: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --first-parent \
 		--abbrev=11 --date=short $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records

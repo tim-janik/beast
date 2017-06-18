@@ -14,7 +14,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # will load without any warnings or errors being issued. This is done
 # by first constructing the tarball file list via git ls-tree and then
 # filtering out bse files and finally trying to load these without warnings.
-bsefiles.list: $(GITSTAMPS)
+bsefiles.list: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
 	$(Q) grep '\.bse$$' $@.tmp1 > $@.tmp2

@@ -17,13 +17,11 @@ QGEN    = $(Q:@=@echo '  GEN   ' $@; )
 QSTDERR = $(Q:@=2>/dev/null)
 QSTDOUT = $(Q:@=1>/dev/null)
 
-# == GITSTAMPS ==
+# == GITSTAMP ==
 # list of stamp files touched by commits
-GITSTAMPS = $(shell test -e "$${GIT_DIR:-.git}" && \
-		ls 2>/dev/null "$${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || \
-		echo HEAD`" "$${GIT_DIR:-.git}/packed-refs" "$${GIT_DIR:-.git}/HEAD")
+GITSTAMP = $(shell G=$$(git rev-parse --git-dir 2>/dev/null); test -z "$$G" -o ! -e "$$G/logs/HEAD" || echo "$$G/logs/HEAD")
 
-# == download ==
+# == Download ==
 # recursive rule supported by all Makefiles to download files hosted online
 .PHONY: download download-recursive download-local
 download: download-local download-recursive
