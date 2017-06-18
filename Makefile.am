@@ -76,7 +76,7 @@ MAINTAINERCLEANFILES += ChangeLog
 # == dist ==
 distname      = $(PACKAGE)-$(VERSION)
 distnamexz    = $(distname).tar.xz
-dist:
+dist: all
 	$(Q) test 0 = `git diff HEAD | wc -l` || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2
 	$(Q) git archive --format=tar --prefix=$(distname)/ HEAD >$(distname).tar
 	$(Q) rm -rf .tmpdist/ &&					\
