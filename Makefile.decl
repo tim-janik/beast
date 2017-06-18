@@ -125,18 +125,20 @@ ALLTESTS = $(TESTS) $(TAPTESTS) $(X11TESTS) $(SLOWTESTS) $(PERFTESTS) # used in 
 # === report ===
 .PHONY: report
 report: all
-	$(Q) export REPORTFILE="$(REPORTFILE)"			\
-	&& [ -z "$$REPORTFILE" ]				\
-	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
-	( :							\
-	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
-	  && (svn info 2>/dev/null |				\
-	      sed -n '/^Revision: /{s/.*: /#TREPREV: SVN: /;p}'; \
-	      true )						\
-	  && (git-svn log -n1 2>/dev/null |				\
-	      sed -n '/^r[0-9]\+ /{s/r\([0-9]\+\) .*/#TREPREV: GIT-SVN: \1/;p;q}' ; \
-	      true )						\
-	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
-	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
-	) 2>&1 | tee "$$REPORTFILE"				\
-	&& test "$${PIPESTATUS[*]}" = "0 0"
+	@export   REPORTFILE="$(REPORTFILE)" && [ -z "$$REPORTFILE" ]		\
+	&& export REPORTFILE="$(shell pwd)/report.out"				\
+	&& set -eo pipefail && ( :						\
+	  && echo -n    "#TSTREPORT: git: "	     && date --iso-8601=seconds	\
+	  && git describe --abbrev=99						\
+	  && echo -n    "#TSTREPORT: install: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) install 					\
+	  && echo -n    "#TSTREPORT: check: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) check 					\
+	  && echo -n    "#TSTREPORT: slowcheck: "    && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) slowcheck 					\
+	  && echo -n    "#TSTREPORT: perf: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) perf 					\
+	  && echo -n    "#TSTREPORT: installcheck: " && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck				\
+	  && echo -n    "#TSTREPORT: done: "	     && date --iso-8601=seconds	\
+	) 2>&1 | tee "$$REPORTFILE"
