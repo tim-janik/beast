@@ -169,7 +169,9 @@ uninstall_filter_files = $(strip	\
 # == cleanups ==
 MOSTLYCLEANFILES +=		\
 	distcheck\.log
-MAINTAINERCLEANFILES += 	\
+# Use am__CONFIG_DISTCLEAN_FILES instead of MAINTAINERCLEANFILES, because the latter
+# is cleared before recursing into subdirs, while the former is cleared later.
+am__CONFIG_DISTCLEAN_FILES = 	\
 	Makefile\.in		\
 	config/compile		\
 	aclocal\.m4		\
@@ -190,4 +192,8 @@ MAINTAINERCLEANFILES += 	\
 	config/ltversion\.m4	\
 	config/lt~obsolete\.m4	\
 	config/missing		\
-	config/py-compile
+	config/py-compile	\
+	config\.status		\
+	config\.cache		\
+	configure\.lineno	\
+	config\.status\.lineno
