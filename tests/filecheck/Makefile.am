@@ -12,9 +12,8 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # == BSE file check ==
 # This test checks that all .bse files contained in the beast tarball
 # will load without any warnings or errors being issued. This is done
-# by first constructing the tarball file list via the distfile-list
-# rule and then filtering out bse files and finally trying to load
-# these without warnings.
+# by first constructing the tarball file list via git ls-tree and then
+# filtering out bse files and finally trying to load these without warnings.
 bsefiles.list: $(GITSTAMPS)
 	$(AM_V_GEN)
 	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
