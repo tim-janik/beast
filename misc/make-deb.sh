@@ -98,7 +98,7 @@ ARCH=$(dpkg --print-architecture)
 DUSIZE=$(cd $DESTDIR && du -k -s .)
 unset D
 D="libc6 (>= 2.15)"
-D="$D, libstdc++6 (>= 5.2), zlib1g, libpython2.7, python2.7, guile-1.8-libs"
+D="$D, libstdc++6 (>= 5.2), zlib1g, libpython2.7, python2.7"
 D="$D, libasound2, libflac8 (>= 1.2.1), libfluidsynth1 (>= 1.0.6), libmad0"
 D="$D, libogg0, libvorbis0a (>= 1.3.2), libvorbisenc2, libvorbisfile3"
 D="$D, libglib2.0-0 (>= 2.32.3), libpango-1.0-0 (>= 1.14.0)"
