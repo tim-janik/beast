@@ -712,7 +712,6 @@ library/Makefile
 library/effects/Makefile
 library/instruments/Makefile
 library/samples/Makefile
-library/scripts/Makefile
 library/demo/Makefile
 library/keys/Makefile
 library/skins/Makefile
