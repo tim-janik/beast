@@ -52,19 +52,6 @@ bse-app-test:
 	$(Q) rm -f tmpx.o tmpx.cc tmpx
 installcheck-local: bse-app-test
 
-
-# == Dist Fixes ==
-# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
-distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
-#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
-uninstall_filter_files = $(strip	\
-	./share/mime/subclasses		./share/mime/XMLnamespaces	./share/mime/globs2	\
-	./share/mime/version		./share/mime/icons		./share/mime/types	\
-	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
-	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
-	./share/applications/mimeinfo.cache	\
-)
-
 # == topbuildid.cc ==
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
 topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
@@ -171,3 +158,15 @@ check-update-po:
 	$(Q) [ "$(DISTCHECK_PO)" = "0" ] || $(MAKE) -C po check-update-po
 DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
 $(DISTCHECK_HOOK): check-update-po
+
+# == distuninstallcheck ignores ==
+# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
+distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
+uninstall_filter_files = $(strip	\
+	*/share/mime/subclasses		*/share/mime/XMLnamespaces	*/share/mime/globs2	\
+	*/share/mime/version		*/share/mime/icons		*/share/mime/types	\
+	*/share/mime/treemagic		*/share/mime/aliases		*/share/mime/magic	\
+	*/share/mime/mime.cache		*/share/mime/generic-icons	*/share/mime/globs	\
+	*/share/applications/mimeinfo.cache	\
+)
