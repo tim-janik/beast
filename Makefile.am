@@ -24,7 +24,7 @@ MAINTAINERCLEANFILES += HACKING
 	$(Q) $(PANDOC) -s --toc -N -S -f markdown_github+pandoc_title_block-hard_line_breaks -t html \
 		--email-obfuscation=javascript $< -o $@
 	$(Q) chmod a-w $@	# prevent accidental target file edits
-
+MAINTAINERCLEANFILES += README README.html
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
@@ -165,3 +165,29 @@ uninstall_filter_files = $(strip	\
 	*/share/mime/mime.cache		*/share/mime/generic-icons	*/share/mime/globs	\
 	*/share/applications/mimeinfo.cache	\
 )
+
+# == cleanups ==
+MOSTLYCLEANFILES +=		\
+	distcheck\.log
+MAINTAINERCLEANFILES += 	\
+	Makefile\.in		\
+	config/compile		\
+	aclocal\.m4		\
+	autogen\.log		\
+	config\.log		\
+	configure		\
+	configure\.h\.in	\
+	configure\.h\.in~	\
+	config/config\.guess	\
+	config/config\.sub	\
+	config/depcomp		\
+	config/install-sh	\
+	config/intltool\.m4	\
+	config/libtool\.m4	\
+	config/ltmain\.sh	\
+	config/ltoptions\.m4	\
+	config/ltsugar\.m4	\
+	config/ltversion\.m4	\
+	config/lt~obsolete\.m4	\
+	config/missing		\
+	config/py-compile
