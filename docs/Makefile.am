@@ -132,7 +132,7 @@ revisioned_files         = # files that need @FILE_REVISION@ substitution, see r
 
 # == revisions.lst ==
 noinst_DATA += revisions.lst
-revisions.lst: @INGIT@ $(revisioned_files) Makefile
+revisions.lst: $(GITSTAMPS)
 	$(AM_V_GEN)
 	$(Q) rm -f $@.tmplst
 	$(Q) for file in $(revisioned_files) ; do \
@@ -146,7 +146,7 @@ clean-revisions.lst: # git is required to rebuild revisions.lst, so conditionali
 	! git rev-parse --git-dir 2>/dev/null 1>&2 || rm -f revisions.lst
 .PHONY: clean-revisions.lst
 clean-local: clean-revisions.lst
-
+EXTRA_DIST += revisions.lst
 
 # == .revd.md (INTERMEDIATE) ==
 %.revd.md: %.md revisions.lst
