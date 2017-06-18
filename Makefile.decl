@@ -34,7 +34,8 @@ extra-gitdist:
 	$(Q) test -w "$(EXTRA_GITDIST_DIR)" || { echo '$@: missing EXTRA_GITDIST_DIR' >&2; false; }
 	@for subdir in $(SUBDIRS) ; do						\
 	  test "$$subdir" = '.' ||						\
-	    $(MAKE) $(AM_MAKEFLAGS) -C "$$subdir" --no-print-directory $@ ||	\
+	    $(MAKE) $(AM_MAKEFLAGS) -C "$$subdir"				\
+		$(if $(findstring 1, $(V)),, --no-print-directory) $@ ||	\
 	    exit 1 ;								\
 	done
 	$(Q) for file in $(EXTRA_DIST) ; do					\
