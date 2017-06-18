@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-23 22:18+0100\n"
+"POT-Creation-Date: 2017-06-19 00:35+0200\n"
 "PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
@@ -93,7 +93,7 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr "  selecciona un dels 3 colors predefinits"
 
-#: bse/bsejanitor.cc:524
+#: bse/bsejanitor.cc:519
 #, c-format
 msgid "%s (core dumped)"
 msgstr "%s (s'ha bolcat el nucli)"
@@ -196,18 +196,6 @@ msgstr ""
 msgid "/Other Sources/Constant"
 msgstr "/Altres fonts/Constant"
 
-#: library/scripts/part-harmonic-transposer.scm:9
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#: library/scripts/record-midi.scm:5
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: library/scripts/progressor-example.scm:17
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
 #: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr "/Encaminament/Amplificador"
@@ -221,23 +209,6 @@ msgstr "/Encaminament/Amplificador"
 #, fuzzy
 msgid "/Routing/Summation"
 msgstr "/Encaminament/Amplificador"
-
-#: library/scripts/modules2grid.scm:6
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:9
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:9
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:18
-#, fuzzy
-msgid "/Song/Duplicate parts (loop range)"
-msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
 
 #: plugins/bsebalance.idl:8
 msgid "/Spatial/Balance"
@@ -946,7 +917,7 @@ msgstr "Percentatge de desentonació (centèsima part d'un semitò)"
 msgid "Amplified audio output"
 msgstr "Sortida d'àudio amplificada"
 
-#: bse/bseserver.cc:434
+#: bse/bseserver.cc:433
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -966,7 +937,7 @@ msgstr ""
 "S'ha produït un error durant l'execució del procediment '%s' del fitxer de "
 "seqüència d'ordres: %s"
 
-#: bse/bseserver.cc:573
+#: bse/bseserver.cc:572
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -1101,7 +1072,7 @@ msgstr "Àudio"
 msgid "Audio Gate"
 msgstr "Sortida d'àudio"
 
-#: bse/bseserver.cc:486
+#: bse/bseserver.cc:485
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "Sortida d'àudio"
@@ -1193,7 +1164,7 @@ msgstr "Sortida d'àudio 2"
 msgid "Audio Output"
 msgstr "Sortida d'àudio"
 
-#: bse/bseserver.cc:432
+#: bse/bseserver.cc:431
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1217,7 +1188,7 @@ msgstr "Sortida d'àudio 1"
 msgid "Audio Sum2"
 msgstr "Sortida d'àudio 2"
 
-#: bse/bseserver.cc:439
+#: bse/bseserver.cc:438
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
@@ -1327,15 +1298,15 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:1054
+#: beast-gtk/bstmain.cc:1057
 msgid "BEAST About"
 msgstr "Quant al BEAST"
 
-#: beast-gtk/bstmain.cc:212
+#: beast-gtk/bstmain.cc:215
 msgid "BEAST Startup"
 msgstr "Inici del BEAST"
 
-#: beast-gtk/bstmain.cc:1055
+#: beast-gtk/bstmain.cc:1058
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST versió %s"
@@ -1344,19 +1315,17 @@ msgstr "BEAST versió %s"
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:260
+#: beast-gtk/bstmain.cc:263
 msgid "BSE Core"
 msgstr "Nucli BSE"
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:16 data/bse.keys.in:24
+#: data/bse.keys.in:24
 msgid "BSE Multi-Part Wave File"
 msgstr "Fitxer d'ones multipart BSE"
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:9 data/bse.keys.in:12
+#: data/bse.keys.in:12
 msgid "BSE Synthesis File"
 msgstr "Fitxer de síntesi BSE"
 
@@ -1789,7 +1758,7 @@ msgstr "Continu 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Control de MIDI continu #1 - Selecció de banc"
 
-#: beast-gtk/bstmain.cc:1056
+#: beast-gtk/bstmain.cc:1059
 msgid "Contributions made by:"
 msgstr "Hi ha contribuït:"
 
@@ -2149,12 +2118,6 @@ msgstr "Crea un projecte nou"
 msgid "Creation Time"
 msgstr "Hora de creació"
 
-#: library/scripts/song-parts-operations.scm:10
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
 #: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "Ctrl In1"
 msgstr "Entrada de control 1"
@@ -2388,7 +2351,7 @@ msgstr "Marcador"
 msgid "Dial (Logarithmic)"
 msgstr "Marcador (logarítmic)"
 
-#: beast-gtk/bstmain.cc:344
+#: beast-gtk/bstmain.cc:347
 msgid "Dialogs"
 msgstr "Diàlegs"
 
@@ -2459,7 +2422,7 @@ msgstr "Desconnecta la sortida"
 msgid "Disconnect Outputs"
 msgstr "Desconnecta les sortides"
 
-#: bse/bseserver.cc:571
+#: bse/bseserver.cc:570
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "Inicia la gravació a disc"
@@ -2573,12 +2536,6 @@ msgstr ""
 #, fuzzy
 msgid "Drum frequency in Hertz"
 msgstr "Entrada de freqüència de percussió"
-
-#: library/scripts/song-parts-operations.scm:19
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
 
 #: beast-gtk/bstpatterncolumns.cc:688
 msgid "EVENTS:"
@@ -2815,20 +2772,10 @@ msgstr "No s'ha pogut configurar la latència del dispositiu"
 msgid "Failed to configure number of device channels"
 msgstr "No s'ha pogut configurar el nombre de canals del dispositiu"
 
-#: library/scripts/song-parts-operations.scm:51
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "S'ha produït un error al iniciar la gravació a disc."
-
 #. content errors
 #: bse/bseapi.idl:40
 #, fuzzy
 msgid "Failed to detect header"
-msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
-
-#: library/scripts/song-parts-operations.scm:63
-#, fuzzy
-msgid "Failed to duplicate part range."
 msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
 
 #: beast-gtk/bstusermessage.cc:735
@@ -2838,7 +2785,7 @@ msgstr ""
 "No s'ha pogut executar el procediment del fitxer de seqüència d'ordres '%s': "
 "%s"
 
-#: beast-gtk/bstmain.cc:431
+#: beast-gtk/bstmain.cc:434
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "No s'ha pogut carregar el projecte «%s»: %s"
@@ -2848,36 +2795,31 @@ msgstr "No s'ha pogut carregar el projecte «%s»: %s"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "No s'ha pogut carregar el projecte «%s»: %s"
 
-#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
-#: beast-gtk/bstmain.cc:394
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:381
+#: beast-gtk/bstmain.cc:397
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "No s'ha pogut obrir el fitxer d'ona «%s»: %s"
 
-#: beast-gtk/bstmain.cc:437
+#: beast-gtk/bstmain.cc:440
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "No s'ha pogut fusionar el projecte «%s»: %s"
 
-#: bse/bseserver.cc:517
+#: bse/bseserver.cc:516
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "No s'ha progut obrir els dispositius MDI: %s"
 
-#: bse/bseserver.cc:490
+#: bse/bseserver.cc:489
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "No s'ha progut obrir els dispositius PCM: %s"
 
-#: bse/bseserver.cc:575
+#: bse/bseserver.cc:574
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "No s'ha pogut obrir el fitxer «%s» de sortida: %s"
-
-#: library/scripts/part-harmonic-transposer.scm:202
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "S'ha produït un error al iniciar la gravació a disc."
 
 #: beast-gtk/bstfiledialog.cc:541
 #, c-format
@@ -2929,12 +2871,12 @@ msgstr ""
 msgid "Failed to spawn child process"
 msgstr "No s'ha pogut intercanviar el procés fill"
 
-#: bse/bseserver.cc:572
+#: bse/bseserver.cc:571
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "S'ha produït un error al iniciar la gravació a disc."
 
-#: bse/bseserver.cc:433
+#: bse/bseserver.cc:432
 msgid "Failed to start recording from audio device."
 msgstr "S'ha produït un error al començar a gravar des del dispositiu d'àudio."
 
@@ -3289,14 +3231,6 @@ msgstr ""
 msgid "Harmonics"
 msgstr ""
 
-#: library/scripts/part-harmonic-transposer.scm:35
-msgid "Harmony Sequence"
-msgstr ""
-
-#: library/scripts/part-harmonic-transposer.scm:205
-msgid "Harmony list is too short"
-msgstr ""
-
 #: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
 msgid "High if the note is currently being pressed"
 msgstr "Alt si la nota s'està prement"
@@ -3424,7 +3358,7 @@ msgstr ""
 "Fase inicial de la forma d'ona de l''oscil·lador (cicles de desplaçament en "
 "graus)"
 
-#: beast-gtk/bstmain.cc:226
+#: beast-gtk/bstmain.cc:229
 msgid "Initializers"
 msgstr "Inicialitzadors"
 
@@ -3692,7 +3626,7 @@ msgstr "Control (logarítmic)"
 msgid "LADSPA Path"
 msgstr "Camí als LADSPA"
 
-#: beast-gtk/bstmain.cc:289
+#: beast-gtk/bstmain.cc:292
 msgid "LADSPA Plugins"
 msgstr "Connectors LADSPA"
 
@@ -3940,7 +3874,7 @@ msgstr "Carrega una malla de sintetització del directori d'instruments"
 msgid "Load..."
 msgstr "Carrega..."
 
-#: beast-gtk/bstmain.cc:374 beast-gtk/bstmain.cc:376
+#: beast-gtk/bstmain.cc:377 beast-gtk/bstmain.cc:379
 #, c-format
 msgid "Loading \"%s\""
 msgstr "S'està carregant «%s»"
@@ -3960,7 +3894,7 @@ msgstr "S'està carregant l'aparença '%s'"
 msgid "Loading wave `%s'"
 msgstr "S'està carregant l'ona '%s'"
 
-#: beast-gtk/bstmain.cc:354
+#: beast-gtk/bstmain.cc:357
 msgid "Loading..."
 msgstr "S'està carregant..."
 
@@ -4010,7 +3944,7 @@ msgstr "MIDI"
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
-#: bse/bseserver.cc:513
+#: bse/bseserver.cc:512
 msgid "MIDI I/O Failed"
 msgstr ""
 
@@ -4046,12 +3980,12 @@ msgstr "Sintetitzador MIDI: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "Rastrejador MIDI, composició musical i aplicació de síntesi modular"
 
-#: bse/bseserver.cc:518
+#: bse/bseserver.cc:517
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "Mostra missatges sobre els problemes de selecció del dispositiu MIDI"
 
-#: bse/bseserver.cc:514
+#: bse/bseserver.cc:513
 #, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "No està disponible l'entrada o sortida MIDI."
@@ -4356,15 +4290,6 @@ msgstr "Silenci: apaga el volum del bus"
 msgid "Muted"
 msgstr "Mut"
 
-#: library/scripts/progressor-example.scm:23
-#, fuzzy
-msgid "N Iterations"
-msgstr "Informació"
-
-#: library/scripts/progressor-example.scm:24
-msgid "N Wait Spins"
-msgstr ""
-
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
 #: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
 msgid "Name"
@@ -4376,7 +4301,7 @@ msgstr ""
 "Nom de la configuració de l'aparença actual (s'usa en la selecció "
 "d'aparences)."
 
-#: bse/bseserver.cc:124
+#: bse/bseserver.cc:123
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Nom del fitxer d'ONA a utilitzar per desar la sortida de so del BSE"
 
@@ -4417,7 +4342,7 @@ msgstr "Cap part"
 msgid "No Track"
 msgstr "Cap pista"
 
-#: bse/bseserver.cc:515
+#: bse/bseserver.cc:514
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -4425,7 +4350,7 @@ msgstr ""
 "No s'ha pogut trobar i obrir cap dispositiu MIDI. Tornant al dispositiu nul, "
 "no es rebran o s'enviaran esdeveniments MIDI."
 
-#: bse/bseserver.cc:488
+#: bse/bseserver.cc:487
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -4433,7 +4358,7 @@ msgstr ""
 "No s'ha pogut trobar i obrir cap dispositiu d'àudio disponible. No s'ha "
 "pogut fer cap selecció per defecte per dispositius d'àudio, sortint."
 
-#: bse/bseserver.cc:487
+#: bse/bseserver.cc:486
 msgid "No available audio device was found."
 msgstr "No s'ha trobat cap dispositiu d'àudio disponible."
 
@@ -4445,11 +4370,6 @@ msgstr "No hi ha dades disponibles"
 #: bse/bseapi.idl:58
 msgid "No device (driver) available"
 msgstr "No hi ha dispositiu (controlador) disponible"
-
-#: library/scripts/part-harmonic-transposer.scm:195
-#, fuzzy
-msgid "No notes selected"
-msgstr "No s'ha seleccionat cap quantificació"
 
 #: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:67
 msgid "No quantization selected"
@@ -4502,27 +4422,6 @@ msgstr "No existeix l'ona"
 msgid "No target"
 msgstr "Cap objectiu"
 
-#: library/scripts/record-midi.scm:34
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Propietat d'objecte invàlida"
-
-#: library/scripts/part-harmonic-transposer.scm:193
-#, fuzzy
-msgid "No valid part supplied"
-msgstr "Propietat d'objecte invàlida"
-
-#: library/scripts/mixer-splitup-by-track.scm:41
-#: library/scripts/song-parts-operations.scm:29
-#, fuzzy
-msgid "No valid song supplied"
-msgstr "Propietat d'objecte invàlida"
-
-#: library/scripts/modules2grid.scm:15
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Voleu dibuixar les xarxes de síntesi suavitzades?"
-
 #: plugins/bsenoise.idl:10
 msgid "Noise Out"
 msgstr "Sortida de soroll"
@@ -4554,15 +4453,6 @@ msgstr "Tipus de normalització"
 msgid ""
 "Normalization level of the saturation curve in percent, some saturation "
 "types still allow overdrive signals beyond this level"
-msgstr ""
-
-#: library/scripts/record-midi.scm:38
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
 msgstr ""
 
 #: bse/bsebiquadfilter.cc:124 bse/bseconstant.cc:112 bse/bsestandardosc.cc:134
@@ -4894,12 +4784,12 @@ msgstr "Mòdul d'entrada PCM"
 msgid "PCM Output module"
 msgstr "Mòdul de sortida PCM"
 
-#: bse/bseserver.cc:491
+#: bse/bseserver.cc:490
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "Mostra missatges sobre els problemes de selecció del dispositiu PCM"
 
-#: bse/bseserver.cc:576
+#: bse/bseserver.cc:575
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "Mostra errors d'enregistrament a fitxer"
@@ -4945,12 +4835,6 @@ msgstr "El pare no coincideix"
 #: bse/bseapi.idl:55
 msgid "Parsing error"
 msgstr "Error d'análisis"
-
-#: library/scripts/part-harmonic-transposer.scm:34
-#: library/scripts/record-midi.scm:10
-#, fuzzy
-msgid "Part"
-msgstr "Parts"
 
 #: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
@@ -5076,7 +4960,7 @@ msgstr "Configuració de la reproducció"
 msgid "Plugin Path"
 msgstr "Camí de connectors"
 
-#: beast-gtk/bstmain.cc:267
+#: beast-gtk/bstmain.cc:270
 msgid "Plugins"
 msgstr "Connectors"
 
@@ -5173,13 +5057,6 @@ msgstr "Gestor de perfils"
 #: bse/bseapi.idl:98
 msgid "Program Change"
 msgstr "Canvis de programa"
-
-#: library/scripts/progressor-example.scm:18
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
 
 #: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:169
 #: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
@@ -5357,7 +5234,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:237
+#: beast-gtk/bstmain.cc:240
 msgid "RC Files"
 msgstr "Fitxers RC"
 
@@ -5385,12 +5262,6 @@ msgstr "Ha fallat al llegir"
 #: beast-gtk/bstapp.cc:86
 msgid "Rebuild"
 msgstr "Torna a muntar"
-
-#: library/scripts/record-midi.scm:6
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
 
 #: beast-gtk/bstpianorollctrl.cc:68
 msgid "Rectangle select notes"
@@ -5595,12 +5466,6 @@ msgstr "Sortida del canal dret"
 msgid "Right to Left"
 msgstr "Sortida d'àudio dreta"
 
-#: library/scripts/modules2grid.scm:7
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
 #: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr "Encaminament"
@@ -5729,7 +5594,7 @@ msgstr "Camí de seqüències d'ordres"
 msgid "Script execution error."
 msgstr "S'ha produït un error en executar el fitxer de seqüència."
 
-#: beast-gtk/bstmain.cc:324
+#: beast-gtk/bstmain.cc:327
 msgid "Scripts"
 msgstr "Fitxers de seqüència d'ordres"
 
@@ -6098,9 +5963,7 @@ msgstr "Solo"
 msgid "Solo: mute all other busses"
 msgstr "Solo: en silenci tots els altres busos"
 
-#: bse/bsesong.cc:553 library/scripts/mixer-splitup-by-track.scm:14
-#: library/scripts/song-parts-operations.scm:14
-#: library/scripts/song-parts-operations.scm:23
+#: bse/bsesong.cc:553
 #, fuzzy
 msgid "Song"
 msgstr "Ca_nçó"
@@ -6141,7 +6004,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Botó d'increment (logarítmic)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:245
+#: beast-gtk/bstmain.cc:248
 msgid "Splash Image"
 msgstr "Imatge flaix d'inici"
 
@@ -6178,11 +6041,6 @@ msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.cc:552 beast-gtk/bsttrackrollctrl.cc:557
 msgid "Start Editor"
-msgstr "Inicia l'editor"
-
-#: library/scripts/record-midi.scm:11
-#, fuzzy
-msgid "Start Now"
 msgstr "Inicia l'editor"
 
 #. | GXK_DIALOG_WINDOW_GROUP,
@@ -6225,7 +6083,7 @@ msgstr "Inici:"
 msgid "Starting Playback"
 msgstr "S'està iniciant la reproducció"
 
-#: beast-gtk/bstmain.cc:219
+#: beast-gtk/bstmain.cc:222
 msgid "Startup"
 msgstr "Inici"
 
@@ -6349,11 +6207,6 @@ msgstr "Entrada de síntesi"
 #: bse/bsebasics.idl:287
 msgid "Synth Mixing Frequency"
 msgstr "Freqüència de mescla del sintetitzador"
-
-#: library/scripts/modules2grid.scm:11
-#, fuzzy
-msgid "Synth Net"
-msgstr "La sintetització ha acabat"
 
 #. label=
 #: beast-gtk/res/radgets-beast.xml:98
@@ -6531,38 +6384,9 @@ msgstr ""
 "El tipus de normalització del filtre de guany (suportat només pels passa-"
 "alts i els passa-baixos)"
 
-#. FIXME: the description may be suboptimal; the problem is
-#. that I can't precisely describe details of musical theory
-#. in english. -- stw
-#: library/scripts/part-harmonic-transposer.scm:13
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
 #: beast-gtk/bstmsgabsorb.cc:202
 msgid "The last program version that displayed this message type"
 msgstr "L'última versió de programa que va mostrar aquest tipus de missatge"
-
-#: library/scripts/song-parts-operations.scm:46
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.cc:131
 msgid "The mnemonic accelerator key for this label"
@@ -6671,16 +6495,6 @@ msgstr ""
 #: beast-gtk/bstapi.idl:43
 msgid "Thirty-secondth note"
 msgstr "Fusa"
-
-#: library/scripts/mixer-splitup-by-track.scm:43
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:10
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
 
 #: beast-gtk/bstusermessage.cc:253
 msgid ""
@@ -6818,10 +6632,6 @@ msgstr "Pistes que contenen definicions d'instruments i parts amb notes"
 #: plugins/davxtalstrings.cc:94
 msgid "Transpose"
 msgstr "Transposa"
-
-#: library/scripts/part-harmonic-transposer.scm:36
-msgid "Transpose down starting at"
-msgstr ""
 
 #: plugins/davorgan.idl:18 plugins/davxtalstrings.cc:94
 #, fuzzy
@@ -6973,10 +6783,6 @@ msgstr "No utilitzat"
 msgid "Up"
 msgstr "Amunt"
 
-#: library/scripts/progressor-example.scm:25
-msgid "Update Percentage"
-msgstr ""
-
 #: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
 #: beast-gtk/bstutils.cc:299
 msgid "Updating View"
@@ -7095,7 +6901,7 @@ msgstr "Ajustament del volum del bus del canal esquerre en decibels"
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Ajustament del volum del bus del canal dret en decibels"
 
-#: bse/bseserver.cc:123
+#: bse/bseserver.cc:122
 msgid "WAVE File"
 msgstr "Fitxer d'ONA"
 
@@ -7187,10 +6993,6 @@ msgstr "Nombre de canals erroni"
 #: plugins/davxtalstrings.cc:135
 msgid "XtalStrings Output"
 msgstr "Sortida d'XtalStrings"
-
-#: library/scripts/record-midi.scm:35
-msgid "You probably want to start this script from a part editor."
-msgstr ""
 
 #: bse/bseapi.idl:347
 msgid "Young Temperament"
@@ -7457,12 +7259,12 @@ msgstr "_Vista"
 msgid "_Virtualization"
 msgstr "_Virtualització"
 
-#: bse/bseserver.cc:443
+#: bse/bseserver.cc:442
 #, fuzzy
 msgid "audio input problems"
 msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
 
-#: bse/bsejanitor.cc:522
+#: bse/bsejanitor.cc:517
 msgid "connection terminated"
 msgstr "connexió acabada"
 
@@ -7690,17 +7492,12 @@ msgstr "control-9"
 msgid "control-90"
 msgstr "control-90"
 
-#: library/scripts/song-parts-operations.scm:48
-#, fuzzy
-msgid "empty part range"
-msgstr "S'ha produït un error al iniciar la gravació a disc."
-
 #: tools/bsewavetool.cc:1158
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "No s'ha pogut afegir un tros d'ona des del fitxer «%s»: %s"
 
-#: bse/bsejanitor.cc:520
+#: bse/bsejanitor.cc:515
 msgid "killed by janitor"
 msgstr "matat per janitor"
 
@@ -7725,6 +7522,10 @@ msgstr "s'està processant"
 
 #~ msgid "/Misc/Evaluator"
 #~ msgstr "/Miscel·lània/Avaluador"
+
+#, fuzzy
+#~ msgid "/Song/Duplicate parts (loop range)"
+#~ msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
 
 #~ msgid "A unique number identifying this thread"
 #~ msgstr "Un sol nombre identificant aquest fil"
@@ -7854,9 +7655,21 @@ msgstr "s'està processant"
 #~ msgid "Everything went well"
 #~ msgstr "Tot ha anat bé"
 
+#, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "S'ha produït un error al iniciar la gravació a disc."
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
+
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr ""
 #~ "No s'han pogut obrir els dispositius MIDI (tornant al dispositiu nul): %s"
+
+#, fuzzy
+#~ msgid "Failed to parse harmony list"
+#~ msgstr "S'ha produït un error al iniciar la gravació a disc."
 
 #~ msgid "Fatal Error"
 #~ msgstr "Error fatal"
@@ -7937,11 +7750,35 @@ msgstr "s'està processant"
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notació musical corresponent a la freqüència de l'oscil·lador"
 
+#, fuzzy
+#~ msgid "N Iterations"
+#~ msgstr "Informació"
+
 #~ msgid "No Audio"
 #~ msgstr "Sense àudio"
 
 #~ msgid "No MIDI"
 #~ msgstr "Sense MIDI"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "No s'ha seleccionat cap quantificació"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Propietat d'objecte invàlida"
+
+#, fuzzy
+#~ msgid "No valid part supplied"
+#~ msgstr "Propietat d'objecte invàlida"
+
+#, fuzzy
+#~ msgid "No valid song supplied"
+#~ msgstr "Propietat d'objecte invàlida"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Voleu dibuixar les xarxes de síntesi suavitzades?"
 
 #~ msgid "Notice"
 #~ msgstr "Atenció"
@@ -7957,6 +7794,10 @@ msgstr "s'està processant"
 
 #~ msgid "Parasite Paths"
 #~ msgstr "Camins de paràsit"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Parts"
 
 #~ msgid "Path"
 #~ msgstr "Camí"
@@ -8059,6 +7900,10 @@ msgstr "s'està processant"
 #~ msgid "Specify project tab width in pixels"
 #~ msgstr "Especifiqueu la mida de la pestanya del projecte, en píxels"
 
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Inicia l'editor"
+
 #~ msgid "State"
 #~ msgstr "Estat"
 
@@ -8076,6 +7921,10 @@ msgstr "s'està processant"
 
 #~ msgid "Stepping Rates"
 #~ msgstr "Taxa d'esglaonament"
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "La sintetització ha acabat"
 
 #~ msgid "Synthesis Network"
 #~ msgstr "Xarxa de síntesi"
@@ -8165,6 +8014,10 @@ msgstr "s'està processant"
 
 #~ msgid "dec2, dec3"
 #~ msgstr "dec2, dec3"
+
+#, fuzzy
+#~ msgid "empty part range"
+#~ msgstr "S'ha produït un error al iniciar la gravació a disc."
 
 #~ msgid "hex2, hex4"
 #~ msgstr "hex2, hex4"
