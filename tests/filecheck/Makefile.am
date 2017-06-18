@@ -15,18 +15,22 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # by first constructing the tarball file list via the distfile-list
 # rule and then filtering out bse files and finally trying to load
 # these without warnings.
-distfiles.list: $(GITSTAMPS)
-	git ls-tree --name-only --full-tree -r HEAD > $@.tmp
-	mv $@.tmp $@
-CLEANFILES += @INGIT@ distfiles.list
+bsefiles.list: $(GITSTAMPS)
+	$(AM_V_GEN)
+	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
+	$(Q) grep '\.bse$$' $@.tmp1 > $@.tmp2
+	$(Q) mv $@.tmp2 $@ && rm -f $@.tmp1
+CLEANFILES += @INGIT@ bsefiles.list
+noinst_DATA += bsefiles.list
+EXTRA_DIST += bsefiles.list
 
 # == checklist rules ==
 # Split the (long) list of files into multiple lists that can be
 # checked in parallel. For each file in a list, unless it matches
 # the skip-pattern, try to load it and check the output logs.
-checklists: distfiles.list # generate checklist-a .. checklist-e
-	$(Q) grep '\.bse$$' distfiles.list > checklist || \
-	{ echo '$@: error: distfiles.list is empty' >&2; exit 1; }
+checklists: bsefiles.list # generate checklist-a .. checklist-e
+	$(Q) grep '\.bse$$' bsefiles.list > checklist || \
+	{ echo '$@: error: bsefiles.list is empty' >&2; exit 1; }
 	$(Q) split -n l/5 -a 1 checklist checklist-
 	$(Q) rm -f checklist
 SKIP_PATTERN = "tests/latency/midi-latency.bse"
@@ -55,9 +59,9 @@ CHECK_LOAD   = $(strip	$(top_builddir)/bse/bsetool				\
 )
 
 # == bse-version-check ==
-bse-version-check: distfiles.list
+bse-version-check: bsefiles.list
 	TESTVERSION="$(BST_MAJOR_VERSION).$(BST_MINOR_VERSION)." ;	\
-	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
+	for tfile in `cat bsefiles.list` ; do				\
 	  file="$(top_srcdir)/$$tfile" ;				\
 	  echo "Check project version: $$file" ;			\
 	  head -n5 "$$file" |						\
