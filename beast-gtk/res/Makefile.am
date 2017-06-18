@@ -8,7 +8,6 @@ RESOURCES = $(strip 		\
 	radgets-standard.xml	\
 	radgets-beast.xml	\
 )
-EXTRA_DIST += $(RESOURCES)
 
 noinst_DATA = beast-resources.cc
 beast-resources.cc: $(RESOURCES)

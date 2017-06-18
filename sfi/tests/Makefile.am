@@ -33,7 +33,6 @@ testsfidl_LDADD   = $(progs_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 
 # testidl (generation test)
-EXTRA_DIST += testidl.idl
 CLEANFILES += testidl.h testidl.c
 testidl.h: $(srcdir)/testidl.idl $(SFIDL)
 	$(SFIDL) --host-c --header $(srcdir)/testidl.idl > xgen-$(@F) \

@@ -22,9 +22,8 @@ idl_files = $(strip			\
 	davchorus.idl			\
 	davorgan.idl			\
 )
-EXTRA_DIST += $(idl_files)
 
-doc_sources = $(idl_files) $(DIST_SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
+doc_sources = $(idl_files) $(SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
 
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
@@ -44,7 +43,6 @@ cxx_plugin_headers = bseadder.hh bseatandistort.hh bsesimpleadsr.hh bsemixer.hh 
 cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc bsemult.cc bsesequencer.cc bseiirfilter.cc	\
 		     davcanyondelay.cc davsyndrum.cc davxtalstrings.cc
 cxx_plugin_extra   = bsesimpleadsr-aux.cc
-EXTRA_DIST        += $(cxx_plugin_headers) $(cxx_plugin_extra)
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
 cxxplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 cxxplugins_FPU_la_LIBADD   = $(plugins_libs)

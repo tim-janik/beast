@@ -33,11 +33,9 @@ gxk_extra_sources = $(strip \
 	gxkparam-entry.cc	gxkparam-label.cc	\
 	gxkparam-scale.cc	gxkparam-spinner.cc	\
 	gxkparam-toggle.cc	\
-	gxkrackcovers.cc		\
+	gxkrackcovers.cc	\
 	gxkmarshal.list		\
 )
-
-EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources)
 
 doc_sources = $(gxk_headers) $(gxk_c_sources) $(gxk_extra_sources)
 

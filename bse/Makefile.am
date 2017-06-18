@@ -119,15 +119,6 @@ bse_proc_sources = $(strip \
 				bseitem.proc					bsewaveosc.proc		\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
-# non-compile and non-install sources required
-EXTRA_DIST += $(strip \
-	bsebasics.idl	bse.idl					\
-	mktypes.pl	mkcalls.pl	mkcproc.pl		\
-	bseconfig.h.in	bsepcmmodule.cc				\
-	bsewave.header						\
-	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
-	gslincluder.hh	gslwaveosc-aux.cc			\
-)
 
 doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
 
@@ -152,12 +143,10 @@ libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\
 	-version-info $(LT_VERSION_INFO)		\
 )
-EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
 # setup sources, their dependancies and commands
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
-EXTRA_DIST += $(bse_proc_sources) engine-mplan.txt
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative
 SFIDL = $(top_builddir)/sfi/sfidl
@@ -311,7 +300,6 @@ CLEANFILES += bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
-EXTRA_DIST += AuxTypes.py bseserverinsert.hh
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
@@ -335,7 +323,6 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) mv xgen-$(@F) $@
 $(srcdir)/bseutils.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
-EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
 CLEANFILES += $(GENERATED)
@@ -367,7 +354,6 @@ bsetool_LDADD    = $(progs_LDADD)
 bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 
 # == Tests ==
-EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
 	@echo "  CHECK " $<
 	$(Q) $(AIDACC_VDEBUG) --bse-extensions -x $(srcdir)/AuxTypes.py $<

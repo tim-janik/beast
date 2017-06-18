@@ -6,5 +6,3 @@ sample_DATA = $(strip			\
 	retrokit.bsewave		\
 )
 sampledir = $(beastdatadir)/samples
-
-EXTRA_DIST += $(sample_DATA)

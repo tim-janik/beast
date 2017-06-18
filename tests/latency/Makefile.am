@@ -46,9 +46,3 @@ test: 	all
 	   --bse-override-script-path $(top_builddir)/shell/		\
 	   -s $(srcdir)/bseplay.scm $(srcdir)/midi-latency.bse
 CLEANFILES += tmp-midi-fifo
-
-EXTRA_DIST += $(strip 		\
-	bseplay.scm		\
-	midi-latency.bse	\
-	$(EXTRA_HEADERS)	\
-)

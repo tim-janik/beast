@@ -133,7 +133,6 @@ STOCK_IMAGE_DEFS = $(strip						\
 gen_sources = xgen-bsgc xgen-bsgh
 CLEANFILES += $(gen_sources) bst-stock-gen.cc bst-stock-gen.h
 noinst_DATA = bst-stock-gen.cc bst-stock-gen.h
-EXTRA_DIST += $(SRC_IMAGES) $(filter-out STOCK_%, $(STOCK_IMAGE_DEFS))
 
 bst-stock-gen.cc: $(srcdir)/*.png bst-stock-gen.h
 	gdk-pixbuf-csource --build-list $(STOCK_IMAGE_DEFS) > xgen-bsgc		\

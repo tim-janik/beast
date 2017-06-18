@@ -10,7 +10,7 @@ AM_CXXFLAGS += $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 #
 beastbin_PROGRAMS = beast
 beast_SOURCES        = suidmain.c beaststart.c
-EXTRA_DIST          += suidmain.h
+EXTRA_HEADERS       += suidmain.h
 
 #
 # make beast wrapper suid to allow renicing

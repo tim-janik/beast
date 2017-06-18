@@ -32,6 +32,21 @@ download: download-local download-recursive
 download-recursive:
 	$(Q) for subdir in $(SUBDIRS) ; do test "$$subdir" = '.' || $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) download || exit $$? ; done
 
+# == extra-gitdist ==
+extra-gitdist:
+	@test -z "$(EXTRA_DIST)" || echo "  TAR      $(patsubst %, $(subdir)/%, $(EXTRA_DIST))"
+	$(Q) test -w "$(EXTRA_GITDIST_DIR)" || { echo '$@: missing EXTRA_GITDIST_DIR' >&2; false; }
+	@for subdir in $(SUBDIRS) ; do						\
+	  test "$$subdir" = '.' ||						\
+	    $(MAKE) $(AM_MAKEFLAGS) -C "$$subdir" --no-print-directory $@ ||	\
+	    exit 1 ;								\
+	done
+	$(Q) for file in $(EXTRA_DIST) ; do					\
+	  cp -a --parent "$$file" "$(EXTRA_GITDIST_DIR)/$(subdir)/" ||		\
+	  exit 1;								\
+	done
+.PHONY: extra-gitdist
+
 # === distfile-list ===
 # recursive rule supported by all Makefiles to generate a list of all files
 # listed as DISTFILES. this asserts a writable file named $DISTFILE_LIST.

@@ -5,9 +5,6 @@ SUBDIRS = v8bse .
 
 export ELECTRON_ENABLE_LOGGING=1
 
-EXTRA_DIST += $(strip \
-)
-
 # == all: ==
 all: with_npm
 	@echo "$$(basename $$(pwd))/: experimental code. Usage:"

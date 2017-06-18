@@ -12,5 +12,3 @@ skins_DATA = $(strip		\
 	white.skin		\
 )
 skinsdir = $(beastdatadir)/skins
-
-EXTRA_DIST += $(skins_DATA)

@@ -6,5 +6,3 @@ keys_DATA = $(strip		\
 	keyrc.us		\
 )
 keysdir = $(beastdatadir)/keys
-
-EXTRA_DIST += $(keys_DATA)

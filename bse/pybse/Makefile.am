@@ -30,7 +30,6 @@ nodist_Bse_la_SOURCES = Bse.cc        # nodist_ forces build time generation
 Bse_la_CXXFLAGS       = $(PYTHON_CPPFLAGS) $(AM_CXXFLAGS) -I$(AIDASTDINC) -Wno-redundant-decls -Wno-unused-function
 Bse_la_LDFLAGS        = $(PYTHON_LDFLAGS) $(AM_LDFLAGS) -no-undefined -module -avoid-version
 Bse_la_LIBADD         = $(RAPICORN_LIBS)  ../libbse-@MAJOR@.la $(PYTHON_LIBS)
-EXTRA_DIST           += Bse.pyx pysupport.hh
 CLEANFILES           += bseidlapi.pyx Bse.cc
 
 # call python with uninstalled or fully installed modules

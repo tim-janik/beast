@@ -10,7 +10,6 @@ AM_CXXFLAGS += $(BSESCM_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONV
 #
 built_sources = # bsescm-genglue.c
 MAINTAINERCLEANFILES += $(built_sources)
-EXTRA_DIST += $(built_sources)
 # temporary build files
 gen_sources = xgen-bsggc
 CLEANFILES += $(gen_sources)
@@ -27,7 +26,6 @@ bsescm_LDADD      = $(programs_ldadd) $(BSESCM_LIBS)
 
 # source setups
 bsescminterp.cc: # bsescm-genglue.c
-EXTRA_DIST += bsescminterp.hh
 
 
 #
@@ -35,8 +33,6 @@ EXTRA_DIST += bsescminterp.hh
 #
 shellscriptdir = $(beastdatadir)/scripts
 shellscript_DATA = bse-scm-glue.boot
-
-EXTRA_DIST += $(shellscript_DATA)
 
 
 #

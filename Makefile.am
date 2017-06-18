@@ -11,7 +11,6 @@ noinst_DATA	=
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
-EXTRA_DIST      += $(projectdocs_DATA)
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
 MAINTAINERCLEANFILES += HACKING
 
@@ -53,21 +52,7 @@ bse-app-test:
 	$(Q) rm -f tmpx.o tmpx.cc tmpx
 installcheck-local: bse-app-test
 
-
-# == Dist Fixes ==
-# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
-distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
-#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
-uninstall_filter_files = $(strip	\
-	./share/mime/subclasses		./share/mime/XMLnamespaces	./share/mime/globs2	\
-	./share/mime/version		./share/mime/icons		./share/mime/types	\
-	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
-	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
-	./share/applications/mimeinfo.cache	\
-)
-
 # == topbuildid.cc ==
-EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
 topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
 CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
@@ -87,28 +72,28 @@ ChangeLog: $(GITSTAMPS)
 	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
-EXTRA_DIST           += ChangeLog taptool.sh
 
-# == distgit ==
+# == dist ==
 distname      = $(PACKAGE)-$(VERSION)
 distnamexz    = $(distname).tar.xz
-distgit: $(extra_distgit)
+dist:
 	$(Q) test 0 = `git diff HEAD | wc -l` || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2
 	$(Q) git archive --format=tar --prefix=$(distname)/ HEAD >$(distname).tar
-	$(Q) rm -rf .tmpdist/ && \
-	  mkdir .tmpdist/ && \
-	  tar -C .tmpdist/ -xf $(distname).tar && \
-	  { test -z "$(extra_distgit)" || cp --parents $(extra_distgit) .tmpdist/$(distname)/ ; } && \
-	  cd .tmpdist/$(distname)/ && \
-	  ./autogen.sh --help >/dev/null && \
-	  cd ../ && \
-	  tar -f ../$(distname).tar -hu $(distname)/ && \
-	  cd .. && \
+	$(Q) rm -rf .tmpdist/ &&					\
+	  mkdir .tmpdist/ &&						\
+	  tar -C .tmpdist/ -xf $(distname).tar &&			\
+	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
+		  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&	\
+	  cd .tmpdist/$(distname)/ &&					\
+	  ./autogen.sh --help >/dev/null &&				\
+	  cd ../ &&							\
+	  tar -f ../$(distname).tar -hu $(distname)/ &&			\
+	  cd .. &&							\
 	  rm -fr .tmpdist/
 	$(Q) rm -f $(distname).tar.xz && xz $(distname).tar && test -e $(distnamexz)
 	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
-.PHONY: distgit
-extra_distgit = ChangeLog README docs/revisions.lst
+.PHONY: dist
+EXTRA_DIST = ChangeLog README
 docs/revisions.lst:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
 
@@ -122,7 +107,7 @@ docs/revisions.lst:
 # distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
 # distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
 distcheck_uniqdir = distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
-distcheck: distgit
+distcheck: dist
 	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
 	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
 	&& TARBALL=$$(readlink -f "$(distnamexz)") \
@@ -157,7 +142,15 @@ distcheck: distgit
 	&& cd "$(abs_top_builddir)" \
 	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
 	&& echo "OK: archive ready for distribution: $$TARBALL" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
-.PHONY: distcheck distuninstallcheck-hook
+distuninstallcheck:
+	@test -n '$(distuninstallcheck_dir)' || { echo '$@: missing distuninstallcheck_dir' >&2; false; }
+	@cd '$(distuninstallcheck_dir)' && \
+	test `$(distuninstallcheck_listfiles) | sed 's|^\./|$(prefix)/|' | wc -l` -eq 0 \
+	|| { echo "$@: ERROR: files left after uninstall:" ; \
+	     $(distuninstallcheck_listfiles) ; \
+	     false; } >&2
+distuninstallcheck_listfiles = find . -type f -print
+.PHONY: distcheck distuninstallcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
 DISTCHECK_PO = 1
@@ -165,3 +158,15 @@ check-update-po:
 	$(Q) [ "$(DISTCHECK_PO)" = "0" ] || $(MAKE) -C po check-update-po
 DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
 $(DISTCHECK_HOOK): check-update-po
+
+# == distuninstallcheck ignores ==
+# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
+distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
+uninstall_filter_files = $(strip	\
+	*/share/mime/subclasses		*/share/mime/XMLnamespaces	*/share/mime/globs2	\
+	*/share/mime/version		*/share/mime/icons		*/share/mime/types	\
+	*/share/mime/treemagic		*/share/mime/aliases		*/share/mime/magic	\
+	*/share/mime/mime.cache		*/share/mime/generic-icons	*/share/mime/globs	\
+	*/share/applications/mimeinfo.cache	\
+)

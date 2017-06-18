@@ -11,5 +11,3 @@ scripts_DATA = $(strip			\
 	mixer-splitup-by-track.scm	\
 )
 scriptsdir = $(beastdatadir)/scripts
-
-EXTRA_DIST += $(scripts_DATA)

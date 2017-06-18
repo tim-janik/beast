@@ -8,5 +8,3 @@ demo_DATA = $(strip		\
 	x2-midi-test.bse	\
 )
 demodir = $(beastdatadir)/demo
-
-EXTRA_DIST += $(demo_DATA)

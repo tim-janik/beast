@@ -16,9 +16,6 @@ topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
 
-# == Extra Tarball Files ==
-EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
-
 # == Collect Doxygen Sources ==
 # The following variable definitions create files as a side effect, which should be
 # avoided e.g. upon 'make clean'. So we confine the assignments to a rule execution.
@@ -44,9 +41,7 @@ docs_doxy_tagsrcs   = $(strip \
 )
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
-EXTRA_DIST         += $(patsubst %, ../%, $(docs_doxygen_tagbzs))
 docs_doxygen_werror = false
-EXTRA_DIST	   += $(patsubst %, ../%, $(docs_doxy_extra))
 
 # Build with dot files by default
 DOXYGEN_GRAPHICS  ?= NO # YES
@@ -72,7 +67,6 @@ doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_dox
 
 # == docs/doxy/html ==
 docs_doxy_auxfiles = ../docs/extrastyles.css ../docs/footer.html ../docs/references.bib
-EXTRA_DIST	  += ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles)
 # rebuild documentation after commits, unless NODOC is set to be non-empty
 doxy/html: $(if $(NODOC), , ../topbuildid.cc)
 # use order-only prerequisite on docs/doxy/src to spare doxygen runs for source edits
@@ -138,8 +132,7 @@ revisioned_files         = # files that need @FILE_REVISION@ substitution, see r
 
 # == revisions.lst ==
 noinst_DATA += revisions.lst
-EXTRA_DIST  += revisions.lst $(revisioned_files)
-revisions.lst: @INGIT@ $(revisioned_files) Makefile
+revisions.lst: $(GITSTAMPS)
 	$(AM_V_GEN)
 	$(Q) rm -f $@.tmplst
 	$(Q) for file in $(revisioned_files) ; do \
@@ -153,7 +146,7 @@ clean-revisions.lst: # git is required to rebuild revisions.lst, so conditionali
 	! git rev-parse --git-dir 2>/dev/null 1>&2 || rm -f revisions.lst
 .PHONY: clean-revisions.lst
 clean-local: clean-revisions.lst
-
+EXTRA_DIST += revisions.lst
 
 # == .revd.md (INTERMEDIATE) ==
 %.revd.md: %.md revisions.lst
@@ -179,7 +172,6 @@ manpage_footer.html:
 	$(Q) echo $$'<hr>\n<a href="../index.html">Return to Index</a>\n' > $@
 .INTERMEDIATE: manpage_footer.html
 MOSTLYCLEANFILES += manpage_footer.html
-EXTRA_DIST += ../docs/manpage.css
 
 # == man.1.html (markdown) ==
 %.1.html: %.1.revd.md manpage_header.html manpage_footer.html ../docs/manpage.css
