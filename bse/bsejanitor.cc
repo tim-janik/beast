@@ -5,7 +5,6 @@
 #include "bseserver.hh"
 #include "bsecontainer.hh"
 #include "bseprocedure.hh"
-#include "bsescripthelper.hh"
 
 
 enum
@@ -407,11 +406,7 @@ janitor_client_msg (SfiGlueDecoder *decoder,
 		    const char     *message,
 		    const GValue   *value)
 {
-  BseJanitor *self = BSE_JANITOR (user_data);
-  GValue *rvalue;
-  rvalue = bse_script_check_client_msg (decoder, self, message, value);
-  if (rvalue)
-    return rvalue;
+  // this used to call bse_script_check_client_msg
   return NULL;
 }
 
