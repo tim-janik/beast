@@ -94,8 +94,6 @@ dist: all
 	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
 .PHONY: dist
 EXTRA_DIST = ChangeLog README
-docs/revisions.lst:
-	$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
 
 # == distcheck ==
 # Distcheck aims:
