@@ -200,12 +200,6 @@ man5_MANS		+= bse.5
 man5_HTMLS		+= bse.5.html
 MOSTLYCLEANFILES	+= bse.5 bse.5.html
 
-# == bsescm.1 ==
-revisioned_files	+= bsescm.1.md
-man1_MANS		+= bsescm.1
-man1_HTMLS		+= bsescm.1.html
-MOSTLYCLEANFILES	+= bsescm.1 bsescm.1.html
-
 # == sfidl.1 ==
 revisioned_files	+= sfidl.1.md
 man1_MANS		+= sfidl.1
