@@ -78,6 +78,5 @@ sfidl - SFI IDL Compiler (Beast internal)
 
 # SEE ALSO
 
-[**bsescm(1)**](bsescm.1.html),
 [**BSE Reference**](https://testbit.eu/pub/docs/beast/latest/namespaceBse.html){.external},
 [**Sfidl Manual**](https://testbit.eu/wiki/Sfidl){.external}

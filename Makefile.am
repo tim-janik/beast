@@ -3,10 +3,8 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= . sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po docs data tests
+SUBDIRS		= . sfi bse plugins drivers pybeast beast-gtk launchers library tools ebeast po docs data tests
 
-# == make setup ==
-noinst_DATA	=
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
@@ -26,7 +24,7 @@ MAINTAINERCLEANFILES += HACKING
 	$(Q) $(PANDOC) -s --toc -N -S -f markdown_github+pandoc_title_block-hard_line_breaks -t html \
 		--email-obfuscation=javascript $< -o $@
 	$(Q) chmod a-w $@	# prevent accidental target file edits
-
+MAINTAINERCLEANFILES += README README.html
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
@@ -62,7 +60,7 @@ buildid:
 # == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
-ChangeLog: $(GITSTAMPS)
+ChangeLog: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --first-parent \
 		--abbrev=11 --date=short $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
@@ -76,7 +74,7 @@ MAINTAINERCLEANFILES += ChangeLog
 # == dist ==
 distname      = $(PACKAGE)-$(VERSION)
 distnamexz    = $(distname).tar.xz
-dist:
+dist: all
 	$(Q) test 0 = `git diff HEAD | wc -l` || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2
 	$(Q) git archive --format=tar --prefix=$(distname)/ HEAD >$(distname).tar
 	$(Q) rm -rf .tmpdist/ &&					\
@@ -93,9 +91,7 @@ dist:
 	$(Q) rm -f $(distname).tar.xz && xz $(distname).tar && test -e $(distnamexz)
 	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
 .PHONY: dist
-EXTRA_DIST = ChangeLog README
-docs/revisions.lst:
-	$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
+EXTRA_DIST += ChangeLog README
 
 # == distcheck ==
 # Distcheck aims:
@@ -149,7 +145,6 @@ distuninstallcheck:
 	|| { echo "$@: ERROR: files left after uninstall:" ; \
 	     $(distuninstallcheck_listfiles) ; \
 	     false; } >&2
-distuninstallcheck_listfiles = find . -type f -print
 .PHONY: distcheck distuninstallcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
@@ -170,3 +165,29 @@ uninstall_filter_files = $(strip	\
 	*/share/mime/mime.cache		*/share/mime/generic-icons	*/share/mime/globs	\
 	*/share/applications/mimeinfo.cache	\
 )
+
+# == cleanups ==
+MOSTLYCLEANFILES +=		\
+	distcheck\.log
+MAINTAINERCLEANFILES += 	\
+	Makefile\.in		\
+	config/compile		\
+	aclocal\.m4		\
+	autogen\.log		\
+	config\.log		\
+	configure		\
+	configure\.h\.in	\
+	configure\.h\.in~	\
+	config/config\.guess	\
+	config/config\.sub	\
+	config/depcomp		\
+	config/install-sh	\
+	config/intltool\.m4	\
+	config/libtool\.m4	\
+	config/ltmain\.sh	\
+	config/ltoptions\.m4	\
+	config/ltsugar\.m4	\
+	config/ltversion\.m4	\
+	config/lt~obsolete\.m4	\
+	config/missing		\
+	config/py-compile

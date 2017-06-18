@@ -12,8 +12,6 @@ BSE - Better Sound Engine File Format
 
 The **Bse** file format is used by the **Bse** library and dependent programs to save
 projects, songs, instruments and sample collections.
-The Bse scheme shell [**bsescm.1**](bsescm.1.html "bsescm.1") is able to play back
-**Bse** files directly.
 
 # FORMAT
 
@@ -36,6 +34,5 @@ indicates the  Bse file format version of the supplied content.
 # SEE ALSO
 
 [**beast(1)**](beast.1.html),
-[**bsescm(1)**](bsescm.1.html),
 [**bsewavetool(1)**](bsewavetool.1.html),
 [**BSE Reference**](https://testbit.eu/pub/docs/beast/latest/namespaceBse.html){.external}

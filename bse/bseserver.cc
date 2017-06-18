@@ -14,7 +14,6 @@
 #include "bsepcmmodule.cc"
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"
-#include "bsescripthelper.hh"
 #include "bseladspa.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -1281,17 +1280,6 @@ ServerImpl::load_assets ()
       if (error)
         printerr ("%s: Bse plugin registration failed: %s\n", name, error);
       g_free (name);
-    }
-  // load Bse scripts
-  ring = bse_script_path_list_files ();
-  while (ring)
-    {
-      gchar *script = (char*) sfi_ring_pop_head (&ring);
-      BseJanitor *janitor = NULL;
-      Bse::Error error = bse_script_file_register (script, &janitor);
-      if (!janitor)
-        printerr ("%s: Bse script registration failed: %s\n", script, bse_error_blurb (error));
-      g_free (script);
     }
   // load LADSPA plugins
   ring = bse_ladspa_plugin_path_list_files ();

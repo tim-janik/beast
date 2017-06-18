@@ -123,12 +123,6 @@ check-scm-strings:
 	  echo "OK" ;				\
 	done
 CHECK_SCM_PATS=$(strip					\
-	library/scripts/mixer-splitup-by-track.scm	\
-	library/scripts/modules2grid.scm		\
-	library/scripts/part-harmonic-transposer.scm	\
-	library/scripts/progressor-example.scm		\
-	library/scripts/record-midi.scm			\
-	library/scripts/song-parts-operations.scm	\
 )
 
 shdie = { echo "ERROR:" $(1) >&2 ; exit $(or $(2), 127) ; }

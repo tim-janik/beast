@@ -38,7 +38,7 @@ bse_public_headers = $(strip \
 	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
 	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			\
 	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
-	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
+	bseprocedure.hh		bseproject.hh						bseserver.hh \
 	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
 	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
 	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
@@ -73,7 +73,7 @@ bse_sources = $(strip \
 	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
 	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			\
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
-	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
+	bseprocedure.cc		bseproject.cc						bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
 	bsesoundfontrepo.cc	bsesoundfont.cc		bsesoundfontpreset.cc		bsesoundfontosc.cc \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \

@@ -1,4 +1,5 @@
 # BEAST & BSE						-*-mode:makefile;-*-
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 # declare variables that we might want to use += on.
 EXTRA_HEADERS=
@@ -10,22 +11,17 @@ GENERATED=$(strip $(GENERATED_CLEANFILES))
 EXTRA_DIST=
 noinst_DATA=
 
-# Verbosity macros
+# == Verbosity ==
 Q       = $(if $(findstring 1, $(V)) ,, @)
 QGEN    = $(Q:@=@echo '  GEN   ' $@; )
 QSTDERR = $(Q:@=2>/dev/null)
+QSTDOUT = $(Q:@=1>/dev/null)
 
-# assign project wide defaults
-AM_CFLAGS   += -D_BIRNET_SOURCE_EXTENSIONS
-AM_CXXFLAGS += -D_BIRNET_SOURCE_EXTENSIONS
-
-# == GITSTAMPS ==
+# == GITSTAMP ==
 # list of stamp files touched by commits
-GITSTAMPS = $(shell test -e "$${GIT_DIR:-.git}" && \
-		ls 2>/dev/null "$${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || \
-		echo HEAD`" "$${GIT_DIR:-.git}/packed-refs" "$${GIT_DIR:-.git}/HEAD")
+GITSTAMP = $(shell G=$$(git rev-parse --git-dir 2>/dev/null); test -z "$$G" -o ! -e "$$G/logs/HEAD" || echo "$$G/logs/HEAD")
 
-# == download ==
+# == Download ==
 # recursive rule supported by all Makefiles to download files hosted online
 .PHONY: download download-recursive download-local
 download: download-local download-recursive
@@ -38,7 +34,8 @@ extra-gitdist:
 	$(Q) test -w "$(EXTRA_GITDIST_DIR)" || { echo '$@: missing EXTRA_GITDIST_DIR' >&2; false; }
 	@for subdir in $(SUBDIRS) ; do						\
 	  test "$$subdir" = '.' ||						\
-	    $(MAKE) $(AM_MAKEFLAGS) -C "$$subdir" --no-print-directory $@ ||	\
+	    $(MAKE) $(AM_MAKEFLAGS) -C "$$subdir"				\
+		$(if $(findstring 1, $(V)),, --no-print-directory) $@ ||	\
 	    exit 1 ;								\
 	done
 	$(Q) for file in $(EXTRA_DIST) ; do					\
@@ -46,28 +43,6 @@ extra-gitdist:
 	  exit 1;								\
 	done
 .PHONY: extra-gitdist
-
-# === distfile-list ===
-# recursive rule supported by all Makefiles to generate a list of all files
-# listed as DISTFILES. this asserts a writable file named $DISTFILE_LIST.
-.PHONY: distfile-list
-distfile-list:
-	$(AM_V_GEN)
-	$(Q) test -w "$(DISTFILE_LIST)" || \
-	  { echo '$$(DISTFILE_LIST): failed to write' >/dev/stderr ; false ; }
-	@for subdir in $(SUBDIRS) ; do				\
-	  test "$$subdir" = '.' ||				\
-	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) $@ ||		\
-	    exit 1 ;						\
-	done
-	$(Q) for file in $(DISTFILES) ; do			\
-	  if [[ "$$file" = /* ]] && test -e "$$file" ; then	\
-	    echo "$$file" >> $(DISTFILE_LIST) ;			\
-	  elif test -e "$(abs_builddir)/$$file" ; then		\
-	    echo "$(abs_builddir)/$$file" >> $(DISTFILE_LIST) ;	\
-	  elif test -e "$(abs_srcdir)/$$file" ; then		\
-	    echo "$(abs_srcdir)/$$file" >> $(DISTFILE_LIST) ;	\
-	  fi ; done ; true
 
 # === check: check-before / check-after ===
 .PHONY: check-before check-after check-devel
@@ -150,18 +125,20 @@ ALLTESTS = $(TESTS) $(TAPTESTS) $(X11TESTS) $(SLOWTESTS) $(PERFTESTS) # used in 
 # === report ===
 .PHONY: report
 report: all
-	$(Q) export REPORTFILE="$(REPORTFILE)"			\
-	&& [ -z "$$REPORTFILE" ]				\
-	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
-	( :							\
-	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
-	  && (svn info 2>/dev/null |				\
-	      sed -n '/^Revision: /{s/.*: /#TREPREV: SVN: /;p}'; \
-	      true )						\
-	  && (git-svn log -n1 2>/dev/null |				\
-	      sed -n '/^r[0-9]\+ /{s/r\([0-9]\+\) .*/#TREPREV: GIT-SVN: \1/;p;q}' ; \
-	      true )						\
-	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
-	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
-	) 2>&1 | tee "$$REPORTFILE"				\
-	&& test "$${PIPESTATUS[*]}" = "0 0"
+	@export   REPORTFILE="$(REPORTFILE)" && [ -z "$$REPORTFILE" ]		\
+	&& export REPORTFILE="$(shell pwd)/report.out"				\
+	&& set -eo pipefail && ( :						\
+	  && echo -n    "#TSTREPORT: git: "	     && date --iso-8601=seconds	\
+	  && git describe --abbrev=99						\
+	  && echo -n    "#TSTREPORT: install: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) install 					\
+	  && echo -n    "#TSTREPORT: check: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) check 					\
+	  && echo -n    "#TSTREPORT: slowcheck: "    && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) slowcheck 					\
+	  && echo -n    "#TSTREPORT: perf: "	     && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) perf 					\
+	  && echo -n    "#TSTREPORT: installcheck: " && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck				\
+	  && echo -n    "#TSTREPORT: done: "	     && date --iso-8601=seconds	\
+	) 2>&1 | tee "$$REPORTFILE"

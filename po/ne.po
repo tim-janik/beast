@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-23 22:18+0100\n"
+"POT-Creation-Date: 2017-06-19 00:35+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -90,7 +90,7 @@ msgstr "  विभिन्न घटना प्रकार चयन गर
 msgid "  selects one of 3 predefined colors"
 msgstr "  ३ पूर्वपरिभाषित रङ मध्ये एउटा चयन गर्नुहोस्"
 
-#: bse/bsejanitor.cc:524
+#: bse/bsejanitor.cc:519
 #, c-format
 msgid "%s (core dumped)"
 msgstr "%s (डम्ट गरिएको कोर)"
@@ -193,18 +193,6 @@ msgstr ""
 msgid "/Other Sources/Constant"
 msgstr "/अन्य स्रोत/अचल"
 
-#: library/scripts/part-harmonic-transposer.scm:9
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#: library/scripts/record-midi.scm:5
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: library/scripts/progressor-example.scm:17
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
 #: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr "/राउटिङ/एम्प्लिफायर"
@@ -218,22 +206,6 @@ msgstr "/राउटिङ/एम्प्लिफायर"
 #, fuzzy
 msgid "/Routing/Summation"
 msgstr "/राउटिङ/एम्प्लिफायर"
-
-#: library/scripts/modules2grid.scm:6
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:9
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:9
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:18
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
 
 #: plugins/bsebalance.idl:8
 msgid "/Spatial/Balance"
@@ -901,7 +873,7 @@ msgstr "डिट्युनिङ्गको रकम सेन्टमा 
 msgid "Amplified audio output"
 msgstr "एम्प्लिफाइड अडियो निर्गत"
 
-#: bse/bseserver.cc:434
+#: bse/bseserver.cc:433
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -917,7 +889,7 @@ msgstr ""
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "स्क्रिप्ट कार्यविधिको कार्यान्वयन गरेको बेलामा एउटा त्रटि भयो '%s': %s"
 
-#: bse/bseserver.cc:573
+#: bse/bseserver.cc:572
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -1043,7 +1015,7 @@ msgstr "अडियो"
 msgid "Audio Gate"
 msgstr "अडियो निर्गत"
 
-#: bse/bseserver.cc:486
+#: bse/bseserver.cc:485
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "अडियो निर्गत"
@@ -1135,7 +1107,7 @@ msgstr "अडियो निर्गत २"
 msgid "Audio Output"
 msgstr "अडियो निर्गत"
 
-#: bse/bseserver.cc:432
+#: bse/bseserver.cc:431
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1159,7 +1131,7 @@ msgstr "अडियो निर्गत १"
 msgid "Audio Sum2"
 msgstr "अडियो निर्गत २"
 
-#: bse/bseserver.cc:439
+#: bse/bseserver.cc:438
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr "आगतका लागि अडियो यन्त्र \"%s\" खुल्ला छैन, अडियो ड्राइभर: %s=%s"
@@ -1266,15 +1238,15 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:1054
+#: beast-gtk/bstmain.cc:1057
 msgid "BEAST About"
 msgstr "BEAST बारेमा"
 
-#: beast-gtk/bstmain.cc:212
+#: beast-gtk/bstmain.cc:215
 msgid "BEAST Startup"
 msgstr "BEAST सुरुवात"
 
-#: beast-gtk/bstmain.cc:1055
+#: beast-gtk/bstmain.cc:1058
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST संस्करण %s"
@@ -1283,19 +1255,17 @@ msgstr "BEAST संस्करण %s"
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:260
+#: beast-gtk/bstmain.cc:263
 msgid "BSE Core"
 msgstr "BSE कोर"
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:16 data/bse.keys.in:24
+#: data/bse.keys.in:24
 msgid "BSE Multi-Part Wave File"
 msgstr "BSE बहु-अंश वेभ फाइल"
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:9 data/bse.keys.in:12
+#: data/bse.keys.in:12
 msgid "BSE Synthesis File"
 msgstr "BSE सिन्थेसिस फाइल"
 
@@ -1720,7 +1690,7 @@ msgstr "लगातार ९"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "निरन्तर मिडि नियन्त्रण #1 - बैक चय"
 
-#: beast-gtk/bstmain.cc:1056
+#: beast-gtk/bstmain.cc:1059
 msgid "Contributions made by:"
 msgstr "योगदानकर्ता:"
 
@@ -2080,12 +2050,6 @@ msgstr "नयाँ परियोजना सिर्जना गर्न
 msgid "Creation Time"
 msgstr "सिर्जना समय"
 
-#: library/scripts/song-parts-operations.scm:10
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
 #: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "Ctrl In1"
 msgstr "नियन्त्रण आगत १"
@@ -2321,7 +2285,7 @@ msgstr "डायल"
 msgid "Dial (Logarithmic)"
 msgstr "डायल (लोगारिथ्मिक)"
 
-#: beast-gtk/bstmain.cc:344
+#: beast-gtk/bstmain.cc:347
 msgid "Dialogs"
 msgstr "संवाद"
 
@@ -2392,7 +2356,7 @@ msgstr "जडान नभएको बाहिर"
 msgid "Disconnect Outputs"
 msgstr "जडान नभएको बाहिर"
 
-#: bse/bseserver.cc:571
+#: bse/bseserver.cc:570
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "डिक्स रेकर्डिङ सुरु गर्नुहोस्"
@@ -2505,12 +2469,6 @@ msgstr ""
 #, fuzzy
 msgid "Drum frequency in Hertz"
 msgstr "ड्रम आवृति आगत"
-
-#: library/scripts/song-parts-operations.scm:19
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
 
 #: beast-gtk/bstpatterncolumns.cc:688
 msgid "EVENTS:"
@@ -2746,20 +2704,10 @@ msgstr "यन्त्र ल्याटेन्सी कन्फिगर 
 msgid "Failed to configure number of device channels"
 msgstr "यन्त्र च्यानलहरूको नम्बर कन्फिगर गर्न असफल"
 
-#: library/scripts/song-parts-operations.scm:51
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
-
 #. content errors
 #: bse/bseapi.idl:40
 #, fuzzy
 msgid "Failed to detect header"
-msgstr "शीर्षक पत्ता लगाउन (खोल्न) असफल"
-
-#: library/scripts/song-parts-operations.scm:63
-#, fuzzy
-msgid "Failed to duplicate part range."
 msgstr "शीर्षक पत्ता लगाउन (खोल्न) असफल"
 
 #: beast-gtk/bstusermessage.cc:735
@@ -2767,7 +2715,7 @@ msgstr "शीर्षक पत्ता लगाउन (खोल्न) अ
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "स्क्रिप्ट कार्यविधि कार्यान्वयन गर्न असफल '%s': %s"
 
-#: beast-gtk/bstmain.cc:431
+#: beast-gtk/bstmain.cc:434
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
@@ -2777,36 +2725,31 @@ msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
-#: beast-gtk/bstmain.cc:394
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:381
+#: beast-gtk/bstmain.cc:397
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "वेभ फाइल \"%s\" लोड गर्न असफल: %s"
 
-#: beast-gtk/bstmain.cc:437
+#: beast-gtk/bstmain.cc:440
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "परियोजना गाभ्न असफल \"%s\": %s"
 
-#: bse/bseserver.cc:517
+#: bse/bseserver.cc:516
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "मिडि यन्त्र खोल्न असफल: %s"
 
-#: bse/bseserver.cc:490
+#: bse/bseserver.cc:489
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "PCM यन्त्र खोल्न असफल: %s"
 
-#: bse/bseserver.cc:575
+#: bse/bseserver.cc:574
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "निर्गतका लागि फाइल \"%s\" खोल्न असफल: %s"
-
-#: library/scripts/part-harmonic-transposer.scm:202
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
 
 #: beast-gtk/bstfiledialog.cc:541
 #, c-format
@@ -2858,12 +2801,12 @@ msgstr ""
 msgid "Failed to spawn child process"
 msgstr "शाखा प्रकृया स्पान गर्न असफल"
 
-#: bse/bseserver.cc:572
+#: bse/bseserver.cc:571
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
 
-#: bse/bseserver.cc:433
+#: bse/bseserver.cc:432
 msgid "Failed to start recording from audio device."
 msgstr "अडियो यन्त्रबाट रेकर्ड सुरु गर्न असफल"
 
@@ -3211,14 +3154,6 @@ msgstr ""
 msgid "Harmonics"
 msgstr ""
 
-#: library/scripts/part-harmonic-transposer.scm:35
-msgid "Harmony Sequence"
-msgstr ""
-
-#: library/scripts/part-harmonic-transposer.scm:205
-msgid "Harmony list is too short"
-msgstr ""
-
 #: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
 msgid "High if the note is currently being pressed"
 msgstr "यदि द्रष्टव्य हाललाई दाबिएको छ भने उच्च"
@@ -3342,7 +3277,7 @@ msgstr "ठाडो मापन"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "ओस्सिलेटर तरङ्ग फारमको प्रारम्भिक फेज (डिग्रीमा साइकल अफसेट)"
 
-#: beast-gtk/bstmain.cc:226
+#: beast-gtk/bstmain.cc:229
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
@@ -3609,7 +3544,7 @@ msgstr "नब (लोगारिथ्मिक)"
 msgid "LADSPA Path"
 msgstr "LADSPA बाटो"
 
-#: beast-gtk/bstmain.cc:289
+#: beast-gtk/bstmain.cc:292
 msgid "LADSPA Plugins"
 msgstr "लाडस्पा प्लगइन"
 
@@ -3849,7 +3784,7 @@ msgstr "सिन्थेसाइजर मेस बाजा फोल्ड
 msgid "Load..."
 msgstr "लोड गर्नुहोस्..."
 
-#: beast-gtk/bstmain.cc:374 beast-gtk/bstmain.cc:376
+#: beast-gtk/bstmain.cc:377 beast-gtk/bstmain.cc:379
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" लोड हुँदैछ"
@@ -3869,7 +3804,7 @@ msgstr "`%s' स्किन लोड हुँदैछ"
 msgid "Loading wave `%s'"
 msgstr "तरङ `%s' लोड हुँदैछ"
 
-#: beast-gtk/bstmain.cc:354
+#: beast-gtk/bstmain.cc:357
 msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
@@ -3919,7 +3854,7 @@ msgstr "मिडि"
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
-#: bse/bseserver.cc:513
+#: bse/bseserver.cc:512
 msgid "MIDI I/O Failed"
 msgstr ""
 
@@ -3955,12 +3890,12 @@ msgstr "MIDI सिन्थेसाइजर: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "मिडि ट्र्याकर, सङ्गीत रचना र मोड्युलर सिन्थेसिस अनुप्रयोग"
 
-#: bse/bseserver.cc:518
+#: bse/bseserver.cc:517
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "मिडि यन्त्र चयन समस्याको बारेमा सन्देश देखाउनुहोस्"
 
-#: bse/bseserver.cc:514
+#: bse/bseserver.cc:513
 #, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "मिडि आगत वा निर्गत उपलब्ध छैन ।"
@@ -4263,15 +4198,6 @@ msgstr "मौन: बसको भोल्युम बन्द गर्न�
 msgid "Muted"
 msgstr "मौन गराइएको"
 
-#: library/scripts/progressor-example.scm:23
-#, fuzzy
-msgid "N Iterations"
-msgstr "जानकारी"
-
-#: library/scripts/progressor-example.scm:24
-msgid "N Wait Spins"
-msgstr ""
-
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
 #: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
 msgid "Name"
@@ -4281,7 +4207,7 @@ msgstr "नाम"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "हालको स्किन कन्फिगरेसनका लागि नाम (स्किन चयनका लागि प्रयोग गरिने)"
 
-#: bse/bseserver.cc:124
+#: bse/bseserver.cc:123
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "BSE ध्वनि निर्गत रेकर्ड गर्न प्रयोग गरिने वेभ फाइलको नाम"
 
@@ -4322,7 +4248,7 @@ msgstr "अंश छैन"
 msgid "No Track"
 msgstr "ट्र्याक छैन"
 
-#: bse/bseserver.cc:515
+#: bse/bseserver.cc:514
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -4330,7 +4256,7 @@ msgstr ""
 "उपलब्ध मिडि यन्त्रहरू सफलतापूर्वक फेला पारेर खोल्न सकेन । शून्य यन्त्र पुन: प्राप्त गर्दैछ, "
 "मिडि घटनाहरू पाइएन वा पठाइएको छैन ।"
 
-#: bse/bseserver.cc:488
+#: bse/bseserver.cc:487
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -4338,7 +4264,7 @@ msgstr ""
 "उपलब्ध अडियो यन्त्र सफलतापूर्वक फेला पारेर खोल्न सकेन । माफ गर्नुहोस्, अडियो यन्त्रका लागि "
 "फलब्याक चयन बनाउन सकिँदैन, छोड्दैछ ।"
 
-#: bse/bseserver.cc:487
+#: bse/bseserver.cc:486
 msgid "No available audio device was found."
 msgstr "उपलब्ध अडियो यन्त्र फेला परेन"
 
@@ -4350,11 +4276,6 @@ msgstr "डेटा उपलब्ध छैन"
 #: bse/bseapi.idl:58
 msgid "No device (driver) available"
 msgstr "यन्त्र (ड्राइभर) उपलब्ध भएन"
-
-#: library/scripts/part-harmonic-transposer.scm:195
-#, fuzzy
-msgid "No notes selected"
-msgstr "कुनै परिमाणात्मक चयन गरिएको छैन"
 
 #: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:67
 msgid "No quantization selected"
@@ -4407,25 +4328,6 @@ msgstr "तरङ छैन"
 msgid "No target"
 msgstr "लक्ष्य छैन"
 
-#: library/scripts/record-midi.scm:34
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "अवैध वस्तु गुण"
-
-#: library/scripts/part-harmonic-transposer.scm:193
-msgid "No valid part supplied"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:41
-#: library/scripts/song-parts-operations.scm:29
-msgid "No valid song supplied"
-msgstr ""
-
-#: library/scripts/modules2grid.scm:15
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "एन्टी-एलाइज गरिएको सिन्थेसिस सञ्जाल कोर्नुहुन्छ ?"
-
 #: plugins/bsenoise.idl:10
 msgid "Noise Out"
 msgstr "हल्ला निर्गत"
@@ -4457,15 +4359,6 @@ msgstr "नर्म प्रकार"
 msgid ""
 "Normalization level of the saturation curve in percent, some saturation "
 "types still allow overdrive signals beyond this level"
-msgstr ""
-
-#: library/scripts/record-midi.scm:38
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
 msgstr ""
 
 #: bse/bsebiquadfilter.cc:124 bse/bseconstant.cc:112 bse/bsestandardosc.cc:134
@@ -4791,12 +4684,12 @@ msgstr "PCM आगत मोड्युल"
 msgid "PCM Output module"
 msgstr "PCM आगत मोड्युल"
 
-#: bse/bseserver.cc:491
+#: bse/bseserver.cc:490
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "PCM यन्त्र चयन समस्याको सन्देश देखाउनुहोस्"
 
-#: bse/bseserver.cc:576
+#: bse/bseserver.cc:575
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "रेकर्डिङ फाइल त्रुटि देखाउनुहोस्"
@@ -4842,12 +4735,6 @@ msgstr "अविभावक अमिल्दो"
 #: bse/bseapi.idl:55
 msgid "Parsing error"
 msgstr "पद वर्णन त्रुटि"
-
-#: library/scripts/part-harmonic-transposer.scm:34
-#: library/scripts/record-midi.scm:10
-#, fuzzy
-msgid "Part"
-msgstr "अंश"
 
 #: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
@@ -4971,7 +4858,7 @@ msgstr "प्लेब्याक सेटिङ"
 msgid "Plugin Path"
 msgstr "प्लगइन बाटो"
 
-#: beast-gtk/bstmain.cc:267
+#: beast-gtk/bstmain.cc:270
 msgid "Plugins"
 msgstr "प्लगइन"
 
@@ -5067,13 +4954,6 @@ msgstr "प्रोफाइलर"
 #: bse/bseapi.idl:98
 msgid "Program Change"
 msgstr "कार्यक्रम परिवर्तन"
-
-#: library/scripts/progressor-example.scm:18
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
 
 #: beast-gtk/bstsnetrouter.cc:664 beast-gtk/bstsupershell.cc:169
 #: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
@@ -5245,7 +5125,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:237
+#: beast-gtk/bstmain.cc:240
 msgid "RC Files"
 msgstr "आर सी फाइल"
 
@@ -5273,12 +5153,6 @@ msgstr "पढ्न असफल"
 #: beast-gtk/bstapp.cc:86
 msgid "Rebuild"
 msgstr "फेरी बनाउनुहोस्"
-
-#: library/scripts/record-midi.scm:6
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
 
 #: beast-gtk/bstpianorollctrl.cc:68
 msgid "Rectangle select notes"
@@ -5483,12 +5357,6 @@ msgstr "दायाँ च्यानल निर्गत"
 msgid "Right to Left"
 msgstr "दायाँ अडियो निर्गत"
 
-#: library/scripts/modules2grid.scm:7
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
 #: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr "कार्यतालिका"
@@ -5617,7 +5485,7 @@ msgstr "स्क्रिप्ट बाटो"
 msgid "Script execution error."
 msgstr "कार्यविधि कार्यान्वयन त्रुटि"
 
-#: beast-gtk/bstmain.cc:324
+#: beast-gtk/bstmain.cc:327
 msgid "Scripts"
 msgstr "स्क्रिप्ट"
 
@@ -5982,9 +5850,7 @@ msgstr "एकल"
 msgid "Solo: mute all other busses"
 msgstr "एकल: अरू बसलाई मौन गराउनुहोस्"
 
-#: bse/bsesong.cc:553 library/scripts/mixer-splitup-by-track.scm:14
-#: library/scripts/song-parts-operations.scm:14
-#: library/scripts/song-parts-operations.scm:23
+#: bse/bsesong.cc:553
 #, fuzzy
 msgid "Song"
 msgstr "गीत"
@@ -6025,7 +5891,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "स्पिन बटन (लोगारिथ्मिक)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:245
+#: beast-gtk/bstmain.cc:248
 msgid "Splash Image"
 msgstr "स्प्ल्यास छवि"
 
@@ -6064,11 +5930,6 @@ msgstr ""
 msgid "Start Editor"
 msgstr "सम्पादनक सुरु गर्नुहोस्"
 
-#: library/scripts/record-midi.scm:11
-#, fuzzy
-msgid "Start Now"
-msgstr "सम्पादनक सुरु गर्नुहोस्"
-
 #. | GXK_DIALOG_WINDOW_GROUP,
 #: beast-gtk/bstprocedure.cc:427
 msgid "Start Procedure"
@@ -6105,7 +5966,7 @@ msgstr "सुरु:"
 msgid "Starting Playback"
 msgstr "प्लेब्याक सुरु हुँदैछ"
 
-#: beast-gtk/bstmain.cc:219
+#: beast-gtk/bstmain.cc:222
 msgid "Startup"
 msgstr "सुरुवात"
 
@@ -6226,11 +6087,6 @@ msgstr "सिन्थ आगत"
 #: bse/bsebasics.idl:287
 msgid "Synth Mixing Frequency"
 msgstr "सिन्थ मिश्रण आवृति"
-
-#: library/scripts/modules2grid.scm:11
-#, fuzzy
-msgid "Synth Net"
-msgstr "सिन्थ गरियो"
 
 #. label=
 #: beast-gtk/res/radgets-beast.xml:98
@@ -6402,38 +6258,9 @@ msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "चयन गेइन सामान्यकरण प्रकार (माथिल्लो पास र तल्लो पासले मात्र समर्थन गर्दछ)"
 
-#. FIXME: the description may be suboptimal; the problem is
-#. that I can't precisely describe details of musical theory
-#. in english. -- stw
-#: library/scripts/part-harmonic-transposer.scm:13
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
 #: beast-gtk/bstmsgabsorb.cc:202
 msgid "The last program version that displayed this message type"
 msgstr "अन्तिम कार्यक्रम संस्करण जसले सूचना प्रकारको प्रदर्शन गर्दछ"
-
-#: library/scripts/song-parts-operations.scm:46
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.cc:131
 msgid "The mnemonic accelerator key for this label"
@@ -6536,16 +6363,6 @@ msgstr "लेबुलको एम्नेमोनिक कुञ्जी 
 #: beast-gtk/bstapi.idl:43
 msgid "Thirty-secondth note"
 msgstr "बत्तिसौं द्रष्टव्य"
-
-#: library/scripts/mixer-splitup-by-track.scm:43
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:10
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
 
 #: beast-gtk/bstusermessage.cc:253
 msgid ""
@@ -6679,10 +6496,6 @@ msgstr "ट्र्याकहरू जुनले बाजाको पर
 #: plugins/davxtalstrings.cc:94
 msgid "Transpose"
 msgstr "ठाउँ सार्नुहोस्"
-
-#: library/scripts/part-harmonic-transposer.scm:36
-msgid "Transpose down starting at"
-msgstr ""
 
 #: plugins/davorgan.idl:18 plugins/davxtalstrings.cc:94
 #, fuzzy
@@ -6834,10 +6647,6 @@ msgstr "प्रयोग नगरिएको"
 msgid "Up"
 msgstr "माथि"
 
-#: library/scripts/progressor-example.scm:25
-msgid "Update Percentage"
-msgstr ""
-
 #: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
 #: beast-gtk/bstutils.cc:299
 msgid "Updating View"
@@ -6953,7 +6762,7 @@ msgstr "बायाँ बस च्यानलको डेसिबलमा
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "दायाँ बस च्यानलको डेसिबलमा भोल्युम समायोजन"
 
-#: bse/bseserver.cc:123
+#: bse/bseserver.cc:122
 msgid "WAVE File"
 msgstr "वेभ फाइल"
 
@@ -7044,10 +6853,6 @@ msgstr "च्यानलको गलत नम्बर"
 #: plugins/davxtalstrings.cc:135
 msgid "XtalStrings Output"
 msgstr "एक्सटाल स्ट्रिङ निर्गत"
-
-#: library/scripts/record-midi.scm:35
-msgid "You probably want to start this script from a part editor."
-msgstr ""
 
 #: bse/bseapi.idl:347
 msgid "Young Temperament"
@@ -7315,12 +7120,12 @@ msgstr "दृश्य"
 msgid "_Virtualization"
 msgstr "अवास्तविकता"
 
-#: bse/bseserver.cc:443
+#: bse/bseserver.cc:442
 #, fuzzy
 msgid "audio input problems"
 msgstr "अडियो आगत समस्याका बारेमा सन्देश देखाउनुहोस्"
 
-#: bse/bsejanitor.cc:522
+#: bse/bsejanitor.cc:517
 msgid "connection terminated"
 msgstr "जडान समाप्त"
 
@@ -7548,17 +7353,12 @@ msgstr "नियन्त्रण-९"
 msgid "control-90"
 msgstr "नियन्त्रण-९०"
 
-#: library/scripts/song-parts-operations.scm:48
-#, fuzzy
-msgid "empty part range"
-msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
-
 #: tools/bsewavetool.cc:1158
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"
 
-#: bse/bsejanitor.cc:520
+#: bse/bsejanitor.cc:515
 msgid "killed by janitor"
 msgstr "ज्यानिटरद्वारा मारियो"
 
@@ -7690,8 +7490,20 @@ msgstr "प्रक्रिया हुँदैछ"
 #~ msgstr "सबै राम्रो भयो"
 
 #, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "शीर्षक पत्ता लगाउन (खोल्न) असफल"
+
+#, fuzzy
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr "मिडि यन्त्र खोल्न असफल: %s"
+
+#, fuzzy
+#~ msgid "Failed to parse harmony list"
+#~ msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
 
 #~ msgid "Fatal Error"
 #~ msgstr "घातक त्रुटि"
@@ -7778,11 +7590,27 @@ msgstr "प्रक्रिया हुँदैछ"
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "ओस्सिलेटर आवृतिमा सङ्गीत सम्बन्धी सङ्केत अनुकूल"
 
+#, fuzzy
+#~ msgid "N Iterations"
+#~ msgstr "जानकारी"
+
 #~ msgid "No Audio"
 #~ msgstr "अडियो होइन"
 
 #~ msgid "No MIDI"
 #~ msgstr "मिडि छैन"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "कुनै परिमाणात्मक चयन गरिएको छैन"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "अवैध वस्तु गुण"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "एन्टी-एलाइज गरिएको सिन्थेसिस सञ्जाल कोर्नुहुन्छ ?"
 
 #~ msgid "Number of elements (C specific)"
 #~ msgstr "तत्वको सङ्ख्या (C निर्दिष्ट)"
@@ -7796,6 +7624,10 @@ msgstr "प्रक्रिया हुँदैछ"
 
 #~ msgid "Parasite Paths"
 #~ msgstr "पारासाइट बाटो"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "अंश"
 
 #~ msgid "Path"
 #~ msgstr "बाटो"
@@ -7881,6 +7713,10 @@ msgstr "प्रक्रिया हुँदैछ"
 #~ msgid "Source code"
 #~ msgstr "स्रोत सङ्केत"
 
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "सम्पादनक सुरु गर्नुहोस्"
+
 #~ msgid "State"
 #~ msgstr "स्थिति"
 
@@ -7898,6 +7734,10 @@ msgstr "प्रक्रिया हुँदैछ"
 
 #~ msgid "Stepping Rates"
 #~ msgstr "दर चरण"
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "सिन्थ गरियो"
 
 #~ msgid "Synthesize a note on a song of an active project."
 #~ msgstr "सक्रिय परियोजनाको द्रष्टव्य गीतमा सिन्थेसाइज गर्नुहोस्"
@@ -7977,6 +7817,10 @@ msgstr "प्रक्रिया हुँदैछ"
 
 #~ msgid "dec2, dec3"
 #~ msgstr "दशमलव २, दशमलव ३"
+
+#, fuzzy
+#~ msgid "empty part range"
+#~ msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
 
 #~ msgid "hex2, hex4"
 #~ msgstr "हेक्स २, हेक्स ४"

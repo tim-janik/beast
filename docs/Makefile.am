@@ -132,7 +132,7 @@ revisioned_files         = # files that need @FILE_REVISION@ substitution, see r
 
 # == revisions.lst ==
 noinst_DATA += revisions.lst
-revisions.lst: $(GITSTAMPS)
+revisions.lst: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) rm -f $@.tmplst
 	$(Q) for file in $(revisioned_files) ; do \
@@ -199,12 +199,6 @@ revisioned_files	+= bse.5.md
 man5_MANS		+= bse.5
 man5_HTMLS		+= bse.5.html
 MOSTLYCLEANFILES	+= bse.5 bse.5.html
-
-# == bsescm.1 ==
-revisioned_files	+= bsescm.1.md
-man1_MANS		+= bsescm.1
-man1_HTMLS		+= bsescm.1.html
-MOSTLYCLEANFILES	+= bsescm.1 bsescm.1.html
 
 # == sfidl.1 ==
 revisioned_files	+= sfidl.1.md

@@ -272,7 +272,7 @@ MC_ASSERT_PROG(XMLLINT, xmllint)
 MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
 # == Headers ==
-AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h guile/gh.h libguile/properties.h )
+AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
 
 # == pkg-config Libraries ==
 # librapicorn dependencies
@@ -509,39 +509,6 @@ AC_DEFUN([MC_ASOUND_CHECK],
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
 ])
-AC_DEFUN([MC_BSESCM_REQUIREMENTS],
-[
-    BSESCM_CFLAGS="$BSE_CFLAGS"
-    BSESCM_LIBS="$BSE_LIBS"
-
-    dnl # --- libguile check ---
-    guile_tests=0
-    GUILE_VERSION=none
-    REQUIRED_VERSION=1.6
-    AC_PATH_PROG(GUILE_CONFIG, guile-config)
-    if test -n "$GUILE_CONFIG"; then
-	guile_tests=`expr $guile_tests + 1`
-	GUILE_VERSION=`$GUILE_CONFIG info guileversion`
-	GUILE_CFLAGS=`$GUILE_CONFIG compile`
-	GUILE_LDFLAGS=`$GUILE_CONFIG link`
-	MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [guile_tests=`expr $guile_tests + 1`])
-	dnl # check headers seperately, since some distributions ship on-devel guile packages with guile-config
-	AC_CHECK_HEADER(guile/gh.h, guile_tests=`expr $guile_tests + 1`)
-	AC_CHECK_HEADER(libguile/properties.h, guile_tests=`expr $guile_tests + 1`) dnl # guile-1.6 headerfile
-    fi
-    if test $guile_tests = 4 ; then
-	BSESCM_CFLAGS="$GUILE_CFLAGS $BSESCM_CFLAGS"
-	BSESCM_LIBS="$GUILE_LDFLAGS $BSESCM_LIBS" 
-    else
-	EMSG="failed to detect guile headers and library v$REQUIRED_VERSION"
-	EMSG="$EMSG (available from http://www.gnu.org/software/guile/guile.html)"
-	EMSG="$EMSG - detected library version: $GUILE_VERSION"
-	AC_MSG_ERROR([$EMSG])
-    fi
-
-    AC_SUBST(BSESCM_CFLAGS)
-    AC_SUBST(BSESCM_LIBS)
-])
 AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
@@ -709,7 +676,6 @@ AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 MC_I18N_REQUIREMENTS
 MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
-MC_BSESCM_REQUIREMENTS
 MC_BSE_SNDDEV_CHECK
 MC_PYTHON_REQUIREMENTS
 MC_GXK_REQUIREMENTS
@@ -736,7 +702,6 @@ plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
 drivers/Makefile
-shell/Makefile
 pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
@@ -747,7 +712,6 @@ library/Makefile
 library/effects/Makefile
 library/instruments/Makefile
 library/samples/Makefile
-library/scripts/Makefile
 library/demo/Makefile
 library/keys/Makefile
 library/skins/Makefile

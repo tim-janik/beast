@@ -8,7 +8,6 @@ AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 
 # IDL generation rule for plugins
 %.genidl.hh: %.idl $(BSEPGEN) # $(SFIDL)
@@ -40,7 +39,7 @@ test: 	all
 	cd . \
 	&& rm -f ./tmp-midi-fifo					\
 	&& mkfifo ./tmp-midi-fifo					\
-	&& FIFO=tmp-midi-fifo $(BSESCM)					\
+	&& FIFO=tmp-midi-fifo : $(BSESCM)				\
 	    -m oss=tmp-midi-fifo -p null				\
 	   --bse-override-plugin-globs $(builddirplugins)		\
 	   --bse-override-script-path $(top_builddir)/shell/		\
