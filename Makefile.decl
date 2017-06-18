@@ -1,4 +1,5 @@
 # BEAST & BSE						-*-mode:makefile;-*-
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 # declare variables that we might want to use += on.
 EXTRA_HEADERS=
@@ -10,14 +11,11 @@ GENERATED=$(strip $(GENERATED_CLEANFILES))
 EXTRA_DIST=
 noinst_DATA=
 
-# Verbosity macros
+# == Verbosity ==
 Q       = $(if $(findstring 1, $(V)) ,, @)
 QGEN    = $(Q:@=@echo '  GEN   ' $@; )
 QSTDERR = $(Q:@=2>/dev/null)
-
-# assign project wide defaults
-AM_CFLAGS   += -D_BIRNET_SOURCE_EXTENSIONS
-AM_CXXFLAGS += -D_BIRNET_SOURCE_EXTENSIONS
+QSTDOUT = $(Q:@=1>/dev/null)
 
 # == GITSTAMPS ==
 # list of stamp files touched by commits
