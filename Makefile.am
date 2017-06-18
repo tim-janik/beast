@@ -86,26 +86,27 @@ ChangeLog: $(GITSTAMPS)
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
 
-# == distgit ==
+# == dist ==
 distname      = $(PACKAGE)-$(VERSION)
 distnamexz    = $(distname).tar.xz
-distgit: $(extra_distgit)
+dist:
 	$(Q) test 0 = `git diff HEAD | wc -l` || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2
 	$(Q) git archive --format=tar --prefix=$(distname)/ HEAD >$(distname).tar
-	$(Q) rm -rf .tmpdist/ && \
-	  mkdir .tmpdist/ && \
-	  tar -C .tmpdist/ -xf $(distname).tar && \
-	  { test -z "$(extra_distgit)" || cp --parents $(extra_distgit) .tmpdist/$(distname)/ ; } && \
-	  cd .tmpdist/$(distname)/ && \
-	  ./autogen.sh --help >/dev/null && \
-	  cd ../ && \
-	  tar -f ../$(distname).tar -hu $(distname)/ && \
-	  cd .. && \
+	$(Q) rm -rf .tmpdist/ &&					\
+	  mkdir .tmpdist/ &&						\
+	  tar -C .tmpdist/ -xf $(distname).tar &&			\
+	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
+		  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&	\
+	  cd .tmpdist/$(distname)/ &&					\
+	  ./autogen.sh --help >/dev/null &&				\
+	  cd ../ &&							\
+	  tar -f ../$(distname).tar -hu $(distname)/ &&			\
+	  cd .. &&							\
 	  rm -fr .tmpdist/
 	$(Q) rm -f $(distname).tar.xz && xz $(distname).tar && test -e $(distnamexz)
 	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
-.PHONY: distgit
-extra_distgit = ChangeLog README docs/revisions.lst
+.PHONY: dist
+EXTRA_DIST = ChangeLog README
 docs/revisions.lst:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
 
@@ -119,7 +120,7 @@ docs/revisions.lst:
 # distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
 # distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
 distcheck_uniqdir = distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
-distcheck: distgit
+distcheck: dist
 	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
 	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
 	&& TARBALL=$$(readlink -f "$(distnamexz)") \
