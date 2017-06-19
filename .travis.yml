@@ -15,7 +15,6 @@ env:
     - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild"
     - DIST="ubuntu:yakkety"     INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
-    - DIST="ubuntu:wily"        INTENT="gccbuild"
     - DIST="debian:jessie"      INTENT="gccbuild"
     - DIST="debian:stretch"     INTENT="gccbuild"
     - DIST="ubuntu:zesty"       INTENT="gccbuild"
@@ -24,7 +23,6 @@ env:
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
-    - env: DIST="ubuntu:wily"        INTENT="gccbuild"
     - env: DIST="debian:jessie"      INTENT="gccbuild"
     - env: DIST="debian:stretch"     INTENT="gccbuild"
     - env: DIST="ubuntu:zesty"       INTENT="gccbuild"
