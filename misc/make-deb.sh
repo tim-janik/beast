@@ -212,8 +212,7 @@ find $DEBIAN/../ -name '*.la' -delete
 find $DEBIAN/../ -name '*.py[co]' -delete
 
 # build binary deb
-FASTZIP="-Zgzip -z3"
-fakeroot dpkg-deb $FASTZIP -b $DESTDIR $DESTDIR/..
+fakeroot dpkg-deb -b $DESTDIR $DESTDIR/..
 
 # check the package
 #lintian -i --no-tag-display-limit $DESTDIR/../$NAME''_$VERSION''_$ARCH.deb
