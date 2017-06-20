@@ -124,14 +124,14 @@ BseMidiEvent* bse_midi_alloc_event    (void);
 BseMidiEvent* bse_midi_copy_event     (const BseMidiEvent *src);
 void          bse_midi_free_event     (BseMidiEvent       *event);
 BseMidiEvent* bse_midi_event_note_on  (uint                midi_channel,
-                                       uint64              delta_time,
+                                       Bse::uint64         delta_time,
                                        float               frequency,
                                        float               velocity);
 BseMidiEvent* bse_midi_event_note_off (uint                midi_channel,
-                                       uint64              delta_time,
+                                       Bse::uint64         delta_time,
                                        gfloat              frequency);
 BseMidiEvent* bse_midi_event_signal   (uint                midi_channel,
-                                       uint64              delta_time,
+                                       Bse::uint64         delta_time,
                                        Bse::MidiSignal   signal_type,
                                        float               value);
 double        bse_midi_signal_default (Bse::MidiSignal signal);

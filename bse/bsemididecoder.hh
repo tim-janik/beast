@@ -26,14 +26,14 @@ struct BseMidiDecoder {
   /*< private >*/
   uint                 state_changed : 1;
   BseMidiDecoderState  state;
-  uint32               delta_time;     /* valid after BSE_MIDI_DECODER_DELTA_TIME_LOW */
+  Bse::uint32          delta_time;     /* valid after BSE_MIDI_DECODER_DELTA_TIME_LOW */
   BseMidiEventType     event_type;     /* event after BSE_MIDI_DECODER_META_EVENT */
   BseMidiEventType     running_mode;
   uint                 zchannel;       /* current channel prefix (offset=-1) */
-  uint32               left_bytes;     /* data to be read (BSE_MIDI_DECODER_DATA) */
+  Bse::uint32          left_bytes;     /* data to be read (BSE_MIDI_DECODER_DATA) */
   /* data accu */
   uint                 n_bytes;
-  uint8               *bytes;
+  Bse::uint8          *bytes;
 };
 
 
@@ -44,11 +44,11 @@ BseMidiDecoder* bse_midi_decoder_new                      (gboolean             
 void            bse_midi_decoder_destroy                  (BseMidiDecoder       *self);
 void            bse_midi_decoder_push_data                (BseMidiDecoder       *self,
                                                            uint                  n_bytes,
-                                                           uint8                *bytes,
-                                                           uint64                usec_systime);
+                                                           Bse::uint8           *bytes,
+                                                           Bse::uint64           usec_systime);
 void            bse_midi_decoder_push_smf_data            (BseMidiDecoder       *self,
                                                            uint                  n_bytes,
-                                                           uint8                *bytes);
+                                                           Bse::uint8           *bytes);
 BseMidiEvent*   bse_midi_decoder_pop_event                (BseMidiDecoder       *self);
 SfiRing*        bse_midi_decoder_pop_event_list           (BseMidiDecoder       *self);
 

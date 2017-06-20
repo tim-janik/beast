@@ -10,7 +10,7 @@
 typedef gboolean (BseCategoryCheck) (const Bse::Category *category, void *data);
 
 /* --- prototypes --- */
-void             bse_categories_register              (const std::string &category, const char *i18n_category, GType type, const uint8 *pixstream);
+void             bse_categories_register              (const std::string &category, const char *i18n_category, GType type, const Bse::uint8 *pixstream);
 Bse::CategorySeq bse_categories_match                 (const std::string &pattern, GType base_type, BseCategoryCheck check, void *data);
 Bse::CategorySeq bse_categories_match_typed           (const std::string &pattern, GType base_type);
 Bse::CategorySeq bse_categories_from_type             (GType type);
