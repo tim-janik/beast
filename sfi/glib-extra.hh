@@ -360,6 +360,11 @@ void        installpath_override (const std::string &topdir);
 /// Provide a string containing the BSE library version number.
 std::string version ();
 
+// == Translate i18n strings ==
+const char* bse_gettext_domain ();
+const char* (_)                (const char        *string);
+std::string (_)                (const std::string &string);
+
 } // Bse
 
 #endif /* __SFI_GLIB_EXTRA_H__ */
