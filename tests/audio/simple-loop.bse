@@ -5,13 +5,13 @@
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2015-09-25 07:15:50")
   (creation-time "2002-02-06 14:05:19")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple-Loop"
   (auto_activate 1)
   (modification-time "2015-09-25 07:15:50")
   (creation-time "2002-02-06 14:05:24")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Tim Janik")
   (container-child "BsePcmOutput::PcmOutput"
     (pos-y -0.55)

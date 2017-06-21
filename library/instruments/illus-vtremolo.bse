@@ -5,7 +5,7 @@
 (container-child "BseCSynth::ILLUS VTremolo"
   (modification-time "2013-03-24 16:48:39")
   (creation-time "2002-04-13 21:18:47")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Tim Janik")
   (blurb "Illustration: Velocity controlled tremolo")
   (container-child "BseStandardOsc::VCO"
