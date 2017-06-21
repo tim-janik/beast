@@ -131,7 +131,7 @@ typedef void          (*BseEngineAccessFunc) (BseModule         *module,
                                               gpointer           data);
 
 // == i18n Helpers ==
-#ifdef BSE_COMPILATION
+#if     defined BSE_COMPILATION or defined BSE_PLUGIN_COMPILATION
 #define _(str)  ::Bse::_ (str)
 #define N_(str) (str)
 #endif /* BSE_COMPILATION */
