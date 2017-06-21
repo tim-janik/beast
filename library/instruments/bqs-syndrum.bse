@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS SynDrum"
   (modification-time "2013-03-24 16:48:38")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (https://creativecommons.org/publicdomain/zero/1.0/)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavSynDrum module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"

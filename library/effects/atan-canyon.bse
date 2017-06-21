@@ -5,7 +5,7 @@
 (container-child "BseCSynth::Atan Canyon"
   (modification-time "2013-03-24 16:48:33")
   (creation-time "2003-10-25 21:02:35")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (https://creativecommons.org/publicdomain/zero/1.0/)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Stefan Westerfeld, Tim Janik")
   (container-child "DavCanyonDelay::DavCanyonDelay-1"
     (filter-freq 4035.5310277491708)

@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS MoogSaw Bass"
   (modification-time "2013-03-24 16:48:37")
   (creation-time "2004-09-20 12:32:34")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (https://creativecommons.org/publicdomain/zero/1.0/)")
+  (license "Public Domain (https://creativecommons.org/publicdomain/zero/1.0/)")
   (author "Stefan Westerfeld, Tim Janik")
   (blurb "Best used in C-2 and C-1.")
   (container-child "BseInstrumentInput::SubKeyboard-1"
