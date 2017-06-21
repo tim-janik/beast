@@ -16,13 +16,6 @@ sfi_init_test (int *argcp, char **argv)
 #define TICK()  TOK()
 #define TACK()  TOK()
 
-#ifndef   _
-#  define _(x)          (x)
-#  define Q_(x)         (x)
-#  define N_(x)         (x)
-#  define U_(x)         (x)
-#endif
-
 /** Macro for test repetitions needed to benchmark in the order of milliseconds.
  * TEST_CALIBRATION() - This macro is used to calculate the number of
  * repetitions needed for execution of a test routine, so that the total

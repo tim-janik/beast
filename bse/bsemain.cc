@@ -50,26 +50,6 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
-static bool bindtextdomain_initialized = false;
-
-/// Bind the BSE text domain, so bse_gettext() becomes usable; may be called before initializing BSE.
-void
-bse_bindtextdomain()
-{
-  assert_return (bindtextdomain_initialized == false);
-  bindtextdomain (BSE_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
-  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  bindtextdomain_initialized = true;
-}
-
-/// Translate message strings used in the BSE library.
-const gchar*
-bse_gettext (const gchar *text)
-{
-  assert (bindtextdomain_initialized == true);
-  return dgettext (BSE_GETTEXT_DOMAIN, text);
-}
-
 static gboolean single_thread_registration_done = FALSE;
 
 static void
@@ -202,9 +182,6 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
   assert (_bse_initialized() == false);
   assert (bse_main_context == NULL);
 
-  // ensure textdomain for error messages
-  if (!bindtextdomain_initialized)
-    bse_bindtextdomain();
   // setup GLib's prgname for error messages
   if (argc && argv && *argc && !g_get_prgname ())
     g_set_prgname (*argv);

@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bcore.hh"
 #include <string.h>
+#include <libintl.h>
 
 void
 g_object_disconnect_any (gpointer object,
@@ -1075,6 +1076,37 @@ std::string
 version ()
 {
   return PACKAGE_VERSION;
+}
+
+static bool
+initialize_textdomain()
+{
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
+  return true;
+}
+
+/// The gettext domain used by libbse.
+const char*
+bse_gettext_domain ()
+{
+  static BSE_UNUSED bool init = initialize_textdomain();
+  // Atm, Beast and libbse share a gettext domain.
+  return BST_GETTEXT_DOMAIN;
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+const char*
+_ (const char *string)
+{
+  return dgettext (bse_gettext_domain(), string);
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+std::string
+_ (const std::string &string)
+{
+  return _ (string.c_str());
 }
 
 } // Bse

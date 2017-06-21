@@ -3,7 +3,6 @@
 #define __BSE_MAIN_H__
 #include        <bse/bsetype.hh>
 // == BSE Initialization ==
-void bse_bindtextdomain ();
 void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
 bool _bse_initialized	();
 void bse_init_inprocess	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());

@@ -12,7 +12,7 @@ bst_project_ctrl_play (BstProjectCtrl *self)
 {
   if (self && self->project)
     {
-      gchar *starting;
+      const char *starting;
       Bse::Error error;
 
       if (self->project.is_playing())
