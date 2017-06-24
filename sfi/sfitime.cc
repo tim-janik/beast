@@ -35,7 +35,7 @@ _sfi_init_time (void)
   time_t t;
   gint error;
 
-  assert (initialized++ == FALSE);
+  assert_return (initialized++ == FALSE);
 
   tzset ();
   error = gettimeofday (&tv, NULL);

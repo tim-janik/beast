@@ -19,7 +19,7 @@ Factory::Factory()
 Factory::~Factory()
 {
   list<Factory *>::iterator fi = find (factories->begin(), factories->end(), this);
-  assert (fi != factories->end());
+  assert_return (fi != factories->end());
   factories->erase (fi);
 }
 

@@ -991,7 +991,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
 	  sfi_seq_unref (seq);
 	}
       else
-	assert (rvalue == NULL);
+	assert_return (rvalue == NULL);
     }
 
   /* queue emitted signals */
