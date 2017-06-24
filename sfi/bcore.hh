@@ -2,13 +2,7 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
-#ifdef  BSE_CONVENIENCE
-#define RAPICORN_CONVENIENCE    BSE_CONVENIENCE
-#endif
 #include <rapicorn-core.hh>
-#ifdef  RAPICORN_CONVENIENCE
-#undef  fatal                           // avoid easy clashes
-#endif
 #include <sfi/glib-extra.hh>
 
 namespace Bse {
@@ -141,6 +135,22 @@ info (const char *format, const Args &...args)
 {
   Internal::diagnostic ('I', string_format (format, args...));
 }
+
+// == Assertions ==
+/// Return from the current function if @a cond is unmet and issue an assertion warning.
+#define BSE_ASSERT_RETURN(cond, ...)            AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
+/// Return from the current function and issue an assertion warning.
+#define BSE_ASSERT_RETURN_UNREACHED(...)        AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+#ifdef BSE_CONVENIENCE
+/// Return from the current function if @a cond is unmet and issue an assertion warning.
+#define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)
+/// Return from the current function and issue an assertion warning.
+#define assert_return_unreached(...)    BSE_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+/// Hint to the compiler to optimize for @a cond == TRUE.
+#define ISLIKELY(cond)  BSE_ISLIKELY (cond)
+/// Hint to the compiler to optimize for @a cond == FALSE.
+#define UNLIKELY(cond)  BSE_UNLIKELY (cond)
+#endif // BSE_CONVENIENCE
 
 } // Bse
 
