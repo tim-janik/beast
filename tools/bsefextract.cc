@@ -84,7 +84,7 @@ class AudioSignal
   {
     if (m_length < m_n_channels)
       {
-        assert (m_length == 0);
+        assert_return (m_length == 0, false);
         return true;
       }
     return false;
@@ -330,7 +330,7 @@ struct SpectrumFeature : public Feature
   build_frequency_vector (double *samples)
   {
     const size_t size = window.size();
-    assert (size > 0);
+    assert_return (size > 0, vector<double>());
 
     vector<double> fvector;
     double in[size], c[size + 2], *im;

@@ -367,7 +367,7 @@ public:
           key_string += 'a' + digit - 10 - 26;
         key_uint /= 62;
       }
-    assert (key_uint == 0);
+    assert_return (key_uint == 0, "");
 
     return key_string;
   }
@@ -2239,8 +2239,8 @@ public:
 	chunk_data.iterators.push_back (it);
       }
 
-    assert (chunk_data.sizes.size() > 0);
-    assert (chunk_data.sizes.size() == chunk_data.errors.size());
+    assert_return (chunk_data.sizes.size() > 0);
+    assert_return (chunk_data.sizes.size() == chunk_data.errors.size());
 
     ChunkSet chunk_set;
     init_empty_set (chunk_data, chunk_set);
