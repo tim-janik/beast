@@ -506,10 +506,7 @@ resolve_cycle (EngineCycle *cycle,
 {
   if (node != cycle->last)
     return FALSE;
-  if (!cycle->seen_deferred_node)
-    {
-      g_error ("cycle without delay module: (%p)", cycle);
-    }
+  assert_return (cycle->seen_deferred_node, FALSE); // cycle without delay module
   *cycle_nodes_p = merge_untagged_node_lists_uniq (*cycle_nodes_p, cycle->nodes);
   cycle->nodes = NULL;
   cycle->last = NULL;

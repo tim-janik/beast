@@ -76,7 +76,10 @@ bse_init_intern()
 {
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_inprocess");
+    {
+      Bse::warning ("%s() may only be called once", "bse_init_inprocess");
+      return;
+    }
   assert_return (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   // main loop
@@ -284,7 +287,10 @@ _bse_glue_context_create (const char *client, const std::function<void()> &calle
   AsyncData adata = { client, caller_wakeup };
   // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
-    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+    {
+      Bse::warning ("%s: called without prior %s()", __func__, "Bse::init_async");
+      return NULL;
+    }
   // queue handler to create context
   GSource *source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);

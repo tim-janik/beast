@@ -567,8 +567,11 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_ADD_POLL:
       JOB_DEBUG ("add poll %p(%p,%u)", job->poll.poll_func, job->poll.data, job->poll.n_fds);
       if (job->poll.n_fds + master_n_pollfds > BSE_ENGINE_MAX_POLLFDS)
-	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
-		 job->poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
+	{
+          Bse::warning ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
+                        job->poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
+          return;
+        }
       poll = sfi_new_struct0 (Poll, 1);
       poll->poll_func = job->poll.poll_func;
       poll->data = job->poll.data;

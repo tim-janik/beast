@@ -1438,17 +1438,17 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
     }
 #if 0
   if (tick_stamp > 158760000)
-    g_error ("tick_stamp conversion problem:\n"
-	     "  tick_stamp            = %llu\n"
-	     "  usec_systime          = %llu\n"
-	     "  current-systime       = %llu\n"
-	     "  current-tickstamp     = %llu\n"
-	     "  last-update-systime   = %llu\n"
-	     "  last-update-tickstamp = %llu\n"
-	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
-	     ustamp.system_time, ustamp.tick_stamp,
-	     bse_engine_sample_freq ());
+    Bse::warning ("tick_stamp conversion problem:\n"
+                  "  tick_stamp            = %llu\n"
+                  "  usec_systime          = %llu\n"
+                  "  current-systime       = %llu\n"
+                  "  current-tickstamp     = %llu\n"
+                  "  last-update-systime   = %llu\n"
+                  "  last-update-tickstamp = %llu\n"
+                  "  sample-freq           = %u\n",
+                  tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
+                  ustamp.system_time, ustamp.tick_stamp,
+                  bse_engine_sample_freq ());
 #endif
   return tick_stamp;
 }

@@ -513,7 +513,10 @@ bse_song_create_summation (BseSong *self)
 {
   GType type = g_type_from_name ("BseSummation");
   if (!g_type_is_a (type, BSE_TYPE_SOURCE))
-    g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", __func__, "BseSummation");
+    {
+      Bse::warning ("%s: failed to resolve %s object type, probably missing or broken plugin installation", __func__, "BseSummation");
+      return NULL;
+    }
   BseSource *summation = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
   assert_return (summation != NULL, NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);

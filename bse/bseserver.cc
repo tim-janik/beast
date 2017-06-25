@@ -36,7 +36,7 @@ enum
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
-static void	bse_server_finalize		(GObject	   *object);
+static void	bse_server_singleton_finalize	(GObject	   *object);
 static void	bse_server_set_property		(GObject           *object,
 						 guint              param_id,
 						 const GValue      *value,
@@ -104,7 +104,7 @@ bse_server_class_init (BseServerClass *klass)
 
   gobject_class->set_property = bse_server_set_property;
   gobject_class->get_property = bse_server_get_property;
-  gobject_class->finalize = bse_server_finalize;
+  gobject_class->finalize = bse_server_singleton_finalize;
 
   item_class->set_parent = bse_server_set_parent;
 
@@ -211,9 +211,9 @@ bse_server_init (BseServer *self)
 }
 
 static void
-bse_server_finalize (GObject *object)
+bse_server_singleton_finalize (GObject *object)
 {
-  g_error ("Fatal attempt to destroy singleton BseServer");
+  assert_return_unreached();
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);

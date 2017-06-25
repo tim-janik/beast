@@ -201,8 +201,7 @@ BsePlugin*
 bse_exports__add_node (const BseExportIdentity *identity,
                        BseExportNode           *enode)
 {
-  if (!startup_plugin)
-    g_error ("%s: plugin startup called without plugin", __func__);
+  assert_return (startup_plugin != NULL, NULL);
   if (!enode || enode->next)
     return NULL;
   if (identity->major != BST_MAJOR_VERSION ||
@@ -260,13 +259,16 @@ bse_plugin_use (GTypePlugin *gplugin)
       plugin->gmodule = g_module_open (plugin->fname, GModuleFlags (0)); /* reopen for use non-lazy */
       startup_plugin = NULL;
       if (!plugin->gmodule)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
+        {
+          Bse::warning ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
+          return;
+        }
       const char *cerror = plugin_check_identity (plugin, (GModule*) plugin->gmodule);
-      if (cerror)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror);
-      if (!plugin->chain)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, "empty plugin");
-
+      if (cerror || !plugin->chain)
+        {
+          Bse::warning ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror ? cerror : "empty plugin");
+          return;
+        }
       bse_plugin_reinit_types (plugin);
     }
   else
@@ -393,7 +395,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
         break;
       }
   if (!node || node->type != type)
-    g_error ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
+    Bse::warning ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
 }
 
 static void

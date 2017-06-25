@@ -548,7 +548,7 @@ Sequencer::Sequencer() :
   poll_pool_ = new PollPool;
 
   if (event_fd_.open() != 0)
-    g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
+    Bse::warning ("failed to create sequencer wake-up pipe: %s", strerror (errno));
 }
 
 void
