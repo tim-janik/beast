@@ -7,6 +7,8 @@ using namespace Sfidl;
 
 int main (int argc, char **argv)
 {
+  Bse::assertion_failed_hook ([&] () { Bse::breakpoint(); });
+
   Options options;
   Parser parser;
 
