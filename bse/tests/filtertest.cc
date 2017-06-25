@@ -267,6 +267,7 @@ print_filter_on_abort (const BseIIRFilterRequest &req, const BseIIRFilterDesign 
   noexit_dump_iir_filter_gnuplot (&req, &fdes, "tmpfilter",
                                   -fabs(req.passband_ripple_db), req.passband_edge, req.passband_edge2,
                                   req.stopband_db != 0 ? req.stopband_db : NAN, req.stopband_edge, NAN);
+  Bse::breakpoint();
 }
 
 static void
