@@ -199,7 +199,7 @@ clone_node_intern (Node        *source,
     }
   if (source->xdef_node)
     {
-      assert (!inherit);
+      assert_return (!inherit, NULL);
       node->xdef_node = clone_list_find (clist, source->xdef_node);
       node->xdef_depth = source->xdef_depth;
     }
@@ -228,7 +228,7 @@ clone_node_intern (Node        *source,
       else
         node->children = last = g_slist_new (child);
     }
-  assert (source->call_stack == NULL);
+  assert_return (source->call_stack == NULL, NULL);
   return node;
 }
 
@@ -680,7 +680,7 @@ node_define (Domain       *domain,
     {
       node = clone_node (source, domain->domain, node_name, inherit);
       node->xdef_node = xdef_node;
-      assert (xdef_node && !xdef_node->xdef_node);
+      assert_return (xdef_node && !xdef_node->xdef_node, NULL);
       node->xdef_depth = node->xdef_node->depth;
     }
   else for (i = 0; attribute_names[i]; i++)     /* node inheritance */
@@ -1011,7 +1011,7 @@ radget_widget_hierarchy_changed (GtkWidget *widget,
   if (!hgroup && !vgroup && !bgroup)
     return;
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  assert (GTK_WIDGET_TOPLEVEL (toplevel));
+  assert_return (GTK_WIDGET_TOPLEVEL (toplevel));
   if (hgroup)
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, hgroup, 'h');
@@ -1850,7 +1850,7 @@ void
 gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
-  assert (quark_radget_type == 0);
+  assert_return (quark_radget_type == 0);
   quark_id = g_quark_from_static_string ("id");
   quark_name = g_quark_from_static_string ("name");
   quark_radget_type = g_quark_from_static_string ("GxkRadget-type");

@@ -641,7 +641,7 @@ gxk_color_dots_interpolate (GxkColorDots   *cdots,
       else
         offset = i;
     }
-  assert (offset == 0 || value >= cdots->colors[offset].value);
+  assert_return (offset == 0 || value >= cdots->colors[offset].value, 0);
   if (value >= cdots->colors[offset].value && offset + 1 < cdots->n_colors)
     {   /* linear interpolation */
       guint c1 = cdots->colors[offset].rgb;

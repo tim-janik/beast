@@ -965,7 +965,7 @@ gxk_action_group_dispose (GxkActionGroup *self)
 void
 gxk_init_actions (void)
 {
-  assert (action_class_ht == NULL);
+  assert_return (action_class_ht == NULL);
   action_class_ht = g_hash_table_new (action_class_hash, action_class_equals);
   quark_action_links = g_quark_from_static_string ("gxk-action-links");
   quark_action_factories = g_quark_from_static_string ("GxkActionFactory-list");
