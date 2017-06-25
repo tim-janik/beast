@@ -195,9 +195,9 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
       g_string_free (gstring, TRUE);
     }
   else
-    g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
-	       pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-	       g_type_name (G_VALUE_TYPE (&svalue)));
+    Bse::warning ("unable to transform \"%s\" of type `%s' to `%s'",
+                  pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                  g_type_name (G_VALUE_TYPE (&svalue)));
   g_value_unset (&svalue);
   g_param_spec_unref (spspec);
 }
@@ -598,9 +598,9 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 	}
       else
 	{
-	  g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
-		     pspec->name, g_type_name (G_VALUE_TYPE (&pvalue)),
-		     g_type_name (G_VALUE_TYPE (value)));
+	  Bse::warning ("unable to transform \"%s\" of type `%s' to `%s'",
+                        pspec->name, g_type_name (G_VALUE_TYPE (&pvalue)),
+                        g_type_name (G_VALUE_TYPE (value)));
 	  return G_TOKEN_ERROR;
 	}
       g_value_unset (&pvalue);
@@ -766,7 +766,7 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
           if (saved_line != scanner->line || saved_position != scanner->position ||
               scanner->next_token != G_TOKEN_IDENTIFIER)
             {
-              g_warning ("((SfiStoreParser)%p) advanced scanner for unmatched token", try_statement);
+              Bse::warning ("((SfiStoreParser)%p) advanced scanner for unmatched token", try_statement);
               return G_TOKEN_ERROR;
             }
           expected_token = sfi_rstore_warn_skip (rstore,
