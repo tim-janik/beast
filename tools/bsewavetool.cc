@@ -19,6 +19,13 @@
 #include <map>
 #include <algorithm>
 
+template<class ...Args> void
+app_error (const char *format, const Args &...args)
+{
+  Bse::printerr ("%s: error: %s\n", Bse::program_alias(), Bse::string_format (format, args...));
+  exit (-1);
+}
+
 /// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
 using namespace Bse;
@@ -70,7 +77,7 @@ main (int   argc,
   if (command_name == "")
     {
       if (orig_argc > 1)
-        sfi_error ("missing command\n");
+        app_error ("missing command");
       else
         wavetool_print_blurb (true);
       exit (1);
@@ -84,12 +91,12 @@ main (int   argc,
       }
   if (!command)
     {
-      sfi_error ("unknown command: %s\n", command_name.c_str());
+      app_error ("unknown command: %s", command_name.c_str());
       exit (1);
     }
   if (input_file == "")
     {
-      sfi_error ("missing input file name\n");
+      app_error ("missing input file name");
       exit (1);
     }
 
@@ -106,12 +113,12 @@ main (int   argc,
   argc = e;
   if (missing)
     {
-      sfi_error ("missing %u arguments to command \"%s\"\n", missing, command->name.c_str());
+      app_error ("missing %u arguments to command \"%s\"", missing, command->name.c_str());
       exit (1);
     }
   if (argc > 1)
     {
-      sfi_error ("extra argument given to command \"%s\": %s\n", command->name.c_str(), argv[1]);
+      app_error ("extra argument given to command \"%s\": %s", command->name.c_str(), argv[1]);
       exit (1);
     }
 
@@ -166,7 +173,7 @@ main (int   argc,
     error = Bse::Error::IO;       /* unknown */
   if (error != 0)
     {
-      sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
+      app_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
       exit (1);
     }
 
@@ -182,7 +189,7 @@ main (int   argc,
       error = wave->store (output_file);
       if (error != 0)
         {
-          sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
+          app_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
           exit (1);
         }
     }
@@ -502,7 +509,7 @@ parse_chunk_selection (char          **argv,
         }
       else
         {
-          sfi_error ("invalid bsewavetool chunk key: %s", str);
+          app_error ("invalid bsewavetool chunk key: %s", str);
           exit (1);
         }
     }
@@ -528,7 +535,7 @@ verify_chunk_selection (const vector<float> &freq_list,
           if (skip_errors)
             sfi_warning ("%s", msg.c_str());
           else
-            sfi_error ("%s", msg.c_str());
+            app_error ("%s", msg.c_str());
         }
     }
 }
@@ -675,7 +682,7 @@ public:
     guint n_channels = g_ascii_strtoull (channel_str.c_str(), NULL, 10);
     if (n_channels < 1 || n_channels > 2)
       {
-        sfi_error ("invalid number of channels: %s (%d)\n", channel_str.c_str(), n_channels);
+        app_error ("invalid number of channels: %s (%d)", channel_str.c_str(), n_channels);
         exit (1);
       }
     /* figure name */
@@ -697,7 +704,7 @@ public:
   {
     if (!force_creation && Rapicorn::Path::check (output_file, "e"))
       {
-        sfi_error ("not creating \"%s\": %s\n", output_file, g_strerror (EEXIST));
+        app_error ("not creating \"%s\": %s", output_file, g_strerror (EEXIST));
         exit (1);
       }
     return true;
@@ -770,7 +777,7 @@ public:
         Bse::Error error = gsl_vorbis_encoder_setup_stream (enc, gsl_vorbis_make_serialno());
         if (error != 0)
           {
-            sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
+            app_error ("chunk % 7.2f/%.0f: failed to encode: %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        bse_error_blurb (error));
             exit (1);
@@ -779,7 +786,7 @@ public:
         gint tmpfd = mkstemp (temp_file);
         if (tmpfd < 0)
           {
-            sfi_error ("chunk % 7.2f/%.0f: failed to open tmp file \"%s\": %s",
+            app_error ("chunk % 7.2f/%.0f: failed to open tmp file \"%s\": %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        temp_file, g_strerror (errno));
             exit (1);
@@ -806,7 +813,7 @@ public:
                     while (j < 0 && errno == EINTR);
                     if (j < 0)
                       {
-                        sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+                        app_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
                                    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                                    g_strerror (errno));
                         exit (1);
@@ -833,7 +840,7 @@ public:
                 while (j < 0 && errno == EINTR);
                 if (j < 0)
                   {
-                    sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+                    app_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
                                gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                                g_strerror (errno));
                     exit (1);
@@ -848,7 +855,7 @@ public:
                   n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
         if (close (tmpfd) < 0)
           {
-            sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+            app_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        g_strerror (errno));
             exit (1);
@@ -856,7 +863,7 @@ public:
         error = chunk->set_dhandle_from_file (temp_file, gsl_data_handle_osc_freq (dhandle), dhandle->setup.xinfos);
         if (error != 0)
           {
-            sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
+            app_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        temp_file, bse_error_blurb (error));
             exit (1);
@@ -1130,13 +1137,13 @@ public:
           /* check osc_freq */
           if (osc_freq <= 0)
             {
-              sfi_error ("none or invalid oscillator frequency given for wave chunk \"%s\": %.2f",
+              app_error ("none or invalid oscillator frequency given for wave chunk \"%s\": %.2f",
                          ochunk.sample_file, osc_freq);
               exit (1);
             }
           if (wave->lookup (osc_freq))
             {
-              sfi_error ("wave \"%s\" already contains a chunk with oscillator frequency %.2f",
+              app_error ("wave \"%s\" already contains a chunk with oscillator frequency %.2f",
                          wave->name.c_str(), osc_freq);
               exit (1);
             }
@@ -1160,7 +1167,7 @@ public:
               if (skip_errors)
                 sfi_warning ("%s", msg.c_str());
               else
-                sfi_error ("%s", msg.c_str());
+                app_error ("%s", msg.c_str());
             }
           g_strfreev (xinfos);
         }
@@ -1346,7 +1353,7 @@ public:
                   }
                 else
                   {
-                    sfi_error ("invalid bsewavetool chunk key: %s", key_str);
+                    app_error ("invalid bsewavetool chunk key: %s", key_str);
                     exit (1);
                   }
               }
@@ -1356,7 +1363,7 @@ public:
             const char *equal = strchr (arg, '=');
             if (!equal)
               {
-                sfi_error ("missing \"=\" in XInfo assignment: %s\n", arg);
+                app_error ("missing \"=\" in XInfo assignment: %s", arg);
                 exit (1);
               }
             char *key = g_strndup (arg, equal - arg);
@@ -1364,13 +1371,13 @@ public:
             g_strcanon (key, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
             if (!key[0] || strncmp (key, arg, equal - arg) != 0)
               {
-                sfi_error ("invalid key specified in XInfo assignment: %s\n", arg);
+                app_error ("invalid key specified in XInfo assignment: %s", arg);
                 exit (1);
               }
             switch (location)
               {
               case NONE:
-                sfi_error ("missing location option for XInfo assignment: %s\n", arg);
+                app_error ("missing location option for XInfo assignment: %s", arg);
                 exit (1);
               case WAVE:
                 wave->set_xinfo (key, value);
@@ -1380,7 +1387,7 @@ public:
                   wave->set_chunk_xinfo (osc_freq, key, value);
                 else
                   {
-                    sfi_error ("failed to find wave chunk with oscillator frequency: %.2f", osc_freq);
+                    app_error ("failed to find wave chunk with oscillator frequency: %.2f", osc_freq);
                     if (!skip_errors)
                       exit (1);
                   }
@@ -1512,7 +1519,7 @@ public:
               m_output_format = FULL;
             else
               {
-                sfi_error ("invalid argument to --pretty in info command: %s", str);
+                app_error ("invalid argument to --pretty in info command: %s", str);
                 exit (1);
               }
           }
@@ -1628,7 +1635,7 @@ public:
               script_output_xstr (wave->wave_xinfos, "play-type");
             else
               {
-                sfi_error ("info command on the wave: invalid field for --script format: %s", fi->c_str());
+                app_error ("info command on the wave: invalid field for --script format: %s", fi->c_str());
                 exit (1);
               }
           }
@@ -1704,7 +1711,7 @@ public:
                     printout ("%.3f", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
                   else
                     {
-                      sfi_error ("info command: invalid field for --script format: %s", fi->c_str());
+                      app_error ("info command: invalid field for --script format: %s", fi->c_str());
                       exit (1);
                     }
                 }
@@ -1884,7 +1891,7 @@ public:
                 reason = "failed to detect silence at tail";
               if (!cresult.head_detected)
                 reason = "failed to detect silence at head";
-              sfi_error ("level clipping failed: %s", reason);
+              app_error ("level clipping failed: %s", reason);
             }
           else
             {
@@ -1895,7 +1902,7 @@ public:
                 {
                   error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
                   if (error != 0)
-                    sfi_error ("level clipping failed: %s", bse_error_blurb (error));
+                    app_error ("level clipping failed: %s", bse_error_blurb (error));
                 }
               g_strfreev (xinfos);
             }
@@ -1981,7 +1988,7 @@ public:
                   GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
                   error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
                   if (error != 0)
-                    sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
+                    app_error ("level normalizing failed: %s", bse_error_blurb (error));
                   gsl_data_handle_unref (shandle);
                 }
             }
@@ -2076,7 +2083,7 @@ public:
 	      gsl_data_handle_ref (dhandle);
 	      Bse::Error error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
 	      if (error != 0)
-		sfi_error ("looping failed: %s", bse_error_blurb (error));
+		app_error ("looping failed: %s", bse_error_blurb (error));
 	      g_strfreev (xinfos);
 	    }
         }
@@ -2541,7 +2548,7 @@ public:
 
 	if (m_cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
 	  {
-	    sfi_error ("chunk % 7.2f/%.0f: IGNORED - can't filter this chunk, cutoff frequency (%f) too high\n",
+	    app_error ("chunk % 7.2f/%.0f: IGNORED - can't filter this chunk, cutoff frequency (%f) too high",
 	    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (dhandle), m_cutoff_freq);
 	  }
 	else
@@ -2554,7 +2561,7 @@ public:
 
 	    if (error != 0)
 	      {
-		sfi_error ("chunk % 7.2f/%.0f: %s",
+		app_error ("chunk % 7.2f/%.0f: %s",
 			   gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
 			   bse_error_blurb (error));
 		exit (1);
@@ -2659,7 +2666,7 @@ public:
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
           if (error != 0)
             {
-              sfi_error ("chunk % 7.2f/%.0f: %s",
+              app_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                          bse_error_blurb (error));
               exit (1);
@@ -2735,7 +2742,7 @@ public:
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
           if (error != 0)
             {
-              sfi_error ("chunk % 7.2f/%.0f: %s",
+              app_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                          bse_error_blurb (error));
               exit (1);
@@ -2850,7 +2857,7 @@ public:
 	    have_export_pattern = true;
 	  else
 	    {
-	      sfi_error ("export filename contains bad formatting expression %%%c", export_filename[i+1]);
+	      app_error ("export filename contains bad formatting expression %%%c", export_filename[i+1]);
 	      exit (1);
 	    }
       }
@@ -2860,7 +2867,7 @@ public:
       {
 	if (!have_export_pattern)
 	  {
-	    sfi_error ("when exporting more than one chunk, the output filename needs to contain %%N %%C or %%F");
+	    app_error ("when exporting more than one chunk, the output filename needs to contain %%N %%C or %%F");
 	    exit (1);
 	  }
       }
@@ -2919,14 +2926,14 @@ public:
 	  if (fd < 0)
 	    {
 	      Bse::Error error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
-	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
+	      app_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 
 	  int xerrno = gsl_data_handle_dump_wav (dhandle, fd, 16, dhandle->setup.n_channels, (guint) dhandle->setup.mix_freq);
 	  if (xerrno)
 	    {
 	      Bse::Error error = bse_error_from_errno (xerrno, Bse::Error::FILE_WRITE_FAILED);
-	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
+	      app_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 	  close (fd);
         }
