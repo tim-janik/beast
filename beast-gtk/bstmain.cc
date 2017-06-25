@@ -378,7 +378,7 @@ main_open_files (int filesc, char **filesv)
               Bse::Error error = wrepo.load_file (filesv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
               if (error != 0)
-                sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
+                Bse::warning (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
@@ -394,7 +394,7 @@ main_open_files (int filesc, char **filesv)
               else
                 {
 		  bse_server.destroy_project (project);
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
+                  Bse::warning (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
                 }
 	    }
           continue;
@@ -431,13 +431,13 @@ main_open_files (int filesc, char **filesv)
           else
             bse_server.destroy_project (project);
           if (error != 0)
-            sfi_error (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
+            Bse::warning (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
       else
         {
           Bse::Error error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
           if (error != 0)
-            sfi_error (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
+            Bse::warning (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
     }
   return app;

@@ -17,7 +17,7 @@ bst_sound_font_preset_view_class_init (BstSoundFontPresetViewClass *klass)
 static void
 bst_sound_font_preset_view_init (BstSoundFontPresetView *self)
 {
-  BstItemView *iview = BST_ITEM_VIEW (self);
+  // BstItemView *iview = BST_ITEM_VIEW (self);
 }
 
 GtkWidget*
