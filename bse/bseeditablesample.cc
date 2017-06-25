@@ -45,7 +45,7 @@ BSE_BUILTIN_TYPE (BseEditableSample)
     (GInstanceInitFunc) bse_editable_sample_init,
   };
 
-  assert (BSE_EDITABLE_SAMPLE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_EDITABLE_SAMPLE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseEditableSample",

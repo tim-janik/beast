@@ -492,7 +492,7 @@ BSE_BUILTIN_TYPE (BseDevice)
     (GInstanceInitFunc) bse_device_init,
   };
 
-  assert (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseDevice",

@@ -725,7 +725,7 @@ uncross_link_R (BseContainerCrossLinks *clinks,
       unode.next = uncross_stack;
       uncross_stack = &unode;
       unode.uncross (unode.owner, unode.link); /* may recurse */
-      assert (uncross_stack == &unode); /* paranoid */
+      assert_return (uncross_stack == &unode); /* paranoid */
       uncross_stack = unode.next;
     }
 }

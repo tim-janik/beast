@@ -302,7 +302,7 @@ vorbis_encoder_write_pcm_1k (GslVorbisEncoder *self,
   /* the vorbis encoding engine has a bug that produces junk at
    * certain block sizes beyond 1024
    */
-  assert (n_values <= 1024);
+  assert_return (n_values <= 1024);
 
   /* people passing in non-channel-aligned data get what they deserve */
   n_values /= self->n_channels;

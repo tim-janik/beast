@@ -77,7 +77,7 @@ bse_init_intern()
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_inprocess");
-  assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+  assert_return (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   // main loop
   bse_main_context = g_main_context_new ();
@@ -179,8 +179,8 @@ _bse_initialized ()
 static void
 initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (_bse_initialized() == false);
-  assert (bse_main_context == NULL);
+  assert_return (_bse_initialized() == false);
+  assert_return (bse_main_context == NULL);
 
   // setup GLib's prgname for error messages
   if (argc && argv && *argc && !g_get_prgname ())
@@ -254,7 +254,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
-  assert (msg == 'B');
+  assert_return (msg == 'B');
   delete init_queue;
 }
 
@@ -309,7 +309,7 @@ bse_main_wakeup ()
 void
 bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  assert (initialized_for_unit_testing < 0);
+  assert_return (initialized_for_unit_testing < 0);
   initialized_for_unit_testing = 1;
   bse_init_inprocess (argc, argv, NULL, args);
 }

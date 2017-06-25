@@ -110,9 +110,9 @@ bse_pcm_output_class_init (BsePcmOutputClass *klass)
 					     1, SFI_PARAM_GUI ":dial"));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
-  assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_LEFT);
+  assert_return (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_LEFT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right channel Input"));
-  assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
+  assert_return (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
 }
 
 static void

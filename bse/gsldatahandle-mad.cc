@@ -464,7 +464,7 @@ dh_mad_read (GslDataHandle *dhandle,
 
       /* suckage, need to do lengthy seek in file */
       tmp = dh_mad_coarse_seek (dhandle, voffset);
-      assert (tmp <= voffset);
+      assert_return (tmp <= voffset, 0);
     }
 
   while (pos >= handle->pcm_pos + handle->pcm_length)

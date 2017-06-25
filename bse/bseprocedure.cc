@@ -670,7 +670,7 @@ procedure_class_unref (BseProcedureClass *proc)
   if (!proc->cache_stamp)
     {
       // printerr ("cache-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
-      assert (proc->cache_next == NULL);
+      assert_return (proc->cache_next == NULL);
       proc->cache_stamp = 2;        /* 'recent' stamp */
       proc->cache_next = proc_cache;
       proc_cache = proc;

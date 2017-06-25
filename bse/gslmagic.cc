@@ -611,7 +611,7 @@ magic_read_data (BFile *bfile, GslRealMagic *magic, MagicData *data)
 	    data->v_int32 = (signed) uint8;
 	}
       else
-	assert_unreached ();
+	assert_return_unreached (FALSE);
     }
 
   return TRUE;

@@ -722,7 +722,7 @@ reverse_handle_read (GslDataHandle *dhandle,
   int64  left, new_offset = dhandle->setup.n_values - (voffset + n_values);
   gfloat *t, *p = values;
 
-  assert (new_offset >= 0);
+  assert_return (new_offset >= 0, 0);
 
   left = n_values;
   do
@@ -1598,7 +1598,7 @@ wave_handle_read (GslDataHandle *dhandle,
       break;
     default:
       l = -1;
-      assert_unreached ();
+      assert_return_unreached (l);
     }
 
   return l;

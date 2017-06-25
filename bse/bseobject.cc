@@ -14,15 +14,15 @@ namespace Bse {
 ObjectImpl::ObjectImpl (BseObject *bobj) :
   gobject_ (bobj)
 {
-  assert (gobject_);
-  assert (gobject_->cxxobject_ == NULL);
+  assert_return (gobject_);
+  assert_return (gobject_->cxxobject_ == NULL);
   g_object_ref (gobject_);
   gobject_->cxxobject_ = this;
 }
 
 ObjectImpl::~ObjectImpl ()
 {
-  assert (gobject_->cxxobject_ == this);
+  assert_return (gobject_->cxxobject_ == this);
   gobject_->cxxobject_ = NULL;
   g_object_unref (gobject_);
   // ObjectImpl keeps BseObject alive until it is destroyed
@@ -164,7 +164,7 @@ static __thread uint in_bse_object_new = 0;
 static void
 bse_object_init (BseObject *object)
 {
-  assert (in_bse_object_new);
+  assert_return (in_bse_object_new);
   object->cxxobject_ = NULL;
   object->cxxobjref_ = NULL;
   object->flags = 0;
@@ -458,7 +458,7 @@ bse_object_lock (gpointer _object)
   assert_return (BSE_IS_OBJECT (object));
   assert_return (gobject->ref_count > 0);
 
-  assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
+  assert_return (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
 
   if (!object->lock_count)
     {
@@ -932,8 +932,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   in_bse_object_new++;
   BseObject *object = (BseObject*) g_object_new_valist (object_type, first_property_name, var_args);
   in_bse_object_new--;
-  assert (object->cxxobject_ == NULL);
-  assert (object->cxxobjref_ == NULL);
+  assert_return (object->cxxobject_ == NULL, NULL);
+  assert_return (object->cxxobjref_ == NULL, NULL);
   Bse::ObjectImpl *cxxo;
   if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
     cxxo = new Bse::ServerImpl (object);
@@ -982,11 +982,11 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))
     cxxo = new Bse::ObjectImpl (object);
   else
-    assert (!"reached");
-  assert (object->cxxobject_ == cxxo);
-  assert (object->cxxobjref_ == NULL);
+    assert_return_unreached (NULL);
+  assert_return (object->cxxobject_ == cxxo, NULL);
+  assert_return (object->cxxobjref_ == NULL, NULL);
   object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
-  assert (cxxo == *object);
-  assert (object == *cxxo);
+  assert_return (cxxo == *object, NULL);
+  assert_return (object == *cxxo, NULL);
   return object;
 }

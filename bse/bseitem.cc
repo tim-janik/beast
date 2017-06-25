@@ -65,7 +65,7 @@ BSE_BUILTIN_TYPE (BseItem)
     (GInstanceInitFunc) bse_item_init,
   };
 
-  assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseItem",
@@ -1336,13 +1336,13 @@ ItemImpl::push_property_undo (const String &property_name)
   assert_return (property_name.empty() == false);
   Any saved_value = __aida_get__ (property_name);
   if (saved_value.empty())
-    critical ("%s: invalid property name: %s", __func__, property_name);
+    Bse::warning ("%s: invalid property name: %s", __func__, property_name);
   else
     {
       auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> Error {
         const bool success = self.__aida_set__ (property_name, saved_value);
         if (!success)
-          critical ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
+          Bse::warning ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
         return Error::NONE;
       };
       push_undo (__func__, *this, lambda);

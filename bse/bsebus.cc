@@ -60,16 +60,16 @@ bse_bus_dispose (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (bus_parent_class)->dispose (object);
 
-  assert (self->bus_outputs == NULL);
+  assert_return (self->bus_outputs == NULL);
 }
 
 static void
 bse_bus_finalize (GObject *object)
 {
   BseBus *self = BSE_BUS (object);
-  assert (self->inputs == NULL);
-  assert (self->bus_outputs == NULL);
-  assert (self->summation == NULL);
+  assert_return (self->inputs == NULL);
+  assert_return (self->bus_outputs == NULL);
+  assert_return (self->summation == NULL);
   /* chain parent class' handler */
   G_OBJECT_CLASS (bus_parent_class)->finalize (object);
 }
@@ -561,7 +561,7 @@ bse_bus_get_stack (BseBus        *self,
   BseProject *project = bse_item_get_project (item);
   if (!BSE_SUB_SYNTH (self)->snet && project && BSE_IS_SONG (item->parent))
     {
-      assert (self->n_effects == 0);
+      assert_return (self->n_effects == 0, FALSE);
       bse_bus_ensure_summation (self);
       BseSNet *snet = (BseSNet*) bse_project_create_intern_csynth (project, "%BusEffectStack");
       self->vin = (BseSource*) bse_container_new_child_bname (BSE_CONTAINER (snet), BSE_TYPE_SUB_IPORT, "%VInput", NULL);
@@ -899,13 +899,13 @@ bse_bus_class_init (BseBusClass *klass)
                                               FALSE, SFI_PARAM_STORAGE ":skip-default"));
 
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
-  assert (channel_id == BSE_BUS_ICHANNEL_LEFT);
+  assert_return (channel_id == BSE_BUS_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right channel input"));
-  assert (channel_id == BSE_BUS_ICHANNEL_RIGHT);
+  assert_return (channel_id == BSE_BUS_ICHANNEL_RIGHT);
   channel_id = bse_source_class_add_ochannel (source_class, "left-audio-out", _("Left Audio Out"), _("Left channel output"));
-  assert (channel_id == BSE_BUS_OCHANNEL_LEFT);
+  assert_return (channel_id == BSE_BUS_OCHANNEL_LEFT);
   channel_id = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right channel output"));
-  assert (channel_id == BSE_BUS_OCHANNEL_RIGHT);
+  assert_return (channel_id == BSE_BUS_OCHANNEL_RIGHT);
 }
 
 BSE_BUILTIN_TYPE (BseBus)

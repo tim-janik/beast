@@ -51,7 +51,7 @@ public:
   fill_pfds (guint    n_pfds,
              GPollFD *pfds)
   {
-    assert (n_pfds == watch_pfds.size());
+    assert_return (n_pfds == watch_pfds.size());
     copy (watch_pfds.begin(), watch_pfds.end(), pfds);
     for (guint i = 0; i < watches.size(); i++)
       watches[i].notify_pfds = pfds + watches[i].index;
@@ -122,13 +122,13 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  RAPICORN_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  static_assert (sizeof (GPollFD) == sizeof (struct pollfd), "");
+  static_assert (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd), "");
+  static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd), "");
+  static_assert (offsetof (GPollFD, events) == offsetof (struct pollfd, events), "");
+  static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events), "");
+  static_assert (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents), "");
+  static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents), "");
 };
 
 void
@@ -217,7 +217,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
       GPollFD *watch_pfds;
       while (poll_pool_->fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
         {
-          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          assert_return (!current_watch_needs_remove1 && !current_watch_needs_remove2, false);
           BSE_SEQUENCER_UNLOCK();
           bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
           BSE_SEQUENCER_LOCK();
@@ -241,7 +241,7 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   assert_return (BSE_IS_SONG (song));
   assert_return (BSE_SOURCE_PREPARED (song));
   assert_return (song->sequencer_start_request_SL == 0);
-  assert (song->sequencer_owns_refcount_SL == false);
+  assert_return (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
 
   // synchornize pcm-writer output with song start
@@ -273,7 +273,7 @@ Sequencer::remove_song (BseSong *song)
   assert_return (BSE_SOURCE_PREPARED (song));
   if (song->sequencer_start_request_SL == 0)
     {
-      assert (song->sequencer_owns_refcount_SL == false);
+      assert_return (song->sequencer_owns_refcount_SL == false);
       return;   // uncontained
     }
   BSE_SEQUENCER_LOCK();
@@ -543,7 +543,7 @@ Sequencer::Sequencer() :
   stamp_ (0), songs_ (NULL)
 {
   stamp_ = Bse::TickStamp::current();
-  assert (stamp_ > 0);
+  assert_return (stamp_ > 0);
 
   poll_pool_ = new PollPool;
 
@@ -563,8 +563,8 @@ Sequencer::reap_thread ()
 void
 Sequencer::_init_threaded ()
 {
-  assert (singleton_ == NULL);
-  assert (sequencer_thread_running == false);
+  assert_return (singleton_ == NULL);
+  assert_return (sequencer_thread_running == false);
   singleton_ = new Sequencer();
   if (std::atexit (Sequencer::reap_thread) != 0)
     fatal ("BSE: failed to install sequencer thread reaper");

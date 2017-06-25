@@ -91,7 +91,7 @@ BSE_BUILTIN_TYPE (BseStorage)
     (GInstanceInitFunc) bse_storage_init,
   };
 
-  assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
@@ -1289,9 +1289,9 @@ storage_store_property_value (BseStorage *self, const std::string &property_name
         target = einfo.value_to_string (any.as_int64());
         break;
       }
-    default:                    assert (!"reached");
+    default:                    assert_return_unreached();
     }
-  assert (!target.empty());
+  assert_return (!target.empty());
   bse_storage_break (self);
   bse_storage_putc (self, '(');
   bse_storage_puts (self, property_name.c_str());

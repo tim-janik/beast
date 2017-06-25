@@ -68,7 +68,7 @@ void
 bse_engine_free_ostreams (guint         n_ostreams,
                           BseOStream   *ostreams)
 {
-  assert (n_ostreams > 0);
+  assert_return (n_ostreams > 0);
   /* bse_engine_block_size() may have changed since allocation */
   g_free (ostreams);
 }
@@ -414,7 +414,7 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
        * during processing. to ensure this, we assert that no flow processing
        * schedule is currently set.
        */
-      assert (pqueue_schedule == NULL);
+      assert_return (pqueue_schedule == NULL);
       pqueue_mutex.unlock();
     }
   else
@@ -513,7 +513,7 @@ _engine_push_processed_node (EngineNode *node)
   assert_return (pqueue_n_nodes > 0);
   assert_return (ENGINE_NODE_IS_SCHEDULED (node));
   pqueue_mutex.lock();
-  assert (pqueue_n_nodes > 0);        /* paranoid */
+  assert_return (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
@@ -590,7 +590,7 @@ _engine_mnl_integrate (EngineNode *node)
   master_node_list_tail = node;
   if (!master_node_list_head)
     master_node_list_head = master_node_list_tail;
-  assert (node->mnl_next == NULL);
+  assert_return (node->mnl_next == NULL);
 }
 
 void

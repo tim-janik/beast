@@ -193,7 +193,7 @@ static BsePlugin *startup_plugin = NULL;
 void
 bse_plugin_make_resident()
 {
-  assert (startup_plugin != NULL);
+  assert_return (startup_plugin != NULL);
   startup_plugin->resident_types = TRUE;
 }
 

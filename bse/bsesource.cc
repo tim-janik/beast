@@ -469,11 +469,11 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     Bse::MidiSignal signal_type)
 {
-  assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
-            BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
-            BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127));
+  static_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
+                 BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
+                 BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
+                 BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
+                 BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127), "");
   assert_return (BSE_IS_SOURCE (source), Bse::Error::INTERNAL);
   assert_return (prop_name != NULL, Bse::Error::INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
@@ -2053,7 +2053,7 @@ BSE_BUILTIN_TYPE (BseSource)
     (GInstanceInitFunc) bse_source_init,
   };
 
-  assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_abstract (BSE_TYPE_ITEM,
                                      "BseSource",

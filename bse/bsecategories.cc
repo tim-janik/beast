@@ -96,12 +96,12 @@ centry_new (const char *caller, const std::string &category, GType type)
   const uint mindex = category_strip_toplevels (category, type);
   if (!mindex)
     {
-      critical ("%s: refusing to add non-conforming category '%s'", caller, category);
+      Bse::warning ("%s: refusing to add non-conforming category '%s'", caller, category);
       return NULL;
     }
   if (centry_find (category))
     {
-      critical ("%s: unable to add category duplicate '%s'", caller, category);
+      Bse::warning ("%s: unable to add category duplicate '%s'", caller, category);
       return NULL;
     }
 

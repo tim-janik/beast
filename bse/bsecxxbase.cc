@@ -307,7 +307,7 @@ CxxBaseClass::add_ochannel (const char *ident,
 {
   int channel_id = bse_source_class_add_ochannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    assert (assert_id == channel_id);
+    assert_return (assert_id == channel_id);
 }
 
 void
@@ -318,7 +318,7 @@ CxxBaseClass::add_ichannel (const char *ident,
 {
   int channel_id = bse_source_class_add_ichannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    assert (assert_id == channel_id);
+    assert_return (assert_id == channel_id);
 }
 
 void
@@ -329,7 +329,7 @@ CxxBaseClass::add_jchannel (const char *ident,
 {
   int channel_id = bse_source_class_add_jchannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
-    assert (assert_id == channel_id);
+    assert_return (assert_id == channel_id);
 }
 
 } // Bse

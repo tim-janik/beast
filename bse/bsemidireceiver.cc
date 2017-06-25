@@ -348,7 +348,7 @@ public:
   }
   ~MidiReceiver()
   {
-    assert (ref_count == 0);
+    assert_return (ref_count == 0);
     for (Channels::iterator it = midi_channels.begin(); it != midi_channels.end(); it++)
       delete *it;
     while (events)
@@ -711,7 +711,7 @@ voice_input_remove_from_table_L (VoiceInput *vinput)    /* UserThread */
             vinput->queue_state = VSTATE_IDLE;
             return;
           }
-      assert_unreached ();
+      assert_return_unreached ();
     }
 }
 
@@ -804,7 +804,7 @@ change_voice_input_L (VoiceInput      *vinput,
           assert_return (vinput->iter == vinput->table->end());
           vinput->next = (*vinput->table)[freq_value];
           vinput->iter = vinput->table->find (freq_value);
-          assert (vinput->iter != vinput->table->end());
+          assert_return (vinput->iter != vinput->table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
@@ -849,7 +849,7 @@ voice_input_module_free_U (gpointer        data,
                            const BseModuleClass *klass)
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  assert (vinput->next == NULL);
+  assert_return (vinput->next == NULL);
   delete vinput;
 }
 

@@ -90,7 +90,7 @@ midi_decoder_advance_state (BseMidiDecoder *self)
       self->delta_time = 0;
       self->event_type = BseMidiEventType (0);
       /* keep running_mode and zchannel */
-      assert (self->left_bytes == 0);
+      assert_return (self->left_bytes == 0);
       if (self->n_bytes)
         g_warning ("leaking %d bytes of midi data", self->n_bytes);
       self->n_bytes = 0;

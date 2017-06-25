@@ -787,12 +787,8 @@ gsl_filter_tscheb1_test	(uint         iorder,
       }
   iorder /= 2;
 
-  /* assert roots found */
-  if (!(r - roots == iorder))
-    {
-      printout ("ERROR: n_roots=%u != iorder=%u\n", r - roots, iorder);
-      abort ();
-    }
+  /* assume we have found roots */
+  assert_return (r - roots == iorder);
 
   /* s => z */
   for (i = 0; i < iorder; i++)
@@ -1167,7 +1163,7 @@ gsl_biquad_filter_config (GslBiquadFilter *f,
 	  f->yc1 = -f->yc1;
 	  break;
 	default:
-	  assert_unreached ();
+	  assert_return_unreached ();
 	}
       c->dirty = FALSE;
     }
