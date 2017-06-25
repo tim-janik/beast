@@ -3,6 +3,8 @@
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
 
+#define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
+
 using namespace Sfidl;
 
 int main (int argc, char **argv)

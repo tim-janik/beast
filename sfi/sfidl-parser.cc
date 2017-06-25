@@ -220,7 +220,7 @@ Type Parser::typeOf (const String& type) const
   if (isSequence (type))      return SEQUENCE;
   if (isRecord (type))	      return RECORD;
   if (isClass (type))	      return OBJECT;
-  g_error ("%s", ("invalid type: " + type).c_str());
+  app_error ("%s", ("invalid type: " + type).c_str());
   return VOID;
 }
 
@@ -561,7 +561,7 @@ void Parser::preprocessContents (const String& input_filename)
               includeImpl = true;
             }
           if (*i != ';')
-            g_error ("expected ';' after include statement");
+            app_error ("expected ';' after include statement");
           i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
 
@@ -2092,7 +2092,7 @@ void Parser::leaveNamespace ()
 {
   currentNamespace = dynamic_cast<Namespace *>(currentNamespace->parent);
   if (!currentNamespace)
-    g_error ("fatal: leaveNamespace called without corresponding enterNamespace");
+    app_error ("fatal: leaveNamespace called without corresponding enterNamespace");
 }
 
 bool Parser::usingNamespace (const String& name)
