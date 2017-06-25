@@ -268,7 +268,7 @@ bst_msg_absorb_config_save (void)
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
   Bse::Error error = bst_msg_absorb_config_dump (file_name);
   if (error != 0)
-    sfi_diag ("Failed to save config-file \"%s\": %s", file_name, Bse::error_blurb (error));
+    Bse::info ("Failed to save config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
 }
 
@@ -369,7 +369,7 @@ bst_msg_absorb_config_load (void)
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
   Bse::Error error = bst_msg_absorb_config_parse (file_name);
   if (0) // error
-    sfi_diag ("Failed to load config-file \"%s\": %s", file_name, Bse::error_blurb (error));
+    Bse::info ("Failed to load config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
   msg_absorb_config_loaded = TRUE;
   /* filter aged strings */
