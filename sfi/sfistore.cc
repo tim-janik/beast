@@ -169,8 +169,11 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
 
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
-    g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
-             g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    {
+      Bse::warning ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+      return;
+    }
 
   g_value_init (&svalue, G_PARAM_SPEC_VALUE_TYPE (spspec));
   if (sfi_value_transform (value, &svalue))
@@ -569,8 +572,11 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
-    g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
-             g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    {
+      Bse::warning ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+      return G_TOKEN_ERROR;
+    }
 
   token = sfi_value_parse_param_rest (&pvalue, rstore->scanner, spspec);
   if (token == G_TOKEN_NONE)

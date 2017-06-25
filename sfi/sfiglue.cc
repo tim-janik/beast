@@ -5,10 +5,13 @@
 #include "sfiustore.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
+
 /* --- prototype --- */
 static GHashTable*	glue_gc_hash_table_new	(void);
+
 /* --- variables --- */
 static GQuark      quark_context_stack = 0;
+
 /* --- context functions --- */
 void
 _sfi_init_glue (void)
@@ -16,6 +19,7 @@ _sfi_init_glue (void)
   assert_return (quark_context_stack == 0);
   quark_context_stack = g_quark_from_static_string ("sfi-glue-context-stack");
 }
+
 void
 sfi_glue_context_common_init (SfiGlueContext            *context,
 			      const SfiGlueContextTable *vtable)
@@ -26,6 +30,15 @@ sfi_glue_context_common_init (SfiGlueContext            *context,
   context->proxies = sfi_ustore_new ();
   context->pending_events = NULL;
   context->gc_hash = glue_gc_hash_table_new ();
+}
+
+SfiGlueContext*
+sfi_glue_fetch_context (const gchar *floc)
+{
+  SfiGlueContext *context = sfi_glue_context_current ();
+  if (!context)
+    Bse::warning ("%s: SfiGlue function called without context (use sfi_glue_context_push())", floc);
+  return context;
 }
 
 class RingPtrDataKey : public Rapicorn::DataKey<SfiRing*> {

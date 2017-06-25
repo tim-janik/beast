@@ -201,19 +201,10 @@ gboolean       _sfi_glue_proxy_request_notify	(SfiProxy        proxy,
 
 
 /* --- implementations --- */
-void	_sfi_init_glue		  (void);
-void sfi_glue_context_common_init (SfiGlueContext            *context,
-				   const SfiGlueContextTable *vtable);
-static inline SfiGlueContext*
-sfi_glue_fetch_context (const gchar *floc);
-static inline SfiGlueContext*
-sfi_glue_fetch_context (const gchar *floc)
-{
-  SfiGlueContext *context = sfi_glue_context_current ();
-  if (!context)
-    g_error ("%s: SfiGlue function called without context (use sfi_glue_context_push())", floc);
-  return context;
-}
+void            _sfi_init_glue               (void);
+void            sfi_glue_context_common_init (SfiGlueContext            *context,
+                                              const SfiGlueContextTable *vtable);
+SfiGlueContext* sfi_glue_fetch_context       (const gchar *floc);
 
 #endif /* __SFI_GLUE_H__ */
 

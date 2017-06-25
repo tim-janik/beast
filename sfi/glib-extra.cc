@@ -1021,8 +1021,8 @@ g_usignal_notify (gint8 usignal)
 GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {
-  if (!config_templ->store_int64)
-    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", __func__);
+  const bool gscanner_64bit_has_store_int64 = config_templ->store_int64 != false;
+  assert_return (gscanner_64bit_has_store_int64 == true, NULL);
   return g_scanner_new (config_templ);
 }
 
