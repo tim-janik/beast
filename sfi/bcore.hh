@@ -50,6 +50,8 @@ namespace Path = Rapicorn::Path;
 #define BSE_MAY_ALIAS	        RAPICORN_MAY_ALIAS      ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html">GCC Attribute</a>.
 #define BSE_CLASS_NON_COPYABLE(ClassName) RAPICORN_CLASS_NON_COPYABLE (ClassName) ///< Delete copy ctor and assignment operator.
 #define BSE_DECLARE_VLA(Type, var, count) RAPICORN_DECLARE_VLA (Type, var, count) ///< Declare a variable length array (clang++ uses std::vector<>).
+/// Return silently if @a cond does not evaluate to true with return value @a ...
+#define BSE_RETURN_UNLESS(cond, ...)      do { if (BSE_LIKELY (cond)) break; return __VA_ARGS__; } while (0)
 
 // == Path Name Macros ==
 #ifdef  _WIN32 // includes _WIN64
@@ -150,7 +152,10 @@ info (const char *format, const Args &...args)
 #define ISLIKELY(cond)  BSE_ISLIKELY (cond)
 /// Hint to the compiler to optimize for @a cond == FALSE.
 #define UNLIKELY(cond)  BSE_UNLIKELY (cond)
+/// Return silently if @a cond does not evaluate to true with return value @a ...
+#define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
 #endif // BSE_CONVENIENCE
+using Rapicorn::Aida::assertion_failed_hook;
 
 } // Bse
 
