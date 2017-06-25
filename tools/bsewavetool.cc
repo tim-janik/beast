@@ -141,8 +141,8 @@ main (int   argc,
                   GslDataHandle *dhandle = bse_wave_handle_create (wdsc, i, &error);
                   if (!dhandle)
                     {
-                      sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
-                                   wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
+                      Bse::warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
+                                    wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
                       if (skip_errors)
                         error = Bse::Error::NONE;
                       else
@@ -162,8 +162,8 @@ main (int   argc,
             }
           else
             {
-              sfi_warning ("failed to load wave description from file \"%s\": %s (loader: %s)",
-                           input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
+              Bse::warning ("failed to load wave description from file \"%s\": %s (loader: %s)",
+                            input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
               error = Bse::Error::NONE;
             }
           bse_wave_file_info_unref (winfo);
@@ -533,7 +533,7 @@ verify_chunk_selection (const vector<float> &freq_list,
         {
           String msg = string_format ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
           if (skip_errors)
-            sfi_warning ("%s", msg.c_str());
+            Bse::warning ("%s", msg.c_str());
           else
             app_error ("%s", msg.c_str());
         }
@@ -793,7 +793,7 @@ public:
           }
         unlink_file_list.push_back (temp_file);
         const guint ENCODER_BUFFER = 16 * 1024;
-        sfi_info ("ENCODING: chunk % 7.2f/%.0f", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
+        Bse::info ("ENCODING: chunk % 7.2f/%.0f", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
         SfiNum n = 0, v = 0, l = gsl_data_handle_length (dhandle);
         while (n < l)
           {
@@ -1150,7 +1150,7 @@ public:
           /* add sample file */
           Bse::Error error = Bse::Error::NONE;
           GslDataHandle *dhandle;
-          sfi_info ("LOAD: osc-freq=%g file=%s", osc_freq, ochunk.sample_file);
+          Bse::info ("LOAD: osc-freq=%g file=%s", osc_freq, ochunk.sample_file);
           if (load_raw)
             dhandle = load_file_raw (ochunk, wave->n_channels, osc_freq, error);
           else
@@ -1165,7 +1165,7 @@ public:
               String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error));
               if (skip_errors)
-                sfi_warning ("%s", msg.c_str());
+                Bse::warning ("%s", msg.c_str());
               else
                 app_error ("%s", msg.c_str());
             }
@@ -1220,7 +1220,7 @@ public:
           {
             GslDataHandle *dhandle = it->dhandle;
             double osc_freq = gsl_data_handle_osc_freq (dhandle);
-            sfi_info ("DELETE: osc-freq=%g", osc_freq);
+            Bse::info ("DELETE: osc-freq=%g", osc_freq);
 
             wave->remove (it);
           }
@@ -1865,7 +1865,7 @@ public:
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;
-          sfi_info ("CLIP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          Bse::info ("CLIP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
           GslDataClipConfig cconfig = { 0 };
           cconfig.produce_info = TRUE;
           cconfig.threshold = threshold;
@@ -1880,7 +1880,7 @@ public:
           error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
           if (error == Bse::Error::DATA_UNMATCHED && cresult.clipped_to_0length)
             {
-              sfi_info ("Deleting 0-length chunk");
+              Bse::info ("Deleting 0-length chunk");
               deleted.push_back (it);
               error = Bse::Error::NONE;
             }
@@ -1971,7 +1971,7 @@ public:
         {
           WaveChunk *chunk = &*it;
           const double osc_freq = gsl_data_handle_osc_freq (chunk->dhandle);
-          sfi_info ("NORMALIZE: chunk %f", osc_freq);
+          Bse::info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
           Bse::Error error = Bse::Error::NONE;
@@ -2053,7 +2053,7 @@ public:
         {
           WaveChunk *chunk = &*it;
 	  GslDataHandle *dhandle = chunk->dhandle;
-          sfi_info ("LOOP: chunk %f", gsl_data_handle_osc_freq (dhandle));
+          Bse::info ("LOOP: chunk %f", gsl_data_handle_osc_freq (dhandle));
 	  gdouble mix_freq = gsl_data_handle_mix_freq (dhandle);
 	  GslDataLoopConfig lconfig;
 	  lconfig.block_start = (GslLong) mix_freq;  /* skip first second */
@@ -2238,7 +2238,7 @@ public:
 	GslLong size = 1;
 	gdouble freq = gsl_data_handle_osc_freq (chunk->dhandle);
 
-	sfi_info ("THINOUT: chunk %f: error %f, size %lld", freq, error, size);
+	Bse::info ("THINOUT: chunk %f: error %f, size %lld", freq, error, size);
 
 	chunk_data.sizes.push_back (size);
 	chunk_data.errors.push_back (error);
@@ -2358,7 +2358,7 @@ public:
      */
     chunk_set = population[0];
 
-    sfi_info ("THINOUT: error %.5f %s", chunk_set.error, set_to_string (chunk_data, chunk_set).c_str());
+    Bse::info ("THINOUT: error %.5f %s", chunk_set.error, set_to_string (chunk_data, chunk_set).c_str());
   }
 
   double
@@ -2528,8 +2528,8 @@ public:
 	    best_freq = freq;
 	  }
       }
-    sfi_info ("%s: => %.2f dB at %lld Hz", string_toupper (name).c_str(),
-	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
+    Bse::info ("%s: => %.2f dB at %lld Hz", string_toupper (name).c_str(),
+               bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
     gsl_data_handle_close (fir_handle);
 
     return Bse::Error::NONE;
@@ -2543,8 +2543,8 @@ public:
       {
         WaveChunk *chunk = &*it;
         GslDataHandle *dhandle = chunk->dhandle;
-	sfi_info ("%s: chunk %f: cutoff_freq=%f order=%d", string_toupper (name).c_str(),
-	          gsl_data_handle_osc_freq (chunk->dhandle), m_cutoff_freq, m_order);
+	Bse::info ("%s: chunk %f: cutoff_freq=%f order=%d", string_toupper (name).c_str(),
+                   gsl_data_handle_osc_freq (chunk->dhandle), m_cutoff_freq, m_order);
 
 	if (m_cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
 	  {
@@ -2656,12 +2656,12 @@ public:
         {
           WaveChunk *chunk = &*it;
           GslDataHandle *dhandle = chunk->dhandle;
-          sfi_info ("UPSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
-                    gsl_data_handle_osc_freq (chunk->dhandle),
-                    gsl_data_handle_mix_freq (chunk->dhandle),
-                    gsl_data_handle_mix_freq (chunk->dhandle) * 2);
-          sfi_info ("  using resampler precision: %s\n",
-                    bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
+          Bse::info ("UPSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
+                     gsl_data_handle_osc_freq (chunk->dhandle),
+                     gsl_data_handle_mix_freq (chunk->dhandle),
+                     gsl_data_handle_mix_freq (chunk->dhandle) * 2);
+          Bse::info ("  using resampler precision: %s\n",
+                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
           if (error != 0)
@@ -2732,12 +2732,12 @@ public:
         {
           WaveChunk *chunk = &*it;
           GslDataHandle *dhandle = chunk->dhandle;
-          sfi_info ("DOWNSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
-                    gsl_data_handle_osc_freq (chunk->dhandle),
-                    gsl_data_handle_mix_freq (chunk->dhandle),
-                    gsl_data_handle_mix_freq (chunk->dhandle) / 2);
-          sfi_info ("  using resampler precision: %s\n",
-                    bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
+          Bse::info ("DOWNSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
+                     gsl_data_handle_osc_freq (chunk->dhandle),
+                     gsl_data_handle_mix_freq (chunk->dhandle),
+                     gsl_data_handle_mix_freq (chunk->dhandle) / 2);
+          Bse::info ("  using resampler precision: %s\n",
+                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
           if (error != 0)
@@ -2910,11 +2910,11 @@ public:
 	  substitute (filename, 'C', name_addon);
 	  g_free (name_addon);
 
-          sfi_info ("EXPORTING: chunk %f to %s", gsl_data_handle_osc_freq (dhandle), filename.c_str());
+          Bse::info ("EXPORTING: chunk %f to %s", gsl_data_handle_osc_freq (dhandle), filename.c_str());
 
 	  if (used_filenames[filename])
 	    {
-	      sfi_warning ("another chunk was already exported to %s. skipping this chunk export.", filename.c_str());
+	      Bse::warning ("another chunk was already exported to %s. skipping this chunk export.", filename.c_str());
 	      continue;
 	    }
 	  else
