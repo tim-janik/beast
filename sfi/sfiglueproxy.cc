@@ -255,10 +255,10 @@ sfi_glue_proxy_signal (SfiGlueContext *context,
 	    }
 	}
       else
-	sfi_diag ("spurious unknown signal \"%s\" on proxy (%lu)", signal, proxy);
+	Bse::info ("spurious unknown signal \"%s\" on proxy (%lu)", signal, proxy);
     }
   else
-    sfi_diag ("spurious signal \"%s\" on non existing proxy (%lu)", signal, proxy);
+    Bse::info ("spurious signal \"%s\" on non existing proxy (%lu)", signal, proxy);
 }
 
 static void
@@ -330,7 +330,7 @@ sfi_glue_signal_connect_closure (SfiProxy       proxy,
 	}
       else
 	{
-	  sfi_diag ("no such signal \"%s\" on proxy (%lu) to connect to", signal, proxy);
+	  Bse::info ("no such signal \"%s\" on proxy (%lu) to connect to", signal, proxy);
 	  sfi_glue_gc_add (closure, SfiGlueGcFreeFunc (g_closure_unref));
 	}
     }
@@ -390,8 +390,8 @@ sfi_glue_signal_disconnect (SfiProxy     proxy,
 	    }
 	}
     }
-  sfi_diag ("%s: proxy (%lu) has no signal connection (%lu) to disconnect",
-	    G_STRLOC, proxy, connection_id);
+  Bse::info ("%s: proxy (%lu) has no signal connection (%lu) to disconnect",
+             G_STRLOC, proxy, connection_id);
 }
 
 static GSList*
@@ -477,7 +477,7 @@ sfi_glue_proxy_connect (SfiProxy     proxy,
 					 g_cclosure_new_object_swap (GCallback (callback), (GObject*) data), callback);
       else
 	{
-	  sfi_diag ("%s: invalid signal spec \"%s\"", G_STRLOC, signal);
+	  Bse::info ("%s: invalid signal spec \"%s\"", G_STRLOC, signal);
 	  break;
 	}
       signal = va_arg (var_args, gchar*);
@@ -521,7 +521,7 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
 	}
       else
 	{
-	  sfi_diag ("%s: invalid signal spec \"%s\"", G_STRLOC, signal);
+	  Bse::info ("%s: invalid signal spec \"%s\"", G_STRLOC, signal);
 	  break;
 	}
       if (!slist)
@@ -722,7 +722,7 @@ sfi_glue_proxy_weak_unref (SfiProxy        proxy,
 	      }
 	}
       if (!found_one)
-	sfi_diag ("%s: proxy (%lu) has no weak ref %p(%p)", G_STRLOC, proxy, weak_notify, data);
+	Bse::info ("%s: proxy (%lu) has no weak ref %p(%p)", G_STRLOC, proxy, weak_notify, data);
     }
 }
 
@@ -868,7 +868,7 @@ sfi_glue_proxy_set (SfiProxy     proxy,
 	error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
-	  sfi_diag ("%s: %s", G_STRLOC, error);
+	  Bse::info ("%s: %s", G_STRLOC, error);
 	  g_free (error);
 	  break;
 	}
@@ -901,7 +901,7 @@ sfi_glue_proxy_get (SfiProxy     proxy,
         error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
-	  sfi_diag ("%s: %s", G_STRLOC, error);
+	  Bse::info ("%s: %s", G_STRLOC, error);
 	  g_free (error);
 	  break;
 	}
@@ -932,7 +932,7 @@ _sfi_glue_proxy_dispatch_event (SfiSeq *event)
       if (proxy)
 	sfi_glue_proxy_release (context, proxy);
       else
-	sfi_diag ("%s: release event without proxy", G_STRLOC);
+	Bse::info ("%s: release event without proxy", G_STRLOC);
       break;
     case SFI_GLUE_EVENT_NOTIFY:
       signal = sfi_seq_get_string (event, 1);
@@ -942,11 +942,11 @@ _sfi_glue_proxy_dispatch_event (SfiSeq *event)
       if (notify_id && proxy && signal && signal[0])
 	sfi_glue_proxy_signal (context, proxy, signal, args);
       else if (!notify_id)
-	sfi_diag ("%s: signal event without notify id", G_STRLOC);
+	Bse::info ("%s: signal event without notify id", G_STRLOC);
       else if (!proxy)
-	sfi_diag ("%s: signal event without proxy", G_STRLOC);
+	Bse::info ("%s: signal event without proxy", G_STRLOC);
       else
-	sfi_diag ("%s: signal event without name", G_STRLOC);
+	Bse::info ("%s: signal event without name", G_STRLOC);
       if (notify_id)
 	_sfi_glue_proxy_processed_notify (notify_id);
       break;
@@ -956,7 +956,7 @@ _sfi_glue_proxy_dispatch_event (SfiSeq *event)
 	_sfi_glue_proxy_processed_notify (notify_id);
       break;
     default:
-      sfi_diag ("%s: ignoring bogus event (type=%u)", G_STRLOC, event_type);
+      Bse::info ("%s: ignoring bogus event (type=%u)", G_STRLOC, event_type);
       break;
     }
   glue_proxy_dispatching = FALSE;

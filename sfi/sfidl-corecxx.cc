@@ -1257,10 +1257,10 @@ public:
         if (!is_void)
           printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result.type));
         printf ("    } catch (std::exception &e) {\n");
-        printf ("      sfi_diag (\"%%s: %%s\", \"%s\", e.what());\n", name);
+        printf ("      Bse::info (\"%%s: %%s\", \"%s\", e.what());\n", name);
         printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    } catch (...) {\n");
-        printf ("      sfi_diag (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
+        printf ("      Bse::info (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
         printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    }\n");
         printf ("    return Bse::Error::NONE;\n");

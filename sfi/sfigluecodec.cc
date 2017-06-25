@@ -118,25 +118,25 @@ encoder_process_message (SfiGlueEncoder *encoder,
 	      return TRUE;
 	    }
 	  else
-	    sfi_diag ("ignoring message with spurious return value");
+            Bse::info ("ignoring message with spurious return value");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_MESSAGE:
-          sfi_diag ("ignoring message with invalid message contents");
+          Bse::info ("ignoring message with invalid message contents");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_EVENT:
 	  seq = seq->n_elements >= 2 ? sfi_seq_get_seq (seq, 1) : NULL;
 	  if (seq)
 	    encoder->events = sfi_ring_append (encoder->events, sfi_seq_ref (seq));
 	  else
-	    sfi_diag ("ignoring message with NULL event");
+	    Bse::info ("ignoring message with NULL event");
 	  break;
 	default:
-	  sfi_diag ("ignoring message with invalid ID: %u", cmd);
+	  Bse::info ("ignoring message with invalid ID: %u", cmd);
 	  break;
 	}
     }
   else
-    sfi_diag ("ignoring message of invalid type: %s", G_VALUE_TYPE_NAME (value));
+    Bse::info ("ignoring message of invalid type: %s", G_VALUE_TYPE_NAME (value));
   sfi_value_free (value);
 
   return FALSE;
@@ -722,7 +722,7 @@ decoder_proxy_processed_notify (SfiGlueDecoder *decoder,
   if (seq->n_elements >= 2)
     _sfi_glue_proxy_processed_notify (sfi_seq_get_int (seq, 1));
   else
-    sfi_diag ("ignoring invalid \"processed notify\" receipt");
+    Bse::info ("ignoring invalid \"processed notify\" receipt");
 }
 
 static GValue*
@@ -824,7 +824,7 @@ decoder_process_request (SfiGlueDecoder *decoder,
   if (!seq || seq->n_elements < 1)
     {
       *one_way = FALSE;
-      sfi_diag ("discarding invalid empty request");
+      Bse::info ("discarding invalid empty request");
       return NULL;
     }
   *one_way = FALSE;
@@ -879,7 +879,7 @@ decoder_process_request (SfiGlueDecoder *decoder,
     case SFI_GLUE_CODEC_CLIENT_MSG:
       return decoder_client_msg (decoder, seq);
     }
-  sfi_diag ("ignoring request with invalid ID: %d", cmd);
+  Bse::info ("ignoring request with invalid ID: %d", cmd);
   return NULL;
 }
 
