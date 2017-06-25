@@ -877,14 +877,14 @@ gtk_hwrap_box_get_type (void)
 static void
 gtk_hwrap_box_class_init (GtkHWrapBoxClass *klass)
 {
-  GtkObjectClass *object_class;
+  //GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
+  //GtkContainerClass *container_class;
   GtkWrapBoxClass *wrap_box_class;
 
-  object_class = GTK_OBJECT_CLASS (klass);
+  //object_class = GTK_OBJECT_CLASS (klass);
   widget_class = GTK_WIDGET_CLASS (klass);
-  container_class = GTK_CONTAINER_CLASS (klass);
+  //container_class = GTK_CONTAINER_CLASS (klass);
   wrap_box_class = GTK_WRAP_BOX_CLASS (klass);
 
   parent_gtkhwrapbox_class = gtk_type_class (GTK_TYPE_WRAP_BOX);
@@ -930,7 +930,7 @@ get_gtkhwrapbox_child_requisition (GtkWrapBox     *wbox,
     gtk_widget_get_child_requisition (child, child_requisition);
 }
 
-static void
+static void __attribute__ ((unused))
 _gtk_hwrap_box_size_request (GtkWidget      *widget,
 			     GtkRequisition *requisition)
 {
@@ -1532,14 +1532,14 @@ gtk_vwrap_box_get_type (void)
 static void
 gtk_vwrap_box_class_init (GtkVWrapBoxClass *klass)
 {
-  GtkObjectClass *object_class;
+  //GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
+  //GtkContainerClass *container_class;
   GtkWrapBoxClass *wrap_box_class;
 
-  object_class = GTK_OBJECT_CLASS (klass);
+  //object_class = GTK_OBJECT_CLASS (klass);
   widget_class = GTK_WIDGET_CLASS (klass);
-  container_class = GTK_CONTAINER_CLASS (klass);
+  //container_class = GTK_CONTAINER_CLASS (klass);
   wrap_box_class = GTK_WRAP_BOX_CLASS (klass);
 
   parent_gtkvwrapbox_class = gtk_type_class (GTK_TYPE_WRAP_BOX);
@@ -1585,7 +1585,7 @@ get_gtkvwrapbox_child_requisition (GtkWrapBox     *wbox,
     gtk_widget_get_child_requisition (child, child_requisition);
 }
 
-static void
+static void __attribute__ ((unused))
 _gtk_vwrap_box_size_request (GtkWidget      *widget,
 			     GtkRequisition *requisition)
 {
