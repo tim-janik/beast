@@ -572,7 +572,7 @@ tree_selection_changed (BstWaveEditor    *self,
     {
       gchar *osc_str, *mix_str;
 
-      assert (self->chunk_wrapper == (GxkListWrapper*) model);
+      assert_return (self->chunk_wrapper == (GxkListWrapper*) model);
 
       gtk_tree_model_get (model, &iter,
 			  COL_OSC_FREQ, &osc_str,

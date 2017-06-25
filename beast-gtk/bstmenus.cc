@@ -64,7 +64,7 @@ menu_choice_activate (GtkWidget *item,
 	  if (GTK_IS_MENU_ITEM (tmp))
 	    item = tmp;
 	}
-      assert (GTK_IS_MENU (item));
+      assert_return (GTK_IS_MENU (item));
 
       gtk_object_set_data (GTK_OBJECT (item), "BstChoice", udata);
     }

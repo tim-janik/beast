@@ -222,7 +222,7 @@ key_bindings_exec_action (gpointer data,
       }
       break;
     default:
-      assert_unreached ();
+      assert_return_unreached ();
       break;
     }
   gxk_status_window_pop ();
@@ -645,7 +645,7 @@ key_binding_try_statement (gpointer   context_data,
                            gpointer   user_data)
 {
   GSList *slist, *kbindings = (GSList*) context_data;
-  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert_return (scanner->next_token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;

@@ -452,7 +452,7 @@ bst_qsampler_update_types (BstQSampler *qsampler,
       guint rstart = r->offset / qsampler->zoom_factor;
       guint rend = last_peek_from_pcm_region (qsampler, r->offset, r->length);
 
-      assert (rstart <= rend);
+      assert_return (rstart <= rend);
 
       /* intersect */
       s = MAX (start, rstart);
@@ -470,7 +470,7 @@ bst_qsampler_update_types (BstQSampler *qsampler,
       guint mstart = m->offset / qsampler->zoom_factor;
       guint mend = last_peek_from_pcm_region (qsampler, m->offset, 1);
 
-      assert (mstart <= mend);
+      assert_return (mstart <= mend);
 
       /* intersect */
       s = MAX (start, mstart);

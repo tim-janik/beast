@@ -63,7 +63,7 @@ Bse::ServerH bse_server;
 void
 _bst_init_utils (void)
 {
-  assert (stock_icon_factory == NULL);
+  assert_return (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
 
@@ -482,7 +482,7 @@ bst_action_list_add_cat (GxkActionList *alist, const Bse::Category &cat, uint sk
   if (cat.icon.pixels.size())
     {
       const Bse::Icon &icon = cat.icon;
-      assert (icon.width * size_t (icon.height) == icon.pixels.size());
+      assert_return (icon.width * size_t (icon.height) == icon.pixels.size());
       bst_stock_register_icon (cat.category, 4,
                                icon.width, icon.height,
                                icon.width * 4,
@@ -512,7 +512,7 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
   const char *stock_id;
   if (icon.width && icon.height)
     {
-      assert (icon.width * icon.height == int (icon.pixels.size()));
+      assert_return (icon.width * icon.height == int (icon.pixels.size()));
       bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
       stock_id = ad.entity.c_str();
     }

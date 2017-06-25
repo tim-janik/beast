@@ -909,7 +909,7 @@ controller_piano_drag (BstPianoRollController *self,
   if (projectid && track)
     {
       Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
-      assert (project);
+      assert_return (project);
       if (drag->type == GXK_DRAG_START ||
 	  (drag->type == GXK_DRAG_MOTION &&
 	   self->obj_note != drag->current_note))

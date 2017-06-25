@@ -131,7 +131,7 @@ bst_db_setup_get_color (BstDBSetup *dbsetup,
       else
         offset = i;
     }
-  assert (offset == 0 || pixel >= dbsetup->colors[offset].pixel);
+  assert_return (offset == 0 || pixel >= dbsetup->colors[offset].pixel, 0);
   if (pixel >= dbsetup->colors[offset].pixel && offset + 1 < dbsetup->n_colors)
     {   /* linear interpolation */
       guint c1 = dbsetup->colors[offset].rgb;
