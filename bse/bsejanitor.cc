@@ -534,7 +534,7 @@ janitor_idle_clean_jsource (void *data)
           self->exit_reason = NULL;
         }
       if (self->exit_reason)
-        sfi_diag ("%s: %s", port->ident, self->exit_reason);
+        Bse::info ("%s: %s", port->ident, self->exit_reason);
     }
   else
     {

@@ -675,7 +675,7 @@ bse_song_compat_finish (BseSuper       *super,
         {
           Bse::Error error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
           if (error != 0)
-            sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
+            Bse::warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
           clear_undo = TRUE;
         }
       sfi_ring_free (tracks);

@@ -462,7 +462,7 @@ bse_device_open_best (GType           base_type,
           device = NULL;
         }
       else
-        sfi_diag ("%s: ignoring unknown driver specification: %s", g_type_name (base_type), driverconf);
+        Bse::info ("%s: ignoring unknown driver specification: %s", g_type_name (base_type), driverconf);
     }
   device_classes_free (class_list);
   return device;

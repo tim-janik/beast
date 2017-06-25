@@ -1244,12 +1244,12 @@ MidiChannel::debug_notes (guint64 tick_stamp, BseTrans *trans)
       VoiceSwitch *vswitch = mchannel->voices[i];
       if (vswitch)
         for (j = 0; j < vswitch->n_vinputs; j++)
-          sfi_diag ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
-                    mchannel->midi_channel, vswitch, vswitch->disconnected ? 'd' : 'C',
-                    vswitch->vinputs[j], bse_module_tick_stamp (vswitch->vinputs[j]->fmodule),
-                    voice_state_to_string (vswitch->vinputs[j]->vstate),
-                    voice_state_to_string (vswitch->vinputs[j]->queue_state),
-                    BSE_FREQ_FROM_VALUE (vswitch->vinputs[j]->freq_value));
+          Bse::info ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
+                     mchannel->midi_channel, vswitch, vswitch->disconnected ? 'd' : 'C',
+                     vswitch->vinputs[j], bse_module_tick_stamp (vswitch->vinputs[j]->fmodule),
+                     voice_state_to_string (vswitch->vinputs[j]->vstate),
+                     voice_state_to_string (vswitch->vinputs[j]->queue_state),
+                     BSE_FREQ_FROM_VALUE (vswitch->vinputs[j]->freq_value));
     }
 }
 } // namespace anon
@@ -2093,7 +2093,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
                                   event->data.note.velocity,
                                   trans);
           else
-            sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
+            Bse::info ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
           break;
         case BSE_MIDI_KEY_PRESSURE:
         case BSE_MIDI_NOTE_OFF:

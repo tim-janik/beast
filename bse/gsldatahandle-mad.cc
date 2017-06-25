@@ -530,8 +530,7 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      sfi_diag ("MAD-init: pcm position screwed (pos: %llu, handle-pos: %llu), aborting read",
-                pos, handle->pcm_pos);	
+      Bse::info ("MAD-init: pcm position screwed (pos: %llu, handle-pos: %llu), aborting read", pos, handle->pcm_pos);
       return -1;
     }
 }

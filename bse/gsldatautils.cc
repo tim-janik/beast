@@ -39,7 +39,7 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 	    {   /* pathologic */
 	      peekbuf->data[k - peekbuf->start] = 0;
 	      inc = 1;
-	      sfi_diag ("%s: failed to read from data handle (%p)", G_STRLOC, dhandle);
+	      Bse::info ("%s: failed to read from data handle (%p)", G_STRLOC, dhandle);
 	    }
 	}
     }
@@ -768,7 +768,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   if (last_value < 1)
     {
       if (info)
-        sfi_info ("Signal too short");
+        Bse::info ("Signal too short");
       result->error = Bse::Error::FILE_EMPTY;
       return result->error;
     }
@@ -779,7 +779,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   if (head < 0)
     {
       if (info)
-        sfi_info ("All of signal below threshold");
+        Bse::info ("All of signal below threshold");
       result->clipped_to_0length = TRUE;
       result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
@@ -791,7 +791,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   if (last_value - tail < cconfig->tail_samples)
     {
       if (info)
-        sfi_info ("Signal tail above threshold, # samples below: %llu", last_value - tail);
+        Bse::info ("Signal tail above threshold, # samples below: %llu", last_value - tail);
       result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
     }
@@ -799,19 +799,19 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   if (head < cconfig->head_samples)
     {
       if (info)
-        sfi_info ("Signal head above threshold, # samples below: %llu", head);
+        Bse::info ("Signal head above threshold, # samples below: %llu", head);
       result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
     }
   result->head_detected = TRUE;
   if (info)
-    sfi_info ("Silence detected: head_silence=%lld tail_silence=%llu", head, last_value - tail);
+    Bse::info ("Silence detected: head_silence=%lld tail_silence=%llu", head, last_value - tail);
 
   /* tail clipping protection */
   if (last_value - tail < cconfig->tail_silence)
     {
       if (info)
-        sfi_info ("Tail silence too short for clipping: silence_length=%lld minimum_length=%u", last_value - tail, cconfig->tail_silence);
+        Bse::info ("Tail silence too short for clipping: silence_length=%lld minimum_length=%u", last_value - tail, cconfig->tail_silence);
       tail = last_value;
     }
 
@@ -822,7 +822,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       tail += cconfig->pad_samples;
       tail = MIN (last_value, tail);
       if (info && otail != tail)
-        sfi_info ("Padding Tail: old_tail=%lld tail=%llu padding=%lld", otail, tail, tail - otail);
+        Bse::info ("Padding Tail: old_tail=%lld tail=%llu padding=%lld", otail, tail, tail - otail);
     }
 
   /* unclipped handles */
@@ -838,8 +838,8 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   gsl_data_handle_open (clip_handle);
   gsl_data_handle_unref (clip_handle);
   if (info)
-    sfi_info ("Clipping: start=%llu end=%llu length=%lld (delta=%lld)", head, tail, gsl_data_handle_n_values (clip_handle),
-              gsl_data_handle_n_values (clip_handle) - gsl_data_handle_n_values (dhandle));
+    Bse::info ("Clipping: start=%llu end=%llu length=%lld (delta=%lld)", head, tail, gsl_data_handle_n_values (clip_handle),
+               gsl_data_handle_n_values (clip_handle) - gsl_data_handle_n_values (dhandle));
   result->clipped_head = head > 0;
   result->clipped_tail = last_value != tail;
 
@@ -866,7 +866,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       gsl_data_handle_open (fade_handle);
       gsl_data_handle_unref (fade_handle);
       if (info)
-        sfi_info ("Adding fade-in ramp: ramp_length=%lld length=%lld", l, gsl_data_handle_n_values (fade_handle));
+        Bse::info ("Adding fade-in ramp: ramp_length=%lld length=%lld", l, gsl_data_handle_n_values (fade_handle));
     }
   else
     {

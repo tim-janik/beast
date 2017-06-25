@@ -65,7 +65,7 @@ server_registration (SfiProxy            server,
   else
     {
       if (error && error[0])
-        sfi_diag ("failed to register \"%s\": %s", what, error);
+        Bse::info ("failed to register \"%s\": %s", what, error);
     }
 }
 
@@ -115,7 +115,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -141,7 +141,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }

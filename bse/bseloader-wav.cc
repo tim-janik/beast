@@ -170,7 +170,7 @@ wav_read_fmt_header (int        fd,
 	  l = read (fd, junk, l);
 	  if (l < 1 || l > n)
 	    {
-	      sfi_diag ("failed to read FmtHeader from WAVE file");
+	      Bse::info ("WAV: failed to read FmtHeader from WAVE file");
 	      return gsl_error_from_errno (errno, Bse::Error::IO);
 	    }
 	  n -= l;

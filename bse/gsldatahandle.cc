@@ -82,8 +82,8 @@ gsl_data_handle_open (GslDataHandle *dhandle)
       Bse::Error error = dhandle->vtable->open (dhandle, &setup);
       if (error == 0 && (setup.n_values < 0 || setup.n_channels < 1))
 	{
-	  sfi_warning ("invalid parameters in data handle open() (%p()): nv=%lld nc=%u",
-                       dhandle->vtable->open, setup.n_values, setup.n_channels);
+	  Bse::warning ("invalid parameters in data handle open() (%p()): nv=%lld nc=%u",
+                        dhandle->vtable->open, setup.n_values, setup.n_channels);
 	  dhandle->vtable->close (dhandle);
 	  error = Bse::Error::FORMAT_INVALID;
 	}
@@ -91,7 +91,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 	{
 	  dhandle->spinlock.unlock();
           if (setup.xinfos)
-            g_warning ("%s: leaking xinfos after open() (%p)", "GslDataHandle", dhandle->vtable->open);
+            Bse::warning ("%s: leaking xinfos after open() (%p)", "GslDataHandle", dhandle->vtable->open);
 	  return error;
 	}
       dhandle->ref_count++;
@@ -117,7 +117,7 @@ gsl_data_handle_close (GslDataHandle *dhandle)
     {
       dhandle->vtable->close (dhandle);
       if (dhandle->setup.xinfos)
-        g_warning ("%s: leaking xinfos after close() (%p)", "GslDataHandle", dhandle->vtable->close);
+        Bse::warning ("%s: leaking xinfos after close() (%p)", "GslDataHandle", dhandle->vtable->close);
       memset (&dhandle->setup, 0, sizeof (dhandle->setup));
     }
   dhandle->spinlock.unlock();
