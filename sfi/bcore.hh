@@ -156,6 +156,7 @@ info (const char *format, const Args &...args)
 #define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
 #endif // BSE_CONVENIENCE
 using Rapicorn::Aida::assertion_failed_hook;
+using Rapicorn::breakpoint;
 
 } // Bse
 
