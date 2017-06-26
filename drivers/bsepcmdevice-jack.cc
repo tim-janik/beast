@@ -357,6 +357,7 @@ bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
 namespace {
 struct DeviceDetails {
   uint ports, input_ports, output_ports, physical_ports, terminal_ports;
+  bool default_device;
   vector<string> input_port_names;
   vector<string> output_port_names;
   DeviceDetails() :
@@ -364,7 +365,8 @@ struct DeviceDetails {
     input_ports (0),
     output_ports (0),
     physical_ports (0),
-    terminal_ports (0)
+    terminal_ports (0),
+    default_device (false)
   {
   }
 };
@@ -382,6 +384,8 @@ query_jack_devices (BsePcmDeviceJACK *self)
   const char **jack_ports = self->jack_client ? jack_get_ports (self->jack_client, NULL, NULL, 0) : NULL;
   if (jack_ports)
     {
+      bool have_default_device = false;
+
       for (uint i = 0; jack_ports[i]; i++)
 	{
 	  const char *end = strchr (jack_ports[i], ':');
@@ -410,7 +414,16 @@ query_jack_devices (BsePcmDeviceJACK *self)
                           details.output_port_names.push_back (jack_ports[i]);
                         }
                       if (flags & JackPortIsPhysical)
-                        details.physical_ports++;
+                        {
+                          details.physical_ports++;
+
+                          if (!have_default_device)
+                            {
+                              /* the first device that has physical ports is the default device */
+                              details.default_device = true;
+                              have_default_device = true;
+                            }
+                        }
                       if (flags & JackPortIsTerminal)
                         details.terminal_ports++;
                     }
@@ -444,8 +457,8 @@ bse_pcm_device_jack_list_devices (BseDevice *device)
 								   details.physical_ports == details.ports ?
 								     " [ hardware ]" : ""));
 
-      /* ensure that alsa_pcm always is the first item listed (it is the default device) */
-      if (device_name == "alsa_pcm")
+      /* ensure that the default device always is the first item listed */
+      if (details.default_device)
 	ring = sfi_ring_prepend (ring, entry);
       else
 	ring = sfi_ring_append (ring, entry);
