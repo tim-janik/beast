@@ -869,7 +869,7 @@ gxk_window_remove_action_client (GtkWindow              *window,
       last = slist;
       slist = last->next;
     }
-  g_warning ("failed to remove action client (%p) from GtkWindow (%p)", client_data, window);
+  Bse::warning ("failed to remove action client (%p) from GtkWindow (%p)", client_data, window);
 }
 
 /* --- action group --- */

@@ -2115,3 +2115,7 @@ gtk_vwrap_box_size_allocate (GtkWidget     *widget,
 
   layout_cols (wbox, &area);
 }
+
+/* --- generated marshallers --- */
+#include "gxkmarshal.h"
+#include "gxkmarshal.cc"

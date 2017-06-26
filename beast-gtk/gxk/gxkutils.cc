@@ -9,10 +9,6 @@
 #include <stdlib.h>
 
 
-/* --- generated marshallers --- */
-#include "gxkmarshal.cc"
-
-
 /* --- generated type IDs and enums --- */
 #include "gxkgentypes.cc"
 
@@ -159,7 +155,7 @@ gxk_type_register_generated (guint                   n_entries,
 	  type_id = g_flags_register_static (entries[i].type_name, (const GFlagsValue*) entries[i].type_data);
 	  break;
 	default:
-	  g_warning ("%s: unsupported parent type `%s'", G_STRLOC, g_type_name (entries[i].parent));
+	  Bse::warning ("%s: unsupported parent type `%s'", G_STRLOC, g_type_name (entries[i].parent));
 	  type_id = 0;
 	  break;
 	}
@@ -2473,7 +2469,7 @@ gxk_signal_handler_exists (gpointer     instance,
 	return TRUE;
     }
   else
-    g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
+    Bse::warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
 }
 
@@ -2518,7 +2514,7 @@ gxk_signal_handler_pending (gpointer     instance,
 	return TRUE;
     }
   else
-    g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
+    Bse::warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
 }
 
@@ -3178,7 +3174,7 @@ gxk_label_set_attributes (GtkLabel *label,
           attr = pango_attr_scale_new (va_arg (args, gdouble));
           break;
         default:
-          g_warning ("%s: invalid PangoAttribute type %d", __func__, attr_type);
+          Bse::warning ("%s: invalid PangoAttribute type %d", __func__, attr_type);
         case -1:
         case PANGO_ATTR_INVALID:
           attr = NULL;
@@ -3943,7 +3939,7 @@ gxk_zfile_uncompress (guint                uncompressed_size,
       break;
     }
   if (err)
-    g_error ("while decompressing (%p, %u): %s", cdata, cdata_size, err);
+    Bse::warning ("while decompressing (%p, %u): %s", cdata, cdata_size, err);
 
   text[dlen] = 0;
   return (char*) text;

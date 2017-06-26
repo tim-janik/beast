@@ -180,5 +180,5 @@ gxk_image_cache_unuse_pixmap (GdkPixmap *pixmap)
           return;
         }
     }
-  g_warning ("%s: no such pixmap: %p", __func__, pixmap);
+  Bse::warning ("%s: no such pixmap: %p", __func__, pixmap);
 }

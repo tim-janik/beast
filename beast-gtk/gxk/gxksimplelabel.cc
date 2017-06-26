@@ -301,7 +301,7 @@ simple_label_mnemonic_activate (GtkWidget *widget,
     }
 
   /* barf if there was nothing to activate */
-  g_warning ("Couldn't find a target for a mnemonic activation.");
+  Bse::warning ("Couldn't find a target for a mnemonic activation.");
   gdk_display_beep (gtk_widget_get_display (widget));
   return FALSE;
 }
@@ -446,7 +446,7 @@ simple_label_set_uline_text_internal (GxkSimpleLabel *self,
       gunichar c = g_utf8_get_char (src);
       if (c == (gunichar) -1)
         {
-          g_warning ("Invalid input string");
+          Bse::warning ("Invalid input string");
           g_free (new_str);
           g_free (pattern);
           return;
