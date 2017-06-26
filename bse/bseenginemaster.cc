@@ -507,7 +507,7 @@ master_process_job (BseJob *job)
 	  master_need_reflow |= TRUE;
 	}
       else
-	g_warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
+	Bse::warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
       break;
     case ENGINE_JOB_FORCE_RESET:
       node = job->data.node;
@@ -615,8 +615,8 @@ master_process_job (BseJob *job)
 	  sfi_delete_struct (Poll, poll_last);
 	}
       else
-	g_warning (G_STRLOC ": failed to remove unknown poll function %p(%p)",
-		   job->poll.poll_func, job->poll.data);
+	Bse::warning ("%s: failed to remove unknown poll function %p(%p)",
+                      __func__, job->poll.poll_func, job->poll.data);
       break;
     case ENGINE_JOB_ADD_TIMER:
       JOB_DEBUG ("add timer %p(%p)", job->timer.timer_func, job->timer.data);

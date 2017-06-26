@@ -106,7 +106,7 @@ CxxBase::connect (const gchar   *signal,
   if (sid == cid)
     id = g_signal_connect_closure (gobject(), signal, gclosure, after != 0);
   else
-    g_warning ("%s: ignoring invalid signal connection (\"%s\" != \"%s\")", G_STRLOC, sid.c_str(), cid.c_str());
+    Bse::warning ("%s: ignoring invalid signal connection (\"%s\" != \"%s\")", G_STRLOC, sid.c_str(), cid.c_str());
   g_closure_unref (gclosure);
   return id;
 }

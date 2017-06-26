@@ -124,7 +124,7 @@ check_type (GType type)
 			     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
 			     '-');
       if (strcmp (x, g_type_name (type)) != 0)
-	g_warning ("type name with invalid characters: %s", g_type_name (type));
+	Bse::warning ("type name with invalid characters: %s", g_type_name (type));
       g_free (x);
     }
 }

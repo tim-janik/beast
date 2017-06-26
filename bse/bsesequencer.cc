@@ -188,7 +188,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
     }
   BSE_SEQUENCER_UNLOCK();
   if (!removal_success)
-    g_warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
+    Bse::warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
 }
 
 bool
@@ -288,7 +288,7 @@ Sequencer::remove_song (BseSong *song)
   song->sequencer_owns_refcount_SL = false;
   BSE_SEQUENCER_UNLOCK();
   if (!ring)
-    g_warning ("%s: failed to find %s in sequencer", G_STRLOC, bse_object_debug_name (song));
+    Bse::warning ("%s: failed to find %s in sequencer", G_STRLOC, bse_object_debug_name (song));
   if (need_unref)
     g_object_unref (song);
 }

@@ -22,6 +22,6 @@ bse_standard_synth_inflate (const gchar *synth_name,
       result[blob.size()] = 0;
       return result;
     }
-  g_warning ("unknown standard synth: %s", synth_name);
+  Bse::warning ("unknown standard synth: %s", synth_name);
   return NULL;
 }

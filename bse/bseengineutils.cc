@@ -59,7 +59,7 @@ bse_engine_free_timed_job (EngineTimedJob *tjob)
       g_free (tjob);
       break;
     default:
-      g_warning ("Engine: invalid user job type: %d", tjob->type);
+      Bse::warning ("Engine: invalid user job type: %d", tjob->type);
       break;
     }
 }
@@ -429,7 +429,7 @@ _engine_set_schedule (EngineSchedule *sched)
   if (UNLIKELY (pqueue_schedule != NULL))
     {
       pqueue_mutex.unlock();
-      g_warning (G_STRLOC ": schedule already set");
+      Bse::warning ("%s: schedule already set", __func__);
       return;
     }
   pqueue_schedule = sched;
@@ -445,11 +445,11 @@ _engine_unset_schedule (EngineSchedule *sched)
   if (UNLIKELY (pqueue_schedule != sched))
     {
       pqueue_mutex.unlock();
-      g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
+      Bse::warning ("%s: schedule(%p) not currently set", __func__, sched);
       return;
     }
   if (UNLIKELY (pqueue_n_nodes || pqueue_n_cycles))
-    g_warning (G_STRLOC ": schedule(%p) still busy", sched);
+    Bse::warning ("%s: schedule(%p) still busy", __func__, sched);
   sched->in_pqueue = FALSE;
   pqueue_schedule = NULL;
   /* see engine_fetch_process_queue_trash_jobs_U() on the limitations regarding pqueue trash jobs */

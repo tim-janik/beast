@@ -57,7 +57,7 @@ bse_pcm_writer_finalize (GObject *object)
   BsePcmWriter *self = BSE_PCM_WRITER (object);
   if (self->open)
     {
-      g_warning ("%s: pcm writer still opened", G_STRLOC);
+      Bse::warning ("%s: pcm writer still opened", G_STRLOC);
       bse_pcm_writer_close (self);
     }
   /* chain parent class' handler */

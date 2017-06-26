@@ -421,8 +421,7 @@ create_wnet (BseTrack *self,
     }
   else
     {
-      g_warning ("track: waves with the play-type \"%s\" are not supported by this version of beast\n",
-	         synthesis_network);
+      Bse::warning ("track: waves with the play-type \"%s\" are not supported by this version of beast\n", synthesis_network);
     }
 
 }
@@ -431,7 +430,7 @@ static void
 create_sound_font_net (BseTrack           *self,
                        BseSoundFontPreset *preset)
 {
-  g_return_if_fail (self->sound_font_net == NULL);
+  assert_return (self->sound_font_net == NULL);
 
   self->sound_font_net =  bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
 							   "sound-font-snet",

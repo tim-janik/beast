@@ -92,7 +92,7 @@ midi_decoder_advance_state (BseMidiDecoder *self)
       /* keep running_mode and zchannel */
       assert_return (self->left_bytes == 0);
       if (self->n_bytes)
-        g_warning ("leaking %d bytes of midi data", self->n_bytes);
+        Bse::warning ("leaking %d bytes of midi data", self->n_bytes);
       self->n_bytes = 0;
     }
   self->state = next_state;

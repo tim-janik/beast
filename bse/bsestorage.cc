@@ -1210,8 +1210,7 @@ bse_item_store_property (BseItem    *item,
       bse_storage_putc (storage, ')');
     }
   else if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    g_warning ("%s: unable to store object property \"%s\" of type `%s'",
-               G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    Bse::warning ("%s: unable to store object property \"%s\" of type `%s'", G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   else
     bse_storage_put_param (storage, value, pspec);
 }
@@ -2032,7 +2031,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	}
       if (!blob_out)
 	{
-	  g_warning ("failed to lookup storage blob with id=%ld\n", id);
+	  Bse::warning ("failed to lookup storage blob with id=%ld\n", id);
 	  goto return_with_error;
 	}
      }

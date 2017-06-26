@@ -288,9 +288,9 @@ bglue_value_from_serializable (const GValue *svalue,
                        g_type_name (G_VALUE_TYPE (svalue)),
                        g_type_name (dtype),
                        g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));
-      g_warning ("unable to convert to value type `%s' from serializable (`%s')",
-                 g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-                 g_type_name (stype));
+      Bse::warning ("unable to convert to value type `%s' from serializable (`%s')",
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                    g_type_name (stype));
     }
   return value;
 }
@@ -346,11 +346,11 @@ bglue_value_to_serializable (const GValue *svalue)
       g_value_init (value, dtype);
     }
   if (!dtype)
-    g_warning ("unable to convert value type `%s' to serializable type",
-	       g_type_name (vtype));
+    Bse::warning ("unable to convert value type `%s' to serializable type",
+                  g_type_name (vtype));
   else if (!sfi_value_transform (svalue, value))
-    g_warning ("unable to convert value type `%s' to serializable (`%s')",
-	       g_type_name (vtype), g_type_name (dtype));
+    Bse::warning ("unable to convert value type `%s' to serializable (`%s')",
+                  g_type_name (vtype), g_type_name (dtype));
   return value;
 }
 
@@ -394,7 +394,7 @@ bse_glue_boxed_to_value (GType    boxed_type,
     }
   else /* urm, bad */
     {
-      g_warning ("unable to convert boxed type `%s' to record or sequence", g_type_name (boxed_type));
+      Bse::warning ("unable to convert boxed type `%s' to record or sequence", g_type_name (boxed_type));
       value = NULL;
     }
   return value;
@@ -653,7 +653,7 @@ bglue_exec_proc (SfiGlueContext *context,
       g_slist_free (clearlist);
 
       if (error != 0)
-        g_warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
+        Bse::warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
       for (i = 0; i < proc->n_out_pspecs; i++)
@@ -900,7 +900,7 @@ bglue_proxy_watch_release (SfiGlueContext *context,
   if (!p)
     return FALSE;
   if (p->remote_watch)
-    g_warning ("%s: redundant watch request on proxy (%lu)", bcontext->user, proxy);
+    Bse::warning ("%s: redundant watch request on proxy (%lu)", bcontext->user, proxy);
   p->remote_watch = TRUE;
   return TRUE;
 }

@@ -11,6 +11,8 @@
 
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 
+#define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
+
 std::set<std::string> needTypes;
 std::set<std::string> needClasses;
 std::set<std::string> excludeTypes;
@@ -166,7 +168,7 @@ std::string idlType (GType g)
         return "FBlock";
       else if (s == "SfiRec")
         return "Rec";
-      g_error ("bseprocidl: unsupported argument type: %s", s.c_str());
+      app_error ("bseprocidl: unsupported argument type: %s", s.c_str());
       return "*ERROR*";
     }
 }

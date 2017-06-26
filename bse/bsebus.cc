@@ -174,7 +174,7 @@ bus_disconnect_outputs (BseBus *self)
     {
       Bse::Error error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
       if (error != 0)
-        g_warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
+        Bse::warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
   g_object_notify (G_OBJECT (self), "master-output");   /* master may have changed */
@@ -511,7 +511,7 @@ bse_bus_set_parent (BseItem *item,
       /* there should be snet=NULL if we have not yet a parent, and
        * snet should be set to NULL due to uncrossing before we are orphaned
        */
-      g_warning ("Bus[%p] has snet[%p] in set-parent", self, BSE_SUB_SYNTH (self)->snet);
+      Bse::warning ("Bus[%p] has snet[%p] in set-parent", self, BSE_SUB_SYNTH (self)->snet);
     }
 }
 

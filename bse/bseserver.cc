@@ -286,7 +286,7 @@ static void
 bse_server_set_parent (BseItem *item,
 		       BseItem *parent)
 {
-  g_warning ("%s: BseServer is a global singleton that cannot be added to a container", G_STRLOC);
+  Bse::warning ("%s: BseServer is a global singleton that cannot be added to a container", G_STRLOC);
 }
 
 static void
@@ -336,7 +336,7 @@ bse_server_release_children (BseContainer *container)
 {
   // BseServer *self = BSE_SERVER (container);
 
-  g_warning ("release_children() should never be triggered on BseServer singleton");
+  Bse::warning ("release_children() should never be triggered on BseServer singleton");
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -759,7 +759,7 @@ bse_server_remove_io_watch (BseServer *server,
   assert_return (watch_func != NULL);
 
   if (!iowatch_remove (server, watch_func, data))
-    g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
+    Bse::warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
 Bse::Error

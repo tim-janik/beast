@@ -326,8 +326,7 @@ bse_sub_synth_context_create (BseSource *source,
   /* create new context for foreign synth */
   if (snet && g_slist_find (recursion_stack, source))
     {
-      g_warning ("%s: not creating modules for %s due to infinite recursion",
-		 bse_object_debug_name (self), bse_object_debug_name (snet));
+      Bse::warning ("%s: not creating modules for %s due to infinite recursion", bse_object_debug_name (self), bse_object_debug_name (snet));
     }
   else if (snet)
     {

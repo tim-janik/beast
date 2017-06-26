@@ -573,9 +573,9 @@ bse_item_cross_link (BseItem         *owner,
   if (container)
     _bse_container_cross_link (BSE_CONTAINER (container), owner, link, uncross_func);
   else
-    g_warning ("%s: %s and %s have no common anchestor", G_STRLOC,
-               bse_object_debug_name (owner),
-               bse_object_debug_name (link));
+    Bse::warning ("%s: %s and %s have no common anchestor", G_STRLOC,
+                  bse_object_debug_name (owner),
+                  bse_object_debug_name (link));
 }
 
 /**
@@ -602,9 +602,9 @@ bse_item_cross_unlink (BseItem        *owner,
   if (container)
     _bse_container_cross_unlink (BSE_CONTAINER (container), owner, link, uncross_func);
   else
-    g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
-               BSE_OBJECT_TYPE_NAME (owner),
-               BSE_OBJECT_TYPE_NAME (link));
+    Bse::warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
+                  BSE_OBJECT_TYPE_NAME (owner),
+                  BSE_OBJECT_TYPE_NAME (link));
 }
 
 /**
@@ -756,8 +756,8 @@ bse_item_execva_i (BseItem     *item,
 
   if (!proc_type)
     {
-      g_warning ("no such method \"%s\" of item %s",
-                 procedure, bse_object_debug_name (item));
+      Bse::warning ("no such method \"%s\" of item %s",
+                    procedure, bse_object_debug_name (item));
       return Bse::Error::INTERNAL;
     }
 
@@ -900,8 +900,8 @@ undo_call_proc (BseUndoStep  *ustep,
         }
       /* we're not tolerating any errors */
       if (error != 0)
-        g_warning ("while executing undo method \"%s\" of item %s: %s", BSE_PROCEDURE_NAME (proc),
-                   bse_object_debug_name (g_value_get_object (ivalues + 0)), bse_error_blurb (error));
+        Bse::warning ("while executing undo method \"%s\" of item %s: %s", BSE_PROCEDURE_NAME (proc),
+                      bse_object_debug_name (g_value_get_object (ivalues + 0)), bse_error_blurb (error));
     }
 }
 
@@ -925,8 +925,8 @@ bse_item_push_undo_proc_valist (void        *item,
     }
   if (!proc_type)
     {
-      g_warning ("no such method \"%s\" of item %s",
-                 procedure, bse_object_debug_name (item));
+      Bse::warning ("no such method \"%s\" of item %s",
+                    procedure, bse_object_debug_name (item));
       bse_item_undo_close (ustack);
       return;
     }
@@ -935,8 +935,8 @@ bse_item_push_undo_proc_valist (void        *item,
   /* we allow one return value */
   if (proc->n_out_pspecs > 1)
     {
-      g_warning ("method \"%s\" of item %s called with more than one return value",
-                 procedure, bse_object_debug_name (item));
+      Bse::warning ("method \"%s\" of item %s called with more than one return value",
+                    procedure, bse_object_debug_name (item));
       g_type_class_unref (proc);
       bse_item_undo_close (ustack);
       return;
@@ -963,8 +963,8 @@ bse_item_push_undo_proc_valist (void        *item,
     }
   else /* urg shouldn't happen */
     {
-      g_warning ("while collecting arguments for method \"%s\" of item %s: %s",
-                 procedure, bse_object_debug_name (item), bse_error_blurb (error));
+      Bse::warning ("while collecting arguments for method \"%s\" of item %s: %s",
+                    procedure, bse_object_debug_name (item), bse_error_blurb (error));
       for (i = 0; i < proc->n_in_pspecs; i++)
         g_value_unset (ivalues + i);
       g_free (ivalues);
@@ -1040,16 +1040,16 @@ bse_item_set_valist_undoable (void       *object,
       pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), name);
       if (!pspec)
         {
-          g_warning ("item %s has no property named `%s'",
-                     bse_object_debug_name (self), name);
+          Bse::warning ("item %s has no property named `%s'",
+                        bse_object_debug_name (self), name);
           break;
         }
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       G_VALUE_COLLECT (&value, var_args, 0, &error);
       if (error)
         {
-          g_warning ("while setting property `%s' on %s: %s",
-                     name, bse_object_debug_name (self), error);
+          Bse::warning ("while setting property `%s' on %s: %s",
+                        name, bse_object_debug_name (self), error);
           g_free (error);
           g_value_unset (&value);
           break;
@@ -1307,8 +1307,8 @@ undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
   if (error != 0) // undo errors shouldn't happen
     {
       String *blurb = (String*) ustep->data[2].v_pointer;
-      g_warning ("error during undo '%s' of item %s: %s", blurb->c_str(),
-                 self.debug_name().c_str(), bse_error_blurb (error));
+      Bse::warning ("error during undo '%s' of item %s: %s", blurb->c_str(),
+                    self.debug_name().c_str(), bse_error_blurb (error));
     }
 }
 

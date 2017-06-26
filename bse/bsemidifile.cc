@@ -336,7 +336,7 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
           BseTrack *btrack = track->as<BseTrack*>();
           Bse::Error error = track->ensure_output();
           if (error != 0)
-            g_warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
+            Bse::warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
           bse_item_set_undoable (btrack, "n-voices", 24, NULL);
           Bse::PartIfaceP part_iface = song.create_part();
           BsePart *bpart = part_iface->as<BsePart*>();

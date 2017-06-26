@@ -172,7 +172,7 @@ bse_midi_voice_switch_dispose (GObject *object)
   BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (object);
 
   if (self->midi_voices)
-    g_warning ("disposing voice-switch with active midi voices");
+    Bse::warning ("disposing voice-switch with active midi voices");
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (voice_switch_parent_class)->dispose (object);
@@ -363,8 +363,8 @@ bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
 	break;
     }
   if (!slist)
-    g_warning ("module %s has no midi voice for context %u",
-	       bse_object_debug_name (self), context_handle);
+    Bse::warning ("module %s has no midi voice for context %u",
+                  bse_object_debug_name (self), context_handle);
   else
     {
       mvoice->ref_count--;

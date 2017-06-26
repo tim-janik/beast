@@ -152,8 +152,8 @@ bse_context_merger_context_create (BseSource    *source,
     {
       module = bse_source_get_context_imodule (source, self->merge_context);
       if (!module)
-	g_warning ("context merger: request to merge context (%u) with non existing context (%u)",
-		   context_handle, self->merge_context);
+	Bse::warning ("context merger: request to merge context (%u) with non existing context (%u)",
+                      context_handle, self->merge_context);
       else
 	{
 	  ContextModuleData *cmdata = (ContextModuleData*) module->user_data;

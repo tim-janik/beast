@@ -163,10 +163,7 @@ bse_container_finalize (GObject *gobject)
   BseContainer *container = BSE_CONTAINER (gobject);
 
   if (container->n_items)
-    g_warning ("%s: finalize handlers missed to remove %u items from %s",
-               G_STRLOC,
-               container->n_items,
-               BSE_OBJECT_TYPE_NAME (container));
+    Bse::warning ("%s: finalize handlers missed to remove %u items from %s", G_STRLOC, container->n_items, BSE_OBJECT_TYPE_NAME (container));
 
   /* chain parent class' finalize handler */
   G_OBJECT_CLASS (parent_class)->finalize (gobject);
@@ -860,10 +857,10 @@ _bse_container_cross_unlink (BseContainer  *container,
         }
     }
   if (!found_one)
-    g_warning ("no cross link from `%s' to `%s' on `%s' to remove",
-               G_OBJECT_TYPE_NAME (owner),
-               G_OBJECT_TYPE_NAME (link),
-               G_OBJECT_TYPE_NAME (container));
+    Bse::warning ("no cross link from `%s' to `%s' on `%s' to remove",
+                  G_OBJECT_TYPE_NAME (owner),
+                  G_OBJECT_TYPE_NAME (link),
+                  G_OBJECT_TYPE_NAME (container));
 
   g_object_unref (link);
   g_object_unref (owner);

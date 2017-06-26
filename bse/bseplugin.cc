@@ -72,7 +72,7 @@ bse_plugin_dispose (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", __func__);
+    Bse::warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
@@ -84,7 +84,7 @@ bse_plugin_finalize (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", __func__);
+    Bse::warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
@@ -281,7 +281,7 @@ bse_exports__del_node (BsePlugin               *plugin,
 {
   if (!plugin || !enode)
     {
-      g_warning ("%s: invalid plugin shutdown", __func__);
+      Bse::warning ("%s: invalid plugin shutdown", __func__);
       return;
     }
   BseExportNode *last = NULL, *link;
@@ -294,7 +294,7 @@ bse_exports__del_node (BsePlugin               *plugin,
           plugin->chain = link->next;
         return;
       }
-  g_warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
+  Bse::warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
 }
 static void
 bse_plugin_unload (BsePlugin *plugin)
@@ -322,7 +322,7 @@ bse_plugin_unuse (GTypePlugin *gplugin)
 	bse_plugin_unload (plugin);
       else
 	{
-	  g_warning ("%s: attempt to unload builtin plugin due to use_count==0", G_STRLOC);
+	  Bse::warning ("%s: attempt to unload builtin plugin due to use_count==0", G_STRLOC);
 	  plugin->use_count = 1;
 	}
     }
@@ -434,7 +434,7 @@ bse_plugin_reinit_types (BsePlugin *plugin)
         }
     }
   while (n--)
-    g_warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
+    Bse::warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
   g_free (types);
 }
 

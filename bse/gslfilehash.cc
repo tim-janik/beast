@@ -133,8 +133,7 @@ gsl_hfile_close (GslHFile *hfile)
   else
     {
       if (!g_hash_table_remove (hfile_ht, hfile))
-	g_warning ("%s: failed to unlink hashed file (%p)",
-		   G_STRLOC, hfile);
+        Bse::warning ("%s: failed to unlink hashed file (%p)", __func__, hfile);
       else
 	{
 	  hfile->ocount = 0;

@@ -197,7 +197,7 @@ bse_object_do_dispose (GObject *gobject)
   BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
 
   if (BSE_OBJECT_IN_RESTORE (object))
-    g_warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
+    Bse::warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
 
   /* perform release notification */
   g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
@@ -741,7 +741,7 @@ bse_object_reemit_signal (gpointer     src_object,
                   g_object_class_find_property (G_OBJECT_GET_CLASS (dest_object),
                                                 g_quark_to_string (key.dest_detail))))))
 	    {
-	      g_warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
+	      Bse::warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
 	      return;
 	    }
 	  e = (EClosure*) g_closure_new_simple (sizeof (EClosure), dest_object);
@@ -764,8 +764,7 @@ bse_object_reemit_signal (gpointer     src_object,
 	e->erefs++;
     }
   else
-    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
-	       G_STRLOC, src_signal, dest_signal);
+    Bse::warning ("%s: invalid signal specs: \"%s\", \"%s\"", G_STRLOC, src_signal, dest_signal);
 }
 
 void
@@ -801,13 +800,12 @@ bse_object_remove_reemit (gpointer     src_object,
 	    }
 	}
       else
-	g_warning ("%s: no reemission for object %s signal \"%s\" to object %s signal \"%s\"",
-		   G_STRLOC, bse_object_debug_name (src_object), src_signal,
-		   bse_object_debug_name (dest_object), dest_signal);
+	Bse::warning ("%s: no reemission for object %s signal \"%s\" to object %s signal \"%s\"", G_STRLOC,
+                      bse_object_debug_name (src_object), src_signal,
+                      bse_object_debug_name (dest_object), dest_signal);
     }
   else
-    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
-	       G_STRLOC, src_signal, dest_signal);
+    Bse::warning ("%s: invalid signal specs: \"%s\", \"%s\"", G_STRLOC, src_signal, dest_signal);
 }
 
 static void

@@ -254,7 +254,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	      rle_buffer += length;
 	    }
           if (check_overrun)
-            g_warning ("%s(): `pixdata' encoding screwed", RAPICORN_SIMPLE_FUNCTION);
+            Bse::warning ("%s(): `pixdata' encoding screwed", RAPICORN_SIMPLE_FUNCTION);
         }
     }
   else

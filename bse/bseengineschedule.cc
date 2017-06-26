@@ -86,7 +86,7 @@ unschedule_cycle (EngineSchedule *sched,
     {
       EngineNode *node = (EngineNode*) walk->data;
       if (!ENGINE_NODE_IS_SCHEDULED (node))
-	g_warning ("node(%p) in schedule ring(%p) is untagged", node, ring);
+        Bse::warning ("%s: node(%p) in schedule ring(%p) is untagged", __func__, node, ring);
       node->sched_leaf_level = 0;
       node->sched_tag = FALSE;
       if (node->flow_jobs)

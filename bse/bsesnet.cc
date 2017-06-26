@@ -134,9 +134,9 @@ bse_snet_finalize (GObject *object)
       snet->port_unregistered_id = 0;
     }
   if (snet->iport_names)
-    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'i', (gchar*) snet->iport_names->data);
+    Bse::warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'i', (gchar*) snet->iport_names->data);
   if (snet->oport_names)
-    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'o', (gchar*) snet->oport_names->data);
+    Bse::warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'o', (gchar*) snet->oport_names->data);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -173,8 +173,7 @@ bse_snet_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = sfi_ring_append (snet->sources, item);
   else if (BSE_SNET_USER_SYNTH (snet))
-    g_warning ("BseSNet: cannot hold non-source item type `%s'",
-               BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSNet: cannot hold non-source item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -222,8 +221,7 @@ bse_snet_remove_item (BseContainer *container,
         self->sources = sfi_ring_remove (self->sources, item);
     }
   else if (BSE_SNET_USER_SYNTH (self))
-    g_warning ("BseSNet: cannot hold non-source item type `%s'",
-               BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSNet: cannot hold non-source item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -696,7 +694,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
     }
   else
     {
-      g_warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
+      Bse::warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
       bse_source_free_collection (ring);
     }
 
@@ -781,9 +779,9 @@ bse_snet_reset (BseSource *source)
     {
       BseSNetPort *port = (BseSNetPort*) g_bsearch_array_get_nth (self->port_array, &port_array_config, 0);
 
-      g_warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p",
-		 G_STRLOC, port->input ? 'i' : 'o', port->name,
-		 port->context, port->src_omodule, port->dest_imodule);
+      Bse::warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p", G_STRLOC,
+                    port->input ? 'i' : 'o', port->name,
+                    port->context, port->src_omodule, port->dest_imodule);
     }
   g_bsearch_array_free (self->port_array, &port_array_config);
   self->port_array = NULL;

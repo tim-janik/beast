@@ -42,7 +42,7 @@ bse_module_new (const BseModuleClass *klass,
   assert_return (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
     {
-      g_warning ("%s: Delay cycle processing not yet implemented", G_STRLOC);
+      Bse::warning ("%s: Delay cycle processing not yet implemented", __func__);
       return NULL;
     }
 
