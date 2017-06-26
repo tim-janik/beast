@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-19 00:35+0200\n"
+"POT-Creation-Date: 2017-06-27 00:09+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "X-Generator: KBabel 1.10.2\n"
 "Plural-Forms: nplurals=2;plural=(n!=1)\n"
 
-#: bse/bsemain.cc:145
+#: bse/bsemain.cc:128
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -30,7 +30,7 @@ msgstr ""
 "\n"
 "उपलब्ध मिडि ड्राइभर:\n"
 
-#: bse/bsemain.cc:143
+#: bse/bsemain.cc:126
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -227,95 +227,95 @@ msgstr "भर्चुलाइजेसन/अवास्तविक सब 
 msgid "1/1"
 msgstr "१/१"
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 msgid "1/1."
 msgstr "१/१."
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 msgid "1/128"
 msgstr "१/१२८"
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 msgid "1/128."
 msgstr "१/१२८."
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 msgid "1/128T"
 msgstr "१/१२८ टी"
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 msgid "1/16"
 msgstr "१/१६"
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 msgid "1/16."
 msgstr "१/१६."
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 msgid "1/16T"
 msgstr "१/१६ टी"
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 msgid "1/1T"
 msgstr "१/१ टी"
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 msgid "1/2"
 msgstr "१/२"
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 msgid "1/2."
 msgstr "१/२."
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 msgid "1/2T"
 msgstr "१/२ टी"
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 msgid "1/32"
 msgstr "१/३२"
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 msgid "1/32."
 msgstr "१/३२."
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 msgid "1/32T"
 msgstr "१/३२ टी"
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 msgid "1/4"
 msgstr "१/४"
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 msgid "1/4."
 msgstr "१/४."
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 msgid "1/4T"
 msgstr "१/४ टी"
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 msgid "1/64"
 msgstr "१/६४"
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 msgid "1/64."
 msgstr "१/६४."
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 msgid "1/64T"
 msgstr "१/६४ टी"
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 msgid "1/8"
 msgstr "१/८"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 msgid "1/8."
 msgstr "१/८."
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 msgid "1/8T"
 msgstr "१/८ टी"
 
@@ -323,7 +323,7 @@ msgstr "१/८ टी"
 msgid "1024 Value FFT Window"
 msgstr "१०२४ मान FFT सञ्झ्याल"
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 msgid "12"
 msgstr "१२"
 
@@ -336,7 +336,7 @@ msgstr ""
 msgid "128 Value FFT Window"
 msgstr "१२८ मान FFT सञ्झ्याल"
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 msgid "16"
 msgstr "१६"
 
@@ -388,11 +388,11 @@ msgstr "१\\/६४"
 msgid "1\\/8"
 msgstr "१\\/८"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 msgid "2"
 msgstr "२"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 msgid "2 & 4"
 msgstr "२ र ४"
 
@@ -424,15 +424,15 @@ msgstr ""
 msgid "2nd Harmonic"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 msgid "3"
 msgstr "३"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 msgid "3 & 12"
 msgstr "३ र १२"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 msgid "3 & 6"
 msgstr "३ र ६"
 
@@ -444,19 +444,19 @@ msgstr "३२ मान FFT सञ्झ्याल"
 msgid "32768 Value FFT Window"
 msgstr "३२७६८ मान FFT सञ्झ्याल"
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 msgid "4"
 msgstr "४"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 msgid "4 & 12"
 msgstr "४ र १२"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 msgid "4 & 16"
 msgstr "४ र १६"
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 msgid "4 & 8"
 msgstr "४ र ८"
 
@@ -492,11 +492,11 @@ msgstr ""
 msgid "512 Value FFT Window"
 msgstr "५१२ मान FFT सञ्झ्याल"
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 msgid "6"
 msgstr "६"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 msgid "6 & 12"
 msgstr "६ र १२"
 
@@ -512,11 +512,11 @@ msgstr "६५५३६ मान FFT सञ्झ्याल"
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 msgid "8"
 msgstr "८"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 msgid "8 & 16"
 msgstr "८ र १६"
 
@@ -781,7 +781,7 @@ msgstr "पङ्क्तिको सट्टा डी बी मान स�
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1106
 msgid "Adjustments"
 msgstr "समायोजन"
 
@@ -899,12 +899,12 @@ msgstr "रेकर्डिङ फाइल खोल्दा त्रुट
 msgid "Answers to frequently asked questions"
 msgstr "लगातार सोधिने प्रश्नहरूको उत्तर दिन्छ"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Anti-Alias"
 msgstr "एन्टी-एलाइज"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr "बाँन्की सम्पादक सजावटमा कन्फिगरेसन परिवर्तन लागू गर्नुहोस्"
 
@@ -972,7 +972,7 @@ msgstr ""
 "क्लिप्पिङ बिना। यसको पूर्णरूपमा प्रभाव सङ्गीतको ठूलो ध्वनिमा छ। हाम्रो उदाहरणमा, निर्गत "
 "एम्प्लिफिकेसन ५dB पारित हुन्छ, यदि आगत सङ्केतले ० dB कहिले पनि नाग्दैन ।"
 
-#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:493
+#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:492
 msgid "Assignments"
 msgstr "पङ्क्तिबद्वता"
 
@@ -1269,31 +1269,31 @@ msgstr "BSE बहु-अंश वेभ फाइल"
 msgid "BSE Synthesis File"
 msgstr "BSE सिन्थेसिस फाइल"
 
-#: beast-gtk/bstapi.idl:136 beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:156
+#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:161
 msgid "Background Color"
 msgstr "पृष्ठभुमि रङ"
 
-#: beast-gtk/bstapi.idl:134 beast-gtk/bstapi.idl:144 beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:139 beast-gtk/bstapi.idl:149 beast-gtk/bstapi.idl:159
 msgid "Background Image"
 msgstr "पृष्ठभूमि छवि"
 
-#: beast-gtk/bstapi.idl:137
+#: beast-gtk/bstapi.idl:142
 msgid "Background Shade 1"
 msgstr "पृष्ठभूमि सेड १"
 
-#: beast-gtk/bstapi.idl:138
+#: beast-gtk/bstapi.idl:143
 msgid "Background Shade 2"
 msgstr "पृष्ठभूमि सेड २"
 
-#: beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:159
 msgid "Background image used by the control events editor."
 msgstr "नियन्त्रण घटना सम्पादकद्वारा प्रयोग गर्ने पृष्ठभूमि छवि"
 
-#: beast-gtk/bstapi.idl:134
+#: beast-gtk/bstapi.idl:139
 msgid "Background image used by the pattern editor."
 msgstr "बाँन्की सम्पादनकद्वारा प्रयोग गरिएको पृष्ठभूमि छवि"
 
-#: beast-gtk/bstapi.idl:144
+#: beast-gtk/bstapi.idl:149
 msgid "Background image used by the piano-roll editor."
 msgstr "पियानो-रोल सम्पादनकद्वारा प्रयोग गरिएको पृष्ठभूमि छवि"
 
@@ -1550,7 +1550,7 @@ msgid "Color Entry"
 msgstr "रङ प्रविष्टि"
 
 #: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Comment"
 msgstr "टिप्पणी"
 
@@ -1563,12 +1563,12 @@ msgid "Compressed audio output 2"
 msgstr "कम्प्रेस्ड अडियो आगत २"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 msgid "Configure"
 msgstr "कन्फिगर गर्नुहोस्"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 msgid "Configure the column layout of the pattern editor"
 msgstr "बाँन्की सम्पादकको स्तम्भ सजावट कन्फिगर गर्नुहोस्"
 
@@ -2009,7 +2009,7 @@ msgid "Control Type"
 msgstr "नियन्त्रण प्रकार:"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:520
+#: beast-gtk/res/radgets-beast.xml:522
 msgid "Control Type:"
 msgstr "नियन्त्रण प्रकार:"
 
@@ -2236,7 +2236,7 @@ msgstr "हालमा चयन गरिएको ट्र्याक म�
 msgid "Delete the currently selected wave"
 msgstr "हालमा चयन गरिएको तरङ मेट्नुहोस्"
 
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 msgid "Denominator"
 msgstr "हर"
 
@@ -2325,7 +2325,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 msgid "Discard changes and close dialog"
 msgstr "परिवर्तन छोडेर बन्द गर्नुहोस्"
 
@@ -2399,35 +2399,35 @@ msgstr "गरियो"
 msgid "Done Output"
 msgstr "गरियो"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 msgid "Dotted eighths note"
 msgstr "आठौं द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 msgid "Dotted half note"
 msgstr "आधा द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 msgid "Dotted hundred twenty-eighth note"
 msgstr "एक सय अठ्ठाइसौं द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 msgid "Dotted quarter note"
 msgstr "चौथाइ द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 msgid "Dotted sixteenth note"
 msgstr "सोर्हौं द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 msgid "Dotted sixty-fourth note"
 msgstr "चौसाठ्ठिऔं द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 msgid "Dotted thirty-secondth note"
 msgstr "बत्तिसौं द्रष्टव्य थोप्ला"
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 msgid "Dotted whole note"
 msgstr "पूरा द्रष्टव्य थोप्ला"
 
@@ -2443,7 +2443,7 @@ msgstr "मान कोर्नुहोस्"
 msgid "Draw a line to align events to"
 msgstr "यसमा घटना पङ्क्तिबद्ध गर्न लाइन कोर्नुहोस्"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "एन्टी-एलाइज गरिएको सिन्थेसिस सञ्जाल कोर्नुहुन्छ ?"
 
@@ -2526,7 +2526,7 @@ msgstr "प्रभाव नियन्त्रण २"
 msgid "Effect Path"
 msgstr "प्रभाव बाटो"
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 msgid "Eighths note"
 msgstr "आठौं द्रष्टव्य"
 
@@ -2534,16 +2534,16 @@ msgstr "आठौं द्रष्टव्य"
 msgid "Emphasis"
 msgstr "महत्व"
 
-#: beast-gtk/bstapi.idl:139
+#: beast-gtk/bstapi.idl:144
 msgid "Empty Field Color"
 msgstr "खाली फिल्ड रङ"
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 #, fuzzy
 msgid "Enable Error Bell"
 msgstr "घातक त्रुटि: "
 
-#: beast-gtk/bstapi.idl:119
+#: beast-gtk/bstapi.idl:124
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2594,67 +2594,67 @@ msgid "Error: "
 msgstr "त्रुटि: "
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:500
+#: beast-gtk/res/radgets-beast.xml:502
 msgid "Events"
 msgstr "घटना"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 msgid "Every eighth and sixteenth row"
 msgstr "हरेक आठौं र सोर्हौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 msgid "Every eighth row"
 msgstr "हरेक आठौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 msgid "Every fourth and eighth row"
 msgstr "हरेक चौथो र आठौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 msgid "Every fourth and sixteenth row"
 msgstr "हरेक चौथो र सोर्हौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 msgid "Every fourth and twelfth row"
 msgstr "हरेक चौथो र बार्हौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 msgid "Every fourth row"
 msgstr "हरेक चौथों पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 msgid "Every second and fourth row"
 msgstr "हरेक दोस्रो र चौथों पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 msgid "Every second row"
 msgstr "हरेक दोस्रो पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 msgid "Every sixteenth row"
 msgstr "हरेक सोर्हौ पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 msgid "Every sixth and twelfth row"
 msgstr "हरेक छैठौं र बार्हौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 msgid "Every sixth row"
 msgstr "हरेक छैठौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 msgid "Every third and sixth row"
 msgstr "हरेक तेस्रो र छैठौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 msgid "Every third and twelfth row"
 msgstr "हरेक तेस्रो र बार्हौं पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 msgid "Every third row"
 msgstr "हरेक तेस्रो पङ्क्ति"
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 msgid "Every twelfth row"
 msgstr "हरेक बार्हौं पङ्क्ति"
 
@@ -2810,7 +2810,7 @@ msgstr "डिक्समा रेकर्डिङ सुरु गर्न
 msgid "Failed to start recording from audio device."
 msgstr "अडियो यन्त्रबाट रेकर्ड सुरु गर्न असफल"
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "सिन्थेसिस मोड्युल निर्माण गरेपछि सम्पादन मोडबाट पछि हट्नुहुन्छ ?"
 
@@ -2944,11 +2944,11 @@ msgstr "फ्लिप स्पेक्ट्रम प्रदर्शन,
 msgid "Flute Sounds"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 msgid "Font Size"
 msgstr "वर्णको साइज"
 
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "सिन्थेसिस सञ्जालमा प्रर्दशित लेबुलका लागि पिक्सेलमा फन्ट साइज"
 
@@ -2960,7 +2960,7 @@ msgstr "पाद नियन्त्रक"
 msgid "Format"
 msgstr "ढाँचा"
 
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3134,11 +3134,11 @@ msgid "HWrap"
 msgstr "एच र्याप"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:451
 msgid "HZoom"
 msgstr "एच जुम"
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 msgid "Half note"
 msgstr "आधा द्रष्टव्य"
 
@@ -3166,15 +3166,15 @@ msgstr "उपकरणले सिन्थेसाइजिङ गर्य�
 msgid "Hit the drum on raising edges"
 msgstr "बढेको कुनामा ड्रम हिर्काउनुहोस्"
 
-#: beast-gtk/bstapi.idl:118
+#: beast-gtk/bstapi.idl:123
 msgid "Homogeneous Input Fields"
 msgstr "उस्तै प्रकारको आगत फाँट"
 
-#: beast-gtk/bstapi.idl:147 beast-gtk/bstapi.idl:157
+#: beast-gtk/bstapi.idl:152 beast-gtk/bstapi.idl:162
 msgid "Horizontal Bar Color"
 msgstr "तेर्सो पट्टी रङ"
 
-#: beast-gtk/bstapi.idl:149
+#: beast-gtk/bstapi.idl:154
 msgid "Horizontal Grid Color"
 msgstr "तेर्सो ग्रिड रङ"
 
@@ -3187,7 +3187,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr "तेर्सो मापन (लोगारिथ्मिक)"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:447
+#: beast-gtk/res/radgets-beast.xml:449
 msgid "Horizontal piano zoom"
 msgstr "तेर्सो पियानो जुम"
 
@@ -3196,7 +3196,7 @@ msgstr "तेर्सो पियानो जुम"
 msgid "Horizontal track zoom"
 msgstr "तेर्सो ट्र्याक जुम"
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 msgid "Hundred twenty-eighth note"
 msgstr "एक सय अठ्ठाइसौं द्रष्टव्य"
 
@@ -3221,7 +3221,7 @@ msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr "यदि सेट भएमा, भरि भएको पाठ काटिन्छ र सट्टामा इलिप्सिस् \"...\" प्रदर्शन हुन्छ"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 msgid "Image shade"
 msgstr "छवि सेड"
 
@@ -3295,7 +3295,7 @@ msgstr "आगत १ [%]"
 msgid "Input 2 [%]"
 msgstr "आगत २ [%]"
 
-#: bse/bsesubsynth.cc:505
+#: bse/bsesubsynth.cc:504
 msgid "Input Assignments"
 msgstr "आगत पङ्क्तिबद्वता"
 
@@ -3308,7 +3308,7 @@ msgstr "आगत च्यानल %u"
 msgid "Input Modulation [%]"
 msgstr "आगत मोड्युलेसन [%]"
 
-#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:503
+#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:502
 #, c-format
 msgid "Input Port %u"
 msgstr "आगत पोर्ट %u"
@@ -3330,7 +3330,7 @@ msgstr "प्रयोगमा च्यानल आगत"
 msgid "Input channel is private"
 msgstr "आगत च्यानल गोप्य छ"
 
-#: bse/bsesubsynth.cc:516
+#: bse/bsesubsynth.cc:515
 msgid "Input port name to interface to"
 msgstr "यसलाई इन्टरफेस गर्न आगत पोर्ट नाम"
 
@@ -3347,8 +3347,9 @@ msgstr "निर्गत/आगत च्यानलहरू जडान �
 msgid "Input/output error"
 msgstr "निर्गत/आगत त्रुटि"
 
+#. TRANSLATORS: Inputs is used for input busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:319
+#: beast-gtk/res/radgets-beast.xml:320
 msgid "Inputs"
 msgstr "आगत"
 
@@ -3561,7 +3562,7 @@ msgid "Latency [ms]"
 msgstr "ल्याटेन्स  [ms]"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:568
+#: beast-gtk/res/radgets-beast.xml:570
 msgid "Layout:"
 msgstr "सजावट:"
 
@@ -3813,7 +3814,7 @@ msgstr "लोड हुँदैछ..."
 msgid "Location"
 msgstr "स्थान"
 
-#: bse/bsesong.cc:737 bse/bsesong.cc:741 bse/bsesong.cc:746 bse/bsesong.cc:751
+#: bse/bsesong.cc:740 bse/bsesong.cc:744 bse/bsesong.cc:749 bse/bsesong.cc:754
 msgid "Looping"
 msgstr "लूप"
 
@@ -3850,7 +3851,7 @@ msgstr "नियन्त्रण सङ्केतका लागि लो
 msgid "MIDI"
 msgstr "मिडि"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1133
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
@@ -3859,8 +3860,8 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
-#: bse/bsetrack.cc:1138
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:736 bse/bsetrack.cc:1131
+#: bse/bsetrack.cc:1137
 msgid "MIDI Instrument"
 msgstr "मिडि बाजा"
 
@@ -3909,7 +3910,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:601
+#: bse/bsesong.cc:604
 msgid "Master"
 msgstr "मास्टर"
 
@@ -3933,19 +3934,19 @@ msgstr "मास्टर [dB]"
 msgid "Master [float]"
 msgstr "मास्टर [फ्लोट]"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 msgid "Max Voices"
 msgstr "म्याक्स स्वर"
 
-#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "समकालिन प्लेब्याकका लागि आवाजको अधिकतम सङ्ख्या"
 
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 msgid "Measure denominator, must be a power of 2"
 msgstr "हर नाप्नुहोस्, यसको पावर २ हुनुपर्दछ"
 
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 msgid "Measure numerator"
 msgstr "गणक नाप्नुहोस्"
 
@@ -3999,11 +4000,11 @@ msgstr ""
 msgid "Metallicness of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:158
+#: beast-gtk/bstapi.idl:156 beast-gtk/bstapi.idl:163
 msgid "Middle Bar Color"
 msgstr "मध्य पट्टी रङ"
 
-#: bse/bsetrack.cc:1135
+#: bse/bsetrack.cc:1134
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "यो ट्र्याकका लागि मिडि च्यानलको मानाङ्कन गर्नुहोस्, ० ले अवधि प्रति ट्र्याक च्यानल प्रयोग "
@@ -4042,7 +4043,7 @@ msgstr "मिश्रण बसहरू ट्र्याक आगतका
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "सिन्थेसिस सङ्केतका लागि आगतको मिश्रण बस"
 
-#: bse/bsetrack.cc:1145
+#: bse/bsetrack.cc:1144
 msgid "Mixer busses used as output for this track"
 msgstr "यो ट्र्याकका लागि निर्गतको रूपमा प्रयोग गरिने मिश्रण बस"
 
@@ -4194,16 +4195,16 @@ msgstr "मौन"
 msgid "Mute: turn off the bus volume"
 msgstr "मौन: बसको भोल्युम बन्द गर्नुहोस्"
 
-#: bse/bsetrack.cc:1109
+#: bse/bsetrack.cc:1108
 msgid "Muted"
 msgstr "मौन गराइएको"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:853
 msgid "Name"
 msgstr "नाम"
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "हालको स्किन कन्फिगरेसनका लागि नाम (स्किन चयनका लागि प्रयोग गरिने)"
 
@@ -4211,7 +4212,7 @@ msgstr "हालको स्किन कन्फिगरेसनका ल
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "BSE ध्वनि निर्गत रेकर्ड गर्न प्रयोग गरिने वेभ फाइलको नाम"
 
-#: beast-gtk/bstapi.idl:161
+#: beast-gtk/bstapi.idl:166
 msgid "Negative Value Color"
 msgstr "नकरात्मक मान रङ"
 
@@ -4345,7 +4346,7 @@ msgid "Non-Registered Parameter"
 msgstr "दर्ता नगिएको परामिति"
 
 #. special cased signals
-#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:76
+#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:78
 #: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
 #: bse/bsebasics.idl:31
 msgid "None"
@@ -4403,7 +4404,7 @@ msgid "Note Velocity"
 msgstr "द्रष्टव्य वेग"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:480
+#: beast-gtk/res/radgets-beast.xml:482
 msgid "Note _Length"
 msgstr "द्रष्टव्य लम्बाइ"
 
@@ -4411,7 +4412,7 @@ msgstr "द्रष्टव्य लम्बाइ"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.cc:181
+#: bse/bseladspamodule.cc:180
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -4425,7 +4426,7 @@ msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "प्लेब्याकको बेला जाँच नभएको ट्र्याकहरूबाट टिप्पणीहरू अनुक्रमणद्वारा वेबस्ता गरियो"
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
 
@@ -4441,11 +4442,11 @@ msgstr "पङ्क्तिको सङ्ख्या"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "एक्सपोनेन्सियल आवृति मोडुलेसनबाट प्रभावित हुने अक्टेभको सङ्ख्या"
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 msgid "Number of ticks per quarter note"
 msgstr "प्रति चौथाइ द्रष्टव्यमा टिकको सङ्ख्या"
 
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 msgid "Numerator"
 msgstr "गणक"
 
@@ -4569,7 +4570,7 @@ msgstr "उत्पत्ती:  %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1025
+#: bse/bsesong.cc:1028
 msgid "Orphan Parts"
 msgstr "ओर्फन अंश"
 
@@ -4621,7 +4622,7 @@ msgstr "स्मृति बाहिरको"
 msgid "Output"
 msgstr "निर्गत"
 
-#: bse/bsesubsynth.cc:515
+#: bse/bsesubsynth.cc:514
 msgid "Output Assignments"
 msgstr "आगत पङ्क्तिबद्वता"
 
@@ -4633,7 +4634,7 @@ msgstr "निर्गत सन्तुलन"
 msgid "Output Panning"
 msgstr "निर्गत योजना"
 
-#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:513
+#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:512
 #, c-format
 msgid "Output Port %u"
 msgstr "निर्गत पोर्ट %u"
@@ -4642,7 +4643,7 @@ msgstr "निर्गत पोर्ट %u"
 msgid "Output Signal Monitor"
 msgstr "आगत सङ्केत मोनिटर"
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1143
 msgid "Output Signals"
 msgstr "आगत सङ्केत"
 
@@ -4659,7 +4660,7 @@ msgstr "निर्गत [dB]"
 msgid "Output of the fluid synth soundfont synthesizer"
 msgstr ""
 
-#: bse/bsesubsynth.cc:506
+#: bse/bsesubsynth.cc:505
 msgid "Output port name to interface from"
 msgstr "यसबाट इन्टरफेस गर्न निर्गत पोर्ट नाम"
 
@@ -4667,8 +4668,9 @@ msgstr "यसबाट इन्टरफेस गर्न निर्गत
 msgid "Output stage amplification in decibel"
 msgstr "डेसिबलमा आगत स्टेज एम्प्लिफिकेसन"
 
+#. TRANSLATORS: Outputs is used for output busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:341
+#: beast-gtk/res/radgets-beast.xml:343
 msgid "Outputs"
 msgstr "निर्गत"
 
@@ -4781,7 +4783,7 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr "CPU प्रयोगको प्रतिशत"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "पृष्ठभूमि छवि पिक्सेल पृष्ठभूमि रङमा ब्लेन्ड गरेको प्रतिशत"
 
@@ -4802,7 +4804,7 @@ msgid "Piano Keys"
 msgstr "पियानो कुञ्जी"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:464
+#: beast-gtk/res/radgets-beast.xml:466
 msgid "Piano Notes"
 msgstr "पियानो द्रष्टव्य"
 
@@ -4878,11 +4880,11 @@ msgstr "स्थान"
 msgid "Position taken"
 msgstr "स्थान लिइयो"
 
-#: beast-gtk/bstapi.idl:159
+#: beast-gtk/bstapi.idl:164
 msgid "Positive Value Color"
 msgstr "सकरात्मक मान रङ"
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:738 bse/bsetrack.cc:1139
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर"
 
@@ -5108,7 +5110,7 @@ msgstr "बत्तिसौं द्रष्टव्य सीमाला�
 msgid "Quantize to whole note boundaries"
 msgstr "सम्पूर्ण द्रष्टव्य सीमालाई परिमाणात्मक गर्नुहोस्"
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 msgid "Quarter note"
 msgstr "चौथाइ द्रष्टव्य"
 
@@ -5187,7 +5189,10 @@ msgstr "दर्ता गरिएको परामिति"
 msgid "Release [ms]"
 msgstr "छोड्नुहोस् [ms]"
 
-#: beast-gtk/bstapi.idl:105
+#. TRANSLATORS: the release counter corresponds to the beast version and is stored in the config file
+#. * to be able to load old versions of the config file
+#.
+#: beast-gtk/bstapi.idl:110
 msgid "Release counter"
 msgstr "जारी गणक"
 
@@ -5715,22 +5720,22 @@ msgstr "मिलिसेकेन्डमा छाड्ने समय स
 msgid "Sets the value of the focus digit"
 msgstr "फोकस अङ्कको मान सेट गर्दछ"
 
-#: beast-gtk/bstapi.idl:66 beast-gtk/bstsampleeditor.cc:497
+#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:497
 #: beast-gtk/bstwaveeditor.cc:199
 msgid "Shape Average"
 msgstr "औसत आकार"
 
-#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:499
+#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:499
 #: beast-gtk/bstwaveeditor.cc:201
 msgid "Shape Maximum"
 msgstr "उच्चतम आकार"
 
-#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:498
+#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:498
 #: beast-gtk/bstwaveeditor.cc:200
 msgid "Shape Minimum"
 msgstr "न्युनतम आकार"
 
-#: beast-gtk/bstapi.idl:65 beast-gtk/bstsampleeditor.cc:496
+#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:496
 #: beast-gtk/bstwaveeditor.cc:198
 msgid "Shape Range"
 msgstr "आकारको दायरा"
@@ -5756,7 +5761,7 @@ msgstr "सङ्केत भित्री"
 msgid "Signal Inputs"
 msgstr "सङ्केत आगत"
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1141
 msgid "Signal Outputs"
 msgstr "सङ्केत आगत"
 
@@ -5765,15 +5770,15 @@ msgstr "सङ्केत आगत"
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 msgid "Single Edit"
 msgstr "एकल सम्पादन"
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 msgid "Sixteenth note"
 msgstr "सोर्हौं द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 msgid "Sixty-fourth note"
 msgstr "चौसठ्ठिऔं द्रष्टव्य"
 
@@ -5781,22 +5786,22 @@ msgstr "चौसठ्ठिऔं द्रष्टव्य"
 msgid "Size"
 msgstr "साइज"
 
-#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:501
+#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:501
 #: beast-gtk/bstwaveeditor.cc:203
 msgid "Sketch Average"
 msgstr "औसत रूपरेखा"
 
-#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:503
+#: beast-gtk/bstapi.idl:74 beast-gtk/bstsampleeditor.cc:503
 #: beast-gtk/bstwaveeditor.cc:205
 msgid "Sketch Maximum"
 msgstr "उच्चतम रूपरेखा"
 
-#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:502
+#: beast-gtk/bstapi.idl:73 beast-gtk/bstsampleeditor.cc:502
 #: beast-gtk/bstwaveeditor.cc:204
 msgid "Sketch Minimum"
 msgstr "न्युनतम रूपरेखा"
 
-#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:500
+#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:500
 #: beast-gtk/bstwaveeditor.cc:202
 msgid "Sketch Range"
 msgstr "रूपरेखा दायरा"
@@ -5805,11 +5810,11 @@ msgstr "रूपरेखा दायरा"
 msgid "Skin"
 msgstr "स्किन"
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 msgid "Skin Name"
 msgstr "स्किन नाम"
 
-#: beast-gtk/bstapi.idl:123
+#: beast-gtk/bstapi.idl:128
 #, fuzzy
 msgid ""
 "Slow down the periodic update frequency of scopes aggresively. Doing this "
@@ -5818,7 +5823,7 @@ msgstr ""
 "कार्यक्षेत्रको आवधिक आवृती जोडले ढिला गर्दछ । यो कार्य विशेषरूपले ढिला मेशिनमा आवश्यक "
 "हुनसक्दछ ।"
 
-#: beast-gtk/bstapi.idl:122
+#: beast-gtk/bstapi.idl:127
 msgid "Slow scopes"
 msgstr "ढिलो क्षेत्र"
 
@@ -5850,7 +5855,7 @@ msgstr "एकल"
 msgid "Solo: mute all other busses"
 msgstr "एकल: अरू बसलाई मौन गराउनुहोस्"
 
-#: bse/bsesong.cc:553
+#: bse/bsesong.cc:556
 #, fuzzy
 msgid "Song"
 msgstr "गीत"
@@ -5860,7 +5865,7 @@ msgstr "गीत"
 msgid "Song: %s"
 msgstr "गीत: %s"
 
-#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1122
 msgid "Sound Font Preset"
 msgstr ""
 
@@ -5872,7 +5877,7 @@ msgstr ""
 msgid "Sound Fonts"
 msgstr ""
 
-#: bse/bsetrack.cc:1124
+#: bse/bsetrack.cc:1123
 #, fuzzy
 msgid "Sound font preset to be used as instrument"
 msgstr "बाजामा प्रयोग गर्न सिन्थेसिस सञ्जाल"
@@ -6017,11 +6022,11 @@ msgstr ""
 msgid "String oscillation frequency in Hertz"
 msgstr "ओस्किलेटिङ आवृति आगत"
 
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 msgid "Swap IO"
 msgstr "स्वाप IO"
 
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "सिन्थेसिस मोड्युल प्रदर्शन गर्दा आगतलाई निर्गत च्यानलसँग सटाउनुहुन्छ ?"
 
@@ -6034,7 +6039,7 @@ msgstr ""
 "मिश्रण गर्नुको सट्टा, सन्तुलनद्वारा तौल गरिएको"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:331
+#: beast-gtk/res/radgets-beast.xml:332
 msgid "Switches"
 msgstr "स्विच"
 
@@ -6079,8 +6084,8 @@ msgstr "सिन्थ नियन्त्रण आवृति"
 msgid "Synth Done"
 msgstr "सिन्थ गरियो"
 
-#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
-#: bse/bsetrack.cc:1127
+#: bse/bsetrack.cc:1110 bse/bsetrack.cc:1115 bse/bsetrack.cc:1120
+#: bse/bsetrack.cc:1126
 msgid "Synth Input"
 msgstr "सिन्थ आगत"
 
@@ -6118,16 +6123,16 @@ msgstr "यो ट्र्याकद्वारा बाजाको रू
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "मिडि बाजाका रूपमा प्रयोग गर्नका लागि सिन्थेसिस सञ्झ्याल"
 
-#: bse/bsetrack.cc:1113
+#: bse/bsetrack.cc:1112
 msgid "Synthesis network to be used as instrument"
 msgstr "बाजामा प्रयोग गर्न सिन्थेसिस सञ्जाल"
 
-#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1140
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:738
+#: bse/bsetrack.cc:1139
 msgid "Synthesis network to be used as postprocessor"
 msgstr "पोष्टप्रोसेसरका रूपमा प्रयोग हुने सिन्थेसिस सञ्जाल"
 
-#: bse/bsesubsynth.cc:496
+#: bse/bsesubsynth.cc:495
 msgid "Synthesis network to use as embedded sub network"
 msgstr "सम्मिलित सब सञ्जालको रूपमा प्रयोग गर्न सिन्थेसिस सञ्जाल"
 
@@ -6138,7 +6143,7 @@ msgstr "सम्मिलित सब सञ्जालको रूपमा
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "बस आगतमा सिन्थेसिस सङ्केतहरूको प्रयोग (ट्र्याक र बसहरूबाट)"
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:494 bse/bsetrack.cc:1112
 msgid "Synthesizer"
 msgstr "सिन्थेसाइजर"
 
@@ -6178,7 +6183,7 @@ msgstr ""
 msgid "Tension of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:140
+#: beast-gtk/bstapi.idl:145
 msgid "Text Color"
 msgstr "पाठको रङ"
 
@@ -6360,7 +6365,7 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "लेबुलको एम्नेमोनिक कुञ्जी थिचेको बेलामा सक्रिय पारिने विजेट"
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 msgid "Thirty-secondth note"
 msgstr "बत्तिसौं द्रष्टव्य"
 
@@ -6420,7 +6425,7 @@ msgstr "थ्रेड प्राथमिकता -२० (उच्च) �
 msgid "Threshold [dB]"
 msgstr "थ्रेसहोल्ड [dB]"
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 msgid "Ticks"
 msgstr "टिक"
 
@@ -6446,7 +6451,7 @@ msgstr "समय प्रविष्टि"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:774 bse/bsesong.cc:721 bse/bsesong.cc:725 bse/bsesong.cc:729
+#: bse/bseapi.idl:774 bse/bsesong.cc:724 bse/bsesong.cc:728 bse/bsesong.cc:732
 msgid "Timing"
 msgstr "समय"
 
@@ -6540,35 +6545,35 @@ msgstr "ट्रिग्गर फिल्टर"
 msgid "Trigger input"
 msgstr "ट्रिग्गर आगत"
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 msgid "Triplet eighths note"
 msgstr "ट्रिप्लेट आठौं द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 msgid "Triplet half note"
 msgstr "ट्रिप्लेट आधा द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 msgid "Triplet hundred twenty-eighth note"
 msgstr "ट्रिप्लेट एक सय अठ्ठाइसौं द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 msgid "Triplet quarter note"
 msgstr "ट्रिप्लेट चौथाइ द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 msgid "Triplet sixteenth note"
 msgstr "ट्रिप्लेट सोर्हौ द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 msgid "Triplet sixty-fourth note"
 msgstr "ट्रिप्लेट चौसाठ्ठिऔं द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 msgid "Triplet thirty-secondth note"
 msgstr "ट्रिप्लेट बत्तिसौं द्रष्टव्य"
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 msgid "Triplet whole note"
 msgstr "ट्रिप्लेट पूरा द्रष्टव्य"
 
@@ -6609,7 +6614,7 @@ msgstr "फिल्टर नगरिएको अडियो सङ्के
 msgid "Unfiltered Input"
 msgstr "फिल्टर नगरिएको आगत"
 
-#: bse/bseobject.cc:855
+#: bse/bseobject.cc:853
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6647,8 +6652,8 @@ msgstr "प्रयोग नगरिएको"
 msgid "Up"
 msgstr "माथि"
 
-#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
-#: beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:277 beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:302
 msgid "Updating View"
 msgstr "दृश्य अद्यावधिक गर्दैछ"
 
@@ -6673,7 +6678,7 @@ msgid "VScale:"
 msgstr "भि स्केल:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:455
 msgid "VZoom"
 msgstr "भी जुम"
 
@@ -6706,11 +6711,11 @@ msgstr "द्रष्टव्य दबिए पछिको वेग"
 msgid "Version"
 msgstr "संस्करण"
 
-#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:148
+#: beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:153
 msgid "Vertical Bar Color"
 msgstr "ठाडो पट्टी रङ"
 
-#: beast-gtk/bstapi.idl:150
+#: beast-gtk/bstapi.idl:155
 msgid "Vertical Grid Color"
 msgstr "ठाडो ग्रिड रङ"
 
@@ -6731,7 +6736,7 @@ msgid "Vertical Select"
 msgstr "ठाडो चयन"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:451
+#: beast-gtk/res/radgets-beast.xml:453
 msgid "Vertical piano zoom"
 msgstr "ठाडो पियानो जुम"
 
@@ -6740,12 +6745,12 @@ msgstr "ठाडो पियानो जुम"
 msgid "Virtual Rack"
 msgstr "अवास्तविक र्याक"
 
-#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:523
+#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:522
 #, c-format
 msgid "Virtual input %u"
 msgstr "अवास्तविक आगत %u"
 
-#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:530
+#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:529
 #, c-format
 msgid "Virtual output %u"
 msgstr "अवास्तविक निर्गत %u"
@@ -6766,7 +6771,7 @@ msgstr "दायाँ बस च्यानलको डेसिबलमा
 msgid "WAVE File"
 msgstr "वेभ फाइल"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1117 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "तरङ्ग"
@@ -6788,7 +6793,7 @@ msgstr "तरङ निर्गत"
 msgid "Wave Repository"
 msgstr "तरङ्ग भण्डारण"
 
-#: bse/bsetrack.cc:1118
+#: bse/bsetrack.cc:1117
 msgid "Wave to be used as instrument"
 msgstr "बाजाको रूपमा प्रयोग गरिने तरङ्ग"
 
@@ -6797,7 +6802,7 @@ msgid "Wave used as oscillator source"
 msgstr "ओस्सिलेटर स्रोतको रूपमा प्रयोग गरिने तरङ्ग"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:653
+#: beast-gtk/res/radgets-beast.xml:655
 msgid "Wave_s"
 msgstr "तरङ्ग"
 
@@ -6826,7 +6831,8 @@ msgstr ""
 msgid "Wet out [%]"
 msgstr "वेट निर्गत [%]"
 
-#: beast-gtk/bstapi.idl:38
+#. TRANSLATORS: note is a noun
+#: beast-gtk/bstapi.idl:40
 msgid "Whole note"
 msgstr "पूरै द्रष्टव्य"
 
@@ -6858,7 +6864,7 @@ msgstr "एक्सटाल स्ट्रिङ निर्गत"
 msgid "Young Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:160
+#: beast-gtk/bstapi.idl:165
 msgid "Zero Value Color"
 msgstr "शून्य मान रङ"
 
@@ -6885,7 +6891,7 @@ msgid "_Add"
 msgstr "थप्नुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "_Apply"
 msgstr "लागू गर्नुहोस्"
 
@@ -6905,7 +6911,7 @@ msgid "_Beast Website..."
 msgstr "BEAST वेबसाइट..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 msgid "_Cancel"
 msgstr "रद्द गर्नुहोस्"
 
@@ -6918,7 +6924,7 @@ msgid "_Close"
 msgstr "बन्द गर्नुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:658
+#: beast-gtk/res/radgets-beast.xml:660
 msgid "_Demo"
 msgstr "डेमो"
 
@@ -6928,8 +6934,8 @@ msgid "_Distortion"
 msgstr "बग्याई"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
-#: beast-gtk/res/radgets-beast.xml:618
+#: beast-gtk/res/radgets-beast.xml:471 beast-gtk/res/radgets-beast.xml:507
+#: beast-gtk/res/radgets-beast.xml:620
 msgid "_Edit"
 msgstr "सम्पादन"
 
@@ -6943,7 +6949,7 @@ msgid "_FAQ..."
 msgstr "FAQ..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:611
+#: beast-gtk/res/radgets-beast.xml:613
 msgid "_File"
 msgstr "फाइल"
 
@@ -6963,7 +6969,7 @@ msgid "_Forward"
 msgstr "अगाडि"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:664
+#: beast-gtk/res/radgets-beast.xml:666
 msgid "_Help"
 msgstr "मद्दत"
 
@@ -7017,12 +7023,12 @@ msgid "_Preferences..."
 msgstr "प्राथमिकता..."
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:635
+#: beast-gtk/res/radgets-beast.xml:637
 msgid "_Project"
 msgstr "परियोजना"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
+#: beast-gtk/res/radgets-beast.xml:479 beast-gtk/res/radgets-beast.xml:515
 msgid "_Quantization"
 msgstr "क्वान्टिजेसन"
 
@@ -7062,17 +7068,17 @@ msgid "_Save"
 msgstr "बचत गर्नुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
+#: beast-gtk/res/radgets-beast.xml:476 beast-gtk/res/radgets-beast.xml:512
 msgid "_Select"
 msgstr "चयन गर्नुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:630
 msgid "_Skins"
 msgstr "स्किन"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:647
+#: beast-gtk/res/radgets-beast.xml:649
 msgid "_Song"
 msgstr "गीत"
 
@@ -7086,18 +7092,18 @@ msgid "_Stop"
 msgstr "रोक्नुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:650
+#: beast-gtk/res/radgets-beast.xml:652
 msgid "_Synth"
 msgstr "सिन्थ"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:640
+#: beast-gtk/res/radgets-beast.xml:642
 msgid "_Synthesizers"
 msgstr "सिन्थेसाइजर"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:468 beast-gtk/res/radgets-beast.xml:504
+#: beast-gtk/res/radgets-beast.xml:647
 msgid "_Tools"
 msgstr "उपकरण"
 
@@ -7106,12 +7112,12 @@ msgid "_Undo"
 msgstr "पूर्वस्थितिमा फर्काउनुहोस्"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:486
 msgid "_Utilities"
 msgstr "उपयोगि"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:624
+#: beast-gtk/res/radgets-beast.xml:626
 msgid "_View"
 msgstr "दृश्य"
 
@@ -7353,7 +7359,7 @@ msgstr "नियन्त्रण-९"
 msgid "control-90"
 msgstr "नियन्त्रण-९०"
 
-#: tools/bsewavetool.cc:1158
+#: tools/bsewavetool.cc:1165
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"

@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-19 00:35+0200\n"
+"POT-Creation-Date: 2017-06-27 00:09+0200\n"
 "PO-Revision-Date: 2010-06-17 23:32+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:145
+#: bse/bsemain.cc:128
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -35,7 +35,7 @@ msgstr ""
 "\n"
 "Verfügbare MIDI-Treiber:\n"
 
-#: bse/bsemain.cc:143
+#: bse/bsemain.cc:126
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -239,95 +239,95 @@ msgstr "/Virtualisierung/Virtuelle Subsynthese"
 msgid "1/1"
 msgstr "1/1"
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 msgid "1/1."
 msgstr "1/1."
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 msgid "1/128"
 msgstr "1/128"
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 msgid "1/128."
 msgstr "1/128."
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 msgid "1/128T"
 msgstr "1/128T"
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 msgid "1/16"
 msgstr "1/16"
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 msgid "1/16."
 msgstr "1/16."
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 msgid "1/16T"
 msgstr "1/16T"
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 msgid "1/1T"
 msgstr "1/1T"
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 msgid "1/2"
 msgstr "1/2"
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 msgid "1/2."
 msgstr "1/2."
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 msgid "1/2T"
 msgstr "1/2T"
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 msgid "1/32"
 msgstr "1/32"
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 msgid "1/32."
 msgstr "1/32."
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 msgid "1/32T"
 msgstr "1/32T"
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 msgid "1/4"
 msgstr "1/4"
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 msgid "1/4."
 msgstr "1/4."
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 msgid "1/4T"
 msgstr "1/4T"
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 msgid "1/64"
 msgstr "1/64"
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 msgid "1/64."
 msgstr "1/64."
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 msgid "1/64T"
 msgstr "1/64T"
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 msgid "1/8"
 msgstr "1/8"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 msgid "1/8."
 msgstr "1/8."
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 msgid "1/8T"
 msgstr "1/8T"
 
@@ -335,7 +335,7 @@ msgstr "1/8T"
 msgid "1024 Value FFT Window"
 msgstr "1024-Werte FFT Anzeige"
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 msgid "12"
 msgstr "12"
 
@@ -348,7 +348,7 @@ msgstr "Gleichstufige 12-Ton-Temperatur"
 msgid "128 Value FFT Window"
 msgstr "128-Werte FFT Anzeige"
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 msgid "16"
 msgstr "16"
 
@@ -400,11 +400,11 @@ msgstr "1\\/64"
 msgid "1\\/8"
 msgstr "1\\/8"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 msgid "2"
 msgstr "2"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 msgid "2 & 4"
 msgstr "2 & 4"
 
@@ -436,15 +436,15 @@ msgstr ""
 msgid "2nd Harmonic"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 msgid "3"
 msgstr "3"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 msgid "3 & 12"
 msgstr "3 & 12"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 msgid "3 & 6"
 msgstr "3 & 6"
 
@@ -456,19 +456,19 @@ msgstr "32-Werte FFT Anzeige"
 msgid "32768 Value FFT Window"
 msgstr "32768-Werte FFT Anzeige"
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 msgid "4"
 msgstr "4"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 msgid "4 & 12"
 msgstr "4 & 12"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 msgid "4 & 16"
 msgstr "4 & 16"
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 msgid "4 & 8"
 msgstr "4 & 8"
 
@@ -504,11 +504,11 @@ msgstr "Gleichstufige 12-Ton-Temperatur"
 msgid "512 Value FFT Window"
 msgstr "512-Werte FFT Anzeige"
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 msgid "6"
 msgstr "6"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 msgid "6 & 12"
 msgstr "6 & 12"
 
@@ -524,11 +524,11 @@ msgstr "65536-Werte FFT Anzeige"
 msgid "7 Tone Equal Temperament"
 msgstr "Gleichstufige 12-Ton-Temperatur"
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 msgid "8"
 msgstr "8"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 msgid "8 & 16"
 msgstr "8 & 16"
 
@@ -809,7 +809,7 @@ msgstr "Legt fest, ob dB-Werte anstatt Linien angezeigt werden"
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1106
 msgid "Adjustments"
 msgstr "Ausrichtungen"
 
@@ -908,12 +908,12 @@ msgstr ""
 msgid "Answers to frequently asked questions"
 msgstr "Antworten zu häufig gestellten Fragen"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Anti-Alias"
 msgstr "Anti-Alias"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr "Konfigurationsänderungen für das Layout des Design-Editors übernehmen"
 
@@ -958,7 +958,7 @@ msgid ""
 "never exceeded 0 dB."
 msgstr ""
 
-#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:493
+#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:492
 msgid "Assignments"
 msgstr "Zuordnungen"
 
@@ -1257,31 +1257,31 @@ msgstr "BSE-Multi-Part-Wave-Datei"
 msgid "BSE Synthesis File"
 msgstr "BSE-Synthesedatei"
 
-#: beast-gtk/bstapi.idl:136 beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:156
+#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:161
 msgid "Background Color"
 msgstr "Hintergrundfarbe"
 
-#: beast-gtk/bstapi.idl:134 beast-gtk/bstapi.idl:144 beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:139 beast-gtk/bstapi.idl:149 beast-gtk/bstapi.idl:159
 msgid "Background Image"
 msgstr "Hintergrundbild"
 
-#: beast-gtk/bstapi.idl:137
+#: beast-gtk/bstapi.idl:142
 msgid "Background Shade 1"
 msgstr "Hintergrundschattierung 1"
 
-#: beast-gtk/bstapi.idl:138
+#: beast-gtk/bstapi.idl:143
 msgid "Background Shade 2"
 msgstr "Hintergrundschattierung 2"
 
-#: beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:159
 msgid "Background image used by the control events editor."
 msgstr ""
 
-#: beast-gtk/bstapi.idl:134
+#: beast-gtk/bstapi.idl:139
 msgid "Background image used by the pattern editor."
 msgstr "Hintergrundbild des Mustereditors."
 
-#: beast-gtk/bstapi.idl:144
+#: beast-gtk/bstapi.idl:149
 msgid "Background image used by the piano-roll editor."
 msgstr "Vom Piano-Roll-Editor verwendetes Hintergrundbild."
 
@@ -1535,7 +1535,7 @@ msgid "Color Entry"
 msgstr "Farbeintrag"
 
 #: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -1548,12 +1548,12 @@ msgid "Compressed audio output 2"
 msgstr "Komprimierte Audio-Ausgabe 2"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 msgid "Configure"
 msgstr "Einstellungen"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 msgid "Configure the column layout of the pattern editor"
 msgstr "Spaltenlayout des Design-Editors konfigurieren"
 
@@ -1996,7 +1996,7 @@ msgid "Control Type"
 msgstr "Steuerungstyp:"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:520
+#: beast-gtk/res/radgets-beast.xml:522
 msgid "Control Type:"
 msgstr "Steuerungstyp:"
 
@@ -2224,7 +2224,7 @@ msgstr "Die momentan gewählte Spur löschen"
 msgid "Delete the currently selected wave"
 msgstr "Die momentan gewählte Wave löschen"
 
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 msgid "Denominator"
 msgstr "Nenner"
 
@@ -2314,7 +2314,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 msgid "Discard changes and close dialog"
 msgstr "Änderungen verwerfen und Dialog schließen"
 
@@ -2388,35 +2388,35 @@ msgstr "Aus, links"
 msgid "Done Output"
 msgstr "Aus, links"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 msgid "Dotted eighths note"
 msgstr "Verlängerte Achtelnote"
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 msgid "Dotted half note"
 msgstr "Verlängerte halbe Note"
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 msgid "Dotted hundred twenty-eighth note"
 msgstr "Verlängerte Hundertachtundzwanzigstelnote"
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 msgid "Dotted quarter note"
 msgstr "Verlängerte Viertelnote"
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 msgid "Dotted sixteenth note"
 msgstr "Verlängerte Sechzehntelnote"
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 msgid "Dotted sixty-fourth note"
 msgstr "Verlängerte Vierundsechzigstelnote"
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 msgid "Dotted thirty-secondth note"
 msgstr "Verlängerte Zweiunddreißigstelnote"
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 msgid "Dotted whole note"
 msgstr "Verlängerte ganze Note"
 
@@ -2432,7 +2432,7 @@ msgstr "Werte anzeigen"
 msgid "Draw a line to align events to"
 msgstr "Eine Linie zur Ereignisausrichtung zeichnen"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "Synthesenetzwerke geglättet zeichnen?"
 
@@ -2516,7 +2516,7 @@ msgstr "Effektsteuerung 2"
 msgid "Effect Path"
 msgstr "Effekt-Pfad"
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 msgid "Eighths note"
 msgstr "Achtelnote"
 
@@ -2525,15 +2525,15 @@ msgstr "Achtelnote"
 msgid "Emphasis"
 msgstr "Gewichtung"
 
-#: beast-gtk/bstapi.idl:139
+#: beast-gtk/bstapi.idl:144
 msgid "Empty Field Color"
 msgstr "Farbe eines leeren Feldes"
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 msgid "Enable Error Bell"
 msgstr "Klingel bei Fehlern aktivieren"
 
-#: beast-gtk/bstapi.idl:119
+#: beast-gtk/bstapi.idl:124
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2588,67 +2588,67 @@ msgid "Error: "
 msgstr "Fehler: "
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:500
+#: beast-gtk/res/radgets-beast.xml:502
 msgid "Events"
 msgstr "Ereignisse"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 msgid "Every eighth and sixteenth row"
 msgstr "Jede achte und sechzehnte Zeile"
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 msgid "Every eighth row"
 msgstr "Jede achte Zeile"
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 msgid "Every fourth and eighth row"
 msgstr "Jede vierte und achte Zeile"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 msgid "Every fourth and sixteenth row"
 msgstr "Jede vierte und sechzehnte Zeile"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 msgid "Every fourth and twelfth row"
 msgstr "Jede vierte und zwölfte Zeile"
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 msgid "Every fourth row"
 msgstr "Jede vierte Zeile"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 msgid "Every second and fourth row"
 msgstr "Jede zweite und vierte Zeile"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 msgid "Every second row"
 msgstr "Jede zweite Zeile"
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 msgid "Every sixteenth row"
 msgstr "Jede sechzehnte Zeile"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 msgid "Every sixth and twelfth row"
 msgstr "Jede sechste und zwölfte Zeile"
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 msgid "Every sixth row"
 msgstr "Jede sechste Zeile"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 msgid "Every third and sixth row"
 msgstr "Jede dritte und sechste Zeile"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 msgid "Every third and twelfth row"
 msgstr "Jede dritte und zwölfte Zeile"
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 msgid "Every third row"
 msgstr "Jede dritte Zeile"
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 msgid "Every twelfth row"
 msgstr "Jede zwölfte Zeile"
 
@@ -2800,7 +2800,7 @@ msgstr "Die Aufzeichnung auf Festplatte konnte nicht gestartet werden."
 msgid "Failed to start recording from audio device."
 msgstr "Start der Aufnahme vom Audiogerät ist gescheitert."
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
 "Nach der Erzeugung der Synthesemodule in den Bearbeitungsmodus "
@@ -2936,11 +2936,11 @@ msgstr "Anzeige des Spektrums umkehren, tiefe und hohe Frequenzen tauschen"
 msgid "Flute Sounds"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 msgid "Font Size"
 msgstr "Schriftgröße"
 
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Schriftgröße der in Synthesenetzwerken angezeigten Beschriftungen"
 
@@ -2953,7 +2953,7 @@ msgstr "Fußpedal"
 msgid "Format"
 msgstr "Format"
 
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Free form comment or description"
 msgstr "Kommentar oder Beschreibung in freier Form"
 
@@ -3132,11 +3132,11 @@ msgid "HWrap"
 msgstr "HWrap"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:451
 msgid "HZoom"
 msgstr "H-Größe"
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 msgid "Half note"
 msgstr "Halbe Note"
 
@@ -3164,15 +3164,15 @@ msgstr ""
 msgid "Hit the drum on raising edges"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:118
+#: beast-gtk/bstapi.idl:123
 msgid "Homogeneous Input Fields"
 msgstr "Homogene Eingabefelder"
 
-#: beast-gtk/bstapi.idl:147 beast-gtk/bstapi.idl:157
+#: beast-gtk/bstapi.idl:152 beast-gtk/bstapi.idl:162
 msgid "Horizontal Bar Color"
 msgstr "Farbe der horizontalen Balken"
 
-#: beast-gtk/bstapi.idl:149
+#: beast-gtk/bstapi.idl:154
 msgid "Horizontal Grid Color"
 msgstr "Horizontale Gitterfarbe"
 
@@ -3185,7 +3185,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr "Horizontale Skala (logarithmisch)"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:447
+#: beast-gtk/res/radgets-beast.xml:449
 msgid "Horizontal piano zoom"
 msgstr "Horizontale Klavier-Ansichtsgröße"
 
@@ -3194,7 +3194,7 @@ msgstr "Horizontale Klavier-Ansichtsgröße"
 msgid "Horizontal track zoom"
 msgstr "Horizontale Titel-Ansichtsgröße"
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 msgid "Hundred twenty-eighth note"
 msgstr "Hundertachtundzwanzigstelnoten"
 
@@ -3221,7 +3221,7 @@ msgstr ""
 "Legt fest, ob überlanger Text abgeschnitten wird und stattdessen eine "
 "Ellipse (»...«) angezeigt werden soll"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 msgid "Image shade"
 msgstr "Bildschattierung"
 
@@ -3304,7 +3304,7 @@ msgstr "Eingabe 1 [%]"
 msgid "Input 2 [%]"
 msgstr "Eingabe 2 [%]"
 
-#: bse/bsesubsynth.cc:505
+#: bse/bsesubsynth.cc:504
 msgid "Input Assignments"
 msgstr "Eingabe-Zuordnungen"
 
@@ -3317,7 +3317,7 @@ msgstr "Eingabekanal %u"
 msgid "Input Modulation [%]"
 msgstr "Eingangsmodulation [%]"
 
-#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:503
+#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:502
 #, c-format
 msgid "Input Port %u"
 msgstr "Eingabeport %u"
@@ -3339,7 +3339,7 @@ msgstr "Zu verwendender Eingabekanal"
 msgid "Input channel is private"
 msgstr "Der Eingabekanal ist privat"
 
-#: bse/bsesubsynth.cc:516
+#: bse/bsesubsynth.cc:515
 msgid "Input port name to interface to"
 msgstr ""
 
@@ -3356,8 +3356,9 @@ msgstr "Die Ein-/Ausgabekanäle werden bereits verwendet"
 msgid "Input/output error"
 msgstr "Ein-/Ausgabefehler"
 
+#. TRANSLATORS: Inputs is used for input busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:319
+#: beast-gtk/res/radgets-beast.xml:320
 msgid "Inputs"
 msgstr "Eingabe"
 
@@ -3572,7 +3573,7 @@ msgid "Latency [ms]"
 msgstr "Ansprechzeit [ms]"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:568
+#: beast-gtk/res/radgets-beast.xml:570
 msgid "Layout:"
 msgstr "Layout:"
 
@@ -3838,7 +3839,7 @@ msgstr "Ladevorgang …"
 msgid "Location"
 msgstr "Ort"
 
-#: bse/bsesong.cc:737 bse/bsesong.cc:741 bse/bsesong.cc:746 bse/bsesong.cc:751
+#: bse/bsesong.cc:740 bse/bsesong.cc:744 bse/bsesong.cc:749 bse/bsesong.cc:754
 msgid "Looping"
 msgstr ""
 
@@ -3875,7 +3876,7 @@ msgstr "Tiefpass-Filterfrequenz für das Steuersignal"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1133
 msgid "MIDI Channel"
 msgstr "MIDI-Kanal"
 
@@ -3884,8 +3885,8 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
-#: bse/bsetrack.cc:1138
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:736 bse/bsetrack.cc:1131
+#: bse/bsetrack.cc:1137
 msgid "MIDI Instrument"
 msgstr "MIDI-Instrument"
 
@@ -3935,7 +3936,7 @@ msgstr "Manueller Auslöser für Schlagzeug"
 
 # CHECK
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:601
+#: bse/bsesong.cc:604
 msgid "Master"
 msgstr "Master"
 
@@ -3963,19 +3964,19 @@ msgstr "Master [dB]"
 msgid "Master [float]"
 msgstr "Kanalbeschriftungen"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 msgid "Max Voices"
 msgstr "Maximale Stimmen"
 
-#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximale Anzahl der Stimmen für gleichzeitige Wiedergabe"
 
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 msgid "Measure numerator"
 msgstr ""
 
@@ -4029,11 +4030,11 @@ msgstr ""
 msgid "Metallicness of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:158
+#: beast-gtk/bstapi.idl:156 beast-gtk/bstapi.idl:163
 msgid "Middle Bar Color"
 msgstr "Farbe des mittleren Balkens"
 
-#: bse/bsetrack.cc:1135
+#: bse/bsetrack.cc:1134
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "Dieser Spur zugeordneter MIDI-Kanal, 0 verwendet den internen spurweisen "
@@ -4074,7 +4075,7 @@ msgstr "Mixer-Busse, die als Spur-Ausgabe verwendet werden"
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Als Ausgabe für Synthesesignale verwendete Mixer-Busse"
 
-#: bse/bsetrack.cc:1145
+#: bse/bsetrack.cc:1144
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4229,16 +4230,16 @@ msgstr "Stumm"
 msgid "Mute: turn off the bus volume"
 msgstr "Stumm: Die Buslautstärke stummschalten"
 
-#: bse/bsetrack.cc:1109
+#: bse/bsetrack.cc:1108
 msgid "Muted"
 msgstr "Stummgeschaltet"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:853
 msgid "Name"
 msgstr "Name"
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 "Name der aktuellen Oberflächeneinstellungen (wird für die Oberflächenauswahl "
@@ -4248,7 +4249,7 @@ msgstr ""
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name der WAVE-Datei, welche für die BSE-Klangausgabe verwendet wird"
 
-#: beast-gtk/bstapi.idl:161
+#: beast-gtk/bstapi.idl:166
 msgid "Negative Value Color"
 msgstr "Farbe für negative Werte"
 
@@ -4386,7 +4387,7 @@ msgid "Non-Registered Parameter"
 msgstr "Nicht registrierter Parameter"
 
 #. special cased signals
-#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:76
+#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:78
 #: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
 #: bse/bsebasics.idl:31
 msgid "None"
@@ -4445,7 +4446,7 @@ msgid "Note Velocity"
 msgstr "Notengeschwindigkeit"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:480
+#: beast-gtk/res/radgets-beast.xml:482
 msgid "Note _Length"
 msgstr "Noten_länge"
 
@@ -4453,7 +4454,7 @@ msgstr "Noten_länge"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.cc:181
+#: bse/bseladspamodule.cc:180
 #, fuzzy
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
@@ -4472,7 +4473,7 @@ msgstr ""
 "Noten aus nicht markierten Spuren werden von Sequenzer bei der Wiedergabe "
 "ignoriert"
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
 "Den Benutzer mittels Klängen benachrichtigen, falls Bearbeitungen nicht "
@@ -4491,11 +4492,11 @@ msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Anzahl der von der exponenziellen Frequenzmodulation betroffenen Oktaven"
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 msgid "Number of ticks per quarter note"
 msgstr "Anzahl der Ticks pro Viertelnote"
 
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 msgid "Numerator"
 msgstr "Zähler"
 
@@ -4615,7 +4616,7 @@ msgstr "Ursprung: %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1025
+#: bse/bsesong.cc:1028
 msgid "Orphan Parts"
 msgstr "Verwaiste Teile"
 
@@ -4670,7 +4671,7 @@ msgstr "Außerhalb des Speichers"
 msgid "Output"
 msgstr "Ausgabe"
 
-#: bse/bsesubsynth.cc:515
+#: bse/bsesubsynth.cc:514
 msgid "Output Assignments"
 msgstr "Ausgabe-Zuordnungen"
 
@@ -4682,7 +4683,7 @@ msgstr "Ausgabeabgleich"
 msgid "Output Panning"
 msgstr ""
 
-#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:513
+#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:512
 #, c-format
 msgid "Output Port %u"
 msgstr "Ausgabeport %u"
@@ -4691,7 +4692,7 @@ msgstr "Ausgabeport %u"
 msgid "Output Signal Monitor"
 msgstr "Ausgabesignalmonitor"
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1143
 msgid "Output Signals"
 msgstr "Ausgabesignale"
 
@@ -4708,7 +4709,7 @@ msgstr "Ausgabe [dB]"
 msgid "Output of the fluid synth soundfont synthesizer"
 msgstr ""
 
-#: bse/bsesubsynth.cc:506
+#: bse/bsesubsynth.cc:505
 msgid "Output port name to interface from"
 msgstr ""
 
@@ -4716,8 +4717,9 @@ msgstr ""
 msgid "Output stage amplification in decibel"
 msgstr "Ausgabeverstärkung in Dezibel"
 
+#. TRANSLATORS: Outputs is used for output busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:341
+#: beast-gtk/res/radgets-beast.xml:343
 msgid "Outputs"
 msgstr "Ausgaben"
 
@@ -4831,7 +4833,7 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr "CPU-Auslastung in Prozent"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
@@ -4852,7 +4854,7 @@ msgid "Piano Keys"
 msgstr "Klaviertasten"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:464
+#: beast-gtk/res/radgets-beast.xml:466
 msgid "Piano Notes"
 msgstr "Klaviernoten"
 
@@ -4933,11 +4935,11 @@ msgstr "Position"
 msgid "Position taken"
 msgstr "Position belegt"
 
-#: beast-gtk/bstapi.idl:159
+#: beast-gtk/bstapi.idl:164
 msgid "Positive Value Color"
 msgstr "Farbe für positive Werte"
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:738 bse/bsetrack.cc:1139
 msgid "Postprocessor"
 msgstr "Postprozessor"
 
@@ -5170,7 +5172,7 @@ msgstr "Auf Zweiunddreußigstelnoten quantisieren"
 msgid "Quantize to whole note boundaries"
 msgstr "Auf ganze Noten quantisieren"
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 msgid "Quarter note"
 msgstr "Viertelnote"
 
@@ -5250,7 +5252,10 @@ msgstr "Registrierter Parameter"
 msgid "Release [ms]"
 msgstr "Ausschwingzeit [ms]"
 
-#: beast-gtk/bstapi.idl:105
+#. TRANSLATORS: the release counter corresponds to the beast version and is stored in the config file
+#. * to be able to load old versions of the config file
+#.
+#: beast-gtk/bstapi.idl:110
 msgid "Release counter"
 msgstr "Releasezähler"
 
@@ -5783,25 +5788,25 @@ msgid "Sets the value of the focus digit"
 msgstr ""
 
 # CHECK
-#: beast-gtk/bstapi.idl:66 beast-gtk/bstsampleeditor.cc:497
+#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:497
 #: beast-gtk/bstwaveeditor.cc:199
 msgid "Shape Average"
 msgstr "Formmittel"
 
 # CHECK
-#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:499
+#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:499
 #: beast-gtk/bstwaveeditor.cc:201
 msgid "Shape Maximum"
 msgstr "Formmaximum"
 
 # CHECK
-#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:498
+#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:498
 #: beast-gtk/bstwaveeditor.cc:200
 msgid "Shape Minimum"
 msgstr "Formminimum"
 
 # CHECK
-#: beast-gtk/bstapi.idl:65 beast-gtk/bstsampleeditor.cc:496
+#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:496
 #: beast-gtk/bstwaveeditor.cc:198
 msgid "Shape Range"
 msgstr "Formbereich"
@@ -5827,7 +5832,7 @@ msgstr "Eingangssignal"
 msgid "Signal Inputs"
 msgstr "Signaleingang"
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1141
 msgid "Signal Outputs"
 msgstr "Signalausgänge"
 
@@ -5836,15 +5841,15 @@ msgstr "Signalausgänge"
 msgid "Silbermann-Sorge Temperament"
 msgstr "Silbermann-Sorge-Temperatur"
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 msgid "Single Edit"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 msgid "Sixteenth note"
 msgstr "Sechzehntelnote"
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 msgid "Sixty-fourth note"
 msgstr "Vierundsechzigstelnoten"
 
@@ -5853,25 +5858,25 @@ msgid "Size"
 msgstr "Größe"
 
 # CHECK
-#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:501
+#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:501
 #: beast-gtk/bstwaveeditor.cc:203
 msgid "Sketch Average"
 msgstr "Umrissmittel"
 
 # CHECK
-#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:503
+#: beast-gtk/bstapi.idl:74 beast-gtk/bstsampleeditor.cc:503
 #: beast-gtk/bstwaveeditor.cc:205
 msgid "Sketch Maximum"
 msgstr "Umrissmaximum"
 
 # CHECK
-#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:502
+#: beast-gtk/bstapi.idl:73 beast-gtk/bstsampleeditor.cc:502
 #: beast-gtk/bstwaveeditor.cc:204
 msgid "Sketch Minimum"
 msgstr "Umrissminimum"
 
 # CHECK
-#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:500
+#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:500
 #: beast-gtk/bstwaveeditor.cc:202
 msgid "Sketch Range"
 msgstr "Umrissbereich"
@@ -5880,17 +5885,17 @@ msgstr "Umrissbereich"
 msgid "Skin"
 msgstr "Oberfläche"
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 msgid "Skin Name"
 msgstr "Oberflächenname"
 
-#: beast-gtk/bstapi.idl:123
+#: beast-gtk/bstapi.idl:128
 msgid ""
 "Slow down the periodic update frequency of scopes aggresively. Doing this "
 "may be desirable on particularly slow machines."
 msgstr ""
 
-#: beast-gtk/bstapi.idl:122
+#: beast-gtk/bstapi.idl:127
 #, fuzzy
 msgid "Slow scopes"
 msgstr "Bereich aktivieren"
@@ -5924,7 +5929,7 @@ msgstr "Solo"
 msgid "Solo: mute all other busses"
 msgstr "Solo: Alle anderen Busse stummschalten"
 
-#: bse/bsesong.cc:553
+#: bse/bsesong.cc:556
 msgid "Song"
 msgstr "Titel"
 
@@ -5933,7 +5938,7 @@ msgstr "Titel"
 msgid "Song: %s"
 msgstr "Titel: %s"
 
-#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1122
 msgid "Sound Font Preset"
 msgstr ""
 
@@ -5945,7 +5950,7 @@ msgstr ""
 msgid "Sound Fonts"
 msgstr ""
 
-#: bse/bsetrack.cc:1124
+#: bse/bsetrack.cc:1123
 #, fuzzy
 msgid "Sound font preset to be used as instrument"
 msgstr "Synthesenetzwerk, welches als Instrument verwendet werden soll"
@@ -6094,11 +6099,11 @@ msgid "String oscillation frequency in Hertz"
 msgstr "Oszillationsfrequenzeingang"
 
 # CHECK
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 msgid "Swap IO"
 msgstr "Tausche IO (Eingang/Ausgang)"
 
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 "Bei Anzeige der Synthesemodule Eingangs- und Ausgangsmodule vertauschen?"
@@ -6110,7 +6115,7 @@ msgid ""
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:331
+#: beast-gtk/res/radgets-beast.xml:332
 msgid "Switches"
 msgstr "Schalter"
 
@@ -6158,8 +6163,8 @@ msgstr "Frequenz zentrieren"
 msgid "Synth Done"
 msgstr "_Synth"
 
-#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
-#: bse/bsetrack.cc:1127
+#: bse/bsetrack.cc:1110 bse/bsetrack.cc:1115 bse/bsetrack.cc:1120
+#: bse/bsetrack.cc:1126
 msgid "Synth Input"
 msgstr "Synth Eingang"
 
@@ -6198,16 +6203,16 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesenetzwerk wird als MIDI-Instrument benutzt"
 
-#: bse/bsetrack.cc:1113
+#: bse/bsetrack.cc:1112
 msgid "Synthesis network to be used as instrument"
 msgstr "Synthesenetzwerk, welches als Instrument verwendet werden soll"
 
-#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1140
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:738
+#: bse/bsetrack.cc:1139
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Als Postprozessor verwendetes Synthesenetzwerk"
 
-#: bse/bsesubsynth.cc:496
+#: bse/bsesubsynth.cc:495
 msgid "Synthesis network to use as embedded sub network"
 msgstr ""
 "Synthesenetzwerk, welches als eingebettetes Subnetzwerk verwendet werden soll"
@@ -6220,7 +6225,7 @@ msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 "Synthesesignale (aus Spuren und Bussen), die als Bus-Eingabe verwendet werden"
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:494 bse/bsetrack.cc:1112
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -6260,7 +6265,7 @@ msgstr ""
 msgid "Tension of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:140
+#: beast-gtk/bstapi.idl:145
 msgid "Text Color"
 msgstr "Textfarbe"
 
@@ -6458,7 +6463,7 @@ msgstr ""
 "Das Widget, das aktiviert werden soll, wenn die dem Kürzelbuchstaben der "
 "Beschriftung entsprechende Taste gedrückt wird"
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 msgid "Thirty-secondth note"
 msgstr "Zweiunddreißigstelnoten"
 
@@ -6520,7 +6525,7 @@ msgstr "Priorität des Prozesses von -20 (hoch) bis 19 (niedrig)"
 msgid "Threshold [dB]"
 msgstr "Schwellwert [dB]"
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 msgid "Ticks"
 msgstr "Ticks"
 
@@ -6546,7 +6551,7 @@ msgstr "Zeiteingabe"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:774 bse/bsesong.cc:721 bse/bsesong.cc:725 bse/bsesong.cc:729
+#: bse/bseapi.idl:774 bse/bsesong.cc:724 bse/bsesong.cc:728 bse/bsesong.cc:732
 msgid "Timing"
 msgstr ""
 
@@ -6644,35 +6649,35 @@ msgstr "Takt Filter"
 msgid "Trigger input"
 msgstr "Takt Eingang"
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 msgid "Triplet eighths note"
 msgstr "Dreifache Achtelnote"
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 msgid "Triplet half note"
 msgstr "Dreifache halbe Note"
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 msgid "Triplet hundred twenty-eighth note"
 msgstr "Dreifache Hundertachtundzwanzigstelnote"
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 msgid "Triplet quarter note"
 msgstr "Dreifache Viertelnote"
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 msgid "Triplet sixteenth note"
 msgstr "Dreifache Sechzehntelnote"
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 msgid "Triplet sixty-fourth note"
 msgstr "Dreifache Vierundsechzigstelnote"
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 msgid "Triplet thirty-secondth note"
 msgstr "Dreifache Zweiunddreißigstelnote"
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 msgid "Triplet whole note"
 msgstr "dreifache ganze Note"
 
@@ -6712,7 +6717,7 @@ msgstr "Ungefiltertes Audio-Signal"
 msgid "Unfiltered Input"
 msgstr "Ungefilterte Eingabe"
 
-#: bse/bseobject.cc:855
+#: bse/bseobject.cc:853
 msgid "Unique name of this object"
 msgstr "Eindeutiger Name dieses Objekts"
 
@@ -6750,8 +6755,8 @@ msgstr "Nicht verwendet"
 msgid "Up"
 msgstr "Hoch"
 
-#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
-#: beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:277 beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:302
 msgid "Updating View"
 msgstr "Ansicht aktualisieren"
 
@@ -6781,7 +6786,7 @@ msgid "VScale:"
 msgstr "VSkalierung:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:455
 msgid "VZoom"
 msgstr "V-Größe"
 
@@ -6813,11 +6818,11 @@ msgstr "Anschlagsdynamik, während die Note gedrückt ist"
 msgid "Version"
 msgstr "Version"
 
-#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:148
+#: beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:153
 msgid "Vertical Bar Color"
 msgstr "Farbe der vertikalen Balken"
 
-#: beast-gtk/bstapi.idl:150
+#: beast-gtk/bstapi.idl:155
 msgid "Vertical Grid Color"
 msgstr "Vertikale Gitterfarbe"
 
@@ -6838,7 +6843,7 @@ msgid "Vertical Select"
 msgstr "Vertikale Auswahl"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:451
+#: beast-gtk/res/radgets-beast.xml:453
 msgid "Vertical piano zoom"
 msgstr "Vertikale Klavier-Ansichtsgröße"
 
@@ -6847,12 +6852,12 @@ msgstr "Vertikale Klavier-Ansichtsgröße"
 msgid "Virtual Rack"
 msgstr "Virtuelle Ablage"
 
-#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:523
+#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:522
 #, c-format
 msgid "Virtual input %u"
 msgstr "Virtueller Eingang %u"
 
-#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:530
+#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:529
 #, c-format
 msgid "Virtual output %u"
 msgstr "Virtueller Ausgang %u"
@@ -6873,7 +6878,7 @@ msgstr "Lautstärkeanpassung des rechten Buskanals in Dezibel"
 msgid "WAVE File"
 msgstr "WAVE-Datei"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1117 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Waveform"
@@ -6896,7 +6901,7 @@ msgstr "Wellenform-Ausgabe"
 msgid "Wave Repository"
 msgstr "Wave-Verzeichnis"
 
-#: bse/bsetrack.cc:1118
+#: bse/bsetrack.cc:1117
 msgid "Wave to be used as instrument"
 msgstr "Als Instrument zu verwendende Wellenform"
 
@@ -6905,7 +6910,7 @@ msgid "Wave used as oscillator source"
 msgstr "Als Oszillatorquelle verwendete Wellenform"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:653
+#: beast-gtk/res/radgets-beast.xml:655
 msgid "Wave_s"
 msgstr "_Waves"
 
@@ -6934,7 +6939,8 @@ msgstr "Werckmeister VI"
 msgid "Wet out [%]"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:38
+#. TRANSLATORS: note is a noun
+#: beast-gtk/bstapi.idl:40
 msgid "Whole note"
 msgstr "Ganze Note"
 
@@ -6966,7 +6972,7 @@ msgstr "XtalStrings-Ausgabe"
 msgid "Young Temperament"
 msgstr "Young-Stimmung"
 
-#: beast-gtk/bstapi.idl:160
+#: beast-gtk/bstapi.idl:165
 msgid "Zero Value Color"
 msgstr "Farbe für Null-Wert"
 
@@ -6993,7 +6999,7 @@ msgid "_Add"
 msgstr "_Hinzufügen"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 msgid "_Apply"
 msgstr "A_nwenden"
 
@@ -7013,7 +7019,7 @@ msgstr "_Beast-Webseite …"
 
 # CHECK
 #. label=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 msgid "_Cancel"
 msgstr "Abbre_chen"
 
@@ -7027,7 +7033,7 @@ msgid "_Close"
 msgstr "S_chließen"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:658
+#: beast-gtk/res/radgets-beast.xml:660
 msgid "_Demo"
 msgstr "D_emo"
 
@@ -7037,8 +7043,8 @@ msgid "_Distortion"
 msgstr "_Verzerren"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
-#: beast-gtk/res/radgets-beast.xml:618
+#: beast-gtk/res/radgets-beast.xml:471 beast-gtk/res/radgets-beast.xml:507
+#: beast-gtk/res/radgets-beast.xml:620
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
@@ -7053,7 +7059,7 @@ msgid "_FAQ..."
 msgstr "_FAQ …"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:611
+#: beast-gtk/res/radgets-beast.xml:613
 msgid "_File"
 msgstr "_Datei"
 
@@ -7073,7 +7079,7 @@ msgid "_Forward"
 msgstr "_Vor"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:664
+#: beast-gtk/res/radgets-beast.xml:666
 msgid "_Help"
 msgstr "_Hilfe"
 
@@ -7128,12 +7134,12 @@ msgid "_Preferences..."
 msgstr "_Einstellungen …"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:635
+#: beast-gtk/res/radgets-beast.xml:637
 msgid "_Project"
 msgstr "_Projekt"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
+#: beast-gtk/res/radgets-beast.xml:479 beast-gtk/res/radgets-beast.xml:515
 msgid "_Quantization"
 msgstr "_Quantisierung"
 
@@ -7175,17 +7181,17 @@ msgid "_Save"
 msgstr "_Speichern"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
+#: beast-gtk/res/radgets-beast.xml:476 beast-gtk/res/radgets-beast.xml:512
 msgid "_Select"
 msgstr "Aus_wahl"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:630
 msgid "_Skins"
 msgstr "O_berflächen"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:647
+#: beast-gtk/res/radgets-beast.xml:649
 msgid "_Song"
 msgstr "_Titel"
 
@@ -7200,18 +7206,18 @@ msgid "_Stop"
 msgstr "_Stopp"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:650
+#: beast-gtk/res/radgets-beast.xml:652
 msgid "_Synth"
 msgstr "_Synth"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:640
+#: beast-gtk/res/radgets-beast.xml:642
 msgid "_Synthesizers"
 msgstr "_Synthesizer"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:468 beast-gtk/res/radgets-beast.xml:504
+#: beast-gtk/res/radgets-beast.xml:647
 msgid "_Tools"
 msgstr "_Werkzeuge"
 
@@ -7220,12 +7226,12 @@ msgid "_Undo"
 msgstr "_Rückgängig"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:486
 msgid "_Utilities"
 msgstr "_Werkzeuge"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:624
+#: beast-gtk/res/radgets-beast.xml:626
 msgid "_View"
 msgstr "_Ansicht"
 
@@ -7469,7 +7475,7 @@ msgstr "Steuerung-9"
 msgid "control-90"
 msgstr "Steuerung-90"
 
-#: tools/bsewavetool.cc:1158
+#: tools/bsewavetool.cc:1165
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
