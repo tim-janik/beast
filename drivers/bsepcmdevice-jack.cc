@@ -1,22 +1,5 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2004 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsecxxplugin.hh>
 #include "bsepcmdevice-jack.hh"
 #include <bse/bseblockutils.hh>
 #include <bse/gsldatautils.hh>
@@ -30,6 +13,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <chrono>
 
 using std::vector;
 using std::set;
@@ -98,8 +82,9 @@ class FrameRingBuffer {
   //BIRNET_PRIVATE_COPY (FrameRingBuffer);
 private:
   vector< vector<T> > m_channel_buffer;
-  volatile int	      m_read_frame_pos;
-  volatile int	      m_write_frame_pos;
+  std::atomic<int>    m_atomic_read_frame_pos;
+  std::atomic<int>    m_atomic_write_frame_pos;
+  std::atomic<int>    m_atomic_dummy;
   uint		      m_channel_buffer_size;	  // = n_frames + 1; the extra frame allows us to
                                                   // see the difference between an empty/full ringbuffer
   uint		      m_n_channels;
@@ -107,13 +92,12 @@ private:
   void
   write_memory_barrier()
   {
-    static volatile int dummy = 0;
 
     /*
      * writing this dummy integer should ensure that all prior writes
      * are committed to memory
      */
-    Atomic::int_set (&dummy, 0x12345678);
+    m_atomic_dummy = 0x12345678;
   }
 public:
   FrameRingBuffer (uint n_frames = 0,
@@ -130,8 +114,8 @@ public:
   uint
   get_readable_frames()
   {
-    int wpos = Atomic::int_get (&m_write_frame_pos);
-    int rpos = Atomic::int_get (&m_read_frame_pos);
+    int wpos = m_atomic_write_frame_pos;
+    int rpos = m_atomic_read_frame_pos;
 
     if (wpos < rpos)		    /* wpos == rpos -> empty ringbuffer */
       wpos += m_channel_buffer_size;
@@ -151,7 +135,7 @@ public:
   read (uint    n_frames,
         T     **frames)
   {
-    int rpos = Atomic::int_get (&m_read_frame_pos);
+    int rpos = m_atomic_read_frame_pos;
     uint can_read = min (get_readable_frames(), n_frames);
 
     uint read1 = min (can_read, m_channel_buffer_size - rpos);
@@ -163,7 +147,7 @@ public:
 	fast_copy (read2, frames[ch] + read1, &m_channel_buffer[ch][0]);
       }
 
-    Atomic::int_set (&m_read_frame_pos, (rpos + can_read) % m_channel_buffer_size);
+    m_atomic_read_frame_pos = (rpos + can_read) % m_channel_buffer_size;
     return can_read;
   }
   /**
@@ -175,8 +159,8 @@ public:
   uint
   get_writable_frames()
   {
-    int wpos = Atomic::int_get (&m_write_frame_pos);
-    int rpos = Atomic::int_get (&m_read_frame_pos);
+    int wpos = m_atomic_write_frame_pos;
+    int rpos = m_atomic_read_frame_pos;
 
     if (rpos <= wpos)		    /* wpos == rpos -> empty ringbuffer */
       rpos += m_channel_buffer_size;
@@ -197,7 +181,7 @@ public:
   write (uint      n_frames,
          const T **frames)
   {
-    int wpos = Atomic::int_get (&m_write_frame_pos);
+    int wpos = m_atomic_write_frame_pos;
     uint can_write = min (get_writable_frames(), n_frames);
 
     uint write1 = min (can_write, m_channel_buffer_size - wpos);
@@ -216,7 +200,7 @@ public:
     // performed).
     write_memory_barrier();
 
-    Atomic::int_set (&m_write_frame_pos, (wpos + can_write) % m_channel_buffer_size);
+    m_atomic_write_frame_pos = (wpos + can_write) % m_channel_buffer_size;
     return can_write;
   }
   /**
@@ -249,8 +233,8 @@ public:
   void
   clear()
   {
-    Atomic::int_set (&m_read_frame_pos, 0);
-    Atomic::int_set (&m_write_frame_pos, 0);
+    m_atomic_read_frame_pos = 0;
+    m_atomic_write_frame_pos = 0;
   }
   /**
    * Resize and clear the ringbuffer.
@@ -275,8 +259,7 @@ public:
 };
 
 
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
+#define PDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
 
 /* --- JACK PCM handle --- */
 enum
@@ -296,27 +279,27 @@ struct JackPcmHandle
 
   uint			  buffer_frames;	/* input/output ringbuffer size in frames */
 
-  Cond			  cond;
-  Mutex			  cond_mutex;
+  std::condition_variable cond;
+  std::mutex              cond_mutex;
   jack_client_t		 *jack_client;
   FrameRingBuffer<float>  input_ringbuffer;
   FrameRingBuffer<float>  output_ringbuffer;
 
-  int			  callback_state;
-  int			  ixruns;
-  int			  oxruns;
-  int			  pixruns;
-  int			  poxruns;
+  std::atomic<int>        atomic_callback_state;
+  std::atomic<int>        atomic_ixruns;
+  std::atomic<int>        atomic_oxruns;
+  std::atomic<int>        atomic_pixruns;
+  std::atomic<int>        atomic_poxruns;
 
   bool			  is_down;
 
   JackPcmHandle (jack_client_t *jack_client) :
     jack_client (jack_client),
-    callback_state (0),
-    ixruns (0),
-    oxruns (0),
-    pixruns (0),
-    poxruns (0),
+    atomic_callback_state (0),
+    atomic_ixruns (0),
+    atomic_oxruns (0),
+    atomic_pixruns (0),
+    atomic_poxruns (0),
     is_down (false)
   {
     memset (&handle, 0, sizeof (handle));
@@ -338,10 +321,10 @@ static uint             jack_device_latency             (BsePcmHandle           
 static void             jack_device_retrigger           (JackPcmHandle          *jack);
 
 /* --- define object type and export to BSE --- */
-static const char type_blurb[] = ("PCM driver implementation for JACK Audio Connection Kit "
-                                  "(http://jackaudio.org)");
-BSE_REGISTER_OBJECT (BsePcmDeviceJACK, BsePcmDevice, NULL, "", type_blurb, NULL, bse_pcm_device_jack_class_init, NULL, bse_pcm_device_jack_init);
-BSE_DEFINE_EXPORTS();
+
+BSE_RESIDENT_TYPE_DEF (BsePcmDeviceJACK, bse_pcm_device_jack, BSE_TYPE_PCM_DEVICE, NULL,
+                       "PCM driver implementation for JACK Audio Connection Kit "
+                                  "(http://jackaudio.org)", NULL);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
@@ -362,7 +345,7 @@ bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
   jack_status_t status;
 
   self->jack_client = jack_client_open ("beast", JackNoStartServer, &status); /* FIXME: translations(?) */
-  DEBUG ("attaching to JACK server returned status: %d\n", status);
+  PDEBUG ("attaching to JACK server returned status: %d\n", status);
   /* FIXME: check status for proper error reporting
    * FIXME: what about server name? (necessary if more than one jackd instance is running)
    * FIXME: get rid of device unloading, so that the jackd connection can be kept initialized
@@ -478,9 +461,9 @@ jack_shutdown_callback (void *jack_handle_ptr)
 {
   JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
 
-  AutoLocker cond_locker (jack->cond_mutex);
+  std::lock_guard<std::mutex> cond_locker (jack->cond_mutex);
   jack->is_down = true;
-  jack->cond.signal();
+  jack->cond.notify_one();
 }
 
 static int
@@ -491,12 +474,12 @@ jack_process_callback (jack_nframes_t n_frames,
 
   JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
 
-  int callback_state = Atomic::int_get (&jack->callback_state);
+  int callback_state = jack->atomic_callback_state;
 
   /* still waiting for initialization to complete */
   if (callback_state == CALLBACK_STATE_ACTIVE)
     {
-      bool have_cond_lock = jack->cond_mutex.trylock();
+      bool have_cond_lock = jack->cond_mutex.try_lock();
 
       uint n_channels = jack->handle.n_channels;
 
@@ -511,7 +494,7 @@ jack_process_callback (jack_nframes_t n_frames,
 
 	  uint frames_written = jack->input_ringbuffer.write (n_frames, values);
 	  if (frames_written != n_frames)
-	    Atomic::int_add (&jack->ixruns, 1);	      /* input underrun detected */
+	    jack->atomic_ixruns++;      /* input underrun detected */
 	}
       if (jack->handle.writable)
 	{
@@ -524,7 +507,7 @@ jack_process_callback (jack_nframes_t n_frames,
 	  uint read_frames = jack->output_ringbuffer.read (n_frames, values);
 	  if (read_frames != n_frames)
 	    {
-	      Atomic::int_add (&jack->oxruns, 1);     /* output underrun detected */
+	      jack->atomic_oxruns++;     /* output underrun detected */
 
 	      for (uint ch = 0; ch < n_channels; ch++)
 		Block::fill ((n_frames - read_frames), &values[ch][read_frames], 0.0);
@@ -575,11 +558,11 @@ jack_process_callback (jack_nframes_t n_frames,
 	  Block::fill (n_frames, values, 0.0);
 	}
     }
-  jack->cond.signal();
+  jack->cond.notify_one();
 
   if (callback_state == CALLBACK_STATE_PLEASE_TERMINATE)
     {
-      Atomic::int_set (&jack->callback_state, CALLBACK_STATE_TERMINATED);
+      jack->atomic_callback_state = CALLBACK_STATE_TERMINATED;
       return 1;
     }
   return 0;
@@ -590,15 +573,15 @@ terminate_and_free_jack (JackPcmHandle *jack)
 {
   g_return_if_fail (jack->jack_client != NULL);
 
-  Atomic::int_set (&jack->callback_state, CALLBACK_STATE_PLEASE_TERMINATE);
-  while (Atomic::int_get (&jack->callback_state) == CALLBACK_STATE_PLEASE_TERMINATE)
+  jack->atomic_callback_state = CALLBACK_STATE_PLEASE_TERMINATE;
+  while (jack->atomic_callback_state == CALLBACK_STATE_PLEASE_TERMINATE)
     {
-      AutoLocker cond_locker (jack->cond_mutex);
+      std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
 
       if (jack->is_down) /* if jack is already gone, then forget it */
-	Atomic::int_set (&jack->callback_state, CALLBACK_STATE_TERMINATED);
+	jack->atomic_callback_state = CALLBACK_STATE_TERMINATED;
       else
-	jack->cond.wait_timed (jack->cond_mutex, 100000);
+	jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
     }
 
   for (uint ch = 0; ch < jack->input_ports.size(); ch++)
@@ -612,7 +595,7 @@ terminate_and_free_jack (JackPcmHandle *jack)
   delete jack;
 }
 
-static BseErrorType
+static Bse::Error
 bse_pcm_device_jack_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -621,7 +604,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
   if (!self->jack_client)
-    return BSE_ERROR_FILE_OPEN_FAILED;
+    return Bse::Error::FILE_OPEN_FAILED;
 
   JackPcmHandle *jack = new JackPcmHandle (self->jack_client);
   BsePcmHandle *handle = &jack->handle;
@@ -631,12 +614,12 @@ bse_pcm_device_jack_open (BseDevice     *device,
   handle->n_channels = BSE_PCM_DEVICE (device)->req_n_channels;
 
   /* try setup */
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   const char *dname = (n_args == 1) ? args[0] : "alsa_pcm";
   handle->mix_freq = jack_get_sample_rate (self->jack_client);
 
-  Atomic::int_set (&jack->callback_state, CALLBACK_STATE_INACTIVE);
+  jack->atomic_callback_state = CALLBACK_STATE_INACTIVE;
 
   for (uint i = 0; i < handle->n_channels; i++)
     {
@@ -649,37 +632,37 @@ bse_pcm_device_jack_open (BseDevice     *device,
       if (port)
 	jack->input_ports.push_back (port);
       else
-	error = BSE_ERROR_FILE_OPEN_FAILED;
+	error = Bse::Error::FILE_OPEN_FAILED;
 
       snprintf (port_name, port_name_size, "out_%u", i);
       port = jack_port_register (self->jack_client, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
       if (port)
 	jack->output_ports.push_back (port);
       else
-	error = BSE_ERROR_FILE_OPEN_FAILED;
+	error = Bse::Error::FILE_OPEN_FAILED;
     }
 
   /* activate */
   
-  if (!error)
+  if (error == 0)
     {
       jack_set_process_callback (self->jack_client, jack_process_callback, jack);
       jack_on_shutdown (self->jack_client, jack_shutdown_callback, jack);
 
       if (jack_activate (self->jack_client) != 0)
-	error = BSE_ERROR_FILE_OPEN_FAILED;
+	error = Bse::Error::FILE_OPEN_FAILED;
     }
 
   /* If an error occurred so far, then the process() callback will not be
    * called and the condition will never be signalled, so we set the is_down
    * flag, which will ensure that we won't wait forever on the condition.
    */
-  if (error)
+  if (error != 0)
     jack->is_down = true;
 
   /* connect ports */
 
-  if (!error)
+  if (error == 0)
     {
       map<string, DeviceDetails> devices = query_jack_devices (self);
       map<string, DeviceDetails>::const_iterator di;
@@ -703,7 +686,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
 
   /* setup buffer size */
 
-  if (!error)
+  if (error == 0)
     {
       // keep at least two jack callback sizes for dropout free audio
       uint min_buffer_frames = jack_get_buffer_size (self->jack_client) * 2;
@@ -727,11 +710,11 @@ bse_pcm_device_jack_open (BseDevice     *device,
 
       // the ringbuffer should be exactly as big as requested
       g_assert (jack->buffer_frames == buffer_frames);
-      DEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
+      PDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
     }
 
   /* setup PCM handle or shutdown */
-  if (!error)
+  if (error == 0)
     {
       bse_device_set_opened (device, dname, handle->readable, handle->writable);
       if (handle->readable)
@@ -750,7 +733,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
     {
       terminate_and_free_jack (jack);
     }
-  DEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  PDEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
 
   return error;
 }
@@ -789,13 +772,15 @@ jack_device_retrigger (JackPcmHandle *jack)
    * the condition, to ensure that the jack callback really isn't
    * active any more
    */
-  Atomic::int_set (&jack->callback_state, CALLBACK_STATE_INACTIVE);
+  jack->atomic_callback_state = CALLBACK_STATE_INACTIVE;
 
   /* usually should not timeout, but be notified by the jack callback */
-  jack->cond_mutex.lock();
-  if (!jack->is_down)
-    jack->cond.wait_timed (jack->cond_mutex, 100000);
-  jack->cond_mutex.unlock();
+  {
+    std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
+
+    if (!jack->is_down)
+      jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
+  }
 
   /* jack_ringbuffer_reset is not threadsafe! */
   jack->input_ringbuffer.clear();
@@ -809,7 +794,7 @@ jack_device_retrigger (JackPcmHandle *jack)
 
   uint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
   g_assert (frames_written == jack->buffer_frames);
-  DEBUG ("jack_device_retrigger: %d frames written", frames_written);
+  PDEBUG ("jack_device_retrigger: %d frames written", frames_written);
 }
 
 static gboolean
@@ -840,17 +825,17 @@ jack_device_check_io (BsePcmHandle *handle,
    * the synthesis graph : so we simply ignore the ixruns variable; I am not sure
    * if thats the right thing to do, though
    */
-  int oxruns = Atomic::int_get (&jack->oxruns);
+  int oxruns = jack->atomic_oxruns;
 
-  if (jack->poxruns != oxruns)
+  if (jack->atomic_poxruns != oxruns)
     {
       g_printerr ("%d beast jack driver xruns\n", oxruns);
-      jack->poxruns = oxruns;
+      jack->atomic_poxruns = oxruns;
 
       jack_device_retrigger (jack);
     }
 
-  Atomic::int_set (&jack->callback_state, CALLBACK_STATE_ACTIVE);
+  jack->atomic_callback_state = CALLBACK_STATE_ACTIVE;
 
   uint n_frames_avail = min (jack->output_ringbuffer.get_writable_frames(), jack->input_ringbuffer.get_readable_frames());
 
@@ -893,11 +878,11 @@ jack_device_latency (BsePcmHandle *handle)
     }
   
   uint total_latency = 2 * jack->buffer_frames + rlatency + wlatency;
-  DEBUG ("rlatency=%.3f ms wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
-         rlatency / double (handle->mix_freq) * 1000,
-         wlatency / double (handle->mix_freq) * 1000,
-         jack->buffer_frames / double (handle->mix_freq) * 1000,
-	 total_latency / double (handle->mix_freq) * 1000);
+  PDEBUG ("rlatency=%.3f ms wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+          rlatency / double (handle->mix_freq) * 1000,
+          wlatency / double (handle->mix_freq) * 1000,
+          jack->buffer_frames / double (handle->mix_freq) * 1000,
+          total_latency / double (handle->mix_freq) * 1000);
   return total_latency;
 }
 
@@ -907,7 +892,7 @@ jack_device_read (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   g_return_val_if_fail (jack->jack_client != NULL, 0);
-  g_return_val_if_fail (Atomic::int_get (&jack->callback_state) == CALLBACK_STATE_ACTIVE, 0);
+  g_return_val_if_fail (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
 
   /* get rid of this *slow* interleaving code */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
@@ -939,11 +924,11 @@ jack_device_read (BsePcmHandle *handle,
 
       if (frames_left)
 	{
-	  AutoLocker cond_locker (jack->cond_mutex);
+	  std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
 
 	  /* usually should not timeout, but be notified by the jack callback */
 	  if (!jack->input_ringbuffer.get_readable_frames())
-	    jack->cond.wait_timed (jack->cond_mutex, 100000);
+	    jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
 
 	  if (jack->is_down)
 	    {
@@ -971,7 +956,7 @@ jack_device_write (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   g_return_if_fail (jack->jack_client != NULL);
-  g_return_if_fail (Atomic::int_get (&jack->callback_state) == CALLBACK_STATE_ACTIVE);
+  g_return_if_fail (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
 
   /* FIXME: *slow* deinterleaving step - get rid of that */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
@@ -998,11 +983,11 @@ jack_device_write (BsePcmHandle *handle,
 
       if (frames_left)
 	{
-	  AutoLocker cond_locker (jack->cond_mutex);
+	  std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
 
 	  /* usually should not timeout, but be notified by the jack callback */
 	  if (!jack->output_ringbuffer.get_writable_frames())
-	    jack->cond.wait_timed (jack->cond_mutex, 100000);
+	    jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
 
 	  if (jack->is_down)
 	    {
