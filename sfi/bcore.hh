@@ -24,9 +24,8 @@ namespace Path = Rapicorn::Path;
 
 
 // == Utility Macros ==
-#define BSE_ISLIKELY(expr)      RAPICORN_ISLIKELY(expr)         ///< Compiler hint that @a expr is likely to be true.
-#define BSE_UNLIKELY(expr)      RAPICORN_UNLIKELY(expr)         ///< Compiler hint that @a expr is unlikely to be true.
-#define BSE_LIKELY              BSE_ISLIKELY                    ///< Compiler hint that @a expr is likely to be true.
+#define BSE_ISLIKELY(expr)      __builtin_expect (bool (expr), 1)       ///< Compiler hint to optimize for @a expr evaluating to true.
+#define BSE_UNLIKELY(expr)      __builtin_expect (bool (expr), 0)       ///< Compiler hint to optimize for @a expr evaluating to false.
 #define BSE_ABS(a)              ((a) < 0 ? -(a) : (a))          ///< Yield the absolute value of @a a.
 #define BSE_MIN(a,b)            ((a) <= (b) ? (a) : (b))        ///< Yield the smaller value of @a a and @a b.
 #define BSE_MAX(a,b)            ((a) >= (b) ? (a) : (b))        ///< Yield the greater value of @a a and @a b.
@@ -51,7 +50,7 @@ namespace Path = Rapicorn::Path;
 #define BSE_CLASS_NON_COPYABLE(ClassName) RAPICORN_CLASS_NON_COPYABLE (ClassName) ///< Delete copy ctor and assignment operator.
 #define BSE_DECLARE_VLA(Type, var, count) RAPICORN_DECLARE_VLA (Type, var, count) ///< Declare a variable length array (clang++ uses std::vector<>).
 /// Return silently if @a cond does not evaluate to true with return value @a ...
-#define BSE_RETURN_UNLESS(cond, ...)      do { if (BSE_LIKELY (cond)) break; return __VA_ARGS__; } while (0)
+#define BSE_RETURN_UNLESS(cond, ...)      do { if (BSE_UNLIKELY (!bool (cond))) return __VA_ARGS__; } while (0)
 
 // == Path Name Macros ==
 #ifdef  _WIN32 // includes _WIN64
