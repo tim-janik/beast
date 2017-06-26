@@ -852,7 +852,7 @@ controller_canvas_drag (BstPianoRollController *self,
 	  self->obj_velocity = 0;
 	}
       if (self->sel_pseq.size())
-	g_warning ("leaking old drag selection (%zu)", self->sel_pseq.size());
+	Bse::warning ("leaking old drag selection (%zu)", self->sel_pseq.size());
       self->sel_pseq.clear();
       self->xoffset = 0;
       self->tick_bound = 0;

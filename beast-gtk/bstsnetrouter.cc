@@ -172,7 +172,7 @@ bst_snet_router_update_links (BstSNetRouter   *self,
           BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
           if (!ocsource)
             {
-              g_warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
+              Bse::warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
               continue;
             }
           /* find corresponding link */

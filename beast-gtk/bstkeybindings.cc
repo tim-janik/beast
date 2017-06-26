@@ -255,7 +255,7 @@ key_bindings_check_action (gpointer data,
     case ACTION_LOAD:
       return TRUE;
     default:
-      g_warning ("%s: unknown action: %lu", __func__, action);
+      Bse::warning ("%s: unknown action: %lu", __func__, action);
       return FALSE;
     }
 }

@@ -199,11 +199,11 @@ bst_qsampler_realize (GtkWidget *widget)
   gdk_window_show (qsampler->canvas);
 
   if (!gdk_color_alloc (widget->style->colormap, &qsampler->red))
-    g_warning ("unable to allocate color: { %d, %d, %d }",
-	       qsampler->red.red, qsampler->red.green, qsampler->red.blue);
+    Bse::warning ("unable to allocate color: { %d, %d, %d }",
+                  qsampler->red.red, qsampler->red.green, qsampler->red.blue);
   if (!gdk_color_alloc (widget->style->colormap, &qsampler->green))
-    g_warning ("unable to allocate color: { %d, %d, %d }",
-	       qsampler->green.red, qsampler->green.green, qsampler->green.blue);
+    Bse::warning ("unable to allocate color: { %d, %d, %d }",
+                  qsampler->green.red, qsampler->green.green, qsampler->green.blue);
   gc_values_mask = GDK_GC_FOREGROUND;
   gc_values.foreground = qsampler->red;
   qsampler->red_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
@@ -234,11 +234,11 @@ bst_qsampler_style_set (GtkWidget *widget,
       gtk_gc_release (qsampler->red_gc);
       gtk_gc_release (qsampler->green_gc);
       if (!gdk_color_alloc (widget->style->colormap, &qsampler->red))
-	g_warning ("unable to allocate color: { %d, %d, %d }",
-		   qsampler->red.red, qsampler->red.green, qsampler->red.blue);
+	Bse::warning ("unable to allocate color: { %d, %d, %d }",
+                      qsampler->red.red, qsampler->red.green, qsampler->red.blue);
       if (!gdk_color_alloc (widget->style->colormap, &qsampler->green))
-	g_warning ("unable to allocate color: { %d, %d, %d }",
-		   qsampler->green.red, qsampler->green.green, qsampler->green.blue);
+	Bse::warning ("unable to allocate color: { %d, %d, %d }",
+                      qsampler->green.red, qsampler->green.green, qsampler->green.blue);
       gc_values_mask = GDK_GC_FOREGROUND;
       gc_values.foreground = qsampler->red;
       qsampler->red_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);

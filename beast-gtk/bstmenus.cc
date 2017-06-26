@@ -166,7 +166,7 @@ bst_choice_menu_set_item_sensitive (GtkWidget *menu,
 	  return;
 	}
     }
-  g_warning ("unable to find item with id %lu in menu %p", id, menu);
+  Bse::warning ("unable to find item with id %lu in menu %p", id, menu);
 }
 
 GtkWidget*

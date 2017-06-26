@@ -580,7 +580,7 @@ main_save_rc_files ()
       gchar *file_name = BST_STRDUP_RC_FILE ();
       Bse::Error error = bst_rc_dump (file_name);
       if (error != 0)
-	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
+	Bse::warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }
 }

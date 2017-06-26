@@ -721,7 +721,7 @@ controller_canvas_drag (BstEventRollController *self,
           self->obj_value = 0;
 	}
       if (self->sel_cseq.size())
-	g_warning ("leaking old drag selection (%lu)", self->sel_cseq.size());
+	Bse::warning ("leaking old drag selection (%lu)", self->sel_cseq.size());
       self->sel_cseq.clear();
 
       /* find drag tool */

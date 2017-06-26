@@ -1,4 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bstmarshal.h"
+#include "bstmarshal.cc"
+
 #include "bstutils.hh"
 
 #include "bstgconfig.hh"
@@ -1319,10 +1322,6 @@ bst_file_scan_find_key (const gchar *file,
   else
     return NULL;
 }
-
-
-/* --- generated marshallers --- */
-#include "bstmarshal.cc"
 
 
 // == mouse button checks ==
