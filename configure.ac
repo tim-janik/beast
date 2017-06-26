@@ -13,7 +13,7 @@ AC_PREREQ(2.57)
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
 # * ~RC:             Release candidate, may contain ~rc[0-9]+ or nothing
-AC_INIT([beast], [0.11.0~rc2])
+AC_INIT([beast], [0.11.0])
 :;   ABI_VERSION=[0.11.0]
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
