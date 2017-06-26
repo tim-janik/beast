@@ -20,8 +20,8 @@
 #ifndef __BSE_PCM_DEVICE_JACK_H__
 #define __BSE_PCM_DEVICE_JACK_H__
 
-#include <bse/bsepcmdevice.h>
-#include <bse/bseplugin.h>
+#include <bse/bsepcmdevice.hh>
+#include <bse/bseplugin.hh>
 #include <jack/jack.h>
 
 G_BEGIN_DECLS

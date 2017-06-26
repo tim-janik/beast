@@ -17,11 +17,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "configure.h"
 #include "bsepcmdevice-jack.hh"
 #include <bse/bseblockutils.hh>
-#include <bse/gsldatautils.h>
-#include <birnet/birnet.hh>
+#include <bse/gsldatautils.hh>
 #include <jack/jack.h>
 #include <string.h>
 #include <stdlib.h>
@@ -33,7 +31,6 @@
 #include <map>
 #include <vector>
 
-using namespace Birnet;
 using std::vector;
 using std::set;
 using std::map;
