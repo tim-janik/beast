@@ -283,7 +283,7 @@ simple_adsr_process (BseModule *module,
 	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = DECAY;	break;
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;	break;
 	    case BSE_MIX_RAMP_REACHED_BOUND:				break;
-	    default:	g_error ("should not be reached: state: %d\n", state);
+	    default:	assert_return_unreached();
 	    }
 	  break;
 	case DECAY:
@@ -296,7 +296,7 @@ simple_adsr_process (BseModule *module,
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;		break;
 	    case BSE_MIX_RAMP_RETRIGGER:	env->phase = ATTACK;		break;
 	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
-	    default:	g_error ("should not be reached: state: %d\n", state);
+	    default:	assert_return_unreached();
 	    }
 	  break;
 	case SUSTAIN:
@@ -309,7 +309,7 @@ simple_adsr_process (BseModule *module,
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;		break;
 	    case BSE_MIX_RAMP_RETRIGGER:        env->phase = ATTACK;            break;
 	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
-	    default:	g_error ("should not be reached: state: %d\n", state);
+	    default:	assert_return_unreached();
 	    }
 	  break;
 	case RELEASE:
@@ -324,7 +324,7 @@ simple_adsr_process (BseModule *module,
 	    case BSE_MIX_RAMP_RETRIGGER:
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = ATTACK;		break;
 	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
-	    default:	g_error ("should not be reached: state: %d\n", state);
+	    default:	assert_return_unreached();
 	    }
 	  break;
 	case POST_RELEASE:
@@ -336,7 +336,7 @@ simple_adsr_process (BseModule *module,
 	    case BSE_MIX_RAMP_RETRIGGER:
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = ATTACK;		break;
 	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
-	    default:	g_error ("should not be reached: state: %d\n", state);
+	    default:	assert_return_unreached();
 	    }
 	  break;
 	}
