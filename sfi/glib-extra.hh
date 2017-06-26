@@ -38,7 +38,6 @@ typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
 
-
 /* --- abandon typesafety for some frequently used functions --- */
 #ifndef __cplusplus
 #define g_object_notify(o,s)		  g_object_notify ((gpointer) o, s)
@@ -366,5 +365,34 @@ const char* (_)                (const char        *string);
 std::string (_)                (const std::string &string);
 
 } // Bse
+
+
+// == Deprecate tempting GLib functions ==
+#if 0   // DEPRECATE_GLIB_UTILS
+#undef  g_warning
+#define g_warning(...)             static_assert (0, "DONTUSE g_warning")
+#undef  g_error
+#define g_error(...)               static_assert (0, "DONTUSE g_error")
+#undef  g_return_if_fail
+#define g_return_if_fail(...)      static_assert (0, "DONTUSE g_return_if_fail")
+#undef  g_return_val_if_fail
+#define g_return_val_if_fail(...)  static_assert (0, "DONTUSE g_return_val_if_fail")
+#undef  g_assert
+#define g_assert(...)              static_assert (0, "DONTUSE g_assert")
+#undef  G_OBJECT_WARN_INVALID_PROPERTY_ID
+#define G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec)   \
+  do {                                                                  \
+    GObject *_glib__object = (GObject*) (object);                       \
+    GParamSpec *_glib__pspec = (GParamSpec*) (pspec);                   \
+    guint _glib__property_id = (property_id);                           \
+    Bse::warning ("%s:%d: invalid %s id %u for \"%s\" of type '%s' in '%s'", \
+               __FILE__, __LINE__,                                      \
+               "property",                                              \
+               _glib__property_id,                                      \
+               _glib__pspec->name,                                      \
+               g_type_name (G_PARAM_SPEC_TYPE (_glib__pspec)),          \
+               G_OBJECT_TYPE_NAME (_glib__object));                     \
+  } while (0)
+#endif  // DEPRECATE_GLIB_UTILS
 
 #endif /* __SFI_GLIB_EXTRA_H__ */
