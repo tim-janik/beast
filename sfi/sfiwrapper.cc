@@ -31,5 +31,5 @@ void
 sfi_url_show (const char *url)
 {
   if (!Rapicorn::url_show (url))
-    g_warning ("Failed to start browser for URL: %s", url);
+    Bse::warning ("Failed to start browser for URL: %s", url);
 }

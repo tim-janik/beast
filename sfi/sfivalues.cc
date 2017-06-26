@@ -86,7 +86,7 @@ _sfi_init_values (void)
   };
   static GType value_types[6] = { 0, };
 
-  assert (sfi__value_types == NULL);
+  assert_return (sfi__value_types == NULL);
 
   sfi__value_types = value_types;
 

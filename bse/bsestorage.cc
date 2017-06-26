@@ -91,7 +91,7 @@ BSE_BUILTIN_TYPE (BseStorage)
     (GInstanceInitFunc) bse_storage_init,
   };
 
-  assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
@@ -1210,8 +1210,7 @@ bse_item_store_property (BseItem    *item,
       bse_storage_putc (storage, ')');
     }
   else if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    g_warning ("%s: unable to store object property \"%s\" of type `%s'",
-               G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    Bse::warning ("%s: unable to store object property \"%s\" of type `%s'", G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   else
     bse_storage_put_param (storage, value, pspec);
 }
@@ -1289,9 +1288,9 @@ storage_store_property_value (BseStorage *self, const std::string &property_name
         target = einfo.value_to_string (any.as_int64());
         break;
       }
-    default:                    assert (!"reached");
+    default:                    assert_return_unreached();
     }
-  assert (!target.empty());
+  assert_return (!target.empty());
   bse_storage_break (self);
   bse_storage_putc (self, '(');
   bse_storage_puts (self, property_name.c_str());
@@ -2032,7 +2031,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	}
       if (!blob_out)
 	{
-	  g_warning ("failed to lookup storage blob with id=%ld\n", id);
+	  Bse::warning ("failed to lookup storage blob with id=%ld\n", id);
 	  goto return_with_error;
 	}
      }

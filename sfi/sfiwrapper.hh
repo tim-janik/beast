@@ -16,12 +16,6 @@ using Bse::int64;
 using Bse::unichar;
 #endif // BSE_CONVENIENCE
 
-/* --- macros --- */
-#define sfi_error(...)          Bse::fatal (__VA_ARGS__)
-#define sfi_warning(...)        Bse::warning (__VA_ARGS__)
-#define sfi_info(...)           Bse::info (__VA_ARGS__)
-#define sfi_diag(...)           Bse::warning (__VA_ARGS__)
-
 /* --- initialization --- */
 typedef struct
 {

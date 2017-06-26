@@ -55,7 +55,7 @@ run_loop_test (GslWaveLoopType loop_type,
 			       loop_type, loop_first, loop_last, loop_count);
   error = gsl_wave_chunk_open (wchunk);
   if (error != 0)
-    g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
+    Bse::warning ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
     printout ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
@@ -172,7 +172,7 @@ reversed_datahandle_test (void)
   gsl_data_handle_unref (rhandle1);
   error = gsl_data_handle_open (rhandle2);
   if (error != 0)
-    g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
+    Bse::warning ("failed to open rhandle2: %s", bse_error_blurb (error));
   gsl_data_handle_unref (rhandle2);
   TASSERT (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
   for (i = 1; i < 8; i++)
@@ -281,7 +281,7 @@ multi_channel_test_one (int pingpong,
                                GslWaveLoopType (LOOP_TYPE), loop_start * channels, loop_end * channels, LOOP_COUNT);
   error = gsl_wave_chunk_open (wchunk);
   if (error != 0)
-    g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
+    Bse::warning ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   float *expect = (float*) malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));
   float *ep = expect;

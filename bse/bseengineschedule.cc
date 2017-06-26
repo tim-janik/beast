@@ -86,7 +86,7 @@ unschedule_cycle (EngineSchedule *sched,
     {
       EngineNode *node = (EngineNode*) walk->data;
       if (!ENGINE_NODE_IS_SCHEDULED (node))
-	g_warning ("node(%p) in schedule ring(%p) is untagged", node, ring);
+        Bse::warning ("%s: node(%p) in schedule ring(%p) is untagged", __func__, node, ring);
       node->sched_leaf_level = 0;
       node->sched_tag = FALSE;
       if (node->flow_jobs)
@@ -369,8 +369,8 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
   assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
 
   subschedule_query_node (schedule, node, &query);
-  assert (query.cycles == NULL);	/* paranoid */
-  assert (query.cycle_nodes == NULL);	/* paranoid */
+  assert_return (query.cycles == NULL);	/* paranoid */
+  assert_return (query.cycle_nodes == NULL);	/* paranoid */
   schedule_node (schedule, node, query.leaf_level);
 }
 
@@ -405,13 +405,14 @@ determine_suspension_state (EngineNode *node,
                             gboolean   *keep_state_p)
 {
   gboolean seen_cycle = FALSE;
-  guint64 stamp;
-  assert (node->in_suspend_call == FALSE);
+  guint64 stamp = Bse::TickStamp::max_stamp();
+  assert_return (node->in_suspend_call == FALSE, stamp);
   if (node->update_suspend)
     {
       node->in_suspend_call = TRUE;
       SfiRing *ring;    /* calculate outer suspend constraints */
-      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : Bse::TickStamp::max_stamp();
+      if (ENGINE_NODE_IS_CONSUMER (node))
+        stamp = 0;
       gboolean keep_state = FALSE;
       for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
         {
@@ -467,13 +468,13 @@ merge_untagged_node_lists_uniq (SfiRing *ring1,
   for (walk = ring2; walk; walk = sfi_ring_walk (walk, ring2))
     {
       EngineNode *node = (EngineNode*) walk->data;
-      assert (node->sched_recurse_tag == FALSE);
+      assert_return (node->sched_recurse_tag == FALSE, NULL);
     }
   /* tag all nodes in ring1 first */
   for (walk = ring1; walk; walk = sfi_ring_walk (walk, ring1))
     {
       EngineNode *node = (EngineNode*) walk->data;
-      assert (node->sched_recurse_tag == FALSE);	/* paranoid check */
+      assert_return (node->sched_recurse_tag == FALSE, NULL);	/* paranoid check */
       node->sched_recurse_tag = TRUE;
     }
   /* merge list with missing (untagged) nodes */
@@ -505,10 +506,7 @@ resolve_cycle (EngineCycle *cycle,
 {
   if (node != cycle->last)
     return FALSE;
-  if (!cycle->seen_deferred_node)
-    {
-      g_error ("cycle without delay module: (%p)", cycle);
-    }
+  assert_return (cycle->seen_deferred_node, FALSE); // cycle without delay module
   *cycle_nodes_p = merge_untagged_node_lists_uniq (*cycle_nodes_p, cycle->nodes);
   cycle->nodes = NULL;
   cycle->last = NULL;
@@ -521,7 +519,7 @@ master_resolve_cycles (EngineQuery *query,
 {
   SfiRing *walk;
   gboolean all_resolved = TRUE;
-  assert (query->cycles != NULL);	/* paranoid */
+  assert_return (query->cycles != NULL, FALSE);	/* paranoid */
   walk = query->cycles;
   while (walk)
     {
@@ -529,8 +527,8 @@ master_resolve_cycles (EngineQuery *query,
       EngineCycle *cycle = (EngineCycle*) walk->data;
       if (resolve_cycle (cycle, node, &query->cycle_nodes))
 	{
-	  assert (cycle->last == NULL);	/* paranoid */
-	  assert (cycle->nodes == NULL);	/* paranoid */
+	  assert_return (cycle->last == NULL, FALSE);	/* paranoid */
+	  assert_return (cycle->nodes == NULL, FALSE);	/* paranoid */
 	  sfi_delete_struct (EngineCycle, cycle);
 	  query->cycles = sfi_ring_remove_node (query->cycles, walk);
 	}
@@ -539,7 +537,7 @@ master_resolve_cycles (EngineQuery *query,
       walk = next;
     }
   if (all_resolved)
-    assert (query->cycles == NULL);	/* paranoid */
+    assert_return (query->cycles == NULL, FALSE);	/* paranoid */
   return all_resolved;
 }
 
@@ -562,7 +560,7 @@ query_merge_cycles (EngineQuery *query,
 		    EngineNode  *node)
 {
   SfiRing *walk;
-  assert (child_query->cycles != NULL);	/* paranoid */
+  assert_return (child_query->cycles != NULL);	/* paranoid */
   /* add node to all child cycles */
   for (walk = child_query->cycles; walk; walk = sfi_ring_walk (walk, child_query->cycles))
     {
@@ -654,18 +652,18 @@ subschedule_child (EngineSchedule *schedule,
       query->leaf_level = MAX (query->leaf_level, child_query.leaf_level + 1);
       if (!child_query.cycles)
 	{
-	  assert (child_query.cycle_nodes == NULL);	/* paranoid */
+	  assert_return (child_query.cycle_nodes == NULL);	/* paranoid */
 	  schedule_node (schedule, child, child_query.leaf_level);
 	}
       else if (master_resolve_cycles (&child_query, child))
 	{
-	  assert (child == child_query.cycle_nodes->data);	/* paranoid */
+	  assert_return (child == child_query.cycle_nodes->data);	/* paranoid */
 	  schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
 	  child_query.cycle_nodes = NULL;
 	}
       else
 	query_merge_cycles (query, &child_query, node);
-      assert (child_query.cycles == NULL && child_query.cycle_nodes == NULL);	/* paranoid */
+      assert_return (child_query.cycles == NULL && child_query.cycle_nodes == NULL);	/* paranoid */
     }
 }
 

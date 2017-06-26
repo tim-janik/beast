@@ -472,14 +472,14 @@ magic_create (char *magic_string, const char *original)
 	  SKIP_CLEAN (p);
 	  if (!magic_parse_offset (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic offset \"%s\" from \"%s\"", magic_string, original);
+              Bse::warning ("unable to parse magic offset \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
 	  magic_string = p;
 	  SKIP_CLEAN (p);
 	  if (!magic_parse_type (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic type \"%s\" from \"%s\"", magic_string, original);
+	      Bse::warning ("unable to parse magic type \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
           magic_string = p;
@@ -490,7 +490,7 @@ magic_create (char *magic_string, const char *original)
 	    SKIP_CLEAN (p);
 	  if (!magic_parse_test (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic test \"%s\" from \"%s\"", magic_string, original);
+	      Bse::warning ("unable to parse magic test \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
 	}
@@ -611,7 +611,7 @@ magic_read_data (BFile *bfile, GslRealMagic *magic, MagicData *data)
 	    data->v_int32 = (signed) uint8;
 	}
       else
-	assert_unreached ();
+	assert_return_unreached (FALSE);
     }
 
   return TRUE;

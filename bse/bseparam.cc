@@ -88,7 +88,7 @@ bse_param_spec_boxed (const gchar *name,
       sfi_pspec_set_options (pspec, hints);
     }
   else
-    g_warning ("boxed parameter \"%s\" of type `%s' can't be converted to record or sequence",
-	       name, g_type_name (boxed_type));
+    Bse::warning ("boxed parameter \"%s\" of type `%s' can't be converted to record or sequence",
+                  name, g_type_name (boxed_type));
   return pspec;
 }

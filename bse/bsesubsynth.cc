@@ -326,8 +326,7 @@ bse_sub_synth_context_create (BseSource *source,
   /* create new context for foreign synth */
   if (snet && g_slist_find (recursion_stack, source))
     {
-      g_warning ("%s: not creating modules for %s due to infinite recursion",
-		 bse_object_debug_name (self), bse_object_debug_name (snet));
+      Bse::warning ("%s: not creating modules for %s due to infinite recursion", bse_object_debug_name (self), bse_object_debug_name (snet));
     }
   else if (snet)
     {
@@ -338,7 +337,7 @@ bse_sub_synth_context_create (BseSource *source,
       recursion_stack = g_slist_prepend (recursion_stack, self);
       foreign_context_handle = bse_snet_create_context (snet, mcontext, trans);
       recursion_stack = g_slist_remove (recursion_stack, self);
-      assert (foreign_context_handle > 0);
+      assert_return (foreign_context_handle > 0);
     }
   else
     shortcut = self->null_shortcut;
@@ -522,14 +521,14 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       ident = g_strdup_format ("input-%u", i + 1);
       label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
-      assert (channel_id == i);
+      assert_return (channel_id == i);
       g_free (ident);
       g_free (label);
 
       ident = g_strdup_format ("output-%u", i + 1);
       label = g_strdup_format (_("Virtual output %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
-      assert (channel_id == i);
+      assert_return (channel_id == i);
       g_free (ident);
       g_free (label);
     }

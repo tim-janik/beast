@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <sfi/sfitests.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bse.hh>
@@ -153,20 +154,20 @@ check_loop (GslDataHandle *src_handle,
 
   GslDataPeekBuffer peek_buffer		  = { +1 /* incremental direction */, 0, };
   GslDataPeekBuffer peek_buffer_reference = { +1 /* incremental direction */, 0, };
-  sfi_info ("check_loop<%lld,%lld>", loop_start, loop_end);
+  Bse::info ("check_loop<%lld,%lld>", loop_start, loop_end);
 
   Bse::Error error;
   error = gsl_data_handle_open (loop_handle);
   if (error != 0)
     {
-      sfi_error ("loop_handle open failed: %s", bse_error_blurb (error));
+      test_error ("loop_handle open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (loop_handle_reference);
   if (error != 0)
     {
-      sfi_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
+      test_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
@@ -178,7 +179,7 @@ check_loop (GslDataHandle *src_handle,
 
       if (a != b)
 	{
-	  sfi_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
+	  test_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
 	  exit (1);
 	}
     }

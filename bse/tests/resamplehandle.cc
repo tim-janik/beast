@@ -27,11 +27,11 @@ read_through (GslDataHandle *handle)
     {
       gfloat values[1024];
       int64 values_read = gsl_data_handle_read (handle, offset, 1024, values);
-      assert (values_read > 0);
+      assert_return (values_read > 0);
       offset += values_read;
     }
 
-  assert (offset == n_values);
+  assert_return (offset == n_values);
 }
 
 static void
@@ -324,7 +324,7 @@ test_delay_compensation (const char *run_type)
       if (j % 2)
 	{
 	  /* implement half a output sample delay (for downsampling only) */
-	  assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  assert_return (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
 	  i++;
 	  j += 2;
 	}
@@ -467,6 +467,7 @@ main (int   argc,
   test_state_length ("FPU");
   run_tests ("FPU");
   /* load plugins */
+  Bse::assertion_failed_hook (NULL); // hack to allow test reinitialization
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())

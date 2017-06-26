@@ -220,7 +220,7 @@ Type Parser::typeOf (const String& type) const
   if (isSequence (type))      return SEQUENCE;
   if (isRecord (type))	      return RECORD;
   if (isClass (type))	      return OBJECT;
-  g_error ("%s", ("invalid type: " + type).c_str());
+  app_error ("%s", ("invalid type: " + type).c_str());
   return VOID;
 }
 
@@ -508,7 +508,7 @@ void Parser::preprocessContents (const String& input_filename)
 	    case '<':	state = filenameIn2;
 			break;
 	    default:	printerr ("bad char after include statement");
-			assert_unreached (); // error handling!
+                        assert_return_unreached (); // error handling!
 	    }
 	}
       else if((state == filenameIn1 && *i == '"')
@@ -561,7 +561,7 @@ void Parser::preprocessContents (const String& input_filename)
               includeImpl = true;
             }
           if (*i != ';')
-            g_error ("expected ';' after include statement");
+            app_error ("expected ';' after include statement");
           i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
 
@@ -986,7 +986,7 @@ GTokenType Parser::parseStringOrConst (String &s)
 		    s = ci->str;
 		    break;
 		  default:
-		    assert_unreached ();
+		    assert_return_unreached (G_TOKEN_ERROR);
 		    break;
 		}
 	      return G_TOKEN_NONE;
@@ -1008,7 +1008,7 @@ GTokenType Parser::parseConstant (bool isident)
   Constant cdef;
 
   if (isident)
-    assert_unreached (); /* parse_or_return (TOKEN_CONST_IDENT); */
+    assert_return_unreached (G_TOKEN_ERROR); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -1495,7 +1495,7 @@ GTokenType Parser::parseParamHints (Param &def)
 		}
                 break;
               default:
-                assert_unreached ();
+                assert_return_unreached (G_TOKEN_ERROR);
                 break;
               }
           }
@@ -2092,7 +2092,7 @@ void Parser::leaveNamespace ()
 {
   currentNamespace = dynamic_cast<Namespace *>(currentNamespace->parent);
   if (!currentNamespace)
-    g_error ("fatal: leaveNamespace called without corresponding enterNamespace");
+    app_error ("fatal: leaveNamespace called without corresponding enterNamespace");
 }
 
 bool Parser::usingNamespace (const String& name)

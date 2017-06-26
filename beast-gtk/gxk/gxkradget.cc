@@ -158,7 +158,7 @@ clone_list_find (CloneList *clist,
   for (i = 0; i < clist->n_clones; i++)
     if (clist->clones[i].source == source)
       return clist->clones[i].clone;
-  g_warning ("failed to find clone for %p", source);
+  Bse::warning ("failed to find clone for %p", source);
   return NULL;
 }
 
@@ -199,7 +199,7 @@ clone_node_intern (Node        *source,
     }
   if (source->xdef_node)
     {
-      assert (!inherit);
+      assert_return (!inherit, NULL);
       node->xdef_node = clone_list_find (clist, source->xdef_node);
       node->xdef_depth = source->xdef_depth;
     }
@@ -228,7 +228,7 @@ clone_node_intern (Node        *source,
       else
         node->children = last = g_slist_new (child);
     }
-  assert (source->call_stack == NULL);
+  assert_return (source->call_stack == NULL, NULL);
   return node;
 }
 
@@ -680,7 +680,7 @@ node_define (Domain       *domain,
     {
       node = clone_node (source, domain->domain, node_name, inherit);
       node->xdef_node = xdef_node;
-      assert (xdef_node && !xdef_node->xdef_node);
+      assert_return (xdef_node && !xdef_node->xdef_node, NULL);
       node->xdef_depth = node->xdef_node->depth;
     }
   else for (i = 0; attribute_names[i]; i++)     /* node inheritance */
@@ -941,7 +941,7 @@ gxk_radget_parse (const gchar    *domain_name,
   close (fd);
   if (myerror)
     {
-      g_warning ("GxkRadget: parsing error in \"%s\": %s", file_name, myerror->message);
+      Bse::warning ("GxkRadget: parsing error in \"%s\": %s", file_name, myerror->message);
       g_error_free (myerror);
     }
 }
@@ -976,7 +976,7 @@ gxk_radget_parse_text (const gchar    *domain_name,
   radget_parser (domain, i18n_domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
   if (myerror)
     {
-      g_warning ("GxkRadget: parsing error: %s", myerror->message);
+      Bse::warning ("GxkRadget: parsing error: %s", myerror->message);
       g_error_free (myerror);
     }
 }
@@ -1011,7 +1011,7 @@ radget_widget_hierarchy_changed (GtkWidget *widget,
   if (!hgroup && !vgroup && !bgroup)
     return;
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  assert (GTK_WIDGET_TOPLEVEL (toplevel));
+  assert_return (GTK_WIDGET_TOPLEVEL (toplevel));
   if (hgroup)
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, hgroup, 'h');
@@ -1209,7 +1209,10 @@ radget_create_from_node (Node         *node,
   env->name = node->name;
   /* retrive type info */
   if (!gxk_radget_type_lookup (node->type, &tinfo))
-    g_error ("invalid radget type: %s", g_type_name (node->type));
+    {
+      Bse::warning ("invalid radget type: %s", g_type_name (node->type));
+      return NULL;
+    }
   /* precedence for property value lookups:
    * - all node ancestry args
    * - expanded call_args
@@ -1464,8 +1467,8 @@ radget_creator (GxkRadget          *radget,
           call_args = node_expand_call_args (node, user_args, &env);
           n_pops++, node->call_stack = g_slist_prepend (node->call_stack, call_args);
           if (radget && !g_type_is_a (G_OBJECT_TYPE (radget), node->type))
-            g_warning ("GxkRadget: radget domain \"%s\": radget `%s' differs from defined type: %s",
-                       domain_name, G_OBJECT_TYPE_NAME (radget), node->name);
+            Bse::warning ("GxkRadget: radget domain \"%s\": radget `%s' differs from defined type: %s",
+                          domain_name, G_OBJECT_TYPE_NAME (radget), node->name);
           else
             {
               radget = radget_create_from_node (node, radget, &env, &error);
@@ -1481,14 +1484,14 @@ radget_creator (GxkRadget          *radget,
           gxk_radget_free_args (call_args);
           env_clear (&env);
           if (error)
-            g_warning ("GxkRadget: while constructing radget \"%s\": %s", node->name, error->message);
+            Bse::warning ("GxkRadget: while constructing radget \"%s\": %s", node->name, error->message);
           g_clear_error (&error);
         }
       else
-        g_warning ("GxkRadget: radget domain \"%s\": no such node: %s", domain_name, name);
+        Bse::warning ("GxkRadget: radget domain \"%s\": no such node: %s", domain_name, name);
     }
   else
-    g_warning ("GxkRadget: no such radget domain: %s", domain_name);
+    Bse::warning ("GxkRadget: no such radget domain: %s", domain_name);
   return radget;
 }
 
@@ -1824,7 +1827,7 @@ gxk_radget_add (GxkRadget      *radget,
   if (GTK_IS_CONTAINER (radget))
     gtk_container_add ((GtkContainer*) radget, (GtkWidget*) widget);
   else
-    g_error ("GxkRadget: failed to find area \"%s\"", area);
+    Bse::warning ("GxkRadget: failed to find area \"%s\"", area);
 }
 
 
@@ -1843,14 +1846,14 @@ radget_define_type (GType           type,
                       i18n_domain, NULL, NULL, NULL, &error);
   g_datalist_set_data (&standard_domain->nodes, name, node);
   if (error)
-    g_error ("while registering standard radgets: %s", error->message);
+    Bse::warning ("while registering standard radgets: %s", error->message);
 }
 
 void
 gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
-  assert (quark_radget_type == 0);
+  assert_return (quark_radget_type == 0);
   quark_id = g_quark_from_static_string ("id");
   quark_name = g_quark_from_static_string ("name");
   quark_radget_type = g_quark_from_static_string ("GxkRadget-type");

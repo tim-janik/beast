@@ -25,11 +25,11 @@ bse_midi_device_dispose (GObject *object)
 
   if (BSE_DEVICE_OPEN (self))
     {
-      g_warning ("%s: midi device still opened", G_STRLOC);
+      Bse::warning ("%s: midi device still opened", G_STRLOC);
       bse_device_close (BSE_DEVICE (self));
     }
   if (self->handle)
-    g_warning (G_STRLOC ": midi device with stale midi handle");
+    Bse::warning (G_STRLOC ": midi device with stale midi handle");
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);

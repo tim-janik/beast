@@ -124,7 +124,7 @@ gnome_canvas_item_keep_between (GnomeCanvasItem *between,
 	    gnome_canvas_item_lower (between, z - n);
 	}
       else
-	g_warning ("gnome_canvas_item_keep_between() called for non-siblings");
+        Bse::warning ("gnome_canvas_item_keep_between() called for non-siblings");
     }
 }
 
@@ -153,7 +153,7 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
 	    gnome_canvas_item_lower (above, z - n);
 	}
       else
-	g_warning ("gnome_canvas_item_keep_above() called for non-siblings");
+	Bse::warning ("gnome_canvas_item_keep_above() called for non-siblings");
     }
 }
 

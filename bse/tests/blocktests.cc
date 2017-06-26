@@ -332,8 +332,8 @@ bench_range (void)
   };
   Rapicorn::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
-  assert (min_value == correct_min_value);
-  assert (max_value == correct_max_value);
+  assert_return (min_value == correct_min_value);
+  assert_return (max_value == correct_max_value);
   TPASS ("Block::range      # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
@@ -373,8 +373,8 @@ bench_range_and_square_sum (void)
   };
   Rapicorn::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
-  assert (min_value == correct_min_value);
-  assert (max_value == correct_max_value);
+  assert_return (min_value == correct_min_value);
+  assert_return (max_value == correct_max_value);
   TPASS ("Block::range+sum² # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
 
@@ -406,7 +406,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
+  // usually we'd call bse_init_test() here, but we have tests to run before plugins are loaded
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
@@ -416,6 +416,7 @@ main (int   argc,
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
   TDONE();
   run_tests(); /* run tests on FPU */
+  Bse::assertion_failed_hook (NULL); // hack to allow test reinitialization
   /* load plugins */
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */

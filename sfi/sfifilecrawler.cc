@@ -152,7 +152,7 @@ file_crawler_queue_readdir (SfiFileCrawler *self,
 			    const gchar    *file_pattern,
 			    GFileTest       file_test)
 {
-  assert (self->dhandle == NULL);
+  assert_return (self->dhandle == NULL);
 
   if (strchr (file_pattern, '?') || strchr (file_pattern, '*'))
     {
@@ -218,7 +218,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
 {
   gchar *sep, *p, *freeme, *tmp;
 
-  assert (self->pdqueue == NULL && self->dlist == NULL && self->accu == NULL);
+  assert_return (self->pdqueue == NULL && self->dlist == NULL && self->accu == NULL);
 
   freeme = p = g_strdup (path_pattern);
 
@@ -275,7 +275,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
 static void
 file_crawler_crawl_abs_path (SfiFileCrawler *self)
 {
-  assert (self->pdqueue || self->dlist);
+  assert_return (self->pdqueue || self->dlist);
   if (self->dhandle)
     {
       /* finish reading directory contents */

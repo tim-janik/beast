@@ -365,7 +365,7 @@ public:
       case RECORD:      return make_fqtn (type, "Handle");
       case SEQUENCE:    return make_fqtn (type);
       case OBJECT:      return is_cxx_class (type) ? make_fqtn (type, "*") : make_PrefixedTypeName (type, "*");
-      default:          assert_unreached(); return NULL;
+      default:          assert_return_unreached (NULL); return NULL;
       }
   }
   const char*
@@ -386,7 +386,7 @@ public:
       case RECORD:
       case SEQUENCE:    return intern (String ("const ") + TypeField (type) + " &");
       case OBJECT:      return TypeField (type);
-      default:          assert_unreached(); return NULL;
+      default:          assert_return_unreached (NULL); return NULL;
       }
   }
   const char*
@@ -420,7 +420,7 @@ public:
           return intern (String() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
         else
           return intern (String() + "::Bse::CxxBase::value_set_gobject");
-      default:          assert_unreached(); return NULL;
+      default:          assert_return_unreached (NULL); return NULL;
       }
   }
   const char*
@@ -447,7 +447,7 @@ public:
                          "::Bse::CxxBase::value_get_object< " + make_fqtn (type) + "Base* >");
         else
           return intern (String ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
-      default:          assert_unreached(); return NULL;
+      default:          assert_return_unreached (NULL); return NULL;
       }
   }
   const char*
@@ -1257,10 +1257,10 @@ public:
         if (!is_void)
           printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result.type));
         printf ("    } catch (std::exception &e) {\n");
-        printf ("      sfi_diag (\"%%s: %%s\", \"%s\", e.what());\n", name);
+        printf ("      Bse::info (\"%%s: %%s\", \"%s\", e.what());\n", name);
         printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    } catch (...) {\n");
-        printf ("      sfi_diag (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
+        printf ("      Bse::info (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
         printf ("      return Bse::Error::PROC_EXECUTION;\n");
         printf ("    }\n");
         printf ("    return Bse::Error::NONE;\n");

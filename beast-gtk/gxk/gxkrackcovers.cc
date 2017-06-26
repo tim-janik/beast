@@ -174,10 +174,10 @@ rack_cover_add_plates (GxkRackTable *rtable)
             {
               cover = rack_cover_create (GTK_WIDGET (rtable));
               plate_list = g_slist_prepend (plate_list, cover);
-              assert (k < GTK_TABLE (rtable)->ncols);
-              assert (l < GTK_TABLE (rtable)->nrows);
-              assert (k + m <= GTK_TABLE (rtable)->ncols);
-              assert (l + n <= GTK_TABLE (rtable)->nrows);
+              assert_return (k < GTK_TABLE (rtable)->ncols, NULL);
+              assert_return (l < GTK_TABLE (rtable)->nrows, NULL);
+              assert_return (k + m <= GTK_TABLE (rtable)->ncols, NULL);
+              assert_return (l + n <= GTK_TABLE (rtable)->nrows, NULL);
               gxk_rack_table_attach (rtable, cover, k, l, m, n);
             }
         }

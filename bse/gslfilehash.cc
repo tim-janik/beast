@@ -39,7 +39,7 @@ hfile_equals (gconstpointer key1,
 void
 _gsl_init_fd_pool (void)
 {
-  assert (hfile_ht == NULL);
+  assert_return (hfile_ht == NULL);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
 static gboolean
@@ -133,8 +133,7 @@ gsl_hfile_close (GslHFile *hfile)
   else
     {
       if (!g_hash_table_remove (hfile_ht, hfile))
-	g_warning ("%s: failed to unlink hashed file (%p)",
-		   G_STRLOC, hfile);
+        Bse::warning ("%s: failed to unlink hashed file (%p)", __func__, hfile);
       else
 	{
 	  hfile->ocount = 0;

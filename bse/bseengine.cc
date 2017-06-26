@@ -42,7 +42,7 @@ bse_module_new (const BseModuleClass *klass,
   assert_return (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
     {
-      g_warning ("%s: Delay cycle processing not yet implemented", G_STRLOC);
+      Bse::warning ("%s: Delay cycle processing not yet implemented", __func__);
       return NULL;
     }
 
@@ -1358,10 +1358,10 @@ bse_engine_init()
   assert_return (bse_engine_initialized == FALSE);
   bse_engine_initialized = TRUE;
   /* assert correct implmentation of accessor macros defined in bsedefs.hh */
-  assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
-  assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
-  assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
-  assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
+  assert_return (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
+  assert_return (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
+  assert_return (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
+  assert_return (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
   /* setup threading */
   Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */
@@ -1438,17 +1438,17 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
     }
 #if 0
   if (tick_stamp > 158760000)
-    g_error ("tick_stamp conversion problem:\n"
-	     "  tick_stamp            = %llu\n"
-	     "  usec_systime          = %llu\n"
-	     "  current-systime       = %llu\n"
-	     "  current-tickstamp     = %llu\n"
-	     "  last-update-systime   = %llu\n"
-	     "  last-update-tickstamp = %llu\n"
-	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
-	     ustamp.system_time, ustamp.tick_stamp,
-	     bse_engine_sample_freq ());
+    Bse::warning ("tick_stamp conversion problem:\n"
+                  "  tick_stamp            = %llu\n"
+                  "  usec_systime          = %llu\n"
+                  "  current-systime       = %llu\n"
+                  "  current-tickstamp     = %llu\n"
+                  "  last-update-systime   = %llu\n"
+                  "  last-update-tickstamp = %llu\n"
+                  "  sample-freq           = %u\n",
+                  tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
+                  ustamp.system_time, ustamp.tick_stamp,
+                  bse_engine_sample_freq ());
 #endif
   return tick_stamp;
 }

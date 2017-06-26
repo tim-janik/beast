@@ -118,7 +118,7 @@ public:
   static AidaGlibSourceImpl*
   create (Rapicorn::Aida::BaseConnection *connection)
   {
-    AIDA_ASSERT (connection != NULL);
+    assert_return (connection != NULL, NULL);
     static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
     GSource *src = g_source_new (&glib_source_funcs, sizeof (AidaGlibSourceImpl));
     return new (src) AidaGlibSourceImpl (connection);
@@ -152,15 +152,14 @@ init_server_connection () // bse.hh
     {
       using namespace Rapicorn::Aida;
       ClientConnectionP connection = ClientConnection::connect ("inproc://BSE-" BST_VERSION);
-      ServerH server;
+      ServerH bseconnection_server_handle;
       if (connection)
-        server = connection->remote_origin<ServerH>();
-      if (!server) // shouldn't happen
-        sfi_error ("%s: failed to establish BSE connection: %s", __func__, g_strerror (errno));
+        bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
+      assert_return (bseconnection_server_handle != NULL, NULL);
       constexpr SfiProxy BSE_SERVER = 1;
-      assert (server.proxy_id() == BSE_SERVER);
-      assert (server.from_proxy (BSE_SERVER) == server);
-      assert (client_connection == NULL);
+      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER, NULL);
+      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER) == bseconnection_server_handle, NULL);
+      assert_return (client_connection == NULL, NULL);
       client_connection = new Rapicorn::Aida::ClientConnectionP (connection);
     }
   return *client_connection;

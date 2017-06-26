@@ -852,7 +852,7 @@ controller_canvas_drag (BstPianoRollController *self,
 	  self->obj_velocity = 0;
 	}
       if (self->sel_pseq.size())
-	g_warning ("leaking old drag selection (%zu)", self->sel_pseq.size());
+	Bse::warning ("leaking old drag selection (%zu)", self->sel_pseq.size());
       self->sel_pseq.clear();
       self->xoffset = 0;
       self->tick_bound = 0;
@@ -909,7 +909,7 @@ controller_piano_drag (BstPianoRollController *self,
   if (projectid && track)
     {
       Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
-      assert (project);
+      assert_return (project);
       if (drag->type == GXK_DRAG_START ||
 	  (drag->type == GXK_DRAG_MOTION &&
 	   self->obj_note != drag->current_note))

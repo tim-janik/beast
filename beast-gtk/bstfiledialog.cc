@@ -745,7 +745,7 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   Bse::Error error = repo.load_file (file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
   if (error != 0)
-    sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
+    Bse::warning (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;
 }
@@ -775,7 +775,7 @@ bst_file_dialog_load_sound_font (BstFileDialog *self,
   Bse::Error error = repo.load_file (file_name);
   bst_status_eprintf (error, _("Loading sound font `%s'"), file_name);
   if (error != 0)
-    sfi_error (_("Failed to load sound font \"%s\": %s"), file_name, Bse::error_blurb (error));
+    Bse::warning (_("Failed to load sound font \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;
 }

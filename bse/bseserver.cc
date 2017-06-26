@@ -36,7 +36,7 @@ enum
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
-static void	bse_server_finalize		(GObject	   *object);
+static void	bse_server_singleton_finalize	(GObject	   *object);
 static void	bse_server_set_property		(GObject           *object,
 						 guint              param_id,
 						 const GValue      *value,
@@ -104,7 +104,7 @@ bse_server_class_init (BseServerClass *klass)
 
   gobject_class->set_property = bse_server_set_property;
   gobject_class->get_property = bse_server_get_property;
-  gobject_class->finalize = bse_server_finalize;
+  gobject_class->finalize = bse_server_singleton_finalize;
 
   item_class->set_parent = bse_server_set_parent;
 
@@ -146,7 +146,7 @@ rc_file_try_statement (gpointer   context_data,
 		       gpointer   user_data)
 {
   BseServer *server = (BseServer*) context_data;
-  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert_return (scanner->next_token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
   if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
@@ -169,7 +169,7 @@ rc_file_try_statement (gpointer   context_data,
 static void
 bse_server_init (BseServer *self)
 {
-  assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
+  assert_return (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
   BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
 
   self->engine_source = NULL;
@@ -211,9 +211,9 @@ bse_server_init (BseServer *self)
 }
 
 static void
-bse_server_finalize (GObject *object)
+bse_server_singleton_finalize (GObject *object)
 {
-  g_error ("Fatal attempt to destroy singleton BseServer");
+  assert_return_unreached();
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -286,7 +286,7 @@ static void
 bse_server_set_parent (BseItem *item,
 		       BseItem *parent)
 {
-  g_warning ("%s: BseServer is a global singleton that cannot be added to a container", G_STRLOC);
+  Bse::warning ("%s: BseServer is a global singleton that cannot be added to a container", G_STRLOC);
 }
 
 static void
@@ -336,7 +336,7 @@ bse_server_release_children (BseContainer *container)
 {
   // BseServer *self = BSE_SERVER (container);
 
-  g_warning ("release_children() should never be triggered on BseServer singleton");
+  Bse::warning ("release_children() should never be triggered on BseServer singleton");
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -356,10 +356,10 @@ bse_server_get (void)
     {
       server = (BseServer*) bse_object_new (BSE_TYPE_SERVER, "uname", "ServerImpl", NULL);
       g_object_ref (server);
-      assert (server);
-      assert (server->cxxobject_);
-      assert (dynamic_cast<Bse::ObjectImpl*> (server->cxxobject_));
-      assert (dynamic_cast<Bse::ServerImpl*> (server->cxxobject_));
+      assert_return (server, NULL);
+      assert_return (server->cxxobject_, NULL);
+      assert_return (dynamic_cast<Bse::ObjectImpl*> (server->cxxobject_), NULL);
+      assert_return (dynamic_cast<Bse::ServerImpl*> (server->cxxobject_), NULL);
     }
 
   return server;
@@ -759,7 +759,7 @@ bse_server_remove_io_watch (BseServer *server,
   assert_return (watch_func != NULL);
 
   if (!iowatch_remove (server, watch_func, data))
-    g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
+    Bse::warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
 Bse::Error
@@ -884,7 +884,7 @@ main_thread_source_setup (BseServer *self)
   MainSource *xsource = (MainSource*) source;
   static gboolean single_call = 0;
 
-  assert (single_call++ == 0);
+  assert_return (single_call++ == 0);
 
   xsource->server = self;
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
@@ -1364,10 +1364,13 @@ ServerImpl::destroy_project (ProjectIface &project_iface)
 {
   BseServer *server = as<BseServer*>();
   BseProject *project = project_iface.as<BseProject*>();
+  bool project_found_and_destroyed = false;
   if (g_list_find (server->projects, project))
-    g_object_run_dispose (project);
-  else
-    critical ("%s: project not found", __func__);
+    {
+      g_object_run_dispose (project);
+      project_found_and_destroyed = true;
+    }
+  assert_return (project_found_and_destroyed);
 }
 
 struct AuxDataAndIcon : AuxData {

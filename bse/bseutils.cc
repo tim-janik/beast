@@ -195,20 +195,12 @@ static Bse::Icon
 bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
   Bse::Icon icon;
-  if (pixdata->width < 1 || pixdata->width > 128 ||
-      pixdata->height < 1 || pixdata->height > 128)
-    {
-      critical ("%s: `pixdata' exceeds dimension limits (%ux%u)", RAPICORN_SIMPLE_FUNCTION, pixdata->width, pixdata->height);
-      return icon;
-    }
+  assert_return (pixdata->width >= 1 && pixdata->width <= 128, icon);   // unsupported dimension
+  assert_return (pixdata->height >= 1 && pixdata->height <= 128, icon); // unsupported dimension
   const uint bpp = pixdata->type & BSE_PIXDATA_RGB_MASK;
   const uint encoding = pixdata->type & BSE_PIXDATA_ENCODING_MASK;
-  if ((bpp != BSE_PIXDATA_RGB && bpp != BSE_PIXDATA_RGBA) ||
-      (encoding && encoding != BSE_PIXDATA_1BYTE_RLE))
-    {
-      critical ("%s: `pixdata' format/encoding unrecognized", RAPICORN_SIMPLE_FUNCTION);
-      return icon;
-    }
+  assert_return (bpp == BSE_PIXDATA_RGB || bpp == BSE_PIXDATA_RGBA, icon);  // unsupported depth
+  assert_return (encoding == 0 || encoding == BSE_PIXDATA_1BYTE_RLE, icon); // unsupported format
   if (!pixdata->encoded_pix_data)
     return icon;
   icon.width = pixdata->width;
@@ -262,7 +254,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	      rle_buffer += length;
 	    }
           if (check_overrun)
-            g_warning ("%s(): `pixdata' encoding screwed", RAPICORN_SIMPLE_FUNCTION);
+            Bse::warning ("%s(): `pixdata' encoding screwed", RAPICORN_SIMPLE_FUNCTION);
         }
     }
   else
@@ -632,12 +624,12 @@ icon_from_pixstream (const uint8 *pixstream)
       while (image_buffer < image_limit)
 	{
 	  uint length = *(rle_buffer++);
-          bool check_overrun = false;
+          bool overrun_in_icon_rle = false;
 	  if (length & 128)
 	    {
 	      length = length - 128;
-	      check_overrun = image_buffer + length * bpp > image_limit;
-	      if (check_overrun)
+	      overrun_in_icon_rle = image_buffer + length * bpp > image_limit;
+	      if (overrun_in_icon_rle)
 		length = (image_limit - image_buffer) / bpp;
 	      if (bpp < 4)
 		do
@@ -659,8 +651,8 @@ icon_from_pixstream (const uint8 *pixstream)
 	  else
 	    {
 	      length *= bpp;
-	      check_overrun = image_buffer + length > image_limit;
-	      if (check_overrun)
+	      overrun_in_icon_rle = image_buffer + length > image_limit;
+	      if (overrun_in_icon_rle)
 		length = image_limit - image_buffer;
               for (uint i = 0; i < length / bpp; i++)
                 {
@@ -671,11 +663,7 @@ icon_from_pixstream (const uint8 *pixstream)
 	      image_buffer += length;
 	      rle_buffer += length;
 	    }
-          if (check_overrun)
-            {
-              critical ("%s: pixdata with invalid encoding", RAPICORN_SIMPLE_FUNCTION);
-              return none;
-            }
+          assert_return (overrun_in_icon_rle == false, none); // invalid encoding
         }
     }
   else

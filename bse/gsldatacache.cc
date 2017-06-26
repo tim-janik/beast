@@ -53,7 +53,7 @@ void
 _gsl_init_data_caches (void)
 {
   static gboolean initialized = FALSE;
-  assert (initialized == FALSE);
+  assert_return (initialized == FALSE);
   initialized++;
   RAPICORN_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
 }
@@ -66,7 +66,7 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   assert_return (dhandle != NULL, NULL);
   assert_return (padding > 0, NULL);
   assert_return (dhandle->name != NULL, NULL);
-  assert (node_size == sfi_alloc_upper_power2 (node_size));
+  assert_return (node_size == sfi_alloc_upper_power2 (node_size), NULL);
   assert_return (padding < node_size / 2, NULL);
   /* allocate new closed dcache if necessary */
   dcache = sfi_new_struct (GslDataCache, 1);
@@ -99,7 +99,7 @@ gsl_data_cache_open (GslDataCache *dcache)
       if (error != 0)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
-	  sfi_diag ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, bse_error_blurb (error));
+	  Bse::info ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, bse_error_blurb (error));
 	}
       else
 	{
@@ -315,7 +315,7 @@ data_cache_new_node_L (GslDataCache *dcache,
       result = gsl_data_handle_read (dcache->dhandle, offset, size, data);
       if (result < 0)
 	{
-          sfi_diag ("ReadAhead: failed to read from \"%s\"", dcache->dhandle->name);
+          Bse::info ("ReadAhead: failed to read from \"%s\"", dcache->dhandle->name);
 	  break;
 	}
       else
@@ -468,7 +468,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
   assert_return (node->ref_count > 0);
   dcache->mutex.lock();
   node_p = data_cache_lookup_nextmost_node_L (dcache, node->offset);
-  assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
+  assert_return (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
   node->ref_count -= 1;
   check_cache = !node->ref_count;
   if (!node->ref_count &&

@@ -147,8 +147,7 @@ bse_wave_repo_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_WAVE))
     wrepo->waves = g_list_append (wrepo->waves, item);
   else
-    g_warning ("BseWaveRepo: cannot hold non-wave item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseWaveRepo: cannot hold non-wave item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -182,8 +181,7 @@ bse_wave_repo_remove_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_WAVE))
     wrepo->waves = g_list_remove (wrepo->waves, item);
   else
-    g_warning ("BseWaveRepo: cannot hold non-wave item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseWaveRepo: cannot hold non-wave item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);

@@ -126,8 +126,8 @@ master_idisconnect_node (EngineNode *node,
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
 
-  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
-	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
+  assert_return (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+                 src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   node->inputs[istream].src_node = NULL;
   node->inputs[istream].src_stream = ~0;
@@ -154,9 +154,9 @@ master_jdisconnect_node (EngineNode *node,
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
 
-  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
-	    node->module.jstreams[jstream].jcount > 0 &&
-	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
+  assert_return (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+                 node->module.jstreams[jstream].jcount > 0 &&
+                 src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   i = --node->module.jstreams[jstream].jcount;
   node->jinputs[jstream][con] = node->jinputs[jstream][i];
@@ -507,7 +507,7 @@ master_process_job (BseJob *job)
 	  master_need_reflow |= TRUE;
 	}
       else
-	g_warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
+	Bse::warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
       break;
     case ENGINE_JOB_FORCE_RESET:
       node = job->data.node;
@@ -567,8 +567,11 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_ADD_POLL:
       JOB_DEBUG ("add poll %p(%p,%u)", job->poll.poll_func, job->poll.data, job->poll.n_fds);
       if (job->poll.n_fds + master_n_pollfds > BSE_ENGINE_MAX_POLLFDS)
-	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
-		 job->poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
+	{
+          Bse::warning ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
+                        job->poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
+          return;
+        }
       poll = sfi_new_struct0 (Poll, 1);
       poll->poll_func = job->poll.poll_func;
       poll->data = job->poll.data;
@@ -612,8 +615,8 @@ master_process_job (BseJob *job)
 	  sfi_delete_struct (Poll, poll_last);
 	}
       else
-	g_warning (G_STRLOC ": failed to remove unknown poll function %p(%p)",
-		   job->poll.poll_func, job->poll.data);
+	Bse::warning ("%s: failed to remove unknown poll function %p(%p)",
+                      __func__, job->poll.poll_func, job->poll.data);
       break;
     case ENGINE_JOB_ADD_TIMER:
       JOB_DEBUG ("add timer %p(%p)", job->timer.timer_func, job->timer.data);
@@ -626,7 +629,7 @@ master_process_job (BseJob *job)
       master_timer_list = timer;
       break;
     default:
-      assert_unreached ();
+      assert_return_unreached ();
     }
   JOB_DEBUG ("done");
 }
@@ -711,7 +714,7 @@ master_take_probes (EngineNode   *node,
   if (ptype == PROBE_SCHEDULED)
     {
       uint i;
-      assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
+      assert_return (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
       /* swap output buffers with probe buffers */
       BseOStream *ostreams = node->module.ostreams;
       node->module.ostreams = tjob->probe.ostreams;
@@ -966,7 +969,7 @@ master_process_flow (void)
 
   assert_return (master_need_process == TRUE);
 
-  assert (bse_fpu_okround () == TRUE);
+  assert_return (bse_fpu_okround () == TRUE);
 
   if (master_schedule)
     {
@@ -1194,7 +1197,7 @@ namespace Bse {
 MasterThread::MasterThread (const std::function<void()> &caller_wakeup) :
   caller_wakeup_ (caller_wakeup)
 {
-  assert (caller_wakeup_ != NULL);
+  assert_return (caller_wakeup_ != NULL);
   if (event_fd_.open() != 0)
     fatal ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
 }
@@ -1207,13 +1210,13 @@ MasterThread::master_thread()
   Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
   /* assert pollfd equality, since we're simply casting structures */
-  RAPICORN_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
-  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  static_assert (sizeof (struct pollfd) == sizeof (GPollFD), "");
+  static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd), "");
+  static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd), "");
+  static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events), "");
+  static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events), "");
+  static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents), "");
+  static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents), "");
 
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.
@@ -1255,7 +1258,7 @@ static std::atomic<MasterThread*> master_thread_singleton { NULL };
 void
 MasterThread::reap_master_thread ()
 {
-  assert (master_thread_singleton != NULL);
+  assert_return (master_thread_singleton != NULL);
   assert_return (master_thread_running == true);
   master_thread_running = false;
   BseInternal::engine_stop_slaves();
@@ -1269,10 +1272,10 @@ MasterThread::reap_master_thread ()
 void
 MasterThread::start (const std::function<void()> &caller_wakeup)
 {
-  assert (master_thread_singleton == NULL);
+  assert_return (master_thread_singleton == NULL);
   MasterThread *mthread = new MasterThread (caller_wakeup);
   master_thread_singleton = mthread;
-  assert (master_thread_running == false);
+  assert_return (master_thread_running == false);
   if (std::atexit (reap_master_thread) != 0)
     fatal ("BSE: failed to install master thread reaper");
   master_thread_running = true;

@@ -174,11 +174,11 @@ bse_sound_font_osc_class_init (BseSoundFontOscClass *klass)
                                                      BSE_TYPE_SOUND_FONT_PRESET, SFI_PARAM_STANDARD));
 
   ochannel = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), _("Output of the fluid synth soundfont synthesizer"));
-  g_assert (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
+  assert_return (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
   ochannel = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), _("Output of the fluid synth soundfont synthesizer"));
-  g_assert (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
+  assert_return (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
   ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("Done Output"));
-  g_assert (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT);
+  assert_return (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT);
 }
 
 static void
@@ -228,7 +228,7 @@ get_sfrepo (BseSoundFontOsc *self)
 	}
       else
 	{
-	  g_warning ("BseSoundFontOsc: could not find sfrepo\n");
+	  Bse::warning ("BseSoundFontOsc: could not find sfrepo\n");
 	  self->config.sfrepo = NULL;
 	}
     }
@@ -363,7 +363,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
   float null_fx[BSE_STREAM_MAX_VALUES];
   float *channel_fx_null[2] = { null_fx, null_fx };
 
-  g_return_if_fail (now_tick_stamp > sfrepo_impl->channel_values_tick_stamp);
+  assert_return (now_tick_stamp > sfrepo_impl->channel_values_tick_stamp);
   sfrepo_impl->channel_values_tick_stamp = now_tick_stamp;
 
   /* Sample precise timing: If events don't occur at block boundary, the block
@@ -465,7 +465,7 @@ sound_font_osc_process (BseModule *module,
     }
   else
     {
-      g_warning (G_STRLOC ": access past end of channel_values buffer");
+      Bse::warning (G_STRLOC ": access past end of channel_values buffer");
     }
   if (BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).connected)
     {

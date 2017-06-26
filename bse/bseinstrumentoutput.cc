@@ -103,7 +103,7 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
   item_class->set_parent = bse_instrument_output_set_parent;
 
   /* assert parent class introduced enough ports */
-  assert (BSE_SUB_OPORT_N_PORTS >= 4);
+  assert_return (BSE_SUB_OPORT_N_PORTS >= 4);
   /* override parent properties with NOP properties */
   for (i = 0; i < BSE_SUB_OPORT_N_PORTS; i++)
     {
@@ -115,13 +115,13 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
     }
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "left-audio", _("Left Audio"), _("Left Channel Output"));
-  assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT);
+  assert_return (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "right-audio", _("Right Audio"), _("Right Channel Output"));
-  assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_RIGHT);
+  assert_return (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_RIGHT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "unused", _("Unused"), NULL);
-  assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED);
+  assert_return (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED);
   ichannel_id = bse_source_class_add_ichannel (source_class, "synth-done", _("Synth Done"), _("High indicates the instrument is done synthesizing"));
-  assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE);
+  assert_return (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE);
 }
 
 BSE_BUILTIN_TYPE (BseInstrumentOutput)

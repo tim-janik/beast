@@ -23,7 +23,7 @@ bst_msg_type_ident (BstMsgType bmt)
     case BST_MSG_SCRIPT:        return "script";
     default: ;
     }
-  assert_unreached();
+  assert_return_unreached (NULL);
 }
 
 static void

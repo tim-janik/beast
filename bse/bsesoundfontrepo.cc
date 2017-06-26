@@ -222,8 +222,7 @@ bse_sound_font_repo_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOUND_FONT))
     sfrepo_impl->sound_fonts.push_back (BSE_SOUND_FONT (item));
   else
-    g_warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -263,8 +262,7 @@ bse_sound_font_repo_remove_item (BseContainer *container,
         }
     }
   else
-    g_warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSoundFontRepo: cannot hold non-sound-font item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -280,7 +278,7 @@ gather_presets (BseItem    *item,
   else if (BSE_IS_SOUND_FONT_PRESET (item))
     bse_it3m_seq_append (items, item);
   else
-    g_warning ("Searching for sound font presets, an unexpected `%s' item was found", BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("Searching for sound font presets, an unexpected `%s' item was found", BSE_OBJECT_TYPE_NAME (item));
   return TRUE;
 }
 
@@ -328,7 +326,7 @@ bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
 {
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  g_return_if_fail (osc_id < sfrepo_impl->oscs.size());
+  assert_return (osc_id < sfrepo_impl->oscs.size());
 
   sfrepo_impl->oscs[osc_id].osc = nullptr;
 }
@@ -387,7 +385,7 @@ SoundFontRepoImpl::~SoundFontRepoImpl ()
   n_fluid_channels = 0;
 
   if (fluid_events != NULL)
-    g_warning (G_STRLOC ": fluid event queue should be empty in SoundFontRepoImpl destructor");
+    Bse::warning (G_STRLOC ": fluid event queue should be empty in SoundFontRepoImpl destructor");
 }
 
 static Error

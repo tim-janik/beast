@@ -41,7 +41,7 @@ wav_read_header (int        fd,
 
   /* read header contents */
   n_bytes = 4 + 4 + 4;
-  assert (n_bytes == sizeof (*header));
+  assert_return (n_bytes == sizeof (*header), Bse::Error::INTERNAL);
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read WavHeader: %s", g_strerror (errno));
@@ -94,7 +94,7 @@ wav_read_fmt_header (int        fd,
 
   /* read header contents */
   n_bytes = 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;
-  assert (n_bytes == sizeof (*header));
+  assert_return (n_bytes == sizeof (*header), Bse::Error::INTERNAL);
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read FmtHeader");
@@ -170,7 +170,7 @@ wav_read_fmt_header (int        fd,
 	  l = read (fd, junk, l);
 	  if (l < 1 || l > n)
 	    {
-	      sfi_diag ("failed to read FmtHeader from WAVE file");
+	      Bse::info ("WAV: failed to read FmtHeader from WAVE file");
 	      return gsl_error_from_errno (errno, Bse::Error::IO);
 	    }
 	  n -= l;
@@ -196,7 +196,7 @@ wav_read_data_header (int         fd,
 
   /* read header contents */
   n_bytes = 4 + 4;
-  assert (n_bytes == sizeof (*header));
+  assert_return (n_bytes == sizeof (*header), Bse::Error::INTERNAL);
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read DataHeader");
@@ -456,7 +456,7 @@ _gsl_init_loader_wav (void)
   };
   static gboolean initialized = FALSE;
 
-  assert (initialized == FALSE);
+  assert_return (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

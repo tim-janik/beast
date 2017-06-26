@@ -1077,7 +1077,7 @@ app_action_exec (gpointer data,
                                      Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (demo_type).ident));
       break;
     default:
-      assert_unreached ();
+      assert_return_unreached ();
       break;
     }
 
@@ -1174,7 +1174,7 @@ app_action_check (gpointer data,
       gxk_radget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
       return TRUE;
     default:
-      g_warning ("BstApp: unknown action: %lu", action);
+      Bse::warning ("BstApp: unknown action: %lu", action);
       return FALSE;
     }
 }

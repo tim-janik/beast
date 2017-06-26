@@ -162,9 +162,9 @@ bst_snet_router_update_links (BstSNetRouter   *self,
       for (j = 0; j < n_joints; j++)
         {
           Bse::ObjectH obj = bse_server.from_proxy (csource->source);
-          assert (obj != NULL);
+          assert_return (obj != NULL);
           Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-          assert (isource != NULL);
+          assert_return (isource != NULL);
           SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
@@ -172,7 +172,7 @@ bst_snet_router_update_links (BstSNetRouter   *self,
           BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
           if (!ocsource)
             {
-              g_warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
+              Bse::warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
               continue;
             }
           /* find corresponding link */
@@ -1085,7 +1085,7 @@ bst_snet_router_init (BstSNetRouter      *self)
         const char *stock_id;
         if (icon.width && icon.height)
           {
-            assert (icon.width * icon.height == int (icon.pixels.size()));
+            assert_return (icon.width * icon.height == int (icon.pixels.size()));
             bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
             stock_id = ad.entity.c_str();
           }

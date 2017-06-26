@@ -65,7 +65,7 @@ server_registration (SfiProxy            server,
   else
     {
       if (error && error[0])
-        sfi_diag ("failed to register \"%s\": %s", what, error);
+        Bse::info ("failed to register \"%s\": %s", what, error);
     }
 }
 
@@ -76,8 +76,11 @@ bse_init_intern()
 {
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_inprocess");
-  assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+    {
+      Bse::warning ("%s() may only be called once", "bse_init_inprocess");
+      return;
+    }
+  assert_return (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   // main loop
   bse_main_context = g_main_context_new ();
@@ -112,7 +115,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -138,7 +141,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -179,8 +182,8 @@ _bse_initialized ()
 static void
 initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (_bse_initialized() == false);
-  assert (bse_main_context == NULL);
+  assert_return (_bse_initialized() == false);
+  assert_return (bse_main_context == NULL);
 
   // setup GLib's prgname for error messages
   if (argc && argv && *argc && !g_get_prgname ())
@@ -254,7 +257,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
-  assert (msg == 'B');
+  assert_return (msg == 'B');
   delete init_queue;
 }
 
@@ -284,7 +287,10 @@ _bse_glue_context_create (const char *client, const std::function<void()> &calle
   AsyncData adata = { client, caller_wakeup };
   // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
-    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+    {
+      Bse::warning ("%s: called without prior %s()", __func__, "Bse::init_async");
+      return NULL;
+    }
   // queue handler to create context
   GSource *source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
@@ -309,7 +315,7 @@ bse_main_wakeup ()
 void
 bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  assert (initialized_for_unit_testing < 0);
+  assert_return (initialized_for_unit_testing < 0);
   initialized_for_unit_testing = 1;
   bse_init_inprocess (argc, argv, NULL, args);
 }
@@ -550,15 +556,14 @@ static void
 init_aida_idl ()
 {
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
-  Aida::ServerConnectionP scon =
+  Aida::ServerConnectionP bseserver_connection =
     Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
-                                                    shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
-  if (!scon)
-    sfi_error ("%s: failed to create BSE connection: %s", __func__, g_strerror (errno));
-  static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (scon); // keep connection alive for entire runtime
+                                                    shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
+  assert_return (bseserver_connection != NULL);
+  static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (bseserver_connection); // keep connection alive for entire runtime
   (void) static_connection;
   // hook up server connection to main loop to process remote calls
-  AidaGlibSource *source = AidaGlibSource::create (scon.get());
+  AidaGlibSource *source = AidaGlibSource::create (bseserver_connection.get());
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
 }

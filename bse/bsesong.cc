@@ -496,7 +496,7 @@ bse_song_reset (BseSource *source)
   Bse::Sequencer::instance().remove_song (self);
   // chain parent class' handler
   BSE_SOURCE_CLASS (parent_class)->reset (source);
-  assert (self->sequencer_start_request_SL == 0);
+  assert_return (self->sequencer_start_request_SL == 0);
   /* outside of sequencer reach, so no locks needed */
   self->sequencer_start_SL = 0;
   self->sequencer_done_SL = 0;
@@ -513,9 +513,12 @@ bse_song_create_summation (BseSong *self)
 {
   GType type = g_type_from_name ("BseSummation");
   if (!g_type_is_a (type, BSE_TYPE_SOURCE))
-    g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", __func__, "BseSummation");
+    {
+      Bse::warning ("%s: failed to resolve %s object type, probably missing or broken plugin installation", __func__, "BseSummation");
+      return NULL;
+    }
   BseSource *summation = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
-  assert (summation != NULL);
+  assert_return (summation != NULL, NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
 }
@@ -672,7 +675,7 @@ bse_song_compat_finish (BseSuper       *super,
         {
           Bse::Error error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
           if (error != 0)
-            sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
+            Bse::warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
           clear_undo = TRUE;
         }
       sfi_ring_free (tracks);

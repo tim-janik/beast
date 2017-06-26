@@ -128,17 +128,17 @@ bse_track_dispose (GObject *object)
   /* we may assert removal here, since if these assertions fail,
    * our parent (BseSong) doesn't properly implement track support
    */
-  assert (self->sub_synth == NULL);
+  assert_return (self->sub_synth == NULL);
 
   /* check uncrossed references */
-  assert (self->snet == NULL);
-  assert (self->pnet == NULL);
-  assert (self->n_entries_SL == 0);
+  assert_return (self->snet == NULL);
+  assert_return (self->pnet == NULL);
+  assert_return (self->n_entries_SL == 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 
-  assert (self->bus_outputs == NULL);
+  assert_return (self->bus_outputs == NULL);
 }
 
 static void
@@ -146,9 +146,9 @@ bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
 
-  assert (self->bus_outputs == NULL);
+  assert_return (self->bus_outputs == NULL);
 
-  assert (self->n_entries_SL == 0);
+  assert_return (self->n_entries_SL == 0);
   g_free (self->entries_SL);
   bse_id_free (self->channel_id);
 
@@ -421,8 +421,7 @@ create_wnet (BseTrack *self,
     }
   else
     {
-      g_warning ("track: waves with the play-type \"%s\" are not supported by this version of beast\n",
-	         synthesis_network);
+      Bse::warning ("track: waves with the play-type \"%s\" are not supported by this version of beast\n", synthesis_network);
     }
 
 }
@@ -431,7 +430,7 @@ static void
 create_sound_font_net (BseTrack           *self,
                        BseSoundFontPreset *preset)
 {
-  g_return_if_fail (self->sound_font_net == NULL);
+  assert_return (self->sound_font_net == NULL);
 
   self->sound_font_net =  bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
 							   "sound-font-snet",

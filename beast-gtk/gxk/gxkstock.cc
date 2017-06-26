@@ -363,7 +363,7 @@ gxk_stock_icon_window (const gchar *stock_id)
   pixbuf = gxk_stock_fallback_pixbuf (stock_id);
   if (!pixbuf)
     {
-      g_warning ("%s: unregistered stock id: \"%s\"", G_STRLOC, stock_id);
+      Bse::warning ("%s: unregistered stock id: \"%s\"", G_STRLOC, stock_id);
       return NULL;
     }
 

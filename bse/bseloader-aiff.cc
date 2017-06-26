@@ -542,7 +542,7 @@ _gsl_init_loader_aiff (void)
   };
   static gboolean initialized = FALSE;
 
-  assert (initialized == FALSE);
+  assert_return (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

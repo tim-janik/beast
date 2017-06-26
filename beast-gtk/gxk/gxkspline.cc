@@ -197,7 +197,7 @@ gxk_spline_eval (const GxkSpline *spline,
       else
         first = i;
     }
-  assert (first + 1 == last);
+  assert_return (first + 1 == last, 0);
   /* eval polynomials */
   double y = segment_eval (spline->segs + first, x, yd1);
   return y;

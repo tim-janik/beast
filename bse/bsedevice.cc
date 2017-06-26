@@ -462,7 +462,7 @@ bse_device_open_best (GType           base_type,
           device = NULL;
         }
       else
-        sfi_diag ("%s: ignoring unknown driver specification: %s", g_type_name (base_type), driverconf);
+        Bse::info ("%s: ignoring unknown driver specification: %s", g_type_name (base_type), driverconf);
     }
   device_classes_free (class_list);
   return device;
@@ -492,7 +492,7 @@ BSE_BUILTIN_TYPE (BseDevice)
     (GInstanceInitFunc) bse_device_init,
   };
 
-  assert (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseDevice",

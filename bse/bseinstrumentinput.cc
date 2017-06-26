@@ -103,7 +103,7 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
   item_class->set_parent = bse_instrument_input_set_parent;
 
   /* assert parent class introduced enough ports */
-  assert (BSE_SUB_IPORT_N_PORTS >= 4);
+  assert_return (BSE_SUB_IPORT_N_PORTS >= 4);
   /* override parent properties with NOP properties */
   for (i = 0; i < BSE_SUB_IPORT_N_PORTS; i++)
     {
@@ -115,13 +115,13 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
     }
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
-  assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
+  assert_return (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
-  assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
+  assert_return (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
   ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
-  assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
+  assert_return (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
-  assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
+  assert_return (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
 }
 
 BSE_BUILTIN_TYPE (BseInstrumentInput)

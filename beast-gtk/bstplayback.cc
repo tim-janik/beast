@@ -107,7 +107,7 @@ wave_oscillator_pcm_notify (BstPlayBackHandle *handle,
 {
   gboolean discard_next_notify = handle->discard_next_notify;
 
-  assert (handle->wosc1 == wosc);
+  assert_return (handle->wosc1 == wosc);
 
   handle->waiting_for_notify = FALSE;
   handle->discard_next_notify = FALSE;

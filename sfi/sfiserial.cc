@@ -539,7 +539,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       break;
     default:
       if (gstring)
-	g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
+	assert_return_unreached (G_TOKEN_ERROR);
       else
 	{
 	  g_scanner_warn (scanner, "unimplemented category (%u)", scat);
@@ -605,7 +605,7 @@ sfi_value_store_typed (const GValue *value,
       gstring_putc (gstring, ')');
       break;
     default:
-      g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
+      assert_return_unreached ();
     }
 }
 
@@ -780,7 +780,7 @@ value_store_param (const GValue *value,
       *needs_break = TRUE;
       break;
     default:
-      g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
+      assert_return_unreached ();
     }
 }
 

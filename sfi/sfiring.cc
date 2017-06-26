@@ -262,7 +262,7 @@ static inline SfiRing*
 sfi_ring_unlink_node_dangling (SfiRing *head,
                                SfiRing *node)
 {
-  assert (head && node);
+  assert_return (head && node, head);
   /* special case one item ring */
   if (head->prev == head)
     return NULL;
@@ -338,7 +338,7 @@ sfi_ring_remove (SfiRing *head,
     if (walk->data == data)
       return sfi_ring_remove_node (head, walk);
 
-  /* g_warning (G_STRLOC ": couldn't find data item (%p) to remove from ring (%p)", data, head); */
+  /* Bse::warning (G_STRLOC ": couldn't find data item (%p) to remove from ring (%p)", data, head); */
 
   return head;
 }

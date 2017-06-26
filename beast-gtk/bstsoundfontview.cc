@@ -78,7 +78,7 @@ bst_sound_font_view_new (SfiProxy sfrepo)
 {
   GtkWidget *sound_font_view;
 
-  g_return_val_if_fail (BSE_IS_SOUND_FONT_REPO (sfrepo), NULL);
+  assert_return (BSE_IS_SOUND_FONT_REPO (sfrepo), NULL);
 
   sound_font_view = gtk_widget_new (BST_TYPE_SOUND_FONT_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (sound_font_view), sfrepo);

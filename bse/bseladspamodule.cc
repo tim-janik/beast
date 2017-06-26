@@ -75,7 +75,7 @@ ladspa_derived_class_init (BseLadspaModuleClass *klass,
 
   derived_parent_class = g_type_class_peek_parent (klass);
 
-  assert (class_data != NULL);
+  assert_return (class_data != NULL);
   klass->bli = (BseLadspaInfo*) class_data;
 
   gobject_class->finalize = ladspa_derived_finalize;
@@ -97,7 +97,7 @@ bse_ladspa_module_derived_type_info (GType                  type,
 				     BseLadspaInfo         *bli,
 				     GTypeInfo             *type_info)
 {
-  assert (bli != NULL);
+  assert_return (bli != NULL);
   type_info->class_size = sizeof (BseLadspaModuleClass);
   type_info->class_init = (GClassInitFunc) ladspa_derived_class_init;
   type_info->class_finalize = (GClassFinalizeFunc) ladspa_derived_class_finalize;
@@ -113,11 +113,10 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   BseObjectClass *object_class = BSE_OBJECT_CLASS (ladspa_module_class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (ladspa_module_class);
   BseLadspaInfo *bli = ladspa_module_class->bli;
-  uint ochannel, ichannel;
 
-  assert (ladspa_module_class->bli != NULL &&
-	    gobject_class->set_property == NULL &&
-	    gobject_class->get_property == NULL);
+  assert_return (ladspa_module_class->bli != NULL &&
+                 gobject_class->set_property == NULL &&
+                 gobject_class->get_property == NULL);
 
   gobject_class->set_property = ladspa_derived_set_property;
   gobject_class->get_property = ladspa_derived_get_property;
@@ -215,6 +214,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
     }
 
+  uint ochannel, ichannel;
   for (size_t i = 0; i < bli->n_aports; i++)
     {
       BseLadspaPort *port = bli->aports + i;
@@ -223,6 +223,8 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       else /* port->output */
 	ochannel = bse_source_class_add_ochannel (source_class, port->ident, port->name, NULL);
     }
+  (void) ochannel;
+  (void) ichannel;
 }
 
 static float
@@ -242,7 +244,7 @@ ladspa_value_get_float (BseLadspaModule *self,
     case SFI_SCAT_REAL:
       return sfi_value_get_real (value);
     default:
-      assert_unreached ();
+      assert_return_unreached (0);
       return 0;
     }
 }
@@ -268,7 +270,7 @@ ladspa_value_set_float (BseLadspaModule *self,
       sfi_value_set_real (value, v_float);
       break;
     default:
-      assert_unreached ();
+      assert_return_unreached ();
     }
 }
 

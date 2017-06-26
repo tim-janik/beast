@@ -2,13 +2,7 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
-#ifdef  BSE_CONVENIENCE
-#define RAPICORN_CONVENIENCE    BSE_CONVENIENCE
-#endif
 #include <rapicorn-core.hh>
-#ifdef  RAPICORN_CONVENIENCE
-#undef  fatal                           // avoid easy clashes
-#endif
 #include <sfi/glib-extra.hh>
 
 namespace Bse {
@@ -30,9 +24,8 @@ namespace Path = Rapicorn::Path;
 
 
 // == Utility Macros ==
-#define BSE_ISLIKELY(expr)      RAPICORN_ISLIKELY(expr)         ///< Compiler hint that @a expr is likely to be true.
-#define BSE_UNLIKELY(expr)      RAPICORN_UNLIKELY(expr)         ///< Compiler hint that @a expr is unlikely to be true.
-#define BSE_LIKELY              BSE_ISLIKELY                    ///< Compiler hint that @a expr is likely to be true.
+#define BSE_ISLIKELY(expr)      __builtin_expect (bool (expr), 1)       ///< Compiler hint to optimize for @a expr evaluating to true.
+#define BSE_UNLIKELY(expr)      __builtin_expect (bool (expr), 0)       ///< Compiler hint to optimize for @a expr evaluating to false.
 #define BSE_ABS(a)              ((a) < 0 ? -(a) : (a))          ///< Yield the absolute value of @a a.
 #define BSE_MIN(a,b)            ((a) <= (b) ? (a) : (b))        ///< Yield the smaller value of @a a and @a b.
 #define BSE_MAX(a,b)            ((a) >= (b) ? (a) : (b))        ///< Yield the greater value of @a a and @a b.
@@ -56,6 +49,8 @@ namespace Path = Rapicorn::Path;
 #define BSE_MAY_ALIAS	        RAPICORN_MAY_ALIAS      ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html">GCC Attribute</a>.
 #define BSE_CLASS_NON_COPYABLE(ClassName) RAPICORN_CLASS_NON_COPYABLE (ClassName) ///< Delete copy ctor and assignment operator.
 #define BSE_DECLARE_VLA(Type, var, count) RAPICORN_DECLARE_VLA (Type, var, count) ///< Declare a variable length array (clang++ uses std::vector<>).
+/// Return silently if @a cond does not evaluate to true with return value @a ...
+#define BSE_RETURN_UNLESS(cond, ...)      do { if (BSE_UNLIKELY (!bool (cond))) return __VA_ARGS__; } while (0)
 
 // == Path Name Macros ==
 #ifdef  _WIN32 // includes _WIN64
@@ -141,6 +136,26 @@ info (const char *format, const Args &...args)
 {
   Internal::diagnostic ('I', string_format (format, args...));
 }
+
+// == Assertions ==
+/// Return from the current function if @a cond is unmet and issue an assertion warning.
+#define BSE_ASSERT_RETURN(cond, ...)            AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
+/// Return from the current function and issue an assertion warning.
+#define BSE_ASSERT_RETURN_UNREACHED(...)        AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+#ifdef BSE_CONVENIENCE
+/// Return from the current function if @a cond is unmet and issue an assertion warning.
+#define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)
+/// Return from the current function and issue an assertion warning.
+#define assert_return_unreached(...)    BSE_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+/// Hint to the compiler to optimize for @a cond == TRUE.
+#define ISLIKELY(cond)  BSE_ISLIKELY (cond)
+/// Hint to the compiler to optimize for @a cond == FALSE.
+#define UNLIKELY(cond)  BSE_UNLIKELY (cond)
+/// Return silently if @a cond does not evaluate to true with return value @a ...
+#define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
+#endif // BSE_CONVENIENCE
+using Rapicorn::Aida::assertion_failed_hook;
+using Rapicorn::breakpoint;
 
 } // Bse
 

@@ -90,7 +90,7 @@ bse_snooper_class_init (BseSnooperClass *klass)
 					     SFI_PARAM_STANDARD));
 
   ichannel = bse_source_class_add_ichannel (source_class, "signal-in", _("Signal In"), _("Snoop Signal"));
-  assert (ichannel == BSE_SNOOPER_ICHANNEL_MONO);
+  assert_return (ichannel == BSE_SNOOPER_ICHANNEL_MONO);
 }
 
 static void
