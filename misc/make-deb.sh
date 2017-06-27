@@ -5,6 +5,20 @@ set -e # -x
 SCRIPTNAME=`basename $0`
 function die  { [ -n "$*" ] && echo "$SCRIPTNAME: $*" >&2; exit 127 ; }
 
+# parse options
+KEEPTMP=false
+while [ $# -gt 0 ] ; do
+  case "$1" in
+    -k)	KEEPTMP=true ;;
+    *)	die "unknown option: $1"
+  esac
+  shift
+done
+
+# clear ./tmpdeb/
+$KEEPTMP || rm -rf ./tmpdeb/
+
+# helper
 git_clone()
 {
   URL="$1" ; REPO="$2" ; COMMIT="$3"
@@ -220,3 +234,6 @@ fakeroot dpkg-deb -b $DESTDIR $DESTDIR/..
 # Move the package
 mv $DESTDIR/../$NAME''_$VERSION''_$ARCH.deb .
 ls -al $NAME''_$VERSION''_$ARCH.deb
+
+# clear ./tmpdeb/
+$KEEPTMP || rm -rf ./tmpdeb/
