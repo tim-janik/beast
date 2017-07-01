@@ -5,6 +5,20 @@ set -e # -x
 SCRIPTNAME=`basename $0`
 function die  { [ -n "$*" ] && echo "$SCRIPTNAME: $*" >&2; exit 127 ; }
 
+# parse options
+KEEPTMP=false
+while [ $# -gt 0 ] ; do
+  case "$1" in
+    -k)	KEEPTMP=true ;;
+    *)	die "unknown option: $1"
+  esac
+  shift
+done
+
+# clear ./tmpdeb/
+$KEEPTMP || rm -rf ./tmpdeb/
+
+# helper
 git_clone()
 {
   URL="$1" ; REPO="$2" ; COMMIT="$3"
@@ -80,7 +94,7 @@ if $REBUILD ; then
     # clone/update and build rapicorn
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
-    git_clone $R rapicorn c013464a64a606fe2165f15396fb96f342d27eb1 # 17.0.0~rc1
+    git_clone $R rapicorn 496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
     build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
 
     # clone/update and build beast
@@ -220,3 +234,6 @@ fakeroot dpkg-deb -b $DESTDIR $DESTDIR/..
 # Move the package
 mv $DESTDIR/../$NAME''_$VERSION''_$ARCH.deb .
 ls -al $NAME''_$VERSION''_$ARCH.deb
+
+# clear ./tmpdeb/
+$KEEPTMP || rm -rf ./tmpdeb/
