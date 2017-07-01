@@ -3,7 +3,6 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = images
 
-MOSTLYCLEANFILES =
 beastmandir = ${beastsharedir}/man
 man1dir     = $(beastmandir)/man1
 man1_MANS   =
@@ -46,9 +45,6 @@ docs_doxygen_werror = false
 docs_upload_name    = $(shell test "`git describe --match '[0-9]*.*[0-9]' 2>/dev/null`" = "`git describe --long 2>/dev/null`" \
 			&& echo latest || echo ${MAJOR}.${MINOR})
 
-# Build with dot files by default
-DOXYGEN_GRAPHICS  ?= NO # YES
-
 # == docs/srctree ==
 doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_doxygen_tagbzs)) | collect_docs_doxy_sources
 	$(AM_V_GEN)
@@ -75,14 +71,11 @@ doxy/html: $(if $(NODOC), , ../topbuildid.cc)
 # use order-only prerequisite on docs/doxy/src to spare doxygen runs for source edits
 doxy/html: ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles) | doxy/src
 	$(V_gen) "PREPARE" $@
-	$(Q) rm -Rf doxy/html doxy/output
+	$(Q) rm -Rf doxy/html doxy/output doxy/richdocs
 	$(Q) mkdir -p doxy/output
 	$(Q) cp $(docs_doxy_auxfiles) doxy/
-	$(Q) (cat ../docs/doxygen.cfg \
+	$(Q) (sed $(RICHDOCS_SED) ../docs/doxygen.cfg \
 	&& echo "PROJECT_NUMBER		= $(topbuildid)" \
-	&& echo "HAVE_DOT		= $(DOXYGEN_GRAPHICS)" \
-	&& echo "CLASS_DIAGRAMS		= $(DOXYGEN_GRAPHICS)" \
-	&& echo "DOT_MULTI_TARGETS	= YES" \
 	&& echo "INPUT			= src/" \
 	&& echo "STRIP_FROM_PATH	= $$(pwd)/doxy/src" \
 	&& echo "OUTPUT_DIRECTORY	= output/" \
@@ -107,6 +100,18 @@ doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(Q) test -z "$(man1_HTMLS)$(man5_HTMLS)" || { $(MKDIR_P) doxy/html/man/ && cp $(man1_HTMLS) $(man5_HTMLS) doxy/html/man/ ; }
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
+# == docs ==
+# Build slim (and fast) docs for 'make all' and build rich (but slow) docs for 'make docs'
+RICHDOCS_OFF = 's/\bIFRICH\b/NO/g;  s/\bIFSLIM\b/YES/g'
+RICHDOCS_ON  = 's/\bIFRICH\b/YES/g; s/\bIFSLIM\b/NO/g'
+RICHDOCS_SED ?= $(RICHDOCS_OFF)
+doxy/richdocs:
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) all RICHDOCS_SED="$(RICHDOCS_ON)"
+	$(Q) touch $@
+docs: doxy/richdocs
+.PHONY: docs
+
 # == install docs/doxy/html ==
 docs_html_installbase	 = $(beastdocdir)
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
@@ -125,7 +130,7 @@ uninstall-local: docs-html-uninstall
 
 # == upload-docs ==
 CHECK_RSYNC = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
-upload-docs: $(noinst_DATA)				# force docs/doxy/html builds
+upload-docs: docs					# force rich docs/doxy/html builds
 	$(AM_V_GEN)
 	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
 	rsync -zaHP --del doxy/html/ testbit:sites/beast/docs/$(docs_upload_name)
