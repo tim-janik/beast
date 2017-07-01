@@ -28,7 +28,7 @@ collect_docs_doxy_sources:
 	$(eval tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst) )
 
 # == Configure docs ==
-docs_project_link   = http://beast.testbit.eu
+docs_project_link   = https://beast.testbit.org/docs/${docs_upload_name}
 docs_doxy_extra     = docs/main.dox
 docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
 docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk tools
@@ -42,6 +42,9 @@ docs_doxy_tagsrcs   = $(strip \
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
 docs_doxygen_werror = false
+# Upload docs into latest/ except for release tags which use MAJOR.MINOR/ versioned directories, see also $(docs_project_link)
+docs_upload_name    = $(shell test "`git describe --match '[0-9]*.*[0-9]' 2>/dev/null`" = "`git describe --long 2>/dev/null`" \
+			&& echo latest || echo ${MAJOR}.${MINOR})
 
 # Build with dot files by default
 DOXYGEN_GRAPHICS  ?= NO # YES
@@ -119,6 +122,14 @@ docs-html-uninstall:
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
 .PHONY: docs-html-uninstall
 uninstall-local: docs-html-uninstall
+
+# == upload-docs ==
+CHECK_RSYNC = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
+upload-docs: $(noinst_DATA)				# force docs/doxy/html builds
+	$(AM_V_GEN)
+	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
+	rsync -zaHP --del doxy/html/ testbit:sites/beast/docs/$(docs_upload_name)
+.PHONY: upload-docs
 
 # == clean docs/doxy/ ==
 clean-docs:
