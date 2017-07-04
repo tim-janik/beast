@@ -2,55 +2,16 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
+#include <sfi/cxxaux.hh>
 #include <rapicorn-core.hh>
 #include <sfi/glib-extra.hh>
 
 namespace Bse {
 using namespace Rapicorn;
-using Rapicorn::uint8;
-using Rapicorn::uint16;
-using Rapicorn::uint32;
-using Rapicorn::uint64;
-using Rapicorn::int8;
-using Rapicorn::int16;
-using Rapicorn::int32;
-using Rapicorn::int64;
-using Rapicorn::unichar;
-using Rapicorn::String;
 using Rapicorn::string_format;
 using Rapicorn::printout;
 using Rapicorn::printerr;
 namespace Path = Rapicorn::Path;
-
-
-// == Utility Macros ==
-#define BSE_ISLIKELY(expr)      __builtin_expect (bool (expr), 1)       ///< Compiler hint to optimize for @a expr evaluating to true.
-#define BSE_UNLIKELY(expr)      __builtin_expect (bool (expr), 0)       ///< Compiler hint to optimize for @a expr evaluating to false.
-#define BSE_ABS(a)              ((a) < 0 ? -(a) : (a))          ///< Yield the absolute value of @a a.
-#define BSE_MIN(a,b)            ((a) <= (b) ? (a) : (b))        ///< Yield the smaller value of @a a and @a b.
-#define BSE_MAX(a,b)            ((a) >= (b) ? (a) : (b))        ///< Yield the greater value of @a a and @a b.
-#define BSE_CLAMP(v,mi,ma)      ((v) < (mi) ? (mi) : ((v) > (ma) ? (ma) : (v))) ///< Yield @a v clamped to [ @a mi .. @a ma ].
-#define BSE_ARRAY_SIZE(array)   (sizeof (array) / sizeof ((array)[0]))          ///< Yield the number of C @a array elements.
-#define BSE_ALIGN(size, base)   ((base) * (((size) + (base) - 1) / (base)))     ///< Round up @a size to multiples of @a base.
-#define BSE_CPP_STRINGIFY(s)    RAPICORN_CPP_STRINGIFY(s)    ///< Turn @a s into a C string literal.
-#define BSE__HERE__             RAPICORN__HERE__             ///< Shorthand for a string literal containing __FILE__ ":" __LINE__
-#define BSE_PURE	        RAPICORN_PURE           ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_MALLOC	        RAPICORN_MALLOC         ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_SENTINEL	        RAPICORN_SENTINEL       ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_NORETURN	        RAPICORN_NORETURN       ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_CONST	        RAPICORN_CONST          ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_UNUSED	        RAPICORN_UNUSED         ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_USED	        RAPICORN_USED           ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_NO_INSTRUMENT	RAPICORN_NO_INSTRUMENT  ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_DEPRECATED	        RAPICORN_DEPRECATED     ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_ALWAYS_INLINE	RAPICORN_ALWAYS_INLINE  ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_NOINLINE	        RAPICORN_NOINLINE       ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_CONSTRUCTOR	        RAPICORN_CONSTRUCTOR    ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attribute</a>.
-#define BSE_MAY_ALIAS	        RAPICORN_MAY_ALIAS      ///< A <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html">GCC Attribute</a>.
-#define BSE_CLASS_NON_COPYABLE(ClassName) RAPICORN_CLASS_NON_COPYABLE (ClassName) ///< Delete copy ctor and assignment operator.
-#define BSE_DECLARE_VLA(Type, var, count) RAPICORN_DECLARE_VLA (Type, var, count) ///< Declare a variable length array (clang++ uses std::vector<>).
-/// Return silently if @a cond does not evaluate to true with return value @a ...
-#define BSE_RETURN_UNLESS(cond, ...)      do { if (BSE_UNLIKELY (!bool (cond))) return __VA_ARGS__; } while (0)
 
 // == Path Name Macros ==
 #ifdef  _WIN32 // includes _WIN64
