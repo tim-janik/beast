@@ -361,7 +361,7 @@ std::string version ();
 
 // == Translate i18n strings ==
 const char* bse_gettext_domain ();
-const char* (_)                (const char        *string);
+const char* (_)                (const char        *string) __attribute__ ((__format_arg__ (1)));
 std::string (_)                (const std::string &string);
 
 } // Bse
