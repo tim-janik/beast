@@ -1,2 +1,3 @@
-libsfi.la
-sfidl
+/libsfi.la
+/sfidl
+/sysconfig.h

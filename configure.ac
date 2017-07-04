@@ -431,6 +431,11 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
 
+    # == sizeof ==
+    AC_CHECK_SIZEOF(uint, 0, [#include <sys/types.h>])
+    BSE_SIZEOF_SYS_TYPESH_UINT="$ac_cv_sizeof_uint"
+    AC_SUBST(BSE_SIZEOF_SYS_TYPESH_UINT)
+
     dnl # --- sizeof types ---
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
     SFI_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
@@ -689,6 +694,7 @@ Makefile
 data/Makefile
 data/beast.applications
 sfi/Makefile
+sfi/sysconfig.h
 sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
