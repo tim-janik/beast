@@ -67,9 +67,9 @@ struct _BseJob
       gchar	     *message;
     } data;
     struct {
-      Bse::Mutex   *lock_mutex;
-      Bse::Cond    *lock_cond;
-      gboolean     *lock_p;
+      std::mutex              *lock_mutex;
+      std::condition_variable *lock_cond;
+      gboolean                *lock_p;
     } sync;
     struct {
       EngineNode     *node;
@@ -164,7 +164,7 @@ typedef struct
 struct _EngineNode		/* fields sorted by order of processing access */
 {
   BseModule	 module;
-  Bse::Mutex	 rec_mutex;	/* processing lock */
+  std::recursive_mutex rec_mutex; // processing lock
   guint64	 counter;	/* <= Bse::TickStamp::current() */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */

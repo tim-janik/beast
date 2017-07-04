@@ -210,7 +210,7 @@ Thread types:
   at a time.
   i.e. if more than one user thread need to call engine API
   functions, the user has to take measures to avoid concurrency
-  in calling these functions, e.g. by using a SfiMutex which is
+  in calling these functions, e.g. by using a mutex which is
   to be locked around engine API calls.
 * MasterThread; the engine, if configured accordingly,
   sets up one master thread which
@@ -283,4 +283,4 @@ May 05 2001	Tim Janik
 	* initial writeup
 
 LocalWords:  BSE API BseModule EngineNode istreams ostreams A's B's sync
-LocalWords:  bseengine SfiMutex UserThread MasterThread SlaveThread SlaveThreads
+LocalWords:  bseengine UserThread MasterThread SlaveThread SlaveThreads

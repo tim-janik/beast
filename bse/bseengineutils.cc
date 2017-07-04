@@ -112,7 +112,7 @@ bse_engine_free_node (EngineNode *node)
     }
   klass = node->module.klass;
   user_data = node->module.user_data;
-  node->rec_mutex.~Mutex();
+  node->rec_mutex.~recursive_mutex();
   sfi_delete_struct (EngineNode, node);
 
   /* allow the free function to free the klass as well */
@@ -182,10 +182,10 @@ bse_engine_free_transaction (BseTrans *trans)
 
 
 /* --- job transactions --- */
-static Bse::Mutex      cqueue_trans_mutex;
+static std::mutex      cqueue_trans_mutex;
 static BseTrans       *cqueue_trans_pending_head = NULL;
 static BseTrans       *cqueue_trans_pending_tail = NULL;
-static Bse::Cond       cqueue_trans_cond;
+static std::condition_variable cqueue_trans_cond;
 static BseTrans       *cqueue_trans_trash_head = NULL;
 static BseTrans       *cqueue_trans_trash_tail = NULL;
 static BseTrans       *cqueue_trans_active_head = NULL;
@@ -211,17 +211,16 @@ _engine_enqueue_trans (BseTrans *trans)
   cqueue_trans_pending_tail = trans;
   guint64 base_stamp = cqueue_commit_base_stamp;
   cqueue_trans_mutex.unlock();
-  cqueue_trans_cond.broadcast();
+  cqueue_trans_cond.notify_all();
   return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
 
 void
 _engine_wait_on_trans (void)
 {
-  cqueue_trans_mutex.lock();
+  std::unique_lock<std::mutex> cqueue_trans_guard (cqueue_trans_mutex);
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    cqueue_trans_cond.wait (cqueue_trans_mutex);
-  cqueue_trans_mutex.unlock();
+    cqueue_trans_cond.wait (cqueue_trans_guard);
 }
 
 gboolean
@@ -302,7 +301,7 @@ _engine_pop_job (gboolean update_commit_stamp)
           if (!cqueue_trans_job && update_commit_stamp)
             cqueue_commit_base_stamp = Bse::TickStamp::current();        /* last job has been handed out */
 	  cqueue_trans_mutex.unlock();
-	  cqueue_trans_cond.broadcast();
+	  cqueue_trans_cond.notify_all();
 	}
       else	/* not currently processing a transaction */
 	{
@@ -391,11 +390,11 @@ bse_engine_has_garbage (void)
 
 
 /* --- node processing queue --- */
-static Bse::Mutex        pqueue_mutex;
+static std::mutex        pqueue_mutex;
 static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static Bse::Cond	 pqueue_done_cond;
+static std::condition_variable pqueue_done_cond;
 static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
 static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
 
@@ -518,7 +517,7 @@ _engine_push_processed_node (EngineNode *node)
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    pqueue_done_cond.signal();
+    pqueue_done_cond.notify_one();
   pqueue_mutex.unlock();
 }
 
@@ -539,10 +538,9 @@ _engine_push_processed_cycle (SfiRing *cycle)
 void
 _engine_wait_on_unprocessed (void)
 {
-  pqueue_mutex.lock();
+  std::unique_lock<std::mutex> pqueue_guard (pqueue_mutex);
   while (pqueue_n_nodes || pqueue_n_cycles || !BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    pqueue_done_cond.wait (pqueue_mutex);
-  pqueue_mutex.unlock();
+    pqueue_done_cond.wait (pqueue_guard);
 }
 
 

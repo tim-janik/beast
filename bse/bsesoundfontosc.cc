@@ -439,7 +439,7 @@ sound_font_osc_process (BseModule *module,
   BseSoundFontRepo *sfrepo = flmod->config.sfrepo;
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sfrepo));
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sfrepo);
   if (flmod->config.update_preset != flmod->last_update_preset)
     {
@@ -501,7 +501,7 @@ sound_font_osc_process_midi (gpointer            null,
                              BseTrans           *trans)
 {
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (flmod->config.sfrepo));
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (flmod->config.sfrepo));
   Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   int note = bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
@@ -633,7 +633,7 @@ bse_sound_font_osc_context_create (BseSource *source,
 
   /* reset fluid synth if necessary */
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
   Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   if (sfrepo_impl->n_channel_oscs_active == 0)
@@ -656,7 +656,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
                                           NULL,
                                           module);
   /* remove old events from the event queue */
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
   SfiRing *fluid_events = sfrepo_impl->fluid_events;
   SfiRing *node = fluid_events;
   while (node)

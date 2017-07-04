@@ -42,12 +42,14 @@ static GslDataCacheNode*	data_cache_new_node_L	(GslDataCache	*dcache,
 							 int64		 offset,
 							 guint		 pos,
 							 gboolean	 demand_load);
+
 /* --- variables --- */
-static Bse::Spinlock global_dcache_spinlock;
-static Bse::Cond   global_dcache_cond_node_filled;
-static SfiRing	  *global_dcache_list = NULL;
-static guint	   global_dcache_count = 0;
-static guint       global_dcache_n_aged_nodes = 0;
+static Bse::Spinlock           global_dcache_spinlock;
+static std::condition_variable global_dcache_cond_node_filled;
+static SfiRing	              *global_dcache_list = NULL;
+static guint                   global_dcache_count = 0;
+static guint                   global_dcache_n_aged_nodes = 0;
+
 /* --- functions --- */
 void
 _gsl_init_data_caches (void)
@@ -70,7 +72,7 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   assert_return (padding < node_size / 2, NULL);
   /* allocate new closed dcache if necessary */
   dcache = sfi_new_struct (GslDataCache, 1);
-  new (&dcache->mutex) Bse::Mutex();
+  new (&dcache->mutex) std::mutex();
   dcache->dhandle = gsl_data_handle_ref (dhandle);
   dcache->open_count = 0;
   dcache->ref_count = 1;
@@ -158,7 +160,7 @@ dcache_free (GslDataCache *dcache)
       sfi_delete_struct (GslDataCacheNode, node);
     }
   g_free (dcache->nodes);
-  dcache->mutex.~Mutex();
+  dcache->mutex.~mutex();
   sfi_delete_struct (GslDataCache, dcache);
 }
 void
@@ -329,7 +331,7 @@ data_cache_new_node_L (GslDataCache *dcache,
   memset (data, 0, size * sizeof (data[0]));
   dcache->mutex.lock();
   dnode->data = node_data;
-  global_dcache_cond_node_filled.broadcast();
+  global_dcache_cond_node_filled.notify_all();
   return dnode;
 }
 GslDataCacheNode*
@@ -343,7 +345,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
   assert_return (dcache->ref_count > 0, NULL);
   assert_return (dcache->open_count > 0, NULL);
   assert_return (offset < gsl_data_handle_length (dcache->dhandle), NULL);
-  dcache->mutex.lock();
+  std::unique_lock<std::mutex> dcache_lock (dcache->mutex);
   node_p = data_cache_lookup_nextmost_node_L (dcache, offset);
   if (node_p)
     {
@@ -358,7 +360,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 		node->ref_count++;
 	      else
 		node = NULL;
-	      dcache->mutex.unlock();
+	      dcache_lock.unlock();
 	      if (node && rejuvenate_node)
 		{
 		  global_dcache_spinlock.lock(); /* different lock */
@@ -370,8 +372,8 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	  node->ref_count++;
 	  if (load_request == GSL_DATA_CACHE_DEMAND_LOAD)
 	    while (!node->data)
-	      global_dcache_cond_node_filled.wait (dcache->mutex);
-	  dcache->mutex.unlock();
+	      global_dcache_cond_node_filled.wait (dcache_lock);
+	  dcache_lock.unlock();
 	  /* printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 	  if (rejuvenate_node)
 	    {
@@ -392,7 +394,6 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
     node = data_cache_new_node_L (dcache, offset, insertion_pos, load_request == GSL_DATA_CACHE_DEMAND_LOAD);
   else
     node = NULL;
-  dcache->mutex.unlock();
   return node;
 }
 static gboolean /* still locked */

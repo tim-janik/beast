@@ -26,7 +26,7 @@ namespace Bse {
 using Rapicorn::ThreadInfo; // FIXME
 
 Sequencer              *Sequencer::singleton_ = NULL;
-Mutex                   Sequencer::sequencer_mutex_;
+std::mutex              Sequencer::sequencer_mutex_;
 static ThreadInfo      *sequencer_thread_self = NULL;
 
 class Sequencer::PollPool {
@@ -161,7 +161,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
    *   least conceptually) or has never been installed
    */
   bool removal_success;
-  BSE_SEQUENCER_LOCK();
+  std::unique_lock<std::mutex> sequencer_guard (sequencer_mutex_);
   if (current_watch_func == watch_func && current_watch_data == watch_data)
     {  /* watch_func() to be removed is currently in call */
       if (&ThreadInfo::self() == sequencer_thread_self)
@@ -177,7 +177,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
           current_watch_needs_remove2 = true;
           /* wait until watch_func() call has finished */
           while (current_watch_func == watch_func && current_watch_data == watch_data)
-            watch_cond_.wait (sequencer_mutex_);
+            watch_cond_.wait (sequencer_guard);
         }
     }
   else /* can remove (watch_func(watch_data) not in call) */
@@ -186,7 +186,6 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
       /* wake up sequencer thread, so it stops polling on fds it doesn't own anymore */
       wakeup();
     }
-  BSE_SEQUENCER_UNLOCK();
   if (!removal_success)
     Bse::warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
 }
@@ -229,7 +228,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
           current_watch_needs_remove2 = false;
           current_watch_func = NULL;
           current_watch_data = NULL;
-          watch_cond_.broadcast();      // wake up threads in remove_io_watch()
+          watch_cond_.notify_all();                     // wake up threads in remove_io_watch()
         }
     }
   return true;

@@ -61,7 +61,7 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  new (&node->rec_mutex) Bse::Mutex (Bse::RECURSIVE_LOCK);
+  new (&node->rec_mutex) std::recursive_mutex();
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
@@ -979,10 +979,10 @@ bse_trans_commit (BseTrans *trans)
   return exec_tick_stamp;
 }
 typedef struct {
-  BseTrans  *trans;
-  guint64    tick_stamp;
-  Bse::Cond  cond;
-  Bse::Mutex mutex;
+  BseTrans               *trans;
+  guint64                 tick_stamp;
+  std::condition_variable cond;
+  std::mutex              mutex;
 } DTrans;
 static gboolean
 dtrans_timer (gpointer timer_data,
@@ -1003,7 +1003,7 @@ dtrans_timer (gpointer timer_data,
       data->mutex.lock();
       data->trans = NULL;
       data->mutex.unlock();
-      data->cond.signal();
+      data->cond.notify_one();
       return FALSE;
     }
   return TRUE;
@@ -1034,11 +1034,10 @@ bse_trans_commit_delayed (BseTrans *trans,
       data.trans = trans;
       data.tick_stamp = tick_stamp;
       bse_trans_add (wtrans, bse_job_add_timer (dtrans_timer, &data, NULL));
-      data.mutex.lock();
+      std::unique_lock<std::mutex> data_lock (data.mutex);
       bse_trans_commit (wtrans);
       while (data.trans)
-	data.cond.wait (data.mutex);
-      data.mutex.unlock();
+	data.cond.wait (data_lock);
     }
 }
 
@@ -1285,8 +1284,8 @@ bse_engine_configure (guint            latency_ms,
                       guint            sample_freq,
                       guint            control_freq)
 {
-  static Bse::Mutex sync_mutex;
-  static Bse::Cond sync_cond;
+  static std::condition_variable sync_cond;
+  static std::mutex sync_mutex;
   static gboolean sync_lock = FALSE;
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
@@ -1305,19 +1304,20 @@ bse_engine_configure (guint            latency_ms,
     return FALSE;
 
   /* block master */
-  sync_mutex.lock();
-  job = sfi_new_struct0 (BseJob, 1);
-  job->job_id = ENGINE_JOB_SYNC;
-  job->sync.lock_mutex = &sync_mutex;
-  job->sync.lock_cond = &sync_cond;
-  job->sync.lock_p = &sync_lock;
-  sync_lock = FALSE;
-  trans = bse_trans_open();
-  bse_trans_add (trans, job);
-  bse_trans_commit (trans);
-  while (!sync_lock)
-    sync_cond.wait (sync_mutex);
-  sync_mutex.unlock();
+  {
+    std::unique_lock<std::mutex> sync_guard (sync_mutex);
+    job = sfi_new_struct0 (BseJob, 1);
+    job->job_id = ENGINE_JOB_SYNC;
+    job->sync.lock_mutex = &sync_mutex;
+    job->sync.lock_cond = &sync_cond;
+    job->sync.lock_p = &sync_lock;
+    sync_lock = FALSE;
+    trans = bse_trans_open();
+    bse_trans_add (trans, job);
+    bse_trans_commit (trans);
+    while (!sync_lock)
+      sync_cond.wait (sync_guard);
+  }
   if (!_engine_mnl_head())
     {
       /* cleanup */
@@ -1336,7 +1336,7 @@ bse_engine_configure (guint            latency_ms,
   /* unblock master */
   sync_mutex.lock();
   sync_lock = FALSE;
-  sync_cond.signal();
+  sync_cond.notify_one();
   sync_mutex.unlock();
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();

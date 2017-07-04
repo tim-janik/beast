@@ -37,7 +37,7 @@ init_needed ()
 }
 
 // == TaskRegistry ==
-static Bse::Mutex         task_registry_mutex_;
+static std::mutex         task_registry_mutex_;
 static TaskRegistry::List task_registry_tasks_;
 
 void
@@ -46,14 +46,14 @@ TaskRegistry::add (const std::string &name, int pid, int tid)
   Rapicorn::TaskStatus task (pid, tid);
   task.name = name;
   task.update();
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   task_registry_tasks_.push_back (task);
 }
 
 bool
 TaskRegistry::remove (int tid)
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   for (auto it = task_registry_tasks_.begin(); it != task_registry_tasks_.end(); it++)
     if (it->task_id == tid)
       {
@@ -66,7 +66,7 @@ TaskRegistry::remove (int tid)
 void
 TaskRegistry::update ()
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   for (auto &task : task_registry_tasks_)
     task.update();
 }
@@ -74,7 +74,7 @@ TaskRegistry::update ()
 TaskRegistry::List
 TaskRegistry::list ()
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   return task_registry_tasks_;
 }
 

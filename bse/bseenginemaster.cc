@@ -295,12 +295,13 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("sync");
       master_need_reflow |= TRUE;
       master_schedule_discard();
-      job->sync.lock_mutex->lock();
-      *job->sync.lock_p = TRUE;
-      job->sync.lock_cond->signal();
-      while (*job->sync.lock_p)
-        job->sync.lock_cond->wait (*job->sync.lock_mutex);
-      job->sync.lock_mutex->unlock();
+      {
+        std::unique_lock<std::mutex> sync_guard (*job->sync.lock_mutex);
+        *job->sync.lock_p = TRUE;
+        job->sync.lock_cond->notify_one();
+        while (*job->sync.lock_p)
+          job->sync.lock_cond->wait (sync_guard);
+      }
       break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
