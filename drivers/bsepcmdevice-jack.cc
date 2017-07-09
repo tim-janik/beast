@@ -266,8 +266,6 @@ enum
 {
   CALLBACK_STATE_INACTIVE = 0,
   CALLBACK_STATE_ACTIVE = 1,
-  CALLBACK_STATE_PLEASE_TERMINATE = 2,
-  CALLBACK_STATE_TERMINATED = 3
 };
 
 struct JackPcmHandle
@@ -572,12 +570,6 @@ jack_process_callback (jack_nframes_t n_frames,
 	}
     }
   jack->cond.notify_one();
-
-  if (callback_state == CALLBACK_STATE_PLEASE_TERMINATE)
-    {
-      jack->atomic_callback_state = CALLBACK_STATE_TERMINATED;
-      return 1;
-    }
   return 0;
 }
 
@@ -585,23 +577,6 @@ static void
 terminate_and_free_jack (JackPcmHandle *jack)
 {
   g_return_if_fail (jack->jack_client != NULL);
-
-  jack->atomic_callback_state = CALLBACK_STATE_PLEASE_TERMINATE;
-  while (jack->atomic_callback_state == CALLBACK_STATE_PLEASE_TERMINATE)
-    {
-      std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
-
-      if (jack->is_down) /* if jack is already gone, then forget it */
-	jack->atomic_callback_state = CALLBACK_STATE_TERMINATED;
-      else
-	jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
-    }
-
-  for (uint ch = 0; ch < jack->input_ports.size(); ch++)
-    jack_port_disconnect (jack->jack_client, jack->input_ports[ch]);
-
-  for (uint ch = 0; ch < jack->output_ports.size(); ch++)
-    jack_port_disconnect (jack->jack_client, jack->output_ports[ch]);
 
   jack_deactivate (jack->jack_client);
 
