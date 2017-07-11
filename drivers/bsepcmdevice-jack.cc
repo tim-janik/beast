@@ -576,7 +576,7 @@ jack_process_callback (jack_nframes_t n_frames,
 static void
 terminate_and_free_jack (JackPcmHandle *jack)
 {
-  g_return_if_fail (jack->jack_client != NULL);
+  assert_return (jack->jack_client != NULL);
 
   jack_deactivate (jack->jack_client);
 
@@ -752,7 +752,7 @@ bse_pcm_device_jack_finalize (GObject *object)
 static void
 jack_device_retrigger (JackPcmHandle *jack)
 {
-  g_return_if_fail (jack->jack_client != NULL);
+  assert_return (jack->jack_client != NULL);
 
   /*
    * we need to reset the active flag to false here, as we modify the
@@ -943,8 +943,8 @@ jack_device_write (BsePcmHandle *handle,
                    const float  *values)
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
-  g_return_if_fail (jack->jack_client != NULL);
-  g_return_if_fail (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
+  assert_return (jack->jack_client != NULL);
+  assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
 
   /* FIXME: *slow* deinterleaving step - get rid of that */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
