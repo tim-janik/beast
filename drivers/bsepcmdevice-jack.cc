@@ -790,7 +790,7 @@ jack_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
-  g_return_val_if_fail (jack->jack_client != NULL, false);
+  assert_return (jack->jack_client != NULL, false);
 
 /*
   int ixruns = Atomic::int_get (&jack->ixruns);
@@ -843,7 +843,7 @@ jack_device_latency (BsePcmHandle *handle)
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   jack_nframes_t rlatency = 0, wlatency = 0;
 
-  g_return_val_if_fail (jack->jack_client != NULL, 0);
+  assert_return (jack->jack_client != NULL, 0);
 
   /* FIXME: the API of this function is broken, because you can't use its result
    * to sync for instance the play position pointer with the screen
@@ -879,8 +879,8 @@ jack_device_read (BsePcmHandle *handle,
                   float        *values)
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
-  g_return_val_if_fail (jack->jack_client != NULL, 0);
-  g_return_val_if_fail (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
+  assert_return (jack->jack_client != NULL, 0);
+  assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
 
   /* get rid of this *slow* interleaving code */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
