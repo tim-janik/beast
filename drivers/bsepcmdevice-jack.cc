@@ -340,19 +340,38 @@ bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
   if (rc != 0)
     g_printerr ("jack driver: pthread_sigmask for SIGPIPE failed: %s\n", strerror (errno));
 
+  self->jack_client = nullptr;
+}
+
+namespace {
+
+bool
+connect_jack (BsePcmDeviceJACK *self)
+{
+  /* we should only be called if jack_client is not already registered */
+  assert_return (!self->jack_client, false);
+
   jack_status_t status;
 
   self->jack_client = jack_client_open ("beast", JackNoStartServer, &status); /* FIXME: translations(?) */
   PDEBUG ("attaching to JACK server returned status: %d\n", status);
   /* FIXME: check status for proper error reporting
    * FIXME: what about server name? (necessary if more than one jackd instance is running)
-   * FIXME: get rid of device unloading, so that the jackd connection can be kept initialized
-   *
-   * maybe move this to a different function
+   * FIXME: it would be nice if the jack connection could remain open between stop | start playback
    */
+  return (self->jack_client != nullptr);
 }
 
-namespace {
+void
+disconnect_jack (BsePcmDeviceJACK *self)
+{
+  assert_return (self->jack_client != NULL);
+
+  jack_deactivate (self->jack_client);
+  jack_client_close (self->jack_client);
+  self->jack_client = NULL;
+}
+
 struct DeviceDetails {
   uint ports, input_ports, output_ports, physical_ports, terminal_ports;
   bool default_device;
@@ -438,7 +457,13 @@ static SfiRing*
 bse_pcm_device_jack_list_devices (BseDevice *device)
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
-  map<string, DeviceDetails> devices = query_jack_devices (self);
+
+  map<string, DeviceDetails> devices;
+  if (connect_jack (self))
+    {
+      devices = query_jack_devices (self);
+      disconnect_jack (self);
+    }
 
   SfiRing *ring = NULL;
   for (map<string, DeviceDetails>::iterator di = devices.begin(); di != devices.end(); di++)
@@ -583,16 +608,6 @@ jack_process_callback (jack_nframes_t n_frames,
   return 0;
 }
 
-static void
-terminate_and_free_jack (JackPcmHandle *jack)
-{
-  assert_return (jack->jack_client != NULL);
-
-  jack_deactivate (jack->jack_client);
-
-  delete jack;
-}
-
 static Bse::Error
 bse_pcm_device_jack_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -601,7 +616,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
                           const char   **args)
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
-  if (!self->jack_client)
+
+  if (!connect_jack (self))
     return Bse::Error::FILE_OPEN_FAILED;
 
   JackPcmHandle *jack = new JackPcmHandle (self->jack_client);
@@ -733,7 +749,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
     }
   else
     {
-      terminate_and_free_jack (jack);
+      disconnect_jack (self);
+      delete jack;
     }
   PDEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
 
@@ -743,21 +760,19 @@ bse_pcm_device_jack_open (BseDevice     *device,
 static void
 bse_pcm_device_jack_close (BseDevice *device)
 {
+  BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
+
   JackPcmHandle *jack = (JackPcmHandle*) BSE_PCM_DEVICE (device)->handle;
   BSE_PCM_DEVICE (device)->handle = NULL;
 
-  terminate_and_free_jack (jack);
+  disconnect_jack (self);
+  delete jack;
 }
 
 static void
 bse_pcm_device_jack_finalize (GObject *object)
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (object);
-  if (self->jack_client)
-    {
-      jack_client_close (self->jack_client);
-      self->jack_client = NULL;
-    }
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
