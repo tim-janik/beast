@@ -497,32 +497,42 @@ jack_process_callback (jack_nframes_t n_frames,
       if (jack->handle.readable)
 	{
 	  /* interleave input data for processing in the engine thread */
-	  g_assert (jack->input_ports.size() == n_channels);
+	  if (jack->input_ports.size() == n_channels)
+            {
+              const JackSample *values[n_channels];
+              for (uint ch = 0; ch < n_channels; ch++)
+                values[ch] = (JackSample *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
 
-	  const JackSample *values[n_channels];
-	  for (uint ch = 0; ch < n_channels; ch++)
-	    values[ch] = (JackSample *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
-
-	  uint frames_written = jack->input_ringbuffer.write (n_frames, values);
-	  if (frames_written != n_frames)
-	    jack->atomic_ixruns++;      /* input underrun detected */
+              uint frames_written = jack->input_ringbuffer.write (n_frames, values);
+              if (frames_written != n_frames)
+                jack->atomic_ixruns++;      /* input underrun detected */
+            }
+          else
+            {
+              Bse::warning ("JACK driver: jack->input_ports.size() != n_channels (%d, %d)\n", jack->input_ports.size(), n_channels);
+            }
 	}
       if (jack->handle.writable)
 	{
-	  g_assert (jack->output_ports.size() == n_channels);
+          if (jack->output_ports.size() == n_channels)
+            {
+              JackSample *values[n_channels];
+              for (uint ch = 0; ch < n_channels; ch++)
+                values[ch] = (JackSample *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
 
-	  JackSample *values[n_channels];
-	  for (uint ch = 0; ch < n_channels; ch++)
-	    values[ch] = (JackSample *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
+              uint read_frames = jack->output_ringbuffer.read (n_frames, values);
+              if (read_frames != n_frames)
+                {
+                  jack->atomic_oxruns++;     /* output underrun detected */
 
-	  uint read_frames = jack->output_ringbuffer.read (n_frames, values);
-	  if (read_frames != n_frames)
-	    {
-	      jack->atomic_oxruns++;     /* output underrun detected */
-
-	      for (uint ch = 0; ch < n_channels; ch++)
-		Block::fill ((n_frames - read_frames), &values[ch][read_frames], 0.0);
-	    }
+                  for (uint ch = 0; ch < n_channels; ch++)
+                    Block::fill ((n_frames - read_frames), &values[ch][read_frames], 0.0);
+                }
+            }
+          else
+            {
+              Bse::warning ("JACK driver: jack->output_ports.size() != n_channels (%d, %d)\n", jack->output_ports.size(), n_channels);
+            }
 	}
 
       /*
@@ -697,7 +707,11 @@ bse_pcm_device_jack_open (BseDevice     *device,
       jack->buffer_frames  = jack->output_ringbuffer.get_writable_frames();
 
       // the ringbuffer should be exactly as big as requested
-      g_assert (jack->buffer_frames == buffer_frames);
+      if (jack->buffer_frames != buffer_frames)
+        {
+          Bse::warning ("JACK driver: ring buffer size not correct: (jack->buffer_frames != buffer_frames)\n");
+          error = Bse::Error::INTERNAL;
+        }
       PDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
     }
 
@@ -781,7 +795,10 @@ jack_device_retrigger (JackPcmHandle *jack)
   fill (silence_buffers.begin(), silence_buffers.end(), &silence[0]);
 
   uint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
-  g_assert (frames_written == jack->buffer_frames);
+  if (frames_written != jack->buffer_frames)
+    {
+      Bse::warning ("JACK driver: retrigger fill failed: (frames_written != jack->buffer_frames)\n");
+    }
   PDEBUG ("jack_device_retrigger: %d frames written", frames_written);
 }
 
