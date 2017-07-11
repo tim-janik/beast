@@ -394,11 +394,9 @@ query_jack_devices (BsePcmDeviceJACK *self)
 {
   map<string, DeviceDetails> devices;
 
-  /* FIXME: we need to make a difference here between
-   *  - jackd is running, but no output ports can be found
-   *  - jackd is not running
-   */
-  const char **jack_ports = self->jack_client ? jack_get_ports (self->jack_client, NULL, NULL, 0) : NULL;
+  assert_return (self->jack_client, devices);
+
+  const char **jack_ports = jack_get_ports (self->jack_client, NULL, NULL, 0);
   if (jack_ports)
     {
       bool have_default_device = false;
