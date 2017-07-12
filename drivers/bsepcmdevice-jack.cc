@@ -513,14 +513,12 @@ jack_process_callback (jack_nframes_t n_frames,
   /* still waiting for initialization to complete */
   if (callback_state == CALLBACK_STATE_ACTIVE)
     {
-      bool have_cond_lock = jack->cond_mutex.try_lock();
-
       uint n_channels = jack->handle.n_channels;
 
       if (jack->handle.readable)
-	{
-	  /* interleave input data for processing in the engine thread */
-	  if (jack->input_ports.size() == n_channels)
+        {
+          /* interleave input data for processing in the engine thread */
+          if (jack->input_ports.size() == n_channels)
             {
               const JackSample *values[n_channels];
               for (uint ch = 0; ch < n_channels; ch++)
@@ -534,9 +532,9 @@ jack_process_callback (jack_nframes_t n_frames,
             {
               Bse::warning ("JACK driver: jack->input_ports.size() != n_channels (%d, %d)\n", jack->input_ports.size(), n_channels);
             }
-	}
+        }
       if (jack->handle.writable)
-	{
+        {
           if (jack->output_ports.size() == n_channels)
             {
               JackSample *values[n_channels];
@@ -556,38 +554,7 @@ jack_process_callback (jack_nframes_t n_frames,
             {
               Bse::warning ("JACK driver: jack->output_ports.size() != n_channels (%d, %d)\n", jack->output_ports.size(), n_channels);
             }
-	}
-
-      /*
-       * as we can't (always) lock our data structures from the jack realtime
-       * thread, using a condition introduces the possibility for a race:
-       *
-       * normal operation:
-       *
-       * [bse thread]      writes some data to output_ringbuffer
-       * [bse thread]      checks remaining space, there is no room left
-       * [bse thread]      sleeps on the condition
-       * [jack thread]     reads some data from output_ringbuffer
-       * [jack thread]     signals the condition
-       * [bse thread]      continues to write some data to output_ringbuffer
-       *
-       * race condition:
-       *
-       * [bse thread]      writes some data to output_ringbuffer
-       * [bse thread]      checks remaining space, there is no room left
-       * [jack thread]     reads some data from output_ringbuffer
-       * [jack thread]     signals the condition
-       * [bse thread]      sleeps on the condition
-       * 
-       * since the jack callback gets called periodically, the bse thread will
-       * never starve, though, in the worst case it will just miss a frame
-       *
-       * so we absolutely exclude the possibility for priority inversion (by
-       * using trylock instead of lock), by introducing extra latency in
-       * some extremely rare cases
-       */
-      if (have_cond_lock)
-	jack->cond_mutex.unlock();
+        }
     }
   else
     {
@@ -770,7 +737,7 @@ bse_pcm_device_jack_close (BseDevice *device)
 static void
 bse_pcm_device_jack_finalize (GObject *object)
 {
-  BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (object);
+  // BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (object);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -864,6 +831,9 @@ jack_device_check_io (BsePcmHandle *handle,
   /* calculate timeout until processing is possible or needed */
   uint diff_frames = handle->block_length - n_frames_avail;
   *timeoutp = diff_frames * 1000 / handle->mix_freq;
+
+  /* wait at least 1ms, because caller may interpret (timeout == 0) as "process now" */
+  *timeoutp = max<int> (*timeoutp, 1);
   return FALSE;
 }
 
@@ -912,58 +882,26 @@ jack_device_read (BsePcmHandle *handle,
   assert_return (jack->jack_client != NULL, 0);
   assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
 
-  /* get rid of this *slow* interleaving code */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
   float *deinterleaved_frames[handle->n_channels];
   for (uint ch = 0; ch < handle->n_channels; ch++)
     deinterleaved_frames[ch] = &deinterleaved_frame_data[ch * handle->block_length];
 
-  uint frames_left = handle->block_length;
-  while (frames_left)
+  // in check_io, we already ensured that there is enough data in the input_ringbuffer
+
+  uint frames_read = jack->input_ringbuffer.read (handle->block_length, deinterleaved_frames);
+  assert_return (frames_read == handle->block_length, 0);
+
+  for (uint ch = 0; ch < handle->n_channels; ch++)
     {
-      uint frames_read = jack->input_ringbuffer.read (frames_left, deinterleaved_frames);
+      const float *src = deinterleaved_frames[ch];
+      float *dest = &values[ch];
 
-      frames_left -= frames_read;
-
-      /* get rid of this *slow* interleaving code */
-      for (uint ch = 0; ch < handle->n_channels; ch++)
-	{
-	  const float *src = deinterleaved_frames[ch];
-	  float *dest = &values[ch];
-
-	  for (uint i = 0; i < frames_read; i++)
-	    {
-	      *dest = src[i];
-	      dest += handle->n_channels;
-	    }
-	}
-
-      values += frames_read * handle->n_channels;
-
-      if (frames_left)
-	{
-	  std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
-
-	  /* usually should not timeout, but be notified by the jack callback */
-	  if (!jack->input_ringbuffer.get_readable_frames())
-	    jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
-
-	  if (jack->is_down)
-	    {
-	      /*
-	       * FIXME: we need a way to indicate an error here; beast should provide
-	       * an adequate reaction in case the JACK server is down (it should stop
-	       * playing the file, and show a dialog, if JACK can not be reconnected)
-	       *
-	       * if we have a way to abort processing, this if can be moved above
-	       * the condition wait; however, right now moving it there means that
-	       * beast will render the output as fast as possible when jack dies, and
-	       * this will look like a machine lockup
-	       */
-	      Block::fill (frames_left * handle->n_channels, values, 0.0);   /* <- remove me once we can indicate errors */
-	      return handle->block_length * handle->n_channels;
-	    }
-	}
+      for (uint i = 0; i < frames_read; i++)
+        {
+          *dest = src[i];
+          dest += handle->n_channels;
+        }
     }
   return handle->block_length * handle->n_channels;
 }
@@ -976,53 +914,20 @@ jack_device_write (BsePcmHandle *handle,
   assert_return (jack->jack_client != NULL);
   assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
 
-  /* FIXME: *slow* deinterleaving step - get rid of that */
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
   const float *deinterleaved_frames[handle->n_channels];
   for (uint ch = 0; ch < handle->n_channels; ch++)
     {
       float *channel_data = &deinterleaved_frame_data[ch * handle->block_length];
       for (uint i = 0; i < handle->block_length; i++)
-	channel_data[i] = values[ch + i * handle->n_channels];
+        channel_data[i] = values[ch + i * handle->n_channels];
       deinterleaved_frames[ch] = channel_data;
     }
 
-  uint frames_left = handle->block_length;
+  // in check_io, we already ensured that there is enough space in the output_ringbuffer
 
-  while (frames_left)
-    {
-      uint frames_written = jack->output_ringbuffer.write (frames_left, deinterleaved_frames);
-
-      frames_left -= frames_written;
-
-      /* advance frame pointers */
-      for (uint ch = 0; ch < handle->n_channels; ch++)
-	deinterleaved_frames[ch] += frames_written;
-
-      if (frames_left)
-	{
-	  std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
-
-	  /* usually should not timeout, but be notified by the jack callback */
-	  if (!jack->output_ringbuffer.get_writable_frames())
-	    jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
-
-	  if (jack->is_down)
-	    {
-	      /*
-	       * FIXME: we need a way to indicate an error here; beast should provide
-	       * an adequate reaction in case the JACK server is down (it should stop
-	       * playing the file, and show a dialog, if JACK can not be reconnected)
-	       *
-	       * if we have a way to abort processing, this if can be moved above
-	       * the condition wait; however, right now moving it there means that
-	       * beast will render the output as fast as possible when jack dies, and
-	       * this will look like a machine lockup
-	       */
-	      return;
-	    }
-	}
-    }
+  uint frames_written = jack->output_ringbuffer.write (handle->block_length, deinterleaved_frames);
+  assert_return (frames_written == handle->block_length);
 }
 
 static void
