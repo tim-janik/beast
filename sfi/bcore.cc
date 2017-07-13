@@ -56,9 +56,11 @@ diagnostic (char kind, const std::string &message)
   String prefix;
   switch (kind) {
   case 'W':     prefix = "WARNING: ";   break;
-  case 'I':     prefix = "INFO: ";      break;
   case 'D':     prefix = "DEBUG: ";     break;
   case ' ':     prefix = "";            break;
+  case 'I':
+    prefix = program_alias() + ": ";
+    break;
   case 'F':
     prefix = program_alias() + ": FATAL: ";
     break;
