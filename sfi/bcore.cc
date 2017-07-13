@@ -84,6 +84,24 @@ debug_diagnostic (const char *prefix, const std::string &message)
   printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, pprefix, message, newline);
 }
 
+struct DebugStartup {
+  DebugStartup()
+  {
+    if (debug_key_enabled ("") ||       // force debug_any_enabled initialization
+        debug_any_enabled)              // run DebugStartup if *any* debugging is enabled
+      {
+        const time_t now = time (NULL);
+        struct tm gtm = { 0, };
+        gmtime_r (&now, &gtm);
+        char buffer[1024] = { 0, };
+        strftime (buffer, sizeof (buffer) - 1, "%Y-%m-%d %H:%M:%S UTC", &gtm);
+        debug_diagnostic (NULL, "startup: " + String() + buffer);
+      }
+  }
+};
+
+static DebugStartup _debug_startup __attribute__ ((init_priority (101)));
+
 } // Internal
 
 } // Bse
