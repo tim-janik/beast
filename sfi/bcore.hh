@@ -41,6 +41,7 @@ namespace Internal {
 extern bool                         debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                                debug_key_enabled (const char *conditional) BSE_PURE;
 void                                diagnostic        (char kind, const std::string &message);
+void                                debug_diagnostic  (const char *prefix, const std::string &message);
 void                                force_abort       () RAPICORN_NORETURN;
 } // Internal
 
@@ -57,7 +58,7 @@ template<class ...Args> inline void RAPICORN_ALWAYS_INLINE
 debug (const char *conditional, const char *format, const Args &...args)
 {
   if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
-    Internal::diagnostic ('D', string_format (format, args...));
+    Internal::debug_diagnostic (conditional, string_format (format, args...));
 }
 
 /// Check if @a conditional is enabled by $BSE_DEBUG.

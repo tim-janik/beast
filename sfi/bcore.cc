@@ -1,6 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bcore.hh"
+#include "platform.hh"
 #include <unistd.h>     // _exit
+#include <sys/time.h>   // gettimeofday
 
 namespace Bse {
 using namespace Rapicorn;
@@ -70,6 +72,16 @@ diagnostic (char kind, const std::string &message)
   }
   const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
   printerr ("%s%s%s", prefix, message, newline);
+}
+
+void
+debug_diagnostic (const char *prefix, const std::string &message)
+{
+  struct timeval tv = { 0, };
+  gettimeofday (&tv, NULL);
+  const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
+  const String pprefix = prefix ? prefix : executable_name();
+  printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, pprefix, message, newline);
 }
 
 } // Internal
