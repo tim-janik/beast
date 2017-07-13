@@ -75,13 +75,11 @@ objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
 
 # == app ==
 app: .appstamp
-.appstamp: package.json xlinting v8bse/v8bse.node
-.appstamp: objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
+PRUNE_APPSTAMP := $(shell test -e v8bse/v8bse.node || rm -f .appstamp)
+.appstamp: package.json xlinting objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
-v8bse/v8bse.node:
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
-v8bse/v8bse.node: v8bse/*.cc v8bse/*.py v8bse/*.gyp v8bse/*.am
 MOSTLYCLEANFILES += .appstamp
 
 # == run ==
