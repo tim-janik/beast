@@ -264,12 +264,6 @@ public:
 #define TEST_DROPOUT() if (unlink ("/tmp/drop") == 0) usleep (1.5 * 1000000. * jack->buffer_frames / handle->mix_freq); /* sleep 1.5 * buffer size */
 
 /* --- JACK PCM handle --- */
-enum
-{
-  CALLBACK_STATE_INACTIVE = 0,
-  CALLBACK_STATE_ACTIVE = 1,
-};
-
 struct JackPcmHandle
 {
   BsePcmHandle  handle;
