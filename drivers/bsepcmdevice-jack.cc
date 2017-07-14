@@ -291,6 +291,9 @@ struct JackPcmHandle
 
   bool			  is_down;
 
+  uint64                  device_read_counter;
+  uint64                  device_write_counter;
+
   JackPcmHandle (jack_client_t *jack_client) :
     jack_client (jack_client),
     atomic_callback_state (0),
@@ -298,7 +301,9 @@ struct JackPcmHandle
     atomic_oxruns (0),
     atomic_pixruns (0),
     atomic_poxruns (0),
-    is_down (false)
+    is_down (false),
+    device_read_counter (0),
+    device_write_counter (0)
   {
     memset (&handle, 0, sizeof (handle));
   }
@@ -789,29 +794,15 @@ jack_device_check_io (BsePcmHandle *handle,
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   assert_return (jack->jack_client != NULL, false);
 
-/*
-  int ixruns = Atomic::int_get (&jack->ixruns);
-  int oxruns = Atomic::int_get (&jack->oxruns);
-
-  if (jack->poxruns != oxruns || jack->pixruns != ixruns)
+  /* report jack driver xruns */
+  int ixruns = jack->atomic_ixruns;
+  if (jack->atomic_pixruns != ixruns)
     {
-      printf ("beast caused jack input xruns %d, output xruns %d\n", ixruns, oxruns);
-      jack->poxruns = oxruns;
-      jack->pixruns = ixruns;
-
-      jack_device_retrigger (jack);
+      g_printerr ("%d beast jack driver ixruns\n", ixruns);
+      jack->atomic_pixruns = ixruns;
     }
-*/
-  
-  /* (FIXME?)
-   *
-   * we can not guarantee that beast will read the data from the jack ringbuffer,
-   * since this depends on the presence of a module that actually reads data in
-   * the synthesis graph : so we simply ignore the ixruns variable; I am not sure
-   * if thats the right thing to do, though
-   */
-  int oxruns = jack->atomic_oxruns;
 
+  int oxruns = jack->atomic_oxruns;
   if (jack->atomic_poxruns != oxruns)
     {
       g_printerr ("%d beast jack driver xruns\n", oxruns);
@@ -882,6 +873,8 @@ jack_device_read (BsePcmHandle *handle,
   assert_return (jack->jack_client != NULL, 0);
   assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
 
+  jack->device_read_counter++;  // read must always gets called before write (see jack_device_write)
+
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
   float *deinterleaved_frames[handle->n_channels];
   for (uint ch = 0; ch < handle->n_channels; ch++)
@@ -914,6 +907,21 @@ jack_device_write (BsePcmHandle *handle,
   assert_return (jack->jack_client != NULL);
   assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
 
+  /* our buffer management is based on the assumption that jack_device_read()
+   * will always be performed before jack_device_write() - BEAST doesn't
+   * always guarantee this (for instance when removing the pcm input module
+   * from the snet while audio is playing), so we read and discard input
+   * if BEAST didn't call jack_device_read() already
+   */
+  jack->device_write_counter++;
+  if (jack->device_read_counter < jack->device_write_counter)
+    {
+      float junk_frames[handle->block_length * handle->n_channels];
+      jack_device_read (handle, junk_frames);
+      assert_return (jack->device_read_counter == jack->device_write_counter);
+    }
+
+  // deinterleave
   float deinterleaved_frame_data[handle->block_length * handle->n_channels];
   const float *deinterleaved_frames[handle->n_channels];
   for (uint ch = 0; ch < handle->n_channels; ch++)
