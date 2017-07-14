@@ -283,7 +283,6 @@ struct JackPcmHandle
   FrameRingBuffer<float>  input_ringbuffer;
   FrameRingBuffer<float>  output_ringbuffer;
 
-  std::atomic<int>        atomic_callback_state;
   std::atomic<int>        atomic_xruns;
   int                     printed_xruns;
 
@@ -294,7 +293,6 @@ struct JackPcmHandle
 
   JackPcmHandle (jack_client_t *jack_client) :
     jack_client (jack_client),
-    atomic_callback_state (0),
     atomic_xruns (0),
     printed_xruns(0),
     is_down (false),
@@ -506,49 +504,35 @@ jack_process_callback (jack_nframes_t n_frames,
 
   JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
 
-  int callback_state = jack->atomic_callback_state;
-
-  /* still waiting for initialization to complete */
-  if (callback_state == CALLBACK_STATE_ACTIVE)
+  if (jack->input_ringbuffer.get_writable_frames() >= n_frames && jack->output_ringbuffer.get_readable_frames() >= n_frames)
     {
-      if (jack->input_ringbuffer.get_writable_frames() >= n_frames && jack->output_ringbuffer.get_readable_frames() >= n_frames)
+      /* setup port pointers */
+      uint n_channels = jack->handle.n_channels;
+
+      assert_return (jack->input_ports.size() == n_channels, 0);
+      assert_return (jack->output_ports.size() == n_channels, 0);
+
+      const JackSample *in_values[n_channels];
+      JackSample *out_values[n_channels];
+      for (uint ch = 0; ch < n_channels; ch++)
         {
-          /* setup port pointers */
-          uint n_channels = jack->handle.n_channels;
-
-          assert_return (jack->input_ports.size() == n_channels, 0);
-          assert_return (jack->output_ports.size() == n_channels, 0);
-
-          const JackSample *in_values[n_channels];
-          JackSample *out_values[n_channels];
-          for (uint ch = 0; ch < n_channels; ch++)
-            {
-              in_values[ch] = (JackSample *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
-              out_values[ch] = (JackSample *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
-            }
-
-          /* handle input ports */
-          guint frames_written = jack->input_ringbuffer.write (n_frames, in_values);
-          assert_return (frames_written == n_frames, 0); // we checked the available space before
-
-          /* handle output ports */
-          guint read_frames = jack->output_ringbuffer.read (n_frames, out_values);
-          assert_return (read_frames == n_frames, 0); // we checked the available space before
+          in_values[ch] = (JackSample *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
+          out_values[ch] = (JackSample *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
         }
-      else
-        {
-          /* underrun (less than n_frames available in input/output ringbuffer) -> write zeros */
-          jack->atomic_xruns++;
 
-          for (auto port : jack->output_ports)
-            {
-              JackSample *values = (JackSample *) jack_port_get_buffer (port, n_frames);
-              Block::fill (n_frames, values, 0.0);
-            }
-        }
+      /* handle input ports */
+      uint frames_written = jack->input_ringbuffer.write (n_frames, in_values);
+      assert_return (frames_written == n_frames, 0); // we checked the available space before
+
+      /* handle output ports */
+      uint read_frames = jack->output_ringbuffer.read (n_frames, out_values);
+      assert_return (read_frames == n_frames, 0); // we checked the available space before
     }
   else
     {
+      /* underrun (less than n_frames available in input/output ringbuffer) -> write zeros */
+      jack->atomic_xruns++;
+
       for (auto port : jack->output_ports)
         {
           JackSample *values = (JackSample *) jack_port_get_buffer (port, n_frames);
@@ -584,8 +568,6 @@ bse_pcm_device_jack_open (BseDevice     *device,
   const char *dname = (n_args == 1) ? args[0] : "alsa_pcm";
   handle->mix_freq = jack_get_sample_rate (self->jack_client);
 
-  jack->atomic_callback_state = CALLBACK_STATE_INACTIVE;
-
   for (uint i = 0; i < handle->n_channels; i++)
     {
       const int port_name_size = jack_port_name_size();
@@ -607,50 +589,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
 	error = Bse::Error::FILE_OPEN_FAILED;
     }
 
-  /* activate */
-  
-  if (error == 0)
-    {
-      jack_set_process_callback (self->jack_client, jack_process_callback, jack);
-      jack_on_shutdown (self->jack_client, jack_shutdown_callback, jack);
-
-      if (jack_activate (self->jack_client) != 0)
-	error = Bse::Error::FILE_OPEN_FAILED;
-    }
-
-  /* If an error occurred so far, then the process() callback will not be
-   * called and the condition will never be signalled, so we set the is_down
-   * flag, which will ensure that we won't wait forever on the condition.
-   */
-  if (error != 0)
-    jack->is_down = true;
-
-  /* connect ports */
-
-  if (error == 0)
-    {
-      map<string, DeviceDetails> devices = query_jack_devices (self);
-      map<string, DeviceDetails>::const_iterator di;
-
-      di = devices.find (dname);
-      if (di != devices.end())
-	{
-	  const DeviceDetails &details = di->second;
-
-	  for (uint ch = 0; ch < handle->n_channels; ch++)
-	    {
-	      if (details.output_ports > ch)
-		jack_connect (self->jack_client, details.output_port_names[ch].c_str(),
-		                                 jack_port_name (jack->input_ports[ch]));
-	      if (details.input_ports > ch)
-		jack_connect (self->jack_client, jack_port_name (jack->output_ports[ch]),
-		                                 details.input_port_names[ch].c_str());
-	    }
-	}
-    }
-
-  /* setup buffer size */
-
+  /* initialize ring buffers */
   if (error == 0)
     {
       // keep at least two jack callback sizes for dropout free audio
@@ -689,10 +628,43 @@ bse_pcm_device_jack_open (BseDevice     *device,
 
       fill (silence_buffers.begin(), silence_buffers.end(), &silence[0]);
 
-      guint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
+      uint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
       if (frames_written != jack->buffer_frames)
         Bse::warning ("JACK driver: output silence init failed: (frames_written != jack->buffer_frames)\n");
 
+    }
+
+  /* activate */
+  if (error == 0)
+    {
+      jack_set_process_callback (self->jack_client, jack_process_callback, jack);
+      jack_on_shutdown (self->jack_client, jack_shutdown_callback, jack);
+
+      if (jack_activate (self->jack_client) != 0)
+	error = Bse::Error::FILE_OPEN_FAILED;
+    }
+
+  /* connect ports */
+  if (error == 0)
+    {
+      map<string, DeviceDetails> devices = query_jack_devices (self);
+      map<string, DeviceDetails>::const_iterator di;
+
+      di = devices.find (dname);
+      if (di != devices.end())
+	{
+	  const DeviceDetails &details = di->second;
+
+	  for (uint ch = 0; ch < handle->n_channels; ch++)
+	    {
+	      if (details.output_ports > ch)
+		jack_connect (self->jack_client, details.output_port_names[ch].c_str(),
+		                                 jack_port_name (jack->input_ports[ch]));
+	      if (details.input_ports > ch)
+		jack_connect (self->jack_client, jack_port_name (jack->output_ports[ch]),
+		                                 details.input_port_names[ch].c_str());
+	    }
+	}
     }
 
   /* setup PCM handle or shutdown */
@@ -754,8 +726,6 @@ jack_device_check_io (BsePcmHandle *handle,
       g_printerr ("%d beast jack driver xruns\n", jack->printed_xruns);
     }
 
-  jack->atomic_callback_state = CALLBACK_STATE_ACTIVE;
-
   uint n_frames_avail = min (jack->output_ringbuffer.get_writable_frames(), jack->input_ringbuffer.get_readable_frames());
 
   /* check whether data can be processed */
@@ -814,7 +784,6 @@ jack_device_read (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   assert_return (jack->jack_client != NULL, 0);
-  assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE, 0);
 
   jack->device_read_counter++;  // read must always gets called before write (see jack_device_write)
 
@@ -848,7 +817,6 @@ jack_device_write (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   assert_return (jack->jack_client != NULL);
-  assert_return (jack->atomic_callback_state == CALLBACK_STATE_ACTIVE);
 
   /* our buffer management is based on the assumption that jack_device_read()
    * will always be performed before jack_device_write() - BEAST doesn't
