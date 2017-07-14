@@ -571,7 +571,6 @@ jack_process_callback (jack_nframes_t n_frames,
 	  Block::fill (n_frames, values, 0.0);
 	}
     }
-  jack->cond.notify_one();
   return 0;
 }
 
