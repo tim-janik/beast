@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>
+#include <unistd.h>
 #include <set>
 #include <string>
 #include <map>
@@ -260,6 +261,7 @@ public:
 
 
 #define PDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
+#define TEST_DROPOUT() if (unlink ("/tmp/drop") == 0) usleep (1.5 * 1000000. * jack->buffer_frames / handle->mix_freq); /* sleep 1.5 * buffer size */
 
 /* --- JACK PCM handle --- */
 enum
@@ -277,8 +279,6 @@ struct JackPcmHandle
 
   uint			  buffer_frames;	/* input/output ringbuffer size in frames */
 
-  std::condition_variable cond;
-  std::mutex              cond_mutex;
   jack_client_t		 *jack_client;
   FrameRingBuffer<float>  input_ringbuffer;
   FrameRingBuffer<float>  output_ringbuffer;
@@ -321,7 +321,6 @@ static void             jack_device_write               (BsePcmHandle           
 static gboolean         jack_device_check_io            (BsePcmHandle           *handle,
                                                          glong                  *tiumeoutp);
 static uint             jack_device_latency             (BsePcmHandle           *handle);
-static void             jack_device_retrigger           (JackPcmHandle          *jack);
 
 /* --- define object type and export to BSE --- */
 
@@ -500,9 +499,7 @@ jack_shutdown_callback (void *jack_handle_ptr)
 {
   JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
 
-  std::lock_guard<std::mutex> cond_locker (jack->cond_mutex);
   jack->is_down = true;
-  jack->cond.notify_one();
 }
 
 static int
@@ -699,6 +696,19 @@ bse_pcm_device_jack_open (BseDevice     *device,
           error = Bse::Error::INTERNAL;
         }
       PDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
+
+      /* initialize output ringbuffer with silence
+       * this will prevent dropouts at initialization, when no data is there at all
+       */
+      vector<float>	  silence (jack->output_ringbuffer.get_total_n_frames());
+      vector<const float *> silence_buffers (jack->output_ringbuffer.get_n_channels());
+
+      fill (silence_buffers.begin(), silence_buffers.end(), &silence[0]);
+
+      guint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
+      if (frames_written != jack->buffer_frames)
+        Bse::warning ("JACK driver: output silence init failed: (frames_written != jack->buffer_frames)\n");
+
     }
 
   /* setup PCM handle or shutdown */
@@ -713,8 +723,6 @@ bse_pcm_device_jack_open (BseDevice     *device,
       handle->latency = jack_device_latency;
       BSE_PCM_DEVICE (device)->handle = handle;
 
-      /* will prevent dropouts at initialization, when no data is there at all */
-      jack_device_retrigger (jack);
       jack_device_latency (handle);   // debugging only: print latency values
     }
   else
@@ -748,45 +756,6 @@ bse_pcm_device_jack_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-jack_device_retrigger (JackPcmHandle *jack)
-{
-  assert_return (jack->jack_client != NULL);
-
-  /*
-   * we need to reset the active flag to false here, as we modify the
-   * buffers in a non threadsafe way; this is why we also wait for
-   * the condition, to ensure that the jack callback really isn't
-   * active any more
-   */
-  jack->atomic_callback_state = CALLBACK_STATE_INACTIVE;
-
-  /* usually should not timeout, but be notified by the jack callback */
-  {
-    std::unique_lock<std::mutex> cond_locker (jack->cond_mutex);
-
-    if (!jack->is_down)
-      jack->cond.wait_for (cond_locker, std::chrono::milliseconds (100));
-  }
-
-  /* jack_ringbuffer_reset is not threadsafe! */
-  jack->input_ringbuffer.clear();
-  jack->output_ringbuffer.clear();
-
-  /* initialize output ringbuffer with silence */
-  vector<float>	  silence (jack->output_ringbuffer.get_total_n_frames());
-  vector<const float *> silence_buffers (jack->output_ringbuffer.get_n_channels());
-
-  fill (silence_buffers.begin(), silence_buffers.end(), &silence[0]);
-
-  uint frames_written = jack->output_ringbuffer.write (jack->buffer_frames, &silence_buffers[0]);
-  if (frames_written != jack->buffer_frames)
-    {
-      Bse::warning ("JACK driver: retrigger fill failed: (frames_written != jack->buffer_frames)\n");
-    }
-  PDEBUG ("jack_device_retrigger: %d frames written", frames_written);
-}
-
 static gboolean
 jack_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
@@ -807,8 +776,6 @@ jack_device_check_io (BsePcmHandle *handle,
     {
       g_printerr ("%d beast jack driver xruns\n", oxruns);
       jack->atomic_poxruns = oxruns;
-
-      jack_device_retrigger (jack);
     }
 
   jack->atomic_callback_state = CALLBACK_STATE_ACTIVE;
