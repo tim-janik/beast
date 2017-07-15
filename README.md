@@ -1,7 +1,7 @@
 BEAST & BSE
 ===========
 
-[![License MPL2](http://testbit.eu/~timj/pics/license-lgpl-3.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
+[![License LGPL-2.1+](http://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
 [![Binary Download](https://api.bintray.com/packages/beast-team/deb/beast/images/download.svg)](https://github.com/tim-janik/beast/#binary-packages)
 
