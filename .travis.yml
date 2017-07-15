@@ -13,11 +13,10 @@ env:
   # INTENT: gccbuild clangbuild package bintrayup
   matrix:
     - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild"
-    - DIST="ubuntu:yakkety"     INTENT="gccbuild"
+    - DIST="ubuntu:zesty"       INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
     - DIST="debian:jessie"      INTENT="gccbuild"
     - DIST="debian:stretch"     INTENT="gccbuild"
-    - DIST="ubuntu:zesty"       INTENT="gccbuild"
     - DIST="ubuntu:zesty"       INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
@@ -25,7 +24,6 @@ matrix:
   allow_failures:
     - env: DIST="debian:jessie"      INTENT="gccbuild"
     - env: DIST="debian:stretch"     INTENT="gccbuild"
-    - env: DIST="ubuntu:zesty"       INTENT="gccbuild"
     - env: DIST="ubuntu:zesty"       INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
     - env: DIST="debian:unstable"    INTENT="clangbuild"
