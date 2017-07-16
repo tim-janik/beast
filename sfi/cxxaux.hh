@@ -5,6 +5,7 @@
 #include <sfi/sysconfig.h>
 #include <sys/types.h>                  // uint, ssize
 #include <cstdint>                      // uint64_t
+#include <memory>
 #include <vector>
 #include <map>
 
@@ -80,6 +81,46 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #else // sane c++
 #define BSE_DECLARE_VLA(Type, var, count)          Type var[count] ///< Declare a variable length array (clang++ uses std::vector<>).
 #endif
+
+/**
+ * A std::make_shared<>() wrapper class to access private ctor & dtor.
+ * To call std::make_shared<T>() on a class @a T, its constructor and
+ * destructor must be public. For classes with private or protected
+ * constructor or destructor, this class can be used as follows:
+ * @code{.cc}
+ * class Type {
+ *   Type (ctor_args...);                // Private ctor.
+ *   friend class FriendAllocator<Type>; // Allow access to ctor/dtor of Type.
+ * };
+ * std::shared_ptr<Type> t = FriendAllocator<Type>::make_shared (ctor_args...);
+ * @endcode
+ */
+template<class T>
+class FriendAllocator : public std::allocator<T> {
+public:
+  /// Construct type @a C object, standard allocator requirement.
+  template<typename C, typename... Args> static inline void
+  construct (C *p, Args &&... args)
+  {
+    ::new ((void*) p) C (std::forward<Args> (args)...);
+  }
+  /// Delete type @a C object, standard allocator requirement.
+  template<typename C> static inline void
+  destroy (C *p)
+  {
+    p->~C ();
+  }
+  /**
+   * Construct an object of type @a T that is wrapped into a std::shared_ptr<T>.
+   * @param args        The list of arguments to pass into a T() constructor.
+   * @return            A std::shared_ptr<T> owning the newly created object.
+   */
+  template<typename ...Args> static inline std::shared_ptr<T>
+  make_shared (Args &&... args)
+  {
+    return std::allocate_shared<T> (FriendAllocator(), std::forward<Args> (args)...);
+  }
+};
 
 } // Bse
 
