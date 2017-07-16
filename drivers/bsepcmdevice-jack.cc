@@ -277,6 +277,7 @@ struct JackPcmHandle
   FrameRingBuffer<float>  input_ringbuffer;
   FrameRingBuffer<float>  output_ringbuffer;
 
+  std::atomic<int>        atomic_active;
   std::atomic<int>        atomic_xruns;
   int                     printed_xruns;
 
@@ -287,6 +288,7 @@ struct JackPcmHandle
 
   JackPcmHandle (jack_client_t *jack_client) :
     jack_client (jack_client),
+    atomic_active (0),
     atomic_xruns (0),
     printed_xruns(0),
     is_down (false),
@@ -494,26 +496,29 @@ static int
 jack_process_callback (jack_nframes_t n_frames,
                        void          *jack_handle_ptr)
 {
-  typedef jack_default_audio_sample_t JackSample;
-
   JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
 
-  if (jack->input_ringbuffer.get_writable_frames() >= n_frames && jack->output_ringbuffer.get_readable_frames() >= n_frames)
+  /* setup port pointers */
+  uint n_channels = jack->handle.n_channels;
+
+  assert_return (jack->input_ports.size() == n_channels, 0);
+  assert_return (jack->output_ports.size() == n_channels, 0);
+
+  const float *in_values[n_channels];
+  float *out_values[n_channels];
+  for (uint ch = 0; ch < n_channels; ch++)
     {
-      /* setup port pointers */
-      uint n_channels = jack->handle.n_channels;
+      in_values[ch] = (float *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
+      out_values[ch] = (float *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
+    }
 
-      assert_return (jack->input_ports.size() == n_channels, 0);
-      assert_return (jack->output_ports.size() == n_channels, 0);
-
-      const JackSample *in_values[n_channels];
-      JackSample *out_values[n_channels];
-      for (uint ch = 0; ch < n_channels; ch++)
-        {
-          in_values[ch] = (JackSample *) jack_port_get_buffer (jack->input_ports[ch], n_frames);
-          out_values[ch] = (JackSample *) jack_port_get_buffer (jack->output_ports[ch], n_frames);
-        }
-
+  if (!jack->atomic_active)
+    {
+      for (auto values : out_values)
+        Block::fill (n_frames, values, 0.0);
+    }
+  else if (jack->input_ringbuffer.get_writable_frames() >= n_frames && jack->output_ringbuffer.get_readable_frames() >= n_frames)
+    {
       /* handle input ports */
       uint frames_written = jack->input_ringbuffer.write (n_frames, in_values);
       assert_return (frames_written == n_frames, 0); // we checked the available space before
@@ -527,11 +532,8 @@ jack_process_callback (jack_nframes_t n_frames,
       /* underrun (less than n_frames available in input/output ringbuffer) -> write zeros */
       jack->atomic_xruns++;
 
-      for (auto port : jack->output_ports)
-        {
-          JackSample *values = (JackSample *) jack_port_get_buffer (port, n_frames);
-          Block::fill (n_frames, values, 0.0);
-        }
+      for (auto values : out_values)
+        Block::fill (n_frames, values, 0.0);
     }
   return 0;
 }
@@ -712,6 +714,9 @@ jack_device_check_io (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   assert_return (jack->jack_client != NULL, false);
+
+  /* enable processing in callback (if not already active) */
+  jack->atomic_active = 1;
 
   /* report jack driver xruns */
   if (jack->atomic_xruns != jack->printed_xruns)
