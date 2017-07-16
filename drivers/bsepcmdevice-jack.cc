@@ -327,20 +327,44 @@ bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
 namespace {
 
 bool
-connect_jack (BsePcmDeviceJACK *self)
+connect_jack (BsePcmDeviceJACK *self, jack_status_t &status)
 {
   /* we should only be called if jack_client is not already registered */
   assert_return (!self->jack_client, false);
 
-  jack_status_t status;
-
-  self->jack_client = jack_client_open ("beast", JackNoStartServer, &status); /* FIXME: translations(?) */
+  self->jack_client = jack_client_open ("beast", JackNoStartServer, &status);
   PDEBUG ("attaching to JACK server returned status: %d\n", status);
-  /* FIXME: check status for proper error reporting
-   * FIXME: what about server name? (necessary if more than one jackd instance is running)
+  /* FIXME: what about server name? (necessary if more than one jackd instance is running)
    * FIXME: it would be nice if the jack connection could remain open between stop | start playback
    */
   return (self->jack_client != nullptr);
+}
+
+string
+jack_status_to_error_msg (jack_status_t status)
+{
+  if (status & JackInvalidOption)
+    return _("The operation contained an invalid or unsupported option.");
+  if (status & JackNameNotUnique)
+    return _("The desired client name was not unique.");
+  if (status & JackServerFailed)
+    return _("Unable to connect to the JACK server.");
+  if (status & JackServerError)
+    return _("Communication error with the JACK server.");
+  if (status & JackNoSuchClient)
+    return _("Requested client does not exist.");
+  if (status & JackInitFailure)
+    return _("Unable to initialize client.");
+  if (status & JackShmFailure)
+    return _("Unable to access shared memory.");
+  if (status & JackVersionError)
+    return _("Client's protocol version does not match.");
+  if (status & JackBackendError)
+    return _("Backent error.");
+  if (status & JackClientZombie)
+    return _("Client zombified failure.");
+
+  return Rapicorn::string_format (_("Unknown JACK status: 0x%03x"), status);
 }
 
 void
@@ -437,11 +461,18 @@ bse_pcm_device_jack_list_devices (BseDevice *device)
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
 
+  jack_status_t status;
+  char         *jack_error_msg = nullptr;
+
   map<string, DeviceDetails> devices;
-  if (connect_jack (self))
+  if (connect_jack (self, status))
     {
       devices = query_jack_devices (self);
       disconnect_jack (self);
+    }
+  else
+    {
+      jack_error_msg = g_strdup (jack_status_to_error_msg (status).c_str());
     }
 
   SfiRing *ring = NULL;
@@ -467,7 +498,7 @@ bse_pcm_device_jack_list_devices (BseDevice *device)
     }
 
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, jack_error_msg ? jack_error_msg : g_strdup_printf ("No devices found")));
   return ring;
 }
 
@@ -534,7 +565,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
 {
   BsePcmDeviceJACK *self = BSE_PCM_DEVICE_JACK (device);
 
-  if (!connect_jack (self))
+  jack_status_t status;
+  if (!connect_jack (self, status))
     return Bse::Error::FILE_OPEN_FAILED;
 
   JackPcmHandle *jack = new JackPcmHandle (self->jack_client);
