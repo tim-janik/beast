@@ -85,21 +85,9 @@ private:
   vector< vector<T> > m_channel_buffer;
   std::atomic<int>    m_atomic_read_frame_pos;
   std::atomic<int>    m_atomic_write_frame_pos;
-  std::atomic<int>    m_atomic_dummy;
   uint		      m_channel_buffer_size;	  // = n_frames + 1; the extra frame allows us to
                                                   // see the difference between an empty/full ringbuffer
   uint		      m_n_channels;
-
-  void
-  write_memory_barrier()
-  {
-
-    /*
-     * writing this dummy integer should ensure that all prior writes
-     * are committed to memory
-     */
-    m_atomic_dummy = 0x12345678;
-  }
 public:
   FrameRingBuffer (uint n_frames = 0,
 		   uint n_channels = 1)
@@ -194,12 +182,11 @@ public:
 	fast_copy (write2, &m_channel_buffer[ch][0], frames[ch] + write1);
       }
  
-    // It is important that the data from the previous writes get committed
-    // to memory *before* the index variable is updated. Otherwise, the
-    // consumer thread could be reading invalid data, if the index variable
-    // got written before the rest of the data (when unordered writes are
-    // performed).
-    write_memory_barrier();
+    // It is important that the data from the previous writes get written
+    // to memory *before* the index variable is updated.
+    //
+    // Writing the C++ atomic variable (position) as last step should ensure
+    // correct ordering (also across threads).
 
     m_atomic_write_frame_pos = (wpos + can_write) % m_channel_buffer_size;
     return can_write;
