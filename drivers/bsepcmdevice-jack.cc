@@ -617,9 +617,9 @@ bse_pcm_device_jack_open (BseDevice     *device,
 
       // honor the user defined latency specification
       //
-      // FIXME: should we try to tweak local buffering so that it corresponds
-      // to the user defined latency, or global buffering (including the jack
-      // buffer)? we do the former, since it is easier
+      // the user defined latency is only used to adjust our local buffering
+      // -> it doesn't take into account latencies outside beast, such as the buffering
+      //    jack does, or latencies added by other clients)
       uint user_buffer_frames = BSE_PCM_DEVICE (device)->req_latency_ms * handle->mix_freq / 1000;
       uint buffer_frames = max (min_buffer_frames, user_buffer_frames);
 
