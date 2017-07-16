@@ -315,8 +315,6 @@ extern GType*	 sfi__param_spec_types;
 SfiRec*		sfi_pspec_to_rec	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
 
-#include <rapicorn-core.hh>
-
 namespace Bse { // bsecore
 
 SfiChoiceValues choice_values_from_enum_values (const String &enumname, const ::Rapicorn::Aida::EnumValueVector &evvec);

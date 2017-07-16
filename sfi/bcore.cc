@@ -32,6 +32,7 @@ static_assert (DBL_EPSILON  <= 1E-9, "");
 
 namespace Bse {
 
+// == Internal ==
 namespace Internal {
 
 void

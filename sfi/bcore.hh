@@ -5,6 +5,7 @@
 #include <sfi/cxxaux.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
+#include <rapicorn-core.hh>
 
 namespace Bse {
 
@@ -25,6 +26,7 @@ using   std::map;
 using   std::vector;
 typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
+using   Rapicorn::Aida::EventFd;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
