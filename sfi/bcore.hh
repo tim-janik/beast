@@ -2,7 +2,7 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
-#include <sfi/cxxaux.hh>
+#include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
 #include <rapicorn-core.hh>
