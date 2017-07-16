@@ -32,6 +32,60 @@ static_assert (DBL_EPSILON  <= 1E-9, "");
 
 namespace Bse {
 
+// == Memory Utilities ==
+/**
+ * The fmsb() function returns the position of the most significant bit set in the word @a val.
+ * The least significant bit is position 1 and the most significant position is, for example, 32 or 64.
+ * @returns The position of the most significant bit set is returned, or 0 if no bits were set.
+ */
+int // 0 or 1..64
+fmsb (uint64 val)
+{
+  if (val >> 32)
+    return 32 + fmsb (val >> 32);
+  int nb = 32;
+  do
+    {
+      nb--;
+      if (val & (1U << nb))
+        return nb + 1;  /* 1..32 */
+    }
+  while (nb > 0);
+  return 0; /* none found */
+}
+
+/// Allocate a block of memory aligned to at least @a alignment bytes.
+void*
+aligned_alloc (size_t total_size, size_t alignment, uint8 **free_pointer)
+{
+  assert_return (free_pointer != NULL, NULL);
+  uint8 *aligned_mem = new uint8[total_size];
+  *free_pointer = aligned_mem;
+  if (aligned_mem && (!alignment || 0 == size_t (aligned_mem) % alignment))
+    return aligned_mem;
+  if (aligned_mem)
+    delete[] aligned_mem;
+  aligned_mem = new uint8[total_size + alignment - 1];
+  assert_return (aligned_mem != NULL, NULL);
+  *free_pointer = aligned_mem;
+  if (size_t (aligned_mem) % alignment)
+    aligned_mem += alignment - size_t (aligned_mem) % alignment;
+  return aligned_mem;
+}
+
+/// Release a block of memory allocated through aligned_malloc().
+void
+aligned_free (uint8 **free_pointer)
+{
+  assert_return (free_pointer != NULL);
+  if (*free_pointer)
+    {
+      uint8 *data = *free_pointer;
+      *free_pointer = NULL;
+      delete[] data;
+    }
+}
+
 // == Internal ==
 namespace Internal {
 
