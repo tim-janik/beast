@@ -147,6 +147,25 @@ info (const char *format, const Args &...args)
 #define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
 #endif // BSE_CONVENIENCE
 
+// == Threading ==
+/**
+ * The Spinlock uses low-latency busy spinning to acquire locks.
+ * This class is a thin wrapper around pthread_spin_lock() and related functions.
+ * This class supports static construction.
+ */
+class Spinlock {
+  pthread_spinlock_t spinlock_;
+public:
+  constexpr Spinlock    () : spinlock_ { BSE_SPINLOCK_INITIALIZER } {}
+  void      lock        ()      { pthread_spin_lock (&spinlock_); }
+  void      unlock      ()      { pthread_spin_unlock (&spinlock_); }
+  bool      try_lock    ()      { return 0 == pthread_spin_trylock (&spinlock_); }
+  typedef pthread_spinlock_t* native_handle_type;
+  native_handle_type native_handle() { return &spinlock_; }
+  /*ctor*/  Spinlock    (const Spinlock&) = delete;
+  Spinlock& operator=   (const Spinlock&) = delete;
+};
+
 } // Bse
 
 #endif // __BSE_BCORE_HH__

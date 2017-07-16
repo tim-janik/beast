@@ -332,6 +332,44 @@ if test -r ebeast/package.json.in ; then
 fi
 AM_CONDITIONAL(WITH_NPM, [test "_$with_usable_npm" = "_yes"])
 
+# == pthread_spinlock_t initializer ==
+AC_LANG_PUSH([C])
+saveed_LDFLAGS="$LDFLAGS" ; LDFLAGS="-pthread $LDFLAGS"
+AC_TRY_RUN(
+  [
+    #include <stdio.h>
+    #include <string.h>
+    #include <assert.h>
+    #include <pthread.h>
+    struct Spin { pthread_spinlock_t dummy1, s1, dummy2, s2, dummy3; };
+    int
+    main (int argc, char *argv[])
+    {
+      struct Spin spin;
+      memset (&spin, 0xffffffff, sizeof (spin));
+      if (pthread_spin_init (&spin.s1, 0) == 0 &&
+          pthread_spin_init (&spin.s2, 0) == 0 &&
+	  sizeof (pthread_spinlock_t) == 4 && // current implementation assumption
+	  spin.s1 == spin.s2) // check for location-independent initialization
+	 {
+	   FILE *f = fopen ("conftest_spinlock_initializer", "w");
+	   assert (f);
+	   fprintf (f, "/*{*/ ");
+	   fprintf (f, "0x%04x,", *(int*) &spin.s1);
+	   fprintf (f, " /*}*/\n");
+	   fclose (f);
+	 }
+	 return 0;
+    } ],
+  BSE_SPINLOCK_INITIALIZER=`cat conftest_spinlock_initializer` && rm -f conftest_spinlock_initializer ,
+  BSE_SPINLOCK_INITIALIZER='' )
+LDFLAGS="$saveed_LDFLAGS"
+AC_LANG_POP([C])
+test -z "$BSE_SPINLOCK_INITIALIZER" && {
+  AC_MSG_FAILURE([spinlock initializer check failed to execute])
+}
+AC_SUBST(BSE_SPINLOCK_INITIALIZER)
+
 dnl #
 dnl # Define package requirements.
 dnl #

@@ -43,6 +43,7 @@ libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers) sysconfig.h
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
 libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
+$(sfi_public_headers):		sysconfig.h
 
 #
 # programs to build
