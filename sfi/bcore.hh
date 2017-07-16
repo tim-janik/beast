@@ -44,6 +44,88 @@ inline bool                         debug_enabled        (const char *conditiona
 // == Development Aids ==
 extern inline void breakpoint () BSE_ALWAYS_INLINE;                    ///< Cause a debugging breakpoint, for development only.
 
+// == Binary Lookups ==
+template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
+extern inline std::pair<RandIter,bool>
+binary_lookup_fuzzy (RandIter begin, RandIter end, Cmp cmp_elements, const Arg &arg)
+{
+  RandIter current = end;
+  size_t n_elements = end - begin, offs = 0;
+  const bool want_lookup = case_lookup_or_sibling_or_insertion == 0;
+  // const bool want_sibling = case_lookup_or_sibling_or_insertion == 1;
+  const bool want_insertion_pos = case_lookup_or_sibling_or_insertion > 1;
+  ssize_t cmp = 0;
+  while (offs < n_elements)
+    {
+      size_t i = (offs + n_elements) >> 1;
+      current = begin + i;
+      cmp = cmp_elements (arg, *current);
+      if (cmp == 0)
+        return want_insertion_pos ? std::make_pair (current, true) : std::make_pair (current, /*ignored*/ false);
+      else if (cmp < 0)
+        n_elements = i;
+      else /* (cmp > 0) */
+        offs = i + 1;
+    }
+  /* check is last mismatch, cmp > 0 indicates greater key */
+  return (want_lookup
+          ? std::make_pair (end, /*ignored*/ false)
+          : (want_insertion_pos && cmp > 0)
+          ? std::make_pair (current + 1, false)
+          : std::make_pair (current, false));
+}
+
+/** Perform a binary lookup to find the insertion position for a new element.
+ * Return (end,false) for end-begin==0, or return (position,true) for exact match,
+ * otherwise return (position,false) where position indicates the location for
+ * the key to be inserted (and may equal end).
+ */
+template<typename RandIter, class Cmp, typename Arg>
+extern inline std::pair<RandIter,bool>
+binary_lookup_insertion_pos (RandIter begin, RandIter end, Cmp cmp_elements, const Arg &arg)
+{
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,2> (begin, end, cmp_elements, arg);
+}
+
+/** Perform a binary lookup to yield exact or nearest match.
+ * return end for end-begin==0, otherwise return the exact match element, or,
+ * if there's no such element, return the element last visited, which is pretty
+ * close to an exact match (will be one off into either direction).
+ */
+template<typename RandIter, class Cmp, typename Arg>
+extern inline RandIter
+binary_lookup_sibling (RandIter begin, RandIter end, Cmp cmp_elements, const Arg &arg)
+{
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,1> (begin, end, cmp_elements, arg).first;
+}
+
+/** Perform binary lookup and yield exact match or @a end.
+ * The arguments [ @a begin, @a end [ denote the range used for the lookup,
+ * @a arg is passed along with the current element to the @a cmp_elements
+ * function.
+ */
+template<typename RandIter, class Cmp, typename Arg>
+extern inline RandIter
+binary_lookup (RandIter begin, RandIter end, Cmp cmp_elements, const Arg &arg)
+{
+  /* return end or exact match */
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,0> (begin, end, cmp_elements, arg).first;
+}
+
+/// Comparison function useful to sort lesser items first.
+template<typename Value> static inline int
+compare_lesser (const Value &v1, const Value &v2)
+{
+  return -(v1 < v2) | (v2 < v1);
+}
+
+/// Comparison function useful to sort greater items first.
+template<typename Value> static inline int
+compare_greater (const Value &v1, const Value &v2)
+{
+  return (v1 < v2) | -(v2 < v1);
+}
+
 // == Implementation Details ==
 #if (defined __i386__ || defined __x86_64__)
 inline void breakpoint() { __asm__ __volatile__ ("int $03"); }
