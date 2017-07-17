@@ -169,7 +169,7 @@ main_init_argv0_installpaths (const char *argv0)
   const char *const slash = strrchr (exe, '/');
   if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
     {
-      using namespace Rapicorn;
+      namespace Path = Bse::Path;
       // use source dir relative installpaths for uninstalled executables
       const String program_abspath = Path::abspath (argv0);
       const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
@@ -622,10 +622,9 @@ echo_test_handler (const std::string &msg)
 static void
 bst_init_aida_idl()
 {
-  using namespace Rapicorn::Aida;
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
-  ClientConnectionP connection = Bse::init_server_connection();
+  Bse::Aida::ClientConnectionP connection = Bse::init_server_connection();
   assert (connection != NULL);
   bse_server = Bse::init_server_instance();
   assert (bse_server != NULL);
