@@ -122,6 +122,60 @@ public:
   }
 };
 
+/** Shorthand for std::dynamic_pointer_cast<>(shared_from_this()).
+ * A shared_ptr_cast() takes a std::shared_ptr or a pointer to an @a object that
+ * supports std::enable_shared_from_this::shared_from_this().
+ * Using std::dynamic_pointer_cast(), the shared_ptr passed in (or retrieved via
+ * calling shared_from_this()) is cast into a std::shared_ptr<@a Target>, possibly
+ * resulting in an empty (NULL) std::shared_ptr if the underlying dynamic_cast()
+ * was not successful or if a NULL @a object was passed in.
+ * Note that shared_from_this() can throw a std::bad_weak_ptr exception if
+ * the object has no associated std::shared_ptr (usually during ctor and dtor), in
+ * which case the exception will also be thrown from shared_ptr_cast<Target>().
+ * However a shared_ptr_cast<Target*>() call will not throw and yield an empty
+ * (NULL) std::shared_ptr<@a Target>. This is analogous to dynamic_cast<T@amp> which
+ * throws, versus dynamic_cast<T*> which yields NULL.
+ * @return A std::shared_ptr<@a Target> storing a pointer to @a object or NULL.
+ * @throws std::bad_weak_ptr if shared_from_this() throws, unless the @a Target* form is used.
+ */
+template<class Target, class Source> std::shared_ptr<typename std::remove_pointer<Target>::type>
+shared_ptr_cast (Source *object)
+{
+  if (!object)
+    return NULL;
+  // construct shared_ptr if possible
+  typedef decltype (object->shared_from_this()) ObjectP;
+  ObjectP sptr;
+  if (std::is_pointer<Target>::value)
+    try {
+      sptr = object->shared_from_this();
+    } catch (const std::bad_weak_ptr&) {
+      return NULL;
+    }
+  else // for non-pointers, allow bad_weak_ptr exceptions
+    sptr = object->shared_from_this();
+  // cast into target shared_ptr<> type
+  return std::dynamic_pointer_cast<typename std::remove_pointer<Target>::type> (sptr);
+}
+/// See shared_ptr_cast(Source*).
+template<class Target, class Source> const std::shared_ptr<typename std::remove_pointer<Target>::type>
+shared_ptr_cast (const Source *object)
+{
+  return shared_ptr_cast<Target> (const_cast<Source*> (object));
+}
+/// See shared_ptr_cast(Source*).
+template<class Target, class Source> std::shared_ptr<typename std::remove_pointer<Target>::type>
+shared_ptr_cast (std::shared_ptr<Source> &sptr)
+{
+  return std::dynamic_pointer_cast<typename std::remove_pointer<Target>::type> (sptr);
+}
+/// See shared_ptr_cast(Source*).
+template<class Target, class Source> const std::shared_ptr<typename std::remove_pointer<Target>::type>
+shared_ptr_cast (const std::shared_ptr<Source> &sptr)
+{
+  return shared_ptr_cast<Target> (const_cast<std::shared_ptr<Source>&> (sptr));
+}
+
 } // Bse
 
 #endif // __BSE_CXXAUX_HH__
