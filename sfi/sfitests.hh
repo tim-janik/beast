@@ -13,12 +13,4 @@ sfi_init_test (int *argcp, char **argv)
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
 }
 
-/// Issue a printf-like message and abort the program with a breakpoint.
-template<class ...Args> void
-test_error (const char *format, const Args &...args)
-{
-  Bse::info ("error: %s", Bse::string_format (format, args...));
-  Bse::breakpoint();
-}
-
 #endif /* __SFI_TESTS_H__ */
