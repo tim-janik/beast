@@ -84,9 +84,9 @@ class AidaGlibSourceImpl : public AidaGlibSource {
   static int                 glib_check    (GSource *src)                     { return self_ (src)->check(); }
   static int                 glib_dispatch (GSource *src, GSourceFunc, void*) { return self_ (src)->dispatch(); }
   static void                glib_finalize (GSource *src)                     { self_ (src)->~AidaGlibSourceImpl(); }
-  Rapicorn::Aida::BaseConnection *connection_;
+  Aida::BaseConnection      *connection_;
   GPollFD                         pfd_;
-  AidaGlibSourceImpl (Rapicorn::Aida::BaseConnection *connection) :
+  AidaGlibSourceImpl (Aida::BaseConnection *connection) :
     connection_ (connection), pfd_ { -1, 0, 0 }
   {
     pfd_.fd = connection_->notify_fd();
@@ -116,7 +116,7 @@ class AidaGlibSourceImpl : public AidaGlibSource {
   }
 public:
   static AidaGlibSourceImpl*
-  create (Rapicorn::Aida::BaseConnection *connection)
+  create (Aida::BaseConnection *connection)
   {
     assert_return (connection != NULL, NULL);
     static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
@@ -126,31 +126,31 @@ public:
 };
 
 AidaGlibSource*
-AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
+AidaGlibSource::create (Aida::BaseConnection *connection)
 {
   return AidaGlibSourceImpl::create (connection);
 }
 
-static Rapicorn::Aida::ClientConnectionP *client_connection = NULL;
+static Aida::ClientConnectionP *client_connection = NULL;
 
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
 ServerHandle
 init_server_instance () // bse.hh
 {
   ServerH server;
-  Rapicorn::Aida::ClientConnectionP connection = init_server_connection();
+  Aida::ClientConnectionP connection = init_server_connection();
   if (connection)
     server = connection->remote_origin<ServerH>();
   return server;
 }
 
 /// Retrieve the ClientConnection used for RPC communication with the Bse thread.
-Rapicorn::Aida::ClientConnectionP
+Aida::ClientConnectionP
 init_server_connection () // bse.hh
 {
   if (!client_connection)
     {
-      Rapicorn::Aida::ClientConnectionP connection = Rapicorn::Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+      Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
       ServerH bseconnection_server_handle;
       if (connection)
         bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
@@ -159,7 +159,7 @@ init_server_connection () // bse.hh
       assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER, NULL);
       assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER) == bseconnection_server_handle, NULL);
       assert_return (client_connection == NULL, NULL);
-      client_connection = new Rapicorn::Aida::ClientConnectionP (connection);
+      client_connection = new Aida::ClientConnectionP (connection);
     }
   return *client_connection;
 }

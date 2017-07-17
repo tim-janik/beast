@@ -17,7 +17,6 @@
 #include <signal.h>
 
 using Bse::Flac1Handle;
-namespace Aida = Bse::Aida;
 
 /* --- macros --- */
 #define parse_or_return sfi_scanner_parse_or_return
@@ -629,7 +628,7 @@ item_link_resolved (gpointer     data,
 template<typename ValueType = std::string> ValueType
 aux_vector_get (const std::vector<std::string> &auxvector, const std::string &field, const std::string &key, const std::string &fallback = "")
 {
-  return Bse::string_to_type<ValueType> (Rapicorn::Aida::aux_vector_find (auxvector, field, key, fallback));
+  return Bse::string_to_type<ValueType> (Aida::aux_vector_find (auxvector, field, key, fallback));
 }
 
 static bool
@@ -773,7 +772,7 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
       GTokenType expected_token = storage_parse_property_value (self, identifier, any, auxvector);
       if (expected_token != G_TOKEN_NONE)
         return expected_token;
-      if (Rapicorn::Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
+      if (Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
         {
           item->__aida_set__ (identifier, any);
         }
@@ -1260,7 +1259,7 @@ store_item_properties (BseItem    *item,
 static void
 storage_store_property_value (BseStorage *self, const std::string &property_name, Bse::Any any, const std::vector<std::string> &aux_data)
 {
-  if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
+  if (Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
     {
       const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
       const std::string dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
@@ -1302,7 +1301,7 @@ store_cxx_item_properties (BseItem *bitem, BseStorage *self)
   Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
   const std::vector<std::string> auxvector = item->__aida_aux_data__();
   for (const std::string &pname : item->__aida_dir__())
-    if (Rapicorn::Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
+    if (Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
       storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
 }
 

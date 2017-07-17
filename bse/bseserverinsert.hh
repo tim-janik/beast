@@ -23,7 +23,7 @@ class_scope:Object:
   ObjectImplP            as ()
   {
     typedef typename ObjectImplP::element_type ObjectImplT;
-    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
     ObjectImplT *impl = this ? dynamic_cast<ObjectImplT*> (this) : NULL;
     return impl ? Rapicorn::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }

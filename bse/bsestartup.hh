@@ -29,7 +29,7 @@ void		objects_debug_leaks ();
 /// A GSource implementation to attach an Aida::BaseConnection to a Glib main loop.
 class AidaGlibSource : public GSource {
 public:
-  static AidaGlibSource* create (Rapicorn::Aida::BaseConnection *connection);
+  static AidaGlibSource* create (Aida::BaseConnection *connection);
 };
 
 } // Bse

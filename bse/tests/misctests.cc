@@ -146,8 +146,7 @@ main (gint   argc,
       Bse::MusicalTuning musical_tuning = Bse::MusicalTuning (j);
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
-      TPASS ("Tuning System: %s\n",
-             Rapicorn::Aida::enum_info<Bse::MusicalTuning>().find_value (musical_tuning).ident);
+      TPASS ("Tuning System: %s\n", Aida::enum_info<Bse::MusicalTuning>().find_value (musical_tuning).ident);
     }
 
   return 0;

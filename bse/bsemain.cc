@@ -21,7 +21,6 @@
 
 using namespace Bse;
 namespace Test = Rapicorn::Test;
-namespace Aida = Rapicorn::Aida;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
