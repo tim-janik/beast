@@ -29,6 +29,14 @@ using   Aida::Any;
 using   Aida::EventFd;
 using   Rapicorn::DataKey;
 using   Rapicorn::DataListContainer;
+using   Rapicorn::void_t;
+using   Rapicorn::Blob;
+using   Rapicorn::Res;
+using   Rapicorn::TaskStatus;
+using   Rapicorn::ThreadInfo;
+using   Rapicorn::cpu_info;
+using   Rapicorn::AsyncBlockingQueue;
+namespace ThisThread = Rapicorn::ThisThread;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
