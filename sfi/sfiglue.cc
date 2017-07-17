@@ -46,7 +46,7 @@ sfi_glue_fetch_context (const gchar *floc)
   return context;
 }
 
-class RingPtrDataKey : public Rapicorn::DataKey<SfiRing*> {
+class RingPtrDataKey : public Bse::DataKey<SfiRing*> {
   virtual void destroy (SfiRing *ring) override
   {
     if (ring)

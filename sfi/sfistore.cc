@@ -587,13 +587,13 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 	    {
 	      if (G_VALUE_TYPE (&pvalue) != G_VALUE_TYPE (value))
 		sfi_rstore_warn (rstore,
-                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
-                                                          pspec->name, g_type_name (G_VALUE_TYPE (value)),
-                                                          g_type_name (G_VALUE_TYPE (&pvalue))));
+                                 Bse::string_format ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
+                                                     pspec->name, g_type_name (G_VALUE_TYPE (value)),
+                                                     g_type_name (G_VALUE_TYPE (&pvalue))));
 	      else
 		sfi_rstore_warn (rstore,
-                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s'",
-                                                          pspec->name, g_type_name (G_VALUE_TYPE (value))));
+                                 Bse::string_format ("fixing up value for \"%s\" of type `%s'",
+                                                     pspec->name, g_type_name (G_VALUE_TYPE (value))));
 	    }
 	}
       else
@@ -770,8 +770,8 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
               return G_TOKEN_ERROR;
             }
           expected_token = sfi_rstore_warn_skip (rstore,
-                                                 Rapicorn::string_format ("unknown identifier: %s",
-                                                                          scanner->next_value.v_identifier));
+                                                 Bse::string_format ("unknown identifier: %s",
+                                                                     scanner->next_value.v_identifier));
         }
       /* bail out on errors */
       if (expected_token != G_TOKEN_NONE)

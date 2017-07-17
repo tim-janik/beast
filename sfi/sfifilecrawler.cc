@@ -556,7 +556,7 @@ sfi_path_get_filename (const gchar  *filename,
  *
  * This is the AND version of g_file_test(). That is, all file tests
  * specified in the @a test bits have to succed for this function to
- * return TRUE. This function is implemented via Rapicorn::Path::check(),
+ * return TRUE. This function is implemented via Bse::Path::check(),
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
  * Here is the list of possible GFileTest flags:

@@ -45,7 +45,7 @@ void            sfi_wstore_puts               (SfiWStore      *wstore,
                                                const gchar    *string);
 void            sfi_wstore_putc               (SfiWStore      *wstore,
                                                gchar           character);
-#define         sfi_wstore_printf(wstore, ...)  sfi_wstore_puts (wstore, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define         sfi_wstore_printf(wstore, ...)  sfi_wstore_puts (wstore, Bse::string_format (__VA_ARGS__).c_str())
 void            sfi_wstore_putf               (SfiWStore      *wstore,
                                                gfloat          vfloat);
 void            sfi_wstore_putd               (SfiWStore      *wstore,
