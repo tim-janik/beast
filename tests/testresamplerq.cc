@@ -13,7 +13,7 @@
 using namespace Bse;
 
 using Bse::Resampler::Resampler2;
-using Rapicorn::AlignedArray;
+using Bse::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
