@@ -6,6 +6,11 @@
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 
+// == Compatibility Imports ==
+namespace Bse {
+using Rapicorn::ThreadInfo;
+} // Bse
+
 /* --- prototype --- */
 static GHashTable*	glue_gc_hash_table_new	(void);
 
