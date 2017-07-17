@@ -54,6 +54,7 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_CONST               __attribute__ ((__const__))
 #define BSE_CONSTRUCTOR	        __attribute__ ((constructor,used))      // gcc-3.3 also needs "used" to emit code
 #define BSE_DEPRECATED          __attribute__ ((__deprecated__))
+#define BSE_FORMAT(fx)          __attribute__ ((__format_arg__ (fx)))
 #define BSE_MALLOC              __attribute__ ((__malloc__))
 #define BSE_MAY_ALIAS           __attribute__ ((may_alias))
 #define BSE_NOINLINE	        __attribute__ ((noinline))
