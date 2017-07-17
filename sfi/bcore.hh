@@ -8,6 +8,7 @@
 #include <rapicorn-core.hh>
 
 namespace Bse {
+namespace Aida = Rapicorn::Aida;
 
 // == type aliases ==
 typedef uint8_t         uint8;          ///< An 8-bit unsigned integer.
