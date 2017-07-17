@@ -660,7 +660,9 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
           any.set_enum (einfo, v);
         break;
       }
-    default:                    Bse::fatal ("unhandled Any: %s; string=%s", any.repr(), string);
+    default:
+      Bse::warn ("unhandled Any: %s; string=%s", any.repr(), string);
+      return false;
     }
   return true;
 }

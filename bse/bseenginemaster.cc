@@ -1200,7 +1200,7 @@ MasterThread::MasterThread (const std::function<void()> &caller_wakeup) :
 {
   assert_return (caller_wakeup_ != NULL);
   if (event_fd_.open() != 0)
-    fatal ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
+    warning ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
 }
 
 static std::atomic<bool> master_thread_running { false };
@@ -1278,7 +1278,7 @@ MasterThread::start (const std::function<void()> &caller_wakeup)
   master_thread_singleton = mthread;
   assert_return (master_thread_running == false);
   if (std::atexit (reap_master_thread) != 0)
-    fatal ("BSE: failed to install master thread reaper");
+    warning ("BSE: failed to install master thread reaper");
   master_thread_running = true;
   mthread->thread_ = std::thread (&MasterThread::master_thread, mthread);
   BseInternal::engine_start_slaves();

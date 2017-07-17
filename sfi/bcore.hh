@@ -35,7 +35,7 @@ template<class... Args> String      string_format        (const char *format, co
 template<class... Args> String      string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class... Args> void        printout             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class... Args> void        printerr             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
-template<class ...Args> void        fatal                (const char *format, const Args &...args) BSE_NORETURN;
+template<class ...Args> void        fatal_error          (const char *format, const Args &...args) BSE_NORETURN;
 template<class ...Args> void        warning              (const char *format, const Args &...args);
 template<class ...Args> void        warn                 (const char *format, const Args &...args);
 template<class ...Args> void        info                 (const char *format, const Args &...args);
@@ -186,9 +186,12 @@ debug_enabled (const char *conditional)
   return false;
 }
 
-/// Issue a printf-like message and abort the program, this function will not return.
+/** Issue a printf-like message and abort the program, this function will not return.
+ * Avoid using this in library code, aborting may take precious user data with it,
+ * library code should instead use info() or assert_return().
+ */
 template<class ...Args> void BSE_NORETURN
-fatal (const char *format, const Args &...args)
+fatal_error (const char *format, const Args &...args)
 {
   Internal::diagnostic ('F', string_format (format, args...));
   Internal::force_abort();

@@ -566,7 +566,7 @@ Sequencer::_init_threaded ()
   assert_return (sequencer_thread_running == false);
   singleton_ = new Sequencer();
   if (std::atexit (Sequencer::reap_thread) != 0)
-    fatal ("BSE: failed to install sequencer thread reaper");
+    warning ("BSE: failed to install sequencer thread reaper");
   sequencer_thread_running = true;
   singleton_->thread_ = std::thread (&Sequencer::sequencer_thread, singleton_); // FIXME: join on exit
 }
