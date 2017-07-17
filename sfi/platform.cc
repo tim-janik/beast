@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "platform.hh"
+#include "path.hh"
 #include <unistd.h>
 #if defined __APPLE__
 #include <mach-o/dyld.h>        // _NSGetExecutablePath
@@ -65,5 +66,51 @@ executable_name()
   } ();
   return cached_executable_name;
 }
+
+static String cached_program_alias;
+
+String
+program_alias ()
+{
+  return cached_program_alias.empty() ? executable_name() : cached_program_alias;
+}
+
+void
+program_alias_init (String customname)
+{
+  assert_return (cached_program_alias.empty() == true);
+  cached_program_alias = customname;
+}
+
+static String cached_application_name;
+
+String
+application_name ()
+{
+  return cached_application_name.empty() ? program_alias() : cached_application_name;
+}
+
+void
+application_name_init (String desktopname)
+{
+  assert_return (cached_application_name.empty() == true);
+  cached_application_name = desktopname;
+}
+
+String
+program_cwd ()
+{
+  static String cached_program_cwd = Path::cwd();
+  return cached_program_cwd;
+}
+
+struct EarlyStartup102 {
+  EarlyStartup102()
+  {
+    program_cwd(); // initialize early, i.e. before main() changes cwd
+  }
+};
+
+static EarlyStartup102 _early_startup_102 __attribute__ ((init_priority (102)));
 
 } // Bse
