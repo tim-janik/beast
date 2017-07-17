@@ -5,7 +5,6 @@
 #include <sfi/sfi.hh>
 #include <string.h>
 #include "ladspa.hh"
-using namespace Rapicorn;
 
 #define LDEBUG(...)     Bse::debug ("ladspa", __VA_ARGS__)
 

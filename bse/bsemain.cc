@@ -18,7 +18,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
-using namespace Rapicorn;
+
+using namespace Bse;
+namespace Test = Rapicorn::Test;
+namespace Aida = Rapicorn::Aida;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
@@ -558,7 +561,7 @@ init_aida_idl ()
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
   Aida::ServerConnectionP bseserver_connection =
     Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
-                                                    shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
+                                                    Bse::shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
   assert_return (bseserver_connection != NULL);
   static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (bseserver_connection); // keep connection alive for entire runtime
   (void) static_connection;

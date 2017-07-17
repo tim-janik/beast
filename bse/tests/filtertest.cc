@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <complex>
-using namespace Rapicorn;
+
+using namespace Bse;
+using namespace Rapicorn::Test;
 using std::max;
 using std::min;
 
@@ -531,7 +533,7 @@ random_filter_tests ()
   double pbe1;
   FilterSetup filters[100000] = { { 0, }, };
   uint filter_index, skip_count = 6;
-  if (!Test::slow())
+  if (!slow())
     n_orders = 9;
 #define MAKE_FILTER(frequest, filter_type) do                                   \
   {                                                                             \
@@ -673,7 +675,7 @@ test_filter_catalog ()
   /* include predesigned filters */
 #include "filtercatalog.cc"
   uint skip_count = 0, tick_count = 3;
-  if (!Test::slow())
+  if (!slow())
     {
       tick_count = 1;
       skip_count = 17;

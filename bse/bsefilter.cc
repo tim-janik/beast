@@ -1,7 +1,8 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "bsefilter.hh"
 #include <sfi/sfi.hh>
-using namespace Rapicorn;
+
+using namespace Bse;
 
 const gchar*
 bse_iir_filter_kind_string (BseIIRFilterKind fkind)

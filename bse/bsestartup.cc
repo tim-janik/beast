@@ -150,8 +150,7 @@ init_server_connection () // bse.hh
 {
   if (!client_connection)
     {
-      using namespace Rapicorn::Aida;
-      ClientConnectionP connection = ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+      Rapicorn::Aida::ClientConnectionP connection = Rapicorn::Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
       ServerH bseconnection_server_handle;
       if (connection)
         bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
