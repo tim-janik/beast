@@ -1028,8 +1028,21 @@ g_scanner_new64 (const GScannerConfig *config_templ)
 
 
 #include "../config/config.h"
+#include <rapicorn-core.hh>
 
 namespace Bse {
+
+void
+assertion_failed (const char *file, uint line, const char *expr)
+{
+  return Rapicorn::Aida::assertion_failed (file, line, expr);
+}
+
+void
+assertion_failed_hook (const std::function<void()> &hook)
+{
+  return Rapicorn::Aida::assertion_failed_hook (hook);
+}
 
 // == BSE_INSTALLPATH ==
 static String installpath_topdir;
