@@ -69,7 +69,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_DIRECTION:
-      bst_scrollgraph_resize_values (self, Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (value)));
+      bst_scrollgraph_resize_values (self, Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (value)));
       gtk_widget_queue_resize (widget);
       break;
     case PROP_BOOST:
@@ -77,7 +77,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_WINDOW_SIZE:
-      self->window_size = int64 (Rapicorn::Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value)));
+      self->window_size = int64 (Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value)));
       bst_scrollgraph_resize_values (self, self->direction);
       gtk_widget_queue_resize (widget);
       break;
@@ -100,13 +100,13 @@ bst_scrollgraph_get_property (GObject     *object,
       sfi_value_set_bool (value, self->flip);
       break;
     case PROP_DIRECTION:
-      sfi_value_set_choice (value, Rapicorn::Aida::enum_value_to_string<Bst::Direction> (self->direction).c_str());
+      sfi_value_set_choice (value, Aida::enum_value_to_string<Bst::Direction> (self->direction).c_str());
       break;
     case PROP_BOOST:
       sfi_value_set_real (value, self->boost);
       break;
     case PROP_WINDOW_SIZE:
-      sfi_value_set_choice (value, Rapicorn::Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
+      sfi_value_set_choice (value, Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

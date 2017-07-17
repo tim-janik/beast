@@ -624,7 +624,7 @@ bst_init_aida_idl()
 {
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
-  Bse::Aida::ClientConnectionP connection = Bse::init_server_connection();
+  Aida::ClientConnectionP connection = Bse::init_server_connection();
   assert (connection != NULL);
   bse_server = Bse::init_server_instance();
   assert (bse_server != NULL);

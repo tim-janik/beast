@@ -45,7 +45,7 @@ pattern_controller_vraster_notify (gpointer             notify_data,
     { int64 (NoteLength::NOTE_LENGTH_128T),        8 },
   };
   int vraster = 384;
-  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value)));
+  const int64 vsval = int64 (Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value)));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
@@ -82,7 +82,7 @@ pattern_controller_row_shading_notify (gpointer  notify_data,
     { int64 (RowShading::ROW_SHADING_6_12),     12, 6 },
   };
   int r1 = 0, r2 = 0, r3 = 0, r4 = 0;
-  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<RowShading> (sfi_value_get_choice (&self->row_shading->value)));
+  const int64 vsval = int64 (Aida::enum_value_from_string<RowShading> (sfi_value_get_choice (&self->row_shading->value)));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
@@ -271,7 +271,7 @@ pattern_controller_key_press (BstPatternController *self,
         case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
           {
-            Bst::Direction d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
+            Bst::Direction d = Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
             if (d == Bst::Direction::DIR_LEFT || d == Bst::Direction::DIR_RIGHT)
               focus_col += (d == Bst::Direction::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
             else /* UP/DOWN */
