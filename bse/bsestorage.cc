@@ -1817,8 +1817,8 @@ BseStorage::Blob::~Blob()
 static std::string
 bse_storage_blob_tmp_dir()
 {
-  std::string dirname = Rapicorn::Path::join (Rapicorn::Path::cache_home(), "libbse");
-  if (!Rapicorn::Path::check (dirname, "d"))
+  std::string dirname = Bse::Path::join (Bse::Path::cache_home(), "libbse");
+  if (!Bse::Path::check (dirname, "d"))
     g_mkdir_with_parents (dirname.c_str(), 0755);
   return dirname;
 }

@@ -23,8 +23,6 @@
 
 namespace Bse {
 
-using Rapicorn::ThreadInfo; // FIXME
-
 Sequencer              *Sequencer::singleton_ = NULL;
 std::mutex              Sequencer::sequencer_mutex_;
 static ThreadInfo      *sequencer_thread_self = NULL;
@@ -333,7 +331,7 @@ static std::atomic<bool> sequencer_thread_running { false };
 void
 Sequencer::sequencer_thread ()
 {
-  Bse::TaskRegistry::add ("Sequencer", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("Sequencer", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
   sequencer_thread_self = &ThreadInfo::self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
@@ -390,7 +388,7 @@ Sequencer::sequencer_thread ()
   while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 
 bool

@@ -11,7 +11,7 @@ namespace Bse {
 /// The task registry keeps track of runtime threads for profiling and statistical purposes.
 class TaskRegistry {            // FIXME: move this to IDL
 public:
-  typedef std::vector<Rapicorn::TaskStatus> List;
+  typedef std::vector<Bse::TaskStatus> List;
   static void  add     (const std::string &name, int pid,
                         int tid = -1);  ///< Add process/thread to registry for runtime profiling.
   static bool  remove  (int tid);       ///< Remove process/thread based on thread_id.

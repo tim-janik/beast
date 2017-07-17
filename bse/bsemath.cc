@@ -8,7 +8,7 @@
 std::string
 bse_string_from_double (long double value)
 {
-  std::string str = Rapicorn::string_format ("%.1270f", value);
+  std::string str = Bse::string_format ("%.1270f", value);
   const char *s = &str[str.size()];
   while (s > &str[0] && s[-1] == '0' && s[-2] != '.')
     s--;
@@ -88,7 +88,7 @@ bse_poly_str1 (uint degree, double *a, const std::string &uvar)
 	}
       s += var;
       if (i > 1)
-        s += Rapicorn::string_format ("**%u", i);
+        s += Bse::string_format ("**%u", i);
       need_plus = true;
     }
   s += ')';

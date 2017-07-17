@@ -25,7 +25,7 @@ py_init_async (const StringVector &args)
         break;
       }
   if (pyargc && !pyargv)
-    PyErr_Warn (PyExc_Warning, Rapicorn::string_format ("%s: failed to readout sys.argv", __func__).c_str());
+    PyErr_Warn (PyExc_Warning, Bse::string_format ("%s: failed to readout sys.argv", __func__).c_str());
   if (PyErr_Occurred())
     return false; // indicate exception
   std::vector<String> sargv;
@@ -34,7 +34,7 @@ py_init_async (const StringVector &args)
   for (size_t i = pyargv ? 0 : pyargc; i < pyargc; i++)
     sargv.push_back (PyString_AsString (PyList_GetItem (pyargv, i)));
   if (sargv.size() == 0)
-    sargv.push_back (Rapicorn::program_name());
+    sargv.push_back (Bse::executable_name());
   char *cargv[sargv.size() + 1];
   for (size_t i = 0; i < sargv.size(); i++)
     cargv[i] = const_cast<char*> (sargv[i].c_str());

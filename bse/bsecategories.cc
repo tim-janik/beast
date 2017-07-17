@@ -153,11 +153,11 @@ bse_categories_register (const std::string &category, const char *i18n_category,
       title = title ? title + 1 : name;
       while (end > name && end[-1] == '/')
         --end;
-      Rapicorn::StringVector tags;
+      Bse::StringVector tags;
       if (name < end)
-        tags = Rapicorn::string_split (std::string (name, end - name), "/");
+        tags = Bse::string_split (std::string (name, end - name), "/");
       Bse::ServerImpl::register_source_module (centry->otype, title,
-                                               Rapicorn::string_join (";", tags),
+                                               Bse::string_join (";", tags),
                                                pixstream);
     }
 }

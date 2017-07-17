@@ -1175,7 +1175,7 @@ bse_module_new_virtual (guint       n_iostreams,
 static void
 slave (gpointer data)
 {
-  Bse::TaskRegistry::add ("DSP Slave", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("DSP Slave", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
   gboolean run = TRUE;
   while (run)
     {
@@ -1190,7 +1190,7 @@ slave (gpointer data)
       bse_trans_commit (trans);
       g_usleep (1000*500);
     }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 /* --- setup & trigger --- */
 static bool     bse_engine_initialized = false;

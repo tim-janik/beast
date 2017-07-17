@@ -43,7 +43,7 @@ static TaskRegistry::List task_registry_tasks_;
 void
 TaskRegistry::add (const std::string &name, int pid, int tid)
 {
-  Rapicorn::TaskStatus task (pid, tid);
+  Bse::TaskStatus task (pid, tid);
   task.name = name;
   task.update();
   std::lock_guard<std::mutex> locker (task_registry_mutex_);
