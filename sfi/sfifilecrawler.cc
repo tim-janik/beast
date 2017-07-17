@@ -583,7 +583,7 @@ g_file_test_all (const gchar  *file,
     strcat (buffer, "d");
   if (test & G_FILE_TEST_IS_EXECUTABLE)
     strcat (buffer, "x");
-  return Rapicorn::Path::check (file, buffer);
+  return Bse::Path::check (file, buffer);
 }
 
 #include <pwd.h>
