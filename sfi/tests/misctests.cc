@@ -156,11 +156,11 @@ test_time (void)
   t = sfi_time_system ();
   if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
     {
-      TACK ();
+      TOK ();
       t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
     }
   else
-    TICK ();
+    TOK ();
   t /= SFI_USEC_FACTOR;
   t *= SFI_USEC_FACTOR;
   str = sfi_time_to_string (t);
@@ -179,7 +179,7 @@ test_time (void)
     {
       t = sfi_time_from_string_err (time_strings[i], &error);
       if (!error)
-	TICK ();
+	TOK ();
       else
 	printout ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
