@@ -253,7 +253,7 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   // debugging aids:
   if (0)
-    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Rapicorn::ThisThread::process_pid());
+    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Bse::ThisThread::process_pid());
 }
 
 // node.js registration
