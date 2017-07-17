@@ -3,50 +3,80 @@
 #define __BSE_BCORE_HH__
 
 #include <sfi/cxxaux.hh>
-#include <rapicorn-core.hh>
+#include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
 
 namespace Bse {
-using namespace Rapicorn;
-using Rapicorn::string_format;
-using Rapicorn::printout;
-using Rapicorn::printerr;
-namespace Path = Rapicorn::Path;
 
-// == Path Name Macros ==
-#ifdef  _WIN32 // includes _WIN64
-#undef  BSE_UNIX_PATHS                                                  ///< Undefined on _WIN32 and _WIN64, defined on Unix.
-#define BSE_DOS_PATHS                1                                  ///< Undefined on Unix-like systems, defined on _WIN32 and _WIN64.
-#else   // !_WIN32
-#define BSE_UNIX_PATHS               1                                  ///< Undefined on _WIN32 and _WIN64, defined on Unix.
-#undef  BSE_DOS_PATHS                                                   ///< Undefined on Unix-like systems, defined on _WIN32 and _WIN64.
-#endif  // !_WIN32
-#define BSE_DIR_SEPARATOR               RAPICORN_DIR_SEPARATOR          ///< A '/' on Unix-like systems, a '\\' on _WIN32.
-#define BSE_DIR_SEPARATOR_S             RAPICORN_DIR_SEPARATOR_S        ///< A "/" on Unix-like systems, a "\\" on _WIN32.
-#define BSE_SEARCHPATH_SEPARATOR        RAPICORN_SEARCHPATH_SEPARATOR   ///< A ':' on Unix-like systems, a ';' on _WIN32.
-#define BSE_SEARCHPATH_SEPARATOR_S      RAPICORN_SEARCHPATH_SEPARATOR_S ///< A ":" on Unix-like systems, a ";" on _WIN32.
-#define BSE_IS_ABSPATH(p)               RAPICORN_IS_ABSPATH (p)         ///< Checks root directory path component, plus drive letter on _WIN32.
+// == type aliases ==
+typedef uint8_t         uint8;          ///< An 8-bit unsigned integer.
+typedef uint16_t        uint16;         ///< A 16-bit unsigned integer.
+typedef uint32_t        uint32;         ///< A 32-bit unsigned integer.
+typedef uint64_t        uint64;         ///< A 64-bit unsigned integer, use PRI*64 in format strings.
+typedef int8_t          int8;           ///< An 8-bit signed integer.
+typedef int16_t         int16;          ///< A 16-bit signed integer.
+typedef int32_t         int32;          ///< A 32-bit signed integer.
+typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*64 in format strings.
+typedef uint32_t        unichar;        ///< A 32-bit unsigned integer used for Unicode characters.
+static_assert (sizeof (uint8) == 1 && sizeof (uint16) == 2 && sizeof (uint32) == 4 && sizeof (uint64) == 8, "");
+static_assert (sizeof (int8)  == 1 && sizeof (int16)  == 2 && sizeof (int32)  == 4 && sizeof (int64)  == 8, "");
+static_assert (sizeof (int) == 4 && sizeof (uint) == 4 && sizeof (unichar) == 4, "");
+using   std::map;
+using   std::vector;
+typedef std::string String;             ///< Convenience alias for std::string.
+typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 
 // == Diagnostics ==
-template<class ...Args> void        fatal             (const char *format, const Args &...args) RAPICORN_NORETURN;
-template<class ...Args> void        warning           (const char *format, const Args &...args);
-template<class ...Args> void        warn              (const char *format, const Args &...args);
-template<class ...Args> void        info              (const char *format, const Args &...args);
-template<class ...Args> inline void dump              (const char *conditional, const char *format, const Args &...args) RAPICORN_ALWAYS_INLINE;
-template<class ...Args> inline void debug             (const char *conditional, const char *format, const Args &...args) RAPICORN_ALWAYS_INLINE;
-inline bool                         debug_enabled     (const char *conditional) RAPICORN_ALWAYS_INLINE BSE_PURE;
+template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class... Args> String      string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class... Args> void        printout             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class... Args> void        printerr             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class ...Args> void        fatal                (const char *format, const Args &...args) BSE_NORETURN;
+template<class ...Args> void        warning              (const char *format, const Args &...args);
+template<class ...Args> void        warn                 (const char *format, const Args &...args);
+template<class ...Args> void        info                 (const char *format, const Args &...args);
+template<class ...Args> inline void dump                 (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
+template<class ...Args> inline void debug                (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
+inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
 
-// == Internal Implementation Details ==
+// == Development Aids ==
+extern inline void breakpoint () BSE_ALWAYS_INLINE;                    ///< Cause a debugging breakpoint, for development only.
+
+// == Implementation Details ==
+#if (defined __i386__ || defined __x86_64__)
+inline void breakpoint() { __asm__ __volatile__ ("int $03"); }
+#elif defined __alpha__ && !defined __osf__
+inline void breakpoint() { __asm__ __volatile__ ("bpt"); }
+#else   // !__i386__ && !__alpha__
+inline void breakpoint() { __builtin_trap(); }
+#endif
+
 namespace Internal {
 extern bool                         debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                                debug_key_enabled (const char *conditional) BSE_PURE;
 void                                diagnostic        (char kind, const std::string &message);
 void                                debug_diagnostic  (const char *prefix, const std::string &message);
-void                                force_abort       () RAPICORN_NORETURN;
+void                                force_abort       () BSE_NORETURN;
+void                                printout_string   (const String &string);
+void                                printerr_string   (const String &string);
 } // Internal
 
+/// Print a message on stdout (and flush stdout) ala printf(), using the POSIX/C locale.
+template<class... Args> void
+printout (const char *format, const Args &...args)
+{
+  Internal::printout_string (string_format (format, args...));
+}
+
+/// Print a message on stderr (and flush stderr) ala printf(), using the POSIX/C locale.
+template<class... Args> void
+printerr (const char *format, const Args &...args)
+{
+  Internal::printerr_string (string_format (format, args...));
+}
+
 /// Issue a printf-like message if @a conditional is enabled by $BSE_DEBUG.
-template<class ...Args> inline void RAPICORN_ALWAYS_INLINE
+template<class ...Args> inline void BSE_ALWAYS_INLINE
 dump (const char *conditional, const char *format, const Args &...args)
 {
   if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
@@ -54,7 +84,7 @@ dump (const char *conditional, const char *format, const Args &...args)
 }
 
 /// Issue a printf-like debugging message if @a conditional is enabled by $BSE_DEBUG.
-template<class ...Args> inline void RAPICORN_ALWAYS_INLINE
+template<class ...Args> inline void BSE_ALWAYS_INLINE
 debug (const char *conditional, const char *format, const Args &...args)
 {
   if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
@@ -62,7 +92,7 @@ debug (const char *conditional, const char *format, const Args &...args)
 }
 
 /// Check if @a conditional is enabled by $BSE_DEBUG.
-inline bool RAPICORN_ALWAYS_INLINE BSE_PURE
+inline bool BSE_ALWAYS_INLINE BSE_PURE
 debug_enabled (const char *conditional)
 {
   if (BSE_UNLIKELY (Internal::debug_any_enabled))
@@ -71,7 +101,7 @@ debug_enabled (const char *conditional)
 }
 
 /// Issue a printf-like message and abort the program, this function will not return.
-template<class ...Args> void RAPICORN_NORETURN
+template<class ...Args> void BSE_NORETURN
 fatal (const char *format, const Args &...args)
 {
   Internal::diagnostic ('F', string_format (format, args...));
@@ -79,21 +109,21 @@ fatal (const char *format, const Args &...args)
 }
 
 /// Issue a printf-like warning message.
-template<class ...Args> void RAPICORN_NORETURN
+template<class ...Args> void BSE_NORETURN
 warn (const char *format, const Args &...args)
 {
   Internal::diagnostic ('W', string_format (format, args...));
 }
 
 /// Issue a printf-like warning message.
-template<class ...Args> void RAPICORN_NORETURN
+template<class ...Args> void BSE_NORETURN
 warning (const char *format, const Args &...args)
 {
   Internal::diagnostic ('W', string_format (format, args...));
 }
 
 /// Issue an informative printf-like message.
-template<class ...Args> void RAPICORN_NORETURN
+template<class ...Args> void BSE_NORETURN
 info (const char *format, const Args &...args)
 {
   Internal::diagnostic ('I', string_format (format, args...));
@@ -101,9 +131,9 @@ info (const char *format, const Args &...args)
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)            AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
+#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (__FILE__, __LINE__, #cond); return __VA_ARGS__; } while (0)
 /// Return from the current function and issue an assertion warning.
-#define BSE_ASSERT_RETURN_UNREACHED(...)        AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+#define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
 #ifdef BSE_CONVENIENCE
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)
@@ -116,8 +146,6 @@ info (const char *format, const Args &...args)
 /// Return silently if @a cond does not evaluate to true with return value @a ...
 #define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
 #endif // BSE_CONVENIENCE
-using Rapicorn::Aida::assertion_failed_hook;
-using Rapicorn::breakpoint;
 
 } // Bse
 
