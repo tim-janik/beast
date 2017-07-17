@@ -150,7 +150,7 @@ public:
   template<class A> void
   visit_enum (A &a, Name name)
   {
-    sfi_rec_set_choice (rec_, name, Rapicorn::Aida::enum_info<A>().value_to_string (a).c_str());
+    sfi_rec_set_choice (rec_, name, Aida::enum_info<A>().value_to_string (a).c_str());
   }
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)
@@ -204,7 +204,7 @@ public:
   visit_enum (A &a, Name name)
   {
     const char *c = sfi_rec_get_choice (rec_, name);
-    a = !c ? (A) 0 : Rapicorn::Aida::enum_value_from_string<A>(c);
+    a = !c ? (A) 0 : Aida::enum_value_from_string<A>(c);
   }
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)

@@ -5,10 +5,8 @@
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
-#include <rapicorn-core.hh>
 
 namespace Bse {
-namespace Aida = Rapicorn::Aida;
 
 // == type aliases ==
 typedef uint8_t         uint8;          ///< An 8-bit unsigned integer.
@@ -27,8 +25,8 @@ using   std::map;
 using   std::vector;
 typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
-using   Rapicorn::Aida::Any;
-using   Rapicorn::Aida::EventFd;
+using   Aida::Any;
+using   Aida::EventFd;
 using   Rapicorn::DataKey;
 using   Rapicorn::DataListContainer;
 

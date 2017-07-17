@@ -7,6 +7,10 @@
 #include <string>
 #include <functional>
 
+#include <rapicorn-core.hh>
+
+namespace Aida = Rapicorn::Aida;
+
 typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*64 in format strings.
 
 #if (GLIB_SIZEOF_LONG > 4)

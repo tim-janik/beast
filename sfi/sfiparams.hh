@@ -317,12 +317,12 @@ GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
 
 namespace Bse { // bsecore
 
-SfiChoiceValues choice_values_from_enum_values (const String &enumname, const ::Rapicorn::Aida::EnumValueVector &evvec);
+SfiChoiceValues choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec);
 
 template<class EnumType> SfiChoiceValues
 choice_values_from_enum ()
 {
-  ::Rapicorn::Aida::EnumInfo einfo = ::Rapicorn::Aida::enum_info<EnumType>();
+  Aida::EnumInfo einfo = Aida::enum_info<EnumType>();
   return choice_values_from_enum_values (einfo.name(), einfo.value_vector());
 }
 
