@@ -498,7 +498,7 @@ bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparamet
     bool match = what == param->pspec->name;
     if (!match && what.size() == strlen (param->pspec->name))
       {
-        const String pname = Rapicorn::string_canonify (Rapicorn::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
+        const String pname = Bse::string_canonify (Bse::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
         match = what == pname;
       }
     if (match)

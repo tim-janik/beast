@@ -48,10 +48,10 @@ G_DEFINE_TYPE (BstSNetRouter, bst_snet_router, GNOME_TYPE_CANVAS);
 static bool
 filter_popup_modules (const Bse::AuxData &ad)
 {
-  String ahints = Rapicorn::string_vector_find_value (ad.attributes, "hints=");
-  if (Rapicorn::string_option_check (ahints, "deprecated") && !BST_DVL_HINTS)
+  String ahints = Bse::string_vector_find_value (ad.attributes, "hints=");
+  if (Bse::string_option_check (ahints, "deprecated") && !BST_DVL_HINTS)
     return false;
-  if (Rapicorn::string_option_check (ahints, "unstable") && !BST_DVL_HINTS)
+  if (Bse::string_option_check (ahints, "unstable") && !BST_DVL_HINTS)
     return false;
   return true;
 }
@@ -834,10 +834,10 @@ snet_router_tool2text (BstSNetRouter *self)
   if (!router_tool_name)
     router_tool_name = "";
   const Bse::AuxData &ad = bse_server.find_module_type (router_tool_name);
-  const String authors = Rapicorn::string_vector_find_value (ad.attributes, "authors=");
-  const String license = Rapicorn::string_vector_find_value (ad.attributes, "license=");
-  String blurb = Rapicorn::string_vector_find_value (ad.attributes, "blurb=");
-  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  const String authors = Bse::string_vector_find_value (ad.attributes, "authors=");
+  const String license = Bse::string_vector_find_value (ad.attributes, "license=");
+  String blurb = Bse::string_vector_find_value (ad.attributes, "blurb=");
+  String title = Bse::string_vector_find_value (ad.attributes, "title=");
   if (title.empty())
     title = ad.entity;
   if (blurb.empty())

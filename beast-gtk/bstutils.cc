@@ -113,10 +113,10 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_SCROLLGRAPH);
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
-  Rapicorn::Blob blob;
-  blob = Rapicorn::Res ("@res radgets-standard.xml");
+  Bse::Blob blob;
+  blob = Bse::Res ("@res radgets-standard.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
-  blob = Rapicorn::Res ("@res radgets-beast.xml");
+  blob = Bse::Res ("@res radgets-beast.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
 }
 
@@ -522,14 +522,14 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
   else
     stock_id = stock_fallback;
 
-  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  String title = Bse::string_vector_find_value (ad.attributes, "title=");
   if (title.empty())
     title = ad.entity;
-  Rapicorn::StringVector tags = Rapicorn::string_split_any (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
+  Bse::StringVector tags = Bse::string_split_any (Bse::string_vector_find_value (ad.attributes, "tags="), ";:");
   if (tags.size())
     {
       tags.push_back (title);
-      title = Rapicorn::string_join ("/", tags);
+      title = Bse::string_join ("/", tags);
     }
   gxk_action_list_add_translated (alist, NULL, title.c_str(), NULL,
                                   ad.entity.c_str(), // tooltip
