@@ -222,7 +222,7 @@ bench_fill ()
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::fill (BLOCK_SIZE, fblock, 2.f);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::fill       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -239,7 +239,7 @@ bench_copy (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::copy       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -256,7 +256,7 @@ bench_add (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::add (BLOCK_SIZE, fblock1, fblock2);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::add        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -273,7 +273,7 @@ bench_sub (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::sub (BLOCK_SIZE, fblock1, fblock2);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::sub        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -290,7 +290,7 @@ bench_mul (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::mul (BLOCK_SIZE, fblock1, fblock2);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::mul        # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -307,7 +307,7 @@ bench_scale (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::scale (BLOCK_SIZE, fblock1, fblock2, 2.f);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::scale      # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -330,7 +330,7 @@ bench_range (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::range (BLOCK_SIZE, fblock, min_value, max_value);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   assert_return (min_value == correct_min_value);
   assert_return (max_value == correct_max_value);
@@ -348,7 +348,7 @@ bench_square_sum (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::square_sum (BLOCK_SIZE, fblock);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   TPASS ("Block::sum²       # timing: fastest=%fs throughput=%.1fMB/s\n", bench_time, bytes_per_loop / bench_time / 1048576.);
 }
@@ -371,7 +371,7 @@ bench_range_and_square_sum (void)
     for (uint j = 0; j < RUNS; j++)
       Bse::Block::range_and_square_sum (BLOCK_SIZE, fblock, min_value, max_value);
   };
-  Rapicorn::Test::Timer timer (MAX_SECONDS);
+  Bse::Test::Timer timer (MAX_SECONDS);
   const double bench_time = timer.benchmark (loop);
   assert_return (min_value == correct_min_value);
   assert_return (max_value == correct_max_value);

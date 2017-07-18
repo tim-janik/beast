@@ -12,7 +12,7 @@
 #include <complex>
 
 using namespace Bse;
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 using std::max;
 using std::min;
 

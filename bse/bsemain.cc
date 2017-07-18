@@ -20,7 +20,7 @@
 #include <sfi/sfitests.hh> /* sfti_test_init() */
 
 using namespace Bse;
-namespace Test = Rapicorn::Test;
+namespace Test = Bse::Test;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);

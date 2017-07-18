@@ -16,7 +16,7 @@ using std::string;
 using std::max;
 using std::min;
 using std::map;
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 
 static void
 read_through (GslDataHandle *handle)
@@ -93,7 +93,7 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      Rapicorn::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
+      Bse::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
@@ -124,7 +124,7 @@ check (const char           *up_down,
         for (uint j = 0; j < RUNS; j++)
           read_through (rhandle);
       };
-      Rapicorn::Test::Timer timer (0.03);
+      Bse::Test::Timer timer (0.03);
       const double bench_time = timer.benchmark (loop);
       const double input_samples_per_second = RUNS * input.size() / bench_time;
       const double output_samples_per_second = RUNS * gsl_data_handle_n_values (rhandle) / bench_time;

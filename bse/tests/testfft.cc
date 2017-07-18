@@ -186,21 +186,21 @@ diff (uint m, uint p, double *a1, double *a2, const char *str)
     {
       double a =  ABS (a1[n] - a2[n]);
       if (n < p)
-        Rapicorn::Test::tprintout ("  TESTFFT  %3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
-                                   n, ((float) n) / (float) m,
-                                   a1[n], a2[n],
-                                   a1[n] - a2[n],
-                                   a1[n] / a2[n]);
+        Bse::Test::tprintout ("  TESTFFT  %3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
+                              n, ((float) n) / (float) m,
+                              a1[n], a2[n],
+                              a1[n] - a2[n],
+                              a1[n] / a2[n]);
       d += a;
       max = MAX (max, a);
       min = MIN (min, a);
     }
-  Rapicorn::Test::tprintout ("  TESTFFT  Diff sum: %.9f, ", d);
-  Rapicorn::Test::tprintout ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
-  Rapicorn::Test::tprintout ("noise: %u %u %u\n",
-                             g_bit_storage (1. / min),
-                             g_bit_storage (m / d),
-                             g_bit_storage (1. / max));
+  Bse::Test::tprintout ("  TESTFFT  Diff sum: %.9f, ", d);
+  Bse::Test::tprintout ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
+  Bse::Test::tprintout ("noise: %u %u %u\n",
+                        g_bit_storage (1. / min),
+                        g_bit_storage (m / d),
+                        g_bit_storage (1. / max));
   return d;
 }
 

@@ -368,7 +368,7 @@ main (gint   argc,
   reversed_datahandle_test();
   simple_loop_tests();
   multi_channel_tests();
-  if (Rapicorn::Test::slow())
+  if (Bse::Test::slow())
     brute_force_loop_tests();
   return 0;
 }
