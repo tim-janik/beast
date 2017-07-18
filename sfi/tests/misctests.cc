@@ -2,7 +2,7 @@
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <sfi/path.hh>
 #include <unistd.h>
 #include <string.h>
@@ -893,7 +893,7 @@ main (int   argc,
       qsort (dummy_array, 3, 1, my_compare_func);
     }
 
-  sfi_init_test (&argc, argv);
+  Bse::Test::init (&argc, argv);
 
   test_types_init ();
 

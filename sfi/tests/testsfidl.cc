@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include "../sfidl-generator.hh"
 #include "../sfidl-factory.hh"
 #include <stdio.h>
