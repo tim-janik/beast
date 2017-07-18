@@ -7,7 +7,7 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfilter.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>

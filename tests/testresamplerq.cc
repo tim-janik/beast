@@ -5,7 +5,7 @@
 #include <bse/bsemain.hh>
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.hh>
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
@@ -221,7 +221,7 @@ int
 main (int argc, char **argv)
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
+  Bse::Test::init (&argc, argv);
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
