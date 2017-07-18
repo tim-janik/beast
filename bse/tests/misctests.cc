@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemain.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
 

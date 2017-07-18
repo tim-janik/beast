@@ -17,10 +17,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/sfitests.hh> /* sfti_test_init() */
+#include <sfi/testing.hh>
 
 using namespace Bse;
-namespace Test = Bse::Test;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
@@ -200,7 +199,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
   // initialize SFI
   if (initialized_for_unit_testing > 0)
-    sfi_init_test (argc, argv);
+    Bse::Test::init (argc, argv);
   else
     sfi_init (argc, argv);
 }

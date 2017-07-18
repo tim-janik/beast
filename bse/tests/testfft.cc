@@ -3,7 +3,7 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemain.hh>
 #include <bse/gslfft.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
