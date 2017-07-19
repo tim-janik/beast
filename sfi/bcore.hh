@@ -52,9 +52,6 @@ template<class ...Args> inline void dump                 (const char *conditiona
 template<class ...Args> inline void debug                (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
 inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
 
-// == Development Aids ==
-extern inline void breakpoint () BSE_ALWAYS_INLINE;                    ///< Cause a debugging breakpoint, for development only.
-
 // == Binary Lookups ==
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
 extern inline std::pair<RandIter,bool>
@@ -138,14 +135,6 @@ compare_greater (const Value &v1, const Value &v2)
 }
 
 // == Implementation Details ==
-#if (defined __i386__ || defined __x86_64__)
-inline void breakpoint() { __asm__ __volatile__ ("int $03"); }
-#elif defined __alpha__ && !defined __osf__
-inline void breakpoint() { __asm__ __volatile__ ("bpt"); }
-#else   // !__i386__ && !__alpha__
-inline void breakpoint() { __builtin_trap(); }
-#endif
-
 namespace Internal {
 extern bool                         debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                                debug_key_enabled (const char *conditional) BSE_PURE;

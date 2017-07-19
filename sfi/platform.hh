@@ -23,6 +23,28 @@ String      program_cwd           ();                   ///< The current working
 std::string executable_name       ();                   ///< Retrieve the name part of executable_path().
 std::string executable_path       ();                   ///< Retrieve the path to the currently running executable.
 
+// == Debugging Aids ==
+extern inline void breakpoint               () BSE_ALWAYS_INLINE;       ///< Cause a debugging breakpoint, for development only.
+extern int       (*backtrace_pointers)      (void **buffer, int size);  ///< Capture stack frames for a backtrace (on __GLIBC__).
+String             pretty_backtrace         (void **ptrs, ssize_t nptrs, const char *file, int line, const char *func);
+StringVector       pretty_backtrace_symbols (void **pointers, const int nptrs);
+#define BSE_BACKTRACE_MAXDEPTH   1024                   ///< Maximum depth for runtime backtrace generation.
+/// Print backtrace of the current line to stderr.
+#define BSE_BACKTRACE()          ({ ::Bse::printerr ("%s", BSE_BACKTRACE_STRING()); })
+/// Generate a string that contains a backtrace of the current line.
+#define BSE_BACKTRACE_STRING()   ({ void *__p_[BSE_BACKTRACE_MAXDEPTH]; \
+      const String __s_ = ::Bse::pretty_backtrace (__p_, ::Bse::backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), \
+                                                   __FILE__, __LINE__, __func__); __s_; })
+
+// == Implementation Details ==
+#if (defined __i386__ || defined __x86_64__)
+inline void breakpoint() { __asm__ __volatile__ ("int $03"); }
+#elif defined __alpha__ && !defined __osf__
+inline void breakpoint() { __asm__ __volatile__ ("bpt"); }
+#else   // !__i386__ && !__alpha__
+inline void breakpoint() { __builtin_trap(); }
+#endif
+
 } // Bse
 
 #endif // __BSE_PLATFORM_HH__
