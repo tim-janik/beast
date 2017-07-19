@@ -41,3 +41,13 @@ testidl.h: $(srcdir)/testidl.idl $(SFIDL)
 testidl.c: $(srcdir)/testidl.idl $(SFIDL)
 	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-$(@F) \
 	&& mv xgen-$(@F) $@
+
+# == t279-backtrace-test ==
+t279-backtrace-test: misctests
+	@echo "  RUN     " $@
+	$(Q) ./misctests --backtrace          2>t279-backtrace-test.tmp && \
+		grep -qi 'Backtrace'		t279-backtrace-test.tmp && \
+		grep -qi 'in my_compare_func'	t279-backtrace-test.tmp
+	$(Q) rm -f t279-backtrace-test.tmp
+	@echo "  PASS    " $@
+check-local: t279-backtrace-test
