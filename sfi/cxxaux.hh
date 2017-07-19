@@ -40,6 +40,8 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 // == Utility Macros ==
 #define BSE_CPP_STRINGIFY(s)    BSE_CPP_STRINGIFY_ (s)                  ///< Convert macro argument into a C const char*.
 #define BSE_CPP_STRINGIFY_(s)   #s                                      // Indirection helper, required to expand macros like __LINE__
+#define BSE_CPP_PASTE2_(a,b)    a ## b                                  // Indirection helper, required to expand macros like __LINE__
+#define BSE_CPP_PASTE2(a,b)     BSE_CPP_PASTE2_ (a,b)                   ///< Paste two macro arguments into one C symbol name
 #define BSE_ISLIKELY(expr)      __builtin_expect (bool (expr), 1)       ///< Compiler hint to optimize for @a expr evaluating to true.
 #define BSE_UNLIKELY(expr)      __builtin_expect (bool (expr), 0)       ///< Compiler hint to optimize for @a expr evaluating to false.
 #define BSE_ABS(a)              ((a) < 0 ? -(a) : (a))                  ///< Yield the absolute value of @a a.
