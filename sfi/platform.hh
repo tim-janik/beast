@@ -6,6 +6,14 @@
 
 namespace Bse {
 
+// == Timestamp Handling ==
+uint64  timestamp_startup    ();        // µseconds
+uint64  timestamp_realtime   ();        // µseconds
+uint64  timestamp_benchmark  ();        // nseconds
+uint64  timestamp_resolution ();        // nseconds
+String  timestamp_format     (uint64 stamp, uint maxlength = 8);
+uint64  monotonic_counter    ();
+
 // == process info ==
 String      program_alias         ();                   ///< Retrieve the program name as used for logging or debug messages.
 void        program_alias_init    (String customname);  ///< Set program_alias to a non-localized alias other than program_argv0 if desired.
