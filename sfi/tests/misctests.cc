@@ -775,6 +775,12 @@ test_vmarshals (void)
   sfi_seq_unref (seq);
 }
 
+static int
+my_compare_func (const void*, const void*)
+{
+  RAPICORN_BACKTRACE();
+  exit (0);
+}
 
 static void
 test_sfidl_seq (void)
@@ -859,8 +865,16 @@ int
 main (int   argc,
       char *argv[])
 {
+  if (argc >= 2 && String ("--backtrace") == argv[1])
+    {
+      char dummy_array[3] = { 1, 2, 3 };
+      qsort (dummy_array, 3, 1, my_compare_func);
+    }
+
   sfi_init_test (&argc, argv);
+
   test_types_init ();
+
   if (0)
     {
       generate_vmarshal_code ();
