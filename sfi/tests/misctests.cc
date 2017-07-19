@@ -38,7 +38,7 @@ run_test_chain()
     }
 }
 
-#define ADD_TEST(fun)   static const TestChain RAPICORN_CPP_PASTE2_ (__testchain__, __LINE__) (fun, RAPICORN_CPP_STRINGIFY (fun))
+#define ADD_TEST(fun)   static const TestChain BSE_CPP_PASTE2 (__testchain__, __LINE__) (fun, BSE_CPP_STRINGIFY (fun))
 
 static void
 test_paths()
@@ -113,6 +113,26 @@ test_paths()
   TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar/"), ==, true); // dir search matches /bar
 }
 ADD_TEST (test_paths);
+
+static void
+test_timestamps()
+{
+  const uint64 b1 = timestamp_benchmark();
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_resolution() > 0);
+  uint64 c = monotonic_counter();
+  for (size_t i = 0; i < 999999; i++)
+    {
+      const uint64 last = c;
+      c = monotonic_counter();
+      TASSERT (c > last);
+    }
+  const uint64 b2 = timestamp_benchmark();
+  TASSERT (b1 < b2);
+}
+ADD_TEST (test_timestamps);
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
