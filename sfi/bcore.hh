@@ -37,6 +37,10 @@ using   Rapicorn::TaskStatus;
 using   Rapicorn::ThreadInfo;
 using   Rapicorn::cpu_info;
 using   Rapicorn::AsyncBlockingQueue;
+using   Rapicorn::random_int64;
+using   Rapicorn::random_float;
+using   Rapicorn::random_irange;
+using   Rapicorn::random_frange;
 namespace ThisThread = Rapicorn::ThisThread;
 
 // == Diagnostics ==
