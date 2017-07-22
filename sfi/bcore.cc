@@ -86,6 +86,44 @@ aligned_free (uint8 **free_pointer)
     }
 }
 
+/// Find @a feature in @a config, return its value or @a fallback.
+String
+feature_toggle_find (const String &config, const String &feature, const String &fallback)
+{
+  String haystack = ":" + config + ":";
+  String needle0 = ":no-" + feature + ":";
+  String needle1 = ":" + feature + ":";
+  String needle2 = ":" + feature + "=";
+  const char *n0 = g_strrstr (haystack.c_str(), needle0.c_str());
+  const char *n1 = g_strrstr (haystack.c_str(), needle1.c_str());
+  const char *n2 = g_strrstr (haystack.c_str(), needle2.c_str());
+  if (n0 && (!n1 || n0 > n1) && (!n2 || n0 > n2))
+    return "0";         // ":no-feature:" is the last toggle in config
+  if (n1 && (!n2 || n1 > n2))
+    return "1";         // ":feature:" is the last toggle in config
+  if (!n2)
+    return fallback;    // no "feature" variant found
+  const char *value = n2 + strlen (needle2.c_str());
+  const char *end = strchr (value, ':');
+  return end ? String (value, end - value) : String (value);
+}
+
+/// Check for @a feature in @a config, if @a feature is empty, checks for *any* feature.
+bool
+feature_toggle_bool (const char *config, const char *feature)
+{
+  if (feature && feature[0])
+    return string_to_bool (feature_toggle_find (config ? config : "", feature));
+  // check if *any* feature is enabled in config
+  if (!config || !config[0])
+    return false;
+  const size_t l = strlen (config);
+  for (size_t i = 0; i < l; i++)
+    if (config[i] && !strchr (": \t\n\r=", config[i]))
+      return true;      // found *some* non-space and non-separator config item
+  return false;         // just whitespace
+}
+
 // == Internal ==
 namespace Internal {
 

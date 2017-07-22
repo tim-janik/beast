@@ -134,6 +134,28 @@ test_timestamps()
 }
 ADD_TEST (test_timestamps);
 
+static void
+test_feature_toggles()
+{
+  String r;
+  r = feature_toggle_find ("a:b", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "b"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "c"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("a:b", "c", "7"); TCMP (r, ==, "7");
+  r = feature_toggle_find ("a:no-b", "b"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b", "a"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b:a", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("no-a:b:a=5", "a"); TCMP (r, ==, "5");
+  r = feature_toggle_find ("no-a:b:a=5:c", "a"); TCMP (r, ==, "5");
+  bool b;
+  b = feature_toggle_bool ("", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("a:b:c", "a"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("no-a:b:c", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("no-a:b:a=5:c", "b"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("x", ""); TCMP (b, ==, true); // *any* feature?
+}
+ADD_TEST (test_feature_toggles);
+
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
   sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)

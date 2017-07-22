@@ -51,6 +51,8 @@ template<class ...Args> void        info                 (const char *format, co
 template<class ...Args> inline void dump                 (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
 template<class ...Args> inline void debug                (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
 inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
+String                              feature_toggle_find  (const String &config, const String &feature, const String &fallback = "0");
+bool                                feature_toggle_bool  (const char *config, const char *feature);
 
 // == Binary Lookups ==
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
