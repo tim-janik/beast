@@ -199,13 +199,6 @@ verbose()
   return cached_verbose;
 }
 
-int
-run (void)
-{
-  // FIXME: run_tests();
-  return 0;
-}
-
 uint64_t
 random_int64 ()
 {
@@ -228,6 +221,39 @@ double
 random_frange (double begin, double end)
 {
   return Bse::random_frange (begin, end);
+}
+
+// == TestChain ==
+static const TestChain *global_test_chain = NULL;
+
+TestChain::TestChain (std::function<void()> tfunc, const std::string &tname) :
+  name_ (tname), func_ (tfunc), next_ (global_test_chain)
+{
+  assert_return (next_ == global_test_chain);
+  global_test_chain = this;
+}
+
+void
+TestChain::run (ptrdiff_t internal_token)
+{
+  assert_return (internal_token == ptrdiff_t (global_test_chain));
+  for (const TestChain *t = global_test_chain; t; t = t->next_)
+    {
+      fflush (stderr);
+      printout ("  RUN…     %s\n", t->name_);
+      fflush (stdout);
+      t->func_();
+      fflush (stderr);
+      printout ("  PASS     %s\n", t->name_);
+      fflush (stdout);
+    }
+}
+
+int
+run (void)
+{
+  TestChain::run (ptrdiff_t (global_test_chain));
+  return 0;
 }
 
 } } // Bse::Test

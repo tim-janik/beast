@@ -11,35 +11,6 @@
 
 using namespace Bse;
 
-struct TestChain;
-static const TestChain *global_test_chain = NULL;
-
-struct TestChain {
-  std::string           name;
-  std::function<void()> func;
-  const TestChain      *const next;
-  TestChain (std::function<void()> tfunc, const std::string &tname) :
-    name (tname), func (tfunc), next (global_test_chain)
-  {
-    assert_return (next == global_test_chain);
-    global_test_chain = this;
-  }
-};
-
-static void
-run_test_chain()
-{
-  for (const TestChain *t = global_test_chain; t; t = t->next)
-    {
-      printout ("  ....     %s", t->name);
-      fflush (stdout);
-      t->func();
-      printout ("\r  PASS     %s\n", t->name);
-    }
-}
-
-#define ADD_TEST(fun)   static const TestChain BSE_CPP_PASTE2 (__testchain__, __LINE__) (fun, BSE_CPP_STRINGIFY (fun))
-
 static void
 test_paths()
 {
@@ -112,7 +83,7 @@ test_paths()
   TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar"), ==, true); // file search matches /bar
   TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar/"), ==, true); // dir search matches /bar
 }
-ADD_TEST (test_paths);
+TEST_ADD (test_paths);
 
 static void
 test_timestamps()
@@ -132,7 +103,7 @@ test_timestamps()
   const uint64 b2 = timestamp_benchmark();
   TASSERT (b1 < b2);
 }
-ADD_TEST (test_timestamps);
+TEST_ADD (test_timestamps);
 
 static void
 test_feature_toggles()
@@ -154,7 +125,7 @@ test_feature_toggles()
   b = feature_toggle_bool ("no-a:b:a=5:c", "b"); TCMP (b, ==, true);
   b = feature_toggle_bool ("x", ""); TCMP (b, ==, true); // *any* feature?
 }
-ADD_TEST (test_feature_toggles);
+TEST_ADD (test_feature_toggles);
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
@@ -902,7 +873,10 @@ main (int   argc,
       generate_vmarshal_code ();
       return 0;
     }
-  run_test_chain();
+
+  if (0 != Bse::Test::run())
+    return -1;
+
   test_notes ();
   test_time ();
   test_renames ();

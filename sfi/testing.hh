@@ -23,6 +23,9 @@ void init (int *argcp, char **argv, const StringVector &args = StringVector());
 #define TASSERT_AT(LINE, cond)  TASSERT__AT (LINE, cond)        ///< Unconditional test assertion for deputy __LINE__.
 #define TOK()                   do {} while (0)                 ///< Deprecated progress indicator, tests generally need to run fast.
 
+/// Register a function to run as part of the unit test suite.
+#define TEST_ADD(fun)           static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun))
+
 /** Class for profiling benchmark tests.
  * UseCase: Benchmarking function implementations, e.g. to compare sorting implementations.
  */
@@ -119,6 +122,15 @@ Timer::benchmark (Callee callee)
     }
   return min_elapsed();
 }
+
+class TestChain {
+  std::string           name_;
+  std::function<void()> func_;
+  const TestChain      *const next_;
+public:
+  explicit    TestChain (std::function<void()> tfunc, const std::string &tname);
+  static void run       (ptrdiff_t internal_token);
+};
 
 /// @endcond
 
