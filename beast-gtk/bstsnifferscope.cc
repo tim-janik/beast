@@ -14,6 +14,7 @@ G_DEFINE_TYPE (BstSnifferScope, bst_sniffer_scope, GTK_TYPE_WIDGET);
 static void
 bst_sniffer_scope_init (BstSnifferScope *self)
 {
+  new (&self->source) Bse::SourceH();
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
@@ -32,7 +33,7 @@ bst_sniffer_scope_destroy (GtkObject *object)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
 
-  bst_sniffer_scope_set_sniffer (self, 0);
+  bst_sniffer_scope_set_sniffer (self);
 
   GTK_OBJECT_CLASS (bst_sniffer_scope_parent_class)->destroy (object);
 }
@@ -42,10 +43,12 @@ bst_sniffer_scope_finalize (GObject *object)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
 
-  bst_sniffer_scope_set_sniffer (self, 0);
+  bst_sniffer_scope_set_sniffer (self);
   g_free (self->lvalues);
   g_free (self->rvalues);
   G_OBJECT_CLASS (bst_sniffer_scope_parent_class)->finalize (object);
+  using namespace Bse;
+  self->source.~SourceH();
 }
 
 static void
@@ -237,8 +240,8 @@ scope_probes_notify (SfiProxy     proxy,
         }
       bse_probe_seq_free (pseq);
     }
-  bst_source_queue_probe_request (self->proxy, 0, BST_SOURCE_PROBE_RANGE, 20.0);
-  bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
+  bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
+  bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
 }
 
 static void
@@ -260,29 +263,27 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *klass)
 }
 
 void
-bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
-                               SfiProxy         proxy)
+bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
 {
-  if (proxy)
+  if (source)
     {
-      assert_return (BSE_IS_SOURCE (proxy));
-      if (!bse_source_has_outputs (proxy))
-        proxy = 0;
+      if (!source.has_outputs())
+        source = Bse::SourceH();
     }
-  if (self->proxy)
+  if (self->source)
     {
-      bse_proxy_disconnect (self->proxy,
+      bse_proxy_disconnect (self->source.proxy_id(),
                             "any_signal::probes", scope_probes_notify, self,
                             NULL);
     }
-  self->proxy = proxy;
-  if (self->proxy)
+  self->source = source;
+  if (self->source)
     {
-      bse_proxy_connect (self->proxy,
+      bse_proxy_connect (self->source.proxy_id(),
                          "signal::probes", scope_probes_notify, self,
                          NULL);
-      bst_source_queue_probe_request (self->proxy, 0, BST_SOURCE_PROBE_RANGE, 20.0);
-      bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
+      bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
+      bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
     }
 }
 

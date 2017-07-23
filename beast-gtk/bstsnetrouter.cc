@@ -658,13 +658,14 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               /* create popup */
               for (int i = 0; has_inputs == 0 && i < bse_source_n_ichannels (csource->source); i++)
                 has_inputs += bse_source_ichannel_get_n_joints (csource->source, i);
+              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
                                                 BST_CHOICE_TITLE (source_name),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (2, _("Properties"), PROPERTIES),
                                                 BST_CHOICE (6, _("Reset Properties"), PROPERTIES_RESET),
                                                 BST_CHOICE_S (3, _("Disconnect Inputs"), NO_ILINK, has_inputs),
-                                                BST_CHOICE_S (4, _("Disconnect Outputs"), NO_OLINK, bse_source_has_outputs (csource->source)),
+                                                BST_CHOICE_S (4, _("Disconnect Outputs"), NO_OLINK, csource_source.has_outputs()),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
                                                 BST_CHOICE_SUBMENU (_("Output Signal Monitor"), choice, SIGNAL),
@@ -693,15 +694,12 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_popup_info (csource);
                   break;
                 case 1:
-                  {
-                    Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-                    error = self->snet.remove_source (source);
-                  }
+                  error = self->snet.remove_source (csource_source);
                   bst_status_eprintf (error, _("Remove Module"));
                   break;
                 case 0: break;
                 default:
-                  dialog = bst_scrollgraph_build_dialog (GTK_WIDGET (self), csource->source, i - monitor_ids);
+                  dialog = bst_scrollgraph_build_dialog (GTK_WIDGET (self), csource_source, i - monitor_ids);
                   gtk_widget_show (dialog);
                   break;
                 }
