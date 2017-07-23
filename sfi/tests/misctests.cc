@@ -144,14 +144,6 @@ TEST_ADD (test_feature_toggles);
 #include "testidl.h"
 
 static void
-test_misc (void)
-{
-  TSTART ("Misc");
-  TASSERT (0 == 0);
-  TDONE ();
-}
-
-static void
 test_time (void)
 {
   SfiTime t;
@@ -163,7 +155,6 @@ test_time (void)
     "2037-12-31 23:59:59",
   };
   gint i;
-  TSTART ("Time");
   TASSERT (SFI_USEC_FACTOR == 1000000);
   TASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
   t = sfi_time_system ();
@@ -201,8 +192,8 @@ test_time (void)
       TASSERT (error == NULL);
       g_free (str);
     }
-  TDONE ();
 }
+TEST_ADD (test_time);
 
 static void
 test_com_ports (void)
@@ -250,6 +241,8 @@ test_com_ports (void)
   sfi_com_port_unref (port2);
   TDONE ();
 }
+TEST_ADD (test_com_ports);
+
 #define SCANNER_ASSERT64(scanner, needprint, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
@@ -271,7 +264,6 @@ static void
 test_scanner64 (void)
 {
   GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
-  TSTART ("64Bit Scanner");
   scanner->config->numbers_2_int = FALSE;
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
@@ -292,8 +284,9 @@ test_scanner64 (void)
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 2.2250738585072014e-308 #", 2.2250738585072014e-308);
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 1.7976931348623157e+308 #", 1.7976931348623157e+308);
   g_scanner_destroy (scanner);
-  TDONE ();
 }
+TEST_ADD (test_scanner64);
+
 typedef enum /*< skip >*/
 {
   SERIAL_TEST_TYPED = 1,
@@ -584,7 +577,6 @@ test_notes (void)
 {
   gchar *str, *error = NULL;
   guint i;
-  TSTART ("Notes");
   str = sfi_note_to_string (SFI_MIN_NOTE);
   TASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
   TASSERT (error == NULL);
@@ -611,14 +603,13 @@ test_notes (void)
   TASSERT (error != NULL);
   // printout ("{%s}", error);
   g_free (error);
-  TDONE ();
 }
+TEST_ADD (test_notes);
 
 static void
 test_renames (void)
 {
   gchar *str;
-  TSTART ("Renames");
   str = g_type_name_to_cname ("PrefixTypeName");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
@@ -637,8 +628,9 @@ test_renames (void)
   str = g_type_name_to_cname ("prefix-type-name");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
-  TDONE ();
 }
+TEST_ADD (test_renames);
+
 static gboolean vmarshal_switch = TRUE;
 static guint    vmarshal_count = 0;
 static void
@@ -767,6 +759,7 @@ test_vmarshals (void)
   TDONE ();
   sfi_seq_unref (seq);
 }
+TEST_ADD (test_vmarshals);
 
 static int
 my_compare_func (const void*, const void*)
@@ -853,18 +846,50 @@ test_sfidl_seq (void)
   // TASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
   TDONE ();
 }
+TEST_ADD (test_sfidl_seq);
+
 #include "testidl.c"
 int
 main (int   argc,
       char *argv[])
 {
+  Bse::Test::init (&argc, argv);
+
   if (argc >= 2 && String ("--backtrace") == argv[1])
     {
       char dummy_array[3] = { 1, 2, 3 };
       qsort (dummy_array, 3, 1, my_compare_func);
     }
-
-  Bse::Test::init (&argc, argv);
+  else if (argc >= 2 && String ("--assert_return1") == argv[1])
+    {
+      assert_return (1, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return0") == argv[1])
+    {
+      assert_return (0, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
+    {
+      assert_return_unreached (0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--fatal_error") == argv[1])
+    {
+      fatal_error ("got argument --fatal_error");
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless0") == argv[1])
+    {
+      return_unless (0, 7);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless1") == argv[1])
+    {
+      return_unless (1, 7);
+      return 0;
+    }
 
   test_types_init ();
 
@@ -877,17 +902,9 @@ main (int   argc,
   if (0 != Bse::Test::run())
     return -1;
 
-  test_notes ();
-  test_time ();
-  test_renames ();
-  test_scanner64 ();
   test_typed_serialization (SERIAL_TEST_PARAM);
   test_typed_serialization (SERIAL_TEST_TYPED);
   test_typed_serialization (SERIAL_TEST_PSPEC);
-  test_vmarshals ();
-  test_com_ports ();
-  test_sfidl_seq ();
-  test_misc ();
 
   return 0;
 }
