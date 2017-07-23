@@ -595,8 +595,8 @@ interface Source : Item {
   // bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
   // bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
   // bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
-  // int32 n_ichannels (); ///< Get the number of input channels of a module.
-  // int32 n_ochannels (); ///< Get the number of output channels of a module.
+  int32 n_ichannels (); ///< Get the number of input channels of a module.
+  int32 n_ochannels (); ///< Get the number of output channels of a module.
   // String ochannel_blurb (int32 output_channel); ///< Get output channel description.
   // String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
   // String ochannel_label (int32 output_channel); ///< Get output channel name.

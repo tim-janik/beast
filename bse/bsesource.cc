@@ -2094,5 +2094,18 @@ SourceImpl::has_outputs ()
   return self->outputs != NULL;
 }
 
+int
+SourceImpl::n_ichannels()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_N_ICHANNELS (self);
+}
+
+int
+SourceImpl::n_ochannels()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_N_OCHANNELS (self);
+}
 
 } // Bse

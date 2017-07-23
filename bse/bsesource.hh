@@ -279,6 +279,8 @@ public:
   virtual SourceIfaceP ichannel_get_osource (int input_channel, int input_joint) override;
   virtual bool         has_output           (int) override;
   virtual bool         has_outputs          () override;
+  virtual int          n_ichannels          () override;
+  virtual int          n_ochannels          () override;
 };
 
 } // Bse
