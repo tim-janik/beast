@@ -6,7 +6,8 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RET
 AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip \
-	bcore.hh	\
+	bcore.hh	formatter.hh	path.hh		platform.hh	strings.hh	\
+	cxxaux.hh	\
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
 	glib-extra.hh			sfiwrapper.hh	 \
 	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
@@ -18,7 +19,7 @@ sfi_public_headers = $(strip \
 	gbsearcharray.hh \
 )
 sfi_all_sources = $(strip \
-	bcore.cc	\
+	bcore.cc	formatter.cc	path.cc		platform.cc	strings.cc	\
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
@@ -38,10 +39,11 @@ doc_sources.lst: Makefile
 # == libsfi-@MAJOR@.so ==
 noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
 libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
-libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
+libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers) sysconfig.h
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
 libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
+$(sfi_public_headers):		sysconfig.h
 
 #
 # programs to build

@@ -5,8 +5,6 @@
 #include <v8pp/class.hpp>
 #include <v8pp/convert.hpp>
 
-namespace Aida = Rapicorn::Aida;
-
 // == RemoteHandle Wrapping ==
 /* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly behind a thread boundary),
  * so multiple RemoteHandle objects can point to the same C++ object. There are a couple ways that a
@@ -30,7 +28,7 @@ namespace Aida = Rapicorn::Aida;
  */
 
 /// Function to wrap a RemoteHandle derived type via v8pp::class_<>::import_external().
-typedef v8::Local<v8::Object> (*AidaRemoteHandleWrapper) (v8::Isolate *const, Rapicorn::Aida::RemoteHandle);
+typedef v8::Local<v8::Object> (*AidaRemoteHandleWrapper) (v8::Isolate *const, Aida::RemoteHandle);
 
 /// Default implementation to wrap a RemoteHandle derived type via v8pp::class_<>::import_external().
 template<class Native> static v8::Local<v8::Object>
@@ -199,9 +197,9 @@ struct convert_AidaSequence
 static V8stub *bse_v8stub = NULL;
 
 // event loop integration
-static uv_poll_t                         bse_uv_watcher;
-static Rapicorn::Aida::ClientConnectionP bse_client_connection;
-static Bse::ServerH                      bse_server;
+static uv_poll_t               bse_uv_watcher;
+static Aida::ClientConnectionP bse_client_connection;
+static Bse::ServerH            bse_server;
 
 // register bindings and start Bse
 static void
@@ -255,7 +253,7 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   // debugging aids:
   if (0)
-    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Rapicorn::ThisThread::process_pid());
+    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", program_invocation_name, Bse::ThisThread::process_pid());
 }
 
 // node.js registration

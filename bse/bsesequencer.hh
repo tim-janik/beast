@@ -10,11 +10,11 @@ namespace Bse {
  */
 class Sequencer {
   static Sequencer *singleton_;
-  static Mutex      sequencer_mutex_;
+  static std::mutex sequencer_mutex_;
   struct PollPool;
   uint64     stamp_;            // sequencer time (ahead of real time)
   SfiRing   *songs_;
-  Cond       watch_cond_;
+  std::condition_variable watch_cond_;
   PollPool  *poll_pool_;
   EventFd    event_fd_;
   std::thread thread_;
@@ -40,8 +40,8 @@ public:
   void          remove_song	(BseSong *song);
   bool          thread_lagging  (uint n_blocks);
   void          wakeup          ()      { event_fd_.wakeup(); }
-  static Mutex& sequencer_mutex ()      { return sequencer_mutex_; }
-  static Sequencer& instance    ()      { return *singleton_; }
+  static std::mutex& sequencer_mutex () { return sequencer_mutex_; }
+  static Sequencer&  instance        () { return *singleton_; }
 };
 
 #define BSE_SEQUENCER_LOCK()    (Bse::Sequencer::sequencer_mutex().lock())

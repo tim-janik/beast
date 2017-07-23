@@ -6,10 +6,6 @@
 // == Rapicorn Imports ==
 #include <sfi/sfiwrapper.hh>    // Introduces bcore.hh and Rapicorn
 
-namespace Sfi {
-using namespace Rapicorn;
-} // Sfi
-
 /* no bin-compat: #include <sfi/sficomwire.hh> */
 #include <sfi/sficomport.hh>
 #include <sfi/sfifilecrawler.hh>

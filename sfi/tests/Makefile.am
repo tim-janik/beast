@@ -2,6 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
+DEFS	    += -D__TOPDIR__="\"$(abs_top_srcdir)/\""
 DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
@@ -40,3 +41,13 @@ testidl.h: $(srcdir)/testidl.idl $(SFIDL)
 testidl.c: $(srcdir)/testidl.idl $(SFIDL)
 	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-$(@F) \
 	&& mv xgen-$(@F) $@
+
+# == t279-backtrace-test ==
+t279-backtrace-test: misctests
+	@echo "  RUN     " $@
+	$(Q) ./misctests --backtrace          2>t279-backtrace-test.tmp && \
+		grep -qi 'Backtrace'		t279-backtrace-test.tmp && \
+		grep -qi 'in my_compare_func'	t279-backtrace-test.tmp
+	$(Q) rm -f t279-backtrace-test.tmp
+	@echo "  PASS    " $@
+check-local: t279-backtrace-test

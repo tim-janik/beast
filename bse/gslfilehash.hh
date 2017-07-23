@@ -14,7 +14,7 @@ typedef struct {
   GslLong  n_bytes;
   /*< private >*/
   GslLong  cpos;
-  Bse::Mutex mutex;
+  std::mutex mutex;
   gint     fd;
   guint    ocount;
   GslLong  zoffset;

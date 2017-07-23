@@ -1080,7 +1080,7 @@ engine_init (BseServer *server,
       engine_is_initialized = true;
       bse_engine_init();
       // lower priority compared to engine if our priority range permits
-      const int mypid = Rapicorn::ThisThread::thread_pid();
+      const int mypid = Bse::ThisThread::thread_pid();
       int current_priority = getpriority (PRIO_PROCESS, mypid);
       if (current_priority <= -2 && mypid)
         setpriority (PRIO_PROCESS, mypid, current_priority + 1);
@@ -1414,7 +1414,7 @@ ServerImpl::register_source_module (const String &type, const String &title, con
     printerr ("%s\n  %s\n  tags=%s\n  icon=...%s\n",
               type,
               title,
-              Rapicorn::string_join (", ", Rapicorn::string_split_any (tags, ":;")),
+              Bse::string_join (", ", Bse::string_split_any (tags, ":;")),
               ad.icon.width && ad.icon.height ? string_format ("%ux%u", ad.icon.width, ad.icon.height) : "0");
 }
 

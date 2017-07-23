@@ -73,5 +73,6 @@ int main (int argc, char **argv)
 #include "sfidl-cxxbase.cc"
 #include "sfidl-hostc.cc"
 #include "sfidl-utils.cc"
+#include "formatter.cc"
 
 /* vim:set ts=8 sts=2 sw=2: */

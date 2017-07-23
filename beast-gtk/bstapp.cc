@@ -1074,7 +1074,7 @@ app_action_exec (gpointer data,
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
                       BST_MSG_TEXT3 ("Demo-Dialog-Type: %s",
-                                     Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (demo_type).ident));
+                                     Aida::enum_info<Bse::UserMessageType>().find_value (demo_type).ident));
       break;
     default:
       assert_return_unreached ();

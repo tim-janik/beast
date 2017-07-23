@@ -13,8 +13,8 @@
 #define HASH_LONG(l)	(l)
 #endif
 /* --- variables --- */
-static Bse::Mutex fdpool_mutex;
-static GHashTable     *hfile_ht = NULL;
+static std::mutex  fdpool_mutex;
+static GHashTable *hfile_ht = NULL;
 /* --- functions --- */
 static guint
 hfile_hash (gconstpointer key)
@@ -96,7 +96,7 @@ gsl_hfile_open (const gchar *file_name)
       if (fd >= 0)
 	{
 	  hfile = sfi_new_struct0 (GslHFile, 1);
-          new (&hfile->mutex) Bse::Mutex();
+          new (&hfile->mutex) std::mutex();
 	  hfile->file_name = g_strdup (file_name);
 	  hfile->mtime = key.mtime;
 	  hfile->n_bytes = key.n_bytes;
@@ -146,7 +146,7 @@ gsl_hfile_close (GslHFile *hfile)
     {
       close (hfile->fd);
       g_free (hfile->file_name);
-      hfile->mutex.~Mutex();
+      hfile->mutex.~mutex();
       sfi_delete_struct (GslHFile, hfile);
     }
   errno = 0;

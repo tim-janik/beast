@@ -6,6 +6,11 @@
 
 namespace Bse { // BseCore
 
+// == Compatibility Imports ==
+using Rapicorn::VisitorDispatcher;
+using Rapicorn::StdVectorValueHandle;
+
+
 template<class Visitable> void                            sfi_rec_to_visitable                      (SfiRec *rec, Visitable &visitable);
 template<class Visitable> SfiRec*                         sfi_rec_new_from_visitable                (Visitable &visitable);
 template<class Visitable> void                            sfi_seq_to_visitable                      (SfiSeq *seq, Visitable &visitable);
@@ -17,7 +22,7 @@ bool sfi_pspecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields 
 bool sfi_pspecs_seq_field_cache  (const std::type_info &type_info, GParamSpec  **pp, bool assign = false); // internal
 bool sfi_pspecs_acs_fields_cache (const std::type_info &type_info, std::vector<GParamSpec*>**, bool assign = false); // internal
 
-class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
+class PspecVisitor : public Bse::VisitorDispatcher<PspecVisitor> {
   std::vector<GParamSpec*> &pspecs_;
   std::vector<String>       aux_;
   String get_min (Name name, Name fallback) { return get_aux (name, "min", fallback); }
@@ -118,7 +123,7 @@ public:
   }
 };
 
-class ToRecVisitor : public VisitorDispatcher<ToRecVisitor> {
+class ToRecVisitor : public Bse::VisitorDispatcher<ToRecVisitor> {
   SfiRec *rec_;
 public:
   ToRecVisitor (SfiRec *rec) : rec_ (rec) {}
@@ -145,7 +150,7 @@ public:
   template<class A> void
   visit_enum (A &a, Name name)
   {
-    sfi_rec_set_choice (rec_, name, Rapicorn::Aida::enum_info<A>().value_to_string (a).c_str());
+    sfi_rec_set_choice (rec_, name, Aida::enum_info<A>().value_to_string (a).c_str());
   }
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)
@@ -170,7 +175,7 @@ public:
   }
 };
 
-class FromRecVisitor : public VisitorDispatcher<FromRecVisitor> {
+class FromRecVisitor : public Bse::VisitorDispatcher<FromRecVisitor> {
   SfiRec *rec_;
 public:
   FromRecVisitor (SfiRec *rec) : rec_ (rec) {}
@@ -199,7 +204,7 @@ public:
   visit_enum (A &a, Name name)
   {
     const char *c = sfi_rec_get_choice (rec_, name);
-    a = !c ? (A) 0 : Rapicorn::Aida::enum_value_from_string<A>(c);
+    a = !c ? (A) 0 : Aida::enum_value_from_string<A>(c);
   }
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)
@@ -240,9 +245,9 @@ sfi_seq_to_visitable (SfiSeq *seq, Visitable &visitable)
       sfi_rec_set (tmp_rec, "seqelement", sfi_seq_get (seq, i));
       FromRecVisitor rec_visitor (tmp_rec);
       typedef typename Visitable::value_type A; // assumes Visitable derives std::vector
-      typename StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
+      typename Bse::StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
       rec_visitor (value_handle, "seqelement");
-      if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
+      if (Bse::StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
         visitable[i] = value_handle;
     }
   sfi_rec_unref (tmp_rec);
@@ -257,9 +262,9 @@ sfi_seq_new_from_visitable (Visitable &visitable)
     {
       ToRecVisitor rec_visitor (tmp_rec);
       typedef typename Visitable::value_type A; // assumes Visitable derives std::vector
-      typename StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
+      typename Bse::StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
       rec_visitor (value_handle, "seqelement");
-      if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
+      if (Bse::StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
         visitable[i] = value_handle;
       GValue *element = sfi_rec_get (tmp_rec, "seqelement");
       if (element)

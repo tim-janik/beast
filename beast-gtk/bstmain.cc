@@ -103,8 +103,8 @@ main (int argc, char *argv[])
   Py_Initialize();
 
   // initialize threading and GLib types
-  Rapicorn::ThreadInfo::self().name ("Beast GUI");
-  Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::ThreadInfo::self().name ("Beast GUI");
+  Bse::TaskRegistry::add (Bse::ThreadInfo::self().name(), Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
 
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv);
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
   // startup Gtk+ *lightly*
   if (!gtk_parse_args (&argc, &argv))
     {
-      printerr ("%s: failed to setup Gtk+\n", Rapicorn::program_argv0());
+      printerr ("%s: failed to setup Gtk+\n", Bse::executable_name());
       exit (7);
     }
 
@@ -162,14 +162,13 @@ static void
 main_init_argv0_installpaths (const char *argv0)
 {
   // Rapicorn and Python both need accurate argv0 excutable names
-  Rapicorn::program_argv0_init (argv0);
   Py_SetProgramName (const_cast<char*> (argv0));
   // check for a libtool-linked, uninstalled executable (name)
   const char *const exe = argv0;
   const char *const slash = strrchr (exe, '/');
   if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
     {
-      using namespace Rapicorn;
+      namespace Path = Bse::Path;
       // use source dir relative installpaths for uninstalled executables
       const String program_abspath = Path::abspath (argv0);
       const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
@@ -215,10 +214,10 @@ main_init_gxk()
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (beast_splash,
-		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
-                                                "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
-                                                "<b>Version %s</b>\n",
-                                                Internal::buildid()));
+		       Bse::string_format ("<b><big>BEAST</big></b>\n"
+                                           "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
+                                           "<b>Version %s</b>\n",
+                                           Internal::buildid()));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 }
@@ -406,17 +405,17 @@ main_open_files (int filesc, char **filesv)
           Bse::Error error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
-              Rapicorn::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
+              Bse::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
               if (error != 0)
                 exit (1);
               if (unlink (filesv[i]) < 0)
                 {
-                  perror (Rapicorn::string_format ("%s: failed to remove", filesv[i]).c_str());
+                  perror (Bse::string_format ("%s: failed to remove", filesv[i]).c_str());
                   exit (2);
                 }
               Bse::SuperH any_super; // FIXME: bad API here
               error = project.store_bse (any_super, filesv[i], TRUE);
-              Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
+              Bse::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
               if (error != 0)
                 exit (3);
               exit (0);
@@ -487,7 +486,7 @@ main_show_release_notes ()
         "<newline/>"
         "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/\">http://beast.testbit.eu</xlink></span>"
         "</tag-span-markup>";
-      const String release_notes_contents = Rapicorn::string_replace (release_notes_contents_tmpl, "__BEAST_INTERNAL_BUILDID__", Internal::buildid());
+      const String release_notes_contents = Bse::string_replace (release_notes_contents_tmpl, "__BEAST_INTERNAL_BUILDID__", Internal::buildid());
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_CENTER, NULL);
       gxk_scroll_text_set_tsm (sctext, release_notes_contents.c_str());
       GtkWidget *rndialog = (GtkWidget*) gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, release_notes_title, sctext);
@@ -547,7 +546,7 @@ main_run_event_loop ()
   FILE *fp = fopen (pyfile.c_str(), "r");
   if (!fp)
     {
-      perror (string_format ("%s: failed to open file %s", Rapicorn::program_argv0(), Rapicorn::string_to_cquote (pyfile)).c_str());
+      perror (string_format ("%s: failed to open file %s", Bse::executable_name(), Bse::string_to_cquote (pyfile)).c_str());
       exit (7);
     }
   const int pyexitcode = PyRun_AnyFileExFlags (fp, pyfile.c_str(), false, NULL);
@@ -602,7 +601,7 @@ main_cleanup ()
 
   // misc cleanups
   Bse::objects_debug_leaks();
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 
 }
 
@@ -622,10 +621,9 @@ echo_test_handler (const std::string &msg)
 static void
 bst_init_aida_idl()
 {
-  using namespace Rapicorn::Aida;
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
-  ClientConnectionP connection = Bse::init_server_connection();
+  Aida::ClientConnectionP connection = Bse::init_server_connection();
   assert (connection != NULL);
   bse_server = Bse::init_server_instance();
   assert (bse_server != NULL);
@@ -639,7 +637,7 @@ bst_init_aida_idl()
   // perform Bse Aida tests
   if (0)
     {
-      Rapicorn::printerr ("bse_server: %s\n", bse_server.debug_name());
+      Bse::printerr ("bse_server: %s\n", bse_server.debug_name());
       Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
@@ -888,7 +886,7 @@ bst_exit_print_version (void)
   printout ("\n");
   printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
-  printout ("%s", Rapicorn::cpu_info().c_str());
+  printout ("%s", Bse::cpu_info().c_str());
   printout ("\n");
   printout ("Binaries:        %s\n", Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
   printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
@@ -1055,7 +1053,7 @@ beast_show_about_box (void)
   if (!GTK_WIDGET_VISIBLE (beast_splash))
     {
       bst_splash_set_title (beast_splash, _("BEAST About"));
-      bst_splash_update_entity (beast_splash, Rapicorn::string_format (_("BEAST Version %s"), Internal::buildid()));
+      bst_splash_update_entity (beast_splash, Bse::string_format (_("BEAST Version %s"), Internal::buildid()));
       bst_splash_update_item (beast_splash, _("Contributions made by:"));
       bst_splash_animate_strings (beast_splash, contributors);
     }

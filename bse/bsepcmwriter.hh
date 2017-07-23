@@ -15,7 +15,7 @@
 
 /* --- BsePcmWriter  --- */
 struct BsePcmWriter : BseItem {
-  Bse::Mutex	mutex;
+  std::mutex	mutex;
   guint		open : 1;
   guint		broken : 1;
   gint		fd;

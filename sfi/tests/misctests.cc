@@ -3,12 +3,136 @@
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
 #include <sfi/sfitests.hh>
+#include <sfi/path.hh>
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */
 #include <math.h>
 
 using namespace Bse;
+
+struct TestChain;
+static const TestChain *global_test_chain = NULL;
+
+struct TestChain {
+  std::string           name;
+  std::function<void()> func;
+  const TestChain      *const next;
+  TestChain (std::function<void()> tfunc, const std::string &tname) :
+    name (tname), func (tfunc), next (global_test_chain)
+  {
+    assert_return (next == global_test_chain);
+    global_test_chain = this;
+  }
+};
+
+static void
+run_test_chain()
+{
+  for (const TestChain *t = global_test_chain; t; t = t->next)
+    {
+      printout ("  ....     %s", t->name);
+      fflush (stdout);
+      t->func();
+      printout ("\r  PASS     %s\n", t->name);
+    }
+}
+
+#define ADD_TEST(fun)   static const TestChain BSE_CPP_PASTE2 (__testchain__, __LINE__) (fun, BSE_CPP_STRINGIFY (fun))
+
+static void
+test_paths()
+{
+  String p, s;
+  // Path::join
+  s = Path::join ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+#if BSE_DIRCHAR == '/'
+  p = "0/1/2/3/4/5/6/7/8/9/a/b/c/d/e/f";
+#else
+  p = "0\\1\\2\\3\\4\\5\\6\\7\\8\\9\\a\\b\\c\\d\\e\\f";
+#endif
+  TCMP (s, ==, p);
+  // Path::searchpath_join
+  s = Path::searchpath_join ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+#if BSE_SEARCHPATH_SEPARATOR == ';'
+  p = "0;1;2;3;4;5;6;7;8;9;a;b;c;d;e;f";
+#else
+  p = "0:1:2:3:4:5:6:7:8:9:a:b:c:d:e:f";
+#endif
+  TCMP (s, ==, p);
+  // Path
+  bool b = Path::isabs (p);
+  TCMP (b, ==, false);
+  const char dirsep[2] = { BSE_DIRCHAR, 0 };
+#if BSE_DIRCHAR == '/'
+  s = Path::join (dirsep, s);
+#else
+  s = Path::join ("C:\\", s);
+#endif
+  b = Path::isabs (s);
+  TCMP (b, ==, true);
+  s = Path::skip_root (s);
+  TCMP (s, ==, p);
+  // TASSERT (Path::dir_separator == "/" || Path::dir_separator == "\\");
+  TASSERT (BSE_SEARCHPATH_SEPARATOR == ':' || BSE_SEARCHPATH_SEPARATOR == ';');
+  TCMP (Path::basename ("simple"), ==, "simple");
+  TCMP (Path::basename ("skipthis" + String (dirsep) + "file"), ==, "file");
+  TCMP (Path::basename (String (dirsep) + "skipthis" + String (dirsep) + "file"), ==, "file");
+  TCMP (Path::dirname ("file"), ==, ".");
+  TCMP (Path::dirname ("dir" + String (dirsep)), ==, "dir");
+  TCMP (Path::dirname ("dir" + String (dirsep) + "file"), ==, "dir");
+  TCMP (Path::cwd(), !=, "");
+  TCMP (Path::check (Path::join (Path::cwd(), "..", Path::basename (Path::cwd())), "rd"), ==, true); // ../. should be a readable directory
+  TCMP (Path::isdirname (""), ==, false);
+  TCMP (Path::isdirname ("foo"), ==, false);
+  TCMP (Path::isdirname ("foo/"), ==, true);
+  TCMP (Path::isdirname ("/foo"), ==, false);
+  TCMP (Path::isdirname ("foo/."), ==, true);
+  TCMP (Path::isdirname ("foo/.."), ==, true);
+  TCMP (Path::isdirname ("foo/..."), ==, false);
+  TCMP (Path::isdirname ("foo/..../"), ==, true);
+  TCMP (Path::isdirname ("/."), ==, true);
+  TCMP (Path::isdirname ("/.."), ==, true);
+  TCMP (Path::isdirname ("/"), ==, true);
+  TCMP (Path::isdirname ("."), ==, true);
+  TCMP (Path::isdirname (".."), ==, true);
+  TCMP (Path::expand_tilde (""), ==, "");
+  const char *env_home = getenv ("HOME");
+  if (env_home)
+    TCMP (Path::expand_tilde ("~"), ==, env_home);
+  const char *env_logname = getenv ("LOGNAME");
+  if (env_home && env_logname)
+    TCMP (Path::expand_tilde ("~" + String (env_logname)), ==, env_home);
+  TCMP (Path::searchpath_multiply ("/:/tmp", "foo:bar"), ==, "/foo:/bar:/tmp/foo:/tmp/bar");
+  const String abs__file__ = Path::abspath (__TOPDIR__ "sfi/tests/" __FILE__);
+  TCMP (Path::searchpath_list ("/:" + abs__file__, "e"), ==, StringVector ({ "/", abs__file__ }));
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/"), ==, false);
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/foo"), ==, false); // false because "/foo" is file search
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/foo/"), ==, true); // true because "/foo/" is dir search
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar"), ==, true); // file search matches /bar
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar/"), ==, true); // dir search matches /bar
+}
+ADD_TEST (test_paths);
+
+static void
+test_timestamps()
+{
+  const uint64 b1 = timestamp_benchmark();
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_resolution() > 0);
+  uint64 c = monotonic_counter();
+  for (size_t i = 0; i < 999999; i++)
+    {
+      const uint64 last = c;
+      c = monotonic_counter();
+      TASSERT (c > last);
+    }
+  const uint64 b2 = timestamp_benchmark();
+  TASSERT (b1 < b2);
+}
+ADD_TEST (test_timestamps);
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
@@ -52,11 +176,11 @@ test_time (void)
   t = sfi_time_system ();
   if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
     {
-      TACK ();
+      TOK ();
       t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
     }
   else
-    TICK ();
+    TOK ();
   t /= SFI_USEC_FACTOR;
   t *= SFI_USEC_FACTOR;
   str = sfi_time_to_string (t);
@@ -75,7 +199,7 @@ test_time (void)
     {
       t = sfi_time_from_string_err (time_strings[i], &error);
       if (!error)
-	TICK ();
+	TOK ();
       else
 	printout ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
@@ -651,6 +775,12 @@ test_vmarshals (void)
   sfi_seq_unref (seq);
 }
 
+static int
+my_compare_func (const void*, const void*)
+{
+  RAPICORN_BACKTRACE();
+  exit (0);
+}
 
 static void
 test_sfidl_seq (void)
@@ -735,13 +865,22 @@ int
 main (int   argc,
       char *argv[])
 {
+  if (argc >= 2 && String ("--backtrace") == argv[1])
+    {
+      char dummy_array[3] = { 1, 2, 3 };
+      qsort (dummy_array, 3, 1, my_compare_func);
+    }
+
   sfi_init_test (&argc, argv);
+
   test_types_init ();
+
   if (0)
     {
       generate_vmarshal_code ();
       return 0;
     }
+  run_test_chain();
   test_notes ();
   test_time ();
   test_renames ();

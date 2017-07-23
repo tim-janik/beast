@@ -1026,10 +1026,21 @@ g_scanner_new64 (const GScannerConfig *config_templ)
   return g_scanner_new (config_templ);
 }
 
-
 #include "../config/config.h"
 
 namespace Bse {
+
+void
+assertion_failed (const char *file, uint line, const char *expr)
+{
+  return Aida::assertion_failed (file, line, expr);
+}
+
+void
+assertion_failed_hook (const std::function<void()> &hook)
+{
+  return Aida::assertion_failed_hook (hook);
+}
 
 // == BSE_INSTALLPATH ==
 static String installpath_topdir;

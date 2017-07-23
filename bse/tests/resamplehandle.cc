@@ -165,7 +165,7 @@ generate_test_signal (vector<Sample> &signal,
           cached_window[i] = bse_window_blackman (wpos);
         }
     }
-  string signal_cache_key = Rapicorn::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  string signal_cache_key = Bse::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
   static map<string, vector<Sample> > signal_cache;
   vector<Sample>& cached_signal = signal_cache[signal_cache_key];
   if (cached_signal.empty())
@@ -458,8 +458,8 @@ main (int   argc,
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
-  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
-  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
+  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   test_c_api ("FPU");

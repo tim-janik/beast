@@ -48,7 +48,7 @@ bse_pcm_writer_class_init (BsePcmWriterClass *klass)
 static void
 bse_pcm_writer_init (BsePcmWriter *self)
 {
-  new (&self->mutex) Bse::Mutex();
+  new (&self->mutex) std::mutex();
 }
 
 static void
@@ -62,7 +62,7 @@ bse_pcm_writer_finalize (GObject *object)
     }
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
-  self->mutex.~Mutex();
+  self->mutex.~mutex();
 }
 
 Bse::Error

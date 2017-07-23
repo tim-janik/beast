@@ -3,6 +3,8 @@
 #define __SFI_WRAPPER_H__
 
 #include <sfi/bcore.hh>
+#include <sfi/path.hh>
+#include <mutex>
 
 #ifdef  BSE_CONVENIENCE
 using Bse::uint8;

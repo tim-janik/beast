@@ -103,7 +103,7 @@ string_to_cescape (const String &str)   // FIXME: move
 /* --- storage helpers --- */
 #define	gstring_puts(gstring, string)	g_string_append (gstring, string)
 #define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
-#define	gstring_format(gstring, ...)	g_string_append (gstring, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define	gstring_format(gstring, ...)	g_string_append (gstring, Bse::string_format (__VA_ARGS__).c_str())
 
 static void
 gstring_break (GString  *gstring,

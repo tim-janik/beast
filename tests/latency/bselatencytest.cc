@@ -76,14 +76,14 @@ class LatencyTest : public LatencyTestBase {
       if (Rapicorn::Path::check (midi_output_name, "pw")) /* writable pipe */
         midi_output_file = fopen (midi_output_name.c_str(), "w");
       if (!midi_output_file)
-        test_error ("failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
+        fatal_error ("failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
       if (logfile_name == "" || !midi_output_file)
         logfile = stdout;
       else
 	{
 	  logfile = fopen (logfile_name.c_str(), "w");
 	  if (!logfile)
-            test_error ("failed to open log file \"%s\": %s\n", logfile_name.c_str(), g_strerror (errno));
+            fatal_error ("failed to open log file \"%s\": %s\n", logfile_name.c_str(), g_strerror (errno));
 	}
     }
     void

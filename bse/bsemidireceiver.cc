@@ -20,7 +20,7 @@ using namespace std;
 #define VDUMP(...)      Bse::dump ("midi-voice", __VA_ARGS__)
 
 /* --- variables --- */
-static Bse::Mutex global_midi_mutex;
+static std::mutex global_midi_mutex;
 #define	BSE_MIDI_RECEIVER_LOCK()        global_midi_mutex.lock()
 #define	BSE_MIDI_RECEIVER_UNLOCK()      global_midi_mutex.unlock()
 

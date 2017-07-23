@@ -147,11 +147,11 @@ Bse::Error bse_storage_flush_fd               (BseStorage             *self,
 
 
 /* --- reading --- */
-#define      bse_storage_error(s, ...)          bse_storage_error_str (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define      bse_storage_error(s, ...)          bse_storage_error_str (s, Bse::string_format (__VA_ARGS__).c_str())
 void         bse_storage_error_str              (BseStorage *self, const std::string &string);
-#define      bse_storage_warn(s, ...)           bse_storage_warn_str (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define      bse_storage_warn(s, ...)           bse_storage_warn_str (s, Bse::string_format (__VA_ARGS__).c_str())
 void         bse_storage_warn_str               (BseStorage *self, const std::string &string);
-#define      bse_storage_warn_skip(s, ...)      bse_storage_skip (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define      bse_storage_warn_skip(s, ...)      bse_storage_skip (s, Bse::string_format (__VA_ARGS__).c_str())
 GTokenType   bse_storage_skip                   (BseStorage *self, const std::string &string);
 GTokenType   bse_storage_parse_param_value      (BseStorage             *self,
                                                  GValue                 *value,
@@ -197,6 +197,6 @@ void              bse_storage_blob_clean_files       (void);
 #define bse_storage_break(s)            sfi_wstore_break ((s)->wstore)
 #define bse_storage_putc(s,c)           sfi_wstore_putc ((s)->wstore, c)
 #define bse_storage_puts(s,b)           sfi_wstore_puts ((s)->wstore, b)
-#define bse_storage_printf(s, ...)      bse_storage_puts (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define bse_storage_printf(s, ...)      bse_storage_puts (s, Bse::string_format (__VA_ARGS__).c_str())
 
 #endif /* __BSE_STORAGE_H__ */

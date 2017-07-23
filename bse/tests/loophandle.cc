@@ -160,14 +160,14 @@ check_loop (GslDataHandle *src_handle,
   error = gsl_data_handle_open (loop_handle);
   if (error != 0)
     {
-      test_error ("loop_handle open failed: %s", bse_error_blurb (error));
+      Bse::fatal_error ("loop_handle open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (loop_handle_reference);
   if (error != 0)
     {
-      test_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
+      Bse::fatal_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
@@ -179,7 +179,7 @@ check_loop (GslDataHandle *src_handle,
 
       if (a != b)
 	{
-	  test_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
+	  Bse::fatal_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
 	  exit (1);
 	}
     }

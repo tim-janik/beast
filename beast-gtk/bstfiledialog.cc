@@ -499,7 +499,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
 {
   Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (super_proxy));
   Bse::Error error = project.store_bse (super, file_name, self_contained);
-  const String title = Rapicorn::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
+  const String title = Bse::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */

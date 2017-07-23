@@ -63,7 +63,7 @@ struct BseObject : GObject {
   operator               Bse::ObjectImpl* ()          { return cxxobject_; }
   // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
   template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
-  template<class T> struct DERIVES_shared_ptr<T, Rapicorn::void_t< typename T::element_type > > :
+  template<class T> struct DERIVES_shared_ptr<T, Bse::void_t< typename T::element_type > > :
   std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
   // as<T*>()
   template<class ObjectImplPtr, typename ::std::enable_if<std::is_pointer<ObjectImplPtr>::value, bool>::type = true>
@@ -71,7 +71,7 @@ struct BseObject : GObject {
   {
     static_assert (std::is_pointer<ObjectImplPtr>::value, "");
     typedef typename std::remove_pointer<ObjectImplPtr>::type ObjectImplT;
-    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
     return dynamic_cast<ObjectImplPtr> (cxxobject_);
   }
   // as<shared_ptr<T>>()
@@ -79,9 +79,9 @@ struct BseObject : GObject {
   ObjectImplP            as ()
   {
     typedef typename ObjectImplP::element_type ObjectImplT;
-    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
     ObjectImplT *impl = this && cxxobject_ ? as<ObjectImplT*>() : NULL;
-    return impl ? Rapicorn::shared_ptr_cast<ObjectImplT> (impl) : NULL;
+    return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
 

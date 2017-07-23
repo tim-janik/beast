@@ -15,7 +15,7 @@ struct _GslDataCache
 {
   GslDataHandle	       *dhandle;
   guint			open_count;
-  Bse::Mutex            mutex;
+  std::mutex            mutex;
   guint			ref_count;
   guint			node_size;	        /* power of 2, const for all dcaches */
   guint			padding;	        /* n_values around blocks */

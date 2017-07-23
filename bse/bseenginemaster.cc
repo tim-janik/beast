@@ -295,12 +295,13 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("sync");
       master_need_reflow |= TRUE;
       master_schedule_discard();
-      job->sync.lock_mutex->lock();
-      *job->sync.lock_p = TRUE;
-      job->sync.lock_cond->signal();
-      while (*job->sync.lock_p)
-        job->sync.lock_cond->wait (*job->sync.lock_mutex);
-      job->sync.lock_mutex->unlock();
+      {
+        std::unique_lock<std::mutex> sync_guard (*job->sync.lock_mutex);
+        *job->sync.lock_p = TRUE;
+        job->sync.lock_cond->notify_one();
+        while (*job->sync.lock_p)
+          job->sync.lock_cond->wait (sync_guard);
+      }
       break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
@@ -911,7 +912,7 @@ engine_start_slaves ()
 {
   assert_return (slaves_running == false);
   slaves_running = true;
-  const uint n_cpus = Rapicorn::ThisThread::online_cpus();
+  const uint n_cpus = Bse::ThisThread::online_cpus();
   const uint n_slaves = std::max (1u, n_cpus) - 1;
   for (uint i = 0; i < n_slaves; i++)
     slave_threads.push_back (new std::thread (engine_run_slave));
@@ -944,7 +945,7 @@ void
 engine_run_slave ()
 {
   std::string myid = Bse::string_format ("DSP #%u", ++slave_counter);
-  Bse::TaskRegistry::add (myid, Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add (myid, Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
   while (slaves_running)
     {
       thread_process_nodes (bse_engine_block_size(), NULL); // FIXME: merge profile data
@@ -953,7 +954,7 @@ engine_run_slave ()
         break;
       slave_condition.wait (slave_lock);
     }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 
 } // BseInternal
@@ -1199,7 +1200,7 @@ MasterThread::MasterThread (const std::function<void()> &caller_wakeup) :
 {
   assert_return (caller_wakeup_ != NULL);
   if (event_fd_.open() != 0)
-    fatal ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
+    warning ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
 }
 
 static std::atomic<bool> master_thread_running { false };
@@ -1207,7 +1208,7 @@ static std::atomic<bool> master_thread_running { false };
 void
 MasterThread::master_thread()
 {
-  Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("DSP #1", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
 
   /* assert pollfd equality, since we're simply casting structures */
   static_assert (sizeof (struct pollfd) == sizeof (GPollFD), "");
@@ -1250,7 +1251,7 @@ MasterThread::master_thread()
       if (bse_engine_has_garbage ())
 	caller_wakeup_();
     }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 
 static std::atomic<MasterThread*> master_thread_singleton { NULL };
@@ -1277,7 +1278,7 @@ MasterThread::start (const std::function<void()> &caller_wakeup)
   master_thread_singleton = mthread;
   assert_return (master_thread_running == false);
   if (std::atexit (reap_master_thread) != 0)
-    fatal ("BSE: failed to install master thread reaper");
+    warning ("BSE: failed to install master thread reaper");
   master_thread_running = true;
   mthread->thread_ = std::thread (&MasterThread::master_thread, mthread);
   BseInternal::engine_start_slaves();

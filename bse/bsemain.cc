@@ -18,7 +18,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
-using namespace Rapicorn;
+
+using namespace Bse;
+namespace Test = Rapicorn::Test;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
@@ -165,7 +167,7 @@ bse_init_intern()
   // unit testing message
   if (initialized_for_unit_testing > 0)
     {
-      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+      StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
       Test::tprintout ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
@@ -215,9 +217,9 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
 static std::atomic<bool> main_loop_thread_running { true };
 
 static void
-bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
+bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 {
-  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("BSE Core", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
 
   bse_init_intern ();
 
@@ -233,7 +235,7 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
       g_main_context_iteration (bse_main_context, TRUE);
     }
 
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid()); // see bse_init_intern
 }
 
 static void
@@ -252,8 +254,8 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
 
   // start main BSE thread
   if (std::atexit (reap_main_loop_thread) != 0)
-    Bse::fatal ("BSE: failed to install main thread reaper");
-  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
+    Bse::warning ("BSE: failed to install main thread reaper");
+  auto *init_queue = new Bse::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
@@ -264,7 +266,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
 struct AsyncData {
   const gchar *client;
   const std::function<void()> &caller_wakeup;
-  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
+  Bse::AsyncBlockingQueue<SfiGlueContext*> result_queue;
 };
 
 static gboolean
@@ -558,7 +560,7 @@ init_aida_idl ()
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
   Aida::ServerConnectionP bseserver_connection =
     Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
-                                                    shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
+                                                    Bse::shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
   assert_return (bseserver_connection != NULL);
   static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (bseserver_connection); // keep connection alive for entire runtime
   (void) static_connection;

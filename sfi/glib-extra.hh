@@ -5,6 +5,11 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <string>
+#include <functional>
+
+#include <rapicorn-core.hh>
+
+namespace Aida = Rapicorn::Aida;
 
 typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*64 in format strings.
 
@@ -55,9 +60,9 @@ void g_object_disconnect_any (gpointer object,
                               gpointer data); /* workaorund for g_object_disconnect() */
 
 // == printf variants ==
-#define g_intern_format(...)            g_intern_string (Rapicorn::string_format (__VA_ARGS__).c_str())
-#define	g_string_add_format(gstr, ...)  g_string_append (gstr, Rapicorn::string_format (__VA_ARGS__).c_str())
-#define g_strdup_format(...)            g_strdup (Rapicorn::string_format (__VA_ARGS__).c_str())
+#define g_intern_format(...)            g_intern_string (::Bse::string_format (__VA_ARGS__).c_str())
+#define g_string_add_format(gstr, ...)  g_string_append (gstr, ::Bse::string_format (__VA_ARGS__).c_str())
+#define g_strdup_format(...)            g_strdup (::Bse::string_format (__VA_ARGS__).c_str())
 
 /* --- string functions --- */
 gchar**		g_straddv	  (gchar	**str_array,
@@ -359,9 +364,14 @@ void        installpath_override (const std::string &topdir);
 /// Provide a string containing the BSE library version number.
 std::string version ();
 
+/// Function used internally to print an error message for failing assertions.
+void assertion_failed (const char *file, uint line, const char *expr);
+/// Install hook function to be called after assertion_failed().
+void assertion_failed_hook (const std::function<void()> &hook);
+
 // == Translate i18n strings ==
 const char* bse_gettext_domain ();
-const char* (_)                (const char        *string);
+const char* (_)                (const char        *string) __attribute__ ((__format_arg__ (1)));
 std::string (_)                (const std::string &string);
 
 } // Bse

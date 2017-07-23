@@ -9,8 +9,12 @@
 /// The Sfidl namespace contains implementation and API of the Sfi IDL compiler.
 namespace Sfidl {
 
-/* lots of helpers like string_from_int, but also typedefs like String */
-using namespace Rapicorn;
+using Rapicorn::String;
+using Rapicorn::string_tolower;
+using Rapicorn::printerr;
+using Rapicorn::string_from_int;
+using Rapicorn::string_from_uint;
+using Rapicorn::string_format;
 
 /* common data structures */
 using std::list;

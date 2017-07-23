@@ -387,7 +387,7 @@ bst_param_new_rec (GParamSpec *pspec,
 static void
 aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
 {
-  Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
   Any any;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
     {
@@ -403,7 +403,7 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
     case G_TYPE_STRING:
       if (G_VALUE_TYPE (value) == SFI_TYPE_CHOICE)      // sfi_pspec_choice
         {
-          const Rapicorn::Aida::EnumInfo &enum_info = *(const Rapicorn::Aida::EnumInfo*) param->bdata[1].v_pointer;
+          const Aida::EnumInfo &enum_info = *(const Aida::EnumInfo*) param->bdata[1].v_pointer;
           assert_return (NULL != &enum_info);
           any.set_enum (enum_info, enum_info.value_from_string (sfi_value_get_choice (value)));
         }
@@ -420,7 +420,7 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
 static void
 aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 {
-  Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
   Any any = apa->get();
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
@@ -440,7 +440,7 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
     case G_TYPE_STRING:
       if (G_PARAM_SPEC_VALUE_TYPE (param->pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
         {
-          const Rapicorn::Aida::EnumInfo &enum_info = any.get_enum_info();
+          const Aida::EnumInfo &enum_info = any.get_enum_info();
           g_value_init (&value, SFI_TYPE_CHOICE);
           sfi_value_set_choice (&value, enum_info.value_to_string (any.as_int64()).c_str());
           param->bdata[1].v_pointer = (void*) &enum_info;
@@ -465,7 +465,7 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 static void
 aida_parameter_binding_destroy (GxkParam *param)
 {
-  Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
   param->bdata[0].v_pointer = NULL;
   delete cxxparam;
 }
@@ -473,7 +473,7 @@ aida_parameter_binding_destroy (GxkParam *param)
 static gboolean
 aida_parameter_binding_check_writable (GxkParam *param)
 {
-  // Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  // Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
   // assert (cxxparam);
   return true;
 }
@@ -488,17 +488,17 @@ static GxkParamBinding aida_parameter_binding = {
 };
 
 GxkParam*
-bst_param_new_aida_parameter (GParamSpec *pspec, const Rapicorn::Aida::Parameter &aparameter)
+bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparameter)
 {
   GxkParam *param = gxk_param_new (pspec, &aida_parameter_binding, NULL);
-  Rapicorn::Aida::Parameter *cxxparam = new Rapicorn::Aida::Parameter (aparameter);
+  Aida::Parameter *cxxparam = new Aida::Parameter (aparameter);
   param->bdata[0].v_pointer = cxxparam;
   param->bdata[1].v_pointer = NULL;
   auto handler = [param] (const String &what) {
     bool match = what == param->pspec->name;
     if (!match && what.size() == strlen (param->pspec->name))
       {
-        const String pname = Rapicorn::string_canonify (Rapicorn::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
+        const String pname = Bse::string_canonify (Bse::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
         match = what == pname;
       }
     if (match)

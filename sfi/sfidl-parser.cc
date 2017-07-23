@@ -183,25 +183,25 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
 
 bool Parser::isChoice(const String& type) const
 {
-  map<String,int>::const_iterator i = typeMap.find (type);
+  std::map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdChoice);
 }
 
 bool Parser::isSequence(const String& type) const
 {
-  map<String,int>::const_iterator i = typeMap.find (type);
+  std::map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdSequence);
 }
 
 bool Parser::isRecord(const String& type) const
 {
-  map<String,int>::const_iterator i = typeMap.find (type);
+  std::map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdRecord);
 }
 
 bool Parser::isClass(const String& type) const
 {
-  map<String,int>::const_iterator i = typeMap.find (type);
+  std::map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdClass);
 }
 
@@ -356,7 +356,7 @@ bool Parser::haveIncluded (const String& filename) const
 
 static void collectImplIncludes (set<String>& result,
 				 const String& root,
-				 map<String, set<String> >& implIncludeMap)
+				 std::map<String, set<String> >& implIncludeMap)
 {
   if (result.count (root) == 0)
     {
@@ -371,7 +371,7 @@ static void collectImplIncludes (set<String>& result,
 void Parser::preprocess (const String& filename, bool includeImpl)
 {
   static stack<String> includeStack;
-  static map<String, set<String> > implIncludeMap;
+  static std::map<String, set<String> > implIncludeMap;
 
   // make a note whenever "file 1" implincludes "file 2"
   if (!includeStack.empty() && includeImpl)
@@ -723,7 +723,7 @@ namespace {
 class ClassCompare {
 public:
   const Parser& parser;
-  map<String, int> inheritanceLevel;
+  std::map<String, int> inheritanceLevel;
 
   ClassCompare (const Parser& parser) : parser (parser)
   {

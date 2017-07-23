@@ -6,6 +6,11 @@
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 
+// == Compatibility Imports ==
+namespace Bse {
+using Rapicorn::ThreadInfo;
+} // Bse
+
 /* --- prototype --- */
 static GHashTable*	glue_gc_hash_table_new	(void);
 
@@ -41,7 +46,7 @@ sfi_glue_fetch_context (const gchar *floc)
   return context;
 }
 
-class RingPtrDataKey : public Rapicorn::DataKey<SfiRing*> {
+class RingPtrDataKey : public Bse::DataKey<SfiRing*> {
   virtual void destroy (SfiRing *ring) override
   {
     if (ring)

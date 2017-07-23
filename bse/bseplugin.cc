@@ -164,7 +164,7 @@ bse_plugin_init_builtins (void)
 static guint64
 runtime_export_config (void)
 {
-  const std::string cinfo = Rapicorn::cpu_info();
+  const std::string cinfo = Bse::cpu_info();
   guint64 emask = 0;
   if (cinfo.find (" MMX ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_MMX;

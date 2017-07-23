@@ -1164,7 +1164,7 @@ bse_item_undo_open_str (void *item, const std::string &string)
   else
     {
       ustack = bse_undo_stack_dummy ();
-      bse_undo_group_open (ustack, Rapicorn::string_format ("DUMMY-GROUP(%s)", string).c_str());
+      bse_undo_group_open (ustack, Bse::string_format ("DUMMY-GROUP(%s)", string).c_str());
     }
   return ustack;
 }

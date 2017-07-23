@@ -124,7 +124,7 @@ void          bse_item_set_property_undoable (BseItem         *self,
                                               const GValue    *value);
 /* undo admin functions */
 BseUndoStack* bse_item_undo_open_str         (void *item, const std::string &string);
-#define       bse_item_undo_open(item,...)   bse_item_undo_open_str (item, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define       bse_item_undo_open(item,...)   bse_item_undo_open_str (item, Bse::string_format (__VA_ARGS__).c_str())
 void          bse_item_undo_close            (BseUndoStack    *ustack);
 /* undo helper functions */
 void          bse_item_push_undo_proc        (gpointer         item,

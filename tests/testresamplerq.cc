@@ -13,7 +13,7 @@
 using namespace Bse;
 
 using Bse::Resampler::Resampler2;
-using Rapicorn::AlignedArray;
+using Bse::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
@@ -222,8 +222,8 @@ main (int argc, char **argv)
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
-  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
-  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
+  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   if (argc > 1)

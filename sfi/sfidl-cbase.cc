@@ -520,7 +520,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const S
   if (rfree != "")
     printf ("  %s _retval_conv;\n", cTypeRet (mdef.result.type));
 
-  map<String, String> cname;
+  std::map<String, String> cname;
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
       String conv = createTypeCode (pi->type, pi->name, MODEL_VCALL_CONV);

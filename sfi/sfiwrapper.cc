@@ -30,6 +30,6 @@ sfi_init (int *argcp, char **argv, const Bse::StringVector &args)
 void
 sfi_url_show (const char *url)
 {
-  if (!Rapicorn::url_show (url))
+  if (!Bse::url_show (url))
     Bse::warning ("Failed to start browser for URL: %s", url);
 }
