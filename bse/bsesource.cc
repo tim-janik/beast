@@ -2080,4 +2080,19 @@ SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
   return osource->as<SourceIfaceP>();
 }
 
+bool
+SourceImpl::has_output (int ochannel)
+{
+  BseSource *self = as<BseSource*>();
+  return bse_source_has_output (self, ochannel);
+}
+
+bool
+SourceImpl::has_outputs ()
+{
+  BseSource *self = as<BseSource*>();
+  return self->outputs != NULL;
+}
+
+
 } // Bse
