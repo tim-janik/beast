@@ -482,7 +482,7 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
 static void
 check_computed_response (const vector<FilterTest>& filter_tests)
 {
-  Bse::Test::tprintout ("---> checking computed filter responses:\n");
+  TNOTE ("---> checking computed filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
 }
@@ -490,7 +490,7 @@ check_computed_response (const vector<FilterTest>& filter_tests)
 static void
 check_scanned_response (const vector<FilterTest>& filter_tests)
 {
-  Bse::Test::tprintout ("---> checking scanned filter responses:\n");
+  TNOTE ("---> checking scanned filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
 }
