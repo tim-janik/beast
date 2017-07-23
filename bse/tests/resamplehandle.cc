@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>
@@ -16,7 +16,7 @@ using std::string;
 using std::max;
 using std::min;
 using std::map;
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 
 static void
 read_through (GslDataHandle *handle)
@@ -93,7 +93,7 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      Rapicorn::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
+      TNOTE ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
@@ -124,7 +124,7 @@ check (const char           *up_down,
         for (uint j = 0; j < RUNS; j++)
           read_through (rhandle);
       };
-      Rapicorn::Test::Timer timer (0.03);
+      Bse::Test::Timer timer (0.03);
       const double bench_time = timer.benchmark (loop);
       const double input_samples_per_second = RUNS * input.size() / bench_time;
       const double output_samples_per_second = RUNS * gsl_data_handle_n_values (rhandle) / bench_time;
@@ -132,11 +132,11 @@ check (const char           *up_down,
              samplestr, (input_samples_per_second + output_samples_per_second) / 2.0 / 44100.0,
              RUNS * bytes_per_run / bench_time / 1048576.);
 #if 0
-      tprintout ("  NOTE     %-28s : %+.14f samples/second\n", samplestr, samples_per_second);
-      tprintout ("  NOTE     %-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
-      tprintout ("  NOTE     samples / second = %f\n", samples_per_second);
-      tprintout ("  NOTE     which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      tprintout ("  NOTE     or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      TNOTE ("%-28s : %+.14f samples/second\n", samplestr, samples_per_second);
+      TNOTE ("%-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
+      TNOTE ("samples / second = %f\n", samples_per_second);
+      TNOTE ("which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      TNOTE ("or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
 #endif
     }
 
@@ -457,7 +457,7 @@ main (int   argc,
       char *argv[])
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
+  Bse::Test::init (&argc, argv);
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test

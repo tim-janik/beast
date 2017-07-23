@@ -7,7 +7,7 @@
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>

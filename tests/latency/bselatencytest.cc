@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bselatencytest.genidl.hh"
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <sys/time.h>
 #include <string>
 #include <errno.h>

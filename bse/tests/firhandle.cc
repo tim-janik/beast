@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
@@ -12,7 +12,7 @@
 
 using namespace Bse;
 
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 using std::vector;
 using std::min;
 using std::max;
@@ -244,7 +244,7 @@ test_with_sine_sweep (FirHandleType type)
         for (uint j = 0; j < RUNS; j++)
           read_through (fir_handle_sin);
       };
-      Rapicorn::Test::Timer timer (0.03);
+      Bse::Test::Timer timer (0.03);
       const double bench_time = timer.benchmark (loop);
       String name = string_format ("%s O64 mono", handle_name (type));
       const double samples_per_second = RUNS * sweep_sin.size() / bench_time;

@@ -2,7 +2,7 @@
 #include <bse/gslwavechunk.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/bsemain.hh>
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -352,8 +352,6 @@ multi_channel_tests()
             }
           if (!skip)
             TOK();
-          else
-            fprintf (stderr, "!");
         }
     }
   TDONE();
@@ -368,7 +366,7 @@ main (gint   argc,
   reversed_datahandle_test();
   simple_loop_tests();
   multi_channel_tests();
-  if (Rapicorn::Test::slow())
+  if (Bse::Test::slow())
     brute_force_loop_tests();
   return 0;
 }

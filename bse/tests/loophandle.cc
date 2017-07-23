@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bse.hh>
@@ -154,7 +154,7 @@ check_loop (GslDataHandle *src_handle,
 
   GslDataPeekBuffer peek_buffer		  = { +1 /* incremental direction */, 0, };
   GslDataPeekBuffer peek_buffer_reference = { +1 /* incremental direction */, 0, };
-  Bse::info ("check_loop<%lld,%lld>", loop_start, loop_end);
+  TNOTE ("check_loop<%lld,%lld>", loop_start, loop_end);
 
   Bse::Error error;
   error = gsl_data_handle_open (loop_handle);

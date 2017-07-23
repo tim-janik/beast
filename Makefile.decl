@@ -16,6 +16,7 @@ Q       = $(if $(findstring 1, $(V)) ,, @)
 QGEN    = $(Q:@=@echo '  GEN   ' $@; )
 QSTDERR = $(Q:@=2>/dev/null)
 QSTDOUT = $(Q:@=1>/dev/null)
+QDIE    = bash -c 'echo "  ERROR    $@: $$@" >&2; exit 127' _
 
 # == GITSTAMP ==
 # list of stamp files touched by commits

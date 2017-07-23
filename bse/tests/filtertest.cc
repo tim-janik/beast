@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/bsefilter.hh>
 #include <bse/bsemain.hh>
 #include <bse/gslfilter.hh> // FIXME
@@ -12,7 +12,7 @@
 #include <complex>
 
 using namespace Bse;
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 using std::max;
 using std::min;
 

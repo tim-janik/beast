@@ -15,8 +15,9 @@ sfi_public_headers = $(strip \
 	sfitime.hh	sfitypes.hh	sfivalues.hh	\
 	sfivisitors.hh	sfiustore.hh	\
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
-	sfitests.hh	sfi.hh						\
+			sfi.hh						\
 	gbsearcharray.hh \
+	testing.hh	\
 )
 sfi_all_sources = $(strip \
 	bcore.cc	formatter.cc	path.cc		platform.cc	strings.cc	\
@@ -27,6 +28,7 @@ sfi_all_sources = $(strip \
 	sfitime.cc	sfitypes.cc	sfivalues.cc	\
 	sfivisitors.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
+	testing.cc	\
 )
 sfi_extra_sources = $(strip \
 )

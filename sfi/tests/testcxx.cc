@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include "../sficxx.hh"
 #include <stdio.h>
 
@@ -23,7 +23,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, argv);
+  Bse::Test::init (&argc, argv);
 
   TSTART ("Test SfiString");
   TASSERT (sizeof (SfiString) == sizeof (const char*));

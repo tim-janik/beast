@@ -2,7 +2,7 @@
 #include <bse/bse.hh>
 #include <bse/bseieee754.hh>
 #include <bse/bsemain.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <stdio.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
