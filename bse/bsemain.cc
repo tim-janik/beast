@@ -168,7 +168,7 @@ bse_init_intern()
     {
       StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      Test::tprintout ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
+      TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
 }
 

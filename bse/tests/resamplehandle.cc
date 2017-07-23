@@ -93,7 +93,7 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      Bse::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
+      TNOTE ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
@@ -132,11 +132,11 @@ check (const char           *up_down,
              samplestr, (input_samples_per_second + output_samples_per_second) / 2.0 / 44100.0,
              RUNS * bytes_per_run / bench_time / 1048576.);
 #if 0
-      tprintout ("  NOTE     %-28s : %+.14f samples/second\n", samplestr, samples_per_second);
-      tprintout ("  NOTE     %-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
-      tprintout ("  NOTE     samples / second = %f\n", samples_per_second);
-      tprintout ("  NOTE     which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      tprintout ("  NOTE     or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      TNOTE ("%-28s : %+.14f samples/second\n", samplestr, samples_per_second);
+      TNOTE ("%-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
+      TNOTE ("samples / second = %f\n", samples_per_second);
+      TNOTE ("which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      TNOTE ("or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
 #endif
     }
 

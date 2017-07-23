@@ -186,21 +186,21 @@ diff (uint m, uint p, double *a1, double *a2, const char *str)
     {
       double a =  ABS (a1[n] - a2[n]);
       if (n < p)
-        Bse::Test::tprintout ("  TESTFFT  %3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
-                              n, ((float) n) / (float) m,
-                              a1[n], a2[n],
-                              a1[n] - a2[n],
-                              a1[n] / a2[n]);
+        TNOTE ("TESTFFT: %3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
+               n, ((float) n) / (float) m,
+               a1[n], a2[n],
+               a1[n] - a2[n],
+               a1[n] / a2[n]);
       d += a;
       max = MAX (max, a);
       min = MIN (min, a);
     }
-  Bse::Test::tprintout ("  TESTFFT  Diff sum: %.9f, ", d);
-  Bse::Test::tprintout ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
-  Bse::Test::tprintout ("noise: %u %u %u\n",
-                        g_bit_storage (1. / min),
-                        g_bit_storage (m / d),
-                        g_bit_storage (1. / max));
+  TNOTE ("TESTFFT: Diff sum: %.9f, ", d);
+  TNOTE ("TESTFFT: min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
+  TNOTE ("TESTFFT: noise: %u %u %u\n",
+         g_bit_storage (1. / min),
+         g_bit_storage (m / d),
+         g_bit_storage (1. / max));
   return d;
 }
 
