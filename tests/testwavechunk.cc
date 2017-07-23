@@ -352,8 +352,6 @@ multi_channel_tests()
             }
           if (!skip)
             TOK();
-          else
-            fprintf (stderr, "!");
         }
     }
   TDONE();
