@@ -2108,4 +2108,22 @@ SourceImpl::n_ochannels()
   return BSE_SOURCE_N_OCHANNELS (self);
 }
 
+void
+SourceImpl::set_pos (double x_pos, double y_pos)
+{
+  BseSource *self = as<BseSource*>();
+  const double epsilon = 1e-5;
+
+  if (fabs (x_pos - self->pos_x) > epsilon ||
+      fabs (y_pos - self->pos_y) > epsilon)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "set-xy-pos");
+      bse_item_set (self,
+                    "pos_x", x_pos,
+                    "pos_y", y_pos,
+                    NULL);
+      bse_item_undo_close (ustack);
+    }
+}
+
 } // Bse

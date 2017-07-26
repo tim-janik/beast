@@ -603,13 +603,21 @@ interface Source : Item {
   // Error set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
   // Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
   // Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
-  // void set_pos (float64 x_pos, float64 y_pos); ///< Set the x and y position of a module. In contrast to setting the position through ordinary object property setters, this function will not update the module position if the passed in arguments are sufficiently equal to the values already set on the object. As such, it does not record an extra undo step for setting properties to values they already have and if necessary turns setting of x and y positions into an atomic undo operation.
   // Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
   // Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
   // signal void probes (ProbeSeq a);
   // signal void io_changed ();
   // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
   // float64 pos_y = Range ("Position Y", "", STANDARD ":scale");
+  /** Set the x and y position of a module.
+   * In contrast to setting the position through ordinary object property
+   * setters, this function will not update the module position if the passed
+   * in arguments are sufficiently equal to the values already set on the
+   * object. As such, it does not record an extra undo step for setting
+   * properties to values they already have and if necessary turns setting
+   * of x and y positions into an atomic undo operation.
+   */
+  void set_pos (float64 x_pos, float64 y_pos);
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.

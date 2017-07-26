@@ -281,6 +281,7 @@ public:
   virtual bool         has_outputs          () override;
   virtual int          n_ichannels          () override;
   virtual int          n_ochannels          () override;
+  virtual void         set_pos              (double x_pos, double y_pos) override;
 };
 
 } // Bse
