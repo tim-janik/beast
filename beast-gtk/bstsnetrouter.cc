@@ -153,10 +153,12 @@ bst_snet_router_update_links (BstSNetRouter   *self,
         self->canvas_links = sfi_ring_append (self->canvas_links, link);
     }
 
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
   /* now we walk the (c)source's input channels, keep
    * existing links and create new ones on the fly
    */
-  for (int i = 0; i < bse_source_n_ichannels (csource->source); i++)
+  for (int i = 0; i < csource_source.n_ichannels(); i++)
     {
       guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
       for (j = 0; j < n_joints; j++)
@@ -641,6 +643,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
         {
           if (csource)
             {
+              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
               GtkWidget *choice;
               gchar *source_name = g_strconcat (bse_item_get_type_name (csource->source),
                                                 ": ",
@@ -649,16 +652,15 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               /* create popup sumenu */
               uint has_inputs = 0, monitor_ids = 1000000;
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModuleChannelPopup", NULL);
-              for (int i = 0; i < bse_source_n_ochannels (csource->source); i++)
+              for (int i = 0; i < csource_source.n_ochannels(); i++)
                 {
                   gchar *name = g_strdup_format ("%d: %s", i + 1, bse_source_ochannel_label (csource->source, i));
                   bst_choice_menu_add_choice_and_free (choice, BST_CHOICE (monitor_ids + i, name, NONE));
                   g_free (name);
                 }
               /* create popup */
-              for (int i = 0; has_inputs == 0 && i < bse_source_n_ichannels (csource->source); i++)
+              for (int i = 0; has_inputs == 0 && i < csource_source.n_ichannels(); i++)
                 has_inputs += bse_source_ichannel_get_n_joints (csource->source, i);
-              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
                                                 BST_CHOICE_TITLE (source_name),
                                                 BST_CHOICE_SEPERATOR,

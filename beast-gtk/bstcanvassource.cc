@@ -346,13 +346,16 @@ csource_info_update (BstCanvasSource *csource)
         gxk_scroll_text_aprintf (text, "Category: %s\n", cseq[0].category);
       gxk_scroll_text_pop_indent (text);
 
+      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
       /* input channels */
-      if (bse_source_n_ichannels (csource->source))
+      const size_t csource_source_n_ichannels = csource_source.n_ichannels();
+      if (csource_source_n_ichannels)
 	{
 	  gxk_scroll_text_aprintf (text, "\nInput Channels:\n");
 	  gxk_scroll_text_push_indent (text);
 	}
-      for (int i = 0; i < bse_source_n_ichannels (csource->source); i++)
+      for (size_t i = 0; i < csource_source_n_ichannels; i++)
 	{
           string = bse_source_ichannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
@@ -366,16 +369,17 @@ csource_info_update (BstCanvasSource *csource)
 	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
-      if (bse_source_n_ichannels (csource->source))
+      if (csource_source_n_ichannels)
 	gxk_scroll_text_pop_indent (text);
 
       /* output channels */
-      if (bse_source_n_ochannels (csource->source))
+      const size_t csource_source_n_ochannels = csource_source.n_ochannels();
+      if (csource_source_n_ochannels)
 	{
 	  gxk_scroll_text_aprintf (text, "\nOutput Channels:\n");
 	  gxk_scroll_text_push_indent (text);
 	}
-      for (int i = 0; i < bse_source_n_ochannels (csource->source); i++)
+      for (size_t i = 0; i < csource_source_n_ochannels; i++)
 	{
 	  string = bse_source_ochannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
@@ -389,7 +393,7 @@ csource_info_update (BstCanvasSource *csource)
 	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
-      if (bse_source_n_ochannels (csource->source))
+      if (csource_source_n_ochannels)
 	gxk_scroll_text_pop_indent (text);
 
       /* description */
@@ -506,7 +510,10 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 
   x = ICHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    y = CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
+    {
+      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+      y = CHANNEL_HEIGHT (csource) / csource_source.n_ichannels();
+    }
   y *= ochannel + 0.5;
   y += ICHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -528,7 +535,10 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
 
   x = OCHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    y = CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
+    {
+      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+      y = CHANNEL_HEIGHT (csource) / csource_source.n_ochannels();
+    }
   y *= ichannel + 0.5;
   y += OCHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -547,15 +557,17 @@ bst_canvas_source_ichannel_at (BstCanvasSource *csource,
 
   assert_return (BST_IS_CANVAS_SOURCE (csource), 0);
 
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= ICHANNEL_X (csource);
   y -= ICHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
       y > 0 && y < CHANNEL_HEIGHT (csource) &&
-      bse_source_n_ichannels (csource->source))
+      csource_source.n_ichannels())
     {
-      y /= CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
+      y /= CHANNEL_HEIGHT (csource) / csource_source.n_ichannels();
       channel = y;
     }
 
@@ -571,15 +583,17 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
   assert_return (BST_IS_CANVAS_SOURCE (csource), 0);
 
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= OCHANNEL_X (csource);
   y -= OCHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
       y > 0 && y < CHANNEL_HEIGHT (csource) &&
-      bse_source_n_ochannels (csource->source))
+      csource_source.n_ochannels())
     {
-      y /= CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
+      y /= CHANNEL_HEIGHT (csource) / csource_source.n_ochannels();
       channel = y;
     }
 
@@ -645,15 +659,17 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   gdouble d_y;
   gboolean east_channel = CHANNEL_EAST (csource, is_input);
 
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
   if (is_input)
     {
-      n_channels = bse_source_n_ichannels (csource->source);
+      n_channels = csource_source.n_ichannels();
       x1 = ICHANNEL_X (csource);
       y1 = ICHANNEL_Y (csource);
     }
   else
     {
-      n_channels = bse_source_n_ochannels (csource->source);
+      n_channels = csource_source.n_ochannels();
       x1 = OCHANNEL_X (csource);
       y1 = OCHANNEL_Y (csource);
     }
