@@ -772,9 +772,8 @@ bst_snet_router_event (GtkWidget *widget,
             {
               bse_item_group_undo (self->snet.proxy_id(), "Create Module");
               SfiProxy module = self->snet.create_source (ad.entity).proxy_id();
-              bse_source_set_pos (module,
-                                  self->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
-                                  self->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
+              Bse::SourceH sourceh = Bse::SourceH::down_cast (bse_server.from_proxy (module));
+              sourceh.set_pos (self->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE, self->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
               bse_item_ungroup_undo (self->snet.proxy_id());
             }
           if (BST_SNET_EDIT_FALLBACK)
