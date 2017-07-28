@@ -324,8 +324,6 @@ csource_info_update (BstCanvasSource *csource)
                      : NULL);
   if (text)
     {
-      const gchar *string;
-
       /* construct information */
       gxk_scroll_text_clear (text);
       gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source));
@@ -349,15 +347,15 @@ csource_info_update (BstCanvasSource *csource)
 	}
       for (size_t i = 0; i < csource_source_n_ichannels; i++)
 	{
-          string = bse_source_ichannel_blurb (csource->source, i);
+          const String string = csource_source.ichannel_blurb (i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   bse_source_ichannel_label (csource->source, i),
-				   bse_source_ichannel_ident (csource->source, i),
-				   string ? ":" : "");
-	  if (string)
+				   csource_source.ichannel_label (i).c_str(),
+				   csource_source.ichannel_ident (i).c_str(),
+				   string.empty() ? "" : ":");
+	  if (!string.empty())
 	    {
 	      gxk_scroll_text_push_indent (text);
-	      gxk_scroll_text_aprintf (text, "%s\n", string);
+	      gxk_scroll_text_aprintf (text, "%s\n", string.c_str());
 	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
@@ -373,15 +371,15 @@ csource_info_update (BstCanvasSource *csource)
 	}
       for (size_t i = 0; i < csource_source_n_ochannels; i++)
 	{
-	  string = bse_source_ochannel_blurb (csource->source, i);
+	  const String string = csource_source.ochannel_blurb (i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   bse_source_ochannel_label (csource->source, i),
-				   bse_source_ochannel_ident (csource->source, i),
-				   string ? ":" : "");
-          if (string)
+				   csource_source.ochannel_label (i).c_str(),
+				   csource_source.ochannel_ident (i).c_str(),
+				   string.empty() ? "" : ":");
+          if (!string.empty())
 	    {
 	      gxk_scroll_text_push_indent (text);
-	      gxk_scroll_text_aprintf (text, "%s\n", string);
+	      gxk_scroll_text_aprintf (text, "%s\n", string.c_str());
 	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
@@ -389,7 +387,7 @@ csource_info_update (BstCanvasSource *csource)
 	gxk_scroll_text_pop_indent (text);
 
       /* description */
-      string = bse_item_get_type_blurb (csource->source);
+      const gchar *string = bse_item_get_type_blurb (csource->source);
       if (string && string[0])
 	{
 	  gxk_scroll_text_aprintf (text, "\nDescription:\n");
@@ -468,24 +466,26 @@ bst_canvas_source_is_jchannel (BstCanvasSource *csource,
   if (!csource->source)
     return FALSE;
 
-  return bse_source_is_joint_ichannel_by_id (csource->source, ichannel);
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
+  return csource_source.is_joint_ichannel_by_id (ichannel);
 }
 
 gboolean
-bst_canvas_source_ichannel_free (BstCanvasSource *csource,
-				 guint            ichannel)
+bst_canvas_source_ichannel_free (BstCanvasSource *csource, uint ichannel)
 {
   assert_return (BST_IS_CANVAS_SOURCE (csource), FALSE);
 
   if (!csource->source)
     return FALSE;
 
-  if (bse_source_is_joint_ichannel_by_id (csource->source, ichannel))
+  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+
+  if (csource_source.is_joint_ichannel_by_id (ichannel))
     return TRUE;
   else
     {
-      Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-      Bse::SourceH osource = isource.ichannel_get_osource (ichannel, 0);
+      Bse::SourceH osource = csource_source.ichannel_get_osource (ichannel, 0);
       return osource == NULL;
     }
 }
@@ -710,8 +710,8 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   for (int i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
-      gboolean is_jchannel = is_input && bse_source_is_joint_ichannel_by_id (csource->source, i);
-      const gchar *label = (is_input ? bse_source_ichannel_label : bse_source_ochannel_label) (csource->source, i);
+      gboolean is_jchannel = is_input && csource_source.is_joint_ichannel_by_id (i);
+      const String label = is_input ? csource_source.ichannel_label (i) : csource_source.ochannel_label (i);
       guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
@@ -749,7 +749,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
                             "swapped_signal::destroy", channel_name_remove, csource,
                             NULL);
           gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (item), FONT_HEIGHT);
-          g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (label), g_free);
+          g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (label.c_str()), g_free);
           csource->channel_hints = g_slist_prepend (csource->channel_hints, item);
         }
 
@@ -952,15 +952,17 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	}
       else
 	{
+          Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
 	  guint channel;
-	  const gchar *label = NULL, *prefix = NULL, *ident = NULL;
+	  const gchar *prefix = NULL;
+          String label, ident;
 
 	  /* set i/o channel hints */
 	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
 	  if (channel != ~uint (0))
 	    {
-	      label = bse_source_ichannel_label (csource->source, channel);
-	      ident = bse_source_ichannel_ident (csource->source, channel);
+	      label = csource_source.ichannel_label (channel);
+	      ident = csource_source.ichannel_ident (channel);
 	      prefix = _("Input");
 	    }
 	  else
@@ -968,12 +970,12 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	      channel = bst_canvas_source_ochannel_at (csource, event->motion.x, event->motion.y);
 	      if (channel != ~uint (0))
 		{
-		  label = bse_source_ochannel_label (csource->source, channel);
-		  ident = bse_source_ochannel_ident (csource->source, channel);
+		  label = csource_source.ochannel_label (channel);
+		  ident = csource_source.ochannel_ident (channel);
 		  prefix = _("Output");
 		}
 	    }
-	  if (label)
+	  if (!label.empty())
 	    gxk_status_printf (GXK_STATUS_IDLE_HINT, _("(Hint)"), "%s[%s]: %s", prefix, ident, label);
 	  else
 	    gxk_status_set (GXK_STATUS_IDLE_HINT, NULL, NULL);

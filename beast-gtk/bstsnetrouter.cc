@@ -160,7 +160,7 @@ bst_snet_router_update_links (BstSNetRouter   *self,
    */
   for (int i = 0; i < csource_source.n_ichannels(); i++)
     {
-      guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
+      guint j, n_joints = csource_source.ichannel_get_n_joints (i);
       for (j = 0; j < n_joints; j++)
         {
           Bse::ObjectH obj = bse_server.from_proxy (csource->source);
@@ -170,7 +170,7 @@ bst_snet_router_update_links (BstSNetRouter   *self,
           SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
-          guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);
+          guint ochannel = csource_source.ichannel_get_ochannel (i, j);
           BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
           if (!ocsource)
             {
@@ -623,15 +623,15 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
+              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+              Bse::SourceH drag_csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (self->drag_csource->source));
               Bse::Error error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
                 error = self->drag_is_input ? Bse::Error::SOURCE_NO_SUCH_OCHANNEL : Bse::Error::SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
-                error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
-                                                    csource->source, ochannel);
+                error = drag_csource_source.set_input_by_id (self->drag_channel, csource_source, ochannel);
               else
-                error = bse_source_set_input_by_id (csource->source, ichannel,
-                                                    self->drag_csource->source, self->drag_channel);
+                error = csource_source.set_input_by_id (ichannel, drag_csource_source, self->drag_channel);
               self->drag_csource = NULL;
               self->drag_channel = ~0;
               bst_snet_router_reset_tool (self);
@@ -654,13 +654,13 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModuleChannelPopup", NULL);
               for (int i = 0; i < csource_source.n_ochannels(); i++)
                 {
-                  gchar *name = g_strdup_format ("%d: %s", i + 1, bse_source_ochannel_label (csource->source, i));
+                  gchar *name = g_strdup_format ("%d: %s", i + 1, csource_source.ochannel_label (i));
                   bst_choice_menu_add_choice_and_free (choice, BST_CHOICE (monitor_ids + i, name, NONE));
                   g_free (name);
                 }
               /* create popup */
               for (int i = 0; has_inputs == 0 && i < csource_source.n_ichannels(); i++)
-                has_inputs += bse_source_ichannel_get_n_joints (csource->source, i);
+                has_inputs += csource_source.ichannel_get_n_joints (i);
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
                                                 BST_CHOICE_TITLE (source_name),
                                                 BST_CHOICE_SEPERATOR,
@@ -727,9 +727,12 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 {
                   Bse::Error error;
                 case 1:
-                  error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
-                                                        clink->ocsource->source, clink->ochannel);
-                  bst_status_eprintf (error, _("Delete Link"));
+                  {
+                    Bse::SourceH icsource = Bse::SourceH::down_cast (bse_server.from_proxy (clink->icsource->source));
+                    Bse::SourceH ocsource = Bse::SourceH::down_cast (bse_server.from_proxy (clink->ocsource->source));
+                    error = icsource.unset_input_by_id (clink->ichannel, ocsource, clink->ochannel);
+                    bst_status_eprintf (error, _("Delete Link"));
+                  }
                   break;
                 case 2:
                   bst_canvas_link_popup_view (clink);

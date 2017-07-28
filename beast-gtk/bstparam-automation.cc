@@ -212,7 +212,8 @@ param_automation_update (GxkParam  *param,
   gxk_widget_set_tooltip (widget, tip);
   gxk_widget_set_tooltip (gxk_parent_find_descendant (widget, GTK_TYPE_BUTTON), tip);
   g_free (tip);
-  gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !bse_source_is_prepared (proxy));
+  Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+  gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !source.is_prepared());
 }
 
 static GxkParamEditor param_automation = {

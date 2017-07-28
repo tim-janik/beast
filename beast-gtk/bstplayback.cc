@@ -24,16 +24,16 @@ bst_play_back_handle_new (void)
 
   handle->snet = handle->project.create_csynth ("");
   handle->snet.auto_activate (true);
-  handle->speaker = handle->snet.create_source ("BsePcmOutput").proxy_id();
-  handle->wosc1 = handle->snet.create_source ("BseWaveOsc").proxy_id();
-  handle->wosc2 = handle->snet.create_source ("BseWaveOsc").proxy_id();
-  bse_proxy_set (handle->wosc2, "channel", 2, NULL);
-  bse_source_set_input_by_id (handle->speaker, 0, handle->wosc1, 0);
-  bse_source_set_input_by_id (handle->speaker, 1, handle->wosc2, 0);
-  handle->constant = handle->snet.create_source ("BseConstant").proxy_id();
-  bse_source_set_input_by_id (handle->wosc1, 0, handle->constant, 0);
-  bse_source_set_input_by_id (handle->wosc2, 0, handle->constant, 0);
-  bse_proxy_connect (handle->wosc1,
+  handle->speaker = handle->snet.create_source ("BsePcmOutput");
+  handle->wosc1 = handle->snet.create_source ("BseWaveOsc");
+  handle->wosc2 = handle->snet.create_source ("BseWaveOsc");
+  bse_proxy_set (handle->wosc2.proxy_id(), "channel", 2, NULL);
+  handle->speaker.set_input_by_id (0, handle->wosc1, 0);
+  handle->speaker.set_input_by_id (1, handle->wosc2, 0);
+  handle->constant = handle->snet.create_source ("BseConstant");
+  handle->wosc1.set_input_by_id (0, handle->constant, 0);
+  handle->wosc2.set_input_by_id (0, handle->constant, 0);
+  bse_proxy_connect (handle->wosc1.proxy_id(),
 		     "swapped_signal::notify_pcm_position", wave_oscillator_pcm_notify, handle,
 		     NULL);
   return handle;
@@ -48,9 +48,9 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
   if (esample)
     assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
-  bse_proxy_set (handle->constant, "frequency_1", osc_freq, NULL);
-  bse_wave_osc_set_from_editable_sample (handle->wosc1, esample);
-  bse_wave_osc_set_from_editable_sample (handle->wosc2, esample);
+  bse_proxy_set (handle->constant.proxy_id(), "frequency_1", osc_freq, NULL);
+  bse_wave_osc_set_from_editable_sample (handle->wosc1.proxy_id(), esample);
+  bse_wave_osc_set_from_editable_sample (handle->wosc2.proxy_id(), esample);
 }
 
 void
@@ -68,9 +68,9 @@ bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
 				gfloat             perc)
 {
   BseIt3mSeq *iseq = bse_it3m_seq_new();
-  bse_it3m_seq_append (iseq, handle->wosc1);
+  bse_it3m_seq_append (iseq, handle->wosc1.proxy_id());
   if (handle->wosc2)
-    bse_it3m_seq_append (iseq, handle->wosc2);
+    bse_it3m_seq_append (iseq, handle->wosc2.proxy_id());
   bse_wave_osc_mass_seek_perc (iseq, perc);
   if (handle->waiting_for_notify)
     handle->discard_next_notify = TRUE;
@@ -107,7 +107,7 @@ wave_oscillator_pcm_notify (BstPlayBackHandle *handle,
 {
   gboolean discard_next_notify = handle->discard_next_notify;
 
-  assert_return (handle->wosc1 == wosc);
+  assert_return (handle->wosc1.proxy_id() == wosc);
 
   handle->waiting_for_notify = FALSE;
   handle->discard_next_notify = FALSE;
@@ -123,7 +123,7 @@ pcm_timer (gpointer data)
   GDK_THREADS_ENTER ();
   if (!handle->waiting_for_notify)
     {
-      bse_wave_osc_request_pcm_position (handle->wosc1);
+      bse_wave_osc_request_pcm_position (handle->wosc1.proxy_id());
       handle->waiting_for_notify = TRUE;
     }
   GDK_THREADS_LEAVE ();
@@ -179,7 +179,7 @@ bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 
   bst_play_back_handle_stop (handle);
 
-  bse_proxy_disconnect (handle->wosc1, "any_signal", wave_oscillator_pcm_notify, handle, NULL);
+  bse_proxy_disconnect (handle->wosc1.proxy_id(), "any_signal", wave_oscillator_pcm_notify, handle, NULL);
 
   if (handle->pcm_timeout)
     g_source_remove (handle->pcm_timeout);
