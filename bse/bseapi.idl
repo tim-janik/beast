@@ -585,31 +585,39 @@ interface Source : Item {
   // void clear_outputs (); ///< Disconnect all module outputs.
   // int32 get_automation_channel (String property_name); ///< Get MIDI channel from an automation property.
   // MidiControlType get_automation_control (String property_name); ///< Get control type from an automation property.
-  // bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
-  // bool has_outputs (); ///< Check whether a module has output channel connections.
-  // String ichannel_blurb (int32 input_channel); ///< Get input channel description.
-  // int32 ichannel_get_n_joints (int32 input_channel); ///< Retrieve the number of inputs connected to an input channel.
-  // int32 ichannel_get_ochannel (int32 input_channel, int32 input_joint); ///< Retrieve output channel of the module connected to a specific joint of an input channel.
-  // String ichannel_ident (int32 input_channel); ///< Get canonical input channel name.
-  // String ichannel_label (int32 input_channel); ///< Get input channel name.
-  // bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
-  // bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
-  // bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
-  // int32 n_ichannels (); ///< Get the number of input channels of a module.
-  // int32 n_ochannels (); ///< Get the number of output channels of a module.
-  // String ochannel_blurb (int32 output_channel); ///< Get output channel description.
-  // String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
-  // String ochannel_label (int32 output_channel); ///< Get output channel name.
+  bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
+  bool has_outputs (); ///< Check whether a module has output channel connections.
+  String ichannel_blurb (int32 input_channel); ///< Get input channel description.
+  int32 ichannel_get_n_joints (int32 input_channel); ///< Retrieve the number of inputs connected to an input channel.
+  int32 ichannel_get_ochannel (int32 input_channel, int32 input_joint); ///< Retrieve output channel of the module connected to a specific joint of an input channel.
+  String ichannel_ident (int32 input_channel); ///< Get canonical input channel name.
+  String ichannel_label (int32 input_channel); ///< Get input channel name.
+  bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
+  int32 n_ichannels (); ///< Get the number of input channels of a module.
+  int32 n_ochannels (); ///< Get the number of output channels of a module.
+  String ochannel_blurb (int32 output_channel); ///< Get output channel description.
+  String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
+  String ochannel_label (int32 output_channel); ///< Get output channel name.
   // Error set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
-  // Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
-  // Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
-  // void set_pos (float64 x_pos, float64 y_pos); ///< Set the x and y position of a module. In contrast to setting the position through ordinary object property setters, this function will not update the module position if the passed in arguments are sufficiently equal to the values already set on the object. As such, it does not record an extra undo step for setting properties to values they already have and if necessary turns setting of x and y positions into an atomic undo operation.
-  // Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
-  // Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
+  Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
+  Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
+  Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
+  Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
   // signal void probes (ProbeSeq a);
   // signal void io_changed ();
   // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
   // float64 pos_y = Range ("Position Y", "", STANDARD ":scale");
+  /** Set the x and y position of a module.
+   * In contrast to setting the position through ordinary object property
+   * setters, this function will not update the module position if the passed
+   * in arguments are sufficiently equal to the values already set on the
+   * object. As such, it does not record an extra undo step for setting
+   * properties to values they already have and if necessary turns setting
+   * of x and y positions into an atomic undo operation.
+   */
+  void set_pos (float64 x_pos, float64 y_pos);
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.

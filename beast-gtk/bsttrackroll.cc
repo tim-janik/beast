@@ -448,7 +448,7 @@ scope_set_track (GtkWidget *scope, Bse::TrackH track)
 {
   g_object_set_long (scope, "BstTrackRoll-Track", track.proxy_id());
   if (BST_SNIFFER_SCOPE (scope))
-    bst_sniffer_scope_set_sniffer (BST_SNIFFER_SCOPE (scope), track.get_output_source().proxy_id());
+    bst_sniffer_scope_set_sniffer (BST_SNIFFER_SCOPE (scope), track.get_output_source());
 }
 
 static Bse::TrackH

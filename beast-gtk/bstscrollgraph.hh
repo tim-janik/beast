@@ -30,7 +30,7 @@ struct _BstScrollgraph
   gfloat         *values;     /* [n_points * n_bars] */
   GdkPixbuf      *pixbuf;     /* n_points wide or high */
   GdkWindow      *canvas;
-  SfiProxy        source;
+  Bse::SourceH    source;
   guint           ochannel;
 };
 struct _BstScrollgraphClass
@@ -42,11 +42,7 @@ struct _BstScrollgraphClass
 /* --- public methods --- */
 GType	        bst_scrollgraph_get_type	(void);
 void            bst_scrollgraph_clear           (BstScrollgraph *self);
-void            bst_scrollgraph_set_source      (BstScrollgraph *self,
-                                                 SfiProxy        source,
-                                                 guint           ochannel);
-GtkWidget*      bst_scrollgraph_build_dialog    (GtkWidget      *alive_object,
-                                                 SfiProxy        source,
-                                                 guint           ochannel);
+void            bst_scrollgraph_set_source      (BstScrollgraph *self, Bse::SourceH source, uint ochannel);
+GtkWidget*      bst_scrollgraph_build_dialog    (GtkWidget *alive_object, Bse::SourceH source, uint ochannel);
 
 #endif /* __BST_SCROLLGRAPH_H__ */

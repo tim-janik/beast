@@ -14,18 +14,17 @@
 
 /* --- API --- */
 typedef struct {
-  GtkWidget parent_instance;
-  SfiProxy  proxy;
-  guint     n_values;
-  float    *lvalues;
-  float    *rvalues;
-  GdkGC    *oshoot_gc;
+  GtkWidget    parent_instance;
+  Bse::SourceH source;
+  guint        n_values;
+  float       *lvalues;
+  float       *rvalues;
+  GdkGC       *oshoot_gc;
 } BstSnifferScope;
 typedef GtkWidgetClass BstSnifferScopeClass;
 GType      bst_sniffer_scope_get_type       (void);
 GtkWidget* bst_sniffer_scope_new            (void);
-void       bst_sniffer_scope_set_sniffer    (BstSnifferScope    *scope,
-                                             SfiProxy            proxy);
+void       bst_sniffer_scope_set_sniffer    (BstSnifferScope *scope, Bse::SourceH source = Bse::SourceH());
 
 typedef enum {
   BST_SOURCE_PROBE_RANGE   = 0x01,

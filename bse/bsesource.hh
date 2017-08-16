@@ -275,8 +275,28 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
 protected:
   virtual             ~SourceImpl           ();
 public:
-  explicit             SourceImpl           (BseObject*);
-  virtual SourceIfaceP ichannel_get_osource (int input_channel, int input_joint) override;
+  explicit             SourceImpl              (BseObject*);
+  virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
+  virtual bool         has_output              (int ochannel) override;
+  virtual bool         has_outputs             () override;
+  virtual std::string  ichannel_blurb          (int input_channel) override;
+  virtual int          ichannel_get_n_joints   (int input_channel) override;
+  virtual int          ichannel_get_ochannel   (int input_channel, int input_joint) override;
+  virtual std::string  ichannel_ident          (int input_channel) override;
+  virtual std::string  ichannel_label          (int input_channel) override;
+  virtual bool         is_joint_ichannel       (const std::string &input_channel) override;
+  virtual bool         is_joint_ichannel_by_id (int input_channel) override;
+  virtual bool         is_prepared             () override;
+  virtual int          n_ichannels             () override;
+  virtual int          n_ochannels             () override;
+  virtual std::string  ochannel_blurb          (int output_channel) override;
+  virtual std::string  ochannel_ident          (int output_channel) override;
+  virtual std::string  ochannel_label          (int output_channel) override;
+  virtual Error        set_input               (const String &input_channel, SourceIface &omodule, const String &output_channel) override;
+  virtual Error        set_input_by_id         (int input_channel, SourceIface &omodule, int output_channel) override;
+  virtual Error        unset_input             (const String &input_channel, SourceIface &omodule, const String &output_channel) override;
+  virtual Error        unset_input_by_id       (int input_channel, SourceIface &omodule, int output_channel) override;
+  virtual void         set_pos                 (double x_pos, double y_pos) override;
 };
 
 } // Bse

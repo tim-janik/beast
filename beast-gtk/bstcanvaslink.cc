@@ -104,8 +104,11 @@ clink_view_update (BstCanvasLink *clink,
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
-      const gchar *ic_label, *oc_label, *ic_blurb, *oc_blurb, *iname, *oname;
+      const gchar *iname, *oname;
       gchar *string;
+
+      Bse::SourceH icsource = clink->icsource ? Bse::SourceH::down_cast (bse_server.from_proxy (clink->icsource->source)) : Bse::SourceH();
+      Bse::SourceH ocsource = clink->ocsource ? Bse::SourceH::down_cast (bse_server.from_proxy (clink->ocsource->source)) : Bse::SourceH();
 
       /* figure appropriate window title
        */
@@ -117,20 +120,20 @@ clink_view_update (BstCanvasLink *clink,
 
       /* construct actuall information
        */
-      oc_label = clink->ocsource ? bse_source_ochannel_label (clink->ocsource->source, clink->ochannel) : NULL;
-      oc_blurb = clink->ocsource ? bse_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
-      ic_label = clink->icsource ? bse_source_ichannel_label (clink->icsource->source, clink->ichannel) : NULL;
-      ic_blurb = clink->icsource ? bse_source_ichannel_blurb (clink->icsource->source, clink->ichannel) : NULL;
-      if (!oc_label)
+      String oc_label = clink->ocsource ? ocsource.ochannel_label (clink->ochannel) : "";
+      const String oc_blurb = clink->ocsource ? ocsource.ochannel_blurb (clink->ochannel) : "";
+      String ic_label = clink->icsource ? icsource.ichannel_label (clink->ichannel) : "";
+      const String ic_blurb = clink->icsource ? icsource.ichannel_blurb (clink->ichannel) : "";
+      if (oc_label.empty())
 	oc_label = "?";
-      if (!ic_label)
+      if (ic_label.empty())
 	ic_label = "?";
 
       /* compose new info */
       gxk_scroll_text_clear (text);
       gxk_scroll_text_aprintf (text, "Source Module:\n");
       gxk_scroll_text_push_indent (text);
-      if (oc_blurb)
+      if (!oc_blurb.empty())
 	{
 	  gxk_scroll_text_aprintf (text, "%s: %s:\n", oname, oc_label);
 	  gxk_scroll_text_push_indent (text);
@@ -142,7 +145,7 @@ clink_view_update (BstCanvasLink *clink,
       gxk_scroll_text_pop_indent (text);
       gxk_scroll_text_aprintf (text, "\nDestination Module:\n");
       gxk_scroll_text_push_indent (text);
-      if (ic_blurb)
+      if (!ic_blurb.empty())
 	{
 	  gxk_scroll_text_aprintf (text, "%s: %s:\n", iname, ic_label);
 	  gxk_scroll_text_push_indent (text);
