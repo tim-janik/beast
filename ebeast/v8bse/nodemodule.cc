@@ -214,15 +214,15 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   v8::HandleScope scope (isolate);
 
-  // workaround electron concatenating argv[1:] in argv[0]
+  // workaround electron appending argv[1:] to argv[0]
   if (Bse::program_alias().find ("electron ") != std::string::npos)
-    Bse::program_alias (Bse::Path::cwd()); // a guess at the actual electron application
+    Bse::program_alias_init (Bse::Path::cwd()); // a guess at the actual electron application
 
   // prepare Bse environment
   const char *canary = "library/demo/partymonster.bse";
   const std::string installpath = Bse::Path::realpath (Bse::Path::abspath ("..")); // ebeast/..
   if (!Bse::Path::check (Bse::Path::join (installpath, canary), "r"))
-    Bse::fatal ("%s: BSE: failed to locate library containing '%s'", installpath, canary);
+    Bse::fatal_error ("%s: BSE: failed to locate library containing '%s'", installpath, canary);
   Bse::installpath_override (installpath);
 
   // start Bse
