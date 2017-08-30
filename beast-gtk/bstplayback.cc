@@ -49,8 +49,9 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
     assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   bse_proxy_set (handle->constant.proxy_id(), "frequency_1", osc_freq, NULL);
-  bse_wave_osc_set_from_editable_sample (handle->wosc1.proxy_id(), esample);
-  bse_wave_osc_set_from_editable_sample (handle->wosc2.proxy_id(), esample);
+  Bse::EditableSampleH es = Bse::EditableSampleH::down_cast (bse_server.from_proxy (esample));
+  handle->wosc1.set_from_editable_sample (es);
+  handle->wosc2.set_from_editable_sample (es);
 }
 
 void
