@@ -25,8 +25,8 @@ bst_play_back_handle_new (void)
   handle->snet = handle->project.create_csynth ("");
   handle->snet.auto_activate (true);
   handle->speaker = handle->snet.create_source ("BsePcmOutput");
-  handle->wosc1 = handle->snet.create_source ("BseWaveOsc");
-  handle->wosc2 = handle->snet.create_source ("BseWaveOsc");
+  handle->wosc1 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
+  handle->wosc2 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
   bse_proxy_set (handle->wosc2.proxy_id(), "channel", 2, NULL);
   handle->speaker.set_input_by_id (0, handle->wosc1, 0);
   handle->speaker.set_input_by_id (1, handle->wosc2, 0);
@@ -123,7 +123,7 @@ pcm_timer (gpointer data)
   GDK_THREADS_ENTER ();
   if (!handle->waiting_for_notify)
     {
-      bse_wave_osc_request_pcm_position (handle->wosc1.proxy_id());
+      handle->wosc1.request_pcm_position();
       handle->waiting_for_notify = TRUE;
     }
   GDK_THREADS_LEAVE ();
