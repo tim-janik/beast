@@ -602,4 +602,14 @@ WaveOscImpl::request_pcm_position ()
   bse_wave_osc_request_pcm_position (self);
 }
 
+void
+WaveOscImpl::set_from_editable_sample (EditableSampleIface &esi)
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  EditableSampleIface *es = &esi;
+  BseEditableSample *esample = es ? es->as<BseEditableSample*>() : NULL;
+
+  bse_wave_osc_set_from_esample (self, esample);
+}
+
 } // Bse

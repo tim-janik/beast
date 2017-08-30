@@ -51,10 +51,11 @@ namespace Bse {
 
 class WaveOscImpl : public SourceImpl, public virtual WaveOscIface {
 protected:
-  virtual      ~WaveOscImpl             ();
+  virtual      ~WaveOscImpl              ();
 public:
-  explicit      WaveOscImpl             (BseObject*);
-  virtual void  request_pcm_position    () override;
+  explicit      WaveOscImpl              (BseObject*);
+  virtual void  request_pcm_position     () override;
+  virtual void  set_from_editable_sample (EditableSampleIface &esi) override;
 };
 
 } // Bse
