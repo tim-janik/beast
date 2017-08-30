@@ -158,7 +158,7 @@ METHOD (BseEditableSample, collect-stats) {
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("max_pairs", NULL, "Maximum number of (min, max) pairs to collect",
 			 1, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("sample_block", NULL, "Block of samples", BSE_TYPE_FLOAT_SEQ, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("sample_block", NULL, "Block of samples", BSE_TYPE_FLO4T_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -171,7 +171,7 @@ METHOD (BseEditableSample, collect-stats) {
   guint              stepping   = sfi_value_get_int (in_values++);
   guint              max_pairs  = sfi_value_get_int (in_values++);
   GslDataCache *dcache = NULL;
-  BseFloatSeq *fseq;
+  BseFlo4tSeq *fseq;
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || stepping < 1)
     return Bse::Error::PROC_PARAM_INVAL;
@@ -179,15 +179,15 @@ METHOD (BseEditableSample, collect-stats) {
     dcache = esample->wchunk->dcache;
   if (!dcache || voffset + block_size > gsl_data_handle_length (dcache->dhandle))
     {
-      fseq = bse_float_seq_new ();
-      bse_float_seq_resize (fseq, max_pairs * 2);
+      fseq = bse_flo4t_seq_new ();
+      bse_flo4t_seq_resize (fseq, max_pairs * 2);
     }
   else
     {
       GslDataCacheNode *dnode = gsl_data_cache_ref_node (dcache, voffset, GSL_DATA_CACHE_DEMAND_LOAD);
       guint j, dnode_length = dcache->node_size;
-      fseq = bse_float_seq_new();
-      bse_float_seq_resize (fseq, max_pairs * 2);
+      fseq = bse_flo4t_seq_new();
+      bse_flo4t_seq_resize (fseq, max_pairs * 2);
       for (j = 0; j < max_pairs; j++)
 	{
 	  guint i, cur_offset = j * offs_scale;
@@ -216,7 +216,7 @@ METHOD (BseEditableSample, collect-stats) {
 	}
       gsl_data_cache_unref_node (dcache, dnode);
     break_loops:
-      bse_float_seq_resize (fseq, j * 2);
+      bse_flo4t_seq_resize (fseq, j * 2);
     }
   /* set output parameters */
   g_value_take_boxed (out_values++, fseq);

@@ -1329,7 +1329,7 @@ qsampler_esample_filler (gpointer         data,
 			 BstQSampler     *qsampler)
 {
   ESampleFiller *fill = (ESampleFiller*) data;
-  BseFloatSeq *fseq;
+  BseFlo4tSeq *fseq;
   voffset = voffset * fill->n_channels + fill->nth_channel;
   fseq = bse_editable_sample_collect_stats (fill->esample,
                                             voffset,
