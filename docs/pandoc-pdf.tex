@@ -1,0 +1,61 @@
+% This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+% latex setup for pandoc PDF conversions
+
+% allow colorization commands
+\usepackage{color}
+
+% allow custom justification
+\usepackage{ragged2e}
+
+% Provide page titles
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% Adjust Code sections
+\lstset{basicstyle=\ttfamily,basicstyle=\ttfamily,breaklines=true}
+\lstset{framextopmargin=50pt,frame=leftline}
+
+% Adjust Abstract width (and indent): https://tex.stackexchange.com/questions/151583/how-to-adjust-the-width-of-abstract/151589
+\renewenvironment{abstract}
+  {\small
+   \vspace{9em}% Abstract headspace
+   \begin{center}
+   \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+   \end{center}
+   \list{}{%
+     \setlength{\leftmargin}{3.5cm}% Abstract margin
+     \setlength{\rightmargin}{\leftmargin}%
+   }%
+   \item\relax}
+  {\endlist}
+
+% Note, use of the 'titlesec' package requires: pandoc --variable=subparagraph
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+% Fix Ubuntu messing up section numbers in titlesec.sty
+% https://tex.stackexchange.com/questions/299969/titlesec-loss-of-section-numbering-with-the-new-update-2016-03-15/300259#300259
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+
+% Make document title bold
+\makeatletter
+\patchcmd{\@maketitle}{\@title}{\bfseries\@title}{}{}
+\patchcmd{\@maketitle}{\@author}{\bfseries\@author}{}{}
+\patchcmd{\@maketitle}{\@date}{\bfseries\@date}{}{}
+\makeatother
+
+% Prevent Figures floating out of sections
+% http://stackoverflow.com/questions/16626462/figure-position-in-markdown-when-converting-to-pdf-with-knitr-and-pandoc/33801326#33801326
+\usepackage{float}
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+\renewenvironment{figure}[1][2] {
+    \expandafter\origfigure\expandafter[H]
+} {
+    \endorigfigure
+}
+
