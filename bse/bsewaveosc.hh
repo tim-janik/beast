@@ -31,7 +31,6 @@ void    bse_wave_osc_mass_seek                  (guint              n_woscs,
 void    bse_wave_osc_set_from_esample           (BseWaveOsc        *self,
                                                  BseEditableSample *esample);
 
-
 /* --- channels --- */
 enum
 {
@@ -47,5 +46,17 @@ enum
   BSE_WAVE_OSC_OCHANNEL_DONE,
   BSE_WAVE_OSC_N_OCHANNELS
 };
+
+namespace Bse {
+
+class WaveOscImpl : public SourceImpl, public virtual WaveOscIface {
+protected:
+  virtual      ~WaveOscImpl             ();
+public:
+  explicit      WaveOscImpl             (BseObject*);
+  virtual void  request_pcm_position    () override;
+};
+
+} // Bse
 
 #endif /* __BSE_WAVE_OSC_H__ */

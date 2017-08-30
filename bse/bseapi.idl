@@ -820,6 +820,18 @@ interface WaveRepo : Super {
   void  remove_wave (Wave wave);                ///< Remove a wave from repository.
 };
 
+/// Oscillator module for wave files.
+interface WaveOsc : Source {
+  void        request_pcm_position     ();                       ///< Request emission of the ::notify_pcm_position signal.
+  // void        set_from_editable_sample (EditableSample esample); ///< Set wave to play from editable sample, bypassing undo and storage mechanisms.
+  // signal void notify_pcm_position      (int64 timestamp, int64 position); ///< Notification signal containing the current PCM play position pointer.
+  // Wave    wave           = ("Wave", "Wave used as oscillator source", STANDARD);
+  // int64   channel        = Range ("Channel", "The audio channel to play, usually 1 is left, 2 is right", ":readwrite", 1, 256);
+  // float64 fm_perc        = Range ("Input Modulation [%]", "Modulation Strength for linear frequency modulation", STANDARD  ":scale", 0, 100, 10);
+  // bool    exponential_fm = Bool ("Exponential FM", "Perform exponential frequency modulation instead of linear", STANDARD, false);
+  // float64 fm_n_octaves   = Range ("Octaves", "Number of octaves to be affected by exponential frequency modulation", STANDARD ":scale", 0, 3, 1);
+};
+
 /// Interface for sound fonts
 interface SoundFont : Container {
 };

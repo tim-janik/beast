@@ -908,6 +908,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 #include "bsepcmwriter.hh"
 #include "bseeditablesample.hh"
 #include "bsesong.hh"
+#include "bsewaveosc.hh"
 #include "bsecsynth.hh"
 #include "bsetrack.hh"
 #include "bsecontextmerger.hh"
@@ -955,6 +956,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::MidiNotifierImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_MIDI_SYNTH))
     cxxo = new Bse::MidiSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE_OSC))
+    cxxo = new Bse::WaveOscImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_CSYNTH))
     cxxo = new Bse::CSynthImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SNET))

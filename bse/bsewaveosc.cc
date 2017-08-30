@@ -585,3 +585,21 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
   ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("Done Output"));
   assert_return (ochannel == BSE_WAVE_OSC_OCHANNEL_DONE);
 }
+
+namespace Bse {
+
+WaveOscImpl::WaveOscImpl (BseObject *bobj) :
+  SourceImpl (bobj)
+{}
+
+WaveOscImpl::~WaveOscImpl ()
+{}
+
+void
+WaveOscImpl::request_pcm_position ()
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  bse_wave_osc_request_pcm_position (self);
+}
+
+} // Bse
