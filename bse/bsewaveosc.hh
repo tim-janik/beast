@@ -56,6 +56,7 @@ public:
   explicit      WaveOscImpl              (BseObject*);
   virtual void  request_pcm_position     () override;
   virtual void  set_from_editable_sample (EditableSampleIface &esi) override;
+  virtual void  sync_seek_perc           (double percentage, const WaveOscSeq &other_oscs) override;
 };
 
 } // Bse

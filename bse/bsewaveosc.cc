@@ -612,4 +612,21 @@ WaveOscImpl::set_from_editable_sample (EditableSampleIface &esi)
   bse_wave_osc_set_from_esample (self, esample);
 }
 
+void
+WaveOscImpl::sync_seek_perc (double percentage, const WaveOscSeq &other_oscs)
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  size_t j = 0, n = other_oscs.size();
+  BseWaveOsc **woscs = (BseWaveOsc**) g_alloca (sizeof (BseWaveOsc*) * (1 + n));
+  woscs[j++] = self;
+  for (size_t i = 0; i < n; i++)
+    if (other_oscs[i])
+      {
+        BseWaveOsc *other = other_oscs[i]->as<BseWaveOsc*>();
+        if (other != self && BSE_IS_WAVE_OSC (other))
+          woscs[j++] = other;
+      }
+  bse_wave_osc_mass_seek (j, woscs, CLAMP (percentage, 0, 100));
+}
+
 } // Bse
