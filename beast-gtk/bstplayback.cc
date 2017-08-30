@@ -65,17 +65,15 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 }
 
 void
-bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
-				gfloat             perc)
+bst_play_back_handle_seek_perc (BstPlayBackHandle *handle, float perc)
 {
-  BseIt3mSeq *iseq = bse_it3m_seq_new();
-  bse_it3m_seq_append (iseq, handle->wosc1.proxy_id());
+  Bse::WaveOscSeq woscs;
+  woscs.push_back (handle->wosc1);
   if (handle->wosc2)
-    bse_it3m_seq_append (iseq, handle->wosc2.proxy_id());
-  bse_wave_osc_mass_seek_perc (iseq, perc);
+    woscs.push_back (handle->wosc2);
+  handle->wosc1.sync_seek_perc (perc, woscs);
   if (handle->waiting_for_notify)
     handle->discard_next_notify = TRUE;
-  bse_it3m_seq_free (iseq);
 }
 
 void
