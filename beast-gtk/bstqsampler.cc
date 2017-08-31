@@ -1313,14 +1313,14 @@ bst_qsampler_set_adjustment (BstQSampler   *qsampler,
 }
 
 
-typedef struct {
-  SfiProxy esample;
-  guint    nth_channel;
-  guint    n_channels;
-} ESampleFiller;
+struct ESampleFiller {
+  Bse::EditableSampleH esample;
+  uint                 nth_channel = 0;
+  uint                 n_channels = 0;
+};
 
 static guint
-qsampler_esample_filler (gpointer         data,
+qsampler_esample_filler (void            *data,
 			 guint            voffset,
 			 gdouble          offset_scale,
 			 guint            block_size,
@@ -1328,52 +1328,39 @@ qsampler_esample_filler (gpointer         data,
 			 BstQSamplerPeak *values,
 			 BstQSampler     *qsampler)
 {
-  ESampleFiller *fill = (ESampleFiller*) data;
-  BseFloatSeq *fseq;
+  ESampleFiller *fill = static_cast<ESampleFiller*> (data);
   voffset = voffset * fill->n_channels + fill->nth_channel;
-  fseq = bse_editable_sample_collect_stats (fill->esample,
-                                            voffset,
-                                            offset_scale * fill->n_channels,
-                                            block_size * fill->n_channels,
-                                            fill->n_channels,
-                                            n_values);
+  Bse::FloatSeq floats = fill->esample.collect_stats (voffset,
+                                                      offset_scale * fill->n_channels,
+                                                      block_size * fill->n_channels,
+                                                      fill->n_channels,
+                                                      n_values);
   uint i;
-  for (i = 0; i < fseq->n_values / 2; i++)
+  for (i = 0; i < floats.size() / 2; i++)
     {
-      values[i].min = fseq->values[i * 2] * 32767.9;
-      values[i].max = fseq->values[i * 2 + 1] * 32767.9;
+      values[i].min = floats[i * 2] * 32767.9;
+      values[i].max = floats[i * 2 + 1] * 32767.9;
     }
-
   return i;
 }
 
-static void
-free_esample_filler (gpointer data)
-{
-  ESampleFiller *fill = (ESampleFiller*) data;
-
-  bse_item_unuse (fill->esample);
-  g_free (data);
-}
-
 void
-bst_qsampler_set_source_from_esample (BstQSampler *qsampler,
-				      SfiProxy     esample,
-				      guint        nth_channel)
+bst_qsampler_set_source_from_esample (BstQSampler *qsampler, Bse::EditableSampleH esample, uint nth_channel)
 {
-  ESampleFiller *fill;
-
   assert_return (BST_IS_QSAMPLER (qsampler));
-  assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
+  assert_return (esample != NULL);
 
-  fill = g_new (ESampleFiller, 1);
+  ESampleFiller *fill = new ESampleFiller();
   fill->esample = esample;
-  bse_item_use (fill->esample);
-  fill->n_channels = bse_editable_sample_get_n_channels (fill->esample);
+  fill->n_channels = fill->esample.get_n_channels();
   fill->nth_channel = nth_channel;
 
+  auto delete_esample_filler = [] (void *data) {
+    ESampleFiller *fill = static_cast<ESampleFiller*> (data);
+    delete fill;
+  };
   bst_qsampler_set_source (qsampler,
-			   bse_editable_sample_get_length (fill->esample) / fill->n_channels,
+			   fill->esample.get_length() / fill->n_channels,
 			   qsampler_esample_filler,
-			   fill, free_esample_filler);
+			   fill, delete_esample_filler);
 }

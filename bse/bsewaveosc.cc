@@ -585,3 +585,48 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
   ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("Done Output"));
   assert_return (ochannel == BSE_WAVE_OSC_OCHANNEL_DONE);
 }
+
+namespace Bse {
+
+WaveOscImpl::WaveOscImpl (BseObject *bobj) :
+  SourceImpl (bobj)
+{}
+
+WaveOscImpl::~WaveOscImpl ()
+{}
+
+void
+WaveOscImpl::request_pcm_position ()
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  bse_wave_osc_request_pcm_position (self);
+}
+
+void
+WaveOscImpl::set_from_editable_sample (EditableSampleIface &esi)
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  EditableSampleIface *es = &esi;
+  BseEditableSample *esample = es ? es->as<BseEditableSample*>() : NULL;
+
+  bse_wave_osc_set_from_esample (self, esample);
+}
+
+void
+WaveOscImpl::sync_seek_perc (double percentage, const WaveOscSeq &other_oscs)
+{
+  BseWaveOsc *self = as<BseWaveOsc*>();
+  size_t j = 0, n = other_oscs.size();
+  BseWaveOsc **woscs = (BseWaveOsc**) g_alloca (sizeof (BseWaveOsc*) * (1 + n));
+  woscs[j++] = self;
+  for (size_t i = 0; i < n; i++)
+    if (other_oscs[i])
+      {
+        BseWaveOsc *other = other_oscs[i]->as<BseWaveOsc*>();
+        if (other != self && BSE_IS_WAVE_OSC (other))
+          woscs[j++] = other;
+      }
+  bse_wave_osc_mass_seek (j, woscs, CLAMP (percentage, 0, 100));
+}
+
+} // Bse

@@ -25,8 +25,8 @@ bst_play_back_handle_new (void)
   handle->snet = handle->project.create_csynth ("");
   handle->snet.auto_activate (true);
   handle->speaker = handle->snet.create_source ("BsePcmOutput");
-  handle->wosc1 = handle->snet.create_source ("BseWaveOsc");
-  handle->wosc2 = handle->snet.create_source ("BseWaveOsc");
+  handle->wosc1 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
+  handle->wosc2 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
   bse_proxy_set (handle->wosc2.proxy_id(), "channel", 2, NULL);
   handle->speaker.set_input_by_id (0, handle->wosc1, 0);
   handle->speaker.set_input_by_id (1, handle->wosc2, 0);
@@ -49,8 +49,9 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
     assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   bse_proxy_set (handle->constant.proxy_id(), "frequency_1", osc_freq, NULL);
-  bse_wave_osc_set_from_editable_sample (handle->wosc1.proxy_id(), esample);
-  bse_wave_osc_set_from_editable_sample (handle->wosc2.proxy_id(), esample);
+  Bse::EditableSampleH es = Bse::EditableSampleH::down_cast (bse_server.from_proxy (esample));
+  handle->wosc1.set_from_editable_sample (es);
+  handle->wosc2.set_from_editable_sample (es);
 }
 
 void
@@ -64,17 +65,15 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 }
 
 void
-bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
-				gfloat             perc)
+bst_play_back_handle_seek_perc (BstPlayBackHandle *handle, float perc)
 {
-  BseIt3mSeq *iseq = bse_it3m_seq_new();
-  bse_it3m_seq_append (iseq, handle->wosc1.proxy_id());
+  Bse::WaveOscSeq woscs;
+  woscs.push_back (handle->wosc1);
   if (handle->wosc2)
-    bse_it3m_seq_append (iseq, handle->wosc2.proxy_id());
-  bse_wave_osc_mass_seek_perc (iseq, perc);
+    woscs.push_back (handle->wosc2);
+  handle->wosc1.sync_seek_perc (perc, woscs);
   if (handle->waiting_for_notify)
     handle->discard_next_notify = TRUE;
-  bse_it3m_seq_free (iseq);
 }
 
 void
@@ -123,7 +122,7 @@ pcm_timer (gpointer data)
   GDK_THREADS_ENTER ();
   if (!handle->waiting_for_notify)
     {
-      bse_wave_osc_request_pcm_position (handle->wosc1.proxy_id());
+      handle->wosc1.request_pcm_position();
       handle->waiting_for_notify = TRUE;
     }
   GDK_THREADS_LEAVE ();

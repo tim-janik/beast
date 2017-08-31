@@ -14,7 +14,7 @@ typedef struct
   Bse::ProjectH project;
   Bse::SNetH    snet;
   Bse::SourceH  speaker;
-  Bse::SourceH  wosc1, wosc2;
+  Bse::WaveOscH wosc1, wosc2;
   Bse::SourceH  constant;
   guint             current_delay;
   guint             pcm_timeout;

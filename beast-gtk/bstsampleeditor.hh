@@ -22,7 +22,7 @@ struct _BstSampleEditor
 {
   GtkVBox	 parent_object;
 
-  SfiProxy	 esample;
+  Bse::EditableSampleH esample;
   guint		 n_channels;
 
   GtkWidget	*main_vbox;
@@ -44,10 +44,10 @@ struct _BstSampleEditorClass
 
 /* --- prototypes --- */
 GtkType		bst_sample_editor_get_type	(void);
-GtkWidget*	bst_sample_editor_new		(SfiProxy	  sample);
-void		bst_sample_editor_set_sample	(BstSampleEditor *sample_editor,
-						 SfiProxy	  editable_sample);
+GtkWidget*	bst_sample_editor_new		(Bse::EditableSampleH esample);
 void		bst_sample_editor_rebuild	(BstSampleEditor *sample_editor);
+void		bst_sample_editor_set_sample	(BstSampleEditor *sample_editor, Bse::EditableSampleH editable_sample);
+inline void     bst_sample_editor_unset_sample  (BstSampleEditor *self) { bst_sample_editor_set_sample (self, Bse::EditableSampleH()); }
 
 
 #endif /* __BST_SAMPLE_EDITOR_H__ */
