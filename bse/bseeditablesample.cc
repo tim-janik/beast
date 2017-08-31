@@ -238,4 +238,53 @@ EditableSampleImpl::open ()
   return error;
 }
 
+FloatSeq
+EditableSampleImpl::collect_stats (int64 voffset, double offset_scale, int64 block_size, int64 stepping, int64 max_pairs)
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  GslDataCache *dcache = NULL;
+  if (BSE_EDITABLE_SAMPLE_OPENED (self) && self->wchunk)
+    dcache = self->wchunk->dcache;
+  FloatSeq floats;
+  floats.resize (max_pairs * 2, 0);
+  const ssize_t dhandle_length = gsl_data_handle_length (dcache->dhandle);
+  if (stepping < 1 || !dcache || voffset + block_size > dhandle_length)
+    return floats;
+  GslDataCacheNode *dnode = gsl_data_cache_ref_node (dcache, voffset, GSL_DATA_CACHE_DEMAND_LOAD);
+  ssize_t j, dnode_length = dcache->node_size;
+  for (j = 0; j < max_pairs; j++)
+    {
+      ssize_t i, cur_offset = j * offset_scale;
+      float min = +1, max = -1;
+      // keep alignment across offset scaling
+      cur_offset /= stepping;
+      cur_offset = voffset + cur_offset * stepping;
+      // collect stats for one block
+      for (i = cur_offset; i < cur_offset + block_size; i += stepping)
+        {
+          size_t pos;
+          if (i < dnode->offset || i >= dnode->offset + dnode_length)
+            {
+              gsl_data_cache_unref_node (dcache, dnode);
+              if (i >= dhandle_length)
+                dnode = NULL;
+              else
+                dnode = gsl_data_cache_ref_node (dcache, i, // demand_load the first block (j==0)
+                                                 j == 0 ? GSL_DATA_CACHE_DEMAND_LOAD : GSL_DATA_CACHE_PEEK);
+              if (!dnode)
+                goto break_loops;
+            }
+          pos = i - dnode->offset;
+          min = MIN (min, dnode->data[pos]);
+          max = MAX (max, dnode->data[pos]);
+        }
+      floats[j * 2] = min;
+      floats[j * 2 + 1] = max;
+    }
+  gsl_data_cache_unref_node (dcache, dnode);
+ break_loops:
+  floats.resize (j * 2);
+  return floats;
+}
+
 } // Bse
