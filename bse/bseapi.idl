@@ -818,11 +818,11 @@ interface EditableSample : Item {
    * @return              Block of samples
    */
   //FloatSeq    collect_stats  (int64 voffset, float64 offset_scale, int64 block_size, int64 stepping, int64 max_pairs);
-  //void        close          (); ///< Close an opened sample.
-  //int64       get_length     (); ///< Return the number of values in the sample.
-  //int64       get_n_channels (); ///< Return the number of channels in the sample.
-  //float64     get_osc_freq   (); ///< Return the oscillator frequency for the sample.
-  //Error       open           (); ///< Open the sample for reading.
+  void        close          (); ///< Close an opened sample.
+  int64       get_length     (); ///< Return the number of values in the sample.
+  int64       get_n_channels (); ///< Return the number of channels in the sample.
+  float64     get_osc_freq   (); ///< Return the oscillator frequency for the sample.
+  Error       open           (); ///< Open the sample for reading.
   //signal void changed        (); ///< Signal indicating all sorts of possible changes.
 };
 

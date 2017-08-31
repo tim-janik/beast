@@ -30,9 +30,14 @@ namespace Bse {
 
 class EditableSampleImpl : public ItemImpl, public virtual EditableSampleIface {
 protected:
-  virtual  ~EditableSampleImpl ();
+  virtual       ~EditableSampleImpl ();
 public:
-  explicit  EditableSampleImpl (BseObject*);
+  explicit       EditableSampleImpl (BseObject*);
+  virtual void   close              () override;
+  virtual int64  get_length         () override;
+  virtual int64  get_n_channels     () override;
+  virtual double get_osc_freq       () override;
+  virtual Error  open               () override;
 };
 
 } // Bse

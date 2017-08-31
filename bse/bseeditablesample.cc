@@ -181,4 +181,61 @@ EditableSampleImpl::EditableSampleImpl (BseObject *bobj) :
 EditableSampleImpl::~EditableSampleImpl ()
 {}
 
+void
+EditableSampleImpl::close ()
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  if (self->open_count)
+    {
+      self->open_count--;
+      if (!self->open_count)
+        gsl_wave_chunk_close (self->wchunk);
+    }
+}
+
+int64
+EditableSampleImpl::get_length ()
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  GslDataCache *dcache = NULL;
+  if (BSE_EDITABLE_SAMPLE_OPENED (self) && self->wchunk)
+    dcache = self->wchunk->dcache;
+  return dcache ? gsl_data_handle_length (dcache->dhandle) : 0;
+}
+
+int64
+EditableSampleImpl::get_n_channels ()
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  return self->wchunk ? self->wchunk->n_channels : 1;
+}
+
+double
+EditableSampleImpl::get_osc_freq ()
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  return self->wchunk ? self->wchunk->osc_freq : BSE_KAMMER_FREQUENCY;
+}
+
+Error
+EditableSampleImpl::open ()
+{
+  BseEditableSample *self = as<BseEditableSample*>();
+  Error error;
+  if (!self->wchunk)
+    error = Error::WAVE_NOT_FOUND;
+  else if (self->open_count)
+    {
+      self->open_count++;
+      error = Error::NONE;
+    }
+  else
+    {
+      error = gsl_wave_chunk_open (self->wchunk);
+      if (error == 0)
+	self->open_count++;
+    }
+  return error;
+}
+
 } // Bse
