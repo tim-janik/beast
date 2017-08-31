@@ -1329,21 +1329,18 @@ qsampler_esample_filler (void            *data,
 			 BstQSampler     *qsampler)
 {
   ESampleFiller *fill = static_cast<ESampleFiller*> (data);
-  BseFlo4tSeq *fseq;
   voffset = voffset * fill->n_channels + fill->nth_channel;
-  fseq = bse_editable_sample_collect_stats (fill->esample.proxy_id(),
-                                            voffset,
-                                            offset_scale * fill->n_channels,
-                                            block_size * fill->n_channels,
-                                            fill->n_channels,
-                                            n_values);
+  Bse::FloatSeq floats = fill->esample.collect_stats (voffset,
+                                                      offset_scale * fill->n_channels,
+                                                      block_size * fill->n_channels,
+                                                      fill->n_channels,
+                                                      n_values);
   uint i;
-  for (i = 0; i < fseq->n_values / 2; i++)
+  for (i = 0; i < floats.size() / 2; i++)
     {
-      values[i].min = fseq->values[i * 2] * 32767.9;
-      values[i].max = fseq->values[i * 2 + 1] * 32767.9;
+      values[i].min = floats[i * 2] * 32767.9;
+      values[i].max = floats[i * 2 + 1] * 32767.9;
     }
-
   return i;
 }
 
