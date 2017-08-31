@@ -99,6 +99,8 @@ bst_wave_editor_class_init (BstWaveEditorClass *klass)
 static void
 bst_wave_editor_init (BstWaveEditor *self)
 {
+  new (&self->esample) Bse::EditableSampleH();
+
   GtkTreeSelection *tsel;
   GtkWidget *any, *paned;
   gpointer gmask;
@@ -253,7 +255,7 @@ bst_wave_editor_destroy (GtkObject *object)
 {
   BstWaveEditor *self = BST_WAVE_EDITOR (object);
 
-  bst_wave_editor_set_esample (self, 0);
+  bst_wave_editor_unset_esample (self);
   if (self->phandle)
     {
       bst_play_back_handle_destroy (self->phandle);
@@ -271,9 +273,14 @@ bst_wave_editor_finalize (GObject *object)
 
   assert_return (self->qsamplers == NULL);
 
+  bst_wave_editor_unset_esample (self);
+
   g_object_unref (self->chunk_wrapper);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
+
+  using namespace Bse;
+  self->esample.~EditableSampleH();
 }
 
 void
@@ -289,7 +296,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
 	  bse_item_unuse (self->wave);
 	  gxk_list_wrapper_notify_clear (self->chunk_wrapper);
 	}
-      bst_wave_editor_set_esample (self, 0);
+      bst_wave_editor_unset_esample (self);
       if (BSE_IS_WAVE (wave))
 	self->wave = wave;
       else
@@ -405,10 +412,10 @@ play_back_wchunk_on (BstWaveEditor *self)
   bst_play_back_handle_stop (self->phandle);
   if (self->esample && self->esample_open)
     {
-      self->playback_length = bse_editable_sample_get_length (self->esample);
+      self->playback_length = self->esample.get_length();
       bst_play_back_handle_set (self->phandle,
-				self->esample,
-				bse_editable_sample_get_osc_freq (self->esample));
+				self->esample.proxy_id(),
+				self->esample.get_osc_freq());
       bst_play_back_handle_start (self->phandle);
       /* request updates */
       bst_play_back_handle_pcm_notify (self->phandle, 40, update_play_back_marks, self); /* request quick update */
@@ -505,12 +512,9 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
 }
 
 void
-bst_wave_editor_set_esample (BstWaveEditor *self,
-			     SfiProxy       esample)
+bst_wave_editor_set_esample (BstWaveEditor *self, Bse::EditableSampleH esample)
 {
   assert_return (BST_IS_WAVE_EDITOR (self));
-  if (esample)
-    assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   if (esample != self->esample)
     {
@@ -522,20 +526,20 @@ bst_wave_editor_set_esample (BstWaveEditor *self,
       if (self->esample)
 	{
 	  if (self->esample_open)
-	    bse_editable_sample_close (self->esample);
-	  bse_item_unuse (self->esample);
+	    self->esample.close();
+          bse_item_unuse (self->esample.proxy_id()); // FIXME: Item.use_count is only needed to keep a container's children
 	}
       self->esample = esample;
       if (self->esample)
 	{
+          bse_item_use (self->esample.proxy_id()); // FIXME: Item.use_count is only needed to keep a container's children
 	  Bse::Error error;
-	  bse_item_use (self->esample);
-	  error = bse_editable_sample_open (self->esample);
+	  error = self->esample.open();
 	  self->esample_open = error == Bse::Error::NONE;
 	  if (error != 0)
 	    g_message ("failed to open sample: %s", Bse::error_blurb (error));
 	}
-      wave_editor_set_n_qsamplers (self, self->esample ? bse_editable_sample_get_n_channels (self->esample) : 0);
+      wave_editor_set_n_qsamplers (self, self->esample ? self->esample.get_n_channels() : 0);
 
       for (i = 0; i < self->n_qsamplers; i++)
 	if (self->esample)
@@ -582,7 +586,8 @@ tree_selection_changed (BstWaveEditor    *self,
       g_free (mix_str);
       Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
       Bse::EditableSampleHandle esample = wave.use_editable (gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
-      bst_wave_editor_set_esample (self, esample.proxy_id());
+      bst_wave_editor_set_esample (self, esample);
+      bse_item_unuse (esample.proxy_id()); // FIXME: change use_editable()
     }
 }
 
