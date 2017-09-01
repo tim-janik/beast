@@ -76,7 +76,7 @@ objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
 # == app ==
 app: .appstamp
 PRUNE_APPSTAMP := $(shell test -e v8bse/v8bse.node || rm -f .appstamp)
-.appstamp: package.json xlinting objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
+.appstamp: package.json .lintstamp objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
@@ -117,12 +117,12 @@ MOSTLYCLEANFILES += objects/gradient-01.png objects/gradient-01.*tmp
 # == Linting rules ==
 HTML_LINT_FILES = index.html
 JS_LINT_FILES = *.js vc/*.js vc/*.vue $(HTML_LINT_FILES)
-xlinting: $(JS_LINT_FILES) package.json
+.lintstamp: $(JS_LINT_FILES) package.json
 	$(AM_V_GEN)
 	$(Q) rm -f $@
 	$(Q) ./node_modules/.bin/eslint -f unix $(JS_LINT_FILES)
 	$(Q) touch $@
-MOSTLYCLEANFILES += xlinting
+MOSTLYCLEANFILES += .lintstamp
 
 # == install ==
 install-exec-bundle: .bundlestamp
