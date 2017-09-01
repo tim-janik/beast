@@ -11,8 +11,8 @@
   - **slot** - All contents passed into this element will be rendered as contents besides the icon.
 </docs>
 
-<style lang="less">
-  @import 'mixins.less';
+<style lang="scss">
+  @import 'mixins.scss';
   .vc-icon-button			{ margin: 0 0; padding: 7px; }
   .vc-icon-button .vc-icon-button-icon	{ font-size: 1.3em /*1.33333333em*/; }
 </style>

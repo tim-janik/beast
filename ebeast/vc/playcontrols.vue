@@ -6,8 +6,8 @@
   - **project** - The BSE object providing playback API.
 </docs>
 
-<style lang="less">
-  @import 'mixins.less';
+<style lang="scss">
+  @import 'mixins.scss';
   .vc-playcontrols { }
 </style>
 

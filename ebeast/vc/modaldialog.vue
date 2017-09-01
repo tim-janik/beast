@@ -17,36 +17,36 @@
   - **vc-modaldialog-container** - Css class for the actual dialog contents.
 </docs>
 
-<style lang="less">
-  @import 'mixins.less';
+<style lang="scss">
+  @import 'mixins.scss';
   .vc-modaldialog * { flex-shrink: 0; }
-  .vc-flex-vbox() {
+  @mixin vc-flex-vbox() {
       display: flex; flex-basis: auto; align-items: center; justify-content: center;
       flex-shrink: 0; flex-flow: column; height: auto;
   }
-  .vc-flex-hbox() {
+  @mixin vc-flex-hbox() {
       display: flex; flex-basis: auto; align-items: center; justify-content: center;
       flex-shrink: 0; flex-flow: row; width: auto;
   }
   .vc-modaldialog-mask {
-      .vc-flex-vbox;
+      @include vc-flex-vbox;
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       z-index: 99998;
-      background-color: fadeout(darken(@vc-theme-background, 15%), 15%); /* backdrop */
+      background-color: fadeout(darken($vc-theme-background, 15%), 15%); /* backdrop */
   }
   .vc-modaldialog-wrapper {
-      .vc-flex-vbox;
+      @include vc-flex-vbox;
       max-height: 100%; max-width: 100%;
       padding: 1em;
   }
   .vc-modaldialog-container {
-      .vc-flex-vbox; flex-shrink: 1;
+      @include vc-flex-vbox; flex-shrink: 1;
       min-width: 25em; padding: 0;
-      background-color: @vc-theme-background;
-      border-radius: @vc-theme-border-radius;
-      border-top: 3px solid @vc-panel-background-light; border-left: 3px solid @vc-panel-background-light;
-      border-bottom: 3px solid @vc-panel-background-dark; border-right: 3px solid @vc-panel-background-dark;
-      .vc-popup-box-shadow;
+      background-color: $vc-theme-background;
+      border-radius: $vc-theme-border-radius;
+      border-top: 3px solid $vc-panel-background-light; border-left: 3px solid $vc-panel-background-light;
+      border-bottom: 3px solid $vc-panel-background-dark; border-right: 3px solid $vc-panel-background-dark;
+      @include vc-popup-box-shadow;
       /* fix vscrolling: https://stackoverflow.com/a/33455342 */
       justify-content: space-between;
       margin: auto;
@@ -58,7 +58,7 @@
   }
   .vc-modaldialog-header, .vc-modaldialog-footer {
       display: block; width: 100%; align-items: center; text-align: center;
-      background-color: darken(@vc-theme-background, 8%);
+      background-color: darken($vc-theme-background, 8%);
   }
   .vc-modaldialog-footer {
       padding: 1.2rem 0 1rem;

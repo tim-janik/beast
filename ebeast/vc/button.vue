@@ -10,16 +10,16 @@
   - **default** - All contents passed into this element will be rendered as contents of the button.
 </docs>
 
-<style lang="less">
-  @import 'mixins.less';
-  .vc-button                  	{ .vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
-  .vc-button:focus            	{ outline: @vc-focus-outline; }
-  .vc-button:hover            	{ .vc-buttonhover; }
+<style lang="scss">
+  @import 'mixins.scss';
+  .vc-button                  	{ @include vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
+  .vc-button:focus            	{ outline: $vc-focus-outline; }
+  .vc-button:hover            	{ @include vc-buttonhover; }
   .vc-button.vc-fakeactive,
-  .vc-button:active           	{ .vc-buttonactive; }
-  .vc-button, .vc-button *	{ color: @vc-button-foreground; fill: @vc-button-foreground !important; }
+  .vc-button:active           	{ @include vc-buttonactive; }
+  .vc-button, .vc-button *	{ color: $vc-button-foreground; fill: $vc-button-foreground !important; }
   .vc-button.vc-fakeactive *,	/* use '*' + fill!important to include svg elements in buttons */
-  .vc-button:active *         	{ color: @vc-button-active-fg;  fill: @vc-button-active-fg !important; }
+  .vc-button:active *         	{ color: $vc-button-active-fg;  fill: $vc-button-active-fg !important; }
 </style>
 
 <template>

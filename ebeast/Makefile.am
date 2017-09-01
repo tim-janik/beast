@@ -95,12 +95,10 @@ run: app
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
 
 # == CSS generation ==
-objects/app.css: app.less package.json
-	$(AM_V_GEN)
+objects/app.css: app.scss package.json | *.scss */*.scss
+	$(QGEN) # NOTE: scss output file names must not be temporary, since .map is derived from it
 	$(Q) mkdir -p objects/.deps/
-	$(Q) ./node_modules/.bin/lessc $< $@ --source-map=$@.map
-	$(Q) ./node_modules/.bin/lessc $< $@ -M >objects/.deps/app.P
--include objects/.deps/app.P
+	$(Q) INPUT=$$(readlink -f $<) && cd $(@D) && ../node_modules/.bin/node-sass $$INPUT $(@F) --source-map true
 clean-local: clean-objects
 clean-objects: ; rm -rf objects/
 

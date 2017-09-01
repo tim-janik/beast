@@ -3,15 +3,15 @@
 /* Only use variable declarations or mixin function declarations here */
 
 /* == Buttons Mixins == */
-.vc-buttonframe() 		{ border: 1px solid @vc-button-border; }
-.vc-buttonshade() 		{ background-image: @vc-button-lg;
-				  border-top: 1px solid @vc-button-light; border-left: 1px solid @vc-button-light;
-				  border-bottom: 1px solid @vc-button-dark; border-right: 1px solid @vc-button-dark; }
-.vc-buttonhover()		{ box-shadow: inset 500px 500px @vc-button-hover; }
-.vc-buttonactive()		{ box-shadow: inset 500px 500px @vc-button-active;
-				  background-image: @vc-button-active-lg;
-				  border-color: @vc-button-active-border; }
-.vc-popup-box-shadow()		{ box-shadow: 0 2px 8px @vc-boxshadow-color; }
+@mixin vc-buttonframe() 	{ border: 1px solid $vc-button-border; }
+@mixin vc-buttonshade() 	{ background-image: $vc-button-lg;
+				  border-top: 1px solid $vc-button-light; border-left: 1px solid $vc-button-light;
+				  border-bottom: 1px solid $vc-button-dark; border-right: 1px solid $vc-button-dark; }
+@mixin vc-buttonhover()		{ box-shadow: inset 500px 500px $vc-button-hover; }
+@mixin vc-buttonactive()	{ box-shadow: inset 500px 500px $vc-button-active;
+				  background-image: $vc-button-active-lg;
+				  border-color: $vc-button-active-border; }
+@mixin vc-popup-box-shadow()	{ box-shadow: 0 2px 8px $vc-boxshadow-color; }
 
 /* == User Settings & Overrides == */
-@import 'variables.less';
+@import 'variables.scss';

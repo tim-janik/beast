@@ -6,7 +6,7 @@
   "dependencies":    { "electron": "^1.4.15", "mithril": "^1.0.1",
 		       "vue": "^2.2.6",
 		       "jquery": "^3.1.1", "font-awesome": "^4.7.0" },
-  "devDependencies": { "node-gyp": "^3.5.0", "less": "^2.7.2",
+  "devDependencies": { "node-gyp": "^3.5.0", "node-sass": "^4.5.3",
 		       "electron-packager": "^8.6.0",
 		       "browserify": "^14.1.0",
 		       "vueify": "^9.4.1",

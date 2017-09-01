@@ -7,8 +7,8 @@
   - **project** - Read-only, the value of *bse-project*.
 </docs>
 
-<style lang="less">
-  @import 'mixins.less';
+<style lang="scss">
+  @import 'mixins.scss';
   .vc-projectshell { }
 </style>
 
