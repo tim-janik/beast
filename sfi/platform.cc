@@ -124,12 +124,17 @@ monotonic_counter ()
 static std::string
 get_executable_path()
 {
-  const ssize_t max_size = 4096;
-  char system_result[max_size + 1] = { 0, };
+  const ssize_t max_size = 4000;
+  char system_result[max_size + 1 + 1] = { 0, };
   ssize_t system_result_size = -1;
 
 #if defined __linux__ || defined __CYGWIN__ || defined __MSYS__
   system_result_size = readlink ("/proc/self/exe", system_result, max_size);
+  if (system_result_size < 0)
+    {
+      strcpy (system_result, "/proc/self/exe");
+      system_result_size = 0;
+    }
 #elif defined __APPLE__
   {
     uint32_t bufsize = max_size;

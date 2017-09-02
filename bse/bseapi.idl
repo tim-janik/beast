@@ -460,6 +460,7 @@ sequence TrackPartSeq;
 
 /// Fundamental base type for all BSE objects.
 interface Object {
+  String      uname      = String ("UName", "Unique object name", GUI);
   String      debug_name (); ///< Object name useful for debugging output.
   int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
   signal void changed    (String what); ///< Notification for object state or property changes.
@@ -958,7 +959,8 @@ sequence CategorySeq {
  * used in the BSE context.
  */
 interface Server : Object {
-  signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
+  signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
+  void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.

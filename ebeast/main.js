@@ -131,6 +131,9 @@ function create_window ()
   win.loadURL ('file:///' + __dirname + '/index.html');
   // win.webContents.openDevTools();
   win.on ('closed', () => { win = null; });
+
+  win.webContents.on ('crashed', function () { Eapp.exit (-127); });
+
 }
 Eapp.on ('ready', create_window); // create window once everything is loaded
 
