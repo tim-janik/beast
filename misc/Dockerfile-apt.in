@@ -25,7 +25,7 @@ RUN retry apt-get update && \
 # Provide build essentials
 RUN retry apt-get install -y \
     build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool \
-    doxygen graphviz texlive-binaries pandoc git libxml2-utils
+    doxygen graphviz texlive-binaries pandoc git libxml2-utils wget
 
 # Provide clang++ if needed
 ENV  INTENT		"@INTENT@"
@@ -48,6 +48,14 @@ RUN echo "deb [trusted=yes] https://dl.bintray.com/$BINTRAY_REPO $DISTRELEASE ma
     retry apt-get install -y rapicorn && \
     rm /etc/apt/sources.list.d/bintray-source-line.list && \
     retry apt-get update
+
+# Install SpectMorph
+### Dependencies
+RUN retry apt-get install -y \
+    libao4 libfftw3-single3 qtbase5-dev
+### Binary package
+RUN wget http://space.twc.de/~stefan/download/spectmorph_0.3.3_amd64.deb && \
+    dpkg -i spectmorph_0.3.3_amd64.deb
 
 # Setup build environment and provide the git repository
 ENV PROJECT	@PROJECT@
