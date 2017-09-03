@@ -43,9 +43,10 @@ Bstrecords-Migration
 --------------------
 **[COMPLETED]** Beast used to generate some structures from bstrecords.idl (sfidl), these are all migrated into bstapi.idl (ADIA IDL).
 
-Enum-Migration
---------------
+Enum-Migrations
+---------------
 **[COMPLETE]** Beast enums have all been migrated from scanned C headers into bstapi.idl.
+**[UNFINISHED]** Enums still present for historic reasons need to be deduplicated, one example: `BSE_MIDI_PITCH_BEND` vs `Bse::MidiSignal::PITCH_BEND`.
 
 C++11-Compilation
 -----------------
