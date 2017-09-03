@@ -128,6 +128,7 @@ plugins/davorgan.idl
 plugins/davsyndrum.cc
 plugins/davxtalstrings.cc
 plugins/freeverb/bsefreeverb.cc
+plugins/spectmorph/spectmorphosc.idl
 plugins/standardguspatchenvelope.idl
 plugins/standardsaturator.idl
 sfi/sfidl-parser.hh
