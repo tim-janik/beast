@@ -22,8 +22,9 @@ param_automation_dialog_ok (GxkDialog *dialog)
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) dialog, "GxkParam-automation-control");
       gint midi_channel = sfi_value_get_int (&param_channel->value);
-      BseMidiControlType control_type = bse_midi_control_type_from_choice (sfi_value_get_choice (&param_control->value));
-      bse_source_set_automation (proxy, param->pspec->name, midi_channel, control_type);
+      Bse::MidiControl control_type = Aida::enum_value_from_string<Bse::MidiControl> (sfi_value_get_choice (&param_control->value));
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      source.set_automation (param->pspec->name, midi_channel, control_type);
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
@@ -70,7 +71,9 @@ param_automation_popup_editor (GtkWidget *widget,
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-control");
       sfi_value_set_int (&param_channel->value, bse_source_get_automation_channel (proxy, param->pspec->name));
-      sfi_value_set_choice (&param_control->value, bse_midi_control_type_to_choice (bse_source_get_automation_control (proxy, param->pspec->name)));
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
+      sfi_value_set_choice (&param_control->value, Aida::enum_value_to_string (control_type).c_str());
       gxk_param_apply_value (param_channel); /* update model, auto updates GUI */
       gxk_param_apply_value (param_control); /* update model, auto updates GUI */
       g_object_set_data ((GObject*) widget, "GxkParam-automation-channel", param_channel);
@@ -157,24 +160,25 @@ param_automation_update (GxkParam  *param,
   gchar *content = NULL, *tip = NULL;
   if (proxy)
     {
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
       const gchar *prefix = "";
-      gint midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
-      BseMidiControlType control_type = bse_source_get_automation_control (proxy, param->pspec->name);
+      int midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
+      Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
       GParamSpec *control_pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
-      const SfiChoiceValue *cv = param_automation_find_choice_value (bse_midi_control_type_to_choice (control_type), control_pspec);
+      const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_string (control_type).c_str(), control_pspec);
       g_param_spec_unref (control_pspec);
-      if (control_type >= BSE_MIDI_CONTROL_CONTINUOUS_0 && control_type <= BSE_MIDI_CONTROL_CONTINUOUS_31)
+      if (control_type >= Bse::MidiControl::CONTINUOUS_0 && control_type <= Bse::MidiControl::CONTINUOUS_31)
         {
           prefix = "c";
-          control_type = BseMidiControlType (control_type - BSE_MIDI_CONTROL_CONTINUOUS_0);
+          control_type = Bse::MidiControl (int64 (control_type) - int64 (Bse::MidiControl::CONTINUOUS_0));
         }
-      else if (control_type >= BSE_MIDI_CONTROL_0 && control_type <= BSE_MIDI_CONTROL_127)
-        control_type = BseMidiControlType (control_type - BSE_MIDI_CONTROL_0);
-      else if (control_type == BSE_MIDI_CONTROL_NONE)
-        control_type = BseMidiControlType (-1);
+      else if (control_type >= Bse::MidiControl::CONTROL_0 && control_type <= Bse::MidiControl::CONTROL_127)
+        control_type = Bse::MidiControl (int64 (control_type) - int64 (Bse::MidiControl::CONTROL_0));
+      else if (control_type == Bse::MidiControl::NONE)
+        control_type = Bse::MidiControl (-1);
       else
-        control_type = BseMidiControlType (control_type + 10000); /* shouldn't happen */
-      if (control_type < 0)     /* none */
+        control_type = Bse::MidiControl (int64 (control_type) + 10000); /* shouldn't happen */
+      if (int64 (control_type) < 0)     /* none */
         {
           content = g_strdup ("--");
           /* TRANSLATORS: %s is substituted with a property name */
