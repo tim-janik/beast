@@ -687,10 +687,10 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_reset_params (csource);
                   break;
                 case 3:
-                  bse_source_clear_inputs (csource->source);
+                  csource_source.clear_inputs();
                   break;
                 case 4:
-                  bse_source_clear_outputs (csource->source);
+                  csource_source.clear_outputs();
                   break;
                 case 5:
                   bst_canvas_source_popup_info (csource);
