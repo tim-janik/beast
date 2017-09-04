@@ -42,13 +42,19 @@ RUN retry apt-get install -y \
 ENV BINTRAY_REPO	"@BINTRAY_REPO@"
 ENV DISTRELEASE		"@DISTRELEASE@"
 
-# Install SpectMorph
+# Build and install SpectMorph 0.3.3
 ### Dependencies
 RUN retry apt-get install -y \
-    libao4 libfftw3-single3 qtbase5-dev
-### Binary package
-RUN wget http://space.twc.de/~stefan/download/spectmorph_0.3.3_amd64.deb && \
-    dpkg -i spectmorph_0.3.3_amd64.deb
+    libao-dev qtbase5-dev libjack-dev libfftw3-dev libboost-dev libsndfile1-dev
+### Clone repository
+RUN cd /usr/src/ && \
+    retry git clone http://space.twc.de/public/git/spectmorph.git && \
+    cd /usr/src/spectmorph && git checkout 0.3.3 -b stable
+### Compile
+RUN cd /usr/src/spectmorph/ && \
+    nice ./autogen.sh --prefix=/usr && \
+    nice make -j`nproc` && \
+    nice make install
 
 # Setup build environment and provide the git repositories
 ENV PROJECT	@PROJECT@
