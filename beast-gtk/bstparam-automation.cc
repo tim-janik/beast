@@ -92,8 +92,8 @@ param_automation_popup_editor (GtkWidget *widget,
       g_object_set_data ((GObject*) automation_dialog, "beast-GxkParam", param);
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-control");
-      sfi_value_set_int (&param_channel->value, bse_source_get_automation_channel (proxy, param->pspec->name));
       Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      sfi_value_set_int (&param_channel->value, source.get_automation_channel (param->pspec->name));
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
       sfi_value_set_choice (&param_control->value, Aida::enum_value_to_string (control_type).c_str());
       gxk_param_apply_value (param_channel); /* update model, auto updates GUI */
@@ -184,7 +184,7 @@ param_automation_update (GxkParam  *param,
     {
       Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
       const gchar *prefix = "";
-      int midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
+      int midi_channel = source.get_automation_channel (param->pspec->name);
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
       GParamSpec *control_pspec = g_param_spec_ref (param_automation_pspec_control_type());
       const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_string (control_type).c_str(), control_pspec);
