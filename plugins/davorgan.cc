@@ -45,12 +45,12 @@ class Organ : public OrganBase {
     ~Tables()
     {} // private destructor; use ref_counting
     static map<uint, Tables*> table_map;        // map of rate specific tables
-    static Mutex              table_mutex;
+    static std::mutex         table_mutex;
   public:
     static Tables*
     ref (uint rate)
     {
-      Bse::ScopedLock<Rapicorn::Mutex> locker (table_mutex);
+      static std::lock_guard<std::mutex> locker (table_mutex);
       if (table_map[rate])
 	table_map[rate]->m_ref_count++;
       else
@@ -61,7 +61,7 @@ class Organ : public OrganBase {
     unref()
     {
       return_unless (m_ref_count > 0);
-      Bse::ScopedLock<Rapicorn::Mutex> locker (table_mutex);
+      static std::lock_guard<std::mutex> locker (table_mutex);
       if (--m_ref_count == 0)
 	{
 	  table_map[m_rate] = 0;
@@ -165,7 +165,7 @@ class Organ : public OrganBase {
        * frequencies in the range [0, mix_freq/2]. We map negative frequencies
        * (like -440 Hz) to their positive equivalents (+440 Hz).
        */
-      dfreq = min (fabs (dfreq), mix_freq() * 0.5);
+      dfreq = std::min (fabs (dfreq), mix_freq() * 0.5);
 
       /* round frequency with dtoi during conversion from floating point to our
        * fixed point representation, in order to minimize the conversion error
@@ -257,7 +257,7 @@ public:
 };
 
 map<uint, Organ::Tables*> Organ::Tables::table_map;
-Mutex                     Organ::Tables::table_mutex;
+std::mutex                Organ::Tables::table_mutex;
 
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Organ);

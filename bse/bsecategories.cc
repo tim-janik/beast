@@ -96,12 +96,12 @@ centry_new (const char *caller, const std::string &category, GType type)
   const uint mindex = category_strip_toplevels (category, type);
   if (!mindex)
     {
-      critical ("%s: refusing to add non-conforming category '%s'", caller, category);
+      Bse::warning ("%s: refusing to add non-conforming category '%s'", caller, category);
       return NULL;
     }
   if (centry_find (category))
     {
-      critical ("%s: unable to add category duplicate '%s'", caller, category);
+      Bse::warning ("%s: unable to add category duplicate '%s'", caller, category);
       return NULL;
     }
 
@@ -124,7 +124,7 @@ check_type (GType type)
 			     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
 			     '-');
       if (strcmp (x, g_type_name (type)) != 0)
-	g_warning ("type name with invalid characters: %s", g_type_name (type));
+	Bse::warning ("type name with invalid characters: %s", g_type_name (type));
       g_free (x);
     }
 }
@@ -153,11 +153,11 @@ bse_categories_register (const std::string &category, const char *i18n_category,
       title = title ? title + 1 : name;
       while (end > name && end[-1] == '/')
         --end;
-      Rapicorn::StringVector tags;
+      Bse::StringVector tags;
       if (name < end)
-        tags = Rapicorn::string_split (std::string (name, end - name), "/");
+        tags = Bse::string_split (std::string (name, end - name), "/");
       Bse::ServerImpl::register_source_module (centry->otype, title,
-                                               Rapicorn::string_join (";", tags),
+                                               Bse::string_join (";", tags),
                                                pixstream);
     }
 }

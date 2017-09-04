@@ -201,7 +201,7 @@ gxk_param_apply_value (GxkParam *param)
   assert_return (GXK_IS_PARAM (param));
   if (param->updating)
     {
-      g_warning ("%s: param (%p) currently in update", __func__, param);
+      Bse::warning ("%s: param (%p) currently in update", __func__, param);
       return;
     }
   if (param->binding->set_value && param->editable && param->sensitive)
@@ -805,7 +805,7 @@ guint
 gxk_param_create_size_group (void)
 {
   guint i;
-  assert (n_size_groups < 0xff);
+  assert_return (n_size_groups < 0xff, 0xff);
   i = n_size_groups++;
   size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
   size_groups[i] = param_editor_default_sizes;

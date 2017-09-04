@@ -21,11 +21,10 @@ doc_sources.lst: Makefile
 # tools to build
 #
 
-bin_PROGRAMS        = bsewavetool
+beastbin_PROGRAMS   = bsewavetool
 bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 nodist_bsewavetool_SOURCES = ../topbuildid.cc
 bsewavetool_LDADD   = $(progs_ldadd)
-EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 ../.deps/topbuildid.Po: ; mkdir -p $(@D) && touch $@ # bad hack to fix maintainer-clean
 
 noinst_PROGRAMS  += cutvorbis

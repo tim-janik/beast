@@ -1,17 +1,33 @@
 <!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 <html><head>
 
-  <title>BEAST</title>
+  <title>Beast - Music Synthesizer and Composer</title>
 
   <link rel="stylesheet" href="objects/app.css">
 
   <script>
-    'use strict';
-    /* Load application code right away, start application once DOM is ready */
-    window.$ = window.jQuery = require ('jquery');
-    $(require ('./app.js').start_app);
+  'use strict';
+  window.Electron = require ('electron').remote;
+  window.Bse = require ('./v8bse/v8bse.node');
+  window.T = (txt) => { return txt; }; // translation indicator
+  // Load jQuery + utils + Vue + components
+  require ('./vc/includes.js');
+  Vue.config.productionTip = false;
+  Vue.config.silent = true;
+  // Load application code, start application once DOM is ready
+  $(require ('./app.js').start_app);
   </script>
 
 </head>
-<body></body>
+<body>
+
+  <div id="mount-vue">
+    <vc-projectshell ref="Shell"></vc-projectshell>
+  </div>
+
+  <script>
+  window.Shell = (new Vue ({ el: '#mount-vue' })).$refs['Shell'];
+  </script>
+
+</body>
 </html>

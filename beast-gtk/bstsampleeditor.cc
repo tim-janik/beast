@@ -6,27 +6,11 @@
 #include	<gdk/gdkkeysyms.h>
 
 
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_SAMPLE
-};
-
-
 /* --- prototypes --- */
 static void	bst_sample_editor_class_init	(BstSampleEditorClass	*klass);
 static void	bst_sample_editor_init		(BstSampleEditor	*sample_editor);
 static void	bst_sample_editor_destroy	(GtkObject		*object);
 static void	bst_sample_editor_finalize	(GObject		*object);
-static void	bst_sample_editor_set_property	(GObject		*object,
-						 guint			 prop_id,
-						 const GValue		*value,
-						 GParamSpec		*pspec);
-static void	bst_sample_editor_get_property	(GObject		*object,
-						 guint			 prop_id,
-						 GValue			*value,
-						 GParamSpec		*pspec);
 
 
 /* --- static variables --- */
@@ -68,83 +52,31 @@ bst_sample_editor_class_init (BstSampleEditorClass *klass)
 
   parent_class = g_type_class_peek_parent (klass);
 
-  gobject_class->set_property = bst_sample_editor_set_property;
-  gobject_class->get_property = bst_sample_editor_get_property;
   gobject_class->finalize = bst_sample_editor_finalize;
 
   object_class->destroy = bst_sample_editor_destroy;
-
-  g_object_class_install_property (gobject_class, PARAM_SAMPLE,
-				   sfi_pspec_proxy ("sample", NULL, NULL,
-						    SFI_PARAM_READWRITE));
 }
 
 static void
-bst_sample_editor_init (BstSampleEditor *editor)
+bst_sample_editor_init (BstSampleEditor *self)
 {
+  new (&self->esample) Bse::EditableSampleH();
   /* setup main container */
-  editor->main_vbox = GTK_WIDGET (editor);
-}
-
-static void
-bst_sample_editor_set_property (GObject      *object,
-				guint         prop_id,
-				const GValue *value,
-				GParamSpec   *pspec)
-{
-  BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
-  switch (prop_id)
-    {
-    case PARAM_SAMPLE:
-      bst_sample_editor_set_sample (editor, sfi_value_get_proxy (value));
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-bst_sample_editor_get_property (GObject    *object,
-			      guint       prop_id,
-			      GValue     *value,
-			      GParamSpec *pspec)
-{
-  BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
-  switch (prop_id)
-    {
-    case PARAM_SAMPLE:
-      sfi_value_set_proxy (value, editor->esample);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
+  self->main_vbox = GTK_WIDGET (self);
 }
 
 void
-bst_sample_editor_set_sample (BstSampleEditor *editor,
-			      SfiProxy	       sample)
+bst_sample_editor_set_sample (BstSampleEditor *editor, Bse::EditableSampleH sample)
 {
   assert_return (BST_IS_SAMPLE_EDITOR (editor));
-  if (sample)
-    assert_return (BSE_IS_EDITABLE_SAMPLE (sample));
 
   if (sample != editor->esample)
     {
-      if (editor->esample)
-	bse_item_unuse (editor->esample);
       editor->esample = sample;
       editor->n_channels = 0;
       if (editor->esample)
-	{
-	  bse_item_use (editor->esample);
-	  editor->n_channels = bse_editable_sample_get_n_channels (editor->esample);
-	}
+        editor->n_channels = editor->esample.get_n_channels();
       bst_sample_editor_rebuild (editor);
-      g_object_notify (G_OBJECT (editor), "sample");
     }
 }
 
@@ -153,7 +85,7 @@ bst_sample_editor_destroy (GtkObject *object)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
 
-  bst_sample_editor_set_sample (editor, 0);
+  bst_sample_editor_unset_sample (editor);
 
   if (editor->play_back)
     bst_play_back_handle_destroy (editor->play_back);
@@ -165,18 +97,19 @@ bst_sample_editor_destroy (GtkObject *object)
 static void
 bst_sample_editor_finalize (GObject *object)
 {
-  // BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
+  BstSampleEditor *self = BST_SAMPLE_EDITOR (object);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
+
+  using namespace Bse;
+  self->esample.~EditableSampleH();
 }
 
 GtkWidget*
-bst_sample_editor_new (SfiProxy sample)
+bst_sample_editor_new (Bse::EditableSampleH esample)
 {
-  GtkWidget *widget;
-
-  widget = gtk_widget_new (BST_TYPE_SAMPLE_EDITOR, "sample", sample, NULL);
-
+  GtkWidget *widget = gtk_widget_new (BST_TYPE_SAMPLE_EDITOR, NULL);
+  bst_sample_editor_set_sample (BST_SAMPLE_EDITOR (widget), esample);
   return widget;
 }
 
@@ -190,7 +123,7 @@ qsampler_set_selection (BstQSampler *qsampler,
 			gboolean     visible_mark)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (qsampler->owner);
-  guint i, length = bse_editable_sample_get_length (editor->esample);
+  guint i, length = editor->esample.get_length();
 
   m1 = CLAMP (m1, 0, (gint) (length / editor->n_channels));
   m2 = CLAMP (m2, 0, (gint) (length / editor->n_channels));
@@ -356,8 +289,8 @@ play_back_wchunk (BstSampleEditor *editor)
     {
       editor->play_back = bst_play_back_handle_new ();
       bst_play_back_handle_set (editor->play_back,
-				editor->esample,
-				bse_editable_sample_get_osc_freq (editor->esample));
+				editor->esample.proxy_id(),
+				editor->esample.get_osc_freq());
     }
   bst_play_back_handle_toggle (editor->play_back);
   if (bst_play_back_handle_is_playing (editor->play_back))

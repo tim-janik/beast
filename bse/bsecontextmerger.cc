@@ -62,12 +62,12 @@ bse_context_merger_class_init (BseContextMergerClass *klass)
 
       ident = g_strdup_format ("input-%u", i + 1);
       channel_id = bse_source_class_add_jchannel (source_class, ident, NULL, NULL);
-      assert (channel_id == i);
+      assert_return (channel_id == i);
       g_free (ident);
 
       ident = g_strdup_format ("output-%u", i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, NULL, NULL);
-      assert (channel_id == i);
+      assert_return (channel_id == i);
       g_free (ident);
     }
 }
@@ -152,8 +152,8 @@ bse_context_merger_context_create (BseSource    *source,
     {
       module = bse_source_get_context_imodule (source, self->merge_context);
       if (!module)
-	g_warning ("context merger: request to merge context (%u) with non existing context (%u)",
-		   context_handle, self->merge_context);
+	Bse::warning ("context merger: request to merge context (%u) with non existing context (%u)",
+                      context_handle, self->merge_context);
       else
 	{
 	  ContextModuleData *cmdata = (ContextModuleData*) module->user_data;

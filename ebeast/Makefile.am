@@ -5,9 +5,6 @@ SUBDIRS = v8bse .
 
 export ELECTRON_ENABLE_LOGGING=1
 
-EXTRA_DIST += $(strip \
-)
-
 # == all: ==
 all: with_npm
 	@echo "$$(basename $$(pwd))/: experimental code. Usage:"
@@ -22,18 +19,19 @@ else
 with_npm:
 endif
 
-# == package.json ==
-package.json: package.json.in ../config.status
+# == .nodestamp ==
+.nodestamp: package.json.in ../config.status
 	$(AM_V_GEN)
 	$(Q) ../config.status --file package.json
 	$(Q) npm install
-clean-local: clean-node_modules
-clean-node_modules: ; rm -rf node_modules/ package.json
+	$(Q) touch $@
+clean-local: clean-node
+clean-node: ; rm -rf node_modules/ package.json .nodestamp
 MOSTLYCLEANFILES += config.log # created by config.status
 
 # == ebeast bundle ==
 INSTALL_VERSION = @MAJOR@.@MINOR@.@MICRO@
-BUNDLEDIR       = ebeast-$(INSTALL_VERSION)
+BUNDLEDIR       = ebeast
 .bundlestamp: .appstamp
 	$(AM_V_GEN)
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
@@ -47,9 +45,39 @@ clean-local: clean-ebeast-bundle
 clean-ebeast-bundle:
 	rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
 
+# == bundle.js ==
+objects/vc-bundle.js: vc/bundle.js vc/*.vue .nodestamp
+	$(AM_V_GEN)
+	@: # check all require('...') file references
+	$(Q) cd $(<D) && \
+	for f in $$(grep -o 'require *([^)]\+)' $(<F) | \
+		    sed "s/require *( *['\"]//g ; s/['\"])//g") ; do \
+	  test -r $$f || { echo $$(pwd -P)/: $$f: 'read error'; exit 1 ; } ; \
+	done
+	@: # all files present, generate bundle
+	$(Q) node_modules/.bin/browserify --ignore-missing --no-builtins --no-commondir \
+	  --insert-global-vars="global" --no-browser-field -d \
+	  -t vueify -e $< -o $@
+MOSTLYCLEANFILES += objects/vc-bundle.js
+
+# == Docs for .vue files ==
+VUE_COMPONENTS_INPUTS = $(sort $(wildcard vc/*.vue))
+objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) .nodestamp Makefile
+	$(AM_V_GEN)
+	$(Q) rm -f $(@:.html=.tmp1)
+	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
+	$(Q) for i in $(VUE_COMPONENTS_INPUTS) ; do \
+	  sed -n '1h;1!H;$${g; s|.*<docs>\(.*\)</docs>.*|\1|i; T; p }' < $$i >> $(@:.html=.tmp1) || exit $$? ; \
+	  echo >> $(@:.html=.tmp1) ; \
+	done
+	$(Q) sed 's/^  // ; s/^### /\n### /' < $(@:.html=.tmp1) > $(@:.html=.tmp2)
+	$(Q) pandoc --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $(@:.html=.tmp2)
+	$(Q) rm -f $(@:.html=.tmp*)
+
 # == app ==
 app: .appstamp
-.appstamp: package.json xlint-html xlint-js objects/app.css objects/gradient-01.png
+PRUNE_APPSTAMP := $(shell test -e v8bse/v8bse.node || rm -f .appstamp)
+.appstamp: .nodestamp .lintstamp objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
@@ -68,12 +96,10 @@ run: app
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
 
 # == CSS generation ==
-objects/app.css: app.less */*.less package.json
-	$(AM_V_GEN)
+objects/app.css: app.scss .nodestamp | *.scss */*.scss
+	$(QGEN) # NOTE: scss output file names must not be temporary, since .map is derived from it
 	$(Q) mkdir -p objects/.deps/
-	$(Q) ./node_modules/.bin/lessc $< $@ --source-map=$@.map
-	$(Q) ./node_modules/.bin/lessc $< $@ -M >objects/.deps/app.P
--include objects/.deps/app.P
+	$(Q) INPUT=$$(readlink -f $<) && cd $(@D) && ../node_modules/.bin/node-sass $$INPUT $(@F) --source-map true
 clean-local: clean-objects
 clean-objects: ; rm -rf objects/
 
@@ -89,33 +115,20 @@ objects/gradient-01.png: objects/app.css Makefile
 	$(Q) rm -f $@.tmp
 MOSTLYCLEANFILES += objects/gradient-01.png objects/gradient-01.*tmp
 
-# == HTML linting ==
+# == Linting rules ==
 HTML_LINT_FILES = index.html
-xlint-html: $(HTML_LINT_FILES)
-	$(AM_V_GEN)
-	$(Q) rm -f $@.log $@
-	$(Q) for file in $(HTML_LINT_FILES) ; do \
-	  xmllint --html --noout --valid $$file >>$@.log 2>&1 ; \
-	done
-	$(Q) cat $@.log ; test ! -s $@.log
-	$(Q) mv $@.log $@
-MOSTLYCLEANFILES += xlint-html xlint-html.log
-
-# == JS linting ==
-JS_LINT_FILES = *.js $(HTML_LINT_FILES)
-xlint-js: $(JS_LINT_FILES) package.json
+JS_LINT_FILES = *.js vc/*.js vc/*.vue $(HTML_LINT_FILES)
+.lintstamp: $(JS_LINT_FILES) .nodestamp
 	$(AM_V_GEN)
 	$(Q) rm -f $@
-	$(Q) for file in $(JS_LINT_FILES) ; do \
-	  ./node_modules/.bin/eslint -f unix $$file || exit $$? ; \
-	done
+	$(Q) ./node_modules/.bin/eslint -f unix $(JS_LINT_FILES)
 	$(Q) touch $@
-MOSTLYCLEANFILES += xlint-js
+MOSTLYCLEANFILES += .lintstamp
 
 # == install ==
 install-exec-bundle: .bundlestamp
-	$(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)"
-	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"
-	cp -RP $(BUNDLEDIR) "$(DESTDIR)$(pkglibexecdir)/"
+	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
+	rm -rf "$(DESTDIR)$(beastdir)/$(BUNDLEDIR)"
+	cp -RP $(BUNDLEDIR) "$(DESTDIR)$(beastdir)/"
 uninstall-bundle:
-	rm -rf "$(DESTDIR)$(pkglibexecdir)/$(BUNDLEDIR)"
+	rm -rf "$(DESTDIR)$(beastdir)/$(BUNDLEDIR)"

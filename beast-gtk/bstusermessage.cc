@@ -15,7 +15,7 @@ static GSList *msg_windows = NULL;
 const char*
 bst_msg_type_ident (BstMsgType bmt)
 {
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
+  const Aida::EnumValue ev = Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
   if (ev.ident)
     return ev.ident;
   switch (bmt)
@@ -23,7 +23,7 @@ bst_msg_type_ident (BstMsgType bmt)
     case BST_MSG_SCRIPT:        return "script";
     default: ;
     }
-  assert_unreached();
+  assert_return_unreached (NULL);
 }
 
 static void
@@ -348,7 +348,7 @@ repeat_dialog (GxkDialog *dialog)
   if (label)
     {
       gint count = g_object_get_int (dialog, "BEAST-user-message-count");
-      gchar *rstr = g_strdup_format (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
+      gchar *rstr = g_strdup_format (dngettext (bst_gettext_domain(), _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
       g_object_set_int (dialog, "BEAST-user-message-count", count + 1);
       gtk_label_set_text (label, rstr);
       g_free (rstr);
@@ -588,7 +588,7 @@ janitor_window_deleted (GxkDialog *dialog)
 			"any_signal", janitor_progress, dialog,
 			"any_signal", janitor_unconnected, dialog,
 			NULL);
-  bse_janitor_kill (janitor);
+  // bse_janitor_kill (janitor);
   bse_item_unuse (janitor);
 }
 
@@ -662,9 +662,9 @@ bst_message_dialog_display (const char     *log_domain,
   msg.type = mtype;
   msg.ident = bst_msg_type_ident (mtype);
   msg.label = bst_msg_type_ident (mtype);
-  msg.janitor = bse_script_janitor();
-  msg.process = g_strdup (Rapicorn::ThisThread::name().c_str());
-  msg.pid = Rapicorn::ThisThread::thread_pid();
+  // msg.janitor = bse_script_janitor();
+  msg.process = g_strdup (Bse::ThisThread::name().c_str());
+  msg.pid = Bse::ThisThread::thread_pid();
   msg.n_msg_bits = 0;
   msg.msg_bits = NULL;
   /* collect msg bits */
@@ -761,7 +761,7 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
+  const Aida::EnumValue ev = Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
   msg.ident = ev.ident;
   msg.label = NULL;
   msg.janitor = 0;

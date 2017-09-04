@@ -17,8 +17,8 @@ record Probe {
   Real          min;			// FIXME: rename to range_min
   Real          max;
   Real          energie;
-  FloatSeq      sample_data;
-  FloatSeq      fft_data;
+  Flo4tSeq      sample_data;
+  Flo4tSeq      fft_data;
 };
 sequence ProbeSeq {
   Probe probes;

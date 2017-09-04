@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>
@@ -16,7 +16,7 @@ using std::string;
 using std::max;
 using std::min;
 using std::map;
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 
 static void
 read_through (GslDataHandle *handle)
@@ -27,11 +27,11 @@ read_through (GslDataHandle *handle)
     {
       gfloat values[1024];
       int64 values_read = gsl_data_handle_read (handle, offset, 1024, values);
-      assert (values_read > 0);
+      assert_return (values_read > 0);
       offset += values_read;
     }
 
-  assert (offset == n_values);
+  assert_return (offset == n_values);
 }
 
 static void
@@ -93,7 +93,7 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      Rapicorn::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
+      TNOTE ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
@@ -124,7 +124,7 @@ check (const char           *up_down,
         for (uint j = 0; j < RUNS; j++)
           read_through (rhandle);
       };
-      Rapicorn::Test::Timer timer (0.03);
+      Bse::Test::Timer timer (0.03);
       const double bench_time = timer.benchmark (loop);
       const double input_samples_per_second = RUNS * input.size() / bench_time;
       const double output_samples_per_second = RUNS * gsl_data_handle_n_values (rhandle) / bench_time;
@@ -132,11 +132,11 @@ check (const char           *up_down,
              samplestr, (input_samples_per_second + output_samples_per_second) / 2.0 / 44100.0,
              RUNS * bytes_per_run / bench_time / 1048576.);
 #if 0
-      tprintout ("  NOTE     %-28s : %+.14f samples/second\n", samplestr, samples_per_second);
-      tprintout ("  NOTE     %-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
-      tprintout ("  NOTE     samples / second = %f\n", samples_per_second);
-      tprintout ("  NOTE     which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      tprintout ("  NOTE     or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      TNOTE ("%-28s : %+.14f samples/second\n", samplestr, samples_per_second);
+      TNOTE ("%-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
+      TNOTE ("samples / second = %f\n", samples_per_second);
+      TNOTE ("which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      TNOTE ("or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
 #endif
     }
 
@@ -165,7 +165,7 @@ generate_test_signal (vector<Sample> &signal,
           cached_window[i] = bse_window_blackman (wpos);
         }
     }
-  string signal_cache_key = Rapicorn::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  string signal_cache_key = Bse::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
   static map<string, vector<Sample> > signal_cache;
   vector<Sample>& cached_signal = signal_cache[signal_cache_key];
   if (cached_signal.empty())
@@ -324,7 +324,7 @@ test_delay_compensation (const char *run_type)
       if (j % 2)
 	{
 	  /* implement half a output sample delay (for downsampling only) */
-	  assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  assert_return (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
 	  i++;
 	  j += 2;
 	}
@@ -457,9 +457,9 @@ main (int   argc,
       char *argv[])
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
-  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
-  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  Bse::Test::init (&argc, argv);
+  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
+  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   test_c_api ("FPU");
@@ -467,6 +467,7 @@ main (int   argc,
   test_state_length ("FPU");
   run_tests ("FPU");
   /* load plugins */
+  Bse::assertion_failed_hook (NULL); // hack to allow test reinitialization
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())

@@ -23,7 +23,7 @@ Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
 sequence TypeSeq {
   SfiString types;
 };
-sequence FloatSeq {
+sequence Flo4tSeq {
   Real values;
 };
 enum MidiControlType {

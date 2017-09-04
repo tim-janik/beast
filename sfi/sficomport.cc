@@ -365,7 +365,7 @@ sfi_com_port_send_bulk (SfiComPort   *port,
       else
 	link->p2queue = sfi_ring_concat (link->p2queue, target);
       if (link->waiting)
-        link->wcond.signal();
+        link->wcond.notify_one();
       else
 	wakeup = first ? link->wakeup2 : link->wakeup1;
       link->mutex.unlock();
@@ -541,7 +541,7 @@ sfi_com_port_recv_intern (SfiComPort *port,
   if (!port->rvalues && port->link)
     {
       SfiComPortLink *link = port->link;
-      link->mutex.lock();
+      std::unique_lock<std::mutex> link_lock (link->mutex);
     refetch:
       if (port == link->port1)
 	port->rvalues = link->p2queue, link->p2queue = NULL;
@@ -550,11 +550,10 @@ sfi_com_port_recv_intern (SfiComPort *port,
       if (!port->rvalues && blocking)
 	{
 	  link->waiting = TRUE;
-	  link->wcond.wait (link->mutex);
+	  link->wcond.wait (link_lock);
 	  link->waiting = FALSE;
 	  goto refetch;
 	}
-      link->mutex.unlock();
     }
   else if (!port->rvalues)
     {

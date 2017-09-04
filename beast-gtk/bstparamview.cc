@@ -210,17 +210,17 @@ bst_param_view_rebuild (BstParamView *self)
   Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
   Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->item));
   std::vector<GParamSpec*> cxxpspecs;
-  std::vector<Rapicorn::Aida::Parameter> cxxparams;
+  std::vector<Aida::Parameter> cxxparams;
   if (song)
     {
       cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (song);
-      Rapicorn::Aida::Parameter::ListVisitor av (cxxparams);
+      Aida::Parameter::ListVisitor av (cxxparams);
       song.__accept_accessor__ (av);
     }
   else if (snet)
     {
       cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (snet);
-      Rapicorn::Aida::Parameter::ListVisitor av (cxxparams);
+      Aida::Parameter::ListVisitor av (cxxparams);
       snet.__accept_accessor__ (av);
     }
 
@@ -235,7 +235,7 @@ bst_param_view_rebuild (BstParamView *self)
       {
         GParamSpec *pspec = cxxpspecs[i];
         const gchar *param_group = sfi_pspec_get_group (pspec);
-        Rapicorn::Aida::Parameter *cxxparam = NULL;
+        Aida::Parameter *cxxparam = NULL;
         for (size_t j = 0; j < cxxparams.size() && !cxxparam; j++)
           if (g_sname_equals (cxxparams[j].name(), pspec->name))
             cxxparam = &cxxparams[j];

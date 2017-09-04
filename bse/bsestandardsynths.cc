@@ -13,8 +13,8 @@ bse_standard_synth_inflate (const gchar *synth_name,
 {
   assert_return (synth_name != NULL, NULL);
 
-  const Rapicorn::String synth_res = Rapicorn::String ("@res ") + synth_name + ".bse";
-  Rapicorn::Blob blob = Rapicorn::Res (synth_res);
+  const Bse::String synth_res = Bse::String ("@res ") + synth_name + ".bse";
+  Bse::Blob blob = Bse::Res (synth_res);
   if (blob.size())
     {
       gchar *result = (gchar*) g_malloc (blob.size() + 1);
@@ -22,6 +22,6 @@ bse_standard_synth_inflate (const gchar *synth_name,
       result[blob.size()] = 0;
       return result;
     }
-  g_warning ("unknown standard synth: %s", synth_name);
+  Bse::warning ("unknown standard synth: %s", synth_name);
   return NULL;
 }

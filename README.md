@@ -1,7 +1,7 @@
 BEAST & BSE
 ===========
 
-[![License MPL2](http://testbit.eu/~timj/pics/license-lgpl-3.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
+[![License LGPL-2.1+](http://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
 [![Binary Download](https://api.bintray.com/packages/beast-team/deb/beast/images/download.svg)](https://github.com/tim-janik/beast/#binary-packages)
 
@@ -32,7 +32,7 @@ For Linux kernels of the 2.6.x series and later, this enables the
 low-latency scheduling behavior needed to avoid audio artefacts.
 
 In order to build release tarballs, `Rapicorn`, `GnomeCanvas`,
-`Guile-1.8`, `Ogg/Vorbis` and `libflac` are required.
+`Ogg/Vorbis`, `libflac` and `npm` are required.
 Support for MP3 files is optional and requires `libmad` (MPEG audio
 decoder library) when compiling Beast.
 Compilation requires `g++-4.9` or later and a recent Linux

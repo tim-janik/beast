@@ -6,21 +6,21 @@ m4_include(config/glib-gettext.m4)
 AC_PREREQ(2.57)
 
 # == Package & Version ==
-# VERSION: MAJOR.MINOR.MICRO-RC:
+# VERSION: MAJOR.MINOR.MICRO~RC:
 # * MAJOR:           Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
 # * MINOR:           Increment for significant changes or ABI breaks, resets MICRO
 # * MICRO:           Increment with every release, increments must *not* break ABI
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
-# * ~RC:             Release candidate, may contain [~-]\w+[0-9]+ or nothing
-AC_INIT([beast], [0.10.1~wip])
-:;   ABI_VERSION=[0.10.0]
+# * ~RC:             Release candidate, may contain ~rc[0-9]+ or nothing
+AC_INIT([beast], [0.11.1])
+:;   ABI_VERSION=[0.11.0]
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
 AM_CONFIG_HEADER(config/config.h)
 AC_CANONICAL_TARGET                                     # architecture information
-AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign subdir-objects)
+AM_INIT_AUTOMAKE(1.9 no-dist no-define foreign subdir-objects)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
 [MAJOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
@@ -68,6 +68,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # == Argument parsing ==
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation directory inside DIR],,with_pkgroot=no)
 # package library defaults
 enable_static=no ; enable_shared=yes
 
@@ -80,34 +81,46 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-bseincludedir="\${includedir}/bse-$MAJOR"
-bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
-beastexecdir="\${libexecdir}/beast-$MAJOR.$MINOR.$MICRO"
-datadir="\${datarootdir}/beast"
-docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
-# Substitute directories in Makefiles
-AC_SUBST(bseincludedir)
-AC_SUBST(bselibdir)
-AC_SUBST(beastexecdir)
-AC_SUBST(datadir)
-AC_SUBST(docdir)
-# Provide directories for C++
-bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"; bak_libexecdir="$libexecdir"
-bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
-test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-libdir=`eval echo "${libdir}"` ; libexecdir=`eval echo "${libexecdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
-datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+beastlocaledir="\${beastdir}/locale"
+beastbindir="\${beastdir}/bin"
+bselibdir="\${beastdir}/lib"
+beastsharedir="\${beastdir}/share"
+beastdatadir="\${beastdir}"
+beastdocdir="\${beastdir}/doc"
+bseincludedir="\${beastdir}/include"
+# Provide directories for C++ and move Beast packagedir into libdir if under /usr
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
+test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
+case "$with_pkgroot" in
+  no)			beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
+  */*)			beastdir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
+  *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
+esac
+bak_libdir="$libdir"
+bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
+libdir=`eval echo "${libdir}"`
+bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTEXECDIR, ["`eval echo ${beastexecdir}`"], [Directory under whic to install Beast executable files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
-datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
+bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
+libdir="$bak_libdir"
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
+# Substitute directories in Makefiles
+AC_SUBST(beastlocaledir)
+AC_SUBST(bseincludedir)
+AC_SUBST(beastbindir)
+AC_SUBST(bselibdir)
+AC_SUBST(beastsharedir)
+AC_SUBST(beastdatadir)
+AC_SUBST(beastdocdir)
+AC_SUBST(beastdir)
 
 # == Check for git ==
 AC_MSG_CHECKING([for git repository])
@@ -259,7 +272,7 @@ MC_ASSERT_PROG(XMLLINT, xmllint)
 MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
 # == Headers ==
-AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h guile/gh.h libguile/properties.h )
+AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
 
 # == pkg-config Libraries ==
 # librapicorn dependencies
@@ -268,7 +281,7 @@ LIBBSE_REQUIRES="
 	gobject-2.0		>= 2.32.3
 	gthread-2.0		>= 2.32.3
 	gmodule-no-export-2.0	>= 2.32.3
-	rapicorn		>= 16.0.1
+	rapicorn		>= 17.0.0
 	ogg			>= 1.2.2
 	vorbis			>= 1.3.2
 	vorbisfile		>= 1.3.2
@@ -319,6 +332,44 @@ if test -r ebeast/package.json.in ; then
 fi
 AM_CONDITIONAL(WITH_NPM, [test "_$with_usable_npm" = "_yes"])
 
+# == pthread_spinlock_t initializer ==
+AC_LANG_PUSH([C])
+saveed_LDFLAGS="$LDFLAGS" ; LDFLAGS="-pthread $LDFLAGS"
+AC_TRY_RUN(
+  [
+    #include <stdio.h>
+    #include <string.h>
+    #include <assert.h>
+    #include <pthread.h>
+    struct Spin { pthread_spinlock_t dummy1, s1, dummy2, s2, dummy3; };
+    int
+    main (int argc, char *argv[])
+    {
+      struct Spin spin;
+      memset (&spin, 0xffffffff, sizeof (spin));
+      if (pthread_spin_init (&spin.s1, 0) == 0 &&
+          pthread_spin_init (&spin.s2, 0) == 0 &&
+	  sizeof (pthread_spinlock_t) == 4 && // current implementation assumption
+	  spin.s1 == spin.s2) // check for location-independent initialization
+	 {
+	   FILE *f = fopen ("conftest_spinlock_initializer", "w");
+	   assert (f);
+	   fprintf (f, "/*{*/ ");
+	   fprintf (f, "0x%04x,", *(int*) &spin.s1);
+	   fprintf (f, " /*}*/\n");
+	   fclose (f);
+	 }
+	 return 0;
+    } ],
+  BSE_SPINLOCK_INITIALIZER=`cat conftest_spinlock_initializer` && rm -f conftest_spinlock_initializer ,
+  BSE_SPINLOCK_INITIALIZER='' )
+LDFLAGS="$saveed_LDFLAGS"
+AC_LANG_POP([C])
+test -z "$BSE_SPINLOCK_INITIALIZER" && {
+  AC_MSG_FAILURE([spinlock initializer check failed to execute])
+}
+AC_SUBST(BSE_SPINLOCK_INITIALIZER)
+
 dnl #
 dnl # Define package requirements.
 dnl #
@@ -355,7 +406,7 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.1)
+    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
     MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
     # librapicorn uses pthread functions in header files, forcing us to link against libpthread
@@ -417,6 +468,11 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     AC_SUBST(BSE_PC_REQUIRE)
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
+
+    # == sizeof ==
+    AC_CHECK_SIZEOF(uint, 0, [#include <sys/types.h>])
+    BSE_SIZEOF_SYS_TYPESH_UINT="$ac_cv_sizeof_uint"
+    AC_SUBST(BSE_SIZEOF_SYS_TYPESH_UINT)
 
     dnl # --- sizeof types ---
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
@@ -495,39 +551,6 @@ AC_DEFUN([MC_ASOUND_CHECK],
     CFLAGS="$saved_cflags"
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
-])
-AC_DEFUN([MC_BSESCM_REQUIREMENTS],
-[
-    BSESCM_CFLAGS="$BSE_CFLAGS"
-    BSESCM_LIBS="$BSE_LIBS"
-
-    dnl # --- libguile check ---
-    guile_tests=0
-    GUILE_VERSION=none
-    REQUIRED_VERSION=1.6
-    AC_PATH_PROG(GUILE_CONFIG, guile-config)
-    if test -n "$GUILE_CONFIG"; then
-	guile_tests=`expr $guile_tests + 1`
-	GUILE_VERSION=`$GUILE_CONFIG info guileversion`
-	GUILE_CFLAGS=`$GUILE_CONFIG compile`
-	GUILE_LDFLAGS=`$GUILE_CONFIG link`
-	MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [guile_tests=`expr $guile_tests + 1`])
-	dnl # check headers seperately, since some distributions ship on-devel guile packages with guile-config
-	AC_CHECK_HEADER(guile/gh.h, guile_tests=`expr $guile_tests + 1`)
-	AC_CHECK_HEADER(libguile/properties.h, guile_tests=`expr $guile_tests + 1`) dnl # guile-1.6 headerfile
-    fi
-    if test $guile_tests = 4 ; then
-	BSESCM_CFLAGS="$GUILE_CFLAGS $BSESCM_CFLAGS"
-	BSESCM_LIBS="$GUILE_LDFLAGS $BSESCM_LIBS" 
-    else
-	EMSG="failed to detect guile headers and library v$REQUIRED_VERSION"
-	EMSG="$EMSG (available from http://www.gnu.org/software/guile/guile.html)"
-	EMSG="$EMSG - detected library version: $GUILE_VERSION"
-	AC_MSG_ERROR([$EMSG])
-    fi
-
-    AC_SUBST(BSESCM_CFLAGS)
-    AC_SUBST(BSESCM_LIBS)
 ])
 AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
 [
@@ -657,6 +680,7 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database)
 
 dnl # MC_PYTHON_REQUIREMENTS() - python checks
 AC_DEFUN([MC_PYTHON_REQUIREMENTS],
@@ -705,7 +729,6 @@ AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 MC_I18N_REQUIREMENTS
 MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
-MC_BSESCM_REQUIREMENTS
 MC_BSE_SNDDEV_CHECK
 MC_PYTHON_REQUIREMENTS
 MC_SPECTMORPH_REQUIREMENTS
@@ -720,6 +743,7 @@ Makefile
 data/Makefile
 data/beast.applications
 sfi/Makefile
+sfi/sysconfig.h
 sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
@@ -735,7 +759,6 @@ plugins/freeverb/Makefile
 plugins/spectmorph/Makefile
 plugins/spectmorph/gui/Makefile
 drivers/Makefile
-shell/Makefile
 pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
@@ -746,7 +769,6 @@ library/Makefile
 library/effects/Makefile
 library/instruments/Makefile
 library/samples/Makefile
-library/scripts/Makefile
 library/demo/Makefile
 library/keys/Makefile
 library/skins/Makefile

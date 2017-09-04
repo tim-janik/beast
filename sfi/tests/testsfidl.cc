@@ -1,10 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include "../sfidl-generator.hh"
 #include "../sfidl-factory.hh"
 #include <stdio.h>
+
+#define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
 
 using namespace Sfidl;
 using namespace std;

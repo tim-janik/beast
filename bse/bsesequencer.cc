@@ -23,10 +23,8 @@
 
 namespace Bse {
 
-using Rapicorn::ThreadInfo; // FIXME
-
 Sequencer              *Sequencer::singleton_ = NULL;
-Mutex                   Sequencer::sequencer_mutex_;
+std::mutex              Sequencer::sequencer_mutex_;
 static ThreadInfo      *sequencer_thread_self = NULL;
 
 class Sequencer::PollPool {
@@ -51,7 +49,7 @@ public:
   fill_pfds (guint    n_pfds,
              GPollFD *pfds)
   {
-    assert (n_pfds == watch_pfds.size());
+    assert_return (n_pfds == watch_pfds.size());
     copy (watch_pfds.begin(), watch_pfds.end(), pfds);
     for (guint i = 0; i < watches.size(); i++)
       watches[i].notify_pfds = pfds + watches[i].index;
@@ -122,13 +120,13 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  RAPICORN_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
-  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  static_assert (sizeof (GPollFD) == sizeof (struct pollfd), "");
+  static_assert (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd), "");
+  static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd), "");
+  static_assert (offsetof (GPollFD, events) == offsetof (struct pollfd, events), "");
+  static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events), "");
+  static_assert (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents), "");
+  static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents), "");
 };
 
 void
@@ -161,7 +159,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
    *   least conceptually) or has never been installed
    */
   bool removal_success;
-  BSE_SEQUENCER_LOCK();
+  std::unique_lock<std::mutex> sequencer_guard (sequencer_mutex_);
   if (current_watch_func == watch_func && current_watch_data == watch_data)
     {  /* watch_func() to be removed is currently in call */
       if (&ThreadInfo::self() == sequencer_thread_self)
@@ -177,7 +175,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
           current_watch_needs_remove2 = true;
           /* wait until watch_func() call has finished */
           while (current_watch_func == watch_func && current_watch_data == watch_data)
-            watch_cond_.wait (sequencer_mutex_);
+            watch_cond_.wait (sequencer_guard);
         }
     }
   else /* can remove (watch_func(watch_data) not in call) */
@@ -186,9 +184,8 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
       /* wake up sequencer thread, so it stops polling on fds it doesn't own anymore */
       wakeup();
     }
-  BSE_SEQUENCER_UNLOCK();
   if (!removal_success)
-    g_warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
+    Bse::warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
 }
 
 bool
@@ -217,7 +214,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
       GPollFD *watch_pfds;
       while (poll_pool_->fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
         {
-          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          assert_return (!current_watch_needs_remove1 && !current_watch_needs_remove2, false);
           BSE_SEQUENCER_UNLOCK();
           bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
           BSE_SEQUENCER_LOCK();
@@ -229,7 +226,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
           current_watch_needs_remove2 = false;
           current_watch_func = NULL;
           current_watch_data = NULL;
-          watch_cond_.broadcast();      // wake up threads in remove_io_watch()
+          watch_cond_.notify_all();                     // wake up threads in remove_io_watch()
         }
     }
   return true;
@@ -241,7 +238,7 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   assert_return (BSE_IS_SONG (song));
   assert_return (BSE_SOURCE_PREPARED (song));
   assert_return (song->sequencer_start_request_SL == 0);
-  assert (song->sequencer_owns_refcount_SL == false);
+  assert_return (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
 
   // synchornize pcm-writer output with song start
@@ -273,7 +270,7 @@ Sequencer::remove_song (BseSong *song)
   assert_return (BSE_SOURCE_PREPARED (song));
   if (song->sequencer_start_request_SL == 0)
     {
-      assert (song->sequencer_owns_refcount_SL == false);
+      assert_return (song->sequencer_owns_refcount_SL == false);
       return;   // uncontained
     }
   BSE_SEQUENCER_LOCK();
@@ -288,7 +285,7 @@ Sequencer::remove_song (BseSong *song)
   song->sequencer_owns_refcount_SL = false;
   BSE_SEQUENCER_UNLOCK();
   if (!ring)
-    g_warning ("%s: failed to find %s in sequencer", G_STRLOC, bse_object_debug_name (song));
+    Bse::warning ("%s: failed to find %s in sequencer", G_STRLOC, bse_object_debug_name (song));
   if (need_unref)
     g_object_unref (song);
 }
@@ -334,7 +331,7 @@ static std::atomic<bool> sequencer_thread_running { false };
 void
 Sequencer::sequencer_thread ()
 {
-  Bse::TaskRegistry::add ("Sequencer", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("Sequencer", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
   sequencer_thread_self = &ThreadInfo::self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
@@ -391,7 +388,7 @@ Sequencer::sequencer_thread ()
   while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 
 bool
@@ -543,12 +540,12 @@ Sequencer::Sequencer() :
   stamp_ (0), songs_ (NULL)
 {
   stamp_ = Bse::TickStamp::current();
-  assert (stamp_ > 0);
+  assert_return (stamp_ > 0);
 
   poll_pool_ = new PollPool;
 
   if (event_fd_.open() != 0)
-    g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
+    Bse::warning ("failed to create sequencer wake-up pipe: %s", strerror (errno));
 }
 
 void
@@ -563,11 +560,11 @@ Sequencer::reap_thread ()
 void
 Sequencer::_init_threaded ()
 {
-  assert (singleton_ == NULL);
-  assert (sequencer_thread_running == false);
+  assert_return (singleton_ == NULL);
+  assert_return (sequencer_thread_running == false);
   singleton_ = new Sequencer();
   if (std::atexit (Sequencer::reap_thread) != 0)
-    fatal ("BSE: failed to install sequencer thread reaper");
+    warning ("BSE: failed to install sequencer thread reaper");
   sequencer_thread_running = true;
   singleton_->thread_ = std::thread (&Sequencer::sequencer_thread, singleton_); // FIXME: join on exit
 }

@@ -130,7 +130,7 @@ bse_source_dispose (GObject *object)
   bse_source_clear_ochannels (source);
   if (BSE_SOURCE_PREPARED (source))
     {
-      g_warning (G_STRLOC ": source still prepared during destruction");
+      Bse::warning (G_STRLOC ": source still prepared during destruction");
       bse_source_reset (source);
     }
 
@@ -210,8 +210,8 @@ bse_source_class_add_ijchannel (BseSourceClass *source_class,
   cname = channel_dup_canonify (ident);
   if (bse_source_class_has_channel (source_class, cname))
     {
-      g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
-                 __func__, cname, G_OBJECT_CLASS_NAME (source_class));
+      Bse::warning ("%s: attempt to reregister channel \"%s\" with source class `%s'", __func__,
+                    cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }
@@ -286,8 +286,8 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
   cname = channel_dup_canonify (ident);
   if (bse_source_class_has_channel (source_class, cname))
     {
-      g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
-                 __func__, cname, G_OBJECT_CLASS_NAME (source_class));
+      Bse::warning ("%s: attempt to reregister channel \"%s\" with source class `%s'", __func__,
+                    cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }
@@ -352,8 +352,8 @@ source_class_collect_properties (BseSourceClass *klass)
             {
               BseSourceClass *source_class = (BseSourceClass*) g_type_class_ref (pspec->owner_type);
               if (!source_class || !source_class->property_updated)
-                g_warning ("%s: ignoring automation property \"%s\" without property_updated() implementation",
-                           g_type_name (pspec->owner_type), pspec->name);
+                Bse::warning ("%s: ignoring automation property \"%s\" without property_updated() implementation",
+                              g_type_name (pspec->owner_type), pspec->name);
               else
                 klass->automation_properties = sfi_ring_append (klass->automation_properties, pspec);
               g_type_class_unref (source_class);
@@ -469,11 +469,11 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     Bse::MidiSignal signal_type)
 {
-  assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
-            BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
-            BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127));
+  static_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
+                 BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
+                 BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
+                 BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
+                 BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127), "");
   assert_return (BSE_IS_SOURCE (source), Bse::Error::INTERNAL);
   assert_return (prop_name != NULL, Bse::Error::INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
@@ -649,7 +649,7 @@ source_create_context (BseSource               *source,
   context = context_lookup (source, context_handle);
   if (context)
     {
-      g_warning ("%s: context %u on %p exists already", str_loc, context->id, source);
+      Bse::warning ("%s: context %u on %p exists already", str_loc, context->id, source);
       return;
     }
 
@@ -662,13 +662,9 @@ source_create_context (BseSource               *source,
   context = context_lookup (source, context_handle);
   assert_return (context != NULL);
   if (BSE_SOURCE_N_ICHANNELS (source) && !context->u.mods.imodule)
-    g_warning ("%s: source `%s' failed to create %s module",
-	       str_loc,
-	       G_OBJECT_TYPE_NAME (source), "input");
+    Bse::warning ("%s: source `%s' failed to create %s module", str_loc, G_OBJECT_TYPE_NAME (source), "input");
   if (BSE_SOURCE_N_OCHANNELS (source) && !context->u.mods.omodule)
-    g_warning ("%s: source `%s' failed to create %s module",
-               str_loc,
-	       G_OBJECT_TYPE_NAME (source), "output");
+    Bse::warning ("%s: source `%s' failed to create %s module", str_loc, G_OBJECT_TYPE_NAME (source), "output");
   g_object_unref (source);
 }
 
@@ -782,7 +778,7 @@ bse_source_connect_context (BseSource *source,
       g_object_unref (source);
     }
   else
-    g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+    Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
 }
 
 static void
@@ -827,13 +823,11 @@ bse_source_dismiss_context (BseSource *source,
       context = context_lookup (source, context_handle);
       assert_return (context != NULL);
       if (BSE_SOURCE_N_ICHANNELS (source) && context->u.mods.imodule)
-	g_warning ("%s: source `%s' failed to dismiss %s module",
-		   G_STRLOC,
-		   G_OBJECT_TYPE_NAME (source), "input");
+	Bse::warning ("%s: source `%s' failed to dismiss %s module", G_STRLOC,
+                      G_OBJECT_TYPE_NAME (source), "input");
       if (BSE_SOURCE_N_OCHANNELS (source) && context->u.mods.omodule)
-	g_warning ("%s: source `%s' failed to dismiss %s module",
-		   G_STRLOC,
-		   G_OBJECT_TYPE_NAME (source), "output");
+	Bse::warning ("%s: source `%s' failed to dismiss %s module", G_STRLOC,
+                      G_OBJECT_TYPE_NAME (source), "output");
       if (BSE_SOURCE_N_OCHANNELS (source) == 0 &&
 	  BSE_SOURCE_N_ICHANNELS (source) == 0)
 	{
@@ -849,7 +843,7 @@ bse_source_dismiss_context (BseSource *source,
       g_object_unref (source);
     }
   else
-    g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+    Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
 }
 
 void
@@ -878,7 +872,7 @@ bse_source_set_context_imodule (BseSource *source,
   context = context_lookup (source, context_handle);
   if (!context)
     {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+      Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
   if (imodule)
@@ -902,7 +896,7 @@ bse_source_get_context_imodule (BseSource *source,
   context = context_lookup (source, context_handle);
   if (!context)
     {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+      Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return NULL;
     }
   return context->u.mods.imodule;
@@ -925,7 +919,7 @@ bse_source_set_context_omodule (BseSource *source,
   context = context_lookup (source, context_handle);
   if (!context)
     {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+      Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
   if (omodule)
@@ -966,7 +960,7 @@ bse_source_get_context_omodule (BseSource *source,
   context = context_lookup (source, context_handle);
   if (!context)
     {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+      Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return NULL;
     }
   return context->u.mods.omodule;
@@ -1010,7 +1004,7 @@ bse_source_flow_access_module (BseSource    *source,
   context = context_lookup (source, context_handle);
   if (!context)
     {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
+      Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
   m1 = context->u.mods.imodule;
@@ -1429,10 +1423,10 @@ bse_source_must_set_input_loc (BseSource      *source,
 {
   Bse::Error error = bse_source_set_input (source, ichannel, osource, ochannel);
   if (error != 0)
-    g_warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
-               bse_object_debug_name (source), ichannel,
-	       bse_object_debug_name (osource), ochannel,
-               bse_error_blurb (error));
+    Bse::warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
+                  bse_object_debug_name (source), ichannel,
+                  bse_object_debug_name (osource), ochannel,
+                  bse_error_blurb (error));
 }
 
 static SfiRing*
@@ -2053,7 +2047,7 @@ BSE_BUILTIN_TYPE (BseSource)
     (GInstanceInitFunc) bse_source_init,
   };
 
-  assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_abstract (BSE_TYPE_ITEM,
                                      "BseSource",
@@ -2084,6 +2078,262 @@ SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
   else
     osource = NULL;
   return osource->as<SourceIfaceP>();
+}
+
+bool
+SourceImpl::has_output (int ochannel)
+{
+  BseSource *self = as<BseSource*>();
+  return bse_source_has_output (self, ochannel);
+}
+
+bool
+SourceImpl::has_outputs ()
+{
+  BseSource *self = as<BseSource*>();
+  return self->outputs != NULL;
+}
+
+String
+SourceImpl::ichannel_blurb (int input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), "");
+  return BSE_SOURCE_ICHANNEL_BLURB (self, input_channel);
+}
+
+int
+SourceImpl::ichannel_get_n_joints (int input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), 0);
+  BseSourceInput *input = BSE_SOURCE_INPUT (self, input_channel);
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (self, input_channel))
+    return input->jdata.n_joints;
+  else
+    return input->idata.osource ? 1 : 0;
+}
+
+
+int
+SourceImpl::ichannel_get_ochannel (int input_channel, int input_joint)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), INT_MAX);
+  assert_return (input_joint >= 0, INT_MAX);
+  BseSourceInput *input = BSE_SOURCE_INPUT (self, input_channel);
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (self, input_channel) && size_t (input_joint) < input->jdata.n_joints)
+    return input->jdata.joints[input_joint].ochannel;
+  else if (input_joint < 1)
+    return input->idata.ochannel;
+  else
+    return INT_MAX;
+}
+
+String
+SourceImpl::ichannel_ident (int input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), 0);
+  return BSE_SOURCE_ICHANNEL_IDENT (self, input_channel);
+}
+
+
+String
+SourceImpl::ichannel_label (int input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), 0);
+  return BSE_SOURCE_ICHANNEL_LABEL (self, input_channel);
+}
+
+bool
+SourceImpl::is_joint_ichannel (const String &input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (input_channel.empty() == false, false);
+  const uint id = bse_source_find_ichannel (self, input_channel.c_str());
+  return id < BSE_SOURCE_N_ICHANNELS (self) ? BSE_SOURCE_IS_JOINT_ICHANNEL (self, id) : false;
+}
+
+bool
+SourceImpl::is_joint_ichannel_by_id (int input_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), false);
+  return BSE_SOURCE_IS_JOINT_ICHANNEL (self, input_channel);
+}
+
+bool
+SourceImpl::is_prepared ()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_PREPARED (self);
+}
+
+int
+SourceImpl::n_ichannels()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_N_ICHANNELS (self);
+}
+
+int
+SourceImpl::n_ochannels()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_N_OCHANNELS (self);
+}
+
+String
+SourceImpl::ochannel_blurb (int output_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (output_channel) < BSE_SOURCE_N_OCHANNELS (self), "");
+  return BSE_SOURCE_OCHANNEL_BLURB (self, output_channel);
+}
+
+String
+SourceImpl::ochannel_ident (int output_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (output_channel) < BSE_SOURCE_N_OCHANNELS (self), "");
+  return BSE_SOURCE_OCHANNEL_IDENT (self, output_channel);
+}
+
+String
+SourceImpl::ochannel_label (int output_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (output_channel) < BSE_SOURCE_N_OCHANNELS (self), "");
+  return BSE_SOURCE_OCHANNEL_LABEL (self, output_channel);
+}
+
+Error
+SourceImpl::set_input (const String &ichannel_ident, SourceIface &omodule, const String &ochannel_ident)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (ichannel_ident.empty() == false, Bse::Error::PROC_PARAM_INVAL);
+  BseSource *osource = omodule.as<BseSource*>();
+  assert_return (osource != NULL, Bse::Error::PROC_PARAM_INVAL);
+  assert_return (ochannel_ident.empty() == false, Bse::Error::PROC_PARAM_INVAL);
+  const size_t input_channel = bse_source_find_ichannel (self, ichannel_ident.c_str());
+  assert_return (input_channel < BSE_SOURCE_N_ICHANNELS (self), Bse::Error::PROC_PARAM_INVAL);
+  const size_t output_channel = bse_source_find_ochannel (osource, ochannel_ident.c_str());
+  assert_return (output_channel < BSE_SOURCE_N_OCHANNELS (osource), Bse::Error::PROC_PARAM_INVAL);
+  if (self->parent != osource->parent)
+    return Bse::Error::PROC_PARAM_INVAL;
+  Bse::Error error = bse_source_set_input (self, input_channel, osource, output_channel);
+  if (error == Bse::Error::NONE)
+    {
+      UndoDescriptor<SourceImpl> omodule_descriptor = undo_descriptor (*osource->as<SourceImpl*>());
+      auto lambda = [input_channel, omodule_descriptor, output_channel] (SourceImpl &self, BseUndoStack *ustack) -> Error {
+        SourceImpl &omodule = self.undo_resolve (omodule_descriptor);
+        Bse::Error error = self.unset_input_by_id (input_channel, omodule, output_channel);
+        return error;
+      };
+      push_undo (__func__, *this, lambda);
+    }
+  return error;
+}
+
+
+Error
+SourceImpl::set_input_by_id (int input_channel, SourceIface &omodule, int output_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), Bse::Error::PROC_PARAM_INVAL);
+  BseSource *osource = omodule.as<BseSource*>();
+  assert_return (osource != NULL, Bse::Error::PROC_PARAM_INVAL);
+  assert_return (size_t (output_channel) < BSE_SOURCE_N_OCHANNELS (osource), Bse::Error::PROC_PARAM_INVAL);
+  if (self->parent != osource->parent)
+    return Bse::Error::PROC_PARAM_INVAL;
+  Bse::Error error = bse_source_set_input (self, input_channel, osource, output_channel);
+  if (error == Bse::Error::NONE)
+    {
+      UndoDescriptor<SourceImpl> omodule_descriptor = undo_descriptor (*osource->as<SourceImpl*>());
+      auto lambda = [input_channel, omodule_descriptor, output_channel] (SourceImpl &self, BseUndoStack *ustack) -> Error {
+        SourceImpl &omodule = self.undo_resolve (omodule_descriptor);
+        Bse::Error error = self.unset_input_by_id (input_channel, omodule, output_channel);
+        return error;
+      };
+      push_undo (__func__, *this, lambda);
+    }
+  return error;
+}
+
+Error
+SourceImpl::unset_input (const String &ichannel_ident, SourceIface &omodule, const String &ochannel_ident)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (ichannel_ident.empty() == false, Bse::Error::PROC_PARAM_INVAL);
+  BseSource *osource = omodule.as<BseSource*>();
+  assert_return (osource != NULL, Bse::Error::PROC_PARAM_INVAL);
+  assert_return (ochannel_ident.empty() == false, Bse::Error::PROC_PARAM_INVAL);
+  const size_t input_channel = bse_source_find_ichannel (self, ichannel_ident.c_str());
+  assert_return (input_channel < BSE_SOURCE_N_ICHANNELS (self), Bse::Error::PROC_PARAM_INVAL);
+  const size_t output_channel = bse_source_find_ochannel (osource, ochannel_ident.c_str());
+  assert_return (output_channel < BSE_SOURCE_N_OCHANNELS (osource), Bse::Error::PROC_PARAM_INVAL);
+  Bse::Error error = bse_source_check_input (self, input_channel, osource, output_channel);
+  if (error == Bse::Error::NONE)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "unset-input-by-id");
+      bse_source_input_backup_to_undo (self, input_channel, osource, output_channel);
+      UndoDescriptor<SourceImpl> omodule_descriptor = undo_descriptor (*osource->as<SourceImpl*>());
+      auto lambda = [input_channel, omodule_descriptor, output_channel] (SourceImpl &self, BseUndoStack *ustack) -> Error {
+        SourceImpl &omodule = self.undo_resolve (omodule_descriptor);
+        Bse::Error error = self.unset_input_by_id (input_channel, omodule, output_channel);
+        return error;
+      };
+      error = bse_source_unset_input (self, input_channel, osource, output_channel);
+      push_undo_to_redo (__func__, *this, lambda);
+      bse_item_undo_close (ustack);
+    }
+  return error;
+}
+
+Error
+SourceImpl::unset_input_by_id (int input_channel, SourceIface &omodule, int output_channel)
+{
+  BseSource *self = as<BseSource*>();
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), Bse::Error::PROC_PARAM_INVAL);
+  BseSource *osource = omodule.as<BseSource*>();
+  assert_return (osource != NULL, Bse::Error::PROC_PARAM_INVAL);
+  assert_return (size_t (output_channel) < BSE_SOURCE_N_OCHANNELS (osource), Bse::Error::PROC_PARAM_INVAL);
+  Bse::Error error = bse_source_check_input (self, input_channel, osource, output_channel);
+  if (error == Bse::Error::NONE)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "unset-input-by-id");
+      bse_source_input_backup_to_undo (self, input_channel, osource, output_channel);
+      UndoDescriptor<SourceImpl> omodule_descriptor = undo_descriptor (*osource->as<SourceImpl*>());
+      auto lambda = [input_channel, omodule_descriptor, output_channel] (SourceImpl &self, BseUndoStack *ustack) -> Error {
+        SourceImpl &omodule = self.undo_resolve (omodule_descriptor);
+        Bse::Error error = self.unset_input_by_id (input_channel, omodule, output_channel);
+        return error;
+      };
+      error = bse_source_unset_input (self, input_channel, osource, output_channel);
+      push_undo_to_redo (__func__, *this, lambda);
+      bse_item_undo_close (ustack);
+    }
+  return error;
+}
+
+void
+SourceImpl::set_pos (double x_pos, double y_pos)
+{
+  BseSource *self = as<BseSource*>();
+  const double epsilon = 1e-5;
+
+  if (fabs (x_pos - self->pos_x) > epsilon ||
+      fabs (y_pos - self->pos_y) > epsilon)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "set-xy-pos");
+      bse_item_set (self,
+                    "pos_x", x_pos,
+                    "pos_y", y_pos,
+                    NULL);
+      bse_item_undo_close (ustack);
+    }
 }
 
 } // Bse

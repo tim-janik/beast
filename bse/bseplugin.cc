@@ -72,7 +72,7 @@ bse_plugin_dispose (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", __func__);
+    Bse::warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
@@ -84,7 +84,7 @@ bse_plugin_finalize (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", __func__);
+    Bse::warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
@@ -164,7 +164,7 @@ bse_plugin_init_builtins (void)
 static guint64
 runtime_export_config (void)
 {
-  const std::string cinfo = Rapicorn::cpu_info();
+  const std::string cinfo = Bse::cpu_info();
   guint64 emask = 0;
   if (cinfo.find (" MMX ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_MMX;
@@ -193,7 +193,7 @@ static BsePlugin *startup_plugin = NULL;
 void
 bse_plugin_make_resident()
 {
-  assert (startup_plugin != NULL);
+  assert_return (startup_plugin != NULL);
   startup_plugin->resident_types = TRUE;
 }
 
@@ -201,8 +201,7 @@ BsePlugin*
 bse_exports__add_node (const BseExportIdentity *identity,
                        BseExportNode           *enode)
 {
-  if (!startup_plugin)
-    g_error ("%s: plugin startup called without plugin", __func__);
+  assert_return (startup_plugin != NULL, NULL);
   if (!enode || enode->next)
     return NULL;
   if (identity->major != BST_MAJOR_VERSION ||
@@ -260,13 +259,16 @@ bse_plugin_use (GTypePlugin *gplugin)
       plugin->gmodule = g_module_open (plugin->fname, GModuleFlags (0)); /* reopen for use non-lazy */
       startup_plugin = NULL;
       if (!plugin->gmodule)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
+        {
+          Bse::warning ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
+          return;
+        }
       const char *cerror = plugin_check_identity (plugin, (GModule*) plugin->gmodule);
-      if (cerror)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror);
-      if (!plugin->chain)
-	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, "empty plugin");
-
+      if (cerror || !plugin->chain)
+        {
+          Bse::warning ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror ? cerror : "empty plugin");
+          return;
+        }
       bse_plugin_reinit_types (plugin);
     }
   else
@@ -279,7 +281,7 @@ bse_exports__del_node (BsePlugin               *plugin,
 {
   if (!plugin || !enode)
     {
-      g_warning ("%s: invalid plugin shutdown", __func__);
+      Bse::warning ("%s: invalid plugin shutdown", __func__);
       return;
     }
   BseExportNode *last = NULL, *link;
@@ -292,7 +294,7 @@ bse_exports__del_node (BsePlugin               *plugin,
           plugin->chain = link->next;
         return;
       }
-  g_warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
+  Bse::warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
 }
 static void
 bse_plugin_unload (BsePlugin *plugin)
@@ -320,7 +322,7 @@ bse_plugin_unuse (GTypePlugin *gplugin)
 	bse_plugin_unload (plugin);
       else
 	{
-	  g_warning ("%s: attempt to unload builtin plugin due to use_count==0", G_STRLOC);
+	  Bse::warning ("%s: attempt to unload builtin plugin due to use_count==0", G_STRLOC);
 	  plugin->use_count = 1;
 	}
     }
@@ -393,7 +395,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
         break;
       }
   if (!node || node->type != type)
-    g_error ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
+    Bse::warning ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
 }
 
 static void
@@ -432,7 +434,7 @@ bse_plugin_reinit_types (BsePlugin *plugin)
         }
     }
   while (n--)
-    g_warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
+    Bse::warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
   g_free (types);
 }
 

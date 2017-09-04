@@ -1,5 +1,5 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-pybeastdir     = ${beastexecdir}/pybeast
+pybeastdir     = ${beastdir}/pybeast
 pybeast_PYTHON = main.py

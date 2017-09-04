@@ -11,6 +11,4 @@ skins_DATA = $(strip		\
 	silvervein.skin		\
 	white.skin		\
 )
-skinsdir = $(datadir)/skins
-
-EXTRA_DIST += $(skins_DATA)
+skinsdir = $(beastdatadir)/skins

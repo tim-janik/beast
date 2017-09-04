@@ -3,15 +3,12 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools ebeast po tests docs
+SUBDIRS		= . sfi bse plugins drivers pybeast beast-gtk launchers library tools ebeast po docs data tests
 
-# == make setup ==
-noinst_DATA	=
 
 # == doc/ install ==
-projectdocsdir   = $(docdir)/
+projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
-EXTRA_DIST      += $(projectdocs_DATA)
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
 MAINTAINERCLEANFILES += HACKING
 
@@ -27,7 +24,7 @@ MAINTAINERCLEANFILES += HACKING
 	$(Q) $(PANDOC) -s --toc -N -S -f markdown_github+pandoc_title_block-hard_line_breaks -t html \
 		--email-obfuscation=javascript $< -o $@
 	$(Q) chmod a-w $@	# prevent accidental target file edits
-
+MAINTAINERCLEANFILES += README README.html
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
@@ -44,49 +41,57 @@ bse-app-test:
 	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> tmpx.cc \
 	&& echo '  return 0; }'						>> tmpx.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
+	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) LD_LIBRARY_PATH="$(libdir):$$LD_LIBRARY_PATH" ./tmpx \
+	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(bselibdir):$$LD_LIBRARY_PATH" ./tmpx \
 		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$(Q) rm -f tmpx.o tmpx.cc tmpx
 installcheck-local: bse-app-test
 
-
-# == Dist Fixes ==
-# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
-distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
-#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
-uninstall_filter_files = $(strip	\
-	./share/mime/subclasses		./share/mime/XMLnamespaces	./share/mime/globs2	\
-	./share/mime/version		./share/mime/icons		./share/mime/types	\
-	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
-	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
-)
-
 # == topbuildid.cc ==
-EXTRA_DIST  += misc/mkbuildid.sh topbuildid.hh
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
 topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
 CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
 buildid:
 	@echo $(topbuildid)
 
-# == ChangeLog & Release Rules ==
+# == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
-ChangeLog: $(GITSTAMPS)
+ChangeLog: $(GITSTAMP)
 	$(AM_V_GEN)
-	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --abbrev=11 \
-		--date=short --first-parent $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
+	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --first-parent \
+		--abbrev=11 --date=short $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
 	$(Q) sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i xgen-$(@F) # Tab-indent commit bodies, kill trailing whitespaces
 	$(Q) sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'                -i xgen-$(@F) # Compress multiple newlines
 	$(Q) mv xgen-$(@F) $@
 	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
-EXTRA_DIST           += ChangeLog taptool.sh
+
+# == dist ==
+distname      = $(PACKAGE)-$(VERSION)
+distnamexz    = $(distname).tar.xz
+dist: all
+	$(Q) test 0 = `git diff HEAD | wc -l` || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2
+	$(Q) git archive --format=tar --prefix=$(distname)/ HEAD >$(distname).tar
+	$(Q) rm -rf .tmpdist/ &&					\
+	  mkdir .tmpdist/ &&						\
+	  tar -C .tmpdist/ -xf $(distname).tar &&			\
+	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
+		  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&	\
+	  cd .tmpdist/$(distname)/ &&					\
+	  ./autogen.sh --help >/dev/null &&				\
+	  cd ../ &&							\
+	  tar -f ../$(distname).tar -hu $(distname)/ &&			\
+	  cd .. &&							\
+	  rm -fr .tmpdist/
+	$(Q) rm -f $(distname).tar.xz && xz $(distname).tar && test -e $(distnamexz)
+	$(Q) echo "Archive ready: $(distnamexz)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+.PHONY: dist
+EXTRA_DIST += ChangeLog README
 
 # == distcheck ==
 # Distcheck aims:
@@ -101,14 +106,14 @@ distcheck_uniqdir = distcheck-$(shell python -c "import os, md5; print ('%u-%s' 
 distcheck: dist
 	$(Q) TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
 	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
-	&& TARBALL=`readlink -f $(firstword $(DIST_ARCHIVES))` \
-	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distdir)" -a -n "$$TARBALL" \
+	&& TARBALL=$$(readlink -f "$(distnamexz)") \
+	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distname)" -a -n "$$TARBALL" \
 	&& { test ! -e "$$DCDIR/" || { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } ; } \
 	&& mkdir -p "$$DCDIR" \
 	&& set -x \
 	&& cd "$$DCDIR" \
 	&& tar xf "$$TARBALL" \
-	&& cd "$(distdir)" \
+	&& cd "$(distname)" \
 	&& ./configure --prefix="$$DCDIR/inst" $(AM_DISTCHECK_CONFIGURE_FLAGS) $(DISTCHECK_CONFIGURE_FLAGS) \
 	&& touch dc-buildtree-cleaned \
 	&& find . -print >dc-buildtree-files \
@@ -133,10 +138,62 @@ distcheck: dist
 	&& cd "$(abs_top_builddir)" \
 	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
 	&& echo "OK: archive ready for distribution: $$TARBALL" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
-.PHONY: distcheck distuninstallcheck-hook
+distuninstallcheck:
+	@test -n '$(distuninstallcheck_dir)' || { echo '$@: missing distuninstallcheck_dir' >&2; false; }
+	@cd '$(distuninstallcheck_dir)' && \
+	test `$(distuninstallcheck_listfiles) | sed 's|^\./|$(prefix)/|' | wc -l` -eq 0 \
+	|| { echo "$@: ERROR: files left after uninstall:" ; \
+	     $(distuninstallcheck_listfiles) ; \
+	     false; } >&2
+.PHONY: distcheck distuninstallcheck distuninstallcheck-hook
 
 # == distcheck-checks ==
+DISTCHECK_PO = 1
 check-update-po:
-	$(Q) $(MAKE) -C po check-update-po
+	$(Q) [ "$(DISTCHECK_PO)" = "0" ] || $(MAKE) -C po check-update-po
 DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
 $(DISTCHECK_HOOK): check-update-po
+
+# == distuninstallcheck ignores ==
+# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
+distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
+uninstall_filter_files = $(strip	\
+	*/share/mime/subclasses		*/share/mime/XMLnamespaces	*/share/mime/globs2	\
+	*/share/mime/version		*/share/mime/icons		*/share/mime/types	\
+	*/share/mime/treemagic		*/share/mime/aliases		*/share/mime/magic	\
+	*/share/mime/mime.cache		*/share/mime/generic-icons	*/share/mime/globs	\
+	*/share/applications/mimeinfo.cache	\
+)
+
+# == cleanups ==
+MOSTLYCLEANFILES +=		\
+	distcheck\.log
+# Use am__CONFIG_DISTCLEAN_FILES instead of MAINTAINERCLEANFILES, because the latter
+# is cleared before recursing into subdirs, while the former is cleared later.
+am__CONFIG_DISTCLEAN_FILES = 	\
+	Makefile\.in		\
+	config/compile		\
+	aclocal\.m4		\
+	autogen\.log		\
+	config\.log		\
+	configure		\
+	configure\.h\.in	\
+	configure\.h\.in~	\
+	config/config\.guess	\
+	config/config\.sub	\
+	config/depcomp		\
+	config/install-sh	\
+	config/intltool\.m4	\
+	config/libtool\.m4	\
+	config/ltmain\.sh	\
+	config/ltoptions\.m4	\
+	config/ltsugar\.m4	\
+	config/ltversion\.m4	\
+	config/lt~obsolete\.m4	\
+	config/missing		\
+	config/py-compile	\
+	config\.status		\
+	config\.cache		\
+	configure\.lineno	\
+	config\.status\.lineno

@@ -400,7 +400,7 @@ alsa_device_retrigger (AlsaPcmHandle *alsa)
   /* prepare for playback/capture */
   gint aerror = snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle);
   if (aerror)   /* this really shouldn't fail */
-    sfi_diag ("ALSA: failed to prepare for io: %s\n", snd_strerror (aerror));
+    Bse::info ("ALSA: failed to prepare for io: %s\n", snd_strerror (aerror));
   /* fill playback buffer with silence */
   if (alsa->write_handle)
     {

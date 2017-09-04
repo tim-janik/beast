@@ -20,7 +20,7 @@ using namespace std;
 #define VDUMP(...)      Bse::dump ("midi-voice", __VA_ARGS__)
 
 /* --- variables --- */
-static Bse::Mutex global_midi_mutex;
+static std::mutex global_midi_mutex;
 #define	BSE_MIDI_RECEIVER_LOCK()        global_midi_mutex.lock()
 #define	BSE_MIDI_RECEIVER_UNLOCK()      global_midi_mutex.unlock()
 
@@ -134,7 +134,7 @@ struct ControlHandler {
           modules.erase (it);
           return;
         }
-    g_warning ("%s: no such module: %p", G_STRLOC, module);
+    Bse::warning ("%s: no such module: %p", G_STRLOC, module);
   }
   ~ControlHandler()
   {
@@ -281,7 +281,7 @@ struct MidiChannel {
   remove_event_handler (const EventHandler& handler)
   {
     vector<EventHandler>::iterator hi = find (event_handlers.begin(), event_handlers.end(), handler);
-    g_return_if_fail (hi != event_handlers.end());
+    assert_return (hi != event_handlers.end());
     event_handlers.erase (hi);
   }
   bool
@@ -290,10 +290,10 @@ struct MidiChannel {
   ~MidiChannel()
   {
     if (vinput)
-      g_warning ("destroying MIDI channel (%u) with active mono synth", midi_channel);
+      Bse::warning ("destroying MIDI channel (%u) with active mono synth", midi_channel);
     for (guint j = 0; j < n_voices; j++)
       if (voices[j])
-        g_warning ("destroying MIDI channel (%u) with active voices", midi_channel);
+        Bse::warning ("destroying MIDI channel (%u) with active voices", midi_channel);
     g_free (voices);
   }
   void  start_note      (guint64         tick_stamp,
@@ -348,7 +348,7 @@ public:
   }
   ~MidiReceiver()
   {
-    assert (ref_count == 0);
+    assert_return (ref_count == 0);
     for (Channels::iterator it = midi_channels.begin(); it != midi_channels.end(); it++)
       delete *it;
     while (events)
@@ -364,7 +364,7 @@ public:
     if (notifier)
       g_object_unref (notifier);
     if (n_cmodules)
-      g_warning ("destroying MIDI receiver (%p) with active control modules (%u)", this, n_cmodules);
+      Bse::warning ("destroying MIDI receiver (%p) with active control modules (%u)", this, n_cmodules);
     g_free (cmodules);
   }
   MidiChannel*
@@ -711,7 +711,7 @@ voice_input_remove_from_table_L (VoiceInput *vinput)    /* UserThread */
             vinput->queue_state = VSTATE_IDLE;
             return;
           }
-      assert_unreached ();
+      assert_return_unreached ();
     }
 }
 
@@ -748,7 +748,7 @@ voice_input_module_access_U (BseModule *module,
     {
     case VOICE_ON:
       if (vinput->vstate == VSTATE_BUSY && /*LOCK()*/ vinput->table /*UNLOCK()*/)
-        g_warning ("%s: VOICE_ON: vinput->vstate == VSTATE_BUSY", G_STRLOC);
+        Bse::warning ("%s: VOICE_ON: vinput->vstate == VSTATE_BUSY", G_STRLOC);
       vinput->vstate = VSTATE_BUSY;
       vinput->freq_value = mdata->freq_value;
       vinput->gate = 1.0;
@@ -798,13 +798,13 @@ change_voice_input_L (VoiceInput      *vinput,
     {
     case VOICE_ON:
       if (vinput->queue_state == VSTATE_BUSY && vinput->table)
-        g_warning ("%s: VOICE_ON: vinput->queue_state == VSTATE_BUSY", G_STRLOC);
+        Bse::warning ("%s: VOICE_ON: vinput->queue_state == VSTATE_BUSY", G_STRLOC);
       if (vinput->table)
         {
           assert_return (vinput->iter == vinput->table->end());
           vinput->next = (*vinput->table)[freq_value];
           vinput->iter = vinput->table->find (freq_value);
-          assert (vinput->iter != vinput->table->end());
+          assert_return (vinput->iter != vinput->table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
@@ -849,7 +849,7 @@ voice_input_module_free_U (gpointer        data,
                            const BseModuleClass *klass)
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  assert (vinput->next == NULL);
+  assert_return (vinput->next == NULL);
   delete vinput;
 }
 
@@ -1112,7 +1112,7 @@ MidiChannel::call_event_handlers (BseMidiEvent *event,
 	    }
 	}
       if (!(activated <= 1))
-	g_warning (G_STRLOC ": midi event handling: assertion (activated <= 1) failed, activated = %d", activated);
+	Bse::warning (G_STRLOC ": midi event handling: assertion (activated <= 1) failed, activated = %d", activated);
       hi->handler_func (hi->handler_data, hi->module, event, trans);
       success = true;
     }
@@ -1244,12 +1244,12 @@ MidiChannel::debug_notes (guint64 tick_stamp, BseTrans *trans)
       VoiceSwitch *vswitch = mchannel->voices[i];
       if (vswitch)
         for (j = 0; j < vswitch->n_vinputs; j++)
-          sfi_diag ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
-                    mchannel->midi_channel, vswitch, vswitch->disconnected ? 'd' : 'C',
-                    vswitch->vinputs[j], bse_module_tick_stamp (vswitch->vinputs[j]->fmodule),
-                    voice_state_to_string (vswitch->vinputs[j]->vstate),
-                    voice_state_to_string (vswitch->vinputs[j]->queue_state),
-                    BSE_FREQ_FROM_VALUE (vswitch->vinputs[j]->freq_value));
+          Bse::info ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
+                     mchannel->midi_channel, vswitch, vswitch->disconnected ? 'd' : 'C',
+                     vswitch->vinputs[j], bse_module_tick_stamp (vswitch->vinputs[j]->fmodule),
+                     voice_state_to_string (vswitch->vinputs[j]->vstate),
+                     voice_state_to_string (vswitch->vinputs[j]->queue_state),
+                     BSE_FREQ_FROM_VALUE (vswitch->vinputs[j]->freq_value));
     }
 }
 } // namespace anon
@@ -1527,7 +1527,7 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
         }
     }
   BSE_MIDI_RECEIVER_UNLOCK ();
-  g_warning ("no such control module: %p", module);
+  Bse::warning ("no such control module: %p", module);
 }
 
 gboolean
@@ -1592,10 +1592,10 @@ bse_midi_receiver_add_event_handler (BseMidiReceiver   *self,
                                      gpointer           handler_data,
                                      BseModule         *module)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (handler_func != NULL);
-  g_return_if_fail (module != NULL);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (handler_func != NULL);
+  assert_return (module != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->add_event_handler (midi_channel, handler_func, handler_data, module);
@@ -1609,10 +1609,10 @@ bse_midi_receiver_remove_event_handler (BseMidiReceiver   *self,
                                         gpointer           handler_data,
                                         BseModule         *module)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (midi_channel > 0);
-  g_return_if_fail (handler_func != NULL);
-  g_return_if_fail (module != NULL);
+  assert_return (self != NULL);
+  assert_return (midi_channel > 0);
+  assert_return (handler_func != NULL);
+  assert_return (module != NULL);
 
   BSE_MIDI_RECEIVER_LOCK ();
   self->remove_event_handler (midi_channel, handler_func, handler_data, module);
@@ -1690,7 +1690,7 @@ bse_midi_receiver_discard_mono_voice (BseMidiReceiver *self,
       return;
     }
   BSE_MIDI_RECEIVER_UNLOCK ();
-  g_warning ("no such mono synth module: %p", fmodule);
+  Bse::warning ("no such mono synth module: %p", fmodule);
 }
 
 guint
@@ -1751,7 +1751,7 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
     }
   BSE_MIDI_RECEIVER_UNLOCK ();
   if (!vswitch)
-    g_warning ("MIDI channel %u has no voice %u", midi_channel, voice_id + 1);
+    Bse::warning ("MIDI channel %u has no voice %u", midi_channel, voice_id + 1);
 }
 
 BseModule*
@@ -1877,7 +1877,7 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
   if (need_unref)
     bse_midi_receiver_discard_poly_voice (self, midi_channel, voice_id + 1, trans);
   if (fmodule)
-    g_warning ("MIDI channel %u, poly voice %u, no such sub voice: %p", midi_channel, voice_id, fmodule);
+    Bse::warning ("MIDI channel %u, poly voice %u, no such sub voice: %p", midi_channel, voice_id, fmodule);
 }
 
 gboolean
@@ -2093,7 +2093,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
                                   event->data.note.velocity,
                                   trans);
           else
-            sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
+            Bse::info ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
           break;
         case BSE_MIDI_KEY_PRESSURE:
         case BSE_MIDI_NOTE_OFF:

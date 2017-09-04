@@ -2,7 +2,7 @@
 #include <bse/bse.hh>
 #include <bse/bseieee754.hh>
 #include <bse/bsemain.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <stdio.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -36,11 +36,11 @@ test_correct_subnormal_elimination (const char* algo_name)
   for (int i = 1; i < n; i++)
     {
       float value = BSE_FLOAT_MAX_SUBNORMAL * i / n;
-      assert (BSE_FLOAT_IS_SUBNORMAL (value));
+      assert_return (BSE_FLOAT_IS_SUBNORMAL (value));
       float normalized_positive_value = Func (value);
-      assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_positive_value));
+      assert_return (!BSE_FLOAT_IS_SUBNORMAL (normalized_positive_value));
       float normalized_negative_value = Func (-value);
-      assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
+      assert_return (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
       if (i % 100000 == 0)
         TOK();
     }
@@ -55,11 +55,11 @@ test_correct_subnormal_elimination (const char* algo_name)
   for (int i = 1; i < n; i++)
     {
       double value = BSE_DOUBLE_MAX_SUBNORMAL * i / n;
-      assert (BSE_DOUBLE_IS_SUBNORMAL (value));
+      assert_return (BSE_DOUBLE_IS_SUBNORMAL (value));
       double normalized_positive_value = Func (value);
-      assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_positive_value));
+      assert_return (!BSE_DOUBLE_IS_SUBNORMAL (normalized_positive_value));
       double normalized_negative_value = Func (-value);
-      assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
+      assert_return (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
       if (i % 100000 == 0)
         TOK();
     }

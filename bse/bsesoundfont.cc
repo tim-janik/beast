@@ -96,7 +96,7 @@ use_searchpath (std::string file_name)
   if (bse_main_args->override_sample_path)
     sample_path = bse_main_args->override_sample_path;
   else
-    sample_path = Rapicorn::Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+    sample_path = Bse::Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
   files = sfi_file_crawler_list_files (sample_path.c_str(), file_name.c_str(), G_FILE_TEST_IS_REGULAR);
 
   for (walk = files; walk; walk = sfi_ring_walk (files, walk))
@@ -123,11 +123,11 @@ bse_sound_font_load_blob (BseSoundFont       *self,
       g_object_ref (sound_font_impl->sfrepo);
     }
 
-  g_return_val_if_fail (blob != NULL, Bse::Error::INTERNAL);
-  g_return_val_if_fail (sound_font_impl->sfrepo != NULL, Bse::Error::INTERNAL);
-  g_return_val_if_fail (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
+  assert_return (blob != NULL, Bse::Error::INTERNAL);
+  assert_return (sound_font_impl->sfrepo != NULL, Bse::Error::INTERNAL);
+  assert_return (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
 
-  std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
   int sfont_id = fluid_synth_sfload (fluid_synth, use_searchpath (blob->file_name()).c_str(), 0);
   Bse::Error error;
@@ -166,11 +166,11 @@ bse_sound_font_unload (BseSoundFont *sound_font)
 {
   Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
 
-  g_return_if_fail (sound_font_impl->sfrepo != NULL);
+  assert_return (sound_font_impl->sfrepo != NULL);
 
   if (sound_font_impl->sfont_id != -1)
     {
-      std::lock_guard<Bse::Mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
+      std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
       fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
 
       fluid_synth_sfunload (fluid_synth, sound_font_impl->sfont_id, 1 /* reset presets */);
@@ -183,7 +183,7 @@ bse_sound_font_reload (BseSoundFont *sound_font)
 {
   Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
 
-  g_return_val_if_fail (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
+  assert_return (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
 
   return bse_sound_font_load_blob (sound_font, sound_font_impl->blob, FALSE);
 }
@@ -281,8 +281,7 @@ bse_sound_font_add_item (BseContainer *container,
       sound_font_impl->presets.push_back (BSE_SOUND_FONT_PRESET (item));
     }
   else
-    g_warning ("BseSoundFont: cannot hold non-sound-font-preset item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSoundFont: cannot hold non-sound-font-preset item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -322,8 +321,7 @@ bse_sound_font_remove_item (BseContainer *container,
         }
     }
   else
-    g_warning ("BseSoundFontRepo: cannot hold non-sound-font-preset item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSoundFontRepo: cannot hold non-sound-font-preset item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -418,7 +416,7 @@ SoundFontImpl::~SoundFontImpl ()
     }
 
   if (sfrepo != NULL || sfont_id != -1)
-    g_warning (G_STRLOC ": some resources could not be freed.");
+    Bse::warning (G_STRLOC ": some resources could not be freed.");
 }
 
 } // Bse

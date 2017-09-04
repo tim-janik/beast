@@ -268,7 +268,7 @@ bse_wave_load_wave_file (BseWave      *self,
       if (bse_main_args->override_sample_path)
 	sample_path = bse_main_args->override_sample_path;
       else
-	sample_path = Rapicorn::Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+	sample_path = Bse::Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
       files = sfi_file_crawler_list_files (sample_path.c_str(), file_name, G_FILE_TEST_IS_REGULAR);
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))
@@ -311,8 +311,8 @@ bse_wave_load_wave_file (BseWave      *self,
                     else
 		      {
 			error = tmp_error;
-			sfi_warning (_("Wave \"%s\": failed to load wave chunk for frequency %f: %s"),
-                                     wdsc->name, wdsc->chunks[i].osc_freq, bse_error_blurb (error));
+                        Bse::warning (_("Wave \"%s\": failed to load wave chunk for frequency %f: %s"),
+                                      wdsc->name, wdsc->chunks[i].osc_freq, bse_error_blurb (error));
 		      }
                   }
               if (self->n_wchunks)

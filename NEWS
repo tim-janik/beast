@@ -1,3 +1,30 @@
+Beast 0.11.0:
+
+* Added Soundfont support so Beast can play .sf2 files. [stw]
+* Execute the DSP engine multi threaded with `nproc` many threads.
+* The startup time could be reduced significantly.
+* Build all plugins with SIMD support always enabled.
+* Started alternate HTML/JS GUI based on electron.
+* Improved IDL representation of old procedure types.
+* Removed guile dependency.
+* Removed 'extern "C"' left overs.
+* Fixed NULL string crashes. [stw]
+* Fixed signedness bug in FFT windowing. [stw]
+* Fixed namespace issues in public BSE headers. [stw]
+* Fixed small translation issues (GB#626760). [stw]
+* Fixed Public Domain licensing of some demos. [stw]
+* Fixed uses of 'assert' in library code.
+* Improved generated documentation.
+* Sources were ported to Kubuntu-16-04. [stw]
+* Manual pages are updated and are converted to Markdown.
+* Improvded diagnostics, build and audio testing toolchains.
+* Fixed MIDI voice allocations taht could lead to premature voice shortages.
+* Majorly improved Docker build setup.
+* Require srcdir=destdir upon distcheck.
+* Tarball/git dependencies now include Rapicorn 17.0.0.
+* The Beast project now provides Debian binary packages at:
+  https://testbit.eu/pub/dists/beast/debs
+
 Beast 0.10.0:					(2016-04-07)
 
 * Memory leak and stability fixes.

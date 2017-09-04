@@ -92,13 +92,13 @@ bse_midi_voice_input_class_init (BseMidiVoiceInputClass *klass)
   source_class->context_dismiss = bse_midi_voice_input_context_dismiss;
 
   channel_id = bse_source_class_add_ochannel (source_class, "freq-out", _("Freq Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
+  assert_return (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
   channel_id = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
+  assert_return (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
   channel_id = bse_source_class_add_ochannel (source_class, "velocity-out", _("Velocity Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
+  assert_return (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
   channel_id = bse_source_class_add_ochannel (source_class, "aftertouch-out", _("Aftertouch Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
+  assert_return (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
 }
 
 static void
@@ -116,17 +116,17 @@ bse_midi_voice_switch_class_init (BseMidiVoiceSwitchClass *klass)
   source_class->context_dismiss = bse_midi_voice_switch_context_dismiss;
 
   channel_id = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ichannel (source_class, "right-in", _("Right In"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
   channel_id = bse_source_class_add_ichannel (source_class, "disconnect-in", _("Disconnect In"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
   channel_id = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
   channel_id = bse_source_class_add_ochannel (source_class, "disconnect-out", _("Disconnect Out"), NULL);
-  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
+  assert_return (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
 }
 
 static void
@@ -172,7 +172,7 @@ bse_midi_voice_switch_dispose (GObject *object)
   BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (object);
 
   if (self->midi_voices)
-    g_warning ("disposing voice-switch with active midi voices");
+    Bse::warning ("disposing voice-switch with active midi voices");
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (voice_switch_parent_class)->dispose (object);
@@ -363,8 +363,8 @@ bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
 	break;
     }
   if (!slist)
-    g_warning ("module %s has no midi voice for context %u",
-	       bse_object_debug_name (self), context_handle);
+    Bse::warning ("module %s has no midi voice for context %u",
+                  bse_object_debug_name (self), context_handle);
   else
     {
       mvoice->ref_count--;

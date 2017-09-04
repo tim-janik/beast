@@ -3,18 +3,17 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = images
 
-MOSTLYCLEANFILES =
-man1_MANS =
-man1_HTMLS =
-man5_MANS =
-man5_HTMLS =
+beastmandir = ${beastsharedir}/man
+man1dir     = $(beastmandir)/man1
+man1_MANS   =
+man1_HTMLS  =
+man5dir     = $(beastmandir)/man5
+man5_MANS   =
+man5_HTMLS  =
 
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
-
-# == Extra Tarball Files ==
-EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
 
 # == Collect Doxygen Sources ==
 # The following variable definitions create files as a side effect, which should be
@@ -28,7 +27,7 @@ collect_docs_doxy_sources:
 	$(eval tools_doc_sources ::= $(shell make doc_sources.lst -C ../tools >&2 && cat ../tools/doc_sources.lst) )
 
 # == Configure docs ==
-docs_project_link   = http://beast.testbit.eu
+docs_project_link   = https://beast.testbit.org/docs/${docs_upload_name}
 docs_doxy_extra     = docs/main.dox
 docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
 docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk tools
@@ -41,12 +40,10 @@ docs_doxy_tagsrcs   = $(strip \
 )
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
-EXTRA_DIST         += $(patsubst %, ../%, $(docs_doxygen_tagbzs))
 docs_doxygen_werror = false
-EXTRA_DIST	   += $(patsubst %, ../%, $(docs_doxy_extra))
-
-# Build with dot files by default
-DOXYGEN_GRAPHICS  ?= NO # YES
+# Upload docs into latest/ except for release tags which use MAJOR.MINOR/ versioned directories, see also $(docs_project_link)
+docs_upload_name    = $(shell test "`git describe --match '[0-9]*.*[0-9]' 2>/dev/null`" = "`git describe --long 2>/dev/null`" \
+			&& echo latest || echo ${MAJOR}.${MINOR})
 
 # == docs/srctree ==
 doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_doxygen_tagbzs)) | collect_docs_doxy_sources
@@ -69,20 +66,16 @@ doxy/src: $(patsubst %, ../%, $(docs_doxy_sources) $(docs_doxy_extra) $(docs_dox
 
 # == docs/doxy/html ==
 docs_doxy_auxfiles = ../docs/extrastyles.css ../docs/footer.html ../docs/references.bib
-EXTRA_DIST	  += ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles)
 # rebuild documentation after commits, unless NODOC is set to be non-empty
 doxy/html: $(if $(NODOC), , ../topbuildid.cc)
 # use order-only prerequisite on docs/doxy/src to spare doxygen runs for source edits
 doxy/html: ../docs/doxygen.cfg ../docs/error.ign $(docs_doxy_auxfiles) | doxy/src
 	$(V_gen) "PREPARE" $@
-	$(Q) rm -Rf doxy/html doxy/output
+	$(Q) rm -Rf doxy/html doxy/output doxy/richdocs
 	$(Q) mkdir -p doxy/output
 	$(Q) cp $(docs_doxy_auxfiles) doxy/
-	$(Q) (cat ../docs/doxygen.cfg \
+	$(Q) (sed $(RICHDOCS_SED) ../docs/doxygen.cfg \
 	&& echo "PROJECT_NUMBER		= $(topbuildid)" \
-	&& echo "HAVE_DOT		= $(DOXYGEN_GRAPHICS)" \
-	&& echo "CLASS_DIAGRAMS		= $(DOXYGEN_GRAPHICS)" \
-	&& echo "DOT_MULTI_TARGETS	= YES" \
 	&& echo "INPUT			= src/" \
 	&& echo "STRIP_FROM_PATH	= $$(pwd)/doxy/src" \
 	&& echo "OUTPUT_DIRECTORY	= output/" \
@@ -107,8 +100,20 @@ doxy/html/doc-version: doxy/html $(man1_HTMLS) $(man5_HTMLS)
 	$(Q) test -z "$(man1_HTMLS)$(man5_HTMLS)" || { $(MKDIR_P) doxy/html/man/ && cp $(man1_HTMLS) $(man5_HTMLS) doxy/html/man/ ; }
 	$(Q) echo "$(PACKAGE)-$(topbuildid)" > $@
 
+# == docs ==
+# Build slim (and fast) docs for 'make all' and build rich (but slow) docs for 'make docs'
+RICHDOCS_OFF = 's/\bIFRICH\b/NO/g;  s/\bIFSLIM\b/YES/g'
+RICHDOCS_ON  = 's/\bIFRICH\b/YES/g; s/\bIFSLIM\b/NO/g'
+RICHDOCS_SED ?= $(RICHDOCS_OFF)
+doxy/richdocs:
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) all RICHDOCS_SED="$(RICHDOCS_ON)"
+	$(Q) touch $@
+docs: doxy/richdocs
+.PHONY: docs
+
 # == install docs/doxy/html ==
-docs_html_installbase	 = $(docdir)
+docs_html_installbase	 = $(beastdocdir)
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
 docs-html-install: $(docs_html_install_DATA)
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/
@@ -123,6 +128,14 @@ docs-html-uninstall:
 .PHONY: docs-html-uninstall
 uninstall-local: docs-html-uninstall
 
+# == upload-docs ==
+CHECK_RSYNC = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
+upload-docs: docs					# force rich docs/doxy/html builds
+	$(AM_V_GEN)
+	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
+	rsync -zaHP --del doxy/html/ testbit:sites/beast/docs/$(docs_upload_name)
+.PHONY: upload-docs
+
 # == clean docs/doxy/ ==
 clean-docs:
 	rm -Rf doxy/
@@ -135,8 +148,7 @@ revisioned_files         = # files that need @FILE_REVISION@ substitution, see r
 
 # == revisions.lst ==
 noinst_DATA += revisions.lst
-EXTRA_DIST  += revisions.lst $(revisioned_files)
-revisions.lst: @INGIT@ $(revisioned_files) Makefile
+revisions.lst: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) rm -f $@.tmplst
 	$(Q) for file in $(revisioned_files) ; do \
@@ -150,7 +162,7 @@ clean-revisions.lst: # git is required to rebuild revisions.lst, so conditionali
 	! git rev-parse --git-dir 2>/dev/null 1>&2 || rm -f revisions.lst
 .PHONY: clean-revisions.lst
 clean-local: clean-revisions.lst
-
+EXTRA_DIST += revisions.lst
 
 # == .revd.md (INTERMEDIATE) ==
 %.revd.md: %.md revisions.lst
@@ -176,7 +188,6 @@ manpage_footer.html:
 	$(Q) echo $$'<hr>\n<a href="../index.html">Return to Index</a>\n' > $@
 .INTERMEDIATE: manpage_footer.html
 MOSTLYCLEANFILES += manpage_footer.html
-EXTRA_DIST += ../docs/manpage.css
 
 # == man.1.html (markdown) ==
 %.1.html: %.1.revd.md manpage_header.html manpage_footer.html ../docs/manpage.css
@@ -204,12 +215,6 @@ revisioned_files	+= bse.5.md
 man5_MANS		+= bse.5
 man5_HTMLS		+= bse.5.html
 MOSTLYCLEANFILES	+= bse.5 bse.5.html
-
-# == bsescm.1 ==
-revisioned_files	+= bsescm.1.md
-man1_MANS		+= bsescm.1
-man1_HTMLS		+= bsescm.1.html
-MOSTLYCLEANFILES	+= bsescm.1 bsescm.1.html
 
 # == sfidl.1 ==
 revisioned_files	+= sfidl.1.md

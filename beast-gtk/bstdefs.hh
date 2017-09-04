@@ -74,9 +74,10 @@ typedef enum /*< skip >*/
 } G_STMT_END
 
 /* --- i18n and gettext helpers --- */
-#define BEAST_GETTEXT_DOMAIN (NULL)
-#define _(str)	dgettext (BEAST_GETTEXT_DOMAIN, str)
-#define N_(str)	(str)
+// Atm, Beast and libbse share the same text domain
+#define _(str)  ::Bse::_ (str)
+#define N_(str) (str)
+inline const char* bst_gettext_domain ()        { return ::Bse::bse_gettext_domain(); }
 
 /* --- internal stuff --- */
 void    beast_show_about_box (void);

@@ -40,7 +40,6 @@ beast_headers = $(strip \
 	bstdefs.hh \
 	bstsoundfontview.hh	bstsoundfontpresetview.hh  \
 )
-EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
 bst_cc_sources = $(strip \
 	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
@@ -70,7 +69,6 @@ beast_extra_files = $(strip 						\
 	bstparam-searchpath.cc		bstparam-time.cc		\
 	bstparam-item-seq.cc		bstmarshal.list			\
 )
-EXTRA_DIST += $(beast_extra_files)
 
 doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
 
@@ -119,7 +117,6 @@ bstmarshal.cc: bstmarshal.list
 
 
 # == bstapi.idl ==
-EXTRA_DIST += bstapi.idl
 $(bst_cc_sources:%=$(srcdir)/%): bstserverapi.hh
 bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
@@ -145,7 +142,7 @@ generated: clean-generated $(GENERATED)
 #
 # build rules for programs
 #
-bin_PROGRAMS = beast-@MAJOR@.@MINOR@.@MICRO@
+beastbin_PROGRAMS = beast-@MAJOR@.@MINOR@.@MICRO@
 beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = $(bst_cc_sources) bstmain.cc
 nodist_beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = ../topbuildid.cc
 beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)

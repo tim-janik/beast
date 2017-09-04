@@ -7,12 +7,11 @@
 
 /// The Bse namespace contains all functions of the synthesis engine.
 namespace Bse {
-using namespace Rapicorn;
 
 /// The task registry keeps track of runtime threads for profiling and statistical purposes.
 class TaskRegistry {            // FIXME: move this to IDL
 public:
-  typedef std::vector<Rapicorn::TaskStatus> List;
+  typedef std::vector<Bse::TaskStatus> List;
   static void  add     (const std::string &name, int pid,
                         int tid = -1);  ///< Add process/thread to registry for runtime profiling.
   static bool  remove  (int tid);       ///< Remove process/thread based on thread_id.
@@ -30,7 +29,7 @@ void		objects_debug_leaks ();
 /// A GSource implementation to attach an Aida::BaseConnection to a Glib main loop.
 class AidaGlibSource : public GSource {
 public:
-  static AidaGlibSource* create (Rapicorn::Aida::BaseConnection *connection);
+  static AidaGlibSource* create (Aida::BaseConnection *connection);
 };
 
 } // Bse

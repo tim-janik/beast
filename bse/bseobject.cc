@@ -14,15 +14,15 @@ namespace Bse {
 ObjectImpl::ObjectImpl (BseObject *bobj) :
   gobject_ (bobj)
 {
-  assert (gobject_);
-  assert (gobject_->cxxobject_ == NULL);
+  assert_return (gobject_);
+  assert_return (gobject_->cxxobject_ == NULL);
   g_object_ref (gobject_);
   gobject_->cxxobject_ = this;
 }
 
 ObjectImpl::~ObjectImpl ()
 {
-  assert (gobject_->cxxobject_ == this);
+  assert_return (gobject_->cxxobject_ == this);
   gobject_->cxxobject_ = NULL;
   g_object_unref (gobject_);
   // ObjectImpl keeps BseObject alive until it is destroyed
@@ -46,6 +46,24 @@ void
 ObjectImpl::changed (const String &what)
 {
   sig_changed.emit (what);
+}
+
+std::string
+ObjectImpl::uname () const
+{
+  BseObject *object = *const_cast<ObjectImpl*> (this);
+  gchar *gstring = NULL;
+  g_object_get (object, "uname", &gstring, NULL);
+  std::string u = gstring ? gstring : "";
+  g_free (gstring);
+  return u;
+}
+
+void
+ObjectImpl::uname (const std::string &newname)
+{
+  BseObject *object = *this;
+  g_object_set (object, "uname", newname.c_str(), NULL);
 }
 
 void
@@ -164,7 +182,7 @@ static __thread uint in_bse_object_new = 0;
 static void
 bse_object_init (BseObject *object)
 {
-  assert (in_bse_object_new);
+  assert_return (in_bse_object_new);
   object->cxxobject_ = NULL;
   object->cxxobjref_ = NULL;
   object->flags = 0;
@@ -197,7 +215,7 @@ bse_object_do_dispose (GObject *gobject)
   BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
 
   if (BSE_OBJECT_IN_RESTORE (object))
-    g_warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
+    Bse::warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
 
   /* perform release notification */
   g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
@@ -458,7 +476,7 @@ bse_object_lock (gpointer _object)
   assert_return (BSE_IS_OBJECT (object));
   assert_return (gobject->ref_count > 0);
 
-  assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
+  assert_return (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
 
   if (!object->lock_count)
     {
@@ -741,7 +759,7 @@ bse_object_reemit_signal (gpointer     src_object,
                   g_object_class_find_property (G_OBJECT_GET_CLASS (dest_object),
                                                 g_quark_to_string (key.dest_detail))))))
 	    {
-	      g_warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
+	      Bse::warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
 	      return;
 	    }
 	  e = (EClosure*) g_closure_new_simple (sizeof (EClosure), dest_object);
@@ -764,8 +782,7 @@ bse_object_reemit_signal (gpointer     src_object,
 	e->erefs++;
     }
   else
-    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
-	       G_STRLOC, src_signal, dest_signal);
+    Bse::warning ("%s: invalid signal specs: \"%s\", \"%s\"", G_STRLOC, src_signal, dest_signal);
 }
 
 void
@@ -801,13 +818,12 @@ bse_object_remove_reemit (gpointer     src_object,
 	    }
 	}
       else
-	g_warning ("%s: no reemission for object %s signal \"%s\" to object %s signal \"%s\"",
-		   G_STRLOC, bse_object_debug_name (src_object), src_signal,
-		   bse_object_debug_name (dest_object), dest_signal);
+	Bse::warning ("%s: no reemission for object %s signal \"%s\" to object %s signal \"%s\"", G_STRLOC,
+                      bse_object_debug_name (src_object), src_signal,
+                      bse_object_debug_name (dest_object), dest_signal);
     }
   else
-    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
-	       G_STRLOC, src_signal, dest_signal);
+    Bse::warning ("%s: invalid signal specs: \"%s\", \"%s\"", G_STRLOC, src_signal, dest_signal);
 }
 
 static void
@@ -910,6 +926,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 #include "bsepcmwriter.hh"
 #include "bseeditablesample.hh"
 #include "bsesong.hh"
+#include "bsewaveosc.hh"
 #include "bsecsynth.hh"
 #include "bsetrack.hh"
 #include "bsecontextmerger.hh"
@@ -932,8 +949,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   in_bse_object_new++;
   BseObject *object = (BseObject*) g_object_new_valist (object_type, first_property_name, var_args);
   in_bse_object_new--;
-  assert (object->cxxobject_ == NULL);
-  assert (object->cxxobjref_ == NULL);
+  assert_return (object->cxxobject_ == NULL, NULL);
+  assert_return (object->cxxobjref_ == NULL, NULL);
   Bse::ObjectImpl *cxxo;
   if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
     cxxo = new Bse::ServerImpl (object);
@@ -957,6 +974,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::MidiNotifierImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_MIDI_SYNTH))
     cxxo = new Bse::MidiSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE_OSC))
+    cxxo = new Bse::WaveOscImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_CSYNTH))
     cxxo = new Bse::CSynthImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SNET))
@@ -982,11 +1001,11 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))
     cxxo = new Bse::ObjectImpl (object);
   else
-    assert (!"reached");
-  assert (object->cxxobject_ == cxxo);
-  assert (object->cxxobjref_ == NULL);
+    assert_return_unreached (NULL);
+  assert_return (object->cxxobject_ == cxxo, NULL);
+  assert_return (object->cxxobjref_ == NULL, NULL);
   object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
-  assert (cxxo == *object);
-  assert (object == *cxxo);
+  assert_return (cxxo == *object, NULL);
+  assert_return (object == *cxxo, NULL);
   return object;
 }

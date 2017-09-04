@@ -4,7 +4,6 @@
 
 #undef   G_DISABLE_ASSERT
 #undef   G_DISABLE_CHECKS
-#include <libintl.h>
 #include <sfi/sfi.hh>
 #include <sfi/sfistore.hh>	// FIXME
 #include <sfi/sficomwire.hh>	// FIXME
@@ -129,14 +128,13 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               GType              type,
                                               gpointer           user_data);
 typedef void          (*BseEngineAccessFunc) (BseModule         *module,
-                                              gpointer           data); 
+                                              gpointer           data);
 
-
-
-/* --- i18n and gettext helpers --- */
-const gchar* bse_gettext (const gchar *text);
-#define _(str)	bse_gettext (str)
+// == i18n Helpers ==
+#if     defined BSE_COMPILATION or defined BSE_PLUGIN_COMPILATION
+#define _(str)  ::Bse::_ (str)
 #define N_(str) (str)
+#endif /* BSE_COMPILATION */
 
 namespace Bse {
 

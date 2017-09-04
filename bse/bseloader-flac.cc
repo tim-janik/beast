@@ -182,7 +182,7 @@ bse_init_loader_flac (void)
   };
   static gboolean initialized = FALSE;
 
-  assert (initialized == FALSE);
+  assert_return (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

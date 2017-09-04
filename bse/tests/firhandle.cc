@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
@@ -12,7 +12,7 @@
 
 using namespace Bse;
 
-using namespace Rapicorn::Test;
+using namespace Bse::Test;
 using std::vector;
 using std::min;
 using std::max;
@@ -27,11 +27,11 @@ read_through (GslDataHandle *handle)
       // we don't use 1024 here, because we know that it is the FIR handle internal buffer size
       gfloat values[700];
       int64 values_read = gsl_data_handle_read (handle, offset, 700, values);
-      assert (values_read > 0);
+      assert_return (values_read > 0);
       offset += values_read;
     }
 
-  assert (offset == n_values);
+  assert_return (offset == n_values);
 }
 
 static double
@@ -56,10 +56,10 @@ band_min (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  assert (scanned_freq.size() == scanned_values.size());
+  double  min_value = 1e19;
+  assert_return (scanned_freq.size() == scanned_values.size(), min_value);
 
   bool	  init = false;
-  double  min_value = 1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
     {
       if (scanned_freq[i] >= start_freq && scanned_freq[i] <= end_freq)
@@ -73,7 +73,7 @@ band_min (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  assert (init);
+  assert_return (init, min_value);
   return min_value;
 }
 
@@ -83,10 +83,10 @@ band_max (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  assert (scanned_freq.size() == scanned_values.size());
+  double  max_value = -1e19;
+  assert_return (scanned_freq.size() == scanned_values.size(), max_value);
 
   bool	  init = false;
-  double  max_value = -1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
     {
       if (scanned_freq[i] >= start_freq && scanned_freq[i] <= end_freq)
@@ -100,7 +100,7 @@ band_max (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  assert (init);
+  assert_return (init, max_value);
   return max_value;
 }
 
@@ -117,7 +117,7 @@ handle_name (FirHandleType type)
     {
       case FIR_HIGHPASS:  return "Highpass";
       case FIR_LOWPASS:	  return "Lowpass";
-      default:		  assert_unreached();
+      default:		  assert_return_unreached (NULL);
     }
 }
 
@@ -244,7 +244,7 @@ test_with_sine_sweep (FirHandleType type)
         for (uint j = 0; j < RUNS; j++)
           read_through (fir_handle_sin);
       };
-      Rapicorn::Test::Timer timer (0.03);
+      Bse::Test::Timer timer (0.03);
       const double bench_time = timer.benchmark (loop);
       String name = string_format ("%s O64 mono", handle_name (type));
       const double samples_per_second = RUNS * sweep_sin.size() / bench_time;

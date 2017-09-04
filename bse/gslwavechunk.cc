@@ -460,7 +460,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 	  reverse = FALSE;
 	  block->length = (iter.ubound - iter.rel_pos) / wchunk->n_channels;
 	  block->length *= wchunk->n_channels;
-	  assert (block->length <= STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values);
+	  assert_return (block->length <= STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values);
 	  block->start = static_zero_block + iter.rel_pos;
 	}
       else
@@ -510,7 +510,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
       block->dirstride = +wchunk->n_channels;
       block->end = block->start + block->length;
     }
-  assert (block->length > 0);
+  assert_return (block->length > 0);
   /* we might want to partly reset this at some point to implement
    * truely infinite loops
    */

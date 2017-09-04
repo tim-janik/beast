@@ -464,7 +464,7 @@ dh_mad_read (GslDataHandle *dhandle,
 
       /* suckage, need to do lengthy seek in file */
       tmp = dh_mad_coarse_seek (dhandle, voffset);
-      assert (tmp <= voffset);
+      assert_return (tmp <= voffset, 0);
     }
 
   while (pos >= handle->pcm_pos + handle->pcm_length)
@@ -530,8 +530,7 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      sfi_diag ("MAD-init: pcm position screwed (pos: %llu, handle-pos: %llu), aborting read",
-                pos, handle->pcm_pos);	
+      Bse::info ("MAD-init: pcm position screwed (pos: %llu, handle-pos: %llu), aborting read", pos, handle->pcm_pos);
       return -1;
     }
 }

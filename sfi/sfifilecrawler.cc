@@ -152,7 +152,7 @@ file_crawler_queue_readdir (SfiFileCrawler *self,
 			    const gchar    *file_pattern,
 			    GFileTest       file_test)
 {
-  assert (self->dhandle == NULL);
+  assert_return (self->dhandle == NULL);
 
   if (strchr (file_pattern, '?') || strchr (file_pattern, '*'))
     {
@@ -218,7 +218,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
 {
   gchar *sep, *p, *freeme, *tmp;
 
-  assert (self->pdqueue == NULL && self->dlist == NULL && self->accu == NULL);
+  assert_return (self->pdqueue == NULL && self->dlist == NULL && self->accu == NULL);
 
   freeme = p = g_strdup (path_pattern);
 
@@ -275,7 +275,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
 static void
 file_crawler_crawl_abs_path (SfiFileCrawler *self)
 {
-  assert (self->pdqueue || self->dlist);
+  assert_return (self->pdqueue || self->dlist);
   if (self->dhandle)
     {
       /* finish reading directory contents */
@@ -556,7 +556,7 @@ sfi_path_get_filename (const gchar  *filename,
  *
  * This is the AND version of g_file_test(). That is, all file tests
  * specified in the @a test bits have to succed for this function to
- * return TRUE. This function is implemented via Rapicorn::Path::check(),
+ * return TRUE. This function is implemented via Bse::Path::check(),
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
  * Here is the list of possible GFileTest flags:
@@ -583,7 +583,7 @@ g_file_test_all (const gchar  *file,
     strcat (buffer, "d");
   if (test & G_FILE_TEST_IS_EXECUTABLE)
     strcat (buffer, "x");
-  return Rapicorn::Path::check (file, buffer);
+  return Bse::Path::check (file, buffer);
 }
 
 #include <pwd.h>

@@ -5,7 +5,6 @@
 #include <sfi/sfi.hh>
 #include <string.h>
 #include "ladspa.hh"
-using namespace Rapicorn;
 
 #define LDEBUG(...)     Bse::debug ("ladspa", __VA_ARGS__)
 
@@ -95,7 +94,7 @@ ladspa_plugin_use (GTypePlugin *gplugin)
       if (!error)
 	error = ladspa_plugin_reinit_type_ids (self, ldf);
       if (error)
-	g_error ("Fatal: failed to reinitialize plugin \"%s\": %s", self->fname, error);
+        Bse::warning ("Fatal: failed to reinitialize plugin \"%s\": %s", self->fname, error);
     }
   else
     self->use_count++;

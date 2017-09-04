@@ -254,30 +254,30 @@ String CodeGeneratorCBase::createTypeCode (const String& type, const String &nam
        * GValues
        */
       // how to create a new "type" called "name" from a GValue*
-      case MODEL_FROM_VALUE:  assert (name != ""); break;
+      case MODEL_FROM_VALUE:  assert_return (name != "", ""); break;
       // how to convert the "type" called "name" to a GValue*
-      case MODEL_TO_VALUE:    assert (name != ""); break;
+      case MODEL_TO_VALUE:    assert_return (name != "", ""); break;
 
       /*
        * vcall interface: the following models deal with how to perform a
        * method/procedure invocation using a given data type
        */
       // the name of the VCALL function for calling functions returning "type"
-      case MODEL_VCALL:	      assert (name == ""); break;
+      case MODEL_VCALL:	      assert_return (name == "", ""); break;
       // how to pass a "type" called "name" to the VCALL function
-      case MODEL_VCALL_ARG:   assert (name != ""); break;
+      case MODEL_VCALL_ARG:   assert_return (name != "", ""); break;
       // what type a conversion results in (== MODEL_VCALL_RET ?)
-      case MODEL_VCALL_CARG:  assert (name == ""); break;
+      case MODEL_VCALL_CARG:  assert_return (name == "", ""); break;
       // how to perform the conversion of a vcall parameter called "name" (optional: "" if unused)
-      case MODEL_VCALL_CONV:  assert (name != ""); break;
+      case MODEL_VCALL_CONV:  assert_return (name != "", ""); break;
       // how to free the conversion result of "name" (optional: "" if unused)
-      case MODEL_VCALL_CFREE: assert (name != ""); break;
+      case MODEL_VCALL_CFREE: assert_return (name != "", ""); break;
       // what type a vcall result is
-      case MODEL_VCALL_RET:   assert (name == ""); break;
+      case MODEL_VCALL_RET:   assert_return (name == "", ""); break;
       // how to convert the result of a vcall called "name" (optional: name if unused)
-      case MODEL_VCALL_RCONV: assert (name != ""); break;
+      case MODEL_VCALL_RCONV: assert_return (name != "", ""); break;
       // how to free (using GC) the result of the conversion (optional: "" if unused)
-      case MODEL_VCALL_RFREE: assert (name != ""); break;
+      case MODEL_VCALL_RFREE: assert_return (name != "", ""); break;
     }
 
   switch (parser.typeOf (type))
@@ -520,7 +520,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const S
   if (rfree != "")
     printf ("  %s _retval_conv;\n", cTypeRet (mdef.result.type));
 
-  map<String, String> cname;
+  std::map<String, String> cname;
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
       String conv = createTypeCode (pi->type, pi->name, MODEL_VCALL_CONV);

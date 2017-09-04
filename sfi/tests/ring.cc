@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <sfi/sfi.hh>
 
 using namespace Bse;
@@ -204,7 +204,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, argv);
+  Bse::Test::init (&argc, argv);
   test_sfi_ring();
   return 0;
 }

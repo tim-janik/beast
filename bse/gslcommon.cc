@@ -16,7 +16,7 @@
 namespace Bse {
 
 // == TickStamp ==
-static Bse::Mutex               global_tick_stamp_mutex;
+static std::mutex               global_tick_stamp_mutex;
 static uint64	                tick_stamp_system_time = 0;
 static uint64                   tick_stamp_leaps = 0;
 std::atomic<uint64>             TickStamp::global_tick_stamp { 0 }; // initialized to 1 from gsl_init(), so 0 == invalid
@@ -32,7 +32,7 @@ TickStamp::_init_forgsl()
 void
 TickStamp::_set_leap (uint64 ticks)
 {
-  Bse::ScopedLock<Bse::Mutex> locker (global_tick_stamp_mutex);
+  std::lock_guard<std::mutex> locker (global_tick_stamp_mutex);
   tick_stamp_leaps = ticks;
 }
 
@@ -45,7 +45,7 @@ TickStamp::_increment ()
   systime = sfi_time_system ();
   newstamp = global_tick_stamp + tick_stamp_leaps;
   {
-    Bse::ScopedLock<Bse::Mutex> locker (global_tick_stamp_mutex);
+    std::lock_guard<std::mutex> locker (global_tick_stamp_mutex);
     global_tick_stamp = newstamp;
     tick_stamp_system_time = systime;
   }
@@ -85,7 +85,7 @@ TickStamp::Update
 TickStamp::get_last()
 {
   Update ustamp;
-  Bse::ScopedLock<Bse::Mutex> locker (global_tick_stamp_mutex);
+  std::lock_guard<std::mutex> locker (global_tick_stamp_mutex);
   ustamp.tick_stamp = global_tick_stamp;
   ustamp.system_time = tick_stamp_system_time;
   return ustamp;
@@ -115,7 +115,7 @@ TickStamp::create_wakeup (const std::function<void()> &wakeup)
 void
 TickStamp::Wakeup::awake_after (uint64 stamp)
 {
-  Bse::ScopedLock<Bse::Mutex> locker (global_tick_stamp_mutex);
+  std::lock_guard<std::mutex> locker (global_tick_stamp_mutex);
   if (!awake_stamp_ && stamp)
     {
       tick_stamp_wakeups.push_back (shared_from_this());
@@ -151,7 +151,7 @@ TickStamp::Wakeup::awake_before (uint64 stamp)
 void
 TickStamp::Wakeup::_emit_wakeups (uint64 wakeup_stamp)
 {
-  Bse::ScopedLock<Bse::Mutex> locker (global_tick_stamp_mutex);
+  std::lock_guard<std::mutex> locker (global_tick_stamp_mutex);
   std::list<TickStampWakeupP> list, notifies;
   list.swap (tick_stamp_wakeups);
   for (auto it : list)
@@ -197,7 +197,7 @@ gsl_byte_order_from_string (const gchar *string)
 Bse::Error
 gsl_file_check (const std::string &file_name, const std::string &mode)
 {
-  if (Rapicorn::Path::check (file_name, mode))
+  if (Bse::Path::check (file_name, mode))
     return Bse::Error::NONE;
   return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }

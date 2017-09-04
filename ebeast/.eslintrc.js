@@ -8,12 +8,15 @@ module.exports = {
   "globals": {
     "Electron": false,
     "Mithril": false,
+    "Vue": false,
     "Bse": false,
     "App": false,
+    "Shell": false,
+    "T": false,
     "module": true /* allow mods */
   },
   "rules": {
-    "no-unused-vars": [ "warn", { "argsIgnorePattern": "^_.*", "varsIgnorePattern": "^_.*" } ],
+    "no-unused-vars": [ "warn", { "args": "none", "argsIgnorePattern": "^__.*", "varsIgnorePattern": "^__.*" } ],
     "no-unreachable": [ "warn" ],
     "semi": [ "error", "always" ],
     "no-extra-semi": [ "warn" ],

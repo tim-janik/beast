@@ -90,9 +90,9 @@ midi_decoder_advance_state (BseMidiDecoder *self)
       self->delta_time = 0;
       self->event_type = BseMidiEventType (0);
       /* keep running_mode and zchannel */
-      assert (self->left_bytes == 0);
+      assert_return (self->left_bytes == 0);
       if (self->n_bytes)
-        g_warning ("leaking %d bytes of midi data", self->n_bytes);
+        Bse::warning ("leaking %d bytes of midi data", self->n_bytes);
       self->n_bytes = 0;
     }
   self->state = next_state;
@@ -240,8 +240,8 @@ midi_decoder_parse_data (BseMidiDecoder *self,
             break;
           case BSE_MIDI_END_EX:
           default: /* probably bogus, inform user for debugging purposes */
-            sfi_diag ("BseMidiDecoder: unhandled midi %s byte 0x%02X\n",
-                      self->event_type < 0x80 ? "data" : "command", self->event_type);
+            Bse::info ("BseMidiDecoder: unhandled midi %s byte 0x%02X\n",
+                       self->event_type < 0x80 ? "data" : "command", self->event_type);
             self->event_type = BseMidiEventType (0);             /* start over */
             next_state = BSE_MIDI_DECODER_ZERO;
             break;
@@ -534,7 +534,7 @@ bse_midi_decoder_construct_event (BseMidiDecoder *self)
   else
     {
       if (event->status)
-        sfi_diag ("BseMidiDecoder: discarding midi event (0x%02X): data invalid\n", event->status);
+        Bse::info ("BseMidiDecoder: discarding midi event (0x%02X): data invalid\n", event->status);
       bse_midi_free_event (event);
     }
   self->n_bytes = 0;

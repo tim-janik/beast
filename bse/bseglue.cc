@@ -288,9 +288,9 @@ bglue_value_from_serializable (const GValue *svalue,
                        g_type_name (G_VALUE_TYPE (svalue)),
                        g_type_name (dtype),
                        g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));
-      g_warning ("unable to convert to value type `%s' from serializable (`%s')",
-                 g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-                 g_type_name (stype));
+      Bse::warning ("unable to convert to value type `%s' from serializable (`%s')",
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                    g_type_name (stype));
     }
   return value;
 }
@@ -346,11 +346,11 @@ bglue_value_to_serializable (const GValue *svalue)
       g_value_init (value, dtype);
     }
   if (!dtype)
-    g_warning ("unable to convert value type `%s' to serializable type",
-	       g_type_name (vtype));
+    Bse::warning ("unable to convert value type `%s' to serializable type",
+                  g_type_name (vtype));
   else if (!sfi_value_transform (svalue, value))
-    g_warning ("unable to convert value type `%s' to serializable (`%s')",
-	       g_type_name (vtype), g_type_name (dtype));
+    Bse::warning ("unable to convert value type `%s' to serializable (`%s')",
+                  g_type_name (vtype), g_type_name (dtype));
   return value;
 }
 
@@ -394,7 +394,7 @@ bse_glue_boxed_to_value (GType    boxed_type,
     }
   else /* urm, bad */
     {
-      g_warning ("unable to convert boxed type `%s' to record or sequence", g_type_name (boxed_type));
+      Bse::warning ("unable to convert boxed type `%s' to record or sequence", g_type_name (boxed_type));
       value = NULL;
     }
   return value;
@@ -478,7 +478,7 @@ bse_glue_enum_index (GType enum_type,
   eclass = (GEnumClass*) g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
   if (!ev)
-    sfi_diag ("%s: enum \"%s\" has no value %u", G_STRLOC, g_type_name (enum_type), enum_value);
+    Bse::info ("%s: enum \"%s\" has no value %u", G_STRLOC, g_type_name (enum_type), enum_value);
   index = ev ? ev - eclass->values : G_MAXINT;
   g_type_class_unref (eclass);
 
@@ -653,7 +653,7 @@ bglue_exec_proc (SfiGlueContext *context,
       g_slist_free (clearlist);
 
       if (error != 0)
-        g_warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
+        Bse::warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
       for (i = 0; i < proc->n_out_pspecs; i++)
@@ -662,7 +662,7 @@ bglue_exec_proc (SfiGlueContext *context,
       g_type_class_unref (proc);
     }
   else
-    sfi_diag ("failed to execute \"%s\": no such procedure", proc_name);
+    Bse::info ("failed to execute \"%s\": no such procedure", proc_name);
 
   return retval;
 }
@@ -732,7 +732,7 @@ bglue_proxy_get_pspec (SfiGlueContext *context,
 
   if (!BSE_IS_ITEM (object))
     {
-      sfi_diag ("property lookup: no such object (proxy=%lu)", proxy);
+      Bse::info ("property lookup: no such object (proxy=%lu)", proxy);
       return NULL;
     }
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), prop_name);
@@ -777,11 +777,11 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	  /* we do conversion and validation here, so we can roll our own warnings */
 	  g_value_init (&tmp_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 	  if (!sfi_value_transform (pvalue ? pvalue : value, &tmp_value))
-	    sfi_diag ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
-		      pspec->name,
-		      g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-		      bse_object_debug_name (object),
-		      G_VALUE_TYPE_NAME (value));
+	    Bse::info ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
+                       pspec->name,
+                       g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                       bse_object_debug_name (object),
+                       G_VALUE_TYPE_NAME (value));
 	  else
 	    {
 	      /* silent validation */
@@ -800,8 +800,8 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	    sfi_value_free (pvalue);
 	}
       else
-	sfi_diag ("object %s has no property `%s'",
-		  bse_object_debug_name (object), prop ? prop : "<NULL>");
+	Bse::info ("object %s has no property `%s'",
+                   bse_object_debug_name (object), prop ? prop : "<NULL>");
     }
 }
 
@@ -826,7 +826,7 @@ bglue_proxy_get_property (SfiGlueContext *context,
 	  sfi_value_free (value);
 	}
       else
-        sfi_diag ("object %s has no such property: %s", bse_object_debug_name (object), prop);
+        Bse::info ("object %s has no such property: %s", bse_object_debug_name (object), prop);
     }
   return rvalue;
 }
@@ -900,7 +900,7 @@ bglue_proxy_watch_release (SfiGlueContext *context,
   if (!p)
     return FALSE;
   if (p->remote_watch)
-    g_warning ("%s: redundant watch request on proxy (%lu)", bcontext->user, proxy);
+    Bse::warning ("%s: redundant watch request on proxy (%lu)", bcontext->user, proxy);
   p->remote_watch = TRUE;
   return TRUE;
 }
@@ -1013,7 +1013,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	{
 	  if (enable_notify)
 	    {
-	      sfi_diag ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
+	      Bse::info ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
 	      return TRUE;
 	    }
           /* disable notify, disconnect closure */
@@ -1033,7 +1033,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
   if (!enable_notify)
     {
 #if 0
-      sfi_diag ("%s: bogus disconnection for signal \"%s\" on proxy (%lu)", bcontext->user, signal, proxy);
+      Bse::info ("%s: bogus disconnection for signal \"%s\" on proxy (%lu)", bcontext->user, signal, proxy);
 #endif
       return FALSE;
     }
@@ -1074,7 +1074,7 @@ bglue_proxy_processed_notify (SfiGlueContext *context,
 {
   BContext *bcontext = (BContext*) context;
   if (!bcontext_release_notify_ref (bcontext, notify_id))
-    sfi_diag ("got invalid event receipt (%u)", notify_id);
+    Bse::info ("got invalid event receipt (%u)", notify_id);
 }
 
 static GValue*
@@ -1088,7 +1088,7 @@ bglue_client_msg (SfiGlueContext *context,
     ;
   else
     {
-      sfi_diag ("unhandled client message: %s", msg);
+      Bse::info ("unhandled client message: %s", msg);
       retval = sfi_value_string ("Unknown client msg");
     }
 

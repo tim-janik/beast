@@ -323,7 +323,7 @@ bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, bnode->func.get_element());
       break;
-    default:    assert_unreached();
+    default:    assert_return_unreached();
     }
 }
 
@@ -340,7 +340,7 @@ bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, NULL);
       break;
-    default:    assert_unreached();
+    default:    assert_return_unreached();
     }
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, NULL);
 }
@@ -424,7 +424,7 @@ bse_type_init (void)
   bse_type_register_procedure_info (&info);
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, GTypeFlags (0));
   bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
-  assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
+  assert_return (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */
   {

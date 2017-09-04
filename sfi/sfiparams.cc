@@ -77,7 +77,7 @@ _sfi_init_params (void)
   };
   static GType pspec_types[7] = { 0, };
 
-  assert (sfi__param_spec_types == NULL);
+  assert_return (sfi__param_spec_types == NULL);
 
   sfi__param_spec_types = pspec_types;
 
@@ -817,7 +817,7 @@ sfi_enum_type_set_choice_value_getter (GType                 gtype,
 {
   assert_return (G_TYPE_IS_ENUM (gtype));
   if (g_type_get_qdata (gtype, quark_tmp_choice_values) != NULL)
-    g_warning ("%s: unsetting choice value getter of type `%s' while keeping old choice value references", __func__, g_type_name (gtype));
+    Bse::warning ("%s: unsetting choice value getter of type `%s' while keeping old choice value references", __func__, g_type_name (gtype));
   g_type_set_qdata (gtype, quark_enum_choice_value_getter, (void*) cvgetter);
 }
 
@@ -1075,8 +1075,8 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     pspec = sfi_pspec_proxy_from_object (xpspec);
 
   if (!pspec)
-    g_warning ("%s: unable to convert non serializable pspec \"%s\" of type `%s'",
-               G_STRLOC, xpspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (xpspec)));
+    Bse::warning ("%s: unable to convert non serializable pspec \"%s\" of type `%s'",
+                  G_STRLOC, xpspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (xpspec)));
 
   return pspec;
 }
@@ -1733,7 +1733,7 @@ namespace Bse { // bsecore
 static std::map<String, SfiChoiceValues> aida_enum_choice_map;
 
 SfiChoiceValues
-choice_values_from_enum_values (const String &enumname, const ::Rapicorn::Aida::EnumValueVector &evvec)
+choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec)
 {
   SfiChoiceValues &cv = aida_enum_choice_map[enumname];
   if (!cv.values && !evvec.empty())

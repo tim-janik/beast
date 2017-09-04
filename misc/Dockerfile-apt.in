@@ -37,17 +37,10 @@ RUN retry apt-get install -y \
     cython gawk libxml-parser-perl \
     libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
     libreadline-dev python-all-dev \
-    libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev guile-1.8-dev \
+    libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
     nodejs-legacy npm imagemagick
 ENV BINTRAY_REPO	"@BINTRAY_REPO@"
 ENV DISTRELEASE		"@DISTRELEASE@"
-# Install Rapicorn
-RUN echo "deb [trusted=yes] https://dl.bintray.com/$BINTRAY_REPO $DISTRELEASE main" | \
-	tee /etc/apt/sources.list.d/bintray-source-line.list && \
-    retry apt-get update && \
-    retry apt-get install -y rapicorn && \
-    rm /etc/apt/sources.list.d/bintray-source-line.list && \
-    retry apt-get update
 
 # Install SpectMorph
 ### Dependencies
@@ -57,10 +50,26 @@ RUN retry apt-get install -y \
 RUN wget http://space.twc.de/~stefan/download/spectmorph_0.3.3_amd64.deb && \
     dpkg -i spectmorph_0.3.3_amd64.deb
 
-# Setup build environment and provide the git repository
+# Setup build environment and provide the git repositories
 ENV PROJECT	@PROJECT@
 ENV EMAIL	beast@gnome.org
 COPY tmp-mirror.git /tmp/$PROJECT.git
+
+# Build and install latest Rapicorn
+RUN retry apt-get install -y \
+    build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool \
+    doxygen graphviz texlive-binaries pandoc git libxml2-utils \
+    bison flex cython xvfb \
+    librsvg2-dev libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
+    libreadline-dev python-all-dev python-enum34
+RUN cd /usr/src/ && \
+    retry git clone --depth=1 https://github.com/tim-janik/rapicorn.git
+RUN cd /usr/src/rapicorn/ && \
+    nice ./autogen.sh --prefix=/usr && \
+    nice make -j`nproc` && \
+    nice make install
+
+# Build project
 RUN cd /usr/src/ && \
     git clone /tmp/$PROJECT.git
 
@@ -83,7 +92,7 @@ RUN nice make uninstall
 
 # Carry out distcheck test if desired
 RUN `intent distcheck` && \
-    nice make distcheck
+    nice make distcheck DISTCHECK_PO=0
 
 # Show tarball
 RUN ls -l *.tar.xz

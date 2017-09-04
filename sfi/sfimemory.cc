@@ -6,7 +6,7 @@
 #define TS8_SIZE                (MAX (sizeof (GTrashStack), 8))
 #define DBG8_SIZE               (MAX (sizeof (gsize), 8))
 /* --- variables --- */
-static Rapicorn::Mutex global_memory_mutex;
+static std::mutex   global_memory_mutex;
 static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { 0, 0, 0, /* ... */ };
 static gulong       memory_allocated = 0;
 /* --- functions --- */

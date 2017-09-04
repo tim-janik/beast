@@ -37,23 +37,23 @@ init_needed ()
 }
 
 // == TaskRegistry ==
-static Bse::Mutex         task_registry_mutex_;
+static std::mutex         task_registry_mutex_;
 static TaskRegistry::List task_registry_tasks_;
 
 void
 TaskRegistry::add (const std::string &name, int pid, int tid)
 {
-  Rapicorn::TaskStatus task (pid, tid);
+  Bse::TaskStatus task (pid, tid);
   task.name = name;
   task.update();
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   task_registry_tasks_.push_back (task);
 }
 
 bool
 TaskRegistry::remove (int tid)
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   for (auto it = task_registry_tasks_.begin(); it != task_registry_tasks_.end(); it++)
     if (it->task_id == tid)
       {
@@ -66,7 +66,7 @@ TaskRegistry::remove (int tid)
 void
 TaskRegistry::update ()
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   for (auto &task : task_registry_tasks_)
     task.update();
 }
@@ -74,7 +74,7 @@ TaskRegistry::update ()
 TaskRegistry::List
 TaskRegistry::list ()
 {
-  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
   return task_registry_tasks_;
 }
 
@@ -84,9 +84,9 @@ class AidaGlibSourceImpl : public AidaGlibSource {
   static int                 glib_check    (GSource *src)                     { return self_ (src)->check(); }
   static int                 glib_dispatch (GSource *src, GSourceFunc, void*) { return self_ (src)->dispatch(); }
   static void                glib_finalize (GSource *src)                     { self_ (src)->~AidaGlibSourceImpl(); }
-  Rapicorn::Aida::BaseConnection *connection_;
+  Aida::BaseConnection      *connection_;
   GPollFD                         pfd_;
-  AidaGlibSourceImpl (Rapicorn::Aida::BaseConnection *connection) :
+  AidaGlibSourceImpl (Aida::BaseConnection *connection) :
     connection_ (connection), pfd_ { -1, 0, 0 }
   {
     pfd_.fd = connection_->notify_fd();
@@ -116,9 +116,9 @@ class AidaGlibSourceImpl : public AidaGlibSource {
   }
 public:
   static AidaGlibSourceImpl*
-  create (Rapicorn::Aida::BaseConnection *connection)
+  create (Aida::BaseConnection *connection)
   {
-    AIDA_ASSERT (connection != NULL);
+    assert_return (connection != NULL, NULL);
     static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
     GSource *src = g_source_new (&glib_source_funcs, sizeof (AidaGlibSourceImpl));
     return new (src) AidaGlibSourceImpl (connection);
@@ -126,42 +126,40 @@ public:
 };
 
 AidaGlibSource*
-AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
+AidaGlibSource::create (Aida::BaseConnection *connection)
 {
   return AidaGlibSourceImpl::create (connection);
 }
 
-static Rapicorn::Aida::ClientConnectionP *client_connection = NULL;
+static Aida::ClientConnectionP *client_connection = NULL;
 
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
 ServerHandle
 init_server_instance () // bse.hh
 {
   ServerH server;
-  Rapicorn::Aida::ClientConnectionP connection = init_server_connection();
+  Aida::ClientConnectionP connection = init_server_connection();
   if (connection)
     server = connection->remote_origin<ServerH>();
   return server;
 }
 
 /// Retrieve the ClientConnection used for RPC communication with the Bse thread.
-Rapicorn::Aida::ClientConnectionP
+Aida::ClientConnectionP
 init_server_connection () // bse.hh
 {
   if (!client_connection)
     {
-      using namespace Rapicorn::Aida;
-      ClientConnectionP connection = ClientConnection::connect ("inproc://BSE-" BST_VERSION);
-      ServerH server;
+      Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+      ServerH bseconnection_server_handle;
       if (connection)
-        server = connection->remote_origin<ServerH>();
-      if (!server) // shouldn't happen
-        sfi_error ("%s: failed to establish BSE connection: %s", __func__, g_strerror (errno));
+        bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
+      assert_return (bseconnection_server_handle != NULL, NULL);
       constexpr SfiProxy BSE_SERVER = 1;
-      assert (server.proxy_id() == BSE_SERVER);
-      assert (server.from_proxy (BSE_SERVER) == server);
-      assert (client_connection == NULL);
-      client_connection = new Rapicorn::Aida::ClientConnectionP (connection);
+      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER, NULL);
+      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER) == bseconnection_server_handle, NULL);
+      assert_return (client_connection == NULL, NULL);
+      client_connection = new Aida::ClientConnectionP (connection);
     }
   return *client_connection;
 }

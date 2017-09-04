@@ -601,7 +601,7 @@ main (int   argc,
                     bse_poly_str (order, b, "z"));
 	}
       else
-	g_error ("unknown filter_mode");
+        Bse::warning ("unknown filter_mode");
       g_free (a);
       g_free (b);
     }

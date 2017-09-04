@@ -12,42 +12,19 @@ public_images = $(strip         \
 	beast-splash.png	\
 )
 images_DATA = ${public_images}
-imagesdir = $(datadir)/images
-EXTRA_DIST += $(private_images) $(public_images)
-
-# generate image header files
-noinst_build_sources = beast-images.h
-beast-images.h: ${public_images}
-	cd . \
-	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \
-	&& echo >> xgen-bstih \
-	&& echo "#define BST_SPLASH_IMAGE    \"beast-splash.png\"" >> xgen-bstih \
-	&& echo "#define BST_SPLASH_WIDTH    (300)" >> xgen-bstih \
-	&& echo "#define BST_SPLASH_HEIGHT   (350)" >> xgen-bstih \
-	&& echo >> xgen-bstih \
-	&& echo "/* Generated data ends here */" >> xgen-bstih \
-	&& (cp xgen-bstih $@) \
-	&& rm -f xgen-bstih
-noinst_DATA = $(noinst_build_sources)
-CLEANFILES += $(noinst_build_sources)
+imagesdir = $(beastdatadir)/images
 
 
 # install pkg-config files
-pkgconfigdir = $(libdir)/pkgconfig
+pkgconfigdir = $(bselibdir)/pkgconfig
 pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
 bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)
 	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
-EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
-# install .applications files
-dotapplicationsdir = $(datarootdir)/application-registry
-dotapplications_DATA = beast.applications
-EXTRA_DIST += $(dotapplications_DATA)
-
 # install related pixmaps
-sharedpixmapsdir = $(datarootdir)/pixmaps
+sharedpixmapsdir = $(beastsharedir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
@@ -65,33 +42,71 @@ $(INTLMERGE_CACHE): $(PODEPS)
 %.keys: %.keys.in	$(INTLMERGE_CACHE)
 	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
 
-# generate and install .desktop file
-dotdesktopdir = $(datarootdir)/applications
+# generate and install .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
+dotdesktopdir = $(beastsharedir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 beast.desktop: beast.desktop.in
 CLEANFILES += beast.desktop
-EXTRA_DIST += $(dotdesktop_in_files)
 
-# generate and install .xml mime info file
-sharedmimedir = $(datarootdir)/mime
+# generate and install .xml mime info file, from shared-mime-info-spec-0.12.html (2003-10-09)
+# simple overview: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
+# gvfs-info testfile.bse                # yields: standard::content-type: audio/x-bse
+# gvfs-mime --query audio/x-bse	        # yields: Registered applications: beast.desktop
+sharedmimedir = $(beastsharedir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
 CLEANFILES += beast.xml
 beast.xml: beast.xml.in
-EXTRA_DIST += $(sharedmimepackage_in_files)
 
-# generate and install .mime and .keys files
-mimedir = $(datarootdir)/mime-info
+# ANCIENT: generate and install .mime and .keys files, from shared-mime-info-spec-0.11.html (2003-04-17)
+mimedir = $(beastsharedir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
 bse.keys: bse.keys.in
-EXTRA_DIST += $(mime_in_file)
 
-# update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
+# ANCIENT: install .applications files, from "GNOME 2.4 Desktop System Administration Guide"
+dotapplicationsdir = $(beastsharedir)/application-registry
+dotapplications_DATA = beast.applications
+# mime_types=...,audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3
+# mime_types=...,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2
+# mime_types=...,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1
+# mime_types=...,audio/mpeg,audio/x-mpeg
+
+# $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
+INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$d" && ln -s $(1) $(2) )
+
+# Create links into standard filesystem hierarchy (FHS) and update system databases
+# * https://www.freedesktop.org/wiki/Howto_desktop_files/
+# * https://www.freedesktop.org/Standards/shared-mime-info-spec
+# TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
 install-data-hook:
-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(beastdocdir)/copyright'
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
+	@$(call INSTALL_SYMLINK, '$(beastmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
+	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast.png')
+	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast-audio-x-bse.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast-audio-x-bse.png')
+	@$(call INSTALL_SYMLINK, '$(dotdesktopdir)/beast.desktop', '$(DESTDIR)$(datarootdir)/applications/beast.desktop')
+	@$(call INSTALL_SYMLINK, '$(dotapplicationsdir)/beast.applications', '$(DESTDIR)$(datarootdir)/application-registry/beast.applications')
+	@$(call INSTALL_SYMLINK, '$(sharedmimepackagedir)/beast.xml', '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml')
+	@$(call INSTALL_SYMLINK, '$(beastbindir)/beast', '$(DESTDIR)$(bindir)/beast')
+	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
+	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';
+beastmandir = ${beastsharedir}/man
+
 uninstall-local: uninstall-sharedmimepackageDATA
-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	rm -f '$(DESTDIR)$(beastdocdir)/copyright'
+	rm -f '$(DESTDIR)$(mandir)/man1/beast.1'
+	rm -f '$(DESTDIR)$(mandir)/man1/bsewavetool.1'
+	rm -f '$(DESTDIR)$(mandir)/man5/bse.5'
+	rm -f '$(DESTDIR)$(datarootdir)/pixmaps/beast.png'
+	rm -f '$(DESTDIR)$(datarootdir)/pixmaps/beast-audio-x-bse.png'
+	rm -f '$(DESTDIR)$(datarootdir)/applications/beast.desktop'
+	rm -f '$(DESTDIR)$(datarootdir)/application-registry/beast.applications'
+	rm -f '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml'
+	rm -f '$(DESTDIR)$(bindir)/beast'
+	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
+	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';

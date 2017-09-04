@@ -2,13 +2,130 @@
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
+#include <sfi/path.hh>
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */
 #include <math.h>
 
 using namespace Bse;
+
+static void
+test_paths()
+{
+  String p, s;
+  // Path::join
+  s = Path::join ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+#if BSE_DIRCHAR == '/'
+  p = "0/1/2/3/4/5/6/7/8/9/a/b/c/d/e/f";
+#else
+  p = "0\\1\\2\\3\\4\\5\\6\\7\\8\\9\\a\\b\\c\\d\\e\\f";
+#endif
+  TCMP (s, ==, p);
+  // Path::searchpath_join
+  s = Path::searchpath_join ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+#if BSE_SEARCHPATH_SEPARATOR == ';'
+  p = "0;1;2;3;4;5;6;7;8;9;a;b;c;d;e;f";
+#else
+  p = "0:1:2:3:4:5:6:7:8:9:a:b:c:d:e:f";
+#endif
+  TCMP (s, ==, p);
+  // Path
+  bool b = Path::isabs (p);
+  TCMP (b, ==, false);
+  const char dirsep[2] = { BSE_DIRCHAR, 0 };
+#if BSE_DIRCHAR == '/'
+  s = Path::join (dirsep, s);
+#else
+  s = Path::join ("C:\\", s);
+#endif
+  b = Path::isabs (s);
+  TCMP (b, ==, true);
+  s = Path::skip_root (s);
+  TCMP (s, ==, p);
+  // TASSERT (Path::dir_separator == "/" || Path::dir_separator == "\\");
+  TASSERT (BSE_SEARCHPATH_SEPARATOR == ':' || BSE_SEARCHPATH_SEPARATOR == ';');
+  TCMP (Path::basename ("simple"), ==, "simple");
+  TCMP (Path::basename ("skipthis" + String (dirsep) + "file"), ==, "file");
+  TCMP (Path::basename (String (dirsep) + "skipthis" + String (dirsep) + "file"), ==, "file");
+  TCMP (Path::dirname ("file"), ==, ".");
+  TCMP (Path::dirname ("dir" + String (dirsep)), ==, "dir");
+  TCMP (Path::dirname ("dir" + String (dirsep) + "file"), ==, "dir");
+  TCMP (Path::cwd(), !=, "");
+  TCMP (Path::check (Path::join (Path::cwd(), "..", Path::basename (Path::cwd())), "rd"), ==, true); // ../. should be a readable directory
+  TCMP (Path::isdirname (""), ==, false);
+  TCMP (Path::isdirname ("foo"), ==, false);
+  TCMP (Path::isdirname ("foo/"), ==, true);
+  TCMP (Path::isdirname ("/foo"), ==, false);
+  TCMP (Path::isdirname ("foo/."), ==, true);
+  TCMP (Path::isdirname ("foo/.."), ==, true);
+  TCMP (Path::isdirname ("foo/..."), ==, false);
+  TCMP (Path::isdirname ("foo/..../"), ==, true);
+  TCMP (Path::isdirname ("/."), ==, true);
+  TCMP (Path::isdirname ("/.."), ==, true);
+  TCMP (Path::isdirname ("/"), ==, true);
+  TCMP (Path::isdirname ("."), ==, true);
+  TCMP (Path::isdirname (".."), ==, true);
+  TCMP (Path::expand_tilde (""), ==, "");
+  const char *env_home = getenv ("HOME");
+  if (env_home)
+    TCMP (Path::expand_tilde ("~"), ==, env_home);
+  const char *env_logname = getenv ("LOGNAME");
+  if (env_home && env_logname)
+    TCMP (Path::expand_tilde ("~" + String (env_logname)), ==, env_home);
+  TCMP (Path::searchpath_multiply ("/:/tmp", "foo:bar"), ==, "/foo:/bar:/tmp/foo:/tmp/bar");
+  const String abs__file__ = Path::abspath (__TOPDIR__ "sfi/tests/" __FILE__);
+  TCMP (Path::searchpath_list ("/:" + abs__file__, "e"), ==, StringVector ({ "/", abs__file__ }));
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/"), ==, false);
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/foo"), ==, false); // false because "/foo" is file search
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/foo/"), ==, true); // true because "/foo/" is dir search
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar"), ==, true); // file search matches /bar
+  TCMP (Path::searchpath_contains ("/foo/:/bar", "/bar/"), ==, true); // dir search matches /bar
+}
+TEST_ADD (test_paths);
+
+static void
+test_timestamps()
+{
+  const uint64 b1 = timestamp_benchmark();
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_resolution() > 0);
+  uint64 c = monotonic_counter();
+  for (size_t i = 0; i < 999999; i++)
+    {
+      const uint64 last = c;
+      c = monotonic_counter();
+      TASSERT (c > last);
+    }
+  const uint64 b2 = timestamp_benchmark();
+  TASSERT (b1 < b2);
+}
+TEST_ADD (test_timestamps);
+
+static void
+test_feature_toggles()
+{
+  String r;
+  r = feature_toggle_find ("a:b", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "b"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "c"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("a:b", "c", "7"); TCMP (r, ==, "7");
+  r = feature_toggle_find ("a:no-b", "b"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b", "a"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b:a", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("no-a:b:a=5", "a"); TCMP (r, ==, "5");
+  r = feature_toggle_find ("no-a:b:a=5:c", "a"); TCMP (r, ==, "5");
+  bool b;
+  b = feature_toggle_bool ("", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("a:b:c", "a"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("no-a:b:c", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("no-a:b:a=5:c", "b"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("x", ""); TCMP (b, ==, true); // *any* feature?
+}
+TEST_ADD (test_feature_toggles);
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
@@ -27,14 +144,6 @@ using namespace Bse;
 #include "testidl.h"
 
 static void
-test_misc (void)
-{
-  TSTART ("Misc");
-  TASSERT (0 == 0);
-  TDONE ();
-}
-
-static void
 test_time (void)
 {
   SfiTime t;
@@ -46,17 +155,16 @@ test_time (void)
     "2037-12-31 23:59:59",
   };
   gint i;
-  TSTART ("Time");
   TASSERT (SFI_USEC_FACTOR == 1000000);
   TASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
   t = sfi_time_system ();
   if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
     {
-      TACK ();
+      TOK ();
       t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
     }
   else
-    TICK ();
+    TOK ();
   t /= SFI_USEC_FACTOR;
   t *= SFI_USEC_FACTOR;
   str = sfi_time_to_string (t);
@@ -75,7 +183,7 @@ test_time (void)
     {
       t = sfi_time_from_string_err (time_strings[i], &error);
       if (!error)
-	TICK ();
+	TOK ();
       else
 	printout ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
@@ -84,8 +192,8 @@ test_time (void)
       TASSERT (error == NULL);
       g_free (str);
     }
-  TDONE ();
 }
+TEST_ADD (test_time);
 
 static void
 test_com_ports (void)
@@ -133,6 +241,8 @@ test_com_ports (void)
   sfi_com_port_unref (port2);
   TDONE ();
 }
+TEST_ADD (test_com_ports);
+
 #define SCANNER_ASSERT64(scanner, needprint, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
@@ -154,7 +264,6 @@ static void
 test_scanner64 (void)
 {
   GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
-  TSTART ("64Bit Scanner");
   scanner->config->numbers_2_int = FALSE;
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
@@ -175,8 +284,9 @@ test_scanner64 (void)
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 2.2250738585072014e-308 #", 2.2250738585072014e-308);
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 1.7976931348623157e+308 #", 1.7976931348623157e+308);
   g_scanner_destroy (scanner);
-  TDONE ();
 }
+TEST_ADD (test_scanner64);
+
 typedef enum /*< skip >*/
 {
   SERIAL_TEST_TYPED = 1,
@@ -467,7 +577,6 @@ test_notes (void)
 {
   gchar *str, *error = NULL;
   guint i;
-  TSTART ("Notes");
   str = sfi_note_to_string (SFI_MIN_NOTE);
   TASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
   TASSERT (error == NULL);
@@ -494,14 +603,13 @@ test_notes (void)
   TASSERT (error != NULL);
   // printout ("{%s}", error);
   g_free (error);
-  TDONE ();
 }
+TEST_ADD (test_notes);
 
 static void
 test_renames (void)
 {
   gchar *str;
-  TSTART ("Renames");
   str = g_type_name_to_cname ("PrefixTypeName");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
@@ -520,8 +628,9 @@ test_renames (void)
   str = g_type_name_to_cname ("prefix-type-name");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
-  TDONE ();
 }
+TEST_ADD (test_renames);
+
 static gboolean vmarshal_switch = TRUE;
 static guint    vmarshal_count = 0;
 static void
@@ -650,7 +759,14 @@ test_vmarshals (void)
   TDONE ();
   sfi_seq_unref (seq);
 }
+TEST_ADD (test_vmarshals);
 
+static int
+my_compare_func (const void*, const void*)
+{
+  RAPICORN_BACKTRACE();
+  exit (0);
+}
 
 static void
 test_sfidl_seq (void)
@@ -730,29 +846,65 @@ test_sfidl_seq (void)
   // TASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
   TDONE ();
 }
+TEST_ADD (test_sfidl_seq);
+
 #include "testidl.c"
 int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, argv);
+  Bse::Test::init (&argc, argv);
+
+  if (argc >= 2 && String ("--backtrace") == argv[1])
+    {
+      char dummy_array[3] = { 1, 2, 3 };
+      qsort (dummy_array, 3, 1, my_compare_func);
+    }
+  else if (argc >= 2 && String ("--assert_return1") == argv[1])
+    {
+      assert_return (1, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return0") == argv[1])
+    {
+      assert_return (0, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
+    {
+      assert_return_unreached (0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--fatal_error") == argv[1])
+    {
+      fatal_error ("got argument --fatal_error");
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless0") == argv[1])
+    {
+      return_unless (0, 7);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless1") == argv[1])
+    {
+      return_unless (1, 7);
+      return 0;
+    }
+
   test_types_init ();
+
   if (0)
     {
       generate_vmarshal_code ();
       return 0;
     }
-  test_notes ();
-  test_time ();
-  test_renames ();
-  test_scanner64 ();
+
+  if (0 != Bse::Test::run())
+    return -1;
+
   test_typed_serialization (SERIAL_TEST_PARAM);
   test_typed_serialization (SERIAL_TEST_TYPED);
   test_typed_serialization (SERIAL_TEST_PSPEC);
-  test_vmarshals ();
-  test_com_ports ();
-  test_sfidl_seq ();
-  test_misc ();
 
   return 0;
 }

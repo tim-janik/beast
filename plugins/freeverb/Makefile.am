@@ -2,7 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
-DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_COMPILATION
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 # install plugins under:
@@ -13,14 +13,3 @@ freeverb_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
 freeverb_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
 plugin_LTLIBRARIES = freeverb.la
-
-EXTRA_DIST += $(strip \
-	bsefreeverb.hh \
-	bsefreeverbcpp.hh \
-	denormals.hh \
-	tuning.hh \
-	allpass.hpp \
-	comb.hpp \
-	revmodel.hpp \
-        readme.txt \
-)

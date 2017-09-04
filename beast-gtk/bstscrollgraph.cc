@@ -32,7 +32,7 @@ static void
 bst_scrollgraph_destroy (GtkObject *object)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (object);
-  bst_scrollgraph_set_source (self, 0, 0);
+  bst_scrollgraph_set_source (self, Bse::SourceH(), 0);
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (bst_scrollgraph_parent_class)->destroy (object);
 }
@@ -45,6 +45,8 @@ bst_scrollgraph_finalize (GObject *object)
   self->values = NULL;
   /* chain parent class' handler */
   G_OBJECT_CLASS (bst_scrollgraph_parent_class)->finalize (object);
+  using namespace Bse;
+  self->source.~SourceH();
 }
 
 static void
@@ -69,7 +71,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_DIRECTION:
-      bst_scrollgraph_resize_values (self, Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (value)));
+      bst_scrollgraph_resize_values (self, Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (value)));
       gtk_widget_queue_resize (widget);
       break;
     case PROP_BOOST:
@@ -77,7 +79,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_WINDOW_SIZE:
-      self->window_size = int64 (Rapicorn::Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value)));
+      self->window_size = int64 (Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value)));
       bst_scrollgraph_resize_values (self, self->direction);
       gtk_widget_queue_resize (widget);
       break;
@@ -100,13 +102,13 @@ bst_scrollgraph_get_property (GObject     *object,
       sfi_value_set_bool (value, self->flip);
       break;
     case PROP_DIRECTION:
-      sfi_value_set_choice (value, Rapicorn::Aida::enum_value_to_string<Bst::Direction> (self->direction).c_str());
+      sfi_value_set_choice (value, Aida::enum_value_to_string<Bst::Direction> (self->direction).c_str());
       break;
     case PROP_BOOST:
       sfi_value_set_real (value, self->boost);
       break;
     case PROP_WINDOW_SIZE:
-      sfi_value_set_choice (value, Rapicorn::Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
+      sfi_value_set_choice (value, Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -406,7 +408,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   if (probe && probe->probe_features->probe_fft && probe->fft_data->n_values == self->window_size)
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
-      BseFloatSeq *fft = probe->fft_data;
+      BseFlo4tSeq *fft = probe->fft_data;
       for (i = 0; i < MIN (self->n_points, FFTSZ2POINTS (fft->n_values)); i++)
         {
           gfloat re, im;
@@ -423,8 +425,8 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
         bst_scrollgraph_draw_bar (self, 0);
     }
   bse_probe_seq_free (pseq);
-  float mix_freq = bse_source_get_mix_freq (self->source);
-  bst_source_queue_probe_request (self->source, self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
+  float mix_freq = bse_source_get_mix_freq (self->source.proxy_id());
+  bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
 }
 
 static void
@@ -432,7 +434,7 @@ bst_scrollgraph_io_changed (BstScrollgraph *self)
 {
   if (self->canvas)
     {
-      if (self->source && bse_source_has_output (self->source, self->ochannel))
+      if (self->source && self->source.has_output (self->ochannel))
         gdk_window_show (self->canvas);
       else
         gdk_window_hide (self->canvas);
@@ -443,23 +445,19 @@ static void
 bst_scrollgraph_release_item (SfiProxy        item,
                               BstScrollgraph *self)
 {
-  assert (self->source == item);
-  bst_scrollgraph_set_source (self, 0, 0);
+  assert_return (self->source.proxy_id() == item);
+  bst_scrollgraph_set_source (self, Bse::SourceH(), 0);
   if (self->delete_toplevel)
     gxk_toplevel_delete (GTK_WIDGET (self));
 }
 
 void
-bst_scrollgraph_set_source (BstScrollgraph *self,
-                            SfiProxy        source,
-                            guint           ochannel)
+bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ochannel)
 {
   assert_return (BST_IS_SCROLLGRAPH (self));
-  if (source)
-    assert_return (BSE_IS_SOURCE (source));
   if (self->source)
     {
-      bse_proxy_disconnect (self->source,
+      bse_proxy_disconnect (self->source.proxy_id(),
                             "any-signal", bst_scrollgraph_release_item, self,
                             "any-signal", bst_scrollgraph_probes_notify, self,
                             "any-signal", bst_scrollgraph_io_changed, self,
@@ -470,13 +468,13 @@ bst_scrollgraph_set_source (BstScrollgraph *self,
   if (self->source)
     {
       /* setup scope */
-      bse_proxy_connect (self->source,
+      bse_proxy_connect (self->source.proxy_id(),
                          "signal::release", bst_scrollgraph_release_item, self,
                          "signal::probes", bst_scrollgraph_probes_notify, self,
                          "swapped-signal::io_changed", bst_scrollgraph_io_changed, self,
                          NULL);
-      float mix_freq = bse_source_get_mix_freq (self->source);
-      bst_source_queue_probe_request (self->source, self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
+      float mix_freq = bse_source_get_mix_freq (self->source.proxy_id());
+      bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
       bst_scrollgraph_io_changed (self);
     }
 }
@@ -508,6 +506,7 @@ bst_scrollgraph_button_release (GtkWidget      *widget,
 static void
 bst_scrollgraph_init (BstScrollgraph *self)
 {
+  new (&self->source) Bse::SourceH();
   GtkWidget *widget = GTK_WIDGET (self);
   GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
   gtk_widget_set_double_buffered (widget, FALSE);
@@ -584,7 +583,7 @@ scrollgraph_resize_rulers (BstScrollgraph *self, Bst::Direction direction, gpoin
   GtkWidget *widget = GTK_WIDGET (self);
   GtkWidget *hruler = (GtkWidget*) g_object_get_data ((GObject*) self, "BstScrollgraph-hruler");
   GtkWidget *vruler = (GtkWidget*) g_object_get_data ((GObject*) self, "BstScrollgraph-vruler");
-  if (self->source)
+  if (self->source.proxy_id())
     {
       gdouble secs = self->window_size / (gdouble) self->mix_freq;
       if (HORIZONTAL (self))
@@ -635,11 +634,9 @@ scrollgraph_resize_alignment (BstScrollgraph *self, Bst::Direction direction, gp
 }
 
 GtkWidget*
-bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
-                              SfiProxy     source,
-                              guint        ochannel)
+bst_scrollgraph_build_dialog (GtkWidget *alive_object, Bse::SourceH source, uint ochannel)
 {
-  assert_return (BSE_IS_SOURCE (source), NULL);
+  assert_return (source != NULL, NULL);
 
   GxkRadget *radget = gxk_radget_create ("beast", "scrollgraph-dialog", NULL);
   BstScrollgraph *scg = (BstScrollgraph*) gxk_radget_find (radget, "scrollgraph");
@@ -673,8 +670,7 @@ bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
         g_signal_connect_object (scg, "resize-values", G_CALLBACK (scrollgraph_resize_alignment), alignment, G_CONNECT_AFTER);
     }
   GtkWidget *dialog = (GtkWidget*) gxk_dialog_new (NULL, (GtkObject*) alive_object, GxkDialogFlags (0), "Scrollgraph", (GtkWidget*) radget);
-  gchar *title = g_strdup_format ("Spectrogram: %%s (%s)", bse_source_ochannel_label (source, ochannel));
-  bst_window_sync_title_to_proxy (dialog, source, title);
-  g_free (title);
+  String title = string_format ("Spectrogram: %%s (%s)", source.ochannel_label (ochannel));
+  bst_window_sync_title_to_proxy (dialog, source.proxy_id(), title.c_str());
   return dialog;
 }

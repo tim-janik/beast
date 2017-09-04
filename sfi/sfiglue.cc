@@ -5,17 +5,26 @@
 #include "sfiustore.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
+
+// == Compatibility Imports ==
+namespace Bse {
+using Rapicorn::ThreadInfo;
+} // Bse
+
 /* --- prototype --- */
 static GHashTable*	glue_gc_hash_table_new	(void);
+
 /* --- variables --- */
 static GQuark      quark_context_stack = 0;
+
 /* --- context functions --- */
 void
 _sfi_init_glue (void)
 {
-  assert (quark_context_stack == 0);
+  assert_return (quark_context_stack == 0);
   quark_context_stack = g_quark_from_static_string ("sfi-glue-context-stack");
 }
+
 void
 sfi_glue_context_common_init (SfiGlueContext            *context,
 			      const SfiGlueContextTable *vtable)
@@ -28,7 +37,16 @@ sfi_glue_context_common_init (SfiGlueContext            *context,
   context->gc_hash = glue_gc_hash_table_new ();
 }
 
-class RingPtrDataKey : public Rapicorn::DataKey<SfiRing*> {
+SfiGlueContext*
+sfi_glue_fetch_context (const gchar *floc)
+{
+  SfiGlueContext *context = sfi_glue_context_current ();
+  if (!context)
+    Bse::warning ("%s: SfiGlue function called without context (use sfi_glue_context_push())", floc);
+  return context;
+}
+
+class RingPtrDataKey : public Bse::DataKey<SfiRing*> {
   virtual void destroy (SfiRing *ring) override
   {
     if (ring)
@@ -150,7 +168,7 @@ sfi_glue_context_destroy (SfiGlueContext *context)
   sfi_glue_context_push (context);
   sfi_glue_gc_run ();
   _sfi_glue_context_clear_proxies (context);
-  assert (context->proxies == NULL);
+  assert_return (context->proxies == NULL);
   sfi_glue_gc_run ();
   sfi_glue_context_pop ();
   destroy = context->table.destroy;
@@ -314,7 +332,7 @@ sfi_glue_call_valist (const gchar *proc_name,
 	}
       if (error)
 	{
-	  sfi_diag ("%s: %s", G_STRLOC, error);
+	  Bse::info ("%s: %s", G_STRLOC, error);
 	  g_free (error);
 	  sfi_seq_unref (seq);
 	  return NULL;

@@ -1,0 +1,30 @@
+/* GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html */
+
+/* Only use variable declarations or mixin function declarations here */
+
+/* == Theme Settings == */
+$vc-theme-foreground: 		#ffffff;
+$vc-theme-background: 		#505050;
+$vc-theme-border-radius:	3px;
+$vc-panel-background-lg0:	lighten($vc-theme-background, 1%);
+$vc-panel-background-lg1:	darken($vc-theme-background, 1%);
+$vc-panel-background-lg:	linear-gradient(to bottom, $vc-panel-background-lg0 0%, $vc-panel-background-lg1 100%);
+$vc-panel-background-border:	darken($vc-theme-background, 25%);
+$vc-panel-background-light:	lighten($vc-theme-background, 9%);
+$vc-panel-background-dark:	darken($vc-theme-background, 9%);
+$vc-toolbar-background:		#606060;
+$vc-toolbar-background-lg:	linear-gradient(to bottom, #666666 0%, #5a5a5a 100%);
+$vc-button-foreground:   	#dddddd;
+$vc-button-light:   		#999999;
+$vc-button-lg:      		linear-gradient(to bottom, #777777 0%, #707070 45%, #606060 55%, #555555 100%);
+$vc-button-dark:    		#444444;
+$vc-button-radius:		$vc-theme-border-radius;
+$vc-button-border:   		#333333;
+$vc-button-hover:		fade(#ffffff, 10%);
+$vc-button-active:		fade(#000000, 20%);
+$vc-button-active-fg:		#bbbbbb;
+$vc-button-active-lg:     	linear-gradient(to bottom, #606060 0%, #707070 50%, #606060 100%);
+$vc-button-active-border:	#555555;
+$vc-glow-control:		#0080ff;
+$vc-focus-outline:		1px solid $vc-glow-control;
+$vc-boxshadow-color:		fade(#000000, 30%);

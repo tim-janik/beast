@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-23 22:18+0100\n"
+"POT-Creation-Date: 2017-06-27 00:09+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -25,13 +25,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "ULL NAME <EMAIL@ADDRESS>\n"
 
-#: bse/bsemain.cc:145
+#: bse/bsemain.cc:128
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: bse/bsemain.cc:143
+#: bse/bsemain.cc:126
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -161,7 +161,7 @@ msgstr "Guhitamo Icyabaye Amagenzura Gikomeza"
 msgid "  selects one of 3 predefined colors"
 msgstr "Bya 3. Amabara"
 
-#: bse/bsejanitor.cc:524
+#: bse/bsejanitor.cc:519
 #, c-format
 msgid "%s (core dumped)"
 msgstr ""
@@ -269,18 +269,6 @@ msgstr ""
 msgid "/Other Sources/Constant"
 msgstr ""
 
-#: library/scripts/part-harmonic-transposer.scm:9
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#: library/scripts/record-midi.scm:5
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: library/scripts/progressor-example.scm:17
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
 #: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr ""
@@ -291,22 +279,6 @@ msgstr ""
 
 #: plugins/bsesummation.idl:8
 msgid "/Routing/Summation"
-msgstr ""
-
-#: library/scripts/modules2grid.scm:6
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:9
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:9
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:18
-msgid "/Song/Duplicate parts (loop range)"
 msgstr ""
 
 #: plugins/bsebalance.idl:8
@@ -330,117 +302,117 @@ msgstr ""
 msgid "1/1"
 msgstr "1. 1."
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 #, fuzzy
 msgid "1/1."
 msgstr "1. 1."
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 #, fuzzy
 msgid "1/128"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 #, fuzzy
 msgid "1/128."
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 #, fuzzy
 msgid "1/128T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 #, fuzzy
 msgid "1/16"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 #, fuzzy
 msgid "1/16."
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 #, fuzzy
 msgid "1/16T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 #, fuzzy
 msgid "1/1T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 #, fuzzy
 msgid "1/2"
 msgstr "1. 2."
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 #, fuzzy
 msgid "1/2."
 msgstr "1. 2."
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 #, fuzzy
 msgid "1/2T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 #, fuzzy
 msgid "1/32"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 #, fuzzy
 msgid "1/32."
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 #, fuzzy
 msgid "1/32T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 #, fuzzy
 msgid "1/4"
 msgstr "1. 4."
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 #, fuzzy
 msgid "1/4."
 msgstr "1. 4."
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 #, fuzzy
 msgid "1/4T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 #, fuzzy
 msgid "1/64"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 #, fuzzy
 msgid "1/64."
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 #, fuzzy
 msgid "1/64T"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 #, fuzzy
 msgid "1/8"
 msgstr "1. 8"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 #, fuzzy
 msgid "1/8."
 msgstr "1. 8"
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 #, fuzzy
 msgid "1/8T"
 msgstr "1."
@@ -449,7 +421,7 @@ msgstr "1."
 msgid "1024 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 msgid "12"
 msgstr "12"
 
@@ -462,7 +434,7 @@ msgstr ""
 msgid "128 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 msgid "16"
 msgstr ""
 
@@ -522,11 +494,11 @@ msgstr "1."
 msgid "1\\/8"
 msgstr "1. 8"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 msgid "2"
 msgstr "2"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 #, fuzzy
 msgid "2 & 4"
 msgstr "2. 4."
@@ -560,16 +532,16 @@ msgstr ""
 msgid "2nd Harmonic"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 msgid "3"
 msgstr "3"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 #, fuzzy
 msgid "3 & 12"
 msgstr "3. 12"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 #, fuzzy
 msgid "3 & 6"
 msgstr "3. 6"
@@ -582,21 +554,21 @@ msgstr ""
 msgid "32768 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 msgid "4"
 msgstr "4"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 #, fuzzy
 msgid "4 & 12"
 msgstr "4. 12"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 #, fuzzy
 msgid "4 & 16"
 msgstr "4."
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 #, fuzzy
 msgid "4 & 8"
 msgstr "4. 8"
@@ -634,11 +606,11 @@ msgstr ""
 msgid "512 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 msgid "6"
 msgstr "6"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 #, fuzzy
 msgid "6 & 12"
 msgstr "6 12"
@@ -655,11 +627,11 @@ msgstr ""
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 msgid "8"
 msgstr "8"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 #, fuzzy
 msgid "8 & 16"
 msgstr "8"
@@ -972,7 +944,7 @@ msgstr "Kuri Gushushanya Uduciro Bya Imirongo"
 
 #: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
 #: bse/bsebus.cc:877 bse/bsemidisynth.cc:443 bse/bsemidisynth.cc:449
-#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1107
+#: bse/bsemidisynth.cc:456 bse/bsetrack.cc:1106
 msgid "Adjustments"
 msgstr ""
 
@@ -1050,7 +1022,7 @@ msgstr "Bya in Bya a Impugukirwa"
 msgid "Amplified audio output"
 msgstr "Ibisohoka"
 
-#: bse/bseserver.cc:434
+#: bse/bseserver.cc:433
 #, fuzzy
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
@@ -1066,7 +1038,7 @@ msgstr ""
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
 
-#: bse/bseserver.cc:573
+#: bse/bseserver.cc:572
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -1077,12 +1049,12 @@ msgstr ""
 msgid "Answers to frequently asked questions"
 msgstr "Kuri"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Anti-Alias"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 #, fuzzy
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr "Iboneza Amahinduka Kuri i Ishusho Muhinduzi Imigaragarire"
@@ -1139,7 +1111,7 @@ msgstr ""
 "hejuru i Bya i in Igice Twebwe NONEAHA Cyangwa i INGARUKA Bya i Urugero "
 "Ibisohoka Bya 5 NIBA i Iyinjiza Nta narimwe 0"
 
-#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:493
+#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:492
 msgid "Assignments"
 msgstr ""
 
@@ -1187,7 +1159,7 @@ msgstr "Iyinjiza"
 msgid "Audio Gate"
 msgstr "Iyinjiza"
 
-#: bse/bseserver.cc:486
+#: bse/bseserver.cc:485
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "Iyinjiza"
@@ -1283,7 +1255,7 @@ msgstr ""
 msgid "Audio Output"
 msgstr ""
 
-#: bse/bseserver.cc:432
+#: bse/bseserver.cc:431
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1305,7 +1277,7 @@ msgstr "1."
 msgid "Audio Sum2"
 msgstr "2."
 
-#: bse/bseserver.cc:439
+#: bse/bseserver.cc:438
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
@@ -1414,15 +1386,15 @@ msgstr "Umubare Bya ISEGONDA Bya Ukoresha: Igihe ku Urudodo"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:1054
+#: beast-gtk/bstmain.cc:1057
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:212
+#: beast-gtk/bstmain.cc:215
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:1055
+#: beast-gtk/bstmain.cc:1058
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
@@ -1431,55 +1403,53 @@ msgstr ""
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:260
+#: beast-gtk/bstmain.cc:263
 msgid "BSE Core"
 msgstr ""
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:16 data/bse.keys.in:24
+#: data/bse.keys.in:24
 #, fuzzy
 msgid "BSE Multi-Part Wave File"
 msgstr "Idosiye"
 
-#. <comment/>
 #. description
-#: data/beast.xml.in:9 data/bse.keys.in:12
+#: data/bse.keys.in:12
 #, fuzzy
 msgid "BSE Synthesis File"
 msgstr "Idosiye"
 
 # svx/sdi\svxslots.src:SID_BACKGROUND_COLOR.text
-#: beast-gtk/bstapi.idl:136 beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:156
+#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:161
 msgid "Background Color"
 msgstr "Ibara rya mbuganyuma"
 
 # wizards/source\webwizard\webwizar.src:WEBDIALOG_+_6.text
-#: beast-gtk/bstapi.idl:134 beast-gtk/bstapi.idl:144 beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:139 beast-gtk/bstapi.idl:149 beast-gtk/bstapi.idl:159
 msgid "Background Image"
 msgstr "Ishusho rya mbuganyuma"
 
-#: beast-gtk/bstapi.idl:137
+#: beast-gtk/bstapi.idl:142
 #, fuzzy
 msgid "Background Shade 1"
 msgstr "1."
 
-#: beast-gtk/bstapi.idl:138
+#: beast-gtk/bstapi.idl:143
 #, fuzzy
 msgid "Background Shade 2"
 msgstr "2."
 
-#: beast-gtk/bstapi.idl:154
+#: beast-gtk/bstapi.idl:159
 #, fuzzy
 msgid "Background image used by the control events editor."
 msgstr "Ishusho ku i Igenzura Ibyabaye Muhinduzi"
 
-#: beast-gtk/bstapi.idl:134
+#: beast-gtk/bstapi.idl:139
 #, fuzzy
 msgid "Background image used by the pattern editor."
 msgstr "Ishusho ku i Ishusho Muhinduzi"
 
-#: beast-gtk/bstapi.idl:144
+#: beast-gtk/bstapi.idl:149
 #, fuzzy
 msgid "Background image used by the piano-roll editor."
 msgstr "Ishusho ku i Kuzinga Muhinduzi"
@@ -1769,7 +1739,7 @@ msgstr ""
 
 # padmin/source\padialog.src:RID_TXT_TESTPAGE_COMMENT.text
 #: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:630
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Comment"
 msgstr "Icyo wongeraho"
 
@@ -1785,12 +1755,12 @@ msgstr "Ibisohoka 2."
 
 # sfx2/sdi\sfxslots.src:SID_CONFIG.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 msgid "Configure"
 msgstr "Kugena Imiterere"
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:541
+#: beast-gtk/res/radgets-beast.xml:543
 #, fuzzy
 msgid "Configure the column layout of the pattern editor"
 msgstr "i Inkingi Imigaragarire Bya i Ishusho Muhinduzi"
@@ -1928,7 +1898,7 @@ msgstr "9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "1."
 
-#: beast-gtk/bstmain.cc:1056
+#: beast-gtk/bstmain.cc:1059
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"
@@ -2275,7 +2245,7 @@ msgid "Control Type"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:520
+#: beast-gtk/res/radgets-beast.xml:522
 msgid "Control Type:"
 msgstr ""
 
@@ -2322,12 +2292,6 @@ msgstr "Gishya Umushinga"
 
 #: bse/bsesuper.cc:195
 msgid "Creation Time"
-msgstr ""
-
-#: library/scripts/song-parts-operations.scm:10
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
 msgstr ""
 
 #: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
@@ -2533,7 +2497,7 @@ msgstr "i Byahiswemo UMUVUMBA"
 # scaddins/source\analysis\analysis.src:RID_ANALYSIS_FUNCTION_DESCRIPTIONS.ANALYSIS_Quotient.4.text
 # #-#-#-#-#  scaddins.pot (PACKAGE VERSION)  #-#-#-#-#
 # scaddins/source\analysis\analysis.src:RID_ANALYSIS_FUNCTION_DESCRIPTIONS.ANALYSIS_Imdiv.4.text
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 msgid "Denominator"
 msgstr "Icyita"
 
@@ -2590,7 +2554,7 @@ msgstr ""
 msgid "Dial (Logarithmic)"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:344
+#: beast-gtk/bstmain.cc:347
 msgid "Dialogs"
 msgstr "Ibiganiro"
 
@@ -2633,7 +2597,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 #, fuzzy
 msgid "Discard changes and close dialog"
 msgstr "Amahinduka Na Gufunga Ikiganiro"
@@ -2665,7 +2629,7 @@ msgstr ""
 msgid "Disconnect Outputs"
 msgstr ""
 
-#: bse/bseserver.cc:571
+#: bse/bseserver.cc:570
 msgid "Disk Recording Failed"
 msgstr ""
 
@@ -2711,42 +2675,42 @@ msgstr ""
 msgid "Done Output"
 msgstr "Ibisohoka"
 
-#: beast-gtk/bstapi.idl:49
+#: beast-gtk/bstapi.idl:51
 #, fuzzy
 msgid "Dotted eighths note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:47
+#: beast-gtk/bstapi.idl:49
 #, fuzzy
 msgid "Dotted half note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:53
+#: beast-gtk/bstapi.idl:55
 #, fuzzy
 msgid "Dotted hundred twenty-eighth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:48
+#: beast-gtk/bstapi.idl:50
 #, fuzzy
 msgid "Dotted quarter note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:50
+#: beast-gtk/bstapi.idl:52
 #, fuzzy
 msgid "Dotted sixteenth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:52
+#: beast-gtk/bstapi.idl:54
 #, fuzzy
 msgid "Dotted sixty-fourth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:51
+#: beast-gtk/bstapi.idl:53
 #, fuzzy
 msgid "Dotted thirty-secondth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:46
+#: beast-gtk/bstapi.idl:48
 #, fuzzy
 msgid "Dotted whole note"
 msgstr "Impugukirwa"
@@ -2765,7 +2729,7 @@ msgstr ""
 msgid "Draw a line to align events to"
 msgstr "a Umurongo Kuri Gutondeka Ibyabaye Kuri"
 
-#: beast-gtk/bstapi.idl:109
+#: beast-gtk/bstapi.idl:114
 msgid "Draw synthesis networks anti-aliased?"
 msgstr ""
 
@@ -2791,12 +2755,6 @@ msgstr ""
 #, fuzzy
 msgid "Drum frequency in Hertz"
 msgstr "Ubwisubire Iyinjiza"
-
-#: library/scripts/song-parts-operations.scm:19
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
 
 # sw/source\ui\chrdlg\chardlg.src:TP_CHAR_URL.PB_EVENT.text
 #: beast-gtk/bstpatterncolumns.cc:688
@@ -2865,7 +2823,7 @@ msgstr "2."
 msgid "Effect Path"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:41
+#: beast-gtk/bstapi.idl:43
 #, fuzzy
 msgid "Eighths note"
 msgstr "Impugukirwa"
@@ -2875,15 +2833,15 @@ msgstr "Impugukirwa"
 msgid "Emphasis"
 msgstr "Gushimangira"
 
-#: beast-gtk/bstapi.idl:139
+#: beast-gtk/bstapi.idl:144
 msgid "Empty Field Color"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 msgid "Enable Error Bell"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:119
+#: beast-gtk/bstapi.idl:124
 #, fuzzy
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
@@ -2941,81 +2899,81 @@ msgid "Error: "
 msgstr "Ikosa"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:500
+#: beast-gtk/res/radgets-beast.xml:502
 msgid "Events"
 msgstr "Ibyabaye"
 
-#: beast-gtk/bstapi.idl:85
+#: beast-gtk/bstapi.idl:87
 #, fuzzy
 msgid "Every eighth and sixteenth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:79
+#: beast-gtk/bstapi.idl:81
 #, fuzzy
 msgid "Every eighth row"
 msgstr "Urubariro"
 
-#: beast-gtk/bstapi.idl:82
+#: beast-gtk/bstapi.idl:84
 #, fuzzy
 msgid "Every fourth and eighth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:84
+#: beast-gtk/bstapi.idl:86
 #, fuzzy
 msgid "Every fourth and sixteenth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:83
+#: beast-gtk/bstapi.idl:85
 #, fuzzy
 msgid "Every fourth and twelfth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:78
+#: beast-gtk/bstapi.idl:80
 #, fuzzy
 msgid "Every fourth row"
 msgstr "Urubariro"
 
-#: beast-gtk/bstapi.idl:81
+#: beast-gtk/bstapi.idl:83
 #, fuzzy
 msgid "Every second and fourth row"
 msgstr "ISEGONDA Na Urubariro"
 
-#: beast-gtk/bstapi.idl:77
+#: beast-gtk/bstapi.idl:79
 #, fuzzy
 msgid "Every second row"
 msgstr "ISEGONDA Urubariro"
 
-#: beast-gtk/bstapi.idl:80
+#: beast-gtk/bstapi.idl:82
 #, fuzzy
 msgid "Every sixteenth row"
 msgstr "Urubariro"
 
-#: beast-gtk/bstapi.idl:91
+#: beast-gtk/bstapi.idl:93
 #, fuzzy
 msgid "Every sixth and twelfth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:87
+#: beast-gtk/bstapi.idl:89
 #, fuzzy
 msgid "Every sixth row"
 msgstr "Urubariro"
 
-#: beast-gtk/bstapi.idl:89
+#: beast-gtk/bstapi.idl:91
 #, fuzzy
 msgid "Every third and sixth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:90
+#: beast-gtk/bstapi.idl:92
 #, fuzzy
 msgid "Every third and twelfth row"
 msgstr "Na Urubariro"
 
-#: beast-gtk/bstapi.idl:86
+#: beast-gtk/bstapi.idl:88
 #, fuzzy
 msgid "Every third row"
 msgstr "Urubariro"
 
-#: beast-gtk/bstapi.idl:88
+#: beast-gtk/bstapi.idl:90
 #, fuzzy
 msgid "Every twelfth row"
 msgstr "Urubariro"
@@ -3072,20 +3030,10 @@ msgstr "Kuri Kugena Imiterere APAREYE"
 msgid "Failed to configure number of device channels"
 msgstr "Kuri Kugena Imiterere Umubare Bya APAREYE"
 
-#: library/scripts/song-parts-operations.scm:51
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Kuri Gutangira Bya Umutwempangano"
-
 #. content errors
 #: bse/bseapi.idl:40
 #, fuzzy
 msgid "Failed to detect header"
-msgstr "Kuri Gutangira Bya Umutwempangano"
-
-#: library/scripts/song-parts-operations.scm:63
-#, fuzzy
-msgid "Failed to duplicate part range."
 msgstr "Kuri Gutangira Bya Umutwempangano"
 
 #: beast-gtk/bstusermessage.cc:735
@@ -3093,7 +3041,7 @@ msgstr "Kuri Gutangira Bya Umutwempangano"
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Kuri Gufungura Ibisohoka IDOSIYE"
 
-#: beast-gtk/bstmain.cc:431
+#: beast-gtk/bstmain.cc:434
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
@@ -3103,35 +3051,31 @@ msgstr "Kuri Ibirimo Umushinga"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
 
-#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:378
-#: beast-gtk/bstmain.cc:394
+#: beast-gtk/bstfiledialog.cc:748 beast-gtk/bstmain.cc:381
+#: beast-gtk/bstmain.cc:397
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
 
-#: beast-gtk/bstmain.cc:437
+#: beast-gtk/bstmain.cc:440
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
 
-#: bse/bseserver.cc:517
+#: bse/bseserver.cc:516
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "Kuri Gufungura Hejuru"
 
-#: bse/bseserver.cc:490
+#: bse/bseserver.cc:489
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "Kuri Gufungura Hejuru"
 
-#: bse/bseserver.cc:575
+#: bse/bseserver.cc:574
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "Kuri Gufungura Ibisohoka IDOSIYE"
-
-#: library/scripts/part-harmonic-transposer.scm:202
-msgid "Failed to parse harmony list"
-msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:541
 #, fuzzy, c-format
@@ -3172,15 +3116,15 @@ msgstr "Kuri Kubika Kuri Kuri"
 msgid "Failed to spawn child process"
 msgstr "Kuri"
 
-#: bse/bseserver.cc:572
+#: bse/bseserver.cc:571
 msgid "Failed to start PCM recording to disk."
 msgstr ""
 
-#: bse/bseserver.cc:433
+#: bse/bseserver.cc:432
 msgid "Failed to start recording from audio device."
 msgstr ""
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 #, fuzzy
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "Ubwoko Nyuma Modire"
@@ -3326,11 +3270,11 @@ msgid "Flute Sounds"
 msgstr ""
 
 # starmath/sdi\smslots.src:SID_FONTSIZE.text
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 msgid "Font Size"
 msgstr "Ingano"
 
-#: beast-gtk/bstapi.idl:107
+#: beast-gtk/bstapi.idl:112
 #, fuzzy
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Ingano in Pigiseli kugirango Uturango... in"
@@ -3343,7 +3287,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:865
+#: bse/bseobject.cc:863
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3594,11 +3538,11 @@ msgid "HWrap"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:449
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:451
 msgid "HZoom"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:39
+#: beast-gtk/bstapi.idl:41
 #, fuzzy
 msgid "Half note"
 msgstr "Impugukirwa"
@@ -3613,14 +3557,6 @@ msgstr ""
 
 #: plugins/davorgan.idl:23
 msgid "Harmonics"
-msgstr ""
-
-#: library/scripts/part-harmonic-transposer.scm:35
-msgid "Harmony Sequence"
-msgstr ""
-
-#: library/scripts/part-harmonic-transposer.scm:205
-msgid "Harmony list is too short"
 msgstr ""
 
 #: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
@@ -3638,15 +3574,15 @@ msgstr "i ni Byakozwe"
 msgid "Hit the drum on raising edges"
 msgstr "i ku"
 
-#: beast-gtk/bstapi.idl:118
+#: beast-gtk/bstapi.idl:123
 msgid "Homogeneous Input Fields"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:147 beast-gtk/bstapi.idl:157
+#: beast-gtk/bstapi.idl:152 beast-gtk/bstapi.idl:162
 msgid "Horizontal Bar Color"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:149
+#: beast-gtk/bstapi.idl:154
 msgid "Horizontal Grid Color"
 msgstr ""
 
@@ -3659,7 +3595,7 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:447
+#: beast-gtk/res/radgets-beast.xml:449
 #, fuzzy
 msgid "Horizontal piano zoom"
 msgstr "Ihindurangano"
@@ -3670,7 +3606,7 @@ msgstr "Ihindurangano"
 msgid "Horizontal track zoom"
 msgstr "Ihindurangano"
 
-#: beast-gtk/bstapi.idl:45
+#: beast-gtk/bstapi.idl:47
 #, fuzzy
 msgid "Hundred twenty-eighth note"
 msgstr "Impugukirwa"
@@ -3699,7 +3635,7 @@ msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr "Gushyiraho Umwandiko ni Gukata Bidakora Na ni"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 msgid "Image shade"
 msgstr ""
 
@@ -3756,7 +3692,7 @@ msgstr ""
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Bya i UMUVUMBA Ifishi Uruziga Nta- boneza in Dogere"
 
-#: beast-gtk/bstmain.cc:226
+#: beast-gtk/bstmain.cc:229
 msgid "Initializers"
 msgstr ""
 
@@ -3777,7 +3713,7 @@ msgstr "1."
 msgid "Input 2 [%]"
 msgstr "2."
 
-#: bse/bsesubsynth.cc:505
+#: bse/bsesubsynth.cc:504
 msgid "Input Assignments"
 msgstr ""
 
@@ -3790,7 +3726,7 @@ msgstr ""
 msgid "Input Modulation [%]"
 msgstr ""
 
-#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:503
+#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:502
 #, c-format
 msgid "Input Port %u"
 msgstr ""
@@ -3815,7 +3751,7 @@ msgstr "in Gukoresha"
 msgid "Input channel is private"
 msgstr "ni By'umwihariko"
 
-#: bse/bsesubsynth.cc:516
+#: bse/bsesubsynth.cc:515
 #, fuzzy
 msgid "Input port name to interface to"
 msgstr "Umuyoboro Izina: Kuri Kuri"
@@ -3835,8 +3771,9 @@ msgstr "OYA"
 msgid "Input/output error"
 msgstr "Ibisohoka Ikosa"
 
+#. TRANSLATORS: Inputs is used for input busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:319
+#: beast-gtk/res/radgets-beast.xml:320
 msgid "Inputs"
 msgstr ""
 
@@ -4058,7 +3995,7 @@ msgstr ""
 msgid "LADSPA Path"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:289
+#: beast-gtk/bstmain.cc:292
 msgid "LADSPA Plugins"
 msgstr ""
 
@@ -4080,7 +4017,7 @@ msgstr ""
 # #-#-#-#-#  sch.pot (PACKAGE VERSION)  #-#-#-#-#
 # sch/source\ui\dlg\attrib.src:TAB_DATA_POINT.1.TP_LAYOUT.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:568
+#: beast-gtk/res/radgets-beast.xml:570
 #, fuzzy
 msgid "Layout:"
 msgstr "Imigaragarire"
@@ -4327,7 +4264,7 @@ msgstr "Bivuye Ububiko"
 msgid "Load..."
 msgstr "Gutangiza..."
 
-#: beast-gtk/bstmain.cc:374 beast-gtk/bstmain.cc:376
+#: beast-gtk/bstmain.cc:377 beast-gtk/bstmain.cc:379
 #, fuzzy, c-format
 msgid "Loading \"%s\""
 msgstr "Itangira..."
@@ -4347,7 +4284,7 @@ msgstr "UMUVUMBA"
 msgid "Loading wave `%s'"
 msgstr "UMUVUMBA"
 
-#: beast-gtk/bstmain.cc:354
+#: beast-gtk/bstmain.cc:357
 msgid "Loading..."
 msgstr "Itangira..."
 
@@ -4362,7 +4299,7 @@ msgstr "Itangira..."
 msgid "Location"
 msgstr "Ahantu"
 
-#: bse/bsesong.cc:737 bse/bsesong.cc:741 bse/bsesong.cc:746 bse/bsesong.cc:751
+#: bse/bsesong.cc:740 bse/bsesong.cc:744 bse/bsesong.cc:749 bse/bsesong.cc:754
 msgid "Looping"
 msgstr ""
 
@@ -4407,17 +4344,17 @@ msgstr "Muyunguruzi... Ubwisubire kugirango i Igenzura"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1134
+#: bse/bsemidisynth.cc:426 bse/bsesource.proc:684 bse/bsetrack.cc:1133
 msgid "MIDI Channel"
 msgstr ""
 
-#: bse/bseserver.cc:513
+#: bse/bseserver.cc:512
 msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:424 bse/bsemidisynth.cc:429 bse/bsemidisynth.cc:434
-#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1132
-#: bse/bsetrack.cc:1138
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:736 bse/bsetrack.cc:1131
+#: bse/bsetrack.cc:1137
 msgid "MIDI Instrument"
 msgstr ""
 
@@ -4452,12 +4389,12 @@ msgstr ""
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "Na"
 
-#: bse/bseserver.cc:518
+#: bse/bseserver.cc:517
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "Ubutumwa Ibyerekeye APAREYE"
 
-#: bse/bseserver.cc:514
+#: bse/bseserver.cc:513
 msgid "MIDI input or output is not available."
 msgstr ""
 
@@ -4470,7 +4407,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:601
+#: bse/bsesong.cc:604
 #, fuzzy
 msgid "Master"
 msgstr "Mugenga"
@@ -4497,21 +4434,21 @@ msgstr ""
 msgid "Master [float]"
 msgstr "Kureremba"
 
-#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 msgid "Max Voices"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1129
+#: beast-gtk/bsttrackview.cc:615 bse/bsemidisynth.cc:431 bse/bsetrack.cc:1128
 #, fuzzy
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Umubare Bya kugirango"
 
-#: bse/bsesong.cc:731
+#: bse/bsesong.cc:734
 #, fuzzy
 msgid "Measure denominator, must be a power of 2"
 msgstr "Icyita a UMWIKUBE Bya 2."
 
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 #, fuzzy
 msgid "Measure numerator"
 msgstr "Ikibara"
@@ -4569,11 +4506,11 @@ msgstr ""
 msgid "Metallicness of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:158
+#: beast-gtk/bstapi.idl:156 beast-gtk/bstapi.idl:163
 msgid "Middle Bar Color"
 msgstr ""
 
-#: bse/bsetrack.cc:1135
+#: bse/bsetrack.cc:1134
 #, fuzzy
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr "Kuri iyi 0 By'imbere"
@@ -4615,7 +4552,7 @@ msgstr "Kuri Ibisohoka"
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Nka Ibisohoka kugirango"
 
-#: bse/bsetrack.cc:1145
+#: bse/bsetrack.cc:1144
 #, fuzzy
 msgid "Mixer busses used as output for this track"
 msgstr "Nka Ibisohoka kugirango iyi"
@@ -4788,34 +4725,26 @@ msgstr "Mute"
 msgid "Mute: turn off the bus volume"
 msgstr "Bidakora i Igice"
 
-#: bse/bsetrack.cc:1109
+#: bse/bsetrack.cc:1108
 msgid "Muted"
 msgstr ""
 
-#: library/scripts/progressor-example.scm:23
-msgid "N Iterations"
-msgstr ""
-
-#: library/scripts/progressor-example.scm:24
-msgid "N Wait Spins"
-msgstr ""
-
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:855
+#: beast-gtk/bsttrackview.cc:609 bse/bseobject.cc:853
 msgid "Name"
 msgstr "Izina"
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 #, fuzzy
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "kugirango i KIGEZWEHO Iboneza kugirango"
 
-#: bse/bseserver.cc:124
+#: bse/bseserver.cc:123
 #, fuzzy
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Bya i IDOSIYE kugirango Ijwi Ibisohoka"
 
-#: beast-gtk/bstapi.idl:161
+#: beast-gtk/bstapi.idl:166
 msgid "Negative Value Color"
 msgstr ""
 
@@ -4852,19 +4781,19 @@ msgstr ""
 msgid "No Track"
 msgstr ""
 
-#: bse/bseserver.cc:515
+#: bse/bseserver.cc:514
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
 
-#: bse/bseserver.cc:488
+#: bse/bseserver.cc:487
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: bse/bseserver.cc:487
+#: bse/bseserver.cc:486
 msgid "No available audio device was found."
 msgstr ""
 
@@ -4878,11 +4807,6 @@ msgstr "Ibyatanzwe Bihari"
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "APAREYE Musomyi: Bihari"
-
-#: library/scripts/part-harmonic-transposer.scm:195
-#, fuzzy
-msgid "No notes selected"
-msgstr "Byahiswemo"
 
 #: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:67
 #, fuzzy
@@ -4945,25 +4869,6 @@ msgstr "UMUVUMBA"
 msgid "No target"
 msgstr "Intego"
 
-#: library/scripts/record-midi.scm:34
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Igikoresho indangakintu"
-
-#: library/scripts/part-harmonic-transposer.scm:193
-msgid "No valid part supplied"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:41
-#: library/scripts/song-parts-operations.scm:29
-msgid "No valid song supplied"
-msgstr ""
-
-#: library/scripts/modules2grid.scm:15
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Modire"
-
 #: plugins/bsenoise.idl:10
 msgid "Noise Out"
 msgstr ""
@@ -4983,7 +4888,7 @@ msgstr ""
 
 # goodies/source\filter.vcl\eps\dlgeps.src:DLG_EXPORT_EPS.RB_COMPRESSION_NONE.text
 #. special cased signals
-#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:76
+#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:78
 #: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
 #: bse/bsebasics.idl:31
 msgid "None"
@@ -4997,15 +4902,6 @@ msgstr ""
 msgid ""
 "Normalization level of the saturation curve in percent, some saturation "
 "types still allow overdrive signals beyond this level"
-msgstr ""
-
-#: library/scripts/record-midi.scm:38
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
 msgstr ""
 
 # sc/source\ui\pagedlg\hfedtdlg.src:RID_HFBASE.FL_INFO.text
@@ -5050,7 +4946,7 @@ msgid "Note Velocity"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:480
+#: beast-gtk/res/radgets-beast.xml:482
 msgid "Note _Length"
 msgstr ""
 
@@ -5058,7 +4954,7 @@ msgstr ""
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.cc:181
+#: bse/bseladspamodule.cc:180
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -5074,7 +4970,7 @@ msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Bivuye Ikuweho ivivura ku i"
 
-#: beast-gtk/bstapi.idl:116
+#: beast-gtk/bstapi.idl:121
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
 
@@ -5093,7 +4989,7 @@ msgstr "Bya"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Bya Kuri ku Ubwisubire"
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Bya Impugukirwa"
@@ -5102,7 +4998,7 @@ msgstr "Bya Impugukirwa"
 # scaddins/source\analysis\analysis.src:RID_ANALYSIS_FUNCTION_DESCRIPTIONS.ANALYSIS_Quotient.2.text
 # #-#-#-#-#  scaddins.pot (PACKAGE VERSION)  #-#-#-#-#
 # scaddins/source\analysis\analysis.src:RID_ANALYSIS_FUNCTION_DESCRIPTIONS.ANALYSIS_Imdiv.2.text
-#: bse/bsesong.cc:727
+#: bse/bsesong.cc:730
 msgid "Numerator"
 msgstr "Ikibara"
 
@@ -5231,7 +5127,7 @@ msgstr "Inkomoko"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1025
+#: bse/bsesong.cc:1028
 msgid "Orphan Parts"
 msgstr ""
 
@@ -5285,7 +5181,7 @@ msgstr "Ububiko bwarenzwe"
 msgid "Output"
 msgstr "Ibisohoka"
 
-#: bse/bsesubsynth.cc:515
+#: bse/bsesubsynth.cc:514
 msgid "Output Assignments"
 msgstr ""
 
@@ -5297,7 +5193,7 @@ msgstr ""
 msgid "Output Panning"
 msgstr ""
 
-#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:513
+#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:512
 #, c-format
 msgid "Output Port %u"
 msgstr ""
@@ -5306,7 +5202,7 @@ msgstr ""
 msgid "Output Signal Monitor"
 msgstr ""
 
-#: bse/bsebus.cc:892 bse/bsetrack.cc:1144
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1143
 msgid "Output Signals"
 msgstr ""
 
@@ -5323,7 +5219,7 @@ msgstr ""
 msgid "Output of the fluid synth soundfont synthesizer"
 msgstr ""
 
-#: bse/bsesubsynth.cc:506
+#: bse/bsesubsynth.cc:505
 #, fuzzy
 msgid "Output port name to interface from"
 msgstr "Umuyoboro Izina: Kuri Bivuye"
@@ -5333,8 +5229,9 @@ msgstr "Umuyoboro Izina: Kuri Bivuye"
 msgid "Output stage amplification in decibel"
 msgstr "in"
 
+#. TRANSLATORS: Outputs is used for output busses within the mixer
 #. label=
-#: beast-gtk/res/radgets-beast.xml:341
+#: beast-gtk/res/radgets-beast.xml:343
 msgid "Outputs"
 msgstr ""
 
@@ -5352,12 +5249,12 @@ msgstr "Modire"
 msgid "PCM Output module"
 msgstr "Modire"
 
-#: bse/bseserver.cc:491
+#: bse/bseserver.cc:490
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "Ubutumwa Ibyerekeye APAREYE"
 
-#: bse/bseserver.cc:576
+#: bse/bseserver.cc:575
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "IDOSIYE Amakosa"
@@ -5417,12 +5314,6 @@ msgstr ""
 msgid "Parsing error"
 msgstr "Ikosa"
 
-#: library/scripts/part-harmonic-transposer.scm:34
-#: library/scripts/record-midi.scm:10
-#, fuzzy
-msgid "Part"
-msgstr "Inzira"
-
 #: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
 msgstr ""
@@ -5472,7 +5363,7 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr "Bya Ikoresha:"
 
-#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
+#: beast-gtk/bstapi.idl:140 beast-gtk/bstapi.idl:150 beast-gtk/bstapi.idl:160
 #, fuzzy
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Bya Mbuganyuma Ishusho Kuri KURI Mbuganyuma Ibara"
@@ -5496,7 +5387,7 @@ msgid "Piano Keys"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:464
+#: beast-gtk/res/radgets-beast.xml:466
 msgid "Piano Notes"
 msgstr ""
 
@@ -5556,7 +5447,7 @@ msgstr ""
 msgid "Plugin Path"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:267
+#: beast-gtk/bstmain.cc:270
 msgid "Plugins"
 msgstr ""
 
@@ -5596,11 +5487,11 @@ msgstr "Ibirindiro"
 msgid "Position taken"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:159
+#: beast-gtk/bstapi.idl:164
 msgid "Positive Value Color"
 msgstr ""
 
-#: bse/bsemidisynth.cc:440 bse/bsesong.cc:735 bse/bsetrack.cc:1140
+#: bse/bsemidisynth.cc:440 bse/bsesong.cc:738 bse/bsetrack.cc:1139
 msgid "Postprocessor"
 msgstr ""
 
@@ -5676,13 +5567,6 @@ msgstr ""
 #. special case signals
 #: bse/bseapi.idl:98
 msgid "Program Change"
-msgstr ""
-
-#: library/scripts/progressor-example.scm:18
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
 msgstr ""
 
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
@@ -5863,7 +5747,7 @@ msgstr "Kuri ISEGONDA Impugukirwa"
 msgid "Quantize to whole note boundaries"
 msgstr "Kuri Impugukirwa"
 
-#: beast-gtk/bstapi.idl:40
+#: beast-gtk/bstapi.idl:42
 #, fuzzy
 msgid "Quarter note"
 msgstr "Impugukirwa"
@@ -5881,7 +5765,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:237
+#: beast-gtk/bstmain.cc:240
 msgid "RC Files"
 msgstr ""
 
@@ -5912,12 +5796,6 @@ msgstr "Byanze"
 #: beast-gtk/bstapp.cc:86
 msgid "Rebuild"
 msgstr "Kubaka bushya"
-
-#: library/scripts/record-midi.scm:6
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
 
 #: beast-gtk/bstpianorollctrl.cc:68
 #, fuzzy
@@ -5960,7 +5838,10 @@ msgstr ""
 msgid "Release [ms]"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:105
+#. TRANSLATORS: the release counter corresponds to the beast version and is stored in the config file
+#. * to be able to load old versions of the config file
+#.
+#: beast-gtk/bstapi.idl:110
 msgid "Release counter"
 msgstr ""
 
@@ -6143,12 +6024,6 @@ msgstr "Ibisohoka"
 msgid "Right to Left"
 msgstr ""
 
-#: library/scripts/modules2grid.scm:7
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
 #: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:194
 msgid "Routing"
 msgstr ""
@@ -6285,7 +6160,7 @@ msgstr ""
 msgid "Script execution error."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:324
+#: beast-gtk/bstmain.cc:327
 msgid "Scripts"
 msgstr "Inyandikoporogaramu"
 
@@ -6534,22 +6409,22 @@ msgstr "i Igihe in"
 msgid "Sets the value of the focus digit"
 msgstr "i Agaciro Bya i"
 
-#: beast-gtk/bstapi.idl:66 beast-gtk/bstsampleeditor.cc:497
+#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:497
 #: beast-gtk/bstwaveeditor.cc:199
 msgid "Shape Average"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:499
+#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:499
 #: beast-gtk/bstwaveeditor.cc:201
 msgid "Shape Maximum"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:498
+#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:498
 #: beast-gtk/bstwaveeditor.cc:200
 msgid "Shape Minimum"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:65 beast-gtk/bstsampleeditor.cc:496
+#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:496
 #: beast-gtk/bstwaveeditor.cc:198
 msgid "Shape Range"
 msgstr ""
@@ -6576,7 +6451,7 @@ msgstr ""
 msgid "Signal Inputs"
 msgstr ""
 
-#: bse/bsebus.cc:890 bse/bsetrack.cc:1142
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1141
 msgid "Signal Outputs"
 msgstr ""
 
@@ -6585,16 +6460,16 @@ msgstr ""
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:110
+#: beast-gtk/bstapi.idl:115
 msgid "Single Edit"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:42
+#: beast-gtk/bstapi.idl:44
 #, fuzzy
 msgid "Sixteenth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:44
+#: beast-gtk/bstapi.idl:46
 #, fuzzy
 msgid "Sixty-fourth note"
 msgstr "Impugukirwa"
@@ -6605,22 +6480,22 @@ msgstr "Impugukirwa"
 msgid "Size"
 msgstr "Ingano"
 
-#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:501
+#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:501
 #: beast-gtk/bstwaveeditor.cc:203
 msgid "Sketch Average"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:503
+#: beast-gtk/bstapi.idl:74 beast-gtk/bstsampleeditor.cc:503
 #: beast-gtk/bstwaveeditor.cc:205
 msgid "Sketch Maximum"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:502
+#: beast-gtk/bstapi.idl:73 beast-gtk/bstsampleeditor.cc:502
 #: beast-gtk/bstwaveeditor.cc:204
 msgid "Sketch Minimum"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:500
+#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:500
 #: beast-gtk/bstwaveeditor.cc:202
 msgid "Sketch Range"
 msgstr ""
@@ -6629,18 +6504,18 @@ msgstr ""
 msgid "Skin"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:132
+#: beast-gtk/bstapi.idl:137
 msgid "Skin Name"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:123
+#: beast-gtk/bstapi.idl:128
 #, fuzzy
 msgid ""
 "Slow down the periodic update frequency of scopes aggresively. Doing this "
 "may be desirable on particularly slow machines."
 msgstr "Cyangwa Bivuye Ivugurura i Gicurasi ku Buhoro"
 
-#: beast-gtk/bstapi.idl:122
+#: beast-gtk/bstapi.idl:127
 msgid "Slow scopes"
 msgstr ""
 
@@ -6673,9 +6548,7 @@ msgstr ""
 msgid "Solo: mute all other busses"
 msgstr "Mute Byose Ikindi"
 
-#: bse/bsesong.cc:553 library/scripts/mixer-splitup-by-track.scm:14
-#: library/scripts/song-parts-operations.scm:14
-#: library/scripts/song-parts-operations.scm:23
+#: bse/bsesong.cc:556
 msgid "Song"
 msgstr ""
 
@@ -6684,7 +6557,7 @@ msgstr ""
 msgid "Song: %s"
 msgstr ""
 
-#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1123
+#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1122
 msgid "Sound Font Preset"
 msgstr ""
 
@@ -6696,7 +6569,7 @@ msgstr ""
 msgid "Sound Fonts"
 msgstr ""
 
-#: bse/bsetrack.cc:1124
+#: bse/bsetrack.cc:1123
 #, fuzzy
 msgid "Sound font preset to be used as instrument"
 msgstr "urusobe Kuri Nka"
@@ -6715,7 +6588,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr ""
 
 #. show splash images
-#: beast-gtk/bstmain.cc:245
+#: beast-gtk/bstmain.cc:248
 msgid "Splash Image"
 msgstr ""
 
@@ -6754,11 +6627,6 @@ msgstr "ni i Ishingiro Bya UMUVUMBA Amafishi Na"
 #: beast-gtk/bsttrackrollctrl.cc:552 beast-gtk/bsttrackrollctrl.cc:557
 #, fuzzy
 msgid "Start Editor"
-msgstr "Gutangira"
-
-#: library/scripts/record-midi.scm:11
-#, fuzzy
-msgid "Start Now"
 msgstr "Gutangira"
 
 #. | GXK_DIALOG_WINDOW_GROUP,
@@ -6810,7 +6678,7 @@ msgstr "Gutangira..."
 msgid "Starting Playback"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:219
+#: beast-gtk/bstmain.cc:222
 msgid "Startup"
 msgstr ""
 
@@ -6871,11 +6739,11 @@ msgstr ""
 msgid "String oscillation frequency in Hertz"
 msgstr "Kuri i Ubwisubire"
 
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 msgid "Swap IO"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:112
+#: beast-gtk/bstapi.idl:117
 #, fuzzy
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "Iyinjiza Na: Ibisohoka Ryari: Modire"
@@ -6888,7 +6756,7 @@ msgid ""
 msgstr "i Igenzura Kuri Akazi nka a Bya Amagenzura ku"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:331
+#: beast-gtk/res/radgets-beast.xml:332
 msgid "Switches"
 msgstr ""
 
@@ -6933,17 +6801,13 @@ msgstr ""
 msgid "Synth Done"
 msgstr ""
 
-#: bse/bsetrack.cc:1111 bse/bsetrack.cc:1116 bse/bsetrack.cc:1121
-#: bse/bsetrack.cc:1127
+#: bse/bsetrack.cc:1110 bse/bsetrack.cc:1115 bse/bsetrack.cc:1120
+#: bse/bsetrack.cc:1126
 msgid "Synth Input"
 msgstr ""
 
 #: bse/bsebasics.idl:287
 msgid "Synth Mixing Frequency"
-msgstr ""
-
-#: library/scripts/modules2grid.scm:11
-msgid "Synth Net"
 msgstr ""
 
 #. label=
@@ -6980,18 +6844,18 @@ msgstr "urusobe Cyangwa UMUVUMBA Kuri Nka ku iyi"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "urusobe Kuri Nka"
 
-#: bse/bsetrack.cc:1113
+#: bse/bsetrack.cc:1112
 #, fuzzy
 msgid "Synthesis network to be used as instrument"
 msgstr "urusobe Kuri Nka"
 
-#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:735
-#: bse/bsetrack.cc:1140
+#: beast-gtk/bsttrackview.cc:627 bse/bsemidisynth.cc:440 bse/bsesong.cc:738
+#: bse/bsetrack.cc:1139
 #, fuzzy
 msgid "Synthesis network to be used as postprocessor"
 msgstr "urusobe Kuri Nka"
 
-#: bse/bsesubsynth.cc:496
+#: bse/bsesubsynth.cc:495
 #, fuzzy
 msgid "Synthesis network to use as embedded sub network"
 msgstr "urusobe Kuri Gukoresha Nka Gitsindiye urusobe"
@@ -7004,7 +6868,7 @@ msgstr "urusobe Kuri Gukoresha Nka Gitsindiye urusobe"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Bivuye Na Nka Iyinjiza"
 
-#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1113
+#: bse/bsemidisynth.cc:436 bse/bsesubsynth.cc:494 bse/bsetrack.cc:1112
 msgid "Synthesizer"
 msgstr ""
 
@@ -7046,7 +6910,7 @@ msgstr ""
 msgid "Tension of the string"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:140
+#: beast-gtk/bstapi.idl:145
 msgid "Text Color"
 msgstr "Ibara y'inyandiko"
 
@@ -7131,39 +6995,10 @@ msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "Muyunguruzi... Ubwoko ku Na"
 
-#. FIXME: the description may be suboptimal; the problem is
-#. that I can't precisely describe details of musical theory
-#. in english. -- stw
-#: library/scripts/part-harmonic-transposer.scm:13
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
 #: beast-gtk/bstmsgabsorb.cc:202
 #, fuzzy
 msgid "The last program version that displayed this message type"
 msgstr "Iheruka Porogaramu Verisiyo iyi Ubutumwa Ubwoko"
-
-#: library/scripts/song-parts-operations.scm:46
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.cc:131
 #, fuzzy
@@ -7275,20 +7110,10 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Kuri Ryari: i Urufunguzo ni"
 
-#: beast-gtk/bstapi.idl:43
+#: beast-gtk/bstapi.idl:45
 #, fuzzy
 msgid "Thirty-secondth note"
 msgstr "Impugukirwa"
-
-#: library/scripts/mixer-splitup-by-track.scm:43
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: library/scripts/mixer-splitup-by-track.scm:10
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
 
 #: beast-gtk/bstusermessage.cc:253
 #, fuzzy
@@ -7350,7 +7175,7 @@ msgstr "By'ibanze Bivuye 20 kirekire Kuri Byo hasi"
 msgid "Threshold [dB]"
 msgstr ""
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:726
 msgid "Ticks"
 msgstr ""
 
@@ -7377,7 +7202,7 @@ msgstr ""
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:774 bse/bsesong.cc:721 bse/bsesong.cc:725 bse/bsesong.cc:729
+#: bse/bseapi.idl:774 bse/bsesong.cc:724 bse/bsesong.cc:728 bse/bsesong.cc:732
 msgid "Timing"
 msgstr "Kugena igihe"
 
@@ -7435,10 +7260,6 @@ msgstr "Na Na: Ibisobanuro"
 msgid "Transpose"
 msgstr ""
 
-#: library/scripts/part-harmonic-transposer.scm:36
-msgid "Transpose down starting at"
-msgstr ""
-
 #: plugins/davorgan.idl:18 plugins/davxtalstrings.cc:94
 #, fuzzy
 msgid "Transposition of the frequency in semitones"
@@ -7485,42 +7306,42 @@ msgstr "Muyunguruzi..."
 msgid "Trigger input"
 msgstr "Iyinjiza"
 
-#: beast-gtk/bstapi.idl:57
+#: beast-gtk/bstapi.idl:59
 #, fuzzy
 msgid "Triplet eighths note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:55
+#: beast-gtk/bstapi.idl:57
 #, fuzzy
 msgid "Triplet half note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:61
+#: beast-gtk/bstapi.idl:63
 #, fuzzy
 msgid "Triplet hundred twenty-eighth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:56
+#: beast-gtk/bstapi.idl:58
 #, fuzzy
 msgid "Triplet quarter note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:58
+#: beast-gtk/bstapi.idl:60
 #, fuzzy
 msgid "Triplet sixteenth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:60
+#: beast-gtk/bstapi.idl:62
 #, fuzzy
 msgid "Triplet sixty-fourth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:59
+#: beast-gtk/bstapi.idl:61
 #, fuzzy
 msgid "Triplet thirty-secondth note"
 msgstr "Impugukirwa"
 
-#: beast-gtk/bstapi.idl:54
+#: beast-gtk/bstapi.idl:56
 #, fuzzy
 msgid "Triplet whole note"
 msgstr "Impugukirwa"
@@ -7570,7 +7391,7 @@ msgstr ""
 msgid "Unfiltered Input"
 msgstr ""
 
-#: bse/bseobject.cc:855
+#: bse/bseobject.cc:853
 msgid "Unique name of this object"
 msgstr ""
 
@@ -7617,12 +7438,8 @@ msgstr "Kidakoreshwa"
 msgid "Up"
 msgstr "Hejuru"
 
-#: library/scripts/progressor-example.scm:25
-msgid "Update Percentage"
-msgstr ""
-
-#: beast-gtk/bstutils.cc:274 beast-gtk/bstutils.cc:296
-#: beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:277 beast-gtk/bstutils.cc:299
+#: beast-gtk/bstutils.cc:302
 msgid "Updating View"
 msgstr ""
 
@@ -7651,7 +7468,7 @@ msgid "VScale:"
 msgstr ""
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:453
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:455
 msgid "VZoom"
 msgstr ""
 
@@ -7688,11 +7505,11 @@ msgstr "i Impugukirwa ni"
 msgid "Version"
 msgstr "Verisiyo"
 
-#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:148
+#: beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:153
 msgid "Vertical Bar Color"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:150
+#: beast-gtk/bstapi.idl:155
 msgid "Vertical Grid Color"
 msgstr ""
 
@@ -7713,7 +7530,7 @@ msgid "Vertical Select"
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/res/radgets-beast.xml:451
+#: beast-gtk/res/radgets-beast.xml:453
 #, fuzzy
 msgid "Vertical piano zoom"
 msgstr "Ihindurangano"
@@ -7723,12 +7540,12 @@ msgstr "Ihindurangano"
 msgid "Virtual Rack"
 msgstr ""
 
-#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:523
+#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:522
 #, fuzzy, c-format
 msgid "Virtual input %u"
 msgstr "Iyinjiza"
 
-#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:530
+#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:529
 #, fuzzy, c-format
 msgid "Virtual output %u"
 msgstr "Ibisohoka"
@@ -7747,13 +7564,13 @@ msgstr "in Bya Ibumoso:"
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "in Bya Iburyo:"
 
-#: bse/bseserver.cc:123
+#: bse/bseserver.cc:122
 #, fuzzy
 msgid "WAVE File"
 msgstr "Idosiye"
 
 # svx/source\dialog\chardlg.src:RID_SVXPAGE_CHAR_EFFECTS.LB_UNDERLINE.15.text
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1118 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1117 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Umuvumba"
@@ -7775,7 +7592,7 @@ msgstr ""
 msgid "Wave Repository"
 msgstr ""
 
-#: bse/bsetrack.cc:1118
+#: bse/bsetrack.cc:1117
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Kuri Nka"
@@ -7786,7 +7603,7 @@ msgid "Wave used as oscillator source"
 msgstr "Nka Inkomoko"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:653
+#: beast-gtk/res/radgets-beast.xml:655
 msgid "Wave_s"
 msgstr ""
 
@@ -7816,7 +7633,8 @@ msgstr ""
 msgid "Wet out [%]"
 msgstr "Inyuma"
 
-#: beast-gtk/bstapi.idl:38
+#. TRANSLATORS: note is a noun
+#: beast-gtk/bstapi.idl:40
 #, fuzzy
 msgid "Whole note"
 msgstr "Impugukirwa"
@@ -7849,15 +7667,11 @@ msgstr "Umubare Bya"
 msgid "XtalStrings Output"
 msgstr ""
 
-#: library/scripts/record-midi.scm:35
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
 #: bse/bseapi.idl:347
 msgid "Young Temperament"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:160
+#: beast-gtk/bstapi.idl:165
 msgid "Zero Value Color"
 msgstr ""
 
@@ -7890,7 +7704,7 @@ msgstr "Kongeramo"
 
 # offmgr/source\offapp\dialog\fontsubs.src:RID_SVX_FONT_SUBSTITUTION.TBX_SUBSTNEWDEL.BT_SUBSTAPPLY.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:574
+#: beast-gtk/res/radgets-beast.xml:576
 #, fuzzy
 msgid "_Apply"
 msgstr "Gukurikiza"
@@ -7912,7 +7726,7 @@ msgstr ""
 
 # crashrep/source\all\crashrep.lng:%CANCEL_BUTTON%.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:576
+#: beast-gtk/res/radgets-beast.xml:578
 #, fuzzy
 msgid "_Cancel"
 msgstr "Kureka"
@@ -7935,7 +7749,7 @@ msgid "_Close"
 msgstr "Gufunga"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:658
+#: beast-gtk/res/radgets-beast.xml:660
 msgid "_Demo"
 msgstr ""
 
@@ -7955,8 +7769,8 @@ msgstr ""
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_EDIT.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:469 beast-gtk/res/radgets-beast.xml:505
-#: beast-gtk/res/radgets-beast.xml:618
+#: beast-gtk/res/radgets-beast.xml:471 beast-gtk/res/radgets-beast.xml:507
+#: beast-gtk/res/radgets-beast.xml:620
 #, fuzzy
 msgid "_Edit"
 msgstr "Guhindura"
@@ -7972,7 +7786,7 @@ msgstr ""
 
 # sc/source\ui\src\globstr.src:RID_GLOBSTR.STR_HFCMD_FILE.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:611
+#: beast-gtk/res/radgets-beast.xml:613
 #, fuzzy
 msgid "_File"
 msgstr "IDOSIYE"
@@ -7999,7 +7813,7 @@ msgid "_Forward"
 msgstr "Imbere"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:664
+#: beast-gtk/res/radgets-beast.xml:666
 #, fuzzy
 msgid "_Help"
 msgstr "Ifashayobora"
@@ -8064,13 +7878,13 @@ msgstr "Ibyahiswemo..."
 
 # svtools/source\misc\mediatyp.src:STR_SVT_MIMETYPE_CNT_PUBLBOX.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:635
+#: beast-gtk/res/radgets-beast.xml:637
 #, fuzzy
 msgid "_Project"
 msgstr "Umushinga"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:477 beast-gtk/res/radgets-beast.xml:513
+#: beast-gtk/res/radgets-beast.xml:479 beast-gtk/res/radgets-beast.xml:515
 msgid "_Quantization"
 msgstr ""
 
@@ -8129,18 +7943,18 @@ msgstr "Kubika"
 
 # basctl/source\basicide\tbxctl.src:RID_TOOLBOX.SID_INSERT_SELECT.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:474 beast-gtk/res/radgets-beast.xml:510
+#: beast-gtk/res/radgets-beast.xml:476 beast-gtk/res/radgets-beast.xml:512
 #, fuzzy
 msgid "_Select"
 msgstr "Guhitamo"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:630
 msgid "_Skins"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:647
+#: beast-gtk/res/radgets-beast.xml:649
 msgid "_Song"
 msgstr ""
 
@@ -8156,12 +7970,12 @@ msgid "_Stop"
 msgstr "Guhagarara"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:650
+#: beast-gtk/res/radgets-beast.xml:652
 msgid "_Synth"
 msgstr ""
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:640
+#: beast-gtk/res/radgets-beast.xml:642
 msgid "_Synthesizers"
 msgstr ""
 
@@ -8170,8 +7984,8 @@ msgstr ""
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\basidesh.src:RID_BASICPLUGINMENU.MN_PLEXTRA.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:466 beast-gtk/res/radgets-beast.xml:502
-#: beast-gtk/res/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:468 beast-gtk/res/radgets-beast.xml:504
+#: beast-gtk/res/radgets-beast.xml:647
 #, fuzzy
 msgid "_Tools"
 msgstr "Ibikoresho"
@@ -8187,7 +8001,7 @@ msgid "_Undo"
 msgstr "Isubiranyuma"
 
 #. label=
-#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:484
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:486
 msgid "_Utilities"
 msgstr ""
 
@@ -8196,7 +8010,7 @@ msgstr ""
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\basidesh.src:RID_BASICPLUGINMENU.MN_PLVIEW.text
 #. label=
-#: beast-gtk/res/radgets-beast.xml:624
+#: beast-gtk/res/radgets-beast.xml:626
 #, fuzzy
 msgid "_View"
 msgstr "Kureba"
@@ -8206,12 +8020,12 @@ msgstr "Kureba"
 msgid "_Virtualization"
 msgstr ""
 
-#: bse/bseserver.cc:443
+#: bse/bseserver.cc:442
 #, fuzzy
 msgid "audio input problems"
 msgstr "Ubutumwa Ibyerekeye"
 
-#: bse/bsejanitor.cc:522
+#: bse/bsejanitor.cc:517
 msgid "connection terminated"
 msgstr ""
 
@@ -8495,17 +8309,12 @@ msgstr "Igenzura 9"
 msgid "control-90"
 msgstr "Igenzura"
 
-#: library/scripts/song-parts-operations.scm:48
-#, fuzzy
-msgid "empty part range"
-msgstr "Kuri Gutangira Bya Umutwempangano"
-
-#: tools/bsewavetool.cc:1158
+#: tools/bsewavetool.cc:1165
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
 
-#: bse/bsejanitor.cc:520
+#: bse/bsejanitor.cc:515
 msgid "killed by janitor"
 msgstr ""
 
@@ -8593,6 +8402,14 @@ msgstr "Inonosora"
 #~ msgstr "Ikosa"
 
 #, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "Kuri Gutangira Bya Umutwempangano"
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "Kuri Gutangira Bya Umutwempangano"
+
+#, fuzzy
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr "Kuri Gufungura Kuri NTAGIHARI APAREYE"
 
@@ -8644,6 +8461,22 @@ msgstr "Inonosora"
 #, fuzzy
 #~ msgid "No MIDI"
 #~ msgstr "MIDI"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Byahiswemo"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Igikoresho indangakintu"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Modire"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Inzira"
 
 #~ msgid "Path"
 #~ msgstr "Inzira"
@@ -8709,6 +8542,10 @@ msgstr "Inonosora"
 # svtools/source\misc\imagemgr.src:STR_DESCRIPTION_SOURCEFILE.text
 #~ msgid "Source code"
 #~ msgstr "Akarangankomoko"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Gutangira"
 
 #~ msgid "State"
 #~ msgstr "Leta"
@@ -8782,6 +8619,10 @@ msgstr "Inonosora"
 #, fuzzy
 #~ msgid "control-0, ..., control-63, cc-0, cc-31"
 #~ msgstr "Igenzura 0 Igenzura KopiKubandi 0 KopiKubandi"
+
+#, fuzzy
+#~ msgid "empty part range"
+#~ msgstr "Kuri Gutangira Bya Umutwempangano"
 
 #, fuzzy
 #~ msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"

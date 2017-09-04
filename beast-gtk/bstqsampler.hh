@@ -173,8 +173,6 @@ void	   bst_qsampler_set_draw_mode	(BstQSampler *qsampler, Bst::QSamplerDrawMode
 void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 					 GtkAdjustment			*adjustment);
 
-void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
-						 SfiProxy		 esample,
-						 guint			 nth_channel);
+void       bst_qsampler_set_source_from_esample (BstQSampler *qsampler, Bse::EditableSampleH esample, uint nth_channel);
 
 #endif /* __BST_QSAMPLER_H__ */

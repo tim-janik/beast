@@ -91,7 +91,7 @@ BSE_BUILTIN_TYPE (BseStorage)
     (GInstanceInitFunc) bse_storage_init,
   };
 
-  assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
 
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
@@ -628,24 +628,23 @@ item_link_resolved (gpointer     data,
 template<typename ValueType = std::string> ValueType
 aux_vector_get (const std::vector<std::string> &auxvector, const std::string &field, const std::string &key, const std::string &fallback = "")
 {
-  return Rapicorn::string_to_type<ValueType> (Rapicorn::Aida::aux_vector_find (auxvector, field, key, fallback));
+  return Bse::string_to_type<ValueType> (Aida::aux_vector_find (auxvector, field, key, fallback));
 }
 
 static bool
 any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
 {
-  using namespace Rapicorn;
   switch (any.kind())
     {
     case Aida::BOOL:
       if (string.size() == 2 && string.data()[0] == '#')
         any.set (bool (string.data()[1] == 't' || string.data()[1] == 'T'));
       else
-        any.set (string_to_bool (string));
+        any.set (Bse::string_to_bool (string));
       break;
-    case Aida::INT64:           any.set (string_to_int (string));        break;
-    case Aida::FLOAT64:         any.set (string_to_double (string));     break;
-    case Aida::STRING:          any.set (string_from_cquote (string));   break;
+    case Aida::INT64:           any.set (Bse::string_to_int (string));        break;
+    case Aida::FLOAT64:         any.set (Bse::string_to_double (string));     break;
+    case Aida::STRING:          any.set (Bse::string_from_cquote (string));   break;
     case Aida::ENUM:
       {
         const Aida::EnumInfo &einfo = any.get_enum_info();
@@ -661,7 +660,9 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
           any.set_enum (einfo, v);
         break;
       }
-    default:                    Bse::fatal ("unhandled Any: %s; string=%s", any.repr(), string);
+    default:
+      Bse::warn ("unhandled Any: %s; string=%s", any.repr(), string);
+      return false;
     }
   return true;
 }
@@ -704,7 +705,7 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
         {
           if (!rest.empty())
             rest += " ";
-          rest += Rapicorn::string_to_cquote (scanner->value.v_string);
+          rest += Bse::string_to_cquote (scanner->value.v_string);
         }
       else if (token == G_TOKEN_IDENTIFIER)
         {
@@ -716,7 +717,7 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
         {
           if (!rest.empty())
             rest += " ";
-          rest += Rapicorn::string_from_int (scanner->value.v_int);
+          rest += Bse::string_from_int (scanner->value.v_int);
         }
       else
         {
@@ -734,10 +735,9 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
 static GTokenType
 storage_parse_property_value (BseStorage *self, const std::string &name, Bse::Any &any, const std::vector<std::string> &aux_data)
 {
-  using namespace Rapicorn;
   assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
   GScanner *scanner = bse_storage_get_scanner (self);
-  String rest;
+  std::string rest;
   GTokenType expected_token = scanner_parse_paren_rest (scanner, &rest);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
@@ -754,28 +754,27 @@ storage_parse_property_value (BseStorage *self, const std::string &name, Bse::An
 static GTokenType
 restore_cxx_item_property (BseItem *bitem, BseStorage *self)
 {
-  using namespace Rapicorn;
   GScanner *scanner = bse_storage_get_scanner (self);
   Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
   // need identifier
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return SFI_TOKEN_UNMATCHED;
-  String identifier = scanner->next_value.v_identifier;
+  std::string identifier = scanner->next_value.v_identifier;
   for (size_t i = 0; i < identifier.size(); i++)
     if (identifier.data()[i] == '-')
       identifier[i] = '_';
   // find identifier in item, we could search __aida_dir__, but *getting* is simpler
-  Any any = item->__aida_get__ (identifier);
+  Bse::Any any = item->__aida_get__ (identifier);
   if (any.kind())
     {
-      const std::vector<String> auxvector = item->__aida_aux_data__();
+      const std::vector<std::string> auxvector = item->__aida_aux_data__();
       // FIXME: need special casing of object references, see bse_storage_parse_item_link
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);    // eat pspec name
       // parse Any value, including the closing ')'
       GTokenType expected_token = storage_parse_property_value (self, identifier, any, auxvector);
       if (expected_token != G_TOKEN_NONE)
         return expected_token;
-      if (Rapicorn::Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
+      if (Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
         {
           item->__aida_set__ (identifier, any);
         }
@@ -1210,8 +1209,7 @@ bse_item_store_property (BseItem    *item,
       bse_storage_putc (storage, ')');
     }
   else if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    g_warning ("%s: unable to store object property \"%s\" of type `%s'",
-               G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    Bse::warning ("%s: unable to store object property \"%s\" of type `%s'", G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   else
     bse_storage_put_param (storage, value, pspec);
 }
@@ -1263,35 +1261,34 @@ store_item_properties (BseItem    *item,
 static void
 storage_store_property_value (BseStorage *self, const std::string &property_name, Bse::Any any, const std::vector<std::string> &aux_data)
 {
-  using namespace Rapicorn;
-  if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
+  if (Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
     {
       const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
-      const String dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
+      const std::string dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
       if (dflt_val != invalid)
         {
-          Any dflt = any; // copy type
+          Bse::Any dflt = any; // copy type
           const bool any_from_string_conversion = any_set_from_string (self, dflt, dflt_val);
           if (any_from_string_conversion && dflt == any)
             return;     // skip storing default value
         }
     }
-  String target;
+  std::string target;
   switch (any.kind())
     {
-    case Aida::BOOL:            target = string_from_bool (any.get<bool>());            break;
-    case Aida::INT64:           target = string_from_int (any.get<int64>());            break;
-    case Aida::FLOAT64:         target = string_from_double (any.get<double>());        break;
-    case Aida::STRING:          target = string_to_cquote (any.get<String>());          break;
+    case Aida::BOOL:            target = Bse::string_from_bool (any.get<bool>());            break;
+    case Aida::INT64:           target = Bse::string_from_int (any.get<int64>());            break;
+    case Aida::FLOAT64:         target = Bse::string_from_double (any.get<double>());        break;
+    case Aida::STRING:          target = Bse::string_to_cquote (any.get<std::string>());     break;
     case Aida::ENUM:
       {
         const Aida::EnumInfo &einfo = any.get_enum_info();
         target = einfo.value_to_string (any.as_int64());
         break;
       }
-    default:                    assert (!"reached");
+    default:                    assert_return_unreached();
     }
-  assert (!target.empty());
+  assert_return (!target.empty());
   bse_storage_break (self);
   bse_storage_putc (self, '(');
   bse_storage_puts (self, property_name.c_str());
@@ -1306,7 +1303,7 @@ store_cxx_item_properties (BseItem *bitem, BseStorage *self)
   Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
   const std::vector<std::string> auxvector = item->__aida_aux_data__();
   for (const std::string &pname : item->__aida_dir__())
-    if (Rapicorn::Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
+    if (Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
       storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
 }
 
@@ -1820,8 +1817,8 @@ BseStorage::Blob::~Blob()
 static std::string
 bse_storage_blob_tmp_dir()
 {
-  std::string dirname = Rapicorn::Path::join (Rapicorn::Path::cache_home(), "libbse");
-  if (!Rapicorn::Path::check (dirname, "d"))
+  std::string dirname = Bse::Path::join (Bse::Path::cache_home(), "libbse");
+  if (!Bse::Path::check (dirname, "d"))
     g_mkdir_with_parents (dirname.c_str(), 0755);
   return dirname;
 }
@@ -2032,7 +2029,7 @@ bse_storage_parse_blob (BseStorage             *self,
 	}
       if (!blob_out)
 	{
-	  g_warning ("failed to lookup storage blob with id=%ld\n", id);
+	  Bse::warning ("failed to lookup storage blob with id=%ld\n", id);
 	  goto return_with_error;
 	}
      }

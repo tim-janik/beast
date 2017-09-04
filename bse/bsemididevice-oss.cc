@@ -74,7 +74,7 @@ bse_midi_device_oss_list_devices (BseDevice *device)
   for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
     {
       char *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
-      if (!Rapicorn::Path::equals (last, dname))
+      if (!Bse::Path::equals (last, dname))
         {
           if (check_device_usage (dname, "crw") == Bse::Error::NONE)
             ring = sfi_ring_append (ring,

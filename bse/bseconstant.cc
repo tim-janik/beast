@@ -120,7 +120,7 @@ bse_constant_class_init (BseConstantClass *klass)
       label = g_strdup_format (_("Const Out%u"), i);
       blurb = g_strdup_format (_("Constant Output %u"), i);
       ochannel = bse_source_class_add_ochannel (source_class, ident, label, blurb);
-      assert (ochannel == i - 1);
+      assert_return (ochannel == i - 1);
       g_free (ident);
       g_free (label);
       g_free (blurb);

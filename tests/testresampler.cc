@@ -2,7 +2,7 @@
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
-#include <rapicorn-test.hh>
+#include <sfi/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
@@ -520,7 +520,7 @@ perform_test()
 	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
 	  if (options.max_threshold_db < 0)
 	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
-	  assert (max_diff_db < options.max_threshold_db);
+	  assert_return (max_diff_db < options.max_threshold_db, -1);
 	}
       else if (TEST == TEST_ERROR_SPECTRUM)
 	{

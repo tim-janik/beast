@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bselatencytest.genidl.hh"
+#include <sfi/testing.hh>
 #include <sys/time.h>
 #include <string>
 #include <errno.h>
@@ -75,14 +76,14 @@ class LatencyTest : public LatencyTestBase {
       if (Rapicorn::Path::check (midi_output_name, "pw")) /* writable pipe */
         midi_output_file = fopen (midi_output_name.c_str(), "w");
       if (!midi_output_file)
-        sfi_error ("failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
+        fatal_error ("failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
       if (logfile_name == "" || !midi_output_file)
         logfile = stdout;
       else
 	{
 	  logfile = fopen (logfile_name.c_str(), "w");
 	  if (!logfile)
-            sfi_error ("failed to open log file \"%s\": %s\n", logfile_name.c_str(), g_strerror (errno));
+            fatal_error ("failed to open log file \"%s\": %s\n", logfile_name.c_str(), g_strerror (errno));
 	}
     }
     void

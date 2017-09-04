@@ -9,6 +9,4 @@ images_DATA = $(strip		\
 	moonpaper.png		\
 	silvervein.png		\
 )
-imagesdir = $(datadir)/skins/images
-
-EXTRA_DIST += $(images_DATA)
+imagesdir = $(beastdatadir)/skins/images

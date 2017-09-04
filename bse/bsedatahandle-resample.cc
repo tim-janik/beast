@@ -142,7 +142,7 @@ public:
       case BSE_RESAMPLER2_MODE_DOWNSAMPLE:  setup->mix_freq /= 2.0;
 					    setup->n_values = (setup->n_values + 1) / 2;
 					    break;
-      default:				    assert_unreached();
+      default:				    assert_return_unreached (Bse::Error::INTERNAL);
       }
 
     m_frame_size = 1024 * setup->n_channels;
@@ -153,11 +153,11 @@ public:
     for (guint i = 0; i < setup->n_channels; i++)
       {
 	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	assert (resampler);
+	assert_return (resampler, Bse::Error::INTERNAL);
 
 	m_resamplers.push_back (resampler);
       }
-    assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
+    assert_return (!m_resamplers.empty(), Bse::Error::INTERNAL); /* n_channels is always > 0 */
     m_filter_order = m_resamplers[0]->order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
@@ -209,10 +209,10 @@ public:
 	if (l < 0)
 	  return l;
       }
-    assert (m_pcm_frame == frame);
+    assert_return (m_pcm_frame == frame, 0);
 
     voffset -= m_pcm_frame * m_frame_size;
-    assert (voffset >= 0);
+    assert_return (voffset >= 0, 0);
 
     n_values = std::min (n_values, m_frame_size - voffset);
     for (int64 i = 0; i < n_values; i++)

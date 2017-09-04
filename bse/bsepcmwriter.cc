@@ -48,7 +48,7 @@ bse_pcm_writer_class_init (BsePcmWriterClass *klass)
 static void
 bse_pcm_writer_init (BsePcmWriter *self)
 {
-  new (&self->mutex) Bse::Mutex();
+  new (&self->mutex) std::mutex();
 }
 
 static void
@@ -57,12 +57,12 @@ bse_pcm_writer_finalize (GObject *object)
   BsePcmWriter *self = BSE_PCM_WRITER (object);
   if (self->open)
     {
-      g_warning ("%s: pcm writer still opened", G_STRLOC);
+      Bse::warning ("%s: pcm writer still opened", G_STRLOC);
       bse_pcm_writer_close (self);
     }
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
-  self->mutex.~Mutex();
+  self->mutex.~mutex();
 }
 
 Bse::Error
@@ -170,7 +170,7 @@ bse_pcm_writer_write (BsePcmWriter *self, size_t n_values, const float *values, 
       g_free (dest);
       if (j < 0 && errno)
 	{
- 	  sfi_diag ("failed to write %u bytes to WAV file: %s", n_bytes, g_strerror (errno));
+ 	  Bse::info ("failed to write %u bytes to WAV file: %s", n_bytes, g_strerror (errno));
 	  self->broken = TRUE;
 	}
     }

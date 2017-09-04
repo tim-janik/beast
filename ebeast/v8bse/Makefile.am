@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 CLEANDIRS     =
 
@@ -58,7 +58,7 @@ binding.gyp: Makefile # binding.gyp needs Makefile variables
 	@echo "      'cflags_cc!':   [ $(patsubst %, '%'$(cma), $(v8bse_rmflags)) ],"	>>$@
 	@echo "      'include_dirs': [ $(patsubst %, '%'$(cma), $(v8bse_incdirs)) ],"	>>$@
 	@echo "      'libraries':    [ $(patsubst %, '%'$(cma), $(v8bse_libs))"		>>$@
-	@echo "                        '-Wl,-rpath,$(libdir)' ],"			>>$@
+	@echo "                        '-Wl,-rpath,$(bselibdir)' ],"			>>$@
 	@echo "    }"									>>$@
 	@echo "  ]"									>>$@
 	@echo "}"									>>$@

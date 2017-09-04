@@ -1,22 +1,23 @@
-prefix=@prefix@
+destdir=
+beastdestdir=
+prefix=${destdir}@prefix@
 exec_prefix=@exec_prefix@
-libdir=@libdir@
-datarootdir=@datarootdir@
-datadir=@datadir@
+beastdir=${beastdestdir}@beastdir@
+beastdatadir=@beastdatadir@
+bselibdir=@bselibdir@
 bseincludedir=@bseincludedir@
 
-sfidl=@exec_prefix@/sfidl
-demodir=@datadir@/demo
-sampledir=@datadir@/samples
-scriptdir=@datadir@/scripts
-plugindir=@bselibdir@/plugins
-driverdir=@bselibdir@/drivers
-effectdir=@datadir@/effects
-instrumentdir=@datadir@/instruments
+demodir=@beastdatadir@/demo
+sampledir=@beastdatadir@/samples
+effectdir=@beastdatadir@/effects
+instrumentdir=@beastdatadir@/instruments
+scriptdir=@beastdatadir@/scripts
+plugindir=${bselibdir}/plugins
+driverdir=${bselibdir}/drivers
 
 Name: Beast & Bse
-Description: Beast & Bse are an audio tracker and audio synthesis engine.
+Description: Beast - Music Synthesizer and Composer
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0 rapicorn
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
+Libs: -L${bselibdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
 Cflags: -I${bseincludedir} @BSE_PC_CFLAGS@

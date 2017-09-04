@@ -45,7 +45,7 @@ struct _BstWaveEditor
   SfiProxy	     wave;
 
   /* editable sample view */
-  SfiProxy	     esample;
+  Bse::EditableSampleH esample;
   guint              esample_open : 1;
   guint              ignore_playpos : 1;
   GtkWidget	    *qsampler_hscroll;
@@ -65,8 +65,8 @@ GtkWidget*	bst_wave_editor_new		(SfiProxy	 wave);
 void		bst_wave_editor_set_wave	(BstWaveEditor	*self,
 						 SfiProxy	 wave);
 void		bst_wave_editor_rebuild		(BstWaveEditor *wave_editor);
-void		bst_wave_editor_set_esample	(BstWaveEditor	*self,
-						 SfiProxy	 editable_sample);
+void		bst_wave_editor_set_esample	(BstWaveEditor	*self, Bse::EditableSampleH editable_sample);
+inline void	bst_wave_editor_unset_esample	(BstWaveEditor *self) { bst_wave_editor_set_esample (self, Bse::EditableSampleH()); }
 
 
 #endif /* __BST_WAVE_EDITOR_H__ */

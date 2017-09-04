@@ -54,7 +54,7 @@ param_searchpath_add (GtkWidget   *dialog,
 {
   GtkWidget *widget = (GtkWidget*) user_data;
   const char *path = gtk_entry_get_text (GTK_ENTRY (widget));
-  String spath = Rapicorn::Path::searchpath_join (path, file);
+  String spath = Bse::Path::searchpath_join (path, file);
   gtk_entry_set_text (GTK_ENTRY (widget), spath.c_str());
   param_searchpath_change_value (widget);
 }

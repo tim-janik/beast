@@ -1,4 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bstmarshal.h"
+#include "bstmarshal.cc"
+
 #include "bstutils.hh"
 
 #include "bstgconfig.hh"
@@ -63,7 +66,7 @@ Bse::ServerH bse_server;
 void
 _bst_init_utils (void)
 {
-  assert (stock_icon_factory == NULL);
+  assert_return (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
 
@@ -110,10 +113,10 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_SCROLLGRAPH);
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
-  Rapicorn::Blob blob;
-  blob = Rapicorn::Res ("@res radgets-standard.xml");
+  Bse::Blob blob;
+  blob = Bse::Res ("@res radgets-standard.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
-  blob = Rapicorn::Res ("@res radgets-beast.xml");
+  blob = Bse::Res ("@res radgets-beast.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
 }
 
@@ -482,7 +485,7 @@ bst_action_list_add_cat (GxkActionList *alist, const Bse::Category &cat, uint sk
   if (cat.icon.pixels.size())
     {
       const Bse::Icon &icon = cat.icon;
-      assert (icon.width * size_t (icon.height) == icon.pixels.size());
+      assert_return (icon.width * size_t (icon.height) == icon.pixels.size());
       bst_stock_register_icon (cat.category, 4,
                                icon.width, icon.height,
                                icon.width * 4,
@@ -512,21 +515,21 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
   const char *stock_id;
   if (icon.width && icon.height)
     {
-      assert (icon.width * icon.height == int (icon.pixels.size()));
+      assert_return (icon.width * icon.height == int (icon.pixels.size()));
       bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
       stock_id = ad.entity.c_str();
     }
   else
     stock_id = stock_fallback;
 
-  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  String title = Bse::string_vector_find_value (ad.attributes, "title=");
   if (title.empty())
     title = ad.entity;
-  Rapicorn::StringVector tags = Rapicorn::string_split_any (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
+  Bse::StringVector tags = Bse::string_split_any (Bse::string_vector_find_value (ad.attributes, "tags="), ";:");
   if (tags.size())
     {
       tags.push_back (title);
-      title = Rapicorn::string_join ("/", tags);
+      title = Bse::string_join ("/", tags);
     }
   gxk_action_list_add_translated (alist, NULL, title.c_str(), NULL,
                                   ad.entity.c_str(), // tooltip
@@ -1319,10 +1322,6 @@ bst_file_scan_find_key (const gchar *file,
   else
     return NULL;
 }
-
-
-/* --- generated marshallers --- */
-#include "bstmarshal.cc"
 
 
 // == mouse button checks ==

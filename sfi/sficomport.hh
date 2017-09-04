@@ -4,6 +4,7 @@
 
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
+#include <condition_variable>
 
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)
 
@@ -46,7 +47,7 @@ struct SfiComPort {
 
 struct SfiComPortLink
 {
-  Bse::Mutex            mutex;
+  std::mutex            mutex;
   guint                 ref_count;
   SfiComPort           *port1;
   std::function<void()> wakeup1;
@@ -54,7 +55,7 @@ struct SfiComPortLink
   std::function<void()> wakeup2;
   SfiRing              *p1queue;
   SfiRing              *p2queue;
-  Bse::Cond             wcond;
+  std::condition_variable wcond;
   bool                  waiting;
 };
 

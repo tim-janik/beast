@@ -34,14 +34,14 @@ bse_type_register_enums (void)
       else if (enums[i].parent_type == G_TYPE_FLAGS)
 	*(enums[i].type_p) = g_flags_register_static (enums[i].name, (GFlagsValue*) enums[i].values);
       else
-	assert_unreached ();
+	assert_return_unreached ();
     }
 }
 
 const char*
 bse_error_blurb (Bse::Error error_value)
 {
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::Error>().find_value (error_value);
+  const Aida::EnumValue ev = Aida::enum_info<Bse::Error>().find_value (error_value);
   return ev.blurb;
 }
 

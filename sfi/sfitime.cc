@@ -33,14 +33,12 @@ _sfi_init_time (void)
   static gboolean initialized = FALSE;
   struct timeval tv = { 0, };
   time_t t;
-  gint error;
 
-  assert (initialized++ == FALSE);
+  assert_return (initialized++ == FALSE);
 
   tzset ();
-  error = gettimeofday (&tv, NULL);
-  if (error)
-    g_error ("gettimeofday() failed: %s", g_strerror (errno));
+  const int gettimeofday_error = gettimeofday (&tv, NULL);
+  assert_return (gettimeofday_error == 0);
   t = tv.tv_sec + tv.tv_usec / 1000000;
 
   /* we need to find out the timezone offset relative to GMT here */

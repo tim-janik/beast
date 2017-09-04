@@ -187,7 +187,7 @@ rc_file_try_statement (gpointer   context_data,
 		       GScanner  *scanner,
 		       gpointer   user_data)
 {
-  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert_return (scanner->next_token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
   if (strcmp (bst_gconfig_pspec ()->name, scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);

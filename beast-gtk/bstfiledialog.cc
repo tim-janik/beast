@@ -499,7 +499,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
 {
   Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (super_proxy));
   Bse::Error error = project.store_bse (super, file_name, self_contained);
-  const String title = Rapicorn::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
+  const String title = Bse::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
@@ -745,7 +745,7 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   Bse::Error error = repo.load_file (file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
   if (error != 0)
-    sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
+    Bse::warning (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;
 }
@@ -775,7 +775,7 @@ bst_file_dialog_load_sound_font (BstFileDialog *self,
   Bse::Error error = repo.load_file (file_name);
   bst_status_eprintf (error, _("Loading sound font `%s'"), file_name);
   if (error != 0)
-    sfi_error (_("Failed to load sound font \"%s\": %s"), file_name, Bse::error_blurb (error));
+    Bse::warning (_("Failed to load sound font \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;
 }

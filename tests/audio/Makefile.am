@@ -27,7 +27,6 @@ CLEANFILES += *.tmp *.wav
 
 # === feature tests ===
 FEATURE_TESTS += bseadder-test
-EXTRA_DIST += bseadder.bse bseadder.ref
 bseadder-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/bseadder.bse $(@F).wav
@@ -37,7 +36,6 @@ bseadder-test:
 
 # Test the audio-diff characteristics of BseSummation
 FEATURE_TESTS += sum-diff-test
-EXTRA_DIST += sum-diff-test.bse sum-diff-test.ref
 sum-diff-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/sum-diff-test.bse $(@F).wav --seconds 25
@@ -46,7 +44,6 @@ sum-diff-test:
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += balance-test
-EXTRA_DIST += balance.bse balance.ref
 balance-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/balance.bse $(@F).wav
@@ -56,7 +53,6 @@ balance-test:
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += minisong-test
-EXTRA_DIST += minisong.bse frowzy-drums.bsewave minisong.ref
 minisong-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/minisong.bse $(@F).wav
@@ -66,7 +62,6 @@ minisong-test:
 #	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += syndrum-test
-EXTRA_DIST += syndrum.bse syndrum.ref
 syndrum-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/syndrum.bse $(@F).wav
@@ -76,7 +71,6 @@ syndrum-test:
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += velocity-test
-EXTRA_DIST += velocity.bse velocity.ref
 velocity-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/velocity.bse $(@F).wav
@@ -87,7 +81,6 @@ velocity-test:
 
 # DavOrgan module is a mono module, so we test only channel 0 (left)
 FEATURE_TESTS += organsong-test
-EXTRA_DIST += organsong.bse organsong.ref
 organsong-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/organsong.bse $(@F).wav
@@ -97,7 +90,6 @@ organsong-test:
 
 # ADSR Test checks the mono channel envelope rendering
 FEATURE_TESTS += adsrtest
-EXTRA_DIST += adsrtest.bse adsrtest.ref
 adsrtest:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/adsrtest.bse $(@F).wav
@@ -107,7 +99,6 @@ adsrtest:
 
 # checks that oscillator transposing works if the frequency is constant
 FEATURE_TESTS += osctranspose1-test
-EXTRA_DIST += osctranspose1.bse osctranspose1.ref
 osctranspose1-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/osctranspose1.bse $(@F).wav
@@ -117,7 +108,6 @@ osctranspose1-test:
 
 # checks that oscillator transposing works if the frequency is a signal
 FEATURE_TESTS += osctranspose2-test
-EXTRA_DIST += osctranspose2.bse osctranspose2.ref
 osctranspose2-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/osctranspose2.bse $(@F).wav
@@ -126,7 +116,6 @@ osctranspose2-test:
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += xtalstringssong-test
-EXTRA_DIST += xtalstringssong.bse xtalstringssong.ref
 xtalstringssong-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/xtalstringssong.bse $(@F).wav
@@ -136,7 +125,6 @@ xtalstringssong-test:
 
 # a loop (from toplevel test/ directory)
 # FEATURE_TESTS += freak-noise-test
-EXTRA_DIST += freak-noise.bse freak-noise.ref
 freak-noise-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/freak-noise.bse $(@F).wav --seconds 5
@@ -146,7 +134,6 @@ freak-noise-test:
 
 # another simple loop (from toplevel test/ directory)
 # FEATURE_TESTS += simple-loop-test
-EXTRA_DIST += simple-loop.bse simple-loop.ref
 simple-loop-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/simple-loop.bse $(@F).wav --seconds 5
@@ -157,7 +144,6 @@ simple-loop-test:
 
 # a test for the oscillator (from toplevel test/ directory)
 # FEATURE_TESTS += osc-test
-EXTRA_DIST += osc-test.bse osc-test.ref
 osc-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/osc-test.bse $(@F).wav --seconds 5
@@ -167,7 +153,6 @@ osc-test:
 
 # a test for ArtsCompressor
 FEATURE_TESTS += artscompressor-test
-EXTRA_DIST += artscompressor.bse artscompressor.ref
 artscompressor-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/artscompressor.bse $(@F).wav
@@ -176,14 +161,13 @@ artscompressor-test:
 	$(Q) rm -f $(@F).tmp $(@F).wav
 
 # required wave files for sample based tests *-wave-[12]-test.bse
-EXTRA_DIST += pseudo-saw.bsewave pseudo-square-env.bsewave pseudo-stereo.bsewave pseudo-stereo-env.bsewave
+# EXTRA_DIST += pseudo-saw.bsewave pseudo-square-env.bsewave pseudo-stereo.bsewave pseudo-stereo-env.bsewave
 
 # required soundfonts
-EXTRA_DIST += minfluid.sf2 minfluid.sf2.LICENSE
+# EXTRA_DIST += minfluid.sf2 minfluid.sf2.LICENSE
 
 # a test for play-type=adsr-wave-1
 FEATURE_TESTS += adsr-wave-1-test
-EXTRA_DIST += adsr-wave-1-test.bse adsr-wave-1-test.ref
 adsr-wave-1-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/adsr-wave-1-test.bse $(@F).wav
@@ -194,7 +178,6 @@ adsr-wave-1-test:
 
 # a test for play-type=adsr-wave-2
 FEATURE_TESTS += adsr-wave-2-test
-EXTRA_DIST += adsr-wave-2-test.bse adsr-wave-2-test.ref
 adsr-wave-2-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/adsr-wave-2-test.bse $(@F).wav
@@ -205,7 +188,6 @@ adsr-wave-2-test:
 
 # a test for play-type=plain-wave-1
 FEATURE_TESTS += plain-wave-1-test
-EXTRA_DIST += plain-wave-1-test.bse plain-wave-1-test.ref
 plain-wave-1-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/plain-wave-1-test.bse $(@F).wav
@@ -216,7 +198,6 @@ plain-wave-1-test:
 
 # a test for play-type=plain-wave-2
 FEATURE_TESTS += plain-wave-2-test
-EXTRA_DIST += plain-wave-2-test.bse plain-wave-2-test.ref
 plain-wave-2-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/plain-wave-2-test.bse $(@F).wav
@@ -227,7 +208,6 @@ plain-wave-2-test:
 
 # a test for soundfont loading|rendering
 FEATURE_TESTS += soundfont-test
-EXTRA_DIST += soundfont-test.bse soundfont-test.ref
 soundfont-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(srcdir)/soundfont-test.bse $(@F).wav
@@ -238,7 +218,6 @@ soundfont-test:
 
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
-EXTRA_DIST += partymonster.ref
 partymonster-test:
 	@$(AM_V_P) || echo "  WAVCHECK" $@;
 	$(Q) $(BSE2WAV) $(top_srcdir)/library/demo/partymonster.bse $(@F).wav

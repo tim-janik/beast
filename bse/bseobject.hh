@@ -11,12 +11,14 @@ class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer 
 public:
   explicit               ObjectImpl (BseObject*);
   virtual               ~ObjectImpl ();
-  virtual std::string    debug_name () override;
-  virtual int64_t        proxy_id   () override;
   void                   changed    (const String &what);
   operator               BseObject* ()          { return gobject_; }
   // template<class BseObjectPtr> BseObjectPtr as (); // provided by ObjectIface
   virtual BseObject*  as_bse_object () override { return gobject_; }
+  virtual std::string    debug_name () override;
+  virtual int64_t        proxy_id   () override;
+  virtual std::string    uname      () const;
+  virtual void           uname      (const std::string &newname);
 };
 typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 
@@ -63,7 +65,7 @@ struct BseObject : GObject {
   operator               Bse::ObjectImpl* ()          { return cxxobject_; }
   // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
   template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
-  template<class T> struct DERIVES_shared_ptr<T, Rapicorn::void_t< typename T::element_type > > :
+  template<class T> struct DERIVES_shared_ptr<T, Bse::void_t< typename T::element_type > > :
   std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
   // as<T*>()
   template<class ObjectImplPtr, typename ::std::enable_if<std::is_pointer<ObjectImplPtr>::value, bool>::type = true>
@@ -71,7 +73,7 @@ struct BseObject : GObject {
   {
     static_assert (std::is_pointer<ObjectImplPtr>::value, "");
     typedef typename std::remove_pointer<ObjectImplPtr>::type ObjectImplT;
-    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
     return dynamic_cast<ObjectImplPtr> (cxxobject_);
   }
   // as<shared_ptr<T>>()
@@ -79,9 +81,9 @@ struct BseObject : GObject {
   ObjectImplP            as ()
   {
     typedef typename ObjectImplP::element_type ObjectImplT;
-    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
     ObjectImplT *impl = this && cxxobject_ ? as<ObjectImplT*>() : NULL;
-    return impl ? Rapicorn::shared_ptr_cast<ObjectImplT> (impl) : NULL;
+    return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
 

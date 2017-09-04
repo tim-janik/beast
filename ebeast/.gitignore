@@ -1,9 +1,10 @@
 /.appstamp
 /.bundlestamp
+/.nodestamp
+/.lintstamp
 /config.log
 /ebeast-[0-9].[0-9][0-9].[0-9]/
 /package.json
 /node_modules/
 /objects/
-/xlint-html
-/xlint-js
+/xlinting

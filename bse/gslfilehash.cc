@@ -13,8 +13,8 @@
 #define HASH_LONG(l)	(l)
 #endif
 /* --- variables --- */
-static Bse::Mutex fdpool_mutex;
-static GHashTable     *hfile_ht = NULL;
+static std::mutex  fdpool_mutex;
+static GHashTable *hfile_ht = NULL;
 /* --- functions --- */
 static guint
 hfile_hash (gconstpointer key)
@@ -39,7 +39,7 @@ hfile_equals (gconstpointer key1,
 void
 _gsl_init_fd_pool (void)
 {
-  assert (hfile_ht == NULL);
+  assert_return (hfile_ht == NULL);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
 static gboolean
@@ -96,7 +96,7 @@ gsl_hfile_open (const gchar *file_name)
       if (fd >= 0)
 	{
 	  hfile = sfi_new_struct0 (GslHFile, 1);
-          new (&hfile->mutex) Bse::Mutex();
+          new (&hfile->mutex) std::mutex();
 	  hfile->file_name = g_strdup (file_name);
 	  hfile->mtime = key.mtime;
 	  hfile->n_bytes = key.n_bytes;
@@ -133,8 +133,7 @@ gsl_hfile_close (GslHFile *hfile)
   else
     {
       if (!g_hash_table_remove (hfile_ht, hfile))
-	g_warning ("%s: failed to unlink hashed file (%p)",
-		   G_STRLOC, hfile);
+        Bse::warning ("%s: failed to unlink hashed file (%p)", __func__, hfile);
       else
 	{
 	  hfile->ocount = 0;
@@ -147,7 +146,7 @@ gsl_hfile_close (GslHFile *hfile)
     {
       close (hfile->fd);
       g_free (hfile->file_name);
-      hfile->mutex.~Mutex();
+      hfile->mutex.~mutex();
       sfi_delete_struct (GslHFile, hfile);
     }
   errno = 0;

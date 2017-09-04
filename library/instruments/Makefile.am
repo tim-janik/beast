@@ -10,6 +10,4 @@ instruments_DATA = $(strip	\
 	illus-vtremolo.bse		\
 	stw-iron-string.bse		\
 )
-instrumentsdir = $(datadir)/instruments
-
-EXTRA_DIST += $(instruments_DATA)
+instrumentsdir = $(beastdatadir)/instruments

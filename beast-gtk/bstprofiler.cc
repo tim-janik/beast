@@ -3,8 +3,6 @@
 #include "bse/bse.hh"
 #include <string.h>
 
-using Rapicorn::TaskStatus;     // FIXME
-
 /* --- thread view --- */
 enum {
   TCOL_NAME,
@@ -21,7 +19,7 @@ enum {
 static GtkWidget     *profiler_dialog = NULL;
 static GxkRadget     *profiler = NULL;
 static guint          timer_id = 0;
-static std::vector<TaskStatus> cached_task_list;
+static std::vector<Bse::TaskStatus> cached_task_list;
 
 /* --- funtions --- */
 static void
@@ -31,7 +29,7 @@ thread_info_cell_fill_value (GtkWidget *profiler,
                              GValue    *value)
 {
   assert_return (row < cached_task_list.size());
-  TaskStatus *info = &cached_task_list[row];
+  Bse::TaskStatus *info = &cached_task_list[row];
   switch (column)
     {
     case TCOL_NAME:
@@ -64,9 +62,9 @@ profiler_update (void)
   GxkListWrapper *lwrapper = (GxkListWrapper*) g_object_get_data ((GObject*) profiler_dialog, "list-wrapper");
   // update and fetch stats
   Bse::TaskRegistry::update();
-  std::vector<TaskStatus> tasks = Bse::TaskRegistry::list();
+  std::vector<Bse::TaskStatus> tasks = Bse::TaskRegistry::list();
   cached_task_list = tasks;                             // keep local copy for list wrapper updates
-  cached_task_list.push_back (TaskStatus (0, 0));       // add one spare for Totals
+  cached_task_list.push_back (Bse::TaskStatus (0, 0));  // add one spare for Totals
   // update stats in list
   if (cached_task_list.size() != lwrapper->n_rows)
     {
@@ -75,14 +73,14 @@ profiler_update (void)
       if (cached_task_list.size() > lwrapper->n_rows)
         gxk_list_wrapper_notify_append (lwrapper, cached_task_list.size() - lwrapper->n_rows);
     }
-  TaskStatus &totals = cached_task_list[cached_task_list.size() - 1];
+  Bse::TaskStatus &totals = cached_task_list[cached_task_list.size() - 1];
   totals.name = _("Totals");
   totals.priority = G_MAXINT;
-  totals.state = TaskStatus::RUNNING;
+  totals.state = Bse::TaskStatus::RUNNING;
   totals.processor = 0;
   for (size_t i = 0; i < tasks.size(); i++)
     {
-      const TaskStatus &ninfo = tasks[i];
+      const Bse::TaskStatus &ninfo = tasks[i];
       gxk_list_wrapper_notify_change (lwrapper, i);
       totals.utime += ninfo.utime;
       totals.stime += ninfo.stime;

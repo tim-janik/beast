@@ -29,10 +29,6 @@ Plugin-Merging
 --------------
 **[STARTED]** The BSE plugin API has almost no uses, but plugin loading causes major slowdowns in the startup phase. As a consequence, all plugins shipped together with BSE should be linked into the same ELF library.
 
-Rapicorn-Migration
-------------------
-**[PLANNED]** Migrate the use of the Gtk+ toolkti to use Rapicorn widgets instead.
-
 Python-REPL
 -----------
 **[PLANNED]** Add interactive REPL loop via Python interpreter, requires

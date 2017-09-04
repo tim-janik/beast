@@ -1,4 +1,5 @@
 #!/bin/bash
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 set -e
 
 # NOTE: avoid using unprefixed environment variables in this script, as they could affect output substitutions

@@ -23,11 +23,6 @@ supports external sequencer sources. A huge set of extra modules is
 available through the support for LADSPA (Linux Audio Developer's Simple
 Plugin API) plugins.
 
-Beast's underlying sound engine **Bse** also comes with a scheme scripting
-extension which allows for advanced non-interactive processing via
-[**bsescm.1**](bsescm.1.html "bsescm.1"){.external}
-and creation of additional GUI functionality for Beast.
-
 
 # OPTIONS
 
@@ -140,7 +135,6 @@ starting with two dashes ('-').
 
 # SEE ALSO
 
-[**bsescm(1)**](bsescm.1.html),
 [**bse(5)**](bse.5.html),
 [**sfidl(1)**](sfidl.1.html),
 [**Beast/Bse Website**](http://beast.testbit.eu){.external}

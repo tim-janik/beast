@@ -8,6 +8,4 @@ effects_DATA = $(strip			\
 	bqs-reverb.bse			\
 	bqs-saturation-and-reverb.bse	\
 )
-effectsdir = $(datadir)/effects
-
-EXTRA_DIST += $(effects_DATA)
+effectsdir = $(beastdatadir)/effects

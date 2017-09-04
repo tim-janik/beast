@@ -172,7 +172,7 @@ bse_part_set_property (GObject        *object,
         bse_part_note_channel_destroy (&self->channels[--self->n_channels]);
       break;
     case PROP_LAST_TICK:
-      assert_unreached ();
+      assert_return_unreached ();
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -276,7 +276,7 @@ bse_part_alloc_id (BsePart *self,
     {
       guint i = self->last_id - 1;
 
-      assert (self->ids[i] >= BSE_PART_INVAL_TICK_FLAG);
+      assert_return (self->ids[i] >= BSE_PART_INVAL_TICK_FLAG, 0);
 
       self->last_id = self->ids[i] - BSE_PART_INVAL_TICK_FLAG;
       id = i + 1;
@@ -1663,7 +1663,7 @@ bse_part_controls_lookup_ge (BsePartControls     *self,
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &controls_bsc, node);
       node = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, ix); /* returns NULL for i >= n_nodes */
-      assert (!node || node->tick >= tick);
+      assert_return (!node || node->tick >= tick, NULL);
     }
   return node;
 }
@@ -1678,7 +1678,7 @@ bse_part_controls_lookup_le (BsePartControls     *self,
   if (node && node->tick > tick)        /* adjust smaller ticks */
     {
       node = g_bsearch_array_get_index (self->bsa, &controls_bsc, node) > 0 ? node - 1 : NULL;
-      assert (!node || node->tick <= tick);
+      assert_return (!node || node->tick <= tick, NULL);
     }
   return node;
 }
@@ -1796,7 +1796,7 @@ bse_part_controls_remove (BsePartControls     *self,
         break;
       }
   if (!cev)
-    g_warning ("%s: failed to remove event at tick=%u", __func__, tick);
+    Bse::warning ("%s: failed to remove event at tick=%u", __func__, tick);
   else if (!node->events)
     {
       /* remove node */
@@ -1875,7 +1875,7 @@ bse_part_note_channel_lookup_le (BsePartNoteChannel     *self,
   if (note && note->tick > tick)        /* adjust greater ticks */
     {
       note = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note) > 0 ? note - 1 : NULL;
-      assert (!note || note->tick <= tick);
+      assert_return (!note || note->tick <= tick, NULL);
     }
   return note;
 }
@@ -1898,7 +1898,7 @@ bse_part_note_channel_lookup_ge (BsePartNoteChannel     *self,
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
       note = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix); /* returns NULL for i >= n_nodes */
-      assert (!note || note->tick >= tick);
+      assert_return (!note || note->tick >= tick, NULL);
     }
   return note;
 }
@@ -1932,7 +1932,7 @@ part_note_channel_check_crossing (BsePartNoteChannel *self,
   BsePartEventNote key, *note;
   key.tick = note_tick;
   note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
-  assert (note);
+  assert_return (note, FALSE);
   return note->tick + note->duration > tick_mark;
 }
 
@@ -1959,7 +1959,7 @@ part_note_channel_crossings_remove (guint *crossings,
         crossings[i] = crossings[n_crossings];
         break;
       }
-  assert (i <= n_crossings);  /* must have found one */
+  assert_return (i <= n_crossings, NULL);  /* must have found one */
   n_crossings--;
   if (n_crossings)
     crossings[0] = n_crossings;
@@ -1982,7 +1982,7 @@ bse_part_note_channel_insert (BsePartNoteChannel *self, BsePartEventNote key)
   self->bsa = g_bsearch_array_insert (self->bsa, &note_channel_bsc, &key);
   BSE_SEQUENCER_UNLOCK ();
   note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
-  assert (note->crossings == NULL && note->id == key.id);
+  assert_return (note->crossings == NULL && note->id == key.id, NULL);
   ix = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
   /* copy predecessor crossings */
   if (ix > 0)

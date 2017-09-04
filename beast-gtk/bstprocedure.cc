@@ -89,7 +89,7 @@ bst_procedure_shell_destroy (GtkObject *object)
   BstProcedureShell *self = BST_PROCEDURE_SHELL (object);
 
   if (self->in_execution)
-    g_warning (G_STRLOC ": destroying procedure shell during execution");
+    Bse::warning (G_STRLOC ": destroying procedure shell during execution");
 
   bst_procedure_shell_set_proc (self, NULL);
 
@@ -399,11 +399,11 @@ bst_procedure_shell_preset (BstProcedureShell *self,
 	      return TRUE;
 	    }
 	  else
-	    g_warning (G_STRLOC ": cannot convert `%s' value to `%s' for `%s' parameter `%s'",
-		       g_type_name (G_VALUE_TYPE (value)),
-		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)),
-		       g_type_name (G_PARAM_SPEC_TYPE (param->pspec)),
-		       name);
+	    Bse::warning (G_STRLOC ": cannot convert `%s' value to `%s' for `%s' parameter `%s'",
+                          g_type_name (G_VALUE_TYPE (value)),
+                          g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)),
+                          g_type_name (G_PARAM_SPEC_TYPE (param->pspec)),
+                          name);
 	}
     }
   /* update parameters from record */
@@ -454,7 +454,7 @@ bst_procedure_exec_internal (const gchar *procedure_name,
   proc = sfi_glue_describe_proc (procedure_name);
   if (!proc)
     {
-      g_warning ("no such procedure \"%s\"", procedure_name);
+      Bse::warning ("no such procedure \"%s\"", procedure_name);
       return;
     }
   proc = sfi_glue_proc_ref (proc);
@@ -474,7 +474,7 @@ bst_procedure_exec_internal (const gchar *procedure_name,
       G_VALUE_COLLECT (&value, var_args, 0, &error);
       if (error)
 	{
-	  g_warning ("%s: %s", G_STRLOC, error);
+	  Bse::warning ("%s: %s", G_STRLOC, error);
 	  g_free (error);
 	  break;
 	}

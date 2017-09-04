@@ -45,11 +45,11 @@ bse_pcm_device_dispose (GObject *object)
 
   if (BSE_DEVICE_OPEN (pdev))
     {
-      g_warning (G_STRLOC ": pcm device still opened");
+      Bse::warning (G_STRLOC ": pcm device still opened");
       bse_device_close (BSE_DEVICE (pdev));
     }
   if (pdev->handle)
-    g_warning (G_STRLOC ": pcm device with stale pcm handle");
+    Bse::warning (G_STRLOC ": pcm device with stale pcm handle");
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }

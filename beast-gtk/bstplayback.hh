@@ -13,9 +13,9 @@ typedef struct
 {
   Bse::ProjectH project;
   Bse::SNetH    snet;
-  SfiProxy speaker;
-  SfiProxy wosc1, wosc2;
-  SfiProxy constant;
+  Bse::SourceH  speaker;
+  Bse::WaveOscH wosc1, wosc2;
+  Bse::SourceH  constant;
   guint             current_delay;
   guint             pcm_timeout;
   BstPlayBackNotify pcm_notify;

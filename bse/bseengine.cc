@@ -42,7 +42,7 @@ bse_module_new (const BseModuleClass *klass,
   assert_return (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
     {
-      g_warning ("%s: Delay cycle processing not yet implemented", G_STRLOC);
+      Bse::warning ("%s: Delay cycle processing not yet implemented", __func__);
       return NULL;
     }
 
@@ -61,7 +61,7 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  new (&node->rec_mutex) Bse::Mutex (Bse::RECURSIVE_LOCK);
+  new (&node->rec_mutex) std::recursive_mutex();
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
@@ -979,10 +979,10 @@ bse_trans_commit (BseTrans *trans)
   return exec_tick_stamp;
 }
 typedef struct {
-  BseTrans  *trans;
-  guint64    tick_stamp;
-  Bse::Cond  cond;
-  Bse::Mutex mutex;
+  BseTrans               *trans;
+  guint64                 tick_stamp;
+  std::condition_variable cond;
+  std::mutex              mutex;
 } DTrans;
 static gboolean
 dtrans_timer (gpointer timer_data,
@@ -1003,7 +1003,7 @@ dtrans_timer (gpointer timer_data,
       data->mutex.lock();
       data->trans = NULL;
       data->mutex.unlock();
-      data->cond.signal();
+      data->cond.notify_one();
       return FALSE;
     }
   return TRUE;
@@ -1034,11 +1034,10 @@ bse_trans_commit_delayed (BseTrans *trans,
       data.trans = trans;
       data.tick_stamp = tick_stamp;
       bse_trans_add (wtrans, bse_job_add_timer (dtrans_timer, &data, NULL));
-      data.mutex.lock();
+      std::unique_lock<std::mutex> data_lock (data.mutex);
       bse_trans_commit (wtrans);
       while (data.trans)
-	data.cond.wait (data.mutex);
-      data.mutex.unlock();
+	data.cond.wait (data_lock);
     }
 }
 
@@ -1176,7 +1175,7 @@ bse_module_new_virtual (guint       n_iostreams,
 static void
 slave (gpointer data)
 {
-  Bse::TaskRegistry::add ("DSP Slave", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("DSP Slave", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
   gboolean run = TRUE;
   while (run)
     {
@@ -1191,7 +1190,7 @@ slave (gpointer data)
       bse_trans_commit (trans);
       g_usleep (1000*500);
     }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
 }
 /* --- setup & trigger --- */
 static bool     bse_engine_initialized = false;
@@ -1285,8 +1284,8 @@ bse_engine_configure (guint            latency_ms,
                       guint            sample_freq,
                       guint            control_freq)
 {
-  static Bse::Mutex sync_mutex;
-  static Bse::Cond sync_cond;
+  static std::condition_variable sync_cond;
+  static std::mutex sync_mutex;
   static gboolean sync_lock = FALSE;
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
@@ -1305,19 +1304,20 @@ bse_engine_configure (guint            latency_ms,
     return FALSE;
 
   /* block master */
-  sync_mutex.lock();
-  job = sfi_new_struct0 (BseJob, 1);
-  job->job_id = ENGINE_JOB_SYNC;
-  job->sync.lock_mutex = &sync_mutex;
-  job->sync.lock_cond = &sync_cond;
-  job->sync.lock_p = &sync_lock;
-  sync_lock = FALSE;
-  trans = bse_trans_open();
-  bse_trans_add (trans, job);
-  bse_trans_commit (trans);
-  while (!sync_lock)
-    sync_cond.wait (sync_mutex);
-  sync_mutex.unlock();
+  {
+    std::unique_lock<std::mutex> sync_guard (sync_mutex);
+    job = sfi_new_struct0 (BseJob, 1);
+    job->job_id = ENGINE_JOB_SYNC;
+    job->sync.lock_mutex = &sync_mutex;
+    job->sync.lock_cond = &sync_cond;
+    job->sync.lock_p = &sync_lock;
+    sync_lock = FALSE;
+    trans = bse_trans_open();
+    bse_trans_add (trans, job);
+    bse_trans_commit (trans);
+    while (!sync_lock)
+      sync_cond.wait (sync_guard);
+  }
   if (!_engine_mnl_head())
     {
       /* cleanup */
@@ -1336,7 +1336,7 @@ bse_engine_configure (guint            latency_ms,
   /* unblock master */
   sync_mutex.lock();
   sync_lock = FALSE;
-  sync_cond.signal();
+  sync_cond.notify_one();
   sync_mutex.unlock();
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();
@@ -1358,10 +1358,10 @@ bse_engine_init()
   assert_return (bse_engine_initialized == FALSE);
   bse_engine_initialized = TRUE;
   /* assert correct implmentation of accessor macros defined in bsedefs.hh */
-  assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
-  assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
-  assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
-  assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
+  assert_return (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
+  assert_return (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
+  assert_return (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
+  assert_return (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
   /* setup threading */
   Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */
@@ -1438,17 +1438,17 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
     }
 #if 0
   if (tick_stamp > 158760000)
-    g_error ("tick_stamp conversion problem:\n"
-	     "  tick_stamp            = %llu\n"
-	     "  usec_systime          = %llu\n"
-	     "  current-systime       = %llu\n"
-	     "  current-tickstamp     = %llu\n"
-	     "  last-update-systime   = %llu\n"
-	     "  last-update-tickstamp = %llu\n"
-	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
-	     ustamp.system_time, ustamp.tick_stamp,
-	     bse_engine_sample_freq ());
+    Bse::warning ("tick_stamp conversion problem:\n"
+                  "  tick_stamp            = %llu\n"
+                  "  usec_systime          = %llu\n"
+                  "  current-systime       = %llu\n"
+                  "  current-tickstamp     = %llu\n"
+                  "  last-update-systime   = %llu\n"
+                  "  last-update-tickstamp = %llu\n"
+                  "  sample-freq           = %u\n",
+                  tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
+                  ustamp.system_time, ustamp.tick_stamp,
+                  bse_engine_sample_freq ());
 #endif
   return tick_stamp;
 }

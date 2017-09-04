@@ -316,6 +316,7 @@
 	  <label _label="Bus Name" size:window-vgroup="bus-name" />
 	  <!-- Inputs -->
 	  <frame shadow-type="etched-in" size:window-vgroup="bus-inputs" >
+            <!-- TRANSLATORS: Inputs is used for input busses within the mixer -->
 	    <label _label="Inputs" />
 	  </frame>
 	  <!-- Reset -->
@@ -338,6 +339,7 @@
 	  <arrow arrow-type="down" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
 	  <frame shadow-type="etched-in" size:window-vgroup="bus-outputs" >
+            <!-- TRANSLATORS: Outputs is used for output busses within the mixer -->
 	    <label _label="Outputs" />
 	  </frame>
 	</vbox>

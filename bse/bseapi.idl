@@ -1,4 +1,4 @@
-// Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
 /**
  * @file
  * @brief Public BSE interface classes.
@@ -460,6 +460,7 @@ sequence TrackPartSeq;
 
 /// Fundamental base type for all BSE objects.
 interface Object {
+  String      uname      = String ("UName", "Unique object name", GUI);
   String      debug_name (); ///< Object name useful for debugging output.
   int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
   signal void changed    (String what); ///< Notification for object state or property changes.
@@ -585,31 +586,39 @@ interface Source : Item {
   // void clear_outputs (); ///< Disconnect all module outputs.
   // int32 get_automation_channel (String property_name); ///< Get MIDI channel from an automation property.
   // MidiControlType get_automation_control (String property_name); ///< Get control type from an automation property.
-  // bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
-  // bool has_outputs (); ///< Check whether a module has output channel connections.
-  // String ichannel_blurb (int32 input_channel); ///< Get input channel description.
-  // int32 ichannel_get_n_joints (int32 input_channel); ///< Retrieve the number of inputs connected to an input channel.
-  // int32 ichannel_get_ochannel (int32 input_channel, int32 input_joint); ///< Retrieve output channel of the module connected to a specific joint of an input channel.
-  // String ichannel_ident (int32 input_channel); ///< Get canonical input channel name.
-  // String ichannel_label (int32 input_channel); ///< Get input channel name.
-  // bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
-  // bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
-  // bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
-  // int32 n_ichannels (); ///< Get the number of input channels of a module.
-  // int32 n_ochannels (); ///< Get the number of output channels of a module.
-  // String ochannel_blurb (int32 output_channel); ///< Get output channel description.
-  // String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
-  // String ochannel_label (int32 output_channel); ///< Get output channel name.
+  bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
+  bool has_outputs (); ///< Check whether a module has output channel connections.
+  String ichannel_blurb (int32 input_channel); ///< Get input channel description.
+  int32 ichannel_get_n_joints (int32 input_channel); ///< Retrieve the number of inputs connected to an input channel.
+  int32 ichannel_get_ochannel (int32 input_channel, int32 input_joint); ///< Retrieve output channel of the module connected to a specific joint of an input channel.
+  String ichannel_ident (int32 input_channel); ///< Get canonical input channel name.
+  String ichannel_label (int32 input_channel); ///< Get input channel name.
+  bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
+  int32 n_ichannels (); ///< Get the number of input channels of a module.
+  int32 n_ochannels (); ///< Get the number of output channels of a module.
+  String ochannel_blurb (int32 output_channel); ///< Get output channel description.
+  String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
+  String ochannel_label (int32 output_channel); ///< Get output channel name.
   // Error set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
-  // Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
-  // Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
-  // void set_pos (float64 x_pos, float64 y_pos); ///< Set the x and y position of a module. In contrast to setting the position through ordinary object property setters, this function will not update the module position if the passed in arguments are sufficiently equal to the values already set on the object. As such, it does not record an extra undo step for setting properties to values they already have and if necessary turns setting of x and y positions into an atomic undo operation.
-  // Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
-  // Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
+  Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
+  Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
+  Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
+  Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
   // signal void probes (ProbeSeq a);
   // signal void io_changed ();
   // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
   // float64 pos_y = Range ("Position Y", "", STANDARD ":scale");
+  /** Set the x and y position of a module.
+   * In contrast to setting the position through ordinary object property
+   * setters, this function will not update the module position if the passed
+   * in arguments are sufficiently equal to the values already set on the
+   * object. As such, it does not record an extra undo step for setting
+   * properties to values they already have and if necessary turns setting
+   * of x and y positions into an atomic undo operation.
+   */
+  void set_pos (float64 x_pos, float64 y_pos);
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.
@@ -794,8 +803,28 @@ record SampleFileInfo {
   Error      error   = Enum ("Error", "Indicator for errors during sample operation", STANDARD);
 };
 
+/// A list of floating point values.
+sequence FloatSeq {
+  float64 floats;
+};
+
 /// Interface for editable PCM wave samples.
 interface EditableSample : Item {
+  /** Collect statistics from sample blocks as (minimum, maximum) pairs.
+   * @param voffset       Offset of first stat block
+   * @param offset-scale  Factor to scale voffset increments with
+   * @param block-size    Block size to compute stat pairs from
+   * @param stepping      Stepping within a stat block
+   * @param max-pairs     Maximum number of (min, max) pairs to collect
+   * @return              Block of samples
+   */
+  FloatSeq    collect_stats  (int64 voffset, float64 offset_scale, int64 block_size, int64 stepping, int64 max_pairs);
+  void        close          (); ///< Close an opened sample.
+  int64       get_length     (); ///< Return the number of values in the sample.
+  int64       get_n_channels (); ///< Return the number of channels in the sample.
+  float64     get_osc_freq   (); ///< Return the oscillator frequency for the sample.
+  Error       open           (); ///< Open the sample for reading.
+  //signal void changed        (); ///< Signal indicating all sorts of possible changes.
 };
 
 /// Interface for PCM wave samples.
@@ -810,6 +839,26 @@ interface Wave : Source {
 interface WaveRepo : Super {
   Error load_file   (String file_name);         ///< Load wave from file.
   void  remove_wave (Wave wave);                ///< Remove a wave from repository.
+};
+
+/// A list of part note events.
+interface WaveOsc;
+sequence WaveOscSeq {
+  WaveOsc wave_oscs;
+};
+
+/// Oscillator module for wave files.
+interface WaveOsc : Source {
+  /// Seek a list of wave oscillators to a pcm position given in percentage. The oscillators will seek to the given position synchronously.
+  void sync_seek_perc           (float64 pos_perc, WaveOscSeq wosc_seq);
+  void request_pcm_position     ();                       ///< Request emission of the ::notify_pcm_position signal.
+  void set_from_editable_sample (EditableSample esample); ///< Set wave to play from editable sample, bypassing undo and storage mechanisms.
+  // signal void notify_pcm_position      (int64 timestamp, int64 position); ///< Notification signal containing the current PCM play position pointer.
+  // Wave    wave           = ("Wave", "Wave used as oscillator source", STANDARD);
+  // int64   channel        = Range ("Channel", "The audio channel to play, usually 1 is left, 2 is right", ":readwrite", 1, 256);
+  // float64 fm_perc        = Range ("Input Modulation [%]", "Modulation Strength for linear frequency modulation", STANDARD  ":scale", 0, 100, 10);
+  // bool    exponential_fm = Bool ("Exponential FM", "Perform exponential frequency modulation instead of linear", STANDARD, false);
+  // float64 fm_n_octaves   = Range ("Octaves", "Number of octaves to be affected by exponential frequency modulation", STANDARD ":scale", 0, 3, 1);
 };
 
 /// Interface for sound fonts
@@ -910,7 +959,8 @@ sequence CategorySeq {
  * used in the BSE context.
  */
 interface Server : Object {
-  signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
+  signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
+  void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.

@@ -31,7 +31,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && ISLIKELY (n_values > 8))
       {
         /* loop until ivalues and ovalues aligned */
 	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
@@ -53,7 +53,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && ISLIKELY (n_values > 8))
       {
         /* loop until ivalues and ovalues aligned */
 	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
@@ -75,7 +75,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && ISLIKELY (n_values > 8))
       {
         /* loop until ivalues and ovalues aligned */
 	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
@@ -98,7 +98,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
          const float  level)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && ISLIKELY (n_values > 8))
       {
         /* loop until ivalues and ovalues aligned */
 	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
@@ -144,12 +144,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	 float&       max_value)
   {
     float minv, maxv;
-    if (LIKELY (n_values))
+    if (ISLIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
 
 	guint upos = 0, n_vectors = 0;
-	if (LIKELY (n_values > 8))
+	if (ISLIKELY (n_values > 8))
 	  {
 	    /* loop until ivalues aligned */
 	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
@@ -161,7 +161,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      }
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
-	    assert (n_vectors > 0);
+	    assert_return (n_vectors > 0);
 	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    __m128 min_m = ivalues_m[0];
@@ -206,14 +206,14 @@ class BlockImpl : virtual public Bse::Block::Impl {
   {
     float square_sum = 0.0;
     guint upos = 0, n_vectors = 0;
-    if (LIKELY (n_values > 8))
+    if (ISLIKELY (n_values > 8))
       {
         /* loop until ivalues aligned */
         for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
           square_sum += ivalues[upos] * ivalues[upos];
 	/* n_vectors must be >= 1 if n_values was > 8 */
         n_vectors = (n_values - upos) / 4;
-	assert (n_vectors > 0);
+	assert_return (n_vectors > 0, 0);
         /* loop while ivalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	__m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
@@ -238,12 +238,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	                float&       max_value)
   {
     float minv, maxv, square_sum = 0;
-    if (LIKELY (n_values))
+    if (ISLIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
 
 	guint upos = 0, n_vectors = 0;
-	if (LIKELY (n_values > 8))
+	if (ISLIKELY (n_values > 8))
 	  {
 	    /* loop until ivalues aligned */
 	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
@@ -256,7 +256,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      }
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
-	    assert (n_vectors > 0);
+	    assert_return (n_vectors > 0, 0);
 	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    n_vectors = (n_values - upos) / 4;

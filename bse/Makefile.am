@@ -38,7 +38,7 @@ bse_public_headers = $(strip \
 	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
 	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			\
 	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
-	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
+	bseprocedure.hh		bseproject.hh						bseserver.hh \
 	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
 	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
 	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
@@ -73,7 +73,7 @@ bse_sources = $(strip \
 	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
 	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			\
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
-	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
+	bseprocedure.cc		bseproject.cc						bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
 	bsesoundfontrepo.cc	bsesoundfont.cc		bsesoundfontpreset.cc		bsesoundfontosc.cc \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
@@ -113,21 +113,11 @@ idl_dummy_files = $(strip	\
 )
 # BSE procedure sources
 bse_proc_sources = $(strip \
-	bseeditablesample.proc	\
 	bsejanitor.proc		\
 										bsesource.proc		\
-				bseitem.proc					bsewaveosc.proc		\
+				bseitem.proc					\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
-# non-compile and non-install sources required
-EXTRA_DIST += $(strip \
-	bsebasics.idl	bse.idl					\
-	mktypes.pl	mkcalls.pl	mkcproc.pl		\
-	bseconfig.h.in	bsepcmmodule.cc				\
-	bsewave.header						\
-	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
-	gslincluder.hh	gslwaveosc-aux.cc			\
-)
 
 doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
 
@@ -139,7 +129,7 @@ doc_sources.lst: Makefile
 #
 # BSE library
 #
-lib_LTLIBRARIES                      = libbse-@MAJOR@.la
+bselib_LTLIBRARIES                   = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
@@ -152,19 +142,17 @@ libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\
 	-version-info $(LT_VERSION_INFO)		\
 )
-EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
 # setup sources, their dependancies and commands
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
-EXTRA_DIST += $(bse_proc_sources) engine-mplan.txt
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
-	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(libdir)
+	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibdir)
 install-exec-hook: install-exec-ldconfig
 
 #
@@ -311,7 +299,6 @@ CLEANFILES += bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
-EXTRA_DIST += AuxTypes.py bseserverinsert.hh
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
@@ -335,7 +322,6 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) mv xgen-$(@F) $@
 $(srcdir)/bseutils.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
-EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
 CLEANFILES += $(GENERATED)
@@ -367,7 +353,6 @@ bsetool_LDADD    = $(progs_LDADD)
 bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 
 # == Tests ==
-EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
 	@echo "  CHECK " $<
 	$(Q) $(AIDACC_VDEBUG) --bse-extensions -x $(srcdir)/AuxTypes.py $<

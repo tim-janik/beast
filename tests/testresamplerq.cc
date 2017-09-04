@@ -5,7 +5,7 @@
 #include <bse/bsemain.hh>
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.hh>
-#include <sfi/sfitests.hh>
+#include <sfi/testing.hh>
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,7 +13,7 @@
 using namespace Bse;
 
 using Bse::Resampler::Resampler2;
-using Rapicorn::AlignedArray;
+using Bse::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
@@ -87,7 +87,7 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
         {
           if (j >= i * 2)
             {
-              assert (output[j] == results[0][j - i * 2]);
+              assert_return (output[j] == results[0][j - i * 2]);
             }
           // printf ("%d %.17g #p%d,%d\n", j, output[j], precision, i);
         }
@@ -126,7 +126,7 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
       for (size_t j = 0; j < output.size(); j++)
         {
           if (j >= i/2)
-            assert (output[j] == results[i % 2][j - i/2]);
+            assert_return (output[j] == results[i % 2][j - i/2]);
           //printf ("%zd %.17g #%d,%zd\n", j, output[j], precision, i);
         }
     }
@@ -174,7 +174,7 @@ band_err (BseResampler2Precision p)
       case BSE_RESAMPLER2_PREC_96DB:    return -95;
       case BSE_RESAMPLER2_PREC_120DB:   return -120;
       case BSE_RESAMPLER2_PREC_144DB:   return -144;
-      default:                          assert_unreached();
+      default:                          assert_return_unreached (NAN);
     }
 }
 
@@ -221,10 +221,10 @@ int
 main (int argc, char **argv)
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
-  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
-  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  Bse::Test::init (&argc, argv);
+  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
+  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   if (argc > 1)
     {
@@ -234,16 +234,17 @@ main (int argc, char **argv)
     {
       options.rand_samples = atoi (argv[2]);
     }
-  assert (options.rand_samples <= options.test_size / 2);
-  assert (options.test_size >= 128);
-  printout ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
-           options.test_size, options.rand_samples);
+  assert_return (options.rand_samples <= options.test_size / 2, -1);
+  assert_return (options.test_size >= 128, -1);
+  TNOTE ("Resampler test parameters: test_size=%zd rand_samples=%zd", options.test_size, options.rand_samples);
   run_tests ("FPU");
 
   /* load plugins */
+  Bse::assertion_failed_hook (NULL); // hack to allow test reinitialization
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */
   run_tests ("SSE");
+  return 0;
 }

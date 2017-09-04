@@ -17,8 +17,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/sfitests.hh> /* sfti_test_init() */
-using namespace Rapicorn;
+#include <sfi/testing.hh>
+
+using namespace Bse;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
@@ -50,26 +51,6 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
-static bool bindtextdomain_initialized = false;
-
-/// Bind the BSE text domain, so bse_gettext() becomes usable; may be called before initializing BSE.
-void
-bse_bindtextdomain()
-{
-  assert_return (bindtextdomain_initialized == false);
-  bindtextdomain (BSE_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
-  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  bindtextdomain_initialized = true;
-}
-
-/// Translate message strings used in the BSE library.
-const gchar*
-bse_gettext (const gchar *text)
-{
-  assert (bindtextdomain_initialized == true);
-  return dgettext (BSE_GETTEXT_DOMAIN, text);
-}
-
 static gboolean single_thread_registration_done = FALSE;
 
 static void
@@ -85,7 +66,7 @@ server_registration (SfiProxy            server,
   else
     {
       if (error && error[0])
-        sfi_diag ("failed to register \"%s\": %s", what, error);
+        Bse::info ("failed to register \"%s\": %s", what, error);
     }
 }
 
@@ -96,8 +77,11 @@ bse_init_intern()
 {
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_inprocess");
-  assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+    {
+      Bse::warning ("%s() may only be called once", "bse_init_inprocess");
+      return;
+    }
+  assert_return (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   // main loop
   bse_main_context = g_main_context_new ();
@@ -132,7 +116,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -158,7 +142,7 @@ bse_init_intern()
           gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
+            Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -182,9 +166,9 @@ bse_init_intern()
   // unit testing message
   if (initialized_for_unit_testing > 0)
     {
-      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+      StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      Test::tprintout ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
+      TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
 }
 
@@ -199,12 +183,9 @@ _bse_initialized ()
 static void
 initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (_bse_initialized() == false);
-  assert (bse_main_context == NULL);
+  assert_return (_bse_initialized() == false);
+  assert_return (bse_main_context == NULL);
 
-  // ensure textdomain for error messages
-  if (!bindtextdomain_initialized)
-    bse_bindtextdomain();
   // setup GLib's prgname for error messages
   if (argc && argv && *argc && !g_get_prgname ())
     g_set_prgname (*argv);
@@ -218,7 +199,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
   // initialize SFI
   if (initialized_for_unit_testing > 0)
-    sfi_init_test (argc, argv);
+    Bse::Test::init (argc, argv);
   else
     sfi_init (argc, argv);
 }
@@ -235,9 +216,9 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
 static std::atomic<bool> main_loop_thread_running { true };
 
 static void
-bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
+bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 {
-  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("BSE Core", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
 
   bse_init_intern ();
 
@@ -253,7 +234,7 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
       g_main_context_iteration (bse_main_context, TRUE);
     }
 
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
+  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid()); // see bse_init_intern
 }
 
 static void
@@ -272,19 +253,19 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
 
   // start main BSE thread
   if (std::atexit (reap_main_loop_thread) != 0)
-    Bse::fatal ("BSE: failed to install main thread reaper");
-  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
+    Bse::warning ("BSE: failed to install main thread reaper");
+  auto *init_queue = new Bse::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
-  assert (msg == 'B');
+  assert_return (msg == 'B');
   delete init_queue;
 }
 
 struct AsyncData {
   const gchar *client;
   const std::function<void()> &caller_wakeup;
-  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
+  Bse::AsyncBlockingQueue<SfiGlueContext*> result_queue;
 };
 
 static gboolean
@@ -307,7 +288,10 @@ _bse_glue_context_create (const char *client, const std::function<void()> &calle
   AsyncData adata = { client, caller_wakeup };
   // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
-    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+    {
+      Bse::warning ("%s: called without prior %s()", __func__, "Bse::init_async");
+      return NULL;
+    }
   // queue handler to create context
   GSource *source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
@@ -332,7 +316,7 @@ bse_main_wakeup ()
 void
 bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  assert (initialized_for_unit_testing < 0);
+  assert_return (initialized_for_unit_testing < 0);
   initialized_for_unit_testing = 1;
   bse_init_inprocess (argc, argv, NULL, args);
 }
@@ -573,15 +557,14 @@ static void
 init_aida_idl ()
 {
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
-  Aida::ServerConnectionP scon =
+  Aida::ServerConnectionP bseserver_connection =
     Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
-                                                    shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
-  if (!scon)
-    sfi_error ("%s: failed to create BSE connection: %s", __func__, g_strerror (errno));
-  static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (scon); // keep connection alive for entire runtime
+                                                    Bse::shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
+  assert_return (bseserver_connection != NULL);
+  static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (bseserver_connection); // keep connection alive for entire runtime
   (void) static_connection;
   // hook up server connection to main loop to process remote calls
-  AidaGlibSource *source = AidaGlibSource::create (scon.get());
+  AidaGlibSource *source = AidaGlibSource::create (bseserver_connection.get());
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
 }

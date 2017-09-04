@@ -415,14 +415,14 @@ bse_project_retrieve_child (BseContainer *container,
       for (slist = self->supers; slist; slist = slist->next)
 	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
 	  return (BseItem*) slist->data;
-      g_warning ("%s: no wave-repo found in project\n", G_STRLOC);
+      Bse::warning ("%s: no wave-repo found in project\n", G_STRLOC);
       return NULL;	/* shouldn't happen */
     }
   else if (g_type_is_a (child_type, BSE_TYPE_SOUND_FONT_REPO))	/* and the same sound font repo */
     {
       BseSoundFontRepo *sfrepo = bse_project_get_sound_font_repo (self);
       if (!sfrepo)
-	g_warning ("%s: no sound-font-repo found in project\n", G_STRLOC);
+	Bse::warning ("%s: no sound-font-repo found in project\n", G_STRLOC);
       return BSE_ITEM (sfrepo);
     }
   else
@@ -607,7 +607,7 @@ bse_project_get_wave_repo (BseProject *self)
 BseSoundFontRepo*
 bse_project_get_sound_font_repo (BseProject *self)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_SOUND_FONT_REPO (slist->data))
@@ -673,8 +673,8 @@ bse_project_create_intern_synth (BseProject  *self,
       g_object_unref (storage);
       g_free (bse_synth);
       if (error != 0 || !strap.items)
-	g_warning ("failed to create internal synth \"%s\": %s",
-		   synth_name, bse_error_blurb (error != 0 ? error : Bse::Error::NO_ENTRY));
+	Bse::warning ("failed to create internal synth \"%s\": %s",
+                      synth_name, bse_error_blurb (error != 0 ? error : Bse::Error::NO_ENTRY));
       else
 	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);

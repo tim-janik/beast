@@ -134,9 +134,9 @@ bse_snet_finalize (GObject *object)
       snet->port_unregistered_id = 0;
     }
   if (snet->iport_names)
-    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'i', (gchar*) snet->iport_names->data);
+    Bse::warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'i', (gchar*) snet->iport_names->data);
   if (snet->oport_names)
-    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'o', (gchar*) snet->oport_names->data);
+    Bse::warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'o', (gchar*) snet->oport_names->data);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -173,8 +173,7 @@ bse_snet_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = sfi_ring_append (snet->sources, item);
   else if (BSE_SNET_USER_SYNTH (snet))
-    g_warning ("BseSNet: cannot hold non-source item type `%s'",
-               BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSNet: cannot hold non-source item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -222,8 +221,7 @@ bse_snet_remove_item (BseContainer *container,
         self->sources = sfi_ring_remove (self->sources, item);
     }
   else if (BSE_SNET_USER_SYNTH (self))
-    g_warning ("BseSNet: cannot hold non-source item type `%s'",
-               BSE_OBJECT_TYPE_NAME (item));
+    Bse::warning ("BseSNet: cannot hold non-source item type `%s'", BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -684,7 +682,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       ContextData *cdata;
       SfiRing *node;
 
-      assert (self->tmp_context_children == NULL);
+      assert_return (self->tmp_context_children == NULL, 0);
       for (node = ring; node; node = sfi_ring_walk (node, ring))
 	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
@@ -692,11 +690,11 @@ bse_snet_context_clone_branch (BseSNet         *self,
       bcid = bse_id_alloc ();
       cdata = create_context_data (self, bcid, context, mcontext.midi_receiver, mcontext.midi_channel);
       bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
-      assert (self->tmp_context_children == NULL);
+      assert_return (self->tmp_context_children == NULL, 0);
     }
   else
     {
-      g_warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
+      Bse::warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
       bse_source_free_collection (ring);
     }
 
@@ -781,9 +779,9 @@ bse_snet_reset (BseSource *source)
     {
       BseSNetPort *port = (BseSNetPort*) g_bsearch_array_get_nth (self->port_array, &port_array_config, 0);
 
-      g_warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p",
-		 G_STRLOC, port->input ? 'i' : 'o', port->name,
-		 port->context, port->src_omodule, port->dest_imodule);
+      Bse::warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p", G_STRLOC,
+                    port->input ? 'i' : 'o', port->name,
+                    port->context, port->src_omodule, port->dest_imodule);
     }
   g_bsearch_array_free (self->port_array, &port_array_config);
   self->port_array = NULL;
@@ -803,7 +801,7 @@ bse_snet_context_create (BseSource *source,
       BseContextMerger *context_merger = (BseContextMerger*) self->tmp_context_children->data;
       ContextData *cdata = find_context_data (self, context_handle);
 
-      assert (BSE_IS_CONTEXT_MERGER (context_merger));
+      assert_return (BSE_IS_CONTEXT_MERGER (context_merger));
 
       bse_context_merger_set_merge_context (context_merger, cdata->parent_context);
       /* chain parent class' handler */
@@ -889,7 +887,7 @@ BSE_BUILTIN_TYPE (BseSNet)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snet_init,
   };
-  assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert_return (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT, 0);
   return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }
 

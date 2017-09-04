@@ -278,7 +278,7 @@ bse_sub_iport_class_init (BseSubIPortClass *klass)
       ident = g_strdup_format ("output-%u", i + 1);
       label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
-      assert (channel_id == i);
+      assert_return (channel_id == i);
       g_free (ident);
       g_free (label);
 

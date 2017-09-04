@@ -103,7 +103,7 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
   for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
     {
       gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
-      if (!Rapicorn::Path::equals (last, dname))
+      if (!Bse::Path::equals (last, dname))
         {
           if (check_device_usage (dname, "crw") == Bse::Error::NONE)
             ring = sfi_ring_append (ring,
@@ -303,7 +303,7 @@ oss_device_setup (OSSHandle *oss,
   if (oss->queue_length != oss->frag_size * oss->n_frags / oss->frame_size)
     {
       /* return Bse::Error::DEVICE_BUFFER; */
-      sfi_diag ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
+      Bse::info ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
       oss->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
     }
 

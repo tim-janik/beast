@@ -1,4 +1,4 @@
-// Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
 /**
  * @file
  * @brief Generated BEAST structures.
@@ -35,7 +35,9 @@ enum FFTSize {
 
 enum NoteLength {
   NOTE_LENGTH_NONE      = Enum (0,	    _("None"), _("Unspecified length")),
-  NOTE_LENGTH_1         = Enum (_("1/1"),   _("Whole note")),
+  NOTE_LENGTH_1         = Enum (_("1/1"),
+                                /* TRANSLATORS: note is a noun */
+                                _("Whole note")),
   NOTE_LENGTH_2         = Enum (_("1/2"),   _("Half note")),
   NOTE_LENGTH_4         = Enum (_("1/4"),   _("Quarter note")),
   NOTE_LENGTH_8         = Enum (_("1/8"),   _("Eighths note")),
@@ -102,6 +104,9 @@ Const STDIMAGEFILE = STANDARD ":filename:image";
 
 // == Global Config ==
 record GConfig {
+  /* TRANSLATORS: the release counter corresponds to the beast version and is stored in the config file
+   * to be able to load old versions of the config file
+   */
   String rc_version		= String ("RC-Version", _("Release counter"), STORAGE);
   group "Synthesis Networks" {
     int32 snet_font_size        = Range (_("Font Size"), _("Font size in pixels for labels displayed in synthesis networks"),

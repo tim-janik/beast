@@ -17,7 +17,6 @@ RESOURCES = $(strip 		\
 gen_sources = xgen-bzc xgen-bzh
 CLEANFILES += $(gen_sources) bse-resources.cc
 noinst_DATA = bse-resources.cc
-EXTRA_DIST += $(RESOURCES)
 
 bse-resources.cc: $(srcdir)/*.bse
 	$(AM_V_GEN)

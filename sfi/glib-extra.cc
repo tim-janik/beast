@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bcore.hh"
 #include <string.h>
+#include <libintl.h>
 
 void
 g_object_disconnect_any (gpointer object,
@@ -1020,15 +1021,26 @@ g_usignal_notify (gint8 usignal)
 GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {
-  if (!config_templ->store_int64)
-    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", __func__);
+  const bool gscanner_64bit_has_store_int64 = config_templ->store_int64 != false;
+  assert_return (gscanner_64bit_has_store_int64 == true, NULL);
   return g_scanner_new (config_templ);
 }
-
 
 #include "../config/config.h"
 
 namespace Bse {
+
+void
+assertion_failed (const char *file, uint line, const char *expr)
+{
+  return Aida::assertion_failed (file, line, expr);
+}
+
+void
+assertion_failed_hook (const std::function<void()> &hook)
+{
+  return Aida::assertion_failed_hook (hook);
+}
 
 // == BSE_INSTALLPATH ==
 static String installpath_topdir;
@@ -1064,8 +1076,8 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
     case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
     case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
-    case INSTALLPATH_BEASTEXECDIR:                      return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTEXECDIR;
-    case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTEXECDIR) + "/pybeast";
+    case INSTALLPATH_BEASTDIR:                          return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTDIR;
+    case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTDIR) + "/pybeast";
     case INSTALLPATH_OBJDIR:                            return CONFIGURE_INSTALLPATH_OBJDIR;
     }
   return "";
@@ -1075,6 +1087,37 @@ std::string
 version ()
 {
   return PACKAGE_VERSION;
+}
+
+static bool
+initialize_textdomain()
+{
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
+  return true;
+}
+
+/// The gettext domain used by libbse.
+const char*
+bse_gettext_domain ()
+{
+  static BSE_UNUSED bool init = initialize_textdomain();
+  // Atm, Beast and libbse share a gettext domain.
+  return BST_GETTEXT_DOMAIN;
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+const char*
+_ (const char *string)
+{
+  return dgettext (bse_gettext_domain(), string);
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+std::string
+_ (const std::string &string)
+{
+  return _ (string.c_str());
 }
 
 } // Bse

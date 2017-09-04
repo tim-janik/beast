@@ -3,6 +3,8 @@
 #define __SFI_WRAPPER_H__
 
 #include <sfi/bcore.hh>
+#include <sfi/path.hh>
+#include <mutex>
 
 #ifdef  BSE_CONVENIENCE
 using Bse::uint8;
@@ -15,12 +17,6 @@ using Bse::int32;
 using Bse::int64;
 using Bse::unichar;
 #endif // BSE_CONVENIENCE
-
-/* --- macros --- */
-#define sfi_error(...)          Bse::fatal (__VA_ARGS__)
-#define sfi_warning(...)        Bse::warning (__VA_ARGS__)
-#define sfi_info(...)           Bse::info (__VA_ARGS__)
-#define sfi_diag(...)           Bse::warning (__VA_ARGS__)
 
 /* --- initialization --- */
 typedef struct

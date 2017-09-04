@@ -169,8 +169,11 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
 
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
-    g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
-             g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    {
+      Bse::warning ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+      return;
+    }
 
   g_value_init (&svalue, G_PARAM_SPEC_VALUE_TYPE (spspec));
   if (sfi_value_transform (value, &svalue))
@@ -179,12 +182,12 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
       if (g_param_value_validate (spspec, &svalue))
 	{
 	  if (G_VALUE_TYPE (&svalue) != G_VALUE_TYPE (value))
-	    sfi_diag ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
-		      pspec->name, g_type_name (G_VALUE_TYPE (&svalue)),
-		      g_type_name (G_VALUE_TYPE (value)));
+	    Bse::info ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
+                       pspec->name, g_type_name (G_VALUE_TYPE (&svalue)),
+                       g_type_name (G_VALUE_TYPE (value)));
 	  else
-	    sfi_diag ("fixing up value for \"%s\" of type `%s'",
-		      pspec->name, g_type_name (G_VALUE_TYPE (&svalue)));
+	    Bse::info ("fixing up value for \"%s\" of type `%s'",
+                       pspec->name, g_type_name (G_VALUE_TYPE (&svalue)));
 	}
       sfi_value_store_param (&svalue, gstring, spspec, wstore->indent);
       sfi_wstore_break (wstore);
@@ -192,9 +195,9 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
       g_string_free (gstring, TRUE);
     }
   else
-    g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
-	       pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-	       g_type_name (G_VALUE_TYPE (&svalue)));
+    Bse::warning ("unable to transform \"%s\" of type `%s' to `%s'",
+                  pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+                  g_type_name (G_VALUE_TYPE (&svalue)));
   g_value_unset (&svalue);
   g_param_spec_unref (spspec);
 }
@@ -307,7 +310,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
 	  n = bblock->reader (bblock->data, buffer, bsize);
 	  if (n < 0)
 	    break;	// FIXME: error handling
-	  assert (n <= int (bsize));
+	  assert_return (n <= int (bsize), -EINVAL);
 	  do
 	    l = write (fd, buffer, n);
 	  while (l < 0 && errno == EINTR);
@@ -569,8 +572,11 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
-    g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
-             g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+    {
+      Bse::warning ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
+                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+      return G_TOKEN_ERROR;
+    }
 
   token = sfi_value_parse_param_rest (&pvalue, rstore->scanner, spspec);
   if (token == G_TOKEN_NONE)
@@ -581,20 +587,20 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 	    {
 	      if (G_VALUE_TYPE (&pvalue) != G_VALUE_TYPE (value))
 		sfi_rstore_warn (rstore,
-                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
-                                                          pspec->name, g_type_name (G_VALUE_TYPE (value)),
-                                                          g_type_name (G_VALUE_TYPE (&pvalue))));
+                                 Bse::string_format ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
+                                                     pspec->name, g_type_name (G_VALUE_TYPE (value)),
+                                                     g_type_name (G_VALUE_TYPE (&pvalue))));
 	      else
 		sfi_rstore_warn (rstore,
-                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s'",
-                                                          pspec->name, g_type_name (G_VALUE_TYPE (value))));
+                                 Bse::string_format ("fixing up value for \"%s\" of type `%s'",
+                                                     pspec->name, g_type_name (G_VALUE_TYPE (value))));
 	    }
 	}
       else
 	{
-	  g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
-		     pspec->name, g_type_name (G_VALUE_TYPE (&pvalue)),
-		     g_type_name (G_VALUE_TYPE (value)));
+	  Bse::warning ("unable to transform \"%s\" of type `%s' to `%s'",
+                        pspec->name, g_type_name (G_VALUE_TYPE (&pvalue)),
+                        g_type_name (G_VALUE_TYPE (value)));
 	  return G_TOKEN_ERROR;
 	}
       g_value_unset (&pvalue);
@@ -760,12 +766,12 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
           if (saved_line != scanner->line || saved_position != scanner->position ||
               scanner->next_token != G_TOKEN_IDENTIFIER)
             {
-              g_warning ("((SfiStoreParser)%p) advanced scanner for unmatched token", try_statement);
+              Bse::warning ("((SfiStoreParser)%p) advanced scanner for unmatched token", try_statement);
               return G_TOKEN_ERROR;
             }
           expected_token = sfi_rstore_warn_skip (rstore,
-                                                 Rapicorn::string_format ("unknown identifier: %s",
-                                                                          scanner->next_value.v_identifier));
+                                                 Bse::string_format ("unknown identifier: %s",
+                                                                     scanner->next_value.v_identifier));
         }
       /* bail out on errors */
       if (expected_token != G_TOKEN_NONE)
