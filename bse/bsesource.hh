@@ -277,6 +277,8 @@ protected:
 public:
   explicit             SourceImpl              (BseObject*);
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
+  virtual void         clear_inputs            () override;
+  virtual void         clear_outputs           () override;
   virtual bool         has_output              (int ochannel) override;
   virtual bool         has_outputs             () override;
   virtual std::string  ichannel_blurb          (int input_channel) override;

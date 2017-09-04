@@ -2379,4 +2379,61 @@ SourceImpl::set_automation (const String &property_name, int midi_channel, MidiC
   return error;
 }
 
+void
+SourceImpl::clear_inputs ()
+{
+  BseSource *self = as<BseSource*>();
+  g_object_ref (self);
+  BseUndoStack *ustack = bse_item_undo_open (self, "%s", __func__);
+  for (size_t i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
+    {
+      BseSourceInput *input = BSE_SOURCE_INPUT (self, i);
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (self, i))
+        while (input->jdata.n_joints)
+          {
+            BseSource *osource = input->jdata.joints[0].osource;
+            uint ochannel = input->jdata.joints[0].ochannel;
+            unset_input_by_id (i, *osource->as<SourceIfaceP>(), ochannel);
+          }
+      else if (input->idata.osource)
+	{
+	  BseSource *osource = input->idata.osource;
+          unset_input_by_id (i, *osource->as<SourceIfaceP>(), input->idata.ochannel);
+	}
+    }
+  bse_item_undo_close (ustack);
+  g_object_unref (self);
+}
+
+void
+SourceImpl::clear_outputs ()
+{
+  BseSource *self = as<BseSource*>();
+  g_object_ref (self);
+  BseUndoStack *ustack = bse_item_undo_open (self, "%s", __func__);
+  while (self->outputs)
+    {
+      BseSource *isource = static_cast<BseSource*> (self->outputs->data);
+      g_object_ref (isource);
+      for (uint i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
+	{
+	  BseSourceInput *input = BSE_SOURCE_INPUT (isource, i);
+	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (isource, i))
+	    {
+	      uint j;
+	      for (j = 0; j < input->jdata.n_joints; j++)
+		if (input->jdata.joints[j].osource == self)
+		  break;
+	      if (j < input->jdata.n_joints)
+                isource->as<SourceIfaceP>()->unset_input_by_id (i, *this, input->jdata.joints[j].ochannel);
+	    }
+	  else if (input->idata.osource == self)
+            isource->as<SourceIfaceP>()->unset_input_by_id (i, *this, input->idata.ochannel);
+	}
+      g_object_unref (isource);
+    }
+  bse_item_undo_close (ustack);
+  g_object_unref (self);
+}
+
 } // Bse

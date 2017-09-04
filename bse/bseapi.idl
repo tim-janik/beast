@@ -751,8 +751,8 @@ sequence PartSeq {
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
 
-  // void clear_inputs (); ///< Disconnect all module inputs.
-  // void clear_outputs (); ///< Disconnect all module outputs.
+  void clear_inputs ();  ///< Disconnect all module inputs.
+  void clear_outputs (); ///< Disconnect all module outputs.
   bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
   bool has_outputs (); ///< Check whether a module has output channel connections.
   String ichannel_blurb (int32 input_channel); ///< Get input channel description.
