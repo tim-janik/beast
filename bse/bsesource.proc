@@ -65,32 +65,3 @@ BODY (BseProcedureClass *proc,
 
   return Bse::Error::NONE;
 }
-
-METHOD (BseSource, get-automation-channel) {
-  HELP	= "Get MIDI channel from an automation property.";
-  IN	= bse_param_spec_object ("source", NULL, NULL,
-				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-  IN    = sfi_pspec_string ("property_name", NULL, "Item property name",
-                            NULL, SFI_PARAM_STANDARD);
-  OUT   = sfi_pspec_int ("midi_channel", NULL, NULL, 0, 0, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD ":scale:unprepared");
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
-  const char *property = sfi_value_get_string (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_SOURCE (source) || !property)
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* connect */
-  guint midi_channel = 0;
-  bse_source_get_automation_property (source, property, &midi_channel, NULL);
-  /* set output parameters */
-  g_value_set_int (out_values++, midi_channel);
-
-  return Bse::Error::NONE;
-}

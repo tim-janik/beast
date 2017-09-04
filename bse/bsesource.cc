@@ -2336,6 +2336,15 @@ SourceImpl::set_pos (double x_pos, double y_pos)
     }
 }
 
+int32
+SourceImpl::get_automation_channel (const String &property_name)
+{
+  BseSource *self = as<BseSource*>();
+  uint midi_channel = 0;
+  bse_source_get_automation_property (self, property_name.c_str(), &midi_channel, NULL);
+  return midi_channel;
+}
+
 MidiControl
 SourceImpl::get_automation_control (const String &property_name)
 {
