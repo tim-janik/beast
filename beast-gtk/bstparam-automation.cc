@@ -4,6 +4,28 @@
 /* --- automation setup editor --- */
 #include "bstprocedure.hh"
 
+static GParamSpec*
+param_automation_pspec_midi_channel()
+{
+  static GParamSpec *midi_channel_pspec =
+    g_param_spec_ref_sink (sfi_pspec_int ("midi_channel", _("MIDI Channel"),
+                                          _("The MIDI Channel from which automation events should be received, 0 designates the default MIDI channel"),
+                                          0, 0, 99 /* FIXME: BSE_MIDI_MAX_CHANNELS */, 1, SFI_PARAM_STANDARD ":scale:unprepared"));
+  return g_param_spec_ref (midi_channel_pspec);
+}
+
+static GParamSpec*
+param_automation_pspec_control_type()
+{
+  static GParamSpec *control_type_pspec =
+    g_param_spec_ref_sink (sfi_pspec_choice ("control_type", _("Control Type"),
+                                             _("The type of control events used for automation"),
+                                             Aida::enum_value_to_string (Bse::MidiControl::CONTINUOUS_16).c_str(),
+                                             Bse::choice_values_from_enum<Bse::MidiControl>(),
+                                             SFI_PARAM_STANDARD));
+  return g_param_spec_ref (control_type_pspec);
+}
+
 static void
 param_automation_dialog_cancel (GxkDialog *dialog)
 {
@@ -50,13 +72,13 @@ param_automation_popup_editor (GtkWidget *widget,
           // gxk_dialog_set_sizes (automation_dialog, 550, 300, 600, 320);
           GtkBox *vbox = (GtkBox*) g_object_new (GTK_TYPE_VBOX, "visible", TRUE, "border-width", 5, NULL);
           /* setup parameter: midi_channel */
-          GParamSpec *pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "midi-channel");
+          GParamSpec *pspec = g_param_spec_ref (param_automation_pspec_midi_channel());
           GxkParam *dialog_param = bst_param_new_value (pspec, NULL, NULL);
           g_param_spec_unref (pspec);
           bst_param_create_gmask (dialog_param, NULL, GTK_WIDGET (vbox));
           g_object_set_data_full ((GObject*) automation_dialog, "GxkParam-automation-channel", dialog_param, (GDestroyNotify) gxk_param_destroy);
           /* setup parameter: control_type */
-          pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
+          pspec = g_param_spec_ref (param_automation_pspec_control_type());
           dialog_param = bst_param_new_value (pspec, NULL, NULL);
           g_param_spec_unref (pspec);
           bst_param_create_gmask (dialog_param, NULL, GTK_WIDGET (vbox));
@@ -164,7 +186,7 @@ param_automation_update (GxkParam  *param,
       const gchar *prefix = "";
       int midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
-      GParamSpec *control_pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
+      GParamSpec *control_pspec = g_param_spec_ref (param_automation_pspec_control_type());
       const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_string (control_type).c_str(), control_pspec);
       g_param_spec_unref (control_pspec);
       if (control_type >= Bse::MidiControl::CONTINUOUS_0 && control_type <= Bse::MidiControl::CONTINUOUS_31)
