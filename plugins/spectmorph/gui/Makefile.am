@@ -10,4 +10,4 @@ spectmorphoscgui_SOURCES = spectmorphoscgui.cc moc_spectmorphoscgui.cc spectmorp
 spectmorphoscgui_LDADD   = ../../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS) $(SPECTMORPH_LIBS) $(SPECTMORPHGUI_LIBS)
 
 moc_spectmorphoscgui.cc: spectmorphoscgui.hh
-	moc spectmorphoscgui.hh > moc_spectmorphoscgui.cc
+	$(QT5_MOC) spectmorphoscgui.hh > moc_spectmorphoscgui.cc
