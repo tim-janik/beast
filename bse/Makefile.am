@@ -114,7 +114,6 @@ idl_dummy_files = $(strip	\
 # BSE procedure sources
 bse_proc_sources = $(strip \
 	bsejanitor.proc		\
-										bsesource.proc		\
 				bseitem.proc					\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)

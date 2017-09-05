@@ -869,7 +869,7 @@ restore_source_automation (BseItem    *item,
   gint midi_channel = scanner->value.v_int64;
   /* parse control type */
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-  BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
+  Bse::MidiControl control_type = Aida::enum_value_from_string<Bse::MidiControl> (scanner->value.v_identifier);
   /* close statement */
   parse_or_return (scanner, ')');
   Bse::Error error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignal (control_type));
@@ -1222,12 +1222,12 @@ bse_source_store_automation (BseSource  *source,
   guint midi_channel = 0;
   Bse::MidiSignal signal_type = Bse::MidiSignal (0);
   bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
-  BseMidiControlType control_type = BseMidiControlType (signal_type);
-  if (control_type)
+  Bse::MidiControl control_type = Bse::MidiControl (signal_type);
+  if (control_type != 0)
     {
       bse_storage_break (storage);
-      bse_storage_printf (storage, "(source-automate \"%s\" %u %s)", pspec->name,
-                          midi_channel, sfi_enum2choice (control_type, BSE_TYPE_MIDI_CONTROL_TYPE));
+      bse_storage_printf (storage, "(source-automate \"%s\" %u %s)", pspec->name, midi_channel,
+                          Aida::enum_value_to_string (control_type));
     }
 }
 
