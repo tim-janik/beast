@@ -563,13 +563,28 @@ AC_DEFUN([MC_ASOUND_CHECK],
 ])
 AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
 [
-    dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
-    PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.2)
-    PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.2)
+    dnl check for spectmorph unless --without-spectmorph was used
+    if test "x$with_spectmorph" != "xno"; then
+        dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
+        PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.2, [found_spectmorph="yes"], [found_spectmorph="no"])
+        PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.2, [found_spectmorphgui="yes"], [found_spectmorphgui="no"])
+
+        dnl automatically build with spectmorph support, if it was found by pkg-config
+        if test "x$found_spectmorph-$found_spectmorphgui" = "xyes-yes"; then
+            QT5_MOC=`pkg-config --variable host_bins Qt5Core`/moc
+
+            with_spectmorph="yes"
+        else
+            with_spectmorph="no"
+        fi
+    fi
     AC_SUBST(SPECTMORPH_CFLAGS)
     AC_SUBST(SPECTMORPH_LIBS)
     AC_SUBST(SPECTMORPHGUI_CFLAGS)
     AC_SUBST(SPECTMORPHGUI_LIBS)
+    AC_SUBST(QT5_MOC)
+
+    AM_CONDITIONAL(WITH_SPECTMORPH, [test "x$with_spectmorph" != "xno"])
 ])
 AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
@@ -799,5 +814,6 @@ Autoconfiguration complete.
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}
 	MP3 support using libmad:	${summary_libmad}
+	SpectMorph support		${with_spectmorph}
 
 EOF
