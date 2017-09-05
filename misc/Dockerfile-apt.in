@@ -25,7 +25,7 @@ RUN retry apt-get update && \
 # Provide build essentials
 RUN retry apt-get install -y \
     build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool \
-    doxygen graphviz texlive-binaries pandoc git libxml2-utils wget
+    doxygen graphviz texlive-binaries pandoc git libxml2-utils
 
 # Provide clang++ if needed
 ENV  INTENT		"@INTENT@"
