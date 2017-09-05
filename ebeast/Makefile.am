@@ -19,13 +19,14 @@ else
 with_npm:
 endif
 
-# == package.json ==
-package.json: package.json.in ../config.status
+# == .nodestamp ==
+.nodestamp: package.json.in ../config.status
 	$(AM_V_GEN)
 	$(Q) ../config.status --file package.json
 	$(Q) npm install
-clean-local: clean-node_modules
-clean-node_modules: ; rm -rf node_modules/ package.json
+	$(Q) touch $@
+clean-local: clean-node
+clean-node: ; rm -rf node_modules/ package.json .nodestamp
 MOSTLYCLEANFILES += config.log # created by config.status
 
 # == ebeast bundle ==
@@ -45,7 +46,7 @@ clean-ebeast-bundle:
 	rm -rf .bundlestamp "./$(BUNDLEDIR)" ebeast-bundle/
 
 # == bundle.js ==
-objects/vc-bundle.js: vc/bundle.js vc/*.vue
+objects/vc-bundle.js: vc/bundle.js vc/*.vue .nodestamp
 	$(AM_V_GEN)
 	@: # check all require('...') file references
 	$(Q) cd $(<D) && \
@@ -61,7 +62,7 @@ MOSTLYCLEANFILES += objects/vc-bundle.js
 
 # == Docs for .vue files ==
 VUE_COMPONENTS_INPUTS = $(sort $(wildcard vc/*.vue))
-objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
+objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) .nodestamp Makefile
 	$(AM_V_GEN)
 	$(Q) rm -f $(@:.html=.tmp1)
 	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
@@ -76,7 +77,7 @@ objects/vue-components.html: $(VUE_COMPONENTS_INPUTS) Makefile
 # == app ==
 app: .appstamp
 PRUNE_APPSTAMP := $(shell test -e v8bse/v8bse.node || rm -f .appstamp)
-.appstamp: package.json .lintstamp objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
+.appstamp: .nodestamp .lintstamp objects/app.css objects/gradient-01.png objects/vc-bundle.js objects/vue-components.html
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) -C v8bse v8bse.node
 	$(Q) rm -rf .bundlestamp "./$(BUNDLEDIR)" # avoid electron picking up stale resources
 	$(Q) touch $@
@@ -95,7 +96,7 @@ run: app
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
 
 # == CSS generation ==
-objects/app.css: app.scss package.json | *.scss */*.scss
+objects/app.css: app.scss .nodestamp | *.scss */*.scss
 	$(QGEN) # NOTE: scss output file names must not be temporary, since .map is derived from it
 	$(Q) mkdir -p objects/.deps/
 	$(Q) INPUT=$$(readlink -f $<) && cd $(@D) && ../node_modules/.bin/node-sass $$INPUT $(@F) --source-map true
@@ -117,7 +118,7 @@ MOSTLYCLEANFILES += objects/gradient-01.png objects/gradient-01.*tmp
 # == Linting rules ==
 HTML_LINT_FILES = index.html
 JS_LINT_FILES = *.js vc/*.js vc/*.vue $(HTML_LINT_FILES)
-.lintstamp: $(JS_LINT_FILES) package.json
+.lintstamp: $(JS_LINT_FILES) .nodestamp
 	$(AM_V_GEN)
 	$(Q) rm -f $@
 	$(Q) ./node_modules/.bin/eslint -f unix $(JS_LINT_FILES)

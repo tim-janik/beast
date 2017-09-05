@@ -743,7 +743,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
                                         "x", east_channel ? TOTAL_WIDTH (csource) + BORDER_PAD * 2. : -BORDER_PAD,
                                         "y", (y1 + y2) / 2.,
                                         "font", CHANNEL_FONT,
-                                        "text", csource->show_hints ? label : "",
+                                        "text", csource->show_hints ? label.c_str() : "",
                                         NULL);
           g_object_connect (item,
                             "swapped_signal::destroy", channel_name_remove, csource,
