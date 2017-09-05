@@ -27,9 +27,11 @@ using std::string;
 using std::map;
 using std::vector;
 
-namespace SpectMorph {
+using namespace SpectMorph;
 
-using namespace Bse;
+namespace Bse {
+
+namespace SpectMorph {
 
 class Osc : public OscBase {
   struct Properties : public OscProperties {
@@ -378,4 +380,5 @@ public:
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Osc);
 
+}
 }
