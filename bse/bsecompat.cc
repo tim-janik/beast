@@ -23,6 +23,7 @@ bse_compat_rewrite_type_name (BseStorage    *storage,
     { 0, 6, 2,  "DavBassFilter",        "BseDavBassFilter"      },
     { 0, 6, 2,  "DavChorus",            "BseDavChorus"          },
     { 0, 7, 5,  "DavOrgan",             "BseDavOrgan"           },
+    { 0, 11, 1, "SpectMorphOsc",        "BseSpectMorphOsc"      },
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (type_changes); i++)
