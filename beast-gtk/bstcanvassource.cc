@@ -52,7 +52,8 @@ static void     bst_canvas_source_build         (BstCanvasSource        *csource
 
 
 /* --- static variables --- */
-static guint                 csource_signals[SIGNAL_LAST] = { 0 };
+static void *parent_class = NULL;
+static uint  csource_signals[SIGNAL_LAST] = { 0 };
 
 
 /* --- functions --- */
@@ -61,9 +62,8 @@ G_DEFINE_TYPE (BstCanvasSource, bst_canvas_source, GNOME_TYPE_CANVAS_GROUP);
 static void
 bst_canvas_source_init (BstCanvasSource *csource)
 {
-  GtkObject *object = GTK_OBJECT (csource);
+  new (&csource->source) Bse::SourceH();
 
-  csource->source = 0;
   csource->params_dialog = NULL;
   csource->source_info = NULL;
   csource->icon_item = NULL;
@@ -75,9 +75,21 @@ bst_canvas_source_init (BstCanvasSource *csource)
   csource->show_hints = FALSE;
   csource->move_dx = 0;
   csource->move_dy = 0;
+  GtkObject *object = GTK_OBJECT (csource);
   g_object_connect (object,
 		    "signal::notify", bst_canvas_source_changed, NULL,
 		    NULL);
+}
+
+static void
+bst_canvas_source_finalize (GObject *object)
+{
+  BstCanvasSource *self = BST_CANVAS_SOURCE (object);
+
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+
+  using namespace Bse;
+  self->source.~SourceH();
 }
 
 static void
@@ -99,7 +111,7 @@ idle_move_item (gpointer data)
   if (self->source && item->canvas)
     {
       SfiReal x, y;
-      bse_proxy_get (self->source,
+      bse_proxy_get (self->source.proxy_id(),
                      "pos-x", &x,
                      "pos-y", &y,
                      NULL);
@@ -146,7 +158,7 @@ source_name_changed (BstCanvasSource *csource)
 
   assert_return (BST_IS_CANVAS_SOURCE (csource));
 
-  name = bse_item_get_name_or_type (csource->source);
+  name = bse_item_get_name_or_type (csource->source.proxy_id());
 
   if (csource->text)
     g_object_set (csource->text, "text", name, NULL);
@@ -168,9 +180,8 @@ source_icon_changed (BstCanvasSource *csource)
   // update icon in group, revert to a stock icon if none is available
   if (csource->icon_item)
     {
-      Bse::ItemH source_item = Bse::ItemH::down_cast (bse_server.from_proxy (csource->source));
-      Bse::Icon icon = source_item.icon();
-      bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
+      Bse::Icon icon = csource->source.icon();
+      bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source.proxy_id()));
     }
 }
 
@@ -183,7 +194,7 @@ bst_canvas_source_destroy (GtkObject *object)
   if (csource->in_move)
     {
       csource->in_move = FALSE;
-      bse_item_ungroup_undo (csource->source);
+      bse_item_ungroup_undo (csource->source.proxy_id());
     }
 
   while (csource->channel_hints)
@@ -193,15 +204,15 @@ bst_canvas_source_destroy (GtkObject *object)
 
   if (csource->source)
     {
-      bse_proxy_disconnect (csource->source,
+      bse_proxy_disconnect (csource->source.proxy_id(),
 			    "any_signal", gtk_object_destroy, csource,
 			    "any_signal", source_channels_changed, csource,
 			    "any_signal", source_name_changed, csource,
 			    "any_signal", source_pos_changed, csource,
 			    "any_signal", source_icon_changed, csource,
 			    NULL);
-      bse_item_unuse (csource->source);
-      csource->source = 0;
+      bse_item_unuse (csource->source.proxy_id());
+      csource->source = Bse::SourceH();
     }
 
   GTK_OBJECT_CLASS (bst_canvas_source_parent_class)->destroy (object);
@@ -223,8 +234,10 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 				BST_TYPE_CANVAS_SOURCE,
 				NULL);
   csource = BST_CANVAS_SOURCE (item);
-  csource->source = bse_item_use (source);
-  bse_proxy_connect (csource->source,
+  csource->source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
+  if (csource->source)
+    bse_item_use (csource->source.proxy_id());
+  bse_proxy_connect (csource->source.proxy_id(),
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
 		     "swapped_signal::property-notify::uname", source_name_changed, csource,
@@ -257,11 +270,11 @@ canvas_source_create_params (BstCanvasSource *csource)
     {
       GtkWidget *param_view;
 
-      param_view = bst_param_view_new (csource->source);
+      param_view = bst_param_view_new (csource->source.proxy_id());
       csource->params_dialog = (GtkWidget*) gxk_dialog_new (&csource->params_dialog,
                                                             GTK_OBJECT (csource),
                                                             GXK_DIALOG_POPUP_POS,
-                                                            bse_item_get_name_or_type (csource->source),
+                                                            bse_item_get_name_or_type (csource->source.proxy_id()),
                                                             param_view);
       source_name_changed (csource);
     }
@@ -326,20 +339,18 @@ csource_info_update (BstCanvasSource *csource)
     {
       /* construct information */
       gxk_scroll_text_clear (text);
-      gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source));
+      gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source.proxy_id()));
 
       /* type & category */
       gxk_scroll_text_push_indent (text);
-      gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source));
-      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", bse_item_get_type_name (csource->source));
+      gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source.proxy_id()));
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", bse_item_get_type_name (csource->source.proxy_id()));
       if (cseq.size())
         gxk_scroll_text_aprintf (text, "Category: %s\n", cseq[0].category);
       gxk_scroll_text_pop_indent (text);
 
-      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
       /* input channels */
-      const size_t csource_source_n_ichannels = csource_source.n_ichannels();
+      const size_t csource_source_n_ichannels = csource->source.n_ichannels();
       if (csource_source_n_ichannels)
 	{
 	  gxk_scroll_text_aprintf (text, "\nInput Channels:\n");
@@ -347,10 +358,10 @@ csource_info_update (BstCanvasSource *csource)
 	}
       for (size_t i = 0; i < csource_source_n_ichannels; i++)
 	{
-          const String string = csource_source.ichannel_blurb (i);
+          const String string = csource->source.ichannel_blurb (i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   csource_source.ichannel_label (i).c_str(),
-				   csource_source.ichannel_ident (i).c_str(),
+				   csource->source.ichannel_label (i).c_str(),
+				   csource->source.ichannel_ident (i).c_str(),
 				   string.empty() ? "" : ":");
 	  if (!string.empty())
 	    {
@@ -363,7 +374,7 @@ csource_info_update (BstCanvasSource *csource)
 	gxk_scroll_text_pop_indent (text);
 
       /* output channels */
-      const size_t csource_source_n_ochannels = csource_source.n_ochannels();
+      const size_t csource_source_n_ochannels = csource->source.n_ochannels();
       if (csource_source_n_ochannels)
 	{
 	  gxk_scroll_text_aprintf (text, "\nOutput Channels:\n");
@@ -371,10 +382,10 @@ csource_info_update (BstCanvasSource *csource)
 	}
       for (size_t i = 0; i < csource_source_n_ochannels; i++)
 	{
-	  const String string = csource_source.ochannel_blurb (i);
+	  const String string = csource->source.ochannel_blurb (i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   csource_source.ochannel_label (i).c_str(),
-				   csource_source.ochannel_ident (i).c_str(),
+				   csource->source.ochannel_label (i).c_str(),
+				   csource->source.ochannel_ident (i).c_str(),
 				   string.empty() ? "" : ":");
           if (!string.empty())
 	    {
@@ -387,7 +398,7 @@ csource_info_update (BstCanvasSource *csource)
 	gxk_scroll_text_pop_indent (text);
 
       /* description */
-      const gchar *string = bse_item_get_type_blurb (csource->source);
+      const gchar *string = bse_item_get_type_blurb (csource->source.proxy_id());
       if (string && string[0])
 	{
 	  gxk_scroll_text_aprintf (text, "\nDescription:\n");
@@ -397,12 +408,12 @@ csource_info_update (BstCanvasSource *csource)
 	}
 
       /* authors */
-      string = bse_item_get_type_authors (csource->source);
+      string = bse_item_get_type_authors (csource->source.proxy_id());
       if (string && string[0])
         gxk_scroll_text_aprintf (text, "\nAuthors: %s\n", string);
 
       /* license */
-      string = bse_item_get_type_license (csource->source);
+      string = bse_item_get_type_license (csource->source.proxy_id());
       if (string && string[0])
         gxk_scroll_text_aprintf (text, "\nLicense: %s\n", string);
     }
@@ -430,7 +441,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
       csource->source_info = (GtkWidget*) gxk_dialog_new (&csource->source_info,
                                                           GTK_OBJECT (csource),
                                                           GXK_DIALOG_POPUP_POS,
-                                                          bse_item_get_name_or_type (csource->source),
+                                                          bse_item_get_name_or_type (csource->source.proxy_id()),
                                                           sctext);
     }
   csource_info_update (csource);
@@ -466,9 +477,7 @@ bst_canvas_source_is_jchannel (BstCanvasSource *csource,
   if (!csource->source)
     return FALSE;
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
-  return csource_source.is_joint_ichannel_by_id (ichannel);
+  return csource->source.is_joint_ichannel_by_id (ichannel);
 }
 
 gboolean
@@ -479,13 +488,11 @@ bst_canvas_source_ichannel_free (BstCanvasSource *csource, uint ichannel)
   if (!csource->source)
     return FALSE;
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
-  if (csource_source.is_joint_ichannel_by_id (ichannel))
+  if (csource->source.is_joint_ichannel_by_id (ichannel))
     return TRUE;
   else
     {
-      Bse::SourceH osource = csource_source.ichannel_get_osource (ichannel, 0);
+      Bse::SourceH osource = csource->source.ichannel_get_osource (ichannel, 0);
       return osource == NULL;
     }
 }
@@ -502,10 +509,7 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 
   x = ICHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    {
-      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-      y = CHANNEL_HEIGHT (csource) / csource_source.n_ichannels();
-    }
+    y = CHANNEL_HEIGHT (csource) / csource->source.n_ichannels();
   y *= ochannel + 0.5;
   y += ICHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -527,10 +531,7 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
 
   x = OCHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    {
-      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-      y = CHANNEL_HEIGHT (csource) / csource_source.n_ochannels();
-    }
+    y = CHANNEL_HEIGHT (csource) / csource->source.n_ochannels();
   y *= ichannel + 0.5;
   y += OCHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -549,17 +550,15 @@ bst_canvas_source_ichannel_at (BstCanvasSource *csource,
 
   assert_return (BST_IS_CANVAS_SOURCE (csource), 0);
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= ICHANNEL_X (csource);
   y -= ICHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
       y > 0 && y < CHANNEL_HEIGHT (csource) &&
-      csource_source.n_ichannels())
+      csource->source.n_ichannels())
     {
-      y /= CHANNEL_HEIGHT (csource) / csource_source.n_ichannels();
+      y /= CHANNEL_HEIGHT (csource) / csource->source.n_ichannels();
       channel = y;
     }
 
@@ -575,17 +574,15 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
   assert_return (BST_IS_CANVAS_SOURCE (csource), 0);
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= OCHANNEL_X (csource);
   y -= OCHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
       y > 0 && y < CHANNEL_HEIGHT (csource) &&
-      csource_source.n_ochannels())
+      csource->source.n_ochannels())
     {
-      y /= CHANNEL_HEIGHT (csource) / csource_source.n_ochannels();
+      y /= CHANNEL_HEIGHT (csource) / csource->source.n_ochannels();
       channel = y;
     }
 
@@ -651,17 +648,15 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   gdouble d_y;
   gboolean east_channel = CHANNEL_EAST (csource, is_input);
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
   if (is_input)
     {
-      n_channels = csource_source.n_ichannels();
+      n_channels = csource->source.n_ichannels();
       x1 = ICHANNEL_X (csource);
       y1 = ICHANNEL_Y (csource);
     }
   else
     {
-      n_channels = csource_source.n_ochannels();
+      n_channels = csource->source.n_ochannels();
       x1 = OCHANNEL_X (csource);
       y1 = OCHANNEL_Y (csource);
     }
@@ -710,8 +705,8 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   for (int i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
-      gboolean is_jchannel = is_input && csource_source.is_joint_ichannel_by_id (i);
-      const String label = is_input ? csource_source.ichannel_label (i) : csource_source.ochannel_label (i);
+      gboolean is_jchannel = is_input && csource->source.is_joint_ichannel_by_id (i);
+      const String label = is_input ? csource->source.ichannel_label (i) : csource->source.ochannel_label (i);
       guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
@@ -813,7 +808,7 @@ bst_canvas_source_build_async (gpointer data)
       if (!csource->text)
         {
           /* add text item, invoke name_changed callback to setup the text value */
-          guint ocolor = csource->source && bse_item_internal (csource->source) ? RGBA_INTERNAL : RGBA_BLACK;
+          guint ocolor = csource->source && bse_item_internal (csource->source.proxy_id()) ? RGBA_INTERNAL : RGBA_BLACK;
           csource->text = gnome_canvas_item_new (group,
                                                  GNOME_TYPE_CANVAS_TEXT,
                                                  "fill_color_rgba", ocolor,
@@ -906,8 +901,7 @@ bst_canvas_source_changed (BstCanvasSource *csource)
       GnomeCanvasItem *item = GNOME_CANVAS_ITEM (csource);
       gdouble x = 0, y = 0;
       gnome_canvas_item_i2w (item, &x, &y);
-      Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-      csource_source.set_pos (x / BST_CANVAS_SOURCE_PIXEL_SCALE, y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
+      csource->source.set_pos (x / BST_CANVAS_SOURCE_PIXEL_SCALE, y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
     }
 }
 
@@ -934,7 +928,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
               csource->move_dx = x;
               csource->move_dy = y;
               csource->in_move = TRUE;
-              bse_item_group_undo (csource->source, "Move");
+              bse_item_group_undo (csource->source.proxy_id(), "Move");
             }
 	  gdk_cursor_destroy (fleur);
 	  handled = TRUE;
@@ -952,7 +946,6 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	}
       else
 	{
-          Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
 	  guint channel;
 	  const gchar *prefix = NULL;
           String label, ident;
@@ -961,8 +954,8 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
 	  if (channel != ~uint (0))
 	    {
-	      label = csource_source.ichannel_label (channel);
-	      ident = csource_source.ichannel_ident (channel);
+	      label = csource->source.ichannel_label (channel);
+	      ident = csource->source.ichannel_ident (channel);
 	      prefix = _("Input");
 	    }
 	  else
@@ -970,8 +963,8 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	      channel = bst_canvas_source_ochannel_at (csource, event->motion.x, event->motion.y);
 	      if (channel != ~uint (0))
 		{
-		  label = csource_source.ochannel_label (channel);
-		  ident = csource_source.ochannel_ident (channel);
+		  label = csource->source.ochannel_label (channel);
+		  ident = csource->source.ochannel_ident (channel);
 		  prefix = _("Output");
 		}
 	    }
@@ -984,7 +977,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
     case GDK_BUTTON_RELEASE:
       if (bst_mouse_button_move (event) && csource->in_move)
 	{
-          bse_item_ungroup_undo (csource->source);
+          bse_item_ungroup_undo (csource->source.proxy_id());
 	  csource->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);
 	  handled = TRUE;
@@ -1050,11 +1043,15 @@ bst_canvas_source_child_event (BstCanvasSource *csource,
 static void
 bst_canvas_source_class_init (BstCanvasSourceClass *klass)
 {
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
-  GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
-  /* GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass); */
+  parent_class = g_type_class_peek_parent (klass);
 
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   object_class->destroy = bst_canvas_source_destroy;
+
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  gobject_class->finalize = bst_canvas_source_finalize;
+
+  GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
   canvas_item_class->event = bst_canvas_source_event;
   klass->update_links = NULL;
 
