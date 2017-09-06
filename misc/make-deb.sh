@@ -94,6 +94,7 @@ if $REBUILD ; then
     # clone/update and build rapicorn
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
+    test -d $R || R=git://github.com/tim-janik/rapicorn.git
     git_clone $R rapicorn 496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
     build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
 
