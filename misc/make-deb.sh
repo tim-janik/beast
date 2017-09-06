@@ -100,7 +100,7 @@ if $REBUILD ; then
 
     # clone/update and build beast
     R=https://github.com/tim-janik/beast.git
-    R=`pwd`/.git/
+    R=`pwd`/.git
     git_clone $R beast
     build_checked beast ./autogen.sh --with-pkgroot=/opt --prefix=/usr
 fi
