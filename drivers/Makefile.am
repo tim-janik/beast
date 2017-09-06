@@ -7,7 +7,7 @@ AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 # Plugin bsedevice-alsa
 driversdir          = $(beastdatadir)/drivers
-drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la bsepcmdevice-jack.la
+drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 drivers_ldflags     = -avoid-version
 drivers_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
@@ -21,7 +21,11 @@ bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.cc
 bsemididevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(drivers_ldflags)
 bsemididevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
 
-# Plugin bsepcmdevice-jack
+if WITH_JACK
+# Plugin bsepcmdevice-jack (built conditionally)
+drivers_LTLIBRARIES += bsepcmdevice-jack.la
+
 bsepcmdevice_jack_la_SOURCES = bsepcmdevice-jack.cc
 bsepcmdevice_jack_la_LDFLAGS = $(AM_LDFLAGS) -module $(drivers_ldflags)
 bsepcmdevice_jack_la_LIBADD  = $(drivers_libs) $(JACK_LIBS)
+endif
