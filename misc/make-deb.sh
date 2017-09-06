@@ -90,8 +90,13 @@ echo "DEBIAN=$DEBIAN"
 if ! test -x $DESTDIR/$BEASTDIR/bin/rapidrun ; then
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
-    test -d $R || R=git://github.com/tim-janik/rapicorn.git
-    git_clone $R rapicorn 496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
+    if test -d $R ; then
+      RAPICORNHEAD=$(GIT_DIR=$R git rev-parse HEAD)
+    else
+      R=git://github.com/tim-janik/rapicorn.git
+      RAPICORNHEAD=496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
+    fi
+    git_clone $R rapicorn $RAPICORNHEAD
     build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
 fi
 
@@ -100,7 +105,7 @@ BEASTEXE=$BEASTDIR/bin/beast
 if ! test -x $DESTDIR/$BEASTEXE ; then
     R=https://github.com/tim-janik/beast.git
     R=`pwd`/.git
-    git_clone $R beast
+    git_clone $R beast $(git rev-parse HEAD)
     build_checked beast ./autogen.sh --with-pkgroot=/opt --prefix=/usr
 fi
 test -x $DESTDIR/$BEASTEXE || die "failed to build Beast executable: $BEASTEXE"
