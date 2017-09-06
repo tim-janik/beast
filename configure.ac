@@ -563,6 +563,8 @@ AC_DEFUN([MC_ASOUND_CHECK],
 ])
 AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
 [
+    AC_ARG_WITH([spectmorph], AS_HELP_STRING([--without-spectmorph], [Build Beast without SpectMorph support]))
+
     dnl check for spectmorph unless --without-spectmorph was used
     if test "x$with_spectmorph" != "xno"; then
         dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
