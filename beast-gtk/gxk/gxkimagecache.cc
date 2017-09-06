@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkimagecache.hh"
+#include "gxkcompat.hh"
 #include <string.h>
 
 
@@ -38,7 +39,7 @@ load_pixbuf (const char *file_name,
         "\377\0\0\0\377\0\0\0\377\0\0\0\377\0\0\0\377\0\0\0\377\0\0\0\377\0\0"
         "\0\377\0\0\0\210\0\0\0"
       };
-      return gdk_pixbuf_new_from_inline (sizeof (black32_pixbuf), black32_pixbuf, FALSE, errorp);
+      return gxk_pixbuf_new_from_inline (sizeof (black32_pixbuf), black32_pixbuf, FALSE, errorp);
     }
   /* try to load from disk */
   return gdk_pixbuf_new_from_file (file_name, errorp);
