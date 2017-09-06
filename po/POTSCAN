@@ -87,7 +87,6 @@ bse/bseserver.cc
 bse/bsesnooper.cc
 bse/bsesong.cc
 bse/bsesoundfontosc.cc
-bse/bsesource.proc
 bse/bsestandardosc.cc
 bse/bsesubiport.cc
 bse/bsesuboport.cc
