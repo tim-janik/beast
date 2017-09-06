@@ -86,25 +86,24 @@ echo "PKG_CONFIG_BSE_PREFIX=$PKG_CONFIG_BSE_PREFIX"
 echo "AIDACC_DESTDIR=$AIDACC_DESTDIR"
 echo "DEBIAN=$DEBIAN"
 
-BEASTEXE=$BEASTDIR/bin/beast
-REBUILD=false
-[ -x $DESTDIR/$BEASTEXE ] || REBUILD=true
-if $REBUILD ; then
-
-    # clone/update and build rapicorn
+# clone and build rapicorn
+if ! test -x $DESTDIR/$BEASTDIR/bin/rapidrun ; then
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
     test -d $R || R=git://github.com/tim-janik/rapicorn.git
     git_clone $R rapicorn 496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
     build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
+fi
 
-    # clone/update and build beast
+# clone and build beast
+BEASTEXE=$BEASTDIR/bin/beast
+if ! test -x $DESTDIR/$BEASTEXE ; then
     R=https://github.com/tim-janik/beast.git
     R=`pwd`/.git
     git_clone $R beast
     build_checked beast ./autogen.sh --with-pkgroot=/opt --prefix=/usr
 fi
-[ -x $DESTDIR/$BEASTEXE ] || die "failed to build Beast executable: $BEASTEXE"
+test -x $DESTDIR/$BEASTEXE || die "failed to build Beast executable: $BEASTEXE"
 
 NAME="beast"
 VERSION=$(./tmpdeb/beast/misc/mkbuildid.sh -p)
