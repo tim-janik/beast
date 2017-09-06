@@ -211,7 +211,7 @@ param_automation_update (GxkParam  *param,
           content = g_strdup_format ("%u:%s%02d", midi_channel, prefix, control_type);
           if (cv)
             {
-              /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
+              /* TRANSLATORS: %s is substituted with a property name, %d is substituted with midi control type */
               tip = g_strdup_format (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident,
