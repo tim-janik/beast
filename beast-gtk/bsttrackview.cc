@@ -286,13 +286,14 @@ track_view_synth_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      if (bse_item_editable_property (item, "snet"))
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      if (bse_item_editable_property (itemid, "snet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
+          BsePropertyCandidates *pc = bse_item_get_property_candidates (itemid, "snet");
           SynthPopup sdata = { self, pcell, };
-          Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (bse_item_get_project (item)));
-          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          Bse::ProjectH project = item.get_project();
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
                                                             pc->label, pc->tooltip, pc->items,
                                                             _("Available Waves"),
                                                             _("List of available waves to choose a track instrument from"),
@@ -732,7 +733,7 @@ track_view_action_exec (gpointer data,
     {
       SfiProxy item;
     case ACTION_ADD_TRACK:
-      bse_item_group_undo (song.proxy_id(), "Add Track");
+      song.group_undo ("Add Track");
       track = song.create_track();
       if (track)
 	{
@@ -742,12 +743,12 @@ track_view_action_exec (gpointer data,
 	  bst_item_view_select (item_view, track.proxy_id());
           track.ensure_output();
 	}
-      bse_item_ungroup_undo (song.proxy_id());
+      song.ungroup_undo();
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
-      bse_item_group_undo (song.proxy_id(), "Delete Track");
+      song.group_undo ("Delete Track");
       Bse::PartSeq pseq = track.list_parts_uniq();
       song.remove_track (track);
       for (const auto &part : pseq)
@@ -756,7 +757,7 @@ track_view_action_exec (gpointer data,
           if (!song.find_any_track_for_part (p))
             song.remove_part (p);
         }
-      bse_item_ungroup_undo (song.proxy_id());
+      song.ungroup_undo();
       break;
     }
   gxk_widget_update_actions_downwards (self);

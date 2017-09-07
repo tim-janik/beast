@@ -256,18 +256,18 @@ static void
 proxy_binding_start_grouping (GxkParam *param)
 {
   SfiProxy proxy = param->bdata[0].v_long;
-  gchar *ustr = g_strconcat ("Modify ", g_param_spec_get_nick (param->pspec), NULL);
-  if (proxy)
-    bse_item_group_undo (proxy, ustr);
-  g_free (ustr);
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  if (item)
+    item.group_undo (string_format ("Modify %s", g_param_spec_get_nick (param->pspec)));
 }
 
 static void
 proxy_binding_stop_grouping (GxkParam *param)
 {
   SfiProxy proxy = param->bdata[0].v_long;
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
   if (proxy)
-    bse_item_ungroup_undo (proxy);
+    item.ungroup_undo();
 }
 
 static gboolean

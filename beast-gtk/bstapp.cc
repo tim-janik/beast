@@ -888,12 +888,12 @@ app_action_exec (gpointer data,
       bst_file_dialog_popup_save_instrument (self, self->project, bst_app_get_current_super (self));
       break;
     case BST_ACTION_NEW_SONG:
-      bse_item_group_undo (self->project.proxy_id(), "Create Song");
+      self->project.group_undo ("Create Song");
       {
         Bse::SongH song = self->project.create_song ("");
         song.ensure_master_bus();
       }
-      bse_item_ungroup_undo (self->project.proxy_id());
+      self->project.ungroup_undo();
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:

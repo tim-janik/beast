@@ -271,8 +271,7 @@ bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
       self->project = Bse::ProjectH();
     }
 
-  SfiProxy projectid = part ? bse_item_get_project (part.proxy_id()) : 0;
-  Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
+  Bse::ProjectH project = part ? part.get_project() : Bse::ProjectH();
   if (project)
     {
       bst_window_sync_title_to_proxy (GXK_DIALOG (self), part.proxy_id(), "%s");
@@ -327,7 +326,7 @@ part_dialog_run_script_proc (gpointer data, size_t action_id)
   Bse::PartH part = self->proll->part;
 
   bst_procedure_exec_auto (cat.otype.c_str(),
-                           "project", SFI_TYPE_PROXY, bse_item_get_project (part.proxy_id()),
+                           "project", SFI_TYPE_PROXY, part.get_project().proxy_id(),
                            "part", SFI_TYPE_PROXY, part.proxy_id(),
                            NULL);
 }
@@ -399,13 +398,13 @@ part_dialog_action_exec (gpointer data,
       bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
-      bse_item_undo (self->proll->part.proxy_id());
+      self->proll->part.get_project().undo();
       break;
     case ACTION_REDO:
-      bse_item_redo (self->proll->part.proxy_id());
+      self->proll->part.get_project().redo();
       break;
     case ACTION_CLEAR_UNDO:
-      bse_item_clear_undo (self->proll->part.proxy_id());
+      self->proll->part.get_project().clear_undo();
       break;
     default:
       break;

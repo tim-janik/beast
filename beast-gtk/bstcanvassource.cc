@@ -194,7 +194,7 @@ bst_canvas_source_destroy (GtkObject *object)
   if (csource->in_move)
     {
       csource->in_move = FALSE;
-      bse_item_ungroup_undo (csource->source.proxy_id());
+      csource->source.ungroup_undo();
     }
 
   while (csource->channel_hints)
@@ -928,7 +928,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
               csource->move_dx = x;
               csource->move_dy = y;
               csource->in_move = TRUE;
-              bse_item_group_undo (csource->source.proxy_id(), "Move");
+              csource->source.group_undo ("Move");
             }
 	  gdk_cursor_destroy (fleur);
 	  handled = TRUE;
@@ -977,7 +977,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
     case GDK_BUTTON_RELEASE:
       if (bst_mouse_button_move (event) && csource->in_move)
 	{
-          bse_item_ungroup_undo (csource->source.proxy_id());
+          csource->source.ungroup_undo();
 	  csource->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);
 	  handled = TRUE;
