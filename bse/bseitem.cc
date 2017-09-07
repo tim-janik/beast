@@ -1349,6 +1349,14 @@ ItemImpl::push_property_undo (const String &property_name)
     }
 }
 
+ProjectIfaceP
+ItemImpl::get_project  ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  return project ? project->as<Bse::ProjectIfaceP>() : NULL;
+}
+
 ItemIfaceP
 ItemImpl::common_ancestor (ItemIface &other)
 {
@@ -1365,6 +1373,24 @@ ItemImpl::check_is_a (const String &type_name)
   const GType type = g_type_from_name (type_name.c_str());
   const bool is_a = g_type_is_a (G_OBJECT_TYPE (self), type);
   return is_a;
+}
+
+void
+ItemImpl::group_undo (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-group-undo");
+  bse_undo_stack_add_merger (ustack, name.c_str());
+  bse_item_undo_close (ustack);
+}
+
+void
+ItemImpl::ungroup_undo ()
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-ungroup-undo");
+  bse_undo_stack_remove_merger (ustack);
+  bse_item_undo_close (ustack);
 }
 
 class CustomIconKey : public DataKey<Icon*> {

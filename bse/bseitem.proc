@@ -3,7 +3,6 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bseitem.hh>
 #include <bse/bsecontainer.hh>
-#include <bse/bseundostack.hh>
 #include <bse/bseproject.hh>
 #include "bsecxxplugin.hh"
 #include "bsebuiltin_externs.cc"
@@ -151,29 +150,6 @@ METHOD (BseItem, get-parent) {
 
   /* set output parameters */
   bse_value_set_object (out_values++, item->parent);
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, get-project) {
-  HELP	= "Retrieve an item's project.";
-  IN	= bse_param_spec_object ("item", "Item", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-  OUT	= bse_param_spec_object ("project", "Project", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (item))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  bse_value_set_object (out_values++, bse_item_get_project (item));
 
   return Bse::Error::NONE;
 }
@@ -432,121 +408,6 @@ METHOD (BseItem, editable-property) {
 
   /* set output parameters */
   sfi_value_set_bool (out_values++, bse_object_editable_property (self, property));
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, group-undo) {
-  HELP	= "Request multiple modifying actions on an item to be grouped together as single undo operation.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_string ("name", NULL, "A name for the undo group to be created",
-                            NULL, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  const char *name       = sfi_value_get_string (in_values++);
-  BseUndoStack *ustack;
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self) || !name)
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  ustack = bse_item_undo_open (self, "item-group-undo");
-  bse_undo_stack_add_merger (ustack, name);
-  bse_item_undo_close (ustack);
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, ungroup-undo) {
-  HELP	= "Ends the undo grouping opened up by a previous group-undo() call.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  BseUndoStack *ustack;
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  ustack = bse_item_undo_open (self, "item-ungroup-undo");
-  bse_undo_stack_remove_merger (ustack);
-  bse_item_undo_close (ustack);
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, undo) {
-  HELP	= "Call the undo function of the project corresponding to this item if any.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
-  if (project)
-    project->undo();
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, redo) {
-  HELP	= "Call the redo function of the project corresponding to this item if any.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
-  if (project)
-    project->redo();
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, clear-undo) {
-  HELP	= "Call the clear-undo function of the project corresponding to this item if any.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
-  if (project)
-    project->clear_undo();
 
   return Bse::Error::NONE;
 }
