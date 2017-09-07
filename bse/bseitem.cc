@@ -1358,6 +1358,15 @@ ItemImpl::common_ancestor (ItemIface &other)
   return common->as<ItemIfaceP>();
 }
 
+bool
+ItemImpl::check_is_a (const String &type_name)
+{
+  BseItem *self = as<BseItem*>();
+  const GType type = g_type_from_name (type_name.c_str());
+  const bool is_a = g_type_is_a (G_OBJECT_TYPE (self), type);
+  return is_a;
+}
+
 class CustomIconKey : public DataKey<Icon*> {
   virtual void destroy (Icon *icon) override    { delete icon; }
 };

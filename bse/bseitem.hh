@@ -162,6 +162,7 @@ public:
   explicit           ItemImpl        (BseObject*);
   ContainerImpl*     parent          ();
   virtual ItemIfaceP common_ancestor (ItemIface &other) override;
+  virtual bool       check_is_a      (const String &type_name) override;
   virtual Icon       icon            () const override;
   virtual void       icon            (const Icon&) override;
   /// Save the value of @a property_name onto the undo stack.
