@@ -524,9 +524,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
           while (error == Bse::Error::FILE_EXISTS)
             {
               g_free (temp_file);
-              temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
-              char *result = mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
-              (void) result;
+              temp_file = g_strdup_format ("%s.tmp%06x", file_name, rand() & 0xfffffd);
               error = project.store_bse (super, temp_file, self_contained);
             }
           /* replace file by temporary file */

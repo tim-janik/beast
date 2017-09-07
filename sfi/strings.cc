@@ -152,6 +152,72 @@ string_capitalize (const String &str, size_t maxn)
   return s;
 }
 
+/// Yield normalized composed UTF-8 string.
+String
+string_normalize_nfc (const String &src)
+{
+  gchar *result = g_utf8_normalize (src.c_str(), src.size(), G_NORMALIZE_NFC);
+  const String ret { result ? result : "" };
+  g_free (result);
+  return ret;
+}
+
+/// Yield normalized decomposed UTF-8 string.
+String
+string_normalize_nfd (const String &src)
+{
+  gchar *result = g_utf8_normalize (src.c_str(), src.size(), G_NORMALIZE_NFD);
+  const String ret { result ? result : "" };
+  g_free (result);
+  return ret;
+}
+
+/// Formatting stripped normalized composed UTF-8 string.
+String
+string_normalize_nfkc (const String &src)
+{
+  gchar *result = g_utf8_normalize (src.c_str(), src.size(), G_NORMALIZE_NFKC);
+  const String ret { result ? result : "" };
+  g_free (result);
+  return ret;
+}
+
+/// Formatting stripped normalized decomposed UTF-8 string.
+String
+string_normalize_nfkd (const String &src)
+{
+  gchar *result = g_utf8_normalize (src.c_str(), src.size(), G_NORMALIZE_NFKD);
+  const String ret { result ? result : "" };
+  g_free (result);
+  return ret;
+}
+
+/// Yield UTF-8 string useful for case insensitive comparisons.
+String
+string_casefold (const String &src)
+{
+  gchar *result = g_utf8_casefold (src.c_str(), src.size());
+  const String ret { result ? result : "" };
+  g_free (result);
+  return ret;
+}
+
+/// Like strcmp(3) for UTF-8 strings.
+int
+string_cmp (const String &s1, const String &s2)
+{
+  return g_utf8_collate (s1.c_str(), s2.c_str());
+}
+
+/// Like strcasecmp(3) for UTF-8 strings.
+int
+string_casecmp (const String &s1, const String &s2)
+{
+  const String cf1 = string_casefold (s1);
+  const String cf2 = string_casefold (s2);
+  return string_cmp (cf1, cf2);
+}
+
 #define STACK_BUFFER_SIZE       3072
 
 static inline String

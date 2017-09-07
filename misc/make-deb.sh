@@ -86,24 +86,29 @@ echo "PKG_CONFIG_BSE_PREFIX=$PKG_CONFIG_BSE_PREFIX"
 echo "AIDACC_DESTDIR=$AIDACC_DESTDIR"
 echo "DEBIAN=$DEBIAN"
 
-BEASTEXE=$BEASTDIR/bin/beast
-REBUILD=false
-[ -x $DESTDIR/$BEASTEXE ] || REBUILD=true
-if $REBUILD ; then
-
-    # clone/update and build rapicorn
+# clone and build rapicorn
+if ! test -x $DESTDIR/$BEASTDIR/bin/rapidrun ; then
     R=https://github.com/tim-janik/rapicorn.git
     R=../rapicorn/.git/
-    git_clone $R rapicorn 496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
+    if test -d $R ; then
+      RAPICORNHEAD=$(GIT_DIR=$R git rev-parse HEAD)
+    else
+      R=git://github.com/tim-janik/rapicorn.git
+      RAPICORNHEAD=496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
+    fi
+    git_clone $R rapicorn $RAPICORNHEAD
     build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
+fi
 
-    # clone/update and build beast
+# clone and build beast
+BEASTEXE=$BEASTDIR/bin/beast
+if ! test -x $DESTDIR/$BEASTEXE ; then
     R=https://github.com/tim-janik/beast.git
-    R=`pwd`/.git/
-    git_clone $R beast
+    R=`pwd`/.git
+    git_clone $R beast $(git rev-parse HEAD)
     build_checked beast ./autogen.sh --with-pkgroot=/opt --prefix=/usr
 fi
-[ -x $DESTDIR/$BEASTEXE ] || die "failed to build Beast executable: $BEASTEXE"
+test -x $DESTDIR/$BEASTEXE || die "failed to build Beast executable: $BEASTEXE"
 
 NAME="beast"
 VERSION=$(./tmpdeb/beast/misc/mkbuildid.sh -p)
@@ -115,7 +120,7 @@ D="libc6 (>= 2.15)"
 D="$D, libstdc++6 (>= 5.2), zlib1g, libpython2.7, python2.7"
 D="$D, libasound2, libflac8 (>= 1.2.1), libfluidsynth1 (>= 1.0.6), libmad0"
 D="$D, libogg0, libvorbis0a (>= 1.3.2), libvorbisenc2, libvorbisfile3"
-D="$D, libglib2.0-0 (>= 2.32.3), libpango-1.0-0 (>= 1.14.0)"
+D="$D, libglib2.0-0 (>= 2.32.3), libpango-1.0-0 (>= 1.14.0), librsvg2-2 (>= 2.40.5)"
 D="$D, libgdk-pixbuf2.0-0, libgtk2.0-0 (>= 2.12.12), libgnomecanvas2-0 (>= 2.4.0)"
 # D="$D, librapicorn-17-0 (>= 17.0.0~rc1), python-rapicorn, rapicorn, librapicorn-dev"
 
