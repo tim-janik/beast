@@ -441,15 +441,14 @@ bst_app_get_current_super (BstApp *app)
 }
 
 static void
-app_update_page_item (SfiProxy     item,
-                      const gchar *property_name,
-                      BstApp      *self)
+app_update_page_item (SfiProxy itemid, const char *property_name, BstApp *self)
 {
-  GxkAssortmentEntry *entry = gxk_assortment_find_data (self->ppages, (void*) item);
+  GxkAssortmentEntry *entry = gxk_assortment_find_data (self->ppages, (void*) itemid);
   if (entry)
     {
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
       g_free (entry->label);
-      entry->label = g_strdup (bse_item_get_name_or_type (item));
+      entry->label = g_strdup (item.get_name_or_type().c_str());
       gxk_assortment_changed (self->ppages, entry);
     }
 }
@@ -468,46 +467,45 @@ ppage_item_free (gpointer user_data,
 }
 
 static void
-bst_app_add_page_item (BstApp  *self,
-                       guint    position,
-                       SfiProxy item)
+bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
 {
-  const gchar *stock, *name = bse_item_get_name_or_type (item);
-  bse_item_use (item);
-  bse_proxy_connect (item, "signal::property-notify::uname", app_update_page_item, self, NULL);
-  gchar *tip;
-  if (BSE_IS_WAVE_REPO (item))
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  const gchar *stock;
+  String name = item.get_name_or_type();
+  bse_item_use (itemid);
+  bse_proxy_connect (itemid, "signal::property-notify::uname", app_update_page_item, self, NULL);
+  String tip;
+  if (BSE_IS_WAVE_REPO (itemid))
     {
       name = _("Waves");
       stock = BST_STOCK_MINI_WAVE_REPO;
-      tip = g_strdup (_("Wave Repository"));
+      tip = _("Wave Repository");
     }
-  else if (BSE_IS_SONG (item))
+  else if (BSE_IS_SONG (itemid))
     {
       stock = BST_STOCK_MINI_SONG;
-      tip = g_strdup_format (_("Song: %s"), name);
+      tip = string_format (_("Song: %s"), name);
     }
-  else if (BSE_IS_MIDI_SYNTH (item))
+  else if (BSE_IS_MIDI_SYNTH (itemid))
     {
       stock = BST_STOCK_MINI_MIDI_SYNTH;
-      tip = g_strdup_format (_("MIDI Synthesizer: %s"), name);
+      tip = string_format (_("MIDI Synthesizer: %s"), name);
     }
   else
     {
       stock = BST_STOCK_MINI_CSYNTH;
-      tip = g_strdup_format (_("Synthesizer: %s"), name);
+      tip = string_format (_("Synthesizer: %s"), name);
     }
   GtkWidget *page = NULL;
-  if (BSE_IS_SUPER (item))
+  if (BSE_IS_SUPER (itemid))
     {
-      page = (GtkWidget*) g_object_new (BST_TYPE_SUPER_SHELL, "super", item, NULL);
+      page = (GtkWidget*) g_object_new (BST_TYPE_SUPER_SHELL, "super", itemid, NULL);
       g_object_ref (page);
       gtk_object_sink (GTK_OBJECT (page));
     }
-  gxk_assortment_insert (self->ppages, position, name, stock, tip, (void*) item, (GObject*) page, self, ppage_item_free);
+  gxk_assortment_insert (self->ppages, position, name.c_str(), stock, tip.c_str(), (void*) itemid, (GObject*) page, self, ppage_item_free);
   if (page)
     g_object_unref (page);
-  g_free (tip);
 }
 
 static int
@@ -544,7 +542,7 @@ bst_app_reload_pages (BstApp *self)
   Bse::SuperSeq sseq = self->project.get_supers();
   // sort out internal objects
   for (Bse::SuperSeq::iterator it = sseq.begin(); it != sseq.end();)
-    if (!BST_DBG_EXT && bse_item_internal (it->proxy_id()))
+    if (!BST_DBG_EXT && it->internal())
       it = sseq.erase (it);
     else
       ++it;
@@ -613,10 +611,10 @@ bst_app_handle_delete_event (GtkWidget   *widget,
   if (self->project.is_dirty())
     {
       uint result = bst_msg_dialog (BST_MSG_WARNING,
-                                    BST_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project.proxy_id())),
+                                    BST_MSG_TITLE (_("Close %s"), self->project.get_name()),
                                     BST_MSG_TEXT1 (_("The project has been modified.")),
                                     BST_MSG_TEXT2 (_("Changes were made to project \"%s\" since the last time it was saved to disk."),
-                                                   bse_item_get_name (self->project.proxy_id())),
+                                                   self->project.get_name()),
                                     BST_MSG_TEXT2 (_("Save the project before closing its window?")),
                                     BST_MSG_CHOICE   (2, _("Save Changes"), BST_STOCK_SAVE),
                                     BST_MSG_CHOICE   (1, _("Discard Changes"), BST_STOCK_DELETE),

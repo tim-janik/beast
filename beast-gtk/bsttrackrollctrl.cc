@@ -384,9 +384,9 @@ edit_name_start (BstTrackRollController *self,
 				      "visible", TRUE,
 				      "has_frame", FALSE,
 				      NULL);
-      const gchar *name = bse_item_get_name (self->obj_part.proxy_id());
-      if (name)
-	gtk_entry_set_text (entry, name);
+      const String name = self->obj_part.get_name();
+      if (!name.empty())
+	gtk_entry_set_text (entry, name.c_str());
       bst_track_roll_start_edit (self->troll, drag->current_row,
 				 self->obj_tick, self->obj_duration,
 				 GTK_CELL_EDITABLE (entry));
@@ -423,8 +423,7 @@ insert_start (BstTrackRollController *self,
       Bse::PartH part = track.get_part (tick);
       if (!part)
 	{
-	  SfiProxy songid = bse_item_get_parent (drag->current_track.proxy_id());
-          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+          Bse::SongH song = Bse::SongH::down_cast (drag->current_track.get_parent());
           song.group_undo ("Insert part");
           Bse::PartH part = song.create_part();
 	  if (part && track.insert_part (tick, part) > 0)

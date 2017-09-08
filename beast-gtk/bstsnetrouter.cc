@@ -165,14 +165,14 @@ bst_snet_router_update_links (BstSNetRouter   *self,
           assert_return (obj != NULL);
           Bse::SourceH isource = csource->source;
           assert_return (isource != NULL);
-          SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
+          Bse::SourceH osource = isource.ichannel_get_osource (i, j);
           if (!osource)
             continue;
           guint ochannel = csource->source.ichannel_get_ochannel (i, j);
-          BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
+          BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource.proxy_id());
           if (!ocsource)
             {
-              Bse::warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
+              Bse::warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", osource.get_name_or_type());
               continue;
             }
           /* find corresponding link */
@@ -640,9 +640,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
           if (csource)
             {
               GtkWidget *choice;
-              gchar *source_name = g_strconcat (bse_item_get_type_name (csource->source.proxy_id()),
+              gchar *source_name = g_strconcat (csource->source.get_type_name().c_str(),
                                                 ": ",
-                                                bse_item_get_name (csource->source.proxy_id()),
+                                                csource->source.get_name().c_str(),
                                                 NULL);
               /* create popup sumenu */
               uint has_inputs = 0, monitor_ids = 1000000;

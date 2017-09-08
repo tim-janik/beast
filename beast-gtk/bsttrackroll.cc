@@ -623,7 +623,7 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
               PangoRectangle rect = { 0 };
 	      guint tick = tp.tick;
 	      guint duration = tp.duration;
-	      const gchar *name = bse_item_get_name (tp.part.proxy_id());
+	      const String name = tp.part.get_name();
 	      GdkRectangle area, carea;
 	      carea.x = tick_to_coord (self, tick);
               carea.width = ticks_to_pixels (self, duration);
@@ -638,7 +638,7 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
               carea.y += YTHICKNESS (self);
               carea.height = MAX (0, carea.height - 2 * YTHICKNESS (self));
               area = carea;
-              pango_layout_set_text (PLAYOUT_CANVAS (self), name, -1);
+              pango_layout_set_text (PLAYOUT_CANVAS (self), name.c_str(), -1);
               pango_layout_get_pixel_extents (PLAYOUT_CANVAS (self), NULL, &rect);
 	      gdk_draw_rectangle (drawable, bg2_gc, // row == self->prelight_row ? bgp_gc : bg2_gc,
 				  TRUE, area.x, area.y, area.width, area.height);

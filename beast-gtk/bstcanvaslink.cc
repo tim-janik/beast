@@ -104,19 +104,16 @@ clink_view_update (BstCanvasLink *clink,
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
-      const gchar *iname, *oname;
-      gchar *string;
 
       Bse::SourceH icsource = clink->icsource->source;
       Bse::SourceH ocsource = clink->ocsource->source;
 
       /* figure appropriate window title
        */
-      iname = clink->icsource ? bse_item_get_name_or_type (icsource.proxy_id()) : "<""???"">";
-      oname = clink->ocsource ? bse_item_get_name_or_type (ocsource.proxy_id()) : "<""???"">";
-      string = g_strconcat (_("Module Link: "), iname, " <=> ", oname, NULL);
-      gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
-      g_free (string);
+      const String iname = clink->icsource ? icsource.get_name_or_type() : "<""???"">";
+      const String oname = clink->ocsource ? ocsource.get_name_or_type() : "<""???"">";
+      const String title = string_format (_("Module Link: %s <=> %s"), iname, oname);
+      gxk_dialog_set_title (GXK_DIALOG (clink->link_view), title.c_str());
 
       /* construct actuall information
        */

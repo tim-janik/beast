@@ -265,15 +265,16 @@ bst_item_view_set_container (BstItemView *self,
 
 void
 bst_item_view_select (BstItemView *self,
-		      SfiProxy	   item)
+		      SfiProxy	   itemid)
 {
   assert_return (BST_IS_ITEM_VIEW (self));
-  assert_return (BSE_IS_ITEM (item));
+  assert_return (BSE_IS_ITEM (itemid));
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
 
-  if (self->tree && bse_item_get_parent (item) == self->container)
+  if (self->tree && item.get_parent().proxy_id() == self->container)
     {
       GtkTreeIter witer;
-      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, item))
+      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))
 	{
 	  GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
 	  GtkTreeIter siter;
@@ -284,21 +285,22 @@ bst_item_view_select (BstItemView *self,
 	  gtk_tree_selection_select_iter (gtk_tree_view_get_selection (self->tree), &siter);
 	}
       else /* probably not added yet */
-	self->auto_select = item;
+	self->auto_select = itemid;
     }
 }
 
 gint
 bst_item_view_get_proxy_row (BstItemView *self,
-                             SfiProxy	  item)
+                             SfiProxy	  itemid)
 {
   assert_return (BST_IS_ITEM_VIEW (self), -1);
-  assert_return (BSE_IS_ITEM (item), -1);
+  assert_return (BSE_IS_ITEM (itemid), -1);
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
 
-  if (self->tree && bse_item_get_parent (item) == self->container)
+  if (self->tree && item.get_parent().proxy_id() == self->container)
     {
       GtkTreeIter witer;
-      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, item))
+      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))
 	{
 	  GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
 	  GtkTreePath *path;

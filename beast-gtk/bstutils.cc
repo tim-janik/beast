@@ -202,10 +202,9 @@ typedef struct {
 static void
 sync_title (TitleSync *tsync)
 {
-  const gchar *name = bse_item_get_name (tsync->proxy);
-  gchar *s;
-
-  s = g_strconcat (tsync->title1, name ? name : "<NULL>", tsync->title2, NULL);
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (tsync->proxy));
+  const String name = item.get_name();
+  gchar *s = g_strconcat (tsync->title1, name.c_str(), tsync->title2, NULL);
   g_object_set (tsync->window, "title", s, NULL);
   g_free (s);
 }

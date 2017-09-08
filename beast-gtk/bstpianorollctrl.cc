@@ -894,35 +894,29 @@ controller_piano_drag (BstPianoRollController *self,
 		       BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  SfiProxy song_proxy = bse_item_get_parent (part.proxy_id());
-  SfiProxy projectid = song_proxy ? bse_item_get_parent (song_proxy) : 0;
-  Bse::SongH song;
+  Bse::SongH song = Bse::SongH::down_cast (part.get_parent());
+  Bse::ProjectH project;
   Bse::TrackH track;
-  if (song_proxy)
+  if (song)
     {
-      song = Bse::SongH::down_cast (bse_server.from_proxy (song_proxy));
+      project = Bse::ProjectH::down_cast (song.get_parent());
       track = song.find_track_for_part (part);
     }
 
   // printerr ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
 
-  if (projectid && track)
+  if (project && track &&
+      (drag->type == GXK_DRAG_START ||
+       (drag->type == GXK_DRAG_MOTION &&
+        self->obj_note != drag->current_note)))
     {
-      Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
-      assert_return (project);
-      if (drag->type == GXK_DRAG_START ||
-	  (drag->type == GXK_DRAG_MOTION &&
-	   self->obj_note != drag->current_note))
-	{
-          Bse::Error error;
-	  project.auto_deactivate (5 * 1000);
-	  error = project.activate();
-	  self->obj_note = drag->current_note;
-	  if (error == Bse::Error::NONE)
-	    song.synthesize_note (track, 384 * 4, self->obj_note, 0, 1.0);
-	  bst_status_eprintf (error, _("Play note"));
-	  drag->state = GXK_DRAG_CONTINUE;
-	}
+      project.auto_deactivate (5 * 1000);
+      Bse::Error error = project.activate();
+      self->obj_note = drag->current_note;
+      if (error == Bse::Error::NONE)
+        song.synthesize_note (track, 384 * 4, self->obj_note, 0, 1.0);
+      bst_status_eprintf (error, _("Play note"));
+      drag->state = GXK_DRAG_CONTINUE;
     }
 
   if (drag->type == GXK_DRAG_START ||

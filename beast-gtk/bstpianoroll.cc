@@ -1232,7 +1232,7 @@ bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
       self->min_note = self->part.get_min_note();
       self->max_note = self->part.get_max_note();
       piano_roll_range_changed (self);
-      SfiProxy song = bse_item_get_parent (self->part.proxy_id());
+      SfiProxy song = self->part.get_parent().proxy_id();
       if (song)
         {
           self->song = song;

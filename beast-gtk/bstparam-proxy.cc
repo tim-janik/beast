@@ -44,7 +44,10 @@ param_proxy_populate (GtkWidget *chunter,
       pop->prefix = NULL;
       /* go from object to path name */
       for (i = 0; i < pop->iseq->n_items; i++)
-	pop->paths = g_straddv (pop->paths, g_strdup (bse_item_get_uname_path (pop->iseq->items[i])));
+        {
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (pop->iseq->items[i]));
+          pop->paths = g_straddv (pop->paths, g_strdup (item.get_uname_path().c_str()));
+        }
       if (!pop->paths || !pop->paths[0])
 	{
 	  param_proxy_free_population (pop);
@@ -169,15 +172,16 @@ bst_item_seq_list_match (GSList      *item_seq_slist,
       BseIt3mSeq *iseq = (BseIt3mSeq*) slist->data;
       for (i = 0; i < iseq->n_items; i++)
 	{
-	  const gchar *path = bse_item_get_uname_path (iseq->items[i]);
-	  guint j = path ? strlen (path) : 0;
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[i]));
+	  const String path = item.get_uname_path();
+	  uint j = path.size();
 	  if (j == l && Bse::string_cmp (text, path) == 0)
 	    return iseq->items[i];	/* found exact match */
 	  else if (!cmatch && j == l && Bse::string_casecmp (text, path) == 0)
 	    cmatch = iseq->items[i];	/* remember first case insensitive match */
-	  else if (!tmatch && j > l && Bse::string_cmp (text, path + j - l) == 0)
+	  else if (!tmatch && j > l && Bse::string_cmp (text, &path[0] + j - l) == 0)
 	    tmatch = iseq->items[i];	/* remember first tail match */
-	  else if (!tcmatch && j > l && Bse::string_casecmp (text, path + j - l) == 0)
+	  else if (!tcmatch && j > l && Bse::string_casecmp (text, &path[0] + j - l) == 0)
 	    tcmatch = iseq->items[i];	/* remember first case insensitive tail match */
 	}
     }
@@ -226,8 +230,10 @@ static void
 param_proxy_update (GxkParam  *param,
 		    GtkWidget *box)
 {
-  SfiProxy item = sfi_value_get_proxy (&param->value);
-  const gchar *cstring = item ? bse_item_get_uname_path (item) : NULL;
+  SfiProxy proxy = sfi_value_get_proxy (&param->value);
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  const String upath = item ? item.get_uname_path() : "";
+  const char *cstring = upath.c_str();
   GtkWidget *entry = ((GtkBoxChild*) GTK_BOX (box)->children->data)->widget;
   GtkWidget *chunter = (GtkWidget*) bst_clue_hunter_from_entry (entry);
 
