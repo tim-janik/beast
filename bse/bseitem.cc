@@ -1420,4 +1420,86 @@ ItemImpl::icon (const Icon &icon)
     }
 }
 
+ItemIfaceP
+ItemImpl::get_parent ()
+{
+  return parent() ? parent()->as<ContainerIfaceP>() : NULL;
+}
+
+int
+ItemImpl::get_seqid ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_item_get_seqid (self);
+}
+
+String
+ItemImpl::get_type ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_authors ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_authors (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_blurb ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_blurb (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_license ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_license (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_uname_path ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  gchar *upath = project ? bse_container_make_upath (BSE_CONTAINER (project), self) : NULL;
+  const String result = upath ? upath : "";
+  g_free (upath);
+  return result;
+}
+
+String
+ItemImpl::get_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_OBJECT_UNAME (self);
+}
+
+String
+ItemImpl::get_name_or_type ()
+{
+  BseItem *self = as<BseItem*>();
+  const char *name = BSE_OBJECT_UNAME (self);
+  const String result = name ? name : BSE_OBJECT_TYPE_NAME (self);
+  return result;
+}
+
+bool
+ItemImpl::internal ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_ITEM_INTERNAL (self);
+}
+
 } // Bse
