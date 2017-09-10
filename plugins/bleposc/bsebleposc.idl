@@ -6,7 +6,7 @@ namespace Bse {
 interface BlepOsc : Effect {
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
-  Info    category    = _("/Input & Output/BlepOsc");
+  Info    category    = _("/Audio Sources/Blep Oscillator");
   Info    blurb       = _("An oscillator for classic analog waveforms based on bleps");
   IStream freq_in     = Stream (_("Freq In"), _("Frequency Input"));
   IStream freq_mod_in = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
