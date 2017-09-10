@@ -742,6 +742,7 @@ bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
+plugins/bleposc/Makefile
 drivers/Makefile
 pybeast/Makefile
 beast-gtk/Makefile
