@@ -101,6 +101,7 @@ data/bse.keys.in
 drivers/bsemididevice-alsa.cc
 drivers/bsepcmdevice-alsa.cc
 plugins/artscompressor.idl
+plugins/bleposc/bsebleposc.idl
 plugins/bseadder.cc
 plugins/bseamplifier.idl
 plugins/bseatandistort.cc
