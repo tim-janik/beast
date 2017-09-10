@@ -147,11 +147,11 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_OBJDIR, [".libs"], [Directory used for 
 AC_LIBTOOL_DLOPEN
 
 # == C++ Dialect ==
-CXX="$CXX -std=gnu++11"
-test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++11"
+CXX="$CXX -std=gnu++14"
+test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 
 # == Compiler flags ==
-# needs gcc >= 4.8, clang >= 3.4
+# needs gcc >= 5, clang >= 3.4
 c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations" # -Wdate-time -Wconversion -Wshadow
 cxx_warnings="-Wsign-promo -Woverloaded-virtual" # -Wnon-virtual-dtor  -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
@@ -172,17 +172,17 @@ x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
 #x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
 AC_MSG_CHECKING([for known C++ compiler])
-if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then
+if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
     AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
     MC_ASSERT_VERSION($CXX --version, 3.5.0)
-elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then
+elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then # gcc
     AC_MSG_RESULT([g++])
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
     AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
     FAST_MATH_FLAGS="$FAST_MATH_FLAGS $gcc_fast_math"
-    MC_ASSERT_VERSION($CXX --version, 4.9.2)
+    MC_ASSERT_VERSION($CXX --version, 5.2.1)
 else
   AC_MSG_RESULT([none])
   AC_MSG_ERROR([unknown C++ compiler])
