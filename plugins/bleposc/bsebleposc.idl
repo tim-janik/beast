@@ -1,0 +1,44 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include <bse/bsecxxmodule.idl>;
+
+namespace Bse {
+
+interface BlepOsc : Effect {
+  Info    authors     = "Stefan Westerfeld";
+  Info    license     = _("GNU Lesser General Public License");
+  Info    category    = _("/Input & Output/BlepOsc");
+  Info    blurb       = _("An oscillator for classic analog waveforms based on bleps");
+  IStream freq_in     = Stream (_("Freq In"), _("Frequency Input"));
+  IStream freq_mod_in = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
+  IStream shape_mod_in= Stream (_("Shape Mod In"), _("Shape Modulation Input"));
+  IStream sub_mod_in  = Stream (_("Sub Mod In"), _("Subharmonic Modulation Input"));
+  IStream sync_mod_in = Stream (_("Sync Mod In"), _("Sync Modulation Input"));
+  IStream pulse_mod_in= Stream (_("Pulse Mod In"), _("Pulse Modulation Input"));
+  OStream left_out    = Stream (_("Left Out"), _("Left audio output"));
+  OStream right_out   = Stream (_("Right Out"), _("Right audio output"));
+
+  group _("Frequency") {
+    Real    frequency	     = Freq(_("Frequency"), _("Constant Frequency (used when frequency input is not connected"), 440.0, STANDARD);
+    Int     transpose        = (_("Transpose"), _("Transposition of the oscillator frequency in semitones"),
+                                0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
+    Int     fine_tune        = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"), STANDARD);
+    Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, 0, 5.0, 0.01, STANDARD ":f:scale");
+  };
+  group _("Shape") {
+    Real    shape            = (_("Shape"), _("Shape of the Oscillator"), 0.0, -100.0, 100.0, 5.0, STANDARD ":scale");
+    Real    shape_mod        = (_("Shape Mod"), _("Shape modulation range in percent"), 0.0, 0.0, 100.0, 2.0, STANDARD ":scale");
+    Real    sub              = (_("Subharmonic"), _("Subharmonic Frequency content (one octave below oscillator frequency)"), 0.0, 0.0, 100.0, 5.0, STANDARD ":scale");
+    Real    sub_mod          = (_("Subharmonic Mod"), _("Modulation of the subharmonic frequency content"), 0.0, 0.0, 50.0, 2.0, STANDARD ":scale");
+    Real    sync             = (_("Sync"), _("Sync slave oscillator semitones"), 0.0, 0.0, 60.0, 3.0, STANDARD ":scale");
+    Real    sync_mod         = (_("Sync Mod"), _("Sync modulation range in semitones"), 0.0, 0.0, 30.0, 2.0, STANDARD ":scale");
+    Real    pulse_width      = (_("Pulse Width"), _("Length of the positive pulse component"), 50.0, 0.0, 100.0, 5, STANDARD ":scale");
+    Real    pulse_width_mod  = (_("Pulse Width Mod"), _("Pulse width modulation range"), 0.0, 0.0, 50.0, 2.0, STANDARD ":scale");
+  };
+  group _("Unison") {
+    Int    unison_voices     = (_("Voices"), _("Number of unison voices used"), 1, 1, 16, 1, STANDARD ":scale");
+    Real   unison_detune     = (_("Detune [Cent]"), _("Total detune of all unison voices"), 6, 0.5, 50.0, 1, STANDARD ":scale");
+    Real   unison_stereo     = (_("Stereo"), _("Amount of stereo spread for unison voices"), 0.0, 0.0, 100.0, 5.0, STANDARD ":scale");
+  };
+};
+
+};
