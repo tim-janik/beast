@@ -35,7 +35,6 @@
 #define LLI     (long long int)
 #define LLU     (long long unsigned int)
 
-namespace Rapicorn {
 /// The Aida namespace provides all IDL functionality exported to C++.
 namespace Aida {
 
@@ -689,7 +688,7 @@ enum_info<TypeKind> ()
     { LOCAL,            "LOCAL",                NULL, NULL },
     { ANY,              "ANY",                  NULL, NULL },
   };
-  return ::Rapicorn::Aida::EnumInfo::cached_enum_info (typeid_name<TypeKind>(), false, values);
+  return ::Aida::EnumInfo::cached_enum_info (typeid_name<TypeKind>(), false, values);
 } // specialization
 template<> const EnumInfo& enum_info<TypeKind> (); // instantiation
 
@@ -1235,7 +1234,7 @@ Any::to_transition (BaseConnection &base_connection)
           assert (server_connection);
           ProtoMsg *pm = ProtoMsg::_new (1);
           server_connection->add_interface (*pm, u_.ibase());
-          Rapicorn::Aida::ProtoReader pmr (*pm);
+          Aida::ProtoReader pmr (*pm);
           rekind (TRANSITION);
           u_.vint64 = pmr.pop_orbid();
           delete pm;
@@ -1253,7 +1252,7 @@ Any::to_transition (BaseConnection &base_connection)
           assert (client_connection);
           ProtoMsg *pm = ProtoMsg::_new (1);
           client_connection->add_handle (*pm, u_.rhandle());
-          Rapicorn::Aida::ProtoReader pmr (*pm);
+          Aida::ProtoReader pmr (*pm);
           rekind (TRANSITION);
           u_.vint64 = pmr.pop_orbid();
           delete pm;
@@ -1302,7 +1301,7 @@ Any::from_transition (BaseConnection &base_connection)
         {
           ProtoMsg *pm = ProtoMsg::_new (1);
           pm->add_orbid (u_.vint64);
-          Rapicorn::Aida::ProtoReader pmr (*pm);
+          Aida::ProtoReader pmr (*pm);
           ImplicitBaseP ibasep = server_connection->pop_interface (pmr);
           delete pm;
           rekind (INSTANCE);
@@ -1312,7 +1311,7 @@ Any::from_transition (BaseConnection &base_connection)
         {
           ProtoMsg *pm = ProtoMsg::_new (1);
           pm->add_orbid (u_.vint64);
-          Rapicorn::Aida::ProtoReader pmr (*pm);
+          Aida::ProtoReader pmr (*pm);
           ARemoteHandle next_handle;
           client_connection->pop_handle (pmr, next_handle);
           delete pm;
@@ -3094,4 +3093,4 @@ static const ServerConnection::MethodEntry implicit_base_methods[] = {
 };
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
-} } // Rapicorn::Aida
+} // Aida

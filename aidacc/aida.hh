@@ -1,6 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-#ifndef __RAPICORN_AIDA_HH__
-#define __RAPICORN_AIDA_HH__
+#ifndef __AIDA_CXX_AIDA_HH__
+#define __AIDA_CXX_AIDA_HH__
 
 #include <cassert>              // FIXME
 
@@ -16,7 +16,7 @@
 // == config (FIXME) ==
 #define HAVE_SYS_EVENTFD_H 1
 
-namespace Rapicorn { namespace Aida {
+namespace Aida {
 
 // == Auxillary macros ==
 #define AIDA_CPP_STRINGIFYi(s)  #s // indirection required to expand __LINE__ etc
@@ -266,13 +266,13 @@ template<typename EnumType> const EnumInfo& enum_info (); // clang++ needs this 
 
 template<typename EnumType> EnumType
 enum_value_from_string (const String &valuestring)      ///< Type-safe variant of EnumInfo.value_from_string().
-{ return (EnumType) Rapicorn::Aida::enum_info<EnumType>().value_from_string (valuestring); }
+{ return (EnumType) Aida::enum_info<EnumType>().value_from_string (valuestring); }
 template<typename EnumType> String
 enum_value_to_string (EnumType evalue)                  ///< Type-safe variant of EnumInfo.value_to_string().
-{ return Rapicorn::Aida::enum_info<EnumType>().value_to_string (evalue); }
+{ return Aida::enum_info<EnumType>().value_to_string (evalue); }
 template<typename EnumType> String
 enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enum_value_to_string() with value joiner.
-{ return Rapicorn::Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
+{ return Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
 
 /// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
 std::vector<String> aux_vectors_combine (const char *char_array, size_t length, // Splits @a char_array at '\\0'
@@ -853,7 +853,7 @@ protected:
   virtual                  ~ServerConnection      ();
   virtual void              cast_interface_handle (RemoteHandle &rhandle, ImplicitBaseP ibase) = 0;
 public:
-  typedef std::function<void (Rapicorn::Aida::ProtoReader&)> EmitResultHandler;
+  typedef std::function<void (Aida::ProtoReader&)> EmitResultHandler;
   template<class C>
   static ServerConnectionP  bind                    (const String &protocol, std::shared_ptr<C> object_ptr);
   void                      post_peer_msg           (ProtoMsg *pm)      { BaseConnection::post_peer_msg (pm); }
@@ -973,6 +973,6 @@ BaseConnection::remote_origin ()
   return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
 }
 
-} } // Rapicorn::Aida
+} // Aida
 
-#endif // __RAPICORN_AIDA_HH__
+#endif // __AIDA_CXX_AIDA_HH__
