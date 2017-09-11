@@ -94,17 +94,19 @@ template<class T> struct DerivesSharedPtr<T, void_t< typename T::element_type > 
 std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
 
 
-// == Utilitiy Functions ==
+// == String Utilitiies ==
+String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
 bool         string_match_identifier_tail (const String &ident, const String &tail);
 bool         string_startswith            (const String &string, const String &fragment);
-int64        string_to_int                (const String &string);
 String       string_to_cquote             (const String &str);
-String       string_printf                (const char *format, ...) AIDA_PRINTF (1, 2);
+bool         string_to_bool               (const String &string, bool fallback = false);
+int64        string_to_int                (const String &string, size_t *consumed = NULL, uint base = 10);
+uint64       string_to_uint               (const String &string, size_t *consumed = NULL, uint base = 10);
 String       string_from_double           (double value);
 String       string_join                  (const String &junctor, const StringVector &strvec);
 StringVector string_split_any             (const String &string, const String &splitchars = "", size_t maxn = size_t (-1));
 bool         string_option_check          (const String &option_string, const String &option);
-String       string_demangle_cxx          (const String &cxx_mangled_name);
+String       string_demangle_cxx          (const char *mangled_identifier);
 
 /// Provide demangled stringified name for a @a Type.
 template<class T> AIDA_PURE static inline String
@@ -130,6 +132,17 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
   static_assert (sizeof (Num) == 1, "");
   return fnv1a_bytehash64 (ztdata, ztdata + n);
 }
+
+// == PosixLocaleGuard ==
+/// Use the POSIX locale in the current thread once a PosixLocaleGuard is created and until it is destroyed.
+class PosixLocaleGuard {
+  struct  Locale;
+  Locale &locale_;
+  int64   localemem_[1];
+public:
+  /*ctor*/  PosixLocaleGuard();
+  /*dtor*/ ~PosixLocaleGuard();
+};
 
 // == VirtualEnableSharedFromThis ==
 /// Helper class for VirtualEnableSharedFromThis.

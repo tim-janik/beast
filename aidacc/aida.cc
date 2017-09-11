@@ -1,7 +1,9 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "aida.hh"
 
-#include <string.h>
+#include <cmath>
+#include <cstring>
+#include <cxxabi.h> // abi::__cxa_demangle
 #include <stdio.h>
 #include <stdarg.h>
 #include <sched.h>
@@ -36,6 +38,9 @@
 namespace Rapicorn {
 /// The Aida namespace provides all IDL functionality exported to C++.
 namespace Aida {
+
+// == Type Helpers ==
+typedef std::weak_ptr<OrbObject>    OrbObjectW;
 
 // == Helper Classes ==
 /// Create an instance of @a Class on demand that is constructed and never destructed.
@@ -77,7 +82,381 @@ public:
   explicit     operator bool () const           { return ptr_ != NULL; }
 };
 
-typedef std::weak_ptr<OrbObject>    OrbObjectW;
+// == String Utilitiies ==
+static locale_t
+new_posix_locale ()
+{
+  locale_t posix_locale = newlocale (LC_ALL_MASK, "POSIX.UTF-8", NULL);
+  if (!posix_locale)
+    posix_locale = newlocale (LC_ALL_MASK, "C.UTF-8", NULL);
+  if (!posix_locale)
+    posix_locale = newlocale (LC_ALL_MASK, "POSIX", NULL);
+  if (!posix_locale)
+    posix_locale = newlocale (LC_ALL_MASK, "C", NULL);
+  if (!posix_locale)
+    posix_locale = newlocale (LC_ALL_MASK, NULL, NULL);
+  AIDA_ASSERT_RETURN (posix_locale != NULL, NULL);
+  return posix_locale; // release: freelocale (posix_locale);
+}
+
+struct PosixLocaleGuard::Locale {
+  locale_t locale;
+};
+
+PosixLocaleGuard::PosixLocaleGuard() :
+  locale_ (*new (localemem_) Locale())
+{
+  static locale_t posix_locale = new_posix_locale();
+  static_assert (sizeof (localemem_) <= sizeof (locale_t), "");
+  locale_.locale = uselocale (posix_locale);
+}
+
+PosixLocaleGuard::~PosixLocaleGuard()
+{
+  uselocale (locale_.locale);
+}
+
+static inline String
+posix_locale_vprintf (const char *format, va_list vargs)
+{
+  String string;
+  constexpr int STACK_BUFFER_SIZE = 2048;
+  va_list pargs;
+  char buffer[STACK_BUFFER_SIZE + 1] = { 0, };
+  va_copy (pargs, vargs);
+  const int l = vsnprintf (buffer, STACK_BUFFER_SIZE, format, pargs);
+  va_end (pargs);
+  if (l < 0)
+    string = format; // error?
+  else if (l < STACK_BUFFER_SIZE)
+    string = String (buffer, l);
+  else
+    {
+      string.resize (l + 1, 0);
+      va_copy (pargs, vargs);
+      const int j = vsnprintf (&string[0], string.size(), format, pargs);
+      va_end (pargs);
+      string.resize (std::min (l, std::max (j, 0)));
+    }
+  return string;
+}
+
+String
+posix_sprintf (const char *format, ...)
+{
+  va_list args;
+  va_start (args, format);
+  const String result = posix_locale_vprintf (format, args);
+  va_end (args);
+  return result;
+}
+
+static inline constexpr bool
+c_isalnum (uint8 c)
+{
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+}
+
+static inline constexpr char
+identifier_char_canon (char c)
+{
+  if (c >= '0' && c <= '9')
+    return c;
+  else if (c >= 'A' && c <= 'Z')
+    return c - 'A' + 'a';
+  else if (c >= 'a' && c <= 'z')
+    return c;
+  else
+    return '-';
+}
+
+static inline constexpr bool
+identifier_match (const char *str1, const char *str2)
+{
+  while (*str1 && *str2)
+    {
+      const uint8 s1 = identifier_char_canon (*str1++);
+      const uint8 s2 = identifier_char_canon (*str2++);
+      if (s1 != s2)
+        return false;
+    }
+  return *str1 == 0 && *str2 == 0;
+}
+
+static inline bool
+match_identifier_detailed (const String &ident, const String &tail)
+{
+  AIDA_ASSERT_RETURN (ident.size() >= tail.size(), false);
+  const char *word = ident.c_str() + ident.size() - tail.size();
+  if (word > ident.c_str()) // allow partial matches on word boundary only
+    {
+      if (c_isalnum (word[-1]) && c_isalnum (word[0])) // no word boundary
+        return false;
+    }
+  return identifier_match (word, tail.c_str());
+}
+
+/// Variant of string_match_identifier() that matches @a tail against @a ident at word boundary.
+bool
+string_match_identifier_tail (const String &ident, const String &tail)
+{
+  return ident.size() >= tail.size() && match_identifier_detailed (ident, tail);
+}
+
+/// Returns whether @a string starts with @a fragment.
+bool
+string_startswith (const String &string, const String &fragment)
+{
+  return fragment.size() <= string.size() && 0 == string.compare (0, fragment.size(), fragment);
+}
+
+/// Escape text like a C string.
+/// Returns a string that escapes all characters with a backslash '\\' that need escaping in C language string syntax.
+static String
+string_to_cescape (const String &str)
+{
+  String buffer;
+  for (String::const_iterator it = str.begin(); it != str.end(); it++)
+    {
+      const uint8 d = *it;
+      if      (d == '\a')       buffer +=  "\\a";
+      else if (d == '\b')       buffer +=  "\\b";
+      else if (d == '\t')       buffer +=  "\\t";
+      else if (d == '\n')       buffer +=  "\\n";
+      else if (d == '\v')       buffer +=  "\\v";
+      else if (d == '\f')       buffer +=  "\\f";
+      else if (d == '\r')       buffer +=  "\\r";
+      else if (d == '"')        buffer += "\\\"";
+      else if (d == '\\')       buffer += "\\\\";
+      else if (d < 32 || d > 126)
+        buffer += posix_sprintf ("\\%03o", d);
+      else
+        buffer += d;
+    }
+  return buffer;
+}
+
+/// Returns a string as C string including double quotes.
+String
+string_to_cquote (const String &str)
+{
+  return String() + "\"" + string_to_cescape (str) + "\"";
+}
+
+/// Parse a string into a 64bit integer, optionally specifying the expected number base.
+int64
+string_to_int (const String &string, size_t *consumed, uint base)
+{
+  const char *const start = string.c_str(), *p = start;
+  while (*p == ' ' || *p == '\n' || *p == '\t' || *p == '\r')
+    p++;
+  const bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
+  const char *const number = hex ? p + 2 : p;
+  char *endptr = NULL;
+  const int64 result = strtoll (number, &endptr, hex ? 16 : base);
+  if (consumed)
+    {
+      if (!endptr || endptr <= number)
+        *consumed = 0;
+      else
+        *consumed = endptr - start;
+    }
+  return result;
+}
+
+/// Parse a string into a 64bit unsigned integer, optionally specifying the expected number base.
+uint64
+string_to_uint (const String &string, size_t *consumed, uint base)
+{
+  const char *const start = string.c_str(), *p = start;
+  while (*p == ' ' || *p == '\n' || *p == '\t' || *p == '\r')
+    p++;
+  const bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
+  const char *const number = hex ? p + 2 : p;
+  char *endptr = NULL;
+  const uint64 result = strtoull (number, &endptr, hex ? 16 : base);
+  if (consumed)
+    {
+      if (!endptr || endptr <= number)
+        *consumed = 0;
+      else
+        *consumed = endptr - start;
+    }
+  return result;
+}
+
+static bool
+cstring_to_bool (const char *string, bool fallback)
+{
+  if (!string)
+    return fallback;
+  const char *p = string;
+  // skip spaces
+  while (*p && isspace (*p))
+    p++;
+  // ignore signs
+  if (p[0] == '-' || p[0] == '+')
+    {
+      p++;
+      // skip spaces
+      while (*p && isspace (*p))
+        p++;
+    }
+  // handle numbers
+  if (p[0] >= '0' && p[0] <= '9')
+    return 0 != string_to_uint (p);
+  // handle special words
+  if (strncasecmp (p, "ON", 2) == 0)
+    return 1;
+  if (strncasecmp (p, "OFF", 3) == 0)
+    return 0;
+  // empty string
+  if (!p[0])
+    return fallback;
+  // anything else needs to resemble "yes" or "true"
+  return strchr ("YyTt", p[0]);
+}
+
+/** Interpret a string as boolean value.
+ * Interpret the string as number, "ON"/"OFF" or distinguish "false"/"true" or "yes"/"no" by starting letter.
+ * For empty strings, @a fallback is returned.
+ */
+bool
+string_to_bool (const String &string, bool fallback)
+{
+  return cstring_to_bool (string.c_str(), fallback);
+}
+
+/// Convert a double into a string, using the POSIX/C locale.
+String
+string_from_double (double value)
+{
+  if (std::isnan (value))
+    return std::signbit (value) ? "-NaN" : "+NaN";
+  if (std::isinf (value))
+    return std::signbit (value) ? "-Infinity" : "+Infinity";
+  return posix_sprintf ("%.17g", value);
+}
+
+/** Join a number of strings.
+ * Join a string vector into a single string, using @a junctor inbetween each pair of strings.
+ */
+String
+string_join (const String &junctor, const StringVector &strvec)
+{
+  String s;
+  if (strvec.size())
+    s = strvec[0];
+  for (uint i = 1; i < strvec.size(); i++)
+    s += junctor + strvec[i];
+  return s;
+}
+
+/// Split a string, using any of the @a splitchars as delimiter.
+/// Passing "" as @a splitter will split the string between all position.
+StringVector
+string_split_any (const String &string, const String &splitchars, size_t maxn)
+{
+  StringVector sv;
+  size_t i, l = 0;
+  if (splitchars.empty())
+    {
+      for (i = 0; i < string.size() && sv.size() < maxn; i++)
+        sv.push_back (string.substr (i, 1));
+      if (i < string.size())
+        sv.push_back (string.substr (i, string.size() - i));
+    }
+  else
+    {
+      const char *schars = splitchars.c_str();
+      l = 0;
+      for (i = 0; i < string.size() && sv.size() < maxn; i++)
+        if (strchr (schars, string[i]))
+          {
+            if (i >= l)
+              sv.push_back (string.substr (l, i - l));
+            l = i + 1;
+          }
+      i = string.size();
+      if (i >= l)
+        sv.push_back (string.substr (l, i - l));
+    }
+  return sv;
+}
+
+/** Demangle a std::typeinfo.name() string into a proper C++ type name.
+ * This function uses abi::__cxa_demangle() from <cxxabi.h> to demangle C++ type names,
+ * which works for g++, libstdc++, clang++, libc++.
+ */
+String
+string_demangle_cxx (const char *mangled_identifier)
+{
+  int status = 0;
+  char *malloced_result = abi::__cxa_demangle (mangled_identifier, NULL, NULL, &status);
+  String result = malloced_result && !status ? malloced_result : mangled_identifier;
+  if (malloced_result)
+    free (malloced_result);
+  return result;
+}
+
+// === String Options ===
+static void
+string_option_add (const String   &assignment,
+                   vector<String> *option_namesp,
+                   vector<String> &option_values,
+                   const String   &empty_default,
+                   const String   *filter)
+{
+  AIDA_ASSERT_RETURN ((option_namesp != NULL) ^ (filter != NULL));
+  const char *n = assignment.c_str();
+  while (isspace (*n))
+    n++;
+  const char *p = n;
+  while (isalnum (*p) || *p == '-' || *p == '_')
+    p++;
+  const String name = String (n, p - n);
+  if (filter && name != *filter)
+    return;
+  while (isspace (*p))
+    p++;
+  const String value = *p == '=' ? String (p + 1) : empty_default;
+  if (!name.empty() && (*p == '=' || *p == 0)) // valid name
+    {
+      if (!filter)
+        option_namesp->push_back (name);
+      option_values.push_back (value);
+    }
+}
+
+static void
+string_options_split_filtered (const String &option_string, vector<String> *option_namesp,
+                               vector<String> &option_values, const String &empty_default, const String *filter)
+{
+  const char *s = option_string.c_str();
+  while (s)
+    {
+      // find next separator
+      const char *b = strpbrk (s, ";:"); // find seperator
+      string_option_add (String (s, b ? b - s : strlen (s)), option_namesp, option_values, empty_default, filter);
+      s = b ? b + 1 : NULL;
+    }
+}
+
+static String
+string_option_find_value (const String &option_string, const String &option)
+{
+  vector<String> option_names, option_values;
+  string_options_split_filtered (option_string, NULL, option_values, "1", &option);
+  return option_values.empty() ? "0" : option_values[option_values.size() - 1];
+}
+
+/// Check if an option is set/unset in an options list string.
+bool
+string_option_check (const String &option_string, const String &option)
+{
+  const String value = string_option_find_value (option_string, option);
+  return cstring_to_bool (value.c_str(), true);
+}
 
 // == Message IDs ==
 /// Mask MessageId bits, see IdentifierParts.message_id.
@@ -193,7 +572,7 @@ EnumInfo::value_to_string (int64 value, const String &joiner) const
   if (filled == value)
     return string_join (joiner, idents);
   // fallback
-  return string_printf ("0x%llx", LLU value);
+  return posix_sprintf ("0x%llx", LLU value);
 }
 
 int64
@@ -321,7 +700,7 @@ type_kind_name (TypeKind type_kind)
 String
 TypeHash::to_string () const
 {
-  return string_printf ("(0x%016llx,0x%016llx)", LLU typehi, LLU typelo);
+  return posix_sprintf ("(0x%016llx,0x%016llx)", LLU typehi, LLU typelo);
 }
 
 // == ProtoUnion ==
@@ -552,14 +931,14 @@ Any::to_string() const
   switch (kind())
     {
     case BOOL: case ENUM: case INT32:
-    case INT64:      s += string_printf ("%lld", LLI u_.vint64);                                                 break;
-    case FLOAT64:    s += string_printf ("%.17g", u_.vdouble);                                                   break;
+    case INT64:      s += posix_sprintf ("%lld", LLI u_.vint64);                                                 break;
+    case FLOAT64:    s += posix_sprintf ("%.17g", u_.vdouble);                                                   break;
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
-    case INSTANCE:   s += string_printf ("((ImplicitBase*) %p)", u_.ibase().get());                              break;
-    case REMOTE:     s += string_printf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
-    case TRANSITION: s += string_printf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
+    case INSTANCE:   s += posix_sprintf ("((ImplicitBase*) %p)", u_.ibase().get());                              break;
+    case REMOTE:     s += posix_sprintf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
+    case TRANSITION: s += posix_sprintf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
     case ANY:
       s += "(Any (";
       if (u_.vany && u_.vany->kind() == STRING)
@@ -715,7 +1094,7 @@ Any::get_string () const
     {
     case BOOL:          return u_.vint64 ? "true" : "false";
     case ENUM: case INT32:
-    case INT64:         return string_printf ("%lli", LLI u_.vint64);
+    case INT64:         return posix_sprintf ("%lli", LLI u_.vint64);
     case FLOAT64:       return string_from_double (u_.vdouble);
     case STRING:        return u_.vstring();
     default: ;
@@ -1106,7 +1485,7 @@ std::string
 ProtoMsg::first_id_str() const
 {
   uint64 fid = first_id();
-  return string_printf ("%016llx", LLU fid);
+  return posix_sprintf ("%016llx", LLU fid);
 }
 
 static std::string
@@ -1117,7 +1496,7 @@ strescape (const std::string &str)
     {
       uint8_t d = *it;
       if (d < 32 || d > 126 || d == '?')
-        buffer += string_printf ("\\%03o", d);
+        buffer += posix_sprintf ("\\%03o", d);
       else if (d == '\\')
         buffer += "\\\\";
       else if (d == '"')
@@ -1134,14 +1513,14 @@ ProtoMsg::type_name (int field_type)
   const char *tkn = type_kind_name (TypeKind (field_type));
   if (tkn)
     return tkn;
-  return string_printf ("<invalid:%d>", field_type);
+  return posix_sprintf ("<invalid:%d>", field_type);
 }
 
 std::string
 ProtoMsg::to_string() const
 {
-  String s = string_printf ("Aida::ProtoMsg(%p)={", this);
-  s += string_printf ("size=%u, capacity=%u", size(), capacity());
+  String s = posix_sprintf ("Aida::ProtoMsg(%p)={", this);
+  s += posix_sprintf ("size=%u, capacity=%u", size(), capacity());
   ProtoReader fbr (*this);
   for (size_t i = 0; i < size(); i++)
     {
@@ -1150,18 +1529,18 @@ ProtoMsg::to_string() const
       switch (fbr.get_type())
         {
         case UNTYPED:
-        case VOID:       s += string_printf (", %s", tn); fbr.skip();                               break;
-        case BOOL:       s += string_printf (", %s: 0x%llx", tn, LLU fbr.pop_bool());               break;
-        case ENUM:       s += string_printf (", %s: 0x%llx", tn, LLU fbr.pop_evalue());             break;
-        case INT32:      s += string_printf (", %s: 0x%08llx", tn, LLU fbr.pop_int64());            break;
-        case INT64:      s += string_printf (", %s: 0x%016llx", tn, LLU fbr.pop_int64());           break;
-        case FLOAT64:    s += string_printf (", %s: %.17g", tn, fbr.pop_double());                  break;
-        case STRING:     s += string_printf (", %s: %s", tn, strescape (fbr.pop_string()).c_str()); break;
-        case SEQUENCE:   s += string_printf (", %s: %p", tn, &fbr.pop_seq());                       break;
-        case RECORD:     s += string_printf (", %s: %p", tn, &fbr.pop_rec());                       break;
-        case TRANSITION: s += string_printf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
-        case ANY:        s += string_printf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
-        default:         s += string_printf (", <unknown:%u>: %p", fbr.get_type(), (void*) fbr.debug_bits()); fbr.skip(); break;
+        case VOID:       s += posix_sprintf (", %s", tn); fbr.skip();                               break;
+        case BOOL:       s += posix_sprintf (", %s: 0x%llx", tn, LLU fbr.pop_bool());               break;
+        case ENUM:       s += posix_sprintf (", %s: 0x%llx", tn, LLU fbr.pop_evalue());             break;
+        case INT32:      s += posix_sprintf (", %s: 0x%08llx", tn, LLU fbr.pop_int64());            break;
+        case INT64:      s += posix_sprintf (", %s: 0x%016llx", tn, LLU fbr.pop_int64());           break;
+        case FLOAT64:    s += posix_sprintf (", %s: %.17g", tn, fbr.pop_double());                  break;
+        case STRING:     s += posix_sprintf (", %s: %s", tn, strescape (fbr.pop_string()).c_str()); break;
+        case SEQUENCE:   s += posix_sprintf (", %s: %p", tn, &fbr.pop_seq());                       break;
+        case RECORD:     s += posix_sprintf (", %s: %p", tn, &fbr.pop_rec());                       break;
+        case TRANSITION: s += posix_sprintf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
+        case ANY:        s += posix_sprintf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
+        default:         s += posix_sprintf (", <unknown:%u>: %p", fbr.get_type(), (void*) fbr.debug_bits()); fbr.skip(); break;
         }
     }
   s += '}';
@@ -2033,7 +2412,7 @@ ClientConnectionImpl::dispatch ()
         const size_t handler_id = fbr.pop_int64();
         const bool deleted = true; // FIXME: currently broken
         if (!deleted)
-          print_warning (string_printf ("%s: invalid handler id (%016x) in message: (%016x, %016x%016x)",
+          print_warning (posix_sprintf ("%s: invalid handler id (%016x) in message: (%016x, %016x%016x)",
                                         __func__, handler_id, msgid, hashhigh, hashlow));
 #endif
       }
@@ -2522,7 +2901,7 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
   if (AIDA_UNLIKELY (size_before == size_after))
     {
       errno = EKEYREJECTED;
-      perror (string_printf ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
+      perror (posix_sprintf ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
                              "duplicate hash registration (%016llx%016llx)",
                              __FILE__, __LINE__, LLU mentry.hashhi, LLU mentry.hashlo).c_str());
       abort();
