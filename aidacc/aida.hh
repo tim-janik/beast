@@ -32,7 +32,7 @@ namespace Rapicorn { namespace Aida {
 #define AIDA_ISLIKELY(expr)     __builtin_expect (bool (expr), 1)
 #define AIDA_UNLIKELY(expr)     __builtin_expect (bool (expr), 0)
 #define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, ! "unreached"); return __VA_ARGS__; } while (0)
 #else   // !__GNUC__
 #define AIDA_UNUSED
 #define AIDA_DEPRECATED
@@ -95,6 +95,17 @@ std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
 
 
 // == Utilitiy Functions ==
+String       string_demangle_cxx          (const String &cxxmangled_name);
+bool         string_match_identifier_tail (const String &ident, const String &tail);
+bool         string_startswith            (const String &string, const String &fragment);
+int64        string_to_int                (const String &string);
+String       string_to_cquote             (const String &str);
+String       string_printf                (const char *format, ...) AIDA_PRINTF (1, 2);
+String       string_from_double           (double value);
+String       string_join                  (const String &junctor, const StringVector &strvec);
+StringVector string_split_any             (const String &string, const String &splitchars = "", size_t maxn = size_t (-1));
+bool         string_option_check          (const String &option_string, const String &option);
+
 /** Simple, very fast and well known hash function as constexpr with good dispersion.
  * This is the 64bit version of the well known
  * [FNV-1a](https://en.wikipedia.org/wiki/Fowler-Noll-Vo_hash_function)
@@ -228,7 +239,7 @@ public:
   const EnumInfo& enum_info         ()
   {
     static_assert (std::is_enum<EnumType>::value, "");
-    return cached_enum_info (cxx_demangle (typeid (EnumType).name()), false, 0, NULL);
+    return cached_enum_info (string_demangle_cxx (typeid (EnumType).name()), false, 0, NULL);
   }
 };
 template<typename EnumType> const EnumInfo& enum_info (); // clang++ needs this extra prototype of the above friend

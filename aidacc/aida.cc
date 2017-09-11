@@ -82,7 +82,7 @@ typedef std::weak_ptr<OrbObject>    OrbObjectW;
 template<class Type> static String
 typeid_name (Type &object)
 {
-  return cxx_demangle (typeid (object).name());
+  return string_demangle_cxx (typeid (object).name());
 }
 
 // == Message IDs ==
@@ -312,7 +312,7 @@ enum_info<TypeKind> ()
     { LOCAL,            "LOCAL",                NULL, NULL },
     { ANY,              "ANY",                  NULL, NULL },
   };
-  return ::Rapicorn::Aida::EnumInfo::cached_enum_info (cxx_demangle (typeid (TypeKind).name()), false, values);
+  return ::Rapicorn::Aida::EnumInfo::cached_enum_info (string_demangle_cxx (typeid (TypeKind).name()), false, values);
 } // specialization
 template<> const EnumInfo& enum_info<TypeKind> (); // instantiation
 
@@ -1888,7 +1888,7 @@ public:
   virtual void         dispatch          () override;
   virtual void         add_handle        (ProtoMsg &fb, const RemoteHandle &rhandle) override;
   virtual void         pop_handle        (ProtoReader &fr, RemoteHandle &rhandle) override;
-  virtual void         notify_callback   (const std::function<void (ClientConnection&)> &cb);
+  virtual void         notify_callback   (const std::function<void (ClientConnection&)> &cb) override;
   virtual void         remote_origin     (ImplicitBaseP rorigin) override  { AIDA_ASSERT_RETURN_UNREACHED(); }
   virtual RemoteHandle remote_origin     () override;
   virtual size_t       signal_connect    (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data) override;
@@ -2248,7 +2248,7 @@ public:
   remote_origin () override
   {
     RemoteHandle rh = RemoteHandle::__aida_null_handle__();
-    AIDA_ASSERT_RETURN (! "assert unreached", rh);
+    AIDA_ASSERT_RETURN_UNREACHED (rh);
     return rh;
   }
   virtual void
