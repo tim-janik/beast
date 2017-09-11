@@ -30,6 +30,7 @@ aidacc_install_PYTHON		= $(aidacc_imports) $(aidacc_generated)
 
 # == aidacc executable ==
 all_targets += aidacc/aidacc
+$(AIDACC): aidacc/aidacc
 aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
 	$(QGEN)
 	$(Q) sed < $< > $@.tmp				\
