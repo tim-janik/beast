@@ -10,16 +10,17 @@
 #include "bleposc.hh"
 
 using std::vector;
+using std::string;
 using std::complex;
 using std::min;
 
-double *
+static double *
 complex_ptr (vector<complex<double>>& vec)
 {
   return reinterpret_cast<double *> (&vec[0]);
 }
 
-vector<double>
+static vector<double>
 compute_fft_mag (Osc& o, size_t N)
 {
   size_t OVER = 8;
@@ -48,9 +49,9 @@ compute_fft_mag (Osc& o, size_t N)
   return out;
 }
 
-double fft_snr (Osc& o);
+static double fft_snr (Osc& o);
 
-void
+static void
 print_fft (Osc& o, size_t N)
 {
   vector<double> mag = compute_fft_mag (o, N);
@@ -63,7 +64,7 @@ print_fft (Osc& o, size_t N)
   printf ("#fft_snr: %f dB\n", fft_snr (o));
 }
 
-double
+static double
 fft_snr (Osc& o)
 {
   vector<double> mag = compute_fft_mag (o, 8192);
@@ -96,7 +97,7 @@ fft_snr (Osc& o)
   return bse_db_from_factor (sig_max / noise_max, -200);
 }
 
-void
+static void
 auto_snr_test()
 {
   GRand *rand = g_rand_new_with_seed (42);
@@ -114,7 +115,7 @@ auto_snr_test()
     }
 }
 
-double
+static double
 gettime()
 {
   timeval tv;
@@ -125,7 +126,7 @@ gettime()
 
 double speed_test_x;
 
-void
+static void
 speed_test (Osc& o)
 {
   double time = 1e9;
@@ -146,7 +147,7 @@ speed_test (Osc& o)
   printf ("%.7f voices   |  %.3f ns/sample\n", len / time, time * 1e9 / (rate * len));
 }
 
-void
+static void
 vnorm_test (Osc& o)
 {
   const int rate = 48000;
@@ -174,7 +175,7 @@ vnorm_test (Osc& o)
 }
 
 int
-main()
+main (int argc, char **argv)
 {
   const int stepping = 1; // oversampled process function
 
@@ -205,10 +206,25 @@ main()
   o.pulse_width = 0.01;
 #endif
 
-  //vnorm_test (o); return 0;
-  //print_fft (o, 8192); return 0;
-  //speed_test (o); return 0;
-  //auto_snr_test(); return 0;
+  if (argc == 2)
+    {
+      string test_name = argv[1];
+
+      if (test_name == "vnorm")
+        vnorm_test (o);
+      else if (test_name == "fft")
+        print_fft (o, 8192);
+      else if (test_name == "speed")
+        speed_test (o);
+      else if (test_name == "snr")
+        auto_snr_test();
+      else
+        {
+          Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed or snr\n", argv[0], test_name.c_str());
+          return 1;
+        }
+      return 0;
+    }
 
   //for (o.freq = 20; o.freq < 20000; o.freq *= 1.00003)
   for (int i = 0; i < 48000; i++)
