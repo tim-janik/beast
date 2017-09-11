@@ -88,6 +88,11 @@ test_strings()
   TCMP (string_to_cquote ("\""), ==, "\"\\\"\"");
   TCMP (string_to_cquote ("\1"), ==, "\"\\001\"");
   TCMP (string_to_cquote ("A\nB"), ==, "\"A\\nB\"");
+  TASSERT (string_startswith ("foo", "fo") == true);
+  TASSERT (string_startswith ("foo", "o") == false);
+  TASSERT (string_match_identifier_tail ("x.FOO", "Foo") == true);
+  TASSERT (string_match_identifier_tail ("x.FOO", "X-Foo") == true);
+  TASSERT (string_match_identifier_tail ("xFOO", "Foo") == false);
 }
 TEST_ADD (test_strings);
 
