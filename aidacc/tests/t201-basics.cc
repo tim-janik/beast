@@ -1,0 +1,67 @@
+// Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
+#include "testing.hh"
+
+using namespace Aida;
+
+static void
+test_strings()
+{
+  TASSERT (string_option_check (" foo ", "foo") == true);
+  TASSERT (string_option_check (" foo9 ", "foo9") == true);
+  TASSERT (string_option_check (" foo7 ", "foo9") == false);
+  TASSERT (string_option_check (" bar ", "bar") == true);
+  TASSERT (string_option_check (" bar= ", "bar") == true);
+  TASSERT (string_option_check (" bar=0 ", "bar") == false);
+  TASSERT (string_option_check (" bar=no ", "bar") == false);
+  TASSERT (string_option_check (" bar=false ", "bar") == false);
+  TASSERT (string_option_check (" bar=off ", "bar") == false);
+  TASSERT (string_option_check (" bar=1 ", "bar") == true);
+  TASSERT (string_option_check (" bar=2 ", "bar") == true);
+  TASSERT (string_option_check (" bar=3 ", "bar") == true);
+  TASSERT (string_option_check (" bar=4 ", "bar") == true);
+  TASSERT (string_option_check (" bar=5 ", "bar") == true);
+  TASSERT (string_option_check (" bar=6 ", "bar") == true);
+  TASSERT (string_option_check (" bar=7 ", "bar") == true);
+  TASSERT (string_option_check (" bar=8 ", "bar") == true);
+  TASSERT (string_option_check (" bar=9 ", "bar") == true);
+  TASSERT (string_option_check (" bar=09 ", "bar") == true);
+  TASSERT (string_option_check (" bar=yes ", "bar") == true);
+  TASSERT (string_option_check (" bar=true ", "bar") == true);
+  TASSERT (string_option_check (" bar=on ", "bar") == true);
+  TASSERT (string_option_check (" bar=1false ", "bar") == true);
+  TASSERT (string_option_check (" bar=0true ", "bar") == false);
+  TASSERT (string_option_check (" foo ", "foo") == true);
+  TASSERT (string_option_check (" foo9 ", "foo9") == true);
+  TASSERT (string_option_check (" foo7 ", "foo9") == false);
+  TASSERT (string_option_check (" bar ", "bar") == true);
+  TASSERT (string_option_check (" bar= ", "bar") == true);
+  TASSERT (string_option_check (" bar=0 ", "bar") == false);
+  TASSERT (string_option_check (" bar=no ", "bar") == false);
+  TASSERT (string_option_check (" bar=false ", "bar") == false);
+  TASSERT (string_option_check (" bar=off ", "bar") == false);
+  TASSERT (string_option_check (" bar=1 ", "bar") == true);
+  TASSERT (string_option_check (" bar=2 ", "bar") == true);
+  TASSERT (string_option_check (" bar=3 ", "bar") == true);
+  TASSERT (string_option_check (" bar=4 ", "bar") == true);
+  TASSERT (string_option_check (" bar=5 ", "bar") == true);
+  TASSERT (string_option_check (" bar=6 ", "bar") == true);
+  TASSERT (string_option_check (" bar=7 ", "bar") == true);
+  TASSERT (string_option_check (" bar=8 ", "bar") == true);
+  TASSERT (string_option_check (" bar=9 ", "bar") == true);
+  TASSERT (string_option_check (" bar=09 ", "bar") == true);
+  TASSERT (string_option_check (" bar=yes ", "bar") == true);
+  TASSERT (string_option_check (" bar=true ", "bar") == true);
+  TASSERT (string_option_check (" bar=on ", "bar") == true);
+  TASSERT (string_option_check (" bar=1false ", "bar") == true);
+  TASSERT (string_option_check (" bar=0true ", "bar") == false);
+  TASSERT (typeid_name<int>() == "int");
+  TASSERT (typeid_name<bool>() == "bool");
+  TASSERT (typeid_name<VirtualEnableSharedFromThisBase>() == "Aida::VirtualEnableSharedFromThisBase");
+}
+TEST_ADD (test_strings);
+
+int
+main (int argc, const char **argv)
+{
+  return TestChain::run (argc, argv);
+}
