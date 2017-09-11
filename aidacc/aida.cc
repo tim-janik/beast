@@ -82,6 +82,10 @@ public:
   explicit     operator bool () const           { return ptr_ != NULL; }
 };
 
+// == VirtualEnableSharedFromThisBase ==
+VirtualEnableSharedFromThisBase::~VirtualEnableSharedFromThisBase()
+{} // force emission of vtable
+
 // == String Utilitiies ==
 static locale_t
 new_posix_locale ()
