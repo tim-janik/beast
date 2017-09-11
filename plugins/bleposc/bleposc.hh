@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #include <sys/types.h>
 #include <assert.h>
@@ -40,13 +41,12 @@ struct Osc
     Osc::State sub_state = State::DOWN;
 
     // could be shared under certain conditions
-    std::vector<float> future;
+    std::array<float, WIDTH * 2> future;
 
     void
     init_future()
     {
-      future.clear();
-      future.resize (WIDTH * 2);
+      future.fill (0);
       future_pos = 0;
     }
     float

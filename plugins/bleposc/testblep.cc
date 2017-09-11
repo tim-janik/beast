@@ -205,6 +205,15 @@ main (int argc, char **argv)
   o.master_freq = 2440;
   o.pulse_width = 0.01;
 #endif
+#if 0
+  // to get better speed test results:
+  //
+  // g++ -O2 -o tb testblep.cc bleposcdata.cc $(pkg-config --cflags --libs bse) -std=c++11
+  //
+  // and: run only speed test
+  speed_test (o);
+  return 0;
+#endif
 
   if (argc == 2)
     {
