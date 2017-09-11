@@ -1,0 +1,79 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+# == aidacc files ==
+aidacc_imports = $(strip		\
+	aidacc/AuxData.py		\
+	aidacc/CxxStub.py		\
+	aidacc/Decls.py			\
+	aidacc/ExtractDocs.py		\
+	aidacc/GenUtils.py		\
+	aidacc/PrettyDump.py		\
+	aidacc/TypeMap.py		\
+	aidacc/yapps2runtime.py		\
+)
+aidacc_generated = $(strip		\
+	aidacc/Parser.py		\
+	aidacc/TmplFiles.py		\
+)
+aidacc_templ_files = $(strip		\
+	aidacc/CxxStub-client.cc	\
+	aidacc/CxxStub-server.cc	\
+)
+aidacc_private_files = $(strip		\
+	aidacc/main.py 			\
+	aidacc/Parser.g			\
+)
+
+# == aidacc dirs ==
+aidacc_installdir		= $(installdir)
+aidacc_install_PYTHON		= $(aidacc_imports) $(aidacc_generated)
+
+# == aidacc executable ==
+all_targets += aidacc/aidacc
+aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
+	$(QGEN)
+	$(Q) sed < $< > $@.tmp				\
+	  -e '1,1s|#!/usr/bin/env python\([0-9]\+\(\.[0-9]\+\)\?\)\?|#!${PYTHON}|' \
+	  -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${AIDACC_CONFIG}|'
+	$(Q) chmod +x $@.tmp
+	$(Q) mv $@.tmp $@
+AIDACC_CONFIG = "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${topbuildid}"
+CLEANFILES   += aidacc/aidacc
+
+# == TmplFiles.py ==
+aidacc/TmplFiles.py: $(aidacc_templ_files)
+	$(QGEN)
+	$(Q) ( echo "# $@: generated from: $(aidacc_templ_files)" \
+	&& for file in $(aidacc_templ_files) ; \
+	    do echo -n "$$(basename $$file)" | sed 's/[^a-zA-Z0-9_]/_/g' && echo ' = """' \
+	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $? ; \
+	done ) > $@.tmp
+	$(Q) mv $@.tmp $@
+CLEANFILES += aidacc/TmplFiles.py
+
+# == Parser.py ==
+aidacc/Parser.py: aidacc/Parser.g
+	$(QGEN)
+	$(Q) $(YAPPS) aidacc/Parser.g $@.tmp 2>&1 | tee $@.errors	# yapps exit code is bogus
+	@! grep -q '.' $@.errors					# catch all yapps errors & warnings
+	$(Q) sed < $@.tmp > $@.tmp2			\
+	    -e 's/^from yapps import runtime$$//'			# Parser.g has all imports
+	$(Q) mv $@.tmp2 $@ && rm -f $@.tmp $@.errors
+CLEANFILES += aidacc/Parser.py
+
+# == aidacc-aidacc-build-check ==
+aidacc-aidacc-build-check: $(AIDACC)
+	$(QTEST)
+	$(Q) $(AIDACC) -x TypeMap --list-formats | grep -q AidaTypeMap
+check-local: aidacc-aidacc-build-check
+
+# == Post-Installation Test ==
+aidacc-aidacc-installcheck:
+	$(QTEST)
+	$(Q) PATH="$(bindir):$$PATH" $(AIDACC_INSTALLABLE) -x CxxStub -x ExtractDocs -x TypeMap --list-formats > $(TSTOUT) && \
+	  grep -F -q CxxStub $(TSTOUT) && grep -F -q TypeMap $(TSTOUT) && grep -F -q ExtractDocs $(TSTOUT)
+	$(Q) rm -f $(TSTOUT)
+installcheck-local: aidacc-aidacc-installcheck
+
+# == aidacc cleanups ==
+CLEANFILES += aidacc/*.py[co]
