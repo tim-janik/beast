@@ -464,7 +464,6 @@ class Generator:
       blurb = blurb if blurb else "NULL"
       s += '    { int64_t (%s), %s, %s, %s },\n' % (number, ident, label, blurb)
     s += '  };\n'
-    """   template<> const EnumInfo& enum_info<X> () { return cached_enum_info ("X", 3, false, xvalues); } """
     s += '  return ::Aida::EnumInfo::cached_enum_info ("%s", %s, %s);\n' % (c_typename, int (type_info.combinable), varray)
     s += '} // specialization\n'
     s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
