@@ -1,0 +1,1206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+
+<HEAD>
+
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.08">
+<STYLE type="text/css">
+.toc{list-style:none;}
+.title{margin:auto;text-align:center}
+.center{text-align:center;margin-left:auto;margin-right:auto;}
+.flushleft{text-align:left;margin-left:0ex;margin-right:auto;}
+.flushright{text-align:right;margin-left:auto;margin-right:0ex;}
+DIV TABLE{margin-left:inherit;margin-right:inherit;}
+PRE{text-align:left;margin-left:0ex;margin-right:auto;}
+BLOCKQUOTE{margin-left:4ex;margin-right:4ex;text-align:left;}
+.part{margin:auto;text-align:center}
+</STYLE>
+</HEAD>
+
+<BODY >
+<!--HEVEA command line is: /usr/bin/hevea yapps2.tex -->
+<!--HTMLHEAD-->
+<!--ENDHTML-->
+<!--PREFIX <ARG ></ARG>-->
+<!--CUT DEF section 1 -->
+
+<BR>
+<BR>
+<DIV CLASS="center">
+<TABLE CELLSPACING=2 CELLPADDING=0>
+<TR><TD ALIGN=center NOWRAP><FONT SIZE=5>The <EM>Yapps</EM> Parser Generator System</FONT></TD>
+</TR>
+<TR><TD ALIGN=center NOWRAP><CODE>http://theory.stanford.edu/~amitp/Yapps/</CODE></TD>
+</TR>
+<TR><TD ALIGN=center NOWRAP>Version 2</TD>
+</TR>
+<TR><TD ALIGN=center NOWRAP>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN=center NOWRAP>Amit J. Patel</TD>
+</TR>
+<TR><TD ALIGN=center NOWRAP>http://www-cs-students.stanford.edu/&nbsp;amitp/
+http://www-cs-students.stanford.edu/&nbsp;amitp/</TD>
+</TR></TABLE> <HR SIZE=2>
+</DIV><BR>
+<BR>
+<!--TOC section Introduction-->
+
+<H2 CLASS="section"><A NAME="htoc1">1</A>&nbsp;&nbsp;Introduction</H2><!--SEC END -->
+
+<EM>Yapps</EM> (<U>Y</U>et <U>A</U>nother <U>P</U>ython
+<U>P</U>arser <U>S</U>ystem) is an easy to use parser
+generator that is written in Python and generates Python code. There
+are several parser generator systems already available for Python,
+including <TT>PyLR, kjParsing, PyBison,</TT> and <TT>mcf.pars,</TT>
+but I had different goals for my parser. Yapps is simple, is easy to
+use, and produces human-readable parsers. It is not the fastest or
+most powerful parser. Yapps is designed to be used when regular
+expressions are not enough and other parser systems are too much:
+situations where you may write your own recursive descent parser.<BR>
+<BR>
+Some unusual features of Yapps that may be of interest are:
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">Yapps produces recursive descent parsers that are readable by
+ humans, as opposed to table-driven parsers that are difficult to
+ read. A Yapps parser for a simple calculator looks similar to the
+ one that Mark Lutz wrote by hand for <EM>Programming Python.</EM><BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps also allows for rules that accept parameters and pass
+ arguments to be used while parsing subexpressions. Grammars that
+ allow for arguments to be passed to subrules and for values to be
+ passed back are often called <EM>attribute grammars.</EM> In many
+ cases parameterized rules can be used to perform actions at &#8220;parse
+ time&#8221; that are usually delayed until later. For example,
+ information about variable declarations can be passed into the
+ rules that parse a procedure body, so that undefined variables can
+ be detected at parse time. The types of defined variables can be
+ used in parsing as well&mdash;for example, if the type of <TT>X</TT> is
+ known, we can determine whether <TT>X(1)</TT> is an array reference or 
+ a function call.<BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps grammars are fairly easy to write, although there are
+ some inconveniences having to do with ELL(1) parsing that have to be
+ worked around. For example, rules have to be left factored and
+ rules may not be left recursive. However, neither limitation seems 
+ to be a problem in practice. <BR>
+<BR>
+Yapps grammars look similar to the notation used in the Python
+ reference manual, with operators like <CODE>*</CODE>, <CODE>+</CODE>, <CODE>|</CODE>,
+ <CODE>[]</CODE>, and <CODE>()</CODE> for patterns, names (<TT>tim</TT>) for rules,
+ regular expressions (<CODE>"[a-z]+"</CODE>) for tokens, and <CODE>#</CODE> for
+ comments.<BR>
+<BR>
+<LI CLASS="li-enumerate">The Yapps parser generator is written as a single Python module
+ with no C extensions. Yapps produces parsers that are written
+ entirely in Python, and require only the Yapps run-time module (5k)
+ for support.<BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps's scanner is context-sensitive, picking tokens based on
+ the types of the tokens accepted by the parser. This can be
+ helpful when implementing certain kinds of parsers, such as for a
+ preprocessor.</OL>
+There are several disadvantages of using Yapps over another parser system:
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">Yapps parsers are <TT>ELL(1)</TT> (Extended LL(1)), which is
+ less powerful than <TT>LALR</TT> (used by <TT>PyLR</TT>) or
+ <TT>SLR</TT> (used by <TT>kjParsing</TT>), so Yapps would not be a
+ good choice for parsing complex languages. For example, allowing
+ both <TT>x := 5;</TT> and <TT>x;</TT> as statements is difficult
+ because we must distinguish based on only one token of lookahead.
+ Seeing only <TT>x</TT>, we cannot decide whether we have an
+ assignment statement or an expression statement. (Note however
+ that this kind of grammar can be matched with backtracking; see
+ section <A HREF="#sec:future">F</A>.)<BR>
+<BR>
+<LI CLASS="li-enumerate">The scanner that Yapps provides can only read from strings, not
+ files, so an entire file has to be read in before scanning can
+ begin. It is possible to build a custom scanner, though, so in
+ cases where stream input is needed (from the console, a network, or
+ a large file are examples), the Yapps parser can be given a custom
+ scanner that reads from a stream instead of a string.<BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps is not designed with efficiency in mind.</OL>
+Yapps provides an easy to use parser generator that produces parsers
+similar to what you might write by hand. It is not meant to be a
+solution for all parsing problems, but instead an aid for those times
+you would write a parser by hand rather than using one of the more
+powerful parsing packages available.<BR>
+<BR>
+Yapps 2.0 is easier to use than Yapps 1.0. New features include a
+less restrictive input syntax, which allows mixing of sequences,
+choices, terminals, and nonterminals; optional matching; the ability
+to insert single-line statements into the generated parser; and
+looping constructs <CODE>*</CODE> and <CODE>+</CODE> similar to the repetitive
+matching constructs in regular expressions. Unfortunately, the
+addition of these constructs has made Yapps 2.0 incompatible with
+Yapps 1.0, so grammars will have to be rewritten. See section
+<A HREF="#sec:Upgrading">??</A> for tips on changing Yapps 1.0 grammars for use
+with Yapps 2.0.<BR>
+<BR>
+<!--TOC section Examples-->
+
+<H2 CLASS="section"><A NAME="htoc2">2</A>&nbsp;&nbsp;Examples</H2><!--SEC END -->
+
+In this section are several examples that show the use of Yapps.
+First, an introduction shows how to construct grammars and write them
+in Yapps form. This example can be skipped by someone familiar with
+grammars and parsing. Next is a Lisp expression grammar that produces
+a parse tree as output. This example demonstrates the use of tokens
+and rules, as well as returning values from rules. The third example
+is a expression evaluation grammar that evaluates during parsing
+(instead of producing a parse tree).<BR>
+<BR>
+<!--TOC subsection Introduction to Grammars-->
+
+<H3 CLASS="subsection"><A NAME="htoc3">2.1</A>&nbsp;&nbsp;Introduction to Grammars</H3><!--SEC END -->
+
+A <EM>grammar</EM> for a natural language specifies how words can be put
+together to form large structures, such as phrases and sentences. A
+grammar for a computer language is similar in that it specifies how
+small components (called <EM>tokens</EM>) can be put together to form
+larger structures. In this section we will write a grammar for a tiny
+subset of English.<BR>
+<BR>
+Simple English sentences can be described as being a noun phrase
+followed by a verb followed by a noun phrase. For example, in the
+sentence, &#8220;Jack sank the blue ship,&#8221; the word &#8220;Jack&#8221; is the first
+noun phrase, &#8220;sank&#8221; is the verb, and &#8220;the blue ship&#8221; is the second
+noun phrase. In addition we should say what a noun phrase is; for
+this example we shall say that a noun phrase is an optional article
+(a, an, the) followed by any number of adjectives followed by a noun.
+The tokens in our language are the articles, nouns, verbs, and
+adjectives. The <EM>rules</EM> in our language will tell us how to
+combine the tokens together to form lists of adjectives, noun phrases,
+and sentences:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+ <TT>sentence: noun_phrase verb noun_phrase</TT>
+ <LI CLASS="li-itemize"><TT>noun_phrase: [article] adjective* noun</TT>
+</UL>
+Notice that some things that we said easily in English, such as
+&#8220;optional article,&#8221; are expressed using special syntax, such as
+brackets. When we said, &#8220;any number of adjectives,&#8221; we wrote
+<TT>adjective*</TT>, where the <TT>*</TT> means &#8220;zero or more of the
+preceding pattern&#8221;.<BR>
+<BR>
+The grammar given above is close to a Yapps grammar. We also have to
+specify what the tokens are, and what to do when a pattern is matched.
+For this example, we will do nothing when patterns are matched; the
+next example will explain how to perform match actions.
+<PRE CLASS="verbatim">
+parser TinyEnglish:
+  ignore:          "\\W+"
+  token noun:      "(Jack|spam|ship)"
+  token verb:      "(sank|threw)"
+  token article:   "(a|an|the)"
+  token adjective: "(blue|red|green)"
+
+  rule sentence:       noun_phrase verb noun_phrase
+  rule noun_phrase:    [article] adjective* noun
+</PRE>
+The tokens are specified as Python <EM>regular expressions</EM>. Since
+Yapps produces Python code, you can write any regular expression that
+would be accepted by Python. (<EM>Note:</EM> These are Python 1.5
+regular expressions from the <TT>re</TT> module, not Python 1.4
+regular expressions from the <TT>regex</TT> module.) In addition to
+tokens that you want to see (which are given names), you can also
+specify tokens to ignore, marked by the <TT>ignore</TT> keyword. In
+this parser we want to ignore whitespace.<BR>
+<BR>
+The TinyEnglish grammar shows how you define tokens and rules, but it
+does not specify what should happen once we've matched the rules. In
+the next example, we will take a grammar and produce a <EM>parse
+tree</EM> from it.<BR>
+<BR>
+<!--TOC subsection Lisp Expressions-->
+
+<H3 CLASS="subsection"><A NAME="htoc4">2.2</A>&nbsp;&nbsp;Lisp Expressions</H3><!--SEC END -->
+
+Lisp syntax, although hated by many, has a redeeming quality: it is
+simple to parse. In this section we will construct a Yapps grammar to
+parse Lisp expressions and produce a parse tree as output.<BR>
+<BR>
+<!--TOC subsubsection Defining the Grammar-->
+
+<H4 CLASS="subsubsection">Defining the Grammar</H4><!--SEC END -->
+
+The syntax of Lisp is simple. It has expressions, which are
+identifiers, strings, numbers, and lists. A list is a left
+parenthesis followed by some number of expressions (separated by
+spaces) followed by a right parenthesis. For example, <CODE>5</CODE>,
+<CODE>"ni"</CODE>, and <CODE>(print "1+2 = " (+ 1 2))</CODE> are Lisp expressions.
+Written as a grammar,
+<PRE CLASS="verbatim">
+    expr:   ID | STR | NUM | list
+    list:   ( expr* )  
+</PRE>
+In addition to having a grammar, we need to specify what to do every
+time something is matched. For the tokens, which are strings, we just
+want to get the &#8220;value&#8221; of the token, attach its type (identifier,
+string, or number) in some way, and return it. For the lists, we want
+to construct and return a Python list.<BR>
+<BR>
+Once some pattern is matched, we enclose a return statement enclosed
+in <CODE>{{...}}</CODE>. The braces allow us to insert any one-line
+statement into the parser. Within this statement, we can refer to the
+values returned by matching each part of the rule. After matching a
+token such as <TT>ID</TT>, &#8220;ID&#8221; will be bound to the text of the
+matched token. Let's take a look at the rule:
+<PRE CLASS="verbatim">
+    rule expr: ID   {{ return ('id', ID) }}
+      ...
+</PRE>
+In a rule, tokens return the text that was matched. For identifiers,
+we just return the identifier, along with a &#8220;tag&#8221; telling us that
+this is an identifier and not a string or some other value. Sometimes
+we may need to convert this text to a different form. For example, if
+a string is matched, we want to remove quotes and handle special forms
+like <CODE>\n</CODE>. If a number is matched, we want to convert it into a
+number. Let's look at the return values for the other tokens:
+<PRE CLASS="verbatim">
+      ...
+             | STR  {{ return ('str', eval(STR)) }}
+             | NUM  {{ return ('num', atoi(NUM)) }}
+      ...
+</PRE>
+If we get a string, we want to remove the quotes and process any
+special backslash codes, so we run <TT>eval</TT> on the quoted string.
+If we get a number, we convert it to an integer with <TT>atoi</TT> and
+then return the number along with its type tag.<BR>
+<BR>
+For matching a list, we need to do something slightly more
+complicated. If we match a Lisp list of expressions, we want to
+create a Python list with those values.
+<PRE CLASS="verbatim">
+    rule list: "\\("                 # Match the opening parenthesis
+               {{ result = [] }}     # Create a Python list
+               ( 
+                  expr               # When we match an expression,
+                  {{ result.append(expr) }}   # add it to the list
+               )*                    # * means repeat this if needed
+               "\\)"                 # Match the closing parenthesis
+               {{ return result }}   # Return the Python list
+</PRE>
+In this rule we first match the opening parenthesis, then go into a
+loop. In this loop we match expressions and add them to the list.
+When there are no more expressions to match, we match the closing
+parenthesis and return the resulting. Note that <CODE>#</CODE> is used for
+comments, just as in Python.<BR>
+<BR>
+The complete grammar is specified as follows:
+<PRE CLASS="verbatim">
+parser Lisp:
+    ignore:      '\\s+'
+    token NUM:   '[0-9]+'
+    token ID:    '[-+*/!@%^&amp;=.a-zA-Z0-9_]+' 
+    token STR:   '"([^\\"]+|\\\\.)*"'
+
+    rule expr:   ID     {{ return ('id', ID) }}
+               | STR    {{ return ('str', eval(STR)) }}
+               | NUM    {{ return ('num', atoi(NUM)) }}
+               | list   {{ return list }}
+    rule list: "\\("    {{ result = [] }} 
+               ( expr   {{ result.append(expr) }}
+               )*  
+               "\\)"    {{ return result }} 
+</PRE>
+One thing you may have noticed is that <CODE>"\\("</CODE> and <CODE>"\\)"</CODE>
+appear in the <TT>list</TT> rule. These are <EM>inline tokens</EM>:
+they appear in the rules without being given a name with the
+<TT>token</TT> keyword. Inline tokens are more convenient to use, but
+since they do not have a name, the text that is matched cannot be used
+in the return value. They are best used for short simple patterns
+(usually punctuation or keywords).<BR>
+<BR>
+Another thing to notice is that the number and identifier tokens
+overlap. For example, &#8220;487&#8221; matches both NUM and ID. In Yapps, the
+scanner only tries to match tokens that are acceptable to the parser.
+This rule doesn't help here, since both NUM and ID can appear in the
+same place in the grammar. There are two rules used to pick tokens if
+more than one matches. One is that the <EM>longest</EM> match is
+preferred. For example, &#8220;487x&#8221; will match as an ID (487x) rather
+than as a NUM (487) followed by an ID (x). The second rule is that if
+the two matches are the same length, the <EM>first</EM> one listed in
+the grammar is preferred. For example, &#8220;487&#8221; will match as an NUM
+rather than an ID because NUM is listed first in the grammar. Inline
+tokens have preference over any tokens you have listed.<BR>
+<BR>
+Now that our grammar is defined, we can run Yapps to produce a parser,
+and then run the parser to produce a parse tree.<BR>
+<BR>
+<!--TOC subsubsection Running Yapps-->
+
+<H4 CLASS="subsubsection">Running Yapps</H4><!--SEC END -->
+
+In the Yapps module is a function <TT>generate</TT> that takes an
+input filename and writes a parser to another file. We can use this
+function to generate the Lisp parser, which is assumed to be in
+<TT>lisp.g</TT>.
+<PRE CLASS="verbatim">
+% python
+Python 1.5.1 (#1, Sep  3 1998, 22:51:17)  [GCC 2.7.2.3] on linux-i386
+Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam
+&gt;&gt;&gt; import yapps
+&gt;&gt;&gt; yapps.generate('lisp.g')
+</PRE>
+At this point, Yapps has written a file <TT>lisp.py</TT> that contains
+the parser. In that file are two classes (one scanner and one parser)
+and a function (called <TT>parse</TT>) that puts things together for
+you.<BR>
+<BR>
+Alternatively, we can run Yapps from the command line to generate the
+parser file:
+<PRE CLASS="verbatim">
+% python yapps.py lisp.g
+</PRE>
+After running Yapps either from within Python or from the command
+line, we can use the Lisp parser by calling the <TT>parse</TT>
+function. The first parameter should be the rule we want to match,
+and the second parameter should be the string to parse.
+<PRE CLASS="verbatim">
+&gt;&gt;&gt; import lisp
+&gt;&gt;&gt; lisp.parse('expr', '(+ 3 4)')
+[('id', '+'), ('num', 3), ('num', 4)]
+&gt;&gt;&gt; lisp.parse('expr', '(print "3 = " (+ 1 2))')
+[('id', 'print'), ('str', '3 = '), [('id', '+'), ('num', 1), ('num', 2)]]
+</PRE>
+The <TT>parse</TT> function is not the only way to use the parser;
+section <A HREF="#sec:Parser-Objects">5.1</A> describes how to access parser objects
+directly.<BR>
+<BR>
+We've now gone through the steps in creating a grammar, writing a
+grammar file for Yapps, producing a parser, and using the parser. In
+the next example we'll see how rules can take parameters and also how
+to do computations instead of just returning a parse tree.<BR>
+<BR>
+<!--TOC subsection Calculator-->
+
+<H3 CLASS="subsection"><A NAME="htoc5">2.3</A>&nbsp;&nbsp;Calculator</H3><!--SEC END -->
+
+A common example parser given in many textbooks is that for simple
+expressions, with numbers, addition, subtraction, multiplication,
+division, and parenthesization of subexpressions. We'll write this
+example in Yapps, evaluating the expression as we parse.<BR>
+<BR>
+Unlike <TT>yacc</TT>, Yapps does not have any way to specify
+precedence rules, so we have to do it ourselves. We say that an
+expression is the sum of terms, and that a term is the product of
+factors, and that a factor is a number or a parenthesized expression:
+<PRE CLASS="verbatim">
+    expr:           factor ( ("+"|"-") factor )*
+    factor:         term   ( ("*"|"/") term )*
+    term:           NUM | "(" expr ")"
+</PRE>
+In order to evaluate the expression as we go, we should keep along an
+accumulator while evaluating the lists of terms or factors. Just as
+we kept a &#8220;result&#8221; variable to build a parse tree for Lisp
+expressions, we will use a variable to evaluate numerical
+expressions. The full grammar is given below:
+<PRE CLASS="verbatim">
+parser Calculator:
+    token END: "$"         # $ means end of string
+    token NUM: "[0-9]+"
+
+    rule goal:           expr END         {{ return expr }}
+
+    # An expression is the sum and difference of factors
+    rule expr:           factor           {{ v = factor }}
+                       ( "[+]" factor       {{ v = v+factor }}
+                       |  "-"  factor       {{ v = v-factor }}
+                       )*                 {{ return v }}
+
+    # A factor is the product and division of terms
+    rule factor:         term             {{ v = term }}
+                       ( "[*]" term         {{ v = v*term }}
+                       |  "/"  term         {{ v = v/term }}
+                       )*                 {{ return v }}
+
+    # A term is either a number or an expression surrounded by parentheses
+    rule term:           NUM              {{ return atoi(NUM) }}
+                       | "\\(" expr "\\)" {{ return expr }}
+</PRE>
+The top-level rule is <EM>goal</EM>, which says that we are looking for
+an expression followed by the end of the string. The <TT>END</TT>
+token is needed because without it, it isn't clear when to stop
+parsing. For example, the string &#8220;1+3&#8221; could be parsed either as
+the expression &#8220;1&#8221; followed by the string &#8220;+3&#8221; or it could be
+parsed as the expression &#8220;1+3&#8221;. By requiring expressions to end
+with <TT>END</TT>, the parser is forced to take &#8220;1+3&#8221;.<BR>
+<BR>
+In the two rules with repetition, the accumulator is named <TT>v</TT>.
+After reading in one expression, we initialize the accumulator. Each
+time through the loop, we modify the accumulator by adding,
+subtracting, multiplying by, or dividing the previous accumulator by
+the expression that has been parsed. At the end of the rule, we
+return the accumulator.<BR>
+<BR>
+The calculator example shows how to process lists of elements using
+loops, as well as how to handle precedence of operators.<BR>
+<BR>
+<EM>Note:</EM> It's often important to put the <TT>END</TT> token in, so 
+put it in unless you are sure that your grammar has some other
+non-ambiguous token marking the end of the program.<BR>
+<BR>
+<!--TOC subsection Calculator with Memory-->
+
+<H3 CLASS="subsection"><A NAME="htoc6">2.4</A>&nbsp;&nbsp;Calculator with Memory</H3><!--SEC END -->
+
+In the previous example we learned how to write a calculator that
+evaluates simple numerical expressions. In this section we will
+extend the example to support both local and global variables.<BR>
+<BR>
+To support global variables, we will add assignment statements to the
+&#8220;goal&#8221; rule.
+<PRE CLASS="verbatim">
+    rule goal:           expr END         {{ return expr }}
+              | 'set' ID expr END         {{ global_vars[ID] = expr }}
+                                          {{ return expr }}   
+</PRE>
+To use these variables, we need a new kind of terminal:
+<PRE CLASS="verbatim">
+    rule term: ... | ID {{ return global_vars[ID] }} 
+</PRE>
+So far, these changes are straightforward. We simply have a global
+dictionary <TT>global_vars</TT> that stores the variables and values, 
+we modify it when there is an assignment statement, and we look up
+variables in it when we see a variable name.<BR>
+<BR>
+To support local variables, we will add variable declarations to the
+set of allowed expressions.
+<PRE CLASS="verbatim">
+    rule term: ... | 'let' VAR '=' expr 'in' expr ...
+</PRE>
+This is where it becomes tricky. Local variables should be stored in
+a local dictionary, not in the global one. One trick would be to save 
+a copy of the global dictionary, modify it, and then restore it
+later. In this example we will instead use <EM>attributes</EM> to
+create local information and pass it to subrules.<BR>
+<BR>
+A rule can optionally take parameters. When we invoke the rule, we
+must pass in arguments. For local variables, let's use a single
+parameter, <TT>local_vars</TT>:
+<PRE CLASS="verbatim">
+    rule expr&lt;&lt;local_vars&gt;&gt;:   ...
+    rule factor&lt;&lt;local_vars&gt;&gt;: ...
+    rule term&lt;&lt;local_vars&gt;&gt;:   ...
+</PRE>
+Each time we want to match <TT>expr</TT>, <TT>factor</TT>, or
+<TT>term</TT>, we will pass the local variables in the current rule to
+the subrule. One interesting case is when we pass as an argument
+something <EM>other</EM> than <TT>local_vars</TT>:
+<PRE CLASS="verbatim">
+   rule term&lt;&lt;local_vars&gt;&gt;: ...
+                | 'let' VAR '=' expr&lt;&lt;local_vars&gt;&gt;
+                  {{ local_vars = [(VAR, expr)] + local_vars }}
+                  'in' expr&lt;&lt;local_vars&gt;&gt;
+                  {{ return expr }}
+</PRE>
+Note that the assignment to the local variables list does not modify
+the original list. This is important to keep local variables from
+being seen outside the &#8220;let&#8221;.<BR>
+<BR>
+The other interesting case is when we find a variable:
+<PRE CLASS="verbatim">
+global_vars = {}
+
+def lookup(map, name):
+    for x,v in map:  if x==name: return v
+    return global_vars[name]
+%%
+   ...
+   rule term&lt;&lt;local_vars&gt;: ...
+                | VAR {{ return lookup(local_vars, VAR) }}
+</PRE>
+The lookup function will search through the local variable list, and
+if it cannot find the name there, it will look it up in the global
+variable dictionary.<BR>
+<BR>
+A complete grammar for this example, including a read-eval-print loop
+for interacting with the calculator, can be found in the examples
+subdirectory included with Yapps.<BR>
+<BR>
+In this section we saw how to insert code before the parser. We also
+saw how to use attributes to transmit local information from one rule
+to its subrules.<BR>
+<BR>
+<!--TOC section Grammars-->
+
+<H2 CLASS="section"><A NAME="htoc7">3</A>&nbsp;&nbsp;Grammars</H2><!--SEC END -->
+
+Each Yapps grammar has a name, a list of tokens, and a set of
+production rules. A grammar named <TT>X</TT> will be used to produce
+a parser named <TT>X</TT> and a scanner anmed <TT>XScanner</TT>. As
+in Python, names are case sensitive, start with a letter, and contain
+letters, numbers, and underscores (_).<BR>
+<BR>
+There are three kinds of tokens in Yapps: named, inline, and ignored.
+As their name implies, named tokens are given a name, using the token
+construct: <TT>token <EM>name</EM> : <EM>regexp</EM></TT>. In a rule, the
+token can be matched by using the name. Inline tokens are regular
+expressions that are used in rules without being declared. Ignored
+tokens are declared using the ignore construct: <TT>ignore:
+ <EM>regexp</EM></TT>. These tokens are ignored by the scanner, and are
+not seen by the parser. Often whitespace is an ignored token. The
+regular expressions used to define tokens should use the syntax
+defined in the <TT>re</TT> module, so some symbols may have to be
+backslashed.<BR>
+<BR>
+Production rules in Yapps have a name and a pattern to match. If the
+rule is parameterized, the name should be followed by a list of
+parameter names in <CODE>&lt;&lt;...&gt;&gt;</CODE>. A pattern can be a simple pattern
+or a compound pattern. Simple patterns are the name of a named token,
+a regular expression in quotes (inline token), the name of a
+production rule (followed by arguments in <CODE>&lt;&lt;...&gt;&gt;</CODE>, if the rule
+has parameters), and single line Python statements (<CODE>{{...}}</CODE>).
+Compound patterns are sequences (<CODE>A B C ...</CODE>), choices (
+<CODE>A | B | C | ...</CODE>), options (<CODE>[...]</CODE>), zero-or-more repetitions
+(<CODE>...*</CODE>), and one-or-more repetitions (<CODE>...+</CODE>). Like
+regular expressions, repetition operators have a higher precedence
+than sequences, and sequences have a higher precedence than choices.<BR>
+<BR>
+Whenever <CODE>{{...}}</CODE> is used, a legal one-line Python statement
+should be put inside the braces. The token <CODE>}}</CODE> should not
+appear within the <CODE>{{...}}</CODE> section, even within a string, since
+Yapps does not attempt to parse the Python statement. A workaround
+for strings is to put two strings together (<CODE>"}" "}"</CODE>), or to use
+backslashes (<CODE>"}\}"</CODE>). At the end of a rule you should use a
+<CODE>{{ return X }}</CODE> statement to return a value. However, you
+should <EM>not</EM> use any control statements (<TT>return</TT>,
+<TT>continue</TT>, <TT>break</TT>) in the middle of a rule. Yapps
+needs to make assumptions about the control flow to generate a parser,
+and any changes to the control flow will confuse Yapps.<BR>
+<BR>
+The <CODE>&lt;&lt;...&gt;&gt;</CODE> form can occur in two places: to define parameters
+to a rule and to give arguments when matching a rule. Parameters use
+the syntax used for Python functions, so they can include default
+arguments and the special forms (<CODE>*args</CODE> and <CODE>**kwargs</CODE>).
+Arguments use the syntax for Python function call arguments, so they
+can include normal arguments and keyword arguments. The token
+<CODE>&gt;&gt;</CODE> should not appear within the <CODE>&lt;&lt;...&gt;&gt;</CODE> section.<BR>
+<BR>
+In both the statements and rule arguments, you can use names defined
+by the parser to refer to matched patterns. You can refer to the text
+matched by a named token by using the token name. You can use the
+value returned by a production rule by using the name of that rule.
+If a name <TT>X</TT> is matched more than once (such as in loops), you
+will have to save the earlier value(s) in a temporary variable, and
+then use that temporary variable in the return value. The next
+section has an example of a name that occurs more than once.<BR>
+<BR>
+<!--TOC subsection Left Factoring-->
+
+<H3 CLASS="subsection"><A NAME="htoc8">3.1</A>&nbsp;&nbsp;Left Factoring</H3><!--SEC END -->
+
+<A NAME="sec:Left-Factoring"></A>
+Yapps produces ELL(1) parsers, which determine which clause to match
+based on the first token available. Sometimes the leftmost tokens of
+several clauses may be the same. The classic example is the
+<EM>if/then/else</EM> construct in Pascal:
+<PRE CLASS="verbatim">
+rule stmt:  "if" expr "then" stmt {{ then_part = stmt }} 
+                      "else" stmt {{ return ('If',expr,then_part,stmt) }}
+          | "if" expr "then" stmt {{ return ('If',expr,stmt,[]) }}
+</PRE>
+(Note that we have to save the first <TT>stmt</TT> into a variable
+because there is another <TT>stmt</TT> that will be matched.) The
+left portions of the two clauses are the same, which presents a
+problem for the parser. The solution is <EM>left-factoring</EM>: the
+common parts are put together, and <EM>then</EM> a choice is made about
+the remaining part:
+<PRE CLASS="verbatim">
+rule stmt:  "if" expr 
+              "then" stmt {{ then_part = stmt }}
+              {{ else_part = [] }}
+              [ "else" stmt {{ else_part = stmt }} ]
+            {{ return ('If', expr, then_part, else_part) }}
+</PRE>
+Unfortunately, the classic <EM>if/then/else</EM> situation is
+<EM>still</EM> ambiguous when you left-factor. Yapps can deal with this
+situation, but will report a warning; see section
+<A HREF="#sec:Ambiguous-Grammars">3.3</A> for details.<BR>
+<BR>
+In general, replace rules of the form:
+<PRE CLASS="verbatim">
+rule A:   a b1 {{ return E1 }}
+        | a b2 {{ return E2 }}
+        | c3   {{ return E3 }}
+        | c4   {{ return E4 }}
+</PRE>
+with rules of the form:
+<PRE CLASS="verbatim">
+rule A:   a ( b1 {{ return E1 }}
+            | b2 {{ return E2 }}
+            )
+        | c3   {{ return E3 }}
+        | c4   {{ return E4 }}
+</PRE>
+<!--TOC subsection Left Recursion-->
+
+<H3 CLASS="subsection"><A NAME="htoc9">3.2</A>&nbsp;&nbsp;Left Recursion</H3><!--SEC END -->
+
+A common construct in grammars is for matching a list of patterns,
+sometimes separated with delimiters such as commas or semicolons. In
+LR-based parser systems, we can parse a list with something like this:
+<PRE CLASS="verbatim">
+rule sum:  NUM             {{ return NUM }}
+         | sum "+" NUM     {{ return (sum, NUM) }}
+</PRE>
+Parsing <TT>1+2+3+4</TT> would produce the output
+<TT>(((1,2),3),4)</TT>, which is what we want from a left-associative
+addition operator. Unfortunately, this grammar is <EM>left
+recursive,</EM> because the <TT>sum</TT> rule contains a clause that
+begins with <TT>sum</TT>. (The recursion occurs at the left side of
+the clause.)<BR>
+<BR>
+We must restructure this grammar to be <EM>right recursive</EM> instead:
+<PRE CLASS="verbatim">
+rule sum:  NUM             {{ return NUM }}
+         | NUM "+" sum     {{ return (NUM, sum) }}
+</PRE>
+Unfortunately, using this grammar, <TT>1+2+3+4</TT> would be parsed as
+<TT>(1,(2,(3,4)))</TT>, which no longer follows left associativity.
+The rule also needs to be left-factored. Instead, we write the
+pattern as a loop instead:
+<PRE CLASS="verbatim">
+rule sum:       NUM {{ v = NUM }}
+                ( "[+]" NUM {{ v = (v,NUM) }} )*
+                {{ return v }}
+</PRE>
+In general, replace rules of the form:
+<PRE CLASS="verbatim">
+rule A:  A a1 -&gt; &lt;&lt; E1 &gt;&gt; 
+       | A a2 -&gt; &lt;&lt; E2 &gt;&gt;
+       | b3   -&gt; &lt;&lt; E3 &gt;&gt;
+       | b4   -&gt; &lt;&lt; E4 &gt;&gt;
+</PRE>
+with rules of the form:
+<PRE CLASS="verbatim">
+rule A:  ( b3 {{ A = E3 }} 
+         | b4 {{ A = E4 }} )
+         ( a1 {{ A = E1 }}
+         | a2 {{ A = E2 }} )*
+         {{ return A }}
+</PRE>
+We have taken a rule that proved problematic for with recursion and
+turned it into a rule that works well with looping constructs.<BR>
+<BR>
+<!--TOC subsection Ambiguous Grammars-->
+
+<H3 CLASS="subsection"><A NAME="htoc10">3.3</A>&nbsp;&nbsp;Ambiguous Grammars</H3><!--SEC END -->
+
+<A NAME="sec:Ambiguous-Grammars"></A>
+In section <A HREF="#sec:Left-Factoring">3.1</A> we saw the classic if/then/else
+ambiguity, which occurs because the &#8220;else ...&#8221; portion of an &#8220;if
+...then ...else ...&#8221; construct is optional. Programs with 
+nested if/then/else constructs can be ambiguous when one of the else
+clauses is missing:
+<PRE CLASS="verbatim">
+if 1 then            if 1 then
+    if 5 then            if 5 then
+        x := 1;              x := 1;
+    else             else
+        y := 9;          y := 9;
+</PRE>
+The indentation shows that the program can be parsed in two different
+ways. (Of course, if we all would adopt Python's indentation-based
+structuring, this would never happen!) Usually we want the parsing on
+the left: the &#8220;else&#8221; should be associated with the closest &#8220;if&#8221;
+statement. In section <A HREF="#sec:Left-Factoring">3.1</A> we &#8220;solved&#8221; the
+problem by using the following grammar:
+<PRE CLASS="verbatim">
+rule stmt:  "if" expr 
+              "then" stmt {{ then_part = stmt }}
+              {{ else_part = [] }}
+              [ "else" stmt {{ else_part = stmt }} ]
+            {{ return ('If', expr, then_part, else_part) }}
+</PRE>
+Here, we have an optional match of &#8220;else&#8221; followed by a statement.
+The ambiguity is that if an &#8220;else&#8221; is present, it is not clear
+whether you want it parsed immediately or if you want it to be parsed
+by the outer &#8220;if&#8221;.<BR>
+<BR>
+Yapps will deal with the situation by matching when the else pattern
+when it can. The parser will work in this case because it prefers the
+<EM>first</EM> matching clause, which tells Yapps to parse the &#8220;else&#8221;.
+That is exactly what we want!<BR>
+<BR>
+For ambiguity cases with choices, Yapps will choose the <EM>first</EM>
+matching choice. However, remember that Yapps only looks at the first 
+token to determine its decision, so <TT>(a b | a c)</TT> will result in
+Yapps choosing <TT>a b</TT> even when the input is <TT>a c</TT>. It only
+looks at the first token, <TT>a</TT>, to make its decision.<BR>
+<BR>
+<!--TOC section Customization-->
+
+<H2 CLASS="section"><A NAME="htoc11">4</A>&nbsp;&nbsp;Customization</H2><!--SEC END -->
+
+Both the parsers and the scanners can be customized. The parser is
+usually extended by subclassing, and the scanner can either be
+subclassed or completely replaced.<BR>
+<BR>
+<!--TOC subsection Customizing Parsers-->
+
+<H3 CLASS="subsection"><A NAME="htoc12">4.1</A>&nbsp;&nbsp;Customizing Parsers</H3><!--SEC END -->
+
+If additional fields and methods are needed in order for a parser to
+work, Python subclassing can be used. (This is unlike parser classes
+written in static languages, in which these fields and methods must be
+defined in the generated parser class.) We simply subclass the
+generated parser, and add any fields or methods required. Expressions
+in the grammar can call methods of the subclass to perform any actions
+that cannot be expressed as a simple expression. For example,
+consider this simple grammar:
+<PRE CLASS="verbatim">
+parser X:
+    rule goal:  "something"  {{ self.printmsg() }}
+</PRE>
+The <TT>printmsg</TT> function need not be implemented in the parser
+class <TT>X</TT>; it can be implemented in a subclass:
+<PRE CLASS="verbatim">
+import Xparser
+
+class MyX(Xparser.X):
+    def printmsg(self):
+        print "Hello!"
+</PRE>
+<!--TOC subsection Customizing Scanners-->
+
+<H3 CLASS="subsection"><A NAME="htoc13">4.2</A>&nbsp;&nbsp;Customizing Scanners</H3><!--SEC END -->
+
+The generated parser class is not dependent on the generated scanner
+class. A scanner object is passed to the parser object's constructor
+in the <TT>parse</TT> function. To use a different scanner, write
+your own function to construct parser objects, with an instance of a
+different scanner. Scanner objects must have a <TT>token</TT> method
+that accepts an integer <TT>N</TT> as well as a list of allowed token
+types, and returns the Nth token, as a tuple. The default scanner
+raises <TT>NoMoreTokens</TT> if no tokens are available, and
+<TT>SyntaxError</TT> if no token could be matched. However, the
+parser does not rely on these exceptions; only the <TT>parse</TT>
+convenience function (which calls <TT>wrap_error_reporter</TT>) and
+the <TT>print_error</TT> error display function use those exceptions.<BR>
+<BR>
+The tuples representing tokens have four elements. The first two are
+the beginning and ending indices of the matched text in the input
+string. The third element is the type tag, matching either the name
+of a named token or the quoted regexp of an inline or ignored token.
+The fourth element of the token tuple is the matched text. If the
+input string is <TT>s</TT>, and the token tuple is
+<TT>(b,e,type,val)</TT>, then <TT>val</TT> should be equal to
+<TT>s[b:e]</TT>.<BR>
+<BR>
+The generated parsers do not the beginning or ending index. They use
+only the token type and value. However, the default error reporter
+uses the beginning and ending index to show the user where the error
+is.<BR>
+<BR>
+<!--TOC section Parser Mechanics-->
+
+<H2 CLASS="section"><A NAME="htoc14">5</A>&nbsp;&nbsp;Parser Mechanics</H2><!--SEC END -->
+
+The base parser class (Parser) defines two methods, <TT>_scan</TT>
+and <TT>_peek</TT>, and two fields, <TT>_pos</TT> and
+<TT>_scanner</TT>. The generated parser inherits from the base
+parser, and contains one method for each rule in the grammar. To
+avoid name clashes, do not use names that begin with an underscore
+(<TT>_</TT>).<BR>
+<BR>
+<!--TOC subsection Parser Objects-->
+
+<H3 CLASS="subsection"><A NAME="htoc15">5.1</A>&nbsp;&nbsp;Parser Objects</H3><!--SEC END -->
+
+<A NAME="sec:Parser-Objects"></A>
+Yapps produces as output two exception classes, a scanner class, a
+parser class, and a function <TT>parse</TT> that puts everything
+together. The <TT>parse</TT> function does not have to be used;
+instead, one can create a parser and scanner object and use them
+together for parsing.
+<PRE CLASS="verbatim">
+    def parse(rule, text):
+        P = X(XScanner(text))
+        return wrap_error_reporter(P, rule)
+</PRE>
+The <TT>parse</TT> function takes a name of a rule and an input string
+as input. It creates a scanner and parser object, then calls
+<TT>wrap_error_reporter</TT> to execute the method in the parser
+object named <TT>rule</TT>. The wrapper function will call the
+appropriate parser rule and report any parsing errors to standard
+output.<BR>
+<BR>
+There are several situations in which the <TT>parse</TT> function
+would not be useful. If a different parser or scanner is being used,
+or exceptions are to be handled differently, a new <TT>parse</TT>
+function would be required. The supplied <TT>parse</TT> function can
+be used as a template for writing a function for your own needs. An
+example of a custom parse function is the <TT>generate</TT> function
+in <TT>Yapps.py</TT>.<BR>
+<BR>
+<!--TOC subsection Context Sensitive Scanner-->
+
+<H3 CLASS="subsection"><A NAME="htoc16">5.2</A>&nbsp;&nbsp;Context Sensitive Scanner</H3><!--SEC END -->
+
+Unlike most scanners, the scanner produced by Yapps can take into
+account the context in which tokens are needed, and try to match only
+good tokens. For example, in the grammar:
+<PRE CLASS="verbatim">
+parser IniFile:
+   token ID:   "[a-zA-Z_0-9]+"
+   token VAL:  ".*"
+
+   rule pair:  ID "[ \t]*=[ \t]*" VAL "\n"
+</PRE>
+we would like to scan lines of text and pick out a name/value pair.
+In a conventional scanner, the input string <TT>shell=progman.exe</TT>
+would be turned into a single token of type <TT>VAL</TT>. The Yapps
+scanner, however, knows that at the beginning of the line, an
+<TT>ID</TT> is expected, so it will return <TT>"shell"</TT> as a token
+of type <TT>ID</TT>. Later, it will return <TT>"progman.exe"</TT> as
+a token of type <TT>VAL</TT>.<BR>
+<BR>
+Context sensitivity decreases the separation between scanner and
+parser, but it is useful in parsers like <TT>IniFile</TT>, where the
+tokens themselves are not unambiguous, but <EM>are</EM> unambiguous
+given a particular stage in the parsing process.<BR>
+<BR>
+Unfortunately, context sensitivity can make it more difficult to
+detect errors in the input. For example, in parsing a Pascal-like
+language with &#8220;begin&#8221; and &#8220;end&#8221; as keywords, a context sensitive
+scanner would only match &#8220;end&#8221; as the END token if the parser is in
+a place that will accept the END token. If not, then the scanner
+would match &#8220;end&#8221; as an identifier. To disable the context
+sensitive scanner in Yapps, add the
+<TT>context-insensitive-scanner</TT> option to the grammar:
+<PRE CLASS="verbatim">
+Parser X:
+    option:  "context-insensitive-scanner"
+</PRE>
+Context-insensitive scanning makes the parser look cleaner as well.<BR>
+<BR>
+<!--TOC subsection Internal Variables-->
+
+<H3 CLASS="subsection"><A NAME="htoc17">5.3</A>&nbsp;&nbsp;Internal Variables</H3><!--SEC END -->
+
+There are two internal fields that may be of use. The parser object
+has two fields, <TT>_pos</TT>, which is the index of the current
+token being matched, and <TT>_scanner</TT>, which is the scanner
+object. The token itself can be retrieved by accessing the scanner
+object and calling the <TT>token</TT> method with the token index. However, if you call <TT>token</TT> before the token has been requested by the parser, it may mess up a context-sensitive scanner.<SUP><A NAME="text1" HREF="#note1">1</A></SUP> A
+potentially useful combination of these fields is to extract the
+portion of the input matched by the current rule. To do this, just save the scanner state (<TT>_scanner.pos</TT>) before the text is matched and then again after the text is matched:
+<PRE CLASS="verbatim">
+  rule R: 
+      {{ start = self._scanner.pos }}
+      a b c 
+      {{ end = self._scanner.pos }}
+      {{ print 'Text is', self._scanner.input[start:end] }}
+</PRE>
+<!--TOC subsection Pre- and Post-Parser Code-->
+
+<H3 CLASS="subsection"><A NAME="htoc18">5.4</A>&nbsp;&nbsp;Pre- and Post-Parser Code</H3><!--SEC END -->
+
+Sometimes the parser code needs to rely on helper variables,
+functions, and classes. A Yapps grammar can optionally be surrounded
+by double percent signs, to separate the grammar from Python code.
+<PRE CLASS="verbatim">
+... Python code ...
+%%
+... Yapps grammar ...
+%%
+... Python code ...
+</PRE>
+The second <CODE>%%</CODE> can be omitted if there is no Python code at the
+end, and the first <CODE>%%</CODE> can be omitted if there is no extra
+Python code at all. (To have code only at the end, both separators
+are required.)<BR>
+<BR>
+If the second <CODE>%%</CODE> is omitted, Yapps will insert testing code
+that allows you to use the generated parser to parse a file.<BR>
+<BR>
+The extended calculator example in the Yapps examples subdirectory
+includes both pre-parser and post-parser code.<BR>
+<BR>
+<!--TOC subsection Representation of Grammars-->
+
+<H3 CLASS="subsection"><A NAME="htoc19">5.5</A>&nbsp;&nbsp;Representation of Grammars</H3><!--SEC END -->
+
+For each kind of pattern there is a class derived from Pattern. Yapps 
+has classes for Terminal, NonTerminal, Sequence, Choice, Option, Plus, 
+Star, and Eval. Each of these classes has the following interface:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+ setup(<EM>gen</EM>) Set accepts-&#1108;, and call
+ <EM>gen.changed()</EM> if it changed. This function can change the
+ flag from false to true but <EM>not</EM> from true to false.
+ <LI CLASS="li-itemize">update(<EM>(</EM>gen)) Set <SPAN STYLE="font-variant:small-caps">first</SPAN>and <SPAN STYLE="font-variant:small-caps">follow</SPAN>, and call
+ <EM>gen.changed()</EM> if either changed. This function can add to
+ the sets but <EM>not</EM> remove from them.
+ <LI CLASS="li-itemize">output(<EM>gen</EM>, <EM>indent</EM>) Generate code for matching
+ this rule, using <EM>indent</EM> as the current indentation level.
+ Writes are performed using <EM>gen.write</EM>.
+ <LI CLASS="li-itemize">used(<EM>vars</EM>) Given a list of variables <EM>vars</EM>,
+ return two lists: one containing the variables that are used, and
+ one containing the variables that are assigned. This function is
+ used for optimizing the resulting code.
+</UL>
+Both <EM>setup</EM> and <EM>update</EM> monotonically increase the
+variables they modify. Since the variables can only increase a finite
+number of times, we can repeatedly call the function until the
+variable stabilized. The <EM>used</EM> function is not currently
+implemented.<BR>
+<BR>
+With each pattern in the grammar Yapps associates three pieces of
+information: the <SPAN STYLE="font-variant:small-caps">first</SPAN>set, the <SPAN STYLE="font-variant:small-caps">follow</SPAN>set, and the
+accepts-&#1108; flag.<BR>
+<BR>
+The <SPAN STYLE="font-variant:small-caps">first</SPAN>set contains the tokens that can appear as we start
+matching the pattern. The <SPAN STYLE="font-variant:small-caps">follow</SPAN>set contains the tokens that can
+appear immediately after we match the pattern. The accepts-&#1108; 
+flag is true if the pattern can match no tokens. In this case, <SPAN STYLE="font-variant:small-caps">first</SPAN>will contain all the elements in <SPAN STYLE="font-variant:small-caps">follow</SPAN>. The <SPAN STYLE="font-variant:small-caps">follow</SPAN>set is not
+needed when accepts-&#1108; is false, and may not be accurate in
+those cases.<BR>
+<BR>
+Yapps does not compute these sets precisely. Its approximation can
+miss certain cases, such as this one:
+<PRE CLASS="verbatim">
+  rule C: ( A* | B )
+  rule B: C [A]
+</PRE>
+Yapps will calculate <TT>C</TT>'s <SPAN STYLE="font-variant:small-caps">follow</SPAN>set to include <TT>A</TT>.
+However, <TT>C</TT> will always match all the <TT>A</TT>'s, so <TT>A</TT> will
+never follow it. Yapps 2.0 does not properly handle this construct,
+but if it seems important, I may add support for it in a future
+version.<BR>
+<BR>
+Yapps also cannot handle constructs that depend on the calling
+sequence. For example:
+<PRE CLASS="verbatim">
+  rule R: U | 'b'
+  rule S:   | 'c'
+  rule T: S 'b'
+  rule U: S 'a'
+</PRE>
+The <SPAN STYLE="font-variant:small-caps">follow</SPAN>set for <TT>S</TT> includes <TT>a</TT> and <TT>b</TT>. Since <TT>S</TT> can be empty, the <SPAN STYLE="font-variant:small-caps">first</SPAN>set for <TT>S</TT> should include <TT>a</TT>,
+<TT>b</TT>, and <TT>c</TT>. However, when parsing <TT>R</TT>, if the lookahead
+is <TT>b</TT> we should <EM>not</EM> parse <TT>U</TT>. That's because in <TT>U</TT>, <TT>S</TT> is followed by <TT>a</TT> and not <TT>b</TT>. Therefore in
+<TT>R</TT>, we should choose rule <TT>U</TT> only if there is an <TT>a</TT> or
+<TT>c</TT>, but not if there is a <TT>b</TT>. Yapps and many other LL(1)
+systems do not distinguish <TT>S b</TT> and <TT>S a</TT>, making <TT>S</TT>'s <SPAN STYLE="font-variant:small-caps">follow</SPAN>set <TT>a, b</TT>, and making <TT>R</TT> always try to match
+<TT>U</TT>. In this case we can solve the problem by changing <TT>R</TT> to 
+<CODE>'b' | U</CODE> but it may not always be possible to solve all such
+problems in this way.<BR>
+<BR>
+<!--TOC section Grammar for Parsers-->
+
+<H2 CLASS="section"><A NAME="htoc20">A</A>&nbsp;&nbsp;Grammar for Parsers</H2><!--SEC END -->
+
+This is the grammar for parsers, without any Python code mixed in.
+The complete grammar can be found in <TT>parsedesc.g</TT> in the Yapps
+distribution.
+<PRE CLASS="verbatim">
+parser ParserDescription:
+    ignore:      "\\s+"
+    ignore:      "#.*?\r?\n"
+    token END:   "$"  # $ means end of string
+    token ATTR:  "&lt;&lt;.+?&gt;&gt;"
+    token STMT:  "{{.+?}}"
+    token ID:    '[a-zA-Z_][a-zA-Z_0-9]*'
+    token STR:   '[rR]?\'([^\\n\'\\\\]|\\\\.)*\'|[rR]?"([^\\n"\\\\]|\\\\.)*"'
+
+    rule Parser: "parser" ID ":"
+                   Options
+                   Tokens
+                   Rules
+                 END 
+
+    rule Options:  ( "option" ":" STR )*
+    rule Tokens:   ( "token" ID ":" STR | "ignore"   ":" STR )*
+    rule Rules:    ( "rule" ID OptParam ":" ClauseA )*
+
+    rule ClauseA:  ClauseB ( '[|]' ClauseB )*
+    rule ClauseB:  ClauseC*
+    rule ClauseC:  ClauseD [ '[+]' | '[*]' ]
+    rule ClauseD:  STR | ID [ATTR] | STMT
+                 | '\\(' ClauseA '\\) | '\\[' ClauseA '\\]'
+</PRE>
+<!--TOC section Upgrading-->
+
+<H2 CLASS="section"><A NAME="htoc21">B</A>&nbsp;&nbsp;Upgrading</H2><!--SEC END -->
+
+Yapps 2.0 is not backwards compatible with Yapps 1.0. In this section 
+are some tips for upgrading:
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+ Yapps 1.0 was distributed as a single file. Yapps 2.0 is
+ instead distributed as two Python files: a <EM>parser generator</EM>
+ (26k) and a <EM>parser runtime</EM> (5k). You need both files to
+ create parsers, but you need only the runtime (<TT>yappsrt.py</TT>)
+ to use the parsers.<BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps 1.0 supported Python 1.4 regular expressions from the
+ <TT>regex</TT> module. Yapps 2.0 uses Python 1.5 regular
+ expressions from the <TT>re</TT> module. <EM>The new syntax for
+ regular expressions is not compatible with the old syntax.</EM>
+ Andrew Kuchling has a guide to converting
+ regular
+ expressionshttp://www.python.org/doc/howto/regex-to-re/ on his
+ web page.<BR>
+<BR>
+<LI CLASS="li-enumerate">Yapps 1.0 wants a pattern and then a return value in <CODE>-&gt;</CODE>
+ <CODE>&lt;&lt;...&gt;&gt;</CODE>. Yapps 2.0 allows patterns and Python statements to
+ be mixed. To convert a rule like this:
+<PRE CLASS="verbatim">
+rule R: A B C -&gt; &lt;&lt; E1 &gt;&gt;
+      | X Y Z -&gt; &lt;&lt; E2 &gt;&gt;
+</PRE>to Yapps 2.0 form, replace the return value specifiers with return
+ statements:
+<PRE CLASS="verbatim">
+rule R: A B C {{ return E1 }}
+      | X Y Z {{ return E2 }}
+</PRE><LI CLASS="li-enumerate">Yapps 2.0 does not perform tail recursion elimination. This
+ means any recursive rules you write will be turned into recursive
+ methods in the parser. The parser will work, but may be slower.
+ It can be made faster by rewriting recursive rules, using instead
+ the looping operators <CODE>*</CODE> and <CODE>+</CODE> provided in Yapps 2.0.</OL>
+<!--TOC section Troubleshooting-->
+
+<H2 CLASS="section"><A NAME="htoc22">C</A>&nbsp;&nbsp;Troubleshooting</H2><!--SEC END -->
+
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+ A common error is to write a grammar that doesn't have an END
+ token. End tokens are needed when it is not clear when to stop
+ parsing. For example, when parsing the expression <TT>3+5</TT>, it is 
+ not clear after reading <TT>3</TT> whether to treat it as a complete
+ expression or whether the parser should continue reading.
+ Therefore the grammar for numeric expressions should include an end 
+ token. Another example is the grammar for Lisp expressions. In
+ Lisp, it is always clear when you should stop parsing, so you do
+ <EM>not</EM> need an end token. In fact, it may be more useful not
+ to have an end token, so that you can read in several Lisp expressions.
+ <LI CLASS="li-itemize">If there is a chance of ambiguity, make sure to put the choices 
+ in the order you want them checked. Usually the most specific
+ choice should be first. Empty sequences should usually be last.
+ <LI CLASS="li-itemize">The context sensitive scanner is not appropriate for all
+ grammars. You might try using the insensitive scanner with the
+ <TT>context-insensitive-scanner</TT> option in the grammar.
+ <LI CLASS="li-itemize">If performance turns out to be a problem, try writing a custom
+ scanner. The Yapps scanner is rather slow (but flexible and easy
+ to understand).
+</UL>
+<!--TOC section History-->
+
+<H2 CLASS="section"><A NAME="htoc23">D</A>&nbsp;&nbsp;History</H2><!--SEC END -->
+
+Yapps 1 had several limitations that bothered me while writing
+parsers:
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+ It was not possible to insert statements into the generated
+ parser. A common workaround was to write an auxilliary function
+ that executed those statements, and to call that function as part
+ of the return value calculation. For example, several of my
+ parsers had an &#8220;append(x,y)&#8221; function that existed solely to call 
+ &#8220;x.append(y)&#8221;.
+ <LI CLASS="li-enumerate">The way in which grammars were specified was rather
+ restrictive: a rule was a choice of clauses. Each clause was a
+ sequence of tokens and rule names, followed by a return value.
+ <LI CLASS="li-enumerate">Optional matching had to be put into a separate rule because
+ choices were only made at the beginning of a rule.
+ <LI CLASS="li-enumerate">Repetition had to be specified in terms of recursion. Not only 
+ was this awkward (sometimes requiring additional rules), I had to
+ add a tail recursion optimization to Yapps to transform the
+ recursion back into a loop.
+</OL>
+Yapps 2 addresses each of these limitations.
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+ Statements can occur anywhere within a rule. (However, only
+ one-line statements are allowed; multiline blocks marked by
+ indentation are not.)
+ <LI CLASS="li-enumerate">Grammars can be specified using any mix of sequences, choices,
+ tokens, and rule names. To allow for complex structures,
+ parentheses can be used for grouping.
+ <LI CLASS="li-enumerate">Given choices and parenthesization, optional matching can be
+ expressed as a choice between some pattern and nothing. In
+ addition, Yapps 2 has the convenience syntax <CODE>[A B ...]</CODE> for
+ matching <CODE>A B ...</CODE> optionally.
+ <LI CLASS="li-enumerate">Repetition operators <CODE>*</CODE> for zero or more and <CODE>+</CODE> for 
+ one or more make it easy to specify repeating patterns.
+</OL>
+It is my hope that Yapps 2 will be flexible enough to meet my needs
+for another year, yet simple enough that I do not hesitate to use it.<BR>
+<BR>
+<!--TOC section Debian Extensions-->
+
+<H2 CLASS="section"><A NAME="htoc24">E</A>&nbsp;&nbsp;Debian Extensions</H2><!--SEC END -->
+
+<A NAME="sec:debian"></A>
+The Debian version adds the following enhancements to the original
+Yapps code. They were written by Matthias Urlichs.
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+ Yapps can stack input sources ("include files"). A usage example
+ is supplied with the calc.g sample program.
+ <LI CLASS="li-enumerate">Yapps now understands augmented ignore-able patterns.
+ This means that Yapps can parse multi-line C comments; this wasn't
+ possible before.
+ <LI CLASS="li-enumerate">Better error reporting.
+ <LI CLASS="li-enumerate">Yapps now reads its input incrementally.
+</OL>
+The generated parser has been renamed to <TT>yapps/runtime.py</TT>.
+In Debian, this file is provided by the <TT>yapps2-runtime</TT> package.
+You need to depend on it if you Debianize Python programs which use
+yapps.<BR>
+<BR>
+<!--TOC section Future Extensions-->
+
+<H2 CLASS="section"><A NAME="htoc25">F</A>&nbsp;&nbsp;Future Extensions</H2><!--SEC END -->
+
+<A NAME="sec:future"></A>
+I am still investigating the possibility of LL(2) and higher
+lookahead. However, it looks like the resulting parsers will be
+somewhat ugly. <BR>
+<BR>
+It would be nice to control choices with user-defined predicates.<BR>
+<BR>
+The most likely future extension is backtracking. A grammar pattern
+like <CODE>(VAR ':=' expr)? {{ return Assign(VAR,expr) }} : expr {{ return expr }}</CODE>
+would turn into code that attempted to match <CODE>VAR ':=' expr</CODE>. If 
+it succeeded, it would run <CODE>{{ return ... }}</CODE>. If it failed, it
+would match <CODE>expr {{ return expr }}</CODE>. Backtracking may make it
+less necessary to write LL(2) grammars.<BR>
+<BR>
+<!--TOC section References-->
+
+<H2 CLASS="section"><A NAME="htoc26">G</A>&nbsp;&nbsp;References</H2><!--SEC END -->
+
+<OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+ The Python-Parser
+ SIGhttp://www.python.org/sigs/parser-sig/ is the first place
+ to look for a list of parser systems for Python.<BR>
+<BR>
+<LI CLASS="li-enumerate">ANTLR/PCCTS, by Terrence Parr, is available at
+ The ANTLR Home Pagehttp://www.antlr.org/.<BR>
+<BR>
+<LI CLASS="li-enumerate">PyLR, by Scott Cotton, is at his Starship
+ pagehttp://starship.skyport.net/crew/scott/PyLR.html.<BR>
+<BR>
+<LI CLASS="li-enumerate">John Aycock's Compiling Little Languages
+ Frameworkhttp://www.foretec.com/python/workshops/1998-11/proceedings/papers/aycock-little/aycock-little.html.<BR>
+<BR>
+<LI CLASS="li-enumerate">PyBison, by Scott Hassan, can be found at
+ his Python Projects
+ pagehttp://coho.stanford.edu/~hassan/Python/.<BR>
+<BR>
+<LI CLASS="li-enumerate">mcf.pars, by Mike C. Fletcher, is available at
+ his web
+ pagehttp://members.rogers.com/mcfletch/programming/simpleparse/simpleparse.html.<BR>
+<BR>
+<LI CLASS="li-enumerate">kwParsing, by Aaron Watters, is available at
+ his Starship
+ pagehttp://starship.skyport.net/crew/aaron_watters/kwParsing/.
+</OL>
+<!--BEGIN NOTES document-->
+<HR WIDTH="50%" SIZE=1><DL CLASS="list"><DT CLASS="dt-list"><A NAME="note1" HREF="#text1"><FONT SIZE=5>1</FONT></A><DD CLASS="dd-list">When using a context-sensitive scanner, the parser tells the scanner what the valid token types are at each point. If you call <TT>token</TT> before the parser can tell the scanner the valid token types, the scanner will attempt to match without considering the context.
+</DL>
+<!--END NOTES-->
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+<!--FOOTER-->
+<HR SIZE=2><BLOCKQUOTE CLASS="quote"><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+</EM><A HREF="http://pauillac.inria.fr/~maranget/hevea/index.html"><EM>H<FONT SIZE=2><sup>E</sup></FONT>V<FONT SIZE=2><sup>E</sup></FONT>A</EM></A><EM>.</EM></BLOCKQUOTE></BODY>
+</HTML>
