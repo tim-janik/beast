@@ -1,11 +1,5 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "aida.hh"
-#include "aidaprops.hh"
-#include "thread.hh"
-#include "regex.hh"
-#include "config/config.h"      // HAVE_SYS_EVENTFD_H
-#include "randomhash.hh"        // random_nonce
-#include "main.hh"              // program_alias
 
 #include <string.h>
 #include <stdio.h>
@@ -33,13 +27,55 @@
 #endif
 #define AIDA_CPP_PASTE2i(a,b)                   a ## b // indirection required to expand __LINE__ etc
 #define AIDA_CPP_PASTE2(a,b)                    AIDA_CPP_PASTE2i (a,b)
-#define GCLOG(...)                              RAPICORN_KEY_DEBUG ("GCStats", __VA_ARGS__)
-#define AIDA_MESSAGES_ENABLED()                 rapicorn_debug_check ("AidaMsg")
-#define AIDA_MESSAGE(...)                       RAPICORN_KEY_DEBUG ("AidaMsg", __VA_ARGS__)
+#define AIDA_DEBUG(...)                         dprintf (2, __VA_ARGS__)
+
+// == printf helper ==
+#define LLI     (long long int)
+#define LLU     (long long unsigned int)
 
 namespace Rapicorn {
 /// The Aida namespace provides all IDL functionality exported to C++.
 namespace Aida {
+
+// == Helper Classes ==
+/// Create an instance of @a Class on demand that is constructed and never destructed.
+/// DurableInstance<Class*> provides the memory for a @a Class instance and calls it's
+/// constructor on demand, but it's destructor is never called (so the memory allocated
+/// to the DurableInstance must not be freed). Due to its constexpr ctor and on-demand
+/// creation of @a Class, a DurableInstance<> can be accessed at any time during the
+/// static ctor (or dtor) phases and will always yield a properly initialized @a Class.
+/// A DurableInstance is useful for static variables that need to be accessible from
+/// other static ctor/dtor calls.
+template<class Class>
+class DurableInstance final {
+  static_assert (std::is_class<Class>::value, "DurableInstance<Class> requires class template argument");
+  Class *ptr_;
+  uint64 mem_[(sizeof (Class) + sizeof (uint64) - 1) / sizeof (uint64)];
+  void
+  initialize() AIDA_NOINLINE
+  {
+    static std::mutex mtx;
+    std::unique_lock<std::mutex> lock (mtx);
+    if (ptr_ == NULL)
+      ptr_ = new (mem_) Class(); // exclusive construction
+  }
+public:
+  constexpr  DurableInstance() : ptr_ (NULL) {}
+  /// Retrieve pointer to @a Class instance, always returns the same pointer.
+  Class*
+  operator->() AIDA_PURE
+  {
+    if (AIDA_UNLIKELY (ptr_ == NULL))
+      initialize();
+    return ptr_;
+  }
+  /// Retrieve reference to @a Class instance, always returns the same reference.
+  Class&       operator*     () AIDA_PURE       { return *operator->(); }
+  const Class* operator->    () const AIDA_PURE { return const_cast<DurableInstance*> (this)->operator->(); }
+  const Class& operator*     () const AIDA_PURE { return const_cast<DurableInstance*> (this)->operator*(); }
+  /// Check if @a this stores a @a Class instance yet.
+  explicit     operator bool () const           { return ptr_ != NULL; }
+};
 
 typedef std::weak_ptr<OrbObject>    OrbObjectW;
 
@@ -84,7 +120,7 @@ EnumInfo::EnumInfo (const String &enum_name, bool isflags, uint32_t n_values, co
   enum_name_ (enum_name), values_ (values), n_values_ (n_values), flags_ (isflags)
 {
   if (n_values)
-    assert_return (values != NULL);
+    AIDA_ASSERT_RETURN (values != NULL);
 }
 
 String
@@ -163,7 +199,7 @@ EnumInfo::value_to_string (int64 value, const String &joiner) const
   if (filled == value)
     return string_join (joiner, idents);
   // fallback
-  return string_format ("0x%x", value);
+  return string_printf ("0x%llx", LLU value);
 }
 
 int64
@@ -174,7 +210,7 @@ EnumInfo::value_from_string (const String &valuestring) const
 }
 
 struct GlobalEnumInfoMap {
-  Mutex                             mutex;
+  std::mutex                        mutex;
   std::map<String, const EnumInfo*> map;
 };
 static DurableInstance<GlobalEnumInfoMap> global_enum_info;
@@ -182,7 +218,7 @@ static DurableInstance<GlobalEnumInfoMap> global_enum_info;
 const EnumInfo&
 EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_values, const EnumValue *values)
 {
-  ScopedLock<Mutex> locker (global_enum_info->mutex);
+  std::lock_guard<std::mutex> locker (global_enum_info->mutex);
   auto it = global_enum_info->map.find (enum_name);
   if (it != global_enum_info->map.end())
     return *it->second;
@@ -194,10 +230,10 @@ EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_va
 static std::vector<const char*>
 split_aux_char_array (const char *char_array, size_t length)
 {
-  assert (char_array && length >= 1);
-  assert (char_array[length-1] == 0);
-  const char *p = char_array, *const end = char_array + length - 1;
   std::vector<const char*> cv;
+  AIDA_ASSERT_RETURN (char_array && length >= 1, cv);
+  AIDA_ASSERT_RETURN (char_array[length-1] == 0, cv);
+  const char *p = char_array, *const end = char_array + length - 1;
   while (p < end)
     {
       const size_t l = strlen (p);
@@ -248,8 +284,8 @@ aux_vector_find (const std::vector<String> &auxvector, const String &field, cons
 bool
 aux_vector_check_options (const std::vector<String> &auxvector, const String &field, const String &key, const String &options)
 {
-  for (const String &option : Rapicorn::string_split_any (options, ":;"))
-    if (!Rapicorn::string_option_check (aux_vector_find (auxvector, field, key), option))
+  for (const String &option : string_split_any (options, ":;"))
+    if (!string_option_check (aux_vector_find (auxvector, field, key), option))
       return false;
   return true;
 }
@@ -291,40 +327,11 @@ type_kind_name (TypeKind type_kind)
 String
 TypeHash::to_string () const
 {
-  return string_format ("(0x%016x,0x%016x)", typehi, typelo);
+  return string_printf ("(0x%016llx,0x%016llx)", LLU typehi, LLU typelo);
 }
 
 // == ProtoUnion ==
 static_assert (sizeof (ProtoMsg) <= sizeof (ProtoUnion), "sizeof ProtoMsg");
-
-// === Utilities ===
-static std::function<void()> current_assertion_hook;
-
-void
-assertion_failed (const char *file, uint line, const char *expr)
-{
-  String msg= file ? file : program_alias();
-  if (line > 0)
-    msg += String (":") + std::to_string (line);
-  msg += ": assertion failed: ";
-  msg += expr ? expr : "statement must be unreached";
-  if (msg[msg.size() - 1] != '\n')
-    msg += "\n";
-  fflush (stdout);
-  fputs (msg.c_str(), stderr);
-  fflush (stderr);
-  // run hook, e.g. to abort test programs
-  if (current_assertion_hook)
-    current_assertion_hook();
-}
-
-void
-assertion_failed_hook (const std::function<void()> &hook)
-{
-  if (hook)
-    AIDA_ASSERT_RETURN (current_assertion_hook == NULL);
-  current_assertion_hook = hook;
-}
 
 // == ImplicitBase ==
 ImplicitBase::~ImplicitBase()
@@ -333,7 +340,7 @@ ImplicitBase::~ImplicitBase()
 }
 
 // == Any ==
-RAPICORN_STATIC_ASSERT (sizeof (std::string) <= sizeof (Any)); // assert big enough Any impl
+static_assert (sizeof (std::string) <= sizeof (Any), ""); // assert big enough Any impl
 
 Any::Any (const Any &clone) :
   Any()
@@ -499,7 +506,7 @@ any_vector_to_string (const Any::FieldVector *vec)
           s += ", ";
         s += any.name + ": ";
         if (any.kind() == STRING)
-          s += Rapicorn::string_to_cquote (any.to_string());
+          s += string_to_cquote (any.to_string());
         else
           s += any.to_string();
       }
@@ -517,7 +524,7 @@ any_vector_to_string (const Any::AnyVector *vec)
         if (!s.empty())
           s += ", ";
         if (any.kind() == STRING)
-          s += Rapicorn::string_to_cquote (any.to_string());
+          s += string_to_cquote (any.to_string());
         else
           s += any.to_string();
       }
@@ -529,14 +536,14 @@ String
 Any::repr (const String &field_name) const
 {
   String s = "{ ";
-  s += "type=" + Rapicorn::string_to_cquote (type_kind_name (kind()));
+  s += "type=" + string_to_cquote (type_kind_name (kind()));
   if (!field_name.empty())
-    s += ", name=" + Rapicorn::string_to_cquote (field_name);
+    s += ", name=" + string_to_cquote (field_name);
   s += ", value=";
   if (kind() == ANY)
     s += u_.vany ? u_.vany->repr() : Any().repr();
   else if (kind() == STRING)
-    s += Rapicorn::string_to_cquote (u_.vstring());
+    s += string_to_cquote (u_.vstring());
   else
     s += to_string();
   s += " }";
@@ -551,18 +558,18 @@ Any::to_string() const
   switch (kind())
     {
     case BOOL: case ENUM: case INT32:
-    case INT64:      s += string_format ("%d", u_.vint64);                                                      break;
-    case FLOAT64:    s += string_format ("%.17g", u_.vdouble);                                                  break;
-    case STRING:     s += u_.vstring();                                                                         break;
-    case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                   break;
-    case RECORD:     s += any_vector_to_string (&u_.vfields());                                                 break;
-    case INSTANCE:   s += string_format ("((ImplicitBase*) %p)", u_.ibase().get());                             break;
-    case REMOTE:     s += string_format ("(RemoteHandle (orbid=0x#%08x))", u_.rhandle().__aida_orbid__());      break;
-    case TRANSITION: s += string_format ("(Any (TRANSITION, orbid=0x#%08x))", u_.vint64);                       break;
+    case INT64:      s += string_printf ("%lld", LLI u_.vint64);                                                 break;
+    case FLOAT64:    s += string_printf ("%.17g", u_.vdouble);                                                   break;
+    case STRING:     s += u_.vstring();                                                                          break;
+    case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
+    case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
+    case INSTANCE:   s += string_printf ("((ImplicitBase*) %p)", u_.ibase().get());                              break;
+    case REMOTE:     s += string_printf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
+    case TRANSITION: s += string_printf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
     case ANY:
       s += "(Any (";
       if (u_.vany && u_.vany->kind() == STRING)
-        s += Rapicorn::string_to_cquote (u_.vany->to_string());
+        s += string_to_cquote (u_.vany->to_string());
       else if (u_.vany && u_.vany->kind() != UNTYPED)
         s += u_.vany->to_string();
       s += "))";
@@ -714,7 +721,7 @@ Any::get_string () const
     {
     case BOOL:          return u_.vint64 ? "true" : "false";
     case ENUM: case INT32:
-    case INT64:         return string_format ("%i", u_.vint64);
+    case INT64:         return string_printf ("%lli", LLI u_.vint64);
     case FLOAT64:       return string_from_double (u_.vdouble);
     case STRING:        return u_.vstring();
     default: ;
@@ -783,7 +790,9 @@ Any::set_ibase (ImplicitBase *ibase)
   ensure (INSTANCE);
   if (u_.ibase().get() != ibase)
     {
-      ImplicitBaseP next = shared_ptr_cast<ImplicitBase> (ibase); // beware of internal references, copy before freeing
+      ImplicitBaseP next;
+      if (ibase)
+        next = ibase->shared_from_this(); // beware of internal references, copy before freeing
       std::swap (u_.ibase(), next);
     }
 }
@@ -957,7 +966,6 @@ OrbObject::client_connection ()
 }
 
 class NullOrbObject : public virtual OrbObject {
-  friend class FriendAllocator<NullOrbObject>;
 public:
   explicit NullOrbObject  () : OrbObject (0) {}
   virtual  ~NullOrbObject () override        {}
@@ -971,7 +979,7 @@ RemoteHandle::__aida_null_orb_object__ ()
 {
   static OrbObjectP null_orbo = [] () {                         // use lambda to sneak in extra code
     pmf_upgrade_from = &RemoteHandle::__aida_upgrade_from__;    // export accessor for internal maintenance
-    return FriendAllocator<NullOrbObject>::make_shared();
+    return std::make_shared<NullOrbObject>();
   } ();                                                         // executes lambda atomically
   return null_orbo;
 }
@@ -1104,7 +1112,7 @@ std::string
 ProtoMsg::first_id_str() const
 {
   uint64 fid = first_id();
-  return string_format ("%016x", fid);
+  return string_printf ("%016llx", LLU fid);
 }
 
 static std::string
@@ -1115,7 +1123,7 @@ strescape (const std::string &str)
     {
       uint8_t d = *it;
       if (d < 32 || d > 126 || d == '?')
-        buffer += string_format ("\\%03o", d);
+        buffer += string_printf ("\\%03o", d);
       else if (d == '\\')
         buffer += "\\\\";
       else if (d == '"')
@@ -1132,14 +1140,14 @@ ProtoMsg::type_name (int field_type)
   const char *tkn = type_kind_name (TypeKind (field_type));
   if (tkn)
     return tkn;
-  return string_format ("<invalid:%d>", field_type);
+  return string_printf ("<invalid:%d>", field_type);
 }
 
 std::string
 ProtoMsg::to_string() const
 {
-  String s = string_format ("Aida::ProtoMsg(%p)={", this);
-  s += string_format ("size=%u, capacity=%u", size(), capacity());
+  String s = string_printf ("Aida::ProtoMsg(%p)={", this);
+  s += string_printf ("size=%u, capacity=%u", size(), capacity());
   ProtoReader fbr (*this);
   for (size_t i = 0; i < size(); i++)
     {
@@ -1148,18 +1156,18 @@ ProtoMsg::to_string() const
       switch (fbr.get_type())
         {
         case UNTYPED:
-        case VOID:       s += string_format (", %s", tn); fbr.skip();                               break;
-        case BOOL:       s += string_format (", %s: 0x%x", tn, fbr.pop_bool());                     break;
-        case ENUM:       s += string_format (", %s: 0x%x", tn, fbr.pop_evalue());                   break;
-        case INT32:      s += string_format (", %s: 0x%08x", tn, fbr.pop_int64());                  break;
-        case INT64:      s += string_format (", %s: 0x%016x", tn, fbr.pop_int64());                 break;
-        case FLOAT64:    s += string_format (", %s: %.17g", tn, fbr.pop_double());                  break;
-        case STRING:     s += string_format (", %s: %s", tn, strescape (fbr.pop_string()).c_str()); break;
-        case SEQUENCE:   s += string_format (", %s: %p", tn, &fbr.pop_seq());                       break;
-        case RECORD:     s += string_format (", %s: %p", tn, &fbr.pop_rec());                       break;
-        case TRANSITION: s += string_format (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
-        case ANY:        s += string_format (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
-        default:         s += string_format (", <unknown:%u>: %p", fbr.get_type(), (void*) fbr.debug_bits()); fbr.skip(); break;
+        case VOID:       s += string_printf (", %s", tn); fbr.skip();                               break;
+        case BOOL:       s += string_printf (", %s: 0x%llx", tn, LLU fbr.pop_bool());               break;
+        case ENUM:       s += string_printf (", %s: 0x%llx", tn, LLU fbr.pop_evalue());             break;
+        case INT32:      s += string_printf (", %s: 0x%08llx", tn, LLU fbr.pop_int64());            break;
+        case INT64:      s += string_printf (", %s: 0x%016llx", tn, LLU fbr.pop_int64());           break;
+        case FLOAT64:    s += string_printf (", %s: %.17g", tn, fbr.pop_double());                  break;
+        case STRING:     s += string_printf (", %s: %s", tn, strescape (fbr.pop_string()).c_str()); break;
+        case SEQUENCE:   s += string_printf (", %s: %p", tn, &fbr.pop_seq());                       break;
+        case RECORD:     s += string_printf (", %s: %p", tn, &fbr.pop_rec());                       break;
+        case TRANSITION: s += string_printf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
+        case ANY:        s += string_printf (", %s: %p", tn, (void*) fbr.debug_bits()); fbr.skip(); break;
+        default:         s += string_printf (", <unknown:%u>: %p", fbr.get_type(), (void*) fbr.debug_bits()); fbr.skip(); break;
         }
     }
   s += '}';
@@ -1602,7 +1610,6 @@ private:
   std::unordered_map<Instance*, uint64> map_;
   std::vector<uint>                     free_list_;
   class MappedObject : public virtual OrbObject {
-    friend class FriendAllocator<MappedObject>;
     ObjectMap &omap_;
   public:
     explicit MappedObject (uint64 orbid, ObjectMap &omap) : OrbObject (orbid), omap_ (omap) { assert (orbid); }
@@ -1654,7 +1661,7 @@ ObjectMap<Instance>::next_index ()
   const size_t FREE_LENGTH = 31;
   if (free_list_.size() > FREE_LENGTH)
     {
-      const size_t prandom = byte_hash64 ((uint8*) free_list_.data(), sizeof (free_list_.data()) * free_list_.size());
+      const size_t prandom = fnv1a_bytehash64 ((uint8*) free_list_.data(), sizeof (free_list_.data()) * free_list_.size());
       const size_t end = free_list_.size(), j = prandom % (end - 1);
       assert (j < end - 1); // use end-1 to avoid popping the last pushed slot
       idx = free_list_[j];
@@ -1680,7 +1687,7 @@ ObjectMap<Instance>::orbo_from_instance (InstanceP instancep)
         {
           const uint64 index = next_index();
           orbid = start_id_ + index;
-          orbop = FriendAllocator<MappedObject>::make_shared (orbid, *this); // calls delete_orbid from dtor
+          orbop = std::make_shared<MappedObject> (orbid, *this); // calls delete_orbid from dtor
           Entry e { orbop, instancep };
           entries_[index] = e;
           map_[instancep.get()] = orbid;
@@ -1716,13 +1723,13 @@ ObjectMap<Instance>::instance_from_orbo (const OrbObjectP &orbo)
 
 // == ConnectionRegistry ==
 class ConnectionRegistry {
-  Mutex                        mutex_;
+  std::mutex                   mutex_;
   std::vector<BaseConnection*> connections_;
 public:
   void
   register_connection (BaseConnection &connection)
   {
-    ScopedLock<Mutex> sl (mutex_);
+    std::lock_guard<std::mutex> locker (mutex_);
     size_t i;
     for (i = 0; i < connections_.size(); i++)
       if (!connections_[i])
@@ -1734,7 +1741,7 @@ public:
   void
   unregister_connection (BaseConnection &connection)
   {
-    ScopedLock<Mutex> sl (mutex_);
+    std::lock_guard<std::mutex> locker (mutex_);
     bool connection_found_and_unregistered = false;
     for (size_t i = 0; i < connections_.size(); i++)
       if (connections_[i] == &connection)
@@ -1748,7 +1755,7 @@ public:
   ServerConnection*
   server_connection_from_protocol (const String &protocol)
   {
-    ScopedLock<Mutex> sl (mutex_);
+    std::lock_guard<std::mutex> locker (mutex_);
     for (size_t i = 0; i < connections_.size(); i++)
       {
         BaseConnection *bcon = connections_[i];
@@ -1781,13 +1788,14 @@ BaseConnection::~BaseConnection ()
 void
 BaseConnection::post_peer_msg (ProtoMsg *pm)
 {
-  assert_return (pm != NULL);
-  if (AIDA_MESSAGES_ENABLED())
-    {
-      ProtoReader fbr (*pm);
-      const uint64 msgid = fbr.pop_int64(), hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-      AIDA_MESSAGE ("orig=%p dest=%p msgid=%016x h=%016x l=%016x", this, &peer_connection(), msgid, hashhigh, hashlow);
-    }
+  AIDA_ASSERT_RETURN (pm != NULL);
+#if 0
+  {
+    ProtoReader fbr (*pm);
+    const uint64 msgid = fbr.pop_int64(), hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
+    AIDA_MESSAGE ("orig=%p dest=%p msgid=%016x h=%016x l=%016x", this, &peer_connection(), msgid, hashhigh, hashlow);
+  }
+#endif
   peer_connection().receive_msg (pm);
 }
 
@@ -1861,12 +1869,12 @@ public:
     connection_registry->unregister_connection (*this);
     sem_destroy (&transport_sem_);
     pthread_spin_destroy (&signal_spin_);
-    fatal ("%s: ~ClientConnectionImpl not properly implemented", __func__);
+    AIDA_ASSERT_RETURN (! "~ClientConnectionImpl not properly implemented");
   }
   virtual void
   receive_msg (ProtoMsg *fb) override
   {
-    assert_return (fb);
+    AIDA_ASSERT_RETURN (fb);
     transport_channel_.send_msg (fb, !blocking_for_sem_);
     notify_for_result();
   }
@@ -1894,13 +1902,12 @@ public:
         seen_garbage_ = true;
         ProtoMsg *fb = ProtoMsg::_new (3);
         fb->add_header1 (MSGID_META_SEEN_GARBAGE, 0, 0);
-        GCLOG ("ClientConnectionImpl: SEEN_GARBAGE (%016x)", coo.orbid());
+        AIDA_DEBUG ("GCStats: ClientConnectionImpl: SEEN_GARBAGE (%016llx)", LLU coo.orbid());
         ProtoMsg *fr = this->call_remote (fb); // takes over fb
         assert (fr == NULL);
       }
   }
   class ClientOrbObject : public OrbObject {
-    friend                class FriendAllocator<ClientOrbObject>;
     ClientConnectionImpl &client_connection_;
   public:
     explicit ClientOrbObject (uint64 orbid, ClientConnectionImpl &c) : OrbObject (orbid), client_connection_ (c) { assert (orbid); }
@@ -1955,7 +1962,7 @@ ClientConnectionImpl::pop_handle (ProtoReader &fr, RemoteHandle &rhandle)
   OrbObjectP orbop = id2orbo_map_[orbid].lock();
   if (AIDA_UNLIKELY (!orbop) && orbid)
     {
-      orbop = FriendAllocator<ClientOrbObject>::make_shared (orbid, *this);
+      orbop = std::make_shared<ClientOrbObject> (orbid, *this);
       id2orbo_map_[orbid] = orbop;
     }
   (rhandle.*pmf_upgrade_from) (orbop);
@@ -1988,7 +1995,7 @@ ClientConnectionImpl::gc_sweep (const ProtoMsg *fb)
   fr->add_int64 (trashids.size()); // length
   for (auto v : trashids)
     fr->add_int64 (v); // items
-  GCLOG ("ClientConnectionImpl: GARBAGE_REPORT: %u trash ids", trashids.size());
+  AIDA_DEBUG ("GCStats: ClientConnectionImpl: GARBAGE_REPORT: %zu trash ids", trashids.size());
   post_peer_msg (fr);
   seen_garbage_ = false;
 }
@@ -1997,7 +2004,8 @@ void
 ClientConnectionImpl::dispatch ()
 {
   ProtoMsg *fb = pop();
-  return_if (fb == NULL);
+  if (fb == NULL)
+    return;
   ProtoScope client_connection_protocol_scope (*this);
   ProtoReader fbr (*fb);
   const MessageId msgid = MessageId (fbr.pop_int64());
@@ -2031,7 +2039,7 @@ ClientConnectionImpl::dispatch ()
         const size_t handler_id = fbr.pop_int64();
         const bool deleted = true; // FIXME: currently broken
         if (!deleted)
-          print_warning (string_format ("%s: invalid handler id (%016x) in message: (%016x, %016x%016x)",
+          print_warning (string_printf ("%s: invalid handler id (%016x) in message: (%016x, %016x%016x)",
                                         __func__, handler_id, msgid, hashhigh, hashlow));
 #endif
       }
@@ -2041,8 +2049,8 @@ ClientConnectionImpl::dispatch ()
       break;
     default: // result/reply messages are handled in call_remote
       {
-        const String s = string_format ("msgid should not occur: %016x", msgid);
-        assertion_failed (__FILE__, __LINE__, s.c_str());
+        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
     }
@@ -2099,8 +2107,8 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
         {
           ProtoReader frr (*fr);
           const uint64 retid = frr.pop_int64(); // rethh = frr.pop_int64(), rethl = frr.pop_int64();
-          const String s = string_format ("msgid should not occur: %016x", retid);
-          assertion_failed (__FILE__, __LINE__, s.c_str());
+          AIDA_DEBUG ("msgid should not occur: %016llx", LLU retid);
+          delete fr;
         }
     }
   blocking_for_sem_ = false;
@@ -2112,10 +2120,10 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
 size_t
 ClientConnectionImpl::signal_connect (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data)
 {
-  assert_return (rhandle.__aida_orbid__() > 0, 0);
-  assert_return (hhi > 0, 0);   // FIXME: check for signal id
-  assert_return (hlo > 0, 0);
-  assert_return (seh != NULL, 0);
+  AIDA_ASSERT_RETURN (rhandle.__aida_orbid__() > 0, 0);
+  AIDA_ASSERT_RETURN (hhi > 0, 0);   // FIXME: check for signal id
+  AIDA_ASSERT_RETURN (hlo > 0, 0);
+  AIDA_ASSERT_RETURN (seh != NULL, 0);
   SignalHandler *shandler = new SignalHandler;
   shandler->hhi = hhi;
   shandler->hlo = hlo;
@@ -2134,7 +2142,7 @@ ClientConnectionImpl::signal_connect (uint64 hhi, uint64 hlo, const RemoteHandle
   fb <<= signal_handler_id;                     // handler connection request id
   fb <<= 0;                                     // disconnection request id
   ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  assert_return (connection_result != NULL, 0);
+  AIDA_ASSERT_RETURN (connection_result != NULL, 0);
   ProtoReader frr (*connection_result);
   frr.skip_header();
   pthread_spin_lock (&signal_spin_);
@@ -2153,22 +2161,23 @@ ClientConnectionImpl::signal_disconnect (size_t signal_handler_id)
   if (shandler)
     signal_handlers_[handler_index] = NULL;
   pthread_spin_unlock (&signal_spin_);
-  return_if (!shandler, false);
+  if (!shandler)
+    return  false;
   ProtoMsg &fb = *ProtoMsg::_new (3 + 1 + 2);
   fb.add_header2 (MSGID_CONNECT, shandler->hhi, shandler->hlo);
   add_handle (fb, shandler->remote);            // emitting object
   fb <<= 0;                                     // handler connection request id
   fb <<= shandler->cid;                         // disconnection request id
   ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  assert_return (connection_result != NULL, false);
+  AIDA_ASSERT_RETURN (connection_result != NULL, false);
   ProtoReader frr (*connection_result);
   frr.skip_header();
   uint64 disconnection_success;
   frr >>= disconnection_success;
   delete connection_result;
-  critical_unless (disconnection_success == true); // should always succeed due to the above guard; FIXME: possible race w/ ~Signal
   shandler->seh (NULL, shandler->data); // handler deletion hook
   delete shandler;
+  AIDA_ASSERT_RETURN (disconnection_success == true, false); // should always succeed due to the above guard; FIXME: possible race w/ ~Signal
   return disconnection_success;
 }
 
@@ -2221,7 +2230,7 @@ class ServerConnectionImpl : public ServerConnection {
   ImplicitBaseP            remote_origin_;
   std::unordered_map<size_t, EmitResultHandler> emit_result_map_;
   std::unordered_set<OrbObjectP> live_remotes_, *sweep_remotes_;
-  RAPICORN_CLASS_NON_COPYABLE (ServerConnectionImpl);
+  AIDA_CLASS_NON_COPYABLE (ServerConnectionImpl);
   void                  start_garbage_collection ();
 public:
   explicit              ServerConnectionImpl    (const std::string &protocol);
@@ -2230,16 +2239,22 @@ public:
   virtual bool          pending                 () override     { return transport_channel_.has_msg(); }
   virtual void          dispatch                () override;
   virtual void          remote_origin           (ImplicitBaseP rorigin) override;
-  virtual RemoteHandle  remote_origin           () override     { fatal ("assert not reached"); }
   virtual void          add_interface           (ProtoMsg &fb, ImplicitBaseP ibase) override;
   virtual ImplicitBaseP pop_interface           (ProtoReader &fr) override;
   virtual void          emit_result_handler_add (size_t id, const EmitResultHandler &handler) override;
   EmitResultHandler     emit_result_handler_pop (size_t id);
   virtual void          cast_interface_handle   (RemoteHandle &rhandle, ImplicitBaseP ibase) override;
+  virtual RemoteHandle
+  remote_origin () override
+  {
+    RemoteHandle rh = RemoteHandle::__aida_null_handle__();
+    AIDA_ASSERT_RETURN (! "assert unreached", rh);
+    return rh;
+  }
   virtual void
   receive_msg (ProtoMsg *fb) override
   {
-    assert_return (fb);
+    AIDA_ASSERT_RETURN (fb);
     transport_channel_.send_msg (fb, true);
   }
 };
@@ -2249,7 +2264,7 @@ ServerConnectionImpl::start_garbage_collection()
 {
   if (sweep_remotes_)
     {
-      assertion_failed (__FILE__, __LINE__, "duplicate garbage collection request should not occur");
+      AIDA_ASSERT_RETURN (! "duplicate garbage collection request should not occur");
       return;
     }
   // GARBAGE_SWEEP
@@ -2257,7 +2272,7 @@ ServerConnectionImpl::start_garbage_collection()
   sweep_remotes_->swap (live_remotes_);
   ProtoMsg *fb = ProtoMsg::_new (3);
   fb->add_header2 (MSGID_META_GARBAGE_SWEEP, 0, 0);
-  GCLOG ("ServerConnectionImpl: GARBAGE_SWEEP: %u candidates", sweep_remotes_->size());
+  AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_SWEEP: %zu candidates", sweep_remotes_->size());
   post_peer_msg (fb);
 }
 
@@ -2274,7 +2289,7 @@ ServerConnectionImpl::ServerConnectionImpl (const std::string &protocol) :
 ServerConnectionImpl::~ServerConnectionImpl()
 {
   connection_registry->unregister_connection (*this);
-  fatal ("%s: ~ServerConnectionImpl not properly implemented", __func__);
+  AIDA_ASSERT_RETURN (! "~ServerConnectionImpl not properly implemented");
 }
 
 void
@@ -2383,8 +2398,8 @@ ServerConnectionImpl::dispatch ()
               }
           delete sweep_remotes_;                // deletes references
           sweep_remotes_ = NULL;
-          GCLOG ("ServerConnectionImpl: GARBAGE_COLLECTED: considered=%u retained=%u purged=%u active=%u",
-                 sweeps, retain, sweeps - retain, live_remotes_.size());
+          AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_COLLECTED: considered=%llu retained=%llu purged=%llu active=%zu",
+                      LLU sweeps, LLU retain, LLU (sweeps - retain), live_remotes_.size());
         }
       break;
     case MSGID_EMIT_RESULT:
@@ -2400,8 +2415,8 @@ ServerConnectionImpl::dispatch ()
     default:
       {
         // const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-        const String s = string_format ("msgid should not occur: %016x", msgid);
-        assertion_failed (__FILE__, __LINE__, s.c_str());
+        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
     }
@@ -2414,7 +2429,7 @@ ServerConnectionImpl::cast_interface_handle (RemoteHandle &rhandle, ImplicitBase
 {
   OrbObjectP orbo = object_map_.orbo_from_instance (ibase);
   (rhandle.*pmf_upgrade_from) (orbo);
-  assert_return (ibase == NULL || rhandle != NULL);
+  AIDA_ASSERT_RETURN (ibase == NULL || rhandle != NULL);
 }
 
 void
@@ -2502,7 +2517,7 @@ void
 ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
 {
   ensure_dispatcher_map();
-  assert_return (global_dispatcher_map_frozen == false);
+  AIDA_ASSERT_RETURN (global_dispatcher_map_frozen == false);
   pthread_mutex_lock (&global_dispatcher_mutex);
   DispatcherMap::size_type size_before = global_dispatcher_map->size();
   TypeHash typehash (mentry.hashhi, mentry.hashlo);
@@ -2513,9 +2528,9 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
   if (AIDA_UNLIKELY (size_before == size_after))
     {
       errno = EKEYREJECTED;
-      perror (string_format ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
-                             "duplicate hash registration (%016x%016x)",
-                             __FILE__, __LINE__, mentry.hashhi, mentry.hashlo).c_str());
+      perror (string_printf ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
+                             "duplicate hash registration (%016llx%016llx)",
+                             __FILE__, __LINE__, LLU mentry.hashhi, LLU mentry.hashlo).c_str());
       abort();
     }
 }
@@ -2525,16 +2540,17 @@ TypeHashList
 RemoteHandle::__aida_typelist__() const
 {
   TypeHashList thl;
-  return_unless (*this != NULL, thl);
+  if (*this == NULL)
+    return thl;
   ProtoMsg &__p_ = *ProtoMsg::_new (3 + 1);
   ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___AIDA_TYPELIST__);
   ProtoMsg *__r_ = __o_.invoke (&__p_);
-  assert_return (__r_ != NULL, thl);
+  AIDA_ASSERT_RETURN (__r_ != NULL, thl);
   ProtoReader __f_ (*__r_);
   __f_.skip_header();
   size_t len;
   __f_ >>= len;
-  assert_return (__f_.remaining() == len * 2, thl);
+  AIDA_ASSERT_RETURN (__f_.remaining() == len * 2, thl);
   for (size_t i = 0; i < len; i++)
     {
       TypeHash thash;
@@ -2548,7 +2564,7 @@ RemoteHandle::__aida_typelist__() const
 static ProtoMsg*
 ImplicitBase____aida_typelist__ (ProtoReader &__f_)
 {
-  assert_return (__f_.remaining() == 3 + 1, NULL);
+  AIDA_ASSERT_RETURN (__f_.remaining() == 3 + 1, NULL);
   __f_.skip_header();
   ImplicitBase *self = __f_.pop_instance<ImplicitBase>().get();
   TypeHashList thl;
@@ -2564,11 +2580,12 @@ ImplicitBase____aida_typelist__ (ProtoReader &__f_)
 std::vector<String>
 RemoteHandle::__aida_aux_data__ () const
 {
-  return_unless (*this != NULL, std::vector<String>());
+  if (*this == NULL)
+    return StringVector();
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self
   ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_AUX_DATA__);
   ProtoMsg *__r_ = __o_.invoke (&__b_);
-  assert_return (__r_ != NULL, std::vector<String>());
+  AIDA_ASSERT_RETURN (__r_ != NULL, std::vector<String>());
   ProtoReader __f_ (*__r_);
   __f_.skip_header();
   Any __v_;
@@ -2580,10 +2597,10 @@ RemoteHandle::__aida_aux_data__ () const
 static ProtoMsg*
 ImplicitBase____aida_aux_data__ (ProtoReader &__b_)
 {
-  assert_return (__b_.remaining() == 3 + 1 + 0, NULL); // header + self
+  AIDA_ASSERT_RETURN (__b_.remaining() == 3 + 1 + 0, NULL); // header + self
   __b_.skip_header();
   ImplicitBase *self = __b_.pop_instance<ImplicitBase>().get();
-  assert_return (self, NULL);
+  AIDA_ASSERT_RETURN (self, NULL);
   std::vector<String> __s_ = self->__aida_aux_data__();
   Any __v_ = Any::any_from_strings (__s_);
   ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_AUX_DATA__);
@@ -2594,11 +2611,12 @@ ImplicitBase____aida_aux_data__ (ProtoReader &__b_)
 std::vector<String>
 RemoteHandle::__aida_dir__ () const
 {
-  return_unless (*this != NULL, std::vector<String>());
+  if (*this == NULL)
+    return StringVector();
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self + no-args
   ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_DIR__);
   ProtoMsg *__r_ = __o_.invoke (&__b_);
-  assert_return (__r_ != NULL, std::vector<String>());
+  AIDA_ASSERT_RETURN (__r_ != NULL, std::vector<String>());
   ProtoReader __f_ (*__r_);
   __f_.skip_header();
   Any __v_;
@@ -2610,10 +2628,10 @@ RemoteHandle::__aida_dir__ () const
 static ProtoMsg*
 ImplicitBase____aida_dir__ (ProtoReader &__b_)
 {
-  assert_return (__b_.remaining() == 3 + 1 + 0, NULL); // header + self + no-args
+  AIDA_ASSERT_RETURN (__b_.remaining() == 3 + 1 + 0, NULL); // header + self + no-args
   __b_.skip_header();
   ImplicitBase *self = __b_.pop_instance<ImplicitBase>().get();
-  assert_return (self, NULL);
+  AIDA_ASSERT_RETURN (self, NULL);
   std::vector<String> __s_ = self->__aida_dir__();
   Any __v_ = Any::any_from_strings (__s_);
   ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_DIR__);
@@ -2624,12 +2642,13 @@ ImplicitBase____aida_dir__ (ProtoReader &__b_)
 Any
 RemoteHandle::__aida_get__ (const String &__n_) const
 {
-  return_unless (*this != NULL, Any());
+  if (*this == NULL)
+    return Any();
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 1); // header + self + __n_
   ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_GET__);
   __b_ <<= __n_;
   ProtoMsg *__r_ = __o_.invoke (&__b_);
-  assert_return (__r_ != NULL, Any());
+  AIDA_ASSERT_RETURN (__r_ != NULL, Any());
   ProtoReader __f_ (*__r_);
   __f_.skip_header();
   Any __v_;
@@ -2641,10 +2660,10 @@ RemoteHandle::__aida_get__ (const String &__n_) const
 static ProtoMsg*
 ImplicitBase____aida_get__ (ProtoReader &__b_)
 {
-  assert_return (__b_.remaining() == 3 + 1 + 1, NULL); // header + self + __n_
+  AIDA_ASSERT_RETURN (__b_.remaining() == 3 + 1 + 1, NULL); // header + self + __n_
   __b_.skip_header();
   ImplicitBase *self = __b_.pop_instance<ImplicitBase>().get();
-  assert_return (self, NULL);
+  AIDA_ASSERT_RETURN (self, NULL);
   String __n_;
   __b_ >>= __n_;
   Any __v_ = self->__aida_get__ (__n_);
@@ -2656,13 +2675,14 @@ ImplicitBase____aida_get__ (ProtoReader &__b_)
 bool
 RemoteHandle::__aida_set__ (const String &__n_, const Any &__a_)
 {
-  return_unless (*this != NULL, false);
+  if (*this == NULL)
+    return false;
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 2); // header + self + args
   ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_SET__);
   __b_ <<= __n_;
   __b_ <<= __a_;
   ProtoMsg *__r_ = __o_.invoke (&__b_);
-  assert_return (__r_ != NULL, false);
+  AIDA_ASSERT_RETURN (__r_ != NULL, false);
   ProtoReader __f_ (*__r_);
   __f_.skip_header();
   bool __v_;
@@ -2674,10 +2694,10 @@ RemoteHandle::__aida_set__ (const String &__n_, const Any &__a_)
 static ProtoMsg*
 ImplicitBase____aida_set__ (ProtoReader &__b_)
 {
-  assert_return (__b_.remaining() == 3 + 1 + 2, NULL); // header + self + args
+  AIDA_ASSERT_RETURN (__b_.remaining() == 3 + 1 + 2, NULL); // header + self + args
   __b_.skip_header();
   ImplicitBase *self = __b_.pop_instance<ImplicitBase>().get();
-  assert_return (self, NULL);
+  AIDA_ASSERT_RETURN (self, NULL);
   String __n_;
   __b_ >>= __n_;
   Any __a_;

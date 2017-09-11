@@ -2,7 +2,8 @@
 #ifndef __RAPICORN_AIDA_HH__
 #define __RAPICORN_AIDA_HH__
 
-#include <rcore/cxxaux.hh>
+#include <cassert>              // FIXME
+
 #include <string>
 #include <vector>
 #include <stdint.h>             // uint32_t
@@ -11,6 +12,9 @@
 #include <future>
 #include <set>
 #include <map>
+
+// == config (FIXME) ==
+#define HAVE_SYS_EVENTFD_H 1
 
 namespace Rapicorn { namespace Aida {
 
@@ -21,34 +25,141 @@ namespace Rapicorn { namespace Aida {
 #if     __GNUC__ >= 4 || defined __clang__
 #define AIDA_UNUSED             __attribute__ ((__unused__))
 #define AIDA_DEPRECATED         __attribute__ ((__deprecated__))
+#define AIDA_PURE               __attribute__ ((pure))
 #define AIDA_NORETURN           __attribute__ ((__noreturn__))
+#define AIDA_NOINLINE           __attribute__ ((noinline))
 #define AIDA_PRINTF(fix, arx)   __attribute__ ((__format__ (__printf__, fix, arx)))
-#define AIDA_BOOLi(expr)        __extension__ ({ bool _plic__bool; if (expr) _plic__bool = 1; else _plic__bool = 0; _plic__bool; })
-#define AIDA_ISLIKELY(expr)     __builtin_expect (AIDA_BOOLi (expr), 1)
-#define AIDA_UNLIKELY(expr)     __builtin_expect (AIDA_BOOLi (expr), 0)
-#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; ::Rapicorn::Aida::assertion_failed (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { ::Rapicorn::Aida::assertion_failed (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
+#define AIDA_ISLIKELY(expr)     __builtin_expect (bool (expr), 1)
+#define AIDA_UNLIKELY(expr)     __builtin_expect (bool (expr), 0)
+#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
 #else   // !__GNUC__
 #define AIDA_UNUSED
 #define AIDA_DEPRECATED
+#define AIDA_PURE
 #define AIDA_NORETURN
+#define AIDA_NOINLINE
 #define AIDA_PRINTF(fix, arx)
 #define AIDA_ISLIKELY(expr)     expr
 #define AIDA_UNLIKELY(expr)     expr
 #define AIDA_ASSERT_RETURN(expr,...)      do { } while (0)
 #define AIDA_ASSERT_RETURN_UNREACHED(...) do { return __VA_ARGS__; } while (0)
 #endif
+#ifndef AIDA_ASSERTION_FAILED
+#define AIDA_ASSERTION_FAILED(f,l,expr)   assert (expr);
+#endif
 #define AIDA_LIKELY             AIDA_ISLIKELY
+#define AIDA_CLASS_NON_COPYABLE(ClassName)  \
+  /*copy-ctor*/ ClassName  (const ClassName&) = delete; \
+  ClassName&    operator=  (const ClassName&) = delete
 
 // == Type Imports ==
 using std::vector;
-using Rapicorn::int32;
-using Rapicorn::uint32;
-using Rapicorn::int64;
-using Rapicorn::uint64;
-typedef std::string String;
+typedef int8_t              int8;
+typedef uint8_t             uint8;
+typedef int16_t             int16;
+typedef uint16_t            uint16;
+typedef int32_t             int32;
+typedef uint32_t            uint32;
+typedef int64_t             int64;
+typedef uint64_t            uint64;
+typedef std::string         String;
+typedef std::vector<String> StringVector;
+
+
+// == C++ Traits ==
+/// Template to map all type arguments to void, useful for SFINAE, see also WG21 N3911.
+template<class...> using void_t = void;
+
+/// REQUIRES<value> - Simplified version of std::enable_if<> to use SFINAE in function templates.
+template<bool value> using REQUIRES = typename ::std::enable_if<value, bool>::type;
+
+/// IsBool<T> - Check if @a T is of type 'bool'.
+template<class T> using IsBool = ::std::is_same<bool, typename ::std::remove_cv<T>::type>;
+
+/// IsComparable<T> - Check if type @a T is comparable for equality.
+/// If @a T is a type that can be compared with operator==, provide the member constant @a value equal true, otherwise false.
+template<class, class = void> struct IsComparable : std::false_type {}; // IsComparable false case, picked if operator== is missing.
+template<class T> struct IsComparable<T, void_t< decltype (std::declval<T>() == std::declval<T>()) >> : std::true_type {};
+
+/// IsInteger<T> - Check if @a T is of integral type (except bool).
+template<class T> using IsInteger = ::std::integral_constant<bool, !IsBool<T>::value && ::std::is_integral<T>::value>;
+
+/// DerivesString<T> - Check if @a T is of type 'std::string'.
+template<class T> using DerivesString = typename std::is_base_of<::std::string, T>;
+
+/// DerivesSharedPtr<T> - Check if @a T derives from std::shared_ptr<>.
+template<class T, typename = void> struct DerivesSharedPtr : std::false_type {};
+template<class T> struct DerivesSharedPtr<T, void_t< typename T::element_type > > :
+std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
+
+
+// == Utilitiy Functions ==
+/** Simple, very fast and well known hash function as constexpr with good dispersion.
+ * This is the 64bit version of the well known
+ * [FNV-1a](https://en.wikipedia.org/wiki/Fowler-Noll-Vo_hash_function)
+ * hash function, implemented as a C++11 constexpr for a byte range.
+ */
+template<class Num> static inline constexpr uint64_t
+fnv1a_bytehash64 (const Num *const ztdata, const Num *const ztend, uint64_t hash = 0xcbf29ce484222325)
+{
+  static_assert (sizeof (Num) == 1, "");
+  return AIDA_LIKELY (ztdata < ztend) ? fnv1a_bytehash64 (ztdata + 1, ztend, 0x100000001b3 * (hash ^ uint8_t (ztdata[0]))) : hash;
+}
+template<class Num> static inline constexpr uint64_t
+fnv1a_bytehash64 (const Num *const ztdata, size_t n)
+{
+  static_assert (sizeof (Num) == 1, "");
+  return fnv1a_bytehash64 (ztdata, ztdata + n);
+}
+
+// == VirtualEnableSharedFromThis ==
+/// Helper class for VirtualEnableSharedFromThis.
+struct VirtualEnableSharedFromThisBase :
+    public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
+  virtual ~VirtualEnableSharedFromThisBase() = 0;
+};
+/// Virtual base class template that provides std::enable_shared_from_this for multiple inheritance.
+template<class T>
+struct VirtualEnableSharedFromThis : public virtual VirtualEnableSharedFromThisBase {
+  std::shared_ptr<T>       shared_from_this()       { return std::dynamic_pointer_cast<T> (VirtualEnableSharedFromThisBase::shared_from_this()); }
+  std::shared_ptr<const T> shared_from_this() const { return std::dynamic_pointer_cast<T> (VirtualEnableSharedFromThisBase::shared_from_this()); }
+};
+
+// == LongIffy and ULongIffy ==
+///@{
+/** LongIffy, ULongIffy, CastIffy, UCastIffy - types for 32bit/64bit overloading.
+ * On 64bit, int64_t is aliased to "long int" which is 64 bit wide.
+ * On 32bit, int64_t is aliased to "long long int", which is 64 bit wide (and long is 32bit wide).
+ * For int-type function overloading, this means that int32, int64 and either "long" or "long long"
+ * need to be overloaded, depending on platform. To aid this case, LongIffy and ULongIffy are defined
+ * to signed and unsigned "long" (for 32bit) and "long long" (for 64bit). Correspondingly, CastIffy
+ * and UCastIffy are defined to signed and unsigned int32 (for 32bit) or int64 (for 64bit), so
+ * LongIffy can be cast losslessly into a known type.
+ */
+#if     __SIZEOF_LONG__ == 8    // 64bit
+typedef long long signed int    LongIffy;
+typedef long long unsigned int  ULongIffy;
+typedef int64_t                 CastIffy;
+typedef uint64_t                UCastIffy;
+static_assert (__SIZEOF_LONG_LONG__ == 8, "__SIZEOF_LONG_LONG__");
+static_assert (__SIZEOF_INT__ == 4, "__SIZEOF_INT__");
+#elif   __SIZEOF_LONG__ == 4    // 32bit
+typedef long signed int         LongIffy;
+typedef long unsigned int       ULongIffy;
+typedef int32_t                 CastIffy;
+typedef uint32_t                UCastIffy;
+static_assert (__SIZEOF_LONG_LONG__ == 8, "__SIZEOF_LONG_LONG__");
+static_assert (__SIZEOF_INT__ == 4, "__SIZEOF_INT__");
+#else
+#error  "Unknown long size:" __SIZEOF_LONG__
+#endif
+static_assert (sizeof (CastIffy) == sizeof (LongIffy), "CastIffy == LongIffy");
+static_assert (sizeof (UCastIffy) == sizeof (ULongIffy), "UCastIffy == ULongIffy");
+///@}
 
 // == Forward Declarations ==
+class Any;
 class RemoteHandle;
 class OrbObject;
 class ImplicitBase;
@@ -237,12 +348,6 @@ public:
   /*Des*/ ~EventFd   ();
 };
 
-// == Utilities ==
-/// Function used internally to print an error message for failing assertions.
-void assertion_failed (const char *file, uint line, const char *expr);
-/// Install hook function to be called after assertion_failed().
-void assertion_failed_hook (const std::function<void()> &hook);
-
 // == Type Utilities ==
 template<class Y> struct ValueType           { typedef Y T; };
 template<class Y> struct ValueType<Y&>       { typedef Y T; };
@@ -430,8 +535,8 @@ private:
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany; PlaceHolder *pholder;
     struct { int64 venum64; const EnumInfo *enum_info; };
-    int64 dummy_[AIDA_I64ELEMENTS (MAX (MAX (sizeof (String), sizeof (std::vector<void*>)),
-                                        MAX (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
+    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
+                                             std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
     FieldVector&         vfields () { return *(FieldVector*) this; static_assert (sizeof (FieldVector) <= sizeof (*this), ""); }
     const FieldVector&   vfields () const { return *(const FieldVector*) this; }
     AnyVector&           vanys   () { return *(AnyVector*) this; static_assert (sizeof (AnyVector) <= sizeof (*this), ""); }
@@ -475,7 +580,7 @@ private:
   template<class T>          using IsConstCharPtr        = ::std::is_same<const char*, typename ::std::decay<T>::type>;
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value &&
-                                    ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
+                                    ::std::is_base_of<ImplicitBase, typename T::element_type >::value)>;
   template<class T>          using IsLocalClass          =
     ::std::integral_constant<bool, (::std::is_class<T>::value &&
                                     !DerivesString<T>::value &&
@@ -685,7 +790,7 @@ public:
 class BaseConnection {
   const std::string protocol_;
   BaseConnection   *peer_;
-  RAPICORN_CLASS_NON_COPYABLE (BaseConnection);
+  AIDA_CLASS_NON_COPYABLE (BaseConnection);
 protected:
   explicit               BaseConnection  (const std::string &protocol);
   virtual               ~BaseConnection  ();
@@ -710,7 +815,7 @@ typedef ProtoMsg* SignalEmitHandler (const ProtoMsg*, void*);
 /// Connection context for IPC servers. @nosubgrouping
 class ServerConnection : public BaseConnection {
   friend  class ClientConnection;
-  RAPICORN_CLASS_NON_COPYABLE (ServerConnection);
+  AIDA_CLASS_NON_COPYABLE (ServerConnection);
   static ServerConnectionP make_server_connection (const String &protocol);
 protected:
   /*ctor*/                  ServerConnection      (const std::string &protocol);
@@ -738,7 +843,7 @@ public:
 
 /// Connection context for IPC clients. @nosubgrouping
 class ClientConnection : public BaseConnection {
-  RAPICORN_CLASS_NON_COPYABLE (ClientConnection);
+  AIDA_CLASS_NON_COPYABLE (ClientConnection);
 protected:
   explicit              ClientConnection (const std::string &protocol);
   virtual              ~ClientConnection ();
@@ -769,7 +874,7 @@ public:
   static ClientConnection& current_client_connection (); ///< Access the client connection of the current thread-specific RPC scope.
   static ServerConnection& current_server_connection (); ///< Access the server connection of the current thread-specific RPC scope.
   static BaseConnection&   current_base_connection   (); ///< Access the client or server connection of the current thread-specific RPC scope.
-  RAPICORN_CLASS_NON_COPYABLE (ProtoScope);
+  AIDA_CLASS_NON_COPYABLE (ProtoScope);
 };
 struct ProtoScopeCall1Way : ProtoScope {
   ProtoScopeCall1Way (ProtoMsg &pm, const RemoteHandle &rhandle, uint64 hashi, uint64 hashlo);
@@ -838,8 +943,5 @@ BaseConnection::remote_origin ()
 }
 
 } } // Rapicorn::Aida
-
-// == Signals ==
-#include "aidasignal.hh"
 
 #endif // __RAPICORN_AIDA_HH__
