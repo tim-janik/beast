@@ -6,6 +6,17 @@ using namespace Aida;
 static void
 test_strings()
 {
+  StringVector sv;
+  sv = string_split_any ("a, b, c", ", ");
+  TCMP (string_join (";", sv), ==, "a;;b;;c");
+  sv = string_split_any ("a, b, c", ", ", 1);
+  TCMP (string_join (";", sv), ==, "a; b, c");
+  sv = string_split_any ("abcdef", "");
+  TCMP (string_join (";", sv), ==, "a;b;c;d;e;f");
+  sv = string_split_any ("abcdef", "", 2);
+  TCMP (string_join (";", sv), ==, "a;b;cdef");
+  sv = string_split_any ("  foo  , bar     , \t\t baz \n", ",");
+  TCMP (string_join (";", sv), ==, "  foo  ; bar     ; \t\t baz \n");
   TASSERT (string_option_check (" foo ", "foo") == true);
   TASSERT (string_option_check (" foo9 ", "foo9") == true);
   TASSERT (string_option_check (" foo7 ", "foo9") == false);
