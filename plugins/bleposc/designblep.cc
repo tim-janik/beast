@@ -150,7 +150,7 @@ main (int argc, char **argv)
       print_fir_response (fir_filter, "Hin");
     }
 
-  const int M = next_power_of_two (N * 128);
+  const size_t M = next_power_of_two (N * 128);
   vector<complex<double>> theta_ri (M);
   vector<complex<double>> mag_ri (M);
   vector<complex<double>> fir_ri (M);
@@ -161,7 +161,7 @@ main (int argc, char **argv)
     fir_ri[i] = fir_filter[i];
 
   gsl_power2_fftac (M, complex_ptr (fir_ri), complex_ptr (mag_ri));   /* get spectrum */
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     {
       mag_ri[i] = std::complex<double> (mag_ri[i].real(), -mag_ri[i].imag()); // FIXME: should be done by fft wrapper
 
@@ -170,15 +170,15 @@ main (int argc, char **argv)
     }
 
   double offset = 0.0;
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     offset = max (-mag_ri[i].real(), offset);
 
   /* sqrt for magnitudes */
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     mag_ri[i] = sqrt (mag_ri[i].real() + offset) + 1e-10;
 
   /* compute log|X(n)| */
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     {
       theta_ri[i] = log (mag_ri[i].real());
     }
@@ -187,7 +187,7 @@ main (int argc, char **argv)
   gsl_power2_fftsc (M, complex_ptr (theta_ri), complex_ptr (theta_ri_ifft));    /* IFFT */
 
   /* pointwise multiplication with sig vector */
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     {
       double sign;
       if (i % (M/2) == 0)
@@ -207,7 +207,7 @@ main (int argc, char **argv)
     }
   gsl_power2_fftac (M, complex_ptr (theta_ri_ifft), complex_ptr (theta_ri));   /* FFT */
 
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     {
       /* multiplication with -j */
       theta_ri[i] *= complex<double> (0, -1);
@@ -217,7 +217,7 @@ main (int argc, char **argv)
   // theta[i] = -j * DFT (sign[i] * IDFT (a[i]))
 
   vector<complex<double>> minphase_spect (M);
-  for (int i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
     {
       /* |X[i]| * exp(j*t(i)) */
       complex<double> j (0, 1);
