@@ -68,6 +68,23 @@ test_strings()
   TASSERT (typeid_name<int>() == "int");
   TASSERT (typeid_name<bool>() == "bool");
   TASSERT (typeid_name<VirtualEnableSharedFromThisBase>() == "Aida::VirtualEnableSharedFromThisBase");
+  TASSERT (string_from_double (1.0) == "1");
+  TASSERT (string_from_double (-1.0) == "-1");
+  TASSERT (string_from_double (0.0) == "0");
+  TASSERT (string_from_double (0.5) == "0.5");
+  TASSERT (string_from_double (-0.5) == "-0.5");
+  TASSERT (string_to_int ("-1") == -1);
+  TASSERT (string_to_int ("9223372036854775807") == 9223372036854775807LL);
+  TASSERT (string_to_int ("-9223372036854775808") == -9223372036854775807LL - 1);
+  TASSERT (string_to_uint ("0") == 0);
+  TASSERT (string_to_uint ("1") == 1);
+  TASSERT (string_to_uint ("18446744073709551615") == 18446744073709551615ULL);
+  TASSERT (string_to_bool ("0") == false);
+  TASSERT (string_to_bool ("1") == true);
+  TASSERT (string_to_bool ("true") == true);
+  TASSERT (string_to_bool ("false") == false);
+  TASSERT (string_to_bool ("on") == 1);
+  TASSERT (string_to_bool ("off") == 0);
 }
 TEST_ADD (test_strings);
 
