@@ -79,12 +79,6 @@ public:
 
 typedef std::weak_ptr<OrbObject>    OrbObjectW;
 
-template<class Type> static String
-typeid_name (Type &object)
-{
-  return string_demangle_cxx (typeid (object).name());
-}
-
 // == Message IDs ==
 /// Mask MessageId bits, see IdentifierParts.message_id.
 static inline constexpr MessageId
@@ -312,7 +306,7 @@ enum_info<TypeKind> ()
     { LOCAL,            "LOCAL",                NULL, NULL },
     { ANY,              "ANY",                  NULL, NULL },
   };
-  return ::Rapicorn::Aida::EnumInfo::cached_enum_info (string_demangle_cxx (typeid (TypeKind).name()), false, values);
+  return ::Rapicorn::Aida::EnumInfo::cached_enum_info (typeid_name<TypeKind>(), false, values);
 } // specialization
 template<> const EnumInfo& enum_info<TypeKind> (); // instantiation
 
