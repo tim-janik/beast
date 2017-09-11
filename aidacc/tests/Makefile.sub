@@ -9,6 +9,14 @@ t301-testpass-idl-test: tests/t301-pass.idl $(AIDACC)
 	$(Q) $(AIDACC) $< # --aida-debug $<
 tests_checktargets += t301-testpass-idl-test
 
+# == t302-testfail-idl-test ==
+t302-testfail-idl-test: tests/t302-fail.idl tests/t302-fail.ref $(AIDACC)
+	$(QTEST)
+	$(Q) $(AIDACC) --aida-fail-file-test $<> $@.out
+	$(Q) sed 's/\(:[0-9]\+:[0-9]\+: Trying to find one of \).*/\1.../' < $@.out > $@.notokens && mv $@.notokens $@.out
+	$(Q) diff -up tests/t302-fail.ref $@.out && rm -f $@.out
+tests_checktargets += t302-testfail-idl-test
+
 # == tests_binaries ==
 define tests_run_RULE
 .PHONY: tests/run-$(1)
