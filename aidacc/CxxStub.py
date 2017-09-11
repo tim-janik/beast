@@ -20,12 +20,12 @@ rapicornsignal_boilerplate = r"""
 """
 
 common_boilerplate = r"""
-#define RAPICORN_AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
+#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
   bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
   bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
   bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
-#define RAPICORN_AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
+#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
   static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
   static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
   static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
@@ -58,11 +58,11 @@ common_boilerplate = r"""
 #else  // !CYTHON_COMPILING_IN_CPYTHON
 #define RAPICORN_FIXCYTHON_ENUM(Enum)
 #endif // !CYTHON_COMPILING_IN_CPYTHON
-#ifdef     RAPICORN_AIDA_ENABLE_ENUM_ARITHMETIC
-#define RAPICORN_AIDA_ENUM_DEFINE_ARITHMETIC_OPS        RAPICORN_AIDA_FLAGS_DEFINE_ARITHMETIC_OPS
-#else  // !RAPICORN_AIDA_ENABLE_ENUM_ARITHMETIC
-#define RAPICORN_AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
-#endif // !RAPICORN_AIDA_ENABLE_ENUM_ARITHMETIC
+#ifdef     AIDA_ENABLE_ENUM_ARITHMETIC
+#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS        AIDA_FLAGS_DEFINE_ARITHMETIC_OPS
+#else  // !AIDA_ENABLE_ENUM_ARITHMETIC
+#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
+#endif // !AIDA_ENABLE_ENUM_ARITHMETIC
 """
 
 def reindent (prefix, lines):
@@ -801,7 +801,7 @@ class Generator:
       default_flags = '""' if fl[1].auxdata.has_key ('label') else '"rw"'
       label, blurb = fl[1].auxdata.get ('label', '"' + fl[0] + '"'), fl[1].auxdata.get ('blurb', '""')
       hints = fl[1].auxdata.get ('hints', default_flags)
-      s += '    ' + cmmt + 'RAPICORN_AIDA_PROPERTY (%s, %s, %s, %s, %s),\n' % (classC, fl[0], label, blurb, fill_range (fl[1], hints))
+      s += '    ' + cmmt + 'AIDA_PROPERTY (%s, %s, %s, %s, %s),\n' % (classC, fl[0], label, blurb, fill_range (fl[1], hints))
       if cmmt:
         self.warning ('%s::__aida_properties__: property type not supported: %s %s' %
                       (self.namespaced_identifier (classC), self.type2cpp (fl[1]), fl[0]), *fl[1].location)
@@ -1174,11 +1174,11 @@ class Generator:
     s += '{ __p_ <<= Aida::EnumValue (e); }\n'
     s += 'inline void operator>>= (Aida::ProtoReader &__f_, %s &e) ' % nm
     s += '{ e = %s (__f_.pop_evalue()); }\n' % nm
-    s += 'RAPICORN_AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
+    s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
     if type_info.combinable: # enum as flags
-      s += 'RAPICORN_AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
+      s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
     else:
-      s += 'RAPICORN_AIDA_ENUM_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
+      s += 'AIDA_ENUM_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
     s += '/// @endcond\n'
     return s
   def generate_enum_info_specialization (self, type_info):
