@@ -13,19 +13,19 @@ using std::vector;
 using std::string;
 using std::max;
 
-double
+static double
 sinc (double x)
 {
   return fabs (x) > 1e-8 ? sin (x * M_PI) / (x * M_PI) : 1;
 }
 
-double *
+static double *
 complex_ptr (vector<complex<double>>& vec)
 {
   return reinterpret_cast<double *> (&vec[0]);
 }
 
-void
+static void
 print_fir_response (const vector<double>& fir,
                     const string& label)
 {
@@ -47,7 +47,7 @@ print_fir_response (const vector<double>& fir,
     }
 }
 
-vector<double>
+static vector<double>
 mk_fir (int width, int oversample, double low_pass, double beta)
 {
   const int N = width * oversample;
@@ -62,8 +62,8 @@ mk_fir (int width, int oversample, double low_pass, double beta)
   return fir_filter;
 }
 
-vector<double>
-load_fir (size_t N, const char *fname)
+static vector<double>
+load_fir (const char *fname)
 {
   vector<double> fir_filter;
 
@@ -80,11 +80,10 @@ load_fir (size_t N, const char *fname)
     }
   fclose (f);
 
-  assert (fir_filter.size() == 2 * N - 1);
   return fir_filter;
 }
 
-int
+static int
 next_power_of_two (int N)
 {
   int P = 2;
@@ -93,7 +92,7 @@ next_power_of_two (int N)
   return P;
 }
 
-vector<double>
+static vector<double>
 repeat_n (size_t n, const vector<double>& fir)
 {
   vector<double> rep_fir;
@@ -105,7 +104,7 @@ repeat_n (size_t n, const vector<double>& fir)
   return rep_fir;
 }
 
-vector<double>
+static vector<double>
 interp_linear (size_t n, const vector<double>& fir)
 {
   vector<double> interp_fir;
@@ -128,12 +127,20 @@ main (int argc, char **argv)
 {
   const bool trace = (argc == 2 && strcmp (argv[1], "trace") == 0);
 
-  /* design low pass FIR filter */
-  vector<double> fir_filter = mk_fir (/* width */ 16, /* oversample */ 64, /* lp */ 20000., /* beta */ 5);
+  vector<double> fir_filter;
+
+  if (1)
+    {
+      /* design low pass FIR filter */
+      fir_filter = mk_fir (/* width */ 16, /* oversample */ 64, /* lp */ 20000., /* beta */ 5);
+    }
+  else
+    {
+      /* load low pass FIR filter */
+      fir_filter = load_fir ("rdemo2fir");
+    }
   assert ((fir_filter.size() & 1) == 1); // odd length
   const int N = (fir_filter.size() + 1) / 2;
-  // const int N = 325;
-  // vector<double> fir_filter = load_fir (N, "rdemo2fir");
 
   if (trace)
     {
