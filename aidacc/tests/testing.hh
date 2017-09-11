@@ -11,6 +11,7 @@
 #define TEST_CPP_STRINGIFY2(s)  #s                              // Indirection helper, required to expand macros like __LINE__
 #define TEST_CPP_STRINGIFY(s)   TEST_CPP_STRINGIFY2 (s)         ///< Convert macro argument into a C const char*.
 #define TASSERT(cond)           assert (cond)
+#define TCMP(a,op,b)            assert (a op b)
 
 // == TestChain ==
 class TestChain {
