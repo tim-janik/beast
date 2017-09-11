@@ -19,6 +19,7 @@ tests_checktargets += t302-testfail-idl-test
 
 # == tests_binaries ==
 define tests_run_RULE
+all_targets += tests/$(1)
 .PHONY: tests/run-$(1)
 $(1)--testexec: tests/$(1)
 	@echo '  EXEC    ' $(1)
