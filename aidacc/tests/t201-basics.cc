@@ -85,6 +85,9 @@ test_strings()
   TASSERT (string_to_bool ("false") == false);
   TASSERT (string_to_bool ("on") == 1);
   TASSERT (string_to_bool ("off") == 0);
+  TCMP (string_to_cquote ("\""), ==, "\"\\\"\"");
+  TCMP (string_to_cquote ("\1"), ==, "\"\\001\"");
+  TCMP (string_to_cquote ("A\nB"), ==, "\"A\\nB\"");
 }
 TEST_ADD (test_strings);
 
