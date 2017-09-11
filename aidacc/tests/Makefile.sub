@@ -3,6 +3,12 @@
 tests_checktargets =
 tests_binaries     = t201-basics
 
+# == t301-testpass-idl-test ==
+t301-testpass-idl-test: tests/t301-pass.idl $(AIDACC)
+	$(QTEST)
+	$(Q) $(AIDACC) $< # --aida-debug $<
+tests_checktargets += t301-testpass-idl-test
+
 # == tests_binaries ==
 define tests_run_RULE
 .PHONY: tests/run-$(1)
