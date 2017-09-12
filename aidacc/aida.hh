@@ -145,6 +145,13 @@ template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
 template<class T>
 struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
 
+/// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
+template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
+template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>                       { typedef T type; };
+template<typename T> struct RemoveSharedPtr<const ::std::shared_ptr<T>>                 { typedef T type; };
+template<typename T> struct RemoveSharedPtr<volatile ::std::shared_ptr<T>>              { typedef T type; };
+template<typename T> struct RemoveSharedPtr<const volatile ::std::shared_ptr<T>>        { typedef T type; };
+
 // == String Utilitiies ==
 String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
 bool         string_match_identifier_tail (const String &ident, const String &tail);
@@ -637,8 +644,8 @@ private:
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
   template<class T>          using IsConstCharPtr        = ::std::is_same<const char*, typename ::std::decay<T>::type>;
   template<class T>          using IsImplicitBaseDerivedP =
-    ::std::integral_constant<bool, (DerivesSharedPtr<T>::value &&
-                                    ::std::is_base_of<ImplicitBase, typename T::element_type >::value)>;
+    ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
+                                    ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
   template<class T>          using IsLocalClass          =
     ::std::integral_constant<bool, (::std::is_class<T>::value &&
                                     !DerivesString<T>::value &&
