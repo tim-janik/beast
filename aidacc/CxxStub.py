@@ -566,8 +566,6 @@ class Generator:
       s += '  virtual ' + self.F ('std::string') + '__aida_type_name__ () const override\t{ return "%s"; }\n' % classFull
       s += self.generate_class_aux_method_decls (type_info)
       s += self.generate_class_any_method_decls (type_info)
-      if self.property_list:
-        s += '  virtual ' + self.F ('const ' + self.property_list + '&') + '__aida_properties__ () override;\n'
     else: # G4STUB
       s += '  template<class RemoteHandle>\n'
       s += '  ' + self.F ('static %s' % classH) + 'down_cast (RemoteHandle smh) '
@@ -777,39 +775,6 @@ class Generator:
     for an in ancestors:
       s += '  thl.push_back (Aida::TypeHash (%s)); // %s\n' % (self.class_digest (an), an.name)
     s += '  return thl;\n'
-    s += '}\n'
-    return s
-  def generate_server_list_properties (self, class_info):
-    def fill_range (ptype, hints):
-      range_config = { Decls.INT32   : ('INT32_MIN', 'INT32_MAX', '1'),
-                       Decls.INT64   : ('INT64_MIN', 'INT64_MAX', '1'),
-                       Decls.FLOAT64 : ('DBL_MIN',   'DBL_MAX',   '0'),
-                     }
-      rconf = range_config.get (ptype.storage, None)
-      if rconf:
-        rmin, rmax, rstp = rconf
-        return '%s, %s, %s, %s' % (rmin, rmax, rstp, hints)
-      return hints
-    if not self.property_list:
-      return ''
-    assert self.gen_mode == G4SERVANT
-    s, classC, constPList = '', self.C (class_info), 'const ' + self.property_list
-    s += constPList + '&\n' + classC + '::__aida_properties__ ()\n{\n'
-    s += '  static ' + self.property_list + '::Property *properties[] = {\n'
-    for fl in class_info.fields:
-      cmmt = '// ' if fl[1].storage in (Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE, Decls.ANY) else ''
-      default_flags = '""' if fl[1].auxdata.has_key ('label') else '"rw"'
-      label, blurb = fl[1].auxdata.get ('label', '"' + fl[0] + '"'), fl[1].auxdata.get ('blurb', '""')
-      hints = fl[1].auxdata.get ('hints', default_flags)
-      s += '    ' + cmmt + 'AIDA_PROPERTY (%s, %s, %s, %s, %s),\n' % (classC, fl[0], label, blurb, fill_range (fl[1], hints))
-      if cmmt:
-        self.warning ('%s::__aida_properties__: property type not supported: %s %s' %
-                      (self.namespaced_identifier (classC), self.type2cpp (fl[1]), fl[0]), *fl[1].location)
-    s += '  };\n'
-    precls, heritage, cl, ddc = self.interface_class_inheritance (class_info)
-    calls = [cl + '::__aida_properties__()' for cl in precls]
-    s += '  static ' + constPList + ' property_list (properties, %s);\n' % (', ').join (calls)
-    s += '  return property_list;\n'
     s += '}\n'
     return s
   def generate_client_method_stub (self, class_info, mtype):
@@ -1331,7 +1296,6 @@ class Generator:
             s += self.generate_server_class_methods (tp)
             s += self.generate_server_class_aux_method_impls (tp)
             s += self.generate_server_class_any_method_impls (tp)
-            s += self.generate_server_list_properties (tp)
           if self.gen_clientcc:
             s += self.open_namespace (tp)
             for sg in tp.signals:
