@@ -261,8 +261,8 @@ interface UIWidgetArea {
   /* property: */
   String on_click = String (_("On CLick"), _("Command on button1 click"), "rw");
   /* signals: */
-  signal void void_signal ();
-  signal float64 sample_signal (UIWidgetArea ba1, int32 someint);
+  //signal void void_signal ();
+  //signal float64 sample_signal (UIWidgetArea ba1, int32 someint);
   //bool check_activate (void) = signal (CollectUntil0);
   //void activate       (void);
 };
@@ -295,34 +295,34 @@ interface MethodTestInterface {
 };
 
 interface SignalTestInterface {
-  signal void                void_result      ();
-  signal bool                bool_result      ();
-  signal int32               int32_result     ();
-  signal int64               int64_result     ();
-  signal float64             float64_result   ();
-  signal String              string_result    ();
-  signal QuickEnum           enum_result      ();
-  signal QuickRecord         record_result    ();
-  signal QuickSequence       sequence_result  ();
-  signal GrandChild          interface_result ();
-  signal Any                 any_result       ();
-  signal SignalTestInterface self_result      ();
-  signal void                void_arg         ();
-  signal void                bool_arg         (bool b);
-  signal void                int32_arg        (int32 i);
-  signal void                int64_arg        (int64 i);
-  signal void                float64_arg      (float64 f);
-  signal void                string_arg       (String s);
-  signal void                enum_arg         (QuickEnum e);
-  signal void                record_arg       (QuickRecord r);
-  signal void                sequence_arg     (QuickSequence s);
-  signal void                interface_arg    (GrandChild i);
-  signal void                any_arg          (Any a);
-  signal void                self_args        (SignalTestInterface self_);
+  //signal void                void_result      ();
+  //signal bool                bool_result      ();
+  //signal int32               int32_result     ();
+  //signal int64               int64_result     ();
+  //signal float64             float64_result   ();
+  //signal String              string_result    ();
+  //signal QuickEnum           enum_result      ();
+  //signal QuickRecord         record_result    ();
+  //signal QuickSequence       sequence_result  ();
+  //signal GrandChild          interface_result ();
+  //signal Any                 any_result       ();
+  //signal SignalTestInterface self_result      ();
+  //signal void                void_arg         ();
+  //signal void                bool_arg         (bool b);
+  //signal void                int32_arg        (int32 i);
+  //signal void                int64_arg        (int64 i);
+  //signal void                float64_arg      (float64 f);
+  //signal void                string_arg       (String s);
+  //signal void                enum_arg         (QuickEnum e);
+  //signal void                record_arg       (QuickRecord r);
+  //signal void                sequence_arg     (QuickSequence s);
+  //signal void                interface_arg    (GrandChild i);
+  //signal void                any_arg          (Any a);
+  //signal void                self_args        (SignalTestInterface self_);
 };
 
 interface ChildInheritingSignals : SignalTestInterface {
-  signal void child_signal (ChildInheritingSignals c, SignalTestInterface p, Any a, int32 i, QuickRecord r, QuickSequence s);
+  //signal void child_signal (ChildInheritingSignals c, SignalTestInterface p, Any a, int32 i, QuickRecord r, QuickSequence s);
 };
 
 interface AnotherChild : SignalTestInterface {
@@ -361,8 +361,8 @@ enum ClickType {
 
 interface ButtonArea // : public virtual Container, public virtual FocusFrame::Client
 {
-  signal bool check_activate ();
-  signal void activate       ();
+  //signal bool check_activate ();
+  //signal void activate       ();
   // protected: explicit              ButtonArea();
   String        on_click;
   String        on_click2;
