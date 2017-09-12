@@ -67,6 +67,26 @@ typedef std::string         String;
 typedef std::vector<String> StringVector;
 
 
+// == Forward Declarations ==
+class Any;
+class RemoteHandle;
+class OrbObject;
+class ImplicitBase;
+class BaseConnection;
+class ClientConnection;
+class ServerConnection;
+union ProtoUnion;
+class ProtoMsg;
+class ProtoReader;
+struct PropertyList;
+class Property;
+typedef std::shared_ptr<OrbObject>    OrbObjectP;
+typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
+typedef std::shared_ptr<BaseConnection> BaseConnectionP;
+typedef std::shared_ptr<ClientConnection> ClientConnectionP;
+typedef std::shared_ptr<ServerConnection> ServerConnectionP;
+typedef ProtoMsg* (*DispatchFunc) (ProtoReader&);
+
 // == C++ Traits ==
 /// Template to map all type arguments to void, useful for SFINAE, see also WG21 N3911.
 template<class...> using void_t = void;
@@ -93,6 +113,37 @@ template<class T, typename = void> struct DerivesSharedPtr : std::false_type {};
 template<class T> struct DerivesSharedPtr<T, void_t< typename T::element_type > > :
 std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
 
+/// DerivesVector<T> - Check if @a T derives from std::vector<>.
+template<class T, typename = void> struct DerivesVector : std::false_type {};
+// use void_t to prevent errors for T without vector's typedefs
+template<class T> struct DerivesVector<T, void_t< typename T::value_type, typename T::allocator_type > > :
+    std::is_base_of< std::vector<typename T::value_type, typename T::allocator_type>, T > {};
+
+/// IsRemoteHandleDerived<T> - Check if @a T derives from Aida::RemoteHandle.
+template<class T> using IsRemoteHandleDerived = ::std::integral_constant<bool, ::std::is_base_of<RemoteHandle, T>::value>;
+
+/// IsImplicitBaseDerived<T> - Check if @a T derives from Aida::ImplicitBase.
+template<class T> using IsImplicitBaseDerived = ::std::integral_constant<bool, ::std::is_base_of<ImplicitBase, T>::value>;
+
+/// Has__accept__<T,Visitor> - Check if @a T provides a member template __accept__<>(Visitor).
+template<class, class, class = void> struct Has__accept__ : std::false_type {};
+template<class T, class V>
+struct Has__accept__<T, V, void_t< decltype (std::declval<T>().template __accept__<V> (*(V*) NULL)) >> : std::true_type {};
+
+/// Has__accept_accessor__<T,Visitor> - Check if @a T provides a member template __accept_accessor__<>(Visitor).
+template<class, class, class = void> struct Has__accept_accessor__ : std::false_type {};
+template<class T, class V>
+struct Has__accept_accessor__<T, V, void_t< decltype (std::declval<T>().template __accept_accessor__<V> (*(V*) NULL)) >> : std::true_type {};
+
+/// Has__aida_from_any__<T> - Check if @a T provides a member __aida_from_any__(const Any&).
+template<class, class = void> struct Has__aida_from_any__ : std::false_type {};
+template<class T>
+struct Has__aida_from_any__<T, void_t< decltype (std::declval<T>().__aida_from_any__ (std::declval<Aida::Any>())) >> : std::true_type {};
+
+/// Has__aida_to_any__<T> - Check if @a T provides a member Has__aida_to_any__().
+template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
+template<class T>
+struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
 
 // == String Utilitiies ==
 String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
@@ -188,30 +239,6 @@ static_assert (__SIZEOF_INT__ == 4, "__SIZEOF_INT__");
 static_assert (sizeof (CastIffy) == sizeof (LongIffy), "CastIffy == LongIffy");
 static_assert (sizeof (UCastIffy) == sizeof (ULongIffy), "UCastIffy == ULongIffy");
 ///@}
-
-// == Forward Declarations ==
-class Any;
-class RemoteHandle;
-class OrbObject;
-class ImplicitBase;
-class BaseConnection;
-class ClientConnection;
-class ServerConnection;
-union ProtoUnion;
-class ProtoMsg;
-class ProtoReader;
-struct PropertyList;
-class Property;
-typedef std::shared_ptr<OrbObject>    OrbObjectP;
-typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
-typedef std::shared_ptr<BaseConnection> BaseConnectionP;
-typedef std::shared_ptr<ClientConnection> ClientConnectionP;
-typedef std::shared_ptr<ServerConnection> ServerConnectionP;
-typedef ProtoMsg* (*DispatchFunc) (ProtoReader&);
-
-// == Trait Checks ==
-template<class T> using IsRemoteHandleDerived = ::std::integral_constant<bool, ::std::is_base_of<RemoteHandle, T>::value>;
-template<class T> using IsImplicitBaseDerived = ::std::integral_constant<bool, ::std::is_base_of<ImplicitBase, T>::value>;
 
 // == EnumValue ==
 /// Aida info for enumeration values.
