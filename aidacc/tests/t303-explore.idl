@@ -76,30 +76,7 @@ interface Other : Base {
 };
 
 interface Derived : Base {
-  signal void           void_result      ();
-  signal bool           bool_result      ();
-  signal int32          int32_result     ();
-  signal int64          int64_result     ();
-  signal float64        float64_result   ();
-  signal String         string_result    ();
-  signal CountEnum      enum_result      ();
-  signal Location       record_result    ();
-  signal StringSeq      sequence_result  ();
-  signal Other          interface_result ();
-  signal Any            any_result       ();
-  signal Derived        self_result      ();
-  signal void           void_arg         ();
-  signal void           bool_arg         (bool b);
-  signal void           int32_arg        (int32 i);
-  signal void           int64_arg        (int64 i);
-  signal void           float64_arg      (float64 f);
-  signal void           string_arg       (String s);
-  signal void           enum_arg         (CountEnum e);
-  signal void           record_arg       (Location r);
-  signal void           sequence_arg     (StringSeq s);
-  signal void           interface_arg    (Other i);
-  signal void           any_arg          (Any a);
-  signal void           self_args        (Derived self_);
+  void           self_args        (Derived self_);
 };
 
 interface Richie : Derived, Base, Other {
@@ -115,7 +92,6 @@ interface Richie : Derived, Base, Other {
   AnySeq    anys;
   Derived   derived;
   BaseSeq   objects;
-  signal void changed (String what);
 };
 
 interface MiniServer {
@@ -131,7 +107,6 @@ interface MiniServer {
   void        message         (String blurb);
   void        quit            ();
   void        test_parameters ();
-  signal void changed         (String what);
 };
 
 } // A1
