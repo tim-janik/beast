@@ -1009,4 +1009,6 @@ BaseConnection::remote_origin ()
 
 } // Aida
 
+#include "visitor.hh"
+
 #endif // __AIDA_CXX_AIDA_HH__
