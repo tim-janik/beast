@@ -589,8 +589,8 @@ public:
     Field (const String &name, V &&value); ///< Initialize Any::Field with a @a name and an Any initialization @a value.
   };
 #endif // DOXYGEN
-  typedef std::vector<Field> FieldVector; ///< Vector of fields (named Any structures) for use in #RECORD types.
-  typedef std::vector<Any> AnyVector;     ///< Vector of Any structures for use in #SEQUENCE types.
+  typedef std::vector<Field> AnyDict; ///< Vector of fields (named Any structures) for use in #RECORD types.
+  typedef std::vector<Any>   AnyList; ///< Vector of Any structures for use in #SEQUENCE types.
 protected:
   template<class Rec> static void any_from_record (Any &any, const Rec &record);
 private:
@@ -602,10 +602,10 @@ private:
     struct { int64 venum64; const EnumInfo *enum_info; };
     int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
                                              std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
-    FieldVector&         vfields () { return *(FieldVector*) this; static_assert (sizeof (FieldVector) <= sizeof (*this), ""); }
-    const FieldVector&   vfields () const { return *(const FieldVector*) this; }
-    AnyVector&           vanys   () { return *(AnyVector*) this; static_assert (sizeof (AnyVector) <= sizeof (*this), ""); }
-    const AnyVector&     vanys   () const { return *(const AnyVector*) this; }
+    AnyDict&             vfields () { return *(AnyDict*) this; static_assert (sizeof (AnyDict) <= sizeof (*this), ""); }
+    const AnyDict&       vfields () const { return *(const AnyDict*) this; }
+    AnyList&             vanys   () { return *(AnyList*) this; static_assert (sizeof (AnyList) <= sizeof (*this), ""); }
+    const AnyList&       vanys   () const { return *(const AnyList*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
     ImplicitBaseP&       ibase   () { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
@@ -649,8 +649,8 @@ private:
   template<class T>          using IsLocalClass          =
     ::std::integral_constant<bool, (::std::is_class<T>::value &&
                                     !DerivesString<T>::value &&
-                                    !IsConvertible<const AnyVector, T>::value &&
-                                    !IsConvertible<const FieldVector, T>::value &&
+                                    !IsConvertible<const AnyList, T>::value &&
+                                    !IsConvertible<const AnyDict, T>::value &&
                                     !IsImplicitBaseDerived<T>::value &&
                                     !IsImplicitBaseDerivedP<T>::value &&
                                     !IsRemoteHandleDerived<T>::value &&
@@ -669,10 +669,10 @@ private:
   Enum               get_enum    () const               { return Enum (get_enum (enum_info<Enum>())); }
   template<typename Enum>
   void               set_enum    (Enum value)           { return set_enum (enum_info<Enum>(), int64 (value)); }
-  const AnyVector*   get_seq     () const;
-  void               set_seq     (const AnyVector *seq);
-  const FieldVector* get_rec     () const;
-  void               set_rec     (const FieldVector *rec);
+  const AnyList*     get_seq     () const;
+  void               set_seq     (const AnyList *seq);
+  const AnyDict*     get_rec     () const;
+  void               set_rec     (const AnyDict *rec);
   ImplicitBaseP      get_ibasep  () const;
   void               set_ibase   (ImplicitBase *ibase);
   template<typename C>
@@ -692,10 +692,10 @@ public:
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            T    get () const { return as_double(); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyVector*, T>::value > = true>   T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyVector, T>::value > = true>    T    get () const { return *get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const FieldVector*, T>::value > = true> T    get () const { return get_rec(); }
-  template<typename T, REQUIRES< IsConvertible<const FieldVector, T>::value > = true>  T    get () const { return *get_rec(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyList*, T>::value > = true>     T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyList, T>::value > = true>      T    get () const { return *get_seq(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyDict*, T>::value > = true>     T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyDict, T>::value > = true>      T    get () const { return *get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
@@ -708,10 +708,10 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
-  template<typename T, REQUIRES< std::is_same<AnyVector, T>::value > = true>           void set (const T &v) { return set_seq (&v); }
-  template<typename T, REQUIRES< std::is_same<AnyVector, T>::value > = true>           void set (const T *v) { return set_seq (v); }
-  template<typename T, REQUIRES< std::is_same<FieldVector, T>::value > = true>         void set (const T &v) { return set_rec (&v); }
-  template<typename T, REQUIRES< std::is_same<FieldVector, T>::value > = true>         void set (const T *v) { return set_rec (v); }
+  template<typename T, REQUIRES< std::is_same<AnyList, T>::value > = true>             void set (const T &v) { return set_seq (&v); }
+  template<typename T, REQUIRES< std::is_same<AnyList, T>::value > = true>             void set (const T *v) { return set_seq (v); }
+  template<typename T, REQUIRES< std::is_same<AnyDict, T>::value > = true>             void set (const T &v) { return set_rec (&v); }
+  template<typename T, REQUIRES< std::is_same<AnyDict, T>::value > = true>             void set (const T *v) { return set_rec (v); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }

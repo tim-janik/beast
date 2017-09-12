@@ -751,8 +751,8 @@ Any::operator= (const Any &clone)
     {
     case STRING:        new (&u_.vstring()) String (clone.u_.vstring());                             break;
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
-    case SEQUENCE:      new (&u_.vanys()) AnyVector (clone.u_.vanys());                              break;
-    case RECORD:        new (&u_.vfields()) FieldVector (clone.u_.vfields());                        break;
+    case SEQUENCE:      new (&u_.vanys()) AnyList (clone.u_.vanys());                                break;
+    case RECORD:        new (&u_.vfields()) AnyDict (clone.u_.vfields());                            break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
     case LOCAL:         u_.pholder = clone.u_.pholder ? clone.u_.pholder->clone() : NULL;            break;
@@ -808,8 +808,8 @@ Any::clear()
     {
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
-    case SEQUENCE:      u_.vanys().~AnyVector();                break;
-    case RECORD:        u_.vfields().~FieldVector();            break;
+    case SEQUENCE:      u_.vanys().~AnyList();                  break;
+    case RECORD:        u_.vfields().~AnyDict();                break;
     case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
     case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
     case LOCAL:         delete u_.pholder;                      break;
@@ -835,8 +835,8 @@ Any::rekind (TypeKind _kind)
     {
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
-    case SEQUENCE: new (&u_.vanys()) AnyVector();       break;
-    case RECORD:   new (&u_.vfields()) FieldVector();   break;
+    case SEQUENCE: new (&u_.vanys()) AnyList();         break;
+    case RECORD:   new (&u_.vfields()) AnyDict();       break;
     case INSTANCE: new (&u_.ibase()) ImplicitBaseP();   break;
     case REMOTE:   new (&u_.rhandle()) ARemoteHandle(); break;
     default:                                            break;
@@ -846,7 +846,7 @@ Any::rekind (TypeKind _kind)
 Any
 Any::any_from_strings (const std::vector<std::string> &string_container)
 {
-  AnyVector av;
+  AnyList av;
   av.resize (string_container.size());
   for (size_t i = 0; i < av.size(); i++)
     av[i].set (string_container[i]);
@@ -858,7 +858,7 @@ Any::any_from_strings (const std::vector<std::string> &string_container)
 std::vector<std::string>
 Any::any_to_strings () const
 {
-  const AnyVector *av = get<const AnyVector*>();
+  const AnyList *av = get<const AnyList*>();
   std::vector<std::string> sv;
   if (av)
     {
@@ -872,7 +872,7 @@ Any::any_to_strings () const
 template<class T> static String any_vector_to_string (const T *av);
 
 template<> String
-any_vector_to_string (const Any::FieldVector *vec)
+any_vector_to_string (const Any::AnyDict *vec)
 {
   String s;
   if (vec)
@@ -891,7 +891,7 @@ any_vector_to_string (const Any::FieldVector *vec)
 }
 
 template<> String
-any_vector_to_string (const Any::AnyVector *vec)
+any_vector_to_string (const Any::AnyList *vec)
 {
   String s;
   if (vec)
@@ -1112,42 +1112,42 @@ Any::set_string (const std::string &value)
   u_.vstring().assign (value);
 }
 
-const Any::AnyVector*
+const Any::AnyList*
 Any::get_seq () const
 {
   if (kind() == SEQUENCE)
     return &u_.vanys();
-  static const AnyVector empty;
+  static const AnyList empty;
   return &empty;
 }
 
 void
-Any::set_seq (const AnyVector *seq)
+Any::set_seq (const AnyList *seq)
 {
   ensure (SEQUENCE);
   if (seq != &u_.vanys())
     {
-      AnyVector tmp (*seq); // beware of internal references, copy before freeing
+      AnyList tmp (*seq); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vanys());
     }
 }
 
-const Any::FieldVector*
+const Any::AnyDict*
 Any::get_rec () const
 {
   if (kind() == RECORD && !u_.vfields().empty())
     return &u_.vfields();
-  static const FieldVector empty;
+  static const AnyDict empty;
   return &empty;
 }
 
 void
-Any::set_rec (const FieldVector *rec)
+Any::set_rec (const AnyDict *rec)
 {
   ensure (RECORD);
   if (rec != &u_.vfields())
     {
-      FieldVector tmp (*rec); // beware of internal references, copy before freeing
+      AnyDict tmp (*rec); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vfields());
     }
 }
