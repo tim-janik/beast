@@ -1,0 +1,137 @@
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0	-*-mode:c++;-*-
+
+namespace A1  {
+
+enum CountEnum { ZERO = 0, ONE, TWO, THREE };
+
+record Location {
+  float64 x;
+  float64 y;
+};
+
+interface Base {
+};
+
+sequence BoolSeq        { bool bools; };
+sequence Int32Seq       { int32 ints; };
+sequence Int64Seq       { int64 ints; };
+sequence FloatSeq       { float64 floats; };
+sequence StringSeq      { String strings; };
+sequence CountSeq       { CountEnum enums; };
+sequence LocationSeq    { Location locations; };
+sequence AnySeq         { Any anys; };
+sequence BaseSeq        { Base objects; };
+
+record SimpleDataPack {
+  bool          vbool;
+  int32         vi32;
+  int64         vi64t;
+  float64       vf64;
+  String        vstr;
+  CountEnum     count;
+  Location      location;
+  StringSeq     strings;
+};
+
+record BigDataPack {
+  SimpleDataPack simple_pack;
+  BoolSeq        bools;
+  Int32Seq       ints32;
+  Int64Seq       ints64;
+  FloatSeq       floats;
+  CountSeq       counts;
+  LocationSeq    locations;
+  Any            any1;
+  AnySeq         anys;
+  // BaseSeq     objects;
+  // Other       other;
+  // Derived     derived;
+};
+
+interface Other : Base {
+  void           void_result      ();
+  bool           bool_result      ();
+  int32          int32_result     ();
+  int64          int64_result     ();
+  float64        float64_result   ();
+  String         string_result    ();
+  CountEnum      enum_result      ();
+  Location       record_result    ();
+  StringSeq      sequence_result  ();
+  Other          interface_result ();
+  Any            any_result       ();
+  Other          self_result      ();
+  void           void_arg         ();
+  void           bool_arg         (bool b);
+  void           int32_arg        (int32 i);
+  void           int64_arg        (int64 i);
+  void           float64_arg      (float64 f);
+  void           string_arg       (String s);
+  void           enum_arg         (CountEnum e);
+  void           record_arg       (Location r);
+  void           sequence_arg     (StringSeq s);
+  void           interface_arg    (Other i);
+  void           any_arg          (Any a);
+  void           self_args        (Other self_);
+};
+
+interface Derived : Base {
+  signal void           void_result      ();
+  signal bool           bool_result      ();
+  signal int32          int32_result     ();
+  signal int64          int64_result     ();
+  signal float64        float64_result   ();
+  signal String         string_result    ();
+  signal CountEnum      enum_result      ();
+  signal Location       record_result    ();
+  signal StringSeq      sequence_result  ();
+  signal Other          interface_result ();
+  signal Any            any_result       ();
+  signal Derived        self_result      ();
+  signal void           void_arg         ();
+  signal void           bool_arg         (bool b);
+  signal void           int32_arg        (int32 i);
+  signal void           int64_arg        (int64 i);
+  signal void           float64_arg      (float64 f);
+  signal void           string_arg       (String s);
+  signal void           enum_arg         (CountEnum e);
+  signal void           record_arg       (Location r);
+  signal void           sequence_arg     (StringSeq s);
+  signal void           interface_arg    (Other i);
+  signal void           any_arg          (Any a);
+  signal void           self_args        (Derived self_);
+};
+
+interface Richie : Derived, Base, Other {
+  bool      vbool;
+  int32     vi32;
+  int64     vi64t;
+  float64   vf64;
+  String    vstr;
+  CountEnum count;
+  Location  location;
+  StringSeq strings;
+  Any       any1;
+  AnySeq    anys;
+  Derived   derived;
+  BaseSeq   objects;
+  signal void changed (String what);
+};
+
+interface MiniServer {
+  bool      vbool = Bool ("Boolean Value", "Just true or false", "rw", true);
+  int32     vi32  = Range ("Int32 Value", "A 32bit integer value", "rw", -2147483648, 2147483647, 256, 32768);
+  int64     vi64t = Range ("Int64 Value", "A 64bit integer value", "rw", -9223372036854775808, 9223372036854775807, 65536, -65536);
+  float64   vf64  = Range ("Float Value", "A 64bit floating point value", "rw", -0.0, +1.0, +0.1, +0.5);
+  CountEnum count = Enum ("Count Value", "One of the CountEnum values", "rw", TWO);
+  String    vstr  = String ("String Value", "Space for words or anything", "rw", "foobar");
+  Location  location;
+  StringSeq strings;
+  Derived   derived;
+  void        message         (String blurb);
+  void        quit            ();
+  void        test_parameters ();
+  signal void changed         (String what);
+};
+
+} // A1

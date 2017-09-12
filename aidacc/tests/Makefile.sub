@@ -17,6 +17,23 @@ t302-testfail-idl-test: tests/t302-fail.idl tests/t302-fail.ref $(AIDACC)
 	$(Q) diff -up tests/t302-fail.ref $@.out && rm -f $@.out
 tests_checktargets += t302-testfail-idl-test
 
+# == t303-explore ==
+tests_binaries += t303-explore
+tests_t303_generated                 =      \
+        tests/t303-explore-srvt.hh          \
+        tests/t303-explore-srvt.cc          \
+        tests/t303-explore-clnt.hh          \
+        tests/t303-explore-clnt.cc
+# MAKE(1) supports parallel execution of a multiple-targets-rule *only* for implicit rules (with '%')
+tests/t303-%-clnt.hh tests/t303-%-clnt.cc tests/t303-%-srvt.hh tests/t303-%-srvt.cc: tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
+	$(QGEN)
+	$(Q) $(AIDACC) -x CxxStub -G clienthh -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.hh
+	$(Q) $(AIDACC) -x CxxStub -G clientcc -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.cc
+	$(Q) $(AIDACC) -x CxxStub -G serverhh -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.hh
+	$(Q) $(AIDACC) -x CxxStub -G servercc -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.cc
+CLEANFILES += $(tests_t303_generated)
+tests/t303-explore.cc: $(tests_t303_generated)
+
 # == tests_binaries ==
 define tests_run_RULE
 all_targets += tests/$(1)
