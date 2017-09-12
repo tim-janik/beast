@@ -92,9 +92,9 @@
 .../t302-fail.idl:74:42: TypeError: no such interface type: R
 >  record R { String s; }; interface I : R {}; // invalid interface inheritance
 >                                           ^
-.../t302-fail.idl:75:32: TypeError: non-method invalidly declared as 'signal': xxx
+.../t302-fail.idl:75:21: TypeError: invalid keyword 'signal', use Events instead
 >  interface I { signal int32 xxx; }; // invalidly declared as signal
->                                 ^
+>                      ^
 .../t302-fail.idl:76:17: NameError: redefining keyword: void
 >  Const void = 17; // invalid constant name
 >                  ^
@@ -148,12 +148,12 @@
 .../t302-fail.idl:103:55: TypeError: stream type used in wrong context: OStream os
 >  interface I { void stream_func3 (int32 i32, OStream os); }; // stream type used in wrong context
 >                                                        ^
-.../t302-fail.idl:104:47: TypeError: stream type used in wrong context: JStream stream_signal1
+.../t302-fail.idl:104:21: TypeError: invalid keyword 'signal', use Events instead
 >  interface I { signal JStream stream_signal1(); }; // stream type used in wrong context
->                                                ^
-.../t302-fail.idl:105:64: TypeError: stream type used in wrong context: OStream os
->  ...I { signal void stream_signal2 (float64 f, OStream os); }; // stream type used in wrong context
->                                                          ^
+>                      ^
+.../t302-fail.idl:105:21: TypeError: invalid keyword 'signal', use Events instead
+>  interface I { signal void stream_signal2 (float64 f, OStream os); }; // stream type used in wrong co
+>                      ^
 .../t302-fail.idl:106:27: TypeError: stream type used in wrong context: OStream istream
 >  record I { OStream istream; }; // stream type used in wrong context
 >                            ^
