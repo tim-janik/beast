@@ -346,7 +346,6 @@ enum TypeKind {
   INSTANCE       = 'C', ///< Interface instance type.
   REMOTE         = 'r', ///< RemoteHandle type.
   TRANSITION     = 'T', ///< Instance or RemoteHandle in transition between remotes.
-  LOCAL          = 'L', ///< Local object type.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
 template<> const EnumInfo& enum_info<TypeKind> ();
@@ -546,36 +545,6 @@ class Any /// Generic value type that can hold values of all other types.
     template<class V> inline
     AnyField (const std::string &_name, V &&value) : Any (::std::forward<V> (value)), name (_name) {}
   };
-  struct PlaceHolder {
-    virtual                      ~PlaceHolder() {}
-    virtual PlaceHolder*          clone      () const = 0;
-    virtual const std::type_info& type_info  () const = 0;
-    virtual bool                  operator== (const PlaceHolder&) const = 0;
-  };
-  template<class T> struct Holder : PlaceHolder {
-    explicit                      Holder    (const T &value) : value_ (value) {}
-    virtual PlaceHolder*          clone     () const { return new Holder (value_); }
-    virtual const std::type_info& type_info () const { return typeid (T); }
-    virtual bool                  operator== (const PlaceHolder &rhs) const
-    { const Holder *other = dynamic_cast<const Holder*> (&rhs); return other ? eq (this, other) : false; }
-    template<class Q = T> static typename std::enable_if<IsComparable<Q>::value, bool>::
-    type eq (const Holder *a, const Holder *b) { return a->value_ == b->value_; }
-    template<class Q = T> static typename std::enable_if<!IsComparable<Q>::value, bool>::
-    type eq (const Holder *a, const Holder *b) { return false; }
-    T value_;
-  };
-  template<class Type> Type
-  cast_holder () const
-  {
-    if (kind() == LOCAL)
-      {
-        const std::type_info &tt = typeid (Type);
-        const std::type_info &ht = u_.pholder->type_info();
-        if (tt == ht)
-          return static_cast<Holder<Type>*> (u_.pholder)->value_;
-      }
-    return Type();
-  }
   ///@endcond
 public:
 #ifndef DOXYGEN
@@ -606,7 +575,7 @@ private:
   ///@cond
   typedef RemoteMember<RemoteHandle> ARemoteHandle;
   union {
-    uint64 vuint64; int64 vint64; double vdouble; Any *vany; PlaceHolder *pholder;
+    uint64 vuint64; int64 vint64; double vdouble; Any *vany;
     struct { int64 venum64; const EnumInfo *enum_info; };
     int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
                                              std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
@@ -622,7 +591,6 @@ private:
     const ARemoteHandle& rhandle () const { return *(const ARemoteHandle*) this; }
   } u_;
   ///@endcond
-  void    hold    (PlaceHolder*);
   void    ensure  (TypeKind _kind) { if (AIDA_LIKELY (kind() == _kind)) return; rekind (_kind); }
   void    rekind  (TypeKind _kind);
 public:
@@ -654,18 +622,6 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
-  template<class T>          using IsLocalClass          =
-    ::std::integral_constant<bool, (::std::is_class<T>::value &&
-                                    !DerivesString<T>::value &&
-                                    !IsConvertible<const AnyList, T>::value &&
-                                    !IsConvertible<const AnyDict, T>::value &&
-                                    !IsImplicitBaseDerived<T>::value &&
-                                    !IsImplicitBaseDerivedP<T>::value &&
-                                    !IsRemoteHandleDerived<T>::value &&
-                                    !IsConvertible<const Any, T>::value &&
-                                    !IsConvertible<T, Any::Field>::value)>;
-  template<class T>          using IsLocalClassPtr       =
-    ::std::integral_constant<bool, ::std::is_pointer<T>::value && IsLocalClass< typename std::remove_pointer<T>::type >::value>;
   bool               get_bool    () const;
   void               set_bool    (bool value);
   void               set_int64   (int64 value);
@@ -708,7 +664,6 @@ public:
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
   template<typename T, REQUIRES< IsConvertible<const Any, T>::value > = true>          T    get () const { return *get_any(); }
-  template<typename T, REQUIRES< IsLocalClass<T>::value > = true>                      T    get () const { return cast_holder<T>(); }
   // void set (const Type&);
   template<typename T, REQUIRES< IsBool<T>::value > = true>                            void set (T v) { return set_bool (v); }
   template<typename T, REQUIRES< IsInteger<T>::value > = true>                         void set (T v) { return set_int64 (v); }
@@ -724,7 +679,6 @@ public:
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
   template<typename T, REQUIRES< std::is_base_of<Any, T>::value > = true>              void set (const T &v) { return set_any (&v); }
-  template<typename T, REQUIRES< IsLocalClass<T>::value > = true>                      void set (const T &v) { hold (new Holder<T> (v)); }
   // convenience
   static Any          any_from_strings (const std::vector<std::string> &string_container);
   std::vector<String> any_to_strings   () const;

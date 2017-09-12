@@ -685,7 +685,6 @@ enum_info<TypeKind> ()
     { INSTANCE,         "INSTANCE",             NULL, NULL },
     { REMOTE,           "REMOTE",               NULL, NULL },
     { TRANSITION,       "TRANSITION",           NULL, NULL },
-    { LOCAL,            "LOCAL",                NULL, NULL },
     { ANY,              "ANY",                  NULL, NULL },
   };
   return ::Aida::EnumInfo::cached_enum_info (typeid_name<TypeKind>(), false, values);
@@ -755,7 +754,6 @@ Any::operator= (const Any &clone)
     case RECORD:        new (&u_.vfields()) AnyDict (clone.u_.vfields());                            break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
-    case LOCAL:         u_.pholder = clone.u_.pholder ? clone.u_.pholder->clone() : NULL;            break;
     case TRANSITION:    // u_.vint64 = clone.u_.vint64;
     default:            u_ = clone.u_;                                                               break;
     }
@@ -774,7 +772,6 @@ swap_any_unions (TypeKind kind, U &u, U &v)
     case RECORD:        std::swap (u.vfields(), v.vfields()); break;
     case INSTANCE:      std::swap (u.ibase(), v.ibase());     break;
     case REMOTE:        std::swap (u.rhandle(), v.rhandle()); break;
-    case LOCAL:         std::swap (u.pholder, v.pholder);     break;
     case ANY:           std::swap (u.vany, v.vany);           break;
     default:            AIDA_ASSERT_RETURN_UNREACHED();       break;
     }
@@ -812,7 +809,6 @@ Any::clear()
     case RECORD:        u_.vfields().~AnyDict();                break;
     case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
     case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
-    case LOCAL:         delete u_.pholder;                      break;
     case TRANSITION: ;
     default: ;
     }
@@ -981,11 +977,6 @@ Any::operator== (const Any &clone) const
       return u_.ibase().get() == clone.u_.ibase().get();
     case REMOTE:
       return u_.rhandle().__aida_orbid__() == clone.u_.rhandle().__aida_orbid__();
-    case LOCAL:
-      if (!u_.pholder || !clone.u_.pholder)
-        return u_.pholder == clone.u_.pholder;
-      else
-        return *u_.pholder == *clone.u_.pholder;
     default:
       AIDA_ASSERT_RETURN_UNREACHED (false);
       return false;
@@ -997,13 +988,6 @@ bool
 Any::operator!= (const Any &clone) const
 {
   return !operator== (clone);
-}
-
-void
-Any::hold (PlaceHolder *ph)
-{
-  ensure (LOCAL);
-  u_.pholder = ph;
 }
 
 bool
@@ -1224,9 +1208,6 @@ Any::to_transition (BaseConnection &base_connection)
       if (u_.vany)
         u_.vany->to_transition (base_connection);
       break;
-    case LOCAL: // FIXME: LOCAL::to_transition doesn't really make sense, should we warn?
-      // pass through for now
-      break;
     case INSTANCE:
       if (u_.ibase().get())
         {
@@ -1289,9 +1270,6 @@ Any::from_transition (BaseConnection &base_connection)
     case ANY:
       if (u_.vany)
         u_.vany->from_transition (base_connection);
-      break;
-    case LOCAL: // FIXME: LOCAL::from_transition shouldn't happen, should we warn?
-      // pass through for now
       break;
     case TRANSITION:
       server_connection = dynamic_cast<ServerConnection*> (&base_connection);
