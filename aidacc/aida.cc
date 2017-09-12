@@ -1327,6 +1327,26 @@ Any::from_transition (BaseConnection &base_connection)
     }
 }
 
+Any&
+Any::AnyDict::operator[] (const String &name)
+{
+  for (size_t i = 0; i < size(); i++)
+    if (name == (*this)[i].name)
+      return (*this)[i];
+  push_back (Field (name, Any()));
+  return (*this)[size() - 1];
+}
+
+const Any&
+Any::AnyDict::operator[] (const String &name) const
+{
+  for (size_t i = 0; i < size(); i++)
+    if (name == (*this)[i].name)
+      return (*this)[i];
+  static const Any empty;
+  return empty;
+}
+
 // == OrbObject ==
 OrbObject::OrbObject (uint64 orbid) :
   orbid_ (orbid)

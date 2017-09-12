@@ -589,8 +589,16 @@ public:
     Field (const String &name, V &&value); ///< Initialize Any::Field with a @a name and an Any initialization @a value.
   };
 #endif // DOXYGEN
-  typedef std::vector<Field> AnyDict; ///< Vector of fields (named Any structures) for use in #RECORD types.
   typedef std::vector<Any>   AnyList; ///< Vector of Any structures for use in #SEQUENCE types.
+  /// Vector of fields (named Any structures) for use in #RECORD types.
+  class AnyDict : public std::vector<Field> {
+    typedef std::vector<Field> FieldVector;
+  public:
+    void         add        (const String &name, const Any &value)      { (*this)[name] = value; }
+    Any&         operator[] (const String &name);
+    const Any&   operator[] (const String &name) const;
+    using FieldVector::operator[]; // still allow: Field& operator[] (size_t __n);
+  };
 protected:
   template<class Rec> static void any_from_record (Any &any, const Rec &record);
 private:
