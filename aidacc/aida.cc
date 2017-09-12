@@ -1096,42 +1096,42 @@ Any::set_string (const std::string &value)
   u_.vstring().assign (value);
 }
 
-const Any::AnyList*
+const Any::AnyList&
 Any::get_seq () const
 {
   if (kind() == SEQUENCE)
-    return &u_.vanys();
+    return u_.vanys();
   static const AnyList empty;
-  return &empty;
+  return empty;
 }
 
 void
-Any::set_seq (const AnyList *seq)
+Any::set_seq (const AnyList &seq)
 {
   ensure (SEQUENCE);
-  if (seq != &u_.vanys())
+  if (&seq != &u_.vanys())
     {
-      AnyList tmp (*seq); // beware of internal references, copy before freeing
+      AnyList tmp (seq); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vanys());
     }
 }
 
-const Any::AnyDict*
+const Any::AnyDict&
 Any::get_rec () const
 {
   if (kind() == RECORD && !u_.vfields().empty())
-    return &u_.vfields();
+    return u_.vfields();
   static const AnyDict empty;
-  return &empty;
+  return empty;
 }
 
 void
-Any::set_rec (const AnyDict *rec)
+Any::set_rec (const AnyDict &rec)
 {
   ensure (RECORD);
-  if (rec != &u_.vfields())
+  if (&rec != &u_.vfields())
     {
-      AnyDict tmp (*rec); // beware of internal references, copy before freeing
+      AnyDict tmp (rec); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vfields());
     }
 }

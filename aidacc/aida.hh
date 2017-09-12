@@ -633,10 +633,10 @@ private:
   Enum               get_enum    () const               { return Enum (get_enum (enum_info<Enum>())); }
   template<typename Enum>
   void               set_enum    (Enum value)           { return set_enum (enum_info<Enum>(), int64 (value)); }
-  const AnyList*     get_seq     () const;
-  void               set_seq     (const AnyList *seq);
-  const AnyDict*     get_rec     () const;
-  void               set_rec     (const AnyDict *rec);
+  const AnyList&     get_seq     () const;
+  void               set_seq     (const AnyList &seq);
+  const AnyDict&     get_rec     () const;
+  void               set_rec     (const AnyDict &rec);
   ImplicitBaseP      get_ibasep  () const;
   void               set_ibase   (ImplicitBase *ibase);
   template<typename C>
@@ -656,10 +656,12 @@ public:
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            T    get () const { return as_double(); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyList*, T>::value > = true>     T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyList, T>::value > = true>      T    get () const { return *get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyDict*, T>::value > = true>     T    get () const { return get_rec(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyDict, T>::value > = true>      T    get () const { return *get_rec(); }
+  template<typename T, REQUIRES< std::is_same<const AnyList*, T>::value > = true>      T    get () const { return &get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnyList&, T>::value > = true>      T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyList, T>::value > = true>      T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnyDict*, T>::value > = true>      T    get () const { return &get_rec(); }
+  template<typename T, REQUIRES< std::is_same<const AnyDict&, T>::value > = true>      T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyDict, T>::value > = true>      T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
@@ -671,10 +673,10 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
-  template<typename T, REQUIRES< std::is_same<AnyList, T>::value > = true>             void set (const T &v) { return set_seq (&v); }
-  template<typename T, REQUIRES< std::is_same<AnyList, T>::value > = true>             void set (const T *v) { return set_seq (v); }
-  template<typename T, REQUIRES< std::is_same<AnyDict, T>::value > = true>             void set (const T &v) { return set_rec (&v); }
-  template<typename T, REQUIRES< std::is_same<AnyDict, T>::value > = true>             void set (const T *v) { return set_rec (v); }
+  template<typename T, REQUIRES< std::is_convertible<T, AnyList>::value > = true>      void set (const T &v) { return set_seq (v); }
+  template<typename T, REQUIRES< std::is_convertible<T, AnyList>::value > = true>      void set (const T *v) { return set_seq (*v); }
+  template<typename T, REQUIRES< std::is_convertible<T, AnyDict>::value > = true>      void set (const T &v) { return set_rec (v); }
+  template<typename T, REQUIRES< std::is_convertible<T, AnyDict>::value > = true>      void set (const T *v) { return set_rec (*v); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
@@ -690,7 +692,8 @@ public:
   double              as_double        () const; ///< Obtain contents as double.
   const Any&          as_any           () const { return kind() == ANY ? *u_.vany : *this; } ///< Obtain contents as Any.
 };
-
+typedef Any::AnyDict AnyDict;
+typedef Any::AnyList AnyList;
 
 // == ProtoMsg ==
 union ProtoUnion {
