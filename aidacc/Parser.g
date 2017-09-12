@@ -380,7 +380,10 @@ def AIi (identifier):   # assert interface identifier
   raise TypeError ('no such interface type: %s' % identifier)
 def ATN (typename):     # assert a typename
   yy.resolve_type (typename) # raises exception
-def ANOSIG (issignal, identifier): # assert non-signal decl
+def ANOTSIG (issignal): # assert no signal declarations
+  if issignal:
+      raise TypeError ("invalid keyword 'signal', use Events instead")
+def AFIELDSIG (issignal, identifier): # assert non-signal decl
   if issignal:
     raise TypeError ('non-method invalidly declared as \'signal\': %s' % identifier)
 def TSTREAM (typename):
@@ -562,7 +565,7 @@ rule method_args:
 
 rule field_stream_method_signal_decl:
                                                 {{ signal = false; pure = 1; fargs = []; daux = () }}
-        [ 'signal'                              {{ signal = true; coll = 'void' }}
+        [ 'signal'                              {{ signal = true; coll = 'void'; ANOTSIG (signal) }}
           ]
         ( 'void'                                {{ dtname = 'void' }}
         | typename                              {{ dtname = typename }}
@@ -574,7 +577,7 @@ rule field_stream_method_signal_decl:
               [ method_args                     {{ fargs = method_args }}
               ] '\)'                            # [ '=' auxinit {{ daux = auxinit }} ]
         ) [ '=' 'concrete'                      {{ pure = 0; ANP (kind == 'func', dident) }}
-          ] ';'                                 {{ if kind == 'field': ANOSIG (signal, dident) }}
+          ] ';'                                 {{ if kind == 'field': AFIELDSIG (signal, dident) }}
                                                 {{ if kind == 'field' and TSTREAM (dtname): kind = 'stream' }}
                                                 {{ flags = { 'void' : kind in ('func', 'signal'), 'stream' : kind == 'stream' } }}
                                                 {{ dtype = yy.link_type (dtname, dident, **flags) }}
