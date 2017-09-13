@@ -170,6 +170,19 @@ _bse_initialized ()
 }
 
 static void
+init_sigpipe()
+{
+  // don't die if we write() data to a process and that process dies (i.e. jackd)
+  sigset_t signal_mask;
+  sigemptyset (&signal_mask);
+  sigaddset (&signal_mask, SIGPIPE);
+
+  int rc = pthread_sigmask (SIG_BLOCK, &signal_mask, NULL);
+  if (rc != 0)
+    Bse::warning ("BSE: pthread_sigmask for SIGPIPE failed: %s\n", strerror (errno));
+}
+
+static void
 initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   assert_return (_bse_initialized() == false);
@@ -191,6 +204,9 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
     Bse::Test::init (argc, argv);
   else
     sfi_init (argc, argv);
+
+  // SIGPIPE init: needs to be done before any child thread is created
+  init_sigpipe();
 }
 
 void
