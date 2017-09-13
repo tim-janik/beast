@@ -312,15 +312,6 @@ static gpointer parent_class = NULL;
 static void
 bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
 {
-  /* FIXME: move signal handling somewhere else */
-  sigset_t signal_mask;
-  sigemptyset (&signal_mask);
-  sigaddset (&signal_mask, SIGPIPE);
-
-  int rc = pthread_sigmask (SIG_BLOCK, &signal_mask, NULL);
-  if (rc != 0)
-    g_printerr ("jack driver: pthread_sigmask for SIGPIPE failed: %s\n", strerror (errno));
-
   self->jack_client = nullptr;
 }
 
