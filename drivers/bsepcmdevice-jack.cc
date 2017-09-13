@@ -732,7 +732,7 @@ jack_device_check_io (BsePcmHandle *handle,
   if (jack->atomic_xruns != jack->printed_xruns)
     {
       jack->printed_xruns = jack->atomic_xruns;
-      g_printerr ("%d beast jack driver xruns\n", jack->printed_xruns);
+      Bse::printerr ("%d beast jack driver xruns\n", jack->printed_xruns);
     }
 
   uint n_frames_avail = min (jack->output_ringbuffer.get_writable_frames(), jack->input_ringbuffer.get_readable_frames());
