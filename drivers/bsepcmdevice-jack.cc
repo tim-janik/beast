@@ -82,12 +82,12 @@ template<class T>
 class FrameRingBuffer {
   //BIRNET_PRIVATE_COPY (FrameRingBuffer);
 private:
-  vector< vector<T> > m_channel_buffer;
-  std::atomic<int>    m_atomic_read_frame_pos;
-  std::atomic<int>    m_atomic_write_frame_pos;
-  uint		      m_channel_buffer_size;	  // = n_frames + 1; the extra frame allows us to
+  vector<vector<T>>   channel_buffer_;
+  std::atomic<int>    atomic_read_frame_pos_;
+  std::atomic<int>    atomic_write_frame_pos_;
+  uint                channel_buffer_size_;       // = n_frames + 1; the extra frame allows us to
                                                   // see the difference between an empty/full ringbuffer
-  uint		      m_n_channels;
+  uint                n_channels_;
 public:
   FrameRingBuffer (uint n_frames = 0,
 		   uint n_channels = 1)
@@ -103,11 +103,11 @@ public:
   uint
   get_readable_frames()
   {
-    int wpos = m_atomic_write_frame_pos;
-    int rpos = m_atomic_read_frame_pos;
+    int wpos = atomic_write_frame_pos_;
+    int rpos = atomic_read_frame_pos_;
 
     if (wpos < rpos)		    /* wpos == rpos -> empty ringbuffer */
-      wpos += m_channel_buffer_size;
+      wpos += channel_buffer_size_;
 
     return wpos - rpos;
   }
@@ -124,19 +124,19 @@ public:
   read (uint    n_frames,
         T     **frames)
   {
-    int rpos = m_atomic_read_frame_pos;
+    int rpos = atomic_read_frame_pos_;
     uint can_read = min (get_readable_frames(), n_frames);
 
-    uint read1 = min (can_read, m_channel_buffer_size - rpos);
+    uint read1 = min (can_read, channel_buffer_size_ - rpos);
     uint read2 = can_read - read1;
 
-    for (uint ch = 0; ch < m_n_channels; ch++)
+    for (uint ch = 0; ch < n_channels_; ch++)
       {
-	fast_copy (read1, frames[ch], &m_channel_buffer[ch][rpos]);
-	fast_copy (read2, frames[ch] + read1, &m_channel_buffer[ch][0]);
+	fast_copy (read1, frames[ch], &channel_buffer_[ch][rpos]);
+	fast_copy (read2, frames[ch] + read1, &channel_buffer_[ch][0]);
       }
 
-    m_atomic_read_frame_pos = (rpos + can_read) % m_channel_buffer_size;
+    atomic_read_frame_pos_ = (rpos + can_read) % channel_buffer_size_;
     return can_read;
   }
   /**
@@ -148,11 +148,11 @@ public:
   uint
   get_writable_frames()
   {
-    int wpos = m_atomic_write_frame_pos;
-    int rpos = m_atomic_read_frame_pos;
+    int wpos = atomic_write_frame_pos_;
+    int rpos = atomic_read_frame_pos_;
 
     if (rpos <= wpos)		    /* wpos == rpos -> empty ringbuffer */
-      rpos += m_channel_buffer_size;
+      rpos += channel_buffer_size_;
 
     // the extra frame allows us to see the difference between an empty/full ringbuffer
     return rpos - wpos - 1;
@@ -170,16 +170,16 @@ public:
   write (uint      n_frames,
          const T **frames)
   {
-    int wpos = m_atomic_write_frame_pos;
+    int wpos = atomic_write_frame_pos_;
     uint can_write = min (get_writable_frames(), n_frames);
 
-    uint write1 = min (can_write, m_channel_buffer_size - wpos);
+    uint write1 = min (can_write, channel_buffer_size_ - wpos);
     uint write2 = can_write - write1;
 
-    for (uint ch = 0; ch < m_n_channels; ch++)
+    for (uint ch = 0; ch < n_channels_; ch++)
       {
-	fast_copy (write1, &m_channel_buffer[ch][wpos], frames[ch]);
-	fast_copy (write2, &m_channel_buffer[ch][0], frames[ch] + write1);
+	fast_copy (write1, &channel_buffer_[ch][wpos], frames[ch]);
+	fast_copy (write2, &channel_buffer_[ch][0], frames[ch] + write1);
       }
  
     // It is important that the data from the previous writes get written
@@ -188,7 +188,7 @@ public:
     // Writing the C++ atomic variable (position) as last step should ensure
     // correct ordering (also across threads).
 
-    m_atomic_write_frame_pos = (wpos + can_write) % m_channel_buffer_size;
+    atomic_write_frame_pos_ = (wpos + can_write) % channel_buffer_size_;
     return can_write;
   }
   /**
@@ -200,7 +200,7 @@ public:
   get_total_n_frames() const
   {
     // the extra frame allows us to see the difference between an empty/full ringbuffer
-    return m_channel_buffer_size - 1;
+    return channel_buffer_size_ - 1;
   }
   /**
    * @returns the number of elements that are part of one frame
@@ -210,7 +210,7 @@ public:
   uint
   get_n_channels() const
   {
-    return m_n_channels;
+    return n_channels_;
   }
   /**
    * Clear the ringbuffer.
@@ -221,8 +221,8 @@ public:
   void
   clear()
   {
-    m_atomic_read_frame_pos = 0;
-    m_atomic_write_frame_pos = 0;
+    atomic_read_frame_pos_ = 0;
+    atomic_write_frame_pos_ = 0;
   }
   /**
    * Resize and clear the ringbuffer.
@@ -234,13 +234,13 @@ public:
   resize (uint n_frames,
           uint n_channels = 1)
   {
-    m_n_channels = n_channels;
-    m_channel_buffer.resize (n_channels);
+    n_channels_ = n_channels;
+    channel_buffer_.resize (n_channels);
 
     // the extra frame allows us to see the difference between an empty/full ringbuffer
-    m_channel_buffer_size = n_frames + 1;
-    for (uint ch = 0; ch < m_n_channels; ch++)
-      m_channel_buffer[ch].resize (m_channel_buffer_size);
+    channel_buffer_size_ = n_frames + 1;
+    for (uint ch = 0; ch < n_channels_; ch++)
+      channel_buffer_[ch].resize (channel_buffer_size_);
 
     clear();
   }
