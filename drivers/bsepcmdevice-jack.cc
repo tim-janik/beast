@@ -309,10 +309,25 @@ BSE_RESIDENT_TYPE_DEF (BsePcmDeviceJACK, bse_pcm_device_jack, BSE_TYPE_PCM_DEVIC
 static gpointer parent_class = NULL;
 
 /* --- functions --- */
+
+static void
+error_callback_silent (const char *msg)
+{
+  /* ignore message */
+}
+
+static void
+error_callback_show (const char *msg)
+{
+  Bse::printerr ("JACK: %s\n", msg);
+}
+
 static void
 bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
 {
   self->jack_client = nullptr;
+
+  jack_set_error_function (error_callback_show);
 }
 
 namespace {
@@ -323,7 +338,13 @@ connect_jack (BsePcmDeviceJACK *self, jack_status_t &status)
   /* we should only be called if jack_client is not already registered */
   assert_return (!self->jack_client, false);
 
+  /* don't report errors during open: silently use the next available driver if JACK is not there */
+  jack_set_error_function (error_callback_silent);
+
   self->jack_client = jack_client_open ("beast", JackNoStartServer, &status);
+
+  jack_set_error_function (error_callback_show);
+
   PDEBUG ("attaching to JACK server returned status: %d\n", status);
   /* FIXME: what about server name? (necessary if more than one jackd instance is running)
    * FIXME: it would be nice if the jack connection could remain open between stop | start playback
