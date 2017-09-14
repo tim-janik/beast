@@ -138,15 +138,15 @@ bse_pcm_handle_check_io (BsePcmHandle           *handle,
   return can_read_write;
 }
 
-guint
-bse_pcm_handle_latency (BsePcmHandle *handle)
+void
+bse_pcm_handle_latency (BsePcmHandle *handle,
+                        guint        *rlatency,
+                        guint        *wlatency)
 {
-  assert_return (handle != NULL, 0);
+  assert_return (handle != NULL);
   handle->spinlock.lock();
-  guint rlatency = 0, wlatency = 0;
-  handle->latency (handle, &rlatency, &wlatency);
+  handle->latency (handle, rlatency, wlatency);
   handle->spinlock.unlock();
-  return rlatency + wlatency;
 }
 
 

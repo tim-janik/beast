@@ -67,7 +67,9 @@ void		bse_pcm_handle_write		(BsePcmHandle		*handle,
 						 const gfloat		*values);
 gboolean        bse_pcm_handle_check_io		(BsePcmHandle		*handle,
                                                  glong                  *timeoutp);
-guint           bse_pcm_handle_latency          (BsePcmHandle           *handle);
+void            bse_pcm_handle_latency          (BsePcmHandle           *handle,
+                                                 guint                  *rlatency,
+                                                 guint                  *wlatency);
 
 
 /* --- misc utils --- */
