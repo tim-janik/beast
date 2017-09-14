@@ -3,7 +3,8 @@
 #define __AIDA_HH__
 
 #include "aidacc/aida.hh"
-#include <assert.h>
+#include <algorithm>
+#include <cassert>
 
 // == Macros ==
 #define TEST_CPP_PASTE2(a,b)    a ## b                          // Indirection helper, required to expand macros like __LINE__
@@ -39,7 +40,11 @@ TestChain::run (int argc, const char **argv)
 {
   if (argc >= 1 && argv)
     ; // printf ("  TEST     %s\n", argv[0]);
+  std::vector<const TestChain*> tests;
   for (const TestChain *t = global_test_chain(); t; t = t->next_)
+    tests.push_back (t);
+  std::reverse (tests.begin(), tests.end());
+  for (const TestChain *t : tests)
     {
       fflush (stderr);
       printf ("  RUN…     %s\n", t->name_.c_str());
