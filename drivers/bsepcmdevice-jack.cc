@@ -297,7 +297,9 @@ static void             jack_device_write               (BsePcmHandle           
                                                          const float            *values);
 static gboolean         jack_device_check_io            (BsePcmHandle           *handle,
                                                          glong                  *tiumeoutp);
-static uint             jack_device_latency             (BsePcmHandle           *handle);
+static void             jack_device_latency             (BsePcmHandle           *handle,
+                                                         uint                   *rlatency,
+                                                         uint                   *wlatency);
 
 /* --- define object type and export to BSE --- */
 
@@ -706,7 +708,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
       handle->latency = jack_device_latency;
       BSE_PCM_DEVICE (device)->handle = handle;
 
-      jack_device_latency (handle);   // debugging only: print latency values
+      guint dummy;
+      jack_device_latency (handle, &dummy, &dummy);   // debugging only: print latency values
     }
   else
     {
@@ -771,41 +774,40 @@ jack_device_check_io (BsePcmHandle *handle,
   return FALSE;
 }
 
-static uint
-jack_device_latency (BsePcmHandle *handle)
+static void
+jack_device_latency (BsePcmHandle *handle,
+                     uint        *rlatency,
+                     uint        *wlatency)
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
-  jack_nframes_t rlatency = 0, wlatency = 0;
+  jack_nframes_t jack_rlatency = 0, jack_wlatency = 0;
 
-  assert_return (jack->jack_client != NULL, 0);
+  assert_return (jack->jack_client != NULL);
 
-  /* FIXME: the API of this function is broken, because you can't use its result
-   * to sync for instance the play position pointer with the screen
-   *
-   * why? because it doesn't return you rlatency and wlatency seperately, but
-   * only the sum of both 
-   *
-   * when using jack, there is no guarantee that rlatency and wlatency are equal
-   */
   for (uint i = 0; i < jack->input_ports.size(); i++)
     {
       jack_nframes_t latency = jack_port_get_total_latency (jack->jack_client, jack->input_ports[i]);
-      rlatency = max (rlatency, latency);
+      jack_rlatency = max (jack_rlatency, latency);
     }
 
   for (uint i = 0; i < jack->output_ports.size(); i++)
     {
       jack_nframes_t latency = jack_port_get_total_latency (jack->jack_client, jack->output_ports[i]);
-      wlatency = max (wlatency, latency);
+      jack_wlatency = max (jack_wlatency, latency);
     }
   
-  uint total_latency = jack->buffer_frames + rlatency + wlatency;
-  PDEBUG ("rlatency=%.3f ms wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
-          rlatency / double (handle->mix_freq) * 1000,
-          wlatency / double (handle->mix_freq) * 1000,
+  uint total_latency = jack->buffer_frames + jack_rlatency + jack_wlatency;
+  PDEBUG ("jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+          jack_rlatency / double (handle->mix_freq) * 1000,
+          jack_wlatency / double (handle->mix_freq) * 1000,
           jack->buffer_frames / double (handle->mix_freq) * 1000,
           total_latency / double (handle->mix_freq) * 1000);
-  return total_latency;
+
+  // ring buffer is normally completely filled
+  //  -> the buffer latency counts as additional write latency
+
+  *rlatency = jack_rlatency;
+  *wlatency = jack_wlatency + jack->buffer_frames;
 }
 
 static gsize
