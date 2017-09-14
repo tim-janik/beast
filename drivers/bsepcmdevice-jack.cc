@@ -348,9 +348,6 @@ connect_jack (BsePcmDeviceJACK *self, jack_status_t &status)
   jack_set_error_function (error_callback_show);
 
   PDEBUG ("attaching to JACK server returned status: %d\n", status);
-  /* FIXME: what about server name? (necessary if more than one jackd instance is running)
-   * FIXME: it would be nice if the jack connection could remain open between stop | start playback
-   */
   return (self->jack_client != nullptr);
 }
 
