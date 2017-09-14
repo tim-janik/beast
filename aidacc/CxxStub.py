@@ -312,16 +312,16 @@ class Generator:
     return s
   def generate_recseq_decl (self, type_info):
     s = '\n'
-    classFull = self.namespaced_identifier (type_info.name)
+    classC, classFull = self.C (type_info), self.namespaced_identifier (type_info.name)
     # s += self.generate_shortdoc (type_info)   # doxygen IDL snippet
     if type_info.storage == Decls.SEQUENCE:
       fl = type_info.elements
       #s += '/// @cond GeneratedRecords\n'
-      s += 'class ' + self.C (type_info) + ' : public std::vector<' + self.M (fl[1]) + '>\n'
+      s += 'class ' + classC + ' : public std::vector<' + self.M (fl[1]) + '>\n'
       s += '{\n'
     else:
       #s += '/// @cond GeneratedSequences\n'
-      s += 'class %s\n' % self.C (type_info)
+      s += 'class %s\n' % classC
       s += '{\n'
     s += 'public:\n'
     if type_info.storage == Decls.RECORD:
@@ -334,33 +334,40 @@ class Generator:
       s += '  typedef std::vector<' + self.M (fl[1]) + '> Sequence;\n'
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
       s += '  { resize (size() + 1); return back(); }\n'
-    if type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('inline') + '%s () {' % self.C (type_info) # ctor
+    if type_info.storage == Decls.SEQUENCE:
+      s += '  ' + self.F ('using') + 'Sequence::Sequence;\n' # ancestor ctors
+      s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyList &al) : %s() { __aida_from_any__ (Aida::Any (al)); }\n' % (classC, classC) # ctor
+    elif type_info.storage == Decls.RECORD:
+      s += '  ' + self.F ('inline') + '%s () {' % classC # ctor
       for fl in fieldlist:
         if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
           s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
       s += ' }\n'
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyDict &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
     s += '  ' + self.F ('std::string') + '__aida_type_name__ () const\t{ return "%s"; }\n' % classFull
     s += '  ' + self.F ('std::vector<std::string>') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnyList     () { return __aida_to_any__().get<Aida::AnyList>(); }\n'
+      s += '  ' + self.F ('operator') + 'Aida::AnyList     () const '
+      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnyList>(); }\n' % classC
     if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_visitable (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnyDict     () { return __aida_to_any__().get<Aida::AnyDict>(); }\n'
+      s += '  ' + self.F ('operator') + 'Aida::AnyDict     () const '
+      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }\n' % classC
     if type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('bool') + 'operator==  (const %s &other) const;\n' % self.C (type_info)
-      s += '  ' + self.F ('bool') + 'operator!=  (const %s &other) const { return !operator== (other); }\n' % self.C (type_info)
+      s += '  ' + self.F ('bool') + 'operator==  (const %s &other) const;\n' % classC
+      s += '  ' + self.F ('bool') + 'operator!=  (const %s &other) const { return !operator== (other); }\n' % classC
       s += self.generate_recseq_accept (type_info)
     s += self.insertion_text ('class_scope:' + type_info.name)
     s += '};\n'
     if type_info.storage in (Decls.RECORD, Decls.SEQUENCE):
-      s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % self.C (type_info)
-      s += 'void operator>>= (Aida::ProtoReader&, %s&);\n' % self.C (type_info)
+      s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % classC
+      s += 'void operator>>= (Aida::ProtoReader&, %s&);\n' % classC
     #s += '/// @endcond\n'
-    self.aliases += 'typedef %s %s;\n' % (self.C (type_info), type_info.name)
+    self.aliases += 'typedef %s %s;\n' % (classC, type_info.name)
     if not type_info.namespace in self.aliases_namespaces:
       self.aliases_namespaces += [ type_info.namespace ]
       self.aliases_namespacenode = type_info
