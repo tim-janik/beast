@@ -34,6 +34,9 @@ tests/t303-%-clnt.hh tests/t303-%-clnt.cc tests/t303-%-srvt.hh tests/t303-%-srvt
 CLEANFILES += $(tests_t303_generated)
 tests/t303-explore.cc: $(tests_t303_generated)
 
+# == t204-aidatests.cc ==
+tests_binaries += t204-aidatests
+
 # == tests_binaries ==
 define tests_run_RULE
 all_targets += tests/$(1)
