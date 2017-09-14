@@ -143,9 +143,10 @@ bse_pcm_handle_latency (BsePcmHandle *handle)
 {
   assert_return (handle != NULL, 0);
   handle->spinlock.lock();
-  guint n_frames = handle->latency (handle);
+  guint rlatency = 0, wlatency = 0;
+  handle->latency (handle, &rlatency, &wlatency);
   handle->spinlock.unlock();
-  return n_frames;
+  return rlatency + wlatency;
 }
 
 
