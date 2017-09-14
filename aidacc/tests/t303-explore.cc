@@ -1,9 +1,23 @@
 // Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
 #include <cstdio>
 #include <cmath>
+#include "testing.hh"
 #include "t303-explore-srvt.hh"
 #include "t303-explore-clnt.hh"
 using namespace Aida;
+
+static void
+test_seq()
+{
+  Any any;
+  const A1::BoolSeq b1 { 0, 1, 1, 0, 1, 0, 1, 1, 0, 1 };
+  A1::BoolSeq b2;
+  assert (b1 != b2);
+  any.set (b1);
+  b2 = any.get<A1::BoolSeq>();
+  assert (b1 == b2);
+}
+TEST_ADD (test_seq);
 
 static void
 fill_simple_data_pack (A1::SimpleDataPack &simple)
@@ -49,17 +63,26 @@ fill_big_data_pack (A1::BigDataPack &big)
   // derived;
 }
 
+static void
+test_any()
+{
+  // record <-> Any
+  A1::BigDataPack big, b2;
+  assert (big == b2);
+  fill_big_data_pack (big);
+  assert (big != b2);
+  Aida::Any any;
+  any.set (big);
+  b2 = any.get<A1::BigDataPack>();
+  assert (big == b2);
+}
+TEST_ADD (test_any);
 
 // == main ==
 int
-main (int   argc,
-      char *argv[])
+main (int argc, const char **argv)
 {
-  // rich data type test setup
-  A1::BigDataPack big;
-  fill_big_data_pack (big);
-
-  return 0;
+  return TestChain::run (argc, argv);
 }
 
 
