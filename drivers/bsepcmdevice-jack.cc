@@ -567,6 +567,57 @@ jack_process_callback (jack_nframes_t n_frames,
   return 0;
 }
 
+static jack_latency_range_t
+get_latency_for_ports (const vector<jack_port_t *>& ports,
+                       jack_latency_callback_mode_t mode)
+{
+  jack_latency_range_t range;
+
+  // compute minimum possible and maximum possible latency over all ports
+  for (size_t p = 0; p < ports.size(); p++)
+    {
+      jack_latency_range_t port_range;
+
+      jack_port_get_latency_range (ports[p], mode, &port_range);
+
+      if (!p) // first port
+        range = port_range;
+      else
+        {
+          range.min = min (range.min, port_range.min);
+          range.max = max (range.max, port_range.max);
+        }
+    }
+  return range;
+}
+
+static void
+jack_latency_callback (jack_latency_callback_mode_t  mode,
+                       void                         *jack_handle_ptr)
+{
+  JackPcmHandle *jack = static_cast <JackPcmHandle *> (jack_handle_ptr);
+
+  // the capture/playback latency added is the number of samples in the ringbuffer
+  if (mode == JackCaptureLatency)
+    {
+      jack_latency_range_t range = get_latency_for_ports (jack->input_ports, mode);
+      range.min += jack->buffer_frames;
+      range.max += jack->buffer_frames;
+
+      for (auto port : jack->output_ports)
+        jack_port_set_latency_range (port, mode, &range);
+    }
+  else
+    {
+      jack_latency_range_t range = get_latency_for_ports (jack->output_ports, mode);
+      range.min += jack->buffer_frames;
+      range.max += jack->buffer_frames;
+
+      for (auto port : jack->input_ports)
+        jack_port_set_latency_range (port, mode, &range);
+    }
+}
+
 static Bse::Error
 bse_pcm_device_jack_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -664,6 +715,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
   if (error == 0)
     {
       jack_set_process_callback (self->jack_client, jack_process_callback, jack);
+      jack_set_latency_callback (self->jack_client, jack_latency_callback, jack);
       jack_on_shutdown (self->jack_client, jack_shutdown_callback, jack);
 
       if (jack_activate (self->jack_client) != 0)
