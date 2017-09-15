@@ -269,6 +269,7 @@ struct JackPcmHandle
   int                     printed_xruns;
 
   bool			  is_down;
+  bool                    printed_is_down;
 
   uint64                  device_read_counter;
   uint64                  device_write_counter;
@@ -279,6 +280,7 @@ struct JackPcmHandle
     atomic_xruns (0),
     printed_xruns(0),
     is_down (false),
+    printed_is_down (false),
     device_read_counter (0),
     device_write_counter (0)
   {
@@ -806,6 +808,13 @@ jack_device_check_io (BsePcmHandle *handle,
     {
       jack->printed_xruns = jack->atomic_xruns;
       Bse::printerr ("%d beast jack driver xruns\n", jack->printed_xruns);
+    }
+  /* report jack shutdown */
+  if (jack->is_down && !jack->printed_is_down)
+    {
+      jack->printed_is_down = true;
+      Bse::printerr ("JACK: connection to jack server lost\n");
+      Bse::printerr ("JACK:  -> to continue, manually stop playback and restart\n");
     }
 
   uint n_frames_avail = min (jack->output_ringbuffer.get_writable_frames(), jack->input_ringbuffer.get_readable_frames());
