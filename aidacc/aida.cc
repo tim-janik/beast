@@ -709,9 +709,184 @@ TypeHash::to_string () const
 static_assert (sizeof (ProtoMsg) <= sizeof (ProtoUnion), "sizeof ProtoMsg");
 
 // == ImplicitBase ==
+class ImplicitBaseExtra {
+  explicit           ImplicitBaseExtra (const ImplicitBaseExtra&) = delete;
+  ImplicitBaseExtra& operator=         (const ImplicitBaseExtra&) = delete;
+  explicit           ImplicitBaseExtra (ImplicitBaseExtra&&) = delete;
+  ImplicitBaseExtra& operator=         (ImplicitBaseExtra&&) = delete;
+public:
+  explicit           ImplicitBaseExtra () = default;
+  struct Handler {
+    StringVector  names;                        // event type + optional list of namespaces
+    EventHandlerF handler;
+    int64         id = 0;
+  };
+  std::vector<Handler> handlers;
+  uint64               empty_handlers = 0;      // hint to reduce allocations
+  uint64               signal_emissions = 0;    // hint to guard against reuse
+};
+
+typedef std::unordered_map<ImplicitBase*, ImplicitBaseExtra*> ImplicitBaseExtraMap;
+static std::mutex           implicit_base_extras_mutex_;
+static ImplicitBaseExtraMap implicit_base_extras_;
+static uint64               implicit_base_handler_counter_ = 0x1001;
+
 ImplicitBase::~ImplicitBase()
 {
-  // this destructor implementation forces vtable emission
+  // delete ImplicitBaseExtra
+  std::unique_lock<std::mutex> locker (implicit_base_extras_mutex_);
+  ImplicitBaseExtraMap::iterator it = implicit_base_extras_.find (this);
+  if (AIDA_UNLIKELY (it != implicit_base_extras_.end()))
+    {
+      ImplicitBaseExtra *extra = it->second;
+      implicit_base_extras_.erase (it);
+      locker.unlock();
+      AIDA_ASSERT_RETURN (extra->signal_emissions == 0);
+      delete extra;
+    }
+  else
+    locker.unlock();
+}
+
+/// Attach an event @a handler function to a specific event @a type.
+uint64
+ImplicitBase::__event_attach__ (const String &type, EventHandlerF handler)
+{
+  StringVector words = string_split_any (type, ".");
+  if (words.size() < 1 || words[0].empty() || !handler)
+    return 0;
+  std::lock_guard<std::mutex> locker (implicit_base_extras_mutex_);
+  ImplicitBaseExtra *extra = implicit_base_extras_[this];
+  if (!extra)
+    {
+      extra = new ImplicitBaseExtra();
+      implicit_base_extras_[this] = extra;
+    }
+  if (extra->empty_handlers && !extra->signal_emissions)
+    {
+      for (auto it = extra->handlers.begin(); it != extra->handlers.end(); /**/)
+        if (it->id == 0)
+          it = extra->handlers.erase (it);
+        else
+          ++it;
+      extra->empty_handlers = 0;
+    }
+  extra->handlers.resize (extra->handlers.size() + 1);
+  ImplicitBaseExtra::Handler &next = extra->handlers.back();
+  next.id = implicit_base_handler_counter_++;
+  next.names = std::move (words);
+  next.handler = handler;
+  return next.id;
+}
+
+/// Detach an event @a handler function through a @a connection_id returned from an __event_attach__() call.
+bool
+ImplicitBase::__event_detach__ (int64 connection_id)
+{
+  std::lock_guard<std::mutex> locker (implicit_base_extras_mutex_);
+  ImplicitBaseExtraMap::iterator it = implicit_base_extras_.find (this);
+  if (AIDA_LIKELY (it != implicit_base_extras_.end()))
+    for (auto hit = it->second->handlers.begin(); hit != it->second->handlers.end(); ++hit)
+      if (hit->id == connection_id)
+        {
+          hit->names.clear();
+          hit->handler = NULL;
+          hit->id = 0;
+          if (it->second->signal_emissions)
+            it->second->empty_handlers++;
+          else
+            it->second->handlers.erase (hit);
+          return true;
+        }
+  return false;
+}
+
+static inline bool
+matches_event_namespace (const String &namespace_, const StringVector event_names)
+{
+  for (size_t i = 1; i < event_names.size(); i++) // skip event_names[0] which is not a namespace
+    if (namespace_ == event_names[i])
+      return true;
+  return false;
+}
+
+/// Detach all handlers from an event @a type, possibly using namespaces.
+uint64
+ImplicitBase::__event_detach__ (const String &type)
+{
+  // https://api.jquery.com/event.namespace/
+  StringVector words = string_split_any (type, ".");
+  if (words.size() < 1)
+    return 0;
+  std::lock_guard<std::mutex> locker (implicit_base_extras_mutex_);
+  ImplicitBaseExtraMap::iterator it = implicit_base_extras_.find (this);
+  if (it == implicit_base_extras_.end())
+    return 0;
+  uint64 removed = 0;
+  for (auto hit = it->second->handlers.begin(); hit != it->second->handlers.end(); ++hit)
+    if (hit->names.size() && (words[0].empty() ||         // no signal type given, just namespaces
+                              words[0] == hit->names[0])) // signal type matches
+      {
+        bool remove_handler = true;
+        for (size_t i = 1; i < words.size(); i++)         // check *all* namespaces
+          if (!matches_event_namespace (words[i], hit->names))
+            {
+              remove_handler = false;
+              break;
+            }
+        if (!remove_handler)
+          continue;
+        hit->names.clear();
+        hit->handler = NULL;
+        hit->id = 0;
+        it->second->empty_handlers++;
+        removed++;
+      }
+  return removed;
+}
+
+static inline bool
+match_namespaced_event_type (const String &type, const String &namespace_, const StringVector &names)
+{
+  // https://api.jquery.com/event.namespace/
+  if (names.size() < 1 || type != names[0])
+    return false;
+  if (namespace_.empty())
+    return true;
+  for (size_t i = 1; i < names.size(); i++)
+    if (names[i] == namespace_)
+      return true;
+  return false;
+}
+
+/// Dispatch @a event by calling all handlers associated with the event type (and its namespace).
+void
+ImplicitBase::__event_emit__ (const Event &event)
+{
+  const String type = event["type"].get<String>();
+  const String namespace_ = event["namespace"].get<String>();
+  if (type.empty())
+    return;
+  std::unique_lock<std::mutex> locker (implicit_base_extras_mutex_);
+  ImplicitBaseExtraMap::iterator it = implicit_base_extras_.find (this);
+  if (it == implicit_base_extras_.end())
+    return; // no handlers
+  ImplicitBaseExtra *const extra = it->second;
+  // loop through all possible handlers in order, __attach__
+  // ensures that new handlers are only *appended*
+  uint64 pos = 0;
+  extra->signal_emissions++;
+  while (pos < extra->handlers.size())
+    {
+      const ImplicitBaseExtra::Handler &h = extra->handlers[pos++];
+      if (h.id == 0 || !match_namespaced_event_type (type, namespace_, h.names))
+        continue;
+      EventHandlerF func = h.handler;
+      locker.unlock();
+      func (event);
+      locker.lock();
+    }
+  extra->signal_emissions--;
 }
 
 // == Any ==

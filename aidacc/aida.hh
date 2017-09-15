@@ -703,6 +703,10 @@ public:
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
+  uint64                      __event_attach__    (const String &type, EventHandlerF handler);
+  bool                        __event_detach__    (int64 connection_id);
+  uint64                      __event_detach__    (const String &type);
+  void                        __event_emit__      (const Event &event);
 };
 
 
