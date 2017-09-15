@@ -118,6 +118,13 @@ record GConfig {
 		"should be much smaller than Synth Mixing Frequency to reduce CPU load"),
 	      1000, 1, 192000, 0, STANDARD);
   };
+  group _("JACK driver") {
+    Bool jack_autoconnect =
+      SfiBool (_("Autoconnect ports on open"),
+               _("Automatically connect JACK BEAST input/output ports "
+                 "to first available hardware device on open (recommended: activate this)"),
+               TRUE, STANDARD);
+  };
   group _("MIDI") {
     Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
                            _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
