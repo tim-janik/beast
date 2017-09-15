@@ -783,14 +783,18 @@ jack_device_latency (BsePcmHandle *handle,
 
   for (uint i = 0; i < jack->input_ports.size(); i++)
     {
-      jack_nframes_t latency = jack_port_get_total_latency (jack->jack_client, jack->input_ports[i]);
-      jack_rlatency = max (jack_rlatency, latency);
+      jack_latency_range_t in_lrange;
+      jack_port_get_latency_range (jack->input_ports[i], JackCaptureLatency, &in_lrange);
+
+      jack_rlatency = max (jack_rlatency, in_lrange.max);
     }
 
   for (uint i = 0; i < jack->output_ports.size(); i++)
     {
-      jack_nframes_t latency = jack_port_get_total_latency (jack->jack_client, jack->output_ports[i]);
-      jack_wlatency = max (jack_wlatency, latency);
+      jack_latency_range_t out_lrange;
+      jack_port_get_latency_range (jack->output_ports[i], JackPlaybackLatency, &out_lrange);
+
+      jack_wlatency = max (jack_wlatency, out_lrange.max);
     }
   
   uint total_latency = jack->buffer_frames + jack_rlatency + jack_wlatency;
