@@ -1325,6 +1325,12 @@ Any::AnyDict::operator[] (const String &name) const
   return empty;
 }
 
+// == Event ==
+Event::Event (const String &type)
+{
+  fields_["type"].set (type);
+}
+
 // == OrbObject ==
 OrbObject::OrbObject (uint64 orbid) :
   orbid_ (orbid)

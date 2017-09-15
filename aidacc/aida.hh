@@ -69,6 +69,7 @@ typedef std::vector<String> StringVector;
 
 // == Forward Declarations ==
 class Any;
+class Event;
 class RemoteHandle;
 class OrbObject;
 class ImplicitBase;
@@ -86,6 +87,7 @@ typedef std::shared_ptr<BaseConnection> BaseConnectionP;
 typedef std::shared_ptr<ClientConnection> ClientConnectionP;
 typedef std::shared_ptr<ServerConnection> ServerConnectionP;
 typedef ProtoMsg* (*DispatchFunc) (ProtoReader&);
+typedef std::function<void (const Event&)> EventHandlerF;
 
 // == C++ Traits ==
 /// Template to map all type arguments to void, useful for SFINAE, see also WG21 N3911.
@@ -373,25 +375,6 @@ typedef std::vector<TypeHash> TypeHashList;
 #define AIDA_HASH___AIDA_DIR__          0xbad85206b64fb121ULL, 0x0c8c9ea7b21db922ULL
 #define AIDA_HASH___AIDA_GET__          0xbbb0c7133dfe9ee1ULL, 0x4390b3489ecbe71eULL
 #define AIDA_HASH___AIDA_SET__          0x5b0fcf5339c750cdULL, 0x3bab8ba66b8e970fULL
-
-
-// == ImplicitBase ==
-/// Abstract base interface that all IDL interfaces are implicitely derived from.
-class ImplicitBase : public virtual VirtualEnableSharedFromThis<ImplicitBase> {
-protected:
-  virtual                    ~ImplicitBase        () = 0; // abstract class
-  virtual const PropertyList& __aida_properties__ () = 0; ///< Retrieve the list of properties for @a this instance.
-  Property*                   __aida_lookup__     (const std::string &property_name);
-  bool                        __aida_setter__     (const std::string &property_name, const std::string &value);
-  std::string                 __aida_getter__     (const std::string &property_name);
-public:
-  virtual std::string         __aida_type_name__  () const = 0; ///< Retrieve the IDL type name of an instance.
-  virtual TypeHashList        __aida_typelist__   () const = 0;
-  virtual std::vector<String> __aida_aux_data__   () const = 0;
-  virtual std::vector<String> __aida_dir__        () const = 0;
-  virtual Any                 __aida_get__        (const String &name) const = 0;
-  virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
-};
 
 
 // === EventFd ===
@@ -694,6 +677,34 @@ public:
 };
 typedef Any::AnyDict AnyDict;
 typedef Any::AnyList AnyList;
+
+// == Event ==
+class Event : public virtual VirtualEnableSharedFromThis<Event> {
+  AnyDict  fields_;
+public:
+  explicit     Event      (const String &type);
+  Any&         operator[] (const String &name)          { return fields_[name]; }
+  const Any&   operator[] (const String &name) const    { return fields_[name]; }
+};
+
+// == ImplicitBase ==
+/// Abstract base interface that all IDL interfaces are implicitely derived from.
+class ImplicitBase : public virtual VirtualEnableSharedFromThis<ImplicitBase> {
+protected:
+  virtual                    ~ImplicitBase        () = 0; // abstract class
+  virtual const PropertyList& __aida_properties__ () = 0; ///< Retrieve the list of properties for @a this instance.
+  Property*                   __aida_lookup__     (const std::string &property_name);
+  bool                        __aida_setter__     (const std::string &property_name, const std::string &value);
+  std::string                 __aida_getter__     (const std::string &property_name);
+public:
+  virtual std::string         __aida_type_name__  () const = 0; ///< Retrieve the IDL type name of an instance.
+  virtual TypeHashList        __aida_typelist__   () const = 0;
+  virtual std::vector<String> __aida_aux_data__   () const = 0;
+  virtual std::vector<String> __aida_dir__        () const = 0;
+  virtual Any                 __aida_get__        (const String &name) const = 0;
+  virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
+};
+
 
 // == ProtoMsg ==
 union ProtoUnion {
