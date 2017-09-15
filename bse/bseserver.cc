@@ -1031,7 +1031,7 @@ void
 ServerImpl::send_user_message (const UserMessage &umsg)
 {
   if (!umsg.text1.empty())
-    sig_user_message.emit (umsg);
+    ; // FIXME: sig_user_message.emit (umsg);
 }
 
 String

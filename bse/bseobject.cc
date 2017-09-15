@@ -45,7 +45,7 @@ ObjectImpl::proxy_id ()
 void
 ObjectImpl::changed (const String &what)
 {
-  sig_changed.emit (what);
+  // FIXME: sig_changed.emit (what);
 }
 
 std::string
