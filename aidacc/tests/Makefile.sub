@@ -34,6 +34,21 @@ tests/t303-%-clnt.hh tests/t303-%-clnt.cc tests/t303-%-srvt.hh tests/t303-%-srvt
 CLEANFILES += $(tests_t303_generated)
 tests/t303-explore.cc: $(tests_t303_generated)
 
+# == t304-testpass-cxx-test ==
+# test CxxStub Generation for Client & Server
+tests/t304-testpass-cxx-server: tests/t301-pass.idl tests/t304-cxxserver.ref $(AIDACC)
+	$(QTEST)
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G aidaids -G strip-path=$(topdir)/ \
+	  $< -o $@.out
+	$(Q) diff -up tests/t304-cxxserver.ref $@.out && rm -f $@.out
+tests/t304-testpass-cxx-client: tests/t301-pass.idl tests/t304-cxxclient.ref $(AIDACC)
+	$(QTEST)
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
+	  $< -o $@.out
+	$(Q) diff -up tests/t304-cxxclient.ref $@.out && rm -f $@.out
+t304-testpass-cxx-test: tests/t304-testpass-cxx-server tests/t304-testpass-cxx-client
+tests_checktargets += t304-testpass-cxx-test
+
 # == t204-aidatests.cc ==
 tests_binaries += t204-aidatests
 
