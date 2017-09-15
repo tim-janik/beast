@@ -670,8 +670,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
 	error = Bse::Error::FILE_OPEN_FAILED;
     }
 
-  /* connect ports */
-  if (error == 0)
+  /* connect ports (only if autoconnect is enabled) */
+  if (error == 0 && BSE_GCONFIG (jack_autoconnect))
     {
       map<string, DeviceDetails> devices = query_jack_devices (self);
       map<string, DeviceDetails>::const_iterator di;
