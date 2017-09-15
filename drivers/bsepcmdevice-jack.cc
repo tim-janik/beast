@@ -278,7 +278,7 @@ struct JackPcmHandle
     jack_client (jack_client),
     atomic_active (0),
     atomic_xruns (0),
-    printed_xruns(0),
+    printed_xruns (0),
     is_down (false),
     printed_is_down (false),
     device_read_counter (0),
@@ -807,7 +807,7 @@ jack_device_check_io (BsePcmHandle *handle,
   if (jack->atomic_xruns != jack->printed_xruns)
     {
       jack->printed_xruns = jack->atomic_xruns;
-      Bse::printerr ("%d beast jack driver xruns\n", jack->printed_xruns);
+      Bse::printerr ("JACK: %d beast driver xruns\n", jack->printed_xruns);
     }
   /* report jack shutdown */
   if (jack->is_down && !jack->printed_is_down)
