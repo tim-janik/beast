@@ -49,6 +49,34 @@ tests/t304-testpass-cxx-client: tests/t301-pass.idl tests/t304-cxxclient.ref $(A
 t304-testpass-cxx-test: tests/t304-testpass-cxx-server tests/t304-testpass-cxx-client
 tests_checktargets += t304-testpass-cxx-test
 
+# == t305-testpass-compile-test ==
+tests/t305-testpass-compile-server: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
+	  tests/t301-inc2.idl -o tests/t305-inc2-server.gen.cc
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
+	  tests/t301-inc1.idl -o tests/t305-inc1-server.gen.cc
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
+	  tests/t301-pass.idl -o tests/t305-testpass-server.gen.cc
+	$(Q) sed -i -e '1i#include "t305-inc2-server.gen.cc"' \
+	            -e '1i#include "t305-inc1-server.gen.cc"' \
+		    -e '1i#define _(x) x' tests/t305-testpass-server.gen.cc
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-testpass-server.gen.cc -c
+CLEANFILES += tests/t305-inc2-server.gen.cc tests/t305-inc1-server.gen.cc tests/t305-testpass-server.gen.cc
+tests/t305-testpass-compile-client: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
+	  tests/t301-inc2.idl -o tests/t305-inc2-client.gen.cc
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
+	  tests/t301-inc1.idl -o tests/t305-inc1-client.gen.cc
+	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
+	  tests/t301-pass.idl -o tests/t305-testpass-client.gen.cc
+	$(Q) sed -i -e '1i#include "t305-inc2-client.gen.cc"' \
+		    -e '1i#include "t305-inc1-client.gen.cc"' \
+		    -e '1i#define _(x) x' tests/t305-testpass-client.gen.cc
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-testpass-client.gen.cc -c ; eval "$$TSTDIAGNOSE"
+CLEANFILES += tests/t305-inc2-client.gen.cc tests/t305-inc1-client.gen.cc tests/t305-testpass-client.gen.cc
+t305-testpass-compile-test: tests/t305-testpass-compile-server tests/t305-testpass-compile-client
+tests_checktargets += t305-testpass-compile-test
+
 # == t204-aidatests.cc ==
 tests_binaries += t204-aidatests
 
@@ -71,4 +99,3 @@ tests/%: tests/%.cc tests/testing.hh aidacc/aida.hh aidacc/aida.o
 check-tests: $(sort $(tests_checktargets))
 check-local: check-tests
 .PHONY: check-tests
-
