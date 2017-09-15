@@ -315,7 +315,7 @@ static gpointer parent_class = NULL;
 static void
 error_callback_silent (const char *msg)
 {
-  /* ignore message */
+  PDEBUG ("JACK: %s\n", msg);
 }
 
 static void
