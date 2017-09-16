@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sfi/randomhash.hh>
 
 #define TDEBUG(...)     Bse::debug ("Test", __VA_ARGS__)
 
