@@ -431,7 +431,7 @@ public:
   typedef std::vector<bool> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_XFooSequence () = default;
   inline                        SrvT_XFooSequence (const Aida::AnyList &al) : SrvT_XFooSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::XFooSequence"; }
@@ -449,7 +449,7 @@ public:
   typedef std::vector<int> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_IntSequence () = default;
   inline                        SrvT_IntSequence (const Aida::AnyList &al) : SrvT_IntSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::IntSequence"; }
@@ -467,7 +467,7 @@ public:
   typedef std::vector<double> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_FloatSequence () = default;
   inline                        SrvT_FloatSequence (const Aida::AnyList &al) : SrvT_FloatSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::FloatSequence"; }
@@ -485,7 +485,7 @@ public:
   typedef std::vector<std::string> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_StringSequence () = default;
   inline                        SrvT_StringSequence (const Aida::AnyList &al) : SrvT_StringSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::StringSequence"; }
@@ -503,7 +503,7 @@ public:
   typedef std::vector<ExtensiveEnum> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_ExtensiveEnumSequence () = default;
   inline                        SrvT_ExtensiveEnumSequence (const Aida::AnyList &al) : SrvT_ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::ExtensiveEnumSequence"; }
@@ -521,7 +521,7 @@ public:
   typedef std::vector<SrvT_XFooRecord> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_RecordSequence () = default;
   inline                        SrvT_RecordSequence (const Aida::AnyList &al) : SrvT_RecordSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::RecordSequence"; }
@@ -539,7 +539,7 @@ public:
   typedef std::vector<SrvT_IntSequence> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_SequenceSequence () = default;
   inline                        SrvT_SequenceSequence (const Aida::AnyList &al) : SrvT_SequenceSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::SequenceSequence"; }
@@ -557,7 +557,7 @@ public:
   typedef std::vector<I_FirstInterfaceIfaceP> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_InterfaceSequence () = default;
   inline                        SrvT_InterfaceSequence (const Aida::AnyList &al) : SrvT_InterfaceSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::InterfaceSequence"; }
@@ -575,7 +575,7 @@ public:
   typedef std::vector<Aida::Any> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_AnySequence () = default;
   inline                        SrvT_AnySequence (const Aida::AnyList &al) : SrvT_AnySequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::AnySequence"; }
@@ -622,7 +622,7 @@ public:
   typedef std::vector<SrvT_NestedTypesRec> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_NestedTypesSeq () = default;
   inline                        SrvT_NestedTypesSeq (const Aida::AnyList &al) : SrvT_NestedTypesSeq() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::NestedTypesSeq"; }
@@ -977,7 +977,7 @@ public:
   typedef std::vector<double> Sequence;
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
-  using                         Sequence::Sequence;
+  explicit                      SrvT_QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SrvT_QuickSequence () = default;
   inline                        SrvT_QuickSequence (const Aida::AnyList &al) : SrvT_QuickSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "InterfaceTests::QuickSequence"; }
