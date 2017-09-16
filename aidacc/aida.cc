@@ -41,6 +41,10 @@ namespace Aida {
 // == Type Helpers ==
 typedef std::weak_ptr<OrbObject>    OrbObjectW;
 
+// == Prototypes ==
+static void remote_handle_dispatch_event_discard_handler (Aida::ProtoReader &fbr);
+static void remote_handle_dispatch_event_emit_handler    (Aida::ProtoReader &fbr);
+
 // == Helper Classes ==
 /// Create an instance of @a Class on demand that is constructed and never destructed.
 /// DurableInstance<Class*> provides the memory for a @a Class instance and calls it's
@@ -1506,6 +1510,12 @@ Event::Event (const String &type)
   fields_["type"].set (type);
 }
 
+Event::Event (const AnyDict &adict) :
+  fields_ (adict)
+{
+  (void) fields_["type"]; // ensure field is present
+}
+
 // == OrbObject ==
 OrbObject::OrbObject (uint64 orbid) :
   orbid_ (orbid)
@@ -2568,7 +2578,6 @@ ClientConnectionImpl::dispatch ()
   switch (idmask)
     {
     case MSGID_EMIT_TWOWAY:
-    case MSGID_EMIT_ONEWAY:
       {
         fbr.skip(); // hashhigh
         fbr.skip(); // hashlow
@@ -2587,17 +2596,11 @@ ClientConnectionImpl::dispatch ()
           }
       }
       break;
+    case MSGID_EMIT_ONEWAY:
+      remote_handle_dispatch_event_emit_handler (fbr);
+      break;
     case MSGID_DISCONNECT:
-      {
-#if 0   // TODO: implement MSGID_DISCONNECT
-        const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-        const size_t handler_id = fbr.pop_int64();
-        const bool deleted = true; // FIXME: currently broken
-        if (!deleted)
-          print_warning (posix_sprintf ("%s: invalid handler id (%016x) in message: (%016x, %016x%016x)",
-                                        __func__, handler_id, msgid, hashhigh, hashlow));
-#endif
-      }
+      remote_handle_dispatch_event_discard_handler (fbr);
       break;
     case MSGID_META_GARBAGE_SWEEP:
       gc_sweep (fb);
@@ -3090,6 +3093,39 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
     }
 }
 
+// == RemoteHandle Event Handlers ==
+typedef std::unordered_map<int64, EventHandlerF> RemoteHandleEventHandlerMap;
+static std::mutex                  remote_handle_event_handler_map_mutex;
+static RemoteHandleEventHandlerMap remote_handle_event_handler_map;
+
+static int64
+remote_handle_event_handler_add (EventHandlerF handlerf)
+{
+  static uint64 remote_handle_event_handler_counter = 0x111;
+  std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
+  const uint64 id = remote_handle_event_handler_counter++;
+  remote_handle_event_handler_map[id] = handlerf;
+  return id;
+}
+
+static EventHandlerF
+remote_handle_event_handler_get (int64 id)
+{
+  std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
+  auto it = remote_handle_event_handler_map.find (id);
+  if (it != remote_handle_event_handler_map.end())
+    return it->second;
+  return NULL;
+}
+
+static void
+remote_handle_event_handler_del (int64 id)
+{
+  std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
+  remote_handle_event_handler_map.erase (id);
+  dprintf (2, "%s: TODO: verify this function gets called: id=%zd", __func__, size_t (id));
+}
+
 // == ImplicitBase <-> RemoteHandle RPC ==
 TypeHashList
 RemoteHandle::__aida_typelist__() const
@@ -3263,12 +3299,169 @@ ImplicitBase____aida_set__ (ProtoReader &__b_)
   return &__r_;
 }
 
+bool
+RemoteHandle::__event_detach__ (uint64 arg_connection_id)
+{
+  AIDA_ASSERT_RETURN (*this != NULL, false);
+  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
+  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_DETACHID__);
+  __p_ <<= int64_t (arg_connection_id);
+  fr = __o_.invoke (&__p_);
+  Aida::ProtoReader __f_ (*fr);
+  __f_.skip_header();
+  bool  retval;
+  __f_ >>= retval;
+  delete fr;
+  return retval;
+}
+
+static Aida::ProtoMsg*
+ImplicitBase____event_detachid__ (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
+  ImplicitBase *self;
+  fbr.skip_header();
+  self = fbr.pop_instance<ImplicitBase>().get();
+  AIDA_ASSERT_RETURN (self != NULL, NULL);
+  int64_t  arg_connection_id;
+  fbr >>= arg_connection_id;
+  bool rval = self->__event_detach__ (arg_connection_id);
+  Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___EVENT_DETACHID__);
+  rb <<= rval;
+  return &rb;
+}
+
+uint64
+RemoteHandle::__event_detach__ (const std::string &arg_type)
+{
+  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
+  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_DETACHNS__);
+  __p_ <<= arg_type;
+  fr = __o_.invoke (&__p_);
+  Aida::ProtoReader __f_ (*fr);
+  __f_.skip_header();
+  int64_t  retval;
+  __f_ >>= retval;
+  delete fr;
+  return retval;
+}
+
+static Aida::ProtoMsg*
+ImplicitBase____event_detachns__ (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
+  ImplicitBase *self;
+  fbr.skip_header();
+  self = fbr.pop_instance<ImplicitBase>().get();
+  AIDA_ASSERT_RETURN (self != NULL, NULL);
+  std::string  arg_type;
+  fbr >>= arg_type;
+  int64_t rval = self->__event_detach__ (arg_type);
+  Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___EVENT_DETACHNS__);
+  rb <<= rval;
+  return &rb;
+}
+
+uint64
+RemoteHandle::__event_attach__ (const std::string &arg_typ3, EventHandlerF handler_func)
+{
+  AIDA_ASSERT_RETURN (*this != NULL, 0);
+  AIDA_ASSERT_RETURN (handler_func != NULL, 0);
+  const int64_t arg_eventhandler = remote_handle_event_handler_add (handler_func);
+  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
+  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_ATTACH__);
+  __p_ <<= arg_typ3;
+  __p_ <<= arg_eventhandler;
+  fr = __o_.invoke (&__p_);
+  Aida::ProtoReader __f_ (*fr);
+  __f_.skip_header();
+  int64_t  retval;
+  __f_ >>= retval;
+  delete fr;
+  return retval;
+}
+
+static Aida::ProtoMsg*
+ImplicitBase____event_attach__ (Aida::ProtoReader &fbr)
+{
+  Aida::ServerConnection *const server_connection = &Aida::ProtoScope::current_server_connection();
+  AIDA_ASSERT_RETURN (server_connection != NULL, NULL);
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
+  ImplicitBase *self;
+  fbr.skip_header();
+  self = fbr.pop_instance<ImplicitBase>().get();
+  AIDA_ASSERT_RETURN (self != NULL, NULL);
+  std::string  arg_type;
+  fbr >>= arg_type;
+  int64_t  arg_eventhandler;
+  fbr >>= arg_eventhandler;
+  // code executed when the attached handler function is deleted
+  auto deleter = [server_connection, arg_eventhandler] (void*) {
+    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1);
+    Aida::ProtoScopeDisconnect __o_ (__p_, *server_connection, AIDA_HASH___EVENT_CALLBACK__);
+    __p_ <<= arg_eventhandler;
+    server_connection->post_peer_msg (&__p_);
+    // FIXME: is this function *really* called?
+  };
+  auto dtor = std::shared_ptr<void> (NULL, deleter);
+  // code executed as attached handler
+  auto handler = [self, arg_eventhandler, server_connection, dtor] (const Event &event) {
+    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1 + 1);
+    Aida::ProtoScopeEmit1Way __o_ (__p_, *server_connection, AIDA_HASH___EVENT_CALLBACK__);
+    __p_ <<= self;
+    __p_ <<= arg_eventhandler;
+    Aida::Any arg_event (event.fields());
+    __p_ <<= arg_event;
+    server_connection->post_peer_msg (&__p_);
+  };
+  // attach handler to event type
+  int64_t rval = self->__event_attach__ (arg_type, handler);
+  Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___EVENT_ATTACH__);
+  rb <<= rval;
+  return &rb;
+}
+
+static void
+remote_handle_dispatch_event_discard_handler (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1); // ::dispath popped msgid
+  const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
+  const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
+  AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
+  int64_t arg_eventhandler;
+  fbr >>= arg_eventhandler;
+  remote_handle_event_handler_del (arg_eventhandler);
+}
+
+static void
+remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1 + 1 + 1); // ::dispath popped msgid
+  const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
+  const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
+  AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
+  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  fbr >>= self;
+  AIDA_ASSERT_RETURN (self != NULL);
+  int64_t arg_eventhandler;
+  fbr >>= arg_eventhandler;
+  Aida::Any arg_event;
+  fbr >>= arg_event;
+  Event event (arg_event.get<AnyDict>());
+  EventHandlerF handler_func = remote_handle_event_handler_get (arg_eventhandler);
+  AIDA_ASSERT_RETURN (handler_func != NULL);
+  handler_func (event); // self
+}
+
 static const ServerConnection::MethodEntry implicit_base_methods[] = {
-  { AIDA_HASH___AIDA_TYPELIST__, ImplicitBase____aida_typelist__, },
-  { AIDA_HASH___AIDA_AUX_DATA__, ImplicitBase____aida_aux_data__, },
-  { AIDA_HASH___AIDA_DIR__,      ImplicitBase____aida_dir__, },
-  { AIDA_HASH___AIDA_SET__,      ImplicitBase____aida_set__, },
-  { AIDA_HASH___AIDA_GET__,      ImplicitBase____aida_get__, },
+  { AIDA_HASH___AIDA_TYPELIST__,   ImplicitBase____aida_typelist__, },
+  { AIDA_HASH___AIDA_AUX_DATA__,   ImplicitBase____aida_aux_data__, },
+  { AIDA_HASH___AIDA_DIR__,        ImplicitBase____aida_dir__, },
+  { AIDA_HASH___AIDA_SET__,        ImplicitBase____aida_set__, },
+  { AIDA_HASH___AIDA_GET__,        ImplicitBase____aida_get__, },
+  { AIDA_HASH___EVENT_ATTACH__,    ImplicitBase____event_attach__, },
+  { AIDA_HASH___EVENT_DETACHID__,  ImplicitBase____event_detachid__, },
+  { AIDA_HASH___EVENT_DETACHNS__,  ImplicitBase____event_detachns__, },
 };
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 

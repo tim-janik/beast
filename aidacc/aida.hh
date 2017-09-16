@@ -370,11 +370,15 @@ typedef std::vector<TypeHash> TypeHashList;
 
 
 // == Internal Type Hashes ==
-#define AIDA_HASH___AIDA_TYPELIST__    0xcb2b5528f621af7fULL, 0x2bb5872e0c576a11ULL
-#define AIDA_HASH___AIDA_AUX_DATA__    0x2fce580dcb2bc25dULL, 0x09b4b91eed573c19ULL
-#define AIDA_HASH___AIDA_DIR__          0xbad85206b64fb121ULL, 0x0c8c9ea7b21db922ULL
-#define AIDA_HASH___AIDA_GET__          0xbbb0c7133dfe9ee1ULL, 0x4390b3489ecbe71eULL
-#define AIDA_HASH___AIDA_SET__          0x5b0fcf5339c750cdULL, 0x3bab8ba66b8e970fULL
+#define AIDA_HASH___AIDA_TYPELIST__     0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
+#define AIDA_HASH___AIDA_AUX_DATA__     0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce02ULL
+#define AIDA_HASH___AIDA_DIR__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce03ULL
+#define AIDA_HASH___AIDA_GET__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce04ULL
+#define AIDA_HASH___AIDA_SET__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce05ULL
+#define AIDA_HASH___EVENT_ATTACH__      0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce06ULL
+#define AIDA_HASH___EVENT_DETACHID__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce07ULL
+#define AIDA_HASH___EVENT_DETACHNS__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce08ULL
+#define AIDA_HASH___EVENT_CALLBACK__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce09ULL
 
 
 // === EventFd ===
@@ -488,6 +492,10 @@ public:
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
+  // Support event handlers
+  uint64                  __event_attach__     (const String &type, EventHandlerF handler);
+  bool                    __event_detach__     (uint64 connection_id);
+  uint64                  __event_detach__     (const String &type);
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
   bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }
@@ -682,9 +690,11 @@ typedef Any::AnyList AnyList;
 class Event : public virtual VirtualEnableSharedFromThis<Event> {
   AnyDict  fields_;
 public:
-  explicit     Event      (const String &type);
-  Any&         operator[] (const String &name)          { return fields_[name]; }
-  const Any&   operator[] (const String &name) const    { return fields_[name]; }
+  explicit       Event      (const String &type);
+  explicit       Event      (const AnyDict &adict);
+  Any&           operator[] (const String &name)          { return fields_[name]; }
+  const Any&     operator[] (const String &name) const    { return fields_[name]; }
+  const AnyDict& fields     () const                      { return fields_; }
 };
 
 // == ImplicitBase ==
