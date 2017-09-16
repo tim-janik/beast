@@ -335,7 +335,6 @@ class Generator:
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
       s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
-      s += '  ' + self.F ('using') + 'Sequence::Sequence;\n' # ancestor ctors
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyList &al) : %s() { __aida_from_any__ (Aida::Any (al)); }\n' % (classC, classC) # ctor
     elif type_info.storage == Decls.RECORD:
