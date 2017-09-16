@@ -24,6 +24,12 @@ generated: clean-generated $(GENERATED)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
+# == suite1 ==
+noinst_PROGRAMS	+= suite1
+TAPTESTS        += suite1
+suite1_SOURCES   = suite1-main.cc
+suite1_LDADD     = ../sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
+
 # testwavechunk
 TAPTESTS             += testwavechunk
 SLOWTESTS            += testwavechunk
