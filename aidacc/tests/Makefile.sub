@@ -92,7 +92,7 @@ CLEANFILES += tests/$(1)
 .PHONY: tests/run-$(1)
 endef
 $(foreach PRG,$(tests_binaries),$(eval $(call tests_run_RULE,$(PRG))))
-tests/%: tests/%.cc tests/testing.hh aidacc/aida.hh aidacc/aida.o
+tests/%: tests/%.o aidacc/aida.o tests/testing.hh aidacc/aida.hh
 	$(CXXCOMPILE) $(CXXFLAGS) $< aidacc/aida.o -o $@
 
 # == check-tests ==
