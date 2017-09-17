@@ -3,6 +3,7 @@
 #define __BSE_PLATFORM_HH__
 
 #include <sfi/cxxaux.hh>
+#include <thread>
 
 namespace Bse {
 
@@ -45,11 +46,13 @@ struct TaskStatus {
 };
 
 // == Thread Info ==
-void   this_thread_set_name    (const String &name16chars);
-String this_thread_get_name    ();
-int    this_thread_getpid      ();
-int    this_thread_gettid      ();
-int    this_thread_online_cpus ();
+using ThreadId = std::thread::id;
+ThreadId this_thread_self        ();
+void     this_thread_set_name    (const String &name16chars);
+String   this_thread_get_name    ();
+int      this_thread_getpid      ();
+int      this_thread_gettid      ();
+int      this_thread_online_cpus ();
 
 // == Debugging Aids ==
 extern inline void breakpoint               () BSE_ALWAYS_INLINE;       ///< Cause a debugging breakpoint, for development only.

@@ -322,6 +322,12 @@ TaskStatus::string ()
 }
 
 // == Thread Info ==
+ThreadId
+this_thread_self ()
+{
+  return std::this_thread::get_id();
+}
+
 void
 this_thread_set_name (const String &name16chars)
 {
