@@ -17,6 +17,7 @@ sfi_public_headers = $(strip \
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
 			sfi.hh						\
 	gbsearcharray.hh \
+	datalist.hh		\
 	entropy.hh		\
 	randomhash.hh		\
 	testing.hh	\
@@ -30,6 +31,7 @@ sfi_all_sources = $(strip \
 	sfitime.cc	sfitypes.cc	sfivalues.cc	\
 	sfivisitors.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
+	datalist.cc		\
 	entropy.cc		\
 	randomhash.cc		\
 	testing.cc	\

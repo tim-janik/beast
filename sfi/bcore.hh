@@ -28,8 +28,6 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Rapicorn::url_show;
-using   Rapicorn::DataKey;
-using   Rapicorn::DataListContainer;
 using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;

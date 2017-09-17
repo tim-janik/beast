@@ -2,7 +2,8 @@
 #ifndef __BSE_OBJECT_H__
 #define __BSE_OBJECT_H__
 
-#include	<bse/bseparam.hh>
+#include <bse/bseparam.hh>
+#include <sfi/datalist.hh>
 
 namespace Bse {
 
