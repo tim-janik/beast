@@ -27,7 +27,6 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
-using   Rapicorn::url_show;
 using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;
@@ -210,6 +209,9 @@ info (const char *format, const Args &...args)
 {
   Internal::diagnostic ('I', string_format (format, args...));
 }
+
+// == External Helpers ==
+bool url_show (const char *url); ///< Display @a url via a suitable WWW user agent.
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
