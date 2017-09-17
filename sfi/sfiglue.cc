@@ -7,9 +7,6 @@
 #include <gobject/gvaluecollector.h>
 
 // == Compatibility Imports ==
-namespace Bse {
-using Rapicorn::ThreadInfo;
-} // Bse
 
 /* --- prototype --- */
 static GHashTable*	glue_gc_hash_table_new	(void);
@@ -46,14 +43,7 @@ sfi_glue_fetch_context (const gchar *floc)
   return context;
 }
 
-class RingPtrDataKey : public Bse::DataKey<SfiRing*> {
-  virtual void destroy (SfiRing *ring) override
-  {
-    if (ring)
-      sfi_ring_free (ring);
-  }
-};
-static RingPtrDataKey context_stack_key;
+static thread_local std::atomic<SfiRing*> tls_context_stack;
 
 void
 sfi_glue_context_push (SfiGlueContext *context)
@@ -61,28 +51,22 @@ sfi_glue_context_push (SfiGlueContext *context)
   assert_return (context != NULL);
   assert_return (context->table.destroy != NULL);
 
-  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
-  SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
-  context_stack = sfi_ring_prepend (context_stack, context);
-  self.set_data (&context_stack_key, context_stack);
+  tls_context_stack = sfi_ring_prepend (tls_context_stack, context);
 }
 
 SfiGlueContext*
 sfi_glue_context_current (void)
 {
-  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
-  SfiRing *context_stack = self.get_data (&context_stack_key);
-  return (SfiGlueContext*) (context_stack ? context_stack->data : NULL);
+  SfiRing *context_stack = tls_context_stack;
+  return context_stack ? (SfiGlueContext*) context_stack->data : NULL;
 }
 
 void
 sfi_glue_context_pop (void)
 {
-  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
-  SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
+  SfiRing *context_stack = tls_context_stack;
   assert_return (context_stack != NULL);
-  context_stack = sfi_ring_remove_node (context_stack, context_stack);
-  self.set_data (&context_stack_key, context_stack);
+  tls_context_stack = sfi_ring_remove_node (tls_context_stack, context_stack);
 }
 
 SfiRing*
