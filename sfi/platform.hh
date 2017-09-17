@@ -23,7 +23,7 @@ String      program_cwd           ();                   ///< The current working
 std::string executable_name       ();                   ///< Retrieve the name part of executable_path().
 std::string executable_path       ();                   ///< Retrieve the path to the currently running executable.
 
-// == thread info ==
+// == Thread Status ==
 /// Acquire information about a task (process or thread) at runtime.
 struct TaskStatus {
   enum State { UNKNOWN = '?', RUNNING = 'R', SLEEPING = 'S', DISKWAIT = 'D', STOPPED = 'T', PAGING = 'W', ZOMBIE = 'Z', DEBUG = 'X', };
@@ -43,6 +43,13 @@ struct TaskStatus {
   bool          update     ();  ///< Update status information, might return false if called too frequently.
   String        string     ();  ///< Retrieve string representation of the status information.
 };
+
+// == Thread Info ==
+void   this_thread_set_name    (const String &name16chars);
+String this_thread_get_name    ();
+int    this_thread_getpid      ();
+int    this_thread_gettid      ();
+int    this_thread_online_cpus ();
 
 // == Debugging Aids ==
 extern inline void breakpoint               () BSE_ALWAYS_INLINE;       ///< Cause a debugging breakpoint, for development only.

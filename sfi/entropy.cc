@@ -285,7 +285,7 @@ runtime_entropy (KeccakRng &pool)
   hash_time (stamp++);  *uintp++ = timestamp_benchmark();
   hash_time (stamp++);  get_rdrand (uintp, 8); uintp += 8;
   hash_time (stamp++);  get_arc4random (uintp, 8); uintp += 8;
-  hash_time (stamp++);  *uintp++ = ThisThread::thread_pid();
+  hash_time (stamp++);  *uintp++ = this_thread_gettid();
   hash_time (stamp++);  *uintp++ = getuid();
   hash_time (stamp++);  *uintp++ = geteuid();
   hash_time (stamp++);  *uintp++ = getgid();

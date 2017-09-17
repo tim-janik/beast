@@ -36,7 +36,6 @@ using   Rapicorn::Res;
 using   Rapicorn::ThreadInfo;
 using   Rapicorn::cpu_info;
 using   Rapicorn::AsyncBlockingQueue;
-namespace ThisThread = Rapicorn::ThisThread;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);

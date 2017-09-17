@@ -2,16 +2,17 @@
 #include "platform.hh"
 #include "path.hh"
 #include <unistd.h>
+#include <cstring>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <execinfo.h>           // _EXECINFO_H
+#include <sys/syscall.h>        // SYS_gettid
 #if defined __APPLE__
 #include <mach-o/dyld.h>        // _NSGetExecutablePath
 #endif // __APPLE__
 #ifdef  _WIN32                  // includes _WIN64
 #include <windows.h>
 #endif  // _WIN32
-#include <cstring>
-#include <sys/wait.h>
-#include <sys/time.h>
-#include <execinfo.h>           // _EXECINFO_H
 
 namespace Bse {
 
@@ -318,6 +319,49 @@ TaskStatus::string ()
     string_format ("pid=%d task=%d state=%c processor=%d priority=%d perc=%.2f%% utime=%.3fms stime=%.3fms cutime=%.3f cstime=%.3f",
                    process_id, task_id, state, processor, priority, (utime + stime) * 0.0001,
                    utime * 0.001, stime * 0.001, cutime * 0.001, cstime * 0.001);
+}
+
+// == Thread Info ==
+void
+this_thread_set_name (const String &name16chars)
+{
+  pthread_setname_np (pthread_self(), name16chars.c_str());
+}
+
+String
+this_thread_get_name ()
+{
+  char buffer[1024] = { 0, };
+  pthread_getname_np (pthread_self(), buffer, sizeof (buffer) - 1);
+  buffer[sizeof (buffer) - 1] = 0;
+  return buffer;
+}
+
+int
+this_thread_getpid ()
+{
+  return getpid();
+}
+
+int
+this_thread_gettid ()
+{
+  int tid = -1;
+#ifdef  __linux__       // SYS_gettid is present on linux >= 2.4.20
+  tid = syscall (SYS_gettid);
+#endif
+  if (tid < 0)
+    tid = this_thread_getpid();
+  return tid;
+}
+
+int
+this_thread_online_cpus ()
+{
+  static int cpus = 0;
+  if (!cpus)
+    cpus = sysconf (_SC_NPROCESSORS_ONLN);
+  return cpus;
 }
 
 // == Early Startup ctors ==
