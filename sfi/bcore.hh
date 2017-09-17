@@ -32,7 +32,6 @@ using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;
 using   Rapicorn::cpu_info;
-using   Rapicorn::AsyncBlockingQueue;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -295,6 +294,60 @@ public:
   /*ctor*/  Spinlock    (const Spinlock&) = delete;
   Spinlock& operator=   (const Spinlock&) = delete;
 };
+
+// == AsyncBlockingQueue ==
+/** Asyncronous queue to push/pop values across thread boundaries.
+ * The AsyncBlockingQueue is a thread-safe asyncronous queue which blocks in pop() until data is provided through push() from any thread.
+ */
+template<class Value>
+class AsyncBlockingQueue {
+  std::mutex              mutex_;
+  std::condition_variable cond_;
+  std::list<Value>        list_;
+public:
+  void  push    (const Value &v);
+  Value pop     ();
+  bool  pending ();
+  void  swap    (std::list<Value> &list);
+};
+
+template<class Value> void
+AsyncBlockingQueue<Value>::push (const Value &v)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.push_back (v);
+  if (BSE_UNLIKELY (notify))
+    cond_.notify_all();
+}
+
+template<class Value> Value
+AsyncBlockingQueue<Value>::pop ()
+{
+  std::unique_lock<std::mutex> locker (mutex_);
+  while (list_.empty())
+    cond_.wait (locker);
+  Value v = list_.front();
+  list_.pop_front();
+  return v;
+}
+
+template<class Value> bool
+AsyncBlockingQueue<Value>::pending()
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  return !list_.empty();
+}
+
+template<class Value> void
+AsyncBlockingQueue<Value>::swap (std::list<Value> &list)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.swap (list);
+  if (notify && !list_.empty())
+    cond_.notify_all();
+}
 
 } // Bse
 
