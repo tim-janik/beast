@@ -31,7 +31,6 @@ using   Rapicorn::url_show;
 using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;
-using   Rapicorn::cpu_info;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);

@@ -3,6 +3,7 @@
 #include "path.hh"
 #include <unistd.h>
 #include <cstring>
+#include <setjmp.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <execinfo.h>           // _EXECINFO_H
@@ -15,6 +16,290 @@
 #endif  // _WIN32
 
 namespace Bse {
+
+// == cpu_info ==
+// figure architecture name from compiler
+static const char*
+get_arch_name (void)
+{
+#if     defined  __alpha__
+  return "Alpha";
+#elif   defined __frv__
+  return "frv";
+#elif   defined __s390__
+  return "s390";
+#elif   defined __m32c__
+  return "m32c";
+#elif   defined sparc
+  return "Sparc";
+#elif   defined __m32r__
+  return "m32r";
+#elif   defined __x86_64__ || defined __amd64__
+  return "AMD64";
+#elif   defined __ia64__
+  return "Intel Itanium";
+#elif   defined __m68k__
+  return "mc68000";
+#elif   defined __powerpc__ || defined PPC || defined powerpc || defined __PPC__
+  return "PPC";
+#elif   defined __arc__
+  return "arc";
+#elif   defined __arm__
+  return "Arm";
+#elif   defined __mips__ || defined mips
+  return "Mips";
+#elif   defined __tune_i686__ || defined __i686__
+  return "i686";
+#elif   defined __tune_i586__ || defined __i586__
+  return "i586";
+#elif   defined __tune_i486__ || defined __i486__
+  return "i486";
+#elif   defined i386 || defined __i386__
+  return "i386";
+#else
+  return "unknown-arch";
+#warning platform.cc needs updating for this processor type
+#endif
+}
+
+/// Acquire information about the runtime architecture and CPU type.
+struct CPUInfo {
+  // architecture name
+  const char *machine;
+  // CPU Vendor ID
+  char cpu_vendor[13];
+  // CPU features on X86
+  uint x86_fpu : 1, x86_ssesys : 1, x86_tsc   : 1, x86_htt      : 1;
+  uint x86_mmx : 1, x86_mmxext : 1, x86_3dnow : 1, x86_3dnowext : 1;
+  uint x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_ssse3    : 1;
+  uint x86_cx16 : 1, x86_sse4_1 : 1, x86_sse4_2 : 1, x86_rdrand : 1;
+};
+
+static jmp_buf cpu_info_jmp_buf;
+
+static void RAPICORN_NORETURN
+cpu_info_sigill_handler (int dummy)
+{
+  longjmp (cpu_info_jmp_buf, 1);
+}
+
+#if     defined __i386__
+#  define x86_has_cpuid()       ({                              \
+  unsigned int __eax, __ecx;                                    \
+  __asm__ __volatile__                                          \
+    (                                                           \
+     /* copy EFLAGS into eax and ecx */                         \
+     "pushf ; pop %0 ; mov %0, %1 \n\t"                         \
+     /* toggle the ID bit and store back to EFLAGS */           \
+     "xor $0x200000, %0 ; push %0 ; popf \n\t"                  \
+     /* read back EFLAGS with possibly modified ID bit */       \
+     "pushf ; pop %0 \n\t"                                      \
+     : "=a" (__eax), "=c" (__ecx)                               \
+     : /* no inputs */                                          \
+     : "cc"                                                     \
+     );                                                         \
+  bool __result = (__eax ^ __ecx) & 0x00200000;                 \
+  __result;                                                     \
+})
+/* save EBX around CPUID, because gcc doesn't like it to be clobbered with -fPIC */
+#  define x86_cpuid(input, eax, ebx, ecx, edx)  \
+  __asm__ __volatile__ (                        \
+    /* save ebx in esi */                       \
+    "mov %%ebx, %%esi \n\t"                     \
+    /* get CPUID with eax=input */              \
+    "cpuid \n\t"                                \
+    /* swap ebx and esi */                      \
+    "xchg %%ebx, %%esi"                         \
+    : "=a" (eax), "=S" (ebx),                   \
+      "=c" (ecx), "=d" (edx)                    \
+    : "0" (input)                               \
+    : "cc")
+#elif   defined __x86_64__ || defined __amd64__
+/* CPUID is always present on AMD64, see:
+ * http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/24594.pdf
+ * "AMD64 Architecture Programmer's Manual Volume 3",
+ * "Appendix D: Instruction Subsets and CPUID Feature Sets"
+ */
+#  define x86_has_cpuid()                       (1)
+/* save EBX around CPUID, because gcc doesn't like it to be clobbered with -fPIC */
+#  define x86_cpuid(input, eax, ebx, ecx, edx)  \
+  __asm__ __volatile__ (                        \
+    /* save ebx in esi */                       \
+    "mov %%rbx, %%rsi \n\t"                     \
+    /* get CPUID with eax=input */              \
+    "cpuid \n\t"                                \
+    /* swap ebx and esi */                      \
+    "xchg %%rbx, %%rsi"                         \
+    : "=a" (eax), "=S" (ebx),                   \
+      "=c" (ecx), "=d" (edx)                    \
+    : "0" (input)                               \
+    : "cc")
+#else
+#  define x86_has_cpuid()                       (false)
+#  define x86_cpuid(input, eax, ebx, ecx, edx)  do {} while (0)
+#endif
+
+static bool
+get_x86_cpu_features (CPUInfo *ci)
+{
+  memset (ci, 0, sizeof (*ci));
+  /* check if the CPUID instruction is supported */
+  if (!x86_has_cpuid ())
+    return false;
+
+  /* query intel CPUID range */
+  unsigned int eax, ebx, ecx, edx;
+  x86_cpuid (0, eax, ebx, ecx, edx);
+  unsigned int v_ebx = ebx, v_ecx = ecx, v_edx = edx;
+  char *vendor = ci->cpu_vendor;
+  *((unsigned int*) &vendor[0]) = ebx;
+  *((unsigned int*) &vendor[4]) = edx;
+  *((unsigned int*) &vendor[8]) = ecx;
+  vendor[12] = 0;
+  if (eax >= 1)                 /* may query version and feature information */
+    {
+      x86_cpuid (1, eax, ebx, ecx, edx);
+      if (ecx & (1 << 0))
+        ci->x86_sse3 = true;
+      if (ecx & (1 << 9))
+        ci->x86_ssse3 = true;
+      if (ecx & (1 << 13))
+        ci->x86_cx16 = true;
+      if (ecx & (1 << 19))
+        ci->x86_sse4_1 = true;
+      if (ecx & (1 << 20))
+        ci->x86_sse4_2 = true;
+      if (ecx & (1 << 30))
+        ci->x86_rdrand = true;
+      if (edx & (1 << 0))
+        ci->x86_fpu = true;
+      if (edx & (1 << 4))
+        ci->x86_tsc = true;
+      if (edx & (1 << 23))
+        ci->x86_mmx = true;
+      if (edx & (1 << 25))
+        {
+          ci->x86_sse = true;
+          ci->x86_mmxext = true;
+        }
+      if (edx & (1 << 26))
+        ci->x86_sse2 = true;
+      if (edx & (1 << 28))
+        ci->x86_htt = true;
+      /* http://www.intel.com/content/www/us/en/processors/processor-identification-cpuid-instruction-note.html
+       * "Intel Processor Identification and the CPUID Instruction"
+       */
+    }
+
+  /* query extended CPUID range */
+  x86_cpuid (0x80000000, eax, ebx, ecx, edx);
+  if (eax >= 0x80000001 &&      /* may query extended feature information */
+      v_ebx == 0x68747541 &&    /* AuthenticAMD */
+      v_ecx == 0x444d4163 && v_edx == 0x69746e65)
+    {
+      x86_cpuid (0x80000001, eax, ebx, ecx, edx);
+      if (edx & (1 << 31))
+        ci->x86_3dnow = true;
+      if (edx & (1 << 22))
+        ci->x86_mmxext = true;
+      if (edx & (1 << 30))
+        ci->x86_3dnowext = true;
+      /* www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/25481.pdf
+       * "AMD CPUID Specification"
+       */
+    }
+
+  /* check system support for SSE */
+  if (ci->x86_sse)
+    {
+      struct sigaction action, old_action;
+      action.sa_handler = cpu_info_sigill_handler;
+      sigemptyset (&action.sa_mask);
+      action.sa_flags = SA_NOMASK;
+      sigaction (SIGILL, &action, &old_action);
+      if (setjmp (cpu_info_jmp_buf) == 0)
+        {
+#if     defined __i386__ || defined __x86_64__ || defined __amd64__
+          unsigned int mxcsr;
+          __asm__ __volatile__ ("stmxcsr %0 ; sfence ; emms" : "=m" (mxcsr));
+          /* executed SIMD instructions without exception */
+          ci->x86_ssesys = true;
+#endif // x86
+        }
+      else
+        {
+          /* signal handler jumped here */
+          // g_printerr ("caught SIGILL\n");
+        }
+      sigaction (SIGILL, &old_action, NULL);
+    }
+
+  return true;
+}
+
+/** The returned string contains: number of online CPUs, a string
+ * describing the CPU architecture, the vendor and finally
+ * a number of flag words describing CPU features plus a trailing space.
+ * This allows checks for CPU features via a simple string search for
+ * " FEATURE ".
+ * @return Example: "4 AMD64 GenuineIntel FPU TSC HTT CMPXCHG16B MMX MMXEXT SSESYS SSE SSE2 SSE3 SSSE3 SSE4.1 SSE4.2 "
+ */
+String
+cpu_info()
+{
+  static String cpu_info_string = []() {
+    CPUInfo cpu_info = { 0, };
+    if (!get_x86_cpu_features (&cpu_info))
+      strcat (cpu_info.cpu_vendor, "Unknown");
+    cpu_info.machine = get_arch_name();
+    String info;
+    // cores
+    info += string_format ("%d", sysconf (_SC_NPROCESSORS_ONLN));
+    // architecture
+    info += String (" ") + cpu_info.machine;
+    // vendor
+    info += String (" ") + cpu_info.cpu_vendor;
+    // processor flags
+    if (cpu_info.x86_fpu)
+      info += " FPU";
+    if (cpu_info.x86_tsc)
+      info += " TSC";
+    if (cpu_info.x86_htt)
+      info += " HTT";
+    if (cpu_info.x86_cx16)
+      info += " CMPXCHG16B";
+    // MMX flags
+    if (cpu_info.x86_mmx)
+      info += " MMX";
+    if (cpu_info.x86_mmxext)
+      info += " MMXEXT";
+    // SSE flags
+    if (cpu_info.x86_ssesys)
+      info += " SSESYS";
+    if (cpu_info.x86_sse)
+      info += " SSE";
+    if (cpu_info.x86_sse2)
+      info += " SSE2";
+    if (cpu_info.x86_sse3)
+      info += " SSE3";
+    if (cpu_info.x86_ssse3)
+      info += " SSSE3";
+    if (cpu_info.x86_sse4_1)
+      info += " SSE4.1";
+    if (cpu_info.x86_sse4_2)
+      info += " SSE4.2";
+    if (cpu_info.x86_rdrand)
+      info += " rdrand";
+    // 3DNOW flags
+    if (cpu_info.x86_3dnow)
+      info += " 3DNOW";
+    if (cpu_info.x86_3dnowext)
+      info += " 3DNOWEXT";
+    info += " ";
+    return String (info.c_str());
+  }();
+  return cpu_info_string;
+}
 
 // == Timestamps ==
 static clockid_t monotonic_clockid = CLOCK_REALTIME;

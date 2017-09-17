@@ -23,6 +23,7 @@ void        application_name_init (String desktopname); ///< Set the application
 String      program_cwd           ();                   ///< The current working directory during startup.
 std::string executable_name       ();                   ///< Retrieve the name part of executable_path().
 std::string executable_path       ();                   ///< Retrieve the path to the currently running executable.
+std::string cpu_info              ();                   ///< Retrieve string identifying the runtime CPU type.
 
 // == Thread Status ==
 /// Acquire information about a task (process or thread) at runtime.
