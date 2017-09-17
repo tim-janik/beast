@@ -331,7 +331,7 @@ static std::atomic<bool> sequencer_thread_running { false };
 void
 Sequencer::sequencer_thread ()
 {
-  Bse::TaskRegistry::add ("Sequencer", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("Sequencer", Bse::this_thread_getpid(), Bse::this_thread_gettid());
   sequencer_thread_self = &ThreadInfo::self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
@@ -388,7 +388,7 @@ Sequencer::sequencer_thread ()
   while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
 bool
