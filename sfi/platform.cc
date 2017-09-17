@@ -218,6 +218,108 @@ program_cwd ()
   return cached_program_cwd;
 }
 
+// == TaskStatus ==
+TaskStatus::TaskStatus (int pid, int tid) :
+  process_id (pid), task_id (tid >= 0 ? tid : pid), state (UNKNOWN), processor (-1), priority (0),
+  utime (0), stime (0), cutime (0), cstime (0),
+  ac_stamp (0), ac_utime (0), ac_stime (0), ac_cutime (0), ac_cstime (0)
+{}
+
+static bool
+update_task_status (TaskStatus &self)
+{
+  static long clk_tck = 0;
+  if (!clk_tck)
+    {
+      clk_tck = sysconf (_SC_CLK_TCK);
+      if (clk_tck <= 0)
+        clk_tck = 100;
+    }
+  int pid = -1, ppid = -1, pgrp = -1, session = -1, tty_nr = -1, tpgid = -1;
+  int exit_signal = 0, processor = 0;
+  long cutime = 0, cstime = 0, priority = 0, nice = 0, dummyld = 0;
+  long itrealvalue = 0, rss = 0;
+  unsigned long flags = 0, minflt = 0, cminflt = 0, majflt = 0, cmajflt = 0;
+  unsigned long utime = 0, stime = 0, vsize = 0, rlim = 0, startcode = 0;
+  unsigned long endcode = 0, startstack = 0, kstkesp = 0, kstkeip = 0;
+  unsigned long signal = 0, blocked = 0, sigignore = 0, sigcatch = 0;
+  unsigned long wchan = 0, nswap = 0, cnswap = 0, rt_priority = 0, policy = 0;
+  unsigned long long starttime = 0;
+  char state = 0, command[8192 + 1] = { 0 };
+  String filename = string_format ("/proc/%u/task/%u/stat", self.process_id, self.task_id);
+  FILE *file = fopen (filename.c_str(), "r");
+  if (!file)
+    return false;
+  int n = fscanf (file,
+                  "%d %8192s %c "
+                  "%d %d %d %d %d "
+                  "%lu %lu %lu %lu %lu %lu %lu "
+                  "%ld %ld %ld %ld %ld %ld "
+                  "%llu %lu %ld "
+                  "%lu %lu %lu %lu %lu "
+                  "%lu %lu %lu %lu %lu "
+                  "%lu %lu %lu %d %d "
+                  "%lu %lu",
+                  &pid, command, &state, // n=3
+                  &ppid, &pgrp, &session, &tty_nr, &tpgid, // n=8
+                  &flags, &minflt, &cminflt, &majflt, &cmajflt, &utime, &stime, // n=15
+                  &cutime, &cstime, &priority, &nice, &dummyld, &itrealvalue, // n=21
+                  &starttime, &vsize, &rss, // n=24
+                  &rlim, &startcode, &endcode, &startstack, &kstkesp, // n=29
+                  &kstkeip, &signal, &blocked, &sigignore, &sigcatch, // n=34
+                  &wchan, &nswap, &cnswap, &exit_signal, &processor, // n=39
+                  &rt_priority, &policy // n=41
+                  );
+  fclose (file);
+  const double jiffies_to_usecs = 1000000.0 / clk_tck;
+  if (n >= 3)
+    self.state = TaskStatus::State (state);
+  if (n >= 15)
+    {
+      self.ac_utime = utime * jiffies_to_usecs;
+      self.ac_stime = stime * jiffies_to_usecs;
+    }
+  if (n >= 17)
+    {
+      self.ac_cutime = cutime * jiffies_to_usecs;
+      self.ac_cstime = cstime * jiffies_to_usecs;
+    }
+  if (n >= 18)
+    self.priority = priority;
+  if (n >= 39)
+    self.processor = 1 + processor;
+  return true;
+}
+
+#define ACCOUNTING_MSECS        50
+
+bool
+TaskStatus::update ()
+{
+  const TaskStatus old (*this);
+  const uint64 now = timestamp_realtime();              // usecs
+  if (ac_stamp + ACCOUNTING_MSECS * 1000 >= now)
+    return false;                                       // limit accounting to a few times per second
+  if (!update_task_status (*this))
+    return false;
+  const double delta = 1000000.0 / MAX (1, now - ac_stamp);
+  utime = uint64 (MAX (ac_utime - old.ac_utime, 0) * delta);
+  stime = uint64 (MAX (ac_stime - old.ac_stime, 0) * delta);
+  cutime = uint64 (MAX (ac_cutime - old.ac_cutime, 0) * delta);
+  cstime = uint64 (MAX (ac_cstime - old.ac_cstime, 0) * delta);
+  ac_stamp = now;
+  return true;
+}
+
+String
+TaskStatus::string ()
+{
+  return
+    string_format ("pid=%d task=%d state=%c processor=%d priority=%d perc=%.2f%% utime=%.3fms stime=%.3fms cutime=%.3f cstime=%.3f",
+                   process_id, task_id, state, processor, priority, (utime + stime) * 0.0001,
+                   utime * 0.001, stime * 0.001, cutime * 0.001, cstime * 0.001);
+}
+
 // == Early Startup ctors ==
 namespace {
 struct EarlyStartup {
