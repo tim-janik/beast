@@ -104,7 +104,7 @@ main (int argc, char *argv[])
 
   // initialize threading and GLib types
   Bse::ThreadInfo::self().name ("Beast GUI");
-  Bse::TaskRegistry::add (Bse::ThreadInfo::self().name(), Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::add (Bse::ThreadInfo::self().name(), Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv);
@@ -601,7 +601,7 @@ main_cleanup ()
 
   // misc cleanups
   Bse::objects_debug_leaks();
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 
 }
 
