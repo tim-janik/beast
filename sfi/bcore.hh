@@ -33,7 +33,6 @@ using   Rapicorn::DataListContainer;
 using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;
-using   Rapicorn::ThreadInfo;
 using   Rapicorn::cpu_info;
 using   Rapicorn::AsyncBlockingQueue;
 

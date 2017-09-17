@@ -103,8 +103,8 @@ main (int argc, char *argv[])
   Py_Initialize();
 
   // initialize threading and GLib types
-  Bse::ThreadInfo::self().name ("Beast GUI");
-  Bse::TaskRegistry::add (Bse::ThreadInfo::self().name(), Bse::this_thread_getpid(), Bse::this_thread_gettid());
+  Bse::this_thread_set_name ("Beast GUI");
+  Bse::TaskRegistry::add (Bse::this_thread_get_name(), Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv);
