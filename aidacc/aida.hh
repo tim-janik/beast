@@ -79,8 +79,6 @@ class ServerConnection;
 union ProtoUnion;
 class ProtoMsg;
 class ProtoReader;
-struct PropertyList;
-class Property;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::shared_ptr<BaseConnection> BaseConnectionP;
@@ -702,10 +700,6 @@ public:
 class ImplicitBase : public virtual VirtualEnableSharedFromThis<ImplicitBase> {
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
-  virtual const PropertyList& __aida_properties__ () = 0; ///< Retrieve the list of properties for @a this instance.
-  Property*                   __aida_lookup__     (const std::string &property_name);
-  bool                        __aida_setter__     (const std::string &property_name, const std::string &value);
-  std::string                 __aida_getter__     (const std::string &property_name);
 public:
   virtual std::string         __aida_type_name__  () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual TypeHashList        __aida_typelist__   () const = 0;
