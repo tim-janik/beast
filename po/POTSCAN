@@ -56,8 +56,6 @@ beast-gtk/gxk/gxkparam-scale.cc
 beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
-beast-gtk/res/radgets-beast.xml
-beast-gtk/res/radgets-standard.xml
 bse/bseapi.idl
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc
@@ -123,5 +121,7 @@ plugins/davxtalstrings.cc
 plugins/freeverb/bsefreeverb.cc
 plugins/standardguspatchenvelope.idl
 plugins/standardsaturator.idl
+res/gxk/radgets-beast.xml
+res/gxk/radgets-standard.xml
 sfi/sfidl-parser.hh
 tools/bsewavetool.cc

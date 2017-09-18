@@ -408,7 +408,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     dnl # require Rapicorn
     PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
-    MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
     # librapicorn uses pthread functions in header files, forcing us to link against libpthread
     RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
 
@@ -737,7 +736,6 @@ sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
-bse/res/Makefile
 ebeast/Makefile
 ebeast/v8bse/Makefile
 bse/pybse/Makefile
@@ -749,7 +747,6 @@ drivers/Makefile
 pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
-beast-gtk/res/Makefile
 beast-gtk/icons/Makefile
 launchers/Makefile
 library/Makefile

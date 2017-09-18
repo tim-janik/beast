@@ -92,7 +92,6 @@ _bst_init_utils (void)
   }
 }
 
-#include "beast-gtk/res/beast-resources.cc"
 void
 _bst_init_radgets (void)
 {
@@ -114,9 +113,9 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   Bse::Blob blob;
-  blob = Bse::Res ("@res radgets-standard.xml");
+  blob = Bse::Blob ("res:gxk/radgets-standard.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
-  blob = Bse::Res ("@res radgets-beast.xml");
+  blob = Bse::Blob ("res:gxk/radgets-beast.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
 }
 
