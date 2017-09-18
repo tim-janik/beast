@@ -25,7 +25,7 @@ namespace Bse {
 
 Sequencer              *Sequencer::singleton_ = NULL;
 std::mutex              Sequencer::sequencer_mutex_;
-static ThreadInfo      *sequencer_thread_self = NULL;
+static Bse::ThreadId    sequencer_thread_self;
 
 class Sequencer::PollPool {
 public:
@@ -162,7 +162,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
   std::unique_lock<std::mutex> sequencer_guard (sequencer_mutex_);
   if (current_watch_func == watch_func && current_watch_data == watch_data)
     {  /* watch_func() to be removed is currently in call */
-      if (&ThreadInfo::self() == sequencer_thread_self)
+      if (Bse::this_thread_self() == sequencer_thread_self)
         {
           /* allow removal calls from within a watch_func() */
           removal_success = !current_watch_needs_remove1;       /* catch multiple calls */
@@ -331,8 +331,8 @@ static std::atomic<bool> sequencer_thread_running { false };
 void
 Sequencer::sequencer_thread ()
 {
-  Bse::TaskRegistry::add ("Sequencer", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
-  sequencer_thread_self = &ThreadInfo::self();
+  Bse::TaskRegistry::add ("Sequencer", Bse::this_thread_getpid(), Bse::this_thread_gettid());
+  sequencer_thread_self = Bse::this_thread_self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
   BSE_SEQUENCER_LOCK();
@@ -388,7 +388,7 @@ Sequencer::sequencer_thread ()
   while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
 bool

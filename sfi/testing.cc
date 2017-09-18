@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sfi/randomhash.hh>
 
 #define TDEBUG(...)     Bse::debug ("Test", __VA_ARGS__)
 
@@ -25,7 +26,7 @@ test_assertion_failed()
   String btmsg = pretty_backtrace (__p_, backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), __FILE__, __LINE__, NULL);
   if (btmsg.size())
     printerr ("%s", btmsg.c_str());
-  printerr ("Rapicorn::test_assertion_failed(): aborting...");
+  printerr ("Bse: test assertion failed, aborting...");
   Bse::breakpoint();
   abort();
 }

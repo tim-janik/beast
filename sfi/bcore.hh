@@ -27,21 +27,9 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
-using   Rapicorn::url_show;
-using   Rapicorn::DataKey;
-using   Rapicorn::DataListContainer;
 using   Rapicorn::void_t;
 using   Rapicorn::Blob;
 using   Rapicorn::Res;
-using   Rapicorn::TaskStatus;
-using   Rapicorn::ThreadInfo;
-using   Rapicorn::cpu_info;
-using   Rapicorn::AsyncBlockingQueue;
-using   Rapicorn::random_int64;
-using   Rapicorn::random_float;
-using   Rapicorn::random_irange;
-using   Rapicorn::random_frange;
-namespace ThisThread = Rapicorn::ThisThread;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -222,6 +210,9 @@ info (const char *format, const Args &...args)
   Internal::diagnostic ('I', string_format (format, args...));
 }
 
+// == External Helpers ==
+bool url_show (const char *url); ///< Display @a url via a suitable WWW user agent.
+
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (__FILE__, __LINE__, #cond); return __VA_ARGS__; } while (0)
@@ -304,6 +295,60 @@ public:
   /*ctor*/  Spinlock    (const Spinlock&) = delete;
   Spinlock& operator=   (const Spinlock&) = delete;
 };
+
+// == AsyncBlockingQueue ==
+/** Asyncronous queue to push/pop values across thread boundaries.
+ * The AsyncBlockingQueue is a thread-safe asyncronous queue which blocks in pop() until data is provided through push() from any thread.
+ */
+template<class Value>
+class AsyncBlockingQueue {
+  std::mutex              mutex_;
+  std::condition_variable cond_;
+  std::list<Value>        list_;
+public:
+  void  push    (const Value &v);
+  Value pop     ();
+  bool  pending ();
+  void  swap    (std::list<Value> &list);
+};
+
+template<class Value> void
+AsyncBlockingQueue<Value>::push (const Value &v)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.push_back (v);
+  if (BSE_UNLIKELY (notify))
+    cond_.notify_all();
+}
+
+template<class Value> Value
+AsyncBlockingQueue<Value>::pop ()
+{
+  std::unique_lock<std::mutex> locker (mutex_);
+  while (list_.empty())
+    cond_.wait (locker);
+  Value v = list_.front();
+  list_.pop_front();
+  return v;
+}
+
+template<class Value> bool
+AsyncBlockingQueue<Value>::pending()
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  return !list_.empty();
+}
+
+template<class Value> void
+AsyncBlockingQueue<Value>::swap (std::list<Value> &list)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.swap (list);
+  if (notify && !list_.empty())
+    cond_.notify_all();
+}
 
 } // Bse
 
