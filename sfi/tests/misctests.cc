@@ -764,7 +764,7 @@ TEST_ADD (test_vmarshals);
 static int
 my_compare_func (const void*, const void*)
 {
-  RAPICORN_BACKTRACE();
+  BSE_BACKTRACE();
   exit (0);
 }
 
