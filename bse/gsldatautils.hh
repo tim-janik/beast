@@ -371,7 +371,7 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values * 4;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED (0);
       return 0;
     }
 }
@@ -602,7 +602,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED (0);
       return 0;
     }
 }
@@ -821,7 +821,7 @@ gsl_conv_to_float (GslWaveFormatType format,
       while (u32dest < u32bound);
       break;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED();
     }
 }
 
@@ -1028,7 +1028,7 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED (0);
       return 0;
     }
 }
@@ -1259,7 +1259,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (u32src < u32bound);
       return n_values << 2;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED (0);
       return 0;
     }
 }
@@ -1428,7 +1428,7 @@ gsl_conv_to_double (GslWaveFormatType format,
       while (u32dest < u32bound);
       break;
     default:
-      RAPICORN_ASSERT_UNREACHED();
+      BSE_ASSERT_RETURN_UNREACHED();
     }
 }
 
