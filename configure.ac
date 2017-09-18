@@ -748,7 +748,6 @@ drivers/Makefile
 pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
-beast-gtk/res/Makefile
 beast-gtk/icons/Makefile
 launchers/Makefile
 library/Makefile
