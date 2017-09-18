@@ -2,6 +2,7 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
+#include <sfi/blob.hh>
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
@@ -28,8 +29,6 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Rapicorn::void_t;
-using   Rapicorn::Blob;
-using   Rapicorn::Res;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
