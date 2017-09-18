@@ -15,7 +15,7 @@
 
 #define MDEBUG(...)     Bse::debug ("mad", __VA_ARGS__)
 
-RAPICORN_STATIC_ASSERT (BSE_HAVE_LIBMAD > 0); // ensure we can use libmad
+static_assert (BSE_HAVE_LIBMAD > 0, ""); // ensure we can use libmad
 #if     BSE_HAVE_LIBMAD
 #include <mad.h>
 
