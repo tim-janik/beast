@@ -5,6 +5,9 @@ topdir = $(abs_top_srcdir)
 
 SUBDIRS		= . sfi bse plugins drivers pybeast beast-gtk launchers library tools ebeast po docs data tests
 
+# == res/ ==
+# define res_resfiles_list
+include res/Makefile.sub
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
