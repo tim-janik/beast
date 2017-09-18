@@ -274,6 +274,8 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 #define UNLIKELY(cond)  BSE_UNLIKELY (cond)
 /// Return silently if @a cond does not evaluate to true with return value @a ...
 #define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
+/// Yield the number of C @a array elements.
+#define ARRAY_SIZE(array)               BSE_ARRAY_SIZE (array)
 #endif // BSE_CONVENIENCE
 
 // == Memory Utilities ==
