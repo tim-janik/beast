@@ -361,7 +361,7 @@ sfi_pspecs_fields_from_accessor_visitable (Visitable &visitable)
   sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp, true);
   pspecsp = NULL;
   bool success = sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp);
-  RAPICORN_ASSERT (success && pspecsp);
+  BSE_ASSERT_RETURN (success && pspecsp, *pspecsp);
   return *pspecsp;
 }
 
