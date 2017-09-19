@@ -2,7 +2,14 @@
 
 namespace A1  {
 
-enum CountEnum { ZERO = 0, ONE, TWO, THREE };
+enum CountEnum {
+  ZERO = 0,
+  ONE,
+  TWO   = Enum ("Two"),
+  THREE = Enum (_("Three"), _("The third value (ignoring ZERO)")),
+  EIGHT = Enum (8, _("Eight"), "Discontinuous value enumeration"),
+  NINE  = Enum (_("Nine")),
+};
 
 record Location {
   float64 x;

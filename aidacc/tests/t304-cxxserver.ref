@@ -3333,7 +3333,8 @@ namespace Aida {
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1_ = {
   "MandatoryNamespace::Enum1\0"
-  ""};
+  "E1_A.value=1\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum1> ()
 {
@@ -3346,7 +3347,8 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiati
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
-  ""};
+  "E1C_A.value=1\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum1c> ()
 {
@@ -3359,7 +3361,9 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
-  ""};
+  "E2_A.value=1\0"
+  "E2_B.value=2\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum2> ()
 {
@@ -3373,7 +3377,9 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiati
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
-  ""};
+  "E2C_A.value=1\0"
+  "E2C_B.value=2\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum2c> ()
 {
@@ -3387,7 +3393,10 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
-  ""};
+  "E3_A.value=1\0"
+  "E3_B.value=2\0"
+  "E3_C.value=3\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum3> ()
 {
@@ -3402,7 +3411,10 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiati
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
-  ""};
+  "E3C_A.value=1\0"
+  "E3C_B.value=2\0"
+  "E3C_C.value=3\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum3c> ()
 {
@@ -3417,7 +3429,11 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
-  ""};
+  "E4A_A.value=1\0"
+  "E4A_B.value=2\0"
+  "E4A_C.value=3\0"
+  "E4A_D.value=4\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4a> ()
 {
@@ -3433,7 +3449,11 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
-  ""};
+  "E4B_A.value=1\0"
+  "E4B_B.value=2\0"
+  "E4B_C.value=3\0"
+  "E4B_D.value=4\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4b> ()
 {
@@ -3449,7 +3469,11 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
-  ""};
+  "E4C_A.value=1\0"
+  "E4C_B.value=2\0"
+  "E4C_C.value=3\0"
+  "E4C_D.value=4\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4c> ()
 {
@@ -3465,7 +3489,11 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
-  ""};
+  "E4D_A.value=1\0"
+  "E4D_B.value=2\0"
+  "E4D_C.value=3\0"
+  "E4D_D.value=4\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4d> ()
 {
@@ -3481,7 +3509,71 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiat
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
-  ""};
+  "V1a.value=1\0"
+  "V1b.value=1\0"
+  "V2.value=2\0"
+  "V3.value=3\0"
+  "V3.label=" "v3" "\0"
+  "V4.value=4\0"
+  "V4.label=" _("v4") "\0"
+  "V5.value=5\0"
+  "V5.label=" "v5" "\0"
+  "V5.blurb=" "V5" "\0"
+  "V6.value=6\0"
+  "V6.label=" _("v6") "\0"
+  "V6.blurb=" "V6" "\0"
+  "V7.value=7\0"
+  "V7.label=" "v7" "\0"
+  "V7.blurb=" _("V7") "\0"
+  "V8.value=8\0"
+  "V8.label=" _("v8") "\0"
+  "V8.blurb=" _("V8") "\0"
+  "V9.value=9\0"
+  "V10.value=10\0"
+  "V10.label=" "v10" "\0"
+  "V11.value=11\0"
+  "V11.label=" _("v11") "\0"
+  "V12.value=12\0"
+  "V12.label=" "v12" "\0"
+  "V13.value=13\0"
+  "V14.value=14\0"
+  "V14.label=" _("v14") "\0"
+  "V15.value=15\0"
+  "V15.label=" "v15" "\0"
+  "V15.blurb=" "V15" "\0"
+  "V16.value=16\0"
+  "V16.label=" _("v16") "\0"
+  "V16.blurb=" "V16" "\0"
+  "V17.value=17\0"
+  "V17.label=" "v17" "\0"
+  "V17.blurb=" _("V17") "\0"
+  "V18.value=18\0"
+  "V18.label=" _("v18") "\0"
+  "V18.blurb=" _("V18") "\0"
+  "V20.value=20\0"
+  "V21.value=21\0"
+  "V22.value=22\0"
+  "V23.value=23\0"
+  "V24.value=24\0"
+  "V25.value=-9223372036854775808\0"
+  "V26.value=9223372036854775807\0"
+  "V27.value=9223372036854775807\0"
+  "V28.value=-28\0"
+  "V30.value=42\0"
+  "V31.value=43\0"
+  "V31.label=" "foo" "\0"
+  "V32.value=42\0"
+  "V33.value=43\0"
+  "V33.label=" "foo" "\0"
+  "V34.value=44\0"
+  "V34.label=" "foo" "\0"
+  "V34.blurb=" "foo" "\0"
+  "V35.value=42\0"
+  "V35.label=" "foo" "\0"
+  "V36.value=42\0"
+  "V36.label=" "foo" "\0"
+  "V36.blurb=" "foo""4" "\0"
+};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::ExtensiveEnum> ()
 {
@@ -3528,7 +3620,8 @@ template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // ins
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
-  ""};
+  "ZERO.value=0\0"
+};
 template<> const EnumInfo&
 enum_info<InterfaceTests::QuickEnum> ()
 {
@@ -3541,7 +3634,12 @@ template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiati
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
-  ""};
+  "CLICK_ON_PRESS.value=1\0"
+  "CLICK_ON_RELEASE.value=2\0"
+  "CLICK_SLOW_REPEAT.value=3\0"
+  "CLICK_FAST_REPEAT.value=4\0"
+  "CLICK_KEY_REPEAT.value=5\0"
+};
 template<> const EnumInfo&
 enum_info<RapicornAidaTest::ClickType> ()
 {
@@ -3558,7 +3656,19 @@ template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantia
 
 static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
-  ""};
+  "RESULT_2.value=2\0"
+  "RESULT_5.value=5\0"
+  "RESULT_8.value=8\0"
+  "RESULT_6.value=6\0"
+  "RESULT_7.value=7\0"
+  "RESULT_16.value=16\0"
+  "RESULT_3.value=3\0"
+  "RESULT_24.value=24\0"
+  "RESULT_13.value=13\0"
+  "RESULT_m2.value=-2\0"
+  "RESULT_77.value=77\0"
+  "RESULT_511.value=511\0"
+};
 template<> const EnumInfo&
 enum_info<RapicornAidaTest::MathExpressions> ()
 {

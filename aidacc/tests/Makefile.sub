@@ -29,8 +29,10 @@ tests/t303-%-clnt.hh tests/t303-%-clnt.cc tests/t303-%-srvt.hh tests/t303-%-srvt
 	$(QGEN)
 	$(Q) $(AIDACC) -x CxxStub -G clienthh -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.hh
 	$(Q) $(AIDACC) -x CxxStub -G clientcc -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.cc
+	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*-clnt.cc
 	$(Q) $(AIDACC) -x CxxStub -G serverhh -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.hh
 	$(Q) $(AIDACC) -x CxxStub -G servercc -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.cc
+	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*-srvt.cc
 CLEANFILES += $(tests_t303_generated)
 tests/t303-explore.cc: $(tests_t303_generated)
 
