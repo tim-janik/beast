@@ -23,7 +23,8 @@ CLEANFILES += v8bse.cc *.pyc *.pyo
 # == v8bse.node ==
 v8bse_sources = nodemodule.cc
 v8bse_deps    = v8bse.cc binding.gyp
-v8bse_rmflags = -fno-exceptions -fno-rtti
+# see also: /usr/include/nodejs/common.gypi
+v8bse_rmflags = -fno-exceptions -fno-rtti -std=gnu++0x
 v8bse_incdirs = ../../ ../../external/v8pp/ $(patsubst -%, , $(patsubst -I%, %, $(LIBBSE_CFLAGS)))
 v8bse_libs    = $(LIBBSE_LIBS) -L$(abs_top_builddir)/bse/.libs -lbse-@MAJOR@
 v8bse.node: $(v8bse_sources) $(v8bse_deps) ../node_modules/electron/dist/electron
