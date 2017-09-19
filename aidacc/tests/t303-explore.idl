@@ -101,6 +101,7 @@ interface MiniServer {
   float64   vf64  = Range ("Float Value", "A 64bit floating point value", "rw", -0.0, +1.0, +0.1, +0.5);
   CountEnum count = Enum ("Count Value", "One of the CountEnum values", "rw", TWO);
   String    vstr  = String ("String Value", "Space for words or anything", "rw", "foobar");
+  Any       vany  = Any ("Generic Value", "Holder for a value of unknown type", "rw");
   Location  location;
   StringSeq strings;
   Derived   derived;

@@ -15,6 +15,7 @@ auxillary_initializers = {
   (Decls.RECORD,    'Record')   : ('label', 'blurb', 'hints'),
   (Decls.SEQUENCE,  'Sequence') : ('label', 'blurb', 'hints'),
   (Decls.STREAM,    'Stream')   : ('label', 'blurb', 'hints'),
+  (Decls.ANY,       'Any')      : ('label', 'blurb', 'hints'),
 }
 
 class AuxError (Exception):
