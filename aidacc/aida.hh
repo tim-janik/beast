@@ -308,8 +308,22 @@ template<typename EnumType> String
 enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enum_value_to_string() with value joiner.
 { return Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
 
+// == AuxDataRegistry ==
+class AuxDataRegistry {
+  static void register_aux_data (const char *auxentry, size_t length);
+public:
+  static std::vector<std::string> lookup          (const std::string &abstypename);
+  template<size_t I>              AuxDataRegistry (const char (&auxentry) [I])
+  {
+    static_assert (I >= 1, "");
+    register_aux_data (auxentry, I);
+  }
+};
+
 /// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
-std::vector<String> aux_vectors_combine (const char *char_array, size_t length, // Splits @a char_array at '\\0'
+std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
+/// Merge string vectors @a v0 .. @a vf.
+std::vector<String> aux_vectors_combine (const std::vector<String> &v0 = std::vector<String>(),
                                          const std::vector<String> &v1 = std::vector<String>(),
                                          const std::vector<String> &v2 = std::vector<String>(),
                                          const std::vector<String> &v3 = std::vector<String>(),

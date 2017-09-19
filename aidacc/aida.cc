@@ -607,6 +607,7 @@ EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_va
   return *einfo;
 }
 
+// == AuxDataRegistry ==
 static std::vector<const char*>
 split_aux_char_array (const char *char_array, size_t length)
 {
@@ -624,15 +625,22 @@ split_aux_char_array (const char *char_array, size_t length)
 }
 
 std::vector<String>
-aux_vectors_combine (const char *char_array, size_t length, const std::vector<String> &v1, const std::vector<String> &v2,
+aux_vector_split (const char *char_array, size_t length)
+{
+  std::vector<const char*> cv = split_aux_char_array (char_array, length);
+  std::vector<std::string> sv (cv.begin(), cv.end());
+  return sv;
+}
+
+std::vector<String>
+aux_vectors_combine (const std::vector<String> &v0, const std::vector<String> &v1, const std::vector<String> &v2,
                      const std::vector<String> &v3, const std::vector<String> &v4, const std::vector<String> &v5,
                      const std::vector<String> &v6, const std::vector<String> &v7, const std::vector<String> &v8,
                      const std::vector<String> &v9, const std::vector<String> &va, const std::vector<String> &vb,
                      const std::vector<String> &vc, const std::vector<String> &vd, const std::vector<String> &ve,
                      const std::vector<String> &vf)
 {
-  std::vector<const char*> cv = split_aux_char_array (char_array, length);
-  std::vector<std::string> sv (cv.begin(), cv.end());
+  std::vector<std::string> sv (v0);
   sv.insert (sv.end(), v1.begin(), v1.end());
   sv.insert (sv.end(), v2.begin(), v2.end());
   sv.insert (sv.end(), v3.begin(), v3.end());
