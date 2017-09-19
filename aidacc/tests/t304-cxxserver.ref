@@ -52,6 +52,8 @@
 #define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
 #endif // !AIDA_ENABLE_ENUM_ARITHMETIC
 
+using AidaAuxDataRegistry = Aida::AuxDataRegistry;
+
 #ifndef __AIDA_CXXSTUB_SERVER_CC__
 #define __AIDA_CXXSTUB_SERVER_CC__
 
@@ -1481,14 +1483,14 @@ I_FirstInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x22113f623903ac14ULL, 0x3fe8e50c1a9a78d2ULL)); // FirstInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_FirstInterface_ = {
+  "MandatoryNamespace::FirstInterface\0"
+  ""};
 std::vector<std::string>
 I_FirstInterfaceIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("MandatoryNamespace::FirstInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -1508,15 +1510,35 @@ I_FirstInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &_
 {
   return false;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooRecord_ = {
+  "MandatoryNamespace::XFooRecord\0"
+  "single_bool.type=BOOL\0"
+  "single_num.type=INT32\0"
+  "num64.type=INT64\0"
+  "single_float.type=FLOAT64\0"
+  "single_string.type=STRING\0"
+  "sibling1.type=INT32\0"
+  "sibling2.type=INT32\0"
+  "multi1.type=INT32\0"
+  "multi2.type=INT32\0"
+  "multi3.type=INT32\0"
+  "multi4.type=INT32\0"
+  "enum_field.type=ENUM\0"
+  "enum_field.typename=MandatoryNamespace::ExtensiveEnum\0"
+  "iface1.type=INTERFACE\0"
+  "iface1.typename=MandatoryNamespace::FirstInterface\0"
+  "iface2.type=INTERFACE\0"
+  "iface2.typename=MandatoryNamespace::FirstInterface\0"
+  "iface3.type=INTERFACE\0"
+  "iface3.typename=MandatoryNamespace::FirstInterface\0"
+  "any1.type=ANY\0"
+  "any2.type=ANY\0"
+  "any3.type=ANY\0"
+};
 std::vector<std::string>
-SrvT_XFooRecord::__aida_aux_data__  () const
+SrvT_XFooRecord::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooRecord");
 }
 bool
 SrvT_XFooRecord::operator== (const SrvT_XFooRecord &other) const
@@ -1588,15 +1610,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_XFooRecord &self)
   fbr >>= self.any2;
   fbr >>= self.any3;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooSequence_ = {
+  "MandatoryNamespace::XFooSequence\0"
+  "single_bool.type=BOOL\0"
+};
 std::vector<std::string>
-SrvT_XFooSequence::__aida_aux_data__  () const
+SrvT_XFooSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_XFooSequence &self)
@@ -1617,15 +1638,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_XFooSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_IntSequence_ = {
+  "MandatoryNamespace::IntSequence\0"
+  "numx.type=INT32\0"
+};
 std::vector<std::string>
-SrvT_IntSequence::__aida_aux_data__  () const
+SrvT_IntSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::IntSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_IntSequence &self)
@@ -1646,15 +1666,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_IntSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_FloatSequence_ = {
+  "MandatoryNamespace::FloatSequence\0"
+  "fractalvalue.type=FLOAT64\0"
+};
 std::vector<std::string>
-SrvT_FloatSequence::__aida_aux_data__  () const
+SrvT_FloatSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::FloatSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_FloatSequence &self)
@@ -1675,15 +1694,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_FloatSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_StringSequence_ = {
+  "MandatoryNamespace::StringSequence\0"
+  "blurb.type=STRING\0"
+};
 std::vector<std::string>
-SrvT_StringSequence::__aida_aux_data__  () const
+SrvT_StringSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::StringSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_StringSequence &self)
@@ -1704,15 +1722,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_StringSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnumSequence_ = {
+  "MandatoryNamespace::ExtensiveEnumSequence\0"
+  "enum_elements.type=ENUM\0"
+  "enum_elements.typename=MandatoryNamespace::ExtensiveEnum\0"
+};
 std::vector<std::string>
-SrvT_ExtensiveEnumSequence::__aida_aux_data__  () const
+SrvT_ExtensiveEnumSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::ExtensiveEnumSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_ExtensiveEnumSequence &self)
@@ -1733,15 +1751,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_ExtensiveEnumSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_RecordSequence_ = {
+  "MandatoryNamespace::RecordSequence\0"
+  "repeatedfield.type=RECORD\0"
+  "repeatedfield.typename=MandatoryNamespace::XFooRecord\0"
+};
 std::vector<std::string>
-SrvT_RecordSequence::__aida_aux_data__  () const
+SrvT_RecordSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::RecordSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_RecordSequence &self)
@@ -1762,15 +1780,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_RecordSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_SequenceSequence_ = {
+  "MandatoryNamespace::SequenceSequence\0"
+  "moreints.type=SEQUENCE\0"
+  "moreints.typename=MandatoryNamespace::IntSequence\0"
+};
 std::vector<std::string>
-SrvT_SequenceSequence::__aida_aux_data__  () const
+SrvT_SequenceSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::SequenceSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_SequenceSequence &self)
@@ -1791,15 +1809,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_SequenceSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_InterfaceSequence_ = {
+  "MandatoryNamespace::InterfaceSequence\0"
+  "iface1.type=INTERFACE\0"
+  "iface1.typename=MandatoryNamespace::FirstInterface\0"
+};
 std::vector<std::string>
-SrvT_InterfaceSequence::__aida_aux_data__  () const
+SrvT_InterfaceSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::InterfaceSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_InterfaceSequence &self)
@@ -1820,15 +1838,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_InterfaceSequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_AnySequence_ = {
+  "MandatoryNamespace::AnySequence\0"
+  "any_value.type=ANY\0"
+};
 std::vector<std::string>
-SrvT_AnySequence::__aida_aux_data__  () const
+SrvT_AnySequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::AnySequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_AnySequence &self)
@@ -1849,15 +1866,17 @@ operator>>= (Aida::ProtoReader &src, SrvT_AnySequence &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_NestedTypesRec_ = {
+  "MandatoryNamespace::NestedTypesRec\0"
+  "rec.type=RECORD\0"
+  "rec.typename=MandatoryNamespace::XFooRecord\0"
+  "seq.type=SEQUENCE\0"
+  "seq.typename=MandatoryNamespace::XFooSequence\0"
+};
 std::vector<std::string>
-SrvT_NestedTypesRec::__aida_aux_data__  () const
+SrvT_NestedTypesRec::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesRec");
 }
 bool
 SrvT_NestedTypesRec::operator== (const SrvT_NestedTypesRec &other) const
@@ -1881,15 +1900,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_NestedTypesRec &self)
   fbr >>= self.rec;
   fbr >>= self.seq;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_NestedTypesSeq_ = {
+  "MandatoryNamespace::NestedTypesSeq\0"
+  "ntr.type=RECORD\0"
+  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
+};
 std::vector<std::string>
-SrvT_NestedTypesSeq::__aida_aux_data__  () const
+SrvT_NestedTypesSeq::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesSeq");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_NestedTypesSeq &self)
@@ -1910,15 +1929,20 @@ operator>>= (Aida::ProtoReader &src, SrvT_NestedTypesSeq &self)
     fbr >>= self[k];
   }
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_NewRecord_ = {
+  "MandatoryNamespace::NewRecord\0"
+  "i.type=INT32\0"
+  "enum1.type=ENUM\0"
+  "enum1.typename=MandatoryNamespace::Enum1\0"
+  "xfs.type=SEQUENCE\0"
+  "xfs.typename=MandatoryNamespace::XFooSequence\0"
+  "ntr.type=RECORD\0"
+  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
+};
 std::vector<std::string>
-SrvT_NewRecord::__aida_aux_data__  () const
+SrvT_NewRecord::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NewRecord");
 }
 bool
 SrvT_NewRecord::operator== (const SrvT_NewRecord &other) const
@@ -1950,15 +1974,17 @@ operator>>= (Aida::ProtoReader &src, SrvT_NewRecord &self)
 }
 
 namespace Inner {
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Inner_InnerRecord_ = {
+  "MandatoryNamespace::Inner::InnerRecord\0"
+  "x.type=INT32\0"
+  "y.type=INT32\0"
+  "rec.type=RECORD\0"
+  "rec.typename=MandatoryNamespace::NewRecord\0"
+};
 std::vector<std::string>
-SrvT_InnerRecord::__aida_aux_data__  () const
+SrvT_InnerRecord::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::Inner::InnerRecord");
 }
 bool
 SrvT_InnerRecord::operator== (const SrvT_InnerRecord &other) const
@@ -1986,15 +2012,15 @@ operator>>= (Aida::ProtoReader &src, SrvT_InnerRecord &self)
   fbr >>= self.rec;
 }
 } // Inner
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Refer2Inner_ = {
+  "MandatoryNamespace::Refer2Inner\0"
+  "r.type=RECORD\0"
+  "r.typename=MandatoryNamespace::Inner::InnerRecord\0"
+};
 std::vector<std::string>
-SrvT_Refer2Inner::__aida_aux_data__  () const
+SrvT_Refer2Inner::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::Refer2Inner");
 }
 bool
 SrvT_Refer2Inner::operator== (const SrvT_Refer2Inner &other) const
@@ -2018,15 +2044,21 @@ operator>>= (Aida::ProtoReader &src, SrvT_Refer2Inner &self)
 } // MandatoryNamespace
 
 namespace OtherNamespace {
+static const AidaAuxDataRegistry __aida_aux_data_srvt__OtherNamespace_SomeRecord_ = {
+  "OtherNamespace::SomeRecord\0"
+  "r1.type=RECORD\0"
+  "r1.typename=MandatoryNamespace::NewRecord\0"
+  "r2.type=RECORD\0"
+  "r2.typename=MandatoryNamespace::NewRecord\0"
+  "r3.type=RECORD\0"
+  "r3.typename=MandatoryNamespace::Inner::InnerRecord\0"
+  "r4.type=RECORD\0"
+  "r4.typename=MandatoryNamespace::Inner::InnerRecord\0"
+};
 std::vector<std::string>
-SrvT_SomeRecord::__aida_aux_data__  () const
+SrvT_SomeRecord::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("OtherNamespace::SomeRecord");
 }
 bool
 SrvT_SomeRecord::operator== (const SrvT_SomeRecord &other) const
@@ -2059,34 +2091,38 @@ operator>>= (Aida::ProtoReader &src, SrvT_SomeRecord &self)
 } // OtherNamespace
 
 namespace Auxdata {
+static const AidaAuxDataRegistry __aida_aux_data_srvt__Auxdata_RecordWithAuxdata_ = {
+  "Auxdata::RecordWithAuxdata\0"
+  "aux_bool.type=BOOL\0"
+  "aux_bool.label=AuxBool\0"
+  "aux_bool.blurb=A Boolean\0"
+  "aux_bool.hints=rw\0"
+  "aux_bool.default=0\0"
+  "aux32.type=INT32\0"
+  "aux32.label=Aux32\0"
+  "aux32.blurb=The Bar number\0"
+  "aux32.hints=rw\0"
+  "aux32.default=10007.0\0"
+  "aux64.type=INT64\0"
+  "aux64.label=Aux64\0"
+  "aux64.blurb=64bit auxillary number\0"
+  "aux64.hints=rw\0"
+  "aux64.default=1152921504606846976\0"
+  "auxf64.type=FLOAT64\0"
+  "auxf64.label=AuxF64\0"
+  "auxf64.blurb=X coordinate\0"
+  "auxf64.hints=ro\0"
+  "auxf64.default=0.019\0"
+  "aux_str.type=STRING\0"
+  "aux_str.label=AuxStr\0"
+  "aux_str.blurb=Specify text here\0"
+  "aux_str.hints=rw\0"
+  "aux_str.default=auxtest3\0"
+};
 std::vector<std::string>
-SrvT_RecordWithAuxdata::__aida_aux_data__  () const
+SrvT_RecordWithAuxdata::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    "aux_bool.label=AuxBool\0"
-    "aux_bool.blurb=A Boolean\0"
-    "aux_bool.hints=rw\0"
-    "aux_bool.default=0\0"
-    "aux32.label=Aux32\0"
-    "aux32.blurb=The Bar number\0"
-    "aux32.hints=rw\0"
-    "aux32.default=10007.0\0"
-    "aux64.label=Aux64\0"
-    "aux64.blurb=64bit auxillary number\0"
-    "aux64.hints=rw\0"
-    "aux64.default=1152921504606846976\0"
-    "auxf64.label=AuxF64\0"
-    "auxf64.blurb=X coordinate\0"
-    "auxf64.hints=ro\0"
-    "auxf64.default=0.019\0"
-    "aux_str.label=AuxStr\0"
-    "aux_str.blurb=Specify text here\0"
-    "aux_str.hints=rw\0"
-    "aux_str.default=auxtest3\0"
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("Auxdata::RecordWithAuxdata");
 }
 bool
 SrvT_RecordWithAuxdata::operator== (const SrvT_RecordWithAuxdata &other) const
@@ -2149,16 +2185,19 @@ I_UIWidgetAreaIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x11db82aaba1ee248ULL, 0xd2359653ff87e972ULL)); // UIWidgetArea
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_UIWidgetArea_ = {
+  "InterfaceTests::UIWidgetArea\0"
+  "dummy.type=BOOL\0"
+  "on_click.type=STRING\0"
+  "on_click.label=On CLick\0"
+  "on_click.blurb=Command on button1 click\0"
+  "on_click.hints=rw\0"
+};
 std::vector<std::string>
 I_UIWidgetAreaIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    "on_click.label=On CLick\0"
-    "on_click.blurb=Command on button1 click\0"
-    "on_click.hints=rw\0"
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::UIWidgetArea"));
   return __d_;
 }
 std::vector<std::string>
@@ -2211,14 +2250,14 @@ I_ParentIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Parent_ = {
+  "InterfaceTests::Parent\0"
+  ""};
 std::vector<std::string>
 I_ParentIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Parent"));
   return __d_;
 }
 std::vector<std::string>
@@ -2266,15 +2305,15 @@ I_ChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Child_ = {
+  "InterfaceTests::Child\0"
+  ""};
 std::vector<std::string>
 I_ChildIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->I_ParentIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Child"),
+                                 this->I_ParentIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2327,15 +2366,15 @@ I_DescendantIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Descendant_ = {
+  "InterfaceTests::Descendant\0"
+  ""};
 std::vector<std::string>
 I_DescendantIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->I_ChildIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Descendant"),
+                                 this->I_ChildIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2389,15 +2428,15 @@ I_GrandChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL)); // Descendant
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_GrandChild_ = {
+  "InterfaceTests::GrandChild\0"
+  ""};
 std::vector<std::string>
 I_GrandChildIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->I_DescendantIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::GrandChild"),
+                                 this->I_DescendantIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2421,15 +2460,15 @@ I_GrandChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
   if (this->I_DescendantIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickRecord_ = {
+  "InterfaceTests::QuickRecord\0"
+  "int1.type=INT32\0"
+  "int2.type=INT32\0"
+};
 std::vector<std::string>
-SrvT_QuickRecord::__aida_aux_data__  () const
+SrvT_QuickRecord::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("InterfaceTests::QuickRecord");
 }
 bool
 SrvT_QuickRecord::operator== (const SrvT_QuickRecord &other) const
@@ -2453,15 +2492,14 @@ operator>>= (Aida::ProtoReader &src, SrvT_QuickRecord &self)
   fbr >>= self.int1;
   fbr >>= self.int2;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickSequence_ = {
+  "InterfaceTests::QuickSequence\0"
+  "somefloat.type=FLOAT64\0"
+};
 std::vector<std::string>
-SrvT_QuickSequence::__aida_aux_data__  () const
+SrvT_QuickSequence::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("InterfaceTests::QuickSequence");
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_QuickSequence &self)
@@ -2509,14 +2547,14 @@ I_QuickIfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x4524ee119d4e454cULL, 0xbeb61f7c3cc04f7dULL)); // QuickIface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickIface_ = {
+  "InterfaceTests::QuickIface\0"
+  ""};
 std::vector<std::string>
 I_QuickIfaceIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::QuickIface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2563,14 +2601,14 @@ I_MethodTestInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x6bf684458ac5f01aULL, 0xf64c02611b807180ULL)); // MethodTestInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_MethodTestInterface_ = {
+  "InterfaceTests::MethodTestInterface\0"
+  ""};
 std::vector<std::string>
 I_MethodTestInterfaceIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::MethodTestInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2617,14 +2655,14 @@ I_SignalTestInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_SignalTestInterface_ = {
+  "InterfaceTests::SignalTestInterface\0"
+  ""};
 std::vector<std::string>
 I_SignalTestInterfaceIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::SignalTestInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2672,15 +2710,15 @@ I_ChildInheritingSignalsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_ChildInheritingSignals_ = {
+  "InterfaceTests::ChildInheritingSignals\0"
+  ""};
 std::vector<std::string>
 I_ChildInheritingSignalsIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->I_SignalTestInterfaceIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
+                                 this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2732,15 +2770,15 @@ I_AnotherChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_AnotherChild_ = {
+  "InterfaceTests::AnotherChild\0"
+  ""};
 std::vector<std::string>
 I_AnotherChildIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->I_SignalTestInterfaceIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::AnotherChild"),
+                                 this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2791,14 +2829,30 @@ I_PropertyTesterIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xa37ab462c55a3b3cULL, 0x4f3fd1c9ad9689fbULL)); // PropertyTester
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_PropertyTester_ = {
+  "InterfaceTests::PropertyTester\0"
+  "bool_prop.type=BOOL\0"
+  "int32_prop.type=INT32\0"
+  "int64_prop.type=INT64\0"
+  "float64_prop.type=FLOAT64\0"
+  "string_prop.type=STRING\0"
+  "enum_prop.type=ENUM\0"
+  "enum_prop.typename=InterfaceTests::QuickEnum\0"
+  "record_prop.type=RECORD\0"
+  "record_prop.typename=InterfaceTests::QuickRecord\0"
+  "sequence_prop.type=SEQUENCE\0"
+  "sequence_prop.typename=InterfaceTests::QuickSequence\0"
+  "interface_prop.type=INTERFACE\0"
+  "interface_prop.typename=InterfaceTests::GrandChild\0"
+  "self_prop.type=INTERFACE\0"
+  "self_prop.typename=InterfaceTests::PropertyTester\0"
+  "any_prop.type=ANY\0"
+};
 std::vector<std::string>
 I_PropertyTesterIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::PropertyTester"));
   return __d_;
 }
 std::vector<std::string>
@@ -2882,15 +2936,15 @@ I_UseIncludesIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf2af9bb31127c663ULL, 0xa5e510409f8552a5ULL)); // SomeInterface
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_UseIncludes_ = {
+  "RapicornAidaTest::UseIncludes\0"
+  ""};
 std::vector<std::string>
 I_UseIncludesIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_),
-                                           this->IncludeCheck::I_SomeInterfaceIface::__aida_aux_data__());
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::UseIncludes"),
+                                 this->IncludeCheck::I_SomeInterfaceIface::__aida_aux_data__());
   return __d_;
 }
 std::vector<std::string>
@@ -2941,14 +2995,19 @@ I_ButtonAreaIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xec371b296fa57436ULL, 0x92e4310e386fc92eULL)); // ButtonArea
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_ButtonArea_ = {
+  "RapicornAidaTest::ButtonArea\0"
+  "on_click.type=STRING\0"
+  "on_click2.type=STRING\0"
+  "on_click3.type=STRING\0"
+  "click_type.type=ENUM\0"
+  "click_type.typename=RapicornAidaTest::ClickType\0"
+};
 std::vector<std::string>
 I_ButtonAreaIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::ButtonArea"));
   return __d_;
 }
 std::vector<std::string>
@@ -3007,14 +3066,14 @@ I_PureMethodsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xddc2a514d04d3af5ULL, 0xc0046740434c0486ULL)); // PureMethods
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_PureMethods_ = {
+  "RapicornAidaTest::PureMethods\0"
+  ""};
 std::vector<std::string>
 I_PureMethodsIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::PureMethods"));
   return __d_;
 }
 std::vector<std::string>
@@ -3064,14 +3123,14 @@ I_NameTestsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x542d40cd7d8fcd40ULL, 0x8c1782df29c9b936ULL)); // NameTests
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__Other_NameTests_ = {
+  "Other::NameTests\0"
+  ""};
 std::vector<std::string>
 I_NameTestsIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("Other::NameTests"));
   return __d_;
 }
 std::vector<std::string>
@@ -3121,19 +3180,22 @@ I_CompressorIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x42057a05d51182dfULL, 0x6a0d69cda274433eULL)); // Compressor
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_Compressor_ = {
+  "BseTest::Compressor\0"
+  "threshold.type=FLOAT64\0"
+  "threshold.hints=w\0"
+  "threshold.default=0\0"
+  "threshold.group=Compatibility Settings\0"
+  "ratio.type=FLOAT64\0"
+  "ratio.hints=w\0"
+  "ratio.default=0\0"
+  "ratio.group=Compatibility Settings\0"
+};
 std::vector<std::string>
 I_CompressorIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    "threshold.hints=w\0"
-    "threshold.default=0\0"
-    "threshold.group=Compatibility Settings\0"
-    "ratio.hints=w\0"
-    "ratio.default=0\0"
-    "ratio.group=Compatibility Settings\0"
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("BseTest::Compressor"));
   return __d_;
 }
 std::vector<std::string>
@@ -3159,17 +3221,21 @@ I_CompressorIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
   if (__n_ == "ratio")           { ratio (__a_.get<double>()); return true; }
   return false;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_RecordForGroups_ = {
+  "BseTest::RecordForGroups\0"
+  "i.type=INT32\0"
+  "ratio.type=FLOAT64\0"
+  "ratio.hints=w\0"
+  "ratio.default=0\0"
+  "ratio.group=Normal\0"
+  "ordinary_bool.type=BOOL\0"
+  "threshold1.type=FLOAT64\0"
+  "threshold2.type=FLOAT64\0"
+};
 std::vector<std::string>
-SrvT_RecordForGroups::__aida_aux_data__  () const
+SrvT_RecordForGroups::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    "ratio.hints=w\0"
-    "ratio.default=0\0"
-    "ratio.group=Normal\0"
-  ;
-  static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
-  return __d_;
+  return AidaAuxDataRegistry::lookup ("BseTest::RecordForGroups");
 }
 bool
 SrvT_RecordForGroups::operator== (const SrvT_RecordForGroups &other) const
@@ -3229,14 +3295,14 @@ I_SoundModuleIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x06447b38b51e0198ULL, 0x848669199cc311deULL)); // SoundModule
   return thl;
 }
+static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_SoundModule_ = {
+  "BseTest::SoundModule\0"
+  ""};
 std::vector<std::string>
 I_SoundModuleIface::__aida_aux_data__() const
 {
-  static const char __s_[] =
-    ""
-  ;
   static const std::vector<std::string> __d_ =
-    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));
+    ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("BseTest::SoundModule"));
   return __d_;
 }
 std::vector<std::string>
@@ -3265,6 +3331,9 @@ I_SoundModuleIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_
 
 namespace Aida {
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1_ = {
+  "MandatoryNamespace::Enum1\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum1> ()
 {
@@ -3275,6 +3344,9 @@ enum_info<MandatoryNamespace::Enum1> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
+  "MandatoryNamespace::Enum1c\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum1c> ()
 {
@@ -3285,6 +3357,9 @@ enum_info<MandatoryNamespace::Enum1c> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
+  "MandatoryNamespace::Enum2\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum2> ()
 {
@@ -3296,6 +3371,9 @@ enum_info<MandatoryNamespace::Enum2> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
+  "MandatoryNamespace::Enum2c\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum2c> ()
 {
@@ -3307,6 +3385,9 @@ enum_info<MandatoryNamespace::Enum2c> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
+  "MandatoryNamespace::Enum3\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum3> ()
 {
@@ -3319,6 +3400,9 @@ enum_info<MandatoryNamespace::Enum3> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
+  "MandatoryNamespace::Enum3c\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum3c> ()
 {
@@ -3331,6 +3415,9 @@ enum_info<MandatoryNamespace::Enum3c> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
+  "MandatoryNamespace::Enum4a\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4a> ()
 {
@@ -3344,6 +3431,9 @@ enum_info<MandatoryNamespace::Enum4a> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
+  "MandatoryNamespace::Enum4b\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4b> ()
 {
@@ -3357,6 +3447,9 @@ enum_info<MandatoryNamespace::Enum4b> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
+  "MandatoryNamespace::Enum4c\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4c> ()
 {
@@ -3370,6 +3463,9 @@ enum_info<MandatoryNamespace::Enum4c> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
+  "MandatoryNamespace::Enum4d\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::Enum4d> ()
 {
@@ -3383,6 +3479,9 @@ enum_info<MandatoryNamespace::Enum4d> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
+  "MandatoryNamespace::ExtensiveEnum\0"
+  ""};
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::ExtensiveEnum> ()
 {
@@ -3427,6 +3526,9 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
 } // specialization
 template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
+  "InterfaceTests::QuickEnum\0"
+  ""};
 template<> const EnumInfo&
 enum_info<InterfaceTests::QuickEnum> ()
 {
@@ -3437,6 +3539,9 @@ enum_info<InterfaceTests::QuickEnum> ()
 } // specialization
 template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
+  "RapicornAidaTest::ClickType\0"
+  ""};
 template<> const EnumInfo&
 enum_info<RapicornAidaTest::ClickType> ()
 {
@@ -3451,6 +3556,9 @@ enum_info<RapicornAidaTest::ClickType> ()
 } // specialization
 template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantiation
 
+static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
+  "RapicornAidaTest::MathExpressions\0"
+  ""};
 template<> const EnumInfo&
 enum_info<RapicornAidaTest::MathExpressions> ()
 {

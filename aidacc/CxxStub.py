@@ -63,6 +63,8 @@ common_boilerplate = r"""
 #else  // !AIDA_ENABLE_ENUM_ARITHMETIC
 #define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
 #endif // !AIDA_ENABLE_ENUM_ARITHMETIC
+
+using AidaAuxDataRegistry = Aida::AuxDataRegistry;
 """
 
 def reindent (prefix, lines):
@@ -172,7 +174,20 @@ class Generator:
     return ns + prefix + base + postfix
   def Iwrap (self, name):
     return self.prefix_namespaced_identifier (I_prefix_postfix[0], name, I_prefix_postfix[1])
-  def type2cpp (self, type_node):
+  def type2cpp_absolute (self, type_node):
+    tstorage = type_node.storage
+    if tstorage == Decls.VOID:          return 'void'
+    if tstorage == Decls.BOOL:          return 'bool'
+    if tstorage == Decls.INT32:         return 'int'
+    if tstorage == Decls.INT64:         return 'int64_t'
+    if tstorage == Decls.FLOAT64:       return 'double'
+    if tstorage == Decls.STRING:        return 'std::string'
+    if tstorage == Decls.ANY:           return 'Aida::Any'
+    tnsl = type_node.list_namespaces() # type namespace list
+    absolute_namespaces = [d.name for d in tnsl if d.name]
+    fullnsname = '::'.join (absolute_namespaces + [ type_node.name ])
+    return fullnsname
+  def type2cpp_relative (self, type_node):
     tstorage = type_node.storage
     if tstorage == Decls.VOID:          return 'void'
     if tstorage == Decls.BOOL:          return 'bool'
@@ -183,6 +198,8 @@ class Generator:
     if tstorage == Decls.ANY:           return 'Aida::Any'
     fullnsname = '::'.join (self.type_relative_namespaces (type_node) + [ type_node.name ])
     return fullnsname
+  def type2cpp (self, type_node):
+    return self.type2cpp_relative (type_node)
   def C4server (self, type_node):
     tname = self.type2cpp (type_node)
     if type_node.storage == Decls.INTERFACE:
@@ -388,30 +405,33 @@ class Generator:
     return s
   def generate_aux_data_string (self, tp, name = ''):
     s, prefix = '', (name + '.' if name else '')
+    if name:
+      s += '  "%stype=%s\\0"\n' % (prefix, Decls.storage_name (tp.storage))
+      if tp.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.INTERFACE):
+        fullnsname = self.type2cpp_absolute (tp)
+        s += '  "%stypename=%s\\0"\n' % (prefix, fullnsname)
     for k,v in tp.auxdata.items():
       qvalue = backslash_quote (aux_data_value_string (v))
       if qvalue:
-        s += '    "%s%s=%s\\0"\n' % (prefix, k, qvalue)
+        s += '  "%s%s=%s\\0"\n' % (prefix, k, qvalue)
     if not name and tp.storage == Decls.SEQUENCE:
       s += self.generate_aux_data_string (tp.elements[1], prefix + tp.elements[0])
     if not name and tp.storage in (Decls.RECORD, Decls.INTERFACE):
       for fid, ftp in tp.fields:
         s += self.generate_aux_data_string (ftp, prefix + fid)
     return s
-  def generate_aux_data (self, type_info):
+  def generate_recseq_aux_method_impls (self, tp): # FIXME: rename
+    absolute_typename = self.type2cpp_absolute (tp)
     s = ''
     # __aida_aux_data__
-    s += 'std::vector<std::string>\n%s::__aida_aux_data__  () const\n{\n' % self.C (type_info)
-    aux_data_string = self.generate_aux_data_string (type_info)
-    aux_data_string = aux_data_string if aux_data_string else '    ""\n'
-    s += '  static const char __s_[] =\n%s  ;\n' % aux_data_string
-    s += '  static const std::vector<std::string> __d_ =\n    ::Aida::aux_vectors_combine (__s_, sizeof (__s_));\n'
-    s += '  return __d_;\n'
+    s += 'std::vector<std::string>\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
+    s += '  return AidaAuxDataRegistry::lookup ("%s");\n' % absolute_typename
     s += '}\n'
     return s
   def generate_record_impl (self, type_info):
     s = ''
-    s += self.generate_aux_data (type_info)
+    s += self.generate_type_aux_data_registration (type_info)
+    s += self.generate_recseq_aux_method_impls (type_info)
     s += 'bool\n'
     s += '%s::operator== (const %s &other) const\n{\n' % (self.C (type_info), self.C (type_info))
     for field in type_info.fields:
@@ -433,7 +453,8 @@ class Generator:
     return s
   def generate_sequence_impl (self, type_info):
     s = ''
-    s += self.generate_aux_data (type_info)
+    s += self.generate_type_aux_data_registration (type_info)
+    s += self.generate_recseq_aux_method_impls (type_info)
     el = type_info.elements
     s += 'inline void __attribute__ ((used))\n'
     s += 'operator<<= (Aida::ProtoMsg &dst, const %s &self)\n{\n' % self.C (type_info)
@@ -458,6 +479,7 @@ class Generator:
   def generate_enum_info_impl (self, type_info):
     u_typename, c_typename = '__'.join (type_name_parts (type_info)), '::'.join (type_name_parts (type_info))
     s, varray = '\n', '_aida_enumvalues_%u' % self.idcounter
+    s += self.generate_type_aux_data_registration (type_info)
     self.idcounter += 1
     enum_ns, enum_class = '::'.join (self.type_relative_namespaces (type_info)), type_info.name
     s += 'template<> const EnumInfo&\n'
@@ -666,6 +688,18 @@ class Generator:
       s += '    this->%s::__accept_accessor__ (__visitor_);\n' % self.C (atp)
     s += '  }\n'
     return s
+  def generate_type_aux_data_registration (self, tp):
+    s = ''
+    aux_data_string = self.generate_aux_data_string (tp)
+    aux_data_string = aux_data_string if aux_data_string else '  ""'
+    fileprefix = 'srvt' if self.gen_servercc else 'clnt'
+    absolute_typename = self.type2cpp_absolute (tp)
+    unique_type_identifier = re.sub ('::', '_', absolute_typename)
+    s += 'static const AidaAuxDataRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
+    s += '  "%s\\0"\n' % absolute_typename
+    s += aux_data_string
+    s += '};\n'
+    return s
   def generate_class_aux_method_decls (self, tp):
     assert self.gen_mode == G4SERVANT
     s = ''
@@ -675,15 +709,15 @@ class Generator:
   def generate_server_class_aux_method_impls (self, tp):
     assert self.gen_mode == G4SERVANT
     s, classH = '', self.C (tp)
+    absolute_typename = self.type2cpp_absolute (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __aida_aux_data__
+    s += self.generate_type_aux_data_registration (tp)
     s += 'std::vector<std::string>\n%s::__aida_aux_data__() const\n{\n' % classH
-    aux_data_string = self.generate_aux_data_string (tp)
-    aux_data_string = aux_data_string if aux_data_string else '    ""\n'
-    s += '  static const char __s_[] =\n%s  ;\n' % aux_data_string
-    s += '  static const std::vector<std::string> __d_ =\n    ::Aida::aux_vectors_combine (__s_, sizeof (__s_)'
+    s += '  static const std::vector<std::string> __d_ =\n    ::Aida::aux_vectors_combine ('
+    s += 'AidaAuxDataRegistry::lookup ("%s")' % absolute_typename
     for atp in reduced_immediate_ancestors:
-      s += ',\n                                           this->%s::__aida_aux_data__()' % self.C (atp)
+      s += ',\n                                 this->%s::__aida_aux_data__()' % self.C (atp)
     s += ');\n'
     s += '  return __d_;\n'
     s += '}\n'
