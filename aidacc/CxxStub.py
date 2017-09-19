@@ -414,6 +414,16 @@ class Generator:
       qvalue = backslash_quote (aux_data_value_string (v))
       if qvalue:
         s += '  "%s%s=%s\\0"\n' % (prefix, k, qvalue)
+    if not name and tp.storage == Decls.ENUM:
+      for ev in tp.options:
+        (ident, label, blurb, number) = ev
+        s += '  "%s.value=%d\\0"\n' % (ident, number)
+        if label:
+          #label = label[-1] == ')' and re.sub ('[A-Z]*_\(', '', label[:-1]) or label # strip i18n function wrapper
+          s += '  "%s.label=" %s "\\0"\n' % (ident, label)
+        if blurb:
+          #blurb = blurb[-1] == ')' and re.sub ('[A-Z]*_\(', '', blurb[:-1]) or blurb # strip i18n function wrapper
+          s += '  "%s.blurb=" %s "\\0"\n' % (ident, blurb)
     if not name and tp.storage == Decls.SEQUENCE:
       s += self.generate_aux_data_string (tp.elements[1], prefix + tp.elements[0])
     if not name and tp.storage in (Decls.RECORD, Decls.INTERFACE):
