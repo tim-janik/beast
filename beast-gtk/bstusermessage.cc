@@ -551,6 +551,6 @@ server_user_message (const Bse::UserMessage &umsg)
 void
 bst_message_connect_to_server (void)
 {
-  bse_server.sig_user_message() += server_user_message;
+  // FIXME: bse_server.sig_user_message() += server_user_message;
   bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
 }

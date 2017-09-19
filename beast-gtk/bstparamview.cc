@@ -210,18 +210,18 @@ bst_param_view_rebuild (BstParamView *self)
   Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
   Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->item));
   std::vector<GParamSpec*> cxxpspecs;
-  std::vector<Aida::Parameter> cxxparams;
+  //FIXME: std::vector<Aida::Parameter> cxxparams;
   if (song)
     {
       cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (song);
-      Aida::Parameter::ListVisitor av (cxxparams);
-      song.__accept_accessor__ (av);
+      //FIXME: Aida::Parameter::ListVisitor av (cxxparams);
+      //FIXME: song.__accept_accessor__ (av);
     }
   else if (snet)
     {
       cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (snet);
-      Aida::Parameter::ListVisitor av (cxxparams);
-      snet.__accept_accessor__ (av);
+      //FIXME: Aida::Parameter::ListVisitor av (cxxparams);
+      //FIXME: snet.__accept_accessor__ (av);
     }
 
   // properties that are useless at the UI
@@ -235,14 +235,16 @@ bst_param_view_rebuild (BstParamView *self)
       {
         GParamSpec *pspec = cxxpspecs[i];
         const gchar *param_group = sfi_pspec_get_group (pspec);
+#if 0 //FIXME:
         Aida::Parameter *cxxparam = NULL;
         for (size_t j = 0; j < cxxparams.size() && !cxxparam; j++)
           if (g_sname_equals (cxxparams[j].name(), pspec->name))
             cxxparam = &cxxparams[j];
-	if (cxxparam && sfi_pspec_check_option (pspec, "G") && // GUI representable
+#endif
+	if (/*FIXME: cxxparam &&*/ sfi_pspec_check_option (pspec, "G") && // GUI representable
             ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
 	  {
-            GxkParam *param = bst_param_new_aida_parameter (pspec, *cxxparam);
+            GxkParam *param = NULL; //FIXME: bst_param_new_aida_parameter (pspec, *cxxparam);
             if (param_group)
               {
                 if (!gcontainer)

@@ -265,13 +265,13 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
         source = Bse::SourceH();
     }
   if (self->source)
-    self->source.sig_probes() -= self->probes_handler;
+    ; // FIXME: self->source.sig_probes() -= self->probes_handler;
   self->source = source;
   if (self->source)
     {
-      self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
-        return scope_probes_notify (self, pseq);
-      };
+      // FIXME: self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+      //return scope_probes_notify (self, pseq);
+      //};
       bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
       bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
     }

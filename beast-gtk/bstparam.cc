@@ -409,7 +409,7 @@ bst_param_new_rec (GParamSpec *pspec,
 static void
 aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
 {
-  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
+  //FIXME: Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
   Any any;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
     {
@@ -436,14 +436,14 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  apa->set (any);
+  //FIXME: apa->set (any);
 }
 
 static void
 aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 {
-  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
-  Any any = apa->get();
+  //FIXME: Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
+  Any any; //FIXME:  = apa->get();
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {
@@ -487,9 +487,9 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 static void
 aida_parameter_binding_destroy (GxkParam *param)
 {
-  Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
+  //FIXME: Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
   param->bdata[0].v_pointer = NULL;
-  delete cxxparam;
+  //FIXME: delete cxxparam;
 }
 
 static gboolean
@@ -509,6 +509,7 @@ static GxkParamBinding aida_parameter_binding = {
   aida_parameter_binding_check_writable,
 };
 
+#if 0 //FIXME:
 GxkParam*
 bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparameter)
 {
@@ -530,6 +531,7 @@ bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparamet
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
+#endif
 
 
 /* --- param implementation utils --- */

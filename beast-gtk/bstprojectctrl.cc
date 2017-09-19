@@ -79,7 +79,7 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal::release", project_release, self,
                             NULL);
-      self->project.sig_state_changed() -= self->sig_state_changed_id;
+      // FIXME: self->project.sig_state_changed() -= self->sig_state_changed_id;
       self->sig_state_changed_id = 0;
     }
   self->project = project;
@@ -88,7 +88,7 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
       bse_proxy_connect (self->project.proxy_id(),
 			 "swapped_signal::release", project_release, self,
 			 NULL);
-      self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) { project_state_changed (self, state); };
+      // FIXME: self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) { project_state_changed (self, state); };
       project_state_changed (self, self->project.get_state());
     }
   else if (self->led)
