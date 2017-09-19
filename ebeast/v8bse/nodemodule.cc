@@ -266,7 +266,7 @@ v8bse_register_module (v8::Local<v8::Object> exports)
    * notify_fd getting a chance to wakeup poll(2). So we use a notify_callback
    * to check for pending events after each remote call.
    */
-  auto bsenotfycb = [] (Rapicorn::Aida::ClientConnection &con) {
+  auto bsenotfycb = [] (Aida::ClientConnection &con) {
     // bse_client_connection == &con
     if (bse_client_connection && bse_client_connection->pending())
       uv_async_send (&bse_uv_dispatcher);
