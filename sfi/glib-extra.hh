@@ -7,7 +7,6 @@
 #include <string>
 #include <functional>
 
-#include <rapicorn-core.hh>
 
 namespace Aida = Rapicorn::Aida;
 

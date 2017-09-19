@@ -7,8 +7,8 @@
 namespace Bse { // BseCore
 
 // == Compatibility Imports ==
-using Rapicorn::VisitorDispatcher;
-using Rapicorn::StdVectorValueHandle;
+using Aida::VisitorDispatcher;
+using Aida::StdVectorValueHandle;
 
 
 template<class Visitable> void                            sfi_rec_to_visitable                      (SfiRec *rec, Visitable &visitable);

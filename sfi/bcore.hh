@@ -8,6 +8,7 @@
 #include <sfi/glib-extra.hh>
 #include <numeric>
 #include <algorithm>
+#include <list>
 
 namespace Bse {
 
@@ -30,7 +31,7 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
-using   Rapicorn::void_t;
+using   Aida::void_t;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
