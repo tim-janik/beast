@@ -102,16 +102,20 @@ interface Richie : Derived, Base, Other {
 };
 
 interface MiniServer {
-  bool      vbool = Bool ("Boolean Value", "Just true or false", "rw", true);
-  int32     vi32  = Range ("Int32 Value", "A 32bit integer value", "rw", -2147483648, 2147483647, 256, 32768);
-  int64     vi64t = Range ("Int64 Value", "A 64bit integer value", "rw", -9223372036854775808, 9223372036854775807, 65536, -65536);
+  group "Integrals" {
+    bool      vbool = Bool ("Boolean Value", "Just true or false", "rw", true);
+    int32     vi32  = Range ("Int32 Value", "A 32bit integer value", "rw", -2147483648, 2147483647, 256, 32768);
+    int64     vi64t = Range ("Int64 Value", "A 64bit integer value", "rw", -9223372036854775808, 9223372036854775807, 65536, -65536);
+  };
   float64   vf64  = Range ("Float Value", "A 64bit floating point value", "rw", -0.0, +1.0, +0.1, +0.5);
   CountEnum count = Enum ("Count Value", "One of the CountEnum values", "rw", TWO);
   String    vstr  = String ("String Value", "Space for words or anything", "rw", "foobar");
   Any       vany  = Any ("Generic Value", "Holder for a value of unknown type", "rw");
-  Location  location;
-  StringSeq strings;
-  Derived   derived;
+  group "Compounds" {
+    Location  location;
+    StringSeq strings;
+    Derived   derived;
+  };
   void        message         (String blurb);
   void        quit            ();
   void        test_parameters ();
