@@ -127,6 +127,7 @@ $(bst_cc_sources:%=$(srcdir)/%): bstserverapi.cc
 bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) sed -i -e '1i#define _(x) x' xgen-$(@F) && sed -i -e '1i#undef _' xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 CLEANFILES += bstserverapi.cc
 
