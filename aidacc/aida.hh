@@ -467,7 +467,9 @@ constexpr uint64 CONNECTION_MASK = 0x0000ffff;
 // == OrbObject ==
 /// Internal management structure for remote objects.
 class OrbObject {
-  const uint64  orbid_;
+  const uint64        orbid_;
+  std::vector<String> cached_aux_data_;
+  friend class RemoteHandle;
 protected:
   explicit                  OrbObject         (uint64 orbid);
   virtual                  ~OrbObject         ();
@@ -497,7 +499,7 @@ public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) : orbop_ (y.orbop_) {}
   virtual                ~RemoteHandle         ();
   TypeHashList            __aida_typelist__    () const;
-  std::vector<String>     __aida_aux_data__    () const;
+  const StringVector&     __aida_aux_data__    () const;
   std::vector<String>     __aida_dir__         () const;
   Any                     __aida_get__         (const String &name) const;
   bool                    __aida_set__         (const String &name, const Any &any);

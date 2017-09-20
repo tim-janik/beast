@@ -3211,21 +3211,26 @@ ImplicitBase____aida_typelist__ (ProtoReader &__f_)
   return &__r_;
 }
 
-std::vector<String>
+const StringVector&
 RemoteHandle::__aida_aux_data__ () const
 {
+  static const StringVector empty;
   if (*this == NULL)
-    return StringVector();
-  ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self
-  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AUX_DATA__);
-  ProtoMsg *__r_ = __o_.invoke (&__b_);
-  AIDA_ASSERT_RETURN (__r_ != NULL, std::vector<String>());
-  ProtoReader __f_ (*__r_);
-  __f_.skip_header();
-  Any __v_;
-  __f_ >>= __v_;
-  delete __r_;
-  return __v_.any_to_strings();
+    return empty;
+  if (orbop_->cached_aux_data_.empty())
+    {
+      ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self
+      ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AUX_DATA__);
+      ProtoMsg *__r_ = __o_.invoke (&__b_);
+      AIDA_ASSERT_RETURN (__r_ != NULL, empty);
+      ProtoReader __f_ (*__r_);
+      __f_.skip_header();
+      Any __v_;
+      __f_ >>= __v_;
+      delete __r_;
+      orbop_->cached_aux_data_ = __v_.any_to_strings();
+    }
+  return orbop_->cached_aux_data_;
 }
 
 static ProtoMsg*
