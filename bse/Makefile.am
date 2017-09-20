@@ -277,6 +277,7 @@ GENERATED_CLEANFILES += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) sed -i -e '1i#define _(x) x' xgen-$(@F) && sed -i -e '1i#undef _' xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 $(srcdir)/bseutils.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
