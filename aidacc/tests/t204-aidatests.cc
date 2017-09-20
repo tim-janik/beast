@@ -69,7 +69,7 @@ public:
   // static Aida::BaseConnection* __aida_connection__();
   virtual std::string                    __aida_type_name__ () const override { return "Rapicorn::OneIface"; }
   virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
-  virtual std::vector<String>            __aida_aux_data__  () const override { return std::vector<String>(); }
+  virtual const std::vector<String>&     __aida_aux_data__  () const override { static std::vector<String> sv; return sv; }
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
   virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }

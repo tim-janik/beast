@@ -363,7 +363,7 @@ class Generator:
       s += ' }\n'
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyDict &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
     s += '  ' + self.F ('std::string') + '__aida_type_name__ () const\t{ return "%s"; }\n' % classFull
-    s += '  ' + self.F ('std::vector<std::string>') + '__aida_aux_data__ () const;\n'
+    s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }\n'
@@ -434,8 +434,9 @@ class Generator:
     absolute_typename = self.type2cpp_absolute (tp)
     s = ''
     # __aida_aux_data__
-    s += 'std::vector<std::string>\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
-    s += '  return AidaAuxDataRegistry::lookup ("%s");\n' % absolute_typename
+    s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
+    s += '  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("%s");\n' % absolute_typename
+    s += '  return sv;\n'
     s += '}\n'
     return s
   def generate_record_impl (self, type_info):
@@ -714,7 +715,7 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s = ''
     virtual = 'virtual '
-    s += '  %-37s __aida_aux_data__  () const override;\n' % (virtual + 'std::vector<std::string>')
+    s += '  %-37s __aida_aux_data__  () const override;\n' % (virtual + 'const Aida::StringVector&')
     return s
   def generate_server_class_aux_method_impls (self, tp):
     assert self.gen_mode == G4SERVANT
@@ -723,8 +724,8 @@ class Generator:
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __aida_aux_data__
     s += self.generate_type_aux_data_registration (tp)
-    s += 'std::vector<std::string>\n%s::__aida_aux_data__() const\n{\n' % classH
-    s += '  static const std::vector<std::string> __d_ =\n    ::Aida::aux_vectors_combine ('
+    s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % classH
+    s += '  static const Aida::StringVector __d_ =\n    ::Aida::aux_vectors_combine ('
     s += 'AidaAuxDataRegistry::lookup ("%s")' % absolute_typename
     for atp in reduced_immediate_ancestors:
       s += ',\n                                 this->%s::__aida_aux_data__()' % self.C (atp)
@@ -751,7 +752,7 @@ class Generator:
       ctype = self.C (ftype)
       s += '  __d_.push_back ("%s");\n' % fname
     for atp in reduced_immediate_ancestors:
-      s += '  { const std::vector<std::string> &__t_ = this->%s::__aida_dir__();\n' % self.C (atp)
+      s += '  { const Aida::StringVector &__t_ = this->%s::__aida_dir__();\n' % self.C (atp)
       s += '    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }\n'
     s += '  return __d_;\n'
     s += '}\n'

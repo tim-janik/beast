@@ -358,7 +358,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "MandatoryNamespace::FirstInterface"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -396,7 +396,7 @@ public:
   inline                        SrvT_XFooRecord () { single_bool = 0; single_num = 0; num64 = 0; single_float = 0; sibling1 = 0; sibling2 = 0; multi1 = 0; multi2 = 0; multi3 = 0; multi4 = 0; enum_field = ExtensiveEnum (0); }
   inline                        SrvT_XFooRecord (const Aida::AnyDict &ad) : SrvT_XFooRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::XFooRecord"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_XFooRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -437,7 +437,7 @@ public:
   inline                        SrvT_XFooSequence () = default;
   inline                        SrvT_XFooSequence (const Aida::AnyList &al) : SrvT_XFooSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::XFooSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_XFooSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -455,7 +455,7 @@ public:
   inline                        SrvT_IntSequence () = default;
   inline                        SrvT_IntSequence (const Aida::AnyList &al) : SrvT_IntSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::IntSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_IntSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -473,7 +473,7 @@ public:
   inline                        SrvT_FloatSequence () = default;
   inline                        SrvT_FloatSequence (const Aida::AnyList &al) : SrvT_FloatSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::FloatSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_FloatSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -491,7 +491,7 @@ public:
   inline                        SrvT_StringSequence () = default;
   inline                        SrvT_StringSequence (const Aida::AnyList &al) : SrvT_StringSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::StringSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_StringSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -509,7 +509,7 @@ public:
   inline                        SrvT_ExtensiveEnumSequence () = default;
   inline                        SrvT_ExtensiveEnumSequence (const Aida::AnyList &al) : SrvT_ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::ExtensiveEnumSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -527,7 +527,7 @@ public:
   inline                        SrvT_RecordSequence () = default;
   inline                        SrvT_RecordSequence (const Aida::AnyList &al) : SrvT_RecordSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::RecordSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_RecordSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -545,7 +545,7 @@ public:
   inline                        SrvT_SequenceSequence () = default;
   inline                        SrvT_SequenceSequence (const Aida::AnyList &al) : SrvT_SequenceSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::SequenceSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -563,7 +563,7 @@ public:
   inline                        SrvT_InterfaceSequence () = default;
   inline                        SrvT_InterfaceSequence (const Aida::AnyList &al) : SrvT_InterfaceSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::InterfaceSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -581,7 +581,7 @@ public:
   inline                        SrvT_AnySequence () = default;
   inline                        SrvT_AnySequence (const Aida::AnyList &al) : SrvT_AnySequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::AnySequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_AnySequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -603,7 +603,7 @@ public:
   inline                        SrvT_NestedTypesRec () { }
   inline                        SrvT_NestedTypesRec (const Aida::AnyDict &ad) : SrvT_NestedTypesRec() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::NestedTypesRec"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_NestedTypesRec*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -628,7 +628,7 @@ public:
   inline                        SrvT_NestedTypesSeq () = default;
   inline                        SrvT_NestedTypesSeq (const Aida::AnyList &al) : SrvT_NestedTypesSeq() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::NestedTypesSeq"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -648,7 +648,7 @@ public:
   inline                        SrvT_NewRecord () { i = 0; enum1 = Enum1 (0); }
   inline                        SrvT_NewRecord (const Aida::AnyDict &ad) : SrvT_NewRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::NewRecord"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_NewRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -678,7 +678,7 @@ public:
   inline                        SrvT_InnerRecord () { x = 0; y = 0; }
   inline                        SrvT_InnerRecord (const Aida::AnyDict &ad) : SrvT_InnerRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::Inner::InnerRecord"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_InnerRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -704,7 +704,7 @@ public:
   inline                        SrvT_Refer2Inner () { }
   inline                        SrvT_Refer2Inner (const Aida::AnyDict &ad) : SrvT_Refer2Inner() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "MandatoryNamespace::Refer2Inner"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_Refer2Inner*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -733,7 +733,7 @@ public:
   inline                        SrvT_SomeRecord () { }
   inline                        SrvT_SomeRecord (const Aida::AnyDict &ad) : SrvT_SomeRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "OtherNamespace::SomeRecord"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_SomeRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -766,7 +766,7 @@ public:
   inline                        SrvT_RecordWithAuxdata () { aux_bool = 0; aux32 = 0; aux64 = 0; auxf64 = 0; }
   inline                        SrvT_RecordWithAuxdata (const Aida::AnyDict &ad) : SrvT_RecordWithAuxdata() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "Auxdata::RecordWithAuxdata"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_RecordWithAuxdata*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -802,7 +802,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::UIWidgetArea"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -853,7 +853,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::Parent"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -879,7 +879,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::Child"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -907,7 +907,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::Descendant"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -935,7 +935,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::GrandChild"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -958,7 +958,7 @@ public:
   inline                        SrvT_QuickRecord () { int1 = 0; int2 = 0; }
   inline                        SrvT_QuickRecord (const Aida::AnyDict &ad) : SrvT_QuickRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "InterfaceTests::QuickRecord"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_QuickRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -983,7 +983,7 @@ public:
   inline                        SrvT_QuickSequence () = default;
   inline                        SrvT_QuickSequence (const Aida::AnyList &al) : SrvT_QuickSequence() { __aida_from_any__ (Aida::Any (al)); }
   std::string                   __aida_type_name__ () const	{ return "InterfaceTests::QuickSequence"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnyList     () const { return const_cast<SrvT_QuickSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
@@ -1006,7 +1006,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::QuickIface"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1033,7 +1033,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::MethodTestInterface"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1082,7 +1082,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::SignalTestInterface"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1108,7 +1108,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1136,7 +1136,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::AnotherChild"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1164,7 +1164,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "InterfaceTests::PropertyTester"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1227,7 +1227,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "RapicornAidaTest::UseIncludes"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1255,7 +1255,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "RapicornAidaTest::ButtonArea"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1295,7 +1295,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "RapicornAidaTest::PureMethods"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1325,7 +1325,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "Other::NameTests"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1357,7 +1357,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "BseTest::Compressor"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1388,7 +1388,7 @@ public:
   inline                        SrvT_RecordForGroups () { i = 0; ratio = 0; ordinary_bool = 0; threshold1 = 0; threshold2 = 0; }
   inline                        SrvT_RecordForGroups (const Aida::AnyDict &ad) : SrvT_RecordForGroups() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __aida_type_name__ () const	{ return "BseTest::RecordForGroups"; }
-  std::vector<std::string>      __aida_aux_data__ () const;
+  const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   operator                      Aida::AnyDict     () const { return const_cast<SrvT_RecordForGroups*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
@@ -1421,7 +1421,7 @@ protected:
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __aida_type_name__ () const override	{ return "BseTest::SoundModule"; }
-  virtual std::vector<std::string>      __aida_aux_data__  () const override;
+  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -1486,10 +1486,10 @@ I_FirstInterfaceIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_FirstInterface_ = {
   "MandatoryNamespace::FirstInterface\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_FirstInterfaceIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("MandatoryNamespace::FirstInterface"));
   return __d_;
 }
@@ -1535,10 +1535,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooRe
   "any2.type=ANY\0"
   "any3.type=ANY\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_XFooRecord::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooRecord");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooRecord");
+  return sv;
 }
 bool
 SrvT_XFooRecord::operator== (const SrvT_XFooRecord &other) const
@@ -1614,10 +1615,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooSe
   "MandatoryNamespace::XFooSequence\0"
   "single_bool.type=BOOL\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_XFooSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::XFooSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_XFooSequence &self)
@@ -1642,10 +1644,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_IntSeq
   "MandatoryNamespace::IntSequence\0"
   "numx.type=INT32\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_IntSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::IntSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::IntSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_IntSequence &self)
@@ -1670,10 +1673,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_FloatS
   "MandatoryNamespace::FloatSequence\0"
   "fractalvalue.type=FLOAT64\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_FloatSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::FloatSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::FloatSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_FloatSequence &self)
@@ -1698,10 +1702,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_String
   "MandatoryNamespace::StringSequence\0"
   "blurb.type=STRING\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_StringSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::StringSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::StringSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_StringSequence &self)
@@ -1727,10 +1732,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Extens
   "enum_elements.type=ENUM\0"
   "enum_elements.typename=MandatoryNamespace::ExtensiveEnum\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_ExtensiveEnumSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::ExtensiveEnumSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::ExtensiveEnumSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_ExtensiveEnumSequence &self)
@@ -1756,10 +1762,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Record
   "repeatedfield.type=RECORD\0"
   "repeatedfield.typename=MandatoryNamespace::XFooRecord\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_RecordSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::RecordSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::RecordSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_RecordSequence &self)
@@ -1785,10 +1792,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Sequen
   "moreints.type=SEQUENCE\0"
   "moreints.typename=MandatoryNamespace::IntSequence\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_SequenceSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::SequenceSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::SequenceSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_SequenceSequence &self)
@@ -1814,10 +1822,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Interf
   "iface1.type=INTERFACE\0"
   "iface1.typename=MandatoryNamespace::FirstInterface\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_InterfaceSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::InterfaceSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::InterfaceSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_InterfaceSequence &self)
@@ -1842,10 +1851,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_AnySeq
   "MandatoryNamespace::AnySequence\0"
   "any_value.type=ANY\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_AnySequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::AnySequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::AnySequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_AnySequence &self)
@@ -1873,10 +1883,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Nested
   "seq.type=SEQUENCE\0"
   "seq.typename=MandatoryNamespace::XFooSequence\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_NestedTypesRec::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesRec");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesRec");
+  return sv;
 }
 bool
 SrvT_NestedTypesRec::operator== (const SrvT_NestedTypesRec &other) const
@@ -1905,10 +1916,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Nested
   "ntr.type=RECORD\0"
   "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_NestedTypesSeq::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesSeq");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::NestedTypesSeq");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_NestedTypesSeq &self)
@@ -1939,10 +1951,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_NewRec
   "ntr.type=RECORD\0"
   "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_NewRecord::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::NewRecord");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::NewRecord");
+  return sv;
 }
 bool
 SrvT_NewRecord::operator== (const SrvT_NewRecord &other) const
@@ -1981,10 +1994,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Inner_
   "rec.type=RECORD\0"
   "rec.typename=MandatoryNamespace::NewRecord\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_InnerRecord::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::Inner::InnerRecord");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::Inner::InnerRecord");
+  return sv;
 }
 bool
 SrvT_InnerRecord::operator== (const SrvT_InnerRecord &other) const
@@ -2017,10 +2031,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__MandatoryNamespace_Refer2
   "r.type=RECORD\0"
   "r.typename=MandatoryNamespace::Inner::InnerRecord\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_Refer2Inner::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("MandatoryNamespace::Refer2Inner");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("MandatoryNamespace::Refer2Inner");
+  return sv;
 }
 bool
 SrvT_Refer2Inner::operator== (const SrvT_Refer2Inner &other) const
@@ -2055,10 +2070,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__OtherNamespace_SomeRecord
   "r4.type=RECORD\0"
   "r4.typename=MandatoryNamespace::Inner::InnerRecord\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_SomeRecord::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("OtherNamespace::SomeRecord");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("OtherNamespace::SomeRecord");
+  return sv;
 }
 bool
 SrvT_SomeRecord::operator== (const SrvT_SomeRecord &other) const
@@ -2119,10 +2135,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__Auxdata_RecordWithAuxdata
   "aux_str.hints=rw\0"
   "aux_str.default=auxtest3\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_RecordWithAuxdata::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("Auxdata::RecordWithAuxdata");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("Auxdata::RecordWithAuxdata");
+  return sv;
 }
 bool
 SrvT_RecordWithAuxdata::operator== (const SrvT_RecordWithAuxdata &other) const
@@ -2193,10 +2210,10 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_UIWidgetAr
   "on_click.blurb=Command on button1 click\0"
   "on_click.hints=rw\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 I_UIWidgetAreaIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::UIWidgetArea"));
   return __d_;
 }
@@ -2253,10 +2270,10 @@ I_ParentIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Parent_ = {
   "InterfaceTests::Parent\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_ParentIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Parent"));
   return __d_;
 }
@@ -2308,10 +2325,10 @@ I_ChildIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Child_ = {
   "InterfaceTests::Child\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_ChildIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Child"),
                                  this->I_ParentIface::__aida_aux_data__());
   return __d_;
@@ -2320,7 +2337,7 @@ std::vector<std::string>
 I_ChildIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->I_ParentIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->I_ParentIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -2369,10 +2386,10 @@ I_DescendantIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_Descendant_ = {
   "InterfaceTests::Descendant\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_DescendantIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::Descendant"),
                                  this->I_ChildIface::__aida_aux_data__());
   return __d_;
@@ -2381,7 +2398,7 @@ std::vector<std::string>
 I_DescendantIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->I_ChildIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->I_ChildIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -2431,10 +2448,10 @@ I_GrandChildIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_GrandChild_ = {
   "InterfaceTests::GrandChild\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_GrandChildIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::GrandChild"),
                                  this->I_DescendantIface::__aida_aux_data__());
   return __d_;
@@ -2443,7 +2460,7 @@ std::vector<std::string>
 I_GrandChildIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->I_DescendantIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->I_DescendantIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -2465,10 +2482,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickRecor
   "int1.type=INT32\0"
   "int2.type=INT32\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_QuickRecord::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("InterfaceTests::QuickRecord");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("InterfaceTests::QuickRecord");
+  return sv;
 }
 bool
 SrvT_QuickRecord::operator== (const SrvT_QuickRecord &other) const
@@ -2496,10 +2514,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickSeque
   "InterfaceTests::QuickSequence\0"
   "somefloat.type=FLOAT64\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_QuickSequence::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("InterfaceTests::QuickSequence");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("InterfaceTests::QuickSequence");
+  return sv;
 }
 inline void __attribute__ ((used))
 operator<<= (Aida::ProtoMsg &dst, const SrvT_QuickSequence &self)
@@ -2550,10 +2569,10 @@ I_QuickIfaceIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_QuickIface_ = {
   "InterfaceTests::QuickIface\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_QuickIfaceIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::QuickIface"));
   return __d_;
 }
@@ -2604,10 +2623,10 @@ I_MethodTestInterfaceIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_MethodTestInterface_ = {
   "InterfaceTests::MethodTestInterface\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_MethodTestInterfaceIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::MethodTestInterface"));
   return __d_;
 }
@@ -2658,10 +2677,10 @@ I_SignalTestInterfaceIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_SignalTestInterface_ = {
   "InterfaceTests::SignalTestInterface\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_SignalTestInterfaceIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::SignalTestInterface"));
   return __d_;
 }
@@ -2713,10 +2732,10 @@ I_ChildInheritingSignalsIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_ChildInheritingSignals_ = {
   "InterfaceTests::ChildInheritingSignals\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_ChildInheritingSignalsIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
@@ -2725,7 +2744,7 @@ std::vector<std::string>
 I_ChildInheritingSignalsIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->I_SignalTestInterfaceIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->I_SignalTestInterfaceIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -2773,10 +2792,10 @@ I_AnotherChildIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_AnotherChild_ = {
   "InterfaceTests::AnotherChild\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_AnotherChildIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::AnotherChild"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
@@ -2785,7 +2804,7 @@ std::vector<std::string>
 I_AnotherChildIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->I_SignalTestInterfaceIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->I_SignalTestInterfaceIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -2848,10 +2867,10 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__InterfaceTests_PropertyTe
   "self_prop.typename=InterfaceTests::PropertyTester\0"
   "any_prop.type=ANY\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 I_PropertyTesterIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("InterfaceTests::PropertyTester"));
   return __d_;
 }
@@ -2939,10 +2958,10 @@ I_UseIncludesIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_UseIncludes_ = {
   "RapicornAidaTest::UseIncludes\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_UseIncludesIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::UseIncludes"),
                                  this->IncludeCheck::I_SomeInterfaceIface::__aida_aux_data__());
   return __d_;
@@ -2951,7 +2970,7 @@ std::vector<std::string>
 I_UseIncludesIface::__aida_dir__ () const
 {
   std::vector<std::string> __d_;
-  { const std::vector<std::string> &__t_ = this->IncludeCheck::I_SomeInterfaceIface::__aida_dir__();
+  { const Aida::StringVector &__t_ = this->IncludeCheck::I_SomeInterfaceIface::__aida_dir__();
     __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
   return __d_;
 }
@@ -3003,10 +3022,10 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_ButtonAr
   "click_type.type=ENUM\0"
   "click_type.typename=RapicornAidaTest::ClickType\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 I_ButtonAreaIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::ButtonArea"));
   return __d_;
 }
@@ -3069,10 +3088,10 @@ I_PureMethodsIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__RapicornAidaTest_PureMethods_ = {
   "RapicornAidaTest::PureMethods\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_PureMethodsIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("RapicornAidaTest::PureMethods"));
   return __d_;
 }
@@ -3126,10 +3145,10 @@ I_NameTestsIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__Other_NameTests_ = {
   "Other::NameTests\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_NameTestsIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("Other::NameTests"));
   return __d_;
 }
@@ -3191,10 +3210,10 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_Compressor_ = {
   "ratio.default=0\0"
   "ratio.group=Compatibility Settings\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 I_CompressorIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("BseTest::Compressor"));
   return __d_;
 }
@@ -3232,10 +3251,11 @@ static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_RecordForGroups_ 
   "threshold1.type=FLOAT64\0"
   "threshold2.type=FLOAT64\0"
 };
-std::vector<std::string>
+const Aida::StringVector&
 SrvT_RecordForGroups::__aida_aux_data__() const
 {
-  return AidaAuxDataRegistry::lookup ("BseTest::RecordForGroups");
+  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("BseTest::RecordForGroups");
+  return sv;
 }
 bool
 SrvT_RecordForGroups::operator== (const SrvT_RecordForGroups &other) const
@@ -3298,10 +3318,10 @@ I_SoundModuleIface::__aida_typelist__ () const
 static const AidaAuxDataRegistry __aida_aux_data_srvt__BseTest_SoundModule_ = {
   "BseTest::SoundModule\0"
   ""};
-std::vector<std::string>
+const Aida::StringVector&
 I_SoundModuleIface::__aida_aux_data__() const
 {
-  static const std::vector<std::string> __d_ =
+  static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (AidaAuxDataRegistry::lookup ("BseTest::SoundModule"));
   return __d_;
 }

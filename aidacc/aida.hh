@@ -717,7 +717,7 @@ protected:
 public:
   virtual std::string         __aida_type_name__  () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual TypeHashList        __aida_typelist__   () const = 0;
-  virtual std::vector<String> __aida_aux_data__   () const = 0;
+  virtual const StringVector& __aida_aux_data__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
