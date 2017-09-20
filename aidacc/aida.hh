@@ -382,15 +382,16 @@ typedef std::vector<TypeHash> TypeHashList;
 
 
 // == Internal Type Hashes ==
-#define AIDA_HASH___TYPELIST__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
-#define AIDA_HASH___AUX_DATA__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce02ULL
-#define AIDA_HASH___DIR__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce03ULL
-#define AIDA_HASH___GET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce04ULL
-#define AIDA_HASH___SET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce05ULL
-#define AIDA_HASH___EVENT_ATTACH__      0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce06ULL
-#define AIDA_HASH___EVENT_DETACHID__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce07ULL
-#define AIDA_HASH___EVENT_DETACHNS__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce08ULL
-#define AIDA_HASH___EVENT_CALLBACK__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce09ULL
+#define AIDA_HASH___TYPE_NAME__         0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
+#define AIDA_HASH___TYPELIST__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce02ULL
+#define AIDA_HASH___AUX_DATA__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce03ULL
+#define AIDA_HASH___DIR__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce04ULL
+#define AIDA_HASH___GET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce05ULL
+#define AIDA_HASH___SET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce06ULL
+#define AIDA_HASH___EVENT_ATTACH__      0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce07ULL
+#define AIDA_HASH___EVENT_DETACHID__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce08ULL
+#define AIDA_HASH___EVENT_DETACHNS__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce09ULL
+#define AIDA_HASH___EVENT_CALLBACK__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce0aULL
 
 
 // === EventFd ===
@@ -498,6 +499,7 @@ protected:
 public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) : orbop_ (y.orbop_) {}
   virtual                ~RemoteHandle         ();
+  String                  __aida_type_name__   () const;
   TypeHashList            __aida_typelist__    () const;
   const StringVector&     __aida_aux_data__    () const;
   std::vector<String>     __aida_dir__         () const;

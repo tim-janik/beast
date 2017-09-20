@@ -3170,6 +3170,37 @@ remote_handle_event_handler_del (int64 id)
 }
 
 // == ImplicitBase <-> RemoteHandle RPC ==
+String
+RemoteHandle::__aida_type_name__ () const
+{
+  if (*this == NULL)
+    return "";
+  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
+  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___TYPE_NAME__);
+  fr = __o_.invoke (&__p_);
+  AIDA_ASSERT_RETURN (fr != NULL, "");
+  Aida::ProtoReader __f_ (*fr);
+  __f_.skip_header();
+  std::string  retval;
+  __f_ >>= retval;
+  delete fr;
+  return retval;
+}
+
+static Aida::ProtoMsg*
+ImplicitBase____aida_type_name__ (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
+  ImplicitBase *self;
+  fbr.skip_header();
+  self = fbr.pop_instance<ImplicitBase>().get();
+  AIDA_ASSERT_RETURN (self != NULL, NULL);
+  std::string rval = self->__aida_type_name__ ();
+  Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___TYPE_NAME__);
+  rb <<= rval;
+  return &rb;
+}
+
 TypeHashList
 RemoteHandle::__aida_typelist__() const
 {
@@ -3502,6 +3533,7 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
 }
 
 static const ServerConnection::MethodEntry implicit_base_methods[] = {
+  { AIDA_HASH___TYPE_NAME__,       ImplicitBase____aida_type_name__, },
   { AIDA_HASH___TYPELIST__,        ImplicitBase____aida_typelist__, },
   { AIDA_HASH___AUX_DATA__,        ImplicitBase____aida_aux_data__, },
   { AIDA_HASH___DIR__,             ImplicitBase____aida_dir__, },
