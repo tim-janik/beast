@@ -308,12 +308,12 @@ template<typename EnumType> String
 enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enum_value_to_string() with value joiner.
 { return Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
 
-// == AuxDataRegistry ==
-class AuxDataRegistry {
+// == IntrospectionRegistry ==
+class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);
 public:
-  static std::vector<std::string> lookup          (const std::string &abstypename);
-  template<size_t I>              AuxDataRegistry (const char (&auxentry) [I])
+  static std::vector<std::string> lookup                (const std::string &abstypename);
+  template<size_t I>              IntrospectionRegistry (const char (&auxentry) [I])
   {
     static_assert (I >= 1, "");
     register_aux_data (auxentry, I);

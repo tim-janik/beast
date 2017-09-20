@@ -64,7 +64,7 @@ common_boilerplate = r"""
 #define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
 #endif // !AIDA_ENABLE_ENUM_ARITHMETIC
 
-using AidaAuxDataRegistry = Aida::AuxDataRegistry;
+using IntrospectionRegistry = Aida::IntrospectionRegistry;
 """
 
 def reindent (prefix, lines):
@@ -435,7 +435,7 @@ class Generator:
     s = ''
     # __aida_aux_data__
     s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
-    s += '  static const Aida::StringVector sv = AidaAuxDataRegistry::lookup ("%s");\n' % absolute_typename
+    s += '  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("%s");\n' % absolute_typename
     s += '  return sv;\n'
     s += '}\n'
     return s
@@ -706,7 +706,7 @@ class Generator:
     fileprefix = 'srvt' if self.gen_servercc else 'clnt'
     absolute_typename = self.type2cpp_absolute (tp)
     unique_type_identifier = re.sub ('::', '_', absolute_typename)
-    s += 'static const AidaAuxDataRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
+    s += 'static const IntrospectionRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
     s += '  "%s\\0"\n' % absolute_typename
     s += aux_data_string
     s += '};\n'
@@ -726,7 +726,7 @@ class Generator:
     s += self.generate_type_aux_data_registration (tp)
     s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % classH
     s += '  static const Aida::StringVector __d_ =\n    ::Aida::aux_vectors_combine ('
-    s += 'AidaAuxDataRegistry::lookup ("%s")' % absolute_typename
+    s += 'IntrospectionRegistry::lookup ("%s")' % absolute_typename
     for atp in reduced_immediate_ancestors:
       s += ',\n                                 this->%s::__aida_aux_data__()' % self.C (atp)
     s += ');\n'

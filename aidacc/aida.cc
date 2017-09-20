@@ -607,34 +607,34 @@ EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_va
   return *einfo;
 }
 
-// == AuxDataRegistry ==
-struct AuxDataEntry {
+// == IntrospectionRegistry ==
+struct IntrospectionEntry {
   const char  *auxentry;
   size_t       length;
 };
 
-using AuxDataEntryMap = std::unordered_map<String, AuxDataEntry>;
+using IntrospectionEntryMap = std::unordered_map<String, IntrospectionEntry>;
 
 inline __attribute__ ((const))
-static AuxDataEntryMap&
+static IntrospectionEntryMap&
 aux_data_map()
 {
-  static AuxDataEntryMap aux_data_map;
+  static IntrospectionEntryMap aux_data_map;
   return aux_data_map;
 }
 
 void
-AuxDataRegistry::register_aux_data (const char *auxentry, size_t length)
+IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
 {
   const size_t offset = strlen (auxentry); // first element is the type name, not a key=value pair
   AIDA_ASSERT_RETURN (offset + 1 < length);
   AIDA_ASSERT_RETURN (auxentry[length - 1] == 0);
-  aux_data_map()[auxentry] = AuxDataEntry { auxentry + offset + 1, length - (offset + 1) };
-  dprintf (2, "AuxDataRegistry: %s (%lu, %d)\n", auxentry, length, auxentry[length - 1]);
+  aux_data_map()[auxentry] = IntrospectionEntry { auxentry + offset + 1, length - (offset + 1) };
+  dprintf (2, "IntrospectionRegistry: %s (%lu, %d)\n", auxentry, length, auxentry[length - 1]);
 }
 
 std::vector<std::string>
-AuxDataRegistry::lookup (const std::string &abstypename)
+IntrospectionRegistry::lookup (const std::string &abstypename)
 {
   auto it = aux_data_map().find (abstypename);
   if (it != aux_data_map().end())
