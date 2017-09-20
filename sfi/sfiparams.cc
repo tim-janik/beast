@@ -4,6 +4,7 @@
 #include "sfiprimitives.hh"
 #include "sfinote.hh"
 #include "sfitime.hh"
+#include <algorithm>
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 
@@ -1731,6 +1732,39 @@ sfi_pspec_copy_commons (GParamSpec *src_pspec,
 namespace Bse { // bsecore
 
 static std::map<String, SfiChoiceValues> aida_enum_choice_map;
+
+SfiChoiceValues
+choice_values_from_enum_aux_data (const String &enumname, const Aida::StringVector &aux_data)
+{
+  SfiChoiceValues &cv = aida_enum_choice_map[enumname];
+  if (!cv.values && !aux_data.empty())
+    {
+      std::vector<SfiChoiceValue> vv;
+      for (const String &string : aux_data)
+        {
+          const char *s = string.c_str();
+          const char *eq = strchr (s, '=');
+          if (eq && eq - s > 7 && strncmp (eq - 6, ".value=", 7) == 0)
+            {
+              const String ident = string.substr (0, eq - 6 - s);
+              vv.resize (vv.size() + 1);
+              SfiChoiceValue &v = vv.back();
+              v.choice_ident = g_strdup (ident.c_str());
+              const String label = Aida::aux_vector_find (aux_data, ident, "label");
+              const String blurb = Aida::aux_vector_find (aux_data, ident, "blurb");
+              if (!label.empty())
+                v.choice_label = g_strdup (label.c_str());
+              if (!blurb.empty())
+                v.choice_blurb = g_strdup (blurb.c_str());
+            }
+        }
+      cv.n_values = vv.size();
+      SfiChoiceValue *cvalues = new SfiChoiceValue[cv.n_values];
+      std::copy_n (vv.begin(), cv.n_values, cvalues);
+      cv.values = cvalues;
+    }
+  return cv;
+}
 
 SfiChoiceValues
 choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec)

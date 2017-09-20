@@ -317,6 +317,8 @@ GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
 
 namespace Bse { // bsecore
 
+SfiChoiceValues choice_values_from_enum_aux_data (const String &enumname, const Aida::StringVector &aux_data);
+
 SfiChoiceValues choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec);
 
 template<class EnumType> SfiChoiceValues
