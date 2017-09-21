@@ -2,8 +2,6 @@
 #ifndef __AIDA_CXX_AIDA_HH__
 #define __AIDA_CXX_AIDA_HH__
 
-#include <cassert>              // FIXME
-
 #include <string>
 #include <vector>
 #include <stdint.h>             // uint32_t
@@ -32,7 +30,7 @@ namespace Aida {
 #define AIDA_ISLIKELY(expr)     __builtin_expect (bool (expr), 1)
 #define AIDA_UNLIKELY(expr)     __builtin_expect (bool (expr), 0)
 #define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, ! "unreached"); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, "unreached"); return __VA_ARGS__; } while (0)
 #else   // !__GNUC__
 #define AIDA_UNUSED
 #define AIDA_DEPRECATED
@@ -46,7 +44,7 @@ namespace Aida {
 #define AIDA_ASSERT_RETURN_UNREACHED(...) do { return __VA_ARGS__; } while (0)
 #endif
 #ifndef AIDA_ASSERTION_FAILED
-#define AIDA_ASSERTION_FAILED(f,l,expr)   assert (expr);
+#define AIDA_ASSERTION_FAILED(f,l,expr)   ({ dprintf (2, "%s:%u: assertion failed: %s\n", f, l, expr); })
 #endif
 #define AIDA_LIKELY             AIDA_ISLIKELY
 #define AIDA_CLASS_NON_COPYABLE(ClassName)  \

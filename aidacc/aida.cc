@@ -19,6 +19,7 @@
 #include <sys/eventfd.h>
 #endif // HAVE_SYS_EVENTFD_H
 #include <stdexcept>
+#include <cassert>              // FIXME
 #include <deque>
 #include <unordered_map>
 #include <unordered_set>
