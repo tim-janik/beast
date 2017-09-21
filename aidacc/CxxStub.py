@@ -708,6 +708,7 @@ class Generator:
     unique_type_identifier = re.sub ('::', '_', absolute_typename)
     s += 'static const IntrospectionRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
     s += '  "%s\\0"\n' % absolute_typename
+    s += '  "%s\\0"\n' % Decls.storage_name (tp.storage)
     s += aux_data_string
     s += '};\n'
     return s

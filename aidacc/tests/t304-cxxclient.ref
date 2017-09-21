@@ -1297,6 +1297,7 @@ FirstInterfaceHandle::void_func () /// See FirstInterface::void_func()
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooRecord_ = {
   "MandatoryNamespace::XFooRecord\0"
+  "RECORD\0"
   "single_bool.type=BOOL\0"
   "single_num.type=INT32\0"
   "num64.type=INT64\0"
@@ -1398,6 +1399,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_XFooRecord &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooSequence_ = {
   "MandatoryNamespace::XFooSequence\0"
+  "SEQUENCE\0"
   "single_bool.type=BOOL\0"
 };
 const Aida::StringVector&
@@ -1427,6 +1429,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_XFooSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_IntSequence_ = {
   "MandatoryNamespace::IntSequence\0"
+  "SEQUENCE\0"
   "numx.type=INT32\0"
 };
 const Aida::StringVector&
@@ -1456,6 +1459,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_IntSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_FloatSequence_ = {
   "MandatoryNamespace::FloatSequence\0"
+  "SEQUENCE\0"
   "fractalvalue.type=FLOAT64\0"
 };
 const Aida::StringVector&
@@ -1485,6 +1489,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_FloatSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_StringSequence_ = {
   "MandatoryNamespace::StringSequence\0"
+  "SEQUENCE\0"
   "blurb.type=STRING\0"
 };
 const Aida::StringVector&
@@ -1514,6 +1519,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_StringSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnumSequence_ = {
   "MandatoryNamespace::ExtensiveEnumSequence\0"
+  "SEQUENCE\0"
   "enum_elements.type=ENUM\0"
   "enum_elements.typename=MandatoryNamespace::ExtensiveEnum\0"
 };
@@ -1544,6 +1550,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_ExtensiveEnumSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_RecordSequence_ = {
   "MandatoryNamespace::RecordSequence\0"
+  "SEQUENCE\0"
   "repeatedfield.type=RECORD\0"
   "repeatedfield.typename=MandatoryNamespace::XFooRecord\0"
 };
@@ -1574,6 +1581,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_RecordSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_SequenceSequence_ = {
   "MandatoryNamespace::SequenceSequence\0"
+  "SEQUENCE\0"
   "moreints.type=SEQUENCE\0"
   "moreints.typename=MandatoryNamespace::IntSequence\0"
 };
@@ -1604,6 +1612,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_SequenceSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_InterfaceSequence_ = {
   "MandatoryNamespace::InterfaceSequence\0"
+  "SEQUENCE\0"
   "iface1.type=INTERFACE\0"
   "iface1.typename=MandatoryNamespace::FirstInterface\0"
 };
@@ -1634,6 +1643,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_InterfaceSequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_AnySequence_ = {
   "MandatoryNamespace::AnySequence\0"
+  "SEQUENCE\0"
   "any_value.type=ANY\0"
 };
 const Aida::StringVector&
@@ -1663,6 +1673,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_AnySequence &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NestedTypesRec_ = {
   "MandatoryNamespace::NestedTypesRec\0"
+  "RECORD\0"
   "rec.type=RECORD\0"
   "rec.typename=MandatoryNamespace::XFooRecord\0"
   "seq.type=SEQUENCE\0"
@@ -1698,6 +1709,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_NestedTypesRec &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NestedTypesSeq_ = {
   "MandatoryNamespace::NestedTypesSeq\0"
+  "SEQUENCE\0"
   "ntr.type=RECORD\0"
   "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
 };
@@ -1728,6 +1740,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_NestedTypesSeq &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NewRecord_ = {
   "MandatoryNamespace::NewRecord\0"
+  "RECORD\0"
   "i.type=INT32\0"
   "enum1.type=ENUM\0"
   "enum1.typename=MandatoryNamespace::Enum1\0"
@@ -1774,6 +1787,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_NewRecord &self)
 namespace Inner {
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Inner_InnerRecord_ = {
   "MandatoryNamespace::Inner::InnerRecord\0"
+  "RECORD\0"
   "x.type=INT32\0"
   "y.type=INT32\0"
   "rec.type=RECORD\0"
@@ -1813,6 +1827,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_InnerRecord &self)
 } // Inner
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Refer2Inner_ = {
   "MandatoryNamespace::Refer2Inner\0"
+  "RECORD\0"
   "r.type=RECORD\0"
   "r.typename=MandatoryNamespace::Inner::InnerRecord\0"
 };
@@ -1846,6 +1861,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_Refer2Inner &self)
 namespace OtherNamespace {
 static const IntrospectionRegistry __aida_aux_data_clnt__OtherNamespace_SomeRecord_ = {
   "OtherNamespace::SomeRecord\0"
+  "RECORD\0"
   "r1.type=RECORD\0"
   "r1.typename=MandatoryNamespace::NewRecord\0"
   "r2.type=RECORD\0"
@@ -1894,6 +1910,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_SomeRecord &self)
 namespace Auxdata {
 static const IntrospectionRegistry __aida_aux_data_clnt__Auxdata_RecordWithAuxdata_ = {
   "Auxdata::RecordWithAuxdata\0"
+  "RECORD\0"
   "aux_bool.type=BOOL\0"
   "aux_bool.label=AuxBool\0"
   "aux_bool.blurb=A Boolean\0"
@@ -2259,6 +2276,7 @@ GrandChildHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHash
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickRecord_ = {
   "InterfaceTests::QuickRecord\0"
+  "RECORD\0"
   "int1.type=INT32\0"
   "int2.type=INT32\0"
 };
@@ -2292,6 +2310,7 @@ operator>>= (Aida::ProtoReader &src, ClnT_QuickRecord &self)
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickSequence_ = {
   "InterfaceTests::QuickSequence\0"
+  "SEQUENCE\0"
   "somefloat.type=FLOAT64\0"
 };
 const Aida::StringVector&
@@ -3166,6 +3185,7 @@ CompressorHandle::ratio (double value) /// See Compressor::ratio
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__BseTest_RecordForGroups_ = {
   "BseTest::RecordForGroups\0"
+  "RECORD\0"
   "i.type=INT32\0"
   "ratio.type=FLOAT64\0"
   "ratio.hints=w\0"
@@ -3242,6 +3262,7 @@ namespace Aida {
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1_ = {
   "MandatoryNamespace::Enum1\0"
+  "ENUM\0"
   "E1_A.value=1\0"
 };
 template<> const EnumInfo&
@@ -3256,6 +3277,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiati
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
+  "ENUM\0"
   "E1C_A.value=1\0"
 };
 template<> const EnumInfo&
@@ -3270,6 +3292,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
+  "ENUM\0"
   "E2_A.value=1\0"
   "E2_B.value=2\0"
 };
@@ -3286,6 +3309,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiati
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
+  "ENUM\0"
   "E2C_A.value=1\0"
   "E2C_B.value=2\0"
 };
@@ -3302,6 +3326,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
+  "ENUM\0"
   "E3_A.value=1\0"
   "E3_B.value=2\0"
   "E3_C.value=3\0"
@@ -3320,6 +3345,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiati
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
+  "ENUM\0"
   "E3C_A.value=1\0"
   "E3C_B.value=2\0"
   "E3C_C.value=3\0"
@@ -3338,6 +3364,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
+  "ENUM\0"
   "E4A_A.value=1\0"
   "E4A_B.value=2\0"
   "E4A_C.value=3\0"
@@ -3358,6 +3385,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
+  "ENUM\0"
   "E4B_A.value=1\0"
   "E4B_B.value=2\0"
   "E4B_C.value=3\0"
@@ -3378,6 +3406,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
+  "ENUM\0"
   "E4C_A.value=1\0"
   "E4C_B.value=2\0"
   "E4C_C.value=3\0"
@@ -3398,6 +3427,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
+  "ENUM\0"
   "E4D_A.value=1\0"
   "E4D_B.value=2\0"
   "E4D_C.value=3\0"
@@ -3418,6 +3448,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiat
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
+  "ENUM\0"
   "V1a.value=1\0"
   "V1b.value=1\0"
   "V2.value=2\0"
@@ -3529,6 +3560,7 @@ template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // ins
 
 static const IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
+  "ENUM\0"
   "ZERO.value=0\0"
 };
 template<> const EnumInfo&
@@ -3543,6 +3575,7 @@ template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiati
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
+  "ENUM\0"
   "CLICK_ON_PRESS.value=1\0"
   "CLICK_ON_RELEASE.value=2\0"
   "CLICK_SLOW_REPEAT.value=3\0"
@@ -3565,6 +3598,7 @@ template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantia
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
+  "ENUM\0"
   "RESULT_2.value=2\0"
   "RESULT_5.value=5\0"
   "RESULT_8.value=8\0"

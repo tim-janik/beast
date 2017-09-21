@@ -310,8 +310,8 @@ enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enu
 class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);
 public:
-  static std::vector<std::string> lookup                (const std::string &abstypename);
-  template<size_t I>              IntrospectionRegistry (const char (&auxentry) [I])
+  static const StringVector& lookup                (const std::string &abstypename, String *fundamental_type = NULL);
+  template<size_t I>         IntrospectionRegistry (const char (&auxentry) [I])
   {
     static_assert (I >= 1, "");
     register_aux_data (auxentry, I);

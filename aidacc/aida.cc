@@ -610,8 +610,11 @@ EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_va
 
 // == IntrospectionRegistry ==
 struct IntrospectionEntry {
-  const char  *auxentry;
+  const char  *type_name;
+  const char  *fundamental;
+  const char  *auxentries;
   size_t       length;
+  StringVector entries;
 };
 
 using IntrospectionEntryMap = std::unordered_map<String, IntrospectionEntry>;
@@ -627,21 +630,43 @@ aux_data_map()
 void
 IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
 {
-  const size_t offset = strlen (auxentry); // first element is the type name, not a key=value pair
-  AIDA_ASSERT_RETURN (offset + 1 < length);
-  AIDA_ASSERT_RETURN (auxentry[length - 1] == 0);
-  aux_data_map()[auxentry] = IntrospectionEntry { auxentry + offset + 1, length - (offset + 1) };
-  dprintf (2, "IntrospectionRegistry: %s (%lu, %d)\n", auxentry, length, auxentry[length - 1]);
+
+  const char *type_name = auxentry;                             // first element is the type name
+  AIDA_ASSERT_RETURN (strchr (type_name, '=') == NULL);
+  const char *fundamental = type_name + strlen (type_name) + 1; // second element is the fundamental type
+  AIDA_ASSERT_RETURN (strchr (fundamental, '=') == NULL);
+  AIDA_ASSERT_RETURN (fundamental < auxentry + length);
+  const char *entries = fundamental + strlen (fundamental) + 1;
+  AIDA_ASSERT_RETURN (entries < auxentry + length);
+  aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, entries, length - (entries - auxentry) };
+  dprintf (2, "IntrospectionRegistry: %s (%s, %lu)\n", auxentry, fundamental, length);
 }
 
-std::vector<std::string>
-IntrospectionRegistry::lookup (const std::string &abstypename)
+const StringVector&
+IntrospectionRegistry::lookup (const std::string &abstypename, String *fundamental_type)
 {
   auto it = aux_data_map().find (abstypename);
   if (it != aux_data_map().end())
-    return aux_vector_split (it->second.auxentry, it->second.length);
-  else
-    return {};
+    {
+      IntrospectionEntry &info = it->second;
+      if (!info.entries.size())
+        {
+          static std::mutex mutex;
+          static std::lock_guard<std::mutex> locker (mutex);
+          if (!info.entries.size())
+            {
+              StringVector entries = aux_vector_split (info.auxentries, info.length);
+              std::swap (info.entries, entries);
+            }
+        }
+      if (fundamental_type)
+        *fundamental_type = info.fundamental;
+      return info.entries;
+    }
+  if (fundamental_type)
+    *fundamental_type = "";
+  static const StringVector empty;
+  return empty;
 }
 
 static std::vector<const char*>
