@@ -380,7 +380,7 @@ typedef std::vector<TypeHash> TypeHashList;
 
 
 // == Internal Type Hashes ==
-#define AIDA_HASH___TYPE_NAME__         0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
+#define AIDA_HASH___TYPENAME__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
 #define AIDA_HASH___TYPELIST__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce02ULL
 #define AIDA_HASH___AUX_DATA__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce03ULL
 #define AIDA_HASH___DIR__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce04ULL
@@ -497,7 +497,7 @@ protected:
 public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) : orbop_ (y.orbop_) {}
   virtual                ~RemoteHandle         ();
-  String                  __aida_type_name__   () const;
+  String                  __typename__         () const;
   TypeHashList            __aida_typelist__    () const;
   const StringVector&     __aida_aux_data__    () const;
   std::vector<String>     __aida_dir__         () const;
@@ -717,7 +717,7 @@ class ImplicitBase : public virtual VirtualEnableSharedFromThis<ImplicitBase> {
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
-  virtual std::string         __aida_type_name__  () const = 0; ///< Retrieve the IDL type name of an instance.
+  virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual TypeHashList        __aida_typelist__   () const = 0;
   virtual const StringVector& __aida_aux_data__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;

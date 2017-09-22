@@ -362,7 +362,7 @@ class Generator:
           s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
       s += ' }\n'
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyDict &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
-    s += '  ' + self.F ('std::string') + '__aida_type_name__ () const\t{ return "%s"; }\n' % classFull
+    s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % classFull
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
@@ -605,7 +605,7 @@ class Generator:
       s += '  virtual ' + self.F ('/*Des*/') + '~%s () override;\n' % self.C (type_info) # dtor
     if self.gen_mode == G4SERVANT:
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
-      s += '  virtual ' + self.F ('std::string') + '__aida_type_name__ () const override\t{ return "%s"; }\n' % classFull
+      s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull
       s += self.generate_class_aux_method_decls (type_info)
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
