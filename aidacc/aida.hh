@@ -44,7 +44,7 @@ namespace Aida {
 #define AIDA_ASSERT_RETURN_UNREACHED(...) do { return __VA_ARGS__; } while (0)
 #endif
 #ifndef AIDA_ASSERTION_FAILED
-#define AIDA_ASSERTION_FAILED(f,l,expr)   ({ dprintf (2, "%s:%u: assertion failed: %s\n", f, l, expr); })
+#define AIDA_ASSERTION_FAILED(f,l,expr)   ({ dprintf (2, "%s:%u: assertion failed: %s\n", f, l, expr); abort(); })
 #endif
 #define AIDA_LIKELY             AIDA_ISLIKELY
 #define AIDA_CLASS_NON_COPYABLE(ClassName)  \
