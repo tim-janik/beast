@@ -593,16 +593,16 @@ class Generator:
     if self.gen_mode == G4STUB:
       for sg in type_info.signals:
         s += self.generate_client_signal_decl (sg, type_info)
-      s += '  ' + self.F ('static %s' % classC, 9) + '__aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
+      s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
       s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:
-      s += '  explicit ' + self.F ('') + '%s ();\n' % self.C (type_info) # ctor
-      s += '  virtual ' + self.F ('/*Des*/') + '~%s () override = 0;\n' % self.C (type_info) # dtor
+      s += '  explicit' + self.F (' ') + '%s ();\n' % self.C (type_info) # ctor
+      s += '  virtual ' + self.F (' /*Des*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info) # dtor
     s += 'public:\n'
     if self.gen_mode == G4STUB:
-      s += '  virtual ' + self.F ('/*Des*/') + '~%s () override;\n' % self.C (type_info) # dtor
+      s += '  ' + self.F ('virtual /*Des*/ ', -1) + '~%s () override;\n' % self.C (type_info) # dtor
     if self.gen_mode == G4SERVANT:
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
       s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull

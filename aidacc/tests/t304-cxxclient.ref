@@ -334,11 +334,11 @@ namespace MandatoryNamespace {
 /// See also the corresponding IDL class FirstInterface.
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static FirstInterfaceHandle            __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static FirstInterfaceHandle   __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~FirstInterfaceHandle () override;
+  virtual /*Des*/              ~FirstInterfaceHandle () override;
   template<class RemoteHandle>
   static FirstInterfaceHandle   down_cast (RemoteHandle smh) { return smh == NULL ? FirstInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      FirstInterfaceHandle ();
@@ -770,11 +770,11 @@ namespace InterfaceTests {
 /// See also the corresponding IDL class UIWidgetArea.
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
-  static UIWidgetAreaHandle              __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static UIWidgetAreaHandle     __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~UIWidgetAreaHandle () override;
+  virtual /*Des*/              ~UIWidgetAreaHandle () override;
   template<class RemoteHandle>
   static UIWidgetAreaHandle     down_cast (RemoteHandle smh) { return smh == NULL ? UIWidgetAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UIWidgetAreaHandle ();
@@ -813,11 +813,11 @@ typedef UIWidgetAreaHandle UIWidgetAreaH; ///< Convenience alias for the IDL typ
 /// See also the corresponding IDL class Parent.
 class ParentHandle : public virtual Aida::RemoteHandle
 {
-  static ParentHandle                    __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ParentHandle           __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~ParentHandle () override;
+  virtual /*Des*/              ~ParentHandle () override;
   template<class RemoteHandle>
   static ParentHandle           down_cast (RemoteHandle smh) { return smh == NULL ? ParentHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ParentHandle ();
@@ -831,11 +831,11 @@ typedef ParentHandle ParentH; ///< Convenience alias for the IDL type Parent.
 /// See also the corresponding IDL class Child.
 class ChildHandle : public virtual ParentHandle
 {
-  static ChildHandle                     __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ChildHandle            __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~ChildHandle () override;
+  virtual /*Des*/              ~ChildHandle () override;
   template<class RemoteHandle>
   static ChildHandle            down_cast (RemoteHandle smh) { return smh == NULL ? ChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildHandle ();
@@ -851,11 +851,11 @@ typedef ChildHandle ChildH; ///< Convenience alias for the IDL type Child.
 /// See also the corresponding IDL class Descendant.
 class DescendantHandle : public virtual ChildHandle
 {
-  static DescendantHandle                __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static DescendantHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~DescendantHandle () override;
+  virtual /*Des*/              ~DescendantHandle () override;
   template<class RemoteHandle>
   static DescendantHandle       down_cast (RemoteHandle smh) { return smh == NULL ? DescendantHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      DescendantHandle ();
@@ -871,11 +871,11 @@ typedef DescendantHandle DescendantH; ///< Convenience alias for the IDL type De
 /// See also the corresponding IDL class GrandChild.
 class GrandChildHandle : public virtual DescendantHandle
 {
-  static GrandChildHandle                __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static GrandChildHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~GrandChildHandle () override;
+  virtual /*Des*/              ~GrandChildHandle () override;
   template<class RemoteHandle>
   static GrandChildHandle       down_cast (RemoteHandle smh) { return smh == NULL ? GrandChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      GrandChildHandle ();
@@ -934,11 +934,11 @@ void operator>>= (Aida::ProtoReader&, ClnT_QuickSequence&);
 /// See also the corresponding IDL class QuickIface.
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
-  static QuickIfaceHandle                __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static QuickIfaceHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~QuickIfaceHandle () override;
+  virtual /*Des*/              ~QuickIfaceHandle () override;
   template<class RemoteHandle>
   static QuickIfaceHandle       down_cast (RemoteHandle smh) { return smh == NULL ? QuickIfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      QuickIfaceHandle ();
@@ -953,11 +953,11 @@ typedef QuickIfaceHandle QuickIfaceH; ///< Convenience alias for the IDL type Qu
 /// See also the corresponding IDL class MethodTestInterface.
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static MethodTestInterfaceHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static MethodTestInterfaceHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~MethodTestInterfaceHandle () override;
+  virtual /*Des*/              ~MethodTestInterfaceHandle () override;
   template<class RemoteHandle>
   static MethodTestInterfaceHandle down_cast (RemoteHandle smh) { return smh == NULL ? MethodTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      MethodTestInterfaceHandle ();
@@ -994,11 +994,11 @@ typedef MethodTestInterfaceHandle MethodTestInterfaceH; ///< Convenience alias f
 /// See also the corresponding IDL class SignalTestInterface.
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static SignalTestInterfaceHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static SignalTestInterfaceHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~SignalTestInterfaceHandle () override;
+  virtual /*Des*/              ~SignalTestInterfaceHandle () override;
   template<class RemoteHandle>
   static SignalTestInterfaceHandle down_cast (RemoteHandle smh) { return smh == NULL ? SignalTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SignalTestInterfaceHandle ();
@@ -1012,11 +1012,11 @@ typedef SignalTestInterfaceHandle SignalTestInterfaceH; ///< Convenience alias f
 /// See also the corresponding IDL class ChildInheritingSignals.
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
-  static ChildInheritingSignalsHandle    __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ChildInheritingSignalsHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~ChildInheritingSignalsHandle () override;
+  virtual /*Des*/              ~ChildInheritingSignalsHandle () override;
   template<class RemoteHandle>
   static ChildInheritingSignalsHandle down_cast (RemoteHandle smh) { return smh == NULL ? ChildInheritingSignalsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildInheritingSignalsHandle ();
@@ -1032,11 +1032,11 @@ typedef ChildInheritingSignalsHandle ChildInheritingSignalsH; ///< Convenience a
 /// See also the corresponding IDL class AnotherChild.
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
-  static AnotherChildHandle              __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static AnotherChildHandle     __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~AnotherChildHandle () override;
+  virtual /*Des*/              ~AnotherChildHandle () override;
   template<class RemoteHandle>
   static AnotherChildHandle     down_cast (RemoteHandle smh) { return smh == NULL ? AnotherChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      AnotherChildHandle ();
@@ -1052,11 +1052,11 @@ typedef AnotherChildHandle AnotherChildH; ///< Convenience alias for the IDL typ
 /// See also the corresponding IDL class PropertyTester.
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
-  static PropertyTesterHandle            __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static PropertyTesterHandle   __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~PropertyTesterHandle () override;
+  virtual /*Des*/              ~PropertyTesterHandle () override;
   template<class RemoteHandle>
   static PropertyTesterHandle   down_cast (RemoteHandle smh) { return smh == NULL ? PropertyTesterHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PropertyTesterHandle ();
@@ -1107,11 +1107,11 @@ namespace RapicornAidaTest {
 /// See also the corresponding IDL class UseIncludes.
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
-  static UseIncludesHandle               __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static UseIncludesHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~UseIncludesHandle () override;
+  virtual /*Des*/              ~UseIncludesHandle () override;
   template<class RemoteHandle>
   static UseIncludesHandle      down_cast (RemoteHandle smh) { return smh == NULL ? UseIncludesHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UseIncludesHandle ();
@@ -1127,11 +1127,11 @@ typedef UseIncludesHandle UseIncludesH; ///< Convenience alias for the IDL type 
 /// See also the corresponding IDL class ButtonArea.
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
-  static ButtonAreaHandle                __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ButtonAreaHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~ButtonAreaHandle () override;
+  virtual /*Des*/              ~ButtonAreaHandle () override;
   template<class RemoteHandle>
   static ButtonAreaHandle       down_cast (RemoteHandle smh) { return smh == NULL ? ButtonAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ButtonAreaHandle ();
@@ -1160,11 +1160,11 @@ class PureMethodsHandle;
 /// See also the corresponding IDL class PureMethods.
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
-  static PureMethodsHandle               __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static PureMethodsHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~PureMethodsHandle () override;
+  virtual /*Des*/              ~PureMethodsHandle () override;
   template<class RemoteHandle>
   static PureMethodsHandle      down_cast (RemoteHandle smh) { return smh == NULL ? PureMethodsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PureMethodsHandle ();
@@ -1182,11 +1182,11 @@ namespace Other {
 /// See also the corresponding IDL class NameTests.
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
-  static NameTestsHandle                 __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static NameTestsHandle        __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~NameTestsHandle () override;
+  virtual /*Des*/              ~NameTestsHandle () override;
   template<class RemoteHandle>
   static NameTestsHandle        down_cast (RemoteHandle smh) { return smh == NULL ? NameTestsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      NameTestsHandle ();
@@ -1206,11 +1206,11 @@ namespace BseTest {
 /// See also the corresponding IDL class Compressor.
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
-  static CompressorHandle                __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static CompressorHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~CompressorHandle () override;
+  virtual /*Des*/              ~CompressorHandle () override;
   template<class RemoteHandle>
   static CompressorHandle       down_cast (RemoteHandle smh) { return smh == NULL ? CompressorHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      CompressorHandle ();
@@ -1262,11 +1262,11 @@ void operator>>= (Aida::ProtoReader&, ClnT_RecordForGroups&);
 /// See also the corresponding IDL class SoundModule.
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
-  static SoundModuleHandle               __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static SoundModuleHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/                       ~SoundModuleHandle () override;
+  virtual /*Des*/              ~SoundModuleHandle () override;
   template<class RemoteHandle>
   static SoundModuleHandle      down_cast (RemoteHandle smh) { return smh == NULL ? SoundModuleHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SoundModuleHandle ();
