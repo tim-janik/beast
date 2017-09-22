@@ -1014,6 +1014,14 @@ Any::operator= (const Any &clone)
     case RECORD:        new (&u_.vfields()) AnyDict (clone.u_.vfields());                            break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
+    case ENUM:
+      if (clone.u_.enum_typename)
+        {
+          u_.enum_typename = new char[strlen (clone.u_.enum_typename) + 1];
+          strcpy (u_.enum_typename, clone.u_.enum_typename);
+        }
+      u_.venum64 = clone.u_.venum64;
+      break;
     case TRANSITION:    // u_.vint64 = clone.u_.vint64;
     default:            u_ = clone.u_;                                                               break;
     }
@@ -1063,6 +1071,7 @@ Any::clear()
 {
   switch (kind())
     {
+    case ENUM:          delete[] u_.enum_typename;              break;
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnyList();                  break;
@@ -1073,7 +1082,7 @@ Any::clear()
     default: ;
     }
   type_kind_ = UNTYPED;
-  u_.vuint64 = 0;
+  memset (&u_, 0, sizeof (u_));
 }
 
 bool
@@ -1089,6 +1098,7 @@ Any::rekind (TypeKind _kind)
   type_kind_ = _kind;
   switch (_kind)
     {
+    case ENUM:     u_.enum_typename = NULL;             break;
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnyList();         break;
@@ -1169,6 +1179,8 @@ Any::repr (const String &field_name) const
 {
   String s = "{ ";
   s += "type=" + string_to_cquote (type_kind_name (kind()));
+  if (kind() == ENUM && u_.enum_typename)
+    s += ", typename=" + String (u_.enum_typename);
   if (!field_name.empty())
     s += ", name=" + string_to_cquote (field_name);
   s += ", value=";
@@ -1189,7 +1201,11 @@ Any::to_string() const
   String s;
   switch (kind())
     {
-    case BOOL: case ENUM: case INT32:
+    case ENUM:
+      if (u_.enum_typename)
+        s += "(" + String (u_.enum_typename) + ") ";
+      // fall through
+    case BOOL: case INT32:
     case INT64:      s += posix_sprintf ("%lld", LLI u_.vint64);                                                 break;
     case FLOAT64:    s += posix_sprintf ("%.17g", u_.vdouble);                                                   break;
     case STRING:     s += u_.vstring();                                                                          break;
@@ -1220,10 +1236,17 @@ Any::operator== (const Any &clone) const
   switch (kind())
     {
     case UNTYPED:     break;
-    case TRANSITION: case BOOL: case ENUM: case INT32: // chain
+    case TRANSITION: case BOOL: case INT32: // chain
     case INT64:    if (u_.vint64 != clone.u_.vint64) return false;                                       break;
     case FLOAT64:  if (u_.vdouble != clone.u_.vdouble) return false;                                     break;
     case STRING:   if (u_.vstring() != clone.u_.vstring()) return false;                                 break;
+    case ENUM:
+      if (u_.vint64 != clone.u_.vint64)
+        return false;
+      if (!u_.enum_typename || !clone.u_.enum_typename)
+        return u_.enum_typename == clone.u_.enum_typename;
+      else
+        return strcmp (u_.enum_typename, clone.u_.enum_typename) == 0;
     case SEQUENCE:
       return u_.vanys() == clone.u_.vanys();
     case RECORD:
@@ -1297,28 +1320,30 @@ Any::set_int64 (int64 value)
 }
 
 void
-Any::set_enum (const EnumInfo &einfo, int64 value)
+Any::set_enum (const char *enum_typename, int64 value)
 {
+  AIDA_ASSERT_RETURN (enum_typename);
+  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM");
   ensure (ENUM);
   u_.venum64 = value;
-  u_.enum_info = &einfo;
+  u_.enum_typename = new char[strlen (enum_typename) + 1];
+  strcpy (u_.enum_typename, enum_typename);
 }
 
 int64
-Any::get_enum (const EnumInfo &einfo) const
+Any::get_enum (const String &enum_typename) const
 {
-  if (kind() == ENUM && u_.enum_info &&
-      u_.enum_info->name() == einfo.name())
-    return u_.venum64;
-  return 0;
+  if (kind() != ENUM)
+    return 0;
+  if (!u_.enum_typename || !u_.enum_typename[0])
+    return enum_typename.empty() ? u_.venum64 : 0;
+  return enum_typename != u_.enum_typename ? 0 : u_.venum64;
 }
 
-const EnumInfo&
-Any::get_enum_info ()
+String
+Any::get_enum_typename () const
 {
-  if (kind() == ENUM)
-    return *u_.enum_info;
-  return *(const EnumInfo*) NULL; // undefined behavior
+  return kind() == ENUM && u_.enum_typename ? u_.enum_typename : "";
 }
 
 double

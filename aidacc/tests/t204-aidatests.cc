@@ -6,6 +6,15 @@ using namespace Aida;
 
 enum TestEnum { TEST_COFFEE_COFFEE = -0xc0ffeec0ffeeLL };
 
+#if 1 // Manually adding TestEnum introspection information
+inline const char* operator->* (::Aida::IntrospectionTypename, TestEnum) { return "TestEnum"; }
+static const IntrospectionRegistry __aida_aux_data_srvt__Aida_TestEnum_ = {
+  "TestEnum\0"
+  "ENUM\0"
+  "TEST_COFFEE_COFFEE.value=-0xc0ffeec0ffee\0"
+};
+#endif
+
 namespace {
 
 template<class, class = void> struct has_complex_member : std::false_type {};      // false case, picked on SFINAE
@@ -149,7 +158,7 @@ test_any_basics()
   TASSERT (b.kind() == ENUM);
   TASSERT (b.get<TestEnum>() == TEST_COFFEE_COFFEE);
   Any dup = b;
-  TASSERT (dup.get_enum_info().name() == "TestEnum");
+  TASSERT (dup.get_enum_typename() == "TestEnum");
   TASSERT (dup.get<TestEnum>() == TEST_COFFEE_COFFEE);
 }
 TEST_ADD (test_any_basics);

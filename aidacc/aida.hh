@@ -594,7 +594,7 @@ private:
   typedef RemoteMember<RemoteHandle> ARemoteHandle;
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany;
-    struct { int64 venum64; const EnumInfo *enum_info; };
+    struct { int64 venum64; char *enum_typename; };
     int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
                                              std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
     AnyDict&             vfields () { return *(AnyDict*) this; static_assert (sizeof (AnyDict) <= sizeof (*this), ""); }
@@ -630,9 +630,9 @@ public:
   void      swap   (Any           &other);              ///< Swap the contents of @a this and @a other in constant time.
   void      clear  ();                                  ///< Erase Any contents, making it empty like a newly constructed Any().
   bool      empty  () const;                            ///< Returns true if Any is newly constructed or after clear().
-  const EnumInfo& get_enum_info ();                     ///< Get enum info for an Any holding an enum, undefined otherwise.
-  void            set_enum      (const EnumInfo &einfo,
-                                 int64 value);          ///< Set Any to hold an enum value.
+  void      set_enum (const char *enum_typename,
+                      int64 value);                     ///< Set Any to hold an enum value.
+  String             get_enum_typename () const;        ///< Get the enum typename from an enum holding any.
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
@@ -646,11 +646,11 @@ private:
   void               set_double  (double value);
   std::string        get_string  () const;
   void               set_string  (const std::string &value);
-  int64              get_enum    (const EnumInfo &einfo) const;
+  int64              get_enum    (const String &enum_typename) const;
   template<typename Enum>
-  Enum               get_enum    () const               { return Enum (get_enum (enum_info<Enum>())); }
+  Enum               get_enum    () const               { return Enum (get_enum (introspection_typename ->* Enum (0))); }
   template<typename Enum>
-  void               set_enum    (Enum value)           { return set_enum (enum_info<Enum>(), int64 (value)); }
+  void               set_enum    (Enum value)           { return set_enum (introspection_typename ->* Enum (0), int64 (value)); }
   const AnyList&     get_seq     () const;
   void               set_seq     (const AnyList &seq);
   const AnyDict&     get_rec     () const;
