@@ -323,6 +323,7 @@ class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);
 public:
   static const StringVector& lookup                (const std::string &abstypename, String *fundamental_type = NULL);
+  static String              lookup_type           (const std::string &abstypename);
   template<size_t I>         IntrospectionRegistry (const char (&auxentry) [I])
   {
     static_assert (I >= 1, "");

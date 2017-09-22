@@ -642,6 +642,18 @@ IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
   dprintf (2, "IntrospectionRegistry: %s (%s, %lu)\n", auxentry, fundamental, length);
 }
 
+String
+IntrospectionRegistry::lookup_type (const std::string &abstypename)
+{
+  auto it = aux_data_map().find (abstypename);
+  if (it != aux_data_map().end())
+    {
+      IntrospectionEntry &info = it->second;
+      return info.fundamental;
+    }
+  return "";
+}
+
 const StringVector&
 IntrospectionRegistry::lookup (const std::string &abstypename, String *fundamental_type)
 {
