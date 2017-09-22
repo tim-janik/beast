@@ -1179,7 +1179,7 @@ class Generator:
     return str (number)
   def generate_enum_decl (self, type_info):
     s = '\n'
-    nm = type_info.name
+    nm, c_typename = type_info.name, self.namespaced_identifier (type_info.name)
     l = []
     s += '/// @cond GeneratedEnums\n'
     s += 'enum class %s : int64_t {\n' % type_info.name
@@ -1190,6 +1190,7 @@ class Generator:
         s += ' // %s' % re.sub ('\n', ' ', blurb)
       s += '\n'
     s += '};\n'
+    s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, c_typename)
     s += 'inline void operator<<= (Aida::ProtoMsg &__p_,  %s  e) ' % nm
     s += '{ __p_ <<= Aida::EnumValue (e); }\n'
     s += 'inline void operator>>= (Aida::ProtoReader &__f_, %s &e) ' % nm

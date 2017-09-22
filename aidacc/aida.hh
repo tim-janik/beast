@@ -306,6 +306,18 @@ template<typename EnumType> String
 enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enum_value_to_string() with value joiner.
 { return Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
 
+// == IntrospectionTypename ==
+struct IntrospectionTypename {};
+constexpr IntrospectionTypename introspection_typename {};
+
+/// Allow to query typename via Aida::introspection_typename ->* someinstance; overloadable via ADL.
+template<class T> const char*
+operator->* (Aida::IntrospectionTypename, T &&t)
+{
+  // static_assert (!sizeof (T), "no Introspection registered for T");
+  return t.__typename__();
+}
+
 // == IntrospectionRegistry ==
 class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);

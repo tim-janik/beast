@@ -109,6 +109,7 @@ namespace MandatoryNamespace {
 enum class Enum1 : int64_t {
   E1_A = 1,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace::Enum1"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum1 &e) { e = Enum1 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
@@ -119,6 +120,7 @@ AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum1);
 enum class Enum1c : int64_t {
   E1C_A = 1,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace::Enum1c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum1c &e) { e = Enum1c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
@@ -130,6 +132,7 @@ enum class Enum2 : int64_t {
   E2_A = 1,
   E2_B = 2,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace::Enum2"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum2 &e) { e = Enum2 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
@@ -141,6 +144,7 @@ enum class Enum2c : int64_t {
   E2C_A = 1,
   E2C_B = 2,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace::Enum2c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum2c &e) { e = Enum2c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
@@ -153,6 +157,7 @@ enum class Enum3 : int64_t {
   E3_B = 2,
   E3_C = 3,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace::Enum3"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum3 &e) { e = Enum3 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
@@ -165,6 +170,7 @@ enum class Enum3c : int64_t {
   E3C_B = 2,
   E3C_C = 3,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace::Enum3c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum3c &e) { e = Enum3c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
@@ -178,6 +184,7 @@ enum class Enum4a : int64_t {
   E4A_C = 3,
   E4A_D = 4,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace::Enum4a"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4a  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4a &e) { e = Enum4a (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
@@ -191,6 +198,7 @@ enum class Enum4b : int64_t {
   E4B_C = 3,
   E4B_D = 4,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace::Enum4b"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4b  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4b &e) { e = Enum4b (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
@@ -204,6 +212,7 @@ enum class Enum4c : int64_t {
   E4C_C = 3,
   E4C_D = 4,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace::Enum4c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4c &e) { e = Enum4c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
@@ -217,6 +226,7 @@ enum class Enum4d : int64_t {
   E4D_C = 3,
   E4D_D = 4,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace::Enum4d"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4d  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4d &e) { e = Enum4d (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
@@ -261,6 +271,7 @@ enum class ExtensiveEnum : int64_t {
   V35 = 42,
   V36 = 42, // "foo""4"
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace::ExtensiveEnum"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  ExtensiveEnum  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, ExtensiveEnum &e) { e = ExtensiveEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
@@ -274,6 +285,7 @@ namespace InterfaceTests {
 enum class QuickEnum : int64_t {
   ZERO = 0,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests::QuickEnum"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  QuickEnum  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, QuickEnum &e) { e = QuickEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
@@ -291,6 +303,7 @@ enum class ClickType : int64_t {
   CLICK_FAST_REPEAT = 4,
   CLICK_KEY_REPEAT = 5,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest::ClickType"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  ClickType  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, ClickType &e) { e = ClickType (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
@@ -312,6 +325,7 @@ enum class MathExpressions : int64_t {
   RESULT_77 = 77,
   RESULT_511 = 511,
 };
+inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest::MathExpressions"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  MathExpressions  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, MathExpressions &e) { e = MathExpressions (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
