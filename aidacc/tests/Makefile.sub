@@ -1,7 +1,11 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 tests_checktargets =
-tests_binaries     = t201-basics
+tests_binaries     =
+
+# == t201-basics ==
+tests_binaries += t201-basics
+CLEANFILES += tests/t201-basics.o
 
 # == t301-testpass-idl-test ==
 t301-testpass-idl-test: tests/t301-pass.idl $(AIDACC)
@@ -81,6 +85,7 @@ tests_checktargets += t305-testpass-compile-test
 
 # == t204-aidatests.cc ==
 tests_binaries += t204-aidatests
+CLEANFILES += tests/t204-aidatests.o
 
 # == tests_binaries ==
 define tests_run_RULE
