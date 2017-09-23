@@ -78,6 +78,39 @@ test_any()
 }
 TEST_ADD (test_any);
 
+static void
+test_enums()
+{
+  TASSERT (  0 == Aida::enum_value_from_string ("A1::CountEnum", "ZERO"));
+  TASSERT (  1 == Aida::enum_value_from_string ("A1::CountEnum", "ONE"));
+  TASSERT (  2 == Aida::enum_value_from_string ("A1::CountEnum", "TWO"));
+  TASSERT (  3 == Aida::enum_value_from_string ("A1::CountEnum", "THREE"));
+  TASSERT (  8 == Aida::enum_value_from_string ("A1::CountEnum", "EIGHT"));
+  TASSERT (  9 == Aida::enum_value_from_string ("A1::CountEnum", "NINE"));
+  TASSERT (-23 == Aida::enum_value_from_string ("A1::CountEnum", "ODD"));
+  TASSERT (+9223372036854775807   == Aida::enum_value_from_string ("A1::CountEnum", "BIG"));
+  TASSERT (-9223372036854775807-1 == Aida::enum_value_from_string ("A1::CountEnum", "SMALL"));
+  TASSERT (0xa     == Aida::enum_value_from_string ("A1::CountEnum", "TWO,EIGHT"));
+  TASSERT (0xb     == Aida::enum_value_from_string ("A1::CountEnum", "ONE TWO EIGHT"));
+  TASSERT (0xb     == Aida::enum_value_from_string ("A1::CountEnum", "THREE | EIGHT"));
+  TASSERT (0       == Aida::enum_value_from_string ("A1::CountEnum", "ZERO + ZERO"));
+  TASSERT (0x1235  == Aida::enum_value_from_string ("A1::CountEnum", "0x1235"));
+  TASSERT (-171717 == Aida::enum_value_from_string ("A1::CountEnum", "-171717"));
+  TASSERT ("ZERO"  == Aida::enum_value_to_string ("A1::CountEnum", 0));
+  TASSERT ("ONE"   == Aida::enum_value_to_string ("A1::CountEnum", 1));
+  TASSERT ("TWO"   == Aida::enum_value_to_string ("A1::CountEnum", 2));
+  TASSERT ("THREE" == Aida::enum_value_to_string ("A1::CountEnum", 3));
+  TASSERT ("EIGHT" == Aida::enum_value_to_string ("A1::CountEnum", 8));
+  TASSERT ("NINE"  == Aida::enum_value_to_string ("A1::CountEnum", 9));
+  TASSERT ("ODD"   == Aida::enum_value_to_string ("A1::CountEnum", -23));
+  TASSERT ("BIG"   == Aida::enum_value_to_string ("A1::CountEnum", 9223372036854775807));
+  TASSERT ("SMALL" == Aida::enum_value_to_string ("A1::CountEnum", -9223372036854775807-1));
+  TASSERT ("TWO|EIGHT" == Aida::enum_value_to_string ("A1::CountEnum", 0xa, "|"));
+  TASSERT ("0x1235"    == Aida::enum_value_to_string ("A1::CountEnum", 0x1235));
+  TASSERT ("-171717"   == Aida::enum_value_to_string ("A1::CountEnum", -171717));
+}
+TEST_ADD (test_enums);
+
 // == main ==
 int
 main (int argc, const char **argv)

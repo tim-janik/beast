@@ -681,6 +681,108 @@ IntrospectionRegistry::lookup (const std::string &abstypename, String *fundament
   return empty;
 }
 
+/// Match 'MEMBER.property=VALUE' against @a kvpair, return <MEMBER,VALUE> if @a property matches.
+static inline std::pair<String, const char*>
+split_member_at_property (const String &kvpair, const char *property)
+{
+  const char *kv = kvpair.c_str();
+  const char *eq = strchr (kv, '=');
+  const int   lp = strlen (property);
+  const int   bt = 1 + lp;              // backtrack from '='
+  if (eq && eq - kv > bt && eq[-bt] == '.' && strncmp (eq - lp, property, lp) == 0)
+    return std::make_pair (kvpair.substr (0, eq - kv - bt), eq + 1);
+  return std::make_pair (String (""), nullptr);
+}
+
+/// Find 'valuestring.value=n' in @a pairs, matching @a valuestring from tail and yield @a n as int64.
+static bool
+find_enum_value (const StringVector &pairs, const String &valuestring, int64 *value)
+{
+  for (const String &kv : pairs)
+    {
+      const auto mvpair = split_member_at_property (kv, "value");
+      if (!mvpair.second)
+        continue;
+      if (string_match_identifier_tail (mvpair.first, valuestring))
+        {
+          *value = string_to_int (mvpair.second);
+          return true;
+        }
+    }
+  return false;
+}
+
+int64
+enum_value_from_string (const std::string &enum_typename, const String &valuestring)
+{
+  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", 0);
+  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
+  int64 value = 0;
+  // try exact match
+  if (find_enum_value (pairs, valuestring, &value))
+    return value;
+  // try bit filling
+  const char *const joiners = "+ \t\n\r|,;:";
+  const StringVector parts = string_split_any (valuestring, joiners);
+  if (parts.size() > 1)
+    {
+      int64 result = 0;
+      int matches = 0;
+      for (const String &ident : parts)
+        if (find_enum_value (pairs, ident, &value))
+          {
+            result |= value;
+            matches++;
+          }
+      if (matches > 0)
+        return result;
+    }
+  // fallback
+  return string_to_int (valuestring);
+}
+
+String
+enum_value_to_string (const std::string &enum_typename, int64 evalue, const String &joiner)
+{
+  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", "");
+  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
+  std::vector<std::pair<String, int64> > values;        // saved bit state
+  // try exact match
+  for (const String &kv : pairs)
+    {
+      const auto mvpair = split_member_at_property (kv, "value");
+      if (!mvpair.second)
+        continue;                                       // not an IDENT.value=123 entry
+      size_t consumed = 0;
+      const int64 value = string_to_int (mvpair.second, &consumed);
+      if (!consumed)
+        continue;                                       // not a parsable value number
+      if (evalue == value)
+        return mvpair.first;                            // exact match
+      if (!joiner.empty())
+        values.push_back (std::make_pair (mvpair.first, value));
+    }
+  // try bit filling
+  if (!joiner.empty())
+    {
+      int64 filled = 0;
+      std::vector<String> idents;
+      for (size_t i = 0; i < values.size(); i++)
+        if ((values[i].second & ~evalue) == 0 &&    // must not set unrelated bits
+            (values[i].second & ~filled) != 0)      // must fill new bits
+          {
+            idents.push_back (values[i].first);
+            filled |= values[i].second;
+            if (filled == evalue)
+              break;
+          }
+      if (filled == evalue)
+        return string_join (joiner, idents);
+    }
+  // fallback
+  return evalue < 0 ? posix_sprintf ("%lli", LLI evalue) : posix_sprintf ("0x%llx", LLU evalue);
+}
+
 static std::vector<const char*>
 split_aux_char_array (const char *char_array, size_t length)
 {

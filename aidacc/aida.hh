@@ -302,9 +302,6 @@ enum_value_from_string (const String &valuestring)      ///< Type-safe variant o
 template<typename EnumType> String
 enum_value_to_string (EnumType evalue)                  ///< Type-safe variant of EnumInfo.value_to_string().
 { return Aida::enum_info<EnumType>().value_to_string (evalue); }
-template<typename EnumType> String
-enum_value_to_string (EnumType evalue, const String &joiner) ///< Variant of enum_value_to_string() with value joiner.
-{ return Aida::enum_info<EnumType>().value_to_string (int64 (evalue), joiner); }
 
 // == IntrospectionTypename ==
 struct IntrospectionTypename {};
@@ -322,14 +319,19 @@ operator->* (Aida::IntrospectionTypename, T &&t)
 class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);
 public:
-  static const StringVector& lookup                (const std::string &abstypename, String *fundamental_type = NULL);
-  static String              lookup_type           (const std::string &abstypename);
-  template<size_t I>         IntrospectionRegistry (const char (&auxentry) [I])
+  static const StringVector& lookup                 (const std::string &abstypename, String *fundamental_type = NULL);
+  static String              lookup_type            (const std::string &abstypename);
+  template<size_t I>         IntrospectionRegistry  (const char (&auxentry) [I])
   {
     static_assert (I >= 1, "");
     register_aux_data (auxentry, I);
   }
 };
+
+/// Return the numeric value of @a valuestring in @a enum_typename.
+int64  enum_value_from_string (const std::string &enum_typename, const String &valuestring);
+/// Construct a string representation of @a evalue in @a enum_typename, joining flags with @a joiner.
+String enum_value_to_string   (const std::string &enum_typename, int64 evalue, const String &joiner = "");
 
 /// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
 std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
@@ -630,9 +632,9 @@ public:
   void      swap   (Any           &other);              ///< Swap the contents of @a this and @a other in constant time.
   void      clear  ();                                  ///< Erase Any contents, making it empty like a newly constructed Any().
   bool      empty  () const;                            ///< Returns true if Any is newly constructed or after clear().
+  String    get_enum_typename () const;                 ///< Get the enum typename from an enum holding any.
   void      set_enum (const char *enum_typename,
                       int64 value);                     ///< Set Any to hold an enum value.
-  String             get_enum_typename () const;        ///< Get the enum typename from an enum holding any.
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;

@@ -9,6 +9,9 @@ enum CountEnum {
   THREE = Enum (_("Three"), _("The third value (ignoring ZERO)")),
   EIGHT = Enum (8, _("Eight"), "Discontinuous value enumeration"),
   NINE  = Enum (_("Nine")),
+  ODD   = -23,
+  BIG   = 9223372036854775807,
+  SMALL = -9223372036854775808,
 };
 
 record Location {
