@@ -207,22 +207,14 @@ bst_param_view_rebuild (BstParamView *self)
     return;
 
   // extract IDL properties
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
-  Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->item));
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
+  Bse::SongH song = Bse::SongH::down_cast (item);
+  Bse::SNetH snet = Bse::SNetH::down_cast (item);
   std::vector<GParamSpec*> cxxpspecs;
-  //FIXME: std::vector<Aida::Parameter> cxxparams;
   if (song)
-    {
-      cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (song);
-      //FIXME: Aida::Parameter::ListVisitor av (cxxparams);
-      //FIXME: song.__accept_accessor__ (av);
-    }
+    cxxpspecs = Bse::introspection_fields_to_param_list (song.__aida_aux_data__());
   else if (snet)
-    {
-      cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (snet);
-      //FIXME: Aida::Parameter::ListVisitor av (cxxparams);
-      //FIXME: snet.__accept_accessor__ (av);
-    }
+    cxxpspecs = Bse::introspection_fields_to_param_list (snet.__aida_aux_data__());
 
   // properties that are useless at the UI
   static const char *const song_reject_properties[] = { "auto_activate" };
@@ -235,16 +227,10 @@ bst_param_view_rebuild (BstParamView *self)
       {
         GParamSpec *pspec = cxxpspecs[i];
         const gchar *param_group = sfi_pspec_get_group (pspec);
-#if 0 //FIXME:
-        Aida::Parameter *cxxparam = NULL;
-        for (size_t j = 0; j < cxxparams.size() && !cxxparam; j++)
-          if (g_sname_equals (cxxparams[j].name(), pspec->name))
-            cxxparam = &cxxparams[j];
-#endif
-	if (/*FIXME: cxxparam &&*/ sfi_pspec_check_option (pspec, "G") && // GUI representable
+	if (sfi_pspec_check_option (pspec, "G") && // GUI representable
             ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
 	  {
-            GxkParam *param = NULL; //FIXME: bst_param_new_aida_parameter (pspec, *cxxparam);
+            GxkParam *param = bst_param_new_property (pspec, item);
             if (param_group)
               {
                 if (!gcontainer)
