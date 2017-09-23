@@ -694,6 +694,27 @@ split_member_at_property (const String &kvpair, const char *property)
   return std::make_pair (String (""), nullptr);
 }
 
+std::vector<IntrospectionRegistry::Enumerator>
+IntrospectionRegistry::list_enumerators (const std::string &enum_typename)
+{
+  std::vector<Enumerator> enumerators;
+  if (IntrospectionRegistry::lookup_type (enum_typename) != "ENUM")
+    return enumerators;
+  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
+  for (const String &kv : pairs)
+    {
+      const auto mvpair = split_member_at_property (kv, "value");
+      if (!mvpair.second)
+        continue;                                       // not an IDENT.value=123 entry
+      size_t consumed = 0;
+      const int64 value = string_to_int (mvpair.second, &consumed);
+      if (!consumed)
+        continue;                                       // not a parsable value number
+      enumerators.push_back (std::make_pair (mvpair.first, value));
+    }
+  return enumerators;
+}
+
 /// Find 'valuestring.value=n' in @a pairs, matching @a valuestring from tail and yield @a n as int64.
 static bool
 find_enum_value (const StringVector &pairs, const String &valuestring, int64 *value)

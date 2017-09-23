@@ -120,6 +120,11 @@ test_enums()
   TASSERT (""      == Aida::enum_value_find ("A1::CountEnum", 0xa));
   TASSERT (""      == Aida::enum_value_find ("A1::CountEnum", 0x1235));
   TASSERT (""      == Aida::enum_value_find ("A1::CountEnum", -171717));
+  auto enumerators = IntrospectionRegistry::list_enumerators ("A1::CountEnum");
+  std::vector<int64> enum_values;
+  std::transform (enumerators.begin(), enumerators.end(), std::back_inserter (enum_values), [] (auto pair) { return pair.second; });
+  const std::vector<int64> reference = { 0, 1, 2, 3, 8, 9, -23, 9223372036854775807, -9223372036854775807-1 };
+  TASSERT (enum_values == reference);
 }
 TEST_ADD (test_enums);
 
