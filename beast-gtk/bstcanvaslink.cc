@@ -107,13 +107,13 @@ clink_view_update (BstCanvasLink *clink,
       const gchar *iname, *oname;
       gchar *string;
 
-      Bse::SourceH icsource = clink->icsource ? Bse::SourceH::down_cast (bse_server.from_proxy (clink->icsource->source)) : Bse::SourceH();
-      Bse::SourceH ocsource = clink->ocsource ? Bse::SourceH::down_cast (bse_server.from_proxy (clink->ocsource->source)) : Bse::SourceH();
+      Bse::SourceH icsource = clink->icsource->source;
+      Bse::SourceH ocsource = clink->ocsource->source;
 
       /* figure appropriate window title
        */
-      iname = clink->icsource ? bse_item_get_name_or_type (clink->icsource->source) : "<""???"">";
-      oname = clink->ocsource ? bse_item_get_name_or_type (clink->ocsource->source) : "<""???"">";
+      iname = clink->icsource ? bse_item_get_name_or_type (icsource.proxy_id()) : "<""???"">";
+      oname = clink->ocsource ? bse_item_get_name_or_type (ocsource.proxy_id()) : "<""???"">";
       string = g_strconcat (_("Module Link: "), iname, " <=> ", oname, NULL);
       gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
       g_free (string);
@@ -208,7 +208,7 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   if (clink->ocsource)
     {
       if (clink->ocsource->source) /* source may be destroyed already */
-	bse_proxy_disconnect (clink->ocsource->source,
+	bse_proxy_disconnect (clink->ocsource->source.proxy_id(),
 			      "any_signal", clink_view_check_update, clink,
 			      NULL);
       if (g_signal_handler_is_connected (clink->ocsource, clink->oc_handler))
@@ -224,7 +224,7 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bse_proxy_connect (clink->ocsource->source,
+      bse_proxy_connect (clink->ocsource->source.proxy_id(),
 			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
 			 NULL);
       bst_canvas_link_update (clink);
@@ -243,7 +243,7 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   if (clink->icsource)
     {
       if (clink->icsource->source) /* source may be destroyed already */
-	bse_proxy_disconnect (clink->icsource->source,
+	bse_proxy_disconnect (clink->icsource->source.proxy_id(),
 			      "any_signal", clink_view_check_update, clink,
 			      NULL);
       if (g_signal_handler_is_connected (clink->icsource, clink->ic_handler))
@@ -259,7 +259,7 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bse_proxy_connect (clink->icsource->source,
+      bse_proxy_connect (clink->icsource->source.proxy_id(),
 			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
 			 NULL);
       bst_canvas_link_update (clink);

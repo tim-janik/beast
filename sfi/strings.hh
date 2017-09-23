@@ -85,6 +85,14 @@ void         memset4		   (uint32 *mem, uint32 filler, uint length);
 long double posix_locale_strtold   (const char *nptr, char **endptr);
 long double current_locale_strtold (const char *nptr, char **endptr);
 
+// == UTF-8 String Helpers ==
+String string_normalize_nfc  (const String &src);                       // Normalized, composed form UTF-8 string
+String string_normalize_nfd  (const String &src);
+String string_normalize_nfkc (const String &src);
+String string_normalize_nfkd (const String &src);
+String string_casefold       (const String &src);
+int    string_casecmp        (const String &s1, const String &s2);      // UTF-8 version of strcasecmp(3)
+int    string_cmp            (const String &s1, const String &s2);      // UTF-8 version of strcmp(3)
 
 // == Templated String Conversions ==
 

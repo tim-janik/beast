@@ -277,6 +277,8 @@ protected:
 public:
   explicit             SourceImpl              (BseObject*);
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
+  virtual void         clear_inputs            () override;
+  virtual void         clear_outputs           () override;
   virtual bool         has_output              (int ochannel) override;
   virtual bool         has_outputs             () override;
   virtual std::string  ichannel_blurb          (int input_channel) override;
@@ -297,6 +299,9 @@ public:
   virtual Error        unset_input             (const String &input_channel, SourceIface &omodule, const String &output_channel) override;
   virtual Error        unset_input_by_id       (int input_channel, SourceIface &omodule, int output_channel) override;
   virtual void         set_pos                 (double x_pos, double y_pos) override;
+  virtual Error        set_automation          (const String &property_name, int midi_channel, MidiControl control_type) override;
+  virtual MidiControl  get_automation_control  (const String &property_name) override;
+  virtual int32        get_automation_channel  (const String &property_name) override;
 };
 
 } // Bse

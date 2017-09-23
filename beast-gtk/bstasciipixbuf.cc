@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstasciipixbuf.hh"
+#include "gxk/gxkcompat.hh"
 
 
 /* --- prototypes --- */
@@ -745,5 +746,5 @@ static const guint8 ascii_font_pixdata[] =
 static GdkPixbuf*
 ascii_pixbuf_create (void)
 {
-  return gdk_pixbuf_new_from_inline (-1, ascii_font_pixdata, FALSE, NULL);
+  return gxk_pixbuf_new_from_inline (-1, ascii_font_pixdata, FALSE, NULL);
 }

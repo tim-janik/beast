@@ -11,6 +11,7 @@ AM_CFLAGS   += $(GXK_CFLAGS)
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
+	gxkcompat.hh	\
 	gxkled.hh	gxkcanvas.hh		gxkdialog.hh	gxkauxwidgets.hh \
 	gxkstatusbar.hh	gxkstock.hh		gxktexttools.hh	gxklistwrapper.hh \
 	gxkrackeditor.hh	gxkutils.hh		gxkpolygon.hh	gxkcellrendererpopup.hh \
@@ -21,6 +22,7 @@ gxk_headers = $(strip \
 	gxk.hh \
 )
 gxk_c_sources = $(strip \
+	gxkcompat.cc	\
 	gxkled.cc	gxkcanvas.cc		gxkdialog.cc	gxkauxwidgets.cc \
 	gxkstatusbar.cc	gxkstock.cc		gxktexttools.cc	gxklistwrapper.cc \
 	gxkrackeditor.cc	gxkutils.cc		gxkpolygon.cc	gxkcellrendererpopup.cc \

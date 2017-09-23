@@ -3,7 +3,6 @@ BEAST & BSE
 
 [![License LGPL-2.1+](http://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
-[![Binary Download](https://api.bintray.com/packages/beast-team/deb/beast/images/download.svg)](https://github.com/tim-janik/beast/#binary-packages)
 
 # DESCRIPTION
 
@@ -35,7 +34,7 @@ In order to build release tarballs, `Rapicorn`, `GnomeCanvas`,
 `Ogg/Vorbis`, `libflac` and `npm` are required.
 Support for MP3 files is optional and requires `libmad` (MPEG audio
 decoder library) when compiling Beast.
-Compilation requires `g++-4.9` or later and a recent Linux
+Compilation requires `g++-5.2.1` or later and a recent Linux
 distribution like Ubuntu-14.04.
 
 
@@ -56,15 +55,20 @@ permissions of the root user.
 # BINARY PACKAGES
 
 New source code pushed to the Beast repository is automatically built
-and tested through a Travis-CI script. Successful continuous integration
-builds also create binary Debian packages
-([latest version](https://bintray.com/beast-team/deb/beast/_latestVersion))
-which can be installed after adding an apt data source, example:
+and tested via Travis-CI. Ever so often we create release candidate
+packages and later release packages after a stabilization phase.
+Some of the release candidates and the stable versions are provided
+as binary packages which can be installed via apt:
 
     # Enable HTTPS transports for apt
-    apt-get -y install apt-transport-https ca-certificates
-    # Add and trust the beast-team packages on bintray.com
-    echo "deb [trusted=yes] https://dl.bintray.com/beast-team/deb vivid main" |
+    apt-get -y install apt-transport-https ca-certificates wget
+	# Recognize signatures from the Beast-Team
+	wget -qO- https://beast.testbit.org/apt/archive.key | sudo apt-key add -
+    # Add Beast release packages to the repository list
+    echo "deb https://beast.testbit.org/apt xenial/stable/" |
       sudo tee -a /etc/apt/sources.list.d/beast-team.list
     # Update package list and install Beast
     apt-get update && apt-get -y install beast
+
+The directory `xenial/stable/` holds end user release packages, and
+the directory `xenial/rc/` holds temporary release candidates.

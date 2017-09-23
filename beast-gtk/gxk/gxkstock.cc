@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkstock.hh"
-
+#include "gxkcompat.hh"
 #include <string.h>
 
 /* --- variables --- */
@@ -168,7 +168,7 @@ gxk_stock_register_icon (const GxkStockIcon *icon)
 
   assert_return (icon != NULL);
 
-  pixbuf = gdk_pixbuf_new_from_inline (-1, icon->inlined_pixbuf, FALSE, NULL);
+  pixbuf = gxk_pixbuf_new_from_inline (-1, icon->inlined_pixbuf, FALSE, NULL);
   iset = gtk_icon_set_new_from_pixbuf (pixbuf);
   g_object_unref (pixbuf);
   gtk_icon_factory_add (stock_icon_factory, icon->stock_id, iset);

@@ -153,24 +153,22 @@ bst_snet_router_update_links (BstSNetRouter   *self,
         self->canvas_links = sfi_ring_append (self->canvas_links, link);
     }
 
-  Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-
   /* now we walk the (c)source's input channels, keep
    * existing links and create new ones on the fly
    */
-  for (int i = 0; i < csource_source.n_ichannels(); i++)
+  for (int i = 0; i < csource->source.n_ichannels(); i++)
     {
-      guint j, n_joints = csource_source.ichannel_get_n_joints (i);
+      guint j, n_joints = csource->source.ichannel_get_n_joints (i);
       for (j = 0; j < n_joints; j++)
         {
-          Bse::ObjectH obj = bse_server.from_proxy (csource->source);
+          Bse::ObjectH obj = csource->source;
           assert_return (obj != NULL);
-          Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+          Bse::SourceH isource = csource->source;
           assert_return (isource != NULL);
           SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
-          guint ochannel = csource_source.ichannel_get_ochannel (i, j);
+          guint ochannel = csource->source.ichannel_get_ochannel (i, j);
           BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
           if (!ocsource)
             {
@@ -472,7 +470,7 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
     {
       BstCanvasSource *csource = (BstCanvasSource*) list->data;
 
-      if (BST_IS_CANVAS_SOURCE (csource) && csource->source == source)
+      if (BST_IS_CANVAS_SOURCE (csource) && csource->source.proxy_id() == source)
         return csource;
     }
 
@@ -603,7 +601,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 gxk_status_set (GXK_STATUS_WAIT, _("Create Link"), _("Select input module"));
               handled = TRUE;
             }
-          else if (csource && csource->source != (SfiProxy) self->snet.proxy_id())
+          else if (csource && csource->source != self->snet)
             {
               if (bst_mouse_button_activate2 (event))
                 bst_canvas_source_toggle_info (csource);
@@ -623,15 +621,13 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
-              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
-              Bse::SourceH drag_csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (self->drag_csource->source));
               Bse::Error error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
                 error = self->drag_is_input ? Bse::Error::SOURCE_NO_SUCH_OCHANNEL : Bse::Error::SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
-                error = drag_csource_source.set_input_by_id (self->drag_channel, csource_source, ochannel);
+                error = self->drag_csource->source.set_input_by_id (self->drag_channel, csource->source, ochannel);
               else
-                error = csource_source.set_input_by_id (ichannel, drag_csource_source, self->drag_channel);
+                error = csource->source.set_input_by_id (ichannel, self->drag_csource->source, self->drag_channel);
               self->drag_csource = NULL;
               self->drag_channel = ~0;
               bst_snet_router_reset_tool (self);
@@ -643,36 +639,35 @@ bst_snet_router_root_event (BstSNetRouter   *self,
         {
           if (csource)
             {
-              Bse::SourceH csource_source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
               GtkWidget *choice;
-              gchar *source_name = g_strconcat (bse_item_get_type_name (csource->source),
+              gchar *source_name = g_strconcat (bse_item_get_type_name (csource->source.proxy_id()),
                                                 ": ",
-                                                bse_item_get_name (csource->source),
+                                                bse_item_get_name (csource->source.proxy_id()),
                                                 NULL);
               /* create popup sumenu */
               uint has_inputs = 0, monitor_ids = 1000000;
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModuleChannelPopup", NULL);
-              for (int i = 0; i < csource_source.n_ochannels(); i++)
+              for (int i = 0; i < csource->source.n_ochannels(); i++)
                 {
-                  gchar *name = g_strdup_format ("%d: %s", i + 1, csource_source.ochannel_label (i));
+                  gchar *name = g_strdup_format ("%d: %s", i + 1, csource->source.ochannel_label (i));
                   bst_choice_menu_add_choice_and_free (choice, BST_CHOICE (monitor_ids + i, name, NONE));
                   g_free (name);
                 }
               /* create popup */
-              for (int i = 0; has_inputs == 0 && i < csource_source.n_ichannels(); i++)
-                has_inputs += csource_source.ichannel_get_n_joints (i);
+              for (int i = 0; has_inputs == 0 && i < csource->source.n_ichannels(); i++)
+                has_inputs += csource->source.ichannel_get_n_joints (i);
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
                                                 BST_CHOICE_TITLE (source_name),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (2, _("Properties"), PROPERTIES),
                                                 BST_CHOICE (6, _("Reset Properties"), PROPERTIES_RESET),
                                                 BST_CHOICE_S (3, _("Disconnect Inputs"), NO_ILINK, has_inputs),
-                                                BST_CHOICE_S (4, _("Disconnect Outputs"), NO_OLINK, csource_source.has_outputs()),
+                                                BST_CHOICE_S (4, _("Disconnect Outputs"), NO_OLINK, csource->source.has_outputs()),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
                                                 BST_CHOICE_SUBMENU (_("Output Signal Monitor"), choice, SIGNAL),
                                                 BST_CHOICE_SEPERATOR,
-                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != (SfiProxy) self->snet.proxy_id()),
+                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != self->snet),
                                                 BST_CHOICE_END);
               g_free (source_name);
               int i = bst_choice_modal (choice, event->button.button, event->button.time);
@@ -687,21 +682,21 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_reset_params (csource);
                   break;
                 case 3:
-                  bse_source_clear_inputs (csource->source);
+                  csource->source.clear_inputs();
                   break;
                 case 4:
-                  bse_source_clear_outputs (csource->source);
+                  csource->source.clear_outputs();
                   break;
                 case 5:
                   bst_canvas_source_popup_info (csource);
                   break;
                 case 1:
-                  error = self->snet.remove_source (csource_source);
+                  error = self->snet.remove_source (csource->source);
                   bst_status_eprintf (error, _("Remove Module"));
                   break;
                 case 0: break;
                 default:
-                  dialog = bst_scrollgraph_build_dialog (GTK_WIDGET (self), csource_source, i - monitor_ids);
+                  dialog = bst_scrollgraph_build_dialog (GTK_WIDGET (self), csource->source, i - monitor_ids);
                   gtk_widget_show (dialog);
                   break;
                 }
@@ -728,9 +723,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   Bse::Error error;
                 case 1:
                   {
-                    Bse::SourceH icsource = Bse::SourceH::down_cast (bse_server.from_proxy (clink->icsource->source));
-                    Bse::SourceH ocsource = Bse::SourceH::down_cast (bse_server.from_proxy (clink->ocsource->source));
-                    error = icsource.unset_input_by_id (clink->ichannel, ocsource, clink->ochannel);
+                    error = clink->icsource->source.unset_input_by_id (clink->ichannel, clink->ocsource->source, clink->ochannel);
                     bst_status_eprintf (error, _("Delete Link"));
                   }
                   break;

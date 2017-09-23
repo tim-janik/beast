@@ -469,19 +469,19 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     Bse::MidiSignal signal_type)
 {
-  static_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
-                 BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
-                 BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
-                 BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
-                 BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127), "");
+  static_assert (Bse::MidiControl::NONE          == 0 &&
+                 Bse::MidiControl::CONTINUOUS_0  == int64 (Bse::MidiSignal::CONTINUOUS_0) &&
+                 Bse::MidiControl::CONTINUOUS_31 == int64 (Bse::MidiSignal::CONTINUOUS_31) &&
+                 Bse::MidiControl::CONTROL_0     == int64 (Bse::MidiSignal::CONTROL_0) &&
+                 Bse::MidiControl::CONTROL_127   == int64 (Bse::MidiSignal::CONTROL_127), "");
   assert_return (BSE_IS_SOURCE (source), Bse::Error::INTERNAL);
   assert_return (prop_name != NULL, Bse::Error::INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
     return Bse::Error::SOURCE_BUSY;
-  const BseMidiControlType control_type = BseMidiControlType (signal_type);
-  if (control_type != BSE_MIDI_CONTROL_NONE &&
-      (control_type < BSE_MIDI_CONTROL_CONTINUOUS_0 || control_type > BSE_MIDI_CONTROL_CONTINUOUS_31) &&
-      (control_type < BSE_MIDI_CONTROL_0 || control_type > BSE_MIDI_CONTROL_127))
+  const Bse::MidiControl control_type = Bse::MidiControl (signal_type);
+  if (control_type != Bse::MidiControl::NONE &&
+      (control_type < Bse::MidiControl::CONTINUOUS_0 || control_type > Bse::MidiControl::CONTINUOUS_31) &&
+      (control_type < Bse::MidiControl::CONTROL_0 || control_type > Bse::MidiControl::CONTROL_127))
     return Bse::Error::INVALID_MIDI_CONTROL;
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
@@ -2334,6 +2334,106 @@ SourceImpl::set_pos (double x_pos, double y_pos)
                     NULL);
       bse_item_undo_close (ustack);
     }
+}
+
+int32
+SourceImpl::get_automation_channel (const String &property_name)
+{
+  BseSource *self = as<BseSource*>();
+  uint midi_channel = 0;
+  bse_source_get_automation_property (self, property_name.c_str(), &midi_channel, NULL);
+  return midi_channel;
+}
+
+MidiControl
+SourceImpl::get_automation_control (const String &property_name)
+{
+  BseSource *self = as<BseSource*>();
+  MidiSignal control_type = MidiSignal (0);
+  bse_source_get_automation_property (self, property_name.c_str(), NULL, &control_type);
+  return MidiControl (control_type);                            // MidiControl values are identical to MidiSignal valus
+}
+
+Error
+SourceImpl::set_automation (const String &property_name, int midi_channel, MidiControl control_type)
+{
+  BseSource *self = as<BseSource*>();
+  MidiSignal control_signal = MidiSignal (control_type);        // MidiControl values are identical to MidiSignal valuas
+  if (midi_channel < 0 || property_name.empty())
+    return Error::PROC_PARAM_INVAL;
+  uint old_midi_channel = 0;
+  MidiSignal old_control_type = MidiSignal (0);
+  bse_source_get_automation_property (self, property_name.c_str(), &old_midi_channel, &old_control_type);
+  Error error = Error::NONE;
+  if (old_midi_channel != uint (midi_channel) || old_control_type != uint (control_type))
+    {
+      error = bse_source_set_automation_property (self, property_name.c_str(), midi_channel, control_signal);
+      if (error == Error::NONE)
+        {
+          auto lambda = [property_name, old_midi_channel, old_control_type] (SourceImpl &self, BseUndoStack *ustack) -> Error {
+            return self.set_automation (property_name, old_midi_channel, MidiControl (old_control_type));
+          };
+          push_undo (__func__, *this, lambda);
+        }
+    }
+  return error;
+}
+
+void
+SourceImpl::clear_inputs ()
+{
+  BseSource *self = as<BseSource*>();
+  g_object_ref (self);
+  BseUndoStack *ustack = bse_item_undo_open (self, "%s", __func__);
+  for (size_t i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
+    {
+      BseSourceInput *input = BSE_SOURCE_INPUT (self, i);
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (self, i))
+        while (input->jdata.n_joints)
+          {
+            BseSource *osource = input->jdata.joints[0].osource;
+            uint ochannel = input->jdata.joints[0].ochannel;
+            unset_input_by_id (i, *osource->as<SourceIfaceP>(), ochannel);
+          }
+      else if (input->idata.osource)
+	{
+	  BseSource *osource = input->idata.osource;
+          unset_input_by_id (i, *osource->as<SourceIfaceP>(), input->idata.ochannel);
+	}
+    }
+  bse_item_undo_close (ustack);
+  g_object_unref (self);
+}
+
+void
+SourceImpl::clear_outputs ()
+{
+  BseSource *self = as<BseSource*>();
+  g_object_ref (self);
+  BseUndoStack *ustack = bse_item_undo_open (self, "%s", __func__);
+  while (self->outputs)
+    {
+      BseSource *isource = static_cast<BseSource*> (self->outputs->data);
+      g_object_ref (isource);
+      for (uint i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
+	{
+	  BseSourceInput *input = BSE_SOURCE_INPUT (isource, i);
+	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (isource, i))
+	    {
+	      uint j;
+	      for (j = 0; j < input->jdata.n_joints; j++)
+		if (input->jdata.joints[j].osource == self)
+		  break;
+	      if (j < input->jdata.n_joints)
+                isource->as<SourceIfaceP>()->unset_input_by_id (i, *this, input->jdata.joints[j].ochannel);
+	    }
+	  else if (input->idata.osource == self)
+            isource->as<SourceIfaceP>()->unset_input_by_id (i, *this, input->idata.ochannel);
+	}
+      g_object_unref (isource);
+    }
+  bse_item_undo_close (ustack);
+  g_object_unref (self);
 }
 
 } // Bse

@@ -171,13 +171,13 @@ bst_item_seq_list_match (GSList      *item_seq_slist,
 	{
 	  const gchar *path = bse_item_get_uname_path (iseq->items[i]);
 	  guint j = path ? strlen (path) : 0;
-	  if (j == l && strcmp (text, path) == 0)
+	  if (j == l && Bse::string_cmp (text, path) == 0)
 	    return iseq->items[i];	/* found exact match */
-	  else if (!cmatch && j == l && g_strcasecmp (text, path) == 0)
+	  else if (!cmatch && j == l && Bse::string_casecmp (text, path) == 0)
 	    cmatch = iseq->items[i];	/* remember first case insensitive match */
-	  else if (!tmatch && j > l && strcmp (text, path + j - l) == 0)
+	  else if (!tmatch && j > l && Bse::string_cmp (text, path + j - l) == 0)
 	    tmatch = iseq->items[i];	/* remember first tail match */
-	  else if (!tcmatch && j > l && g_strcasecmp (text, path + j - l) == 0)
+	  else if (!tcmatch && j > l && Bse::string_casecmp (text, path + j - l) == 0)
 	    tcmatch = iseq->items[i];	/* remember first case insensitive tail match */
 	}
     }

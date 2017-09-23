@@ -4,6 +4,28 @@
 /* --- automation setup editor --- */
 #include "bstprocedure.hh"
 
+static GParamSpec*
+param_automation_pspec_midi_channel()
+{
+  static GParamSpec *midi_channel_pspec =
+    g_param_spec_ref_sink (sfi_pspec_int ("midi_channel", _("MIDI Channel"),
+                                          _("The MIDI Channel from which automation events should be received, 0 designates the default MIDI channel"),
+                                          0, 0, 99 /* FIXME: BSE_MIDI_MAX_CHANNELS */, 1, SFI_PARAM_STANDARD ":scale:unprepared"));
+  return g_param_spec_ref (midi_channel_pspec);
+}
+
+static GParamSpec*
+param_automation_pspec_control_type()
+{
+  static GParamSpec *control_type_pspec =
+    g_param_spec_ref_sink (sfi_pspec_choice ("control_type", _("Control Type"),
+                                             _("The type of control events used for automation"),
+                                             Aida::enum_value_to_string (Bse::MidiControl::CONTINUOUS_16).c_str(),
+                                             Bse::choice_values_from_enum<Bse::MidiControl>(),
+                                             SFI_PARAM_STANDARD));
+  return g_param_spec_ref (control_type_pspec);
+}
+
 static void
 param_automation_dialog_cancel (GxkDialog *dialog)
 {
@@ -22,8 +44,9 @@ param_automation_dialog_ok (GxkDialog *dialog)
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) dialog, "GxkParam-automation-control");
       gint midi_channel = sfi_value_get_int (&param_channel->value);
-      BseMidiControlType control_type = bse_midi_control_type_from_choice (sfi_value_get_choice (&param_control->value));
-      bse_source_set_automation (proxy, param->pspec->name, midi_channel, control_type);
+      Bse::MidiControl control_type = Aida::enum_value_from_string<Bse::MidiControl> (sfi_value_get_choice (&param_control->value));
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      source.set_automation (param->pspec->name, midi_channel, control_type);
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
@@ -49,13 +72,13 @@ param_automation_popup_editor (GtkWidget *widget,
           // gxk_dialog_set_sizes (automation_dialog, 550, 300, 600, 320);
           GtkBox *vbox = (GtkBox*) g_object_new (GTK_TYPE_VBOX, "visible", TRUE, "border-width", 5, NULL);
           /* setup parameter: midi_channel */
-          GParamSpec *pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "midi-channel");
+          GParamSpec *pspec = g_param_spec_ref (param_automation_pspec_midi_channel());
           GxkParam *dialog_param = bst_param_new_value (pspec, NULL, NULL);
           g_param_spec_unref (pspec);
           bst_param_create_gmask (dialog_param, NULL, GTK_WIDGET (vbox));
           g_object_set_data_full ((GObject*) automation_dialog, "GxkParam-automation-channel", dialog_param, (GDestroyNotify) gxk_param_destroy);
           /* setup parameter: control_type */
-          pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
+          pspec = g_param_spec_ref (param_automation_pspec_control_type());
           dialog_param = bst_param_new_value (pspec, NULL, NULL);
           g_param_spec_unref (pspec);
           bst_param_create_gmask (dialog_param, NULL, GTK_WIDGET (vbox));
@@ -69,8 +92,10 @@ param_automation_popup_editor (GtkWidget *widget,
       g_object_set_data ((GObject*) automation_dialog, "beast-GxkParam", param);
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-control");
-      sfi_value_set_int (&param_channel->value, bse_source_get_automation_channel (proxy, param->pspec->name));
-      sfi_value_set_choice (&param_control->value, bse_midi_control_type_to_choice (bse_source_get_automation_control (proxy, param->pspec->name)));
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      sfi_value_set_int (&param_channel->value, source.get_automation_channel (param->pspec->name));
+      Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
+      sfi_value_set_choice (&param_control->value, Aida::enum_value_to_string (control_type).c_str());
       gxk_param_apply_value (param_channel); /* update model, auto updates GUI */
       gxk_param_apply_value (param_control); /* update model, auto updates GUI */
       g_object_set_data ((GObject*) widget, "GxkParam-automation-channel", param_channel);
@@ -157,24 +182,25 @@ param_automation_update (GxkParam  *param,
   gchar *content = NULL, *tip = NULL;
   if (proxy)
     {
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
       const gchar *prefix = "";
-      gint midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
-      BseMidiControlType control_type = bse_source_get_automation_control (proxy, param->pspec->name);
-      GParamSpec *control_pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
-      const SfiChoiceValue *cv = param_automation_find_choice_value (bse_midi_control_type_to_choice (control_type), control_pspec);
+      int midi_channel = source.get_automation_channel (param->pspec->name);
+      Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
+      GParamSpec *control_pspec = g_param_spec_ref (param_automation_pspec_control_type());
+      const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_string (control_type).c_str(), control_pspec);
       g_param_spec_unref (control_pspec);
-      if (control_type >= BSE_MIDI_CONTROL_CONTINUOUS_0 && control_type <= BSE_MIDI_CONTROL_CONTINUOUS_31)
+      if (control_type >= Bse::MidiControl::CONTINUOUS_0 && control_type <= Bse::MidiControl::CONTINUOUS_31)
         {
           prefix = "c";
-          control_type = BseMidiControlType (control_type - BSE_MIDI_CONTROL_CONTINUOUS_0);
+          control_type = Bse::MidiControl (int64 (control_type) - int64 (Bse::MidiControl::CONTINUOUS_0));
         }
-      else if (control_type >= BSE_MIDI_CONTROL_0 && control_type <= BSE_MIDI_CONTROL_127)
-        control_type = BseMidiControlType (control_type - BSE_MIDI_CONTROL_0);
-      else if (control_type == BSE_MIDI_CONTROL_NONE)
-        control_type = BseMidiControlType (-1);
+      else if (control_type >= Bse::MidiControl::CONTROL_0 && control_type <= Bse::MidiControl::CONTROL_127)
+        control_type = Bse::MidiControl (int64 (control_type) - int64 (Bse::MidiControl::CONTROL_0));
+      else if (control_type == Bse::MidiControl::NONE)
+        control_type = Bse::MidiControl (-1);
       else
-        control_type = BseMidiControlType (control_type + 10000); /* shouldn't happen */
-      if (control_type < 0)     /* none */
+        control_type = Bse::MidiControl (int64 (control_type) + 10000); /* shouldn't happen */
+      if (int64 (control_type) < 0)     /* none */
         {
           content = g_strdup ("--");
           /* TRANSLATORS: %s is substituted with a property name */
@@ -185,7 +211,7 @@ param_automation_update (GxkParam  *param,
           content = g_strdup_format ("%u:%s%02d", midi_channel, prefix, control_type);
           if (cv)
             {
-              /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
+              /* TRANSLATORS: %s is substituted with a property name, %d is substituted with midi control type */
               tip = g_strdup_format (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident,
