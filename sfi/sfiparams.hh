@@ -152,6 +152,13 @@ GParamSpec*	sfi_pspec_choice	(const gchar    *name,
 					 const gchar	*default_value,
 					 SfiChoiceValues static_const_evalues,
 					 const gchar	*hints);
+GParamSpec*	sfi_pspec_enum_choice	(const gchar    *name,
+					 const gchar    *nick,
+					 const gchar    *blurb,
+					 const gchar	*default_value,
+					 const std::string &enum_typename,
+					 SfiChoiceValues static_const_evalues,
+					 const gchar	*hints);
 GParamSpec*	sfi_pspec_bblock	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
@@ -202,6 +209,7 @@ typedef SfiChoiceValues (*SfiChoiceValueGetter)     (GType                 enum_
 GParamSpec*  sfi_pspec_to_serializable              (GParamSpec           *pspec);
 GParamSpec*  sfi_pspec_choice_from_enum             (GParamSpec           *enum_pspec);
 GParamSpec*  sfi_pspec_proxy_from_object            (GParamSpec           *object_pspec);
+const char*  sfi_pspec_get_enum_typename            (GParamSpec           *pspec);
 void         sfi_enum_type_set_choice_value_getter  (GType                 gtype,
                                                      SfiChoiceValueGetter  cvgetter);
 void         sfi_boxed_type_set_rec_fields          (GType                 boxed_type,
@@ -317,8 +325,6 @@ GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
 
 namespace Bse { // bsecore
 
-SfiChoiceValues choice_values_from_enum_aux_data (const String &enumname, const Aida::StringVector &aux_data);
-
 SfiChoiceValues choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec);
 
 template<class EnumType> SfiChoiceValues
@@ -327,6 +333,11 @@ choice_values_from_enum ()
   Aida::EnumInfo einfo = Aida::enum_info<EnumType>();
   return choice_values_from_enum_values (einfo.name(), einfo.value_vector());
 }
+
+SfiChoiceValues          introspection_enum_to_choice_values  (const Aida::StringVector &introspection, const String &enumname);
+GParamSpec*              introspection_field_to_param_spec    (const Aida::StringVector &introspection, const String &fieldname);
+Aida::StringVector       introspection_list_field_names       (const Aida::StringVector &introspection);
+std::vector<GParamSpec*> introspection_fields_to_param_list   (const Aida::StringVector &introspection);
 
 } // Bse
 

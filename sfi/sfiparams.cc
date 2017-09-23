@@ -5,6 +5,7 @@
 #include "sfinote.hh"
 #include "sfitime.hh"
 #include <algorithm>
+#include <unordered_map>
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 
@@ -571,6 +572,15 @@ sfi_pspec_choice (const gchar    *name,
 		  SfiChoiceValues static_const_cvalues,
 		  const gchar    *hints)
 {
+  return sfi_pspec_enum_choice (name, nick, blurb, default_value, "", static_const_cvalues, hints);
+}
+
+static GQuark quark_pspec_enum_typename = g_quark_from_static_string ("SfiParamSpec-enum_typename");
+
+GParamSpec*
+sfi_pspec_enum_choice (const char *name, const char *nick, const char *blurb, const char *default_value,
+                       const std::string &enum_typename, SfiChoiceValues static_const_cvalues, const char *hints)
+{
   assert_return (static_const_cvalues.n_values >= 1, NULL);
 
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_CHOICE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
@@ -581,8 +591,17 @@ sfi_pspec_choice (const gchar    *name,
   SfiParamSpecChoice *cspec = SFI_PSPEC_CHOICE (pspec);
   cspec->cvalues = static_const_cvalues;
   pspec->value_type = SFI_TYPE_CHOICE;
+  if (!enum_typename.empty())
+    g_param_spec_set_qdata (pspec, quark_pspec_enum_typename, (gchar*) g_intern_string (enum_typename.c_str()));
 
   return pspec;
+}
+
+const char*
+sfi_pspec_get_enum_typename (GParamSpec *pspec)
+{
+  void *data = g_param_spec_get_qdata (pspec, quark_pspec_enum_typename);
+  return data ? (char*) data : "";
 }
 
 GParamSpec*
@@ -1734,39 +1753,6 @@ namespace Bse { // bsecore
 static std::map<String, SfiChoiceValues> aida_enum_choice_map;
 
 SfiChoiceValues
-choice_values_from_enum_aux_data (const String &enumname, const Aida::StringVector &aux_data)
-{
-  SfiChoiceValues &cv = aida_enum_choice_map[enumname];
-  if (!cv.values && !aux_data.empty())
-    {
-      std::vector<SfiChoiceValue> vv;
-      for (const String &string : aux_data)
-        {
-          const char *s = string.c_str();
-          const char *eq = strchr (s, '=');
-          if (eq && eq - s > 7 && strncmp (eq - 6, ".value=", 7) == 0)
-            {
-              const String ident = string.substr (0, eq - 6 - s);
-              vv.resize (vv.size() + 1);
-              SfiChoiceValue &v = vv.back();
-              v.choice_ident = g_strdup (ident.c_str());
-              const String label = Aida::aux_vector_find (aux_data, ident, "label");
-              const String blurb = Aida::aux_vector_find (aux_data, ident, "blurb");
-              if (!label.empty())
-                v.choice_label = g_strdup (label.c_str());
-              if (!blurb.empty())
-                v.choice_blurb = g_strdup (blurb.c_str());
-            }
-        }
-      cv.n_values = vv.size();
-      SfiChoiceValue *cvalues = new SfiChoiceValue[cv.n_values];
-      std::copy_n (vv.begin(), cv.n_values, cvalues);
-      cv.values = cvalues;
-    }
-  return cv;
-}
-
-SfiChoiceValues
 choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVector &evvec)
 {
   SfiChoiceValues &cv = aida_enum_choice_map[enumname];
@@ -1783,6 +1769,180 @@ choice_values_from_enum_values (const String &enumname, const Aida::EnumValueVec
       cv.values = vv;
     }
   return cv;
+}
+
+SfiChoiceValues
+introspection_enum_to_choice_values (const Aida::StringVector &introspection, const String &enumname)
+{
+  SfiChoiceValues &cv = aida_enum_choice_map[enumname];
+  if (!cv.values && !introspection.empty())
+    {
+      std::vector<SfiChoiceValue> vv;
+      for (const String &string : introspection)
+        {
+          const char *s = string.c_str();
+          const char *eq = strchr (s, '=');
+          if (eq && eq - s > 7 && strncmp (eq - 6, ".value=", 7) == 0)
+            {
+              const String ident = string.substr (0, eq - 6 - s);
+              vv.resize (vv.size() + 1);
+              SfiChoiceValue &v = vv.back();
+              v.choice_ident = g_strdup (ident.c_str());
+              const String label = Aida::aux_vector_find (introspection, ident, "label");
+              const String blurb = Aida::aux_vector_find (introspection, ident, "blurb");
+              if (!label.empty())
+                v.choice_label = g_strdup (label.c_str());
+              if (!blurb.empty())
+                v.choice_blurb = g_strdup (blurb.c_str());
+            }
+        }
+      cv.n_values = vv.size();
+      SfiChoiceValue *cvalues = new SfiChoiceValue[cv.n_values];
+      std::copy_n (vv.begin(), cv.n_values, cvalues);
+      cv.values = cvalues;
+    }
+  return cv;
+}
+
+static bool
+sfi_pspecs_rec_fields_cache (const String &rec_typename, SfiRecFields *rf, bool assign)
+{
+  static std::unordered_map<String, SfiRecFields> rec_fields_map;
+  if (assign)
+    {
+      rec_fields_map[rec_typename] = *rf;
+      return true;
+    }
+  auto it = rec_fields_map.find (rec_typename);
+  if (it == rec_fields_map.end())
+    return false;
+  *rf = it->second;
+  return true;
+}
+
+GParamSpec*
+introspection_field_to_param_spec (const Aida::StringVector &introspection, const String &fieldname)
+{
+  using Aida::StringVector;
+  const String type = Aida::aux_vector_find (introspection, fieldname, "type");
+  const String label = Aida::aux_vector_find (introspection, fieldname, "label");
+  const String blurb = Aida::aux_vector_find (introspection, fieldname, "blurb");
+  const String hints = Aida::aux_vector_find (introspection, fieldname, "hints");
+  const String group = Aida::aux_vector_find (introspection, fieldname, "group");
+  GParamSpec *pspec = NULL;
+  if (type == "BOOL")
+    {
+      const String dflt = Aida::aux_vector_find (introspection, fieldname, "default");
+      pspec = sfi_pspec_bool (fieldname.c_str(), label.c_str(), blurb.c_str(), Bse::string_to_bool (dflt), hints.c_str());
+    }
+  else if (type == "STRING")
+    {
+      const String dflt = Aida::aux_vector_find (introspection, fieldname, "default");
+      pspec = sfi_pspec_string (fieldname.c_str(), label.c_str(), blurb.c_str(), dflt.c_str(), hints.c_str());
+    }
+  else if (type == "INT32" || type == "INT64")
+    {
+      const String dflt = Aida::aux_vector_find (introspection, fieldname, "default");
+      const int64 df = Bse::string_to_int (dflt);
+      const int64 st = Bse::string_to_int (Aida::aux_vector_find (introspection, fieldname, "step"));
+      const int64 mi = Bse::string_to_int (Aida::aux_vector_find (introspection, fieldname, "min", "-9223372036854775808"));
+      const int64 ma = Bse::string_to_int (Aida::aux_vector_find (introspection, fieldname, "max", "+9223372036854775807"));
+      pspec = sfi_pspec_num (fieldname.c_str(), label.c_str(), blurb.c_str(), df, mi, ma, st, hints.c_str());
+    }
+  else if (type == "FLOAT64")
+    {
+      const String dflt = Aida::aux_vector_find (introspection, fieldname, "default");
+      const double df = Bse::string_to_double (dflt);
+      const double st = Bse::string_to_double (Aida::aux_vector_find (introspection, fieldname, "step"));
+      const double mi = Bse::string_to_double (Aida::aux_vector_find (introspection, fieldname, "min", "-1.79769313486231570815e+308"));
+      const double ma = Bse::string_to_double (Aida::aux_vector_find (introspection, fieldname, "max", "+1.79769313486231570815e+308"));
+      pspec = sfi_pspec_real (fieldname.c_str(), label.c_str(), blurb.c_str(), df, mi, ma, st, hints.c_str());
+    }
+  else if (type == "ENUM")
+    {
+      const String dflt = Aida::aux_vector_find (introspection, fieldname, "default");
+      const String enum_typename = Aida::aux_vector_find (introspection, fieldname, "typename");
+      const StringVector &enum_introspection = Aida::IntrospectionRegistry::lookup (enum_typename);
+      SfiChoiceValues cvalues = introspection_enum_to_choice_values (enum_introspection, enum_typename);
+      pspec = sfi_pspec_enum_choice (fieldname.c_str(), label.c_str(), blurb.c_str(), dflt.c_str(), enum_typename, cvalues, hints.c_str());
+    }
+  else if (type == "SEQUENCE")
+    {
+      const String seq_typename = Aida::aux_vector_find (introspection, fieldname, "typename");
+      const StringVector &seq_introspection = Aida::IntrospectionRegistry::lookup (seq_typename);
+      const StringVector seq_fieldnames = introspection_list_field_names (seq_introspection);
+      if (seq_fieldnames.size() == 1)
+        {
+          GParamSpec *field_pspec = introspection_field_to_param_spec (seq_introspection, seq_fieldnames[0]);
+          if (field_pspec)
+            pspec = sfi_pspec_seq (fieldname.c_str(), label.c_str(), blurb.c_str(), field_pspec, hints.c_str());
+        }
+    }
+  else if (type == "RECORD")
+    {
+      const String rec_typename = Aida::aux_vector_find (introspection, fieldname, "typename");
+      const StringVector &rec_introspection = Aida::IntrospectionRegistry::lookup (rec_typename);
+      SfiRecFields rec_fields;
+      if (!sfi_pspecs_rec_fields_cache (rec_typename, &rec_fields, false))
+        {
+          std::vector<GParamSpec*> pspecs = introspection_fields_to_param_list (rec_introspection);
+          if (pspecs.size())
+            {
+              rec_fields.n_fields = pspecs.size();
+              rec_fields.fields = g_new0 (GParamSpec*, rec_fields.n_fields);
+              for (size_t i = 0; i < rec_fields.n_fields; i++)
+                {
+                  g_param_spec_ref (pspecs[i]);
+                  g_param_spec_sink (pspecs[i]);
+                  rec_fields.fields[i] = pspecs[i];
+                }
+              sfi_pspecs_rec_fields_cache (rec_typename, &rec_fields, true);
+            }
+        }
+      if (rec_fields.n_fields)
+        pspec = sfi_pspec_rec (fieldname.c_str(), label.c_str(), blurb.c_str(), rec_fields, hints.c_str());
+    }
+  else if (type == "INTERFACE")
+    pspec = sfi_pspec_proxy (fieldname.c_str(), label.c_str(), blurb.c_str(), hints.c_str());
+  if (pspec)
+    {
+      if (!group.empty())
+        sfi_pspec_set_group (pspec, group.c_str());
+      g_param_spec_ref (pspec);
+      g_param_spec_sink (pspec);
+    }
+  return pspec;
+}
+
+std::vector<GParamSpec*>
+introspection_fields_to_param_list (const Aida::StringVector &introspection)
+{
+  using Aida::StringVector;
+  std::vector<GParamSpec*> pspecs;
+  for (const String &fieldname : introspection_list_field_names (introspection))
+    {
+      GParamSpec *pspec = introspection_field_to_param_spec (introspection, fieldname);
+      if (pspec)
+        pspecs.push_back (pspec);
+    }
+  return pspecs;
+}
+
+Aida::StringVector
+introspection_list_field_names (const Aida::StringVector &introspection)
+{
+  Aida::StringVector fieldnames;
+  for (const String &string : introspection)
+    {
+      const char *s = string.c_str();
+      const char *eq = strchr (s, '=');
+      if (eq && eq - s > 6 && strncmp (eq - 5, ".type=", 6) == 0)
+        {
+          const String ident = string.substr (0, eq - 5 - s);
+          fieldnames.push_back (ident);
+        }
+    }
+  return fieldnames;
 }
 
 } // Bse
