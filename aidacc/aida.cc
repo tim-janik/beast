@@ -742,6 +742,27 @@ enum_value_from_string (const std::string &enum_typename, const String &valuestr
 }
 
 String
+enum_value_find (const std::string &enum_typename, int64 evalue)
+{
+  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", "");
+  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
+  // try exact match
+  for (const String &kv : pairs)
+    {
+      const auto mvpair = split_member_at_property (kv, "value");
+      if (!mvpair.second)
+        continue;                                       // not an IDENT.value=123 entry
+      size_t consumed = 0;
+      const int64 value = string_to_int (mvpair.second, &consumed);
+      if (!consumed)
+        continue;                                       // not a parsable value number
+      if (evalue == value)
+        return mvpair.first;                            // exact match
+    }
+  return "";                                            // avoid fallbacks
+}
+
+String
 enum_value_to_string (const std::string &enum_typename, int64 evalue, const String &joiner)
 {
   AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", "");

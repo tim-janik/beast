@@ -332,6 +332,8 @@ public:
 int64  enum_value_from_string (const std::string &enum_typename, const String &valuestring);
 /// Construct a string representation of @a evalue in @a enum_typename, joining flags with @a joiner.
 String enum_value_to_string   (const std::string &enum_typename, int64 evalue, const String &joiner = "");
+/// Return enum value identifier in @a enum_typename with the exact value @a evalue.
+String enum_value_find        (const std::string &enum_typename, int64 evalue);
 
 /// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
 std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
