@@ -637,7 +637,7 @@ public:
   void      clear  ();                                  ///< Erase Any contents, making it empty like a newly constructed Any().
   bool      empty  () const;                            ///< Returns true if Any is newly constructed or after clear().
   String    get_enum_typename () const;                 ///< Get the enum typename from an enum holding any.
-  void      set_enum (const char *enum_typename,
+  void      set_enum (const String &enum_typename,
                       int64 value);                     ///< Set Any to hold an enum value.
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.

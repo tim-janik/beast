@@ -1464,14 +1464,13 @@ Any::set_int64 (int64 value)
 }
 
 void
-Any::set_enum (const char *enum_typename, int64 value)
+Any::set_enum (const String &enum_typename, int64 value)
 {
-  AIDA_ASSERT_RETURN (enum_typename);
   AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM");
   ensure (ENUM);
   u_.venum64 = value;
-  u_.enum_typename = new char[strlen (enum_typename) + 1];
-  strcpy (u_.enum_typename, enum_typename);
+  u_.enum_typename = new char[strlen (enum_typename.c_str()) + 1];
+  strcpy (u_.enum_typename, enum_typename.c_str());
 }
 
 int64
