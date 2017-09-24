@@ -138,7 +138,7 @@ class Osc : public OscBase {
             }
 
           float freq_in_converted[n_values];
-          float *freq_in_buffer = nullptr;
+          const float *freq_in_buffer = nullptr;
 
           if (istream (ICHANNEL_FREQ_IN).connected)
             {
@@ -154,7 +154,17 @@ class Osc : public OscBase {
             {
               morph_plan_voice->output()->process (release_n_values, audio_out, 4, freq_in_buffer);
               morph_plan_voice->output()->release();
-              morph_plan_voice->output()->process (n_values - release_n_values, audio_out, 4, freq_in_buffer);
+
+              // setup pointers to process second (post-release) part of the block
+              float *audio_out_inc[4] = { nullptr, nullptr, nullptr, nullptr };
+              const float *freq_in_buffer_inc = nullptr;
+
+              if (audio_out[0])
+                audio_out_inc[0] = audio_out[0] + release_n_values;
+              if (freq_in_buffer)
+                freq_in_buffer_inc = freq_in_buffer + release_n_values;
+
+              morph_plan_voice->output()->process (n_values - release_n_values, audio_out_inc, 4, freq_in_buffer_inc);
             }
           else
             morph_plan_voice->output()->process (n_values, audio_out, 4);
