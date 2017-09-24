@@ -639,7 +639,6 @@ IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
   const char *entries = fundamental + strlen (fundamental) + 1;
   AIDA_ASSERT_RETURN (entries < auxentry + length);
   aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, entries, length - (entries - auxentry) };
-  dprintf (2, "IntrospectionRegistry: %s (%s, %lu)\n", auxentry, fundamental, length);
 }
 
 String
