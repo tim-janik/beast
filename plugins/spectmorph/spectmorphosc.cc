@@ -159,6 +159,7 @@ class Osc : public OscBase {
           else
             morph_plan_voice->output()->process (n_values, audio_out, 4);
 
+          // done
           if (ostream (OCHANNEL_DONE_OUT).connected)
             {
               if (state == State::DONE)
@@ -166,6 +167,10 @@ class Osc : public OscBase {
               else
                 ostream_set (OCHANNEL_DONE_OUT, const_values (0));
             }
+
+          // apply velocity
+          if (istream (ICHANNEL_VELOCITY_IN).connected && audio_out[0])
+            Block::mul (n_values, audio_out[0], istream (ICHANNEL_VELOCITY_IN).values);
         }
       osc->update_shared_state (tick_stamp(), mix_freq());
     }
