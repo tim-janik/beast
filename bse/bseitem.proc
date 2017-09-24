@@ -12,81 +12,6 @@ AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
 
 
-METHOD (BseItem, use) {
-  HELP	= "Increment use count to keep an item alive.";
-  IN	= bse_param_spec_object ("item", "Item", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-  OUT	= bse_param_spec_object ("used_item", "Item", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (item) || (!item->parent && !item->use_count))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* action */
-  bse_item_use (item);
-
-  /* set output parameters */
-  bse_value_set_object (out_values++, item);
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, unuse) {
-  HELP	= "Decrement use count for when an item is not needed anymore.";
-  IN	= bse_param_spec_object ("item", "Item", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (item))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* action */
-  if (item->use_count < 1)
-    return Bse::Error::NOT_OWNER;
-
-  bse_item_unuse (item);
-
-  return Bse::Error::NONE;
-}
-
-METHOD (BseItem, set-name) {
-  HELP	= "Set an item's name.";
-  IN	= bse_param_spec_object ("item", "Item", NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_string ("name", "Name", NULL,
-			    NULL, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
-  const gchar *name = g_value_get_string (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (item))
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* action */
-  if (!bse_string_equals (name, BSE_OBJECT_UNAME (item)))
-    bse_item_set (item, "uname", name, NULL);
-
-  return Bse::Error::NONE;
-}
-
 METHOD (BseItem, get-property-candidates) {
   HELP	= "Retrieve tentative values for an item or item sequence property.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -118,27 +43,3 @@ METHOD (BseItem, get-property-candidates) {
   return Bse::Error::NONE;
 }
 
-METHOD (BseItem, editable-property) {
-  HELP	= "Test whether a property is editable according to object state and property options.";
-  IN	= bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_string ("property_name", NULL, "Item property name",
-			    NULL, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_bool ("editable", NULL, NULL, FALSE, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  const char   *property = sfi_value_get_string (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_ITEM (self) || !property)
-    return Bse::Error::PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  sfi_value_set_bool (out_values++, bse_object_editable_property (self, property));
-
-  return Bse::Error::NONE;
-}

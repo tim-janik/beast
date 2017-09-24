@@ -1242,6 +1242,39 @@ ItemImpl::ItemImpl (BseObject *bobj) :
 ItemImpl::~ItemImpl ()
 {}
 
+ItemIfaceP
+ItemImpl::use ()
+{
+  BseItem *self = as<BseItem*>();
+  ItemIfaceP iface = self->as<ItemIfaceP>();
+  assert_return (self->parent || self->use_count, iface);
+  bse_item_use (self);
+  return iface;
+}
+
+void
+ItemImpl::unuse ()
+{
+  BseItem *self = as<BseItem*>();
+  assert_return (self->use_count >= 1);
+  bse_item_unuse (self);
+}
+
+void
+ItemImpl::set_name (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  if (name != BSE_OBJECT_UNAME (self))
+    bse_item_set (self, "uname", name.c_str(), NULL);
+}
+
+bool
+ItemImpl::editable_property (const std::string &property)
+{
+  BseItem *self = as<BseItem*>();
+  return bse_object_editable_property (self, property.c_str());
+}
+
 ContainerImpl*
 ItemImpl::parent ()
 {
