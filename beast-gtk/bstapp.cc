@@ -463,7 +463,7 @@ ppage_item_free (gpointer user_data,
   bse_proxy_disconnect (item, "any-signal::property-notify::uname", app_update_page_item, self, NULL);
   if (GTK_IS_WIDGET (object))
     gtk_widget_destroy (GTK_WIDGET (object));
-  bse_item_unuse (item);
+  Bse::ItemH::down_cast (bse_server.from_proxy (item)).unuse();
 }
 
 static void
@@ -472,7 +472,7 @@ bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
   const gchar *stock;
   String name = item.get_name_or_type();
-  bse_item_use (itemid);
+  item.use();
   bse_proxy_connect (itemid, "signal::property-notify::uname", app_update_page_item, self, NULL);
   String tip;
   if (BSE_IS_WAVE_REPO (itemid))

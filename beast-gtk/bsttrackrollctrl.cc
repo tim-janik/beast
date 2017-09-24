@@ -406,7 +406,7 @@ controller_stop_edit (BstTrackRollController *self,
 {
   if (!canceled)
     {
-      bse_item_set_name (self->obj_part.proxy_id(), gtk_entry_get_text (GTK_ENTRY (ecell)));
+      self->obj_part.set_name (gtk_entry_get_text (GTK_ENTRY (ecell)));
       gxk_status_set (GXK_STATUS_DONE, _("Edit Part"), NULL);
     }
   controller_reset_canvas_cursor (self);

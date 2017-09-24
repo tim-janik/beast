@@ -589,7 +589,7 @@ janitor_window_deleted (GxkDialog *dialog)
 			"any_signal", janitor_unconnected, dialog,
 			NULL);
   // bse_janitor_kill (janitor);
-  bse_item_unuse (janitor);
+  Bse::ItemH::down_cast (bse_server.from_proxy (janitor)).unuse();
 }
 
 static GtkWidget*
@@ -608,7 +608,7 @@ create_janitor_dialog (SfiProxy janitor)
 		     "swapped-object-signal::property-notify::connected", janitor_unconnected, dialog,
 		     NULL);
   janitor_actions_changed (dialog);
-  bse_item_use (janitor);
+  Bse::ItemH::down_cast (bse_server.from_proxy (janitor)).use();
   g_object_connect (dialog, "swapped_signal::destroy", janitor_window_deleted, dialog, NULL);
   dialog_show_above_modals (dialog, FALSE);
   return GTK_WIDGET (dialog);

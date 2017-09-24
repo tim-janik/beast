@@ -181,7 +181,7 @@ track_roll_release_proxy (BstTrackRoll *self)
                         "any_signal", track_roll_release_proxy, self,
                         "any_signal", track_roll_song_item_removed, self,
                         NULL);
-  bse_item_unuse (self->proxy);
+  Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).unuse();
   self->proxy = 0;
 }
 
@@ -215,7 +215,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
   self->proxy = song;
   if (self->proxy)
     {
-      bse_item_use (self->proxy);
+      Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).use();
       bse_proxy_connect (self->proxy,
                          "swapped_signal::release", track_roll_release_proxy, self,
                          "swapped_signal::item-remove", track_roll_song_item_removed, self,

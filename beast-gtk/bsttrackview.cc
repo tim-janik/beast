@@ -308,11 +308,11 @@ track_view_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      if (bse_item_editable_property (itemid, "snet"))
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      if (item.editable_property ("snet"))
         {
           BsePropertyCandidates *pc = bse_item_get_property_candidates (itemid, "snet");
           SynthPopup sdata = { self, pcell, };
-          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
           Bse::ProjectH project = item.get_project();
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
                                                             pc->label, pc->tooltip, pc->items,
@@ -341,12 +341,13 @@ track_view_post_synth_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      if (bse_item_editable_property (item, "pnet"))
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      if (item.editable_property ("pnet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
+          BsePropertyCandidates *pc = bse_item_get_property_candidates (itemid, "pnet");
           SynthPopup sdata = { self, pcell, };
-          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
                                                             pc->label, pc->tooltip, pc->items,
                                                             NULL, NULL, 0,
 							    NULL, NULL, 0,
@@ -759,7 +760,7 @@ track_view_action_exec (gpointer data,
       if (track)
 	{
 	  gchar *string = g_strdup_format ("Track-%02X", track.get_seqid());
-	  bse_item_set_name (track.proxy_id(), string);
+	  track.set_name (string);
 	  g_free (string);
 	  bst_item_view_select (item_view, track.proxy_id());
           track.ensure_output();

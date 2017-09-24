@@ -86,7 +86,7 @@ bst_item_view_name_edited (BstItemView *self,
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (self, row);
       if (item)
-	bse_item_set_name (item, text);
+        Bse::ItemH::down_cast (bse_server.from_proxy (item)).set_name (text);
     }
 }
 

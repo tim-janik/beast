@@ -275,7 +275,7 @@ proxy_binding_check_writable (GxkParam *param)
 {
   SfiProxy proxy = param->bdata[0].v_long;
   if (proxy)
-    return bse_item_editable_property (proxy, param->pspec->name);
+    return Bse::ItemH::down_cast (bse_server.from_proxy (proxy)).editable_property (param->pspec->name);
   else
     return FALSE;
 }
