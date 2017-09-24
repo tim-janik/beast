@@ -11,11 +11,13 @@ interface Osc : Effect {
   Info    category    = _("/Audio Sources/SpectMorph Oscillator");
   Info    blurb       = _("Oscillator based on SpectMorph instruments.");
   IStream freq_in     = Stream (_("Frequency In"), _("Frequency Input"));
+  IStream gate_in     = Stream (_("Gate In"),      _("Gate input (activates/deactivates envelope)"));
   IStream velocity_in = Stream (_("Velocity In"), _("Velocity of the note press"));
   IStream ctrl_in1   = Stream (_("Ctrl In1"), _("First control input"));
   IStream ctrl_in2   = Stream (_("Ctrl In2"), _("Second control input"));
 
   OStream audio_out1  = Stream (_("Audio Out1"), _("Audio output 1"));
+  OStream done_out    = Stream (_("Done Out"),   _("This signal goes high after the end of the note"));
 
   group _("Source") {
     Bool      edit_settings  = Bool (_("Edit Settings"), _("Edit settings for SpectMorph OSC"), FALSE, STANDARD ":trigger:skip-undo");
