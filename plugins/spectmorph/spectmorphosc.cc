@@ -47,29 +47,29 @@ class Osc : public OscBase {
     MorphPlanVoice *morph_plan_voice;
     MorphPlanSynth *morph_plan_synth;
     Osc            *osc;
-    float           last_sync_level;
     float           current_freq;
-    bool            need_retrigger;
     float           frequency;
+
+    enum class State { IDLE, ON, RELEASE, DONE };
+    State           state;
   public:
     Module() :
       morph_plan_voice (NULL),
       morph_plan_synth (NULL),
       osc (NULL),
-      need_retrigger (false)
+      state (State::IDLE)
     {
       //
     }
     void reset()
     {
-      need_retrigger = true;
+      state = State::IDLE;
     }
     void
     process (unsigned int n_values)
     {
       QMutexLocker lock (&osc->morph_plan_synth_mutex());
 
-      //const gfloat *sync_in = istream (ICHANNEL_AUDIO_OUT).values;
       if (istream (ICHANNEL_CTRL_IN1).connected)
         {
           const gfloat *ctrl_in = istream (ICHANNEL_CTRL_IN1).values;
@@ -88,7 +88,7 @@ class Osc : public OscBase {
         {
           morph_plan_voice->set_control_input (1, 0);
         }
-      if (need_retrigger)
+      if (state == State::IDLE)
         {
           // get frequency
           const gfloat *freq_in = istream (ICHANNEL_FREQ_IN).values;
@@ -100,7 +100,8 @@ class Osc : public OscBase {
           int   midi_velocity = CLAMP (sm_round_positive (new_velocity * 127), 0, 127);
 
           retrigger (new_freq, midi_velocity);
-          need_retrigger = false;
+
+          state = State::ON;
         }
       if (!morph_plan_voice->output())
         {
@@ -117,19 +118,53 @@ class Osc : public OscBase {
           if (ostream (OCHANNEL_AUDIO_OUT1).connected)
             audio_out[0] = ostream (OCHANNEL_AUDIO_OUT1).values;
 
+          int release_n_values = -1;
+          if (istream (ICHANNEL_GATE_IN).connected && state == State::ON)
+            {
+              const gfloat *gate_in = istream (ICHANNEL_GATE_IN).values;
+              for (unsigned int i = 0; i < n_values; i++)
+                if (gate_in[i] < 0.5)
+                  {
+                    state = State::RELEASE;
+                    release_n_values = i;
+                    break;
+                  }
+            }
+          else if (state == State::RELEASE && morph_plan_voice->output()->done())
+            {
+              // done should not be set if the release happens during this
+              // block, so we only update done if we were in RELEASE already
+              state = State::DONE;
+            }
+
+          float freq_in_converted[n_values];
+          float *freq_in_buffer = nullptr;
+
           if (istream (ICHANNEL_FREQ_IN).connected)
             {
               const gfloat *freq_in = istream (ICHANNEL_FREQ_IN).values;
-              float freq_in_converted[n_values];
 
               for (unsigned int i = 0; i < n_values; i++)
                 freq_in_converted[i] = BSE_SIGNAL_TO_FREQ (freq_in[i]);
 
-              morph_plan_voice->output()->process (n_values, audio_out, 4, freq_in_converted);
+              freq_in_buffer = freq_in_converted;
+            }
+
+          if (release_n_values >= 0)  // handle release somewhere in the middle of this block
+            {
+              morph_plan_voice->output()->process (release_n_values, audio_out, 4, freq_in_buffer);
+              morph_plan_voice->output()->release();
+              morph_plan_voice->output()->process (n_values - release_n_values, audio_out, 4, freq_in_buffer);
             }
           else
+            morph_plan_voice->output()->process (n_values, audio_out, 4);
+
+          if (ostream (OCHANNEL_DONE_OUT).connected)
             {
-              morph_plan_voice->output()->process (n_values, audio_out, 4);
+              if (state == State::DONE)
+                ostream_set (OCHANNEL_DONE_OUT, const_values (1));
+              else
+                ostream_set (OCHANNEL_DONE_OUT, const_values (0));
             }
         }
       osc->update_shared_state (tick_stamp(), mix_freq());
