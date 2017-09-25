@@ -6,6 +6,7 @@
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
+#include <algorithm>
 
 namespace Bse {
 
@@ -44,6 +45,50 @@ template<class ...Args> inline void debug                (const char *conditiona
 inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
 String                              feature_toggle_find  (const String &config, const String &feature, const String &fallback = "0");
 bool                                feature_toggle_bool  (const char *config, const char *feature);
+
+// == Small Utilities ==
+/// Erase element @a value from std::vector @a v if it's present.
+template<class V> bool
+vector_erase_element (V &v, const typename V::value_type &value)
+{
+  typename V::iterator it = std::find (v.begin(), v.end(), value);
+  if (it != v.end())
+    {
+      v.erase (it);
+      return true;
+    }
+  return false;
+}
+
+/// Copy @a unordered_first .. @a unordered_end into @a output_iterator in the order given by @a ordered_first .. @a ordered_end.
+template<class InputIterator, class OutputIterator> OutputIterator
+copy_reordered (InputIterator const unordered_first, InputIterator const unordered_end,
+                InputIterator const ordered_first, InputIterator const ordered_end,
+                OutputIterator output_iterator)
+{
+  static_assert (std::is_same<std::random_access_iterator_tag,
+                 typename std::iterator_traits<InputIterator>::iterator_category>::value,
+                 "vector_copy_reordered() requires random access iterator as input");
+  std::vector<bool> taken;
+  taken.resize (unordered_end - unordered_first, false);
+  // insert all ordered_first.. elements if present in unordered_first..
+  for (InputIterator it = ordered_first; it != ordered_end; ++it)
+    {
+      InputIterator pos = std::find (unordered_first, unordered_end, *it);
+      while (pos != unordered_end && taken[pos - unordered_first])
+        pos = std::find (++pos, unordered_end, *it);   // keep searching for dups
+      if (pos != unordered_end) // && !taken
+        {
+          taken[pos - unordered_first] = true;
+          *output_iterator++ = *it;
+        }
+    }
+  // insert all unordered_first.. elements not previously encountered
+  for (ssize_t i = 0; i < unordered_end - unordered_first; i++)
+    if (taken[i] == false)
+      *output_iterator++ = *(unordered_first + i);
+  return output_iterator;
+}
 
 // == Binary Lookups ==
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
