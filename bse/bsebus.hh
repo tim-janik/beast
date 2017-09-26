@@ -54,11 +54,10 @@ Bse::Error    bse_bus_replace_effect          (BseBus         *self,
                                                  const gchar    *etype);
 void            bse_bus_change_solo             (BseBus         *self,
                                                  gboolean        solo_muted);
+void            bse_bus_set_inputs              (BseBus *self, const Bse::ItemSeq &iseq);
 #define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
-void    bse_bus_or_track_list_output_candidates (BseItem        *trackbus,
-                                                 BseIt3mSeq     *iseq);
-void    bse_bus_or_track_set_outputs            (BseItem        *trackbus,
-                                                 BseIt3mSeq     *iseq);
+void    bse_bus_or_track_list_output_candidates (BseItem *trackbus, Bse::ItemSeq &iseq);
+void    bse_bus_or_track_set_outputs            (BseItem *trackbus, const Bse::ItemSeq &iseq);
 
 /* --- channels --- */
 enum

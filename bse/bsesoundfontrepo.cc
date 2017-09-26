@@ -272,21 +272,20 @@ static gboolean
 gather_presets (BseItem    *item,
                 void       *pitems)
 {
-  BseIt3mSeq *items = (BseIt3mSeq *) pitems;
+  Bse::ItemSeq &items = *(Bse::ItemSeq*) pitems;
   if (BSE_IS_SOUND_FONT (item) || BSE_IS_SOUND_FONT_REPO (item))
-    bse_container_forall_items (BSE_CONTAINER (item), gather_presets, items);
+    bse_container_forall_items (BSE_CONTAINER (item), gather_presets, &items);
   else if (BSE_IS_SOUND_FONT_PRESET (item))
-    bse_it3m_seq_append (items, item);
+    items.push_back (item->as<Bse::ItemIfaceP>());
   else
     Bse::warning ("Searching for sound font presets, an unexpected `%s' item was found", BSE_OBJECT_TYPE_NAME (item));
   return TRUE;
 }
 
 void
-bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo,
-                                      BseIt3mSeq       *items)
+bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo, Bse::ItemSeq &items)
 {
-  gather_presets (BSE_ITEM (sfrepo), items);
+  gather_presets (BSE_ITEM (sfrepo), &items);
 }
 
 std::mutex&

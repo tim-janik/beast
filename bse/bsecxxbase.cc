@@ -260,7 +260,7 @@ void
 CxxBaseClass::set_accessors (void       (*get_property)      (GObject*,   guint,       GValue*,          GParamSpec*),
                              void       (*set_property)      (GObject*,   guint, const GValue*,          GParamSpec*),
                              gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*),
-                             void       (*get_candidates)    (BseItem*,   guint, BsePropertyCandidates*, GParamSpec*),
+                             void       (*get_candidates)    (BseItem*,   guint, Bse::PropertyCandidates&, GParamSpec*),
                              void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*))
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (this);

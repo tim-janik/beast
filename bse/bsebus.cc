@@ -87,20 +87,18 @@ get_master (BseBus *self)
 }
 
 static void
-bus_list_input_candidates (BseBus     *self,
-                           BseIt3mSeq *iseq)
+bus_list_input_candidates (BseBus *self, Bse::ItemSeq &iseq)
 {
   BseItem *item = BSE_ITEM (self);
   bse_item_gather_items_typed (item, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
   bse_item_gather_items_typed (item, iseq, BSE_TYPE_TRACK, BSE_TYPE_SONG, FALSE);
   BseBus *master = get_master (self);
   if (master)
-    bse_it3m_seq_remove (iseq, BSE_ITEM (master));
+    vector_erase_element (iseq, master->as<Bse::ItemIfaceP>());
 }
 
 void
-bse_bus_or_track_list_output_candidates (BseItem    *trackbus,
-                                         BseIt3mSeq *iseq)
+bse_bus_or_track_list_output_candidates (BseItem *trackbus, Bse::ItemSeq &iseq)
 {
   if (BSE_IS_BUS (trackbus) || BSE_IS_TRACK (trackbus))
     bse_item_gather_items_typed (trackbus, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
@@ -109,7 +107,7 @@ bse_bus_or_track_list_output_candidates (BseItem    *trackbus,
 static void
 bse_bus_get_candidates (BseItem               *item,
                         guint                  param_id,
-                        BsePropertyCandidates *pc,
+                        Bse::PropertyCandidates &pc,
                         GParamSpec            *pspec)
 {
   BseBus *self = BSE_BUS (item);
@@ -117,23 +115,31 @@ bse_bus_get_candidates (BseItem               *item,
     {
       SfiRing *ring;
     case PROP_INPUTS:
-      bse_property_candidate_relabel (pc, _("Available Inputs"), _("List of available synthesis signals to be used as bus input"));
-      bus_list_input_candidates (self, pc->items);
+      pc.label = _("Available Inputs");
+      pc.tooltip = _("List of available synthesis signals to be used as bus input");
+      bus_list_input_candidates (self, pc.items);
       /* remove existing inputs from candidates */
       ring = bse_bus_list_inputs (self);
       while (ring)
-        bse_it3m_seq_remove (pc->items, (BseItem*) sfi_ring_pop_head (&ring));
+        {
+          BseItem *item = (BseItem*) sfi_ring_pop_head (&ring);
+          vector_erase_element (pc.items, item->as<Bse::ItemIfaceP>());
+        }
       /* SYNC: type partitions */
-      bse_type_seq_append (pc->partitions, "BseTrack");
-      bse_type_seq_append (pc->partitions, "BseBus");
+      pc.partitions.push_back ("BseTrack");
+      pc.partitions.push_back ("BseBus");
       break;
     case PROP_OUTPUTS:
-      bse_property_candidate_relabel (pc, _("Available Outputs"), _("List of available mixer busses to be used as bus output"));
-      bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
+      pc.label = _("Available Outputs");
+      pc.tooltip = _("List of available mixer busses to be used as bus output");
+      bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc.items);
       /* remove existing outputs */
       ring = bse_bus_list_outputs (self);
       while (ring)
-        bse_it3m_seq_remove (pc->items, (BseItem*) sfi_ring_pop_head (&ring));
+        {
+          BseItem *item = (BseItem*) sfi_ring_pop_head (&ring);
+          vector_erase_element (pc.items, item->as<Bse::ItemIfaceP>());
+        }
       break;
     case PROP_SNET:
       break;
@@ -236,44 +242,125 @@ bus_volume_changed (BseBus *self)
 }
 
 void
-bse_bus_or_track_set_outputs (BseItem        *trackbus,
-                              BseIt3mSeq     *outputs_iseq)
+bse_bus_set_inputs (BseBus *self, const Bse::ItemSeq &inputs_iseq)
+{
+  // convert and sort existing bus outputs
+  std::vector<BseItem*> bus_inputs;
+  for (SfiRing *ring = self->inputs; ring; ring = sfi_ring_walk (ring, self->inputs))
+    bus_inputs.push_back ((BseItem*) ring->data);
+  std::stable_sort (bus_inputs.begin(), bus_inputs.end());                      // self->inputs
+  // sort the new set of input items
+  std::vector<BseItem*> inputs;
+  for (Bse::ItemIfaceP itemp : inputs_iseq)
+    inputs.push_back (itemp->as<BseItem*>());
+  std::stable_sort (inputs.begin(), inputs.end());                              // inputs == inputs_iseq
+  // fetch all input candidates
+  Bse::ItemSeq iseq;
+  bus_list_input_candidates (self, iseq);
+  std::vector<BseItem*> candidates;
+  for (Bse::ItemIfaceP itemp : iseq)
+    candidates.push_back (itemp->as<BseItem*>());
+  std::stable_sort (candidates.begin(), candidates.end());
+  // constrain the new output list
+  std::vector<BseItem*> tmp;
+  std::set_intersection (inputs.begin(), inputs.end(), candidates.begin(), candidates.end(), std::back_inserter (tmp));
+  inputs.swap (tmp);
+  tmp.clear();
+  // disconnect stale inputs
+  std::set_difference (bus_inputs.begin(), bus_inputs.end(), inputs.begin(), inputs.end(), std::back_inserter (tmp));
+  while (!tmp.empty())
+    {
+      BseItem *item = tmp.back();
+      tmp.pop_back();
+      bse_bus_disconnect (self, item);                                          // modifies self->inputs
+    }
+  // add new inputs
+  std::set_difference (inputs.begin(), inputs.end(), bus_inputs.begin(), bus_inputs.end(), std::back_inserter (tmp));
+  while (!tmp.empty())
+    {
+      BseItem *item = tmp.back();
+      tmp.pop_back();
+      bse_bus_connect_unchecked (self, item);                                   // modifies self->inputs
+    }
+  // restore self->inputs order to user provided order, given in inputs_iseq
+  bus_inputs.clear();
+  for (SfiRing *ring = self->inputs; ring; ring = sfi_ring_walk (ring, self->inputs))
+    bus_inputs.push_back ((BseItem*) ring->data);                               // self->inputs
+  inputs.clear();
+  for (Bse::ItemIfaceP itemp : inputs_iseq)
+    inputs.push_back (itemp->as<BseItem*>());
+  Bse::copy_reordered (bus_inputs.begin(), bus_inputs.end(), inputs.begin(), inputs.end(), std::back_inserter (tmp));
+  assert_return (bus_inputs.size() == tmp.size());
+  SfiRing *newring = NULL;
+  for (BseItem *item : tmp)
+    newring = sfi_ring_append (newring, item);
+  sfi_ring_free (self->inputs);
+  self->inputs = newring;
+}
+
+void
+bse_bus_or_track_set_outputs (BseItem *trackbus, const Bse::ItemSeq &outputs_iseq)
 {
   SfiRing **pbus_outputs;
-  /* handle object types */
+  // pick bus output depending on object type
   if (BSE_IS_BUS (trackbus))
     pbus_outputs = &BSE_BUS (trackbus)->bus_outputs;
   else if (BSE_IS_TRACK (trackbus))
     pbus_outputs = &BSE_TRACK (trackbus)->bus_outputs;
   else
     return;
-  /* save user provided order */
-  SfiRing *saved_outputs = bse_it3m_seq_to_ring (outputs_iseq);
-  /* provide sorted rings: bus_outputs, outputs */
-  SfiRing *outputs = sfi_ring_sort (sfi_ring_copy (saved_outputs), sfi_pointer_cmp, NULL);
-  *pbus_outputs = sfi_ring_sort (*pbus_outputs, sfi_pointer_cmp, NULL);
-  /* get all output candidates */
-  BseIt3mSeq *iseq = bse_it3m_seq_new();
+  // convert and sort existing bus outputs
+  std::vector<BseItem*> bus_outputs;
+  for (SfiRing *ring = *pbus_outputs; ring; ring = sfi_ring_walk (ring, *pbus_outputs))
+    bus_outputs.push_back ((BseItem*) ring->data);
+  std::stable_sort (bus_outputs.begin(), bus_outputs.end());
+  // sort the new set of output items
+  std::vector<BseItem*> outputs;
+  for (Bse::ItemIfaceP itemp : outputs_iseq)
+    outputs.push_back (itemp->as<BseItem*>());
+  std::stable_sort (outputs.begin(), outputs.end());
+  // fetch all output candidates
+  Bse::ItemSeq iseq;
   bse_bus_or_track_list_output_candidates (trackbus, iseq);
-  SfiRing *candidates = sfi_ring_sort (bse_it3m_seq_to_ring (iseq), sfi_pointer_cmp, NULL);
-  bse_it3m_seq_free (iseq);
-  /* constrain the new output list */
-  SfiRing *ring = sfi_ring_intersection (outputs, candidates, sfi_pointer_cmp, NULL);
-  sfi_ring_free (candidates);
-  sfi_ring_free (outputs);
-  outputs = ring;
-  /* remove stale outputs */
-  ring = sfi_ring_difference (*pbus_outputs, outputs, sfi_pointer_cmp, NULL);
-  while (ring)
-    bse_bus_disconnect ((BseBus*) sfi_ring_pop_head (&ring), trackbus);
-  /* add new outputs */
-  ring = sfi_ring_difference (outputs, *pbus_outputs, sfi_pointer_cmp, NULL);
-  while (ring)
-    bse_bus_connect_unchecked ((BseBus*) sfi_ring_pop_head (&ring), trackbus);
-  sfi_ring_free (outputs);
-  /* restore user provided order */
-  *pbus_outputs = sfi_ring_reorder (*pbus_outputs, saved_outputs);
-  sfi_ring_free (saved_outputs);
+  std::vector<BseItem*> candidates;
+  for (Bse::ItemIfaceP itemp : iseq)
+    candidates.push_back (itemp->as<BseItem*>());
+  std::stable_sort (candidates.begin(), candidates.end());
+  // constrain the new output list
+  std::vector<BseItem*> tmp;
+  std::set_intersection (outputs.begin(), outputs.end(), candidates.begin(), candidates.end(), std::back_inserter (tmp));
+  outputs.swap (tmp);
+  tmp.clear();
+  // disconnect stale outputs
+  std::set_difference (bus_outputs.begin(), bus_outputs.end(), outputs.begin(), outputs.end(), std::back_inserter (tmp));
+  while (!tmp.empty())
+    {
+      BseItem *item = tmp.back();
+      tmp.pop_back();
+      bse_bus_disconnect (BSE_BUS (item), trackbus);            // modifies trackbus->bus_outputs
+    }
+  // add new outputs
+  std::set_difference (outputs.begin(), outputs.end(), bus_outputs.begin(), bus_outputs.end(), std::back_inserter (tmp));
+  while (!tmp.empty())
+    {
+      BseItem *item = tmp.back();
+      tmp.pop_back();
+      bse_bus_connect_unchecked (BSE_BUS (item), trackbus);     // modifies trackbus->bus_outputs
+    }
+  // restore pbus_outputs order to user provided order, given in outputs_iseq
+  bus_outputs.clear();
+  for (SfiRing *ring = *pbus_outputs; ring; ring = sfi_ring_walk (ring, *pbus_outputs))
+    bus_outputs.push_back ((BseItem*) ring->data);
+  outputs.clear();
+  for (Bse::ItemIfaceP itemp : outputs_iseq)
+    outputs.push_back (itemp->as<BseItem*>());
+  Bse::copy_reordered (bus_outputs.begin(), bus_outputs.end(), outputs.begin(), outputs.end(), std::back_inserter (tmp));
+  assert_return (bus_outputs.size() == tmp.size());
+  SfiRing *newring = NULL;
+  for (BseItem *item : tmp)
+    newring = sfi_ring_append (newring, item);
+  sfi_ring_free (*pbus_outputs);
+  *pbus_outputs = newring;
 }
 
 static void
@@ -285,41 +372,21 @@ bse_bus_set_property (GObject      *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
-      SfiRing *inputs, *candidates, *ring, *saved_inputs;
-      BseIt3mSeq *iseq;
       BseItem *parent;
       gboolean vbool;
     case PROP_INPUTS:
-      /* save user provided order */
-      saved_inputs = bse_it3m_seq_to_ring ((BseIt3mSeq*) g_value_get_boxed (value));
-      /* provide sorted rings: self->inputs, inputs */
-      inputs = sfi_ring_sort (sfi_ring_copy (saved_inputs), sfi_pointer_cmp, NULL);
-      self->inputs = sfi_ring_sort (self->inputs, sfi_pointer_cmp, NULL);
-      /* get all input candidates */
-      iseq = bse_it3m_seq_new();
-      bus_list_input_candidates (self, iseq);
-      candidates = sfi_ring_sort (bse_it3m_seq_to_ring (iseq), sfi_pointer_cmp, NULL);
-      bse_it3m_seq_free (iseq);
-      /* constrain the new input list */
-      ring = sfi_ring_intersection (inputs, candidates, sfi_pointer_cmp, NULL);
-      sfi_ring_free (candidates);
-      sfi_ring_free (inputs);
-      inputs = ring;
-      /* remove stale inputs */
-      ring = sfi_ring_difference (self->inputs, inputs, sfi_pointer_cmp, NULL);
-      while (ring)
-        bse_bus_disconnect (self, (BseItem*) sfi_ring_pop_head (&ring));
-      /* add new inputs */
-      ring = sfi_ring_difference (inputs, self->inputs, sfi_pointer_cmp, NULL);
-      while (ring)
-        bse_bus_connect_unchecked (self, (BseItem*) sfi_ring_pop_head (&ring));
-      sfi_ring_free (inputs);
-      /* restore user provided order */
-      self->inputs = sfi_ring_reorder (self->inputs, saved_inputs);
-      sfi_ring_free (saved_inputs);
+      {
+        BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
+        Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
+        bse_bus_set_inputs (self, items);
+      }
       break;
     case PROP_OUTPUTS:
-      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseIt3mSeq*) g_value_get_boxed (value));
+      {
+        BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
+        Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
+        bse_bus_or_track_set_outputs (BSE_ITEM (self), items);
+      }
       break;
     case PROP_SNET:
       g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
@@ -648,23 +715,20 @@ bus_uncross_input (BseItem *owner,
 }
 
 Bse::Error
-bse_bus_connect (BseBus  *self,
-                 BseItem *trackbus)
+bse_bus_connect (BseBus *self, BseItem *trackbus)
 {
-  /* get all input candidates */
-  BseIt3mSeq *iseq = bse_it3m_seq_new();
+  // get all input candidates
+  Bse::ItemSeq iseq;
   bus_list_input_candidates (self, iseq);
-  /* find trackbus */
-  gboolean found_candidate = FALSE;
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (iseq->items[i] == trackbus)
+  // find trackbus
+  bool found_candidate = false;
+  for (size_t i = 0; i < iseq.size(); i++)
+    if (iseq[i]->as<BseItem*>() == trackbus)
       {
-        found_candidate = TRUE;
+        found_candidate = true;
         break;
       }
-  bse_it3m_seq_free (iseq);
-  /* add trackbus if valid */
+  // add trackbus if valid
   if (found_candidate)
     return bse_bus_connect_unchecked (self, trackbus);
   else
