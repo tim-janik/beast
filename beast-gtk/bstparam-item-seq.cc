@@ -25,11 +25,12 @@ param_item_seq_popup_editor (GtkWidget *widget,
   SfiProxy proxy = bst_param_get_proxy (param);
   if (proxy)
     {
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      Bse::PropertyCandidates pc = item.get_property_candidates (param->pspec->name);
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (&param->value);
       BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
       bst_item_seq_dialog_popup (widget, proxy,
-                                 pc->label, pc->tooltip, pc->items,
+                                 pc.label.c_str(), pc.tooltip.c_str(), pc.items,
                                  g_param_spec_get_nick (param->pspec), g_param_spec_get_blurb (param->pspec), iseq,
                                  param_item_seq_changed,
                                  param, NULL);
