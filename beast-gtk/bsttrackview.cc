@@ -210,32 +210,37 @@ track_view_synth_edited (BstTrackView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (text)
 	{
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
+          Bse::PropertyCandidates pc;
 	  /* list possible snet/wave/sound_font_preset candidates */
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
-	  slist = g_slist_append (slist, pc->items);
-          pc = bse_item_get_property_candidates (item, "wave");
-	  slist = g_slist_append (slist, pc->items);
-	  pc = bse_item_get_property_candidates (item, "sound_font_preset");
-          slist = g_slist_append (slist, pc->items);
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          pc = item.get_property_candidates ("snet");
+          auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, snet_i3s.get());
+          pc = item.get_property_candidates ("wave");
+          auto wave_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, wave_i3s.get());
+          pc = item.get_property_candidates ("sound_font_preset");
+          auto sfpr_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+          slist = g_slist_append (slist, sfpr_i3s.get());
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
-	    bse_proxy_set (item, "snet", proxy, NULL);
+	    bse_proxy_set (itemid, "snet", proxy, NULL);
 	  else if (proxy && BSE_IS_WAVE (proxy))
-	    bse_proxy_set (item, "wave", proxy, NULL);
+	    bse_proxy_set (itemid, "wave", proxy, NULL);
 	  else if (proxy && BSE_IS_SOUND_FONT_PRESET (proxy))
-	    bse_proxy_set (item, "sound_font_preset", proxy, NULL);
+	    bse_proxy_set (itemid, "sound_font_preset", proxy, NULL);
 	  else
-	    bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
+	    bse_proxy_set (itemid, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
 	}
       else
-	bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
+	bse_proxy_set (itemid, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
     }
 }
 
@@ -249,24 +254,27 @@ track_view_post_synth_edited (BstTrackView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (text)
 	{
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
 	  /* list possible snet candidates */
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
-	  slist = g_slist_append (slist, pc->items);
+
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
+          auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, snet_i3s.get());
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
-	    bse_proxy_set (item, "pnet", proxy, NULL);
+	    bse_proxy_set (itemid, "pnet", proxy, NULL);
 	  else
-	    bse_proxy_set (item, "pnet", 0, NULL);
+	    bse_proxy_set (itemid, "pnet", 0, NULL);
 	}
       else
-	bse_proxy_set (item, "pnet", 0, NULL);
+	bse_proxy_set (itemid, "pnet", 0, NULL);
     }
 }
 
@@ -311,11 +319,12 @@ track_view_synth_popup (BstTrackView         *self,
       Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
       if (item.editable_property ("snet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (itemid, "snet");
+          Bse::PropertyCandidates pc = item.get_property_candidates ("snet");
+          BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
           SynthPopup sdata = { self, pcell, };
           Bse::ProjectH project = item.get_project();
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
-                                                            pc->label, pc->tooltip, pc->items,
+                                                            pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                             _("Available Waves"),
                                                             _("List of available waves to choose a track instrument from"),
                                                             project.get_wave_repo().proxy_id(),
@@ -323,6 +332,7 @@ track_view_synth_popup (BstTrackView         *self,
 							    _("List of available sound fonts to choose track instrument from"),
 							    project.get_sound_font_repo().proxy_id(),
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
+          bse_it3m_seq_free (pc_items);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
@@ -345,13 +355,15 @@ track_view_post_synth_popup (BstTrackView         *self,
       Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
       if (item.editable_property ("pnet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (itemid, "pnet");
+          Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
+          BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
           SynthPopup sdata = { self, pcell, };
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
-                                                            pc->label, pc->tooltip, pc->items,
+                                                            pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                             NULL, NULL, 0,
 							    NULL, NULL, 0,
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
+          bse_it3m_seq_free (pc_items);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
@@ -398,17 +410,20 @@ track_view_outputs_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "outputs");
-      GParamSpec *pspec = bse_proxy_get_pspec (item, "outputs");
-      const GValue *value = bse_proxy_get_property (item, "outputs");
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      Bse::PropertyCandidates pc = item.get_property_candidates ("outputs");
+      GParamSpec *pspec = bse_proxy_get_pspec (item.proxy_id(), "outputs");
+      const GValue *value = bse_proxy_get_property (item.proxy_id(), "outputs");
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
       BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
-      OutputsPopup odata = { self, pcell, item };
-      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
-                                                     pc->label, pc->tooltip, pc->items,
+      OutputsPopup odata = { self, pcell, item.proxy_id() };
+      BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
+      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item.proxy_id(),
+                                                     pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                      g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
+      bse_it3m_seq_free (pc_items);
       bse_it3m_seq_free (iseq);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
