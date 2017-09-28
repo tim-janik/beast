@@ -88,6 +88,24 @@ bst_path_leaf_index (const String &path, char separator)
   return d && d >= data && d < data + path.size() ? d - data + 1 : 0;
 }
 
+BseIt3mSeq*
+bst_it3m_seq_from_item_seq (Bse::ItemSeq &items)
+{
+  BseIt3mSeq *i3s = bse_it3m_seq_new();
+  for (auto item : items)
+    bse_it3m_seq_append (i3s, !item ? 0 : item.proxy_id());
+  return i3s;
+}
+
+Bse::ItemSeq
+bst_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
+{
+  Bse::ItemSeq items;
+  for (size_t i = 0; i < i3s->n_items; i++)
+    items.push_back (Bse::ItemH::down_cast (bse_server.from_proxy (i3s->items[i])));
+  return items;
+}
+
 namespace Bse {
 
 const char*

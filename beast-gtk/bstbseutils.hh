@@ -41,6 +41,9 @@ const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 uint            bst_path_leaf_index             (const String &path, char separator = '/');
 Bse::Category   bst_category_find               (const String &pattern);
 
+BseIt3mSeq*     bst_it3m_seq_from_item_seq (Bse::ItemSeq &items);
+Bse::ItemSeq    bst_item_seq_from_it3m_seq (BseIt3mSeq *i3s);
+
 
 namespace Bse {
 const char*     error_blurb (Bse::Error error_value); ///< Retrieve the description of an error value
