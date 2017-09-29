@@ -1140,7 +1140,7 @@ sequence CategorySeq {
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
  */
-interface Server : Object {
+interface Server : Container {
   signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
