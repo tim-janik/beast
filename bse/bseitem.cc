@@ -283,14 +283,15 @@ bse_item_compat_setup (BseItem         *self,
     BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
 }
 
-typedef struct {
+struct GatherData {
   BseItem              *item;
   void                 *data;
-  Bse::ItemSeq          iseq;
+  Bse::ItemSeq         &iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
-} GatherData;
+  GatherData (Bse::ItemSeq &is) : iseq (is) {}
+};
 
 static gboolean
 gather_child (BseItem *child,
@@ -320,13 +321,12 @@ gather_child (BseItem *child,
 static void
 bse_item_gather_items (BseItem *item, Bse::ItemSeq &iseq, GType base_type, BseItemCheckContainer ccheck, BseItemCheckProxy pcheck, void *data)
 {
-  GatherData gdata;
+  GatherData gdata (iseq);
   assert_return (BSE_IS_ITEM (item));
   assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM));
 
   gdata.item = item;
   gdata.data = data;
-  gdata.iseq = iseq;
   gdata.base_type = base_type;
   gdata.ccheck = ccheck;
   gdata.pcheck = pcheck;
