@@ -181,7 +181,7 @@ track_roll_release_proxy (BstTrackRoll *self)
                         "any_signal", track_roll_release_proxy, self,
                         "any_signal", track_roll_song_item_removed, self,
                         NULL);
-  bse_item_unuse (self->proxy);
+  Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).unuse();
   self->proxy = 0;
 }
 
@@ -215,7 +215,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
   self->proxy = song;
   if (self->proxy)
     {
-      bse_item_use (self->proxy);
+      Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).use();
       bse_proxy_connect (self->proxy,
                          "swapped_signal::release", track_roll_release_proxy, self,
                          "swapped_signal::item-remove", track_roll_song_item_removed, self,
@@ -623,7 +623,7 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
               PangoRectangle rect = { 0 };
 	      guint tick = tp.tick;
 	      guint duration = tp.duration;
-	      const gchar *name = bse_item_get_name (tp.part.proxy_id());
+	      const String name = tp.part.get_name();
 	      GdkRectangle area, carea;
 	      carea.x = tick_to_coord (self, tick);
               carea.width = ticks_to_pixels (self, duration);
@@ -638,7 +638,7 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
               carea.y += YTHICKNESS (self);
               carea.height = MAX (0, carea.height - 2 * YTHICKNESS (self));
               area = carea;
-              pango_layout_set_text (PLAYOUT_CANVAS (self), name, -1);
+              pango_layout_set_text (PLAYOUT_CANVAS (self), name.c_str(), -1);
               pango_layout_get_pixel_extents (PLAYOUT_CANVAS (self), NULL, &rect);
 	      gdk_draw_rectangle (drawable, bg2_gc, // row == self->prelight_row ? bgp_gc : bg2_gc,
 				  TRUE, area.x, area.y, area.width, area.height);

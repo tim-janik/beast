@@ -345,13 +345,13 @@ bst_piano_roll_controller_clear (BstPianoRollController *self)
   assert_return (self != NULL);
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq pseq = part.list_selected_notes();
-  bse_item_group_undo (part.proxy_id(), "Clear Selection");
+  part.group_undo ("Clear Selection");
   for (size_t i = 0; i < pseq.size(); i++)
     {
       const Bse::PartNote *pnote = &pseq[i];
       part.delete_event (pnote->id);
     }
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 void
@@ -361,14 +361,14 @@ bst_piano_roll_controller_cut (BstPianoRollController *self)
 
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq pseq = part.list_selected_notes();
-  bse_item_group_undo (part.proxy_id(), "Cut Selection");
+  part.group_undo ("Cut Selection");
   for (size_t i = 0; i < pseq.size(); i++)
     {
       const Bse::PartNote *pnote = &pseq[i];
       part.delete_event (pnote->id);
     }
   bst_piano_roll_controller_set_clipboard (&pseq);
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 gboolean
@@ -394,7 +394,7 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
       guint i, paste_tick, ctick = self->proll->max_ticks;
       gint cnote = 0;
       gint paste_note;
-      bse_item_group_undo (part.proxy_id(), "Paste Clipboard");
+      part.group_undo ("Paste Clipboard");
       part.deselect_notes (0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
       bst_piano_roll_get_paste_pos (self->proll, &paste_tick, &paste_note);
       paste_tick = bst_piano_roll_controller_quantize (self, paste_tick);
@@ -417,7 +417,7 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
               part.select_event (id);
             }
 	}
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
     }
 }
 
@@ -556,7 +556,7 @@ move_group_motion (BstPianoRollController *self, BstPianoRollDrag *drag)
   delta_note = old_note;
   delta_tick -= new_tick;
   delta_note -= new_note;
-  bse_item_group_undo (part.proxy_id(), "Move Selection");
+  part.group_undo ("Move Selection");
   for (size_t i = 0; i < self->sel_pseq.size(); i++)
     {
       const Bse::PartNote *pnote = &self->sel_pseq[i];
@@ -568,7 +568,7 @@ move_group_motion (BstPianoRollController *self, BstPianoRollDrag *drag)
     }
   if (drag->type == GXK_DRAG_DONE)
     self->sel_pseq.clear();
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 static void
@@ -591,7 +591,7 @@ move_motion (BstPianoRollController *self,
       !check_hoverlap (part, new_tick, self->obj_duration, drag->current_note,
 		       self->obj_tick, note_changed ? 0 : self->obj_duration))
     {
-      bse_item_group_undo (part.proxy_id(), "Move Note");
+      part.group_undo ("Move Note");
       if (part.delete_event (self->obj_id) != Bse::Error::NONE)
         drag->state = GXK_DRAG_ERROR;
       else
@@ -603,7 +603,7 @@ move_motion (BstPianoRollController *self,
 	  if (!self->obj_id)
 	    drag->state = GXK_DRAG_ERROR;
 	}
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
     }
 }
 
@@ -658,7 +658,7 @@ resize_motion (BstPianoRollController *self,
       !check_hoverlap (part, new_tick, new_duration, self->obj_note,
 		       self->obj_tick, self->obj_duration))
     {
-      bse_item_group_undo (part.proxy_id(), "Resize Note");
+      part.group_undo ("Resize Note");
       if (self->obj_id)
 	{
 	  Bse::Error error = part.delete_event (self->obj_id);
@@ -675,7 +675,7 @@ resize_motion (BstPianoRollController *self,
 	  if (!self->obj_id)
 	    drag->state = GXK_DRAG_ERROR;
 	}
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
     }
 }
 
@@ -894,35 +894,29 @@ controller_piano_drag (BstPianoRollController *self,
 		       BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  SfiProxy song_proxy = bse_item_get_parent (part.proxy_id());
-  SfiProxy projectid = song_proxy ? bse_item_get_parent (song_proxy) : 0;
-  Bse::SongH song;
+  Bse::SongH song = Bse::SongH::down_cast (part.get_parent());
+  Bse::ProjectH project;
   Bse::TrackH track;
-  if (song_proxy)
+  if (song)
     {
-      song = Bse::SongH::down_cast (bse_server.from_proxy (song_proxy));
+      project = Bse::ProjectH::down_cast (song.get_parent());
       track = song.find_track_for_part (part);
     }
 
   // printerr ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
 
-  if (projectid && track)
+  if (project && track &&
+      (drag->type == GXK_DRAG_START ||
+       (drag->type == GXK_DRAG_MOTION &&
+        self->obj_note != drag->current_note)))
     {
-      Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
-      assert_return (project);
-      if (drag->type == GXK_DRAG_START ||
-	  (drag->type == GXK_DRAG_MOTION &&
-	   self->obj_note != drag->current_note))
-	{
-          Bse::Error error;
-	  project.auto_deactivate (5 * 1000);
-	  error = project.activate();
-	  self->obj_note = drag->current_note;
-	  if (error == Bse::Error::NONE)
-	    song.synthesize_note (track, 384 * 4, self->obj_note, 0, 1.0);
-	  bst_status_eprintf (error, _("Play note"));
-	  drag->state = GXK_DRAG_CONTINUE;
-	}
+      project.auto_deactivate (5 * 1000);
+      Bse::Error error = project.activate();
+      self->obj_note = drag->current_note;
+      if (error == Bse::Error::NONE)
+        song.synthesize_note (track, 384 * 4, self->obj_note, 0, 1.0);
+      bst_status_eprintf (error, _("Play note"));
+      drag->state = GXK_DRAG_CONTINUE;
     }
 
   if (drag->type == GXK_DRAG_START ||

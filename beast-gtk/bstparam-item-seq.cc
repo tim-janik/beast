@@ -91,7 +91,10 @@ param_item_seq_update (GxkParam  *param,
       if (iseq)
         {
           if (iseq->n_items == 1)
-            content = g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0]));
+            {
+              Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[0]));
+              content = g_strdup (item.get_name_or_type().c_str());
+            }
           else if (iseq->n_items > 1 && (!pc->partitions || pc->partitions->n_types == 0))
             content = g_strdup_format ("#%u", iseq->n_items);
           else if (iseq->n_items > 1) /* && partitions->n_types */
@@ -101,11 +104,14 @@ param_item_seq_update (GxkParam  *param,
               for (i = 0; i < iseq->n_items; i++)
                 {
                   for (j = 0; j < pc->partitions->n_types; j++)
-                    if (bse_item_check_is_a (iseq->items[i], pc->partitions->types[j]))
-                      {
-                        partitions[j]++;
-                        break;
-                      }
+                    {
+                      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[i]));
+                      if (item.check_is_a (pc->partitions->types[j]))
+                        {
+                          partitions[j]++;
+                          break;
+                        }
+                    }
                   if (j >= pc->partitions->n_types)
                     other++;
                 }

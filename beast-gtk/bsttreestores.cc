@@ -288,10 +288,10 @@ child_list_wrapper_item_removed (SfiProxy    container,
 }
 
 static gint
-child_list_wrapper_row_from_proxy (ProxyStore *ps,
-                                   SfiProxy    proxy)
+child_list_wrapper_row_from_proxy (ProxyStore *ps, SfiProxy proxy)
 {
-  return bse_item_get_seqid (proxy) - 1;
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  return item.get_seqid() - 1;
 }
 
 static gboolean
@@ -426,26 +426,30 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
                                guint           row,
                                GValue         *value)
 {
+  Bse::ItemH item;
   guint seqid = row + 1;
   switch (column)
     {
       const gchar *string;
-      SfiProxy item;
+      SfiProxy itemid;
     case BST_PROXY_STORE_SEQID:
       g_value_take_string (value, g_strdup_format ("%03u", seqid));
       break;
     case BST_PROXY_STORE_NAME:
-      item = bst_child_list_wrapper_get_proxy (self, row);
-      g_value_set_string (value, bse_item_get_name (item));
+      itemid = bst_child_list_wrapper_get_proxy (self, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      g_value_set_string (value, item.get_name().c_str());
       break;
     case BST_PROXY_STORE_BLURB:
-      item = bst_child_list_wrapper_get_proxy (self, row);
-      bse_proxy_get (item, "blurb", &string, NULL);
+      itemid = bst_child_list_wrapper_get_proxy (self, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      bse_proxy_get (item.proxy_id(), "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
     case BST_PROXY_STORE_TYPE:
-      item = bst_child_list_wrapper_get_proxy (self, row);
-      g_value_set_string (value, bse_item_get_type (item));
+      itemid = bst_child_list_wrapper_get_proxy (self, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      g_value_set_string (value, item.get_type().c_str());
       break;
     }
 }
@@ -473,26 +477,31 @@ item_seq_store_fill_value (GxkListWrapper *self,
                            GValue         *value)
 {
   GtkTreeModel *model = GTK_TREE_MODEL (self);
+  Bse::ItemH item;
   switch (column)
     {
       const gchar *string;
-      SfiProxy item;
+      SfiProxy itemid;
     case BST_PROXY_STORE_SEQID:
-      item = bst_item_seq_store_get_proxy (model, row);
-      g_value_take_string (value, g_strdup_format ("%03u", bse_item_get_seqid (item)));
+      itemid = bst_item_seq_store_get_proxy (model, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      g_value_take_string (value, g_strdup_format ("%03u", item.get_seqid()));
       break;
     case BST_PROXY_STORE_NAME:
-      item = bst_item_seq_store_get_proxy (model, row);
-      g_value_set_string (value, bse_item_get_name (item));
+      itemid = bst_item_seq_store_get_proxy (model, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      g_value_set_string (value, item.get_name().c_str());
       break;
     case BST_PROXY_STORE_BLURB:
-      item = bst_item_seq_store_get_proxy (model, row);
-      bse_proxy_get (item, "blurb", &string, NULL);
+      itemid = bst_item_seq_store_get_proxy (model, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      bse_proxy_get (item.proxy_id(), "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
     case BST_PROXY_STORE_TYPE:
-      item = bst_item_seq_store_get_proxy (model, row);
-      g_value_set_string (value, bse_item_get_type (item));
+      itemid = bst_item_seq_store_get_proxy (model, row);
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      g_value_set_string (value, item.get_type().c_str());
       break;
     }
 }
@@ -540,23 +549,25 @@ item_seq_store_destroy_data (gpointer data)
 }
 
 static gint
-proxy_cmp_sorted (gconstpointer   value1,
-                  gconstpointer   value2,
-                  gpointer        data)
+proxy_cmp_sorted (gconstpointer value1, gconstpointer value2, gpointer data)
 {
   SfiProxy p1 = (SfiProxy) value1;
   SfiProxy p2 = (SfiProxy) value2;
   if (!p1 || !p2)
     return p2 ? -1 : p1 != 0;
-  const gchar *s1 = bse_item_get_type (p1);
-  const gchar *s2 = bse_item_get_type (p2);
+  Bse::ItemH item1 = Bse::ItemH::down_cast (bse_server.from_proxy (p1));
+  Bse::ItemH item2 = Bse::ItemH::down_cast (bse_server.from_proxy (p2));
+  const String t1 = item1.get_type(), t2 = item2.get_type();
+  const gchar *s1 = t1.c_str();
+  const gchar *s2 = t2.c_str();
   if (!s1 || !s2)
     return s2 ? -1 : s1 != 0;
-  gint cmp = strcmp (s1, s2);
+  const int cmp = strcmp (s1, s2);
   if (cmp)
     return cmp;
-  s1 = bse_item_get_name (p1);
-  s2 = bse_item_get_name (p2);
+  const String n1 = item1.get_name(), n2 = item2.get_name();
+  s1 = n1.c_str();
+  s2 = n2.c_str();
   if (!s1 || !s2)
     return s2 ? -1 : s1 != 0;
   return strcmp (s1, s2);

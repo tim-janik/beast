@@ -626,6 +626,7 @@ record PartLink;
 sequence PartLinkSeq;
 record TrackPart;
 sequence TrackPartSeq;
+interface Project;
 
 /// Fundamental base type for all BSE objects.
 interface Object {
@@ -637,32 +638,28 @@ interface Object {
 
 /// Base interface type for objects that can be added to a container.
 interface Item : Object {
-  Icon icon = Record ("Icon", "State dependent icon representation of this item", "rw:G");
-  Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
-
-  // bool   check_is_a        (String type_name); ///< Check whether an item has a certain type.
-  // void   clear_undo        (); ///< Call the clear-undo function of the project corresponding to this item if any.
-  // bool   editable_property (String property_name); ///< Test whether a property is editable according to object state and property options.
-  // String get_name          (); ///< Retrieve an item's name.
-  // String get_name_or_type  (); ///< Retrieve an item's name or type if it has no name.
-  // Item   get_parent        (); ///< Retrieve an item's parent.
-  // Item   get_project       (); ///< Retrieve an item's project.
+  Icon    icon = Record ("Icon", "State dependent icon representation of this item", "rw:G");
+  Item    use               (); ///< Increment use count to keep an item alive.
+  void    unuse             (); ///< Decrement use count for when an item is not needed anymore.
+  void    set_name          (String name);       ///< Assign an item's name.
+  Item    common_ancestor   (Item other);        ///< Find a common container (parent or grand-parent) of two items if any.
+  bool    check_is_a        (String type_name);  ///< Check whether an item has a certain type.
+  void    group_undo        (String group_name); ///< Request multiple modifying actions on an item to be grouped together as a single undo operation.
+  void    ungroup_undo      (); ///< Ends the undo grouping opened up by a previous group-undo() call.
+  Project get_project       (); ///< Retrieve an item's project.
+  Item    get_parent        (); ///< Retrieve an item's parent.
+  int32   get_seqid         (); ///< Retrieve an item's sequential ID. The sequential ID depends on the item's type an it's position inbetween siblings of the same type within it's immediate container.
+  String  get_type          (); ///< Retrieve an item's type name.
+  String  get_type_authors  (); ///< Retrieve authors of an item's type implementation.
+  String  get_type_blurb    (); ///< Retrieve an item's type description.
+  String  get_type_license  (); ///< Retrieve the license for an item's type implementation.
+  String  get_type_name     (); ///< Retrieve an item's type name.
+  String  get_uname_path    (); ///< Retrieve the project relative uname path for this item.
+  String  get_name          (); ///< Retrieve an item's name.
+  String  get_name_or_type  (); ///< Retrieve an item's name or type if it has no name.
+  bool    internal          (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
+  bool    editable_property (String property); ///< Test whether a property is editable according to object state and property options.
   // PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
-  // int32  get_seqid        (); ///< Retrieve an item's sequential ID. The sequential ID depends on the item's type an it's position inbetween siblings of the same type within it's immediate container.
-  // String get_type         (); ///< Retrieve an item's type name.
-  // String get_type_authors (); ///< Retrieve authors of an item's type implementation.
-  // String get_type_blurb   (); ///< Retrieve an item's type description.
-  // String get_type_license (); ///< Retrieve the license for an item's type implementation.
-  // String get_type_name    (); ///< Retrieve an item's type name.
-  // String get_uname_path   (); ///< Retrieve the project relative uname path for this item.
-  // void   group_undo   (String name); ///< Request multiple modifying actions on an item to be grouped together as single undo operation.
-  // bool   internal     (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
-  // void   redo         (); ///< Call the redo function of the project corresponding to this item if any.
-  // void   set_name     (String name); ///< Set an item's name.
-  // void   undo         (); ///< Call the undo function of the project corresponding to this item if any.
-  // void   ungroup_undo (); ///< Ends the undo grouping opened up by a previous group-undo() call.
-  // void   unuse        (); ///< Decrement use count for when an item is not needed anymore.
-  // Item   use          (); ///< Increment use count to keep an item alive.
   // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
 };
 

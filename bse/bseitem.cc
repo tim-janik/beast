@@ -1242,6 +1242,39 @@ ItemImpl::ItemImpl (BseObject *bobj) :
 ItemImpl::~ItemImpl ()
 {}
 
+ItemIfaceP
+ItemImpl::use ()
+{
+  BseItem *self = as<BseItem*>();
+  ItemIfaceP iface = self->as<ItemIfaceP>();
+  assert_return (self->parent || self->use_count, iface);
+  bse_item_use (self);
+  return iface;
+}
+
+void
+ItemImpl::unuse ()
+{
+  BseItem *self = as<BseItem*>();
+  assert_return (self->use_count >= 1);
+  bse_item_unuse (self);
+}
+
+void
+ItemImpl::set_name (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  if (name != BSE_OBJECT_UNAME (self))
+    bse_item_set (self, "uname", name.c_str(), NULL);
+}
+
+bool
+ItemImpl::editable_property (const std::string &property)
+{
+  BseItem *self = as<BseItem*>();
+  return bse_object_editable_property (self, property.c_str());
+}
+
 ContainerImpl*
 ItemImpl::parent ()
 {
@@ -1349,6 +1382,14 @@ ItemImpl::push_property_undo (const String &property_name)
     }
 }
 
+ProjectIfaceP
+ItemImpl::get_project  ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  return project ? project->as<Bse::ProjectIfaceP>() : NULL;
+}
+
 ItemIfaceP
 ItemImpl::common_ancestor (ItemIface &other)
 {
@@ -1356,6 +1397,33 @@ ItemImpl::common_ancestor (ItemIface &other)
   BseItem *bo = other.as<BseItem*>();
   BseItem *common = bse_item_common_ancestor (self, bo);
   return common->as<ItemIfaceP>();
+}
+
+bool
+ItemImpl::check_is_a (const String &type_name)
+{
+  BseItem *self = as<BseItem*>();
+  const GType type = g_type_from_name (type_name.c_str());
+  const bool is_a = g_type_is_a (G_OBJECT_TYPE (self), type);
+  return is_a;
+}
+
+void
+ItemImpl::group_undo (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-group-undo");
+  bse_undo_stack_add_merger (ustack, name.c_str());
+  bse_item_undo_close (ustack);
+}
+
+void
+ItemImpl::ungroup_undo ()
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-ungroup-undo");
+  bse_undo_stack_remove_merger (ustack);
+  bse_item_undo_close (ustack);
 }
 
 class CustomIconKey : public DataKey<Icon*> {
@@ -1383,6 +1451,88 @@ ItemImpl::icon (const Icon &icon)
       delete custom_icon;
       delete_data (&custom_icon_key);
     }
+}
+
+ItemIfaceP
+ItemImpl::get_parent ()
+{
+  return parent() ? parent()->as<ContainerIfaceP>() : NULL;
+}
+
+int
+ItemImpl::get_seqid ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_item_get_seqid (self);
+}
+
+String
+ItemImpl::get_type ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_authors ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_authors (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_blurb ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_blurb (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_license ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_license (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_uname_path ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  gchar *upath = project ? bse_container_make_upath (BSE_CONTAINER (project), self) : NULL;
+  const String result = upath ? upath : "";
+  g_free (upath);
+  return result;
+}
+
+String
+ItemImpl::get_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_OBJECT_UNAME (self);
+}
+
+String
+ItemImpl::get_name_or_type ()
+{
+  BseItem *self = as<BseItem*>();
+  const char *name = BSE_OBJECT_UNAME (self);
+  const String result = name ? name : BSE_OBJECT_TYPE_NAME (self);
+  return result;
+}
+
+bool
+ItemImpl::internal ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_ITEM_INTERNAL (self);
 }
 
 } // Bse

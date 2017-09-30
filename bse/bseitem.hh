@@ -159,13 +159,32 @@ private:
 protected:
   virtual           ~ItemImpl        ();
 public:
-  explicit           ItemImpl        (BseObject*);
-  ContainerImpl*     parent          ();
-  virtual ItemIfaceP common_ancestor (ItemIface &other) override;
-  virtual Icon       icon            () const override;
-  virtual void       icon            (const Icon&) override;
+  explicit              ItemImpl         (BseObject*);
+  ContainerImpl*        parent           ();
+  virtual ItemIfaceP    use               () override;
+  virtual void          unuse             () override;
+  virtual void          set_name          (const std::string &name) override;
+  virtual bool          editable_property (const std::string &property_name) override;
+  virtual Icon          icon             () const override;
+  virtual void          icon             (const Icon&) override;
+  virtual ItemIfaceP    common_ancestor  (ItemIface &other) override;
+  virtual bool          check_is_a       (const String &type_name) override;
+  virtual void          group_undo       (const String &name) override;
+  virtual void          ungroup_undo     () override;
+  virtual ProjectIfaceP get_project      () override;
+  virtual ItemIfaceP    get_parent       () override;
+  virtual int           get_seqid        () override;
+  virtual String        get_type         () override;
+  virtual String        get_type_authors () override;
+  virtual String        get_type_blurb   () override;
+  virtual String        get_type_license () override;
+  virtual String        get_type_name    () override;
+  virtual String        get_uname_path   () override;
+  virtual String        get_name         () override;
+  virtual String        get_name_or_type () override;
+  virtual bool          internal         () override;
   /// Save the value of @a property_name onto the undo stack.
-  void               push_property_undo (const String &property_name);
+  void               push_property_undo  (const String &property_name);
   /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, Error (ItemT::*function) (FuncArgs...), CallArgs... args)

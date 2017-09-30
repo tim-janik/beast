@@ -1208,7 +1208,7 @@ bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
                                 "any_signal", piano_roll_release_proxy, self,
                                 "any_signal", piano_roll_song_pointer_changed, self,
                                 NULL);
-          bse_item_unuse (self->song);
+          Bse::ItemH::down_cast (bse_server.from_proxy (self->song)).unuse();
           self->song = 0;
         }
       self->plinks.clear();
@@ -1232,11 +1232,11 @@ bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
       self->min_note = self->part.get_min_note();
       self->max_note = self->part.get_max_note();
       piano_roll_range_changed (self);
-      SfiProxy song = bse_item_get_parent (self->part.proxy_id());
+      SfiProxy song = self->part.get_parent().proxy_id();
       if (song)
         {
           self->song = song;
-          bse_item_use (self->song);
+          Bse::ItemH::down_cast (bse_server.from_proxy (self->song)).use();
           bse_proxy_connect (self->song,
                              "swapped_signal::release", piano_roll_release_proxy, self,
                              "swapped_signal::pointer-changed", piano_roll_song_pointer_changed, self,

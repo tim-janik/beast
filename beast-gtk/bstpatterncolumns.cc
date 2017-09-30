@@ -187,13 +187,13 @@ pattern_column_note_key_event (BstPatternColumn       *column,
   switch (action)
     {
     case BST_PATTERN_REMOVE_EVENTS:
-      bse_item_group_undo (part.proxy_id(), "Remove Events");
+      part.group_undo ("Remove Events");
       for (i = 0; i < pseq.size(); i++)
         part.delete_event (pseq[i].id);
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
       return TRUE;
     case BST_PATTERN_SET_NOTE:
-      bse_item_group_undo (part.proxy_id(), "Set Note");
+      part.group_undo ("Set Note");
       if (pseq.size() == 1)
         {
           const Bse::PartNote *pnote = &pseq[0];
@@ -203,7 +203,7 @@ pattern_column_note_key_event (BstPatternColumn       *column,
         part.insert_note (column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
       else
         bst_gui_error_bell (pview);
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
       return TRUE;
     default: ;
     }
@@ -498,10 +498,10 @@ pattern_column_event_key_event (BstPatternColumn       *column,
   pattern_column_event_to_string (column, buffer, pctrl, placeholder, &ivalue);
   if (action == BST_PATTERN_REMOVE_EVENTS)
     {
-      bse_item_group_undo (part.proxy_id(), "Remove Events");
+      part.group_undo ("Remove Events");
       for (size_t i = 0; i < cseq.size(); i++)
         part.delete_event (cseq[i].id);
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
       handled = TRUE;
     }
   else if (action == BST_PATTERN_SET_DIGIT &&   /* insertions */
