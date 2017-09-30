@@ -7,7 +7,6 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RET
 AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-# need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
@@ -109,11 +108,6 @@ idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
 	bsecxxbase.idl		\
 )
-# BSE procedure sources
-bse_proc_sources = $(strip \
-				bseitem.proc					\
-)
-bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 
 doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
 
@@ -130,7 +124,7 @@ libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
-nodist_libbse_@MAJOR@_la_SOURCES     = $(bse_proc_gen_sources) gslfft.cc
+nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
 libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
@@ -150,18 +144,6 @@ SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
 	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibdir)
 install-exec-hook: install-exec-ldconfig
-
-#
-# rules to generate built sources
-#
-%.genprc.cc: @PERLRULE@ %.proc mkcproc.pl
-	$(AM_V_GEN)
-	$(Q) $(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
-if WITH_PERLRULE
-CLEANFILES += $(bse_proc_gen_sources)
-else
-MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
-endif
 
 # == gslfft.cc ==
 GENERATED_CLEANFILES += gslfft.cc
@@ -240,26 +222,6 @@ bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	$(AM_V_GEN)
 	$(Q) cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(mktypes_bse_sources) > xgen-$(@F) \
-	&& cp xgen-$(@F) $(@F) \
-	&& rm -f xgen-$(@F)
-# bsebuiltin_externs.cc
-GENERATED_CLEANFILES += bsebuiltin_externs.cc
-#$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
-bseplugin.cc: bsebuiltin_externs.cc
-bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
-	$(AM_V_GEN)
-	$(Q) cd $(srcdir) \
-	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
-	&& cp xgen-$(@F) $(@F) \
-	&& rm -f xgen-$(@F)
-# bsebuiltin_array.cc
-GENERATED_CLEANFILES += bsebuiltin_array.cc
-#$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
-bseplugin.cc: bsebuiltin_array.cc
-bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
-	$(AM_V_GEN)
-	$(Q) cd $(srcdir) \
-	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsegenbasics.cc
