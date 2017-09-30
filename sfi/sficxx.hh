@@ -611,7 +611,7 @@ public:
   void
   unref ()
   {
-    RAPICORN_ASSERT_RETURN (block != NULL && block->ref_count > 1);
+    BSE_ASSERT_RETURN (block != NULL && block->ref_count > 1);
     sfi_fblock_unref (block);
   }
   void
@@ -752,7 +752,7 @@ public:
   void
   unref ()
   {
-    RAPICORN_ASSERT_RETURN (block != NULL && block->ref_count > 1);
+    BSE_ASSERT_RETURN (block != NULL && block->ref_count > 1);
     sfi_bblock_unref (block);
   }
   void resize (unsigned int length)
@@ -883,7 +883,7 @@ public:
   void
   unref ()
   {
-    RAPICORN_ASSERT_RETURN (crec != NULL && crec->ref_count > 1);
+    BSE_ASSERT_RETURN (crec != NULL && crec->ref_count > 1);
     sfi_rec_unref (crec);
   }
   void
@@ -989,13 +989,13 @@ public:
   void
   ref ()
   {
-    RAPICORN_ASSERT_RETURN (cobj != NULL && cobj->ref_count > 0);
+    BSE_ASSERT_RETURN (cobj != NULL && cobj->ref_count > 0);
     g_object_ref (cobj);
   }
   void
   unref ()
   {
-    RAPICORN_ASSERT_RETURN (cobj != NULL && cobj->ref_count > 1);
+    BSE_ASSERT_RETURN (cobj != NULL && cobj->ref_count > 1);
     g_object_unref (cobj);
   }
   void

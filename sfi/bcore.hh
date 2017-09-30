@@ -248,7 +248,7 @@ class AlignedArray {
     data_ = reinterpret_cast<T*> (aligned_alloc (n_elements_ * sizeof (T), ALIGNMENT, &unaligned_mem_));
   }
   // disallow copy constructor assignment operator
-  RAPICORN_CLASS_NON_COPYABLE (AlignedArray);
+  BSE_CLASS_NON_COPYABLE (AlignedArray);
 public:
   AlignedArray (const vector<T>& elements) :
     n_elements_ (elements.size())

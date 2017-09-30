@@ -174,8 +174,8 @@ Block::fill (guint           n_values,
              float          *values,
              float           value)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (float) == 4);
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (float) == 4, "");
+  static_assert (sizeof (wchar_t) == 4, "");
   const union { float f; guint32 vuint32; } u = { value };
   wmemset ((wchar_t*) values, u.vuint32, n_values);
 }
@@ -185,7 +185,7 @@ Block::fill (guint           n_values,
              guint32        *values,
              guint32         value)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemset ((wchar_t*) values, value, n_values);
 }
 
@@ -194,7 +194,7 @@ Block::copy (guint          n_values,
              guint32       *values,
              const guint32 *ivalues)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
 
@@ -203,8 +203,8 @@ Block::copy (guint         n_values,
              gfloat       *values,
              const gfloat *ivalues)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (float) == 4);
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (float) == 4, "");
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
 
@@ -217,7 +217,7 @@ bse_block_fill_uint32 (guint    n_values,
 		       guint32 *values,
 		       guint32  vuint32)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemset ((wchar_t*) values, vuint32, n_values);
 }
 
@@ -226,9 +226,9 @@ bse_block_fill_float (guint	   n_values,
 		      float       *values,
 		      const float  value)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (float) == 4);
+  static_assert (sizeof (float) == 4, "");
   const union { float f; guint32 vuint32; } u = { value };
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemset ((wchar_t*) values, u.vuint32, n_values);
 }
 
@@ -237,7 +237,7 @@ bse_block_copy_uint32 (guint	      n_values,
 		       guint32       *values,
 		       const guint32 *ivalues)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
 
@@ -246,8 +246,8 @@ bse_block_copy_float (guint	    n_values,
 		      gfloat       *values,
 		      const gfloat *ivalues)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (float) == 4);
-  RAPICORN_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  static_assert (sizeof (float) == 4, "");
+  static_assert (sizeof (wchar_t) == 4, "");
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
 // == C++ Implementations ==
@@ -257,7 +257,7 @@ bse_block_fill_0 (size_t n_values, TYPE *values)
   size_t n_bytes = n_values * sizeof (TYPE);
   char *p = (char*) values;
   uint r = size_t (p) & 3;
-  if (RAPICORN_UNLIKELY (r))
+  if (BSE_UNLIKELY (r))
     {
       r = MIN (r, n_values);    // rest for pointer alignment
       memset (p, 0, r);
@@ -267,7 +267,7 @@ bse_block_fill_0 (size_t n_values, TYPE *values)
   const size_t n_aligned = n_bytes / 4;
   wmemset ((wchar_t*) p, 0, n_aligned);
   n_bytes -= n_aligned * 4;
-  if (RAPICORN_UNLIKELY (n_bytes))
+  if (BSE_UNLIKELY (n_bytes))
     {
       p += n_aligned * 4;
       memset (p, 0, n_bytes);

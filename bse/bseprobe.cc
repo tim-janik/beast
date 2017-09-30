@@ -318,7 +318,7 @@ public:
     }
   };
 private:
-  RAPICORN_CLASS_NON_COPYABLE (ProbeQueue);
+  BSE_CLASS_NON_COPYABLE (ProbeQueue);
 };
 
 
@@ -411,7 +411,7 @@ private:
     {
       assert_return (ostreams == NULL);
     }
-    RAPICORN_CLASS_NON_COPYABLE (ProbeData);
+    BSE_CLASS_NON_COPYABLE (ProbeData);
   };
   void
   handle_probe (ProbeData   &pdata,

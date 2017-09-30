@@ -68,6 +68,21 @@ StringVector       pretty_backtrace_symbols (void **pointers, const int nptrs);
       const String __s_ = ::Bse::pretty_backtrace (__p_, ::Bse::backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), \
                                                    __FILE__, __LINE__, __func__); __s_; })
 
+// == Memory Barriers ==
+#define  BSE_CACHE_LINE_ALIGNMENT       64      // generally enough on x86, see getconf LEVEL1_DCACHE_LINESIZE
+#if defined __x86_64__ || defined __amd64__
+#define  BSE_MFENCE __sync_synchronize()
+#define  BSE_SFENCE __asm__ __volatile__ ("sfence" ::: "memory")
+#define  BSE_LFENCE __asm__ __volatile__ ("lfence" ::: "memory")
+#else // !x86/64
+#define  BSE_SFENCE __sync_synchronize() ///< Store Fence - prevent processor (and compiler) from reordering stores (write barrier).
+#define  BSE_LFENCE __sync_synchronize() ///< Load Fence  - prevent processor (and compiler) from reordering loads (read barrier).
+/// Memory Fence - prevent processor (and compiler) from reordering loads/stores (read/write barrier), see also std::atomic_thread_fence().
+#define  BSE_MFENCE __sync_synchronize()
+#endif
+/// Compiler Fence, prevent compiler from reordering non-volatile loads/stores, see also std::atomic_signal_fence().
+#define  BSE_CFENCE __asm__ __volatile__ ("" ::: "memory")
+
 // == Implementation Details ==
 #if (defined __i386__ || defined __x86_64__)
 inline void breakpoint() { __asm__ __volatile__ ("int $03"); }

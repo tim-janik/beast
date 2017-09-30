@@ -118,7 +118,7 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
         if (!values[0].value_name) {                                    \
           GEnumValue *v = values;                                       \
           ICode; /* initializes values via *v++ = ...; */               \
-          RAPICORN_ASSERT (v == values + N);                            \
+          BSE_ASSERT_RETURN (v == values + N, NULL);                    \
           *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */     \
         }                                                               \
         return values;                                                  \
@@ -316,7 +316,7 @@ class ExportTypeKeeper
                                         ::BseExportNode           *enode);
   static void       plugin_cleanup     (BsePlugin                 *plugin,
                                         ::BseExportNode           *enode);
-  RAPICORN_CLASS_NON_COPYABLE (ExportTypeKeeper);
+  BSE_CLASS_NON_COPYABLE (ExportTypeKeeper);
 public:
   ExportTypeKeeper (::BseExportNode* (*export_node) (),
                     ::BseExportIdentity *export_identity)
