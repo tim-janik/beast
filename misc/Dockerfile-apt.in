@@ -42,14 +42,14 @@ RUN retry apt-get install -y \
 ENV BINTRAY_REPO	"@BINTRAY_REPO@"
 ENV DISTRELEASE		"@DISTRELEASE@"
 
-# Build and install SpectMorph 0.3.3
+# Build and install SpectMorph 0.3.4
 ### Dependencies
 RUN retry apt-get install -y \
     libao-dev qtbase5-dev libjack-jackd2-dev libfftw3-dev libboost-dev libsndfile1-dev
 ### Clone repository
 RUN cd /usr/src/ && \
     retry git clone http://space.twc.de/public/git/spectmorph.git && \
-    cd /usr/src/spectmorph # need latest version here   && git checkout 0.3.3 -b stable
+    cd /usr/src/spectmorph && git checkout 0.3.4 -b stable
 ### Compile
 RUN cd /usr/src/spectmorph/ && \
     nice ./autogen.sh --prefix=/usr && \
