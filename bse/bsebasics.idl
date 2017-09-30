@@ -79,13 +79,6 @@ sequence It3mSeq {
   Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
 };
-record PropertyCandidates {
-  Info    blurb      = ("A structure describing tentative property values.");
-  SfiString  label;
-  SfiString  tooltip;
-  It3mSeq items;
-  TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
-};
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");

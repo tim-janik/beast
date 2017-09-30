@@ -340,20 +340,15 @@ namespace Bse {
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
                                guint                  prop_id,
-                               BsePropertyCandidates *pc,
+                               Bse::PropertyCandidates &pc,
                                GParamSpec            *pspec)
 {
   CxxBase *cbase = cast (item);
   ObjectType *instance = static_cast<ObjectType*> (cbase);
   if (0)        // check ObjectType::get_candidates() member and prototype
-    (void) static_cast<void (ObjectType::*) (PropertyID, ::Bse::PropertyCandidatesHandle&, GParamSpec*)> (&ObjectType::get_candidates);
-  ::Bse::PropertyCandidatesHandle pch (::Sfi::INIT_NULL);
-  ::Bse::PropertyCandidates *cxxpc = (::Bse::PropertyCandidates*) pc;
-  if (cxxpc)
-    pch.take (cxxpc);   /* take as pointer, not via CopyConstructor */
+    (void) static_cast<void (ObjectType::*) (PropertyID, ::Bse::PropertyCandidates&, GParamSpec*)> (&ObjectType::get_candidates);
+  ::Bse::PropertyCandidates pch;
   instance->get_candidates (static_cast<PropertyID> (prop_id), pch, pspec);
-  if (cxxpc)
-    pch.steal();        /* steal to avoid destruction */
 }
 
 } // Bse

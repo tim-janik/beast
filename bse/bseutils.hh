@@ -15,13 +15,11 @@ Bse::PartControl bse_part_control (uint id, uint tick, Bse::MidiSignal control_t
 void                bse_note_sequence_resize         (BseNoteSequence       *rec,
                                                       guint                  length);
 guint               bse_note_sequence_length         (BseNoteSequence       *rec);
-void                bse_property_candidate_relabel   (BsePropertyCandidates *pc,
-                                                      const gchar           *label,
-                                                      const gchar           *tooltip);
-void                bse_it3m_seq_remove              (BseIt3mSeq            *iseq,
-                                                      BseItem               *item);
 SfiRing*            bse_it3m_seq_to_ring             (BseIt3mSeq            *iseq);
 BseIt3mSeq*         bse_it3m_seq_from_ring           (SfiRing               *ring);
+BseIt3mSeq*         bse_it3m_seq_from_item_seq       (Bse::ItemSeq &items);
+Bse::ItemSeq        bse_item_seq_from_it3m_seq       (BseIt3mSeq *i3s);
+
 
 
 /* --- debugging --- */

@@ -35,10 +35,7 @@ struct BseItem : BseObject {
 };
 
 struct BseItemClass : BseObjectClass {
-  void          (*get_candidates) (BseItem               *item,
-                                   guint                  param_id,
-                                   BsePropertyCandidates *pc,
-                                   GParamSpec            *pspec);
+  void          (*get_candidates) (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec);
   void          (*set_parent)     (BseItem               *item,
                                    BseItem               *parent);
   gboolean      (*needs_storage)  (BseItem               *item,
@@ -62,20 +59,10 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseIt3mSeq*    bse_item_gather_items         (BseItem                *item,
-                                              BseIt3mSeq             *iseq,
-                                              GType                   base_type,
-                                              BseItemCheckContainer   ccheck,
-                                              BseItemCheckProxy       pcheck,
-                                              gpointer                data);
-BseIt3mSeq*    bse_item_gather_items_typed   (BseItem                *item,
-                                              BseIt3mSeq             *iseq,
-                                              GType                   proxy_type,
-                                              GType                   container_type,
-                                              gboolean                allow_ancestor);
+void            bse_item_gather_items_typed   (BseItem *item, Bse::ItemSeq &iseq, GType proxy_type, GType container_type, bool allow_ancestor);
 gboolean        bse_item_get_candidates      (BseItem                *item,
-                                              const gchar            *property,
-                                              BsePropertyCandidates  *pc);
+                                              const Bse::String      &property,
+                                              Bse::PropertyCandidates &pc);
 void            bse_item_set_internal        (gpointer         item,
                                               gboolean         internal);
 gboolean        bse_item_needs_storage       (BseItem         *item,
@@ -183,6 +170,7 @@ public:
   virtual String        get_name         () override;
   virtual String        get_name_or_type () override;
   virtual bool          internal         () override;
+  virtual PropertyCandidates get_property_candidates (const String &property_name) override;
   /// Save the value of @a property_name onto the undo stack.
   void               push_property_undo  (const String &property_name);
   /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.

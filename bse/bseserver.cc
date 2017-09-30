@@ -1106,7 +1106,7 @@ engine_shutdown (BseServer *server)
 namespace Bse {
 
 ServerImpl::ServerImpl (BseObject *bobj) :
-  ObjectImpl (bobj)
+  ContainerImpl (bobj)
 {}
 
 ServerImpl::~ServerImpl ()

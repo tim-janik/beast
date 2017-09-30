@@ -34,7 +34,7 @@ struct BseSoundFontRepoClass : BseSuperClass
 
 /* --- prototypes --- */
 void	       bse_sound_font_repo_list_all_presets   (BseSoundFontRepo *sfrepo,
-						       BseIt3mSeq       *items);
+						       Bse::ItemSeq     &items);
 std::mutex&    bse_sound_font_repo_mutex              (BseSoundFontRepo *sfrepo);
 fluid_synth_t* bse_sound_font_repo_fluid_synth        (BseSoundFontRepo *sfrepo);
 int	       bse_sound_font_repo_add_osc            (BseSoundFontRepo *sfrepo,

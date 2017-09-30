@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstparam.hh"
 #include "bstxframe.hh"
+#include "bstbseutils.hh"
 
 
 /* --- prototypes --- */
@@ -208,19 +209,18 @@ static void
 proxy_binding_set_value (GxkParam     *param,
                          const GValue *value)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  if (proxy)
-    sfi_glue_proxy_set_property (proxy, param->pspec->name, value);
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
+  if (item)
+    sfi_glue_proxy_set_property (item.proxy_id(), param->pspec->name, value);
 }
 
 static void
-proxy_binding_get_value (GxkParam *param,
-                         GValue   *value)
+proxy_binding_get_value (GxkParam *param, GValue *value)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  if (proxy)
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
+  if (item)
     {
-      const GValue *cvalue = sfi_glue_proxy_get_property (proxy, param->pspec->name);
+      const GValue *cvalue = sfi_glue_proxy_get_property (item.proxy_id(), param->pspec->name);
       if (cvalue)
 	g_value_transform (cvalue, value);
       else
@@ -231,32 +231,33 @@ proxy_binding_get_value (GxkParam *param,
 }
 
 static void
-proxy_binding_weakref (gpointer data,
-                       SfiProxy junk)
+proxy_binding_weakref (gpointer data, SfiProxy junk)
 {
   GxkParam *param = (GxkParam*) data;
-  param->bdata[0].v_long = 0;
-  param->bdata[1].v_long = 0;	/* already disconnected */
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
+  param->bdata[0].v_pointer = NULL;
+  param->bdata[1].v_long = 0;  /* already disconnected */
+  delete itemp;
 }
 
 static void
 proxy_binding_destroy (GxkParam *param)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  if (proxy)
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
+  if (param->bdata[1].v_long)
     {
-      sfi_glue_signal_disconnect (proxy, param->bdata[1].v_long);
-      sfi_glue_proxy_weak_unref (proxy, proxy_binding_weakref, param);
-      param->bdata[0].v_long = 0;
-      param->bdata[1].v_long = 0;
+      sfi_glue_signal_disconnect (itemp->proxy_id(), param->bdata[1].v_long);
+      sfi_glue_proxy_weak_unref (itemp->proxy_id(), proxy_binding_weakref, param);
     }
+  param->bdata[0].v_pointer = NULL;
+  param->bdata[1].v_long = 0;
+  delete itemp;
 }
 
 static void
 proxy_binding_start_grouping (GxkParam *param)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
   if (item)
     item.group_undo (string_format ("Modify %s", g_param_spec_get_nick (param->pspec)));
 }
@@ -264,20 +265,19 @@ proxy_binding_start_grouping (GxkParam *param)
 static void
 proxy_binding_stop_grouping (GxkParam *param)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
-  if (proxy)
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
+  if (item)
     item.ungroup_undo();
 }
 
 static gboolean
 proxy_binding_check_writable (GxkParam *param)
 {
-  SfiProxy proxy = param->bdata[0].v_long;
-  if (proxy)
-    return Bse::ItemH::down_cast (bse_server.from_proxy (proxy)).editable_property (param->pspec->name);
+  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
+  if (item)
+    return item.editable_property (param->pspec->name);
   else
-    return FALSE;
+    return false;
 }
 
 static GxkParamBinding proxy_binding = {
@@ -292,41 +292,63 @@ static GxkParamBinding proxy_binding = {
 };
 
 GxkParam*
-bst_param_new_proxy (GParamSpec *pspec,
-                     SfiProxy    proxy)
+bst_param_new_proxy (GParamSpec *pspec, SfiProxy proxy)
 {
-  GxkParam *param = gxk_param_new (pspec, &proxy_binding, (gpointer) FALSE);
+  GxkParam *param = gxk_param_new (pspec, &proxy_binding, NULL);
   bst_param_set_proxy (param, proxy);
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
 
 void
-bst_param_set_proxy (GxkParam *param,
-                     SfiProxy  proxy)
+bst_param_set_item (GxkParam *param, Bse::ItemH item)
 {
   assert_return (GXK_IS_PARAM (param));
   assert_return (param->binding == &proxy_binding);
 
-  proxy_binding_destroy (param);
-  param->bdata[0].v_long = proxy;
-  if (proxy)
+  if (param->bdata[0].v_pointer)
+    proxy_binding_destroy (param);
+  param->bdata[0].v_pointer = new Bse::ItemH (item);
+  if (item)
     {
       gchar *sig = g_strconcat ("property-notify::", param->pspec->name, NULL);
-      param->bdata[1].v_long = sfi_glue_signal_connect_swapped (proxy, sig, (void*) gxk_param_update, param);
+      param->bdata[1].v_long = sfi_glue_signal_connect_swapped (item.proxy_id(), sig, (void*) gxk_param_update, param);
       g_free (sig);
-      sfi_glue_proxy_weak_ref (proxy, proxy_binding_weakref, param);
+      sfi_glue_proxy_weak_ref (item.proxy_id(), proxy_binding_weakref, param);
     }
+}
+
+void
+bst_param_set_proxy (GxkParam *param, SfiProxy proxy)
+{
+  assert_return (GXK_IS_PARAM (param));
+  Bse::ItemH item;
+  if (proxy)
+    {
+      item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      assert_return (item != NULL);
+    }
+  bst_param_set_item (param, item);
+}
+
+Bse::ItemH
+bst_param_get_item (GxkParam *param)
+{
+  Bse::ItemH item;
+  assert_return (GXK_IS_PARAM (param), item);
+  if (param->binding == &proxy_binding)
+    {
+      Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
+      item = *itemp;
+    }
+  return item;
 }
 
 SfiProxy
 bst_param_get_proxy (GxkParam *param)
 {
-  assert_return (GXK_IS_PARAM (param), 0);
-
-  if (param->binding == &proxy_binding)
-    return param->bdata[0].v_long;
-  return 0;
+  Bse::ItemH item = bst_param_get_item (param);
+  return item ? item.proxy_id() : 0;
 }
 
 bool

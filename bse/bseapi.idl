@@ -626,6 +626,7 @@ record PartLink;
 sequence PartLinkSeq;
 record TrackPart;
 sequence TrackPartSeq;
+interface Item;
 interface Project;
 
 /// Fundamental base type for all BSE objects.
@@ -634,6 +635,21 @@ interface Object {
   String      debug_name (); ///< Object name useful for debugging output.
   int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
   signal void changed    (String what); ///< Notification for object state or property changes.
+};
+
+/// A list of Item or derived objects.
+sequence ItemSeq {
+  Item items;
+};
+
+/// A list of items suitable to set as a specific property value.
+record PropertyCandidates {
+  Info      blurb      = ("A structure describing tentative property values.");
+  String    label;
+  String    tooltip;
+  ItemSeq   items;
+  // List of types which may logically partition the list of items by type discrimination
+  StringSeq partitions;
 };
 
 /// Base interface type for objects that can be added to a container.
@@ -659,13 +675,8 @@ interface Item : Object {
   String  get_name_or_type  (); ///< Retrieve an item's name or type if it has no name.
   bool    internal          (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
   bool    editable_property (String property); ///< Test whether a property is editable according to object state and property options.
-  // PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
+  PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
   // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
-};
-
-/// A list of part note events.
-sequence ItemSeq {
-  Item items;
 };
 
 /// Part specific note event representation.
@@ -1129,7 +1140,7 @@ sequence CategorySeq {
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
  */
-interface Server : Object {
+interface Server : Container {
   signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.

@@ -283,14 +283,15 @@ bse_item_compat_setup (BseItem         *self,
     BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
 }
 
-typedef struct {
+struct GatherData {
   BseItem              *item;
   void                 *data;
-  BseIt3mSeq           *iseq;
+  Bse::ItemSeq         &iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
-} GatherData;
+  GatherData (Bse::ItemSeq &is) : iseq (is) {}
+};
 
 static gboolean
 gather_child (BseItem *child,
@@ -301,7 +302,7 @@ gather_child (BseItem *child,
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    bse_it3m_seq_append (gdata->iseq, child);
+    gdata->iseq.push_back (child->as<Bse::ItemIfaceP>());
   return TRUE;
 }
 
@@ -312,29 +313,20 @@ gather_child (BseItem *child,
  * @param ccheck	container filter function
  * @param pcheck	proxy filter function
  * @param data	        @a data pointer to @a ccheck and @a pcheck
- * @return		returns @a items
  *
  * This function gathers items from an object hierachy, walking upwards,
  * starting out with @a item. For each container passing @a ccheck(), all
  * immediate children are tested for addition with @a pcheck.
  */
-BseIt3mSeq*
-bse_item_gather_items (BseItem              *item,
-                       BseIt3mSeq           *iseq,
-                       GType                 base_type,
-                       BseItemCheckContainer ccheck,
-                       BseItemCheckProxy     pcheck,
-                       void                 *data)
+static void
+bse_item_gather_items (BseItem *item, Bse::ItemSeq &iseq, GType base_type, BseItemCheckContainer ccheck, BseItemCheckProxy pcheck, void *data)
 {
-  GatherData gdata;
-
-  assert_return (BSE_IS_ITEM (item), NULL);
-  assert_return (iseq != NULL, NULL);
-  assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
+  GatherData gdata (iseq);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM));
 
   gdata.item = item;
   gdata.data = data;
-  gdata.iseq = iseq;
   gdata.base_type = base_type;
   gdata.ccheck = ccheck;
   gdata.pcheck = pcheck;
@@ -347,7 +339,6 @@ bse_item_gather_items (BseItem              *item,
         bse_container_forall_items (container, gather_child, &gdata);
       item = item->parent;
     }
-  return iseq;
 }
 
 static gboolean
@@ -373,46 +364,32 @@ gather_typed_acheck (BseItem  *proxy,
  * @param proxy_type	 base type of the items to gather
  * @param container_type base type of the containers to check for items
  * @param allow_ancestor if FALSE, ancestors of @a item are omitted
- * @return		 returns @a items
  *
  * Variant of bse_item_gather_items(), the containers and items
  * are simply filtered by checking derivation from @a container_type
  * and @a proxy_type respectively. Gathered items may not be ancestors
- * of @a item if @a allow_ancestor is FALSE.
+ * of @a item if @a allow_ancestor is @a false.
  */
-BseIt3mSeq*
-bse_item_gather_items_typed (BseItem              *item,
-                             BseIt3mSeq           *iseq,
-                             GType                 proxy_type,
-                             GType                 container_type,
-                             gboolean              allow_ancestor)
+void
+bse_item_gather_items_typed (BseItem *item, Bse::ItemSeq &iseq, GType proxy_type, GType container_type, bool allow_ancestor)
 {
   if (allow_ancestor)
-    return bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (void*) container_type);
+    bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (void*) container_type);
   else
-    return bse_item_gather_items (item, iseq, proxy_type,
-                                  gather_typed_ccheck, gather_typed_acheck, (void*) container_type);
+    bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, gather_typed_acheck, (void*) container_type);
 }
 
 gboolean
-bse_item_get_candidates (BseItem                *item,
-                         const char             *property,
-                         BsePropertyCandidates  *pc)
+bse_item_get_candidates (BseItem *item, const Bse::String &property, Bse::PropertyCandidates &pc)
 {
   BseItemClass *klass;
   GParamSpec *pspec;
 
   assert_return (BSE_IS_ITEM (item), FALSE);
-  assert_return (property != NULL, FALSE);
-  assert_return (pc != NULL, FALSE);
 
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
+  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property.c_str());
   if (!pspec)
     return FALSE;
-  if (!pc->items)
-    pc->items = bse_it3m_seq_new();
-  if (!pc->partitions)
-    pc->partitions = bse_type_seq_new();
   klass = (BseItemClass*) g_type_class_peek (pspec->owner_type);
   if (klass && klass->get_candidates)
     klass->get_candidates (item, pspec->param_id, pc, pspec);
@@ -1533,6 +1510,16 @@ ItemImpl::internal ()
 {
   BseItem *self = as<BseItem*>();
   return BSE_ITEM_INTERNAL (self);
+}
+
+PropertyCandidates
+ItemImpl::get_property_candidates (const String &property_name)
+{
+  BseItem *self = as<BseItem*>();
+  PropertyCandidates pc;
+  if (bse_item_get_candidates (self, property_name, pc))
+    return pc;
+  return PropertyCandidates();
 }
 
 } // Bse

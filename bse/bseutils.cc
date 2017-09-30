@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseutils.hh"
 #include "gsldatautils.hh"
+#include "bseitem.hh"
 
 #include <string.h>
 #include <stdlib.h>
@@ -57,30 +58,22 @@ bse_note_sequence_length (BseNoteSequence *rec)
   return rec->notes->n_notes;
 }
 
-void
-bse_property_candidate_relabel (BsePropertyCandidates *pc,
-                                const gchar           *label,
-                                const gchar           *tooltip)
+BseIt3mSeq*
+bse_it3m_seq_from_item_seq (Bse::ItemSeq &items)
 {
-  g_free (pc->label);
-  pc->label = g_strdup (label);
-  g_free (pc->tooltip);
-  pc->tooltip = g_strdup (tooltip);
+  BseIt3mSeq *i3s = bse_it3m_seq_new();
+  for (auto item : items)
+    bse_it3m_seq_append (i3s, item->as<BseItem*>());
+  return i3s;
 }
 
-void
-bse_it3m_seq_remove (BseIt3mSeq *iseq,
-                     BseItem    *item)
+Bse::ItemSeq
+bse_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
 {
-  guint i;
- restart:
-  for (i = 0; i < iseq->n_items; i++)
-    if (iseq->items[i] == item)
-      {
-        iseq->n_items--;
-        memmove (iseq->items + i, iseq->items + i + 1, (iseq->n_items - i) * sizeof (iseq->items[0]));
-        goto restart;
-      }
+  Bse::ItemSeq items;
+  for (size_t i = 0; i < i3s->n_items; i++)
+    items.push_back (i3s->items[i]->as<Bse::ItemIfaceP>());
+  return items;
 }
 
 SfiRing*

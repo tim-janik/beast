@@ -1021,7 +1021,7 @@ public:
         printf ("  }\n");
 
         /* get_candidates() */
-        printf ("  virtual void get_candidates (%s prop_id, ::Bse::PropertyCandidatesHandle &pch, GParamSpec *pspec)\n", ctPropertyID);
+        printf ("  virtual void get_candidates (%s prop_id, ::Bse::PropertyCandidates &pch, GParamSpec *pspec)\n", ctPropertyID);
         printf ("  {\n");
         printf ("  }\n");
 

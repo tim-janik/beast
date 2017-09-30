@@ -259,10 +259,7 @@ track_uncross_part (BseItem *owner,
 }
 
 static void
-bse_track_get_candidates (BseItem               *item,
-                          guint                  param_id,
-                          BsePropertyCandidates *pc,
-                          GParamSpec            *pspec)
+bse_track_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec)
 {
   BseTrack *self = BSE_TRACK (item);
   switch (param_id)
@@ -270,34 +267,39 @@ bse_track_get_candidates (BseItem               *item,
       BseProject *project;
       SfiRing *ring;
     case PROP_WAVE:
-      bse_property_candidate_relabel (pc, _("Available Waves"), _("List of available waves to choose as track instrument"));
+      pc.label = _("Available Waves");
+      pc.tooltip = _("List of available waves to choose as track instrument");
       project = bse_item_get_project (item);
       if (project)
 	{
 	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
-	  bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+	  bse_item_gather_items_typed (BSE_ITEM (wrepo), pc.items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
       break;
     case PROP_SOUND_FONT_PRESET:
-      bse_property_candidate_relabel (pc, _("Sound Fonts"), _("List of available sound font presets to choose as track instrument"));
+      pc.label = _("Sound Fonts");
+      pc.tooltip = _("List of available sound font presets to choose as track instrument");
       project = bse_item_get_project (item);
       if (project)
-	bse_sound_font_repo_list_all_presets (bse_project_get_sound_font_repo (project), pc->items);
+	bse_sound_font_repo_list_all_presets (bse_project_get_sound_font_repo (project), pc.items);
       break;
     case PROP_SNET:
-      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
-      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      pc.label = _("Available Synthesizers");
+      pc.tooltip = _("List of available synthesis networks to choose a track instrument from");
+      bse_item_gather_items_typed (item, pc.items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_PNET:
-      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
-      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      pc.label = _("Available Postprocessors");
+      pc.tooltip = _("List of available synthesis networks to choose a postprocessor from");
+      bse_item_gather_items_typed (item, pc.items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_OUTPUTS:
-      bse_property_candidate_relabel (pc, _("Available Outputs"), _("List of available mixer busses to be used as track output"));
-      bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
+      pc.label = _("Available Outputs");
+      pc.tooltip = _("List of available mixer busses to be used as track output");
+      bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc.items);
       /* remove existing outputs */
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_it3m_seq_remove (pc->items, (BseItem*) ring->data);
+        vector_erase_element (pc.items, ((BseItem*) ring->data)->as<Bse::ItemIfaceP>());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -601,7 +603,11 @@ bse_track_set_property (GObject      *object,
 	}
       break;
     case PROP_OUTPUTS:
-      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseIt3mSeq*) g_value_get_boxed (value));
+      {
+        BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
+        Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
+        bse_bus_or_track_set_outputs (BSE_ITEM (self), items);
+      }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

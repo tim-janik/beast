@@ -6,6 +6,7 @@
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
+#include <numeric>
 #include <algorithm>
 
 namespace Bse {

@@ -99,22 +99,20 @@ bse_wave_osc_init (BseWaveOsc *self)
 }
 
 static void
-bse_wave_osc_get_candidates (BseItem               *item,
-                             guint                  param_id,
-                             BsePropertyCandidates *pc,
-                             GParamSpec            *pspec)
+bse_wave_osc_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (item);
   switch (param_id)
     {
       BseProject *project;
     case PARAM_WAVE:
-      bse_property_candidate_relabel (pc, _("Available Waves"), _("List of available waves to choose as oscillator source"));
+      pc.label = _("Available Waves");
+      pc.tooltip = _("List of available waves to choose as oscillator source");
       project = bse_item_get_project (item);
       if (project)
         {
           BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
-          bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+          bse_item_gather_items_typed (BSE_ITEM (wrepo), pc.items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
         }
       break;
     default:
