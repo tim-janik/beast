@@ -568,8 +568,8 @@ AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
     dnl check for spectmorph unless --without-spectmorph was used
     if test "x$with_spectmorph" != "xno"; then
         dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
-        PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.2, [found_spectmorph="yes"], [found_spectmorph="no"])
-        PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.2, [found_spectmorphgui="yes"], [found_spectmorphgui="no"])
+        PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.4, [found_spectmorph="yes"], [found_spectmorph="no"])
+        PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.4, [found_spectmorphgui="yes"], [found_spectmorphgui="no"])
 
         dnl automatically build with spectmorph support, if it was found by pkg-config
         if test "x$found_spectmorph-$found_spectmorphgui" = "xyes-yes"; then
