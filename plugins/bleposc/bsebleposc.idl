@@ -23,6 +23,8 @@ interface BlepOsc : Effect {
                                 0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
     Int     fine_tune        = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"), STANDARD);
     Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, 0, 5.0, 0.01, STANDARD ":f:scale");
+
+    Real    devel_control_freq = LogScale(_("Internal Control Frequency"), _("Quality/Speed Tradeoff"), 1000, 1, 192000, 0, 480, 10, 2, STANDARD);
   };
   group _("Shape") {
     Real    shape            = (_("Shape"), _("Shape of the Oscillator"), 0.0, -100.0, 100.0, 5.0, STANDARD ":scale");
