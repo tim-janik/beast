@@ -2,6 +2,7 @@
 include "bsecxxmodule.idl";
 namespace Bse {
 
+/*
 record ProbeFeatures {
   Bool          probe_range;
   Bool          probe_energie;
@@ -38,5 +39,5 @@ void source_request_probes (Source          source,
                             ProbeFeatures   probe_features);
 void source_mass_request   (ProbeRequestSeq prseq);
 Int  source_get_mix_freq   (Source          obj);
-
+*/
 };
