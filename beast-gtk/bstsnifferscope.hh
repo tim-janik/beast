@@ -16,6 +16,7 @@
 typedef struct {
   GtkWidget    parent_instance;
   Bse::SourceH source;
+  size_t       probes_handler;
   guint        n_values;
   float       *lvalues;
   float       *rvalues;

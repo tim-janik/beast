@@ -31,6 +31,7 @@ struct _BstScrollgraph
   GdkPixbuf      *pixbuf;     /* n_points wide or high */
   GdkWindow      *canvas;
   Bse::SourceH    source;
+  size_t          probes_handler = 0;
   guint           ochannel;
 };
 struct _BstScrollgraphClass
