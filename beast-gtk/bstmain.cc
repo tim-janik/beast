@@ -37,7 +37,6 @@ static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
 static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
-static gboolean     register_scripts = TRUE;
 static gboolean     may_auto_update_bse_rc_file = TRUE;
 static bool         rewrite_bse_file = false;
 
@@ -72,7 +71,6 @@ static void     main_show_splash_image();
 static void     main_init_core_plugins();
 static void     main_init_ladspa();
 static void     main_sleep4gdb();
-static void     main_init_scripts();
 static void     main_init_dialogs();
 static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
@@ -142,7 +140,6 @@ main (int argc, char *argv[])
   main_init_core_plugins();
   main_init_ladspa();
   main_sleep4gdb();
-  main_init_scripts();
   main_init_dialogs();
   BstApp *app = main_open_files (argc - 1, &argv[1]);
   if (!app)
@@ -314,29 +311,6 @@ main_sleep4gdb()
       bst_splash_update_entity (beast_splash, "Debugging Hook");
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
-    }
-}
-
-static void
-main_init_scripts()
-{
-  /* register BSE scripts */
-  if (register_scripts)
-    {
-      bst_splash_update_entity (beast_splash, _("Scripts"));
-
-      /* script registration, this is done asyncronously,
-       * so we wait until all are done
-       */
-      registration_done = FALSE;
-      bse_server.register_scripts();
-      while (!registration_done)
-	{
-	  GDK_THREADS_LEAVE ();
-	  g_main_iteration (TRUE);
-	  GDK_THREADS_ENTER ();
-	  sfi_glue_gc_run ();
-	}
     }
 }
 
@@ -667,7 +641,6 @@ bst_args_parse_early (int *argc_p, char **argv)
 	    {
 	      register_core_plugins = FALSE;
 	      register_ladspa_plugins = FALSE;
-	      register_scripts = FALSE;
 	    }
 	  if (strchr (flags, 'p'))
 	    register_core_plugins = TRUE;
@@ -677,10 +650,6 @@ bst_args_parse_early (int *argc_p, char **argv)
 	    register_ladspa_plugins = TRUE;
 	  if (strchr (flags, 'L'))
 	    register_ladspa_plugins = FALSE;
-	  if (strchr (flags, 's'))
-	    register_scripts = TRUE;
-	  if (strchr (flags, 'S'))
-	    register_scripts = FALSE;
 	  if (strchr (flags, 'f'))
 	    {
 	      GLogLevelFlags fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
@@ -821,8 +790,6 @@ bst_args_process (int *argc_p, char **argv)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
 	    printout ("%s\n", bse_server.get_effect_path());
-	  else if (strcmp (arg, "scripts") == 0)
-	    printout ("%s\n", bse_server.get_script_path());
 	  else if (strcmp (arg, "instruments") == 0)
 	    printout ("%s\n", bse_server.get_instrument_path());
 	  else if (strcmp (arg, "demo") == 0)
@@ -895,7 +862,6 @@ bst_exit_print_version (void)
   printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
-  printout ("Script Path:     %s\n", bse_server.get_script_path());
   printout ("Effect Path:     %s\n", bse_server.get_effect_path());
   printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
   printout ("Demo Path:       %s\n", bse_server.get_demo_path());
