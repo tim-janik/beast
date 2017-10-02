@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "bseprobe.genidl.hh"
+#include "bsesource.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh"
 #include "gslcommon.hh" // for Bse::TickStamp::current()
