@@ -74,18 +74,6 @@ void		bse_server_registration			(BseServer          *server,
 							 BseRegistrationType rtype,
 							 const gchar	    *what,
 							 const gchar	    *error);
-void		bse_server_script_start			(BseServer          *server,
-							 BseJanitor	    *janitor);
-void		bse_server_script_error			(BseServer	    *server,
-							 const gchar	    *script_name,
-							 const gchar	    *proc_name,
-							 const gchar        *reason);
-Bse::Error	bse_server_run_remote			(BseServer	    *server,
-							 const gchar	    *process_name,
-							 SfiRing	    *params,
-							 const gchar        *script_name,
-							 const gchar        *proc_name,
-							 BseJanitor	   **janitor_p);
 void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
@@ -106,7 +94,6 @@ public:
   virtual String        get_vorbis_version  () override;
   virtual String        get_ladspa_path     () override;
   virtual String        get_plugin_path     () override;
-  virtual String        get_script_path     () override;
   virtual String        get_instrument_path () override;
   virtual String        get_sample_path     () override;
   virtual String        get_effect_path     () override;
@@ -118,10 +105,8 @@ public:
   virtual void   register_ladspa_plugins () override;
   virtual void   register_core_plugins   () override;
   virtual void   start_recording         (const String &wave_file, double n_seconds) override;
-  virtual void   register_scripts        () override;
   virtual void   load_assets             () override;
   virtual bool   preferences_locked      () override;
-  virtual int    n_scripts               () override;
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
   virtual void          destroy_project  (ProjectIface &project) override;

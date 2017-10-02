@@ -34,8 +34,6 @@ struct BseEditableSample;
 struct BseEditableSampleClass;
 struct BseItem;
 struct BseItemClass;
-struct BseJanitor;
-struct BseJanitorClass;
 struct BseMidiDecoder;
 struct BseMidiNotifier;
 struct BseMidiNotifierClass;

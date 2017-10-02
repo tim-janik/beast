@@ -30,7 +30,7 @@ bse_public_headers = $(strip \
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
 							effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
-	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
+	bseglobals.hh		bseglue.hh		bseitem.hh			\
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
 	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
 	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
@@ -65,7 +65,7 @@ bse_sources = $(strip \
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
 	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
 				bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
-	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
+	bseglobals.cc		bseglue.cc		bseitem.cc			\
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \

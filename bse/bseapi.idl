@@ -1194,7 +1194,6 @@ interface Server : Container {
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
   String        get_ladspa_path ();                     ///< Retrieve ladspa search path.
   String        get_plugin_path ();                     ///< Retrieve plugin search path.
-  String        get_script_path ();                     ///< Retrieve script search path.
   String        get_instrument_path ();                 ///< Retrieve instrument search path.
   String        get_sample_path ();                     ///< Retrieve sample search path.
   String        get_effect_path ();                     ///< Retrieve effect search path.
@@ -1205,10 +1204,8 @@ interface Server : Container {
   void          save_preferences ();         ///< Save the bse-preferences property to disk.
   void          register_ladspa_plugins();   ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins asynchronously, DEPRECATED.
   void          register_core_plugins();     ///< Register core plugins asynchronously, DEPRECATED.
-  void          register_scripts();          ///< Register external scripts asynchronously, DEPRECATED.
   void          load_assets();               ///< Register plugins and scripts immediately.
   bool          preferences_locked();        ///< Returns whether the bse-preferences property is currently locked against modifications or not.
-  int32         n_scripts();                 ///< Return the number of scripts currently running on this server.
   bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
@@ -1236,16 +1233,6 @@ interface Server : Container {
 
   /// Helper for Wave PCM positioning.
   int64       tick_stamp_from_systime (int64 systime_usecs);
-
-  // *** Old Janitor ***
-  // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.
-  // String get_script_name  (); ///< Retrieve the script name of this janitor.
-  // String get_proc_name    (); ///< Retrieve the procedure name of this janitor.
-  // int32  n_actions        (); ///< Retrieve number of user actions of this janitor.
-  // String get_action       (int32 nth_action); ///< Retrieve an action of this janitor.
-  // String get_action_name  (int32 nth_action); ///< Retrieve the name of an action of this janitor.
-  // String get_action_blurb (int32 nth_action); ///< Retrieve the help string of an action of this janitor.
-  // void kill (); ///< Kill a currently running janitor.
 };
 
 } // Bse
