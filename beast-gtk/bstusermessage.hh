@@ -28,7 +28,6 @@ typedef struct {
   const char    *secondary;
   const char    *details;
   const char    *config_check;
-  SfiProxy       janitor;
   const char    *process;
   guint          pid;
   guint          n_msg_bits;
