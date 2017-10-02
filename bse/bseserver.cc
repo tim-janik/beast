@@ -1080,10 +1080,10 @@ engine_init (BseServer *server,
       engine_is_initialized = true;
       bse_engine_init();
       // lower priority compared to engine if our priority range permits
-      const int mypid = Bse::ThisThread::thread_pid();
-      int current_priority = getpriority (PRIO_PROCESS, mypid);
-      if (current_priority <= -2 && mypid)
-        setpriority (PRIO_PROCESS, mypid, current_priority + 1);
+      const int mytid = Bse::this_thread_gettid();
+      int current_priority = getpriority (PRIO_PROCESS, mytid);
+      if (current_priority <= -2 && mytid)
+        setpriority (PRIO_PROCESS, mytid, current_priority + 1);
     }
   bse_engine_configure (BSE_GCONFIG (synth_latency), mix_freq, BSE_GCONFIG (synth_control_freq));
 
@@ -1106,7 +1106,7 @@ engine_shutdown (BseServer *server)
 namespace Bse {
 
 ServerImpl::ServerImpl (BseObject *bobj) :
-  ObjectImpl (bobj)
+  ContainerImpl (bobj)
 {}
 
 ServerImpl::~ServerImpl ()

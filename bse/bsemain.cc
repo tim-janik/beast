@@ -218,7 +218,7 @@ static std::atomic<bool> main_loop_thread_running { true };
 static void
 bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 {
-  Bse::TaskRegistry::add ("BSE Core", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("BSE Core", Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   bse_init_intern ();
 
@@ -234,7 +234,7 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       g_main_context_iteration (bse_main_context, TRUE);
     }
 
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid()); // see bse_init_intern
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid()); // see bse_init_intern
 }
 
 static void

@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = gxk res icons
+SUBDIRS = gxk icons
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST\""

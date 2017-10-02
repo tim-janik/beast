@@ -293,7 +293,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
     {
       if (self->wave)
 	{
-	  bse_item_unuse (self->wave);
+          Bse::ItemH::down_cast (bse_server.from_proxy (self->wave)).unuse();
 	  gxk_list_wrapper_notify_clear (self->chunk_wrapper);
 	}
       bst_wave_editor_unset_esample (self);
@@ -303,7 +303,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
 	self->wave = 0;
       if (self->wave)
 	{
-	  bse_item_use (self->wave);
+          Bse::ItemH::down_cast (bse_server.from_proxy (self->wave)).use();
           Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
 	  /* add wave's chunks to list */
 	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, wave.n_wave_chunks());
@@ -527,12 +527,12 @@ bst_wave_editor_set_esample (BstWaveEditor *self, Bse::EditableSampleH esample)
 	{
 	  if (self->esample_open)
 	    self->esample.close();
-          bse_item_unuse (self->esample.proxy_id()); // FIXME: Item.use_count is only needed to keep a container's children
+          self->esample.unuse(); // FIXME: Item.use_count is only needed to keep a container's children
 	}
       self->esample = esample;
       if (self->esample)
 	{
-          bse_item_use (self->esample.proxy_id()); // FIXME: Item.use_count is only needed to keep a container's children
+          self->esample.use(); // FIXME: Item.use_count is only needed to keep a container's children
 	  Bse::Error error;
 	  error = self->esample.open();
 	  self->esample_open = error == Bse::Error::NONE;
@@ -587,7 +587,7 @@ tree_selection_changed (BstWaveEditor    *self,
       Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
       Bse::EditableSampleHandle esample = wave.use_editable (gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
       bst_wave_editor_set_esample (self, esample);
-      bse_item_unuse (esample.proxy_id()); // FIXME: change use_editable()
+      esample.unuse(); // FIXME: change use_editable()
     }
 }
 

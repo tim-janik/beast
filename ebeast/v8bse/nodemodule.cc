@@ -291,7 +291,7 @@ v8bse_register_module (v8::Local<v8::Object> exports)
 
   // debugging aids:
   if (0)
-    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::ThisThread::process_pid());
+    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::this_thread_getpid());
 
   // Ensure Bse has everything properly loaded
   bse_server.load_assets();

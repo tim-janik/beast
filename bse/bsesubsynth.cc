@@ -129,17 +129,15 @@ bse_sub_synth_finalize (GObject *object)
 }
 
 static void
-bse_sub_synth_get_candidates (BseItem               *item,
-                              guint                  param_id,
-                              BsePropertyCandidates *pc,
-                              GParamSpec            *pspec)
+bse_sub_synth_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (item);
   switch (param_id)
     {
     case PARAM_SNET:
-      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a sub network from"));
-      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      pc.label = _("Available Synthesizers");
+      pc.tooltip = _("List of available synthesis networks to choose a sub network from");
+      bse_item_gather_items_typed (item, pc.items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

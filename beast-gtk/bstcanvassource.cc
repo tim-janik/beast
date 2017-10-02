@@ -154,24 +154,22 @@ canvas_source_set_position (BstCanvasSource *self)
 static void
 source_name_changed (BstCanvasSource *csource)
 {
-  const gchar *name;
-
   assert_return (BST_IS_CANVAS_SOURCE (csource));
 
-  name = bse_item_get_name_or_type (csource->source.proxy_id());
+  String name = csource->source.get_name_or_type();
 
   if (csource->text)
-    g_object_set (csource->text, "text", name, NULL);
+    g_object_set (csource->text, "text", name.c_str(), NULL);
 
   if (csource->params_dialog)
     {
-      gxk_dialog_set_title (GXK_DIALOG (csource->params_dialog), name);
+      gxk_dialog_set_title (GXK_DIALOG (csource->params_dialog), name.c_str());
       csource_info_update (csource);
     }
 
-  name = g_strconcat ("Info: ", name, NULL);
+  name = "Info: " + name;
   if (csource->source_info)
-    gxk_dialog_set_title (GXK_DIALOG (csource->source_info), name);
+    gxk_dialog_set_title (GXK_DIALOG (csource->source_info), name.c_str());
 }
 
 static void
@@ -181,7 +179,7 @@ source_icon_changed (BstCanvasSource *csource)
   if (csource->icon_item)
     {
       Bse::Icon icon = csource->source.icon();
-      bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source.proxy_id()));
+      bst_canvas_icon_set (csource->icon_item, icon, csource->source.get_type().c_str());
     }
 }
 
@@ -194,7 +192,7 @@ bst_canvas_source_destroy (GtkObject *object)
   if (csource->in_move)
     {
       csource->in_move = FALSE;
-      bse_item_ungroup_undo (csource->source.proxy_id());
+      csource->source.ungroup_undo();
     }
 
   while (csource->channel_hints)
@@ -211,7 +209,7 @@ bst_canvas_source_destroy (GtkObject *object)
 			    "any_signal", source_pos_changed, csource,
 			    "any_signal", source_icon_changed, csource,
 			    NULL);
-      bse_item_unuse (csource->source.proxy_id());
+      csource->source.unuse();
       csource->source = Bse::SourceH();
     }
 
@@ -236,7 +234,7 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   csource = BST_CANVAS_SOURCE (item);
   csource->source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
   if (csource->source)
-    bse_item_use (csource->source.proxy_id());
+    csource->source.use();
   bse_proxy_connect (csource->source.proxy_id(),
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
@@ -274,7 +272,7 @@ canvas_source_create_params (BstCanvasSource *csource)
       csource->params_dialog = (GtkWidget*) gxk_dialog_new (&csource->params_dialog,
                                                             GTK_OBJECT (csource),
                                                             GXK_DIALOG_POPUP_POS,
-                                                            bse_item_get_name_or_type (csource->source.proxy_id()),
+                                                            csource->source.get_name_or_type().c_str(),
                                                             param_view);
       source_name_changed (csource);
     }
@@ -339,12 +337,12 @@ csource_info_update (BstCanvasSource *csource)
     {
       /* construct information */
       gxk_scroll_text_clear (text);
-      gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source.proxy_id()));
+      gxk_scroll_text_aprintf (text, "%s:\n", csource->source.get_name_or_type());
 
       /* type & category */
       gxk_scroll_text_push_indent (text);
-      gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source.proxy_id()));
-      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", bse_item_get_type_name (csource->source.proxy_id()));
+      gxk_scroll_text_aprintf (text, "Type: %s\n", csource->source.get_type_name());
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", csource->source.get_type_name());
       if (cseq.size())
         gxk_scroll_text_aprintf (text, "Category: %s\n", cseq[0].category);
       gxk_scroll_text_pop_indent (text);
@@ -397,9 +395,9 @@ csource_info_update (BstCanvasSource *csource)
       if (csource_source_n_ochannels)
 	gxk_scroll_text_pop_indent (text);
 
-      /* description */
-      const gchar *string = bse_item_get_type_blurb (csource->source.proxy_id());
-      if (string && string[0])
+      // description
+      String string = csource->source.get_type_blurb();
+      if (!string.empty())
 	{
 	  gxk_scroll_text_aprintf (text, "\nDescription:\n");
 	  gxk_scroll_text_push_indent (text);
@@ -407,14 +405,14 @@ csource_info_update (BstCanvasSource *csource)
 	  gxk_scroll_text_pop_indent (text);
 	}
 
-      /* authors */
-      string = bse_item_get_type_authors (csource->source.proxy_id());
-      if (string && string[0])
+      // authors
+      string = csource->source.get_type_authors();
+      if (!string.empty())
         gxk_scroll_text_aprintf (text, "\nAuthors: %s\n", string);
 
-      /* license */
-      string = bse_item_get_type_license (csource->source.proxy_id());
-      if (string && string[0])
+      // license
+      string = csource->source.get_type_license();
+      if (!string.empty())
         gxk_scroll_text_aprintf (text, "\nLicense: %s\n", string);
     }
 }
@@ -441,7 +439,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
       csource->source_info = (GtkWidget*) gxk_dialog_new (&csource->source_info,
                                                           GTK_OBJECT (csource),
                                                           GXK_DIALOG_POPUP_POS,
-                                                          bse_item_get_name_or_type (csource->source.proxy_id()),
+                                                          csource->source.get_name_or_type().c_str(),
                                                           sctext);
     }
   csource_info_update (csource);
@@ -808,7 +806,7 @@ bst_canvas_source_build_async (gpointer data)
       if (!csource->text)
         {
           /* add text item, invoke name_changed callback to setup the text value */
-          guint ocolor = csource->source && bse_item_internal (csource->source.proxy_id()) ? RGBA_INTERNAL : RGBA_BLACK;
+          guint ocolor = csource->source && csource->source.internal() ? RGBA_INTERNAL : RGBA_BLACK;
           csource->text = gnome_canvas_item_new (group,
                                                  GNOME_TYPE_CANVAS_TEXT,
                                                  "fill_color_rgba", ocolor,
@@ -928,7 +926,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
               csource->move_dx = x;
               csource->move_dy = y;
               csource->in_move = TRUE;
-              bse_item_group_undo (csource->source.proxy_id(), "Move");
+              csource->source.group_undo ("Move");
             }
 	  gdk_cursor_destroy (fleur);
 	  handled = TRUE;
@@ -977,7 +975,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
     case GDK_BUTTON_RELEASE:
       if (bst_mouse_button_move (event) && csource->in_move)
 	{
-          bse_item_ungroup_undo (csource->source.proxy_id());
+          csource->source.ungroup_undo();
 	  csource->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);
 	  handled = TRUE;

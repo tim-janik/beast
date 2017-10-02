@@ -34,7 +34,7 @@ In order to build release tarballs, `Rapicorn`, `GnomeCanvas`,
 `Ogg/Vorbis`, `libflac` and `npm` are required.
 Support for MP3 files is optional and requires `libmad` (MPEG audio
 decoder library) when compiling Beast.
-Compilation requires `g++-4.9` or later and a recent Linux
+Compilation requires `g++-5.2.1` or later and a recent Linux
 distribution like Ubuntu-14.04.
 
 

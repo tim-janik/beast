@@ -11,6 +11,43 @@
 
 using namespace Bse;
 
+#define print_vector(v, fmt)       ({ printf ("{"); for (const auto e : v) printf (" " fmt, e); printf (" }\n"); })
+
+static void
+test_vector_utils()
+{
+  std::vector<int> ref;
+  std::vector<int> v1 = { +17, +7, +5, +3, +1, -1, -3, -5, -7, -19 };
+  std::vector<int> v2 = { +27, -7, +4, -2, 0, -1, +2, -6, +7, -12, +66 };
+  std::vector<int> rv;
+  copy_reordered (v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter (rv));
+  ref = { -7, -1, +7, +17, +5, +3, +1, -3, -5, -19 };
+  TASSERT (rv == ref); // print_vector (rv, "%d");
+  vector_erase_element (v1, -3);    ref = { +17, +7, +5, +3, +1, -1, -5, -7, -19 };   TASSERT (v1 == ref);
+  vector_erase_element (v1, +5);    ref = { +17, +7, +3, +1, -1, -5, -7, -19 };       TASSERT (v1 == ref);
+  vector_erase_element (v1, -5);    ref = { +17, +7, +3, +1, -1, -7, -19 };           TASSERT (v1 == ref);
+  vector_erase_element (v1, -19);   ref = { +17, +7, +3, +1, -1, -7 };                TASSERT (v1 == ref);
+  vector_erase_element (v1, +17);   ref = { +7, +3, +1, -1, -7 };                     TASSERT (v1 == ref);
+  vector_erase_element (v1, +77);   ref = { +7, +3, +1, -1, -7 };                     TASSERT (v1 == ref);
+  vector_erase_element (v1, 0);     ref = { +7, +3, +1, -1, -7 };                     TASSERT (v1 == ref);
+  rv.clear(); copy_reordered (v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter (rv));
+  ref = { -7, -1, +7, +3, +1 };                                 TASSERT (rv == ref);
+  v1.push_back (0);
+  rv.clear(); copy_reordered (v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter (rv));
+  ref = { -7, 0, -1, +7, +3, +1 };                              TASSERT (rv == ref);
+  v1.push_back (0);
+  rv.clear(); copy_reordered (v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter (rv));
+  ref = { -7, 0, -1, +7, +3, +1, 0 };                           TASSERT (rv == ref);
+  v1.push_back (+2);
+  rv.clear(); copy_reordered (v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter (rv));
+  ref = { -7, 0, -1, +2, +7, +3, +1, 0 };                       TASSERT (rv == ref);
+  v1.resize (201);
+  std::iota (v1.begin(), v1.end(), -100); // v1 = -100 .. +100
+  rv.clear(); copy_reordered (v2.begin(), v2.end(), v1.begin(), v1.end(), std::back_inserter (rv));
+  ref = { -12, -7, -6, -2, -1, 0, +2, +4, +7, +27, +66 };       TASSERT (rv == ref);
+}
+TEST_ADD (test_vector_utils);
+
 static void
 test_paths()
 {
@@ -764,7 +801,7 @@ TEST_ADD (test_vmarshals);
 static int
 my_compare_func (const void*, const void*)
 {
-  RAPICORN_BACKTRACE();
+  BSE_BACKTRACE();
   exit (0);
 }
 

@@ -207,7 +207,7 @@ aiff_read_inst (int       fd,
                 guint32   chunk_size)
 {
   int r;
-  RAPICORN_STATIC_ASSERT (sizeof (afile->instrument) == 20);
+  static_assert (sizeof (afile->instrument) == 20, "");
   if (chunk_size < 20)
     return Bse::Error::FORMAT_INVALID;
   do

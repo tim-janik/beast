@@ -1862,7 +1862,7 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
               VoiceInput *vinput = vswitch->vinputs[i];
               /* second, unlist vinput */
               vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs];
-              RAPICORN_MFENCE;
+              BSE_MFENCE;
               /* last, queue vinput destruction */
               destroy_voice_input_L (vinput, trans);
               /* the order of the above steps is important to prevent DSP-threads

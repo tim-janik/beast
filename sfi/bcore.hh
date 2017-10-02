@@ -2,9 +2,12 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
+#include <sfi/blob.hh>
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/glib-extra.hh>
+#include <numeric>
+#include <algorithm>
 
 namespace Bse {
 
@@ -27,21 +30,7 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
-using   Rapicorn::url_show;
-using   Rapicorn::DataKey;
-using   Rapicorn::DataListContainer;
 using   Rapicorn::void_t;
-using   Rapicorn::Blob;
-using   Rapicorn::Res;
-using   Rapicorn::TaskStatus;
-using   Rapicorn::ThreadInfo;
-using   Rapicorn::cpu_info;
-using   Rapicorn::AsyncBlockingQueue;
-using   Rapicorn::random_int64;
-using   Rapicorn::random_float;
-using   Rapicorn::random_irange;
-using   Rapicorn::random_frange;
-namespace ThisThread = Rapicorn::ThisThread;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -57,6 +46,50 @@ template<class ...Args> inline void debug                (const char *conditiona
 inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
 String                              feature_toggle_find  (const String &config, const String &feature, const String &fallback = "0");
 bool                                feature_toggle_bool  (const char *config, const char *feature);
+
+// == Small Utilities ==
+/// Erase element @a value from std::vector @a v if it's present.
+template<class V> bool
+vector_erase_element (V &v, const typename V::value_type &value)
+{
+  typename V::iterator it = std::find (v.begin(), v.end(), value);
+  if (it != v.end())
+    {
+      v.erase (it);
+      return true;
+    }
+  return false;
+}
+
+/// Copy @a unordered_first .. @a unordered_end into @a output_iterator in the order given by @a ordered_first .. @a ordered_end.
+template<class InputIterator, class OutputIterator> OutputIterator
+copy_reordered (InputIterator const unordered_first, InputIterator const unordered_end,
+                InputIterator const ordered_first, InputIterator const ordered_end,
+                OutputIterator output_iterator)
+{
+  static_assert (std::is_same<std::random_access_iterator_tag,
+                 typename std::iterator_traits<InputIterator>::iterator_category>::value,
+                 "vector_copy_reordered() requires random access iterator as input");
+  std::vector<bool> taken;
+  taken.resize (unordered_end - unordered_first, false);
+  // insert all ordered_first.. elements if present in unordered_first..
+  for (InputIterator it = ordered_first; it != ordered_end; ++it)
+    {
+      InputIterator pos = std::find (unordered_first, unordered_end, *it);
+      while (pos != unordered_end && taken[pos - unordered_first])
+        pos = std::find (++pos, unordered_end, *it);   // keep searching for dups
+      if (pos != unordered_end) // && !taken
+        {
+          taken[pos - unordered_first] = true;
+          *output_iterator++ = *it;
+        }
+    }
+  // insert all unordered_first.. elements not previously encountered
+  for (ssize_t i = 0; i < unordered_end - unordered_first; i++)
+    if (taken[i] == false)
+      *output_iterator++ = *(unordered_first + i);
+  return output_iterator;
+}
 
 // == Binary Lookups ==
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
@@ -222,6 +255,9 @@ info (const char *format, const Args &...args)
   Internal::diagnostic ('I', string_format (format, args...));
 }
 
+// == External Helpers ==
+bool url_show (const char *url); ///< Display @a url via a suitable WWW user agent.
+
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (__FILE__, __LINE__, #cond); return __VA_ARGS__; } while (0)
@@ -258,7 +294,7 @@ class AlignedArray {
     data_ = reinterpret_cast<T*> (aligned_alloc (n_elements_ * sizeof (T), ALIGNMENT, &unaligned_mem_));
   }
   // disallow copy constructor assignment operator
-  RAPICORN_CLASS_NON_COPYABLE (AlignedArray);
+  BSE_CLASS_NON_COPYABLE (AlignedArray);
 public:
   AlignedArray (const vector<T>& elements) :
     n_elements_ (elements.size())
@@ -304,6 +340,60 @@ public:
   /*ctor*/  Spinlock    (const Spinlock&) = delete;
   Spinlock& operator=   (const Spinlock&) = delete;
 };
+
+// == AsyncBlockingQueue ==
+/** Asyncronous queue to push/pop values across thread boundaries.
+ * The AsyncBlockingQueue is a thread-safe asyncronous queue which blocks in pop() until data is provided through push() from any thread.
+ */
+template<class Value>
+class AsyncBlockingQueue {
+  std::mutex              mutex_;
+  std::condition_variable cond_;
+  std::list<Value>        list_;
+public:
+  void  push    (const Value &v);
+  Value pop     ();
+  bool  pending ();
+  void  swap    (std::list<Value> &list);
+};
+
+template<class Value> void
+AsyncBlockingQueue<Value>::push (const Value &v)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.push_back (v);
+  if (BSE_UNLIKELY (notify))
+    cond_.notify_all();
+}
+
+template<class Value> Value
+AsyncBlockingQueue<Value>::pop ()
+{
+  std::unique_lock<std::mutex> locker (mutex_);
+  while (list_.empty())
+    cond_.wait (locker);
+  Value v = list_.front();
+  list_.pop_front();
+  return v;
+}
+
+template<class Value> bool
+AsyncBlockingQueue<Value>::pending()
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  return !list_.empty();
+}
+
+template<class Value> void
+AsyncBlockingQueue<Value>::swap (std::list<Value> &list)
+{
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool notify = list_.empty();
+  list_.swap (list);
+  if (notify && !list_.empty())
+    cond_.notify_all();
+}
 
 } // Bse
 

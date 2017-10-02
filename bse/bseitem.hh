@@ -35,10 +35,7 @@ struct BseItem : BseObject {
 };
 
 struct BseItemClass : BseObjectClass {
-  void          (*get_candidates) (BseItem               *item,
-                                   guint                  param_id,
-                                   BsePropertyCandidates *pc,
-                                   GParamSpec            *pspec);
+  void          (*get_candidates) (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec);
   void          (*set_parent)     (BseItem               *item,
                                    BseItem               *parent);
   gboolean      (*needs_storage)  (BseItem               *item,
@@ -62,20 +59,10 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseIt3mSeq*    bse_item_gather_items         (BseItem                *item,
-                                              BseIt3mSeq             *iseq,
-                                              GType                   base_type,
-                                              BseItemCheckContainer   ccheck,
-                                              BseItemCheckProxy       pcheck,
-                                              gpointer                data);
-BseIt3mSeq*    bse_item_gather_items_typed   (BseItem                *item,
-                                              BseIt3mSeq             *iseq,
-                                              GType                   proxy_type,
-                                              GType                   container_type,
-                                              gboolean                allow_ancestor);
+void            bse_item_gather_items_typed   (BseItem *item, Bse::ItemSeq &iseq, GType proxy_type, GType container_type, bool allow_ancestor);
 gboolean        bse_item_get_candidates      (BseItem                *item,
-                                              const gchar            *property,
-                                              BsePropertyCandidates  *pc);
+                                              const Bse::String      &property,
+                                              Bse::PropertyCandidates &pc);
 void            bse_item_set_internal        (gpointer         item,
                                               gboolean         internal);
 gboolean        bse_item_needs_storage       (BseItem         *item,
@@ -159,18 +146,38 @@ private:
 protected:
   virtual           ~ItemImpl        ();
 public:
-  explicit           ItemImpl        (BseObject*);
-  ContainerImpl*     parent          ();
-  virtual ItemIfaceP common_ancestor (ItemIface &other) override;
-  virtual Icon       icon            () const override;
-  virtual void       icon            (const Icon&) override;
+  explicit              ItemImpl         (BseObject*);
+  ContainerImpl*        parent           ();
+  virtual ItemIfaceP    use               () override;
+  virtual void          unuse             () override;
+  virtual void          set_name          (const std::string &name) override;
+  virtual bool          editable_property (const std::string &property_name) override;
+  virtual Icon          icon             () const override;
+  virtual void          icon             (const Icon&) override;
+  virtual ItemIfaceP    common_ancestor  (ItemIface &other) override;
+  virtual bool          check_is_a       (const String &type_name) override;
+  virtual void          group_undo       (const String &name) override;
+  virtual void          ungroup_undo     () override;
+  virtual ProjectIfaceP get_project      () override;
+  virtual ItemIfaceP    get_parent       () override;
+  virtual int           get_seqid        () override;
+  virtual String        get_type         () override;
+  virtual String        get_type_authors () override;
+  virtual String        get_type_blurb   () override;
+  virtual String        get_type_license () override;
+  virtual String        get_type_name    () override;
+  virtual String        get_uname_path   () override;
+  virtual String        get_name         () override;
+  virtual String        get_name_or_type () override;
+  virtual bool          internal         () override;
+  virtual PropertyCandidates get_property_candidates (const String &property_name) override;
   /// Save the value of @a property_name onto the undo stack.
-  void               push_property_undo (const String &property_name);
+  void               push_property_undo  (const String &property_name);
   /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, Error (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
-    RAPICORN_ASSERT_RETURN (this == &self);
+    BSE_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       return (self.*function) (args...);
@@ -181,7 +188,7 @@ public:
   template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
-    RAPICORN_ASSERT_RETURN (this == &self);
+    BSE_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       (self.*function) (args...); // ignoring return type R
@@ -194,7 +201,7 @@ public:
   push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   {
     const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
-    RAPICORN_ASSERT_RETURN (this == &self);
+    BSE_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       return undo_lambda (self, ustack);
@@ -206,7 +213,7 @@ public:
   push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
     const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
-    RAPICORN_ASSERT_RETURN (this == &self);
+    BSE_ASSERT_RETURN (this == &self);
     auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> Error {
       self.push_undo (blurb, self, undo_lambda);
       return Error::NONE;

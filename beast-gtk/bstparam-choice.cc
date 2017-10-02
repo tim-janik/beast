@@ -71,10 +71,11 @@ param_choice_create (GxkParam    *param,
   if (GXK_IS_MENU_BUTTON (widget))
     {
       SfiProxy proxy = bst_param_get_proxy (param);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
       g_object_set (widget, "menu", menu, NULL);
       str = g_strdup_format ("<BEAST-ParamChoice>/%s(%s::%llx)",
                              param->pspec->name,
-                             proxy ? bse_item_get_type (proxy) : "0",
+                             item ? item.get_type() : "0",
                              (long long unsigned) sfi_pspec_get_choice_hash (param->pspec));
       gtk_menu_set_accel_path (GTK_MENU (menu), str);
       g_free (str);

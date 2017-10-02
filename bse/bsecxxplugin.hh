@@ -118,7 +118,7 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
         if (!values[0].value_name) {                                    \
           GEnumValue *v = values;                                       \
           ICode; /* initializes values via *v++ = ...; */               \
-          RAPICORN_ASSERT (v == values + N);                            \
+          BSE_ASSERT_RETURN (v == values + N, NULL);                    \
           *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */     \
         }                                                               \
         return values;                                                  \
@@ -316,7 +316,7 @@ class ExportTypeKeeper
                                         ::BseExportNode           *enode);
   static void       plugin_cleanup     (BsePlugin                 *plugin,
                                         ::BseExportNode           *enode);
-  RAPICORN_CLASS_NON_COPYABLE (ExportTypeKeeper);
+  BSE_CLASS_NON_COPYABLE (ExportTypeKeeper);
 public:
   ExportTypeKeeper (::BseExportNode* (*export_node) (),
                     ::BseExportIdentity *export_identity)
@@ -340,20 +340,15 @@ namespace Bse {
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
                                guint                  prop_id,
-                               BsePropertyCandidates *pc,
+                               Bse::PropertyCandidates &pc,
                                GParamSpec            *pspec)
 {
   CxxBase *cbase = cast (item);
   ObjectType *instance = static_cast<ObjectType*> (cbase);
   if (0)        // check ObjectType::get_candidates() member and prototype
-    (void) static_cast<void (ObjectType::*) (PropertyID, ::Bse::PropertyCandidatesHandle&, GParamSpec*)> (&ObjectType::get_candidates);
-  ::Bse::PropertyCandidatesHandle pch (::Sfi::INIT_NULL);
-  ::Bse::PropertyCandidates *cxxpc = (::Bse::PropertyCandidates*) pc;
-  if (cxxpc)
-    pch.take (cxxpc);   /* take as pointer, not via CopyConstructor */
+    (void) static_cast<void (ObjectType::*) (PropertyID, ::Bse::PropertyCandidates&, GParamSpec*)> (&ObjectType::get_candidates);
+  ::Bse::PropertyCandidates pch;
   instance->get_candidates (static_cast<PropertyID> (prop_id), pch, pspec);
-  if (cxxpc)
-    pch.steal();        /* steal to avoid destruction */
 }
 
 } // Bse

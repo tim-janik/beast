@@ -21,7 +21,7 @@ public:
   void  set_accessors (void       (*get_property)      (GObject*,   guint,       GValue*,          GParamSpec*),
                        void       (*set_property)      (GObject*,   guint, const GValue*,          GParamSpec*) = NULL,
                        gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*) = NULL,
-                       void       (*get_candidates)    (BseItem*,   guint, BsePropertyCandidates*, GParamSpec*) = NULL,
+                       void       (*get_candidates)    (BseItem*,   guint, Bse::PropertyCandidates&, GParamSpec*) = NULL,
                        void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*) = NULL);
   guint add_signal    (const gchar *signal_name,
                        GSignalFlags flags,
@@ -225,7 +225,7 @@ cxx_editable_property_trampoline (BseObject    *o,
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
                                guint                  prop_id,
-                               BsePropertyCandidates *pc,
+                               Bse::PropertyCandidates &pc,
                                GParamSpec            *pspec);   /* defined in bsecxxplugin.hh */
 
 template<class ObjectType, typename PropertyID> static void

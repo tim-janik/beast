@@ -102,8 +102,8 @@ static void	 bse_sound_font_osc_get_property  (GObject		 *object,
 						   GValue		 *value,
 						   GParamSpec		 *pspec);
 static void	 bse_sound_font_osc_get_candidates (BseItem		 *item,
-						    guint		  param_id,
-						    BsePropertyCandidates *pc,
+						    uint		  param_id,
+						    Bse::PropertyCandidates &pc,
 						    GParamSpec		 *pspec);
 static void	 bse_sound_font_osc_context_create (BseSource		 *source,
 						    guint		  context_handle,
@@ -299,17 +299,15 @@ bse_sound_font_osc_get_property (GObject     *object,
 
 
 static void
-bse_sound_font_osc_get_candidates (BseItem               *item,
-                                   guint                  param_id,
-                                   BsePropertyCandidates *pc,
-                                   GParamSpec            *pspec)
+bse_sound_font_osc_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates &pc, GParamSpec *pspec)
 {
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (item);
   switch (param_id)
     {
     case PARAM_PRESET:
-      bse_property_candidate_relabel (pc, _("Available Presets"), _("List of available sound font presets to choose as fluid synth preset"));
-      bse_sound_font_repo_list_all_presets (get_sfrepo (self), pc->items);
+      pc.label = _("Available Presets");
+      pc.tooltip = _("List of available sound font presets to choose as fluid synth preset");
+      bse_sound_font_repo_list_all_presets (get_sfrepo (self), pc.items);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

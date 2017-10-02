@@ -92,7 +92,6 @@ _bst_init_utils (void)
   }
 }
 
-#include "beast-gtk/res/beast-resources.cc"
 void
 _bst_init_radgets (void)
 {
@@ -114,9 +113,9 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   Bse::Blob blob;
-  blob = Bse::Res ("@res radgets-standard.xml");
+  blob = Bse::Blob ("res:gxk/radgets-standard.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
-  blob = Bse::Res ("@res radgets-beast.xml");
+  blob = Bse::Blob ("res:gxk/radgets-beast.xml");
   gxk_radget_parse_text ("beast", blob.data(), blob.size(), NULL, NULL);
 }
 
@@ -203,10 +202,9 @@ typedef struct {
 static void
 sync_title (TitleSync *tsync)
 {
-  const gchar *name = bse_item_get_name (tsync->proxy);
-  gchar *s;
-
-  s = g_strconcat (tsync->title1, name ? name : "<NULL>", tsync->title2, NULL);
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (tsync->proxy));
+  const String name = item.get_name();
+  gchar *s = g_strconcat (tsync->title1, name.c_str(), tsync->title2, NULL);
   g_object_set (tsync->window, "title", s, NULL);
   g_free (s);
 }

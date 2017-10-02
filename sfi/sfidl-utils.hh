@@ -9,12 +9,13 @@
 /// The Sfidl namespace contains implementation and API of the Sfi IDL compiler.
 namespace Sfidl {
 
-using Rapicorn::String;
-using Rapicorn::string_tolower;
-using Rapicorn::printerr;
-using Rapicorn::string_from_int;
-using Rapicorn::string_from_uint;
-using Rapicorn::string_format;
+using Bse::String;
+
+String string_tolower   (const String &str);
+String string_from_int  (int64 value);
+String string_from_uint (uint64 value);
+String string_format    (const char *format, ...) __attribute__ ((__format__ (printf, 1, 2)));
+void   printerr         (const char *format, ...) __attribute__ ((__format__ (printf, 1, 2)));
 
 /* common data structures */
 using std::list;

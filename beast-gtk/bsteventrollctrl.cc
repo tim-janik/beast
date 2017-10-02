@@ -264,13 +264,13 @@ bst_event_roll_controller_clear (BstEventRollController *self)
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq &cseq = part.list_selected_controls (CONTROL_TYPE (self));
-  bse_item_group_undo (part.proxy_id(), "Clear Selection");
+  part.group_undo ("Clear Selection");
   for (size_t i = 0; i < cseq.size(); i++)
     {
       const Bse::PartControl &pctrl = cseq[i];
       part.delete_event (pctrl.id);
     }
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 void
@@ -280,14 +280,14 @@ bst_event_roll_controller_cut (BstEventRollController *self)
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq &cseq = part.list_selected_controls (CONTROL_TYPE (self));
-  bse_item_group_undo (part.proxy_id(), "Cut Selection");
+  part.group_undo ("Cut Selection");
   for (size_t i = 0; i < cseq.size(); i++)
     {
       const Bse::PartControl &pctrl = cseq[i];
       part.delete_event (pctrl.id);
     }
   bst_event_roll_controller_set_clipboard (cseq);
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 gboolean
@@ -318,7 +318,7 @@ bst_event_roll_controller_paste (BstEventRollController *self)
       const Bse::PartControl &pctrl = (*cseq)[i];
       ctick = MIN (ctick, uint (pctrl.tick));
     }
-  bse_item_group_undo (part.proxy_id(), "Paste Clipboard");
+  part.group_undo ("Paste Clipboard");
   part.deselect_controls (0, self->eroll->max_ticks, CONTROL_TYPE (self));
   for (size_t i = 0; i < cseq->size(); i++)
     {
@@ -327,7 +327,7 @@ bst_event_roll_controller_paste (BstEventRollController *self)
       if (id)
         part.select_event (id);
     }
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 gboolean
@@ -435,7 +435,7 @@ move_group_motion (BstEventRollController *self,
   new_tick = bst_event_roll_controller_quantize (self, drag->current_tick);
   delta_tick = self->obj_tick;
   delta_tick -= new_tick;
-  bse_item_group_undo (part.proxy_id(), "Move Selection");
+  part.group_undo ("Move Selection");
   for (size_t i = 0; i < self->sel_cseq.size(); i++)
     {
       const Bse::PartControl &pctrl = self->sel_cseq[i];
@@ -444,7 +444,7 @@ move_group_motion (BstEventRollController *self,
     }
   if (drag->type == GXK_DRAG_DONE)
     self->sel_cseq.clear();
-  bse_item_ungroup_undo (part.proxy_id());
+  part.ungroup_undo();
 }
 
 static void
@@ -501,7 +501,7 @@ align_motion (BstEventRollController *self,
       Bse::PartH part = self->eroll->part;
       guint tick, duration, i;
 
-      bse_item_group_undo (part.proxy_id(), "Align Control Events");
+      part.group_undo ("Align Control Events");
       bst_event_roll_segment_tick_range (self->eroll, &tick, &duration);
       const Bse::PartControlSeq &cseq = part.list_controls (tick, duration, CONTROL_TYPE (self));
       for (i = 0; i < cseq.size(); i++)
@@ -511,7 +511,7 @@ align_motion (BstEventRollController *self,
           part.change_control (pctrl.id, pctrl.tick, CONTROL_TYPE (self), v);
         }
       bst_event_roll_clear_segment (self->eroll);
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
     }
 }
 
@@ -584,11 +584,11 @@ resize_motion (BstEventRollController *self,
   /* apply new control event size */
   if (drag->current_value != self->obj_value)
     {
-      bse_item_group_undo (part.proxy_id(), "Resize Control Event");
+      part.group_undo ("Resize Control Event");
       self->obj_value = drag->current_value;
       if (part.change_control (self->obj_id, self->obj_tick, CONTROL_TYPE (self), self->obj_value) != Bse::Error::NONE)
         drag->state = GXK_DRAG_ERROR;
-      bse_item_ungroup_undo (part.proxy_id());
+      part.ungroup_undo();
     }
 }
 

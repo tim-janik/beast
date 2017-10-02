@@ -912,7 +912,7 @@ engine_start_slaves ()
 {
   assert_return (slaves_running == false);
   slaves_running = true;
-  const uint n_cpus = Bse::ThisThread::online_cpus();
+  const uint n_cpus = Bse::this_thread_online_cpus();
   const uint n_slaves = std::max (1u, n_cpus) - 1;
   for (uint i = 0; i < n_slaves; i++)
     slave_threads.push_back (new std::thread (engine_run_slave));
@@ -945,7 +945,7 @@ void
 engine_run_slave ()
 {
   std::string myid = Bse::string_format ("DSP #%u", ++slave_counter);
-  Bse::TaskRegistry::add (myid, Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
   while (slaves_running)
     {
       thread_process_nodes (bse_engine_block_size(), NULL); // FIXME: merge profile data
@@ -954,7 +954,7 @@ engine_run_slave ()
         break;
       slave_condition.wait (slave_lock);
     }
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
 } // BseInternal
@@ -1208,7 +1208,7 @@ static std::atomic<bool> master_thread_running { false };
 void
 MasterThread::master_thread()
 {
-  Bse::TaskRegistry::add ("DSP #1", Bse::ThisThread::process_pid(), Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::add ("DSP #1", Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   /* assert pollfd equality, since we're simply casting structures */
   static_assert (sizeof (struct pollfd) == sizeof (GPollFD), "");
@@ -1251,7 +1251,7 @@ MasterThread::master_thread()
       if (bse_engine_has_garbage ())
 	caller_wakeup_();
     }
-  Bse::TaskRegistry::remove (Bse::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
 static std::atomic<MasterThread*> master_thread_singleton { NULL };

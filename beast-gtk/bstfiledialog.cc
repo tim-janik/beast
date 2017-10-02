@@ -499,7 +499,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
 {
   Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (super_proxy));
   Bse::Error error = project.store_bse (super, file_name, self_contained);
-  const String title = Bse::string_format (saving_message_format.c_str(), bse_item_get_name (super_proxy ? super_proxy : project.proxy_id()));
+  const String title = Bse::string_format (saving_message_format.c_str(), super ? super.get_name() : project.get_name());
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
@@ -507,7 +507,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
     {
       if (!want_overwrite)
         {
-          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project.proxy_id()), file_name, Bse::error_blurb (error));
+          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), project.get_name(), file_name, Bse::error_blurb (error));
           GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
                                                          BST_CHOICE_TEXT (text),
                                                          BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),

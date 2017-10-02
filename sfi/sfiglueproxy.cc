@@ -8,7 +8,7 @@
 #include <sfi/gbsearcharray.hh>
 
 #define SDEBUG(...)             Bse::debug ("signals", __VA_ARGS__)
-#define	invalid_proxy(proxy)    RAPICORN_CRITICAL ("invalid proxy id: %u", proxy)
+#define	invalid_proxy(proxy)    Bse::warning ("invalid proxy id: %u", proxy)
 
 /* --- structures --- */
 typedef struct {

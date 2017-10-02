@@ -283,14 +283,15 @@ bse_item_compat_setup (BseItem         *self,
     BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
 }
 
-typedef struct {
+struct GatherData {
   BseItem              *item;
   void                 *data;
-  BseIt3mSeq           *iseq;
+  Bse::ItemSeq         &iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
-} GatherData;
+  GatherData (Bse::ItemSeq &is) : iseq (is) {}
+};
 
 static gboolean
 gather_child (BseItem *child,
@@ -301,7 +302,7 @@ gather_child (BseItem *child,
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    bse_it3m_seq_append (gdata->iseq, child);
+    gdata->iseq.push_back (child->as<Bse::ItemIfaceP>());
   return TRUE;
 }
 
@@ -312,29 +313,20 @@ gather_child (BseItem *child,
  * @param ccheck	container filter function
  * @param pcheck	proxy filter function
  * @param data	        @a data pointer to @a ccheck and @a pcheck
- * @return		returns @a items
  *
  * This function gathers items from an object hierachy, walking upwards,
  * starting out with @a item. For each container passing @a ccheck(), all
  * immediate children are tested for addition with @a pcheck.
  */
-BseIt3mSeq*
-bse_item_gather_items (BseItem              *item,
-                       BseIt3mSeq           *iseq,
-                       GType                 base_type,
-                       BseItemCheckContainer ccheck,
-                       BseItemCheckProxy     pcheck,
-                       void                 *data)
+static void
+bse_item_gather_items (BseItem *item, Bse::ItemSeq &iseq, GType base_type, BseItemCheckContainer ccheck, BseItemCheckProxy pcheck, void *data)
 {
-  GatherData gdata;
-
-  assert_return (BSE_IS_ITEM (item), NULL);
-  assert_return (iseq != NULL, NULL);
-  assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
+  GatherData gdata (iseq);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM));
 
   gdata.item = item;
   gdata.data = data;
-  gdata.iseq = iseq;
   gdata.base_type = base_type;
   gdata.ccheck = ccheck;
   gdata.pcheck = pcheck;
@@ -347,7 +339,6 @@ bse_item_gather_items (BseItem              *item,
         bse_container_forall_items (container, gather_child, &gdata);
       item = item->parent;
     }
-  return iseq;
 }
 
 static gboolean
@@ -373,46 +364,32 @@ gather_typed_acheck (BseItem  *proxy,
  * @param proxy_type	 base type of the items to gather
  * @param container_type base type of the containers to check for items
  * @param allow_ancestor if FALSE, ancestors of @a item are omitted
- * @return		 returns @a items
  *
  * Variant of bse_item_gather_items(), the containers and items
  * are simply filtered by checking derivation from @a container_type
  * and @a proxy_type respectively. Gathered items may not be ancestors
- * of @a item if @a allow_ancestor is FALSE.
+ * of @a item if @a allow_ancestor is @a false.
  */
-BseIt3mSeq*
-bse_item_gather_items_typed (BseItem              *item,
-                             BseIt3mSeq           *iseq,
-                             GType                 proxy_type,
-                             GType                 container_type,
-                             gboolean              allow_ancestor)
+void
+bse_item_gather_items_typed (BseItem *item, Bse::ItemSeq &iseq, GType proxy_type, GType container_type, bool allow_ancestor)
 {
   if (allow_ancestor)
-    return bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (void*) container_type);
+    bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (void*) container_type);
   else
-    return bse_item_gather_items (item, iseq, proxy_type,
-                                  gather_typed_ccheck, gather_typed_acheck, (void*) container_type);
+    bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, gather_typed_acheck, (void*) container_type);
 }
 
 gboolean
-bse_item_get_candidates (BseItem                *item,
-                         const char             *property,
-                         BsePropertyCandidates  *pc)
+bse_item_get_candidates (BseItem *item, const Bse::String &property, Bse::PropertyCandidates &pc)
 {
   BseItemClass *klass;
   GParamSpec *pspec;
 
   assert_return (BSE_IS_ITEM (item), FALSE);
-  assert_return (property != NULL, FALSE);
-  assert_return (pc != NULL, FALSE);
 
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
+  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property.c_str());
   if (!pspec)
     return FALSE;
-  if (!pc->items)
-    pc->items = bse_it3m_seq_new();
-  if (!pc->partitions)
-    pc->partitions = bse_type_seq_new();
   klass = (BseItemClass*) g_type_class_peek (pspec->owner_type);
   if (klass && klass->get_candidates)
     klass->get_candidates (item, pspec->param_id, pc, pspec);
@@ -1242,6 +1219,39 @@ ItemImpl::ItemImpl (BseObject *bobj) :
 ItemImpl::~ItemImpl ()
 {}
 
+ItemIfaceP
+ItemImpl::use ()
+{
+  BseItem *self = as<BseItem*>();
+  ItemIfaceP iface = self->as<ItemIfaceP>();
+  assert_return (self->parent || self->use_count, iface);
+  bse_item_use (self);
+  return iface;
+}
+
+void
+ItemImpl::unuse ()
+{
+  BseItem *self = as<BseItem*>();
+  assert_return (self->use_count >= 1);
+  bse_item_unuse (self);
+}
+
+void
+ItemImpl::set_name (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  if (name != BSE_OBJECT_UNAME (self))
+    bse_item_set (self, "uname", name.c_str(), NULL);
+}
+
+bool
+ItemImpl::editable_property (const std::string &property)
+{
+  BseItem *self = as<BseItem*>();
+  return bse_object_editable_property (self, property.c_str());
+}
+
 ContainerImpl*
 ItemImpl::parent ()
 {
@@ -1349,6 +1359,14 @@ ItemImpl::push_property_undo (const String &property_name)
     }
 }
 
+ProjectIfaceP
+ItemImpl::get_project  ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  return project ? project->as<Bse::ProjectIfaceP>() : NULL;
+}
+
 ItemIfaceP
 ItemImpl::common_ancestor (ItemIface &other)
 {
@@ -1356,6 +1374,33 @@ ItemImpl::common_ancestor (ItemIface &other)
   BseItem *bo = other.as<BseItem*>();
   BseItem *common = bse_item_common_ancestor (self, bo);
   return common->as<ItemIfaceP>();
+}
+
+bool
+ItemImpl::check_is_a (const String &type_name)
+{
+  BseItem *self = as<BseItem*>();
+  const GType type = g_type_from_name (type_name.c_str());
+  const bool is_a = g_type_is_a (G_OBJECT_TYPE (self), type);
+  return is_a;
+}
+
+void
+ItemImpl::group_undo (const std::string &name)
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-group-undo");
+  bse_undo_stack_add_merger (ustack, name.c_str());
+  bse_item_undo_close (ustack);
+}
+
+void
+ItemImpl::ungroup_undo ()
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "item-ungroup-undo");
+  bse_undo_stack_remove_merger (ustack);
+  bse_item_undo_close (ustack);
 }
 
 class CustomIconKey : public DataKey<Icon*> {
@@ -1383,6 +1428,98 @@ ItemImpl::icon (const Icon &icon)
       delete custom_icon;
       delete_data (&custom_icon_key);
     }
+}
+
+ItemIfaceP
+ItemImpl::get_parent ()
+{
+  return parent() ? parent()->as<ContainerIfaceP>() : NULL;
+}
+
+int
+ItemImpl::get_seqid ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_item_get_seqid (self);
+}
+
+String
+ItemImpl::get_type ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_authors ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_authors (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_blurb ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_blurb (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_license ()
+{
+  BseItem *self = as<BseItem*>();
+  return bse_type_get_license (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_type_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return g_type_name (G_OBJECT_TYPE (self));
+}
+
+String
+ItemImpl::get_uname_path ()
+{
+  BseItem *self = as<BseItem*>();
+  BseProject *project = bse_item_get_project (self);
+  gchar *upath = project ? bse_container_make_upath (BSE_CONTAINER (project), self) : NULL;
+  const String result = upath ? upath : "";
+  g_free (upath);
+  return result;
+}
+
+String
+ItemImpl::get_name ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_OBJECT_UNAME (self);
+}
+
+String
+ItemImpl::get_name_or_type ()
+{
+  BseItem *self = as<BseItem*>();
+  const char *name = BSE_OBJECT_UNAME (self);
+  const String result = name ? name : BSE_OBJECT_TYPE_NAME (self);
+  return result;
+}
+
+bool
+ItemImpl::internal ()
+{
+  BseItem *self = as<BseItem*>();
+  return BSE_ITEM_INTERNAL (self);
+}
+
+PropertyCandidates
+ItemImpl::get_property_candidates (const String &property_name)
+{
+  BseItem *self = as<BseItem*>();
+  PropertyCandidates pc;
+  if (bse_item_get_candidates (self, property_name, pc))
+    return pc;
+  return PropertyCandidates();
 }
 
 } // Bse

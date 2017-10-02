@@ -1,9 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#define _ISOC99_SOURCE  /* NAN, isfinite, isnan */
 #include "gxkspline.hh"
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <cmath>
+
+using std::isnan;
+using std::isfinite;
 
 #define SQRT_3       (1.7320508075688772935274463415059)
 static const double INF = DBL_MAX;

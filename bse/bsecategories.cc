@@ -133,7 +133,7 @@ void
 bse_categories_register (const std::string &category, const char *i18n_category, GType type, const uint8 *pixstream)
 {
   assert_return (!category.empty());
-  Bse::Category *centry = centry_new (RAPICORN_SIMPLE_FUNCTION, category, type);
+  Bse::Category *centry = centry_new (__func__, category, type);
   check_type (type);
   if (centry)
     {

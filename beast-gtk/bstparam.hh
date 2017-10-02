@@ -34,8 +34,9 @@ GxkParam*    bst_param_new_object     (GParamSpec  *pspec,              /* gxk_p
 /* --- SfiProxy parameters --- */
 GxkParam*    bst_param_new_proxy      (GParamSpec  *pspec,
                                        SfiProxy     proxy);
-void         bst_param_set_proxy      (GxkParam    *param,
-                                       SfiProxy     proxy);
+void         bst_param_set_item       (GxkParam *param, Bse::ItemH item);
+void         bst_param_set_proxy      (GxkParam *param, SfiProxy proxy);
+Bse::ItemH   bst_param_get_item       (GxkParam    *param);
 SfiProxy     bst_param_get_proxy      (GxkParam    *param);
 bool         bst_param_is_proxy       (GxkParam    *param);
 SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,    /* bstparam-proxy.cc */

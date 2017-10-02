@@ -1,5 +1,6 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
 
 SUBDIRS      = . tests
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
@@ -17,6 +18,10 @@ sfi_public_headers = $(strip \
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
 			sfi.hh						\
 	gbsearcharray.hh \
+	blob.hh			\
+	datalist.hh		\
+	entropy.hh		\
+	randomhash.hh		\
 	testing.hh	\
 )
 sfi_all_sources = $(strip \
@@ -28,6 +33,10 @@ sfi_all_sources = $(strip \
 	sfitime.cc	sfitypes.cc	sfivalues.cc	\
 	sfivisitors.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
+	blob.cc			\
+	datalist.cc		\
+	entropy.cc		\
+	randomhash.cc		\
 	testing.cc	\
 )
 sfi_extra_sources = $(strip \
@@ -63,3 +72,14 @@ sfidl_includes += sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc sfidl-utils.c
 # headers
 sfidl_includes += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 sfidl_includes += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
+
+# == zres.cc ==
+include ../res/Makefile.sub
+# ^^^^^ FIXME: the above should only be included by the toplevel Makefile.am
+MISC_PACKRES = $(top_srcdir)/misc/packres.py
+zres.cc: $(top_srcdir)/res/resfiles.list $(MISC_PACKRES) # res_resfiles_list contains res/resfiles.list
+	$(AM_V_GEN)
+	$(Q) $(MISC_PACKRES) -s '.*/res/' $(res_resfiles_list:%=$(top_srcdir)/res/%) > $@.tmp
+	$(Q) mv $@.tmp $@
+CLEANFILES += zres.cc
+bcore.cc: zres.cc

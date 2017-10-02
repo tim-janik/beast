@@ -94,7 +94,7 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 
 namespace Bse {
 
-class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
+class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   TestObjectImplP    test_object_;
 protected:
   virtual                 ~ServerImpl ();

@@ -53,7 +53,7 @@ TickStamp::_increment ()
   Internal::_emit_wakeups (newstamp);
 }
 
-#ifdef  RAPICORN_DOXYGEN
+#ifdef  DOXYGEN
 /**
  * Retrieve BSE execution tick stamp as unsigned 64bit integer.
  *

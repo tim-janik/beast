@@ -384,9 +384,9 @@ edit_name_start (BstTrackRollController *self,
 				      "visible", TRUE,
 				      "has_frame", FALSE,
 				      NULL);
-      const gchar *name = bse_item_get_name (self->obj_part.proxy_id());
-      if (name)
-	gtk_entry_set_text (entry, name);
+      const String name = self->obj_part.get_name();
+      if (!name.empty())
+	gtk_entry_set_text (entry, name.c_str());
       bst_track_roll_start_edit (self->troll, drag->current_row,
 				 self->obj_tick, self->obj_duration,
 				 GTK_CELL_EDITABLE (entry));
@@ -406,7 +406,7 @@ controller_stop_edit (BstTrackRollController *self,
 {
   if (!canceled)
     {
-      bse_item_set_name (self->obj_part.proxy_id(), gtk_entry_get_text (GTK_ENTRY (ecell)));
+      self->obj_part.set_name (gtk_entry_get_text (GTK_ENTRY (ecell)));
       gxk_status_set (GXK_STATUS_DONE, _("Edit Part"), NULL);
     }
   controller_reset_canvas_cursor (self);
@@ -423,15 +423,14 @@ insert_start (BstTrackRollController *self,
       Bse::PartH part = track.get_part (tick);
       if (!part)
 	{
-	  SfiProxy songid = bse_item_get_parent (drag->current_track.proxy_id());
-          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
-          bse_item_group_undo (song.proxy_id(), "Insert part");
+          Bse::SongH song = Bse::SongH::down_cast (drag->current_track.get_parent());
+          song.group_undo ("Insert part");
           Bse::PartH part = song.create_part();
 	  if (part && track.insert_part (tick, part) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
-          bse_item_ungroup_undo (song.proxy_id());
+          song.ungroup_undo ();
 	  drag->state = GXK_DRAG_HANDLED;
 	}
       else
@@ -454,12 +453,12 @@ delete_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to delete */
     {
       Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
-      bse_item_group_undo (song.proxy_id(), "Delete Part");
+      song.group_undo ("Delete Part");
       Bse::TrackH track = self->obj_track;
       track.remove_tick (self->obj_tick);
       if (!song.find_any_track_for_part (self->obj_part))
         song.remove_part (self->obj_part);
-      bse_item_ungroup_undo (song.proxy_id());
+      song.ungroup_undo();
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
@@ -514,7 +513,7 @@ move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
       Bse::TrackH track = drag->current_track;
-      bse_item_group_undo (track.proxy_id(), "Move part");
+      track.group_undo ("Move part");
       if (track.insert_part (new_tick, self->obj_part) > 0)
 	{
 	  if (!self->skip_deletion)
@@ -529,7 +528,7 @@ move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
 	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
       /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", Bse::error_blurb (error)); */
-      bse_item_ungroup_undo (track.proxy_id());
+      track.ungroup_undo();
     }
 }
 

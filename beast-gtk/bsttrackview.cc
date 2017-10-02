@@ -118,7 +118,6 @@ track_view_fill_value (BstItemView *iview,
     return; // item is probably already destructed
   switch (column)
     {
-      const gchar *string;
       gboolean vbool;
       SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
@@ -128,7 +127,7 @@ track_view_fill_value (BstItemView *iview,
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
       break;
     case COL_NAME:
-      g_value_set_string (value, bse_item_get_name (item.proxy_id()));
+      g_value_set_string (value, item.get_name().c_str());
       break;
     case COL_MUTE:
       bse_proxy_get (item.proxy_id(), "muted", &vbool, NULL);
@@ -143,15 +142,27 @@ track_view_fill_value (BstItemView *iview,
       wave = 0;
       sound_font_preset = 0;
       bse_proxy_get (item.proxy_id(), "snet", &snet, "wave", &wave, "sound_font_preset", &sound_font_preset, NULL);
-      if (snet)
-	string = bse_item_get_name (snet);
-      else if (wave)
-	string = bse_item_get_name (wave);
-      else if (sound_font_preset)
-	string = bse_item_get_name (sound_font_preset);
-      else
-	string = "";
-      g_value_set_string (value, string);
+      {
+        String string;
+        if (snet)
+          {
+            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (snet));
+            string = item.get_name();
+          }
+        else if (wave)
+          {
+            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (wave));
+            string = item.get_name();
+          }
+        else if (sound_font_preset)
+          {
+            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (sound_font_preset));
+            string = item.get_name();
+          }
+        else
+          string = "";
+        g_value_set_string (value, string.c_str());
+      }
       break;
     case COL_MIDI_CHANNEL:
       bse_proxy_get (item.proxy_id(), "midi-channel", &vint, NULL);
@@ -161,7 +172,10 @@ track_view_fill_value (BstItemView *iview,
       bse_proxy_get (item.proxy_id(), "outputs", &seq, NULL);
       iseq = bse_it3m_seq_from_seq (seq);
       if (iseq && iseq->n_items == 1)
-        g_value_take_string (value, g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0])));
+        {
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[0]));
+          g_value_take_string (value, g_strdup_format ("%s", item.get_name_or_type()));
+        }
       else if (iseq && iseq->n_items > 1)
         g_value_take_string (value, g_strdup_format ("#%u", iseq ? iseq->n_items : 0));
       else
@@ -171,11 +185,17 @@ track_view_fill_value (BstItemView *iview,
     case COL_POST_SYNTH:
       snet = 0;
       bse_proxy_get (item.proxy_id(), "pnet", &snet, NULL);
-      g_value_set_string (value, snet ? bse_item_get_name (snet) : "");
+      {
+        Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (snet));
+        g_value_set_string (value, item ? item.get_name().c_str() : "");
+      }
       break;
     case COL_BLURB:
-      bse_proxy_get (item.proxy_id(), "blurb", &string, NULL);
-      g_value_set_string (value, string ? string : "");
+      {
+        char *cstring = NULL;
+        bse_proxy_get (item.proxy_id(), "blurb", &cstring, NULL);
+        g_value_set_string (value, cstring ? cstring : "");
+      }
       break;
     }
 }
@@ -190,32 +210,37 @@ track_view_synth_edited (BstTrackView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (text)
 	{
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
+          Bse::PropertyCandidates pc;
 	  /* list possible snet/wave/sound_font_preset candidates */
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
-	  slist = g_slist_append (slist, pc->items);
-          pc = bse_item_get_property_candidates (item, "wave");
-	  slist = g_slist_append (slist, pc->items);
-	  pc = bse_item_get_property_candidates (item, "sound_font_preset");
-          slist = g_slist_append (slist, pc->items);
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          pc = item.get_property_candidates ("snet");
+          auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, snet_i3s.get());
+          pc = item.get_property_candidates ("wave");
+          auto wave_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, wave_i3s.get());
+          pc = item.get_property_candidates ("sound_font_preset");
+          auto sfpr_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+          slist = g_slist_append (slist, sfpr_i3s.get());
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
-	    bse_proxy_set (item, "snet", proxy, NULL);
+	    bse_proxy_set (itemid, "snet", proxy, NULL);
 	  else if (proxy && BSE_IS_WAVE (proxy))
-	    bse_proxy_set (item, "wave", proxy, NULL);
+	    bse_proxy_set (itemid, "wave", proxy, NULL);
 	  else if (proxy && BSE_IS_SOUND_FONT_PRESET (proxy))
-	    bse_proxy_set (item, "sound_font_preset", proxy, NULL);
+	    bse_proxy_set (itemid, "sound_font_preset", proxy, NULL);
 	  else
-	    bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
+	    bse_proxy_set (itemid, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
 	}
       else
-	bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
+	bse_proxy_set (itemid, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
     }
 }
 
@@ -229,24 +254,27 @@ track_view_post_synth_edited (BstTrackView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (text)
 	{
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
 	  /* list possible snet candidates */
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
-	  slist = g_slist_append (slist, pc->items);
+
+          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
+          auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
+	  slist = g_slist_append (slist, snet_i3s.get());
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
-	    bse_proxy_set (item, "pnet", proxy, NULL);
+	    bse_proxy_set (itemid, "pnet", proxy, NULL);
 	  else
-	    bse_proxy_set (item, "pnet", 0, NULL);
+	    bse_proxy_set (itemid, "pnet", 0, NULL);
 	}
       else
-	bse_proxy_set (item, "pnet", 0, NULL);
+	bse_proxy_set (itemid, "pnet", 0, NULL);
     }
 }
 
@@ -269,10 +297,11 @@ track_view_synth_popup_cb (gpointer              data,
                            BstTrackSynthDialog  *tsdialog)
 {
   SynthPopup *sdata = (SynthPopup*) data;
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
   gxk_cell_renderer_popup_change (sdata->pcell,
-                                  proxy ? bse_item_get_uname_path (proxy) : "",
+                                  item ? item.get_uname_path().c_str() : "",
                                   FALSE,
-                                  proxy == 0);
+                                  item == NULL);
 }
 
 static void
@@ -286,14 +315,16 @@ track_view_synth_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      if (bse_item_editable_property (item, "snet"))
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      if (item.editable_property ("snet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
+          Bse::PropertyCandidates pc = item.get_property_candidates ("snet");
+          BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
           SynthPopup sdata = { self, pcell, };
-          Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (bse_item_get_project (item)));
-          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
-                                                            pc->label, pc->tooltip, pc->items,
+          Bse::ProjectH project = item.get_project();
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
+                                                            pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                             _("Available Waves"),
                                                             _("List of available waves to choose a track instrument from"),
                                                             project.get_wave_repo().proxy_id(),
@@ -301,6 +332,7 @@ track_view_synth_popup (BstTrackView         *self,
 							    _("List of available sound fonts to choose track instrument from"),
 							    project.get_sound_font_repo().proxy_id(),
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
+          bse_it3m_seq_free (pc_items);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
@@ -319,16 +351,19 @@ track_view_post_synth_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      if (bse_item_editable_property (item, "pnet"))
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      if (item.editable_property ("pnet"))
         {
-          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
+          Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
+          BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
           SynthPopup sdata = { self, pcell, };
-          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
-                                                            pc->label, pc->tooltip, pc->items,
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, itemid,
+                                                            pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                             NULL, NULL, 0,
 							    NULL, NULL, 0,
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
+          bse_it3m_seq_free (pc_items);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
@@ -375,17 +410,20 @@ track_view_outputs_popup (BstTrackView         *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "outputs");
-      GParamSpec *pspec = bse_proxy_get_pspec (item, "outputs");
-      const GValue *value = bse_proxy_get_property (item, "outputs");
+      SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      Bse::PropertyCandidates pc = item.get_property_candidates ("outputs");
+      GParamSpec *pspec = bse_proxy_get_pspec (item.proxy_id(), "outputs");
+      const GValue *value = bse_proxy_get_property (item.proxy_id(), "outputs");
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
       BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
-      OutputsPopup odata = { self, pcell, item };
-      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
-                                                     pc->label, pc->tooltip, pc->items,
+      OutputsPopup odata = { self, pcell, item.proxy_id() };
+      BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
+      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item.proxy_id(),
+                                                     pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                      g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
+      bse_it3m_seq_free (pc_items);
       bse_it3m_seq_free (iseq);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
@@ -732,22 +770,22 @@ track_view_action_exec (gpointer data,
     {
       SfiProxy item;
     case ACTION_ADD_TRACK:
-      bse_item_group_undo (song.proxy_id(), "Add Track");
+      song.group_undo ("Add Track");
       track = song.create_track();
       if (track)
 	{
-	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (track.proxy_id()));
-	  bse_item_set_name (track.proxy_id(), string);
+	  gchar *string = g_strdup_format ("Track-%02X", track.get_seqid());
+	  track.set_name (string);
 	  g_free (string);
 	  bst_item_view_select (item_view, track.proxy_id());
           track.ensure_output();
 	}
-      bse_item_ungroup_undo (song.proxy_id());
+      song.ungroup_undo();
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
-      bse_item_group_undo (song.proxy_id(), "Delete Track");
+      song.group_undo ("Delete Track");
       Bse::PartSeq pseq = track.list_parts_uniq();
       song.remove_track (track);
       for (const auto &part : pseq)
@@ -756,7 +794,7 @@ track_view_action_exec (gpointer data,
           if (!song.find_any_track_for_part (p))
             song.remove_part (p);
         }
-      bse_item_ungroup_undo (song.proxy_id());
+      song.ungroup_undo();
       break;
     }
   gxk_widget_update_actions_downwards (self);

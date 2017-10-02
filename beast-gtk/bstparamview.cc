@@ -171,11 +171,11 @@ bst_param_view_apply_defaults (BstParamView *self)
 
   if (self->item)
     {
-      GSList *slist;
-      bse_item_group_undo (self->item, "Reset to defaults");
-      for (slist = self->params; slist; slist = slist->next)
+      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
+      item.group_undo ("Reset to defaults");
+      for (GSList *slist = self->params; slist; slist = slist->next)
         gxk_param_apply_default ((GxkParam*) slist->data);
-      bse_item_ungroup_undo (self->item);
+      item.ungroup_undo();
     }
 }
 
