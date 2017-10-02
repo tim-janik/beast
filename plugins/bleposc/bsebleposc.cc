@@ -127,7 +127,7 @@ class BlepOsc : public BlepOscBase {
                 {
                   current_sync = CLAMP (sync + sync_mod * sync_mod_in[i], 0.0, 60.0);
                 }
-              osc.freq = osc.master_freq * pow (2, current_sync / 12.);
+              osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
 
               /* pulse width modulation */
               double current_pulse_width = pulse_width;
