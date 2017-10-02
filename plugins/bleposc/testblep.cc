@@ -12,6 +12,7 @@
 using std::vector;
 using std::string;
 using std::complex;
+using std::max;
 using std::min;
 
 static double *
@@ -147,6 +148,77 @@ speed_test (Osc& o)
   printf ("%.7f voices   |  %.3f ns/sample\n", len / time, time * 1e9 / (rate * len));
 }
 
+template<int FN> double
+exp2_func (double d)
+{
+  switch (FN)
+  {
+    case 0: return pow (2, d);
+    case 1: return exp (d * 0.693147180559945);
+    case 2: return bse_approx2_exp2 (d);
+    case 3: return bse_approx3_exp2 (d);
+    case 4: return bse_approx4_exp2 (d);
+    case 5: return bse_approx5_exp2 (d);
+    case 6: return bse_approx6_exp2 (d);
+    case 7: return bse_approx7_exp2 (d);
+    case 8: return bse_approx8_exp2 (d);
+    case 9: return bse_approx9_exp2 (d);
+  }
+}
+template<int FN> std::string
+exp2_label()
+{
+  switch (FN)
+  {
+    case 0: return "pow";
+    case 1: return "exp";
+    default: return Bse::string_format ("approx%d_exp2", FN);
+  }
+}
+
+template<int FN> void
+exp2_subtest()
+{
+  double time = 1e9;
+  const int len  = 1'000'000;
+
+  // speed
+  for (int runs = 0; runs < 32; runs++)
+    {
+      const double start = gettime();
+      for (int i = 0; i < len; i++)
+        {
+          double d = double (i) / len;
+          speed_test_x += exp2_func<FN> (d);
+        }
+      const double end = gettime();
+      time = min (time, end - start);
+    }
+
+  // accuracy
+  double err = 0;
+  for (double d = -5; d < 5; d += 0.0001)
+    {
+      err = max (err, fabs (exp2_func<FN> (d) - pow (2, d)) / pow (2, d));
+    }
+  printf ("%15s  %6.3f ns   err=%5.2g\n", exp2_label<FN>().c_str(), time * 1e9 / len, err);
+}
+
+static void
+exp2_test()
+{
+  exp2_subtest<0>();
+  exp2_subtest<1>();
+  exp2_subtest<2>();
+  exp2_subtest<3>();
+  exp2_subtest<4>();
+  exp2_subtest<5>();
+  exp2_subtest<6>();
+  exp2_subtest<7>();
+  exp2_subtest<8>();
+  exp2_subtest<9>();
+}
+
 static void
 vnorm_test (Osc& o)
 {
@@ -227,6 +299,8 @@ main (int argc, char **argv)
         speed_test (o);
       else if (test_name == "snr")
         auto_snr_test();
+      else if (test_name == "exp2")
+        exp2_test();
       else
         {
           Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed or snr\n", argv[0], test_name.c_str());
