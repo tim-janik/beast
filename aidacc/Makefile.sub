@@ -14,6 +14,7 @@ aidacc_imports = $(strip		\
 aidacc_generated = $(strip		\
 	aidacc/Parser.py		\
 	aidacc/TmplFiles.py		\
+	aidacc/IdStrings.py		\
 )
 aidacc_templ_files = $(strip		\
 	aidacc/CxxStub-client.cc	\
@@ -40,6 +41,13 @@ aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
 	$(Q) mv $@.tmp $@
 AIDACC_CONFIG = "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${topbuildid}"
 CLEANFILES   += aidacc/aidacc
+
+# == IdStrings.py ==
+aidacc/IdStrings.py: aidacc/aida.hh aidacc/ExtractIdStrings.py
+	$(QGEN)
+	$(Q) ${PYTHON} aidacc/ExtractIdStrings.py aidacc/aida.hh > $@.tmp
+	$(Q) mv $@.tmp $@
+CLEANFILES += aidacc/IdStrings.py
 
 # == TmplFiles.py ==
 aidacc/TmplFiles.py: $(aidacc_templ_files)
