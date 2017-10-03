@@ -516,12 +516,12 @@ protected:
 public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) : orbop_ (y.orbop_) {}
   virtual                ~RemoteHandle         ();
-  String                  __typename__         () const;
-  TypeHashList            __aida_typelist__    () const;
-  const StringVector&     __aida_aux_data__    () const;
-  std::vector<String>     __aida_dir__         () const;
-  Any                     __aida_get__         (const String &name) const;
-  bool                    __aida_set__         (const String &name, const Any &any);
+  String                  __typename__         () const;                                //: AIDAID
+  TypeHashList            __aida_typelist__    () const;                                //: AIDAID
+  const StringVector&     __aida_aux_data__    () const;                                //: AIDAID
+  std::vector<String>     __aida_dir__         () const;                                //: AIDAID
+  Any                     __aida_get__         (const String &name) const;              //: AIDAID
+  bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
@@ -742,10 +742,10 @@ public:
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
-  uint64                      __event_attach__    (const String &type, EventHandlerF handler);
-  bool                        __event_detach__    (int64 connection_id);
-  uint64                      __event_detach__    (const String &type);
-  void                        __event_emit__      (const Event &event);
+  uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
+  bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
+  uint64                      __event_detach__    (const String &type);                                 //: AIDAID __event_detachns__
+  void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
 };
 
 
