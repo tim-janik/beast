@@ -1429,18 +1429,13 @@ class Generator:
     nslist += [ Decls.Namespace ('Aida', None, []) ]
     iface = Decls.TypeInfo ('ImplicitBase', Decls.INTERFACE, False)
     nslist[-1].add_type (iface) # iface.full_name() == Aida::ImplicitBase
-    identifiers = collections.OrderedDict ((
-      ('__aida_typelist__',        'Aida::TypeHashList %s () const'),
-      ('__aida_aux_data__',        'std::vector<std::string> %s () const'),
-      ('__aida_dir__',             'std::vector<std::string> %s () const'),
-      ('__aida_get__',             'Aida::Any %s (const std::string&) const'),
-      ('__aida_set__',             'bool %s (const std::string&, const Aida::Any&)'),
-    ))
+    import IdStrings
+    identifiers = IdStrings.id_dict
     for k,v in identifiers.items():
-      IDENT, digest = k.upper(), self.internal_digest (iface, v % k)
+      IDENT, digest = k.upper(), self.internal_digest (iface, v)
       s += 'static_assert (Aida::TypeHash { AIDA_HASH_%s } ==\n' % IDENT
       s += '               Aida::TypeHash { %s },\n' % digest
-      s += '               "#define AIDA_HASH_%s \t%s");\n' % (IDENT, digest)
+      s += '               "Expecting hash defined as:\\n#define AIDA_HASH_%s \t%s");\n' % (IDENT, digest)
     return s
 
 def error (msg):

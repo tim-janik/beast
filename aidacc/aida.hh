@@ -399,16 +399,16 @@ typedef std::vector<TypeHash> TypeHashList;
 
 
 // == Internal Type Hashes ==
-#define AIDA_HASH___TYPENAME__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce01ULL
-#define AIDA_HASH___TYPELIST__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce02ULL
-#define AIDA_HASH___AUX_DATA__          0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce03ULL
-#define AIDA_HASH___DIR__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce04ULL
-#define AIDA_HASH___GET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce05ULL
-#define AIDA_HASH___SET__               0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce06ULL
-#define AIDA_HASH___EVENT_ATTACH__      0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce07ULL
-#define AIDA_HASH___EVENT_DETACHID__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce08ULL
-#define AIDA_HASH___EVENT_DETACHNS__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce09ULL
-#define AIDA_HASH___EVENT_CALLBACK__    0x00a1dad1ce0ff1ceULL, 0xa1dad1ce0ff1ce0aULL
+#define AIDA_HASH___TYPENAME__          0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL
+#define AIDA_HASH___AIDA_TYPELIST__     0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL
+#define AIDA_HASH___AIDA_AUX_DATA__     0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL
+#define AIDA_HASH___AIDA_DIR__          0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL
+#define AIDA_HASH___AIDA_GET__          0x4aed20bb93591defULL, 0xc75b192eab6983edULL
+#define AIDA_HASH___AIDA_SET__          0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL
+#define AIDA_HASH___EVENT_ATTACH__      0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL
+#define AIDA_HASH___EVENT_DETACHID__    0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL
+#define AIDA_HASH___EVENT_DETACHNS__    0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL
+#define AIDA_HASH___EVENT_CALLBACK__    0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL
 
 
 // === EventFd ===

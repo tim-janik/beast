@@ -3413,7 +3413,7 @@ RemoteHandle::__aida_typelist__() const
   if (*this == NULL)
     return thl;
   ProtoMsg &__p_ = *ProtoMsg::_new (3 + 1);
-  ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___TYPELIST__);
+  ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___AIDA_TYPELIST__);
   ProtoMsg *__r_ = __o_.invoke (&__p_);
   AIDA_ASSERT_RETURN (__r_ != NULL, thl);
   ProtoReader __f_ (*__r_);
@@ -3440,7 +3440,7 @@ ImplicitBase____aida_typelist__ (ProtoReader &__f_)
   TypeHashList thl;
   if (self) // allow NULL self to guard against invalid casts
     thl = self->__aida_typelist__();
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__f_, MSGID_CALL_RESULT, AIDA_HASH___TYPELIST__, 1 + 2 * thl.size());
+  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__f_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_TYPELIST__, 1 + 2 * thl.size());
   __r_ <<= int64_t (thl.size());
   for (size_t i = 0; i < thl.size(); i++)
     __r_ <<= thl[i];
@@ -3456,7 +3456,7 @@ RemoteHandle::__aida_aux_data__ () const
   if (orbop_->cached_aux_data_.empty())
     {
       ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self
-      ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AUX_DATA__);
+      ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_AUX_DATA__);
       ProtoMsg *__r_ = __o_.invoke (&__b_);
       AIDA_ASSERT_RETURN (__r_ != NULL, empty);
       ProtoReader __f_ (*__r_);
@@ -3478,7 +3478,7 @@ ImplicitBase____aida_aux_data__ (ProtoReader &__b_)
   AIDA_ASSERT_RETURN (self, NULL);
   std::vector<String> __s_ = self->__aida_aux_data__();
   Any __v_ = Any::any_from_strings (__s_);
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AUX_DATA__);
+  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_AUX_DATA__);
   __r_ <<= __v_;
   return &__r_;
 }
@@ -3489,7 +3489,7 @@ RemoteHandle::__aida_dir__ () const
   if (*this == NULL)
     return StringVector();
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self + no-args
-  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___DIR__);
+  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_DIR__);
   ProtoMsg *__r_ = __o_.invoke (&__b_);
   AIDA_ASSERT_RETURN (__r_ != NULL, std::vector<String>());
   ProtoReader __f_ (*__r_);
@@ -3509,7 +3509,7 @@ ImplicitBase____aida_dir__ (ProtoReader &__b_)
   AIDA_ASSERT_RETURN (self, NULL);
   std::vector<String> __s_ = self->__aida_dir__();
   Any __v_ = Any::any_from_strings (__s_);
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___DIR__);
+  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_DIR__);
   __r_ <<= __v_;
   return &__r_;
 }
@@ -3520,7 +3520,7 @@ RemoteHandle::__aida_get__ (const String &__n_) const
   if (*this == NULL)
     return Any();
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 1); // header + self + __n_
-  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___GET__);
+  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_GET__);
   __b_ <<= __n_;
   ProtoMsg *__r_ = __o_.invoke (&__b_);
   AIDA_ASSERT_RETURN (__r_ != NULL, Any());
@@ -3542,7 +3542,7 @@ ImplicitBase____aida_get__ (ProtoReader &__b_)
   String __n_;
   __b_ >>= __n_;
   Any __v_ = self->__aida_get__ (__n_);
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___GET__);
+  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_GET__);
   __r_ <<= __v_;
   return &__r_;
 }
@@ -3553,7 +3553,7 @@ RemoteHandle::__aida_set__ (const String &__n_, const Any &__a_)
   if (*this == NULL)
     return false;
   ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 2); // header + self + args
-  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___SET__);
+  ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_SET__);
   __b_ <<= __n_;
   __b_ <<= __a_;
   ProtoMsg *__r_ = __o_.invoke (&__b_);
@@ -3578,7 +3578,7 @@ ImplicitBase____aida_set__ (ProtoReader &__b_)
   Any __a_;
   __b_ >>= __a_;
   bool __v_ = self->__aida_set__ (__n_, __a_);
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___SET__);
+  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_SET__);
   __r_ <<= __v_;
   return &__r_;
 }
@@ -3738,15 +3738,15 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
 }
 
 static const ServerConnection::MethodEntry implicit_base_methods[] = {
-  { AIDA_HASH___TYPENAME__,        ImplicitBase____typename__, },
-  { AIDA_HASH___TYPELIST__,        ImplicitBase____aida_typelist__, },
-  { AIDA_HASH___AUX_DATA__,        ImplicitBase____aida_aux_data__, },
-  { AIDA_HASH___DIR__,             ImplicitBase____aida_dir__, },
-  { AIDA_HASH___SET__,             ImplicitBase____aida_set__, },
-  { AIDA_HASH___GET__,             ImplicitBase____aida_get__, },
-  { AIDA_HASH___EVENT_ATTACH__,    ImplicitBase____event_attach__, },
-  { AIDA_HASH___EVENT_DETACHID__,  ImplicitBase____event_detachid__, },
-  { AIDA_HASH___EVENT_DETACHNS__,  ImplicitBase____event_detachns__, },
+  { AIDA_HASH___TYPENAME__,             ImplicitBase____typename__, },
+  { AIDA_HASH___AIDA_TYPELIST__,        ImplicitBase____aida_typelist__, },
+  { AIDA_HASH___AIDA_AUX_DATA__,        ImplicitBase____aida_aux_data__, },
+  { AIDA_HASH___AIDA_DIR__,             ImplicitBase____aida_dir__, },
+  { AIDA_HASH___AIDA_GET__,             ImplicitBase____aida_get__, },
+  { AIDA_HASH___AIDA_SET__,             ImplicitBase____aida_set__, },
+  { AIDA_HASH___EVENT_ATTACH__,         ImplicitBase____event_attach__, },
+  { AIDA_HASH___EVENT_DETACHID__,       ImplicitBase____event_detachid__, },
+  { AIDA_HASH___EVENT_DETACHNS__,       ImplicitBase____event_detachns__, },
 };
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
