@@ -98,8 +98,50 @@ static GQuark quark_original_enum = 0;
 static GQuark quark_property_notify = 0;
 static GQuark quark_notify = 0;
 
+// == bse_glue_setup_dispatcher ==
+struct GlueGSource : GSource {
+  SfiComPort     *port;
+  SfiGlueContext *context;
+  SfiGlueDecoder *decoder;
+};
 
-/* --- functions --- */
+GSource*
+bse_glue_setup_dispatcher (SfiComPort *port)
+{
+  assert_return (port != NULL, NULL);
+  assert_return (bse_main_context != NULL, NULL);
+  auto prepare = [] (GSource *source, int *timeout_p) -> gboolean {
+    return sfi_glue_decoder_pending (static_cast<GlueGSource*> (source)->decoder);
+  };
+  auto check = [] (GSource *source) -> gboolean {
+    return sfi_glue_decoder_pending (static_cast<GlueGSource*> (source)->decoder);
+  };
+  auto dispatch = [] (GSource *source, GSourceFunc callback, void *user_data) -> gboolean {
+    GlueGSource *gsource = static_cast<GlueGSource*> (source);
+    if (gsource->port)
+      sfi_glue_decoder_dispatch (gsource->decoder);
+    return true;        /* keep source alive */
+  };
+  static GSourceFuncs gsource_funcs = { prepare, check, dispatch };
+  GlueGSource *gsource = (GlueGSource*) g_source_new (&gsource_funcs, sizeof (GlueGSource));
+  gsource->port = sfi_com_port_ref (port);
+  gsource->context = bse_glue_context_intern (port->ident);
+  gsource->decoder = sfi_glue_context_decoder (port, gsource->context);
+  SfiRing *ring;
+  GPollFD *pfd;
+  g_source_set_priority (gsource, BSE_PRIORITY_GLUE);
+  ring = sfi_glue_decoder_list_poll_fds (gsource->decoder);
+  pfd = (GPollFD*) sfi_ring_pop_head (&ring);
+  while (pfd)
+    {
+      g_source_add_poll (gsource, pfd);
+      pfd = (GPollFD*) sfi_ring_pop_head (&ring);
+    }
+  g_source_attach (gsource, bse_main_context);
+  return gsource;
+}
+
+// == bse_glue_context =
 SfiGlueContext*
 bse_glue_context_intern (const char *user)
 {

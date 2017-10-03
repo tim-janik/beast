@@ -12,6 +12,7 @@
 #include "bsemididevice.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
+#include "bseglue.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -263,6 +264,7 @@ async_create_context (gpointer data)
   sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
 			      "Server", bse_main_wakeup, &port2);
   SfiGlueContext *context = sfi_glue_encoder_context (port1);
+  bse_glue_setup_dispatcher (port2);
   adata->result_queue.push (context);
   return false; // run-once
 }
