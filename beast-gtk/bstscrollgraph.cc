@@ -384,48 +384,42 @@ bst_scrollgraph_clear (BstScrollgraph *self)
 }
 
 static void
-bst_scrollgraph_probes_notify (SfiProxy     source,
-                               SfiSeq      *sseq,
-                               gpointer     data)
+bst_scrollgraph_probes_notify (BstScrollgraph *self, const Bse::ProbeSeq &pseq)
 {
-  BstScrollgraph *self = BST_SCROLLGRAPH (data);
-  BseProbeSeq *pseq = bse_probe_seq_from_seq (sseq);
-  BseProbe *probe = NULL;
-  guint i;
-  for (i = 0; i < pseq->n_probes && !probe; i++)
-    if (uint (pseq->probes[i]->channel_id) == self->ochannel)
+  const Bse::Probe *probe = NULL;
+  for (size_t i = 0; i < pseq.size() && !probe; i++)
+    if (pseq[i].channel == int (self->ochannel))
       {
-        BseProbe *candidate = pseq->probes[i];
-        if (candidate->probe_features->probe_fft &&
-            candidate->fft_data->n_values == self->window_size)
-          probe = candidate;
+        const Bse::Probe &candidate = pseq[i];
+        if (candidate.probe_features.probe_fft &&
+            candidate.fft_data.size() == self->window_size)
+          probe = &candidate;
       }
   if (probe && probe->mix_freq != self->mix_freq && probe->mix_freq > 0)
     {
       self->mix_freq = probe->mix_freq;
       bst_scrollgraph_resize_values (self, self->direction);
     }
-  if (probe && probe->probe_features->probe_fft && probe->fft_data->n_values == self->window_size)
+  if (probe && probe->probe_features.probe_fft && probe->fft_data.size() == self->window_size)
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
-      BseFlo4tSeq *fft = probe->fft_data;
-      for (i = 0; i < MIN (self->n_points, FFTSZ2POINTS (fft->n_values)); i++)
+      const Bse::FloatSeq &fft = probe->fft_data;
+      for (size_t i = 0; i < MIN (self->n_points, FFTSZ2POINTS (fft.size())); i++)
         {
           gfloat re, im;
           if (i == 0)
-            re = fft->values[0], im = 0;
-          else if (i == fft->n_values / 2)
-            re = fft->values[1], im = 0;
+            re = fft[0], im = 0;
+          else if (i == fft.size() / 2)
+            re = fft[1], im = 0;
           else
-            re = fft->values[i * 2], im = fft->values[i * 2 + 1];
+            re = fft[i * 2], im = fft[i * 2 + 1];
           bar[i] = sqrt (re * re + im * im); // FIXME: speed up
         }
       bst_scrollgraph_scroll_bars (self); /* last bar becomes bar0 */
       if (GTK_WIDGET_DRAWABLE (self))
         bst_scrollgraph_draw_bar (self, 0);
     }
-  bse_probe_seq_free (pseq);
-  float mix_freq = bse_source_get_mix_freq (self->source.proxy_id());
+  float mix_freq = self->source.get_mix_freq();
   bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
 }
 
@@ -457,9 +451,9 @@ bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ocha
   assert_return (BST_IS_SCROLLGRAPH (self));
   if (self->source)
     {
+      self->source.sig_probes() -= self->probes_handler;
       bse_proxy_disconnect (self->source.proxy_id(),
                             "any-signal", bst_scrollgraph_release_item, self,
-                            "any-signal", bst_scrollgraph_probes_notify, self,
                             "any-signal", bst_scrollgraph_io_changed, self,
                             NULL);
     }
@@ -468,12 +462,14 @@ bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ocha
   if (self->source)
     {
       /* setup scope */
+      self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+        return bst_scrollgraph_probes_notify (self, pseq);
+      };
       bse_proxy_connect (self->source.proxy_id(),
                          "signal::release", bst_scrollgraph_release_item, self,
-                         "signal::probes", bst_scrollgraph_probes_notify, self,
                          "swapped-signal::io_changed", bst_scrollgraph_io_changed, self,
                          NULL);
-      float mix_freq = bse_source_get_mix_freq (self->source.proxy_id());
+      float mix_freq = self->source.get_mix_freq();
       bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
       bst_scrollgraph_io_changed (self);
     }
