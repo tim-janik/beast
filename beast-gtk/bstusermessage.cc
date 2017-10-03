@@ -5,9 +5,6 @@
 #include <string.h>
 #include <errno.h>
 
-/* --- prototypes --- */
-static GtkWidget*	create_janitor_dialog	(SfiProxy	   janitor);
-
 /* --- variables --- */
 static GSList *msg_windows = NULL;
 
@@ -71,22 +68,9 @@ message_title (const BstMessage *msg,
   if (msg->title)
     return g_strconcat (message, ": ", msg->title, NULL);
   else
-    {
-      const gchar *proc_name = msg->janitor ? bse_janitor_get_proc_name (msg->janitor) : NULL;
-      const gchar *proc_title = bst_procedure_get_title (proc_name);
-      if (proc_title)
-        return g_strconcat (message, ": ", proc_title, NULL);
-      else
-        return g_strdup (message);
-    }
+    return g_strdup (message);
 }
-static void
-janitor_action (gpointer   data,
-		GtkWidget *widget)
-{
-  SfiProxy proxy = (SfiProxy) data;
-  bse_janitor_trigger_action (proxy, (const char*) g_object_get_data (G_OBJECT (widget), "user_data"));
-}
+
 static void
 toggle_update_filter (GtkWidget *toggle,
                       gpointer   data)
@@ -119,11 +103,8 @@ adapt_message_spacing (const gchar *head,
 static gchar*
 strdup_msg_hashkey (const BstMessage *msg)
 {
-  /* prefer hashing by janitor/process name over PID */
-  if (msg->janitor)
-    return g_strdup_format ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
-                            bse_janitor_get_script_name (msg->janitor), bse_janitor_get_proc_name (msg->janitor));
-  else if (msg->process)
+  /* prefer hashing by process name over PID */
+  if (msg->process)
     return g_strdup_format ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
   else
     return g_strdup_format ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
@@ -197,7 +178,7 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       g_object_set_int (dialog, "BEAST-user-message-count", 1);
     }
   /* add details section */
-  if (msg->log_domain || msg->details || msg->janitor || msg->process || msg->pid)
+  if (msg->log_domain || msg->details || msg->process || msg->pid)
     {
       GtkWidget *exp = gtk_expander_new (_("Details:"));
       gtk_widget_show (exp);
@@ -205,17 +186,13 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                         1, 2, row, row + 1, /* left/right, top/bottom */
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
       row++;
-      const gchar *proc_name = !msg->janitor ? NULL : bse_janitor_get_proc_name (msg->janitor);
-      const gchar *script_name = proc_name ? bse_janitor_get_script_name (msg->janitor) : NULL;
       GString *gstring = g_string_new (msg->details);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       g_string_add_format (gstring, "\n\n");
-      if (hastext (proc_name))
-        g_string_add_format (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
       if (hastext (msg->process))
         g_string_add_format (gstring, _("Process: %s\n"), msg->process);
-      if (hastext (msg->log_domain) && !hastext (proc_name) && !hastext (msg->process))
+      if (hastext (msg->log_domain) && !hastext (msg->process))
         g_string_add_format (gstring, _("Origin:  %s\n"), msg->log_domain);
       if (msg->pid && BST_DVL_HINTS)
           g_string_add_format (gstring, _("PID:     %u\n"), msg->pid);
@@ -263,33 +240,6 @@ bst_msg_dialog_update (GxkDialog        *dialog,
   gxk_dialog_set_title (dialog, title);
   g_free (title);
 }
-
-static void
-bst_msg_dialog_janitor_update (GxkDialog        *dialog,
-                               SfiProxy          janitor)
-{
-  assert_return (BSE_IS_JANITOR (janitor));
-
-  guint i, n = bse_janitor_n_actions (janitor);
-  for (i = 0; i < n; i++)
-    {
-      const gchar *action = bse_janitor_get_action (janitor, i);
-      const gchar *name = bse_janitor_get_action_name (janitor, i);
-      const gchar *blurb = bse_janitor_get_action_blurb (janitor, i);
-
-      if (action)
-        {
-          GtkWidget *button = gxk_dialog_action_multi (dialog, name,
-                                                       (void*) janitor_action, (gpointer) janitor,
-                                                       action, GXK_DIALOG_MULTI_SWAPPED);
-          g_object_set_data_full (G_OBJECT (button), "user_data", g_strdup (action), g_free);
-          gxk_widget_set_tooltip (button, blurb);
-        }
-    }
-  GtkWidget *bwidget = gxk_dialog_action (dialog, BST_STOCK_CANCEL, (void*) gxk_toplevel_delete, NULL);
-  gxk_dialog_set_focus (dialog, bwidget);
-}
-
 
 void
 bst_msg_bit_free (BstMsgBit *mbit)
@@ -465,155 +415,6 @@ bst_message_handler (const BstMessage *const_msg)
   return result;
 }
 
-static void
-message_fill_from_script (BstMessage    *msg,
-                          BstMsgType     mtype,
-                          SfiProxy       janitor,
-                          const gchar   *primary,
-                          const gchar   *script_name,
-                          const gchar   *proc_name,
-                          const gchar   *user_msg)
-{
-  msg->log_domain = NULL;
-  msg->type = mtype;
-  msg->ident = bst_msg_type_ident (msg->type);
-  msg->label = bst_msg_type_ident (msg->type);
-  const gchar *proc_title = NULL;
-  if (hastext (proc_name))
-    {
-      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", proc_name);
-      if (cseq.size())
-        proc_title = cseq[0].category.c_str() + bst_path_leaf_index (cseq[0].category);
-    }
-  msg->title = g_strdup (proc_title);
-  msg->primary = g_strdup (primary ? primary : proc_title);
-  if (user_msg && user_msg[0])
-    msg->secondary = g_strdup (user_msg);
-  else
-    {
-      gchar *script_base = g_path_get_basename (script_name);
-      msg->secondary = g_strdup_format (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
-      g_free (script_base);
-    }
-  if (!janitor && hastext (proc_name))
-    msg->details = g_strdup_format (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
-  else
-    msg->details = NULL;
-  msg->config_check = NULL;
-  msg->janitor = janitor;
-  msg->process = NULL;
-  msg->pid = 0;
-  msg->n_msg_bits = 0;
-  msg->msg_bits = NULL;
-}
-
-
-static void
-message_free_from_script (BstMessage *msg)
-{
-  g_free ((char*) msg->title);
-  g_free ((char*) msg->primary);
-  g_free ((char*) msg->secondary);
-  g_free ((char*) msg->details);
-  g_free ((char*) msg->config_check);
-}
-
-static void
-janitor_actions_changed (GxkDialog *dialog)
-{
-  SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
-  BstMessage msg = { 0, };
-  const gchar *user_msg = NULL;
-  bse_proxy_get (janitor, "status-message", &user_msg, NULL);
-  const gchar *proc_name = bse_janitor_get_proc_name (janitor);
-  const gchar *script_name = bse_janitor_get_script_name (janitor);
-  message_fill_from_script (&msg, BST_MSG_SCRIPT, 0, NULL, script_name, proc_name, user_msg);
-  bst_msg_dialog_update (dialog, &msg, FALSE);
-  bst_msg_dialog_janitor_update (dialog, janitor);
-  message_free_from_script (&msg);
-}
-
-static void
-janitor_progress (GxkDialog *dialog,
-		  SfiReal    progress)
-{
-  SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
-  const gchar *script = bse_janitor_get_script_name (janitor);
-  const gchar *sbname = strrchr (script, '/');
-  gchar *exec_name = g_strdup_format ("%s", sbname ? sbname + 1 : script);
-  // bse_janitor_get_proc_name (janitor);
-  gxk_status_window_push (dialog);
-  if (progress < 0)
-    gxk_status_set (GXK_STATUS_PROGRESS, exec_name, _("processing"));
-  else
-    gxk_status_set (progress * 100.0, exec_name, _("processing"));
-  gxk_status_window_pop ();
-  g_free (exec_name);
-}
-
-static void
-janitor_unconnected (GxkDialog *dialog)
-{
-  SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
-  gboolean connected = FALSE;
-  const gchar *exit_reason = NULL;
-  gint exit_code;
-  bse_proxy_get (janitor, "connected", &connected, "exit-code", &exit_code, "exit-reason", &exit_reason, NULL);
-  if (!connected)
-    {
-      const gchar *proc_name = bse_janitor_get_proc_name (janitor);
-      const gchar *script_name = bse_janitor_get_script_name (janitor);
-      /* destroy script dialog *and* janitor reference */
-      gtk_widget_destroy (GTK_WIDGET (dialog));
-      /* notify user about unsuccessful exits */
-      if (exit_reason)
-        {
-          BstMessage msg = { 0, };
-          gchar *error_msg = g_strdup_format (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
-          message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
-          g_free (error_msg);
-          bst_message_handler (&msg);
-          message_free_from_script (&msg);
-        }
-    }
-}
-
-static void
-janitor_window_deleted (GxkDialog *dialog)
-{
-  SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
-
-  bse_proxy_disconnect (janitor,
-			"any_signal", janitor_actions_changed, dialog,
-			"any_signal", janitor_progress, dialog,
-			"any_signal", janitor_unconnected, dialog,
-			NULL);
-  // bse_janitor_kill (janitor);
-  Bse::ItemH::down_cast (bse_server.from_proxy (janitor)).unuse();
-}
-
-static GtkWidget*
-create_janitor_dialog (SfiProxy janitor)
-{
-  GxkDialog *dialog = (GxkDialog*) gxk_dialog_new (NULL, NULL,
-                                                   GXK_DIALOG_STATUS_BAR, // | GXK_DIALOG_WINDOW_GROUP,
-                                                   NULL, NULL);
-  gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
-
-  g_object_set_data (G_OBJECT (dialog), "user-data", (gpointer) janitor);
-  bse_proxy_connect (janitor,
-		     "swapped-object-signal::action-changed", janitor_actions_changed, dialog,
-		     "swapped-object-signal::property-notify::user-msg", janitor_actions_changed, dialog,
-		     "swapped-object-signal::progress", janitor_progress, dialog,
-		     "swapped-object-signal::property-notify::connected", janitor_unconnected, dialog,
-		     NULL);
-  janitor_actions_changed (dialog);
-  Bse::ItemH::down_cast (bse_server.from_proxy (janitor)).use();
-  g_object_connect (dialog, "swapped_signal::destroy", janitor_window_deleted, dialog, NULL);
-  dialog_show_above_modals (dialog, FALSE);
-  return GTK_WIDGET (dialog);
-}
-
 static char*
 text_concat (char *prefix,
              char *text)
@@ -662,7 +463,6 @@ bst_message_dialog_display (const char     *log_domain,
   msg.type = mtype;
   msg.ident = bst_msg_type_ident (mtype);
   msg.label = bst_msg_type_ident (mtype);
-  // msg.janitor = bse_script_janitor();
   msg.process = g_strdup (Bse::this_thread_get_name().c_str());
   msg.pid = Bse::this_thread_gettid();
   msg.n_msg_bits = 0;
@@ -719,27 +519,6 @@ bst_message_dialogs_popdown (void)
 }
 
 static void
-server_script_start (SfiProxy server,
-                     SfiProxy janitor)
-{
-  create_janitor_dialog (janitor);
-}
-static void
-server_script_error (SfiProxy     server,
-                     const gchar *script_name,
-                     const gchar *proc_name,
-                     const gchar *reason)
-{
-  /* this signal is emitted (without janitor) when script execution failed */
-  BstMessage msg = { 0, };
-  gchar *error_msg = g_strdup_format (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
-  message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
-  g_free (error_msg);
-  bst_message_handler (&msg);
-  message_free_from_script (&msg);
-}
-
-static void
 server_user_message (const Bse::UserMessage &umsg)
 {
   auto convert_msg_type = [] (Bse::UserMessageType mtype) {
@@ -764,7 +543,6 @@ server_user_message (const Bse::UserMessage &umsg)
   const Aida::EnumValue ev = Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
   msg.ident = ev.ident;
   msg.label = NULL;
-  msg.janitor = 0;
   msg.process = 0;
   msg.pid = 0;
   bst_message_handler (&msg);
@@ -774,9 +552,5 @@ void
 bst_message_connect_to_server (void)
 {
   bse_server.sig_user_message() += server_user_message;
-  bse_proxy_connect (BSE_SERVER,
-		     "signal::script_start", server_script_start, NULL,
-		     "signal::script_error", server_script_error, NULL,
-		     NULL);
   bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
 }

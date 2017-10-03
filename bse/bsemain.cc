@@ -3,7 +3,6 @@
 #include "bsestartup.hh"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
-#include "bsejanitor.hh"
 #include "bseplugin.hh"
 #include "bsecategories.hh"
 #include "bsemidireceiver.hh"
@@ -13,6 +12,7 @@
 #include "bsemididevice.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
+#include "bseglue.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -42,7 +42,6 @@ static BseMainArgs       default_main_args = {
   NULL,                 // path_binaries
   NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
-  NULL,                 // override_script_path
   NULL,			// override_sample_path
   false,                // stand_alone
   true,                 // allow_randomization
@@ -130,9 +129,7 @@ bse_init_intern()
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 
-  // initialize core plugins & scripts
-  if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
-      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
+  // initialize core plugins
   if (bse_main_args->load_core_plugins)
     {
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
@@ -144,15 +141,6 @@ bse_init_intern()
           if (error)
             Bse::info ("while loading \"%s\": %s", name, error);
           g_free (name);
-        }
-    }
-  if (bse_main_args->load_core_scripts)
-    {
-      Bse::ServerImpl::instance().register_scripts();
-      while (!single_thread_registration_done)
-        {
-          g_main_context_iteration (bse_main_context, TRUE);
-          // sfi_glue_gc_run ();
         }
     }
 
@@ -276,7 +264,7 @@ async_create_context (gpointer data)
   sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
 			      "Server", bse_main_wakeup, &port2);
   SfiGlueContext *context = sfi_glue_encoder_context (port1);
-  bse_janitor_new (port2);
+  bse_glue_setup_dispatcher (port2);
   adata->result_queue.push (context);
   return false; // run-once
 }
@@ -455,12 +443,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
           margs->override_plugin_globs = argv[i];
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
-	{
-          argv[i++] = NULL;
-          margs->override_script_path = argv[i];
-	  argv[i] = NULL;
-	}
       else if (strcmp ("--bse-override-sample-path", argv[i]) == 0 && i + 1 < argc)
 	{
 	  argv[i++] = NULL;
@@ -522,8 +504,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
         margs->force_fpu |= b;
       else if (parse_bool_option (arg, "load-core-plugins", &b))
         margs->load_core_plugins |= b;
-      else if (parse_bool_option (arg, "load-core-scripts", &b))
-        margs->load_core_scripts |= b;
       else if (parse_bool_option (arg, "debug-extensions", &b))
         margs->debug_extensions |= b;
       else if (parse_int_option (arg, "wave-chunk-padding", &i))

@@ -32,13 +32,11 @@ struct BseMainArgs {
   const char           *path_binaries;
   const char           *bse_rcfile;
   const char           *override_plugin_globs;
-  const char           *override_script_path;
   const char 	       *override_sample_path;
-  bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, boot scripts, etc.
+  bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.
   bool                  allow_randomization;	///< Initialization argument "allow-randomization" - enables non-deterministic behavior
   bool                  force_fpu;		///< Initialization argument "force-fpu" - avoid vectorized optimizations
   bool		        load_core_plugins;	///< Initialization argument "load-core-plugins" - enable core plugin bootup
-  bool		        load_core_scripts;	///< Initialization argument "load-core-scripts" - enable core script bootup
   bool		        debug_extensions;	///< Initialization argument "debug-extensions" - enable debugging extensions
   bool                  load_drivers_early;
   bool                  dump_driver_list;
