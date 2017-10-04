@@ -1425,7 +1425,7 @@ class Generator:
       s += '\n'
       s += self.insertion_text ('global_scope')
     # Aida IDs
-    if self.gen_aidaids:
+    if self.gen_aidaids and (self.gen_servercc or self.gen_clientcc):
       s += self.generate_aida_ids ()
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
