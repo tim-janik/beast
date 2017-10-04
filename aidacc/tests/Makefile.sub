@@ -23,64 +23,58 @@ tests_checktargets += t302-testfail-idl-test
 
 # == t303-explore ==
 tests_binaries += t303-explore
-tests_t303_generated                 =      \
-        tests/t303-explore-srvt.hh          \
-        tests/t303-explore-srvt.cc          \
-        tests/t303-explore-clnt.hh          \
-        tests/t303-explore-clnt.cc
+tests_t303_generated                 =      	\
+	tests/t303-explore_interfaces.hh	\
+	tests/t303-explore_interfaces.cc	\
+        tests/t303-explore_handles.hh		\
+        tests/t303-explore_handles.cc
 # MAKE(1) supports parallel execution of a multiple-targets-rule *only* for implicit rules (with '%')
-tests/t303-%-clnt.hh tests/t303-%-clnt.cc tests/t303-%-srvt.hh tests/t303-%-srvt.cc: tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
+tests/t303-%_interfaces.hh tests/t303-%_interfaces.cc tests/t303-%_handles.hh tests/t303-%_handles.cc: tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
 	$(QGEN)
-	$(Q) $(AIDACC) -x CxxStub -G clienthh -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.hh
-	$(Q) $(AIDACC) -x CxxStub -G clientcc -G strip-path=$(topdir)/ $< -o tests/t303-$*-clnt.cc
-	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*-clnt.cc
-	$(Q) $(AIDACC) -x CxxStub -G serverhh -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.hh
-	$(Q) $(AIDACC) -x CxxStub -G servercc -G strip-path=$(topdir)/ $< -o tests/t303-$*-srvt.cc
-	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*-srvt.cc
+	$(Q) $(AIDACC) -x CxxStub -G strip-path=$(topdir)/ $<
+	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*_handles.cc
+	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*_interfaces.cc
 CLEANFILES += $(tests_t303_generated)
 tests/t303-explore.cc: $(tests_t303_generated)
 
 # == t304-testpass-cxx-test ==
 # test CxxStub Generation for Client & Server
-tests/t304-testpass-cxx-server: tests/t301-pass.idl tests/t304-cxxserver.ref $(AIDACC)
+tests/t304-testpass-cxx: tests/t301-pass.idl tests/t304-cxxserver.ref $(AIDACC)
 	$(QTEST)
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G aidaids -G strip-path=$(topdir)/ \
-	  $< -o $@.out
-	$(Q) diff -up tests/t304-cxxserver.ref $@.out && rm -f $@.out
-tests/t304-testpass-cxx-client: tests/t301-pass.idl tests/t304-cxxclient.ref $(AIDACC)
-	$(QTEST)
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
-	  $< -o $@.out
-	$(Q) diff -up tests/t304-cxxclient.ref $@.out && rm -f $@.out
-t304-testpass-cxx-test: tests/t304-testpass-cxx-server tests/t304-testpass-cxx-client
+	$(Q) cp $< tests/t304-testpass.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G aidaids -G strip-path=$(topdir)/ tests/t304-testpass.idl \
+	&&   cat tests/t304-testpass_interfaces.cc >> tests/t304-testpass_interfaces.hh \
+	&&   cat tests/t304-testpass_handles.cc >> tests/t304-testpass_handles.hh \
+	&&   rm -f tests/t304-testpass.idl tests/t304-testpass_handles.cc tests/t304-testpass_interfaces.cc
+	$(Q) diff -up tests/t304-cxxserver.ref tests/t304-testpass_interfaces.hh && rm -f tests/t304-testpass_interfaces.hh
+	$(Q) diff -up tests/t304-cxxclient.ref tests/t304-testpass_handles.hh && rm -f tests/t304-testpass_handles.hh
+t304-testpass-cxx-test: tests/t304-testpass-cxx
 tests_checktargets += t304-testpass-cxx-test
 
 # == t305-testpass-compile-test ==
-tests/t305-testpass-compile-server: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
-	  tests/t301-inc2.idl -o tests/t305-inc2-server.gen.cc
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
-	  tests/t301-inc1.idl -o tests/t305-inc1-server.gen.cc
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G serverhh -G servercc -G strip-path=$(topdir)/ \
-	  tests/t301-pass.idl -o tests/t305-testpass-server.gen.cc
-	$(Q) sed -i -e '1i#include "t305-inc2-server.gen.cc"' \
-	            -e '1i#include "t305-inc1-server.gen.cc"' \
-		    -e '1i#define _(x) x' tests/t305-testpass-server.gen.cc
-	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-testpass-server.gen.cc -c
-CLEANFILES += tests/t305-inc2-server.gen.cc tests/t305-inc1-server.gen.cc tests/t305-testpass-server.gen.cc
-tests/t305-testpass-compile-client: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
-	  tests/t301-inc2.idl -o tests/t305-inc2-client.gen.cc
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
-	  tests/t301-inc1.idl -o tests/t305-inc1-client.gen.cc
-	$(Q) $(AIDACC) -x CxxStub -G iface-prefix=I_ -G clienthh -G clientcc -G strip-path=$(topdir)/ \
-	  tests/t301-pass.idl -o tests/t305-testpass-client.gen.cc
-	$(Q) sed -i -e '1i#include "t305-inc2-client.gen.cc"' \
-		    -e '1i#include "t305-inc1-client.gen.cc"' \
-		    -e '1i#define _(x) x' tests/t305-testpass-client.gen.cc
-	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-testpass-client.gen.cc -c ; eval "$$TSTDIAGNOSE"
-CLEANFILES += tests/t305-inc2-client.gen.cc tests/t305-inc1-client.gen.cc tests/t305-testpass-client.gen.cc
-t305-testpass-compile-test: tests/t305-testpass-compile-server tests/t305-testpass-compile-client
+tests/t305-testpass-compile: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
+	$(QTEST)
+	$(Q) cp tests/t301-inc2.idl tests/t305-inc2.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-inc2.idl \
+	&&   rm -f tests/t305-inc2.idl
+	$(Q) cp tests/t301-inc1.idl tests/t305-inc1.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-inc1.idl \
+	&&   rm -f tests/t305-inc1.idl
+	$(Q) cp tests/t301-pass.idl tests/t305-pass.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-pass.idl \
+	&&   rm -f tests/t305-pass.idl
+	$(Q) sed -e '1i#include "t305-inc2_interfaces.cc"' \
+	         -e '1i#include "t305-inc1_interfaces.cc"' \
+		 -e '1i#define _(x) x' -i tests/t305-pass_interfaces.cc
+	$(Q) sed -e '1i#include "t305-inc2_handles.cc"' \
+		 -e '1i#include "t305-inc1_handles.cc"' \
+		 -e '1i#define _(x) x' -i tests/t305-pass_handles.cc
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-pass_interfaces.cc -c
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-pass_handles.cc -c
+CLEANFILES += t305-inc1_interfaces.hh t305-inc1_interfaces.cc t305-inc1_handles.hh t305-inc1_handles.cc
+CLEANFILES += t305-inc2_interfaces.hh t305-inc2_interfaces.cc t305-inc2_handles.hh t305-inc2_handles.cc
+CLEANFILES += t305-pass_interfaces.hh t305-pass_interfaces.cc t305-pass_handles.hh t305-pass_handles.cc
+t305-testpass-compile-test: tests/t305-testpass-compile
 tests_checktargets += t305-testpass-compile-test
 
 # == t204-aidatests.cc ==

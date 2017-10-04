@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <cmath>
 #include "testing.hh"
-#include "t303-explore-srvt.hh"
-#include "t303-explore-clnt.hh"
+#include "t303-explore_interfaces.hh"
+#include "t303-explore_handles.hh"
 using namespace Aida;
 
 static void
@@ -135,6 +135,5 @@ main (int argc, const char **argv)
   return TestChain::run (argc, argv);
 }
 
-
-#include "t303-explore-srvt.cc"
-#include "t303-explore-clnt.cc"
+#include "t303-explore_interfaces.cc"
+#include "t303-explore_handles.cc"
