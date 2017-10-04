@@ -136,7 +136,6 @@ class Generator:
   def __init__ (self, idl_file):
     assert len (idl_file) > 0
     self.ntab = 26
-    self.idcounter = 1001
     self.namespaces = []
     self.insertions = {}
     self.idl_file = idl_file
@@ -147,10 +146,10 @@ class Generator:
     self.property_list = 'Aida::PropertyList'
     self.gen_mode = None
     self.strip_path = ''
-    self.aliases = ''
     self.aliases_namespaces = []
     self.aliases_namespacenode = None
     self.declared_pointerdefs = set() # types for which pointerdefs have been generated
+    self.reset()
   def warning (self, message, input_file = '', input_line = -1, input_col = -1):
     import sys
     if input_file:
@@ -1244,7 +1243,11 @@ class Generator:
             apath = apath[1:]
           break
     return apath
+  def reset (self):
+    self.idcounter = 1001
+    self.aliases = ''
   def generate_impl_types (self, implementation_types):
+    self.reset()
     def text_expand (txt):
       txt = txt.replace ('$AIDA_iface_base$', self.iface_base)
       return txt
@@ -1260,6 +1263,10 @@ class Generator:
     if self.gen_serverhh or self.gen_clienthh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
     # inclusions
+    if self.gen_clientcc and not self.gen_clienthh:
+      s += '#include "%s"\n' % self.filename_clienthh
+    if self.gen_servercc and not self.gen_serverhh:
+      s += '#include "%s"\n' % self.filename_serverhh
     if self.gen_inclusions:
       s += '\n// --- Custom Includes ---\n'
     if self.gen_inclusions and (self.gen_clientcc or self.gen_servercc):
@@ -1453,14 +1460,8 @@ def generate (namespace_list, **args):
     raise RuntimeError ("CxxStub: exactly one IDL input file is required")
   outname = config.get ('output', '-')
   gg = Generator (idlfiles[0])
-  gg.gen_aidaids  = 'aidaids' in config['backend-options'] or re.search (r'aidaids.?hh', outname)
-  gg.gen_serverhh = 'serverhh' in config['backend-options'] or re.search (r'server.?hh', outname)
-  gg.gen_servercc = 'servercc' in config['backend-options'] or re.search (r'server.?cc', outname)
-  gg.gen_clienthh = 'clienthh' in config['backend-options'] or re.search (r'client.?hh', outname)
-  gg.gen_clientcc = 'clientcc' in config['backend-options'] or re.search (r'client.?cc', outname)
+  gg.gen_aidaids = True
   gg.gen_inclusions = config['inclusions']
-  if not any ([gg.gen_aidaids, gg.gen_serverhh, gg.gen_servercc, gg.gen_clienthh, gg.gen_clientcc]):
-    raise RuntimeError ("CxxStub: failed to identify output file type")
   for opt in config['backend-options']:
     if opt.startswith ('macro='):
       gg.cppmacro = opt[6:]
@@ -1475,13 +1476,21 @@ def generate (namespace_list, **args):
   for ifile in config['insertions']:
     gg.insertion_file (ifile)
   gg.ns_aida = ( Decls.Namespace ('Aida', None, []), ) # Aida namespace tuple for open_namespace()
-  textstring = gg.generate_impl_types (config['implementation_types']) # namespace_list
-  if outname != '-':
-    fout = open (outname, 'w')
+  base_filename = gg.idl_file.rstrip ('.idl')
+  gg.filename_serverhh = base_filename + '_interfaces.hh'
+  gg.filename_servercc = base_filename + '_interfaces.cc'
+  gg.filename_clienthh = base_filename + '_handles.hh'
+  gg.filename_clientcc = base_filename + '_handles.cc'
+  for i in range (1, 5):
+    gg.gen_serverhh = i == 1
+    gg.gen_servercc = i == 2
+    gg.gen_clienthh = i == 3
+    gg.gen_clientcc = i == 4
+    destfilename = [ gg.filename_serverhh, gg.filename_servercc, gg.filename_clienthh, gg.filename_clientcc ][i-1]
+    textstring = gg.generate_impl_types (config['implementation_types']) # namespace_list
+    fout = open (destfilename, 'w')
     fout.write (textstring)
     fout.close()
-  else:
-    print textstring,
 
 # register extension hooks
 __Aida__.add_backend (__file__, generate, __doc__)
