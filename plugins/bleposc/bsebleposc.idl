@@ -25,6 +25,7 @@ interface BlepOsc : Effect {
     Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, 0, 5.0, 0.01, STANDARD ":f:scale");
 
     Real    devel_control_freq = LogScale(_("Internal Control Frequency"), _("Quality/Speed Tradeoff"), 1000, 1, 192000, 0, 480, 10, 2, STANDARD);
+    Bool    devel_auto_control = Bool (_("Auto Control Freq"), _("Auto Quality/Speed Tradeoff"), FALSE, STANDARD);
   };
   group _("Shape") {
     Real    shape            = (_("Shape"), _("Shape of the Oscillator"), 0.0, -100.0, 100.0, 5.0, STANDARD ":scale");
