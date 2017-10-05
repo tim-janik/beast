@@ -36,7 +36,10 @@ class BlepOsc : public BlepOscBase {
     double  pulse_width;
     double  pulse_width_mod;
 
-    unsigned int control_block_size;
+    bool auto_control;
+
+    unsigned int devel_control_block_size;
+    double control_block_size_ms;
     unsigned int control_todo;
   public:
     void
@@ -57,13 +60,15 @@ class BlepOsc : public BlepOscBase {
 
       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
 
-      control_block_size = CLAMP (lrint (mix_freq() / properties->devel_control_freq), 1, 48000);
+      devel_control_block_size = CLAMP (bse_ftoi (mix_freq() / properties->devel_control_freq), 1, 48000);
+      auto_control = properties->devel_auto_control;
       //printf ("control_block_size=%d\n", control_block_size);
     }
     void
     reset()
     {
       control_todo = 0;
+      control_block_size_ms = 1000; // will be recomputed immediately
     }
     Module()
     {
@@ -137,7 +142,36 @@ class BlepOsc : public BlepOscBase {
                 }
               osc.pulse_width = CLAMP (current_pulse_width, 0.01, 0.99);
 
-              control_todo = control_block_size;
+              if (auto_control)
+                {
+                  /* adaptive control frequency: we use
+                   *   - higher control frequency for higher master frequencies
+                   *   - shorter block sizes for higher master freq
+                   */
+                  const double min_control_freq     = 1500; /* minimal control freq: 32 samples @ 48000 Hz */
+                  const double base2control_factor  = 4;    /* control freq must be at least N times higher than base freq */
+                  const double block_step_ms        = 0.01; /* block size increment */
+
+                  const double new_control_freq = std::max (osc.master_freq * base2control_factor, min_control_freq);
+                  const double new_control_block_size_ms = 1000 / new_control_freq;
+
+                  if (new_control_block_size_ms < control_block_size_ms)
+                    {
+                      /* if we need a higher control frequency now, shrink block size in one step */
+                      control_block_size_ms = new_control_block_size_ms;
+                    }
+                  else
+                    {
+                      /* if we can use a lower control frequency, grow block size in small steps */
+                      control_block_size_ms = std::min (new_control_block_size_ms, control_block_size_ms + block_step_ms);
+                    }
+
+                  control_todo = max (1, bse_ftoi (control_block_size_ms * mix_freq() / 1000));
+                }
+              else
+                {
+                  control_todo = devel_control_block_size;
+                }
             }
           else
             {
