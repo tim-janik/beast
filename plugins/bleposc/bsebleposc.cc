@@ -22,7 +22,7 @@ class BlepOsc : public BlepOscBase {
 
   /* actual computation */
   class Module : public SynthesisModule {
-    Osc     osc;
+    OscImpl osc;
     double  frequency;
     double  transpose_factor;
     double  fine_tune;
@@ -59,10 +59,7 @@ class BlepOsc : public BlepOscBase {
       pulse_width_mod   = properties->pulse_width_mod / 100;
 
       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
-
-      devel_control_block_size = CLAMP (bse_ftoi (mix_freq() / properties->devel_control_freq), 1, 48000);
-      auto_control = properties->devel_auto_control;
-      //printf ("control_block_size=%d\n", control_block_size);
+      osc.rate        = mix_freq();
     }
     void
     reset()
@@ -88,98 +85,54 @@ class BlepOsc : public BlepOscBase {
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
       float *right_out          = ostream (OCHANNEL_RIGHT_OUT).values;
 
-      osc.rate        = mix_freq();
+      /* master freq */
+      double current_freq = frequency * bse_cent_tune_fast (fine_tune);
+      if (istream (ICHANNEL_FREQ_IN).connected)
+        {
+          current_freq = BSE_SIGNAL_TO_FREQ (freq_in[0]) * bse_cent_tune_fast (fine_tune);
+        }
+      current_freq *= transpose_factor;
 
-      unsigned int i = 0;
-      while (i < n_values)
-	{
-          if (control_todo == 0) // update parameters at start of each internal block
-            {
-              /* master freq */
-              double current_freq = frequency * bse_cent_tune_fast (fine_tune);
-              if (istream (ICHANNEL_FREQ_IN).connected)
-                {
-                  current_freq = BSE_SIGNAL_TO_FREQ (freq_in[i]) * bse_cent_tune_fast (fine_tune);
-                }
-              current_freq *= transpose_factor;
+      /* freq mod */
+      if (istream (ICHANNEL_FREQ_MOD_IN).connected)
+        {
+          current_freq *= bse_approx5_exp2 (freq_mod_in[0] * freq_mod_octaves);
+        }
+      osc.master_freq = current_freq;
 
-              /* freq mod */
-              if (istream (ICHANNEL_FREQ_MOD_IN).connected)
-                {
-                  current_freq *= bse_approx5_exp2 (freq_mod_in[i] * freq_mod_octaves);
-                }
-              osc.master_freq = current_freq;
+      /* shape mod */
+      double current_shape = shape;
+      if (istream (ICHANNEL_SHAPE_MOD_IN).connected)
+        {
+          current_shape = CLAMP (shape + shape_mod * shape_mod_in[0], -1.0, 1.0);
+        }
+      osc.shape = current_shape;
 
-              /* shape mod */
-              double current_shape = shape;
-              if (istream (ICHANNEL_SHAPE_MOD_IN).connected)
-                {
-                  current_shape = CLAMP (shape + shape_mod * shape_mod_in[i], -1.0, 1.0);
-                }
-              osc.shape = current_shape;
+      /* sub mod */
+      double current_sub = sub;
+      if (istream (ICHANNEL_SUB_MOD_IN).connected)
+        {
+          current_sub = CLAMP (sub + sub_mod * sub_mod_in[0], 0.0, 1.0);
+        }
+      osc.sub = current_sub;
 
-              /* sub mod */
-              double current_sub = sub;
-              if (istream (ICHANNEL_SUB_MOD_IN).connected)
-                {
-                  current_sub = CLAMP (sub + sub_mod * sub_mod_in[i], 0.0, 1.0);
-                }
-              osc.sub = current_sub;
+      /* slave freq from sync */
+      double current_sync = sync;
+      if (istream (ICHANNEL_SYNC_MOD_IN).connected)
+        {
+          current_sync = CLAMP (sync + sync_mod * sync_mod_in[0], 0.0, 60.0);
+        }
+      osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
 
-              /* slave freq from sync */
-              double current_sync = sync;
-              if (istream (ICHANNEL_SYNC_MOD_IN).connected)
-                {
-                  current_sync = CLAMP (sync + sync_mod * sync_mod_in[i], 0.0, 60.0);
-                }
-              osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
+      /* pulse width modulation */
+      double current_pulse_width = pulse_width;
+      if (istream (ICHANNEL_PULSE_MOD_IN).connected)
+        {
+          current_pulse_width += pulse_width_mod * pulse_mod_in[0];
+        }
+      osc.pulse_width = CLAMP (current_pulse_width, 0.01, 0.99);
 
-              /* pulse width modulation */
-              double current_pulse_width = pulse_width;
-              if (istream (ICHANNEL_PULSE_MOD_IN).connected)
-                {
-                  current_pulse_width += pulse_width_mod * pulse_mod_in[i];
-                }
-              osc.pulse_width = CLAMP (current_pulse_width, 0.01, 0.99);
-
-              if (auto_control)
-                {
-                  /* adaptive control frequency: we use
-                   *   - higher control frequency for higher master frequencies
-                   *   - shorter block sizes for higher master freq
-                   */
-                  const double min_control_freq     = 1500; /* minimal control freq: 32 samples @ 48000 Hz */
-                  const double base2control_factor  = 4;    /* control freq must be at least N times higher than base freq */
-                  const double block_step_ms        = 0.01; /* block size increment */
-
-                  const double new_control_freq = std::max (osc.master_freq * base2control_factor, min_control_freq);
-                  const double new_control_block_size_ms = 1000 / new_control_freq;
-
-                  if (new_control_block_size_ms < control_block_size_ms)
-                    {
-                      /* if we need a higher control frequency now, shrink block size in one step */
-                      control_block_size_ms = new_control_block_size_ms;
-                    }
-                  else
-                    {
-                      /* if we can use a lower control frequency, grow block size in small steps */
-                      control_block_size_ms = std::min (new_control_block_size_ms, control_block_size_ms + block_step_ms);
-                    }
-
-                  control_todo = max (1, bse_ftoi (control_block_size_ms * mix_freq() / 1000));
-                }
-              else
-                {
-                  control_todo = devel_control_block_size;
-                }
-            }
-          else
-            {
-              osc.process_sample_stereo (&left_out[i], &right_out[i]);
-              control_todo--;
-              i++;
-            }
-	}
+      osc.process_sample_stereo (left_out, right_out, n_values);
     }
   };
 public:

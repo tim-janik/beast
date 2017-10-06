@@ -6,7 +6,7 @@
 #include <math.h>
 #include <glib.h>
 
-struct Osc
+struct OscImpl
 {
   double rate;
   double freq;
@@ -37,8 +37,8 @@ struct Osc
     double right_factor = 0;
     int future_pos;
 
-    Osc::State state     = State::DOWN;
-    Osc::State sub_state = State::DOWN;
+    State state     = State::DOWN;
+    State sub_state = State::DOWN;
 
     // could be shared under certain conditions
     std::array<float, WIDTH * 2> future;
@@ -68,7 +68,7 @@ struct Osc
   };
   std::vector<UnisonVoice> unison_voices;
 
-  Osc()
+  OscImpl()
   {
     /* compute average total blep dc offset (expected value for linear interpolation) */
     blep_dc = 0;
@@ -200,136 +200,158 @@ struct Osc
     return false;
   }
   void
-  process_sample_stereo (float *left_out, float *right_out)
+  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values)
   {
-    float left_sum = 0, right_sum = 0;
-
-    const int over = auto_get_over();
-    for (auto& voice : unison_voices)
+    for (unsigned int n = 0; n < n_values; n++)
       {
-        double unison_freq        = freq * voice.freq_factor;
-        double unison_master_freq = master_freq * voice.freq_factor;
+        float left_sum = 0, right_sum = 0;
 
-        for (int i = 0; i < over; i++)
+        const int over = auto_get_over();
+        for (auto& voice : unison_voices)
           {
-            const double vsub_position = (over - i - 1.0) / over;
-            const double vrate = rate * over;
+            double unison_freq        = freq * voice.freq_factor;
+            double unison_master_freq = master_freq * voice.freq_factor;
 
-            voice.phase += unison_freq / vrate;
-            voice.master_phase += unison_master_freq / vrate;
-
-            if (voice.state == State::DOWN && check_slave_before_master (voice, pulse_width))
+            for (int i = 0; i < over; i++)
               {
-                voice.state = State::UP;
-                insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
-              }
-            if (check_slave_before_master (voice, 1))
-              {
-                voice.phase -= 1;
+                const double vsub_position = (over - i - 1.0) / over;
+                const double vrate = rate * over;
 
-                double blep_weight = 2.0 * (1 - shape); // sawish part
-                if (voice.state == State::UP)
+                voice.phase += unison_freq / vrate;
+                voice.master_phase += unison_master_freq / vrate;
+
+                if (voice.state == State::DOWN && check_slave_before_master (voice, pulse_width))
                   {
-                    voice.state = State::DOWN;
-                    blep_weight += 2.0 * shape; // pulseish part
+                    voice.state = State::UP;
+                    insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
                   }
+                if (check_slave_before_master (voice, 1))
+                  {
+                    voice.phase -= 1;
 
-                insert_blep (voice, vsub_position + voice.phase / (unison_freq / rate), blep_weight * (1 - sub));
+                    double blep_weight = 2.0 * (1 - shape); // sawish part
+                    if (voice.state == State::UP)
+                      {
+                        voice.state = State::DOWN;
+                        blep_weight += 2.0 * shape; // pulseish part
+                      }
 
-              if (check_slave_before_master (voice, pulse_width))
+                    insert_blep (voice, vsub_position + voice.phase / (unison_freq / rate), blep_weight * (1 - sub));
+
+                  if (check_slave_before_master (voice, pulse_width))
+                      {
+                        voice.state = State::UP;
+                        insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
+                      }
+                  }
+                if (voice.master_phase > 1)
+                  {
+                    voice.master_phase -= 1;
+
+                    double master_frac = voice.master_phase / (unison_master_freq / rate);
+
+                    double new_phase = master_frac * unison_freq / rate;
+
+                    // sawish part of the wave
+                    double blep_weight = (voice.phase - new_phase) * 2.0 * (1 - shape);
+
+                    // pulseish part of the wave
+                    if (voice.state == State::UP)
+                      {
+                        voice.state = State::DOWN;
+                        blep_weight += 2.0 * shape;
+                      }
+                    // sub part of the wave
+                    double sub_blep_weight;
+                    if (voice.sub_state == State::UP)
+                      {
+                        voice.sub_state = State::DOWN;
+                        sub_blep_weight = 2.0;
+                      }
+                    else
+                      {
+                        voice.sub_state = State::UP;
+                        sub_blep_weight = -2.0;
+                      }
+
+                    insert_blep (voice, vsub_position + master_frac, blep_weight * (1 - sub) + sub_blep_weight * sub);
+
+                    voice.phase = new_phase;
+                  }
+                /*
+                 * we need to check again (same code as before) if we need to switch to UP state,
+                 * as voice.phase may be changed - so switching to DOWN and then UP may happen on
+                 * the same sample
+                 */
+                if (voice.state == State::DOWN && voice.phase > pulse_width)
                   {
                     voice.state = State::UP;
                     insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
                   }
               }
-            if (voice.master_phase > 1)
+
+            double value = (voice.phase * 2 - 1) * (1 - shape);
+
+            if (voice.state == State::DOWN)
+              value -= 1 * shape;
+            else
+              value += 1 * shape;
+
+            /* basic dc offset during saw/pulse production */
+            double saw_dc = blep_dc * 2 * unison_freq / rate;
+
+            /* dc offset introduced by sync */
+            double sync_len = freq / master_freq;
+            double sync_last_len = sync_len - int (sync_len);
+            double sync_dc = -1 + sync_last_len;
+
+            saw_dc += sync_dc * sync_last_len / sync_len;
+
+            double pulse_dc = 1 - pulse_width * 2;
+            if (pulse_width < sync_last_len)
               {
-                voice.master_phase -= 1;
-
-                double master_frac = voice.master_phase / (unison_master_freq / rate);
-
-                double new_phase = master_frac * unison_freq / rate;
-
-                // sawish part of the wave
-                double blep_weight = (voice.phase - new_phase) * 2.0 * (1 - shape);
-
-                // pulseish part of the wave
-                if (voice.state == State::UP)
-                  {
-                    voice.state = State::DOWN;
-                    blep_weight += 2.0 * shape;
-                  }
-                // sub part of the wave
-                double sub_blep_weight;
-                if (voice.sub_state == State::UP)
-                  {
-                    voice.sub_state = State::DOWN;
-                    sub_blep_weight = 2.0;
-                  }
-                else
-                  {
-                    voice.sub_state = State::UP;
-                    sub_blep_weight = -2.0;
-                  }
-
-                insert_blep (voice, vsub_position + master_frac, blep_weight * (1 - sub) + sub_blep_weight * sub);
-
-                voice.phase = new_phase;
+                double level = 1 - pulse_width / sync_last_len * 2;
+                pulse_dc = (pulse_dc * (sync_len - sync_last_len) + level * sync_last_len) / sync_len;
               }
-            /*
-             * we need to check again (same code as before) if we need to switch to UP state,
-             * as voice.phase may be changed - so switching to DOWN and then UP may happen on
-             * the same sample
-             */
-            if (voice.state == State::DOWN && voice.phase > pulse_width)
+            else
               {
-                voice.state = State::UP;
-                insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
+                double level = -1;
+                pulse_dc = (pulse_dc * (sync_len - sync_last_len) + level * sync_last_len) / sync_len;
               }
+
+            /* correct dc offset */
+            value -= saw_dc * (1 - shape) + pulse_dc * shape;
+
+            /* sub: introduces no extra dc offset */
+            double sub_value = (voice.sub_state == State::DOWN) ? -1 : 1;
+
+            double out = value * (1 - sub) + sub_value * sub + voice.pop_future();
+
+            left_sum += out * voice.left_factor;
+            right_sum += out * voice.right_factor;
           }
-
-        double value = (voice.phase * 2 - 1) * (1 - shape);
-
-        if (voice.state == State::DOWN)
-          value -= 1 * shape;
-        else
-          value += 1 * shape;
-
-        /* basic dc offset during saw/pulse production */
-        double saw_dc = blep_dc * 2 * unison_freq / rate;
-
-        /* dc offset introduced by sync */
-        double sync_len = freq / master_freq;
-        double sync_last_len = sync_len - int (sync_len);
-        double sync_dc = -1 + sync_last_len;
-
-        saw_dc += sync_dc * sync_last_len / sync_len;
-
-        double pulse_dc = 1 - pulse_width * 2;
-        if (pulse_width < sync_last_len)
-          {
-            double level = 1 - pulse_width / sync_last_len * 2;
-            pulse_dc = (pulse_dc * (sync_len - sync_last_len) + level * sync_last_len) / sync_len;
-          }
-        else
-          {
-            double level = -1;
-            pulse_dc = (pulse_dc * (sync_len - sync_last_len) + level * sync_last_len) / sync_len;
-          }
-
-        /* correct dc offset */
-        value -= saw_dc * (1 - shape) + pulse_dc * shape;
-
-        /* sub: introduces no extra dc offset */
-        double sub_value = (voice.sub_state == State::DOWN) ? -1 : 1;
-
-        double out = value * (1 - sub) + sub_value * sub + voice.pop_future();
-
-        left_sum += out * voice.left_factor;
-        right_sum += out * voice.right_factor;
+        left_out[n] = left_sum;
+        right_out[n] = right_sum;
       }
-    *left_out = left_sum;
-    *right_out = right_sum;
+  }
+};
+
+class Osc /* simple interface to OscImpl */
+{
+  OscImpl osc_impl;
+public:
+  double rate;
+  double freq;
+  double pulse_width = 0.5;
+  double shape = 0; // 0 = saw, range [-1:1]
+  double sub = 0;
+
+  double master_freq;
+
+  void
+  set_unison (size_t n_voices, float detune, float stereo)
+  {
+    osc_impl.set_unison (n_voices, detune, stereo);
   }
   double
   process_sample()
@@ -339,5 +361,17 @@ struct Osc
     process_sample_stereo (&left, &right);
 
     return left + right;
+  }
+  void
+  process_sample_stereo (float *left_out, float *right_out)
+  {
+    osc_impl.rate = rate;
+    osc_impl.freq = freq;
+    osc_impl.pulse_width = pulse_width;
+    osc_impl.shape = shape;
+    osc_impl.sub = sub;
+    osc_impl.master_freq = master_freq;
+
+    return osc_impl.process_sample_stereo (left_out, right_out, 1);
   }
 };
