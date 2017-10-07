@@ -16,7 +16,8 @@ struct OscImpl
   double freq;
   double pulse_width_base = 0.5;
   double pulse_width_mod  = 0.0;
-  double shape = 0; // 0 = saw, range [-1:1]
+  double shape_base       = 0; // 0 = saw, range [-1:1]
+  double shape_mod        = 1.0;
   double sub = 0;
 
   double master_freq;
@@ -210,7 +211,9 @@ struct OscImpl
     return CLAMP (d, min, max);
   }
   void
-  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values, const float *pulse_mod_in = nullptr)
+  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
+                         const float *shape_mod_in = nullptr,
+                         const float *pulse_mod_in = nullptr)
   {
     Block::fill (n_values, left_out, 0.0);
     Block::fill (n_values, right_out, 0.0);
@@ -224,6 +227,7 @@ struct OscImpl
         for (unsigned int n = 0; n < n_values; n++)
           {
             const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
+            const double shape       = clamp (shape_mod_in ? shape_base + shape_mod * shape_mod_in[n] : shape_base, -1.0, 1.0);
 
             for (int i = 0; i < over; i++)
               {
@@ -379,7 +383,7 @@ public:
     osc_impl.rate = rate;
     osc_impl.freq = freq;
     osc_impl.pulse_width_base = pulse_width;
-    osc_impl.shape = shape;
+    osc_impl.shape_base = shape;
     osc_impl.sub = sub;
     osc_impl.master_freq = master_freq;
 

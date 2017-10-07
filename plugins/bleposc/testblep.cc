@@ -159,16 +159,18 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 4; subtest++)
+  for (int subtest = 0; subtest < 5; subtest++)
     {
       o.rate = 48000;
-      o.shape = 0; // saw
+      o.shape_base = 0; // saw
+      o.shape_mod = 0.00001;
       o.freq = 440 * 3.1;
       o.master_freq = 440;
       o.pulse_width_base = 0.5;
       o.pulse_width_mod  = 0.00001;
 
       float *pulse_width_mod = nullptr;
+      float *shape_mod = nullptr;
       const char *label = nullptr;
       int unison = 1;
 
@@ -179,10 +181,14 @@ speed2_test()
           case 1: label = "440y3+pw";
                   pulse_width_mod = random_buffer;
                   break;
-          case 2: label = "440";
+          case 2: label = "440y3+all";
+                  pulse_width_mod = random_buffer;
+                  shape_mod = random_buffer;
+                  break;
+          case 3: label = "440";
                   o.freq = o.master_freq = 440;
                   break;
-          case 3: label = "440y3+u7";
+          case 4: label = "440y3+u7";
                   unison = 7;
                   break;
         }
@@ -201,7 +207,9 @@ speed2_test()
             {
               float lbuffer[len];
               float rbuffer[len];
-              o.process_sample_stereo (lbuffer, rbuffer, len, pulse_width_mod);
+              o.process_sample_stereo (lbuffer, rbuffer, len,
+                                       shape_mod,
+                                       pulse_width_mod);
 
               for (int n = 0; n < len; n++)
                 speed_test_x += lbuffer[n] + rbuffer[n];

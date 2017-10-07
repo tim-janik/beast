@@ -27,8 +27,6 @@ class BlepOsc : public BlepOscBase {
     double  transpose_factor;
     double  fine_tune;
     double  freq_mod_octaves;
-    double  shape;
-    double  shape_mod;
     double  sub;
     double  sub_mod;
     double  sync;
@@ -42,8 +40,10 @@ class BlepOsc : public BlepOscBase {
       transpose_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose);
       fine_tune         = properties->fine_tune;
       freq_mod_octaves  = properties->freq_mod_octaves;
-      shape             = properties->shape / 100;
-      shape_mod         = properties->shape_mod / 100;
+
+      osc.shape_base    = properties->shape / 100;
+      osc.shape_mod     = properties->shape_mod / 100;
+
       sub               = properties->sub / 100;
       sub_mod           = properties->sub_mod / 100;
       sync              = properties->sync;
@@ -76,7 +76,6 @@ class BlepOsc : public BlepOscBase {
     {
       const float *freq_in      = istream (ICHANNEL_FREQ_IN).values;
       const float *freq_mod_in  = istream (ICHANNEL_FREQ_MOD_IN).values;
-      const float *shape_mod_in = istream (ICHANNEL_SHAPE_MOD_IN).values;
       const float *sub_mod_in   = istream (ICHANNEL_SUB_MOD_IN).values;
       const float *sync_mod_in  = istream (ICHANNEL_SYNC_MOD_IN).values;
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
@@ -97,14 +96,6 @@ class BlepOsc : public BlepOscBase {
         }
       osc.master_freq = current_freq;
 
-      /* shape mod */
-      double current_shape = shape;
-      if (istream (ICHANNEL_SHAPE_MOD_IN).connected)
-        {
-          current_shape = CLAMP (shape + shape_mod * shape_mod_in[0], -1.0, 1.0);
-        }
-      osc.shape = current_shape;
-
       /* sub mod */
       double current_sub = sub;
       if (istream (ICHANNEL_SUB_MOD_IN).connected)
@@ -122,6 +113,7 @@ class BlepOsc : public BlepOscBase {
       osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
 
       osc.process_sample_stereo (left_out, right_out, n_values,
+                                 istream_ptr (ICHANNEL_SHAPE_MOD_IN),
                                  istream_ptr (ICHANNEL_PULSE_MOD_IN));
     }
   };
