@@ -255,7 +255,8 @@ struct OscImpl
 
   static constexpr int FLAG_OVERSAMPLE = 1 << 0;
   static constexpr int FLAG_FREQ_MOD   = 1 << 1;
-  static constexpr int FLAG_PULSE_MOD  = 1 << 2;
+  static constexpr int FLAG_SYNC_MOD   = 1 << 2;
+  static constexpr int FLAG_PULSE_MOD  = 1 << 3;
 
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
@@ -275,12 +276,15 @@ struct OscImpl
     if (freq_mod_in)
       flags |= FLAG_FREQ_MOD;
 
+    if (sync_mod_in)
+      flags |= FLAG_SYNC_MOD;
+
     if (pulse_mod_in)
       flags |= FLAG_PULSE_MOD;
 
     switch (flags)
       {
-#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 7)
+#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n < (1 << 4))
 #define BSE_INCLUDER_FUNC(n)    process_block<n>
 #define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
@@ -299,7 +303,7 @@ struct OscImpl
     Block::fill (n_values, right_out, 0.0);
 
     double sync_factor = 0; // avoid uninitialized warning
-    if (!sync_mod_in)
+    if ((FLAGS & FLAG_SYNC_MOD) == 0)
       sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
     double pulse_width = 0; // avoid uninitialized warning
@@ -320,7 +324,7 @@ struct OscImpl
             if (FLAGS & FLAG_FREQ_MOD)
               unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
 
-            if (sync_mod_in)
+            if (FLAGS & FLAG_SYNC_MOD)
               sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
 
             const double unison_freq = unison_master_freq * sync_factor;
