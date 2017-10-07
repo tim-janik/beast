@@ -31,7 +31,6 @@ enum {
   ACTION_INTERNALS = BST_ACTION_APP_LAST,
   /* dialogs */
   ACTION_SHOW_PREFERENCES,
-  ACTION_SHOW_PROC_BROWSER,
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
 #define ACTION_HELP_FIRST   ACTION_HELP_INDEX
@@ -98,8 +97,6 @@ static const GxkStockAction undo_dvl_actions[] = {
     BST_ACTION_CLEAR_UNDO,      BST_STOCK_CLEAR_UNDO, },
 };
 static const GxkStockAction dialog_actions[] = {
-  { N_("Procedure _Browser"),   NULL,           N_("Display an overview of all procedures"),
-    ACTION_SHOW_PROC_BROWSER, },
   { N_("Profiler"),             NULL,           N_("Display statistics and timing information"),
     ACTION_SHOW_PROFILER, },
   { N_("New View"),             NULL,           N_("Create an extra view of the project"),
@@ -897,54 +894,6 @@ app_action_exec (gpointer data,
       any = bst_profiler_window_get ();
       gxk_idle_show_widget (any);
       break;
-    case ACTION_SHOW_PROC_BROWSER:
-#if 0 // FIXME
-      if (!bst_proc_browser)
-        {
-          GtkWidget *widget;
-
-          widget = bst_proc_browser_new ();
-          gtk_widget_show (widget);
-          bst_proc_browser = gxk_dialog_new (&bst_proc_browser,
-                                             NULL,
-                                             GXK_DIALOG_HIDE_ON_DELETE,
-                                             _("Procedure Browser"),
-                                             widget);
-          bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
-        }
-      gxk_idle_show_widget (bst_proc_browser);
-#endif
-      sfi_alloc_report ();
-#if 0 // FIXME
-      {
-        GSList *slist, *olist = g_object_debug_list();
-        guint i, n_buckets = 257;
-        guint buckets[n_buckets];
-        guint max=0,min=0xffffffff,empty=0,avg=0;
-        memset(buckets,0,sizeof(buckets[0])*n_buckets);
-        for (slist = olist; slist; slist = slist->next)
-          {
-            guint hash, h = (guint) slist->data;
-            hash = (h & 0xffff) ^ (h >> 16);
-            hash = (hash & 0xff) ^ (hash >> 8);
-            hash = h % n_buckets;
-            buckets[hash]++;
-          }
-        for (i = 0; i < n_buckets; i++)
-          {
-            printerr ("bucket[%u] = %u\n", i, buckets[i]);
-            max = MAX (max, buckets[i]);
-            min = MIN (min, buckets[i]);
-            avg += buckets[i];
-            if (!buckets[i])
-              empty++;
-          }
-        printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
-                    avg, min, max, empty, avg / n_buckets);
-        g_slist_free (olist);
-      }
-#endif
-      break;
     case BST_ACTION_REBUILD:
       gtk_container_foreach (GTK_CONTAINER (self->notebook),
                              (GtkCallback) rebuild_super_shell,
@@ -1078,8 +1027,6 @@ app_action_check (gpointer data,
     case BST_ACTION_STOP_PLAYBACK:
       if (self->project && self->project.is_playing())
         return TRUE;
-      return FALSE;
-    case ACTION_SHOW_PROC_BROWSER:
       return FALSE;
     case ACTION_SHOW_PREFERENCES:
     case ACTION_EXTRA_VIEW:
