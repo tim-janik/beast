@@ -44,8 +44,6 @@ typedef struct {
 /* --- prototypes --- */
 static SfiGlueIFace*    bglue_describe_iface            (SfiGlueContext *context,
 							 const char     *iface);
-static SfiGlueProc*     bglue_describe_proc             (SfiGlueContext *context,
-							 const char     *proc_name);
 static char**           bglue_list_proc_names           (SfiGlueContext *context);
 static char**           bglue_list_method_names         (SfiGlueContext *context,
 							 const char     *iface_name);
@@ -144,7 +142,7 @@ bse_glue_context_intern (const char *user)
 {
   static const SfiGlueContextTable bse_glue_table = {
     bglue_describe_iface,
-    bglue_describe_proc,
+    NULL /*describe_proc*/,
     bglue_list_proc_names,
     bglue_list_method_names,
     bglue_base_iface,
@@ -522,44 +520,6 @@ bse_glue_enum_index (GType enum_type,
   g_type_class_unref (eclass);
 
   return index;
-}
-
-static SfiGlueProc*
-bglue_describe_proc (SfiGlueContext *context,
-                     const char     *proc_name)
-{
-  GType type = g_type_from_name (proc_name);
-  BseProcedureClass *proc;
-  SfiGlueProc *p = NULL;
-
-  if (!BSE_TYPE_IS_PROCEDURE (type))
-    return NULL;
-
-  proc = (BseProcedureClass*) g_type_class_ref (type);
-  if (proc->n_out_pspecs < 2)
-    {
-      uint i;
-
-      p = sfi_glue_proc_new (g_type_name (type));
-      p->help = g_strdup (bse_type_get_blurb (type));
-      p->authors = g_strdup (bse_type_get_authors (type));
-      p->license = g_strdup (bse_type_get_license (type));
-      if (proc->n_out_pspecs)
-	{
-	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->out_pspecs[0]);
-	  sfi_glue_proc_add_ret_param (p, pspec);
-	  g_param_spec_unref (pspec);
-	}
-      for (i = 0; i < proc->n_in_pspecs; i++)
-	{
-	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->in_pspecs[i]);
-	  sfi_glue_proc_add_param (p, pspec);
-	  g_param_spec_unref (pspec);
-	}
-    }
-  g_type_class_unref (proc);
-
-  return p;
 }
 
 static char**
