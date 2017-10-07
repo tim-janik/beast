@@ -159,7 +159,7 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 5; subtest++)
+  for (int subtest = 0; subtest < 6; subtest++)
     {
       o.rate = 48000;
       o.frequency_base = 440;

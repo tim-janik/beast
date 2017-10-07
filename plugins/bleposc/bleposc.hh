@@ -254,11 +254,12 @@ struct OscImpl
   }
 
   static constexpr int FLAG_OVERSAMPLE = 1 << 0;
-  static constexpr int FLAG_FREQ_MOD   = 1 << 1;
-  static constexpr int FLAG_SHAPE_MOD  = 1 << 2;
-  static constexpr int FLAG_SUB_MOD    = 1 << 3;
-  static constexpr int FLAG_SYNC_MOD   = 1 << 4;
-  static constexpr int FLAG_PULSE_MOD  = 1 << 5;
+  static constexpr int FLAG_FREQ_IN    = 1 << 1;
+  static constexpr int FLAG_FREQ_MOD   = 1 << 2;
+  static constexpr int FLAG_SHAPE_MOD  = 1 << 3;
+  static constexpr int FLAG_SUB_MOD    = 1 << 4;
+  static constexpr int FLAG_SYNC_MOD   = 1 << 5;
+  static constexpr int FLAG_PULSE_MOD  = 1 << 6;
 
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
@@ -274,6 +275,9 @@ struct OscImpl
     const int over = auto_get_over (n_values, freq_in, freq_mod_in, sync_mod_in);
     if (over > 1)
       flags |= FLAG_OVERSAMPLE;
+
+    if (freq_in)
+      flags |= FLAG_FREQ_IN;
 
     if (freq_mod_in)
       flags |= FLAG_FREQ_MOD;
@@ -292,7 +296,7 @@ struct OscImpl
 
     switch (flags)
       {
-#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n < (1 << 6))
+#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n < (1 << 7))
 #define BSE_INCLUDER_FUNC(n)    process_block<n>
 #define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
@@ -310,6 +314,8 @@ struct OscImpl
     Block::fill (n_values, left_out, 0.0);
     Block::fill (n_values, right_out, 0.0);
 
+    double master_freq = frequency_base;
+
     double shape = clamp (shape_base, -1.0, 1.0);
     double sub   = clamp (sub_base, 0.0, 1.0);
 
@@ -326,7 +332,8 @@ struct OscImpl
       {
         for (unsigned int n = 0; n < n_values; n++)
           {
-            const double master_freq = frequency_factor * (freq_in ? BSE_SIGNAL_TO_FREQ (freq_in[n]) : frequency_base);
+            if (FLAGS & FLAG_FREQ_IN)
+              master_freq = frequency_factor * BSE_SIGNAL_TO_FREQ (freq_in[n]);
 
             double unison_master_freq = master_freq * voice.freq_factor;
 
