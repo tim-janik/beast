@@ -33,14 +33,7 @@ class BlepOsc : public BlepOscBase {
     double  sub_mod;
     double  sync;
     double  sync_mod;
-    double  pulse_width;
-    double  pulse_width_mod;
 
-    bool auto_control;
-
-    unsigned int devel_control_block_size;
-    double control_block_size_ms;
-    unsigned int control_todo;
   public:
     void
     config (Properties *properties)
@@ -55,8 +48,9 @@ class BlepOsc : public BlepOscBase {
       sub_mod           = properties->sub_mod / 100;
       sync              = properties->sync;
       sync_mod          = properties->sync_mod;
-      pulse_width       = properties->pulse_width / 100;
-      pulse_width_mod   = properties->pulse_width_mod / 100;
+
+      osc.pulse_width_base = properties->pulse_width / 100;
+      osc.pulse_width_mod  = properties->pulse_width_mod / 100;
 
       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
       osc.rate        = mix_freq();
@@ -64,14 +58,18 @@ class BlepOsc : public BlepOscBase {
     void
     reset()
     {
-      control_todo = 0;
-      control_block_size_ms = 1000; // will be recomputed immediately
     }
     Module()
     {
     }
     ~Module()
     {
+    }
+    const float *
+    istream_ptr (uint index)
+    {
+      const IStream& is = istream (index);
+      return is.connected ? is.values : nullptr;
     }
     void
     process (unsigned int n_values)
@@ -81,7 +79,6 @@ class BlepOsc : public BlepOscBase {
       const float *shape_mod_in = istream (ICHANNEL_SHAPE_MOD_IN).values;
       const float *sub_mod_in   = istream (ICHANNEL_SUB_MOD_IN).values;
       const float *sync_mod_in  = istream (ICHANNEL_SYNC_MOD_IN).values;
-      const float *pulse_mod_in = istream (ICHANNEL_PULSE_MOD_IN).values;
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
       float *right_out          = ostream (OCHANNEL_RIGHT_OUT).values;
 
@@ -124,15 +121,8 @@ class BlepOsc : public BlepOscBase {
         }
       osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
 
-      /* pulse width modulation */
-      double current_pulse_width = pulse_width;
-      if (istream (ICHANNEL_PULSE_MOD_IN).connected)
-        {
-          current_pulse_width += pulse_width_mod * pulse_mod_in[0];
-        }
-      osc.pulse_width = CLAMP (current_pulse_width, 0.01, 0.99);
-
-      osc.process_sample_stereo (left_out, right_out, n_values);
+      osc.process_sample_stereo (left_out, right_out, n_values,
+                                 istream_ptr (ICHANNEL_PULSE_MOD_IN));
     }
   };
 public:
