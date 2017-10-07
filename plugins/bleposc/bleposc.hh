@@ -6,6 +6,10 @@
 #include <math.h>
 #include <glib.h>
 
+#include <bse/bseblockutils.hh>
+
+using Bse::Block;
+
 struct OscImpl
 {
   double rate;
@@ -208,17 +212,18 @@ struct OscImpl
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values, const float *pulse_mod_in = nullptr)
   {
-    for (unsigned int n = 0; n < n_values; n++)
+    Block::fill (n_values, left_out, 0.0);
+    Block::fill (n_values, right_out, 0.0);
+
+    const int over = auto_get_over(); // FIXME: freq mod
+    for (auto& voice : unison_voices)
       {
-        float left_sum = 0, right_sum = 0;
+        const double unison_freq        = freq * voice.freq_factor;
+        const double unison_master_freq = master_freq * voice.freq_factor;
 
-        const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
-
-        const int over = auto_get_over();
-        for (auto& voice : unison_voices)
+        for (unsigned int n = 0; n < n_values; n++)
           {
-            double unison_freq        = freq * voice.freq_factor;
-            double unison_master_freq = master_freq * voice.freq_factor;
+            const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
 
             for (int i = 0; i < over; i++)
               {
@@ -335,11 +340,9 @@ struct OscImpl
 
             double out = value * (1 - sub) + sub_value * sub + voice.pop_future();
 
-            left_sum += out * voice.left_factor;
-            right_sum += out * voice.right_factor;
+            left_out[n] += out * voice.left_factor;
+            right_out[n] += out * voice.right_factor;
           }
-        left_out[n] = left_sum;
-        right_out[n] = right_sum;
       }
   }
 };
