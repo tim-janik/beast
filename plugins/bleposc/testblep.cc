@@ -151,7 +151,6 @@ speed_test (Osc& o)
 static void
 speed2_test()
 {
-  const int rate = 48000;
   const int len  = 64;
 
   OscImpl o;
@@ -160,9 +159,9 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 3; subtest++)
+  for (int subtest = 0; subtest < 4; subtest++)
     {
-      o.rate = rate;
+      o.rate = 48000;
       o.shape = 0; // saw
       o.freq = 440 * 3.1;
       o.master_freq = 440;
@@ -171,6 +170,8 @@ speed2_test()
 
       float *pulse_width_mod = nullptr;
       const char *label = nullptr;
+      int unison = 1;
+
       switch (subtest)
         {
           case 0: label = "440y3";
@@ -181,15 +182,22 @@ speed2_test()
           case 2: label = "440";
                   o.freq = o.master_freq = 440;
                   break;
+          case 3: label = "440y3+u7";
+                  unison = 7;
+                  break;
         }
+      if (unison > 1)
+        o.set_unison (unison, 10.0, 1);
 
       double time = 1e9;
+
+      const int blocks = 10000 / unison;
 
       for (int r = 0; r < 10; r++)
         {
           const double start = gettime();
 
-          for (int i = 0; i < rate; i++)
+          for (int i = 0; i < blocks; i++)
             {
               float lbuffer[len];
               float rbuffer[len];
@@ -203,7 +211,7 @@ speed2_test()
           time = min (time, end - start);
         }
 
-      printf ("%d %.7f voices   |  %.3f ns/sample    | %s\n", subtest, len / time, time * 1e9 / (rate * len), label);
+      printf ("%d %.7f voices   |  %.3f ns/sample    | %s\n", subtest, (len * blocks * unison) / o.rate / time, time * 1e9 / (len * blocks * unison), label);
     }
 }
 
