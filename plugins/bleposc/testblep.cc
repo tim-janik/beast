@@ -162,14 +162,16 @@ speed2_test()
   for (int subtest = 0; subtest < 5; subtest++)
     {
       o.rate = 48000;
+      o.master_freq = 440;
+      o.freq_mod_octaves = 0.00001;
       o.shape_base = 0; // saw
       o.shape_mod = 0.00001;
       o.sync_base = 20;
       o.sync_mod = 0.00001;
-      o.master_freq = 440;
       o.pulse_width_base = 0.5;
       o.pulse_width_mod  = 0.00001;
 
+      float *freq_mod = nullptr;
       float *shape_mod = nullptr;
       float *sub_mod = nullptr;
       float *sync_mod = nullptr;
@@ -189,6 +191,7 @@ speed2_test()
                   sync_mod = random_buffer;
                   break;
           case 3: label = "440y3+all";
+                  freq_mod = random_buffer;
                   shape_mod = random_buffer;
                   sub_mod = random_buffer;
                   sync_mod = random_buffer;
@@ -217,6 +220,7 @@ speed2_test()
               float lbuffer[len];
               float rbuffer[len];
               o.process_sample_stereo (lbuffer, rbuffer, len,
+                                       freq_mod,
                                        shape_mod,
                                        sub_mod,
                                        sync_mod,

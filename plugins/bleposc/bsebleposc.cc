@@ -26,28 +26,28 @@ class BlepOsc : public BlepOscBase {
     double  frequency;
     double  transpose_factor;
     double  fine_tune;
-    double  freq_mod_octaves;
 
   public:
     void
     config (Properties *properties)
     {
-      frequency         = properties->frequency;
-      transpose_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose);
-      fine_tune         = properties->fine_tune;
-      freq_mod_octaves  = properties->freq_mod_octaves;
+      frequency             = properties->frequency;
+      transpose_factor      = bse_transpose_factor (properties->current_musical_tuning, properties->transpose);
+      fine_tune             = properties->fine_tune;
 
-      osc.shape_base    = properties->shape / 100;
-      osc.shape_mod     = properties->shape_mod / 100;
+      osc.freq_mod_octaves  = properties->freq_mod_octaves;
 
-      osc.sub_base      = properties->sub / 100;
-      osc.sub_mod       = properties->sub_mod / 100;
+      osc.shape_base        = properties->shape / 100;
+      osc.shape_mod         = properties->shape_mod / 100;
 
-      osc.sync_base     = properties->sync;
-      osc.sync_mod      = properties->sync_mod;
+      osc.sub_base          = properties->sub / 100;
+      osc.sub_mod           = properties->sub_mod / 100;
 
-      osc.pulse_width_base = properties->pulse_width / 100;
-      osc.pulse_width_mod  = properties->pulse_width_mod / 100;
+      osc.sync_base         = properties->sync;
+      osc.sync_mod          = properties->sync_mod;
+
+      osc.pulse_width_base  = properties->pulse_width / 100;
+      osc.pulse_width_mod   = properties->pulse_width_mod / 100;
 
       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
       osc.rate        = mix_freq();
@@ -72,7 +72,6 @@ class BlepOsc : public BlepOscBase {
     process (unsigned int n_values)
     {
       const float *freq_in      = istream (ICHANNEL_FREQ_IN).values;
-      const float *freq_mod_in  = istream (ICHANNEL_FREQ_MOD_IN).values;
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
       float *right_out          = ostream (OCHANNEL_RIGHT_OUT).values;
 
@@ -84,14 +83,10 @@ class BlepOsc : public BlepOscBase {
         }
       current_freq *= transpose_factor;
 
-      /* freq mod */
-      if (istream (ICHANNEL_FREQ_MOD_IN).connected)
-        {
-          current_freq *= bse_approx5_exp2 (freq_mod_in[0] * freq_mod_octaves);
-        }
       osc.master_freq = current_freq;
 
       osc.process_sample_stereo (left_out, right_out, n_values,
+                                 istream_ptr (ICHANNEL_FREQ_MOD_IN),
                                  istream_ptr (ICHANNEL_SHAPE_MOD_IN),
                                  istream_ptr (ICHANNEL_SUB_MOD_IN),
                                  istream_ptr (ICHANNEL_SYNC_MOD_IN),
