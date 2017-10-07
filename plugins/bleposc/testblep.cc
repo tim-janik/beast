@@ -160,7 +160,7 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 2; subtest++)
+  for (int subtest = 0; subtest < 3; subtest++)
     {
       o.rate = rate;
       o.shape = 0; // saw
@@ -170,9 +170,18 @@ speed2_test()
       o.pulse_width_mod  = 0.00001;
 
       float *pulse_width_mod = nullptr;
-
-      if (subtest == 1)
-        pulse_width_mod = random_buffer;
+      const char *label = nullptr;
+      switch (subtest)
+        {
+          case 0: label = "440y3";
+                  break;
+          case 1: label = "440y3+pw";
+                  pulse_width_mod = random_buffer;
+                  break;
+          case 2: label = "440";
+                  o.freq = o.master_freq = 440;
+                  break;
+        }
 
       double time = 1e9;
 
@@ -194,7 +203,7 @@ speed2_test()
           time = min (time, end - start);
         }
 
-      printf ("T%d %.7f voices   |  %.3f ns/sample\n", subtest, len / time, time * 1e9 / (rate * len));
+      printf ("%d %.7f voices   |  %.3f ns/sample    | %s\n", subtest, len / time, time * 1e9 / (rate * len), label);
     }
 }
 
