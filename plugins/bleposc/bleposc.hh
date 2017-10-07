@@ -252,7 +252,10 @@ struct OscImpl
   {
     return CLAMP (d, min, max);
   }
-  const int FLAG_OVERSAMPLE = 1 << 0;
+
+  static constexpr int FLAG_OVERSAMPLE = 1 << 0;
+  static constexpr int FLAG_PULSE_MOD  = 1 << 1;
+
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *freq_in = nullptr,
@@ -268,9 +271,12 @@ struct OscImpl
     if (over > 1)
       flags |= FLAG_OVERSAMPLE;
 
+    if (pulse_mod_in)
+      flags |= FLAG_PULSE_MOD;
+
     switch (flags)
       {
-#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 1)
+#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 3)
 #define BSE_INCLUDER_FUNC(n)    process_block<n>
 #define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
@@ -292,6 +298,10 @@ struct OscImpl
     if (!sync_mod_in)
       sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
+    double pulse_width = 0; // avoid uninitialized warning
+    if ((FLAGS & FLAG_PULSE_MOD) == 0)
+      pulse_width = clamp (pulse_width_base, 0.01, 0.99);
+
     const int over = (FLAGS & FLAG_OVERSAMPLE) ? xover : 1;
     for (auto& voice : unison_voices)
       {
@@ -300,7 +310,6 @@ struct OscImpl
             const double master_freq = frequency_factor * (freq_in ? BSE_SIGNAL_TO_FREQ (freq_in[n]) : frequency_base);
             const double shape       = clamp (shape_mod_in ? shape_base + shape_mod * shape_mod_in[n] : shape_base, -1.0, 1.0);
             const double sub         = clamp (sub_mod_in ? sub_base + sub_mod * sub_mod_in[n] : sub_base, 0.0, 1.0);
-            const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
 
             double unison_master_freq = master_freq * voice.freq_factor;
 
@@ -311,6 +320,9 @@ struct OscImpl
               sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
 
             const double unison_freq = unison_master_freq * sync_factor;
+
+            if (FLAGS & FLAG_PULSE_MOD)
+              pulse_width = clamp (pulse_width_base + pulse_width_mod * pulse_mod_in[n], 0.01, 0.99);
 
             for (int i = 0; i < over; i++)
               {
