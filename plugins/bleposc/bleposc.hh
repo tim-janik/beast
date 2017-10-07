@@ -10,6 +10,7 @@
 #include <bse/bsemathsignal.hh>
 
 using Bse::Block;
+using std::max;
 
 struct OscImpl
 {
@@ -180,17 +181,46 @@ struct OscImpl
       }
   }
   int
-  auto_get_over()
+  auto_get_over (unsigned int n_values, const float *freq_in, const float *freq_mod_in, const float *sync_mod_in)
   {
+    /* determine maximum freq */
+    double max_freq = 0;
+    if (freq_in)
+      {
+        for (unsigned int n = 0; n < n_values; n++)
+          max_freq = max (max_freq, BSE_SIGNAL_TO_FREQ (freq_in[n]));
+      }
+    else
+      {
+        max_freq = frequency_base;
+      }
+
+    /* constant fine tune / transpose */
+    max_freq *= frequency_factor;
+
+    /* determine maximum frequency modulation */
+    if (freq_mod_in)
+      {
+        double max_freq_mod = freq_mod_in[0] * freq_mod_octaves;
+
+        for (unsigned int n = 0; n < n_values; n++)
+          max_freq_mod = max (max_freq_mod, freq_mod_in[n] * freq_mod_octaves);
+
+        max_freq *= bse_approx5_exp2 (max_freq_mod);
+      }
+
+    /* determine maximum sync_factor */
+    double max_sync = 0;
+    if (sync_mod_in)
+      {
+        for (unsigned int n = 0; n < n_values; n++)
+          max_sync = max (max_sync, sync_mod * sync_mod_in[n]);
+      }
+    max_freq *= bse_approx5_exp2 (clamp (sync_base + max_sync, 0.0, 60.0) / 12);
+
     int over = 1;
 
-    /* simple implementation: could be improved */
-    /* FIXME: sync
-    while (freq / (rate * over) > 0.4)
-      over++;
-    */
-
-    while (frequency_base * frequency_factor / (rate * over) > 0.4)
+    while (max_freq / (rate * over) > 0.4)
       over++;
 
     return over;
@@ -238,7 +268,7 @@ struct OscImpl
     if (!sync_mod_in)
       sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
-    const int over = auto_get_over(); // FIXME: freq mod, sync
+    const int over = auto_get_over (n_values, freq_in, freq_mod_in, sync_mod_in);
     for (auto& voice : unison_voices)
       {
         for (unsigned int n = 0; n < n_values; n++)
