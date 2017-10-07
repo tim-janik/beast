@@ -404,14 +404,14 @@ track_view_outputs_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
-      Bse::PropertyCandidates pc = item.get_property_candidates ("outputs");
-      const GValue *value = bse_proxy_get_property (item.proxy_id(), "outputs");
-      SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
-      BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
-      OutputsPopup odata = { self, pcell, item.proxy_id() };
+      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (itemid));
+      assert_return (track != NULL);
+      Bse::PropertyCandidates pc = track.get_property_candidates ("outputs");
+      Bse::ItemSeq items = track.outputs();
+      BseIt3mSeq *iseq = bst_it3m_seq_from_item_seq (items);
+      OutputsPopup odata = { self, pcell, track.proxy_id() };
       BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
-      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item.proxy_id(),
+      GtkWidget *dialog = bst_item_seq_dialog_popup (self, track.proxy_id(),
                                                      pc.label.c_str(), pc.tooltip.c_str(), pc_items,
                                                      _("Output Signals"), _("Mixer busses used as output for this track"), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
