@@ -406,7 +406,6 @@ track_view_outputs_popup (BstTrackView         *self,
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
       Bse::PropertyCandidates pc = item.get_property_candidates ("outputs");
-      GParamSpec *pspec = bse_proxy_get_pspec (item.proxy_id(), "outputs");
       const GValue *value = bse_proxy_get_property (item.proxy_id(), "outputs");
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
       BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
@@ -414,7 +413,7 @@ track_view_outputs_popup (BstTrackView         *self,
       BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
       GtkWidget *dialog = bst_item_seq_dialog_popup (self, item.proxy_id(),
                                                      pc.label.c_str(), pc.tooltip.c_str(), pc_items,
-                                                     g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
+                                                     _("Output Signals"), _("Mixer busses used as output for this track"), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
       bse_it3m_seq_free (pc_items);
       bse_it3m_seq_free (iseq);
