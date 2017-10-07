@@ -195,7 +195,10 @@ speed2_test()
                   pulse_width_mod = random_buffer;
                   sync_mod = random_buffer;
                   break;
-          case 3: label = "440y3+all";
+          case 3: label = "440y3+f";
+                  freq_in = freq_buffer;
+                  break;
+          case 4: label = "440y3+all";
                   freq_in = freq_buffer;
                   freq_mod = random_buffer;
                   shape_mod = random_buffer;
@@ -203,10 +206,10 @@ speed2_test()
                   sync_mod = random_buffer;
                   pulse_width_mod = random_buffer;
                   break;
-          case 4: label = "440";
+          case 5: label = "440";
                   o.sync_base = 0;
                   break;
-          case 5: label = "440y3+u7";
+          case 6: label = "440y3+u7";
                   unison = 7;
                   break;
         }
