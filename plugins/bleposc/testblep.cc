@@ -169,8 +169,9 @@ speed2_test()
       o.pulse_width_base = 0.5;
       o.pulse_width_mod  = 0.00001;
 
-      float *pulse_width_mod = nullptr;
       float *shape_mod = nullptr;
+      float *sub_mod = nullptr;
+      float *pulse_width_mod = nullptr;
       const char *label = nullptr;
       int unison = 1;
 
@@ -182,8 +183,9 @@ speed2_test()
                   pulse_width_mod = random_buffer;
                   break;
           case 2: label = "440y3+all";
-                  pulse_width_mod = random_buffer;
                   shape_mod = random_buffer;
+                  sub_mod = random_buffer;
+                  pulse_width_mod = random_buffer;
                   break;
           case 3: label = "440";
                   o.freq = o.master_freq = 440;
@@ -209,6 +211,7 @@ speed2_test()
               float rbuffer[len];
               o.process_sample_stereo (lbuffer, rbuffer, len,
                                        shape_mod,
+                                       sub_mod,
                                        pulse_width_mod);
 
               for (int n = 0; n < len; n++)
