@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpartdialog.hh"
-#include "bstprocedure.hh"
 #include "bstmenus.hh"
 #include "bstparam.hh"
 #include "bstgrowbar.hh"
@@ -27,7 +26,6 @@ static gboolean part_dialog_action_check        (gpointer                data,
                                                  guint64                 action_stamp);
 static void     part_dialog_action_exec         (gpointer                data,
                                                  size_t                  action);
-static void     part_dialog_run_script_proc     (gpointer data, size_t action_id);
 
 
 /* --- track actions --- */
@@ -104,7 +102,6 @@ bst_part_dialog_init (BstPartDialog *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkRange *srange;
-  GxkActionList *al1;
   GtkObject *adjustment;
   GtkAdjustment *adj;
   GxkRadget *radget;
@@ -130,12 +127,6 @@ bst_part_dialog_init (BstPartDialog *self)
   if (BST_DVL_HINTS)
     gxk_widget_publish_actions (self, "piano-clear-undo", G_N_ELEMENTS (piano_clear_undo), piano_clear_undo,
                                 NULL, part_dialog_action_check, part_dialog_action_exec);
-
-  /* publish /Part/ scripts */
-  Bse::CategorySeq cseq = bse_server.category_match ("/Part/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, part_dialog_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (self, "part-scripts", al1);
 
   BstGrowBar *grow_bar = (BstGrowBar*) gxk_radget_find (radget, "piano-roll-hgrow-bar");
 
@@ -316,19 +307,6 @@ event_canvas_clicked (BstEventRoll           *eroll,
     gxk_menu_popup ((GtkMenu*) gxk_radget_find (self, "event-popup"),
                     event->button.x_root, event->button.y_root,
                     event->button.button, event->button.time);
-}
-
-static void
-part_dialog_run_script_proc (gpointer data, size_t action_id)
-{
-  BstPartDialog *self = BST_PART_DIALOG (data);
-  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
-  Bse::PartH part = self->proll->part;
-
-  bst_procedure_exec_auto (cat.otype.c_str(),
-                           "project", SFI_TYPE_PROXY, part.get_project().proxy_id(),
-                           "part", SFI_TYPE_PROXY, part.proxy_id(),
-                           NULL);
 }
 
 static gboolean

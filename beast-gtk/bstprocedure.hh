@@ -41,7 +41,6 @@ GtkType		   bst_procedure_shell_get_type	   (void);
 GtkWidget*	   bst_procedure_shell_new	   (SfiGlueProc       *proc);
 void		   bst_procedure_shell_update	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_rebuild	   (BstProcedureShell *procedure_shell);
-void		   bst_procedure_shell_execute	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_set_proc	   (BstProcedureShell *procedure_shell,
 						    SfiGlueProc       *proc);
 void		   bst_procedure_shell_reset	   (BstProcedureShell *procedure_shell);
@@ -54,15 +53,6 @@ gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
 
 /* --- convenience --- */
 BstProcedureShell* bst_procedure_shell_global	(void);
-void		   bst_procedure_exec		(const gchar	*procedure_name,
-						 const gchar	*preset_param,
-						 ...) G_GNUC_NULL_TERMINATED;
-void		   bst_procedure_exec_auto	(const gchar    *procedure_name,
-						 const gchar	*preset_param,
-						 ...) G_GNUC_NULL_TERMINATED;
-void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
-						 const gchar	*preset_param,
-						 ...) G_GNUC_NULL_TERMINATED;
 GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
                                                  const gchar    *parameter);
 

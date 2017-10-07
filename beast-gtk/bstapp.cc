@@ -8,7 +8,6 @@
 #include "bstpreferences.hh"
 #include "bstservermonitor.hh"
 #include "bstmenus.hh"
-#include "bstprocedure.hh"
 #include "bstprojectctrl.hh"
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
@@ -17,7 +16,6 @@
 
 
 /* --- prototypes --- */
-static void           bst_app_run_script_proc     (gpointer data, size_t action_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
@@ -200,7 +198,7 @@ bst_app_init (BstApp *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkWidget *widget = GTK_WIDGET (self);
-  GxkActionList *al1, *al2;
+  GxkActionList *al1;
 
   g_object_set (self,
                 "name", "BEAST-Application",
@@ -247,30 +245,6 @@ bst_app_init (BstApp *self)
   if (BST_DVL_HINTS)
     gxk_widget_publish_actions (self, "demo-dialogs", G_N_ELEMENTS (demo_dialogs), demo_dialogs,
                                 NULL, app_action_check, app_action_exec);
-  /* Project utilities */
-  Bse::CategorySeq cseq = bse_server.category_match ("/Project/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-project", al1);
-  /* Song scripts */
-  cseq = bse_server.category_match ("/Song/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-song", al1);
-  /* CSynth & SNet utilities */
-  cseq = bse_server.category_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  cseq = bse_server.category_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al2);
-  al1 = gxk_action_list_merge (al1, al2);
-  gxk_widget_publish_action_list (widget, "tools-synth", al1);
-  /* WaveRepo utilities */
-  cseq = bse_server.category_match ("/WaveRepo/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
   al1 = demo_entries_create (self);
   gxk_widget_publish_action_list (widget, "demo-songs", al1);
@@ -781,34 +755,6 @@ skin_entries_create (BstApp *app)
                                     NULL, NULL, BST_ACTION_LOAD_SKIN_0000 + i, BST_STOCK_BROWSE_IMAGE,
                                     NULL, load_skin, app);
   return alist;
-}
-
-static void
-bst_app_run_script_proc (gpointer data, size_t action_id)
-{
-  BstApp *self = BST_APP (data);
-  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
-  SfiProxy super = bst_app_get_current_super (self);
-  const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
-
-  if (BSE_IS_SONG (super))
-    song = "song";
-  else if (BSE_IS_WAVE_REPO (super))
-    wave_repo = "wave-repo";
-  else if (BSE_IS_SNET (super))
-    {
-      snet = "synth-net";
-      if (BSE_IS_CSYNTH (super))
-        csynth = "custom-synth";
-    }
-
-  bst_procedure_exec_auto (cat.otype.c_str(),
-                           "project", SFI_TYPE_PROXY, self->project.proxy_id(),
-                           song, SFI_TYPE_PROXY, super,
-                           wave_repo, SFI_TYPE_PROXY, super,
-                           snet, SFI_TYPE_PROXY, super,
-                           csynth, SFI_TYPE_PROXY, super,
-                           NULL);
 }
 
 void

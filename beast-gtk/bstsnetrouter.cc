@@ -6,7 +6,6 @@
 #include "bstcanvaslink.hh"
 #include "bstmenus.hh"
 #include "bstgconfig.hh"
-#include "bstprocedure.hh"
 #include "bstscrollgraph.hh"
 #include <gdk/gdkkeysyms.h>
 
@@ -314,17 +313,6 @@ bst_router_popup_select (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
   gxk_action_group_select (self->canvas_tool, action_id);
-}
-
-static void
-bst_router_run_method (gpointer user_data, size_t action_id)
-{
-  BstSNetRouter *self = BST_SNET_ROUTER (user_data);
-  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
-  bst_procedure_exec_auto (cat.otype.c_str(),
-                           "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
-                           BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
-                           NULL);
 }
 
 void
@@ -980,7 +968,7 @@ bst_snet_router_init (BstSNetRouter      *self)
 {
   new (&self->snet) Bse::SNetH();
   GnomeCanvas *canvas = GNOME_CANVAS (self);
-  GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules, *palette_modules;
+  GxkActionList *canvas_modules, *toolbar_modules, *palette_modules;
   uint i, n;
 
   self->palette = NULL;
@@ -1009,16 +997,6 @@ bst_snet_router_init (BstSNetRouter      *self)
                     "swapped_signal::value_changed", bst_snet_router_adjust_zoom, self,
                     "swapped_signal::destroy", g_nullify_pointer, &self->adjustment,
                     NULL);
-
-  /* CSynth & SNet utilities */
-  Bse::CategorySeq cseq = bse_server.category_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
-  gxk_action_list_sort (al1);
-  cseq = bse_server.category_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
-  gxk_action_list_sort (al2);
-  al1 = gxk_action_list_merge (al1, al2);
-  gxk_widget_publish_action_list (GTK_WIDGET (self), "router-util-actions", al1);
 
   /* publish canvas toolbar tools & actions */
   gxk_widget_publish_actions_grouped (self, self->canvas_tool, "router-canvas-tools",
