@@ -148,6 +148,56 @@ speed_test (Osc& o)
   printf ("%.7f voices   |  %.3f ns/sample\n", len / time, time * 1e9 / (rate * len));
 }
 
+static void
+speed2_test()
+{
+  const int rate = 48000;
+  const int len  = 64;
+
+  OscImpl o;
+
+  float random_buffer[len];
+  for (int n = 0; n < len; n++)
+    random_buffer[n] = g_random_double_range (-1, 1);
+
+  for (int subtest = 0; subtest < 2; subtest++)
+    {
+      o.rate = rate;
+      o.shape = 0; // saw
+      o.freq = 440 * 3.1;
+      o.master_freq = 440;
+      o.pulse_width_base = 0.5;
+      o.pulse_width_mod  = 0.00001;
+
+      float *pulse_width_mod = nullptr;
+
+      if (subtest == 1)
+        pulse_width_mod = random_buffer;
+
+      double time = 1e9;
+
+      for (int r = 0; r < 10; r++)
+        {
+          const double start = gettime();
+
+          for (int i = 0; i < rate; i++)
+            {
+              float lbuffer[len];
+              float rbuffer[len];
+              o.process_sample_stereo (lbuffer, rbuffer, len, pulse_width_mod);
+
+              for (int n = 0; n < len; n++)
+                speed_test_x += lbuffer[n] + rbuffer[n];
+            }
+
+          const double end = gettime();
+          time = min (time, end - start);
+        }
+
+      printf ("T%d %.7f voices   |  %.3f ns/sample\n", subtest, len / time, time * 1e9 / (rate * len));
+    }
+}
+
 template<int FN> double
 exp2_func (double d)
 {
@@ -297,6 +347,8 @@ main (int argc, char **argv)
         print_fft (o, 8192);
       else if (test_name == "speed")
         speed_test (o);
+      else if (test_name == "speed2")
+        speed2_test();
       else if (test_name == "snr")
         auto_snr_test();
       else if (test_name == "exp2")
