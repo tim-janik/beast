@@ -27,8 +27,6 @@ class BlepOsc : public BlepOscBase {
     double  transpose_factor;
     double  fine_tune;
     double  freq_mod_octaves;
-    double  sync;
-    double  sync_mod;
 
   public:
     void
@@ -45,8 +43,8 @@ class BlepOsc : public BlepOscBase {
       osc.sub_base      = properties->sub / 100;
       osc.sub_mod       = properties->sub_mod / 100;
 
-      sync              = properties->sync;
-      sync_mod          = properties->sync_mod;
+      osc.sync_base     = properties->sync;
+      osc.sync_mod      = properties->sync_mod;
 
       osc.pulse_width_base = properties->pulse_width / 100;
       osc.pulse_width_mod  = properties->pulse_width_mod / 100;
@@ -75,7 +73,6 @@ class BlepOsc : public BlepOscBase {
     {
       const float *freq_in      = istream (ICHANNEL_FREQ_IN).values;
       const float *freq_mod_in  = istream (ICHANNEL_FREQ_MOD_IN).values;
-      const float *sync_mod_in  = istream (ICHANNEL_SYNC_MOD_IN).values;
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
       float *right_out          = ostream (OCHANNEL_RIGHT_OUT).values;
 
@@ -94,17 +91,10 @@ class BlepOsc : public BlepOscBase {
         }
       osc.master_freq = current_freq;
 
-      /* slave freq from sync */
-      double current_sync = sync;
-      if (istream (ICHANNEL_SYNC_MOD_IN).connected)
-        {
-          current_sync = CLAMP (sync + sync_mod * sync_mod_in[0], 0.0, 60.0);
-        }
-      osc.freq = osc.master_freq * bse_approx5_exp2 (current_sync / 12.);
-
       osc.process_sample_stereo (left_out, right_out, n_values,
                                  istream_ptr (ICHANNEL_SHAPE_MOD_IN),
                                  istream_ptr (ICHANNEL_SUB_MOD_IN),
+                                 istream_ptr (ICHANNEL_SYNC_MOD_IN),
                                  istream_ptr (ICHANNEL_PULSE_MOD_IN));
     }
   };

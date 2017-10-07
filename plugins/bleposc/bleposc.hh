@@ -7,19 +7,25 @@
 #include <glib.h>
 
 #include <bse/bseblockutils.hh>
+#include <bse/bsemathsignal.hh>
 
 using Bse::Block;
 
 struct OscImpl
 {
   double rate;
-  double freq;
-  double pulse_width_base = 0.5;
-  double pulse_width_mod  = 0.0;
+
   double shape_base       = 0; // 0 = saw, range [-1:1]
   double shape_mod        = 1.0;
+
   double sub_base         = 0;
   double sub_mod          = 0;
+
+  double sync_base        = 0;
+  double sync_mod         = 0;
+
+  double pulse_width_base = 0.5;
+  double pulse_width_mod  = 0.0;
 
   double master_freq;
 
@@ -176,8 +182,10 @@ struct OscImpl
     int over = 1;
 
     /* simple implementation: could be improved */
+    /* FIXME: sync
     while (freq / (rate * over) > 0.4)
       over++;
+    */
 
     while (master_freq / (rate * over) > 0.4)
       over++;
@@ -190,14 +198,14 @@ struct OscImpl
    * before master oscillator sync
    */
   bool
-  check_slave_before_master (UnisonVoice& voice, double target_phase)
+  check_slave_before_master (UnisonVoice& voice, double target_phase, double sync_factor)
   {
     if (voice.phase > target_phase)
       {
         if (voice.master_phase > 1)
           {
-            const double slave_frac = (voice.phase - target_phase) / freq;
-            const double master_frac = (voice.master_phase - 1) / master_freq;
+            const double slave_frac = (voice.phase - target_phase) / sync_factor;
+            const double master_frac = (voice.master_phase - 1);
 
             return master_frac < slave_frac;
           }
@@ -215,15 +223,19 @@ struct OscImpl
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *shape_mod_in = nullptr,
                          const float *sub_mod_in = nullptr,
+                         const float *sync_mod_in = nullptr,
                          const float *pulse_mod_in = nullptr)
   {
     Block::fill (n_values, left_out, 0.0);
     Block::fill (n_values, right_out, 0.0);
 
-    const int over = auto_get_over(); // FIXME: freq mod
+    double sync_factor = 0; // avoid uninitialized warning
+    if (!sync_mod_in)
+      sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
+
+    const int over = auto_get_over(); // FIXME: freq mod, sync
     for (auto& voice : unison_voices)
       {
-        const double unison_freq        = freq * voice.freq_factor;
         const double unison_master_freq = master_freq * voice.freq_factor;
 
         for (unsigned int n = 0; n < n_values; n++)
@@ -231,6 +243,11 @@ struct OscImpl
             const double shape       = clamp (shape_mod_in ? shape_base + shape_mod * shape_mod_in[n] : shape_base, -1.0, 1.0);
             const double sub         = clamp (sub_mod_in ? sub_base + sub_mod * sub_mod_in[n] : sub_base, 0.0, 1.0);
             const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
+
+            if (sync_mod_in)
+              sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
+
+            const double unison_freq = unison_master_freq * sync_factor;
 
             for (int i = 0; i < over; i++)
               {
@@ -240,12 +257,12 @@ struct OscImpl
                 voice.phase += unison_freq / vrate;
                 voice.master_phase += unison_master_freq / vrate;
 
-                if (voice.state == State::DOWN && check_slave_before_master (voice, pulse_width))
+                if (voice.state == State::DOWN && check_slave_before_master (voice, pulse_width, sync_factor))
                   {
                     voice.state = State::UP;
                     insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
                   }
-                if (check_slave_before_master (voice, 1))
+                if (check_slave_before_master (voice, 1, sync_factor))
                   {
                     voice.phase -= 1;
 
@@ -258,7 +275,7 @@ struct OscImpl
 
                     insert_blep (voice, vsub_position + voice.phase / (unison_freq / rate), blep_weight * (1 - sub));
 
-                  if (check_slave_before_master (voice, pulse_width))
+                  if (check_slave_before_master (voice, pulse_width, sync_factor))
                       {
                         voice.state = State::UP;
                         insert_blep (voice, vsub_position + (voice.phase - pulse_width) / (unison_freq / rate), -2.0 * shape * (1 - sub));
@@ -321,7 +338,7 @@ struct OscImpl
             double saw_dc = blep_dc * 2 * unison_freq / rate;
 
             /* dc offset introduced by sync */
-            double sync_len = freq / master_freq;
+            double sync_len = sync_factor;
             double sync_last_len = sync_len - int (sync_len);
             double sync_dc = -1 + sync_last_len;
 
@@ -357,6 +374,11 @@ struct OscImpl
 class Osc /* simple interface to OscImpl */
 {
   OscImpl osc_impl;
+  double
+  to_sync (double sync_factor)
+  {
+    return 12 * log (sync_factor) / log (2);
+  }
 public:
   double rate;
   double freq;
@@ -384,7 +406,7 @@ public:
   process_sample_stereo (float *left_out, float *right_out)
   {
     osc_impl.rate = rate;
-    osc_impl.freq = freq;
+    osc_impl.sync_base = to_sync (freq / master_freq);
     osc_impl.pulse_width_base = pulse_width;
     osc_impl.shape_base = shape;
     osc_impl.sub_base = sub;
