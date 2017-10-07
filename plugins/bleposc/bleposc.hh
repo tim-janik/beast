@@ -15,6 +15,9 @@ struct OscImpl
 {
   double rate;
 
+  double frequency_base   = 440;
+  double frequency_factor = 1;
+
   double freq_mod_octaves = 0;
 
   double shape_base       = 0; // 0 = saw, range [-1:1]
@@ -28,8 +31,6 @@ struct OscImpl
 
   double pulse_width_base = 0.5;
   double pulse_width_mod  = 0.0;
-
-  double master_freq;
 
   static const int WIDTH = 16;
   static const int OVERSAMPLE = 64;
@@ -189,7 +190,7 @@ struct OscImpl
       over++;
     */
 
-    while (master_freq / (rate * over) > 0.4)
+    while (frequency_base * frequency_factor / (rate * over) > 0.4)
       over++;
 
     return over;
@@ -223,6 +224,7 @@ struct OscImpl
   }
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
+                         const float *freq_in = nullptr,
                          const float *freq_mod_in = nullptr,
                          const float *shape_mod_in = nullptr,
                          const float *sub_mod_in = nullptr,
@@ -241,11 +243,13 @@ struct OscImpl
       {
         for (unsigned int n = 0; n < n_values; n++)
           {
+            const double master_freq = frequency_factor * (freq_in ? BSE_SIGNAL_TO_FREQ (freq_in[n]) : frequency_base);
             const double shape       = clamp (shape_mod_in ? shape_base + shape_mod * shape_mod_in[n] : shape_base, -1.0, 1.0);
             const double sub         = clamp (sub_mod_in ? sub_base + sub_mod * sub_mod_in[n] : sub_base, 0.0, 1.0);
             const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
 
             double unison_master_freq = master_freq * voice.freq_factor;
+
             if (freq_mod_in)
               unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
 
@@ -415,7 +419,7 @@ public:
     osc_impl.pulse_width_base = pulse_width;
     osc_impl.shape_base = shape;
     osc_impl.sub_base = sub;
-    osc_impl.master_freq = master_freq;
+    osc_impl.frequency_base = master_freq;
 
     return osc_impl.process_sample_stereo (left_out, right_out, 1);
   }

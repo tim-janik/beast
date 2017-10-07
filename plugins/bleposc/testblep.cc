@@ -162,7 +162,7 @@ speed2_test()
   for (int subtest = 0; subtest < 5; subtest++)
     {
       o.rate = 48000;
-      o.master_freq = 440;
+      o.frequency_base = 440;
       o.freq_mod_octaves = 0.00001;
       o.shape_base = 0; // saw
       o.shape_mod = 0.00001;
@@ -171,6 +171,11 @@ speed2_test()
       o.pulse_width_base = 0.5;
       o.pulse_width_mod  = 0.00001;
 
+      float freq_buffer[len];
+      for (int n = 0; n < len; n++)
+        freq_buffer[n] = BSE_SIGNAL_FROM_FREQ (o.frequency_base);
+
+      float *freq_in = nullptr;
       float *freq_mod = nullptr;
       float *shape_mod = nullptr;
       float *sub_mod = nullptr;
@@ -191,6 +196,7 @@ speed2_test()
                   sync_mod = random_buffer;
                   break;
           case 3: label = "440y3+all";
+                  freq_in = freq_buffer;
                   freq_mod = random_buffer;
                   shape_mod = random_buffer;
                   sub_mod = random_buffer;
@@ -220,6 +226,7 @@ speed2_test()
               float lbuffer[len];
               float rbuffer[len];
               o.process_sample_stereo (lbuffer, rbuffer, len,
+                                       freq_in,
                                        freq_mod,
                                        shape_mod,
                                        sub_mod,
