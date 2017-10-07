@@ -176,25 +176,6 @@ upper_power2 (gulong number)
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
 
-SfiGlueProc*
-sfi_glue_describe_proc (const gchar *proc_name)
-{
-  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
-  SfiGlueProc *proc;
-
-  assert_return (proc_name != NULL, NULL);
-
-  proc = context->table.describe_proc (context, proc_name);
-  if (proc && !proc->name)
-    {
-      sfi_glue_proc_unref (proc);
-      proc = NULL;
-    }
-  else if (proc)
-    sfi_glue_gc_add (proc, SfiGlueGcFreeFunc (sfi_glue_proc_unref));
-  return proc;
-}
-
 const gchar**
 sfi_glue_list_proc_names (void)
 {

@@ -39,7 +39,6 @@ typedef struct {
   GParamSpec **params;
 } SfiGlueProc;
 
-SfiGlueProc*	sfi_glue_describe_proc		(const gchar	*proc_name);
 SfiGlueProc*	sfi_glue_proc_ref		(SfiGlueProc	*proc);
 void		sfi_glue_proc_unref		(SfiGlueProc	*proc);
 const gchar**	sfi_glue_list_proc_names	(void);
@@ -55,8 +54,7 @@ typedef struct {
   /* core functions */
   SfiGlueIFace*         (*describe_iface)               (SfiGlueContext *context,
                                                          const gchar    *iface);
-  SfiGlueProc*          (*describe_proc)                (SfiGlueContext *context,
-                                                         const gchar    *proc_name);
+  void                   *describe_proc;
   gchar**               (*list_proc_names)              (SfiGlueContext *context);
   gchar**               (*list_method_names)            (SfiGlueContext *context,
                                                          const gchar    *iface_name);
