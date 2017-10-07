@@ -254,7 +254,8 @@ struct OscImpl
   }
 
   static constexpr int FLAG_OVERSAMPLE = 1 << 0;
-  static constexpr int FLAG_PULSE_MOD  = 1 << 1;
+  static constexpr int FLAG_FREQ_MOD   = 1 << 1;
+  static constexpr int FLAG_PULSE_MOD  = 1 << 2;
 
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
@@ -271,12 +272,15 @@ struct OscImpl
     if (over > 1)
       flags |= FLAG_OVERSAMPLE;
 
+    if (freq_mod_in)
+      flags |= FLAG_FREQ_MOD;
+
     if (pulse_mod_in)
       flags |= FLAG_PULSE_MOD;
 
     switch (flags)
       {
-#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 3)
+#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 7)
 #define BSE_INCLUDER_FUNC(n)    process_block<n>
 #define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
@@ -313,7 +317,7 @@ struct OscImpl
 
             double unison_master_freq = master_freq * voice.freq_factor;
 
-            if (freq_mod_in)
+            if (FLAGS & FLAG_FREQ_MOD)
               unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
 
             if (sync_mod_in)
