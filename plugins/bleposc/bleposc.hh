@@ -15,6 +15,8 @@ struct OscImpl
 {
   double rate;
 
+  double freq_mod_octaves = 0;
+
   double shape_base       = 0; // 0 = saw, range [-1:1]
   double shape_mod        = 1.0;
 
@@ -221,6 +223,7 @@ struct OscImpl
   }
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
+                         const float *freq_mod_in = nullptr,
                          const float *shape_mod_in = nullptr,
                          const float *sub_mod_in = nullptr,
                          const float *sync_mod_in = nullptr,
@@ -236,13 +239,15 @@ struct OscImpl
     const int over = auto_get_over(); // FIXME: freq mod, sync
     for (auto& voice : unison_voices)
       {
-        const double unison_master_freq = master_freq * voice.freq_factor;
-
         for (unsigned int n = 0; n < n_values; n++)
           {
             const double shape       = clamp (shape_mod_in ? shape_base + shape_mod * shape_mod_in[n] : shape_base, -1.0, 1.0);
             const double sub         = clamp (sub_mod_in ? sub_base + sub_mod * sub_mod_in[n] : sub_base, 0.0, 1.0);
             const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
+
+            double unison_master_freq = master_freq * voice.freq_factor;
+            if (freq_mod_in)
+              unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
 
             if (sync_mod_in)
               sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
