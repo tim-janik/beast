@@ -272,12 +272,12 @@ struct OscImpl
       {
 #define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 1)
 #define BSE_INCLUDER_FUNC(n)    process_block<n>
-#define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, n & FLAG_OVERSAMPLE ? over : 1, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
+#define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
       }
   }
   template<int FLAGS> void
-  process_block (float *left_out, float *right_out, unsigned int n_values, int over,
+  process_block (float *left_out, float *right_out, unsigned int n_values, int xover,
                  const float *freq_in,
                  const float *freq_mod_in,
                  const float *shape_mod_in,
@@ -292,6 +292,7 @@ struct OscImpl
     if (!sync_mod_in)
       sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
+    const int over = (FLAGS & FLAG_OVERSAMPLE) ? xover : 1;
     for (auto& voice : unison_voices)
       {
         for (unsigned int n = 0; n < n_values; n++)
