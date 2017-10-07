@@ -580,7 +580,9 @@ bse_dummy_prober (gpointer data)
       data = sfi_ring_pop_head (&bse_dummy_sources);
       BseSource *source = BSE_SOURCE (data);
       ProbeSeq probe_seq;
-      source->as<SourceIface*>()->sig_probes.emit (probe_seq);
+      SourceIface *iface = source->as<SourceIface*>();
+      if (iface) // timer might be executed after destruction
+        iface->sig_probes.emit (probe_seq);
       g_object_unref (source);
     }
   bse_dummy_prober_id = 0;
