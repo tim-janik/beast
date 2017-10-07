@@ -10,7 +10,8 @@ struct OscImpl
 {
   double rate;
   double freq;
-  double pulse_width = 0.5;
+  double pulse_width_base = 0.5;
+  double pulse_width_mod  = 0.0;
   double shape = 0; // 0 = saw, range [-1:1]
   double sub = 0;
 
@@ -199,12 +200,19 @@ struct OscImpl
       }
     return false;
   }
+  double
+  clamp (double d, double min, double max)
+  {
+    return CLAMP (d, min, max);
+  }
   void
-  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values)
+  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values, const float *pulse_mod_in = nullptr)
   {
     for (unsigned int n = 0; n < n_values; n++)
       {
         float left_sum = 0, right_sum = 0;
+
+        const double pulse_width = clamp (pulse_mod_in ? pulse_width_base + pulse_width_mod * pulse_mod_in[n] : pulse_width_base, 0.01, 0.99);
 
         const int over = auto_get_over();
         for (auto& voice : unison_voices)
@@ -367,7 +375,7 @@ public:
   {
     osc_impl.rate = rate;
     osc_impl.freq = freq;
-    osc_impl.pulse_width = pulse_width;
+    osc_impl.pulse_width_base = pulse_width;
     osc_impl.shape = shape;
     osc_impl.sub = sub;
     osc_impl.master_freq = master_freq;
