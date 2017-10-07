@@ -16,9 +16,6 @@ static gchar**	      encoder_list_method_names		(SfiGlueContext *context,
 static gchar*	      encoder_base_iface		(SfiGlueContext *context);
 static gchar**	      encoder_iface_children		(SfiGlueContext *context,
 							 const gchar    *iface_name);
-static GValue*	      encoder_exec_proc			(SfiGlueContext *context,
-							 const gchar    *proc_name,
-							 SfiSeq         *params);
 static gchar*	      encoder_proxy_iface		(SfiGlueContext *context,
 							 SfiProxy        proxy);
 static gboolean	      encoder_proxy_is_a		(SfiGlueContext *context,
@@ -68,7 +65,7 @@ sfi_glue_encoder_context (SfiComPort *port)
     encoder_list_method_names,
     encoder_base_iface,
     encoder_iface_children,
-    encoder_exec_proc,
+    NULL /*exec_proc*/,
     encoder_proxy_iface,
     encoder_proxy_is_a,
     encoder_proxy_list_properties,
@@ -418,36 +415,6 @@ decoder_iface_children (SfiGlueDecoder *decoder,
   GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
-}
-
-static GValue*
-encoder_exec_proc (SfiGlueContext *context,
-		   const gchar    *proc_name,
-		   SfiSeq         *params)
-{
-  GValue *rvalue = NULL;
-  SfiSeq *seq = sfi_seq_new ();
-  sfi_seq_append_int (seq, SFI_GLUE_CODEC_EXEC_PROC);
-  sfi_seq_append_string (seq, proc_name);
-  sfi_seq_append_seq (seq, params);
-
-  seq = encoder_exec_round_trip (context, seq);
-
-  if (seq->n_elements)
-    rvalue = sfi_value_clone_shallow (sfi_seq_get (seq, 0));
-  sfi_seq_unref (seq);
-  return rvalue;
-}
-
-static GValue*
-decoder_exec_proc (SfiGlueDecoder *decoder,
-		   SfiSeq         *seq)
-{
-  GValue *pvalue = sfi_glue_call_seq (sfi_seq_get_string (seq, 1),
-				      sfi_seq_get_seq (seq, 2));
-  if (pvalue)
-    sfi_glue_gc_remove (pvalue, SfiGlueGcFreeFunc (sfi_value_free));
-  return pvalue;
 }
 
 static gchar*
@@ -850,8 +817,6 @@ decoder_process_request (SfiGlueDecoder *decoder,
       return decoder_base_iface (decoder, seq);
     case SFI_GLUE_CODEC_IFACE_CHILDREN:
       return decoder_iface_children (decoder, seq);
-    case SFI_GLUE_CODEC_EXEC_PROC:
-      return decoder_exec_proc (decoder, seq);
     case SFI_GLUE_CODEC_PROXY_IFACE:
       return decoder_proxy_iface (decoder, seq);
     case SFI_GLUE_CODEC_PROXY_IS_A:

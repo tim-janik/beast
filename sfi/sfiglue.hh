@@ -45,11 +45,6 @@ void		sfi_glue_proc_unref		(SfiGlueProc	*proc);
 const gchar**	sfi_glue_list_proc_names	(void);
 const gchar**	sfi_glue_list_method_names	(const gchar	*iface_name);
 
-GValue*		sfi_glue_call_seq		(const gchar	*proc_name,
-						 SfiSeq		*params);
-GValue*		sfi_glue_call_valist		(const gchar	*proc_name,
-                                                 guint8          first_arg_type,
-						 va_list         var_args);
 GValue*		sfi_glue_client_msg		(const gchar	*msg,
 						 GValue		*value);
 
@@ -68,9 +63,7 @@ typedef struct {
   gchar*                (*base_iface)                   (SfiGlueContext *context);
   gchar**               (*iface_children)               (SfiGlueContext *context,
                                                          const gchar    *iface_name);
-  GValue*               (*exec_proc)                    (SfiGlueContext *context,
-							 const gchar    *proc_name,
-                                                         SfiSeq         *params);
+  void                   *exec_proc; // unused
   /* proxy functions */
   gchar*                (*proxy_iface)                  (SfiGlueContext *context,
                                                          SfiProxy        proxy);

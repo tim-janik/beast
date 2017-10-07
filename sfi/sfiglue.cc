@@ -275,63 +275,6 @@ sfi_glue_client_msg (const gchar *msg,
   return rvalue;
 }
 
-
-/* --- procedure calls --- */
-GValue*
-sfi_glue_call_seq (const gchar *proc_name,
-		   SfiSeq      *params)
-{
-  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
-
-  assert_return (proc_name != NULL, NULL);
-  assert_return (params != NULL, NULL);
-
-  GValue *value = context->table.exec_proc (context, proc_name, params);
-  if (value)
-    sfi_glue_gc_add (value, SfiGlueGcFreeFunc (sfi_value_free));
-  return value;
-}
-
-GValue*
-sfi_glue_call_valist (const gchar *proc_name,
-		      guint8       first_arg_type,
-		      va_list      var_args)
-{
-  guint8 arg_type = first_arg_type;
-  SfiSeq *seq;
-
-  assert_return (proc_name != NULL, NULL);
-
-  seq = sfi_seq_new ();
-  while (arg_type)
-    {
-      gchar *error = NULL;
-      GType collect_type = sfi_category_type (SfiSCategory (arg_type));
-      if (!collect_type)
-	error = g_strdup_format ("%s: invalid category_type (%u)", G_STRLOC, arg_type);
-      else
-	{
-	  GValue *value = sfi_seq_append_empty (seq, collect_type);
-	  G_VALUE_COLLECT (value, var_args, 0, &error);
-	}
-      if (error)
-	{
-	  Bse::info ("%s: %s", G_STRLOC, error);
-	  g_free (error);
-	  sfi_seq_unref (seq);
-	  return NULL;
-	}
-      arg_type = va_arg (var_args, guint);
-    }
-  if (seq)
-    {
-      GValue *retval = sfi_glue_call_seq (proc_name, seq);
-      sfi_seq_unref (seq);
-      return retval;	/* already GC owned */
-    }
-  return NULL;
-}
-
 /* --- Glue utilities --- */
 SfiGlueIFace*
 sfi_glue_iface_new (const gchar *iface_name)
