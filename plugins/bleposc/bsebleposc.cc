@@ -23,17 +23,12 @@ class BlepOsc : public BlepOscBase {
   /* actual computation */
   class Module : public SynthesisModule {
     OscImpl osc;
-    double  frequency;
-    double  transpose_factor;
-    double  fine_tune;
-
   public:
     void
     config (Properties *properties)
     {
-      frequency             = properties->frequency;
-      transpose_factor      = bse_transpose_factor (properties->current_musical_tuning, properties->transpose);
-      fine_tune             = properties->fine_tune;
+      osc.frequency_base    = properties->frequency;
+      osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
 
       osc.freq_mod_octaves  = properties->freq_mod_octaves;
 
@@ -71,21 +66,11 @@ class BlepOsc : public BlepOscBase {
     void
     process (unsigned int n_values)
     {
-      const float *freq_in      = istream (ICHANNEL_FREQ_IN).values;
       float *left_out           = ostream (OCHANNEL_LEFT_OUT).values;
       float *right_out          = ostream (OCHANNEL_RIGHT_OUT).values;
 
-      /* master freq */
-      double current_freq = frequency * bse_cent_tune_fast (fine_tune);
-      if (istream (ICHANNEL_FREQ_IN).connected)
-        {
-          current_freq = BSE_SIGNAL_TO_FREQ (freq_in[0]) * bse_cent_tune_fast (fine_tune);
-        }
-      current_freq *= transpose_factor;
-
-      osc.master_freq = current_freq;
-
       osc.process_sample_stereo (left_out, right_out, n_values,
+                                 istream_ptr (ICHANNEL_FREQ_IN),
                                  istream_ptr (ICHANNEL_FREQ_MOD_IN),
                                  istream_ptr (ICHANNEL_SHAPE_MOD_IN),
                                  istream_ptr (ICHANNEL_SUB_MOD_IN),
