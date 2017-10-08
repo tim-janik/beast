@@ -3,5 +3,3 @@ dc subsampling
 sync specialization
 possible table-of-exp2
 allow negative modulation
-
-FIX: bad reset
