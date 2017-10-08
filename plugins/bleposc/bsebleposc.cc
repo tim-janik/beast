@@ -50,6 +50,7 @@ class BlepOsc : public BlepOscBase {
     void
     reset()
     {
+      osc.reset();
     }
     Module()
     {
