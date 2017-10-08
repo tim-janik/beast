@@ -159,7 +159,7 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 6; subtest++)
+  for (int subtest = 0; subtest < 7; subtest++)
     {
       o.rate = 48000;
       o.frequency_base = 440;
@@ -244,7 +244,7 @@ speed2_test()
           time = min (time, end - start);
         }
 
-      printf ("%d %.7f voices   |  %.3f ns/sample    | %s\n", subtest, (len * blocks * unison) / o.rate / time, time * 1e9 / (len * blocks * unison), label);
+      printf ("%d  %8.3f voices   |  %7.3f ns/sample    | %s\n", subtest, (len * blocks * unison) / o.rate / time, time * 1e9 / (len * blocks * unison), label);
     }
 }
 
