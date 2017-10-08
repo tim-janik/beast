@@ -261,6 +261,7 @@ struct OscImpl
   static constexpr int FLAG_SYNC_MOD   = 1 << 5;
   static constexpr int FLAG_PULSE_MOD  = 1 << 6;
 
+#define USE_TEMPLATE_FUNC 1
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *freq_in = nullptr,
@@ -294,6 +295,7 @@ struct OscImpl
     if (pulse_mod_in)
       flags |= FLAG_PULSE_MOD;
 
+#if USE_TEMPLATE_FUNC
     switch (flags)
       {
 #define BSE_INCLUDER_MATCH(n)   (n >= 0 && n < (1 << 7))
@@ -301,7 +303,11 @@ struct OscImpl
 #define BSE_INCLUDER_ARGS(n)    (left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in)
 #include <bse/bseincluder.hh>
       }
+#else
+    process_block (flags, left_out, right_out, n_values, over, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_mod_in);
+#endif
   }
+#if USE_TEMPLATE_FUNC
   template<int FLAGS> void
   process_block (float *left_out, float *right_out, unsigned int n_values, int xover,
                  const float *freq_in,
@@ -310,6 +316,17 @@ struct OscImpl
                  const float *sub_mod_in,
                  const float *sync_mod_in,
                  const float *pulse_mod_in)
+#else
+  void
+  process_block (int FLAGS,
+                 float *left_out, float *right_out, unsigned int n_values, int xover,
+                 const float *freq_in,
+                 const float *freq_mod_in,
+                 const float *shape_mod_in,
+                 const float *sub_mod_in,
+                 const float *sync_mod_in,
+                 const float *pulse_mod_in)
+#endif
   {
     Block::fill (n_values, left_out, 0.0);
     Block::fill (n_values, right_out, 0.0);
