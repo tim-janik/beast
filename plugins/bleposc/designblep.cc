@@ -8,6 +8,8 @@
 
 #include "bleputils.hh"
 
+using namespace Bse::BlepUtils;
+
 using std::complex;
 using std::vector;
 using std::string;
@@ -251,7 +253,7 @@ main (int argc, char **argv)
   else
     {
       printf ("#include \"bleposc.hh\"\n");
-      printf ("const float OscImpl::blep_delta[%zd] = {\n", minphase.size() + 1);
+      printf ("const float Bse::BlepUtils::OscImpl::blep_delta[%zd] = {\n", minphase.size() + 1);
     }
 
   double blep_acc = 0;

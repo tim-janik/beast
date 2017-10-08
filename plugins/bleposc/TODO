@@ -1,6 +1,5 @@
 reset()
 dc subsampling
 sync specialization
-namespacing
 possible table-of-exp2
 allow negative modulation

@@ -1,4 +1,12 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+#ifndef __BSE_BLEPUTILS_HH__
+#define __BSE_BLEPUTILS_HH__
+
 #include <assert.h>
+
+namespace Bse {
+namespace BlepUtils {
 
 inline double
 bessel_i0 (double x)
@@ -33,3 +41,7 @@ window_kaiser (double x, double beta)
   return bessel_i0 (M_PI * beta * sqrt (pos)) / bessel_i0 (M_PI * beta);
 }
 
+}
+}
+
+#endif
