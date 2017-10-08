@@ -98,10 +98,38 @@ struct OscImpl
     set_unison (1, 0, 0); // default
   }
   void
+  reset()
+  {
+    const bool randomize_phase = unison_voices.size() > 1;
+
+    for (auto& voice : unison_voices)
+      {
+        voice.init_future();
+
+        if (randomize_phase)
+          {
+            // this is not really correct; we would need to
+            //   - derive phase from master_phase
+            //   - derive state and sub_state from master_phase
+            //
+            // but since the first master retrigger fixes our state, it may not be so bad
+            voice.master_phase = g_random_double_range (0, 1);
+            voice.phase        = g_random_double_range (0, 1);
+            voice.state        = State::DOWN;
+            voice.sub_state    = State::DOWN;
+          }
+        else
+          {
+            voice.master_phase = 0;
+            voice.phase        = 0;
+            voice.state        = State::DOWN;
+            voice.sub_state    = State::DOWN;
+          }
+      }
+  }
+  void
   set_unison (size_t n_voices, float detune, float stereo)
   {
-    const bool size_changed = (n_voices != unison_voices.size());
-
     unison_voices.resize (n_voices);
 
     bool left_channel = true; /* start spreading voices at the left channel */
@@ -113,21 +141,6 @@ struct OscImpl
           {
             const float detune_cent = -detune / 2.0 + i / float (n_voices - 1) * detune;
             unison_voices[i].freq_factor = pow (2, detune_cent / 1200);
-          }
-        if (size_changed)
-          {
-            unison_voices[i].init_future();
-
-            if (n_voices > 1)
-              {
-                // this is not really correct; we would need to
-                //   - derive phase from master_phase
-                //   - derive state and sub_state from master_phase
-                //
-                // but since the first master retrigger fixes our state, it may not be so bad
-                unison_voices[i].master_phase = g_random_double_range (0, 1);
-                unison_voices[i].phase        = g_random_double_range (0, 1);
-              }
           }
         /* stereo spread factors */
         double left_factor, right_factor;
@@ -161,6 +174,8 @@ struct OscImpl
         unison_voices[i].left_factor  = left_factor / norm;
         unison_voices[i].right_factor = right_factor / norm;
       }
+
+    reset();
   }
   void
   insert_blep (UnisonVoice& voice, double frac, double weight)
