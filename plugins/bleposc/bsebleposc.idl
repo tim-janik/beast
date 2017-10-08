@@ -8,6 +8,7 @@ interface BlepOsc : Effect {
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Audio Sources/Blep Oscillator");
   Info    blurb       = _("An oscillator for classic analog waveforms based on bleps");
+  Info    icon        = "bleposc.png";
   IStream freq_in     = Stream (_("Freq In"), _("Frequency Input"));
   IStream freq_mod_in = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
   IStream shape_mod_in= Stream (_("Shape Mod In"), _("Shape Modulation Input"));
