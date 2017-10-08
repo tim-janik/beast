@@ -138,6 +138,8 @@ struct OscImpl
   void
   set_unison (size_t n_voices, float detune, float stereo)
   {
+    const bool unison_voices_changed = unison_voices.size() != n_voices;
+
     unison_voices.resize (n_voices);
 
     bool left_channel = true; /* start spreading voices at the left channel */
@@ -182,8 +184,8 @@ struct OscImpl
         unison_voices[i].left_factor  = left_factor / norm;
         unison_voices[i].right_factor = right_factor / norm;
       }
-
-    reset();
+    if (unison_voices_changed)
+      reset();
   }
   void
   insert_blep (UnisonVoice& voice, double frac, double weight)
