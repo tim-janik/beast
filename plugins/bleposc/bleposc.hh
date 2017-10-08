@@ -157,7 +157,7 @@ struct OscImpl
          *   -> each time the number of voices is doubled, the signal level is increased by
          *      a factor of sqrt (2)
          */
-        const double norm = sqrt (left_factor * left_factor + right_factor * right_factor) * sqrt (2 * n_voices);
+        const double norm = sqrt (left_factor * left_factor + right_factor * right_factor) * sqrt (n_voices / 2.0);
         unison_voices[i].left_factor  = left_factor / norm;
         unison_voices[i].right_factor = right_factor / norm;
       }
@@ -522,7 +522,7 @@ public:
 
     process_sample_stereo (&left, &right);
 
-    return left + right;
+    return (left + right) / 2;
   }
   void
   process_sample_stereo (float *left_out, float *right_out)
