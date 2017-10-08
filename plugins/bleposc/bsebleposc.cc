@@ -22,7 +22,7 @@ class BlepOsc : public BlepOscBase {
 
   /* actual computation */
   class Module : public SynthesisModule {
-    OscImpl osc;
+    BlepUtils::OscImpl osc;
   public:
     void
     config (Properties *properties)

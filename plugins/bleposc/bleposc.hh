@@ -1,3 +1,8 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+#ifndef __BSE_BLEPOSC_HH__
+#define __BSE_BLEPOSC_HH__
+
 #include <vector>
 #include <array>
 
@@ -8,6 +13,9 @@
 
 #include <bse/bseblockutils.hh>
 #include <bse/bsemathsignal.hh>
+
+namespace Bse {
+namespace BlepUtils {
 
 using Bse::Block;
 using std::max;
@@ -552,3 +560,8 @@ public:
     return osc_impl.process_sample_stereo (left_out, right_out, 1);
   }
 };
+
+}
+}
+
+#endif

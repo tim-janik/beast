@@ -9,6 +9,8 @@
 #include "bleputils.hh"
 #include "bleposc.hh"
 
+using namespace Bse::BlepUtils;
+
 using std::vector;
 using std::string;
 using std::complex;
