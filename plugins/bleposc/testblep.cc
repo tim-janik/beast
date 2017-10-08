@@ -1,3 +1,5 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
