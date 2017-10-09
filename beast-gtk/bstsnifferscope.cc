@@ -212,22 +212,17 @@ sniffer_scope_shift (BstSnifferScope *self)
 }
 
 static void
-scope_probes_notify (SfiProxy     proxy,
-                     SfiSeq      *sseq,
-                     gpointer     data)
+scope_probes_notify (BstSnifferScope *self, const Bse::ProbeSeq &pseq)
 {
-  BstSnifferScope *self = BST_SNIFFER_SCOPE (data);
   if (GTK_WIDGET_DRAWABLE (self))
     {
-      BseProbeSeq *pseq = bse_probe_seq_from_seq (sseq);
-      BseProbe *lprobe = NULL, *rprobe = NULL;
-      guint i;
-      for (i = 0; i < pseq->n_probes && (!lprobe || !rprobe); i++)
-        if (pseq->probes[i]->channel_id == 0)
-          lprobe = pseq->probes[i];
-        else if (pseq->probes[i]->channel_id == 1)
-          rprobe = pseq->probes[i];
-      if (lprobe && lprobe->probe_features->probe_range && rprobe && rprobe->probe_features->probe_range)
+      const Bse::Probe *lprobe = NULL, *rprobe = NULL;
+      for (size_t i = 0; i < pseq.size() && (!lprobe || !rprobe); i++)
+        if (pseq[i].channel == 0)
+          lprobe = &pseq[i];
+        else if (pseq[i].channel == 1)
+          rprobe = &pseq[i];
+      if (lprobe && lprobe->probe_features.probe_range && rprobe && rprobe->probe_features.probe_range)
         {
           sniffer_scope_shift (self);
           self->lvalues[0] = MAX (ABS (lprobe->min), ABS (lprobe->max));
@@ -238,7 +233,6 @@ scope_probes_notify (SfiProxy     proxy,
           sniffer_scope_rregion (self, &x, &width);
           sniffer_scope_draw_bar (self, x, self->rvalues[0]);
         }
-      bse_probe_seq_free (pseq);
     }
   bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
   bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
@@ -271,34 +265,28 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
         source = Bse::SourceH();
     }
   if (self->source)
-    {
-      bse_proxy_disconnect (self->source.proxy_id(),
-                            "any_signal::probes", scope_probes_notify, self,
-                            NULL);
-    }
+    self->source.sig_probes() -= self->probes_handler;
   self->source = source;
   if (self->source)
     {
-      bse_proxy_connect (self->source.proxy_id(),
-                         "signal::probes", scope_probes_notify, self,
-                         NULL);
+      self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+        return scope_probes_notify (self, pseq);
+      };
       bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
       bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
     }
 }
 
-static BseProbeRequestSeq *probe_request_seq = NULL;
+static Bse::ProbeRequestSeq probe_request_seq;
+
 static gboolean
 source_probe_idle_request (gpointer data)
 {
   GDK_THREADS_ENTER ();
-  BseProbeRequestSeq *prs = probe_request_seq;
-  probe_request_seq = NULL;
-  if (prs)
-    {
-      bse_source_mass_request (prs);
-      bse_probe_request_seq_free (prs);
-    }
+  Bse::ProbeRequestSeq prs;
+  prs.swap (probe_request_seq);
+  if (prs.size())
+    Bse::SourceH::down_cast (prs[0].source).request_probes (prs);
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
@@ -309,22 +297,19 @@ bst_source_queue_probe_request (SfiProxy              source,
                                 BstSourceProbeFeature pfeature,
                                 gfloat                frequency)
 {
-  BseProbeFeatures features = { 0, };
+  Bse::ProbeFeatures features;
   features.probe_range = 0 != (pfeature & BST_SOURCE_PROBE_RANGE);
   features.probe_energie = 0 != (pfeature & BST_SOURCE_PROBE_ENERGIE);
   features.probe_samples = 0 != (pfeature & BST_SOURCE_PROBE_SAMPLES);
   features.probe_fft = 0 != (pfeature & BST_SOURCE_PROBE_FFT);
-  BseProbeRequest request = { 0, };
-  request.source = source;
-  request.channel_id = ochannel_id;
-  request.probe_features = &features;
+  Bse::ProbeRequest request;
+  request.source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
+  request.channel = ochannel_id;
+  request.probe_features = features;
   request.frequency = frequency;
   if (BST_GCONFIG (slow_scopes) && !(features.probe_samples || features.probe_fft))
     request.frequency = MIN (request.frequency, 4);
-  if (!probe_request_seq)
-    {
-      g_idle_add_full (G_PRIORITY_LOW + 5, source_probe_idle_request, NULL, NULL);  // GTK_PRIORITY_REDRAW + 5
-      probe_request_seq = bse_probe_request_seq_new();
-    }
-  bse_probe_request_seq_append (probe_request_seq, &request);
+  if (probe_request_seq.size() == 0)
+    g_idle_add_full (G_PRIORITY_LOW + 5, source_probe_idle_request, NULL, NULL);  // GTK_PRIORITY_REDRAW + 5
+  probe_request_seq.push_back (std::move (request));
 }

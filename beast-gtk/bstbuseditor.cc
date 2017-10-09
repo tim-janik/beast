@@ -75,26 +75,20 @@ bus_editor_release_item (SfiProxy      item,
 }
 
 static void
-bus_probes_notify (SfiProxy     bus,
-                   SfiSeq      *sseq,
-                   gpointer     data)
+bus_probes_notify (BstBusEditor *self, const Bse::ProbeSeq &pseq)
 {
-  BstBusEditor *self = BST_BUS_EDITOR (data);
-  BseProbeSeq *pseq = bse_probe_seq_from_seq (sseq);
-  BseProbe *lprobe = NULL, *rprobe = NULL;
-  guint i;
-  for (i = 0; i < pseq->n_probes && (!lprobe || !rprobe); i++)
-    if (pseq->probes[i]->channel_id == 0)
-      lprobe = pseq->probes[i];
-    else if (pseq->probes[i]->channel_id == 1)
-      rprobe = pseq->probes[i];
-  if (self->lbeam && lprobe && lprobe->probe_features->probe_energie)
+  const Bse::Probe *lprobe = NULL, *rprobe = NULL;
+  for (size_t i = 0; i < pseq.size() && (!lprobe || !rprobe); i++)
+    if (pseq[i].channel == 0)
+      lprobe = &pseq[i];
+    else if (pseq[i].channel == 1)
+      rprobe = &pseq[i];
+  if (self->lbeam && lprobe && lprobe->probe_features.probe_energie)
     bst_db_beam_set_value (self->lbeam, lprobe->energie);
-  if (self->rbeam && rprobe && rprobe->probe_features->probe_energie)
+  if (self->rbeam && rprobe && rprobe->probe_features.probe_energie)
     bst_db_beam_set_value (self->rbeam, rprobe->energie);
   bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGIE, 20.0);
   bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
-  bse_probe_seq_free (pseq);
 }
 
 static GtkWidget*
@@ -128,9 +122,8 @@ bst_bus_editor_set_bus (BstBusEditor *self,
     assert_return (BSE_IS_BUS (item));
   if (self->item)
     {
-      bse_proxy_disconnect (self->item,
-                            "any_signal::probes", bus_probes_notify, self,
-                            NULL);
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
+      source.sig_probes() -= self->probes_handler;
       bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
@@ -183,9 +176,10 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
         gxk_param_update ((GxkParam*) ring->data);
       /* setup scope */
-      bse_proxy_connect (self->item,
-                         "signal::probes", bus_probes_notify, self,
-                         NULL);
+      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
+      self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+        return bus_probes_notify (self, pseq);
+      };
       bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGIE, 20.0);
       bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
     }

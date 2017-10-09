@@ -873,6 +873,8 @@ GTokenType Parser::parseNamespace()
 	    }
 	    break;
 	  case G_TOKEN_IDENTIFIER:
+            print_error ("procedure definitions are not supported");
+            return GTokenType ('}');
 	    {
 	      Method procedure;
 	      GTokenType expected_token = parseMethod (procedure);

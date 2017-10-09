@@ -2028,7 +2028,6 @@ bse_source_class_init (BseSourceClass *klass)
 					      SFI_PARAM_STORAGE ":skip-default:f:"));
 
   signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
-  bse_source_class_add_probe_signals (klass);
 }
 
 BSE_BUILTIN_TYPE (BseSource)

@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "bseprobe.genidl.hh"
+#include "bsesource.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.hh" /* for Bse::TickStamp::current() */
+#include "gslcommon.hh" // for Bse::TickStamp::current()
 #include "gslfft.hh"
 #include "bsemain.hh"
 #include "bsesequencer.hh"
@@ -16,13 +16,12 @@ using namespace Bse;
 
 /* --- variables --- */
 static guint    MAX_QUEUE_LENGTH = 3; // or, for 20ms: (int) (bse_engine_sample_freq() * 0.020 / bse_engine_block_size() + 0.5)
-static guint    bse_source_signal_probes = 0;
 
-/* --- functions --- */
+// == functions ==
 static inline double
 blackman_window (double x)
-{       // FIXE: parameterize, move somewhere else
-  /* returns a blackman window: x is supposed to be in the interval [0..1] */
+{       // FIXE: parameterize, move somewhere else, optimize via table
+  // returns a blackman window: x is supposed to be in the interval [0..1]
   if (x < 0)
     return 0;
   if (x > 1)
@@ -30,8 +29,7 @@ blackman_window (double x)
   return 0.42 - 0.5 * cos (PI * x * 2) + 0.08 * cos (4 * PI * x);
 }
 
-
-/* --- ProbeQueue --- */
+// == ProbeQueue ==
 class SourceProbes;
 class ProbeQueue {
   /* this class is part of the BseSource probing logic. each source can have a set of these
@@ -61,9 +59,9 @@ class ProbeQueue {
   bool          probe_xrun;
   /* --- methods --- */
   static inline bool
-  is_power2 (guint32 v)
+  is_power2 (uint32 v)
   {
-    guint64 n = 1 << (g_bit_storage (v) - 1);
+    uint64 n = 1 << (g_bit_storage (v) - 1);
     return n == v;
   }
   inline void
@@ -78,9 +76,7 @@ class ProbeQueue {
     probe_xrun = false;
   }
   void
-  compute_probe_state (guint         n,
-                       const gfloat *oblock,
-                       bool          connected)
+  compute_probe_state (uint n, const float *oblock, bool connected)
   {
     assert_return (n <= block_size - n_computed);
     /* store samples, possibly for fft */
@@ -128,13 +124,12 @@ class ProbeQueue {
       n_computed += n;
   }
   void
-  complete_probe (Probe  &probe,
-                  guint64 channel_id)
+  complete_probe (Probe &probe, uint64 channel_id)
   {
     if (n_computed != block_size)
       return;
     /* fill probe */
-    probe.channel_id = channel_id;
+    probe.channel = channel_id;
     probe.block_stamp = first_stamp;
     probe.mix_freq = bse_engine_sample_freq();
     ProbeFeatures probe_features;
@@ -262,7 +257,7 @@ public:
           {
             Probe probe;
             complete_probe (probe, channel_id);
-            probe_seq += probe;
+            probe_seq.push_back (probe);
           }
       }
   }
@@ -468,8 +463,8 @@ private:
         bse_engine_free_ostreams (n_ostreams, pdata.ostreams);
         pdata.ostreams = NULL;
         /* notify clients */
-        if (probe_seq.length())
-          g_signal_emit (source, bse_source_signal_probes, 0, probe_seq.c_ptr());
+        if (probe_seq.size())
+          source->as<SourceIface*>()->sig_probes.emit (probe_seq);
       }
     if (0)
       printerr ("BseProbe: got probe: %d %d (left=%d)\n", n_values, n_ostreams, pdata.n_pending);
@@ -585,7 +580,7 @@ bse_dummy_prober (gpointer data)
       data = sfi_ring_pop_head (&bse_dummy_sources);
       BseSource *source = BSE_SOURCE (data);
       ProbeSeq probe_seq;
-      g_signal_emit (source, bse_source_signal_probes, 0, probe_seq.c_ptr());
+      source->as<SourceIface*>()->sig_probes.emit (probe_seq);
       g_object_unref (source);
     }
   bse_dummy_prober_id = 0;
@@ -620,21 +615,12 @@ SourceProbes::queue_probe_request (guint                 n_channels,
 } // Anon
 
 namespace Bse {
-namespace Procedure {
 
-void
-source_request_probes::exec (BseSource                 *source,
-                             Int                        ochannel_id,
-                             const ProbeFeaturesHandle &probe_features)
+int
+SourceImpl::get_mix_freq ()
 {
-  ProbeRequest rq;
-  rq.source = source;
-  rq.channel_id = ochannel_id;
-  rq.frequency = 1;     // FIXME: remove source_request_probes()
-  rq.probe_features = probe_features;
-  ProbeRequestSeq prs;
-  prs += rq;
-  source_mass_request::exec (prs);
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
 
 static guint
@@ -645,32 +631,28 @@ fft_align (guint bsize)
 }
 
 void
-source_mass_request::exec (const ProbeRequestSeq &cprseq)
+SourceImpl::request_probes (const ProbeRequestSeq &cprseq)
 {
-  struct Sub {
-    static bool
-    probe_requests_lesser (const ProbeRequestHandle &h1,
-                           const ProbeRequestHandle &h2)
-    {
-      return h2->source < h1->source || h2->frequency < h1->frequency;
-    }
+  // BseSource *self = as<BseSource*>();
+  auto probe_requests_lesser = [] (const ProbeRequest &h1, const ProbeRequest &h2) -> bool {
+    return h2.source < h1.source || h2.frequency < h1.frequency;
   };
   ProbeRequestSeq prs (cprseq);
-  /* sort probe-requests, so requests for a single source are adjacent */
-  stable_sort (prs.begin(), prs.end(), Sub::probe_requests_lesser);
+  // sort probe-requests, so requests for a single source are adjacent
+  stable_sort (prs.begin(), prs.end(), probe_requests_lesser);
   BseSource *current = NULL;
   guint current_size = 0;
   bool seen_fft = false;
   const ProbeFeatures **channel_features = NULL;
   for (ProbeRequestSeq::iterator it = prs.begin(); it != prs.end(); it++)
     {
-      guint block_size = bse_engine_sample_freq() / CLAMP ((*it)->frequency, 1, 1000) + 0.5;
-      if (!(*it)->source)
-        continue;       /* can happen due to sources getting destroyed before asyncronous delivery */
-      else if ((*it)->source != current || block_size != current_size)
-        {               /* open new request list */
+      guint block_size = bse_engine_sample_freq() / CLAMP (it->frequency, 1, 1000) + 0.5;
+      if (!it->source)
+        continue;       // can happen due to sources getting destroyed before asyncronous delivery
+      else if (it->source->as<BseSource*>() != current || block_size != current_size)
+        {               // open new request list
           if (current)
-            {           /* commit old request list */
+            {           // commit old request list
               SourceProbes *probes = SourceProbes::create_from_source (current);
               if (seen_fft)
                 current_size = fft_align (current_size);
@@ -678,20 +660,20 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
               g_free (channel_features);
               channel_features = NULL;
             }
-          current = (*it)->source;
+          current = it->source->as<BseSource*>();
           current_size = block_size;
           channel_features = g_new0 (const ProbeFeatures*, BSE_SOURCE_N_OCHANNELS (current));
           seen_fft = false;
         }
-      guint channel_id = (*it)->channel_id;
-      if (channel_id < BSE_SOURCE_N_OCHANNELS (current))        /* add request */
+      guint channel_id = it->channel;
+      if (channel_id < BSE_SOURCE_N_OCHANNELS (current))        // add request
         {
-          channel_features[channel_id] = (*it)->probe_features.c_ptr();
+          channel_features[channel_id] = &it->probe_features;
           seen_fft |= channel_features[channel_id]->probe_fft;
         }
     }
   if (current)
-    {                   /* commit last request list */
+    {                   // commit last request list
       SourceProbes *probes = SourceProbes::create_from_source (current);
       if (seen_fft)
         current_size = fft_align (current_size);
@@ -701,18 +683,6 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
     }
 }
 
-Int
-source_get_mix_freq::exec (BseSource *self)
-{
-  if (!self)
-    throw std::runtime_error ("invalid arguments");
-  return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
-}
-
-} // Procedure
-/* export definitions follow */
-BSE_CXX_DEFINE_EXPORTS();
-BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
 } // Bse
 /* --- bsesource.hh bits --- */
 using namespace Bse;
@@ -732,12 +702,4 @@ bse_source_probes_modules_changed (BseSource *source)
   SourceProbes *probes = SourceProbes::peek_from_source (source);
   probes->reset_omodules();
   // FIXME: remove: probes->queue_probes_update (1);
-}
-
-void
-bse_source_class_add_probe_signals (BseSourceClass *klass)
-{
-  assert_return (bse_source_signal_probes == 0);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
-  bse_source_signal_probes = bse_object_class_add_signal (object_class, "probes", G_TYPE_NONE, 1, BSE_TYPE_PROBE_SEQ);
 }

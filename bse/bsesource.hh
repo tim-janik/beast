@@ -266,7 +266,6 @@ gboolean	bse_source_has_context		(BseSource	*source,
 SfiRing*        bse_source_list_omodules        (BseSource      *source);
 /* implemented in bseprobe.cc */
 void    bse_source_clear_probes                 (BseSource      *source);
-void    bse_source_class_add_probe_signals      (BseSourceClass *klass);
 void    bse_source_probes_modules_changed       (BseSource      *source);
 
 namespace Bse {
@@ -302,6 +301,8 @@ public:
   virtual Error        set_automation          (const String &property_name, int midi_channel, MidiControl control_type) override;
   virtual MidiControl  get_automation_control  (const String &property_name) override;
   virtual int32        get_automation_channel  (const String &property_name) override;
+  virtual void         request_probes          (const ProbeRequestSeq &prseq) override; // bseprobe.cc
+  virtual int          get_mix_freq            () override;                             // bseprobe.cc
 };
 
 } // Bse
