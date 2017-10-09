@@ -65,6 +65,8 @@ struct OscImpl
     State state     = State::DOWN;
     State sub_state = State::DOWN;
 
+    bool need_slave_reset = false;
+
     // could be shared under certain conditions
     std::array<float, WIDTH * 2> future;
 
@@ -90,6 +92,24 @@ struct OscImpl
         }
       return f;
     }
+    void
+    reset_slave (double sync_factor, double pulse_width)
+    {
+      // unfortunately, the parameters required for determining a correct slave
+      // phase for a given master phase are only available during block computation
+      //
+      // so we have to do this as first step of computing a block
+      phase = master_phase * sync_factor;
+      phase -= int (phase);
+      state = phase > pulse_width ? State::UP : State::DOWN;
+    }
+    void
+    reset_master (double new_master_phase, State new_sub_state)
+    {
+      master_phase     = new_master_phase;
+      sub_state        = new_sub_state;
+      need_slave_reset = true;
+    }
   };
   std::vector<UnisonVoice> unison_voices;
 
@@ -114,24 +134,15 @@ struct OscImpl
       {
         voice.init_future();
 
-        if (randomize_phase)
+        if (randomize_phase) // randomize start phase for true unison
           {
-            // this is not really correct; we would need to
-            //   - derive phase from master_phase
-            //   - derive state and sub_state from master_phase
-            //
-            // but since the first master retrigger fixes our state, it may not be so bad
-            voice.master_phase = g_random_double_range (0, 1);
-            voice.phase        = g_random_double_range (0, 1);
-            voice.state        = State::DOWN;
-            voice.sub_state    = State::DOWN;
+            State sub_state = g_random_boolean() ? State::UP : State::DOWN;
+
+            voice.reset_master (g_random_double_range (0, 1), sub_state);
           }
         else
           {
-            voice.master_phase = 0;
-            voice.phase        = 0;
-            voice.state        = State::DOWN;
-            voice.sub_state    = State::DOWN;
+            voice.reset_master (0, State::DOWN);
           }
       }
   }
@@ -396,6 +407,12 @@ struct OscImpl
             if (FLAGS & FLAG_PULSE_MOD)
               pulse_width = clamp (pulse_width_base + pulse_width_mod * pulse_mod_in[n], 0.01, 0.99);
 
+            if (voice.need_slave_reset)
+              {
+                voice.reset_slave (sync_factor, pulse_width);
+                voice.need_slave_reset = false;
+              }
+
             for (int i = 0; i < over; i++)
               {
                 const double vsub_position = (over - i - 1.0) / over;
@@ -520,13 +537,14 @@ struct OscImpl
 
 class Osc /* simple interface to OscImpl */
 {
-  OscImpl osc_impl;
   double
   to_sync (double sync_factor)
   {
     return 12 * log (sync_factor) / log (2);
   }
 public:
+  OscImpl osc_impl;
+
   double rate;
   double freq;
   double pulse_width = 0.5;
