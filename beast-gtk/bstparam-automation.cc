@@ -2,8 +2,6 @@
 
 
 /* --- automation setup editor --- */
-#include "bstprocedure.hh"
-
 static GParamSpec*
 param_automation_pspec_midi_channel()
 {

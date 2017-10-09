@@ -535,34 +535,6 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
                                   acheck, aexec, user_data);
 }
 
-GxkActionList*
-bst_action_list_from_cats_pred (const Bse::CategorySeq &cseq,
-                                guint            skip_levels,
-                                const gchar     *stock_fallback,
-                                GxkActionCheck   acheck,
-                                GxkActionExec    aexec,
-                                gpointer         user_data,
-                                BstActionListCategoryP predicate,
-                                gpointer         predicate_data)
-{
-  GxkActionList *alist = gxk_action_list_create ();
-  for (size_t i = 0; i < cseq.size(); i++)
-    if (!predicate || predicate (predicate_data, cseq[i]))
-      bst_action_list_add_cat (alist, cseq[i], skip_levels, stock_fallback, acheck, aexec, user_data);
-  return alist;
-}
-
-GxkActionList*
-bst_action_list_from_cats (const Bse::CategorySeq &cseq,
-                           guint                   skip_levels,
-                           const gchar            *stock_fallback,
-                           GxkActionCheck          acheck,
-                           GxkActionExec           aexec,
-                           gpointer                user_data)
-{
-  return bst_action_list_from_cats_pred (cseq, skip_levels, stock_fallback, acheck, aexec, user_data, NULL, NULL);
-}
-
 
 /* --- field mask --- */
 static GQuark gmask_quark = 0;

@@ -44,17 +44,12 @@ typedef struct {
 /* --- prototypes --- */
 static SfiGlueIFace*    bglue_describe_iface            (SfiGlueContext *context,
 							 const char     *iface);
-static SfiGlueProc*     bglue_describe_proc             (SfiGlueContext *context,
-							 const char     *proc_name);
 static char**           bglue_list_proc_names           (SfiGlueContext *context);
 static char**           bglue_list_method_names         (SfiGlueContext *context,
 							 const char     *iface_name);
 static char*            bglue_base_iface                (SfiGlueContext *context);
 static char**           bglue_iface_children            (SfiGlueContext *context,
 							 const char     *iface_name);
-static GValue*          bglue_exec_proc                 (SfiGlueContext *context,
-							 const char     *proc_name,
-							 SfiSeq         *params);
 static char*            bglue_proxy_iface               (SfiGlueContext *context,
 							 SfiProxy        proxy);
 static gboolean         bglue_proxy_is_a                (SfiGlueContext *context,
@@ -147,12 +142,12 @@ bse_glue_context_intern (const char *user)
 {
   static const SfiGlueContextTable bse_glue_table = {
     bglue_describe_iface,
-    bglue_describe_proc,
+    NULL /*describe_proc*/,
     bglue_list_proc_names,
     bglue_list_method_names,
     bglue_base_iface,
     bglue_iface_children,
-    bglue_exec_proc,
+    NULL /*exec_proc*/,
     bglue_proxy_iface,
     bglue_proxy_is_a,
     bglue_proxy_list_properties,
@@ -527,44 +522,6 @@ bse_glue_enum_index (GType enum_type,
   return index;
 }
 
-static SfiGlueProc*
-bglue_describe_proc (SfiGlueContext *context,
-                     const char     *proc_name)
-{
-  GType type = g_type_from_name (proc_name);
-  BseProcedureClass *proc;
-  SfiGlueProc *p = NULL;
-
-  if (!BSE_TYPE_IS_PROCEDURE (type))
-    return NULL;
-
-  proc = (BseProcedureClass*) g_type_class_ref (type);
-  if (proc->n_out_pspecs < 2)
-    {
-      uint i;
-
-      p = sfi_glue_proc_new (g_type_name (type));
-      p->help = g_strdup (bse_type_get_blurb (type));
-      p->authors = g_strdup (bse_type_get_authors (type));
-      p->license = g_strdup (bse_type_get_license (type));
-      if (proc->n_out_pspecs)
-	{
-	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->out_pspecs[0]);
-	  sfi_glue_proc_add_ret_param (p, pspec);
-	  g_param_spec_unref (pspec);
-	}
-      for (i = 0; i < proc->n_in_pspecs; i++)
-	{
-	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->in_pspecs[i]);
-	  sfi_glue_proc_add_param (p, pspec);
-	  g_param_spec_unref (pspec);
-	}
-    }
-  g_type_class_unref (proc);
-
-  return p;
-}
-
 static char**
 bglue_list_proc_names (SfiGlueContext *context)
 {
@@ -632,81 +589,6 @@ bglue_iface_children (SfiGlueContext *context,
       g_free (children);
     }
   return childnames;
-}
-
-static Bse::Error
-bglue_marshal_proc (void              *marshal_data,
-		    BseProcedureClass *proc,
-		    const GValue      *ivalues,
-		    GValue            *ovalues)
-{
-  return proc->execute (proc, ivalues, ovalues);
-}
-
-static GValue*
-bglue_exec_proc (SfiGlueContext *context,
-		 const char     *proc_name,
-		 SfiSeq         *params)
-{
-  GValue *retval = NULL;
-  GType ptype = bse_procedure_lookup (proc_name);
-
-  if (BSE_TYPE_IS_PROCEDURE (ptype) && G_TYPE_IS_DERIVED (ptype))
-    {
-      BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (ptype);
-      GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
-      GSList *ilist = NULL, *olist = NULL, *clearlist = NULL;
-      uint i, sl = sfi_seq_length (params);
-      Bse::Error error;
-
-      for (i = 0; i < proc->n_in_pspecs; i++)
-	{
-	  GParamSpec *pspec = proc->in_pspecs[i];
-	  if (i < sl)
-	    {
-	      GValue *sfivalue = sfi_seq_get (params, i);
-	      GValue *bsevalue = bglue_value_from_serializable (sfivalue, pspec);
-	      ilist = g_slist_prepend (ilist, bsevalue ? bsevalue : sfivalue);
-	      if (bsevalue)
-		clearlist = g_slist_prepend (clearlist, bsevalue);
-	    }
-	  else
-	    {
-	      GValue *value = sfi_value_empty ();
-	      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-	      g_param_value_set_default (pspec, value);
-	      ilist = g_slist_prepend (ilist, value);
-	      clearlist = g_slist_prepend (clearlist, value);
-	    }
-	}
-      for (i = 0; i < proc->n_out_pspecs; i++)
-	{
-	  g_value_init (ovalues + i, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
-	  olist = g_slist_prepend (olist, ovalues + i);
-	}
-
-      ilist = g_slist_reverse (ilist);
-      olist = g_slist_reverse (olist);
-      error = bse_procedure_execvl (proc, ilist, olist, bglue_marshal_proc, NULL);
-      g_slist_free (ilist);
-      g_slist_free (olist);
-      for (ilist = clearlist; ilist; ilist = ilist->next)
-	sfi_value_free ((GValue*) ilist->data);
-      g_slist_free (clearlist);
-
-      if (error != 0)
-        Bse::warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
-      if (proc->n_out_pspecs)
-	retval = bglue_value_to_serializable (ovalues + 0);
-      for (i = 0; i < proc->n_out_pspecs; i++)
-        g_value_unset (ovalues + i);
-      g_free (ovalues);
-      g_type_class_unref (proc);
-    }
-  else
-    Bse::info ("failed to execute \"%s\": no such procedure", proc_name);
-
-  return retval;
 }
 
 static char*

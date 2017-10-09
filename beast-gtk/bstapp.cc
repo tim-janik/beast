@@ -8,7 +8,6 @@
 #include "bstpreferences.hh"
 #include "bstservermonitor.hh"
 #include "bstmenus.hh"
-#include "bstprocedure.hh"
 #include "bstprojectctrl.hh"
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
@@ -17,7 +16,6 @@
 
 
 /* --- prototypes --- */
-static void           bst_app_run_script_proc     (gpointer data, size_t action_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
@@ -33,7 +31,6 @@ enum {
   ACTION_INTERNALS = BST_ACTION_APP_LAST,
   /* dialogs */
   ACTION_SHOW_PREFERENCES,
-  ACTION_SHOW_PROC_BROWSER,
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
 #define ACTION_HELP_FIRST   ACTION_HELP_INDEX
@@ -100,8 +97,6 @@ static const GxkStockAction undo_dvl_actions[] = {
     BST_ACTION_CLEAR_UNDO,      BST_STOCK_CLEAR_UNDO, },
 };
 static const GxkStockAction dialog_actions[] = {
-  { N_("Procedure _Browser"),   NULL,           N_("Display an overview of all procedures"),
-    ACTION_SHOW_PROC_BROWSER, },
   { N_("Profiler"),             NULL,           N_("Display statistics and timing information"),
     ACTION_SHOW_PROFILER, },
   { N_("New View"),             NULL,           N_("Create an extra view of the project"),
@@ -200,7 +195,7 @@ bst_app_init (BstApp *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkWidget *widget = GTK_WIDGET (self);
-  GxkActionList *al1, *al2;
+  GxkActionList *al1;
 
   g_object_set (self,
                 "name", "BEAST-Application",
@@ -247,30 +242,6 @@ bst_app_init (BstApp *self)
   if (BST_DVL_HINTS)
     gxk_widget_publish_actions (self, "demo-dialogs", G_N_ELEMENTS (demo_dialogs), demo_dialogs,
                                 NULL, app_action_check, app_action_exec);
-  /* Project utilities */
-  Bse::CategorySeq cseq = bse_server.category_match ("/Project/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-project", al1);
-  /* Song scripts */
-  cseq = bse_server.category_match ("/Song/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-song", al1);
-  /* CSynth & SNet utilities */
-  cseq = bse_server.category_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  cseq = bse_server.category_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al2);
-  al1 = gxk_action_list_merge (al1, al2);
-  gxk_widget_publish_action_list (widget, "tools-synth", al1);
-  /* WaveRepo utilities */
-  cseq = bse_server.category_match ("/WaveRepo/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
-  gxk_action_list_sort (al1);
-  gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
   al1 = demo_entries_create (self);
   gxk_widget_publish_action_list (widget, "demo-songs", al1);
@@ -783,34 +754,6 @@ skin_entries_create (BstApp *app)
   return alist;
 }
 
-static void
-bst_app_run_script_proc (gpointer data, size_t action_id)
-{
-  BstApp *self = BST_APP (data);
-  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
-  SfiProxy super = bst_app_get_current_super (self);
-  const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
-
-  if (BSE_IS_SONG (super))
-    song = "song";
-  else if (BSE_IS_WAVE_REPO (super))
-    wave_repo = "wave-repo";
-  else if (BSE_IS_SNET (super))
-    {
-      snet = "synth-net";
-      if (BSE_IS_CSYNTH (super))
-        csynth = "custom-synth";
-    }
-
-  bst_procedure_exec_auto (cat.otype.c_str(),
-                           "project", SFI_TYPE_PROXY, self->project.proxy_id(),
-                           song, SFI_TYPE_PROXY, super,
-                           wave_repo, SFI_TYPE_PROXY, super,
-                           snet, SFI_TYPE_PROXY, super,
-                           csynth, SFI_TYPE_PROXY, super,
-                           NULL);
-}
-
 void
 bst_app_show_release_notes (BstApp *app)
 {
@@ -951,54 +894,6 @@ app_action_exec (gpointer data,
       any = bst_profiler_window_get ();
       gxk_idle_show_widget (any);
       break;
-    case ACTION_SHOW_PROC_BROWSER:
-#if 0 // FIXME
-      if (!bst_proc_browser)
-        {
-          GtkWidget *widget;
-
-          widget = bst_proc_browser_new ();
-          gtk_widget_show (widget);
-          bst_proc_browser = gxk_dialog_new (&bst_proc_browser,
-                                             NULL,
-                                             GXK_DIALOG_HIDE_ON_DELETE,
-                                             _("Procedure Browser"),
-                                             widget);
-          bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
-        }
-      gxk_idle_show_widget (bst_proc_browser);
-#endif
-      sfi_alloc_report ();
-#if 0 // FIXME
-      {
-        GSList *slist, *olist = g_object_debug_list();
-        guint i, n_buckets = 257;
-        guint buckets[n_buckets];
-        guint max=0,min=0xffffffff,empty=0,avg=0;
-        memset(buckets,0,sizeof(buckets[0])*n_buckets);
-        for (slist = olist; slist; slist = slist->next)
-          {
-            guint hash, h = (guint) slist->data;
-            hash = (h & 0xffff) ^ (h >> 16);
-            hash = (hash & 0xff) ^ (hash >> 8);
-            hash = h % n_buckets;
-            buckets[hash]++;
-          }
-        for (i = 0; i < n_buckets; i++)
-          {
-            printerr ("bucket[%u] = %u\n", i, buckets[i]);
-            max = MAX (max, buckets[i]);
-            min = MIN (min, buckets[i]);
-            avg += buckets[i];
-            if (!buckets[i])
-              empty++;
-          }
-        printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
-                    avg, min, max, empty, avg / n_buckets);
-        g_slist_free (olist);
-      }
-#endif
-      break;
     case BST_ACTION_REBUILD:
       gtk_container_foreach (GTK_CONTAINER (self->notebook),
                              (GtkCallback) rebuild_super_shell,
@@ -1132,8 +1027,6 @@ app_action_check (gpointer data,
     case BST_ACTION_STOP_PLAYBACK:
       if (self->project && self->project.is_playing())
         return TRUE;
-      return FALSE;
-    case ACTION_SHOW_PROC_BROWSER:
       return FALSE;
     case ACTION_SHOW_PREFERENCES:
     case ACTION_EXTRA_VIEW:

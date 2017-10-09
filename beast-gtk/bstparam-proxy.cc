@@ -145,7 +145,7 @@ param_proxy_changed (GtkWidget *entry,
 	      }
 	}
       /* we get lots of notifications from focus-out, so try to optimize */
-      if (sfi_value_get_proxy (&param->value) != item.proxy_id())
+      if (sfi_value_get_proxy (&param->value) != (item ? item.proxy_id() : 0))
 	{
 	  sfi_value_set_proxy (&param->value, item.proxy_id());
 	  gxk_param_apply_value (param);

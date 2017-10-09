@@ -39,53 +39,11 @@ typedef struct {
   GParamSpec **params;
 } SfiGlueProc;
 
-SfiGlueProc*	sfi_glue_describe_proc		(const gchar	*proc_name);
 SfiGlueProc*	sfi_glue_proc_ref		(SfiGlueProc	*proc);
 void		sfi_glue_proc_unref		(SfiGlueProc	*proc);
 const gchar**	sfi_glue_list_proc_names	(void);
 const gchar**	sfi_glue_list_method_names	(const gchar	*iface_name);
 
-GValue*		sfi_glue_call_seq		(const gchar	*proc_name,
-						 SfiSeq		*params);
-GValue*		sfi_glue_call_valist		(const gchar	*proc_name,
-                                                 guint8          first_arg_type,
-						 va_list         var_args);
-void		sfi_glue_vcall_void		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiBool		sfi_glue_vcall_bool		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiInt		sfi_glue_vcall_int		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiNum		sfi_glue_vcall_num		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiReal		sfi_glue_vcall_real		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-const gchar*	sfi_glue_vcall_string		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-const gchar*	sfi_glue_vcall_choice		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiProxy	sfi_glue_vcall_proxy		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiSeq*		sfi_glue_vcall_seq		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiRec*		sfi_glue_vcall_rec		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiFBlock*	sfi_glue_vcall_fblock		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
-SfiBBlock*	sfi_glue_vcall_bblock		(const gchar	*proc_name,
-						 guint8		 first_arg_type,
-						 ...);
 GValue*		sfi_glue_client_msg		(const gchar	*msg,
 						 GValue		*value);
 
@@ -96,17 +54,14 @@ typedef struct {
   /* core functions */
   SfiGlueIFace*         (*describe_iface)               (SfiGlueContext *context,
                                                          const gchar    *iface);
-  SfiGlueProc*          (*describe_proc)                (SfiGlueContext *context,
-                                                         const gchar    *proc_name);
+  void                   *describe_proc;
   gchar**               (*list_proc_names)              (SfiGlueContext *context);
   gchar**               (*list_method_names)            (SfiGlueContext *context,
                                                          const gchar    *iface_name);
   gchar*                (*base_iface)                   (SfiGlueContext *context);
   gchar**               (*iface_children)               (SfiGlueContext *context,
                                                          const gchar    *iface_name);
-  GValue*               (*exec_proc)                    (SfiGlueContext *context,
-							 const gchar    *proc_name,
-                                                         SfiSeq         *params);
+  void                   *exec_proc; // unused
   /* proxy functions */
   gchar*                (*proxy_iface)                  (SfiGlueContext *context,
                                                          SfiProxy        proxy);
