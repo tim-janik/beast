@@ -1,4 +1,3 @@
-reset()
 dc subsampling
 sync specialization
 possible table-of-exp2

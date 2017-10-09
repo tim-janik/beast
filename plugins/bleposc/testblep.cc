@@ -350,6 +350,22 @@ vnorm_test (Osc& o)
     }
 }
 
+static void
+reset_test (Osc& o)
+{
+  for (int rpos = 0; rpos <= 10; rpos++)
+    {
+      double r = rpos / 10.;
+
+      o.osc_impl.reset(); // clear future
+      o.osc_impl.unison_voices[0].reset_master (r, OscImpl::State::DOWN);
+
+      double t = r * o.rate / o.master_freq;
+      for (int l = 0; l < 4000; l++)
+        printf ("%.17g %.17g #%d\n", t++, o.process_sample(), rpos);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -407,9 +423,11 @@ main (int argc, char **argv)
         auto_snr_test();
       else if (test_name == "exp2")
         exp2_test();
+      else if (test_name == "reset")
+        reset_test (o);
       else
         {
-          Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed or snr\n", argv[0], test_name.c_str());
+          Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed, speed2, reset, exp2 or snr\n", argv[0], test_name.c_str());
           return 1;
         }
       return 0;
