@@ -935,7 +935,7 @@ interface Track : ContextMerger {
   // property int32 midi_channel;  ///< _("Midi channel assigned to this track, 0 uses internal per-track channel.")
   // property int32 n_voices;      ///< _("Maximum number of voices for simultaneous playback.")
   // property CSynth pnet;         ///< _("Synthesis network to be used as postprocessor.")
-  // property ItemSeq outputs;     ///< _("Mixer busses used as output for this track.")
+  ItemSeq outputs;      ///< _("Mixer busses used as output for this track.")
 };
 
 /// Record representing the use of a Part within a Track at a specific position.

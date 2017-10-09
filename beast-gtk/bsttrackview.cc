@@ -121,8 +121,6 @@ track_view_fill_value (BstItemView *iview,
       gboolean vbool;
       SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
-      BseIt3mSeq *iseq;
-      SfiSeq *seq;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
       break;
@@ -169,18 +167,16 @@ track_view_fill_value (BstItemView *iview,
       sfi_value_take_string (value, g_strdup_format ("%2d", vint));
       break;
     case COL_OUTPUTS:
-      bse_proxy_get (item.proxy_id(), "outputs", &seq, NULL);
-      iseq = bse_it3m_seq_from_seq (seq);
-      if (iseq && iseq->n_items == 1)
-        {
-          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[0]));
-          g_value_take_string (value, g_strdup_format ("%s", item.get_name_or_type()));
-        }
-      else if (iseq && iseq->n_items > 1)
-        g_value_take_string (value, g_strdup_format ("#%u", iseq ? iseq->n_items : 0));
-      else
-        g_value_set_string (value, "");
-      bse_it3m_seq_free (iseq);
+      {
+        Bse::TrackH track = Bse::TrackH::down_cast (item);
+        Bse::ItemSeq items = track.outputs();
+        if (items.size() == 1)
+          g_value_take_string (value, g_strdup_format ("%s", items[0].get_name_or_type()));
+        else if (items.size() > 1)
+          g_value_take_string (value, g_strdup_format ("#%u", items.size()));
+        else if (items.size() > 1)
+          g_value_set_string (value, "");
+      }
       break;
     case COL_POST_SYNTH:
       snet = 0;
@@ -392,11 +388,8 @@ track_view_outputs_changed (gpointer              data,
 {
   OutputsPopup *odata = (OutputsPopup*) data;
   gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
-  SfiSeq *seq = bse_it3m_seq_to_seq (iseq);
-  GValue *value = sfi_value_seq (seq);
-  sfi_seq_unref (seq);
-  bse_proxy_set_property (odata->item, "outputs", value);
-  sfi_value_free (value);
+  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (odata->item));
+  track.outputs (bst_item_seq_from_it3m_seq (iseq));
 }
 
 static void
@@ -411,17 +404,16 @@ track_view_outputs_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
-      Bse::PropertyCandidates pc = item.get_property_candidates ("outputs");
-      GParamSpec *pspec = bse_proxy_get_pspec (item.proxy_id(), "outputs");
-      const GValue *value = bse_proxy_get_property (item.proxy_id(), "outputs");
-      SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
-      BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
-      OutputsPopup odata = { self, pcell, item.proxy_id() };
+      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (itemid));
+      assert_return (track != NULL);
+      Bse::PropertyCandidates pc = track.get_property_candidates ("outputs");
+      Bse::ItemSeq items = track.outputs();
+      BseIt3mSeq *iseq = bst_it3m_seq_from_item_seq (items);
+      OutputsPopup odata = { self, pcell, track.proxy_id() };
       BseIt3mSeq *pc_items = bst_it3m_seq_from_item_seq (pc.items);
-      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item.proxy_id(),
+      GtkWidget *dialog = bst_item_seq_dialog_popup (self, track.proxy_id(),
                                                      pc.label.c_str(), pc.tooltip.c_str(), pc_items,
-                                                     g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
+                                                     _("Output Signals"), _("Mixer busses used as output for this track"), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
       bse_it3m_seq_free (pc_items);
       bse_it3m_seq_free (iseq);

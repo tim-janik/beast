@@ -95,8 +95,10 @@ public:
   virtual TrackPartSeq list_parts        () override;
   virtual PartIfaceP   get_part          (int tick) override;
   virtual int          get_last_tick     () override;
-  virtual Error    ensure_output     () override;
+  virtual Error        ensure_output     () override;
   virtual SourceIfaceP get_output_source () override;
+  virtual ItemSeq      outputs           () const override;
+  virtual void         outputs           (const ItemSeq &newoutputs) override;
 };
 
 } // Bse
