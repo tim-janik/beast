@@ -23,17 +23,17 @@ interface BlepOsc : Effect {
     Int     transpose        = (_("Transpose"), _("Transposition of the oscillator frequency in semitones"),
                                 0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
     Int     fine_tune        = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"), STANDARD);
-    Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, 0, 5.0, 0.01, STANDARD ":f:scale");
+    Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, -5.0, 5.0, 0.01, STANDARD ":f:scale");
   };
   group _("Shape") {
     Real    shape            = (_("Shape"), _("Shape of the Oscillator"), 0.0, -100.0, 100.0, 5.0, STANDARD ":scale");
-    Real    shape_mod        = (_("Shape Mod"), _("Shape modulation range in percent"), 0.0, 0.0, 100.0, 2.0, STANDARD ":scale");
+    Real    shape_mod        = (_("Shape Mod"), _("Shape modulation range in percent"), 0.0, -100.0, 100.0, 2.0, STANDARD ":scale");
     Real    sub              = (_("Subharmonic"), _("Subharmonic Frequency content (one octave below oscillator frequency)"), 0.0, 0.0, 100.0, 5.0, STANDARD ":scale");
-    Real    sub_mod          = (_("Subharmonic Mod"), _("Modulation of the subharmonic frequency content"), 0.0, 0.0, 50.0, 2.0, STANDARD ":scale");
+    Real    sub_mod          = (_("Subharmonic Mod"), _("Modulation of the subharmonic frequency content"), 0.0, -50.0, 50.0, 2.0, STANDARD ":scale");
     Real    sync             = (_("Sync"), _("Sync slave oscillator semitones"), 0.0, 0.0, 60.0, 3.0, STANDARD ":scale");
-    Real    sync_mod         = (_("Sync Mod"), _("Sync modulation range in semitones"), 0.0, 0.0, 30.0, 2.0, STANDARD ":scale");
+    Real    sync_mod         = (_("Sync Mod"), _("Sync modulation range in semitones"), 0.0, -30.0, 30.0, 2.0, STANDARD ":scale");
     Real    pulse_width      = (_("Pulse Width"), _("Length of the positive pulse component"), 50.0, 0.0, 100.0, 5, STANDARD ":scale");
-    Real    pulse_width_mod  = (_("Pulse Width Mod"), _("Pulse width modulation range"), 0.0, 0.0, 50.0, 2.0, STANDARD ":scale");
+    Real    pulse_width_mod  = (_("Pulse Width Mod"), _("Pulse width modulation range"), 0.0, -50.0, 50.0, 2.0, STANDARD ":scale");
   };
   group _("Unison") {
     Int    unison_voices     = (_("Voices"), _("Number of unison voices used"), 1, 1, 16, 1, STANDARD ":scale");
