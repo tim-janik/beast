@@ -9,7 +9,6 @@
 #include "bsemain.hh"		/* threads enter/leave */
 #include "bsepcmwriter.hh"
 #include "bsemididevice-null.hh"
-#include "bsejanitor.hh"
 #include "bsecxxplugin.hh"
 #include "bsepcmmodule.cc"
 #include "gsldatahandle-mad.hh"
@@ -70,8 +69,6 @@ static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_registration = 0;
-static guint       signal_script_start = 0;
-static guint       signal_script_error = 0;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseServer)
 {
@@ -131,12 +128,6 @@ bse_server_class_init (BseServerClass *klass)
 						     BSE_TYPE_REGISTRATION_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_script_start = bse_object_class_add_signal (object_class, "script-start",
-						     G_TYPE_NONE, 1,
-						     BSE_TYPE_JANITOR);
-  signal_script_error = bse_object_class_add_signal (object_class, "script-error",
-						     G_TYPE_NONE, 3,
-						     G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 static GTokenType
@@ -690,21 +681,6 @@ bse_server_discard_pcm_input_module (BseServer *self,
   bse_server_close_devices (self);
 }
 
-/**
- * @param script_control associated script control object
- *
- * Signal script invocation start.
- */
-void
-bse_server_script_start (BseServer  *server,
-			 BseJanitor *janitor)
-{
-  assert_return (BSE_IS_SERVER (server));
-  assert_return (BSE_IS_JANITOR (janitor));
-
-  g_signal_emit (server, signal_script_start, 0, janitor);
-}
-
 void
 bse_server_registration (BseServer          *server,
 			 BseRegistrationType rtype,
@@ -714,27 +690,6 @@ bse_server_registration (BseServer          *server,
   assert_return (BSE_IS_SERVER (server));
 
   g_signal_emit (server, signal_registration, 0, rtype, what, error);
-}
-
-/**
- * @param script_name name of the executed script
- * @param proc_name   procedure name to execute
- * @param reason      error condition
- *
- * Signal script invocation error.
- */
-void
-bse_server_script_error (BseServer   *server,
-			 const gchar *script_name,
-			 const gchar *proc_name,
-			 const gchar *reason)
-{
-  assert_return (BSE_IS_SERVER (server));
-  assert_return (script_name != NULL);
-  assert_return (proc_name != NULL);
-  assert_return (reason != NULL);
-  g_signal_emit (server, signal_script_error, 0,
-		 script_name, proc_name, reason);
 }
 
 void
@@ -761,69 +716,6 @@ bse_server_remove_io_watch (BseServer *server,
   if (!iowatch_remove (server, watch_func, data))
     Bse::warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
-
-Bse::Error
-bse_server_run_remote (BseServer         *server,
-		       const gchar       *process_name,
-		       SfiRing           *params,
-		       const gchar       *script_name,
-		       const gchar       *proc_name,
-		       BseJanitor       **janitor_p)
-{
-  gint child_pid, command_input, command_output;
-  BseJanitor *janitor = NULL;
-
-  assert_return (BSE_IS_SERVER (server), Bse::Error::INTERNAL);
-  assert_return (process_name != NULL, Bse::Error::INTERNAL);
-  assert_return (script_name != NULL, Bse::Error::INTERNAL);
-  assert_return (proc_name != NULL, Bse::Error::INTERNAL);
-
-  child_pid = command_input = command_output = -1;
-  const char *reason = sfi_com_spawn_async (process_name,
-                                            &child_pid,
-                                            NULL, /* &standard_input, */
-                                            NULL, /* &standard_output, */
-                                            NULL, /* &standard_error, */
-                                            "--bse-pipe",
-                                            &command_input,
-                                            &command_output,
-                                            params);
-  char *freeme = NULL;
-  if (!reason)
-    {
-      gchar *ident = g_strdup_format ("%s::%s", script_name, proc_name);
-      SfiComPort *port = sfi_com_port_from_child (ident,
-						  command_output,
-						  command_input,
-						  child_pid);
-      g_free (ident);
-      if (!port->connected)	/* bad, bad */
-	{
-	  sfi_com_port_unref (port);
-	  reason = freeme = g_strdup ("failed to establish connection");
-	}
-      else
-	{
-	  janitor = bse_janitor_new (port);
-	  bse_janitor_set_procedure (janitor, script_name, proc_name);
-	  sfi_com_port_unref (port);
-	  /* already owned by server */
-	  g_object_unref (janitor);
-	}
-    }
-  if (janitor_p)
-    *janitor_p = janitor;
-  if (reason)
-    {
-      bse_server_script_error (server, script_name, proc_name, reason);
-      g_free (freeme);
-      return Bse::Error::SPAWN;
-    }
-  g_free (freeme);
-  bse_server_script_start (server, janitor);
-  return Bse::Error::NONE;
-}
-
 
 /* --- GSL Main Thread Source --- */
 typedef struct {
@@ -1167,12 +1059,6 @@ ServerImpl::get_plugin_path ()
 }
 
 String
-ServerImpl::get_script_path ()
-{
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS), BSE_GCONFIG (script_path));
-}
-
-String
 ServerImpl::get_instrument_path ()
 {
   return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
@@ -1258,13 +1144,6 @@ ServerImpl::register_core_plugins ()
 }
 
 void
-ServerImpl::register_scripts ()
-{
-  load_assets();
-  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
-}
-
-void
 ServerImpl::load_assets ()
 {
   static bool done_once = false;
@@ -1304,18 +1183,6 @@ bool
 ServerImpl::preferences_locked ()
 {
   return bse_gconfig_locked();
-}
-
-int
-ServerImpl::n_scripts()
-{
-  BseServer *server = as<BseServer*>();
-  // count script controls
-  uint n_scripts = 0;
-  for (GSList *slist = server->children; slist; slist = slist->next)
-    if (BSE_IS_JANITOR (slist->data))
-      n_scripts++;
-  return n_scripts;
 }
 
 bool

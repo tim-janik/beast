@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstwaveview.hh"
-#include "bstprocedure.hh"
 #include "bstwaveeditor.hh"
 #include "bstfiledialog.hh"
 #include "bstsampleeditor.hh"

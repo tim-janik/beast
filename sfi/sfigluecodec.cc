@@ -8,17 +8,12 @@
 /* --- prototypes --- */
 static SfiGlueIFace*  encoder_describe_iface		(SfiGlueContext *context,
 							 const gchar    *iface);
-static SfiGlueProc*   encoder_describe_proc		(SfiGlueContext *context,
-							 const gchar    *proc_name);
 static gchar**	      encoder_list_proc_names		(SfiGlueContext *context);
 static gchar**	      encoder_list_method_names		(SfiGlueContext *context,
 							 const gchar    *iface_name);
 static gchar*	      encoder_base_iface		(SfiGlueContext *context);
 static gchar**	      encoder_iface_children		(SfiGlueContext *context,
 							 const gchar    *iface_name);
-static GValue*	      encoder_exec_proc			(SfiGlueContext *context,
-							 const gchar    *proc_name,
-							 SfiSeq         *params);
 static gchar*	      encoder_proxy_iface		(SfiGlueContext *context,
 							 SfiProxy        proxy);
 static gboolean	      encoder_proxy_is_a		(SfiGlueContext *context,
@@ -63,12 +58,12 @@ sfi_glue_encoder_context (SfiComPort *port)
 {
   static const SfiGlueContextTable encoder_vtable = {
     encoder_describe_iface,
-    encoder_describe_proc,
+    NULL /*describe_proc*/,
     encoder_list_proc_names,
     encoder_list_method_names,
     encoder_base_iface,
     encoder_iface_children,
-    encoder_exec_proc,
+    NULL /*exec_proc*/,
     encoder_proxy_iface,
     encoder_proxy_is_a,
     encoder_proxy_list_properties,
@@ -243,73 +238,6 @@ decoder_describe_iface (SfiGlueDecoder *decoder,
   return rvalue;
 }
 
-static SfiGlueProc*
-encoder_describe_proc (SfiGlueContext *context,
-		       const gchar    *proc_name)
-{
-  SfiGlueProc *proc = NULL;
-  SfiRec *rec;
-  SfiSeq *seq = sfi_seq_new ();
-  sfi_seq_append_int (seq, SFI_GLUE_CODEC_DESCRIBE_PROC);
-  sfi_seq_append_string (seq, proc_name);
-
-  seq = encoder_exec_round_trip (context, seq);
-
-  rec = sfi_seq_get_rec (seq, 0);
-  if (rec)
-    {
-      SfiSeq *pseq;
-      GParamSpec *pspec;
-      proc = sfi_glue_proc_new (sfi_rec_get_string (rec, "name"));
-      proc->help = g_strdup (sfi_rec_get_string (rec, "help"));
-      proc->authors = g_strdup (sfi_rec_get_string (rec, "authors"));
-      proc->license = g_strdup (sfi_rec_get_string (rec, "license"));
-      pseq = sfi_rec_get_seq (rec, "params");
-      if (pseq)
-	{
-	  guint i;
-	  for (i = 0; i < pseq->n_elements; i++)
-	    sfi_glue_proc_add_param (proc, sfi_seq_get_pspec (pseq, i));
-	}
-      pspec = sfi_rec_get_pspec (rec, "ret_param");
-      if (pspec)
-	sfi_glue_proc_add_ret_param (proc, pspec);
-    }
-  sfi_seq_unref (seq);
-  return proc;
-}
-
-static GValue*
-decoder_describe_proc (SfiGlueDecoder *decoder,
-		       SfiSeq         *seq)
-{
-  SfiGlueProc *proc = sfi_glue_describe_proc (sfi_seq_get_string (seq, 1));
-  GValue *rvalue = NULL;
-  SfiRec *rec = NULL;
-  if (proc)
-    {
-      rec = sfi_rec_new ();
-      sfi_rec_set_string (rec, "name", proc->name);
-      sfi_rec_set_string (rec, "help", proc->help);
-      sfi_rec_set_string (rec, "authors", proc->authors);
-      sfi_rec_set_string (rec, "license", proc->license);
-      if (proc->ret_param)
-	sfi_rec_set_pspec (rec, "ret_param", proc->ret_param);
-      if (proc->params)
-	{
-	  SfiSeq *seq = sfi_seq_new ();
-	  guint i;
-	  for (i = 0; i < proc->n_params; i++)
-	    sfi_seq_append_pspec (seq, proc->params[i]);
-	  sfi_rec_set_seq (rec, "params", seq);
-	  sfi_seq_unref (seq);
-	}
-    }
-  rvalue = sfi_value_rec (rec);
-  sfi_glue_gc_free_now (proc, SfiGlueGcFreeFunc (sfi_glue_proc_unref));
-  return rvalue;
-}
-
 static inline GValue*
 seq_value_from_strv (const gchar **strv)
 {
@@ -418,36 +346,6 @@ decoder_iface_children (SfiGlueDecoder *decoder,
   GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
-}
-
-static GValue*
-encoder_exec_proc (SfiGlueContext *context,
-		   const gchar    *proc_name,
-		   SfiSeq         *params)
-{
-  GValue *rvalue = NULL;
-  SfiSeq *seq = sfi_seq_new ();
-  sfi_seq_append_int (seq, SFI_GLUE_CODEC_EXEC_PROC);
-  sfi_seq_append_string (seq, proc_name);
-  sfi_seq_append_seq (seq, params);
-
-  seq = encoder_exec_round_trip (context, seq);
-
-  if (seq->n_elements)
-    rvalue = sfi_value_clone_shallow (sfi_seq_get (seq, 0));
-  sfi_seq_unref (seq);
-  return rvalue;
-}
-
-static GValue*
-decoder_exec_proc (SfiGlueDecoder *decoder,
-		   SfiSeq         *seq)
-{
-  GValue *pvalue = sfi_glue_call_seq (sfi_seq_get_string (seq, 1),
-				      sfi_seq_get_seq (seq, 2));
-  if (pvalue)
-    sfi_glue_gc_remove (pvalue, SfiGlueGcFreeFunc (sfi_value_free));
-  return pvalue;
 }
 
 static gchar*
@@ -840,8 +738,6 @@ decoder_process_request (SfiGlueDecoder *decoder,
     {
     case SFI_GLUE_CODEC_DESCRIBE_IFACE:
       return decoder_describe_iface (decoder, seq);
-    case SFI_GLUE_CODEC_DESCRIBE_PROC:
-      return decoder_describe_proc (decoder, seq);
     case SFI_GLUE_CODEC_LIST_PROC_NAMES:
       return decoder_list_proc_names (decoder, seq);
     case SFI_GLUE_CODEC_LIST_METHOD_NAMES:
@@ -850,8 +746,6 @@ decoder_process_request (SfiGlueDecoder *decoder,
       return decoder_base_iface (decoder, seq);
     case SFI_GLUE_CODEC_IFACE_CHILDREN:
       return decoder_iface_children (decoder, seq);
-    case SFI_GLUE_CODEC_EXEC_PROC:
-      return decoder_exec_proc (decoder, seq);
     case SFI_GLUE_CODEC_PROXY_IFACE:
       return decoder_proxy_iface (decoder, seq);
     case SFI_GLUE_CODEC_PROXY_IS_A:

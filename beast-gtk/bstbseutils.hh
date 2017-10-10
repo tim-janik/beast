@@ -37,7 +37,6 @@ Bse::Error    bst_project_restore_from_file   (Bse::ProjectH   project,
 						 bool            preserve_non_dirty);
 Bse::Error    bst_project_import_midi_file    (Bse::ProjectH   project,
                                                  const gchar    *file_name);
-const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 uint            bst_path_leaf_index             (const String &path, char separator = '/');
 Bse::Category   bst_category_find               (const String &pattern);
 

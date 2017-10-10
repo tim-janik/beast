@@ -2,7 +2,6 @@
 #include	"bstwaveeditor.hh"
 
 #include	"bstplayback.hh"
-#include	"bstprocedure.hh"
 #include	"bstmenus.hh"
 #include	<gdk/gdkkeysyms.h>
 

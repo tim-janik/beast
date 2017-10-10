@@ -1003,7 +1003,7 @@ ProjectImpl::can_play ()
   BseProject *self = as<BseProject*>();
   /* playback works if we have supers other than wave repo */
   gpointer wrepo = bse_project_get_wave_repo (self);
-  return self->supers->data != wrepo || self->supers->next;
+  return self->supers && (self->supers->data != wrepo || self->supers->next);
 }
 
 bool

@@ -4,11 +4,8 @@
 
 #include <bse/bsetype.hh>
 
-/* FIXME: creation of a new context source should be done
- * by a janitor constructor
- */
-
-SfiGlueContext*	bse_glue_context_intern	 (const gchar	*user);
+SfiGlueContext*	bse_glue_context_intern	  (const gchar	*user);
+GSource*        bse_glue_setup_dispatcher (SfiComPort   *port);
 
 /* Construct a new #SfiRec from a boxed value. */
 typedef SfiRec*	(*BseGlueBoxedToRec)	 (gpointer	    boxed);

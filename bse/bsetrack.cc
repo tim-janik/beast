@@ -1281,4 +1281,24 @@ TrackImpl::get_output_source ()
   return child->as<SourceIfaceP>();
 }
 
+ItemSeq
+TrackImpl::outputs () const
+{
+  BseTrack *self = const_cast<TrackImpl*> (this)->as<BseTrack*>();
+  ItemSeq items;
+  for (SfiRing *ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
+    {
+      BseItem *item = (BseItem*) ring->data;
+      items.push_back (item->as<ItemIfaceP>());
+    }
+  return items;
+}
+
+void
+TrackImpl::outputs (const ItemSeq &newoutputs)
+{
+  BseTrack *self = as<BseTrack*>();
+  bse_bus_or_track_set_outputs (self, newoutputs);
+}
+
 } // Bse

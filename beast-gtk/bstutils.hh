@@ -46,21 +46,6 @@ void bst_action_list_add_cat    (GxkActionList *alist, const Bse::Category &cat,
                                  GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
 void bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
                                  GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
-GxkActionList* bst_action_list_from_cats      (const Bse::CategorySeq &cseq,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback,
-                                               GxkActionCheck   acheck,
-                                               GxkActionExec    aexec,
-                                               gpointer         user_data);
-typedef gboolean (*BstActionListCategoryP)    (gpointer predicate_data, const Bse::Category &cat);
-GxkActionList* bst_action_list_from_cats_pred (const Bse::CategorySeq &cseq,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback,
-                                               GxkActionCheck   acheck,
-                                               GxkActionExec    aexec,
-                                               gpointer         user_data,
-                                               BstActionListCategoryP predicate,
-                                               gpointer         predicate_data);
 void           bst_background_handler1_add    (gboolean       (*handler) (gpointer data),
                                                gpointer         data,
                                                void           (*free_func) (gpointer data));

@@ -55,19 +55,6 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
   return error;
 }
 
-const gchar*
-bst_procedure_get_title (const gchar *procedure)
-{
-  if (procedure)
-    {
-      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", procedure);
-      if (cseq.size())
-        return cseq[0].category.c_str() + bst_path_leaf_index (cseq[0].category);
-    }
-  return NULL;
-}
-
-
 Bse::Category
 bst_category_find (const String &pattern)
 {
