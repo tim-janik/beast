@@ -11,6 +11,7 @@
 <template>
   <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
     <b-playcontrols :project="project"> </b-playcontrols>
+    <b-positionview> </b-positionview>
 
     <b-hflex grow1 style="overflow-y: hidden">
       <b-vflex grow1 shrink1>
