@@ -760,7 +760,6 @@ library/skins/images/Makefile
 tools/Makefile
 tools/scripts/Makefile
 po/Makefile
-tests/Makefile
 docs/Makefile
 docs/images/Makefile
 ])
