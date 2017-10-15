@@ -50,3 +50,98 @@ tests_testresamplerq_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 tests_testresamplerq_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 tests_testresamplerq_SOURCES  = \
 	tests/testresamplerq.cc
+
+# == testresampler ==
+#NOINST_TESTS                += tests/testresampler
+noinst_PROGRAMS             += tests/testresampler
+tests_testresampler_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_testresampler_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_testresampler_SOURCES = \
+	tests/testresampler.cc
+tests-testresampler-check-filter-impl:
+	$(QTEST)
+	$(Q) tests/testresampler filter-impl
+tests-testresampler-check-precision8:
+	$(QTEST)
+	$(Q) tests/testresampler accuracy --up --precision=8 --freq-scan=180,18000,1979 --max-threshold=45
+tests-testresampler-check-precision12:
+	$(QTEST)
+	$(Q) tests/testresampler accuracy --down --precision=12 --freq-scan=90,9000,997 --max-threshold=72
+tests-testresampler-check-precision16:
+	$(QTEST)
+	$(Q) tests/testresampler accuracy --fpu --up --precision=16 --freq-scan=180,18000,1453 --max-threshold=89.5
+tests-testresampler-check-precision20:
+	$(QTEST)
+	$(Q) tests/testresampler accuracy --fpu --oversample --precision=20 --freq-scan=180,18000,1671 --max-threshold=113.5
+tests-testresampler-check-precision24:
+	$(QTEST)
+	$(Q) tests/testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,983 --max-threshold=126
+check-tests: tests-testresampler-check-filter-impl tests-testresampler-check-precision8 tests-testresampler-check-precision12
+check-tests: tests-testresampler-check-precision16 tests-testresampler-check-precision20 tests-testresampler-check-precision24
+tests-testresampler-check-all:
+	: ## test SSE filter implementation
+	tests/testresampler filter-impl
+	: ## (possibly SSEified) upsampler tests
+	tests/testresampler accuracy --up --precision=8 --freq-scan=50,18000,50  --max-threshold=45     # ideally: 48dB
+	tests/testresampler accuracy --up --precision=12 --freq-scan=50,18000,50 --max-threshold=66.5   # ideally: 72dB
+	tests/testresampler accuracy --up --precision=16 --freq-scan=50,18000,50 --max-threshold=89     # ideally: 96dB
+	tests/testresampler accuracy --up --precision=20 --freq-scan=50,18000,50 --max-threshold=113.5  # ideally: 120dB
+	tests/testresampler accuracy --up --precision=24 --freq-scan=50,18000,50 --max-threshold=126.5  # ideally: 144dB
+	: ## (possibly SSEified) downsampler tests
+	tests/testresampler accuracy --down --precision=8  --freq-scan=25,9000,25 --max-threshold=51    # ideally: 48dB
+	tests/testresampler accuracy --down --precision=12 --freq-scan=25,9000,25 --max-threshold=72    # ideally: 72dB
+	tests/testresampler accuracy --down --precision=16 --freq-scan=25,9000,25 --max-threshold=95    # ideally: 96dB
+	tests/testresampler accuracy --down --precision=20 --freq-scan=25,9000,25 --max-threshold=119.5 # ideally: 120dB
+	tests/testresampler accuracy --down --precision=24 --freq-scan=25,9000,25 --max-threshold=131   # ideally: 144dB
+	: ## FPU upsampler tests
+	tests/testresampler accuracy --fpu --up --precision=8  --freq-scan=50,18000,50 --max-threshold=45     # ideally: 48dB
+	tests/testresampler accuracy --fpu --up --precision=12 --freq-scan=50,18000,50 --max-threshold=66.5   # ideally: 72dB
+	tests/testresampler accuracy --fpu --up --precision=16 --freq-scan=50,18000,50 --max-threshold=89     # ideally: 96dB
+	tests/testresampler accuracy --fpu --up --precision=20 --freq-scan=50,18000,50 --max-threshold=113.5  # ideally: 120dB
+	tests/testresampler accuracy --fpu --up --precision=24 --freq-scan=50,18000,50 --max-threshold=126    # ideally: 144dB
+	: ## FPU downsampler tests
+	tests/testresampler accuracy --fpu --down --precision=8  --freq-scan=25,9000,25 --max-threshold=51    # ideally: 48dB
+	tests/testresampler accuracy --fpu --down --precision=12 --freq-scan=25,9000,25 --max-threshold=72    # ideally: 72dB
+	tests/testresampler accuracy --fpu --down --precision=16 --freq-scan=25,9000,25 --max-threshold=95    # ideally: 96dB
+	tests/testresampler accuracy --fpu --down --precision=20 --freq-scan=25,9000,25 --max-threshold=119.5 # ideally: 120dB
+	tests/testresampler accuracy --fpu --down --precision=24 --freq-scan=25,9000,25 --max-threshold=131   # ideally: 144dB
+	: ## sparse testing of sub- and oversampling (we don't test every combination of
+	: ## flags here, but this is also an uncommon usage scenario)
+	tests/testresampler accuracy       --oversample --precision=8  --freq-scan=50,18000,50 --max-threshold=45   # ideally: 48dB
+	tests/testresampler accuracy       --oversample --precision=16 --freq-scan=50,18000,50 --max-threshold=89   # ideally: 96dB
+	tests/testresampler accuracy --fpu --oversample --precision=16 --freq-scan=50,18000,50 --max-threshold=89   # ideally: 96dB
+	tests/testresampler accuracy       --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
+	tests/testresampler accuracy --fpu --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
+tests-testresampler-check-perf:
+	tests/testresampler perf --fpu --precision=8  --up
+	tests/testresampler perf --fpu --precision=8  --down
+	tests/testresampler perf --fpu --precision=8  --subsample
+	tests/testresampler perf --fpu --precision=8  --oversample
+	tests/testresampler perf       --precision=8  --up
+	tests/testresampler perf       --precision=8  --down
+	tests/testresampler perf       --precision=8  --subsample
+	tests/testresampler perf       --precision=8  --oversample
+	tests/testresampler perf --fpu --precision=16 --up
+	tests/testresampler perf --fpu --precision=16 --down
+	tests/testresampler perf --fpu --precision=16 --subsample
+	tests/testresampler perf --fpu --precision=16 --oversample
+	tests/testresampler perf       --precision=16 --up
+	tests/testresampler perf       --precision=16 --down
+	tests/testresampler perf       --precision=16 --subsample
+	tests/testresampler perf       --precision=16 --oversample
+	tests/testresampler perf --fpu --precision=20 --up
+	tests/testresampler perf --fpu --precision=20 --down
+	tests/testresampler perf --fpu --precision=20 --subsample
+	tests/testresampler perf --fpu --precision=20 --oversample
+	tests/testresampler perf       --precision=20 --up
+	tests/testresampler perf       --precision=20 --down
+	tests/testresampler perf       --precision=20 --subsample
+	tests/testresampler perf       --precision=20 --oversample
+	tests/testresampler perf --fpu --precision=24 --up
+	tests/testresampler perf --fpu --precision=24 --down
+	tests/testresampler perf --fpu --precision=24 --subsample
+	tests/testresampler perf --fpu --precision=24 --oversample
+	tests/testresampler perf       --precision=24 --up
+	tests/testresampler perf       --precision=24 --down
+	tests/testresampler perf       --precision=24 --subsample
+	tests/testresampler perf       --precision=24 --oversample
