@@ -26,10 +26,6 @@ progs_ldadd = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 #$(srcdir)/cxxbinding.cc: bsecxxapi.hh
 #$(srcdir)/cxxbinding.cc: bsecxxapi.cc
 
-TAPTESTS          += filtertest
-filtertest_SOURCES = filtertest.cc
-filtertest_LDADD   = $(progs_ldadd)
-
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 

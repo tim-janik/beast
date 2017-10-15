@@ -51,6 +51,13 @@ tests_testresamplerq_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 tests_testresamplerq_SOURCES  = \
 	tests/testresamplerq.cc
 
+# == filtertest ==
+NOINST_TESTS		 += tests/filtertest
+tests_filtertest_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_filtertest_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_filtertest_SOURCES  = \
+	tests/filtertest.cc
+
 # == testresampler ==
 #NOINST_TESTS                += tests/testresampler
 noinst_PROGRAMS             += tests/testresampler
