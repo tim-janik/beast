@@ -765,7 +765,6 @@ tests/latency/Makefile
 tests/scripts/Makefile
 tests/bse/Makefile
 tests/audio/Makefile
-tests/filecheck/Makefile
 docs/Makefile
 docs/images/Makefile
 ])
