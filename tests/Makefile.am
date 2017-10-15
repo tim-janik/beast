@@ -28,10 +28,6 @@ progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD   = $(progs_ldadd)
-# testresamplerq
-TAPTESTS              += testresamplerq
-testresamplerq_SOURCES = testresamplerq.cc
-testresamplerq_LDADD   = $(progs_ldadd)
 
 
 # === Resampler tests ===
