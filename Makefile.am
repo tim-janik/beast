@@ -3,10 +3,38 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= . sfi bse plugins drivers pybeast beast-gtk launchers library tools ebeast po docs data tests
+SUBDIRS		= sfi bse plugins drivers pybeast beast-gtk launchers library tools ebeast po docs data .
+
+# == make setup ==
+DEFS                    += -DBSE_CONVENIENCE
+QTEST                    = @echo '  TEST    ' $@;
+QWAVCHECK                = @echo '  WAVCHECK' $@;
+AM_CPPFLAGS             += -I$(top_srcdir) -I$(top_builddir)
+lib_LTLIBRARIES          =
+bin_PROGRAMS             =
+bin_SCRIPTS              =
+#noinst_DATA             =
+noinst_SCRIPTS           =
+noinst_PROGRAMS          =
+noinst_LTLIBRARIES	 =
+
+# == project tools and paths ==
+SFIDL                    = $(top_builddir)/sfi/sfidl
+SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+BSEFEXTRACT		 = $(top_builddir)/tools/bsefextract
+BSEFCOMPARE		 = $(top_builddir)/tools/bsefcompare
+
+# == early rules ==
+# Ideally, all directories would provide a Makefile.sub and be included here
+# in the appropriate order. Since we're not there yet, *some* Makefile.sub
+# rules need to be build before recursing into subdirs with Makefile.am, and
+# other Makefile.sub rules need to be build *after* recursing into subdirs.
+# We solve this by building ./ last, and using BUILT_SOURCES to force builds
+# of files required before we recurse into subdirs with Makefile.am.
+BUILT_SOURCES            =
 
 # == res/ ==
-# define res_resfiles_list
+# define res_resfiles_list via immediate assignment
 include res/Makefile.sub
 
 # == doc/ install ==
@@ -28,13 +56,6 @@ MAINTAINERCLEANFILES += HACKING
 		--email-obfuscation=javascript $< -o $@
 	$(Q) chmod a-w $@	# prevent accidental target file edits
 MAINTAINERCLEANFILES += README README.html
-
-# check: message
-ALL_CHECKED_MSG = "All package tests passed"
-check: check-recursive
-	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
-	@echo $(ALL_CHECKED_MSG)
-	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
 # == BSE App Test ==
 bse-app-test:
@@ -73,6 +94,7 @@ ChangeLog: $(GITSTAMP)
 	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
+BUILT_SOURCES        += ChangeLog
 
 # == dist ==
 distname      = $(PACKAGE)-$(VERSION)
@@ -200,3 +222,9 @@ am__CONFIG_DISTCLEAN_FILES = 	\
 	config\.cache		\
 	configure\.lineno	\
 	config\.status\.lineno
+
+# == tests/ ==
+include tests/Makefile.sub
+
+# == af-tests/ ==
+include af-tests/Makefile.sub

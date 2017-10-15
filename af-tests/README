@@ -13,7 +13,7 @@ which features are supported, call bsefextract --help.
 To run the currently available tests, there is a Makefile rule, so you can
 type:
 
-   make test
+   make check-af-tests
 
 Adding a new test
 =================
@@ -25,25 +25,24 @@ steps:
    ensure that the bse file terminates after some time (using the song
    sequencer is a good way to ensure this)
 
-   save foo.bse in this directory (add it to the CVS)
+   save foo.bse in this directory (add it to the repository)
 
-2) add a new target to Makefile.am (look at the other tests to see how its done)
+2) add a new target to Makefile.sub (look at the other tests to see how its done)
 
-3) add the target to the FEATURE_TESTS line in Makefile.am
+3) add the target to the check-af-tests rule
 
-4) run make foo-test once, the test will fail, but you will generate a foo.tmp
+4) run make af-tests/foo once, the test will fail, but you will generate a foo.tmp
    file, which you can move to the reference file using
 
      mv foo.tmp foo.ref
 
-   you need to add add the created foo.reference to CVS
+   you need to add the created reference file to the repository
 
-6) run make test, the newly added test should be executed and succeed now
+6) run make check-af-tests, the newly added test should be executed and succeed now
 
 Note, that if you need multiple tests for the same .bse file (for instance
 because you want to set a different threshold for different features), you can
-do so by adding multiple targets foo1-test, foo2-test,... using difference
-reference file names for the tests, like foo1.ref, foo2.ref,...
+do so by adding multiple test rules using different reference file names for the tests.
 
 
 Good features to use:
