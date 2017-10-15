@@ -17,6 +17,10 @@ noinst_SCRIPTS           =
 noinst_PROGRAMS          =
 noinst_LTLIBRARIES	 =
 
+# == project tools and paths ==
+SFIDL                    = $(top_builddir)/sfi/sfidl
+SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+
 # == early rules ==
 # Ideally, all directories would provide a Makefile.sub and be included here
 # in the appropriate order. Since we're not there yet, *some* Makefile.sub

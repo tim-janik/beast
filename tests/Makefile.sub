@@ -58,6 +58,20 @@ tests_filtertest_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 tests_filtertest_SOURCES  = \
 	tests/filtertest.cc
 
+# == plugintest ==
+noinst_LTLIBRARIES          += tests/plugintest.la
+tests_plugintest_la_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_plugintest_la_LDFLAGS  = $(AM_LDFLAGS) -module -avoid-version
+tests_plugintest_la_LIBADD   = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_plugintest_la_SOURCES  = \
+	tests/plugintest.cc
+tests/plugintest.genidl.hh: tests/plugintest.idl $(SFIDL)
+	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@.tmp
+	mv $@.tmp $@
+TESTS_CLEANFILES += tests/plugintest.genidl.hh tests/plugintest.genidl.hh.tmp
+$(tests_plugintest_la_SOURCES): tests/plugintest.genidl.hh tests/plugintest.idl
+# tihs is merely a compilation test for Bse plugins
+
 # == testresampler ==
 #NOINST_TESTS                += tests/testresampler
 noinst_PROGRAMS             += tests/testresampler
