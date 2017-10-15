@@ -761,7 +761,6 @@ tools/Makefile
 tools/scripts/Makefile
 po/Makefile
 tests/Makefile
-tests/latency/Makefile
 tests/bse/Makefile
 tests/audio/Makefile
 docs/Makefile
