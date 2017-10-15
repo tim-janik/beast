@@ -116,7 +116,7 @@ af-tests/osc-test: af-tests/osc-test.bse af-tests/osc-test.ref
 	$(QWAVCHECK)	# a test for the oscillator
 	$(Q) $(AF_TESTS_BSE2WAV) $@.bse $@.wav --seconds 5
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
-	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
+	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.90
 	$(Q) rm -f $@.wav $@.tmp
 check-af-tests: af-tests/osc-test
 
