@@ -761,7 +761,6 @@ tools/Makefile
 tools/scripts/Makefile
 po/Makefile
 tests/Makefile
-tests/audio/Makefile
 docs/Makefile
 docs/images/Makefile
 ])

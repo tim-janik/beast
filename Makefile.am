@@ -8,6 +8,7 @@ SUBDIRS		= sfi bse plugins drivers pybeast beast-gtk launchers library tools ebe
 # == make setup ==
 DEFS                    += -DBSE_CONVENIENCE
 QTEST                    = @echo '  TEST    ' $@;
+QWAVCHECK                = @echo '  WAVCHECK' $@;
 AM_CPPFLAGS             += -I$(top_srcdir) -I$(top_builddir)
 lib_LTLIBRARIES          =
 bin_PROGRAMS             =
@@ -20,6 +21,8 @@ noinst_LTLIBRARIES	 =
 # == project tools and paths ==
 SFIDL                    = $(top_builddir)/sfi/sfidl
 SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+BSEFEXTRACT		 = $(top_builddir)/tools/bsefextract
+BSEFCOMPARE		 = $(top_builddir)/tools/bsefcompare
 
 # == early rules ==
 # Ideally, all directories would provide a Makefile.sub and be included here
@@ -222,3 +225,6 @@ am__CONFIG_DISTCLEAN_FILES = 	\
 
 # == tests/ ==
 include tests/Makefile.sub
+
+# == af-tests/ ==
+include af-tests/Makefile.sub
