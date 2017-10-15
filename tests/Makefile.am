@@ -24,11 +24,6 @@ generated: clean-generated $(GENERATED)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
 
-# testwavechunk
-TAPTESTS             += testwavechunk
-SLOWTESTS            += testwavechunk
-testwavechunk_SOURCES = testwavechunk.cc
-testwavechunk_LDADD = $(progs_ldadd)
 # testresampler
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc

@@ -15,6 +15,13 @@ tests_check_TARGETS =
 check-tests: $(tests_check_TARGETS)
 check-local: check-tests
 .PHONY: check-tests
+define tests_foreach_RULE
+$(TESTPRG)\ CHECK: $(TESTPRG)
+	@echo '  EXEC    ' $(TESTPRG) ; $(TESTPRG)
+check-tests: $(TESTPRG)\ CHECK
+.PHONY: $(TESTPRG)\ CHECK
+endef
+$(foreach TESTPRG,$(NOINST_TESTS),$(eval $(call tests_foreach_RULE,$(TESTPRG))))
 
 # == installcheck-tests ==
 installcheck-tests:
@@ -28,7 +35,11 @@ tests_suite1_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 tests_suite1_SOURCES = \
 	tests/suite1-main.cc \
 	tests/suite1-randomhash.cc
-tests_suite1_CHECK: tests/suite1 ; $(QTEST) tests/suite1
-tests_check_TARGETS += tests_suite1_CHECK
 
-
+# == testwavechunk ==
+NOINST_TESTS                += tests/testwavechunk
+SLOWTESTS                   += tests/testwavechunk
+tests_testwavechunk_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_testwavechunk_SOURCES  = \
+	tests/testwavechunk.cc
+tests_testwavechunk_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
