@@ -215,3 +215,6 @@ am__CONFIG_DISTCLEAN_FILES = 	\
 	config\.cache		\
 	configure\.lineno	\
 	config\.status\.lineno
+
+# == tests/ ==
+include tests/Makefile.sub

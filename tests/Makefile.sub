@@ -1,0 +1,34 @@
+# BEAST tests/
+
+NOINST_TESTS     =
+TESTS_CLEANFILES = $(NOINST_TESTS)
+noinst_PROGRAMS += $(NOINST_TESTS)
+
+# == clean-tests ==
+clean-tests:
+	rm -f $(TESTS_CLEANFILES) tests/*.$(OBJEXT)
+clean-local: clean-tests
+.PHONY: clean-tests
+
+# == check-tests ==
+tests_check_TARGETS =
+check-tests: $(tests_check_TARGETS)
+check-local: check-tests
+.PHONY: check-tests
+
+# == installcheck-tests ==
+installcheck-tests:
+installcheck-local: installcheck-tests
+.PHONY: installcheck-tests
+
+# == suite1 ==
+NOINST_TESTS         += tests/suite1
+tests_suite1_LDADD    = sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
+tests_suite1_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_suite1_SOURCES = \
+	tests/suite1-main.cc \
+	tests/suite1-randomhash.cc
+tests_suite1_CHECK: tests/suite1 ; $(QTEST) tests/suite1
+tests_check_TARGETS += tests_suite1_CHECK
+
+
