@@ -145,3 +145,68 @@ tests-testresampler-check-perf:
 	tests/testresampler perf       --precision=24 --down
 	tests/testresampler perf       --precision=24 --subsample
 	tests/testresampler perf       --precision=24 --oversample
+
+# == bsefiles.list ==
+# Construct the list of shipped BSE files by first constructing the tarball
+# file list via git ls-tree and then filtering the bse files.
+noinst_DATA      += tests/bsefiles.list
+TESTS_CLEANFILES += @INGIT@ bsefiles.list
+EXTRA_DIST       += tests/bsefiles.list
+tests/bsefiles.list: $(GITSTAMP)
+	$(AM_V_GEN)
+	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
+	$(Q) grep '\.bse$$' $@.tmp1 > $@.tmp2
+	$(Q) mv $@.tmp2 $@ && rm -f $@.tmp1
+
+# == tests-bsefile-check ==
+# This test checks that all .bse files contained in the beast tarball
+# will load without any warnings or errors being issued. At first,
+# we split the (long) list of files into multiple lists that can be
+# checked in parallel. For each file in a list, unless it matches
+# the skip-pattern, try to load it and check the output logs.
+tests/bsefile-checklist: tests/bsefiles.list # generate checklist-a .. checklist-e
+	$(Q) grep '\.bse$$' $< > $@ || \
+	{ echo '$@: error: bsefiles.list is empty' >&2; exit 1; }
+	$(Q) cd tests && split -n l/5 -a 1 $(@F) $(@F)-
+	$(Q) rm -f $@
+SKIP_PATTERN = "tests/latency/midi-latency.bse"
+# Check-load ensures BSE loading works, it needs all available samples and plugins
+TESTS_BSEFILE_CHECK_LOAD = $(strip				\
+	$(topdir)/bse/bsetool					\
+	  $(if $(findstring 1, $(V)),, --quiet)			\
+	  check-load						\
+	  --bse-pcm-driver null=nosleep				\
+	  --bse-midi-driver null				\
+	  --bse-override-sample-path '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples' \
+	  --bse-override-plugin-globs '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so' \
+	  --bse-rcfile "/dev/null" )
+tests/bsefile-checklist-%-test: tests/bsefile-checklist
+	$(Q) for tfile in `cat $(@:-test=)` ; do			\
+	    if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then		\
+	      echo "  SKIP     Loading: $$tfile" ;			\
+	    else							\
+	      $(TESTS_BSEFILE_CHECK_LOAD) "$(topdir)/$$tfile" 2>&1 |	\
+		tee $@.log ; 						\
+	      test ! -s $@.log || exit 1				\
+	      && echo "  OK       Loading: $$tfile" ;			\
+	    fi ; done ; rm -f $@.log $(@:-test=)
+TESTS_CLEANFILES += tests/bsefile-checklist tests/bsefile-checklist-? tests/bsefile-checklist-?-test tests/bsefile-checklist-?-test.log
+check-tests: tests/bsefile-checklist-a-test tests/bsefile-checklist-b-test tests/bsefile-checklist-c-test \
+		tests/bsefile-checklist-d-test tests/bsefile-checklist-e-test
+
+# == tests-bse-version-check ==
+tests-bse-version-check: tests/bsefiles.list
+	TESTVERSION="$(MAJOR).$(MINOR)." ;				\
+	for tfile in `cat $<` ; do					\
+	  file="$(topdir)/$$tfile" ;					\
+	  echo "  VERIFY   Newest BSE Version: $$file" ;		\
+	  head -n5 "$$file" |						\
+	    grep -Fq "(bse-version \"$$TESTVERSION" ||			\
+	      { grep -F bse-version "$$file" ; exit 1 ; }		\
+	done
+	@MESSAGETEXT="All tested BSE files passed version check"	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
+	&& echo $$MESSAGETEXT		 				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g'
+.PHONY: tests-bse-version-check
+#check-tests: tests-bse-version-check
