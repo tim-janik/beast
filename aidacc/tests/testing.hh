@@ -38,7 +38,7 @@ int
 TestChain::run (int argc, const char **argv)
 {
   if (argc >= 1 && argv)
-    printf ("  TEST     %s\n", argv[0]);
+    ; // printf ("  TEST     %s\n", argv[0]);
   for (const TestChain *t = global_test_chain(); t; t = t->next_)
     {
       fflush (stderr);

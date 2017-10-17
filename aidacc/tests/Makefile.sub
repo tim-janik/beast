@@ -1,0 +1,24 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+tests_checktargets =
+tests_binaries     = t201-basics
+
+# == tests_binaries ==
+define tests_run_RULE
+.PHONY: tests/run-$(1)
+$(1)--testexec: tests/$(1)
+	@echo '  EXEC    ' $(1)
+	$$(Q) tests/$(1)
+tests_checktargets += $(1)--testexec
+CLEANFILES += tests/$(1)
+.PHONY: tests/run-$(1)
+endef
+$(foreach PRG,$(tests_binaries),$(eval $(call tests_run_RULE,$(PRG))))
+tests/%: tests/%.cc tests/testing.hh aidacc/aida.hh aida.o
+	$(CXXCOMPILE) $(CXXFLAGS) $< aida.o -o $@
+
+# == check-tests ==
+check-tests: $(sort $(tests_checktargets))
+check-local: check-tests
+.PHONY: check-tests
+
