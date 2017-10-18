@@ -1,102 +1,108 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-tests_checktargets =
-tests_binaries     =
+aidacc_tests_checktargets =
+aidacc_tests_binaries     =
+
+# == clean-aidacc-tests ==
+clean-aidacc-tests:
+	rm -f $(AIDACC_TESTS_CLEANFILES) aidacc/tests/*.$(OBJEXT)
+clean: clean-aidacc-tests
+.PHONY: clean-aidacc-tests
 
 # == t201-basics ==
-tests_binaries += t201-basics
-CLEANFILES += tests/t201-basics.o
+aidacc_tests_binaries += t201-basics
+AIDACC_TESTS_CLEANFILES += aidacc/tests/t201-basics.o
 
 # == t301-testpass-idl-test ==
-t301-testpass-idl-test: tests/t301-pass.idl $(AIDACC)
+t301-testpass-idl-test: aidacc/tests/t301-pass.idl $(AIDACC)
 	$(QTEST)
 	$(Q) $(AIDACC) $< # --aida-debug $<
-tests_checktargets += t301-testpass-idl-test
+aidacc_tests_checktargets += t301-testpass-idl-test
 
 # == t302-testfail-idl-test ==
-t302-testfail-idl-test: tests/t302-fail.idl tests/t302-fail.ref $(AIDACC)
+t302-testfail-idl-test: aidacc/tests/t302-fail.idl aidacc/tests/t302-fail.ref $(AIDACC)
 	$(QTEST)
 	$(Q) $(AIDACC) --aida-fail-file-test $<> $@.out
 	$(Q) sed 's/\(:[0-9]\+:[0-9]\+: Trying to find one of \).*/\1.../' < $@.out > $@.notokens && mv $@.notokens $@.out
-	$(Q) diff -up tests/t302-fail.ref $@.out && rm -f $@.out
-tests_checktargets += t302-testfail-idl-test
+	$(Q) diff -up aidacc/tests/t302-fail.ref $@.out && rm -f $@.out
+aidacc_tests_checktargets += t302-testfail-idl-test
 
 # == t303-explore ==
-tests_binaries += t303-explore
+aidacc_tests_binaries += t303-explore
 tests_t303_generated                 =      	\
-	tests/t303-explore_interfaces.hh	\
-	tests/t303-explore_interfaces.cc	\
-        tests/t303-explore_handles.hh		\
-        tests/t303-explore_handles.cc
+	aidacc/tests/t303-explore_interfaces.hh	\
+	aidacc/tests/t303-explore_interfaces.cc	\
+        aidacc/tests/t303-explore_handles.hh		\
+        aidacc/tests/t303-explore_handles.cc
 # MAKE(1) supports parallel execution of a multiple-targets-rule *only* for implicit rules (with '%')
-tests/t303-%_interfaces.hh tests/t303-%_interfaces.cc tests/t303-%_handles.hh tests/t303-%_handles.cc: tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
+aidacc/tests/t303-%_interfaces.hh aidacc/tests/t303-%_interfaces.cc aidacc/tests/t303-%_handles.hh aidacc/tests/t303-%_handles.cc: aidacc/tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
 	$(QGEN)
 	$(Q) $(AIDACC) -x CxxStub -G strip-path=$(topdir)/ $<
-	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*_handles.cc
-	$(Q) sed -i -e '1i#define _(x) x' tests/t303-$*_interfaces.cc
-CLEANFILES += $(tests_t303_generated)
-tests/t303-explore.cc: $(tests_t303_generated)
+	$(Q) sed -i -e '1i#define _(x) x' aidacc/tests/t303-$*_handles.cc
+	$(Q) sed -i -e '1i#define _(x) x' aidacc/tests/t303-$*_interfaces.cc
+AIDACC_TESTS_CLEANFILES += $(tests_t303_generated)
+aidacc/tests/t303-explore.cc: $(tests_t303_generated)
 
 # == t304-testpass-cxx-test ==
 # test CxxStub Generation for Client & Server
-tests/t304-testpass-cxx: tests/t301-pass.idl tests/t304-cxxserver.ref $(AIDACC)
+aidacc/tests/t304-testpass-cxx: aidacc/tests/t301-pass.idl aidacc/tests/t304-cxxserver.ref $(AIDACC)
 	$(QTEST)
-	$(Q) cp $< tests/t304-testpass.idl \
-	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G aidaids -G strip-path=$(topdir)/ tests/t304-testpass.idl \
-	&&   cat tests/t304-testpass_interfaces.cc >> tests/t304-testpass_interfaces.hh \
-	&&   cat tests/t304-testpass_handles.cc >> tests/t304-testpass_handles.hh \
-	&&   rm -f tests/t304-testpass.idl tests/t304-testpass_handles.cc tests/t304-testpass_interfaces.cc
-	$(Q) diff -up tests/t304-cxxserver.ref tests/t304-testpass_interfaces.hh && rm -f tests/t304-testpass_interfaces.hh
-	$(Q) diff -up tests/t304-cxxclient.ref tests/t304-testpass_handles.hh && rm -f tests/t304-testpass_handles.hh
-t304-testpass-cxx-test: tests/t304-testpass-cxx
-tests_checktargets += t304-testpass-cxx-test
+	$(Q) cp $< aidacc/tests/t304-testpass.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G aidaids -G strip-path=$(topdir)/ aidacc/tests/t304-testpass.idl \
+	&&   cat aidacc/tests/t304-testpass_interfaces.cc >> aidacc/tests/t304-testpass_interfaces.hh \
+	&&   cat aidacc/tests/t304-testpass_handles.cc >> aidacc/tests/t304-testpass_handles.hh \
+	&&   rm -f aidacc/tests/t304-testpass.idl aidacc/tests/t304-testpass_handles.cc aidacc/tests/t304-testpass_interfaces.cc
+	$(Q) diff -up aidacc/tests/t304-cxxserver.ref aidacc/tests/t304-testpass_interfaces.hh && rm -f aidacc/tests/t304-testpass_interfaces.hh
+	$(Q) diff -up aidacc/tests/t304-cxxclient.ref aidacc/tests/t304-testpass_handles.hh && rm -f aidacc/tests/t304-testpass_handles.hh
+t304-testpass-cxx-test: aidacc/tests/t304-testpass-cxx
+aidacc_tests_checktargets += t304-testpass-cxx-test
 
 # == t305-testpass-compile-test ==
-tests/t305-testpass-compile: tests/t301-pass.idl tests/t301-inc2.idl tests/t301-inc1.idl $(AIDACC)
+aidacc/tests/t305-testpass-compile: aidacc/tests/t301-pass.idl aidacc/tests/t301-inc2.idl aidacc/tests/t301-inc1.idl $(AIDACC)
 	$(QTEST)
-	$(Q) cp tests/t301-inc2.idl tests/t305-inc2.idl \
-	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-inc2.idl \
-	&&   rm -f tests/t305-inc2.idl
-	$(Q) cp tests/t301-inc1.idl tests/t305-inc1.idl \
-	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-inc1.idl \
-	&&   rm -f tests/t305-inc1.idl
-	$(Q) cp tests/t301-pass.idl tests/t305-pass.idl \
-	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ tests/t305-pass.idl \
-	&&   rm -f tests/t305-pass.idl
+	$(Q) cp aidacc/tests/t301-inc2.idl aidacc/tests/t305-inc2.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ aidacc/tests/t305-inc2.idl \
+	&&   rm -f aidacc/tests/t305-inc2.idl
+	$(Q) cp aidacc/tests/t301-inc1.idl aidacc/tests/t305-inc1.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ aidacc/tests/t305-inc1.idl \
+	&&   rm -f aidacc/tests/t305-inc1.idl
+	$(Q) cp aidacc/tests/t301-pass.idl aidacc/tests/t305-pass.idl \
+	&&   $(AIDACC) -x CxxStub -G iface-prefix=I_ -G strip-path=$(topdir)/ aidacc/tests/t305-pass.idl \
+	&&   rm -f aidacc/tests/t305-pass.idl
 	$(Q) sed -e '1i#include "t305-inc2_interfaces.cc"' \
 	         -e '1i#include "t305-inc1_interfaces.cc"' \
-		 -e '1i#define _(x) x' -i tests/t305-pass_interfaces.cc
+		 -e '1i#define _(x) x' -i aidacc/tests/t305-pass_interfaces.cc
 	$(Q) sed -e '1i#include "t305-inc2_handles.cc"' \
 		 -e '1i#include "t305-inc1_handles.cc"' \
-		 -e '1i#define _(x) x' -i tests/t305-pass_handles.cc
-	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-pass_interfaces.cc -c
-	$(Q) $(CXXCOMPILE) $(CXXFLAGS) tests/t305-pass_handles.cc -c
-CLEANFILES += t305-inc1_interfaces.hh t305-inc1_interfaces.cc t305-inc1_handles.hh t305-inc1_handles.cc
-CLEANFILES += t305-inc2_interfaces.hh t305-inc2_interfaces.cc t305-inc2_handles.hh t305-inc2_handles.cc
-CLEANFILES += t305-pass_interfaces.hh t305-pass_interfaces.cc t305-pass_handles.hh t305-pass_handles.cc
-t305-testpass-compile-test: tests/t305-testpass-compile
-tests_checktargets += t305-testpass-compile-test
+		 -e '1i#define _(x) x' -i aidacc/tests/t305-pass_handles.cc
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) aidacc/tests/t305-pass_interfaces.cc -c
+	$(Q) $(CXXCOMPILE) $(CXXFLAGS) aidacc/tests/t305-pass_handles.cc -c
+AIDACC_TESTS_CLEANFILES += t305-inc1_interfaces.hh t305-inc1_interfaces.cc t305-inc1_handles.hh t305-inc1_handles.cc
+AIDACC_TESTS_CLEANFILES += t305-inc2_interfaces.hh t305-inc2_interfaces.cc t305-inc2_handles.hh t305-inc2_handles.cc
+AIDACC_TESTS_CLEANFILES += t305-pass_interfaces.hh t305-pass_interfaces.cc t305-pass_handles.hh t305-pass_handles.cc
+t305-testpass-compile-test: aidacc/tests/t305-testpass-compile
+aidacc_tests_checktargets += t305-testpass-compile-test
 
 # == t204-aidatests.cc ==
-tests_binaries += t204-aidatests
-CLEANFILES += tests/t204-aidatests.o
+aidacc_tests_binaries += t204-aidatests
+AIDACC_TESTS_CLEANFILES += aidacc/tests/t204-aidatests.o
 
-# == tests_binaries ==
+# == aidacc_tests_binaries ==
 define tests_run_RULE
-all_targets += tests/$(1)
-.PHONY: tests/run-$(1)
-$(1)--testexec: tests/$(1)
+all_targets += aidacc/tests/$(1)
+.PHONY: aidacc/tests/run-$(1)
+$(1)--testexec: aidacc/tests/$(1)
 	@echo '  EXEC    ' $(1)
-	$$(Q) tests/$(1)
-tests_checktargets += $(1)--testexec
-CLEANFILES += tests/$(1)
-.PHONY: tests/run-$(1)
+	$$(Q) aidacc/tests/$(1)
+aidacc_tests_checktargets += $(1)--testexec
+AIDACC_TESTS_CLEANFILES += aidacc/tests/$(1)
+.PHONY: aidacc/tests/run-$(1)
 endef
-$(foreach PRG,$(tests_binaries),$(eval $(call tests_run_RULE,$(PRG))))
-tests/%: tests/%.o aidacc/aida.o tests/testing.hh aidacc/aida.hh
+$(foreach PRG,$(aidacc_tests_binaries),$(eval $(call tests_run_RULE,$(PRG))))
+aidacc/tests/%: aidacc/tests/%.o aidacc/aida.o aidacc/tests/testing.hh aidacc/aida.hh
 	$(CXXCOMPILE) $(CXXFLAGS) $< aidacc/aida.o -o $@
 
 # == check-tests ==
-check-tests: $(sort $(tests_checktargets))
+check-tests: $(sort $(aidacc_tests_checktargets))
 check-local: check-tests
 .PHONY: check-tests
