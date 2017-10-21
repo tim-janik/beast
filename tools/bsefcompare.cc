@@ -27,6 +27,7 @@ struct Options {
   double              threshold;
   bool                compact;
   bool                strict;
+  bool                verbose;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
@@ -39,6 +40,7 @@ Options::Options ()
   threshold = 100;
   compact = false;
   strict = false;
+  verbose = false;
 }
 
 static bool
@@ -129,6 +131,8 @@ Options::parse (int   *argc_p,
         strict = false;
       else if (check_arg (argc, argv, &i, "--threshold", &opt_arg))
         threshold = g_ascii_strtod (opt_arg, NULL);
+      else if (check_arg (argc, argv, &i, "--verbose"))
+        verbose = true;
     }
 
   /* resort argc/argv */
@@ -156,6 +160,7 @@ Options::print_usage ()
   fprintf (stderr, " --compact              suppress printing individual similarities\n");
   fprintf (stderr, " --help                 help for %s\n", program_name.c_str());
   fprintf (stderr, " --version              print version\n");
+  fprintf (stderr, " --verbose              print verbose information\n");
 }
 
 static double
@@ -708,22 +713,24 @@ main (int argc, char **argv)
   double min_s = similarity.empty() ? 0.0 : similarity[0];
   double max_s = min_s;
 
-  printf ("%s: similarities: ", argv[1]);
+  string verbose_output;
+
+  verbose_output += string_format ("%s: similarities: ", argv[1]);
   for (size_t i = 0; i < similarity.size(); i++)
     {
       if (!options.compact)
         {
           if (i != 0)
-            printf (", ");
-          printf ("%s=%.2f%%", file1.feature_values[i]->name.c_str(), similarity[i] * 100.0); /* percent */
+            verbose_output += ", ";
+          verbose_output += string_format ("%s=%.2f%%", file1.feature_values[i]->name.c_str(), similarity[i] * 100.0); /* percent */
         }
       s += similarity[i];
       min_s = min (similarity[i], min_s);
       min_s = min (similarity[i], max_s);
     }
   if (options.compact)
-    printf ("minimum=%.2f%% maximum=%.2f%%", min_s * 100.0, max_s * 100.0);
-  printf ("\n");
+    verbose_output += string_format ("minimum=%.2f%% maximum=%.2f%%", min_s * 100.0, max_s * 100.0);
+  verbose_output += "\n";
 
   double average_similarity = s / similarity.size() * 100.0; /* percent */
   /* We check this first, because we explicitely allow setting the threshold
@@ -743,7 +750,15 @@ main (int argc, char **argv)
       rating = "similarity below threshold";
       result = 1;
     }
-  printf ("%s: average similarity rating (%s): %.3f%%\n", argv[1], rating.c_str(), average_similarity);
+  verbose_output += string_format ("%s: average similarity rating (%s): %.3f%%\n", argv[1], rating.c_str(), average_similarity);
+
+  if (options.verbose || result != 0)
+    printf ("%s", verbose_output.c_str());
+
+  if (result == 0)
+    printf ("  PASS     %s\n", argv[1]);
+  else
+    printf ("  FAIL     %s\n", argv[1]);
   return result;
 }
 
