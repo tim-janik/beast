@@ -17,7 +17,6 @@ AIDACC       = $(topdir)/aidacc/aidacc
 # special profiling hooks
 DEFS += @DEFINE__FILE_DIR__@ # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
 LIBS += # -lefence # -pg 
-AUXTYPES_PY = $(top_srcdir)/bse/AuxTypes.py
 
 #
 # setup source file variables
@@ -120,19 +119,16 @@ bstmarshal.cc: bstmarshal.list
 
 
 # == bstapi.idl ==
-$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.hh
-bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-CLEANFILES += bstserverapi.hh
-$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.cc
-bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) sed -i -e '1i#define _(x) x' xgen-$(@F) && sed -i -e '1i#undef _' xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-CLEANFILES += bstserverapi.cc
+AUXTYPES_PY = $(topdir)/bse/AuxTypes.py
+bstapi_outputs = bstapi_interfaces.hh bstapi_interfaces.cc bstapi_handles.hh bstapi_handles.cc .bstapi.stamp
+$(bstapi_outputs): bstapi.idl $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
+	$(QGEN)
+	$(Q) $(AIDACC) -x CxxStub -x $(AUXTYPES_PY) -G strip-path=$(topdir)/ $<
+	$(Q) sed -i -e '1i#define _(x) x' bstapi_interfaces.cc && sed -i -e '1i#undef _' bstapi_interfaces.cc
+	$(Q) touch .bstapi.stamp # indicates completion without errors
+CLEANFILES += $(bstapi_outputs)
+$(srcdir)/bstutils.cc: bstapi_interfaces.cc
+$(bst_cc_sources:%=$(srcdir)/%): bstapi_interfaces.hh .bstapi.stamp
 
 #
 # convenience targets for generated source files
