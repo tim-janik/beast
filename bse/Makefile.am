@@ -1,5 +1,7 @@
 # BEAST & BSE
+
 include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
 
 SUBDIRS = icons . tests # pybse
 
@@ -9,6 +11,7 @@ AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
+AIDACC        = $(topdir)/aidacc/aidacc
 
 #
 # setup source file variables
