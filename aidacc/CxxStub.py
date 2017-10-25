@@ -1475,8 +1475,8 @@ def generate (namespace_list, **args):
       gg.property_list = ""
   for ifile in config['insertions']:
     gg.insertion_file (ifile)
-  gg.ns_aida = ( Decls.Namespace ('Aida', None, []), ) # Aida namespace tuple for open_namespace()
-  base_filename = gg.idl_file.rstrip ('.idl')
+  gg.ns_aida = ( Decls.Namespace ('Aida', None, []), )  # Aida namespace tuple for open_namespace()
+  base_filename = gg.idl_file[:gg.idl_file.rfind ('.')] # strip extension
   gg.filename_serverhh = base_filename + '_interfaces.hh'
   gg.filename_servercc = base_filename + '_interfaces.cc'
   gg.filename_clienthh = base_filename + '_handles.hh'
