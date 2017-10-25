@@ -27,3 +27,6 @@ sfi_url_show (const char *url)
   if (!Bse::url_show (url))
     Bse::warning ("Failed to start browser for URL: %s", url);
 }
+
+// == aidacc/aida.cc ==
+#include "aidacc/aida.cc"
