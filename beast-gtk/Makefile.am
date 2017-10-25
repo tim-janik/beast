@@ -1,5 +1,7 @@
 # BEAST & BSE
+
 include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
 
 SUBDIRS = gxk icons
 
@@ -9,6 +11,7 @@ AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -D
 			-DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 AM_CPPFLAGS += $(PYTHON_CPPFLAGS)
 AM_LDFLAGS  += $(PYTHON_LDFLAGS)
+AIDACC       = $(topdir)/aidacc/aidacc
 
 
 # special profiling hooks
