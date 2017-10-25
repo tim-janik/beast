@@ -19,6 +19,8 @@ noinst_PROGRAMS          =
 noinst_LTLIBRARIES	 =
 
 # == project tools and paths ==
+YAPPS                    = $(PYTHON) $(topdir)/yapps2_deb/yapps2.py
+AIDACC                   = $(topdir)/aidacc/aidacc
 SFIDL                    = $(top_builddir)/sfi/sfidl
 SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 BSEFEXTRACT		 = $(top_builddir)/tools/bsefextract
@@ -36,6 +38,13 @@ BUILT_SOURCES            =
 # == res/ ==
 # define res_resfiles_list via immediate assignment
 include res/Makefile.sub
+
+# == aidacc/ ==
+include aidacc/Makefile.sub
+BUILT_SOURCES	+= $(AIDACC)
+
+# == aidacc/tests/ ==
+include aidacc/tests/Makefile.sub
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
