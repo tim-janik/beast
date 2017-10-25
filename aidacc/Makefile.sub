@@ -1,5 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
+AIDACC_CLEANFILES =
+
 # == aidacc files ==
 aidacc_imports = $(strip		\
 	aidacc/AuxData.py		\
@@ -30,7 +32,7 @@ aidacc_installdir		= $(installdir)
 aidacc_install_PYTHON		= $(aidacc_imports) $(aidacc_generated)
 
 # == aidacc executable ==
-all_targets += aidacc/aidacc
+noinst_DATA += aidacc/aidacc
 $(AIDACC): aidacc/aidacc
 aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
 	$(QGEN)
@@ -40,14 +42,14 @@ aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
 	$(Q) chmod +x $@.tmp
 	$(Q) mv $@.tmp $@
 AIDACC_CONFIG = "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${topbuildid}"
-CLEANFILES   += aidacc/aidacc
+AIDACC_CLEANFILES   += aidacc/aidacc
 
 # == IdStrings.py ==
 aidacc/IdStrings.py: aidacc/aida.hh aidacc/ExtractIdStrings.py
 	$(QGEN)
 	$(Q) ${PYTHON} aidacc/ExtractIdStrings.py aidacc/aida.hh > $@.tmp
 	$(Q) mv $@.tmp $@
-CLEANFILES += aidacc/IdStrings.py
+AIDACC_CLEANFILES += aidacc/IdStrings.py
 
 # == TmplFiles.py ==
 aidacc/TmplFiles.py: $(aidacc_templ_files)
@@ -58,7 +60,7 @@ aidacc/TmplFiles.py: $(aidacc_templ_files)
 	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $? ; \
 	done ) > $@.tmp
 	$(Q) mv $@.tmp $@
-CLEANFILES += aidacc/TmplFiles.py
+AIDACC_CLEANFILES += aidacc/TmplFiles.py
 
 # == Parser.py ==
 aidacc/Parser.py: aidacc/Parser.g
@@ -68,21 +70,30 @@ aidacc/Parser.py: aidacc/Parser.g
 	$(Q) sed < $@.tmp > $@.tmp2			\
 	    -e 's/^from yapps import runtime$$//'			# Parser.g has all imports
 	$(Q) mv $@.tmp2 $@ && rm -f $@.tmp $@.errors
-CLEANFILES += aidacc/Parser.py
+AIDACC_CLEANFILES += aidacc/Parser.py
 
-# == aidacc-aidacc-build-check ==
-aidacc-aidacc-build-check: $(AIDACC)
+# == clean-aidacc ==
+clean-aidacc:
+	rm -f $(AIDACC_CLEANFILES) aidacc/*.$(OBJEXT)
+.PHONY: clean-aidacc
+clean-local: clean-aidacc
+AIDACC_CLEANFILES += aidacc/*.py[co]
+
+# == check-aidacc ==
+check-aidacc-build-test: $(AIDACC)
 	$(QTEST)
 	$(Q) $(AIDACC) -x TypeMap --list-formats | grep -q AidaTypeMap
-check-local: aidacc-aidacc-build-check
+check-aidacc: check-aidacc-build-test
+.PHONY: check-aidacc check-aidacc-build-test
+check-local: check-aidacc
 
-# == Post-Installation Test ==
-aidacc-aidacc-installcheck:
+# == installcheck-aidacc ==
+# for now, we keep aidacc uninstalled
+AIDACC_INSTALLABLE = $(AIDACC)
+installcheck-aidacc:
 	$(QTEST)
-	$(Q) PATH="$(bindir):$$PATH" $(AIDACC_INSTALLABLE) -x CxxStub -x ExtractDocs -x TypeMap --list-formats > $(TSTOUT) && \
-	  grep -F -q CxxStub $(TSTOUT) && grep -F -q TypeMap $(TSTOUT) && grep -F -q ExtractDocs $(TSTOUT)
-	$(Q) rm -f $(TSTOUT)
-installcheck-local: aidacc-aidacc-installcheck
-
-# == aidacc cleanups ==
-CLEANFILES += aidacc/*.py[co]
+	$(Q) PATH="$(bindir):$$PATH" $(AIDACC_INSTALLABLE) -x CxxStub -x ExtractDocs -x TypeMap --list-formats > aidacc/$@.tmp && \
+	  grep -F -q CxxStub aidacc/$@.tmp && grep -F -q TypeMap aidacc/$@.tmp && grep -F -q ExtractDocs aidacc/$@.tmp
+	$(Q) rm -f aidacc/$@.tmp
+.PHONY: installcheck-aidacc
+installcheck-local: installcheck-aidacc
