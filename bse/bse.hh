@@ -3,7 +3,7 @@
 #define __BSE_H__
 
 #include <bse/bsestartup.hh>
-#include <bse/bseclientapi.hh>
+#include <bse/bseapi_handles.hh>
 
 namespace Bse { // clientapi glue code, see bsestartup.cc
 ServerHandle            init_server_instance   ();
