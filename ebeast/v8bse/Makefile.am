@@ -1,7 +1,10 @@
 # BEAST & BSE
+
 include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
 
 AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AIDACC        = $(topdir)/aidacc/aidacc
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 CLEANDIRS     =
 
