@@ -39,7 +39,7 @@ test_assertion_failed()
 void
 init (int *argcp, char **argv, const StringVector &args)
 {
-  Aida::assertion_failed_hook (test_assertion_failed);
+  assertion_failed_hook (test_assertion_failed);
   unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
   g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
   sfi_init (argcp, argv, Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));

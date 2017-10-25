@@ -7,6 +7,14 @@
 
 using namespace Sfidl;
 
+namespace Bse {
+String
+program_alias ()
+{
+  return program_invocation_name;
+}
+} // Bse
+
 int main (int argc, char **argv)
 {
   Bse::assertion_failed_hook ([&] () { Bse::breakpoint(); });
