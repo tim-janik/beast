@@ -7,7 +7,6 @@ SUBDIRS		= sfi bse plugins drivers pybeast beast-gtk launchers library tools ebe
 
 # == make setup ==
 DEFS                    += -DBSE_CONVENIENCE
-QTEST                    = @echo '  TEST    ' $@;
 QWAVCHECK                = @echo '  WAVCHECK' $@;
 AM_CPPFLAGS             += -I$(top_srcdir) -I$(top_builddir)
 lib_LTLIBRARIES          =
