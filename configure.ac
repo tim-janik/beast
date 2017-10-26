@@ -88,6 +88,7 @@ beastsharedir="\${beastdir}/share"
 beastdatadir="\${beastdir}"
 beastdocdir="\${beastdir}/doc"
 bseincludedir="\${beastdir}/include"
+includerootdir="\${beastdir}/include"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
 test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
@@ -97,10 +98,11 @@ case "$with_pkgroot" in
   *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
 esac
 bak_libdir="$libdir"
-bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
+bak_includerootdir="$includerootdir"; bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
 libdir=`eval echo "${libdir}"`
-bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
+includerootdir=`eval echo "${includerootdir}"`; bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_INCLUDEROOTDIR, ["`eval echo "${includerootdir}"`"], [Directory for libbse header files])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
@@ -109,11 +111,12 @@ AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"]
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
+includerootdir="$bak_includerootdir"; bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
 libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
 AC_SUBST(beastlocaledir)
+AC_SUBST(includerootdir)
 AC_SUBST(bseincludedir)
 AC_SUBST(beastbindir)
 AC_SUBST(bselibdir)
