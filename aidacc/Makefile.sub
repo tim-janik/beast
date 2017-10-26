@@ -28,8 +28,11 @@ aidacc_private_files = $(strip		\
 )
 
 # == aidacc dirs ==
-aidacc_installdir		= $(installdir)
-aidacc_install_PYTHON		= $(aidacc_imports) $(aidacc_generated)
+aidacc_includedir		= $(includerootdir)/aidacc
+aidacc_include_HEADERS		=	\
+	aidacc/aida.hh			\
+	aidacc/visitor.hh
+# aidacc_install_PYTHON		= $(aidacc_imports) $(aidacc_generated)
 
 # == aidacc executable ==
 noinst_DATA += aidacc/aidacc
