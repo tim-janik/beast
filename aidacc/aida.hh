@@ -689,7 +689,7 @@ public:
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
-  template<typename T, REQUIRES< IsConvertible<const Any, T>::value > = true>          T    get () const { return *get_any(); }
+  template<typename T, REQUIRES< std::is_base_of<const Any, T>::value > = true>        T    get () const { return *get_any(); }
   // void set (const Type&);
   template<typename T, REQUIRES< IsBool<T>::value > = true>                            void set (T v) { return set_bool (v); }
   template<typename T, REQUIRES< IsInteger<T>::value > = true>                         void set (T v) { return set_int64 (v); }
@@ -715,6 +715,11 @@ public:
   int64               as_int64         () const; ///< Obtain contents as int64.
   double              as_double        () const; ///< Obtain contents as double.
   const Any&          as_any           () const { return kind() == ANY ? *u_.vany : *this; } ///< Obtain contents as Any.
+  template<class R, REQUIRES< !::std::is_base_of<Any, R>::value > = true>
+  operator R () const
+  {
+    return get<R>();
+  }
 };
 typedef Any::AnyDict AnyDict;
 typedef Any::AnyList AnyList;
