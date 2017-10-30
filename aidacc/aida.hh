@@ -646,6 +646,15 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
+  template<class T> using ToAnyDictConvertible =        ///< Check is_convertible<a T, AnyDict >.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnyDict>::value && !::std::is_base_of<Any, T>::value>;
+  template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyDict.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnyList>::value && !(::std::is_convertible<T, AnyDict>::value ||
+                                                                                 ::std::is_base_of<Any, T>::value)>;
+  template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnyList / AnyDict.
+    ::std::integral_constant<bool, ::std::is_base_of<Any, T>::value || (::std::is_convertible<T, Any>::value &&
+                                                                        !::std::is_convertible<T, AnyList>::value &&
+                                                                        !::std::is_convertible<T, AnyDict>::value)>;
   bool               get_bool    () const;
   void               set_bool    (bool value);
   void               set_int64   (int64 value);
@@ -697,14 +706,14 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
-  template<typename T, REQUIRES< std::is_convertible<T, AnyList>::value > = true>      void set (const T &v) { return set_seq (v); }
-  template<typename T, REQUIRES< std::is_convertible<T, AnyList>::value > = true>      void set (const T *v) { return set_seq (*v); }
-  template<typename T, REQUIRES< std::is_convertible<T, AnyDict>::value > = true>      void set (const T &v) { return set_rec (v); }
-  template<typename T, REQUIRES< std::is_convertible<T, AnyDict>::value > = true>      void set (const T *v) { return set_rec (*v); }
+  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T &v) { return set_seq (v); }
+  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T *v) { return set_seq (*v); }
+  template<typename T, REQUIRES< ToAnyDictConvertible<T>::value > = true>              void set (const T &v) { return set_rec (v); }
+  template<typename T, REQUIRES< ToAnyDictConvertible<T>::value > = true>              void set (const T *v) { return set_rec (*v); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
-  template<typename T, REQUIRES< std::is_base_of<Any, T>::value > = true>              void set (const T &v) { return set_any (&v); }
+  template<typename T, REQUIRES< ToAnyConvertible<T>::value > = true>                  void set (const T &v) { return set_any (&v); }
   // convenience
   static Any          any_from_strings (const std::vector<std::string> &string_container);
   std::vector<String> any_to_strings   () const;
