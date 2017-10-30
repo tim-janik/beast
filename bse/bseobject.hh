@@ -12,7 +12,6 @@ class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer 
 public:
   explicit               ObjectImpl (BseObject*);
   virtual               ~ObjectImpl ();
-  void                   changed    (const String &what);
   operator               BseObject* ()          { return gobject_; }
   // template<class BseObjectPtr> BseObjectPtr as (); // provided by ObjectIface
   virtual BseObject*  as_bse_object () override { return gobject_; }
@@ -20,6 +19,7 @@ public:
   virtual int64_t        proxy_id   () override;
   virtual std::string    uname      () const;
   virtual void           uname      (const std::string &newname);
+  virtual void           notify     (const String &detail) override;
 };
 typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 
