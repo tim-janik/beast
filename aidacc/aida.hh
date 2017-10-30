@@ -724,6 +724,12 @@ public:
   int64               as_int64         () const; ///< Obtain contents as int64.
   double              as_double        () const; ///< Obtain contents as double.
   const Any&          as_any           () const { return kind() == ANY ? *u_.vany : *this; } ///< Obtain contents as Any.
+  template<class V, REQUIRES< !::std::is_base_of<Any, V>::value > = true> Any&
+  operator= (const V &v)
+  {
+    set (v);
+    return *this;
+  }
   template<class R, REQUIRES< !::std::is_base_of<Any, R>::value > = true>
   operator R () const
   {
