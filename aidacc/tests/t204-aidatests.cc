@@ -184,6 +184,14 @@ test_any_conversions()
 }
 TEST_ADD (test_any_conversions);
 
+static void AIDA_UNUSED
+P (const Any &any, const String &name = "")
+{
+  if (!name.empty())
+    printf ("%s=", name.c_str());
+  printf ("%s\n", any.repr().c_str());
+}
+
 static void
 test_any_equality()
 {
