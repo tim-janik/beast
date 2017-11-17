@@ -366,6 +366,23 @@ reset_test (Osc& o)
     }
 }
 
+static void
+plot_blep (float shape, float sync, float sub, float pulse)
+{
+  Osc o;
+  o.rate = 48000;
+  o.pulse_width = pulse / 100;
+  o.shape = shape / 100;
+  o.sub = sub / 100;
+  o.master_freq = 48;
+  o.freq = pow (2, sync / 12) * o.master_freq; /* sync param: semitones */
+
+  for (int i = 0; i < 4800; i++)
+    {
+      printf ("%.17g\n", o.process_sample());
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -406,6 +423,9 @@ main (int argc, char **argv)
   speed_test (o);
   return 0;
 #endif
+
+  if (argc == 6 && strcmp (argv[1], "plotblep") == 0)
+    plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]));
 
   if (argc == 2)
     {
