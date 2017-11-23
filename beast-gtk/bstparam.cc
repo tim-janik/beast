@@ -524,17 +524,9 @@ bst_param_new_property (GParamSpec *pspec, const Bse::ObjectHandle handle)
   Bse::ObjectHandle *handlep = new Bse::ObjectHandle (handle);
   param->bdata[0].v_pointer = handlep;
   auto notify = [param] (const Aida::Event &event) {
-    const String detail = event["detail"];
-    bool match = detail == param->pspec->name;
-    if (!match && detail.size() == strlen (param->pspec->name))
-      {
-        const String pname = Bse::string_canonify (Bse::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
-        match = detail == pname;
-      }
-    if (match)
-      gxk_param_update (param);
+    gxk_param_update (param);
   };
-  const uint64 hid = handlep->on ("notify", notify);
+  const uint64 hid = handlep->on (String ("notify:") + param->pspec->name, notify);
   static_assert (sizeof (param->bdata[1].v_pointer) == sizeof (hid), "");
   param->bdata[1].v_pointer = (void*) ptrdiff_t (hid);
   gxk_param_set_size_group (param, param_size_group);
