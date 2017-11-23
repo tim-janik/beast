@@ -45,9 +45,12 @@ ObjectImpl::proxy_id ()
 void
 ObjectImpl::notify (const String &detail)
 {
-  Aida::Event ev ("notify");
+  assert_return (detail.empty() == false);
+  Aida::Event ev ("notify:" + detail);
   ev["detail"] = detail;
-  trigger (ev);
+  trigger (ev);                 // emit "notify:detail"
+  ev["type"] = "notify";
+  trigger (ev);                 // emit "notify"
 }
 
 std::string
