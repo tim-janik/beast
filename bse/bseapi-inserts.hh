@@ -10,6 +10,9 @@ handle_scope:Object:
   uint64_t      off      (const ::std::string &type)                                { return this->RemoteHandle::__event_detach__ (type); }
 
 interface_scope:Object:
+  uint64_t      on       (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
+  bool          off      (uint64_t connection_id)                                   { return this->ImplicitBase::__event_detach__ (connection_id); }
+  uint64_t      off      (const ::std::string &type)                                { return this->ImplicitBase::__event_detach__ (type); }
   void          trigger  (const ::Aida::Event &event)                               { return this->ImplicitBase::__event_emit__ (event); }
   // as<BseObjectPtr>()
   template<class BseObjectPtr, typename ::std::enable_if<std::is_pointer<BseObjectPtr>::value, bool>::type = true>
