@@ -9,6 +9,44 @@ import subprocess
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+def osc_py (params):
+  pulse_width = params["pulse"].value / 100.
+  sub = params["sub"].value / 100.
+  out = []
+  pos = 0
+  phase = 0
+  sub_phase = 0
+  while pos < 4800:
+    pos += 1
+    phase += 0.001
+    sub_phase += 0.0005
+    if phase > 1:
+      phase -= 1
+    if sub_phase > 1:
+      sub_phase -= 1
+    if phase < pulse_width:
+      pout = 1
+    else:
+      pout = -1
+    if sub_phase < pulse_width * 0.5 or sub_phase > (0.5 + pulse_width * 0.5):
+      sout = 1
+    else:
+      sout = -1
+    out.append (pout * (1 - sub) + sout * sub)
+  return out
+
+def osc_cxx (params):
+  process = subprocess.Popen(['testblep', 'plotblep',
+    "%.5f" % params["shape"].value,
+    "%.5f" % params["sync"].value,
+    "%.5f" % params["sub"].value,
+    "%.5f" % params["pulse"].value], stdout=subprocess.PIPE)
+  out, err = process.communicate()
+  plot_data = []
+  for o in out.splitlines():
+    plot_data += [ float (o) ]
+  return plot_data
+
 class BlepWidget(QtWidgets.QWidget):
   def __init__(self):
     super(BlepWidget, self).__init__()
@@ -16,15 +54,8 @@ class BlepWidget(QtWidgets.QWidget):
 
   def update_params (self, params):
     try:
-      process = subprocess.Popen(['testblep', 'plotblep',
-        "%.5f" % params["shape"].value,
-        "%.5f" % params["sync"].value,
-        "%.5f" % params["sub"].value,
-        "%.5f" % params["pulse"].value], stdout=subprocess.PIPE)
-      out, err = process.communicate()
-      self.plot_data = []
-      for o in out.splitlines():
-        self.plot_data += [ float (o) ]
+      # self.plot_data = osc_cxx (params)
+      self.plot_data = osc_py (params)
       self.repaint()
     except KeyError:
       # hacky way of avoiding to run testblep if not all params are known
@@ -38,7 +69,7 @@ class BlepWidget(QtWidgets.QWidget):
     qp.fillRect (QtCore.QRect (0, 0, self.width() / 10, self.height()), xgreycolor)
     qp.fillRect (QtCore.QRect (self.width() * 9 / 10, 0, self.width(), self.height()), xgreycolor)
     xscale = self.width() / 2000 / 1.25
-    xcenter = -self.width() / 5 * 1.5
+    xcenter = -self.width() / 5 * 3.5
     yscale = -self.height() / 2 * 0.75
     ycenter = self.height() / 2
     qp.setPen (QtGui.QColor (190, 190, 190))
