@@ -425,7 +425,10 @@ main (int argc, char **argv)
 #endif
 
   if (argc == 6 && strcmp (argv[1], "plotblep") == 0)
-    plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]));
+    {
+      plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]));
+      return 0;
+    }
 
   if (argc == 2)
     {
