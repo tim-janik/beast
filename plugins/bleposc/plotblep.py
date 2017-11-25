@@ -12,26 +12,30 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 def osc_py (params):
   pulse_width = params["pulse"].value / 100.
   sub = params["sub"].value / 100.
+  sub_width = params["subw"].value / 100.
   out = []
   pos = 0
-  phase = 0
   sub_phase = 0
   while pos < 4800:
     pos += 1
-    phase += 0.001
+
     sub_phase += 0.0005
-    if phase > 1:
-      phase -= 1
     if sub_phase > 1:
       sub_phase -= 1
-    if phase < pulse_width:
+
+    if sub_phase > 0.5 + 0.5 * pulse_width:
       pout = 1
+      sout = 1
+    elif sub_phase > 0.5:
+      pout = -1
+      sout = -1
+    elif sub_phase > 0.5 * pulse_width:
+      pout = 1
+      sout = -1
     else:
       pout = -1
-    if sub_phase < pulse_width * 0.5 or sub_phase > (0.5 + pulse_width * 0.5):
       sout = 1
-    else:
-      sout = -1
+
     out.append (pout * (1 - sub) + sout * sub)
   return out
 
@@ -106,8 +110,9 @@ class PlotWindow (QtWidgets.QMainWindow):
     self.params = dict()
     self.add_slider (1, "shape", 0, -100, 100)
     self.add_slider (2, "sync", 0, 0, 60)
-    self.add_slider (3, "sub", 0, 0, 100)
-    self.add_slider (4, "pulse", 50, 0, 100)
+    self.add_slider (3, "pulse", 50, 0, 100)
+    self.add_slider (4, "sub", 0, 0, 100)
+    self.add_slider (5, "subw", 50, 0, 100)
 
   def add_slider (self, row, label, vdef, vmin, vmax):
     slider = QtWidgets.QSlider (QtCore.Qt.Vertical)
