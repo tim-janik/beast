@@ -100,8 +100,15 @@ $(libgxk_a_OBJECTS): gxkmarshal.h
 gxkmarshal.h: gxkmarshal.list
 	( \
 	  cd $(srcdir) \
-	  && glib-genmarshal --prefix=gxk_marshal gxkmarshal.list --header \
+	  && glib-genmarshal --prefix gxk_marshal gxkmarshal.list --header \
 	) > xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__POINTER      g_cclosure_marshal_VOID__POINTER'      >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__UINT_POINTER g_cclosure_marshal_VOID__UINT_POINTER' >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__BOXED        g_cclosure_marshal_VOID__BOXED'        >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__BOOLEAN      g_cclosure_marshal_VOID__BOOLEAN'      >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__STRING       g_cclosure_marshal_VOID__STRING'       >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__INT          g_cclosure_marshal_VOID__INT'          >> xgen-$(@F) \
+	&& echo '#define gxk_marshal_VOID__UINT         g_cclosure_marshal_VOID__UINT'         >> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # gxkmarshal.cc
@@ -110,7 +117,7 @@ $(libgxk_a_OBJECTS): gxkmarshal.cc
 gxkmarshal.cc: gxkmarshal.list
 	( \
 	  cd $(srcdir) \
-	  && glib-genmarshal --prefix=gxk_marshal gxkmarshal.list --body \
+	  && glib-genmarshal --prefix gxk_marshal gxkmarshal.list --body \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
