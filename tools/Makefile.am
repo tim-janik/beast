@@ -8,7 +8,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CON
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+progs_ldadd     = ../bse/libbse-@MAJOR@.la $(BSE_LIBS)
 
 doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
 
