@@ -278,13 +278,16 @@ MC_ASSERT_VERSION($XMLLINT --version, 20901)
 AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
 
 # == pkg-config Libraries ==
-# librapicorn dependencies
-LIBBSE_REQUIRES="
+SFI_REQUIRES="
         glib-2.0        	>= 2.32.3
 	gobject-2.0		>= 2.32.3
 	gthread-2.0		>= 2.32.3
 	gmodule-no-export-2.0	>= 2.32.3
-	rapicorn		>= 17.0.0
+"
+# defines SFI_CFLAGS and SFI_LIBS
+PKG_CHECK_MODULES(SFI, [ $SFI_REQUIRES ])
+# lib dependencies
+LIBBSE_REQUIRES="
 	ogg			>= 1.2.2
 	vorbis			>= 1.3.2
 	vorbisfile		>= 1.3.2
@@ -299,18 +302,19 @@ LIBBSE_REQUIRES="
 	libgnomecanvas-2.0	>= 2.4.0
 "
 LIBBSE_REQUIRES=`echo $LIBBSE_REQUIRES` # strip whitespaces
-AC_SUBST(LIBBSE_REQUIRES)
-# define LIBBSE_CFLAGS and LIBBSE_LIBS
-PKG_CHECK_MODULES(LIBBSE, [ $LIBBSE_REQUIRES ])
+# define BSE_CFLAGS and BSE_LIBS
+PKG_CHECK_MODULES(BSE, [ $LIBBSE_REQUIRES ])
 # for calling pthread_ functions, '-lpthread' is needed in addition to '-pthread'
-LIBBSE_LIBS=`printf %s "$LIBBSE_LIBS" | sed 's/\(-pthread\b\)/\1 -lpthread/' `
+dnl # FIXME: BSE_LIBS=`printf %s "$BSE_LIBS" | sed 's/\(-pthread\b\)/\1 -lpthread/' `
+BSE_CFLAGS="$BSE_CFLAGS ${PTHREAD_CFLAGS:--D_REENTRANT}"
+BSE_LIBS="$BSE_LIBS ${PTHREAD_LIBS:--lpthread}"
 
 # == libz ==
 AC_CHECK_LIB(z, gzsetparams, [ LIBZ_LIBS='' ; test "$ac_cv_header_zlib_h" = yes && LIBZ_LIBS='-lz' ])
 if test -z "$LIBZ_LIBS"; then
     AC_MSG_ERROR([Compression library libz is missing, but required])
 else
-  LIBBSE_LIBS="$LIBBSE_LIBS $LIBZ_LIBS"
+  BSE_LIBS="$BSE_LIBS $LIBZ_LIBS"
 fi
 AC_SUBST(LIBZ_LIBS)
 
@@ -409,9 +413,9 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
+    dnl # PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
     # librapicorn uses pthread functions in header files, forcing us to link against libpthread
-    RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
+    dnl # RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
@@ -453,11 +457,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
-    dnl # --- complete CFLAGS/LIBS setup ---
-    BSE_CFLAGS="$SFI_CPPFLAGS"
-    BSE_LIBS="$OGGVORBIS_LIBS $SFI_LIBS"
-    AC_SUBST(BSE_CFLAGS)
-    AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
     dnl # except for debian, libmad doesn't ship a mad.pc file
