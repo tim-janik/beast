@@ -1207,12 +1207,12 @@ bst_pattern_view_class_init (BstPatternViewClass *klass)
   signal_drag = g_signal_new ("drag", G_OBJECT_CLASS_TYPE (klass),
 			      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPatternViewClass, drag),
 			      NULL, NULL,
-			      bst_marshal_NONE__POINTER,
+			      bst_marshal_VOID__POINTER,
 			      G_TYPE_NONE, 1, G_TYPE_POINTER);
   signal_clicked = g_signal_new ("clicked", G_OBJECT_CLASS_TYPE (klass),
 				 G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPatternViewClass, clicked),
 				 NULL, NULL,
-				 bst_marshal_NONE__UINT_UINT_INT_BOXED,
+				 bst_marshal_VOID__UINT_UINT_INT_BOXED,
 				 G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
 				 GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 

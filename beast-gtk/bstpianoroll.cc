@@ -1454,23 +1454,23 @@ bst_piano_roll_class_init (BstPianoRollClass *klass)
   signal_canvas_drag = g_signal_new ("canvas-drag", G_OBJECT_CLASS_TYPE (klass),
 				     G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_drag),
 				     NULL, NULL,
-				     bst_marshal_NONE__POINTER,
+				     bst_marshal_VOID__POINTER,
 				     G_TYPE_NONE, 1, G_TYPE_POINTER);
   signal_canvas_clicked = g_signal_new ("canvas-clicked", G_OBJECT_CLASS_TYPE (klass),
 					G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_clicked),
 					NULL, NULL,
-					bst_marshal_NONE__UINT_UINT_INT_BOXED,
+					bst_marshal_VOID__UINT_UINT_INT_BOXED,
 					G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
 					GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_piano_drag = g_signal_new ("piano-drag", G_OBJECT_CLASS_TYPE (klass),
 				    G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, piano_drag),
 				    NULL, NULL,
-				    bst_marshal_NONE__POINTER,
+				    bst_marshal_VOID__POINTER,
 				    G_TYPE_NONE, 1, G_TYPE_POINTER);
   signal_piano_clicked = g_signal_new ("piano-clicked", G_OBJECT_CLASS_TYPE (klass),
 				       G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, piano_clicked),
 				       NULL, NULL,
-				       bst_marshal_NONE__UINT_INT_BOXED,
+				       bst_marshal_VOID__UINT_INT_BOXED,
 				       G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_INT,
 				       GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 }

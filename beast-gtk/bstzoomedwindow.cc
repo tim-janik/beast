@@ -94,7 +94,7 @@ bst_zoomed_window_class_init (BstZoomedWindowClass *klass)
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstZoomedWindowClass, zoom),
-		    bst_marshal_BOOL__BOOL,
+		    bst_marshal_BOOLEAN__BOOLEAN,
 		    GTK_TYPE_BOOL,
 		    1, GTK_TYPE_BOOL);
 }

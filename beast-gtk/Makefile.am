@@ -106,14 +106,14 @@ bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.id
 GENERATED_CLEANFILES += bstmarshal.h
 $(beast_build_objects): bstmarshal.h
 bstmarshal.h: bstmarshal.list
-	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-$(@F) \
+	glib-genmarshal --prefix bst_marshal $(srcdir)/bstmarshal.list --header > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bstmarshal.cc
 GENERATED_CLEANFILES += bstmarshal.cc
 $(srcdir)/bstutils.cc: bstmarshal.cc
 bstmarshal.cc: bstmarshal.list
-	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-$(@F) \
+	glib-genmarshal --prefix bst_marshal $(srcdir)/bstmarshal.list --body > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 

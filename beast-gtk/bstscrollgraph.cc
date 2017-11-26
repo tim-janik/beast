@@ -560,7 +560,7 @@ bst_scrollgraph_class_init (BstScrollgraphClass *klass)
   signal_resize_values = g_signal_new ("resize-values", G_OBJECT_CLASS_TYPE (klass),
                                        G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstScrollgraphClass, resize_values),
                                        NULL, NULL,
-                                       bst_marshal_NONE__INT, // HACK: should use BstDirection enum type
+                                       bst_marshal_VOID__INT, // HACK: should use BstDirection enum type
                                        G_TYPE_NONE, 1, G_TYPE_INT);
 }
 
