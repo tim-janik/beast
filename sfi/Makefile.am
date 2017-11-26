@@ -52,8 +52,8 @@ noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
 libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
 libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers) sysconfig.h
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
-libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
-libsfi_@MAJOR@_la_LIBADD      = $(LIBBSE_LIBS)
+libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS)
 $(sfi_public_headers):		sysconfig.h
 
 #
@@ -63,8 +63,8 @@ $(sfi_public_headers):		sysconfig.h
 
 beastbin_PROGRAMS = sfidl
 sfidl_SOURCES  = sfidl.cc
-sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
-sfidl_LDADD    = $(LIBBSE_LIBS)
+sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+sfidl_LDADD    = $(SFI_LIBS)
 # included files
 sfidl_includes  = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc
 sfidl_includes += sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc
