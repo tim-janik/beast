@@ -16,6 +16,15 @@ def osc_py (params):
   out = []
   pos = 0
   sub_phase = 0
+  a = (1 - sub_width) * pulse_width
+  b = a + sub_width * pulse_width
+  c = a + sub_width
+  print ("pw1=%.3f" % (a / (1 - sub_width)))
+  print ("pw2=%.3f" % ((b - a) / sub_width))
+  print ("sub=%.3f" % (c - a))
+  print ("a=%f" % a)
+  print ("b=%f" % b)
+  print ("c=%f" % c)
   while pos < 4800:
     pos += 1
 
@@ -23,13 +32,13 @@ def osc_py (params):
     if sub_phase > 1:
       sub_phase -= 1
 
-    if sub_phase > 0.5 + 0.5 * pulse_width:
+    if sub_phase > c:
       pout = 1
       sout = 1
-    elif sub_phase > 0.5:
+    elif sub_phase > b:
       pout = -1
       sout = -1
-    elif sub_phase > 0.5 * pulse_width:
+    elif sub_phase > a:
       pout = 1
       sout = -1
     else:
