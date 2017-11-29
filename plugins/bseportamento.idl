@@ -1,0 +1,20 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bsecxxmodule.idl";
+
+namespace Bse {
+
+interface Portamento : Effect {
+  Info    authors     = "Stefan Westerfeld";
+  Info    license     = _("GNU Lesser General Public License");
+  Info    category    = _("/Input & Output/Portamento");
+  Info    blurb       = _("The Portamento module smoothes frequency transitions");
+  IStream freq_in   =   Stream (_("Freq In"), _("Frequency Input"));
+  IStream gate_in     = Stream (_("Gate In"), _("Gate Input"));
+  OStream freq_out    = Stream (_("Freq Out"), _("Frequency Output"));
+
+  group _("Parameters") {
+    Real time = SfiReal (_("Time [ms]"), _("Set the attack time in milliseconds"), 50.0, 0.1, 1000.0, 10.0, STANDARD ":scale");
+  };
+
+};
+};
