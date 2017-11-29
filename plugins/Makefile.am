@@ -13,6 +13,7 @@ idl_files = $(strip			\
 	bseamplifier.idl		\
 	bsebalance.idl			\
 	bsenoise.idl			\
+	bseportamento.idl		\
 	bsequantizer.idl		\
 	bsesummation.idl		\
 	standardsaturator.idl		\
@@ -100,6 +101,11 @@ $(srcdir)/bsebalance.cc: bsebalance.genidl.hh
 bseplugins_FPU_la_SOURCES	+= bsenoise.cc
 plugins_built_sources		+= bsenoise.genidl.hh
 $(srcdir)/bsenoise.cc: bsenoise.genidl.hh
+
+# == bseportamento ==
+bseplugins_FPU_la_SOURCES	+= bseportamento.cc
+plugins_built_sources		+= bseportamento.genidl.hh
+$(srcdir)/bseportamento.cc: bseportamento.genidl.hh
 
 # == bsequantizer ==
 bseplugins_FPU_la_SOURCES	+= bsequantizer.cc
