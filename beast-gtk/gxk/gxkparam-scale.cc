@@ -102,22 +102,22 @@ static GxkParamEditor param_scale4 = {
 static GxkParamEditor param_scale5 = {
   { "hscale-poly",       N_("Horizontal Scale (Poly)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
-  { "poly-scale",  +10,   TRUE, },        /* options, rating, editing */
+  { "poly-scale",  +5,   TRUE, },        /* options, rating, editing */
   param_scale_create,   NULL,   PARAM_PSCALE_HORIZONTAL,
 };
 static GxkParamEditor param_scale6 = {
   { "vscale-poly",       N_("Vertical Scale (Poly)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
-  { "poly-scale",  +10,   TRUE, },        /* options, rating, editing */
+  { "poly-scale",  +5,   TRUE, },        /* options, rating, editing */
   param_scale_create,   NULL,   PARAM_PSCALE_VERTICAL,
 };
 static const gchar *param_scale_aliases1[] = {
   "hscale",
-  "hscale-lin", "hscale-log", "pscale-poly",
+  "hscale-lin", "hscale-log", "hscale-poly",
   NULL,
 };
 static const gchar *param_scale_aliases2[] = {
   "vscale",
-  "vscale-lin", "vscale-log", "pscale-poly",
+  "vscale-lin", "vscale-log", "vscale-poly",
   NULL,
 };
