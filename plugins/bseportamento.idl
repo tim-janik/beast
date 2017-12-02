@@ -13,8 +13,7 @@ interface Portamento : Effect {
   OStream freq_out    = Stream (_("Freq Out"), _("Frequency Output"));
 
   group _("Parameters") {
-    Real time = SfiReal (_("Time [ms]"), _("Set the attack time in milliseconds"), 50.0, 0.1, 1000.0, 10.0, STANDARD ":scale");
+    Real time = PolyScale (_("Time [ms]"), _("Set the attack time in milliseconds"), 50.0, 0.0, 1000.0, 10.0, 3, STANDARD);
   };
-
 };
 };
