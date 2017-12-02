@@ -1172,3 +1172,68 @@ gxk_param_get_decibel_adjustment (GxkParam *param)
     }
   return NULL;
 }
+
+struct GxkParamPolyData
+{
+  double min_value, max_value;
+  uint   exponent;
+};
+
+static gdouble
+gxk_param_poly_adjustment_convert (GxkAdapterAdjustment           *self,
+                                   GxkAdapterAdjustmentConvertType convert_type,
+                                   gdouble                         value,
+                                   gpointer                        data)
+{
+  GxkParamPolyData *poly_data = (GxkParamPolyData*) data;
+  switch (convert_type)
+    {
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_TO_CLIENT:
+      {
+        double x_e = pow (value, poly_data->exponent);
+        return x_e * (poly_data->max_value - poly_data->min_value) + poly_data->min_value;
+      }
+    default:
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_FROM_CLIENT:
+      {
+        double x = (value - poly_data->min_value) / (poly_data->max_value - poly_data->min_value);
+        return pow (x, 1.0 / poly_data->exponent);
+      }
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_STEP_INCREMENT:
+      return MIN (1, (poly_data->max_value - poly_data->min_value) / 10.0); // FIXME: correct?
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_PAGE_INCREMENT:
+      return MIN (6, (poly_data->max_value - poly_data->min_value) / 2.0); // FIXME: correct?
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_PAGE_SIZE:
+      return 0;
+    }
+}
+
+GtkAdjustment*
+gxk_param_get_poly_adjustment (GxkParam *param)
+{
+  GtkAdjustment *adjustment;
+  GSList *slist;
+  for (slist = param->objects; slist; slist = slist->next)
+    if (GXK_IS_LOG_ADJUSTMENT (slist->data) &&
+        g_object_get_data ((GObject*) slist->data, "gxk-param-func") == gxk_param_get_poly_adjustment)
+      return (GtkAdjustment*) slist->data;
+  adjustment = gxk_param_get_adjustment (param);
+  if (adjustment)
+    {
+      GxkParamPolyData poly_data = { 0, };
+      poly_data.min_value = adjustment->lower;
+      poly_data.max_value = adjustment->upper;
+      if (!g_param_spec_get_poly_scale (param->pspec, &poly_data.exponent))
+        return NULL;
+
+      GtkAdjustment *poly_adjustment = gxk_adapter_adjustment_from_adj (adjustment, gxk_param_poly_adjustment_convert,
+                                                                        g_memdup (&poly_data, sizeof (poly_data)), g_free);
+      GtkObject *object = GTK_OBJECT (poly_adjustment);
+      gxk_param_add_object (param, object);
+      gtk_object_sink (object);
+      /* recognize adjustments created by this function */
+      g_object_set_data ((GObject*) poly_adjustment, "gxk-param-func", (void*) gxk_param_get_poly_adjustment);
+      return poly_adjustment;
+    }
+  return NULL;
+}

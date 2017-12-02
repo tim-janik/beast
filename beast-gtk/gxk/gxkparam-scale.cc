@@ -44,11 +44,7 @@ param_scale_create (GxkParam    *param,
   if (variant == PARAM_LSCALE_HORIZONTAL || variant == PARAM_LSCALE_VERTICAL)
     adjustment = gxk_param_get_log_adjustment (param);
   if (variant == PARAM_PSCALE_HORIZONTAL || variant == PARAM_PSCALE_VERTICAL)
-    {
-      uint exponent;
-      g_param_spec_get_poly_scale (param->pspec, &exponent);
-      printf ("pscale exp=%d:opts=%s\n", exponent, g_param_spec_get_options (param->pspec));
-    }
+    adjustment = gxk_param_get_poly_adjustment (param);
   if ((variant == PARAM_SCALE_HORIZONTAL || variant == PARAM_SCALE_VERTICAL) &&
       (g_param_spec_check_option (param->pspec, "db-volume") ||
        g_param_spec_check_option (param->pspec, "db-range")) &&
