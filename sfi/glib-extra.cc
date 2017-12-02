@@ -533,6 +533,47 @@ g_param_spec_get_log_scale (GParamSpec  *pspec,
   return FALSE;
 }
 
+/* poly scale */
+typedef struct {
+  uint exponent;
+} PolyScale;
+
+static GQuark quark_pspec_poly_scale = 0;
+
+void
+g_param_spec_set_poly_scale (GParamSpec  *pspec,
+                             uint         exponent)
+{
+  if (!quark_pspec_poly_scale)
+    quark_pspec_poly_scale = g_quark_from_static_string ("GParamSpec-poly-scale");
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  if (exponent > 0)
+    {
+      PolyScale *pscale = g_new0 (PolyScale, 1);
+      pscale->exponent = exponent;
+      g_param_spec_set_qdata_full (pspec, quark_pspec_poly_scale, pscale, g_free);
+      g_param_spec_add_option (pspec, "poly-scale", "+");
+    }
+  else
+    g_param_spec_set_qdata (pspec, quark_pspec_poly_scale, NULL);
+}
+
+gboolean
+g_param_spec_get_poly_scale (GParamSpec *pspec,
+                             uint       *exponent)
+{
+  PolyScale *pscale;
+  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
+  pscale = (PolyScale*) g_param_spec_get_qdata (pspec, quark_pspec_poly_scale);
+  if (pscale)
+    {
+      if (exponent)
+        *exponent = pscale->exponent;
+      return TRUE;
+    }
+  return FALSE;
+}
+
 
 /* --- list extensions --- */
 gpointer

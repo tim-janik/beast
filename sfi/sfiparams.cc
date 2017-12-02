@@ -549,6 +549,27 @@ sfi_pspec_log_scale (const gchar    *name,
 }
 
 GParamSpec*
+sfi_pspec_poly_scale (const gchar    *name,
+		      const gchar    *nick,
+		      const gchar    *blurb,
+		      SfiReal         default_value,
+		      SfiReal         minimum_value,
+		      SfiReal         maximum_value,
+		      SfiReal         stepping,
+		      SfiInt          exponent,
+		      const gchar    *hints)
+{
+  GParamSpec *pspec;
+
+  assert_return (exponent > 0, NULL);
+
+  pspec = sfi_pspec_real (name, nick, blurb, default_value, minimum_value, maximum_value, stepping, hints);
+  if (pspec)
+    sfi_pspec_set_poly_scale (pspec, exponent);
+  return pspec;
+}
+
+GParamSpec*
 sfi_pspec_string (const gchar    *name,
 		  const gchar    *nick,
 		  const gchar    *blurb,
@@ -1595,6 +1616,11 @@ sfi_pspec_to_rec (GParamSpec *pspec)
       sfi_rec_set_real (prec, "log_n_steps", log_n_steps);
     }
 
+  /* poly scales */
+  guint poly_exponent = 0;
+  if (sfi_pspec_get_poly_scale (pspec, &poly_exponent))
+    sfi_rec_set_int (prec, "poly_exponent", poly_exponent);
+
   return prec;
 }
 
@@ -1656,6 +1682,11 @@ sfi_pspec_from_rec (SfiRec *prec)
 	SfiReal log_n_steps = sfi_rec_get_real (prec, "log_n_steps");
 	if (log_n_steps >= 1)
 	  sfi_pspec_set_log_scale (pspec, log_center, log_base, log_n_steps);
+      }
+      {
+	SfiInt poly_exponent = sfi_rec_get_int (prec, "poly_exponent");
+	if (poly_exponent >= 1)
+	  sfi_pspec_set_poly_scale (pspec, poly_exponent);
       }
       break;
     case SFI_SCAT_STRING:
@@ -1746,6 +1777,10 @@ sfi_pspec_copy_commons (GParamSpec *src_pspec,
     sfi_pspec_set_owner (dest_pspec, cstring);
   if (sfi_pspec_get_log_scale (src_pspec, &log_center, &log_base, &log_n_steps))
     sfi_pspec_set_log_scale (dest_pspec, log_center, log_base, log_n_steps);
+
+  guint poly_exponent;
+  if (sfi_pspec_get_poly_scale (src_pspec, &poly_exponent))
+    sfi_pspec_set_poly_scale (dest_pspec, poly_exponent);
 }
 
 namespace Bse { // bsecore
