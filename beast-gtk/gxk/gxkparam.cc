@@ -867,6 +867,8 @@ gxk_init_params (void)
   gxk_param_register_editor (&param_scale2, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_scale3, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_scale4, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale5, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale6, GXK_I18N_DOMAIN);
   gxk_param_register_aliases (param_scale_aliases1);
   gxk_param_register_aliases (param_scale_aliases2);
   gxk_param_register_editor (&param_spinner1, GXK_I18N_DOMAIN);
