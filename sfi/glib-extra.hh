@@ -114,7 +114,10 @@ gboolean     g_param_spec_get_log_scale    (GParamSpec  *pspec,
                                             gdouble     *center,
                                             gdouble     *base,
                                             gdouble     *n_steps);
-
+void         g_param_spec_set_poly_scale    (GParamSpec *pspec,
+                                             uint        exponent);
+gboolean     g_param_spec_get_poly_scale    (GParamSpec *pspec,
+                                             uint       *exponent);
 
 /* --- list extensions --- */
 gpointer	g_slist_pop_head	(GSList	     **slist_p);

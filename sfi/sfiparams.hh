@@ -141,6 +141,15 @@ GParamSpec*    sfi_pspec_log_scale	(const gchar    *name,
 					 SfiReal	 base,
 					 SfiReal	 n_steps,
 					 const gchar	*hints);
+GParamSpec*    sfi_pspec_poly_scale	(const gchar    *name,
+					 const gchar    *nick,
+					 const gchar    *blurb,
+					 SfiReal	 default_value,
+					 SfiReal	 minimum_value,
+					 SfiReal	 maximum_value,
+					 SfiReal	 stepping,
+					 SfiInt		 exponent,
+					 const gchar	*hints);
 GParamSpec*	sfi_pspec_string	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
@@ -299,6 +308,8 @@ void		sfi_pspec_get_real_range	(GParamSpec	*pspec,
 						 SfiReal        *stepping);
 #define sfi_pspec_set_log_scale(p, c, b, n)     g_param_spec_set_log_scale (p, c, b, n)
 #define sfi_pspec_get_log_scale(p, c, b, n)     g_param_spec_get_log_scale (p, c, b, n)
+#define sfi_pspec_set_poly_scale(p, e)          g_param_spec_set_poly_scale (p, e)
+#define sfi_pspec_get_poly_scale(p, e)          g_param_spec_get_poly_scale (p, e)
 const gchar*	sfi_pspec_get_string_default	(GParamSpec	*pspec);
 const gchar*	sfi_pspec_get_choice_default	(GParamSpec	*pspec);
 SfiChoiceValues	sfi_pspec_get_choice_values	(GParamSpec	*pspec);
