@@ -4,6 +4,7 @@ include "bse/bsecxxmodule.idl";
 namespace Bse {
 
 interface Portamento : Effect {
+  Info    icon      = "icons/portamento.png";
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Input & Output/Portamento");
