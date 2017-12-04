@@ -4,6 +4,8 @@
 
 using namespace std;
 
+using std::max;
+
 namespace Bse {
 
 class Portamento : public PortamentoBase {
@@ -55,7 +57,7 @@ class Portamento : public PortamentoBase {
                   // multiplication with pfactor mix_freq()*time_sec times should make
                   // current_frequency == input_frequency
 
-                  pfactor_steps = mix_freq() * time_sec;
+                  pfactor_steps = max<int> (mix_freq() * time_sec, 1);
                   pfactor = exp (log (input_frequency / current_frequency) / pfactor_steps);
 
                   dest_frequency = input_frequency;
