@@ -108,6 +108,7 @@ plugins/bseiirfilter.cc
 plugins/bsemixer.cc
 plugins/bsemult.cc
 plugins/bsenoise.idl
+plugins/bseportamento.idl
 plugins/bsequantizer.idl
 plugins/bsesequencer.cc
 plugins/bsesimpleadsr.cc
