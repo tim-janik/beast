@@ -20,16 +20,17 @@ def osc_py (params):
   pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
   sub = params["sub"].value / 100.
   sub_width = clamp (params["subw"].value / 100., 0.01, 0.99)
+  sub_width = 1 - sub_width
   sync_factor = 2.0 ** (params["sync"].value / 12.)
   out = []
   pos = 0
   master_phase = 0
   sub_phase = 0
   a = (1 - sub_width) * pulse_width
-  b = a + sub_width * pulse_width
   c = a + sub_width
+  b = c - sub_width * pulse_width
   print ("pw1=%.3f" % (a / (1 - sub_width)))
-  print ("pw2=%.3f" % ((b - a) / sub_width))
+  print ("pw2=%.3f" % ((c - b) / sub_width))
   print ("sub=%.3f" % (c - a))
   print ("a=%f" % a)
   print ("b=%f" % b)
@@ -47,16 +48,16 @@ def osc_py (params):
       sub_phase -= 1
 
     if sub_phase > c:
-      pout = 1
+      pout = -1
       sout = 1
     elif sub_phase > b:
-      pout = -1
-      sout = -1
-    elif sub_phase > a:
       pout = 1
       sout = -1
-    else:
+    elif sub_phase > a:
       pout = -1
+      sout = -1
+    else:
+      pout = 1
       sout = 1
 
     out.append (pout * (1 - sub) + sout * sub)
@@ -77,7 +78,7 @@ def osc_cxx (params):
 class BlepWidget(QtWidgets.QWidget):
   def __init__(self):
     super(BlepWidget, self).__init__()
-    self.setMinimumSize (500, 500)
+    self.setMinimumSize (100, 100)
 
   def update_params (self, params):
     try:
