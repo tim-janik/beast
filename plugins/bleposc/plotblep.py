@@ -9,10 +9,17 @@ import subprocess
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+def clamp (value, minv, maxv):
+  if value < minv:
+    return minv
+  if value > maxv:
+    return maxv
+  return value
+
 def osc_py (params):
-  pulse_width = params["pulse"].value / 100.
+  pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
   sub = params["sub"].value / 100.
-  sub_width = params["subw"].value / 100.
+  sub_width = clamp (params["subw"].value / 100., 0.01, 0.99)
   out = []
   pos = 0
   sub_phase = 0
