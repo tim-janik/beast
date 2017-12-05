@@ -20,8 +20,10 @@ def osc_py (params):
   pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
   sub = params["sub"].value / 100.
   sub_width = clamp (params["subw"].value / 100., 0.01, 0.99)
+  sync_factor = 2.0 ** (params["sync"].value / 12.)
   out = []
   pos = 0
+  master_phase = 0
   sub_phase = 0
   a = (1 - sub_width) * pulse_width
   b = a + sub_width * pulse_width
@@ -35,7 +37,12 @@ def osc_py (params):
   while pos < 4800:
     pos += 1
 
-    sub_phase += 0.0005
+    master_phase += 0.0005
+    if master_phase > 1:
+      master_phase -= 1
+      sub_phase = 0  # not really correct (see bleposc.hh for a better implementation)
+
+    sub_phase += 0.0005 * sync_factor
     if sub_phase > 1:
       sub_phase -= 1
 
