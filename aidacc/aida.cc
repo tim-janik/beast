@@ -25,12 +25,11 @@
 #include <unordered_set>
 
 // == Auxillary macros ==
-#ifndef __GNUC__
-#define __PRETTY_FUNCTION__                     __func__
-#endif
 #define AIDA_CPP_PASTE2i(a,b)                   a ## b // indirection required to expand __LINE__ etc
 #define AIDA_CPP_PASTE2(a,b)                    AIDA_CPP_PASTE2i (a,b)
-#define AIDA_DEBUG(...)                         ({ dprintf (2, __VA_ARGS__); dprintf (2, "\n"); })
+#ifndef AIDA_DEBUG
+#define AIDA_DEBUG(...)                         ({ fprintf (stderr, __VA_ARGS__); fputs ("\n", stderr); })
+#endif
 
 // == printf helper ==
 #define LLI     (long long int)
