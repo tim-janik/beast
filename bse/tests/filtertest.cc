@@ -269,7 +269,6 @@ print_filter_on_abort (const BseIIRFilterRequest &req, const BseIIRFilterDesign 
   noexit_dump_iir_filter_gnuplot (&req, &fdes, "tmpfilter",
                                   -fabs(req.passband_ripple_db), req.passband_edge, req.passband_edge2,
                                   req.stopband_db != 0 ? req.stopband_db : NAN, req.stopband_edge, NAN);
-  Bse::breakpoint();
 }
 
 static void
@@ -281,7 +280,7 @@ butterwoth_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_BUTTERWORTH;
-  Bse::assertion_failed_hook ([&] () { print_filter_on_abort (req, fdes); });
+  Bse::fatal_assertion_hook ([&] () { print_filter_on_abort (req, fdes); });
   TOK();
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
@@ -344,7 +343,7 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1000, 4000, -77, 1500, 3500);
   }
-  Bse::assertion_failed_hook (NULL);
+  Bse::fatal_assertion_hook (NULL);
   TOK();
   TDONE();
 }
@@ -357,7 +356,7 @@ chebychev1_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;
-  Bse::assertion_failed_hook ([&] () { print_filter_on_abort (req, fdes); });
+  Bse::fatal_assertion_hook ([&] () { print_filter_on_abort (req, fdes); });
   const double gaineps = 1e-7;
   TOK();
   {
@@ -420,7 +419,7 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.001, 8000, 12000, -78, 8500, 11500);
   }
-  Bse::assertion_failed_hook (NULL);
+  Bse::fatal_assertion_hook (NULL);
   TOK();
   TDONE();
 }
@@ -699,7 +698,7 @@ generic_filter_tests (const char        *test_name,
     {
       const BseIIRFilterRequest *req = filters[i].filter_request;
       BseIIRFilterDesign fdes;
-      Bse::assertion_failed_hook ([&] () { print_filter_on_abort (*req, fdes); });
+      Bse::fatal_assertion_hook ([&] () { print_filter_on_abort (*req, fdes); });
       bool success = bse_iir_filter_design (req, &fdes);
       TASSERT (success == true);
       if (filters[i].zeros)
@@ -773,7 +772,7 @@ generic_filter_tests (const char        *test_name,
         }
       if (i % tick_count == 0)
         TOK();
-      Bse::assertion_failed_hook (NULL);
+      Bse::fatal_assertion_hook (NULL);
     }
   TDONE();
 }
@@ -783,7 +782,7 @@ main (int    argc,
       char **argv)
 {
   bse_init_test (&argc, argv);
-  Bse::assertion_failed_hook (NULL);
+  Bse::fatal_assertion_hook (NULL);
   butterwoth_tests ();
   chebychev1_tests ();
   test_problem_candidates ();

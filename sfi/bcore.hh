@@ -33,6 +33,8 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Aida::void_t;
+using   Aida::failed_assertion;
+using   Aida::fatal_assertion_hook;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -264,9 +266,9 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (__FILE__, __LINE__, #cond); return __VA_ARGS__; } while (0)
+#define BSE_ASSERT_RETURN(cond, ...)     AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
 /// Return from the current function and issue an assertion warning.
-#define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
+#define BSE_ASSERT_RETURN_UNREACHED(...) AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
 #ifdef BSE_CONVENIENCE
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)

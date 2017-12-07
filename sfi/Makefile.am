@@ -65,7 +65,7 @@ $(sfi_public_headers):		sysconfig.h
 
 beastbin_PROGRAMS = sfidl
 sfidl_SOURCES  = sfidl.cc
-sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE -DSFIDL_INTERNALS
 sfidl_LDADD    = $(SFI_LIBS)
 # included files
 sfidl_includes  = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc

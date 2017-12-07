@@ -17,7 +17,7 @@ program_alias ()
 
 int main (int argc, char **argv)
 {
-  Bse::assertion_failed_hook ([&] () { Bse::breakpoint(); });
+  Bse::fatal_assertion_hook ([&] () { /* force fatal assertions */ Bse::breakpoint(); });
 
   Options options;
   Parser parser;

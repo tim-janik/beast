@@ -361,11 +361,6 @@ void        installpath_override (const std::string &topdir);
 /// Provide a string containing the BSE library version number.
 std::string version ();
 
-/// Function used internally to print an error message for failing assertions.
-void assertion_failed (const char *file, uint line, const char *expr);
-/// Install hook function to be called after assertion_failed().
-void assertion_failed_hook (const std::function<void()> &hook);
-
 // == Translate i18n strings ==
 const char* bse_gettext_domain ();
 const char* (_)                (const char        *string) __attribute__ ((__format_arg__ (1)));

@@ -140,3 +140,6 @@ symbolToList (const String& symbol)
 } // Sfidl
 
 #include "glib-extra.cc" // needed by sfidl
+#ifdef SFIDL_INTERNALS
+#include "aidacc/aida.cc" // needed by sfidl
+#endif
