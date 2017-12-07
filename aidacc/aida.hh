@@ -29,8 +29,6 @@ namespace Aida {
 #define AIDA_PRINTF(fix, arx)   __attribute__ ((__format__ (__printf__, fix, arx)))
 #define AIDA_ISLIKELY(expr)     __builtin_expect (bool (expr), 1)
 #define AIDA_UNLIKELY(expr)     __builtin_expect (bool (expr), 0)
-#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, "unreached"); return __VA_ARGS__; } while (0)
 #else   // !__GNUC__
 #define AIDA_UNUSED
 #define AIDA_DEPRECATED
@@ -40,12 +38,12 @@ namespace Aida {
 #define AIDA_PRINTF(fix, arx)
 #define AIDA_ISLIKELY(expr)     expr
 #define AIDA_UNLIKELY(expr)     expr
-#define AIDA_ASSERT_RETURN(expr,...)      do { } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { return __VA_ARGS__; } while (0)
 #endif
 #ifndef AIDA_ASSERTION_FAILED
-#define AIDA_ASSERTION_FAILED(f,l,expr)   ({ dprintf (2, "%s:%u: assertion failed: %s\n", f, l, expr); abort(); })
+#define AIDA_ASSERTION_FAILED(...)        ::Aida::failed_assertion (__FILE__, __LINE__, __func__, __VA_ARGS__)
 #endif
+#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (#expr); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED ("unreached"); return __VA_ARGS__; } while (0)
 #define AIDA_LIKELY             AIDA_ISLIKELY
 #define AIDA_CLASS_NON_COPYABLE(ClassName)  \
   /*copy-ctor*/ ClassName  (const ClassName&) = delete; \
@@ -149,6 +147,13 @@ template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>               
 template<typename T> struct RemoveSharedPtr<const ::std::shared_ptr<T>>                 { typedef T type; };
 template<typename T> struct RemoveSharedPtr<volatile ::std::shared_ptr<T>>              { typedef T type; };
 template<typename T> struct RemoveSharedPtr<const volatile ::std::shared_ptr<T>>        { typedef T type; };
+
+// == Assertions ==
+/// Print an error message for failing assertions and possibly abort().
+void    failed_assertion       (const char *file, unsigned int line, const char *func, const ::std::string &message, int p_errno = 0);
+/// Call @a hook from failed_assertion() and force it to abort().
+void    fatal_assertion_hook   (const std::function<void()> &hook);
+
 
 // == String Utilitiies ==
 String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);

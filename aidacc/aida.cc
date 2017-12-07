@@ -89,6 +89,86 @@ public:
 VirtualEnableSharedFromThisBase::~VirtualEnableSharedFromThisBase()
 {} // force emission of vtable
 
+// == Assertions ==
+static std::function<void()> assertion_hook;
+
+void
+fatal_assertion_hook (const std::function<void()> &hook)
+{
+  assertion_hook = hook;
+}
+
+static void
+print_stderr_failed_assertion (const char *file, unsigned int line, const char *func, const char *prefix, const ::std::string &message, int p_errno)
+{
+  String out;
+  if (file)
+    out += String (file) + ":";
+  if (line && file)
+    out += posix_sprintf ("%u:", line);
+  if (func)
+    {
+      if (!out.empty())
+        out += " ";
+      out += String (func) + "():";
+    }
+  if (!out.empty())
+    out += " ";
+  if (prefix)
+    out += prefix;
+  if (message.empty())
+    {
+      const char *serr = strerror (p_errno);
+      out += serr ? serr : posix_sprintf ("unknown error %d", p_errno);
+    }
+  else
+    out += "failed assertion: " + message;
+  if (out.size() && out[out.size() - 1] != '\n')
+    out += "\n";
+  fflush (stdout);
+  fputs (out.c_str(), stderr);
+  fflush (stderr);
+}
+
+void
+failed_assertion (const char *file, unsigned int line, const char *func, const ::std::string &cmessage, int p_errno)
+{
+  const bool isfatal = assertion_hook != NULL;
+  const String message = cmessage.empty() && !p_errno ? "unreached" : cmessage;
+  const char *const fatalprefix = isfatal ? "FATAL: " : NULL;
+#ifdef __GLIBC__
+  if (isfatal)
+    {
+      if (assertion_hook)
+        {
+          // ensure printouts from assertion_hook() are preceeded by an assertion
+          // message even if that means printing the assertion twice with glibc
+          print_stderr_failed_assertion (file, line, func, fatalprefix, message, p_errno);
+          assertion_hook();
+        }
+      fflush (stdout);
+      fflush (stderr);
+      // use glibc assert helpers to set __abort_msg for core files
+      if (message.empty())
+        ::__assert_perror_fail (p_errno, file, line, func);
+      else
+        ::__assert_fail (message.c_str(), file, line, func);
+      _exit (255);
+    }
+#endif
+  print_stderr_failed_assertion (file, line, func, fatalprefix, message, p_errno);
+  if (assertion_hook)
+    {
+      assertion_hook();
+      fflush (stdout);
+      fflush (stderr);
+    }
+  if (!isfatal)
+    return;
+  abort();
+  _exit (255);
+}
+
 // == String Utilitiies ==
 static locale_t
 new_posix_locale ()
@@ -3331,13 +3411,7 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
   pthread_mutex_unlock (&global_dispatcher_mutex);
   // simple hash collision check (sanity check, see below)
   if (AIDA_UNLIKELY (size_before == size_after))
-    {
-      errno = EKEYREJECTED;
-      perror (posix_sprintf ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
-                             "duplicate hash registration (%016llx%016llx)",
-                             __FILE__, __LINE__, LLU mentry.hashhi, LLU mentry.hashlo).c_str());
-      abort();
-    }
+    AIDA_ASSERTION_FAILED (posix_sprintf ("method_hash_is_unregistered (%016llx%016llx)", LLU mentry.hashhi, LLU mentry.hashlo));
 }
 
 // == RemoteHandle Event Handlers ==
