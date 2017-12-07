@@ -19,6 +19,7 @@ def clamp (value, minv, maxv):
 def osc_py (params):
   pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
   sub = params["sub"].value / 100.
+  shape = params["shape"].value / 100.
   sub_width = clamp (params["subw"].value / 100., 0.01, 0.99)
   sub_width = 1 - sub_width
   sync_factor = 2.0 ** (params["sync"].value / 12.)
@@ -44,23 +45,24 @@ def osc_py (params):
       sub_phase = 0  # not really correct (see bleposc.hh for a better implementation)
 
     sub_phase += 0.0005 * sync_factor
+    saw_state = -4 * sub_phase * (shape + 1)
     if sub_phase > 1:
       sub_phase -= 1
 
     if sub_phase > c:
-      pout = -1
+      pout = shape * 4 + 3
       sout = 1
     elif sub_phase > b:
-      pout = 1
+      pout = shape * 2 + 3
       sout = -1
     elif sub_phase > a:
-      pout = -1
+      pout = shape * 2 + 1
       sout = -1
     else:
       pout = 1
       sout = 1
 
-    out.append (pout * (1 - sub) + sout * sub)
+    out.append (saw_state * (1 - sub) + pout * (1 - sub) + sout * sub)
   return out
 
 def osc_cxx (params):
@@ -98,7 +100,7 @@ class BlepWidget(QtWidgets.QWidget):
     qp.fillRect (QtCore.QRect (self.width() * 9 / 10, 0, self.width(), self.height()), xgreycolor)
     xscale = self.width() / 2000 / 1.25
     xcenter = -self.width() / 5 * 3.5
-    yscale = -self.height() / 2 * 0.75
+    yscale = -self.height() / 4 * 0.75
     ycenter = self.height() / 2
     qp.setPen (QtGui.QColor (190, 190, 190))
     qp.drawLine (0, ycenter + 1 * yscale, self.width(), ycenter + 1 * yscale)
