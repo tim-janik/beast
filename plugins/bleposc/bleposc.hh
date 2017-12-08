@@ -559,12 +559,15 @@ public:
   double sub_base         = 0;
   double sub_mod          = 0;
 
+  double master_phase     = 0;
+  double last_value       = 0;
+
   static const float blep_delta[1025]; /* FIXME: legacy blep table no longer needed */
 
   enum class State { /* FIXME: not implemented yet */
     UP,
     DOWN
-  };
+  } state = State::UP;
 
   struct UnisonVoice /* FIXME: not implemented yet */
   {
@@ -598,8 +601,33 @@ public:
                          const float *pulse_mod_in = nullptr,
                          const float *sub_width_mod_in = nullptr)
   {
+    double master_freq = frequency_base;
+
     for (unsigned int n = 0; n < n_values; n++)
-      left_out[n] = right_out[n] = g_random_double_range (-1, 1);
+      {
+        double delta = 0;
+
+        master_phase += master_freq * 0.5 / rate;
+        if (state == State::UP)
+          {
+            if (master_phase > 0.5)
+              {
+                delta = -2;
+                state = State::DOWN;
+              }
+          }
+        if (state == State::DOWN && master_phase > 1)
+          {
+            master_phase -= 1;
+            delta = 2;
+            state = State::UP;
+          }
+        /* leaky integration */
+        double value = 0.999 * last_value + delta;
+        last_value = value;
+
+        left_out[n] = right_out[n] = value;
+      }
   }
 };
 
