@@ -367,13 +367,14 @@ reset_test (Osc& o)
 }
 
 static void
-plot_blep (float shape, float sync, float sub, float pulse)
+plot_blep (float shape, float sync, float sub, float pulse, float sub_width)
 {
   Osc o;
   o.rate = 48000;
   o.pulse_width = pulse / 100;
   o.shape = shape / 100;
   o.sub = sub / 100;
+  o.sub_width = sub_width / 100;
   o.master_freq = 48;
   o.freq = pow (2, sync / 12) * o.master_freq; /* sync param: semitones */
 
@@ -424,9 +425,9 @@ main (int argc, char **argv)
   return 0;
 #endif
 
-  if (argc == 6 && strcmp (argv[1], "plotblep") == 0)
+  if (argc == 7 && strcmp (argv[1], "plotblep") == 0)
     {
-      plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]));
+      plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]), atof (argv[6]));
       return 0;
     }
 
