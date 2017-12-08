@@ -6,6 +6,7 @@
 
 import sys
 import subprocess
+import math
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
@@ -15,6 +16,28 @@ def clamp (value, minv, maxv):
   if value > maxv:
     return maxv
   return value
+
+def get_delta (x):
+  start = 0
+  y = []
+  for value in x:
+    y.append (value - start)
+    start = value
+  return y
+
+def leaky_integrate (x):
+  out_value = 0
+  y = []
+  for in_value in x:
+    out_value = out_value * 0.9995 + in_value
+    y.append (out_value)
+  return y
+
+def get_dc (x):
+  dc = 0
+  for value in x:
+    dc += value
+  return 20 * math.log10 (abs (dc / len (x)))
 
 def osc_py (params):
   pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
@@ -63,6 +86,8 @@ def osc_py (params):
       sout = 1
 
     out.append (saw_state * (1 - sub) + pout * (1 - sub) + sout * sub)
+
+  # out = leaky_integrate (get_delta (out)) # simulate blit integration
   return out
 
 def osc_cxx (params):
