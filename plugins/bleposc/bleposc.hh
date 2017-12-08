@@ -20,6 +20,7 @@ namespace BlepUtils {
 using Bse::Block;
 using std::max;
 
+#if 0
 struct OscImpl
 {
   double rate;
@@ -534,6 +535,73 @@ struct OscImpl
       }
   }
 };
+#endif
+
+class OscImpl
+{
+public:
+  double rate;
+
+  double frequency_base   = 440;
+  double frequency_factor = 1;
+
+  double freq_mod_octaves = 0;
+
+  double shape_base       = 0; // 0 = saw, range [-1:1]
+  double shape_mod        = 1.0;
+
+  double pulse_width_base = 0.5;
+  double pulse_width_mod  = 0.0;
+
+  double sync_base        = 0;
+  double sync_mod         = 0;
+
+  double sub_base         = 0;
+  double sub_mod          = 0;
+
+  static const float blep_delta[1025]; /* FIXME: legacy blep table no longer needed */
+
+  enum class State { /* FIXME: not implemented yet */
+    UP,
+    DOWN
+  };
+
+  struct UnisonVoice /* FIXME: not implemented yet */
+  {
+    void
+    reset_master (double new_master_phase, State new_sub_state)
+    {
+      /* FIXME: not implemented yet */
+    }
+  };
+
+  std::vector<UnisonVoice> unison_voices;
+
+  void
+  reset()
+  {
+    /* FIXME: not implemented yet */
+  }
+  void
+  set_unison (size_t n_voices, float detune, float stereo)
+  {
+    /* FIXME: not implemented yet */
+  }
+
+  void
+  process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
+                         const float *freq_in = nullptr,
+                         const float *freq_mod_in = nullptr,
+                         const float *shape_mod_in = nullptr,
+                         const float *sub_mod_in = nullptr,
+                         const float *sync_mod_in = nullptr,
+                         const float *pulse_mod_in = nullptr,
+                         const float *sub_width_mod_in = nullptr)
+  {
+    for (unsigned int n = 0; n < n_values; n++)
+      left_out[n] = right_out[n] = g_random_double_range (-1, 1);
+  }
+};
 
 class Osc /* simple interface to OscImpl */
 {
@@ -550,6 +618,7 @@ public:
   double pulse_width = 0.5;
   double shape = 0; // 0 = saw, range [-1:1]
   double sub = 0;
+  double sub_width = 0.5;
 
   double master_freq;
 

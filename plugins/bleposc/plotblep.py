@@ -95,7 +95,8 @@ def osc_cxx (params):
     "%.5f" % params["shape"].value,
     "%.5f" % params["sync"].value,
     "%.5f" % params["sub"].value,
-    "%.5f" % params["pulse"].value], stdout=subprocess.PIPE)
+    "%.5f" % params["pulse"].value,
+    "%.5f" % params["subw"].value], stdout=subprocess.PIPE)
   out, err = process.communicate()
   plot_data = []
   for o in out.splitlines():
@@ -109,8 +110,8 @@ class BlepWidget(QtWidgets.QWidget):
 
   def update_params (self, params):
     try:
-      # self.plot_data = osc_cxx (params)
-      self.plot_data = osc_py (params)
+      self.plot_data = osc_cxx (params)
+      # self.plot_data = osc_py (params)
       self.repaint()
     except KeyError:
       # hacky way of avoiding to run testblep if not all params are known
