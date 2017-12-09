@@ -562,7 +562,10 @@ public:
   double master_phase     = 0;
   double last_value       = 0;
 
-  static const float blep_delta[1025]; /* FIXME: legacy blep table no longer needed */
+  static const int WIDTH = 12;
+  static const int OVERSAMPLE = 64;
+
+  static const float impulse_table[WIDTH * OVERSAMPLE + 1];
 
   enum class State { /* FIXME: not implemented yet */
     UP,
@@ -580,6 +583,10 @@ public:
 
   std::vector<UnisonVoice> unison_voices;
 
+  OscImpl()
+  {
+    init_future();
+  }
   void
   reset()
   {
@@ -591,6 +598,52 @@ public:
     /* FIXME: not implemented yet */
   }
 
+  int future_pos;
+
+  // could be shared under certain conditions
+  std::array<float, WIDTH * 2> future;
+
+  void
+  init_future()
+  {
+    future.fill (0);
+    future_pos = 0;
+  }
+  float
+  pop_future()
+  {
+    const float f = future[future_pos++];
+    if (future_pos == WIDTH)
+      {
+        // this loop was slightly faster than std::copy_n + std::fill_n
+        for (int i = 0; i < WIDTH; i++)
+          {
+            future[i] = future[WIDTH + i];
+            future[WIDTH + i] = 0;
+          }
+        future_pos = 0;
+      }
+    return f;
+  }
+
+  void
+  insert_impulse (double frac, double weight)
+  {
+    int pos = frac * OVERSAMPLE;
+    const float inter_frac = frac * OVERSAMPLE - pos;
+    const float weight_left = (1 - inter_frac) * weight;
+    const float weight_right = inter_frac * weight;
+
+    pos = std::max (pos, 0);
+    pos = std::min (pos, OVERSAMPLE - 1);
+
+    for (int i = 0; i < WIDTH; i++)
+      {
+        future[i + future_pos] += impulse_table[pos] * weight_left + impulse_table[pos + 1] * weight_right;
+
+        pos += OVERSAMPLE;
+      }
+  }
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *freq_in = nullptr,
@@ -605,25 +658,28 @@ public:
 
     for (unsigned int n = 0; n < n_values; n++)
       {
-        double delta = 0;
-
         master_phase += master_freq * 0.5 / rate;
         if (state == State::UP)
           {
             if (master_phase > 0.5)
               {
-                delta = -2;
+                double master_frac = (master_phase - 0.5) / (master_freq * 0.5 / rate);
+
+                insert_impulse (master_frac, -2.0);
                 state = State::DOWN;
               }
           }
         if (state == State::DOWN && master_phase > 1)
           {
             master_phase -= 1;
-            delta = 2;
+
+            double master_frac = master_phase / (master_freq * 0.5 / rate);
+
+            insert_impulse (master_frac, 2.0);
             state = State::UP;
           }
         /* leaky integration */
-        double value = 0.999 * last_value + delta;
+        double value = 0.999 * last_value + pop_future();
         last_value = value;
 
         left_out[n] = right_out[n] = value;
