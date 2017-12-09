@@ -37,7 +37,7 @@ $(srcdir)/bsebleposc.cc: bsebleposc.genidl.hh
 
 # generate blepdata.hh
 bleposcdata.cc: designblep
-	./designblep > bleposcdata.cc || ( rm $@ ; exit 1 )
+	./designblep impulse > bleposcdata.cc || ( rm $@ ; exit 1 )
 
 CLEANFILES += bsebleposc.genidl.hh bleposcdata.cc
 
