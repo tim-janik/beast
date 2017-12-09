@@ -591,6 +591,7 @@ public:
   OscImpl()
   {
     init_future();
+    last_value = 1;
   }
   void
   reset()
