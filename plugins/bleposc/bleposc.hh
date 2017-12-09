@@ -669,6 +669,7 @@ public:
     double master_freq = frequency_base;
     double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
     double sub_width = clamp (sub_width_base, 0.01, 0.99);
+    double shape = clamp (shape_base, -1.0, 1.0);
 
     for (unsigned int n = 0; n < n_values; n++)
       {
@@ -681,7 +682,7 @@ public:
               {
                 double master_frac = (master_phase - bound_a) / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, -2.0);
+                insert_impulse (master_frac, 2 * shape);
                 state = State::B;
               }
           }
@@ -705,7 +706,7 @@ public:
               {
                 double master_frac = (master_phase - bound_c) / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, -2.0);
+                insert_impulse (master_frac, 2 * shape);
                 state = State::D;
               }
           }
@@ -721,8 +722,9 @@ public:
                 state = State::A;
               }
           }
+        double saw_delta = -2.0 * master_freq / rate * (shape + 1);
         /* leaky integration */
-        double value = 0.999 * last_value + pop_future();
+        double value = 0.9999 * last_value + pop_future() + saw_delta;
         last_value = value;
 
         left_out[n] = right_out[n] = value;
