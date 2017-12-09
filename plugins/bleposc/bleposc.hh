@@ -559,6 +559,9 @@ public:
   double sub_base         = 0;
   double sub_mod          = 0;
 
+  double sub_width_base   = 0.5;
+  double sub_width_mod    = 0.0;
+
   double master_phase     = 0;
   double last_value       = 0;
 
@@ -568,9 +571,11 @@ public:
   static const float impulse_table[WIDTH * OVERSAMPLE + 1];
 
   enum class State { /* FIXME: not implemented yet */
-    UP,
-    DOWN
-  } state = State::UP;
+    A,
+    B,
+    C,
+    D
+  } state = State::A;
 
   struct UnisonVoice /* FIXME: not implemented yet */
   {
@@ -644,6 +649,13 @@ public:
         pos += OVERSAMPLE;
       }
   }
+
+  double
+  clamp (double d, double min, double max)
+  {
+    return CLAMP (d, min, max);
+  }
+
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *freq_in = nullptr,
@@ -655,28 +667,59 @@ public:
                          const float *sub_width_mod_in = nullptr)
   {
     double master_freq = frequency_base;
+    double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
+    double sub_width = clamp (sub_width_base, 0.01, 0.99);
 
     for (unsigned int n = 0; n < n_values; n++)
       {
         master_phase += master_freq * 0.5 / rate;
-        if (state == State::UP)
+        if (state == State::A)
           {
-            if (master_phase > 0.5)
+            const double bound_a = sub_width * pulse_width;
+
+            if (master_phase > bound_a)
               {
-                double master_frac = (master_phase - 0.5) / (master_freq * 0.5 / rate);
+                double master_frac = (master_phase - bound_a) / (master_freq * 0.5 / rate);
 
                 insert_impulse (master_frac, -2.0);
-                state = State::DOWN;
+                state = State::B;
               }
           }
-        if (state == State::DOWN && master_phase > 1)
+        if (state == State::B)
           {
-            master_phase -= 1;
+            const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
 
-            double master_frac = master_phase / (master_freq * 0.5 / rate);
+            if (master_phase > bound_b)
+              {
+                double master_frac = (master_phase - bound_b) / (master_freq * 0.5 / rate);
 
-            insert_impulse (master_frac, 2.0);
-            state = State::UP;
+                insert_impulse (master_frac, 2.0);
+                state = State::C;
+              }
+          }
+        if (state == State::C)
+          {
+            const double bound_c = sub_width * pulse_width + (1 - sub_width);
+
+            if (master_phase > bound_c)
+              {
+                double master_frac = (master_phase - bound_c) / (master_freq * 0.5 / rate);
+
+                insert_impulse (master_frac, -2.0);
+                state = State::D;
+              }
+          }
+        if (state == State::D)
+          {
+            if (master_phase > 1)
+              {
+                master_phase -= 1;
+
+                double master_frac = master_phase / (master_freq * 0.5 / rate);
+
+                insert_impulse (master_frac, 2.0);
+                state = State::A;
+              }
           }
         /* leaky integration */
         double value = 0.999 * last_value + pop_future();
@@ -728,6 +771,7 @@ public:
     osc_impl.pulse_width_base = pulse_width;
     osc_impl.shape_base = shape;
     osc_impl.sub_base = sub;
+    osc_impl.sub_width_base = sub_width;
     osc_impl.frequency_base = master_freq;
 
     return osc_impl.process_sample_stereo (left_out, right_out, 1);

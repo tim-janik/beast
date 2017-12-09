@@ -38,6 +38,9 @@ class BlepOsc : public BlepOscBase {
       osc.sub_base          = properties->sub / 100;
       osc.sub_mod           = properties->sub_mod / 100;
 
+      osc.sub_width_base    = properties->sub_width / 100;
+      osc.sub_width_mod     = properties->sub_width_mod / 100;
+
       osc.sync_base         = properties->sync;
       osc.sync_mod          = properties->sync_mod;
 
