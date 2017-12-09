@@ -669,8 +669,9 @@ public:
   {
     double master_freq = frequency_base;
     double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
-    double sub_width = clamp (sub_width_base, 0.01, 0.99);
-    double shape = clamp (shape_base, -1.0, 1.0);
+    double sub         = clamp (sub_base, 0.0, 1.0);
+    double sub_width   = clamp (sub_width_base, 0.01, 0.99);
+    double shape       = clamp (shape_base, -1.0, 1.0);
 
     for (unsigned int n = 0; n < n_values; n++)
       {
@@ -683,7 +684,7 @@ public:
               {
                 double master_frac = (master_phase - bound_a) / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, 2 * shape);
+                insert_impulse (master_frac, 2.0 * (shape * (1 - sub) - sub));
                 state = State::B;
               }
           }
@@ -695,7 +696,7 @@ public:
               {
                 double master_frac = (master_phase - bound_b) / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, 2.0);
+                insert_impulse (master_frac, 2.0 * (1 - sub));
                 state = State::C;
               }
           }
@@ -707,7 +708,7 @@ public:
               {
                 double master_frac = (master_phase - bound_c) / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, 2 * shape);
+                insert_impulse (master_frac, 2.0 * (shape * (1 - sub) + sub));
                 state = State::D;
               }
           }
@@ -719,11 +720,11 @@ public:
 
                 double master_frac = master_phase / (master_freq * 0.5 / rate);
 
-                insert_impulse (master_frac, 2.0);
+                insert_impulse (master_frac, 2.0 * (1 - sub));
                 state = State::A;
               }
           }
-        double saw_delta = -2.0 * master_freq / rate * (shape + 1);
+        double saw_delta = -2.0 * master_freq / rate * (shape + 1) * (1 - sub);
         /* leaky integration */
         double value = 0.9999 * last_value + pop_future() + saw_delta;
         last_value = value;
