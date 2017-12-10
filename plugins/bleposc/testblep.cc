@@ -28,15 +28,32 @@ complex_ptr (vector<complex<double>>& vec)
 static vector<double>
 compute_fft_mag (Osc& o, size_t N)
 {
+  const bool IGNORE_DC = true;
   size_t OVER = 8;
   vector<complex<double>> in_ri (N * OVER), out_ri (N * OVER);
+
+  for (size_t i = 0; i < N; i++)
+    {
+      in_ri[i] = o.process_sample();
+    }
+
+  if (IGNORE_DC)
+    {
+      double dc = 0;
+
+      for (size_t i = 0; i < N; i++)
+        dc += in_ri[i].real();
+      dc /= N;
+      for (size_t i = 0; i < N; i++)
+        in_ri[i] -= dc;
+    }
 
   double win_norm = 0;
   for (size_t i = 0; i < N; i++)
     {
       const double win = window_kaiser ((i * 2.0 - N) / (N - 1), 4);
 
-      in_ri[i] = o.process_sample() * win;
+      in_ri[i] *= win;
       win_norm += win;
     }
 
@@ -78,7 +95,8 @@ fft_snr (Osc& o)
   assert (mag.size() == 8192 * 8);
 
   double sig_max = 0;
-  for (float freq = o.master_freq; freq < o.rate; freq += o.master_freq)
+  const double sub_freq = o.master_freq * 0.5;
+  for (float freq = sub_freq; freq < o.rate; freq += sub_freq)
     {
       int pos = freq / o.rate * mag.size();
       for (int i = -32; i < 33; i++)
