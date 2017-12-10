@@ -565,6 +565,7 @@ public:
   double master_phase     = 0;
   double slave_phase      = 0;
   double last_value       = 0;
+  double sync_jump_level  = 0;
 
   static const int WIDTH = 12;
   static const int OVERSAMPLE = 64;
@@ -593,6 +594,7 @@ public:
   {
     init_future();
     last_value = 1;
+    sync_jump_level = 1;
   }
   void
   reset()
@@ -671,7 +673,7 @@ public:
         if (master_phase > 1)
           {
             const double slave_frac = (slave_phase - target_phase) / sync_factor; // FIXME: ?
-            const double master_frac = (master_phase - 1) / 0.5;                  // FIXME: ?
+            const double master_frac = master_phase - 1;                          // FIXME: ?
 
             return master_frac < slave_frac;
           }
@@ -709,9 +711,10 @@ public:
 
             if (check_slave_before_master (bound_a, sync_factor)) //slave_phase > bound_a)
               {
-                double slave_frac = (slave_phase - bound_a) / slave_freq / rate;
+                double slave_frac = (slave_phase - bound_a) / (slave_freq / rate);
 
                 insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) - sub));
+                sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
                 state = State::B;
               }
           }
@@ -721,9 +724,10 @@ public:
 
             if (check_slave_before_master (bound_b, sync_factor)) //slave_phase > bound_b)
               {
-                double slave_frac = (slave_phase - bound_b) / slave_freq / rate;
+                double slave_frac = (slave_phase - bound_b) / (slave_freq / rate);
 
                 insert_impulse (slave_frac, 2.0 * (1 - sub));
+                sync_jump_level += 2 * (1 - sub);
                 state = State::C;
               }
           }
@@ -733,9 +737,10 @@ public:
 
             if (check_slave_before_master (bound_c, sync_factor)) //slave_phase > bound_c)
               {
-                double slave_frac = (slave_phase - bound_c) / slave_freq / rate;
+                double slave_frac = (slave_phase - bound_c) / (slave_freq / rate);
 
                 insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) + sub));
+                sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
                 state = State::D;
               }
           }
@@ -745,9 +750,10 @@ public:
               {
                 slave_phase -= 1;
 
-                double slave_frac = slave_phase / slave_freq / rate;
+                double slave_frac = slave_phase / (slave_freq / rate);
 
                 insert_impulse (slave_frac, 2.0 * (1 - sub));
+                sync_jump_level += 2.0 * (1 - sub);
                 state = State::A;
               }
           }
@@ -755,10 +761,14 @@ public:
           {
             master_phase -= 1;
 
+            double master_frac = master_phase / (master_freq * 0.5 / rate);
+
+            insert_impulse (master_frac, (1 - sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
+
+            slave_phase = master_phase * sync_factor;
+            sync_jump_level = 1;
+
             state = State::A;
-            // FIXME: not antialiased
-            last_value = 1;
-            slave_phase = 0;
           }
         double saw_delta = -4.0 * slave_freq / rate * (shape + 1) * (1 - sub);
         /* leaky integration */
