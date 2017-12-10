@@ -32,6 +32,11 @@ compute_fft_mag (Osc& o, size_t N)
   size_t OVER = 8;
   vector<complex<double>> in_ri (N * OVER), out_ri (N * OVER);
 
+  if (IGNORE_DC)
+    {
+      for (size_t i = 0; i < 4 * N; i++)
+        o.process_sample();
+    }
   for (size_t i = 0; i < N; i++)
     {
       in_ri[i] = o.process_sample();
@@ -133,8 +138,9 @@ auto_snr_test()
       o.master_freq = g_rand_double_range (rand, 200, 5000);
       o.freq = g_rand_double_range (rand, o.master_freq, 20000);
       o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
+      o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
 
-      printf ("%f %f %f %f Y %f\n", fft_snr (o), o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12);
+      printf ("%f %f %f %f Y %f pw %f sw %f\n", fft_snr (o), o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.pulse_width, o.sub_width);
     }
 }
 
