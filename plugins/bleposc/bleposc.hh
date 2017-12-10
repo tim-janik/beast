@@ -705,71 +705,84 @@ public:
       {
         master_phase += master_freq * 0.5 / rate;
         slave_phase += slave_freq / rate;
-        if (state == State::A)
+
+        bool state_changed;
+        do
           {
-            const double bound_a = sub_width * pulse_width;
+            state_changed = false;
 
-            if (check_slave_before_master (bound_a, sync_factor)) //slave_phase > bound_a)
+            if (state == State::A)
               {
-                double slave_frac = (slave_phase - bound_a) / (slave_freq / rate);
+                const double bound_a = sub_width * pulse_width;
 
-                insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) - sub));
-                sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
-                state = State::B;
+                if (check_slave_before_master (bound_a, sync_factor)) //slave_phase > bound_a)
+                  {
+                    double slave_frac = (slave_phase - bound_a) / (slave_freq / rate);
+
+                    insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) - sub));
+                    sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
+                    state = State::B;
+                    state_changed = true;
+                  }
               }
-          }
-        if (state == State::B)
-          {
-            const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
-
-            if (check_slave_before_master (bound_b, sync_factor)) //slave_phase > bound_b)
+            if (state == State::B)
               {
-                double slave_frac = (slave_phase - bound_b) / (slave_freq / rate);
+                const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
 
-                insert_impulse (slave_frac, 2.0 * (1 - sub));
-                sync_jump_level += 2 * (1 - sub);
-                state = State::C;
+                if (check_slave_before_master (bound_b, sync_factor)) //slave_phase > bound_b)
+                  {
+                    double slave_frac = (slave_phase - bound_b) / (slave_freq / rate);
+
+                    insert_impulse (slave_frac, 2.0 * (1 - sub));
+                    sync_jump_level += 2 * (1 - sub);
+                    state = State::C;
+                    state_changed = true;
+                  }
               }
-          }
-        if (state == State::C)
-          {
-            const double bound_c = sub_width * pulse_width + (1 - sub_width);
-
-            if (check_slave_before_master (bound_c, sync_factor)) //slave_phase > bound_c)
+            if (state == State::C)
               {
-                double slave_frac = (slave_phase - bound_c) / (slave_freq / rate);
+                const double bound_c = sub_width * pulse_width + (1 - sub_width);
 
-                insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) + sub));
-                sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
-                state = State::D;
+                if (check_slave_before_master (bound_c, sync_factor)) //slave_phase > bound_c)
+                  {
+                    double slave_frac = (slave_phase - bound_c) / (slave_freq / rate);
+
+                    insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) + sub));
+                    sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
+                    state = State::D;
+                    state_changed = true;
+                  }
               }
-          }
-        if (state == State::D)
-          {
-            if (check_slave_before_master (1, sync_factor)) //slave_phase > 1)
+            if (state == State::D)
               {
-                slave_phase -= 1;
+                if (check_slave_before_master (1, sync_factor)) //slave_phase > 1)
+                  {
+                    slave_phase -= 1;
 
-                double slave_frac = slave_phase / (slave_freq / rate);
+                    double slave_frac = slave_phase / (slave_freq / rate);
 
-                insert_impulse (slave_frac, 2.0 * (1 - sub));
-                sync_jump_level += 2.0 * (1 - sub);
+                    insert_impulse (slave_frac, 2.0 * (1 - sub));
+                    sync_jump_level += 2.0 * (1 - sub);
+                    state = State::A;
+                    state_changed = true;
+                  }
+              }
+            if (master_phase > 1)
+              {
+                master_phase -= 1;
+
+                double master_frac = master_phase / (master_freq * 0.5 / rate);
+
+                insert_impulse (master_frac, (1 - sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
+
+                slave_phase = master_phase * sync_factor;
+                sync_jump_level = 1;
+
                 state = State::A;
+                state_changed = true;
               }
           }
-        if (master_phase > 1)
-          {
-            master_phase -= 1;
-
-            double master_frac = master_phase / (master_freq * 0.5 / rate);
-
-            insert_impulse (master_frac, (1 - sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
-
-            slave_phase = master_phase * sync_factor;
-            sync_jump_level = 1;
-
-            state = State::A;
-          }
+        while (state_changed); // rerun all state checks if state was modified
         double saw_delta = -4.0 * slave_freq / rate * (shape + 1) * (1 - sub);
         /* leaky integration */
         double value = 0.9999 * last_value + pop_future() + saw_delta;
