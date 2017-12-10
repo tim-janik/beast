@@ -563,6 +563,7 @@ public:
   double sub_width_mod    = 0.0;
 
   double master_phase     = 0;
+  double slave_phase      = 0;
   double last_value       = 0;
 
   static const int WIDTH = 12;
@@ -657,6 +658,28 @@ public:
     return CLAMP (d, min, max);
   }
 
+  /* check if slave oscillator has reached target_phase
+   *
+   * when master oscillator sync occurs, only return true if this point in time is
+   * before master oscillator sync
+   */
+  bool
+  check_slave_before_master (double target_phase, double sync_factor)
+  {
+    if (slave_phase > target_phase)
+      {
+        if (master_phase > 1)
+          {
+            const double slave_frac = (slave_phase - target_phase) / sync_factor; // FIXME: ?
+            const double master_frac = (master_phase - 1) / 0.5;                  // FIXME: ?
+
+            return master_frac < slave_frac;
+          }
+        else
+          return true;
+      }
+    return false;
+  }
   void
   process_sample_stereo (float *left_out, float *right_out, unsigned int n_values,
                          const float *freq_in = nullptr,
@@ -672,19 +695,23 @@ public:
     double sub         = clamp (sub_base, 0.0, 1.0);
     double sub_width   = clamp (sub_width_base, 0.01, 0.99);
     double shape       = clamp (shape_base, -1.0, 1.0);
+    double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
+
+    const double slave_freq = master_freq * 0.5 * sync_factor;
 
     for (unsigned int n = 0; n < n_values; n++)
       {
         master_phase += master_freq * 0.5 / rate;
+        slave_phase += slave_freq / rate;
         if (state == State::A)
           {
             const double bound_a = sub_width * pulse_width;
 
-            if (master_phase > bound_a)
+            if (check_slave_before_master (bound_a, sync_factor)) //slave_phase > bound_a)
               {
-                double master_frac = (master_phase - bound_a) / (master_freq * 0.5 / rate);
+                double slave_frac = (slave_phase - bound_a) / slave_freq / rate;
 
-                insert_impulse (master_frac, 2.0 * (shape * (1 - sub) - sub));
+                insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) - sub));
                 state = State::B;
               }
           }
@@ -692,11 +719,11 @@ public:
           {
             const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
 
-            if (master_phase > bound_b)
+            if (check_slave_before_master (bound_b, sync_factor)) //slave_phase > bound_b)
               {
-                double master_frac = (master_phase - bound_b) / (master_freq * 0.5 / rate);
+                double slave_frac = (slave_phase - bound_b) / slave_freq / rate;
 
-                insert_impulse (master_frac, 2.0 * (1 - sub));
+                insert_impulse (slave_frac, 2.0 * (1 - sub));
                 state = State::C;
               }
           }
@@ -704,27 +731,36 @@ public:
           {
             const double bound_c = sub_width * pulse_width + (1 - sub_width);
 
-            if (master_phase > bound_c)
+            if (check_slave_before_master (bound_c, sync_factor)) //slave_phase > bound_c)
               {
-                double master_frac = (master_phase - bound_c) / (master_freq * 0.5 / rate);
+                double slave_frac = (slave_phase - bound_c) / slave_freq / rate;
 
-                insert_impulse (master_frac, 2.0 * (shape * (1 - sub) + sub));
+                insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) + sub));
                 state = State::D;
               }
           }
         if (state == State::D)
           {
-            if (master_phase > 1)
+            if (check_slave_before_master (1, sync_factor)) //slave_phase > 1)
               {
-                master_phase -= 1;
+                slave_phase -= 1;
 
-                double master_frac = master_phase / (master_freq * 0.5 / rate);
+                double slave_frac = slave_phase / slave_freq / rate;
 
-                insert_impulse (master_frac, 2.0 * (1 - sub));
+                insert_impulse (slave_frac, 2.0 * (1 - sub));
                 state = State::A;
               }
           }
-        double saw_delta = -2.0 * master_freq / rate * (shape + 1) * (1 - sub);
+        if (master_phase > 1)
+          {
+            master_phase -= 1;
+
+            state = State::A;
+            // FIXME: not antialiased
+            last_value = 1;
+            slave_phase = 0;
+          }
+        double saw_delta = -4.0 * slave_freq / rate * (shape + 1) * (1 - sub);
         /* leaky integration */
         double value = 0.9999 * last_value + pop_future() + saw_delta;
         last_value = value;
