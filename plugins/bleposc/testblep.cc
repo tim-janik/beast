@@ -426,11 +426,22 @@ plot_blep (float shape, float sync, float sub, float pulse, float sub_width)
     }
 }
 
+static void
+dc_test (Osc& o)
+{
+  for (int sec = 0; sec < 4; sec++)
+    {
+      double dc = 0;
+      for (int i = 0; i < o.rate; i++)
+        dc += o.process_sample();
+      dc /= o.rate;
+      printf ("%d %.6f %.17g #dB\n", sec, dc, bse_db_from_factor (fabs (dc), -200));
+    }
+}
+
 int
 main (int argc, char **argv)
 {
-  const int stepping = 1; // oversampled process function
-
   Osc o;
   o.rate = 48000;
   o.pulse_width = 0.5;
@@ -438,6 +449,16 @@ main (int argc, char **argv)
   o.freq = 440 * 3.1;
   o.master_freq = 440;
 
+#if 0
+  /* dc problem */
+// 36.782045 0.563029 4174.116241 16051.472457 Y 23.317956 pw 0.793546 sw 0.818630 sfreq 5.859375
+  o.rate = 48000;
+  o.shape = 0.563029;
+  o.freq = 16051.472457;
+  o.master_freq = 4174.116241;
+  o.pulse_width = 0.793546;
+  o.sub_width = 0.818630;
+#endif
 #if 0
   /* sync bug */
   o.shape = 0;
@@ -491,6 +512,8 @@ main (int argc, char **argv)
         exp2_test();
       else if (test_name == "reset")
         reset_test (o);
+      else if (test_name == "dc")
+        dc_test (o);
       else
         {
           Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed, speed2, reset, exp2 or snr\n", argv[0], test_name.c_str());
@@ -502,9 +525,7 @@ main (int argc, char **argv)
   //for (o.freq = 20; o.freq < 20000; o.freq *= 1.00003)
   for (int i = 0; i < 48000; i++)
     {
-      double sample;
-      for (int j = 0; j < stepping; j++)
-        sample = o.process_sample();
+      double sample = o.process_sample();
 
       printf ("%.17g\n", sample * 0.5);
     }
