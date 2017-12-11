@@ -114,6 +114,7 @@ class BlepWidget(QtWidgets.QWidget):
         self.plot_data = osc_cxx (params)
       else:
         self.plot_data = osc_py (params)
+      print ("dc=%f dB" % get_dc (self.plot_data[2000:4000]))
       self.repaint()
     except KeyError:
       # hacky way of avoiding to run testblep if not all params are known
