@@ -568,6 +568,7 @@ public:
   double sync_jump_level  = 0;
 
   static const int WIDTH = 12;
+  static const int WSHIFT = 4; // delay to align saw and impulse part of the signal
   static const int OVERSAMPLE = 64;
 
   static const float impulse_table[WIDTH * OVERSAMPLE + 1];
@@ -652,6 +653,11 @@ public:
 
         pos += OVERSAMPLE;
       }
+  }
+  void
+  insert_future_delta (double weight)
+  {
+    future[future_pos + WSHIFT] += weight;
   }
 
   double
@@ -783,9 +789,12 @@ public:
               }
           }
         while (state_changed); // rerun all state checks if state was modified
+
         double saw_delta = -4.0 * slave_freq / rate * (shape + 1) * (1 - sub);
+        insert_future_delta (saw_delta); // align with the impulses
+
         /* leaky integration */
-        double value = 0.9999 * last_value + pop_future() + saw_delta;
+        double value = 0.9999 * last_value + pop_future();
         last_value = value;
 
         left_out[n] = right_out[n] = value;
