@@ -707,6 +707,10 @@ public:
 
     const double slave_freq = master_freq * 0.5 * sync_factor;
 
+    /* get leaky integrator constant for sample rate from ms (half-life time) */
+    const double leaky_ms = 10;
+    const double leaky_a = pow (2.0, -1000.0 / (rate * leaky_ms));
+
     for (unsigned int n = 0; n < n_values; n++)
       {
         master_phase += master_freq * 0.5 / rate;
@@ -795,7 +799,7 @@ public:
         insert_future_delta (saw_delta); // align with the impulses
 
         /* leaky integration */
-        double value = 0.9999 * last_value + pop_future();
+        double value = leaky_a * last_value + pop_future();
         last_value = value;
 
         left_out[n] = right_out[n] = value;
