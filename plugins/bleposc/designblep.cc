@@ -151,6 +151,9 @@ main (int argc, char **argv)
         {
           print_fir_response (fir_filter, "Hfir");
 
+          print_fir_response (repeat_n (16, fir_filter), "Hrep");
+          print_fir_response (interp_linear (16, fir_filter), "Hlin");
+
           for (auto f : fir_filter)
             printf ("%.17g #impulse\n", f);
         }
