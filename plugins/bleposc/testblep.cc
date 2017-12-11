@@ -76,7 +76,13 @@ compute_fft_mag (Osc& o, size_t N)
   return out;
 }
 
-static double fft_snr (Osc& o);
+struct SNR
+{
+  double snr;
+  double freq;
+};
+
+static SNR fft_snr (Osc& o);
 
 static void
 print_fft (Osc& o, size_t N)
@@ -88,10 +94,11 @@ print_fft (Osc& o, size_t N)
       double d = i / double (mag.size()) * o.rate;
       printf ("%.17g %.17g\n", d, mag[i]);
     }
-  printf ("#fft_snr: %f dB\n", fft_snr (o));
+  SNR snr = fft_snr (o);
+  printf ("#fft_snr: %f dB @ %f\n", snr.snr, snr.freq);
 }
 
-static double
+static SNR
 fft_snr (Osc& o)
 {
   vector<double> mag = compute_fft_mag (o, 8192);
@@ -114,15 +121,24 @@ fft_snr (Osc& o)
         }
     }
 
+  SNR snr;
   double noise_max = 0;
   for (size_t i = 0; i <= mag.size() / 2; i++)
     {
       double freq = i / double (mag.size()) * o.rate;
 
-      if (freq < 17000) // audible frequencies
-        noise_max = std::max (std::abs (mag[i]), noise_max);
+      if (freq < 16000) // audible frequencies
+        {
+          double noise_mag = std::abs (mag[i]);
+          if (noise_mag > noise_max)
+            {
+              noise_max = noise_mag;
+              snr.freq = freq;
+           }
+        }
     }
-  return bse_db_from_factor (sig_max / noise_max, -200);
+  snr.snr = bse_db_from_factor (sig_max / noise_max, -200);
+  return snr;
 }
 
 static void
@@ -140,7 +156,9 @@ auto_snr_test()
       o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
       o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
 
-      printf ("%f %f %f %f Y %f pw %f sw %f\n", fft_snr (o), o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.pulse_width, o.sub_width);
+      SNR snr = fft_snr (o);
+
+      printf ("%f %f %f %f Y %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.pulse_width, o.sub_width, snr.freq);
     }
 }
 
