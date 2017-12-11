@@ -725,7 +725,7 @@ public:
               {
                 const double bound_a = sub_width * pulse_width;
 
-                if (check_slave_before_master (bound_a, sync_factor)) //slave_phase > bound_a)
+                if (check_slave_before_master (bound_a, sync_factor))
                   {
                     double slave_frac = (slave_phase - bound_a) / (slave_freq / rate);
 
@@ -739,7 +739,7 @@ public:
               {
                 const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
 
-                if (check_slave_before_master (bound_b, sync_factor)) //slave_phase > bound_b)
+                if (check_slave_before_master (bound_b, sync_factor))
                   {
                     double slave_frac = (slave_phase - bound_b) / (slave_freq / rate);
 
@@ -753,7 +753,7 @@ public:
               {
                 const double bound_c = sub_width * pulse_width + (1 - sub_width);
 
-                if (check_slave_before_master (bound_c, sync_factor)) //slave_phase > bound_c)
+                if (check_slave_before_master (bound_c, sync_factor))
                   {
                     double slave_frac = (slave_phase - bound_c) / (slave_freq / rate);
 
@@ -765,7 +765,7 @@ public:
               }
             if (state == State::D)
               {
-                if (check_slave_before_master (1, sync_factor)) //slave_phase > 1)
+                if (check_slave_before_master (1, sync_factor))
                   {
                     slave_phase -= 1;
 
@@ -777,8 +777,7 @@ public:
                     state_changed = true;
                   }
               }
-            // FIXME: we may want to recheck state == State::A (and so on)
-            if (master_phase > 1)
+            if (!state_changed && master_phase > 1)
               {
                 master_phase -= 1;
 
