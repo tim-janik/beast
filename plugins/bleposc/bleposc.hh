@@ -573,7 +573,7 @@ public:
 
   static const float impulse_table[WIDTH * OVERSAMPLE + 1];
 
-  enum class State { /* FIXME: not implemented yet */
+  enum class State {
     A,
     B,
     C,
@@ -773,6 +773,7 @@ public:
                     state_changed = true;
                   }
               }
+            // FIXME: we may want to recheck state == State::A (and so on)
             if (master_phase > 1)
               {
                 master_phase -= 1;
