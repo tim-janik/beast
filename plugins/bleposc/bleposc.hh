@@ -568,7 +568,7 @@ public:
   double sync_jump_level  = 0;
   double impulse_norm     = 0;
 
-  static const int WIDTH = 12;
+  static const int WIDTH = 13;
   static const int WSHIFT = 4; // delay to align saw and impulse part of the signal
   static const int OVERSAMPLE = 64;
 
