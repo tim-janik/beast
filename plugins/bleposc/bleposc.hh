@@ -566,7 +566,6 @@ public:
   double slave_phase      = 0;
   double last_value       = 0;
   double sync_jump_level  = 0;
-  double impulse_norm     = 0;
 
   static const int WIDTH = 13;
   static const int WSHIFT = 4; // delay to align saw and impulse part of the signal
@@ -597,14 +596,6 @@ public:
     init_future();
     last_value = 1;
     sync_jump_level = 1;
-
-    double impulse_avg = 0; /* average weight of one impulse (somewhat close to 1.0) */
-    for (size_t i = 0; i < WIDTH * OVERSAMPLE; i++)
-      {
-        impulse_avg += (impulse_table[i] + impulse_table[i + 1]) / 2; // average for linear interpolation between values
-      }
-    impulse_avg /= OVERSAMPLE;
-    impulse_norm = 1.0 / impulse_avg;
   }
   void
   reset()
@@ -648,8 +639,6 @@ public:
   void
   insert_impulse (double frac, double weight)
   {
-    weight *= impulse_norm;
-
     int pos = frac * OVERSAMPLE;
     const float inter_frac = frac * OVERSAMPLE - pos;
     const float weight_left = (1 - inter_frac) * weight;
