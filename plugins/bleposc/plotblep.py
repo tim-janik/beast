@@ -37,7 +37,11 @@ def get_dc (x):
   dc = 0
   for value in x:
     dc += value
-  return 20 * math.log10 (abs (dc / len (x)))
+  dc = abs (dc) / len (x)
+  if dc > 0:
+    return 20 * math.log10 (dc)
+  else:
+    return -200 # avoid division by zero
 
 def osc_py (params):
   pulse_width = clamp (params["pulse"].value / 100., 0.01, 0.99)
