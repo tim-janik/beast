@@ -42,17 +42,6 @@ compute_fft_mag (Osc& o, size_t N)
       in_ri[i] = o.process_sample();
     }
 
-  if (IGNORE_DC)
-    {
-      double dc = 0;
-
-      for (size_t i = 0; i < N; i++)
-        dc += in_ri[i].real();
-      dc /= N;
-      for (size_t i = 0; i < N; i++)
-        in_ri[i] -= dc;
-    }
-
   double win_norm = 0;
   for (size_t i = 0; i < N; i++)
     {
