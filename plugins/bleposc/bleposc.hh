@@ -567,6 +567,8 @@ public:
   double last_value       = 0;
   double sync_jump_level  = 0;
 
+  bool   need_reset;
+
   static const int WIDTH = 13;
   static const int WSHIFT = 4; // delay to align saw and impulse part of the signal
   static const int OVERSAMPLE = 64;
@@ -596,6 +598,7 @@ public:
     init_future();
     last_value = 1;
     sync_jump_level = 1;
+    need_reset = true;
   }
   void
   reset()
@@ -636,6 +639,58 @@ public:
     return f;
   }
 
+  void
+  seek_to (double dest_phase)
+  {
+    const double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
+    const double sub_width   = clamp (sub_width_base, 0.01, 0.99);
+
+    const double sub         = clamp (sub_base, 0.0, 1.0);
+    const double shape       = clamp (shape_base, -1.0, 1.0);
+
+    const double bound_a = sub_width * pulse_width;
+    const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
+    const double bound_c = sub_width * pulse_width + (1 - sub_width);
+    const double bound_d = 1.0;
+
+    const double a1 = 1;
+    const double a2 = a1 - 4.0 * (shape + 1) * (1 - sub) * bound_a;
+
+    const double b1 = a2 + 2.0 * (shape * (1 - sub) - sub);
+    const double b2 = b1 - 4.0 * (shape + 1) * (1 - sub) * (bound_b - bound_a);
+
+    const double c1 = b2 + 2 * (1 - sub);
+    const double c2 = c1 - 4.0 * (shape + 1) * (1 - sub) * (bound_c - bound_b);
+
+    const double d1 = c2 + 2.0 * (shape * (1 - sub) + sub);
+    const double d2 = d1 - 4.0 * (shape + 1) * (1 - sub) * (bound_d - bound_c);
+
+    if (dest_phase < bound_a)
+      {
+        double frac = (bound_a - dest_phase) / bound_a;
+        last_value = a1 * frac + a2 * (1 - frac);
+      }
+    else if (dest_phase < bound_b)
+      {
+        double frac = (bound_b - dest_phase) / (bound_b - bound_a);
+        last_value = b1 * frac + b2 * (1 - frac);
+      }
+    else if (dest_phase < bound_c)
+      {
+        double frac = (bound_c - dest_phase) / (bound_c - bound_b);
+        last_value = c1 * frac + c2 * (1 - frac);
+      }
+    else
+      {
+        double frac = (bound_d - dest_phase) / (bound_d - bound_c);
+        last_value = d1 * frac + d2 * (1 - frac);
+      }
+    const double dc = (a1 + a2) / 2 * bound_a
+                    + (b1 + b2) / 2 * (bound_b - bound_a)
+                    + (c1 + c2) / 2 * (bound_c - bound_b)
+                    + (d1 + d2) / 2 * (bound_d - bound_c);
+    last_value -= dc;
+  }
   void
   insert_impulse (double frac, double weight)
   {
@@ -706,6 +761,13 @@ public:
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
     const double slave_freq = master_freq * 0.5 * sync_factor;
+
+    /* reset needs parameters, so we need to do it here */
+    if (need_reset)
+      {
+        seek_to (0);
+        need_reset = false;
+      }
 
     /* get leaky integrator constant for sample rate from ms (half-life time) */
     const double leaky_ms = 10;
@@ -829,6 +891,13 @@ public:
   set_unison (size_t n_voices, float detune, float stereo)
   {
     osc_impl.set_unison (n_voices, detune, stereo);
+  }
+  double
+  test_seek_to (double phase)
+  {
+    process_sample(); // propagate parameters
+    osc_impl.seek_to (phase);
+    return osc_impl.last_value;
   }
   double
   process_sample()

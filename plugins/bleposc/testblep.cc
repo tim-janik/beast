@@ -413,6 +413,12 @@ plot_blep (float shape, float sync, float sub, float pulse, float sub_width)
     {
       printf ("%.17g\n", o.process_sample());
     }
+#if 0
+  for (int i = 0; i < 4800; i++)
+    {
+      printf ("%17g\n", o.test_seek_to ((i % 2000) / 2000.));
+    }
+#endif
 }
 
 static void
