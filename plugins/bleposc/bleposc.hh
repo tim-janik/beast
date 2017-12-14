@@ -653,17 +653,19 @@ public:
     const double bound_c = sub_width * pulse_width + (1 - sub_width);
     const double bound_d = 1.0;
 
+    const double saw_slope = -4.0 * (shape + 1) * (1 - sub);
+
     const double a1 = 1;
-    const double a2 = a1 - 4.0 * (shape + 1) * (1 - sub) * bound_a;
+    const double a2 = a1 + saw_slope * bound_a;
 
     const double b1 = a2 + 2.0 * (shape * (1 - sub) - sub);
-    const double b2 = b1 - 4.0 * (shape + 1) * (1 - sub) * (bound_b - bound_a);
+    const double b2 = b1 + saw_slope * (bound_b - bound_a);
 
     const double c1 = b2 + 2 * (1 - sub);
-    const double c2 = c1 - 4.0 * (shape + 1) * (1 - sub) * (bound_c - bound_b);
+    const double c2 = c1 + saw_slope * (bound_c - bound_b);
 
     const double d1 = c2 + 2.0 * (shape * (1 - sub) + sub);
-    const double d2 = d1 - 4.0 * (shape + 1) * (1 - sub) * (bound_d - bound_c);
+    const double d2 = d1 + saw_slope * (bound_d - bound_c);
 
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
