@@ -665,6 +665,11 @@ public:
     const double d1 = c2 + 2.0 * (shape * (1 - sub) + sub);
     const double d2 = d1 - 4.0 * (shape + 1) * (1 - sub) * (bound_d - bound_c);
 
+    double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
+
+    dest_phase *= sync_factor;
+    dest_phase -= (int) dest_phase;
+
     if (dest_phase < bound_a)
       {
         double frac = (bound_a - dest_phase) / bound_a;
@@ -685,10 +690,63 @@ public:
         double frac = (bound_d - dest_phase) / (bound_d - bound_c);
         last_value = d1 * frac + d2 * (1 - frac);
       }
-    const double dc = (a1 + a2) / 2 * bound_a
-                    + (b1 + b2) / 2 * (bound_b - bound_a)
-                    + (c1 + c2) / 2 * (bound_c - bound_b)
-                    + (d1 + d2) / 2 * (bound_d - bound_c);
+    /* dc without sync */
+    double dc = (a1 + a2) / 2 * bound_a
+              + (b1 + b2) / 2 * (bound_b - bound_a)
+              + (c1 + c2) / 2 * (bound_c - bound_b)
+              + (d1 + d2) / 2 * (bound_d - bound_c);
+
+    /* dc offset introduced by sync */
+    double sync_len = sync_factor;
+    double sync_last_len = sync_len - int (sync_len);
+
+    double fa, fb, fc, fd;
+    double va2 = a2;
+    double vb2 = b2;
+    double vc2 = c2;
+    double vd2 = d2;
+    if (sync_last_len < bound_a)
+      {
+        double frac = (bound_a - sync_last_len) / bound_a;
+        va2 = a1 * frac + a2 * (1 - frac);
+
+        fa = 1 - frac;
+        fb = fc = fd = 0;
+      }
+    else if (sync_last_len < bound_b)
+      {
+        double frac = (bound_b - sync_last_len) / (bound_b - bound_a);
+        vb2 = b1 * frac + b2 * (1 - frac);
+
+        fa = 1;
+        fb = 1 - frac;
+        fc = fd = 0;
+      }
+    else if (sync_last_len < bound_c)
+      {
+        double frac = (bound_c - sync_last_len) / (bound_c - bound_b);
+        vc2 = c1 * frac + c2 * (1 - frac);
+
+        fa = fb = 1;
+        fc = 1 - frac;
+        fd = 0;
+      }
+    else
+      {
+        double frac = (bound_d - sync_last_len) / (bound_d - bound_c);
+        vd2 = d1 * frac + d2 * (1 - frac);
+
+        fa = fb = fc = 1;
+        fd = 1 - frac;
+      }
+
+    /* dc sync part of the signal */
+    double dc_sync = ((a1 + va2) / 2 * fa * bound_a
+                    + (b1 + vb2) / 2 * fb * (bound_b - bound_a)
+                    + (c1 + vc2) / 2 * fc * (bound_c - bound_b)
+                    + (d1 + vd2) / 2 * fd * (bound_d - bound_c));
+
+    dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
     last_value -= dc;
   }
   void
