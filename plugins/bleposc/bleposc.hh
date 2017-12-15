@@ -570,7 +570,7 @@ public:
   bool   need_reset;
 
   static const int WIDTH = 13;
-  static const int WSHIFT = 4; // delay to align saw and impulse part of the signal
+  static const int WSHIFT = 6; // delay to align saw and impulse part of the signal
   static const int OVERSAMPLE = 64;
 
   static const float impulse_table[WIDTH * OVERSAMPLE + 1];
