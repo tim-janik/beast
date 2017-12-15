@@ -25,15 +25,20 @@ complex_ptr (vector<complex<double>>& vec)
   return reinterpret_cast<double *> (&vec[0]);
 }
 
+enum class DCTest {
+  OFF,
+  ON
+};
+
 static vector<double>
-compute_fft_mag (Osc& o, size_t N)
+compute_fft_mag (Osc& o, size_t N, DCTest dc_test)
 {
-  const bool IGNORE_DC = true;
   size_t OVER = 8;
   vector<complex<double>> in_ri (N * OVER), out_ri (N * OVER);
 
-  if (IGNORE_DC)
+  if (dc_test == DCTest::OFF)
     {
+      // skip possible dc at start
       for (size_t i = 0; i < 4 * N; i++)
         o.process_sample();
     }
@@ -71,26 +76,26 @@ struct SNR
   double freq;
 };
 
-static SNR fft_snr (Osc& o);
+static SNR fft_snr (Osc& o, DCTest dc_test);
 
 static void
-print_fft (Osc& o, size_t N)
+print_fft (Osc& o, size_t N, DCTest dc_test)
 {
-  vector<double> mag = compute_fft_mag (o, N);
+  vector<double> mag = compute_fft_mag (o, N, dc_test);
 
   for (size_t i = 0; i <= mag.size() / 2; i++)
     {
       double d = i / double (mag.size()) * o.rate;
       printf ("%.17g %.17g\n", d, mag[i]);
     }
-  SNR snr = fft_snr (o);
+  SNR snr = fft_snr (o, dc_test);
   printf ("#fft_snr: %f dB @ %f\n", snr.snr, snr.freq);
 }
 
 static SNR
-fft_snr (Osc& o)
+fft_snr (Osc& o, DCTest dc_test)
 {
-  vector<double> mag = compute_fft_mag (o, 8192);
+  vector<double> mag = compute_fft_mag (o, 8192, dc_test);
 
   /* this is required because the width of the window is hardcoded to [-32:32] bins below */
   assert (mag.size() == 8192 * 8);
@@ -131,7 +136,7 @@ fft_snr (Osc& o)
 }
 
 static void
-auto_snr_test()
+auto_snr_test (DCTest dc_test)
 {
   GRand *rand = g_rand_new_with_seed (42);
 
@@ -145,7 +150,7 @@ auto_snr_test()
       o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
       o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
 
-      SNR snr = fft_snr (o);
+      SNR snr = fft_snr (o, dc_test);
 
       printf ("%f %f %f %f Y %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.pulse_width, o.sub_width, snr.freq);
     }
@@ -496,13 +501,17 @@ main (int argc, char **argv)
       if (test_name == "vnorm")
         vnorm_test (o);
       else if (test_name == "fft")
-        print_fft (o, 8192);
+        print_fft (o, 8192, DCTest::OFF);
+      else if (test_name == "fft-dc")
+        print_fft (o, 8192, DCTest::ON);
       else if (test_name == "speed")
         speed_test (o);
       else if (test_name == "speed2")
         speed2_test();
       else if (test_name == "snr")
-        auto_snr_test();
+        auto_snr_test (DCTest::OFF);
+      else if (test_name == "snr-dc")
+        auto_snr_test (DCTest::ON);
       else if (test_name == "exp2")
         exp2_test();
       else if (test_name == "reset")
