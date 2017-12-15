@@ -1,3 +1,12 @@
+- unison
+- pass modulators into inner loop computation
+- if saw dc changes within on cycle, the impulse height is not correct
+- seek: improve code quality (dc)
+- seek: slope approximation
+- seek: initial conditions for dest_phase != 0
+
+- sync specialization
+- possible table-of-exp2
+
+OLD:
 dc subsampling
-sync specialization
-possible table-of-exp2
