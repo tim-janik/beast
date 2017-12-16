@@ -699,54 +699,50 @@ public:
               + (d1 + d2) / 2 * (bound_d - bound_c);
 
     /* dc offset introduced by sync */
-    double sync_len = sync_factor;
-    double sync_last_len = sync_len - int (sync_len);
+    const double sync_phase = sync_factor - int (sync_factor);
 
-    double fa, fb, fc, fd;
-    double va2 = a2;
-    double vb2 = b2;
-    double vc2 = c2;
-    double vd2 = d2;
-    if (sync_last_len < bound_a)
+    double a_avg = (a1 + a2) / 2;
+    double b_avg = (b1 + b2) / 2;
+    double c_avg = (c1 + c2) / 2;
+    double d_avg = (d1 + d2) / 2;
+
+    if (sync_phase < bound_a)
       {
-        double frac = (bound_a - sync_last_len) / bound_a;
-        va2 = a1 * frac + a2 * (1 - frac);
+        const double frac = (bound_a - sync_phase) / bound_a;
+        const double sync_a2 = a1 * frac + a2 * (1 - frac);
 
-        fa = 1 - frac;
-        fb = fc = fd = 0;
+        a_avg = (1 - frac) * (a1 + sync_a2) / 2;
+        b_avg = c_avg = d_avg = 0;
       }
-    else if (sync_last_len < bound_b)
+    else if (sync_phase < bound_b)
       {
-        double frac = (bound_b - sync_last_len) / (bound_b - bound_a);
-        vb2 = b1 * frac + b2 * (1 - frac);
+        const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
+        const double sync_b2 = b1 * frac + b2 * (1 - frac);
 
-        fa = 1;
-        fb = 1 - frac;
-        fc = fd = 0;
+        b_avg = (1 - frac) * (b1 + sync_b2) / 2;
+        c_avg = d_avg = 0;
       }
-    else if (sync_last_len < bound_c)
+    else if (sync_phase < bound_c)
       {
-        double frac = (bound_c - sync_last_len) / (bound_c - bound_b);
-        vc2 = c1 * frac + c2 * (1 - frac);
+        const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
+        const double sync_c2 = c1 * frac + c2 * (1 - frac);
 
-        fa = fb = 1;
-        fc = 1 - frac;
-        fd = 0;
+        c_avg = (1 - frac) * (c1 + sync_c2) / 2;
+        d_avg = 0;
       }
     else
       {
-        double frac = (bound_d - sync_last_len) / (bound_d - bound_c);
-        vd2 = d1 * frac + d2 * (1 - frac);
+        const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
+        const double sync_d2 = d1 * frac + d2 * (1 - frac);
 
-        fa = fb = fc = 1;
-        fd = 1 - frac;
+        d_avg = (1 - frac) * (d1 + sync_d2) / 2;
       }
 
     /* dc sync part of the signal */
-    double dc_sync = ((a1 + va2) / 2 * fa * bound_a
-                    + (b1 + vb2) / 2 * fb * (bound_b - bound_a)
-                    + (c1 + vc2) / 2 * fc * (bound_c - bound_b)
-                    + (d1 + vd2) / 2 * fd * (bound_d - bound_c));
+    double dc_sync = a_avg * bound_a
+                   + b_avg * (bound_b - bound_a)
+                   + c_avg * (bound_c - bound_b)
+                   + d_avg * (bound_d - bound_c);
 
     dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
     last_value -= dc;
