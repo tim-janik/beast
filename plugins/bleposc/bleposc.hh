@@ -643,7 +643,7 @@ public:
         voice.init_future();
 
         voice.last_value = 1;
-        voice.sync_jump_level = 1;
+        voice.sync_jump_level = 0;
       }
   }
   void
@@ -813,7 +813,7 @@ public:
       {
         /* FIXME: not correct */
         voice.last_value = last_value;
-        voice.sync_jump_level = 1;
+        voice.sync_jump_level = 0;
       }
   }
   void
@@ -1004,10 +1004,10 @@ public:
 
                     double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate);
 
-                    insert_blep (voice, master_frac, (1 - voice.sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
+                    insert_blep (voice, master_frac, 4.0 * (shape + 1) * (1 - sub) * sync_factor - voice.sync_jump_level);
 
                     voice.slave_phase = voice.master_phase * sync_factor;
-                    voice.sync_jump_level = 1;
+                    voice.sync_jump_level = 0;
 
                     voice.state = State::A;
                     state_changed = true;
