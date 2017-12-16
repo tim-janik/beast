@@ -9,14 +9,16 @@ interface BlepOsc : Effect {
   Info    category    = _("/Audio Sources/Blep Oscillator");
   Info    blurb       = _("An oscillator for classic analog waveforms based on bleps");
   Info    icon        = "bleposc.png";
-  IStream freq_in     = Stream (_("Freq In"), _("Frequency Input"));
-  IStream freq_mod_in = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
-  IStream shape_mod_in= Stream (_("Shape Mod In"), _("Shape Modulation Input"));
-  IStream sub_mod_in  = Stream (_("Sub Mod In"), _("Subharmonic Modulation Input"));
-  IStream sync_mod_in = Stream (_("Sync Mod In"), _("Sync Modulation Input"));
-  IStream pulse_mod_in= Stream (_("Pulse Mod In"), _("Pulse Modulation Input"));
-  OStream left_out    = Stream (_("Left Out"), _("Left audio output"));
-  OStream right_out   = Stream (_("Right Out"), _("Right audio output"));
+
+  IStream freq_in           = Stream (_("Freq In"), _("Frequency Input"));
+  IStream freq_mod_in       = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
+  IStream shape_mod_in      = Stream (_("Shape Mod In"), _("Shape Modulation Input"));
+  IStream pulse_mod_in      = Stream (_("Pulse Mod In"), _("Pulse Modulation Input"));
+  IStream sub_mod_in        = Stream (_("Sub Mod In"), _("Subharmonic Modulation Input"));
+  IStream sub_width_mod_in  = Stream (_("Sub Width Mod In"), _("Subharmonic Width Modulation Input"));
+  IStream sync_mod_in       = Stream (_("Sync Mod In"), _("Sync Modulation Input"));
+  OStream left_out          = Stream (_("Left Out"), _("Left audio output"));
+  OStream right_out         = Stream (_("Right Out"), _("Right audio output"));
 
   group _("Frequency") {
     Real    frequency	     = Freq(_("Frequency"), _("Constant Frequency (used when frequency input is not connected"), 440.0, STANDARD);
