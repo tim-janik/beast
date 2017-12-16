@@ -79,7 +79,8 @@ class BlepOsc : public BlepOscBase {
                                  istream_ptr (ICHANNEL_SHAPE_MOD_IN),
                                  istream_ptr (ICHANNEL_SUB_MOD_IN),
                                  istream_ptr (ICHANNEL_SYNC_MOD_IN),
-                                 istream_ptr (ICHANNEL_PULSE_MOD_IN));
+                                 istream_ptr (ICHANNEL_PULSE_MOD_IN),
+                                 istream_ptr (ICHANNEL_SUB_WIDTH_MOD_IN));
     }
   };
 public:
