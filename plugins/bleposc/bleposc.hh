@@ -881,7 +881,7 @@ public:
     Block::fill (n_values, left_out, 0.0);
     Block::fill (n_values, right_out, 0.0);
 
-    double master_freq = frequency_base;
+    double master_freq = frequency_factor * frequency_base;
     double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
     double sub         = clamp (sub_base, 0.0, 1.0);
     double sub_width   = clamp (sub_width_base, 0.01, 0.99);
