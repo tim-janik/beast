@@ -562,11 +562,6 @@ public:
   double sub_width_base   = 0.5;
   double sub_width_mod    = 0.0;
 
-  double master_phase     = 0;
-  double slave_phase      = 0;
-  double last_value       = 0;
-  double sync_jump_level  = 0;
-
   bool   need_reset;
 
   static const int WIDTH = 13;
@@ -580,10 +575,50 @@ public:
     B,
     C,
     D
-  } state = State::A;
+  };
 
-  struct UnisonVoice /* FIXME: not implemented yet */
+  struct UnisonVoice
   {
+    double freq_factor     = 1;
+    double left_factor     = 1;
+    double right_factor    = 0;
+
+    double master_phase    = 0;
+    double slave_phase     = 0;
+
+    double last_value      = 0; /* leaky integrator state */
+    double sync_jump_level = 0;
+
+    int    future_pos      = 0;
+
+    State  state = State::A;
+
+    // could be shared under certain conditions
+    std::array<float, WIDTH * 2> future;
+
+    void
+    init_future()
+    {
+      future.fill (0);
+      future_pos = 0;
+    }
+    float
+    pop_future()
+    {
+      const float f = future[future_pos++];
+      if (future_pos == WIDTH)
+        {
+          // this loop was slightly faster than std::copy_n + std::fill_n
+          for (int i = 0; i < WIDTH; i++)
+            {
+              future[i] = future[WIDTH + i];
+              future[WIDTH + i] = 0;
+            }
+          future_pos = 0;
+        }
+      return f;
+    }
+
     void
     reset_master (double new_master_phase, State new_sub_state)
     {
@@ -595,48 +630,73 @@ public:
 
   OscImpl()
   {
-    init_future();
-    last_value = 1;
-    sync_jump_level = 1;
     need_reset = true;
+
+    set_unison (1, 0, 0); // default
   }
   void
   reset()
   {
-    /* FIXME: not implemented yet */
+    for (auto& voice : unison_voices)
+      {
+        /* FIXME: not correct */
+        voice.init_future();
+
+        voice.last_value = 1;
+        voice.sync_jump_level = 1;
+      }
   }
   void
   set_unison (size_t n_voices, float detune, float stereo)
   {
-    /* FIXME: not implemented yet */
-  }
+    const bool unison_voices_changed = unison_voices.size() != n_voices;
 
-  int future_pos;
+    unison_voices.resize (n_voices);
 
-  // could be shared under certain conditions
-  std::array<float, WIDTH * 2> future;
-
-  void
-  init_future()
-  {
-    future.fill (0);
-    future_pos = 0;
-  }
-  float
-  pop_future()
-  {
-    const float f = future[future_pos++];
-    if (future_pos == WIDTH)
+    bool left_channel = true; /* start spreading voices at the left channel */
+    for (size_t i = 0; i < unison_voices.size(); i++)
       {
-        // this loop was slightly faster than std::copy_n + std::fill_n
-        for (int i = 0; i < WIDTH; i++)
+        if (n_voices == 1)
+          unison_voices[i].freq_factor = 1;
+        else
           {
-            future[i] = future[WIDTH + i];
-            future[WIDTH + i] = 0;
+            const float detune_cent = -detune / 2.0 + i / float (n_voices - 1) * detune;
+            unison_voices[i].freq_factor = pow (2, detune_cent / 1200);
           }
-        future_pos = 0;
+        /* stereo spread factors */
+        double left_factor, right_factor;
+        bool odd_n_voices = unison_voices.size() & 1;
+        if (odd_n_voices && i == unison_voices.size() / 2)  // odd number of voices: this voice is centered
+          {
+            left_factor  = (1 - stereo) + stereo * 0.5;
+            right_factor = (1 - stereo) + stereo * 0.5;
+          }
+        else if (left_channel) // alternate beween left and right voices
+          {
+            left_factor  = 0.5 + stereo / 2;
+            right_factor = 0.5 - stereo / 2;
+            left_channel = false;
+          }
+        else
+          {
+            left_factor  = 0.5 - stereo / 2;
+            right_factor = 0.5 + stereo / 2;
+            left_channel = true;
+          }
+        /* ensure constant total energy of left + right channel combined
+         *
+         * also take into account the more unison voices we add up, the louder the result
+         * will be, so compensate for this:
+         *
+         *   -> each time the number of voices is doubled, the signal level is increased by
+         *      a factor of sqrt (2)
+         */
+        const double norm = sqrt (left_factor * left_factor + right_factor * right_factor) * sqrt (n_voices / 2.0);
+        unison_voices[i].left_factor  = left_factor / norm;
+        unison_voices[i].right_factor = right_factor / norm;
       }
-    return f;
+    if (unison_voices_changed)
+      reset();
   }
 
   void
@@ -668,6 +728,8 @@ public:
     const double d2 = d1 + saw_slope * (bound_d - bound_c);
 
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
+
+    double last_value; /* leaky integrator state */
 
     dest_phase *= sync_factor;
     dest_phase -= (int) dest_phase;
@@ -746,9 +808,16 @@ public:
 
     dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
     last_value -= dc;
+
+    for (auto& voice : unison_voices)
+      {
+        /* FIXME: not correct */
+        voice.last_value = last_value;
+        voice.sync_jump_level = 1;
+      }
   }
   void
-  insert_impulse (double frac, double weight)
+  insert_blep (UnisonVoice& voice, double frac, double weight)
   {
     int pos = frac * OVERSAMPLE;
     const float inter_frac = frac * OVERSAMPLE - pos;
@@ -760,15 +829,15 @@ public:
 
     for (int i = 0; i < WIDTH; i++)
       {
-        future[i + future_pos] += impulse_table[pos] * weight_left + impulse_table[pos + 1] * weight_right;
+        voice.future[i + voice.future_pos] += impulse_table[pos] * weight_left + impulse_table[pos + 1] * weight_right;
 
         pos += OVERSAMPLE;
       }
   }
   void
-  insert_future_delta (double weight)
+  insert_future_delta (UnisonVoice& voice, double weight)
   {
-    future[future_pos + WSHIFT] += weight;
+    voice.future[voice.future_pos + WSHIFT] += weight;
   }
 
   double
@@ -783,14 +852,14 @@ public:
    * before master oscillator sync
    */
   bool
-  check_slave_before_master (double target_phase, double sync_factor)
+  check_slave_before_master (UnisonVoice& voice, double target_phase, double sync_factor)
   {
-    if (slave_phase > target_phase)
+    if (voice.slave_phase > target_phase)
       {
-        if (master_phase > 1)
+        if (voice.master_phase > 1)
           {
-            const double slave_frac = (slave_phase - target_phase) / sync_factor; // FIXME: ?
-            const double master_frac = master_phase - 1;                          // FIXME: ?
+            const double slave_frac = (voice.slave_phase - target_phase) / sync_factor; // FIXME: ?
+            const double master_frac = voice.master_phase - 1;                          // FIXME: ?
 
             return master_frac < slave_frac;
           }
@@ -809,14 +878,15 @@ public:
                          const float *pulse_mod_in = nullptr,
                          const float *sub_width_mod_in = nullptr)
   {
+    Block::fill (n_values, left_out, 0.0);
+    Block::fill (n_values, right_out, 0.0);
+
     double master_freq = frequency_base;
     double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
     double sub         = clamp (sub_base, 0.0, 1.0);
     double sub_width   = clamp (sub_width_base, 0.01, 0.99);
     double shape       = clamp (shape_base, -1.0, 1.0);
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
-
-    const double slave_freq = master_freq * 0.5 * sync_factor;
 
     /* reset needs parameters, so we need to do it here */
     if (need_reset)
@@ -829,97 +899,104 @@ public:
     const double leaky_ms = 10;
     const double leaky_a = pow (2.0, -1000.0 / (rate * leaky_ms));
 
-    for (unsigned int n = 0; n < n_values; n++)
+    for (auto& voice : unison_voices)
       {
-        master_phase += master_freq * 0.5 / rate;
-        slave_phase += slave_freq / rate;
+        const double unison_master_freq = master_freq * voice.freq_factor;
+        const double unison_slave_freq  = unison_master_freq * 0.5 * sync_factor;
 
-        bool state_changed;
-        do
+        for (unsigned int n = 0; n < n_values; n++)
           {
-            state_changed = false;
+            voice.master_phase += unison_master_freq * 0.5 / rate;
+            voice.slave_phase  += unison_slave_freq / rate;
 
-            if (state == State::A)
+            bool state_changed;
+            do
               {
-                const double bound_a = sub_width * pulse_width;
+                state_changed = false;
 
-                if (check_slave_before_master (bound_a, sync_factor))
+                if (voice.state == State::A)
                   {
-                    double slave_frac = (slave_phase - bound_a) / (slave_freq / rate);
+                    const double bound_a = sub_width * pulse_width;
 
-                    insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) - sub));
-                    sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
-                    state = State::B;
+                    if (check_slave_before_master (voice, bound_a, sync_factor))
+                      {
+                        double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
+
+                        insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) - sub));
+                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
+                        voice.state = State::B;
+                        state_changed = true;
+                      }
+                  }
+                if (voice.state == State::B)
+                  {
+                    const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
+
+                    if (check_slave_before_master (voice, bound_b, sync_factor))
+                      {
+                        double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
+
+                        insert_blep (voice, slave_frac, 2.0 * (1 - sub));
+                        voice.sync_jump_level += 2 * (1 - sub);
+                        voice.state = State::C;
+                        state_changed = true;
+                      }
+                  }
+                if (voice.state == State::C)
+                  {
+                    const double bound_c = sub_width * pulse_width + (1 - sub_width);
+
+                    if (check_slave_before_master (voice, bound_c, sync_factor))
+                      {
+                        double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
+
+                        insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) + sub));
+                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
+                        voice.state = State::D;
+                        state_changed = true;
+                      }
+                  }
+                if (voice.state == State::D)
+                  {
+                    if (check_slave_before_master (voice, 1, sync_factor))
+                      {
+                        voice.slave_phase -= 1;
+
+                        double slave_frac = voice.slave_phase / (unison_slave_freq / rate);
+
+                        insert_blep (voice, slave_frac, 2.0 * (1 - sub));
+                        voice.sync_jump_level += 2.0 * (1 - sub);
+                        voice.state = State::A;
+                        state_changed = true;
+                      }
+                  }
+                if (!state_changed && voice.master_phase > 1)
+                  {
+                    voice.master_phase -= 1;
+
+                    double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate);
+
+                    insert_blep (voice, master_frac, (1 - voice.sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
+
+                    voice.slave_phase = voice.master_phase * sync_factor;
+                    voice.sync_jump_level = 1;
+
+                    voice.state = State::A;
                     state_changed = true;
                   }
               }
-            if (state == State::B)
-              {
-                const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
+            while (state_changed); // rerun all state checks if state was modified
 
-                if (check_slave_before_master (bound_b, sync_factor))
-                  {
-                    double slave_frac = (slave_phase - bound_b) / (slave_freq / rate);
+            double saw_delta = -4.0 * unison_slave_freq / rate * (shape + 1) * (1 - sub);
+            insert_future_delta (voice, saw_delta); // align with the impulses
 
-                    insert_impulse (slave_frac, 2.0 * (1 - sub));
-                    sync_jump_level += 2 * (1 - sub);
-                    state = State::C;
-                    state_changed = true;
-                  }
-              }
-            if (state == State::C)
-              {
-                const double bound_c = sub_width * pulse_width + (1 - sub_width);
+            /* leaky integration */
+            double value = leaky_a * voice.last_value + voice.pop_future();
+            voice.last_value = value;
 
-                if (check_slave_before_master (bound_c, sync_factor))
-                  {
-                    double slave_frac = (slave_phase - bound_c) / (slave_freq / rate);
-
-                    insert_impulse (slave_frac, 2.0 * (shape * (1 - sub) + sub));
-                    sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
-                    state = State::D;
-                    state_changed = true;
-                  }
-              }
-            if (state == State::D)
-              {
-                if (check_slave_before_master (1, sync_factor))
-                  {
-                    slave_phase -= 1;
-
-                    double slave_frac = slave_phase / (slave_freq / rate);
-
-                    insert_impulse (slave_frac, 2.0 * (1 - sub));
-                    sync_jump_level += 2.0 * (1 - sub);
-                    state = State::A;
-                    state_changed = true;
-                  }
-              }
-            if (!state_changed && master_phase > 1)
-              {
-                master_phase -= 1;
-
-                double master_frac = master_phase / (master_freq * 0.5 / rate);
-
-                insert_impulse (master_frac, (1 - sync_jump_level) + 4.0 * (shape + 1) * (1 - sub) * sync_factor);
-
-                slave_phase = master_phase * sync_factor;
-                sync_jump_level = 1;
-
-                state = State::A;
-                state_changed = true;
-              }
+            left_out[n] += value * voice.left_factor;
+            right_out[n] += value * voice.right_factor;
           }
-        while (state_changed); // rerun all state checks if state was modified
-
-        double saw_delta = -4.0 * slave_freq / rate * (shape + 1) * (1 - sub);
-        insert_future_delta (saw_delta); // align with the impulses
-
-        /* leaky integration */
-        double value = leaky_a * last_value + pop_future();
-        last_value = value;
-
-        left_out[n] = right_out[n] = value;
       }
   }
 };
@@ -953,7 +1030,9 @@ public:
   {
     process_sample(); // propagate parameters
     osc_impl.seek_to (phase);
-    return osc_impl.last_value;
+
+    assert (osc_impl.unison_voices.size() > 0);
+    return osc_impl.unison_voices[0].last_value;
   }
   double
   process_sample()
