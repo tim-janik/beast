@@ -901,11 +901,39 @@ public:
 
     for (auto& voice : unison_voices)
       {
-        const double unison_master_freq = master_freq * voice.freq_factor;
-        const double unison_slave_freq  = unison_master_freq * 0.5 * sync_factor;
-
         for (unsigned int n = 0; n < n_values; n++)
           {
+            if (shape_mod_in)
+              shape = clamp (shape_base + shape_mod * shape_mod_in[n], -1.0, 1.0);
+
+            if (sync_mod_in)
+              sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
+
+            if (freq_in)
+              master_freq = frequency_factor * BSE_SIGNAL_TO_FREQ (freq_in[n]);
+
+            double unison_master_freq = master_freq * voice.freq_factor;
+
+            if (freq_mod_in)
+              unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
+
+            if (shape_mod_in)
+              shape = clamp (shape_base + shape_mod * shape_mod_in[n], -1.0, 1.0);
+
+            if (sub_mod_in)
+              sub = clamp (sub_base + sub_mod * sub_mod_in[n], 0.0, 1.0);
+
+            if (sync_mod_in)
+              sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
+
+            const double unison_slave_freq = unison_master_freq * 0.5 * sync_factor;
+
+            if (pulse_mod_in)
+              pulse_width = clamp (pulse_width_base + pulse_width_mod * pulse_mod_in[n], 0.01, 0.99);
+
+            if (sub_width_mod_in)
+              sub_width = clamp (sub_width_base + sub_width_mod * sub_width_mod_in[n], 0.01, 0.99);
+
             voice.master_phase += unison_master_freq * 0.5 / rate;
             voice.slave_phase  += unison_slave_freq / rate;
 
