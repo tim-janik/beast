@@ -587,7 +587,6 @@ public:
     double slave_phase     = 0;
 
     double last_value      = 0; /* leaky integrator state */
-    double sync_jump_level = 0;
 
     int    future_pos      = 0;
 
@@ -643,7 +642,6 @@ public:
         voice.init_future();
 
         voice.last_value = 1;
-        voice.sync_jump_level = 0;
       }
   }
   void
@@ -813,7 +811,6 @@ public:
       {
         /* FIXME: not correct */
         voice.last_value = last_value;
-        voice.sync_jump_level = 0;
       }
   }
   void
@@ -951,7 +948,6 @@ public:
                         double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
 
                         insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) - sub));
-                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
                         voice.state = State::B;
                         state_changed = true;
                       }
@@ -965,7 +961,6 @@ public:
                         double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
 
                         insert_blep (voice, slave_frac, 2.0 * (1 - sub));
-                        voice.sync_jump_level += 2 * (1 - sub);
                         voice.state = State::C;
                         state_changed = true;
                       }
@@ -979,7 +974,6 @@ public:
                         double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
 
                         insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) + sub));
-                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
                         voice.state = State::D;
                         state_changed = true;
                       }
@@ -993,7 +987,6 @@ public:
                         double slave_frac = voice.slave_phase / (unison_slave_freq / rate);
 
                         insert_blep (voice, slave_frac, 2.0 * (1 - sub));
-                        voice.sync_jump_level += 2.0 * (1 - sub);
                         voice.state = State::A;
                         state_changed = true;
                       }
@@ -1004,10 +997,22 @@ public:
 
                     double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate);
 
-                    insert_blep (voice, master_frac, 4.0 * (shape + 1) * (1 - sub) * sync_factor - voice.sync_jump_level);
+                    double sync_jump_level = 0;
 
-                    voice.slave_phase = voice.master_phase * sync_factor;
-                    voice.sync_jump_level = 0;
+                    if (voice.state > State::A)
+                      sync_jump_level += 2 * (shape * (1 - sub) - sub);
+
+                    if (voice.state > State::B)
+                      sync_jump_level += 2 * (1 - sub);
+
+                    if (voice.state > State::C)
+                      sync_jump_level += 2 * (shape * (1 - sub) + sub);
+
+                    const double new_slave_phase = voice.master_phase * sync_factor;
+
+                    insert_blep (voice, master_frac, 4.0 * (shape + 1) * (1 - sub) * (voice.slave_phase - new_slave_phase) - sync_jump_level);
+
+                    voice.slave_phase = new_slave_phase;
 
                     voice.state = State::A;
                     state_changed = true;
