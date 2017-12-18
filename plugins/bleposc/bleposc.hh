@@ -704,14 +704,12 @@ public:
   }
 
   void
-  reset_voice_state()
+  reset_voice_state (double shape,
+                     double pulse_width,
+                     double sub,
+                     double sub_width,
+                     double sync_factor)
   {
-    const double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
-    const double sub_width   = clamp (sub_width_base, 0.01, 0.99);
-
-    const double sub         = clamp (sub_base, 0.0, 1.0);
-    const double shape       = clamp (shape_base, -1.0, 1.0);
-
     const double bound_a = sub_width * pulse_width;
     const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
     const double bound_c = sub_width * pulse_width + (1 - sub_width);
@@ -730,8 +728,6 @@ public:
 
     const double d1 = c2 + 2.0 * (shape * (1 - sub) + sub);
     const double d2 = d1 + saw_slope * (bound_d - bound_c);
-
-    double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
     /* dc without sync */
     double dc = (a1 + a2) / 2 * bound_a
@@ -944,7 +940,7 @@ public:
             /* reset needs parameters, so we need to do it here */
             if (need_reset_voice_state)
               {
-                reset_voice_state();
+                reset_voice_state (shape, pulse_width, sub, sub_width, sync_factor);
                 need_reset_voice_state = false;
               }
 
