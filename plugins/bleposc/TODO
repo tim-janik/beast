@@ -1,6 +1,4 @@
-- unison
 - seek: slope approximation
-- seek: initial conditions for dest_phase != 0
 
 - sync specialization
 - possible table-of-exp2

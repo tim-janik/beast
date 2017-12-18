@@ -906,12 +906,6 @@ public:
       {
         for (unsigned int n = 0; n < n_values; n++)
           {
-            if (shape_mod_in)
-              shape = clamp (shape_base + shape_mod * shape_mod_in[n], -1.0, 1.0);
-
-            if (sync_mod_in)
-              sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
-
             if (freq_in)
               master_freq = frequency_factor * BSE_SIGNAL_TO_FREQ (freq_in[n]);
 
