@@ -395,9 +395,9 @@ reset_test (Osc& o)
       double r = rpos / 10.;
 
       o.osc_impl.reset(); // clear future
-      o.osc_impl.unison_voices[0].reset_master (r, OscImpl::State::A);
+      o.osc_impl.reset_master (o.osc_impl.unison_voices[0], r);
 
-      double t = r * o.rate / o.master_freq;
+      double t = r * o.rate / (o.master_freq * 0.5);
       for (int l = 0; l < 4000; l++)
         printf ("%.17g %.17g #%d\n", t++, o.process_sample(), rpos);
     }
