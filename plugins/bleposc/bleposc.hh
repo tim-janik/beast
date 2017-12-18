@@ -562,7 +562,7 @@ public:
   double sub_width_base   = 0.5;
   double sub_width_mod    = 0.0;
 
-  bool   need_reset;
+  bool   need_reset_voice_state;
 
   static const int WIDTH = 13;
   static const int WSHIFT = 6; // delay to align saw and impulse part of the signal
@@ -590,7 +590,7 @@ public:
 
     int    future_pos      = 0;
 
-    State  state = State::A;
+    State  state           = State::A;
 
     // could be shared under certain conditions
     std::array<float, WIDTH * 2> future;
@@ -617,32 +617,38 @@ public:
         }
       return f;
     }
-
-    void
-    reset_master (double new_master_phase, State new_sub_state)
-    {
-      /* FIXME: not implemented yet */
-    }
   };
 
   std::vector<UnisonVoice> unison_voices;
 
   OscImpl()
   {
-    need_reset = true;
-
     set_unison (1, 0, 0); // default
   }
   void
   reset()
   {
+    const bool randomize_phase = unison_voices.size() > 1;
+
     for (auto& voice : unison_voices)
       {
-        /* FIXME: not correct */
         voice.init_future();
 
-        voice.last_value = 1;
+        if (randomize_phase) // randomize start phase for true unison
+          {
+            reset_master (voice, g_random_double_range (0, 1));
+          }
+        else
+          {
+            reset_master (voice, 0);
+          }
       }
+  }
+  void
+  reset_master (UnisonVoice& voice, double master_phase)
+  {
+    voice.master_phase = master_phase;
+    need_reset_voice_state = true;
   }
   void
   set_unison (size_t n_voices, float detune, float stereo)
@@ -698,7 +704,7 @@ public:
   }
 
   void
-  seek_to (double dest_phase)
+  reset_voice_state()
   {
     const double pulse_width = clamp (pulse_width_base, 0.01, 0.99);
     const double sub_width   = clamp (sub_width_base, 0.01, 0.99);
@@ -727,90 +733,101 @@ public:
 
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
-    double last_value; /* leaky integrator state */
-
-    dest_phase *= sync_factor;
-    dest_phase -= (int) dest_phase;
-
-    if (dest_phase < bound_a)
-      {
-        double frac = (bound_a - dest_phase) / bound_a;
-        last_value = a1 * frac + a2 * (1 - frac);
-      }
-    else if (dest_phase < bound_b)
-      {
-        double frac = (bound_b - dest_phase) / (bound_b - bound_a);
-        last_value = b1 * frac + b2 * (1 - frac);
-      }
-    else if (dest_phase < bound_c)
-      {
-        double frac = (bound_c - dest_phase) / (bound_c - bound_b);
-        last_value = c1 * frac + c2 * (1 - frac);
-      }
-    else
-      {
-        double frac = (bound_d - dest_phase) / (bound_d - bound_c);
-        last_value = d1 * frac + d2 * (1 - frac);
-      }
-    /* dc without sync */
-    double dc = (a1 + a2) / 2 * bound_a
-              + (b1 + b2) / 2 * (bound_b - bound_a)
-              + (c1 + c2) / 2 * (bound_c - bound_b)
-              + (d1 + d2) / 2 * (bound_d - bound_c);
-
-    /* dc offset introduced by sync */
-    const double sync_phase = sync_factor - int (sync_factor);
-
-    double a_avg = (a1 + a2) / 2;
-    double b_avg = (b1 + b2) / 2;
-    double c_avg = (c1 + c2) / 2;
-    double d_avg = (d1 + d2) / 2;
-
-    if (sync_phase < bound_a)
-      {
-        const double frac = (bound_a - sync_phase) / bound_a;
-        const double sync_a2 = a1 * frac + a2 * (1 - frac);
-
-        a_avg = (1 - frac) * (a1 + sync_a2) / 2;
-        b_avg = c_avg = d_avg = 0;
-      }
-    else if (sync_phase < bound_b)
-      {
-        const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
-        const double sync_b2 = b1 * frac + b2 * (1 - frac);
-
-        b_avg = (1 - frac) * (b1 + sync_b2) / 2;
-        c_avg = d_avg = 0;
-      }
-    else if (sync_phase < bound_c)
-      {
-        const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
-        const double sync_c2 = c1 * frac + c2 * (1 - frac);
-
-        c_avg = (1 - frac) * (c1 + sync_c2) / 2;
-        d_avg = 0;
-      }
-    else
-      {
-        const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
-        const double sync_d2 = d1 * frac + d2 * (1 - frac);
-
-        d_avg = (1 - frac) * (d1 + sync_d2) / 2;
-      }
-
-    /* dc sync part of the signal */
-    double dc_sync = a_avg * bound_a
-                   + b_avg * (bound_b - bound_a)
-                   + c_avg * (bound_c - bound_b)
-                   + d_avg * (bound_d - bound_c);
-
-    dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
-    last_value -= dc;
-
     for (auto& voice : unison_voices)
       {
-        /* FIXME: not correct */
-        voice.last_value = last_value;
+        double dest_phase = voice.master_phase;
+
+        double last_value; /* leaky integrator state */
+
+        dest_phase *= sync_factor;
+        dest_phase -= (int) dest_phase;
+
+        voice.slave_phase = dest_phase;
+
+        /* compute voice state and initial value without dc */
+        if (dest_phase < bound_a)
+          {
+            double frac = (bound_a - dest_phase) / bound_a;
+            last_value = a1 * frac + a2 * (1 - frac);
+
+            voice.state = State::A;
+          }
+        else if (dest_phase < bound_b)
+          {
+            double frac = (bound_b - dest_phase) / (bound_b - bound_a);
+            last_value = b1 * frac + b2 * (1 - frac);
+
+            voice.state = State::B;
+          }
+        else if (dest_phase < bound_c)
+          {
+            double frac = (bound_c - dest_phase) / (bound_c - bound_b);
+            last_value = c1 * frac + c2 * (1 - frac);
+
+            voice.state = State::C;
+          }
+        else
+          {
+            double frac = (bound_d - dest_phase) / (bound_d - bound_c);
+            last_value = d1 * frac + d2 * (1 - frac);
+
+            voice.state = State::D;
+          }
+        /* dc without sync */
+        double dc = (a1 + a2) / 2 * bound_a
+                  + (b1 + b2) / 2 * (bound_b - bound_a)
+                  + (c1 + c2) / 2 * (bound_c - bound_b)
+                  + (d1 + d2) / 2 * (bound_d - bound_c);
+
+        /* dc offset introduced by sync */
+        const double sync_phase = sync_factor - int (sync_factor);
+
+        double a_avg = (a1 + a2) / 2;
+        double b_avg = (b1 + b2) / 2;
+        double c_avg = (c1 + c2) / 2;
+        double d_avg = (d1 + d2) / 2;
+
+        if (sync_phase < bound_a)
+          {
+            const double frac = (bound_a - sync_phase) / bound_a;
+            const double sync_a2 = a1 * frac + a2 * (1 - frac);
+
+            a_avg = (1 - frac) * (a1 + sync_a2) / 2;
+            b_avg = c_avg = d_avg = 0;
+          }
+        else if (sync_phase < bound_b)
+          {
+            const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
+            const double sync_b2 = b1 * frac + b2 * (1 - frac);
+
+            b_avg = (1 - frac) * (b1 + sync_b2) / 2;
+            c_avg = d_avg = 0;
+          }
+        else if (sync_phase < bound_c)
+          {
+            const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
+            const double sync_c2 = c1 * frac + c2 * (1 - frac);
+
+            c_avg = (1 - frac) * (c1 + sync_c2) / 2;
+            d_avg = 0;
+          }
+        else
+          {
+            const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
+            const double sync_d2 = d1 * frac + d2 * (1 - frac);
+
+            d_avg = (1 - frac) * (d1 + sync_d2) / 2;
+          }
+
+        /* dc sync part of the signal */
+        double dc_sync = a_avg * bound_a
+                       + b_avg * (bound_b - bound_a)
+                       + c_avg * (bound_c - bound_b)
+                       + d_avg * (bound_d - bound_c);
+
+        dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
+
+        voice.last_value = last_value - dc;
       }
   }
   void
@@ -885,13 +902,6 @@ public:
     double shape       = clamp (shape_base, -1.0, 1.0);
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
-    /* reset needs parameters, so we need to do it here */
-    if (need_reset)
-      {
-        seek_to (0);
-        need_reset = false;
-      }
-
     /* get leaky integrator constant for sample rate from ms (half-life time) */
     const double leaky_ms = 10;
     const double leaky_a = pow (2.0, -1000.0 / (rate * leaky_ms));
@@ -930,6 +940,13 @@ public:
 
             if (sub_width_mod_in)
               sub_width = clamp (sub_width_base + sub_width_mod * sub_width_mod_in[n], 0.01, 0.99);
+
+            /* reset needs parameters, so we need to do it here */
+            if (need_reset_voice_state)
+              {
+                reset_voice_state();
+                need_reset_voice_state = false;
+              }
 
             voice.master_phase += unison_master_freq * 0.5 / rate;
             voice.slave_phase  += unison_slave_freq / rate;
@@ -1062,7 +1079,7 @@ public:
   test_seek_to (double phase)
   {
     process_sample(); // propagate parameters
-    osc_impl.seek_to (phase);
+    // osc_impl.seek_to (phase); FIXME
 
     assert (osc_impl.unison_voices.size() > 0);
     return osc_impl.unison_voices[0].last_value;
