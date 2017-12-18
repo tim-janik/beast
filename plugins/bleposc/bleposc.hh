@@ -733,6 +733,60 @@ public:
 
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
+    /* dc without sync */
+    double dc = (a1 + a2) / 2 * bound_a
+              + (b1 + b2) / 2 * (bound_b - bound_a)
+              + (c1 + c2) / 2 * (bound_c - bound_b)
+              + (d1 + d2) / 2 * (bound_d - bound_c);
+
+    /* dc offset introduced by sync */
+    const double sync_phase = sync_factor - int (sync_factor);
+
+    double a_avg = (a1 + a2) / 2;
+    double b_avg = (b1 + b2) / 2;
+    double c_avg = (c1 + c2) / 2;
+    double d_avg = (d1 + d2) / 2;
+
+    if (sync_phase < bound_a)
+      {
+        const double frac = (bound_a - sync_phase) / bound_a;
+        const double sync_a2 = a1 * frac + a2 * (1 - frac);
+
+        a_avg = (1 - frac) * (a1 + sync_a2) / 2;
+        b_avg = c_avg = d_avg = 0;
+      }
+    else if (sync_phase < bound_b)
+      {
+        const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
+        const double sync_b2 = b1 * frac + b2 * (1 - frac);
+
+        b_avg = (1 - frac) * (b1 + sync_b2) / 2;
+        c_avg = d_avg = 0;
+      }
+    else if (sync_phase < bound_c)
+      {
+        const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
+        const double sync_c2 = c1 * frac + c2 * (1 - frac);
+
+        c_avg = (1 - frac) * (c1 + sync_c2) / 2;
+        d_avg = 0;
+      }
+    else
+      {
+        const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
+        const double sync_d2 = d1 * frac + d2 * (1 - frac);
+
+        d_avg = (1 - frac) * (d1 + sync_d2) / 2;
+      }
+
+    /* dc sync part of the signal */
+    double dc_sync = a_avg * bound_a
+                   + b_avg * (bound_b - bound_a)
+                   + c_avg * (bound_c - bound_b)
+                   + d_avg * (bound_d - bound_c);
+
+    dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
+
     for (auto& voice : unison_voices)
       {
         double dest_phase = voice.master_phase;
@@ -773,60 +827,6 @@ public:
 
             voice.state = State::D;
           }
-        /* dc without sync */
-        double dc = (a1 + a2) / 2 * bound_a
-                  + (b1 + b2) / 2 * (bound_b - bound_a)
-                  + (c1 + c2) / 2 * (bound_c - bound_b)
-                  + (d1 + d2) / 2 * (bound_d - bound_c);
-
-        /* dc offset introduced by sync */
-        const double sync_phase = sync_factor - int (sync_factor);
-
-        double a_avg = (a1 + a2) / 2;
-        double b_avg = (b1 + b2) / 2;
-        double c_avg = (c1 + c2) / 2;
-        double d_avg = (d1 + d2) / 2;
-
-        if (sync_phase < bound_a)
-          {
-            const double frac = (bound_a - sync_phase) / bound_a;
-            const double sync_a2 = a1 * frac + a2 * (1 - frac);
-
-            a_avg = (1 - frac) * (a1 + sync_a2) / 2;
-            b_avg = c_avg = d_avg = 0;
-          }
-        else if (sync_phase < bound_b)
-          {
-            const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
-            const double sync_b2 = b1 * frac + b2 * (1 - frac);
-
-            b_avg = (1 - frac) * (b1 + sync_b2) / 2;
-            c_avg = d_avg = 0;
-          }
-        else if (sync_phase < bound_c)
-          {
-            const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
-            const double sync_c2 = c1 * frac + c2 * (1 - frac);
-
-            c_avg = (1 - frac) * (c1 + sync_c2) / 2;
-            d_avg = 0;
-          }
-        else
-          {
-            const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
-            const double sync_d2 = d1 * frac + d2 * (1 - frac);
-
-            d_avg = (1 - frac) * (d1 + sync_d2) / 2;
-          }
-
-        /* dc sync part of the signal */
-        double dc_sync = a_avg * bound_a
-                       + b_avg * (bound_b - bound_a)
-                       + c_avg * (bound_c - bound_b)
-                       + d_avg * (bound_d - bound_c);
-
-        dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
-
         voice.last_value = last_value - dc;
       }
   }
