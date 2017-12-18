@@ -148,11 +148,12 @@ auto_snr_test (DCTest dc_test)
       o.master_freq = g_rand_double_range (rand, 200, 5000);
       o.freq = g_rand_double_range (rand, o.master_freq, 20000);
       o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
+      o.sub = g_rand_double_range (rand, 0, 1);
       o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
 
       SNR snr = fft_snr (o, dc_test);
 
-      printf ("%f %f %f %f Y %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.pulse_width, o.sub_width, snr.freq);
+      printf ("%f %f %f %f Y %f sub %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.sub, o.pulse_width, o.sub_width, snr.freq);
     }
 }
 
