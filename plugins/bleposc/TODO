@@ -1,5 +1,8 @@
 - seek: slope approximation
+- do we need oversampling?
 
+PERF:
+- specializations
 - sync specialization
 - possible table-of-exp2
 
