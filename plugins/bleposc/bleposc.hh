@@ -70,9 +70,13 @@ public:
     double slave_phase     = 0;
 
     double last_value      = 0; /* leaky integrator state */
+
     double last_dc         = 0; /* dc of previous parameters */
+    double dc_delta        = 0;
+    int    dc_steps        = 0;
 
     int    future_pos      = 0;
+
 
     State  state           = State::A;
 
@@ -117,6 +121,8 @@ public:
     for (auto& voice : unison_voices)
       {
         voice.init_future();
+        voice.dc_steps = 0;
+        voice.dc_delta = 0;
 
         if (randomize_phase) // randomize start phase for true unison
           {
@@ -473,6 +479,9 @@ public:
     const double leaky_ms = 10;
     const double leaky_a = pow (2.0, -1000.0 / (rate * leaky_ms));
 
+    /* dc substampling according to control frequency (cpu/quality trade off) */
+    const int dc_steps = max (bse_ftoi (rate / 4000), 1);
+
     for (auto& voice : unison_voices)
       {
         for (unsigned int n = 0; n < n_values; n++)
@@ -598,12 +607,21 @@ public:
               }
             while (state_changed); // rerun all state checks if state was modified
 
+            if (voice.dc_steps > 0)
+              {
+                voice.dc_steps--;
+              }
+            else
+              {
+                const double dc = estimate_dc (shape, pulse_width, sub, sub_width, sync_factor);
+
+                voice.dc_steps = dc_steps - 1;
+                voice.dc_delta = (voice.last_dc - dc) / dc_steps;
+                voice.last_dc = dc;
+              }
+
             double saw_delta = -4.0 * unison_slave_freq / rate * (shape + 1) * (1 - sub);
-
-            const double dc = ((n & 15) == 0) ? estimate_dc (shape, pulse_width, sub, sub_width, sync_factor) : voice.last_dc;
-
-            insert_future_delta (voice, saw_delta + voice.last_dc - dc); // align with the impulses
-            voice.last_dc = dc;
+            insert_future_delta (voice, saw_delta + voice.dc_delta); // align with the impulses
 
             /* leaky integration */
             double value = leaky_a * voice.last_value + voice.pop_future();
