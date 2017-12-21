@@ -70,6 +70,7 @@ public:
     double slave_phase     = 0;
 
     double last_value      = 0; /* leaky integrator state */
+    double last_dc         = 0; /* dc of previous parameters */
 
     int    future_pos      = 0;
 
@@ -186,6 +187,92 @@ public:
       reset();
   }
 
+  double
+  estimate_dc (double shape,
+               double pulse_width,
+               double sub,
+               double sub_width,
+               double sync_factor)
+  {
+    const double bound_a = sub_width * pulse_width;
+    const double bound_b = 2 * sub_width * pulse_width + 1 - sub_width - pulse_width;
+    const double bound_c = sub_width * pulse_width + (1 - sub_width);
+    const double bound_d = 1.0;
+
+    const double saw_slope = -4.0 * (shape + 1) * (1 - sub);
+
+    const double a1 = 1;
+    const double a2 = a1 + saw_slope * bound_a;
+
+    const double b1 = a2 + 2.0 * (shape * (1 - sub) - sub);
+    const double b2 = b1 + saw_slope * (bound_b - bound_a);
+
+    const double c1 = b2 + 2 * (1 - sub);
+    const double c2 = c1 + saw_slope * (bound_c - bound_b);
+
+    const double d1 = c2 + 2.0 * (shape * (1 - sub) + sub);
+    const double d2 = d1 + saw_slope * (bound_d - bound_c);
+
+    /* dc without sync */
+    const double dc_base = (a1 + a2) / 2 * bound_a
+                         + (b1 + b2) / 2 * (bound_b - bound_a)
+                         + (c1 + c2) / 2 * (bound_c - bound_b)
+                         + (d1 + d2) / 2 * (bound_d - bound_c);
+
+    /* quick path: no sync, no sync related dc computation */
+    if (sync_factor < 1.01)
+      return dc_base;
+
+    /* dc offset introduced by sync */
+    const double sync_phase = sync_factor - int (sync_factor);
+
+    double a_avg = (a1 + a2) / 2;
+    double b_avg = (b1 + b2) / 2;
+    double c_avg = (c1 + c2) / 2;
+    double d_avg = (d1 + d2) / 2;
+
+    if (sync_phase < bound_a)
+      {
+        const double frac = (bound_a - sync_phase) / bound_a;
+        const double sync_a2 = a1 * frac + a2 * (1 - frac);
+
+        a_avg = (1 - frac) * (a1 + sync_a2) / 2;
+        b_avg = c_avg = d_avg = 0;
+      }
+    else if (sync_phase < bound_b)
+      {
+        const double frac = (bound_b - sync_phase) / (bound_b - bound_a);
+        const double sync_b2 = b1 * frac + b2 * (1 - frac);
+
+        b_avg = (1 - frac) * (b1 + sync_b2) / 2;
+        c_avg = d_avg = 0;
+      }
+    else if (sync_phase < bound_c)
+      {
+        const double frac = (bound_c - sync_phase) / (bound_c - bound_b);
+        const double sync_c2 = c1 * frac + c2 * (1 - frac);
+
+        c_avg = (1 - frac) * (c1 + sync_c2) / 2;
+        d_avg = 0;
+      }
+    else
+      {
+        const double frac = (bound_d - sync_phase) / (bound_d - bound_c);
+        const double sync_d2 = d1 * frac + d2 * (1 - frac);
+
+        d_avg = (1 - frac) * (d1 + sync_d2) / 2;
+      }
+
+    /* dc sync part of the signal */
+    const double dc_sync = a_avg * bound_a
+                         + b_avg * (bound_b - bound_a)
+                         + c_avg * (bound_c - bound_b)
+                         + d_avg * (bound_d - bound_c);
+    const double dc = (dc_base * (int) sync_factor + dc_sync) / sync_factor;
+
+    return dc;
+  }
+
   void
   reset_voice_state (double shape,
                      double pulse_width,
@@ -213,10 +300,10 @@ public:
     const double d2 = d1 + saw_slope * (bound_d - bound_c);
 
     /* dc without sync */
-    double dc = (a1 + a2) / 2 * bound_a
-              + (b1 + b2) / 2 * (bound_b - bound_a)
-              + (c1 + c2) / 2 * (bound_c - bound_b)
-              + (d1 + d2) / 2 * (bound_d - bound_c);
+    const double dc_base = (a1 + a2) / 2 * bound_a
+                         + (b1 + b2) / 2 * (bound_b - bound_a)
+                         + (c1 + c2) / 2 * (bound_c - bound_b)
+                         + (d1 + d2) / 2 * (bound_d - bound_c);
 
     /* dc offset introduced by sync */
     const double sync_phase = sync_factor - int (sync_factor);
@@ -264,7 +351,7 @@ public:
                    + c_avg * (bound_c - bound_b)
                    + d_avg * (bound_d - bound_c);
 
-    dc = (dc * (int) sync_factor + dc_sync) / sync_factor;
+    const double dc = (dc_base * (int) sync_factor + dc_sync) / sync_factor;
 
     for (auto& voice : unison_voices)
       {
@@ -307,6 +394,7 @@ public:
             voice.state = State::D;
           }
         voice.last_value = last_value - dc;
+        voice.last_dc    = dc;
       }
   }
   void
@@ -511,7 +599,11 @@ public:
             while (state_changed); // rerun all state checks if state was modified
 
             double saw_delta = -4.0 * unison_slave_freq / rate * (shape + 1) * (1 - sub);
-            insert_future_delta (voice, saw_delta); // align with the impulses
+
+            const double dc = ((n & 15) == 0) ? estimate_dc (shape, pulse_width, sub, sub_width, sync_factor) : voice.last_dc;
+
+            insert_future_delta (voice, saw_delta + voice.last_dc - dc); // align with the impulses
+            voice.last_dc = dc;
 
             /* leaky integration */
             double value = leaky_a * voice.last_value + voice.pop_future();
