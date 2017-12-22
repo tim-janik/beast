@@ -336,7 +336,7 @@ lfo_test()
 
   OscImpl o;
 
-  for (int subtest = 0; subtest < 1; subtest++)
+  for (int subtest = 0; subtest < 2; subtest++)
     {
       string label;
 
@@ -345,6 +345,7 @@ lfo_test()
       o.shape_base = 0; // saw
       o.sync_base = 0;
       o.pulse_width_base = 0.5;
+      o.sub_width_base = 0.5;
 
       float lfo[len];
 
@@ -362,6 +363,13 @@ lfo_test()
                   o.pulse_width_mod = 0.48;
                   pulse_width_mod_in = lfo;
                   label = "pulse";
+                  break;
+          case 1: o.shape_base = -1;
+                  o.sub_width_base = 0.95;
+                  o.sub_base = 0.5;
+                  o.sub_mod = 0.5;
+                  sub_mod_in = lfo;
+                  label = "subm";
                   break;
         }
 
