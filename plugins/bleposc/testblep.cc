@@ -330,13 +330,13 @@ dc_report (vector<float>& dcs)
 }
 
 static void
-lfo_test()
+lfo_test (int dump = -1)
 {
   const int len = 48000;
 
   OscImpl o;
 
-  for (int subtest = 0; subtest < 2; subtest++)
+  for (int subtest = 0; subtest < 3; subtest++)
     {
       string label;
 
@@ -371,6 +371,12 @@ lfo_test()
                   sub_mod_in = lfo;
                   label = "subm";
                   break;
+          case 2: o.pulse_width_base = 0.9;
+                  o.shape_base = 0;
+                  o.shape_mod = 1;
+                  shape_mod_in = lfo;
+                  label = "shape";
+                  break;
         }
 
       float lfo_hz = 5;
@@ -384,11 +390,15 @@ lfo_test()
       for (int i = 0; i < len; i++)
         {
           assert (fabs (lbuffer[i] - rbuffer[i]) < 0.0001);
-          //printf ("%f\n", lbuffer[i] * 0.2);
+          if (dump == subtest)
+            printf ("%f\n", lbuffer[i] * 0.2);
         }
-      vector<float> dcs = dc_reduce (lbuffer, 4096);
-      printf ("%s: %s\n", label.c_str(), dc_report (dcs).c_str());
-      dc_report (dcs);
+      if (dump == -1)
+        {
+          vector<float> dcs = dc_reduce (lbuffer, 4096);
+          printf ("%d %s: %s\n", subtest, label.c_str(), dc_report (dcs).c_str());
+          dc_report (dcs);
+        }
     }
 }
 
@@ -598,7 +608,11 @@ main (int argc, char **argv)
       plot_blep (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]), atof (argv[6]));
       return 0;
     }
-
+  if (argc == 3 && strcmp (argv[1], "lfo") == 0)
+    {
+      lfo_test (atoi (argv[2]));
+      return 0;
+    }
   if (argc == 2)
     {
       string test_name = argv[1];
