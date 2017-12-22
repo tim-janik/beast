@@ -289,6 +289,102 @@ speed2_test()
     }
 }
 
+static vector<float>
+dc_reduce (const vector<float>& signal,
+           size_t len)
+{
+  vector<float> dcs;
+
+  for (size_t start = 0; start + len < signal.size(); start += len / 4)
+    {
+      double win_sum = 0;
+      double sum = 0;
+      for (size_t i = 0; i < len; i++)
+        {
+          double win = bse_window_cos ((i * 2.0) / len - 1.0);
+          win_sum += win;
+          sum += signal[start + i] * win;
+          //printf ("%zd %f\n", i, signal[i] * win);
+        }
+      //printf ("%f %f %f\n", start / 48., sum / win_sum);
+      dcs.push_back (sum / win_sum);
+    }
+  return dcs;
+}
+
+static string
+dc_report (vector<float>& dcs)
+{
+  double dmin = 100;
+  double dmax = 0;
+  double davg = 0;
+
+  for (auto d : dcs)
+    {
+      d = fabs (d);
+      dmin = min<double> (d, dmin);
+      dmax = max<double> (d, dmax);
+      davg += d / dcs.size();
+    }
+  return Bse::string_format ("avg %f range [%f, %f]", bse_db_from_factor (fabs (davg), -200), bse_db_from_factor (fabs (dmin), -200), bse_db_from_factor (fabs (dmax), -200));
+}
+
+static void
+lfo_test()
+{
+  const int len = 48000;
+
+  OscImpl o;
+
+  for (int subtest = 0; subtest < 1; subtest++)
+    {
+      string label;
+
+      o.rate = 48000;
+      o.frequency_base = 440;
+      o.shape_base = 0; // saw
+      o.sync_base = 0;
+      o.pulse_width_base = 0.5;
+
+      float lfo[len];
+
+      float *freq_in = nullptr;
+      float *freq_mod_in = nullptr;
+      float *shape_mod_in = nullptr;
+      float *sub_mod_in = nullptr;
+      float *sync_mod_in = nullptr;
+      float *pulse_width_mod_in = nullptr;
+      float *sub_width_mod_in = nullptr;
+
+      switch (subtest)
+        {
+          case 0: o.shape_base = -1;
+                  o.pulse_width_mod = 0.48;
+                  pulse_width_mod_in = lfo;
+                  label = "pulse";
+                  break;
+        }
+
+      float lfo_hz = 5;
+      for (int i = 0; i < len; i++)
+        lfo[i] = sin (i * lfo_hz * 2 * M_PI / 48000.);
+
+      vector<float> lbuffer (len);
+      vector<float> rbuffer (len);
+      o.process_sample_stereo (&lbuffer[0], &rbuffer[0], len, freq_in, freq_mod_in, shape_mod_in, sub_mod_in, sync_mod_in, pulse_width_mod_in, sub_width_mod_in);
+
+      for (int i = 0; i < len; i++)
+        {
+          assert (fabs (lbuffer[i] - rbuffer[i]) < 0.0001);
+          //printf ("%f\n", lbuffer[i] * 0.2);
+        }
+      vector<float> dcs = dc_reduce (lbuffer, 4096);
+      printf ("%s: %s\n", label.c_str(), dc_report (dcs).c_str());
+      dc_report (dcs);
+    }
+}
+
+
 template<int FN> double
 exp2_func (double d)
 {
@@ -519,6 +615,8 @@ main (int argc, char **argv)
         reset_test (o);
       else if (test_name == "dc")
         dc_test (o);
+      else if (test_name == "lfo")
+        lfo_test ();
       else
         {
           Bse::printerr ("%s: unsupported test type '%s', try vnorm, fft, speed, speed2, reset, exp2 or snr\n", argv[0], test_name.c_str());
