@@ -336,7 +336,7 @@ lfo_test (int dump = -1)
 
   OscImpl o;
 
-  for (int subtest = 0; subtest < 3; subtest++)
+  for (int subtest = 0; subtest < 4; subtest++)
     {
       string label;
 
@@ -376,6 +376,14 @@ lfo_test (int dump = -1)
                   o.shape_mod = 1;
                   shape_mod_in = lfo;
                   label = "shape";
+                  break;
+          case 3: o.shape_base = -1;
+                  o.sub_width_base = 0.95;
+                  o.sub_base = 0.5;
+                  o.sub_mod = 0.5;
+                  o.sync_base = 30;
+                  sub_mod_in = lfo;
+                  label = "subm+sync";
                   break;
         }
 
