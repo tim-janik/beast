@@ -70,8 +70,7 @@ public:
     double slave_phase     = 0;
 
     double last_value      = 0; /* leaky integrator state */
-    double saw_acc         = 0;
-    double sync_jump_level = 0;
+    double current_level   = 0; /* current position of the wave form (saw + jumps) */
 
     double last_dc         = 0; /* dc of previous parameters */
     double dc_delta        = 0;
@@ -403,8 +402,7 @@ public:
           }
         voice.last_value = last_value - dc;
         voice.last_dc    = dc;
-        voice.sync_jump_level = 0; // FIXME
-        voice.saw_acc    = 0; // FIXME
+        voice.current_level = 0; // FIXME
       }
   }
   void
@@ -544,12 +542,11 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
 
-                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_a;
-                        const double blep_height = jump_a + saw - saw_acc - voice.sync_jump_level;
+                        const double blep_height = jump_a + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
                         insert_blep (voice, slave_frac, blep_height);
-                        voice.sync_jump_level += blep_height;
+                        voice.current_level += blep_height;
                         voice.state = State::B;
                         state_changed = true;
                       }
@@ -562,12 +559,11 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
 
-                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_b;
-                        const double blep_height = jump_a + jump_b + saw - saw_acc - voice.sync_jump_level;
+                        const double blep_height = jump_a + jump_b + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
                         insert_blep (voice, slave_frac, blep_height);
-                        voice.sync_jump_level += blep_height;
+                        voice.current_level += blep_height;
                         voice.state = State::C;
                         state_changed = true;
                       }
@@ -580,12 +576,11 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
 
-                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_c;
-                        const double blep_height = jump_a + jump_b + jump_c + saw - saw_acc - voice.sync_jump_level;
+                        const double blep_height = jump_a + jump_b + jump_c + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
                         insert_blep (voice, slave_frac, blep_height);
-                        voice.sync_jump_level += blep_height;
+                        voice.current_level += blep_height;
                         voice.state = State::D;
                         state_changed = true;
                       }
@@ -598,12 +593,11 @@ public:
 
                         double slave_frac = voice.slave_phase / (unison_slave_freq / rate);
 
-                        voice.saw_acc += (1 - slave_frac) * saw_delta;
+                        voice.current_level += (1 - slave_frac) * saw_delta;
 
-                        insert_blep (voice, slave_frac, -voice.saw_acc - voice.sync_jump_level);
+                        insert_blep (voice, slave_frac, -voice.current_level);
 
-                        voice.saw_acc = saw_delta * slave_frac - saw_delta;
-                        voice.sync_jump_level = 0;
+                        voice.current_level = saw_delta * slave_frac - saw_delta;
                         voice.state = State::A;
                         state_changed = true;
                       }
@@ -616,12 +610,11 @@ public:
 
                     const double new_slave_phase = voice.master_phase * sync_factor;
 
-                    voice.saw_acc += (1 - master_frac) * saw_delta;
+                    voice.current_level += (1 - master_frac) * saw_delta;
 
-                    insert_blep (voice, master_frac, -voice.saw_acc - voice.sync_jump_level);
+                    insert_blep (voice, master_frac, -voice.current_level);
 
-                    voice.saw_acc = saw_delta * master_frac - saw_delta;
-                    voice.sync_jump_level = 0;
+                    voice.current_level = saw_delta * master_frac - saw_delta;
                     voice.slave_phase = new_slave_phase;
 
                     voice.state = State::A;
@@ -643,7 +636,7 @@ public:
                 voice.last_dc = dc;
               }
 
-            voice.saw_acc += saw_delta;
+            voice.current_level += saw_delta;
             insert_future_delta (voice, saw_delta + voice.dc_delta); // align with the impulses
 
             /* leaky integration */
