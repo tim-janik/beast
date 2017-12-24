@@ -525,10 +525,6 @@ public:
             voice.master_phase += unison_master_freq * 0.5 / rate;
             voice.slave_phase  += unison_slave_freq / rate;
 
-            const double jump_a = 2.0 * (shape * (1 - sub) - sub);
-            const double jump_b = 2.0 * (1 - sub);
-            const double jump_c = 2.0 * (shape * (1 - sub) + sub);
-
             bool state_changed;
             do
               {
@@ -542,6 +538,7 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
 
+                        const double jump_a = 2.0 * (shape * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_a;
                         const double blep_height = jump_a + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
@@ -559,8 +556,9 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
 
+                        const double jump_ab = 2.0 * ((shape + 1) * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_b;
-                        const double blep_height = jump_a + jump_b + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
+                        const double blep_height = jump_ab + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
                         insert_blep (voice, slave_frac, blep_height);
                         voice.current_level += blep_height;
@@ -576,8 +574,9 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
 
+                        const double jump_abc = 2.0 * (2 * shape + 1) * (1 - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_c;
-                        const double blep_height = jump_a + jump_b + jump_c + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
+                        const double blep_height = jump_abc + saw - (voice.current_level + (1 - slave_frac) * saw_delta);
 
                         insert_blep (voice, slave_frac, blep_height);
                         voice.current_level += blep_height;
