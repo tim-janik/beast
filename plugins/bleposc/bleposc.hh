@@ -527,6 +527,10 @@ public:
             voice.master_phase += unison_master_freq * 0.5 / rate;
             voice.slave_phase  += unison_slave_freq / rate;
 
+            const double jump_a = 2.0 * (shape * (1 - sub) - sub);
+            const double jump_b = 2.0 * (1 - sub);
+            const double jump_c = 2.0 * (shape * (1 - sub) + sub);
+
             bool state_changed;
             do
               {
@@ -540,8 +544,12 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
 
-                        insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) - sub));
-                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) - sub);
+                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
+                        const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_a;
+                        const double blep_height = jump_a + saw - saw_acc - voice.sync_jump_level;
+
+                        insert_blep (voice, slave_frac, blep_height);
+                        voice.sync_jump_level += blep_height;
                         voice.state = State::B;
                         state_changed = true;
                       }
@@ -554,8 +562,12 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
 
-                        insert_blep (voice, slave_frac, 2.0 * (1 - sub));
-                        voice.sync_jump_level += 2.0 * (1 - sub);
+                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
+                        const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_b;
+                        const double blep_height = jump_a + jump_b + saw - saw_acc - voice.sync_jump_level;
+
+                        insert_blep (voice, slave_frac, blep_height);
+                        voice.sync_jump_level += blep_height;
                         voice.state = State::C;
                         state_changed = true;
                       }
@@ -568,8 +580,12 @@ public:
                       {
                         double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
 
-                        insert_blep (voice, slave_frac, 2.0 * (shape * (1 - sub) + sub));
-                        voice.sync_jump_level += 2.0 * (shape * (1 - sub) + sub);
+                        const double saw_acc = voice.saw_acc + (1 - slave_frac) * saw_delta;
+                        const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_c;
+                        const double blep_height = jump_a + jump_b + jump_c + saw - saw_acc - voice.sync_jump_level;
+
+                        insert_blep (voice, slave_frac, blep_height);
+                        voice.sync_jump_level += blep_height;
                         voice.state = State::D;
                         state_changed = true;
                       }
