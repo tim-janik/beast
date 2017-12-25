@@ -157,6 +157,112 @@ auto_snr_test (DCTest dc_test)
     }
 }
 
+static void
+get_sig_noise_max (vector<double> mag, /* deep copy to allow destructive processing */
+                   Osc& o,
+                   double& sig_max,
+                   double& noise_max,
+                   double& freq_max)
+{
+  sig_max = 0;
+
+  const double sub_freq = o.master_freq * 0.5;
+  for (float freq = sub_freq; freq < o.rate; freq += sub_freq)
+    {
+      int pos = freq / o.rate * mag.size();
+      for (int i = -32; i < 33; i++)
+        {
+          if (pos + i >= 0 && pos + i < int (mag.size()))
+            {
+              sig_max = std::max (mag[pos + i], sig_max);
+              mag[pos + i] = 0;
+            }
+        }
+    }
+
+  noise_max = 0;
+  freq_max = -1;
+
+  for (size_t i = 0; i <= mag.size() / 2; i++)
+    {
+      double freq = i / double (mag.size()) * o.rate;
+
+      if (freq < 16000) // audible frequencies
+        {
+          double noise_mag = std::abs (mag[i]);
+          if (noise_mag > noise_max)
+            {
+              noise_max = noise_mag;
+              freq_max  = freq;
+           }
+        }
+    }
+}
+
+static SNR
+snr_high_fft (Osc& o, Osc& o_high, int over)
+{
+  vector<double> mag_low = compute_fft_mag (o, 8192, DCTest::OFF);
+  vector<double> mag_high = compute_fft_mag (o_high, 8192 * over, DCTest::OFF);
+
+  if (0)
+    {
+      for (size_t i = 0; i <= mag_low.size() / 2; i++)
+        {
+          double d = i / double (mag_low.size()) * o.rate;
+          printf ("%.17g %.17g #low\n", d, mag_low[i]);
+        }
+      for (size_t i = 0; i <= mag_high.size() / 2; i++)
+        {
+          double d = i / double (mag_high.size()) * o_high.rate;
+          printf ("%.17g %.17g #high\n", d, mag_high[i]);
+        }
+    }
+  double sig_max_low, noise_max_low, sig_max_high, noise_max_high, freq_max_low, freq_max_high;
+
+  get_sig_noise_max (mag_low, o, sig_max_low, noise_max_low, freq_max_low);
+  get_sig_noise_max (mag_high, o_high, sig_max_high, noise_max_high, freq_max_high);
+
+  double sig_max = max (sig_max_low, sig_max_high);
+
+  SNR snr;
+  snr.snr = bse_db_from_factor (sig_max / noise_max_low, -200);
+  snr.freq = freq_max_low;
+  return snr;
+}
+
+static void
+auto_snr_high_test()
+{
+  GRand *rand = g_rand_new_with_seed (42);
+
+  for (int i = 0; i < 1000; i++)
+    {
+      Osc o, o_high;
+
+      o.rate = 48000;
+      o.shape = g_rand_double_range (rand, -1, 1);
+      o.master_freq = g_rand_double_range (rand, 200, 5000);
+      o.freq = g_rand_double_range (rand, o.master_freq, o.master_freq * 30);
+      o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
+      o.sub = g_rand_double_range (rand, 0, 1);
+      o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
+
+      const int over = 4;
+      o_high.rate = 48000 * over;
+      o_high.shape = o.shape;
+      o_high.master_freq = o.master_freq;
+      o_high.freq = o.freq;
+      o_high.pulse_width = o.pulse_width;
+      o_high.sub = o.sub;
+      o_high.sub_width = o.sub_width;
+
+      SNR snr = snr_high_fft (o, o_high, over);
+
+      printf ("%f %d %f %f %f Y %f sub %f pw %f sw %f sfreq %f\n", snr.snr, i, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.sub, o.pulse_width, o.sub_width, snr.freq);
+    }
+}
+
 static double
 gettime()
 {
@@ -639,6 +745,8 @@ main (int argc, char **argv)
         auto_snr_test (DCTest::OFF);
       else if (test_name == "snr-dc")
         auto_snr_test (DCTest::ON);
+      else if (test_name == "snr-high")
+        auto_snr_high_test();
       else if (test_name == "exp2")
         exp2_test();
       else if (test_name == "reset")
