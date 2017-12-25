@@ -92,71 +92,6 @@ print_fft (Osc& o, size_t N, DCTest dc_test)
   printf ("#fft_snr: %f dB @ %f\n", snr.snr, snr.freq);
 }
 
-static SNR
-fft_snr (Osc& o, DCTest dc_test)
-{
-  vector<double> mag = compute_fft_mag (o, 8192, dc_test);
-
-  /* this is required because the width of the window is hardcoded to [-32:32] bins below */
-  assert (mag.size() == 8192 * 8);
-
-  double sig_max = 0;
-  const double sub_freq = o.master_freq * 0.5;
-  for (float freq = sub_freq; freq < o.rate; freq += sub_freq)
-    {
-      int pos = freq / o.rate * mag.size();
-      for (int i = -32; i < 33; i++)
-        {
-          if (pos + i >= 0 && pos + i < int (mag.size()))
-            {
-              sig_max = std::max (mag[pos + i], sig_max);
-              mag[pos + i] = 0;
-            }
-        }
-    }
-
-  SNR snr;
-  double noise_max = 0;
-  for (size_t i = 0; i <= mag.size() / 2; i++)
-    {
-      double freq = i / double (mag.size()) * o.rate;
-
-      if (freq < 16000) // audible frequencies
-        {
-          double noise_mag = std::abs (mag[i]);
-          if (noise_mag > noise_max)
-            {
-              noise_max = noise_mag;
-              snr.freq = freq;
-           }
-        }
-    }
-  snr.snr = bse_db_from_factor (sig_max / noise_max, -200);
-  return snr;
-}
-
-static void
-auto_snr_test (DCTest dc_test)
-{
-  GRand *rand = g_rand_new_with_seed (42);
-
-  for (int i = 0; i < 1000; i++)
-    {
-      Osc o;
-      o.rate = 48000;
-      o.shape = g_rand_double_range (rand, -1, 1);
-      o.master_freq = g_rand_double_range (rand, 200, 5000);
-      o.freq = g_rand_double_range (rand, o.master_freq, 20000);
-      o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
-      o.sub = g_rand_double_range (rand, 0, 1);
-      o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
-
-      SNR snr = fft_snr (o, dc_test);
-
-      printf ("%f %f %f %f Y %f sub %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.sub, o.pulse_width, o.sub_width, snr.freq);
-    }
-}
-
 static void
 get_sig_noise_max (vector<double> mag, /* deep copy to allow destructive processing */
                    Osc& o,
@@ -196,6 +131,46 @@ get_sig_noise_max (vector<double> mag, /* deep copy to allow destructive process
               freq_max  = freq;
            }
         }
+    }
+}
+
+static SNR
+fft_snr (Osc& o, DCTest dc_test)
+{
+  vector<double> mag = compute_fft_mag (o, 8192, dc_test);
+
+  /* this is required because the width of the window is hardcoded to [-32:32] in get_sig_noise_max() */
+  assert (mag.size() == 8192 * 8);
+
+  double sig_max, noise_max, freq_max;
+  get_sig_noise_max (mag, o, sig_max, noise_max, freq_max);
+
+  SNR snr;
+  snr.snr = bse_db_from_factor (sig_max / noise_max, -200);
+  snr.freq = freq_max;
+
+  return snr;
+}
+
+static void
+auto_snr_test (DCTest dc_test)
+{
+  GRand *rand = g_rand_new_with_seed (42);
+
+  for (int i = 0; i < 1000; i++)
+    {
+      Osc o;
+      o.rate = 48000;
+      o.shape = g_rand_double_range (rand, -1, 1);
+      o.master_freq = g_rand_double_range (rand, 200, 5000);
+      o.freq = g_rand_double_range (rand, o.master_freq, 20000);
+      o.pulse_width = g_rand_double_range (rand, 0.01, 0.99);
+      o.sub = g_rand_double_range (rand, 0, 1);
+      o.sub_width = g_rand_double_range (rand, 0.01, 0.99);
+
+      SNR snr = fft_snr (o, dc_test);
+
+      printf ("%f %f %f %f Y %f sub %f pw %f sw %f sfreq %f\n", snr.snr, o.shape, o.master_freq, o.freq, log2 (o.freq / o.master_freq) * 12, o.sub, o.pulse_width, o.sub_width, snr.freq);
     }
 }
 
