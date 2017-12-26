@@ -25,6 +25,12 @@ class OscImpl
   double rate_;
   double leaky_a;
 
+  static const int WIDTH = 13;
+  static const int WSHIFT = 6; // delay to align saw and impulse part of the signal
+  static const int OVERSAMPLE = 64;
+
+  static const float blep_table[WIDTH * OVERSAMPLE + 1];
+
 public:
   double frequency_base   = 440;
   double frequency_factor = 1;
@@ -47,12 +53,6 @@ public:
   double sub_width_mod    = 0.0;
 
   bool   need_reset_voice_state;
-
-  static const int WIDTH = 13;
-  static const int WSHIFT = 6; // delay to align saw and impulse part of the signal
-  static const int OVERSAMPLE = 64;
-
-  static const float impulse_table[WIDTH * OVERSAMPLE + 1];
 
   enum class State {
     A,
@@ -432,7 +432,7 @@ public:
 
     for (int i = 0; i < WIDTH; i++)
       {
-        voice.future[i + voice.future_pos] += impulse_table[pos] * weight_left + impulse_table[pos + 1] * weight_right;
+        voice.future[i + voice.future_pos] += blep_table[pos] * weight_left + blep_table[pos + 1] * weight_right;
 
         pos += OVERSAMPLE;
       }
