@@ -22,9 +22,10 @@ using std::max;
 
 class OscImpl
 {
-public:
-  double rate;
+  double rate_;
+  double leaky_a;
 
+public:
   double frequency_base   = 440;
   double frequency_factor = 1;
 
@@ -193,7 +194,20 @@ public:
     if (unison_voices_changed)
       reset();
   }
+  void
+  set_rate (double rate)
+  {
+    rate_ = rate;
 
+    /* get leaky integrator constant for sample rate from ms (half-life time) */
+    const double leaky_ms = 10;
+    leaky_a = pow (2.0, -1000.0 / (rate_ * leaky_ms));
+  }
+  double
+  rate()
+  {
+    return rate_;
+  }
   double
   estimate_dc (double shape,
                double pulse_width,
@@ -477,12 +491,8 @@ public:
     double shape       = clamp (shape_base, -1.0, 1.0);
     double sync_factor = bse_approx5_exp2 (clamp (sync_base, 0.0, 60.0) / 12);
 
-    /* get leaky integrator constant for sample rate from ms (half-life time) */
-    const double leaky_ms = 10;
-    const double leaky_a = pow (2.0, -1000.0 / (rate * leaky_ms));
-
     /* dc substampling according to control frequency (cpu/quality trade off) */
-    const int dc_steps = max (bse_ftoi (rate / 4000), 1);
+    const int dc_steps = max (bse_ftoi (rate_ / 4000), 1);
 
     for (auto& voice : unison_voices)
       {
@@ -520,10 +530,10 @@ public:
                 need_reset_voice_state = false;
               }
 
-            const double saw_delta = -4.0 * unison_slave_freq / rate * (shape + 1) * (1 - sub);
+            const double saw_delta = -4.0 * unison_slave_freq / rate_ * (shape + 1) * (1 - sub);
 
-            voice.master_phase += unison_master_freq * 0.5 / rate;
-            voice.slave_phase  += unison_slave_freq / rate;
+            voice.master_phase += unison_master_freq * 0.5 / rate_;
+            voice.slave_phase  += unison_slave_freq / rate_;
 
             bool state_changed;
             do
@@ -536,7 +546,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_a, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate);
+                        double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate_);
 
                         const double jump_a = 2.0 * (shape * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_a;
@@ -554,7 +564,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_b, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate);
+                        double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate_);
 
                         const double jump_ab = 2.0 * ((shape + 1) * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_b;
@@ -572,7 +582,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_c, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate);
+                        double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate_);
 
                         const double jump_abc = 2.0 * (2 * shape + 1) * (1 - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_c;
@@ -590,7 +600,7 @@ public:
                       {
                         voice.slave_phase -= 1;
 
-                        double slave_frac = voice.slave_phase / (unison_slave_freq / rate);
+                        double slave_frac = voice.slave_phase / (unison_slave_freq / rate_);
 
                         voice.current_level += (1 - slave_frac) * saw_delta;
 
@@ -605,7 +615,7 @@ public:
                   {
                     voice.master_phase -= 1;
 
-                    double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate);
+                    double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate_);
 
                     const double new_slave_phase = voice.master_phase * sync_factor;
 
@@ -694,7 +704,7 @@ public:
   void
   process_sample_stereo (float *left_out, float *right_out)
   {
-    osc_impl.rate = rate;
+    osc_impl.set_rate (rate);
     osc_impl.sync_base = to_sync (freq / master_freq);
     osc_impl.pulse_width_base = pulse_width;
     osc_impl.shape_base = shape;

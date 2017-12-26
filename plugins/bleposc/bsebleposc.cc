@@ -48,7 +48,7 @@ class BlepOsc : public BlepOscBase {
       osc.pulse_width_mod   = properties->pulse_width_mod / 100;
 
       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
-      osc.rate        = mix_freq();
+      osc.set_rate (mix_freq());
     }
     void
     reset()
