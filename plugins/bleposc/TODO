@@ -6,3 +6,4 @@ PERF:
 - speed up dc computation
 - sync specialization
 - possible table-of-exp2
+- some parameters (like sync_factor) can be computed once for all unison voices
