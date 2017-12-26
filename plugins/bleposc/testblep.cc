@@ -283,7 +283,7 @@ speed2_test()
 
   for (int subtest = 0; subtest < 7; subtest++)
     {
-      o.rate = 48000;
+      o.set_rate (48000);
       o.frequency_base = 440;
       o.freq_mod_octaves = 0.00001;
       o.shape_base = 0; // saw
@@ -366,7 +366,7 @@ speed2_test()
           time = min (time, end - start);
         }
 
-      printf ("%d  %8.3f voices   |  %7.3f ns/sample    | %s\n", subtest, (len * blocks * unison) / o.rate / time, time * 1e9 / (len * blocks * unison), label);
+      printf ("%d  %8.3f voices   |  %7.3f ns/sample    | %s\n", subtest, (len * blocks * unison) / o.rate() / time, time * 1e9 / (len * blocks * unison), label);
     }
 }
 
@@ -421,7 +421,7 @@ lfo_test (int dump = -1)
     {
       string label;
 
-      o.rate = 48000;
+      o.set_rate (48000);
       o.frequency_base = 440;
       o.shape_base = 0; // saw
       o.sync_base = 0;
