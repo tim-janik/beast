@@ -414,9 +414,9 @@ public:
 
             voice.state = State::D;
           }
-        voice.last_value = last_value - dc;
-        voice.last_dc    = dc;
-        voice.current_level = 0; // FIXME
+        voice.last_value    = last_value - dc;
+        voice.last_dc       = dc;
+        voice.current_level = last_value - 1;
       }
   }
   void
