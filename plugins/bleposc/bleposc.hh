@@ -461,8 +461,8 @@ public:
       {
         if (voice.master_phase > 1)
           {
-            const double slave_frac = (voice.slave_phase - target_phase) / sync_factor; // FIXME: ?
-            const double master_frac = voice.master_phase - 1;                          // FIXME: ?
+            const double slave_frac = (voice.slave_phase - target_phase) / sync_factor;
+            const double master_frac = voice.master_phase - 1;
 
             return master_frac < slave_frac;
           }
