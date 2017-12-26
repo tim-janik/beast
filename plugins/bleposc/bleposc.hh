@@ -686,11 +686,11 @@ public:
   double
   test_seek_to (double phase)
   {
-    process_sample(); // propagate parameters
-
     assert (osc_impl.unison_voices.size() > 0);
     osc_impl.reset();
     osc_impl.reset_master (osc_impl.unison_voices[0], phase);  // jump to phase
+
+    process_sample(); // propagate parameters & perform reset
     return osc_impl.unison_voices[0].last_value;
   }
   double
