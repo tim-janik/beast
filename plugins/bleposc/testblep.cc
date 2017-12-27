@@ -292,6 +292,8 @@ speed2_test()
       o.sync_mod = 0.00001;
       o.pulse_width_base = 0.5;
       o.pulse_width_mod  = 0.00001;
+      o.sub_width_base = 0.5;
+      o.sub_width_mod  = 0.00001;
 
       float freq_buffer[len];
       for (int n = 0; n < len; n++)
@@ -303,6 +305,7 @@ speed2_test()
       float *sub_mod = nullptr;
       float *sync_mod = nullptr;
       float *pulse_width_mod = nullptr;
+      float *sub_width_mod = nullptr;
       const char *label = nullptr;
       int unison = 1;
 
@@ -327,6 +330,7 @@ speed2_test()
                   sub_mod = random_buffer;
                   sync_mod = random_buffer;
                   pulse_width_mod = random_buffer;
+                  sub_width_mod = random_buffer;
                   break;
           case 5: label = "440";
                   o.sync_base = 0;
@@ -356,7 +360,8 @@ speed2_test()
                                        shape_mod,
                                        sub_mod,
                                        sync_mod,
-                                       pulse_width_mod);
+                                       pulse_width_mod,
+                                       sub_width_mod);
 
               for (int n = 0; n < len; n++)
                 speed_test_x += lbuffer[n] + rbuffer[n];
