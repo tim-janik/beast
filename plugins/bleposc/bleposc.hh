@@ -496,15 +496,16 @@ public:
 
     for (auto& voice : unison_voices)
       {
+        const double master_freq2inc = 0.5 / rate_ * voice.freq_factor;
+
         for (unsigned int n = 0; n < n_values; n++)
           {
             if (freq_in)
               master_freq = frequency_factor * BSE_SIGNAL_TO_FREQ (freq_in[n]);
 
-            double unison_master_freq = master_freq * voice.freq_factor;
-
+            double master_inc = master_freq * master_freq2inc;
             if (freq_mod_in)
-              unison_master_freq *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
+              master_inc *= bse_approx5_exp2 (freq_mod_in[n] * freq_mod_octaves);
 
             if (shape_mod_in)
               shape = clamp (shape_base + shape_mod * shape_mod_in[n], -1.0, 1.0);
@@ -528,7 +529,6 @@ public:
                 need_reset_voice_state = false;
               }
 
-            const double master_inc = unison_master_freq * 0.5 / rate_;
             const double slave_inc = master_inc * sync_factor;
             const double saw_delta = -4.0 * slave_inc * (shape + 1) * (1 - sub);
 
