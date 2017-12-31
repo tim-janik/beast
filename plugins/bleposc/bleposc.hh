@@ -515,8 +515,6 @@ public:
             if (sync_mod_in)
               sync_factor = bse_approx5_exp2 (clamp (sync_base + sync_mod * sync_mod_in[n], 0.0, 60.0) / 12);
 
-            const double unison_slave_freq = unison_master_freq * 0.5 * sync_factor;
-
             if (pulse_mod_in)
               pulse_width = clamp (pulse_width_base + pulse_width_mod * pulse_mod_in[n], 0.01, 0.99);
 
@@ -530,10 +528,12 @@ public:
                 need_reset_voice_state = false;
               }
 
-            const double saw_delta = -4.0 * unison_slave_freq / rate_ * (shape + 1) * (1 - sub);
+            const double master_inc = unison_master_freq * 0.5 / rate_;
+            const double slave_inc = master_inc * sync_factor;
+            const double saw_delta = -4.0 * slave_inc * (shape + 1) * (1 - sub);
 
-            voice.master_phase += unison_master_freq * 0.5 / rate_;
-            voice.slave_phase  += unison_slave_freq / rate_;
+            voice.master_phase += master_inc;
+            voice.slave_phase  += slave_inc;
 
             bool state_changed;
             do
@@ -546,7 +546,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_a, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_a) / (unison_slave_freq / rate_);
+                        const double slave_frac = (voice.slave_phase - bound_a) / slave_inc;
 
                         const double jump_a = 2.0 * (shape * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_a;
@@ -564,7 +564,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_b, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_b) / (unison_slave_freq / rate_);
+                        const double slave_frac = (voice.slave_phase - bound_b) / slave_inc;
 
                         const double jump_ab = 2.0 * ((shape + 1) * (1 - sub) - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_b;
@@ -582,7 +582,7 @@ public:
 
                     if (check_slave_before_master (voice, bound_c, sync_factor))
                       {
-                        double slave_frac = (voice.slave_phase - bound_c) / (unison_slave_freq / rate_);
+                        const double slave_frac = (voice.slave_phase - bound_c) / slave_inc;
 
                         const double jump_abc = 2.0 * (2 * shape + 1) * (1 - sub);
                         const double saw = -4.0 * (shape + 1) * (1 - sub) * bound_c;
@@ -600,7 +600,7 @@ public:
                       {
                         voice.slave_phase -= 1;
 
-                        double slave_frac = voice.slave_phase / (unison_slave_freq / rate_);
+                        const double slave_frac = voice.slave_phase / slave_inc;
 
                         voice.current_level += (1 - slave_frac) * saw_delta;
 
@@ -615,7 +615,7 @@ public:
                   {
                     voice.master_phase -= 1;
 
-                    double master_frac = voice.master_phase / (unison_master_freq * 0.5 / rate_);
+                    const double master_frac = voice.master_phase / master_inc;
 
                     const double new_slave_phase = voice.master_phase * sync_factor;
 
