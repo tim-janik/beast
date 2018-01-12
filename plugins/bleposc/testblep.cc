@@ -281,7 +281,7 @@ speed2_test()
   for (int n = 0; n < len; n++)
     random_buffer[n] = g_random_double_range (-1, 1);
 
-  for (int subtest = 0; subtest < 7; subtest++)
+  for (int subtest = 0; subtest < 8; subtest++)
     {
       o.set_rate (48000);
       o.frequency_base = 440;
@@ -316,7 +316,7 @@ speed2_test()
           case 1: label = "440y3+pw";
                   pulse_width_mod = random_buffer;
                   break;
-          case 2: label = "440y3+y";
+          case 2: label = "440y3+pw+y";
                   pulse_width_mod = random_buffer;
                   sync_mod = random_buffer;
                   break;
@@ -336,6 +336,10 @@ speed2_test()
                   o.sync_base = 0;
                   break;
           case 6: label = "440y3+u7";
+                  unison = 7;
+                  break;
+          case 7: label = "440y3+y+u7";
+                  sync_mod = random_buffer;
                   unison = 7;
                   break;
         }
