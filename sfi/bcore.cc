@@ -279,25 +279,57 @@ force_abort ()
   _exit (-1);
 }
 
-void
-diagnostic (char kind, const std::string &message)
+/// Construct newline-terminated diagnostics message from @a diag.
+std::string
+diagnostic_message (const char *file, int line, const char *func, char kind, const std::string &diag)
 {
-  const char buf[2] = { kind, 0 };
+  String message;
+  if (file)
+    message = line ? string_format ("%s:%u", file, line) : file;
+  if (func)
+    {
+      if (!message.empty())
+        message += ": ";
+      message += func;
+      message += "()";
+    }
+  const String prg = program_alias();
+  if (!prg.empty())
+    {
+      if (message.empty())
+        message = prg;
+      else
+        message = prg + ": " + message;
+    }
   String prefix;
   switch (kind) {
-  case 'W':     prefix = "WARNING: ";   break;
-  case 'I':     prefix = "INFO: ";      break;
-  case 'D':     prefix = "DEBUG: ";     break;
-  case ' ':     prefix = "";            break;
-  case 'F':
-    prefix = program_alias() + ": FATAL: ";
-    break;
+  case 'W':     prefix = "WARNING";     break;
+  case 'I':     prefix = "INFO";        break;
+  case 'D':     prefix = "DEBUG";       break;
+  case 'E':     prefix = "ERROR";       break;
+  case 'F':     prefix = "FATAL";       break;
   default:
-    prefix = program_alias() + ": " + buf + ": ";
-    break;
+  case ' ':                             break;
   }
-  const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
-  printerr ("%s%s%s", prefix, message, newline);
+  if (!prefix.empty())
+    {
+      if (!message.empty())
+        message += ": ";
+      message += prefix;
+    }
+  if (!message.empty())
+    message += ": ";
+  message += diag.empty() ? "statement should not be reached" : diag;
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    message += "\n";
+  return message;
+}
+
+void
+diagnostic (const char *file, int line, const char *func, char kind, const std::string &info)
+{
+  String msg = diagnostic_message (file, line, func, kind, info);
+  printerr ("%s", msg);
 }
 
 void

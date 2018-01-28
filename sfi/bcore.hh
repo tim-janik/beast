@@ -176,13 +176,14 @@ compare_greater (const Value &v1, const Value &v2)
 
 // == Implementation Details ==
 namespace Internal {
-extern bool                         debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
-bool                                debug_key_enabled (const char *conditional) BSE_PURE;
-void                                diagnostic        (char kind, const std::string &message);
-void                                debug_diagnostic  (const char *prefix, const std::string &message);
-void                                force_abort       () BSE_NORETURN;
-void                                printout_string   (const String &string);
-void                                printerr_string   (const String &string);
+extern bool                     debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
+bool                            debug_key_enabled       (const char *conditional) BSE_PURE;
+void                            debug_diagnostic        (const char *prefix, const std::string &message);
+std::string                     diagnostic_message      (const char *file, int line, const char *func, char kind, const std::string &info);
+void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
+void                            force_abort             () BSE_NORETURN;
+void                            printout_string         (const String &string);
+void                            printerr_string         (const String &string);
 } // Internal
 
 /// Print a message on stdout (and flush stdout) ala printf(), using the POSIX/C locale.
@@ -204,7 +205,7 @@ template<class ...Args> inline void BSE_ALWAYS_INLINE
 dump (const char *conditional, const char *format, const Args &...args)
 {
   if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
-    Internal::diagnostic (' ', string_format (format, args...));
+    Internal::diagnostic (NULL, 0, NULL, ' ', string_format (format, args...));
 }
 
 /// Issue a printf-like debugging message if @a conditional is enabled by $BSE_DEBUG.
@@ -231,7 +232,8 @@ debug_enabled (const char *conditional)
 template<class ...Args> void BSE_NORETURN
 fatal_error (const char *format, const Args &...args)
 {
-  Internal::diagnostic ('F', string_format (format, args...));
+  const String msg = Internal::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...));
+  printerr ("%s", msg);
   Internal::force_abort();
 }
 
@@ -239,21 +241,21 @@ fatal_error (const char *format, const Args &...args)
 template<class ...Args> void BSE_NORETURN
 warn (const char *format, const Args &...args)
 {
-  Internal::diagnostic ('W', string_format (format, args...));
+  Internal::diagnostic (NULL, 0, NULL, 'W', string_format (format, args...));
 }
 
 /// Issue a printf-like warning message.
 template<class ...Args> void BSE_NORETURN
 warning (const char *format, const Args &...args)
 {
-  Internal::diagnostic ('W', string_format (format, args...));
+  Internal::diagnostic (NULL, 0, NULL, 'W', string_format (format, args...));
 }
 
 /// Issue an informative printf-like message.
 template<class ...Args> void BSE_NORETURN
 info (const char *format, const Args &...args)
 {
-  Internal::diagnostic ('I', string_format (format, args...));
+  Internal::diagnostic (NULL, 0, NULL, 'I', string_format (format, args...));
 }
 
 // == External Helpers ==
