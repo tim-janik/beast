@@ -6,6 +6,7 @@
 #include "bsecategories.hh"
 #include "bsegconfig.hh"
 #include "bsesource.hh"		/* debug hack */
+#include "bsestartup.hh"
 #include <string.h>
 
 #define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
