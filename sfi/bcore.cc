@@ -271,14 +271,6 @@ debug_key_enabled (const char *conditional)
   return false;
 }
 
-void BSE_NORETURN
-force_abort ()
-{
-  // ensure the program halts on error conditions
-  abort();
-  _exit (-1);
-}
-
 /// Construct newline-terminated diagnostics message from @a diag.
 std::string
 diagnostic_message (const char *file, int line, const char *func, char kind, const std::string &diag)
@@ -360,6 +352,31 @@ struct EarlyStartup101 {
 
 static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
+
+// == fatal_abort ==
+// Mimick relevant parts of glibc's abort_msg_s
+struct AbortMsg {
+  const char *msg = NULL;
+};
+static AbortMsg abort_msg;
+
+/// Exit the program with SIGABRT, leaving @a message for core dump readouts.
+void BSE_NORETURN BSE_NOINLINE
+fatal_abort (const std::string &message)
+{
+  abort_msg.msg = message.c_str();      // store abort message for core dumps
+  __sync_synchronize();
+  abort();                              // default action for SIGABRT is core dump
+  _exit (-1);                           // ensure noreturn
+}
+
 } // Internal
 
 } // Bse
+
+// == __abort_msg ==
+Bse::Internal::AbortMsg            *bse_abort_msg = &Bse::Internal::abort_msg;
+// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
+#ifdef  __ELF__
+extern "C" Bse::Internal::AbortMsg *__abort_msg __attribute__ ((weak, alias ("bse_abort_msg")));
+#endif // __ELF__

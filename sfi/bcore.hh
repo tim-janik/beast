@@ -181,7 +181,7 @@ bool                            debug_key_enabled       (const char *conditional
 void                            debug_diagnostic        (const char *prefix, const std::string &message);
 std::string                     diagnostic_message      (const char *file, int line, const char *func, char kind, const std::string &info);
 void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
-void                            force_abort             () BSE_NORETURN;
+void                            fatal_abort             (const std::string &message) BSE_NORETURN BSE_NOINLINE;
 void                            printout_string         (const String &string);
 void                            printerr_string         (const String &string);
 } // Internal
@@ -234,7 +234,7 @@ fatal_error (const char *format, const Args &...args)
 {
   const String msg = Internal::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...));
   printerr ("%s", msg);
-  Internal::force_abort();
+  Internal::fatal_abort (msg);
 }
 
 /// Issue a printf-like warning message.
