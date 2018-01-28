@@ -217,7 +217,7 @@ case "_$enable_debug" in
   _yes)
     debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer" ;;
   _min*)
-    debug_flags="-DG_ENABLE_DEBUG -g1" ;;
+    debug_flags="-DG_ENABLE_DEBUG -g" ;;
   _*)
     debug_flags="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" ;; # -DG_DISABLE_ASSERT
 esac
