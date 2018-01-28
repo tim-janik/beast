@@ -1226,11 +1226,13 @@ MidiChannel::kill_notes (guint64       tick_stamp,
     {
       VoiceSwitch *vswitch = mchannel->voices[i];
       if (vswitch)
-        for (j = 0; j < vswitch->n_vinputs; j++)
-          if (sustained_only && vswitch->vinputs[j]->queue_state == VSTATE_SUSTAINED)
-            change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
-          else if (!sustained_only && vswitch->vinputs[j]->queue_state != VSTATE_BUSY)
-            change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL, 0, 0, trans);
+        {
+          for (j = 0; j < vswitch->n_vinputs; j++)
+            if (sustained_only && vswitch->vinputs[j]->queue_state == VSTATE_SUSTAINED)
+              change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+            else if (!sustained_only && vswitch->vinputs[j]->queue_state != VSTATE_BUSY)
+              change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL, 0, 0, trans);
+        }
     }
 }
 
