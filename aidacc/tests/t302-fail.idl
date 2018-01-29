@@ -1,0 +1,112 @@
+// IDL error test file					 	-*-mode:c++;-*-
+// this file is processed line by line, no statement may span multiple lines
+// each line is asserted to produce an error
+
+Const a = 5; Const a = 6; // redefining existing identifier
+
+Const record = 5; // keyword assignment
+
+
+
+namespace broken$name { Const a = 5; } // invalid namespace name (without --system-typedefs)
+
+enum E { VALUE }; Const E = 0; // typename assignment
+
+enum E { VALUE }; Const VALUE = 0; // enum value assignment
+
+Const TRUE = 17; // invalid constant name
+
+Const tmp = "invalid" _("i18n string") "concatenation";
+
+FrobCheck tmp = 1; // FrobCheck is no type
+
+Const zzz = 1; zzz tmp = 1; // zzz is no type
+
+record DupRecord { int32 a, b, c; }; // fail on multiple fields per type
+
+record DupRecord { int32 b; int32 b; }; // duplicate: b
+
+record EmptyRecord { }; // record is empty
+
+enum ExtensiveEnum { record, }; // keyword as enum value
+
+enum ExtensiveEnum { Foo; }; // semicolon in enum
+
+enum ExtensiveEnum { EV1, EV2, EV1 }; // duplicate enum value
+
+enum Enu1 { AA, AA }; // duplicate enum value
+
+enum Enu1 { AA }; enum Enu1 { BB }; // duplicate enum name
+
+enum ExtensiveEnum { Const }; // Const keyword in enum
+
+sequence EmptySequence { }; // sequence needs 1 field
+
+sequence MultiFieldSequence { bool one; int32 toomany; }; // sequence needs 1 field
+
+sequence Seq { enum b; }; // keyword is not typename
+
+sequence S1 { bool b; }; sequence S2 { _S1 s; }; // need existing typenames
+
+sequence Dup { bool b; }; sequence Dup { bool b; }; // duplicate definition
+
+
+
+
+
+Const class = 5; // keyword redefinition
+
+enum Enu1 { AA }; enum Enu1 { AA }; // type redefinition
+
+
+
+
+
+
+
+record R { String s = Num ("x", "X coord", 0, 0, 100.0, +.5, "ro"); }; // type/initializer mismatch
+
+interface I { int32 method (,); }; // invalid method arg separator
+interface I { int32 method (); int32 method (); }; // multiple method definitions
+interface I { int32 xxx; int32 xxx (); }; // multiple member definitions
+interface I { int32 method (int32 n, int32 n); }; // duplicate method argument
+interface I : Unknown {}; // invalid parent interface
+record R { String s; }; interface I : R {}; // invalid interface inheritance
+interface I { signal int32 xxx; }; // invalidly declared as signal
+Const void = 17; // invalid constant name
+void xy = 17; // invalid property type
+interface I { int32 method (void); }; // invalid argument type
+interface I { int32 method (int32 n, void v); }; // invalid argument type
+
+include "t302-inc1.idl"; // test include error messages
+
+namespace B { enum E { E1 }; } namespace B { enum E { E1 }; } // namespaced type redefinition
+
+namespace A { namespace B { enum E { E1 }; } namespace B { enum E { E1 }; } } // namespaced type redefinition
+
+interface I { int32 method (I self); }; // invalid method arg name
+
+interface I { int32 self; }; // invalid property name
+interface I { int32 method (int32 a, int32 b = 2, int32 c); }; // missing subsequent default initializer
+
+
+interface P { void void_prop; }; // invalid property type
+
+interface I; interface I {}; interface I; interface I {}; // interface redefinition
+
+enum Empty { }; // invalid empty enumeration
+
+namespace U { using namespace Unknown; } // not a namespace-name
+
+interface I { IStream stream_func1(); }; // stream type used in wrong context
+interface I { void stream_func2 (JStream js); }; // stream type used in wrong context
+interface I { void stream_func3 (int32 i32, OStream os); }; // stream type used in wrong context
+interface I { signal JStream stream_signal1(); }; // stream type used in wrong context
+interface I { signal void stream_signal2 (float64 f, OStream os); }; // stream type used in wrong context
+record I { OStream istream; }; // stream type used in wrong context
+sequence S { IStream istream; }; // stream type used in wrong context
+
+enum TooBig { VALUE = -9223372036854775809 }; // number too large
+enum TooBig { VALUE = +9223372036854775808 }; // number too large
+
+record R { int32 type; }; // invalid field name

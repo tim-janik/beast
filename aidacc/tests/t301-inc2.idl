@@ -1,0 +1,6 @@
+namespace IncludeTest {
+  record SomeRecord {
+    int32 x;
+    int32 y;
+  };
+}

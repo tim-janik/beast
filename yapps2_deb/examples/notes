@@ -1,0 +1,44 @@
+Hints
+#####
+
+Some additional hints for your edification.
+
+Author: Matthias Urlichs <smurf@debian.org>
+
+How to process C preprocessor codes:
+====================================
+
+Rudimentary include handling has been added to the parser by me.
+
+However, if you want to do anything fancy, like for instance whatever
+the C preprocessor does, things get more complicated. Fortunately,
+there's already a nice tool to handle C preprocessing -- CPP itself.
+
+If you want to report errors correctly in that situation, do this:
+
+	def set_line(s,m):
+		"""Fixup the scanner's idea of the current line"""
+		s.filename = m.group(2)
+		line = int(m.group(1))
+		s.del_line = line - s.line
+
+	%%
+	parser whatever:
+		ignore:    '^#\s*(\d+)\s*"([^"\n]+)"\s*\n' {{ set_line }}
+		ignore:    '^#.*\n'
+
+	[...]
+	%%
+	if __name__=='__main__':
+		import sys,os
+		for a in sys.argv[1:]:
+			f=os.popen("cpp "+repr(a),"r")
+
+			P = whatever(whateverScanner("", filename=a, file=f))
+			try: P.goal()
+			except runtime.SyntaxError, e:
+				runtime.print_error(e, P._scanner)
+				sys.exit(1)
+
+			f.close()
+
