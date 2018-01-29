@@ -259,13 +259,13 @@ sub table_stage {
 
     printf "%s{\n", $indent;
     $indent .= "  ";
-    printf "%sstatic const %s Wconst%u[] = {\n", $indent, $tmp_ieee_type, $n_points;
+    printf "%sstatic const %s Wconst%u[] = { 0, 0, \n", $indent, $tmp_ieee_type, $n_points;
     for (my $i = 1; $i < $n_points >> 2; $i++) {
 	my $wk = Wexponent ($fft_size, $n_points, $i);
 	printf "%s  %+.15f, %+.15f,\n", $indent, Wreal ($fft_size, $wk), Wimag ($fft_size, $wk);
     }
     printf "%s};\n", $indent;
-    printf "%sconst %s *W = Wconst%u - 2;\n", $indent, $tmp_ieee_type, $n_points;
+    printf "%sconst %s *W = Wconst%u;\n", $indent, $tmp_ieee_type, $n_points;
     printf "%s%s *Z = Y + %u;\n", $indent, $ieee_type, $n_points >> 1;
 
     # first half loops

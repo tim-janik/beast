@@ -104,7 +104,7 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
   (::NameSpace::bse_type_keeper__3##EnumType.get_type ())
 #define BSE_CXX_DECLARE_ENUM(EnumType,EnumName,N,ICode)                 \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> BseExportNode*                                             \
+  template<> BSE_UNUSED BseExportNode*                                  \
   bse_export_node<EnumType> ()                                          \
   {                                                                     \
     static BseExportNodeEnum enode = {                                  \
@@ -158,7 +158,7 @@ EnumValue (int         int_value,
   (::NameSpace::bse_type_keeper__1##RecordType.get_type ())
 #define BSE_CXX_DECLARE_RECORD(RecordType)                              \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> BseExportNode*                                             \
+  template<> BSE_UNUSED BseExportNode*                                  \
   bse_export_node<RecordType> ()                                        \
   {                                                                     \
     static BseExportNodeBoxed bnode = {                                 \
@@ -194,7 +194,7 @@ EnumValue (int         int_value,
   (::NameSpace::bse_type_keeper__2##SequenceType.get_type ())
 #define BSE_CXX_DECLARE_SEQUENCE(SequenceType)                                  \
   template<class E> static BseExportNode* bse_export_node ();                   \
-  template<> BseExportNode*                                                     \
+  template<> BSE_UNUSED BseExportNode*                                          \
   bse_export_node<SequenceType> ()                                              \
   {                                                                             \
     static BseExportNodeBoxed bnode = {                                         \

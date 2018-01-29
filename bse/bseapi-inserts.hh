@@ -21,7 +21,7 @@ interface_scope:Object:
     static_assert (std::is_pointer<BseObjectPtr>::value, "'BseObject*' required");
     typedef typename std::remove_pointer<BseObjectPtr>::type BseObjectT;
     static_assert (std::is_base_of<GObject, BseObjectT>::value, "'BseObject*' required");
-    return this ? (BseObjectPtr) this->as_bse_object() : NULL;
+    return (BseObjectPtr) this->as_bse_object();
   }
   // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
   template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
@@ -33,7 +33,7 @@ interface_scope:Object:
   {
     typedef typename ObjectImplP::element_type ObjectImplT;
     static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
-    ObjectImplT *impl = this ? dynamic_cast<ObjectImplT*> (this) : NULL;
+    ObjectImplT *impl = dynamic_cast<ObjectImplT*> (this);
     return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 protected:

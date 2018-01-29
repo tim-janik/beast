@@ -83,7 +83,7 @@ struct BseObject : GObject {
   {
     typedef typename ObjectImplP::element_type ObjectImplT;
     static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
-    ObjectImplT *impl = this && cxxobject_ ? as<ObjectImplT*>() : NULL;
+    ObjectImplT *impl = cxxobject_ ? as<ObjectImplT*>() : NULL;
     return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
