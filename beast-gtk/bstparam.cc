@@ -407,9 +407,10 @@ bst_param_new_rec (GParamSpec *pspec,
 
 // == Aida::Parameter binding ==
 static void
-aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
+aida_property_binding_set_value (GxkParam *param, const GValue *value)
 {
-  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
+  Bse::ObjectHandle &handle = *(Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  GParamSpec *pspec = param->pspec;
   Any any;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
     {
@@ -423,11 +424,12 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
       any.set (g_value_get_double (value));
       break;
     case G_TYPE_STRING:
-      if (G_VALUE_TYPE (value) == SFI_TYPE_CHOICE)      // sfi_pspec_choice
+      if (G_PARAM_SPEC_VALUE_TYPE (pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
         {
-          const Aida::EnumInfo &enum_info = *(const Aida::EnumInfo*) param->bdata[1].v_pointer;
-          assert_return (NULL != &enum_info);
-          any.set_enum (enum_info, enum_info.value_from_string (sfi_value_get_choice (value)));
+          const char *enum_typename = sfi_pspec_get_enum_typename (pspec);
+          assert_return (NULL != enum_typename && enum_typename[0]);
+          const int64 v = Aida::enum_value_from_string (enum_typename, sfi_value_get_choice (value));
+          any.set_enum (enum_typename, v);
         }
       else                      // sfi_pspec_string
         any.set (g_value_get_string (value));
@@ -436,14 +438,15 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  apa->set (any);
+  handle.__aida_set__ (pspec->name, any);
 }
 
 static void
-aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
+aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 {
-  Aida::Parameter *const apa = (Aida::Parameter*) param->bdata[0].v_pointer;
-  Any any = apa->get();
+  Bse::ObjectHandle &handle = *(Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  GParamSpec *pspec = param->pspec;
+  Any any = handle.__aida_get__(pspec->name);
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {
@@ -460,12 +463,13 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
       g_value_set_double (&value, any.get<double>());
       break;
     case G_TYPE_STRING:
-      if (G_PARAM_SPEC_VALUE_TYPE (param->pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
+      if (G_PARAM_SPEC_VALUE_TYPE (pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
         {
-          const Aida::EnumInfo &enum_info = any.get_enum_info();
+          const char *enum_typename = sfi_pspec_get_enum_typename (pspec);
+          assert_return (NULL != enum_typename && enum_typename[0]);
+          const String enumerator = Aida::enum_value_to_string (enum_typename, any.as_int64());
           g_value_init (&value, SFI_TYPE_CHOICE);
-          sfi_value_set_choice (&value, enum_info.value_to_string (any.as_int64()).c_str());
-          param->bdata[1].v_pointer = (void*) &enum_info;
+          sfi_value_set_choice (&value, enumerator.c_str());
         }
       else                      // sfi_pspec_string
         {
@@ -485,37 +489,39 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 }
 
 static void
-aida_parameter_binding_destroy (GxkParam *param)
+aida_property_binding_destroy (GxkParam *param)
 {
-  Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
+  Bse::ObjectHandle *handlep = (Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  assert_return (handlep);
   param->bdata[0].v_pointer = NULL;
-  delete cxxparam;
+  delete handlep;
 }
 
 static gboolean
-aida_parameter_binding_check_writable (GxkParam *param)
+aida_property_binding_check_writable (GxkParam *param)
 {
-  // Aida::Parameter *const cxxparam = (Aida::Parameter*) param->bdata[0].v_pointer;
-  // assert (cxxparam);
+  Bse::ObjectHandle *handlep = (Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  assert_return (handlep, false);
   return true;
 }
 
-static GxkParamBinding aida_parameter_binding = {
+static GxkParamBinding aida_property_binding = {
   2, // Aida::Parameter*, const Aida::EnumInfo*
   NULL,
-  aida_parameter_binding_set_value,
-  aida_parameter_binding_get_value,
-  aida_parameter_binding_destroy,
-  aida_parameter_binding_check_writable,
+  aida_property_binding_set_value,
+  aida_property_binding_get_value,
+  aida_property_binding_destroy,
+  aida_property_binding_check_writable,
 };
 
 GxkParam*
-bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparameter)
+bst_param_new_property (GParamSpec *pspec, const Bse::ObjectHandle handle)
 {
-  GxkParam *param = gxk_param_new (pspec, &aida_parameter_binding, NULL);
-  Aida::Parameter *cxxparam = new Aida::Parameter (aparameter);
-  param->bdata[0].v_pointer = cxxparam;
+  GxkParam *param = gxk_param_new (pspec, &aida_property_binding, NULL);
+  Bse::ObjectHandle *handlep = new Bse::ObjectHandle (handle);
+  param->bdata[0].v_pointer = handlep;
   param->bdata[1].v_pointer = NULL;
+#if 0 // FIXME: catch "changed" signal/event for the pspec->name property
   auto handler = [param] (const String &what) {
     bool match = what == param->pspec->name;
     if (!match && what.size() == strlen (param->pspec->name))
@@ -527,6 +533,7 @@ bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparamet
       gxk_param_update (param);
   };
   cxxparam->sig_changed() += handler; // disconnected by delete cxxparam
+#endif
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }

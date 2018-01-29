@@ -8,6 +8,7 @@
 #include <sfi/glib-extra.hh>
 #include <numeric>
 #include <algorithm>
+#include <list>
 
 namespace Bse {
 
@@ -30,7 +31,7 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
-using   Rapicorn::void_t;
+using   Aida::void_t;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -274,6 +275,8 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 #define UNLIKELY(cond)  BSE_UNLIKELY (cond)
 /// Return silently if @a cond does not evaluate to true with return value @a ...
 #define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
+/// Yield the number of C @a array elements.
+#define ARRAY_SIZE(array)               BSE_ARRAY_SIZE (array)
 #endif // BSE_CONVENIENCE
 
 // == Memory Utilities ==

@@ -11,7 +11,7 @@
 
 #define PREC    "15"
 
-using Rapicorn::printout;
+using Bse::printout;
 
 static void	usage (void)	G_GNUC_NORETURN;
 

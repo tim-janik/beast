@@ -123,7 +123,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
   if (self->item)
     {
       Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
-      source.sig_probes() -= self->probes_handler;
+      // FIXME: source.sig_probes() -= self->probes_handler;
       bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
@@ -177,9 +177,9 @@ bst_bus_editor_set_bus (BstBusEditor *self,
         gxk_param_update ((GxkParam*) ring->data);
       /* setup scope */
       Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
-      self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
-        return bus_probes_notify (self, pseq);
-      };
+      // FIXME: self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+      //return bus_probes_notify (self, pseq);
+      //};
       bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGIE, 20.0);
       bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
     }

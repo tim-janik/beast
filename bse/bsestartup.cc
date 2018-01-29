@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsestartup.hh"
 #include "bsemain.hh"
-#include <bse/bseclientapi.hh>
+#include <bse/bseapi_handles.hh>
 #include <bse/bse.hh>           // init_server_connection
 #include "../config/config.h"   // BST_VERSION
 
@@ -166,4 +166,4 @@ init_server_connection () // bse.hh
 
 } // Bse
 
-#include "bseclientapi.cc"      // build IDL client interface
+#include "bseapi_handles.cc"      // build IDL client interface

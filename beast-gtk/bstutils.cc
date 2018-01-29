@@ -1344,5 +1344,5 @@ bst_mouse_button_context (GdkEvent *event)
   return button_event (event) && event->button.button == 3;
 }
 
-// == bstserverapi.hh ==
-#include "bstserverapi.cc"      // compile types and bindings generated for bstapi.idl
+// == bstapi_interfaces.cc ==
+#include "bstapi_interfaces.cc"      // compile types and bindings generated for bstapi.idl

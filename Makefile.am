@@ -7,7 +7,6 @@ SUBDIRS		= sfi bse plugins drivers pybeast beast-gtk launchers library tools ebe
 
 # == make setup ==
 DEFS                    += -DBSE_CONVENIENCE
-QTEST                    = @echo '  TEST    ' $@;
 QWAVCHECK                = @echo '  WAVCHECK' $@;
 AM_CPPFLAGS             += -I$(top_srcdir) -I$(top_builddir)
 lib_LTLIBRARIES          =
@@ -19,6 +18,8 @@ noinst_PROGRAMS          =
 noinst_LTLIBRARIES	 =
 
 # == project tools and paths ==
+YAPPS                    = $(PYTHON) $(topdir)/yapps2_deb/yapps2.py
+AIDACC                   = $(topdir)/aidacc/aidacc
 SFIDL                    = $(top_builddir)/sfi/sfidl
 SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 BSEFEXTRACT		 = $(top_builddir)/tools/bsefextract
@@ -36,6 +37,13 @@ BUILT_SOURCES            =
 # == res/ ==
 # define res_resfiles_list via immediate assignment
 include res/Makefile.sub
+
+# == aidacc/ ==
+include aidacc/Makefile.sub
+BUILT_SOURCES	+= $(AIDACC)
+
+# == aidacc/tests/ ==
+include aidacc/tests/Makefile.sub
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
@@ -57,22 +65,23 @@ MAINTAINERCLEANFILES += HACKING
 	$(Q) chmod a-w $@	# prevent accidental target file edits
 MAINTAINERCLEANFILES += README README.html
 
-# == BSE App Test ==
-bse-app-test:
+# == buildtest ==
+installcheck-buildtest:
 	$(Q) cd . \
-	&& echo '#include <bse/bse.hh>'					 > tmpx.cc \
-	&& echo 'extern "C" int main (int argc, char *argv[]) {'	>> tmpx.cc \
-	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> tmpx.cc \
-	&& echo '  return 0; }'						>> tmpx.cc \
+	&& echo '#include <bse/bse.hh>'					 > $@.cc \
+	&& echo 'extern "C" int main (int argc, char *argv[]) {'	>> $@.cc \
+	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> $@.cc \
+	&& echo '  return 0; }'						>> $@.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+	$(Q) $(CXX) -Werror $@.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
+	$(Q) $(CXX) -Werror $@.o -o $@ `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(bselibdir):$$LD_LIBRARY_PATH" ./tmpx \
+	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(bselibdir):$$LD_LIBRARY_PATH" ./$@ \
 		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) rm -f tmpx.o tmpx.cc tmpx
-installcheck-local: bse-app-test
+	$(Q) rm -f $@.o $@.cc $@
+.PHONY: installcheck-buildtest
+installcheck-local: installcheck-buildtest
 
 # == topbuildid.cc ==
 topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc

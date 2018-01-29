@@ -377,7 +377,10 @@ class Generator:
       s += '  ' + self.F ('bool') + 'operator==  (const %s &other) const;\n' % classC
       s += '  ' + self.F ('bool') + 'operator!=  (const %s &other) const { return !operator== (other); }\n' % classC
       s += self.generate_recseq_accept (type_info)
-    s += self.insertion_text ('class_scope:' + type_info.name)
+    if self.gen_mode == G4STUB:
+      s += self.insertion_text ('handle_scope:' + type_info.name)
+    if self.gen_mode == G4SERVANT:
+      s += self.insertion_text ('interface_scope:' + type_info.name)
     s += '};\n'
     if type_info.storage in (Decls.RECORD, Decls.SEQUENCE):
       s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % classC
@@ -636,7 +639,10 @@ class Generator:
       il = max (il, len (self.C (type_info)))
     for m in type_info.methods:
       s += self.generate_method_decl (type_info, m, il)
-    s += self.insertion_text ('class_scope:' + type_info.name)
+    if self.gen_mode == G4STUB:
+      s += self.insertion_text ('handle_scope:' + type_info.name)
+    if self.gen_mode == G4SERVANT:
+      s += self.insertion_text ('interface_scope:' + type_info.name)
     # accept
     s += self.generate_class_accept_accessor (type_info)
     s += '};\n'
@@ -1213,7 +1219,7 @@ class Generator:
     text = lstrip.sub ('', text)
     text = rstrip.sub ('', text)
     if text:
-      ind = '  ' if key.startswith ('class_scope:') else '' # inner class indent
+      ind = '  ' if key.startswith (('class_scope:', 'handle_scope:', 'interface_scope:')) else '' # inner class indent
       return ind + '// ' + key + ':\n' + text + '\n'
     else:
       return ''
@@ -1223,6 +1229,8 @@ class Generator:
     for line in f:
       m = (re.match ('(includes):\s*(//.*)?$', line) or
            re.match ('(class_scope:\w+):\s*(//.*)?$', line) or
+           re.match ('(handle_scope:\w+):\s*(//.*)?$', line) or
+           re.match ('(interface_scope:\w+):\s*(//.*)?$', line) or
            re.match ('(global_scope):\s*(//.*)?$', line))
       if not m:
         m = re.match ('(IGNORE):\s*(//.*)?$', line)
@@ -1475,8 +1483,8 @@ def generate (namespace_list, **args):
       gg.property_list = ""
   for ifile in config['insertions']:
     gg.insertion_file (ifile)
-  gg.ns_aida = ( Decls.Namespace ('Aida', None, []), ) # Aida namespace tuple for open_namespace()
-  base_filename = gg.idl_file.rstrip ('.idl')
+  gg.ns_aida = ( Decls.Namespace ('Aida', None, []), )  # Aida namespace tuple for open_namespace()
+  base_filename = gg.idl_file[:gg.idl_file.rfind ('.')] # strip extension
   gg.filename_serverhh = base_filename + '_interfaces.hh'
   gg.filename_servercc = base_filename + '_interfaces.cc'
   gg.filename_clienthh = base_filename + '_handles.hh'

@@ -464,7 +464,7 @@ private:
         pdata.ostreams = NULL;
         /* notify clients */
         if (probe_seq.size())
-          source->as<SourceIface*>()->sig_probes.emit (probe_seq);
+          ; // FIXME: source->as<SourceIface*>()->sig_probes.emit (probe_seq);
       }
     if (0)
       printerr ("BseProbe: got probe: %d %d (left=%d)\n", n_values, n_ostreams, pdata.n_pending);
@@ -582,7 +582,7 @@ bse_dummy_prober (gpointer data)
       ProbeSeq probe_seq;
       SourceIface *iface = source->as<SourceIface*>();
       if (iface) // timer might be executed after destruction
-        iface->sig_probes.emit (probe_seq);
+        ; // FIXME: iface->sig_probes.emit (probe_seq);
       g_object_unref (source);
     }
   bse_dummy_prober_id = 0;

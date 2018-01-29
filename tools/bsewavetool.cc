@@ -702,7 +702,7 @@ public:
   bool
   exec (Wave *wave)
   {
-    if (!force_creation && Rapicorn::Path::check (output_file, "e"))
+    if (!force_creation && Bse::Path::check (output_file, "e"))
       {
         app_error ("not creating \"%s\": %s", output_file, g_strerror (EEXIST));
         exit (1);

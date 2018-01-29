@@ -327,7 +327,7 @@ bst_app_finalize (GObject *object)
 
   if (self->project)
     {
-      self->project.sig_state_changed() -= self->sig_state_changed_id;
+      //FIXME: self->project.sig_state_changed() -= self->sig_state_changed_id;
       self->sig_state_changed_id = 0;
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", bst_app_reload_pages, self,
@@ -356,10 +356,12 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
+#if 0 // FIXME
   self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
     gxk_widget_update_actions (self);
   };
-
+#endif
+  
   bse_proxy_connect (self->project.proxy_id(),
                      "swapped_signal::item-added", bst_app_reload_pages, self,
                      "swapped_signal::item-remove", bst_app_reload_pages, self,

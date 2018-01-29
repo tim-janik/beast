@@ -41,7 +41,7 @@ SfiProxy     bst_param_get_proxy      (GxkParam    *param);
 bool         bst_param_is_proxy       (GxkParam    *param);
 SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,    /* bstparam-proxy.cc */
                                        const gchar *text);
-GxkParam* bst_param_new_aida_parameter (GParamSpec *pspec, const Aida::Parameter &aparameter);
+GxkParam*    bst_param_new_property   (GParamSpec *pspec, const Bse::ObjectHandle handle);
 
 
 /* --- param implementation utils --- */

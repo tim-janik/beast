@@ -751,7 +751,7 @@ bse_project_state_changed (BseProject *self, Bse::ProjectState state)
 	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
       self->deactivate_timer = bse_idle_timed (self->deactivate_usecs + delay_usecs, auto_deactivate, self);
     }
-  self->as<Bse::ProjectIface*>()->sig_state_changed.emit (state);
+  // FIXME: self->as<Bse::ProjectIface*>()->sig_state_changed.emit (state);
 }
 
 void

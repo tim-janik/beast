@@ -4,7 +4,7 @@ IGNORE:
 struct DUMMY { // dummy class for auto indentation
 
 
-class_scope:Object:
+interface_scope:Object:
   // as<BseObjectPtr>()
   template<class BseObjectPtr, typename ::std::enable_if<std::is_pointer<BseObjectPtr>::value, bool>::type = true>
   BseObjectPtr           as ()

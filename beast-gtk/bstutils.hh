@@ -5,7 +5,7 @@
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
-#include "bstserverapi.hh"
+#include "bstapi_interfaces.hh"
 
 namespace Bst {
 

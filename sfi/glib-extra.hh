@@ -6,10 +6,7 @@
 #include <glib-object.h>
 #include <string>
 #include <functional>
-
-#include <rapicorn-core.hh>
-
-namespace Aida = Rapicorn::Aida;
+#include <aidacc/aida.hh>
 
 typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*64 in format strings.
 

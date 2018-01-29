@@ -4,7 +4,7 @@
 
 #include <bse/gsldefs.hh>
 #include <bse/bsetype.hh>
-#include <bse/bseserverapi.hh>
+#include <bse/bseapi_interfaces.hh>
 
 
 

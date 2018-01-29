@@ -573,7 +573,7 @@ sequence AuxDataSeq {
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
   int32         echo_test       (String msg);   ///< Echo custom message to stdout.
-  signal void   echo_reply      (String msg);   ///< Signal emitted in response to echo_test().
+  // signal void echo_reply     (String msg);   ///< Signal emitted in response to echo_test().
 };
 
 enum UserMessageType {
@@ -635,7 +635,7 @@ interface Object {
   String      uname      = String ("UName", "Unique object name", GUI);
   String      debug_name (); ///< Object name useful for debugging output.
   int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
-  signal void changed    (String what); ///< Notification for object state or property changes.
+  // signal void changed (String what); ///< Notification for object state or property changes.
 };
 
 /// A list of Item or derived objects.
@@ -850,7 +850,7 @@ interface Source : Item {
   /// Query sample probes from a number of sources.
   void        request_probes (ProbeRequestSeq prseq);
   /// Signal arrival of new probe values.
-  signal void probes         (ProbeSeq a);
+  // signal void probes         (ProbeSeq a);
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.
@@ -879,7 +879,7 @@ interface SNet : Super {
   Error       can_create_source (String module_type); ///< Check whether inserting a new module into a synthesis network is possible.
   Source      create_source     (String module_type); ///< Insert a new module into a synthesis network.
   Error       remove_source     (Source module);      ///< Remove an existing module from its synthesis network.
-  signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
+  // signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
   group _("Playback Settings") {
     bool      auto_activate = Bool (_("Auto Activate"),
                                     _("Automatic activation only needs to be enabled for synthesis networks that don't "
@@ -1114,7 +1114,7 @@ enum ProjectState {
 
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
-  signal void  state_changed       (ProjectState newstate); ///< Signal notifies of project state changes.
+  // signal void  state_changed       (ProjectState newstate); ///< Signal notifies of project state changes.
   ProjectState get_state           (); ///< Retrieve the current project activation/playback state.
   void         change_name         (String name); ///< Change a project name without recording undo steps.
   Error        play                (); ///< Activate a project and start project playback (an already playing project is first halted).
@@ -1186,7 +1186,7 @@ sequence CategorySeq {
  * used in the BSE context.
  */
 interface Server : Container {
-  signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
+  // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.

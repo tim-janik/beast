@@ -451,7 +451,7 @@ bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ocha
   assert_return (BST_IS_SCROLLGRAPH (self));
   if (self->source)
     {
-      self->source.sig_probes() -= self->probes_handler;
+      // FIXME: self->source.sig_probes() -= self->probes_handler;
       bse_proxy_disconnect (self->source.proxy_id(),
                             "any-signal", bst_scrollgraph_release_item, self,
                             "any-signal", bst_scrollgraph_io_changed, self,
@@ -462,9 +462,9 @@ bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ocha
   if (self->source)
     {
       /* setup scope */
-      self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
-        return bst_scrollgraph_probes_notify (self, pseq);
-      };
+      // FIXME: self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
+      //return bst_scrollgraph_probes_notify (self, pseq);
+      //};
       bse_proxy_connect (self->source.proxy_id(),
                          "signal::release", bst_scrollgraph_release_item, self,
                          "swapped-signal::io_changed", bst_scrollgraph_io_changed, self,

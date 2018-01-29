@@ -9,6 +9,7 @@ AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ $(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, $(filter $(<F), $(bse_sources) $(bse_sources))) \
 		-DRAPICORN_AIDA_ENABLE_ENUM_ARITHMETIC
 AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AIDACC        = $(topdir)/aidacc/aidacc
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 # == Pyx ==

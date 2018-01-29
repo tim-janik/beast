@@ -613,7 +613,7 @@ bst_init_aida_idl()
     {
       Bse::printerr ("bse_server: %s\n", bse_server.debug_name());
       Bse::TestObjectH test = bse_server.get_test_object();
-      test.sig_echo_reply() += echo_test_handler;
+      //FIXME: test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
       assert (test_result == 3);
     }

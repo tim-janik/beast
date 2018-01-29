@@ -1,7 +1,9 @@
 # BEAST & BSE
-include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = icons . pybse tests
+include $(top_srcdir)/Makefile.decl
+topdir = $(abs_top_srcdir)
+
+SUBDIRS = icons . tests # pybse
 
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
 AM_CPPFLAGS += -I$(top_srcdir)
@@ -9,6 +11,7 @@ AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
+AIDACC        = $(topdir)/aidacc/aidacc
 
 #
 # setup source file variables
@@ -122,7 +125,7 @@ doc_sources.lst: Makefile
 bselib_LTLIBRARIES                   = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
-nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseserverapi.hh bsehack.idl bseclientapi.hh bsegentypes.h
+nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
@@ -255,31 +258,19 @@ stamp-bhi: bse.idl bsebasics.idl bsecxxbase.idl bsecxxmodule.idl bseprocidl # re
 	$(Q) rm -f xgen-bhi1 xgen-bhi2 && touch $@
 CLEANFILES += bsehack.idl
 
-# == BSE IDL API (AIDA) ==
-AUXTYPES_PY = $(srcdir)/AuxTypes.py
-bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-GENERATED += bseclientapi.hh
-bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-$(srcdir)/bsestartup.cc: bseclientapi.cc
-CLEANFILES += bseclientapi.cc
-bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
-	  --insertions $(srcdir)/bseserverinsert.hh $< -o xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-GENERATED_CLEANFILES += bseserverapi.hh
-bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
-	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) mv xgen-$(@F) $@
-$(srcdir)/bseutils.cc: bseserverapi.hh bseserverapi.cc
-CLEANFILES += bseserverapi.cc
+# == bseapi.idl ==
+AUXTYPES_PY = $(topdir)/bse/AuxTypes.py
+bseapi_outputs = bseapi_interfaces.hh bseapi_interfaces.cc bseapi_handles.hh bseapi_handles.cc .bseapi.stamp
+$(bseapi_outputs): bseapi.idl bseapi-inserts.hh $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
+	$(QGEN)
+	$(Q) $(AIDACC) -x CxxStub -x $(AUXTYPES_PY) -G strip-path=$(topdir)/ \
+	       --insertions $(srcdir)/bseapi-inserts.hh $<
+	$(Q) sed -i -e '1i#define _(x) x' bseapi_interfaces.cc && sed -i -e '1i#undef _' bseapi_interfaces.cc
+	$(Q) touch .bseapi.stamp # indicates completion without errors
+CLEANFILES += $(bseapi_outputs)
+$(srcdir)/bseutils.cc: bseapi_interfaces.hh bseapi_interfaces.cc .bseapi.stamp
+$(srcdir)/bsestartup.cc: bseapi_handles.hh bseapi_handles.cc .bseapi.stamp
+$(libbse_@MAJOR@_la_OBJECTS): .bseapi.stamp	# needed dependency to force file generation
 
 # == GENERATED targets ==
 CLEANFILES += $(GENERATED)
