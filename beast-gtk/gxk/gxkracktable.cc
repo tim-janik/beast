@@ -112,7 +112,7 @@ gxk_rack_table_class_init (GxkRackTableClass *klass)
                                            G_SIGNAL_RUN_FIRST,
                                            G_STRUCT_OFFSET (GxkRackTableClass, edit_mode_changed),
                                            NULL, NULL,
-                                           gxk_marshal_NONE__BOOLEAN,
+                                           gxk_marshal_VOID__BOOLEAN,
                                            G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 }
 

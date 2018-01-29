@@ -1217,23 +1217,23 @@ bst_track_roll_class_init (BstTrackRollClass *klass)
   signal_select_row = g_signal_new ("select-row", G_OBJECT_CLASS_TYPE (klass),
 				    G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, select_row),
 				    NULL, NULL,
-				    bst_marshal_NONE__INT,
+				    bst_marshal_VOID__INT,
 				    G_TYPE_NONE, 1, G_TYPE_INT);
   signal_drag = g_signal_new ("drag", G_OBJECT_CLASS_TYPE (klass),
 			      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, drag),
 			      NULL, NULL,
-			      bst_marshal_NONE__POINTER,
+			      bst_marshal_VOID__POINTER,
 			      G_TYPE_NONE, 1, G_TYPE_POINTER);
   signal_clicked = g_signal_new ("clicked", G_OBJECT_CLASS_TYPE (klass),
 				 G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, clicked),
 				 NULL, NULL,
-				 bst_marshal_NONE__UINT_UINT_INT_BOXED,
+				 bst_marshal_VOID__UINT_UINT_INT_BOXED,
 				 G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
 				 GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_stop_edit = g_signal_new ("stop-edit", G_OBJECT_CLASS_TYPE (klass),
 				   G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, stop_edit),
 				   NULL, NULL,
-				   bst_marshal_NONE__BOOLEAN_OBJECT,
+				   bst_marshal_VOID__BOOLEAN_OBJECT,
 				   G_TYPE_NONE, 2,
 				   G_TYPE_BOOLEAN, G_TYPE_OBJECT);
 }

@@ -128,8 +128,8 @@ libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_s
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
-libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
-libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
+libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
+libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(BSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	$(AM_LDFLAGS)					\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\
@@ -288,18 +288,18 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = libbse-@MAJOR@.la $(LIBBSE_LIBS)
+progs_LDADD     = libbse-@MAJOR@.la $(BSE_LIBS)
 
 noinst_PROGRAMS    += bseprocidl
-bseprocidl_SOURCES  = bseprocidl.cc
+bseprocidl_CXXFLAGS = $(BSE_CFLAGS) -DBSE_CONVENIENCE
 bseprocidl_LDADD    = $(progs_LDADD)
-bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
+bseprocidl_SOURCES  = bseprocidl.cc
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
-bsetool_SOURCES  = bsetool.cc
+bsetool_CXXFLAGS = $(BSE_CFLAGS) -DBSE_CONVENIENCE
 bsetool_LDADD    = $(progs_LDADD)
-bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(LIBBSE_CFLAGS) -DBSE_CONVENIENCE
+bsetool_SOURCES  = bsetool.cc
 
 # == Tests ==
 check-oldidl: oldidl.idl AuxTypes.py

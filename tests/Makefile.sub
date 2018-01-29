@@ -30,8 +30,8 @@ installcheck-local: installcheck-tests
 
 # == suite1 ==
 NOINST_TESTS         += tests/suite1
-tests_suite1_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
-tests_suite1_LDADD    = sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
+tests_suite1_CXXFLAGS = $(SFI_CFLAGS)
+tests_suite1_LDADD    = sfi/libsfi-@MAJOR@.la $(BSE_LIBS)
 tests_suite1_SOURCES = \
 	tests/suite1-main.cc \
 	tests/suite1-randomhash.cc
@@ -39,30 +39,30 @@ tests_suite1_SOURCES = \
 # == testwavechunk ==
 NOINST_TESTS                += tests/testwavechunk
 SLOWTESTS                   += tests/testwavechunk
-tests_testwavechunk_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
-tests_testwavechunk_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_testwavechunk_CXXFLAGS = $(SFI_CFLAGS)
+tests_testwavechunk_LDADD    = bse/libbse-@MAJOR@.la $(BSE_LIBS)
 tests_testwavechunk_SOURCES  = \
 	tests/testwavechunk.cc
 
 # == testresamplerq ==
 NOINST_TESTS		     += tests/testresamplerq
-tests_testresamplerq_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
-tests_testresamplerq_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_testresamplerq_CXXFLAGS = $(SFI_CFLAGS)
+tests_testresamplerq_LDADD    = bse/libbse-@MAJOR@.la $(BSE_LIBS)
 tests_testresamplerq_SOURCES  = \
 	tests/testresamplerq.cc
 
 # == filtertest ==
 NOINST_TESTS		 += tests/filtertest
-tests_filtertest_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
-tests_filtertest_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_filtertest_CXXFLAGS = $(SFI_CFLAGS)
+tests_filtertest_LDADD    = bse/libbse-@MAJOR@.la $(BSE_LIBS)
 tests_filtertest_SOURCES  = \
 	tests/filtertest.cc
 
 # == plugintest ==
 noinst_LTLIBRARIES          += tests/plugintest.la
-tests_plugintest_la_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
+tests_plugintest_la_CXXFLAGS = $(SFI_CFLAGS)
 tests_plugintest_la_LDFLAGS  = $(AM_LDFLAGS) -module -avoid-version
-tests_plugintest_la_LIBADD   = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_plugintest_la_LIBADD   = bse/libbse-@MAJOR@.la $(BSE_LIBS)
 tests_plugintest_la_SOURCES  = \
 	tests/plugintest.cc
 tests/plugintest.genidl.hh: tests/plugintest.idl $(SFIDL)
@@ -75,8 +75,8 @@ $(tests_plugintest_la_SOURCES): tests/plugintest.genidl.hh tests/plugintest.idl
 # == testresampler ==
 #NOINST_TESTS                += tests/testresampler
 noinst_PROGRAMS             += tests/testresampler
-tests_testresampler_CXXFLAGS = $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
-tests_testresampler_LDADD    = bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+tests_testresampler_CXXFLAGS = $(SFI_CFLAGS)
+tests_testresampler_LDADD    = bse/libbse-@MAJOR@.la $(BSE_LIBS)
 tests_testresampler_SOURCES = \
 	tests/testresampler.cc
 tests-testresampler-check-filter-impl:

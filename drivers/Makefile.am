@@ -9,7 +9,7 @@ AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 driversdir          = $(bselibdir)/drivers
 drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 drivers_ldflags     = -avoid-version
-drivers_libs        = ../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+drivers_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
 # Plugin bsepcmdevice-alsa
 bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.cc

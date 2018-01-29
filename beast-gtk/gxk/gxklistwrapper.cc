@@ -98,7 +98,7 @@ gxk_list_wrapper_class_init (GxkListWrapperClass *klass)
 				    G_SIGNAL_RUN_LAST,
 				    G_STRUCT_OFFSET (GxkListWrapperClass, fill_value),
 				    NULL, NULL,
-				    gxk_marshal_NONE__UINT_UINT_BOXED,
+				    gxk_marshal_VOID__UINT_UINT_BOXED,
 				    G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT,
 				    G_TYPE_VALUE | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_row_change = g_signal_new ("row-change",
@@ -106,7 +106,7 @@ gxk_list_wrapper_class_init (GxkListWrapperClass *klass)
 				    G_SIGNAL_RUN_LAST,
 				    G_STRUCT_OFFSET (GxkListWrapperClass, row_change),
 				    NULL, NULL,
-				    gxk_marshal_NONE__INT,
+				    gxk_marshal_VOID__INT,
 				    G_TYPE_NONE, 1, G_TYPE_INT);
 }
 

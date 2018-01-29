@@ -74,7 +74,7 @@ gxk_rack_item_class_init (GxkRackItemClass *klass)
                 G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
                 G_STRUCT_OFFSET (GxkRackItemClass, button_press),
                 NULL, NULL,
-                gxk_marshal_NONE__BOXED,
+                gxk_marshal_VOID__BOXED,
                 G_TYPE_NONE, 1, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
 

@@ -7,30 +7,33 @@ DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID
 AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBBSE_LIBS)
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
-TAPTESTS    += ring
-ring_SOURCES = ring.cc
-ring_LDADD   = $(progs_ldadd)
+TAPTESTS     += ring
+ring_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+ring_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
+ring_SOURCES  = ring.cc
 
 # misctests
 TAPTESTS          += misctests
+misctests_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 misctests_SOURCES  = misctests.cc
-misctests_LDADD	   = $(progs_ldadd)
 $(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
 TAPTESTS	       += testcxx
+testcxx_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testcxx_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testcxx_SOURCES = testcxx.cc
-testcxx_LDADD   = $(progs_ldadd)
 $(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
-TAPTESTS         += testsfidl
-testsfidl_SOURCES = testsfidl.cc
-testsfidl_LDADD   = $(progs_ldadd)
+TAPTESTS          += testsfidl
+testsfidl_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testsfidl_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
+testsfidl_SOURCES  = testsfidl.cc
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 
 # testidl (generation test)
