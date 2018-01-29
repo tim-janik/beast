@@ -271,33 +271,57 @@ debug_key_enabled (const char *conditional)
   return false;
 }
 
-void BSE_NORETURN
-force_abort ()
+/// Construct newline-terminated diagnostics message from @a diag.
+std::string
+diagnostic_message (const char *file, int line, const char *func, char kind, const std::string &diag)
 {
-  // ensure the program halts on error conditions
-  abort();
-  _exit (-1);
+  String message;
+  if (file)
+    message = line ? string_format ("%s:%u", file, line) : file;
+  if (func)
+    {
+      if (!message.empty())
+        message += ": ";
+      message += func;
+      message += "()";
+    }
+  const String prg = program_alias();
+  if (!prg.empty())
+    {
+      if (message.empty())
+        message = prg;
+      else
+        message = prg + ": " + message;
+    }
+  String prefix;
+  switch (kind) {
+  case 'W':     prefix = "WARNING";     break;
+  case 'I':     prefix = "INFO";        break;
+  case 'D':     prefix = "DEBUG";       break;
+  case 'E':     prefix = "ERROR";       break;
+  case 'F':     prefix = "FATAL";       break;
+  default:
+  case ' ':                             break;
+  }
+  if (!prefix.empty())
+    {
+      if (!message.empty())
+        message += ": ";
+      message += prefix;
+    }
+  if (!message.empty())
+    message += ": ";
+  message += diag.empty() ? "statement should not be reached" : diag;
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    message += "\n";
+  return message;
 }
 
 void
-diagnostic (char kind, const std::string &message)
+diagnostic (const char *file, int line, const char *func, char kind, const std::string &info)
 {
-  const char buf[2] = { kind, 0 };
-  String prefix;
-  switch (kind) {
-  case 'W':     prefix = "WARNING: ";   break;
-  case 'I':     prefix = "INFO: ";      break;
-  case 'D':     prefix = "DEBUG: ";     break;
-  case ' ':     prefix = "";            break;
-  case 'F':
-    prefix = program_alias() + ": FATAL: ";
-    break;
-  default:
-    prefix = program_alias() + ": " + buf + ": ";
-    break;
-  }
-  const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
-  printerr ("%s%s%s", prefix, message, newline);
+  String msg = diagnostic_message (file, line, func, kind, info);
+  printerr ("%s", msg);
 }
 
 void
@@ -328,6 +352,31 @@ struct EarlyStartup101 {
 
 static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
+
+// == fatal_abort ==
+// Mimick relevant parts of glibc's abort_msg_s
+struct AbortMsg {
+  const char *msg = NULL;
+};
+static AbortMsg abort_msg;
+
+/// Exit the program with SIGABRT, leaving @a message for core dump readouts.
+void BSE_NORETURN BSE_NOINLINE
+fatal_abort (const std::string &message)
+{
+  abort_msg.msg = message.c_str();      // store abort message for core dumps
+  __sync_synchronize();
+  abort();                              // default action for SIGABRT is core dump
+  _exit (-1);                           // ensure noreturn
+}
+
 } // Internal
 
 } // Bse
+
+// == __abort_msg ==
+Bse::Internal::AbortMsg            *bse_abort_msg = &Bse::Internal::abort_msg;
+// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
+#ifdef  __ELF__
+extern "C" Bse::Internal::AbortMsg *__abort_msg __attribute__ ((weak, alias ("bse_abort_msg")));
+#endif // __ELF__

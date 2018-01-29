@@ -291,13 +291,13 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = libbse-@MAJOR@.la $(BSE_LIBS)
 
 noinst_PROGRAMS    += bseprocidl
-bseprocidl_CXXFLAGS = $(BSE_CFLAGS) -DBSE_CONVENIENCE
+bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
 bseprocidl_LDADD    = $(progs_LDADD)
 bseprocidl_SOURCES  = bseprocidl.cc
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
-bsetool_CXXFLAGS = $(BSE_CFLAGS) -DBSE_CONVENIENCE
+bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
 bsetool_LDADD    = $(progs_LDADD)
 bsetool_SOURCES  = bsetool.cc
 

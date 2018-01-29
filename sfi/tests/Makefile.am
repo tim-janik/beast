@@ -11,27 +11,27 @@ SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
 TAPTESTS     += ring
-ring_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+ring_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
 ring_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 ring_SOURCES  = ring.cc
 
 # misctests
 TAPTESTS          += misctests
-misctests_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
 misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 misctests_SOURCES  = misctests.cc
 $(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
-TAPTESTS	       += testcxx
-testcxx_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
-testcxx_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la
-testcxx_SOURCES = testcxx.cc
+TAPTESTS	+= testcxx
+testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testcxx_LDADD	 = $(top_builddir)/sfi/libsfi-@MAJOR@.la
+testcxx_SOURCES  = testcxx.cc
 $(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
 TAPTESTS          += testsfidl
-testsfidl_CXXFLAGS = $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
 testsfidl_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testsfidl_SOURCES  = testsfidl.cc
 $(srcdir)/testsfidl.cc: testidl.h testidl.c

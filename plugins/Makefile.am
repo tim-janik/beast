@@ -46,8 +46,8 @@ cxx_plugin_extra   = bsesimpleadsr-aux.cc
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
 cxxplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 cxxplugins_FPU_la_LIBADD   = $(plugins_libs)
-cxxplugins_FPU_la_CFLAGS   = $(FPU_PLUGIN_CFLAGS)
-cxxplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
+cxxplugins_FPU_la_CFLAGS   = $(AM_CFLAGS) $(FPU_PLUGIN_CFLAGS)
+cxxplugins_FPU_la_CXXFLAGS = $(AM_CXXFLAGS) $(FPU_PLUGIN_CXXFLAGS)
 
 # old/unported plugin list
 UNPORTED = $(strip		\
@@ -77,8 +77,8 @@ endif
 # == C++ Plugin Library bseplugins ==
 plugin_FPU_LTLIBRARIES	  += bseplugins.FPU.la
 bseplugins_FPU_la_SOURCES  =
-bseplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-bseplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+bseplugins_FPU_la_CXXFLAGS = $(AM_CXXFLAGS) $(FPU_PLUGIN_CXXFLAGS)
+bseplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 bseplugins_FPU_la_LIBADD   = $(plugins_libs)
 
 # == artscompressor ==
