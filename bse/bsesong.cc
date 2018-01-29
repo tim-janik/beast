@@ -933,7 +933,7 @@ SongImpl::bpm (double val)
       push_property_undo (prop);
       self->bpm = val;
       bse_song_update_tpsi_SL (self);
-      changed (prop);
+      notify (prop);
     }
 }
 
@@ -956,7 +956,7 @@ SongImpl::musical_tuning (MusicalTuning tuning)
       SfiRing *ring;
       for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
         bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
-      changed (prop);
+      notify (prop);
     }
 }
 

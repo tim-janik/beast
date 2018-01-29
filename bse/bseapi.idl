@@ -630,12 +630,15 @@ interface Item;
 interface Source;
 interface Project;
 
-/// Fundamental base type for all BSE objects.
+/** Base type for all BSE objects.
+ * ### Events:
+ * - **notify** - A notification event for property changes, the event field *detail* contains the property name.
+ */
 interface Object {
   String      uname      = String ("UName", "Unique object name", GUI);
   String      debug_name (); ///< Object name useful for debugging output.
   int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
-  // signal void changed (String what); ///< Notification for object state or property changes.
+  void        notify     (String detail); ///< Emit notification event for object state or property changes.
 };
 
 /// A list of Item or derived objects.

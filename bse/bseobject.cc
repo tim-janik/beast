@@ -43,9 +43,14 @@ ObjectImpl::proxy_id ()
 }
 
 void
-ObjectImpl::changed (const String &what)
+ObjectImpl::notify (const String &detail)
 {
-  // FIXME: sig_changed.emit (what);
+  assert_return (detail.empty() == false);
+  Aida::Event ev ("notify:" + detail);
+  ev["detail"] = detail;
+  trigger (ev);                 // emit "notify:detail"
+  ev["type"] = "notify";
+  trigger (ev);                 // emit "notify"
 }
 
 std::string

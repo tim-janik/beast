@@ -193,7 +193,7 @@ class ProbeQueue {
           {
             /* if (probe_xrun) bse_block_fill_float (n_computed, raw_floats, 0.0); */
             probe.sample_data.resize (block_size);
-            double *fvalues = &probe.fft_data[0];
+            double *fvalues = &probe.sample_data[0];
             for (int i = 0; i < int (block_size); i++)
               fvalues[i] = raw_floats[i];
             g_free (raw_floats);

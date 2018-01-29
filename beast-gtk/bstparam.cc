@@ -493,7 +493,10 @@ aida_property_binding_destroy (GxkParam *param)
 {
   Bse::ObjectHandle *handlep = (Bse::ObjectHandle*) param->bdata[0].v_pointer;
   assert_return (handlep);
+  const uint64 hid = ptrdiff_t (param->bdata[1].v_pointer);
   param->bdata[0].v_pointer = NULL;
+  param->bdata[1].v_pointer = NULL;
+  handlep->off (hid);
   delete handlep;
 }
 
@@ -520,20 +523,12 @@ bst_param_new_property (GParamSpec *pspec, const Bse::ObjectHandle handle)
   GxkParam *param = gxk_param_new (pspec, &aida_property_binding, NULL);
   Bse::ObjectHandle *handlep = new Bse::ObjectHandle (handle);
   param->bdata[0].v_pointer = handlep;
-  param->bdata[1].v_pointer = NULL;
-#if 0 // FIXME: catch "changed" signal/event for the pspec->name property
-  auto handler = [param] (const String &what) {
-    bool match = what == param->pspec->name;
-    if (!match && what.size() == strlen (param->pspec->name))
-      {
-        const String pname = Bse::string_canonify (Bse::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
-        match = what == pname;
-      }
-    if (match)
-      gxk_param_update (param);
+  auto notify = [param] (const Aida::Event &event) {
+    gxk_param_update (param);
   };
-  cxxparam->sig_changed() += handler; // disconnected by delete cxxparam
-#endif
+  const uint64 hid = handlep->on (String ("notify:") + param->pspec->name, notify);
+  static_assert (sizeof (param->bdata[1].v_pointer) == sizeof (hid), "");
+  param->bdata[1].v_pointer = (void*) ptrdiff_t (hid);
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
