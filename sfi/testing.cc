@@ -20,15 +20,12 @@ namespace Bse {
 namespace Test {
 
 static void
-test_assertion_failed()
+test_assertion_failed (const std::string &message)
 {
   void *__p_[BSE_BACKTRACE_MAXDEPTH] = { 0, };
   String btmsg = pretty_backtrace (__p_, backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), __FILE__, __LINE__, NULL);
   if (btmsg.size())
     printerr ("%s", btmsg.c_str());
-  printerr ("Bse: test assertion failed, aborting...");
-  Bse::breakpoint();
-  abort();
 }
 
 /** Initialize the Bse core for a test program.
@@ -39,7 +36,7 @@ test_assertion_failed()
 void
 init (int *argcp, char **argv, const StringVector &args)
 {
-  Bse::fatal_assertion_hook (test_assertion_failed);
+  Aida::error_hook (test_assertion_failed);
   unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
   g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
   sfi_init (argcp, argv, Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));

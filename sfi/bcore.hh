@@ -33,8 +33,9 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Aida::void_t;
-using   Aida::failed_assertion;
-using   Aida::fatal_assertion_hook;
+using   Aida::error_hook;
+using   Aida::executable_path;
+using   Aida::executable_name;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -182,9 +183,7 @@ namespace Internal {
 extern bool                     debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                            debug_key_enabled       (const char *conditional) BSE_PURE;
 void                            debug_diagnostic        (const char *prefix, const std::string &message);
-std::string                     diagnostic_message      (const char *file, int line, const char *func, char kind, const std::string &info);
 void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
-void                            fatal_abort             (const std::string &message) BSE_NORETURN BSE_NOINLINE;
 void                            printout_string         (const String &string);
 void                            printerr_string         (const String &string);
 } // Internal
@@ -235,9 +234,8 @@ debug_enabled (const char *conditional)
 template<class ...Args> void BSE_NORETURN
 fatal_error (const char *format, const Args &...args)
 {
-  const String msg = Internal::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...));
-  printerr ("%s", msg);
-  Internal::fatal_abort (msg);
+  const String msg = Aida::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...), 0);
+  Aida::fatal_abort (msg);
 }
 
 /// Issue a printf-like warning message.

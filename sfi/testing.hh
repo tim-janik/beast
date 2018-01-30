@@ -57,10 +57,10 @@ public:
 
 
 // === test maintenance ===
-int     run                ();  ///< Run all registered tests.
-bool    verbose            ();  ///< Indicates whether tests should run verbosely.
-bool    slow               ();  ///< Indicates whether slow tests should be run.
-void    test_output       (int kind, const String &string);
+int     run             ();     ///< Run all registered tests.
+bool    verbose         ();     ///< Indicates whether tests should run verbosely.
+bool    slow            ();     ///< Indicates whether slow tests should be run.
+void    test_output     (int kind, const String &string);
 
 
 /// == Stringify Args ==

@@ -17,7 +17,7 @@ program_alias ()
 
 int main (int argc, char **argv)
 {
-  Bse::fatal_assertion_hook ([&] () { /* force fatal assertions */ Bse::breakpoint(); });
+  Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::FATAL_ASSERTIONS | Aida::FatalAbortFlags::FATAL_WARNINGS);
 
   Options options;
   Parser parser;
