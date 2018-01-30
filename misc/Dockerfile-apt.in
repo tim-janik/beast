@@ -38,7 +38,8 @@ RUN retry apt-get install -y \
     libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
     libreadline-dev python-all-dev \
     libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
-    nodejs-legacy npm imagemagick
+    nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
+    npm imagemagick
 ENV BINTRAY_REPO	"@BINTRAY_REPO@"
 ENV DISTRELEASE		"@DISTRELEASE@"
 
@@ -47,19 +48,12 @@ ENV PROJECT	@PROJECT@
 ENV EMAIL	beast@gnome.org
 COPY tmp-mirror.git /tmp/$PROJECT.git
 
-# Build and install latest Rapicorn
+# Install build dependencies
 RUN retry apt-get install -y \
     build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool \
     doxygen graphviz texlive-binaries pandoc git libxml2-utils \
     bison flex cython xvfb \
-    librsvg2-dev libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
-    libreadline-dev python-all-dev python-enum34
-RUN cd /usr/src/ && \
-    retry git clone --depth=1 https://github.com/tim-janik/rapicorn.git
-RUN cd /usr/src/rapicorn/ && \
-    nice ./autogen.sh --prefix=/usr && \
-    nice make -j`nproc` && \
-    nice make install
+    libpango1.0-dev python2.7-dev python-all-dev python-enum34
 
 # Build project
 RUN cd /usr/src/ && \

@@ -120,13 +120,12 @@ bstmarshal.cc: bstmarshal.list
 
 # == bstapi.idl ==
 AUXTYPES_PY = $(topdir)/bse/AuxTypes.py
-bstapi_outputs = bstapi_interfaces.hh bstapi_interfaces.cc bstapi_handles.hh bstapi_handles.cc .bstapi.stamp
-$(bstapi_outputs): bstapi.idl $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
-	$(QGEN)
+%_interfaces.hh %_interfaces.cc %_handles.hh %_handles.cc .%.stamp: %.idl $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
+	$(QGEN) # MAKE(1) supports parallel execution of a multiple-outputs-rule *only* for pattern rules (with '%')
 	$(Q) $(AIDACC) -x CxxStub -x $(AUXTYPES_PY) -G strip-path=$(topdir)/ $<
 	$(Q) sed -i -e '1i#define _(x) x' bstapi_interfaces.cc && sed -i -e '1i#undef _' bstapi_interfaces.cc
-	$(Q) touch .bstapi.stamp # indicates completion without errors
-CLEANFILES += $(bstapi_outputs)
+	$(Q) touch .bstapi.stamp # memorize completion without errors
+CLEANFILES += bstapi_interfaces.hh bstapi_interfaces.cc bstapi_handles.hh bstapi_handles.cc .bstapi.stamp
 $(srcdir)/bstutils.cc: bstapi_interfaces.cc
 $(bst_cc_sources:%=$(srcdir)/%): bstapi_interfaces.hh .bstapi.stamp
 

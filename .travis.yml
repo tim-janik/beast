@@ -12,11 +12,11 @@ language: generic
 env:
   # INTENT: gccbuild clangbuild package bintrayup
   matrix:
-    - DIST="ubuntu:xenial"      INTENT="distcheck,gccbuild"
-    - DIST="ubuntu:zesty"       INTENT="gccbuild"
+    - DIST="ubuntu:xenial"      INTENT="gccbuild,distcheck"
+    - DIST="ubuntu:artful"      INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
     - DIST="debian:stretch"     INTENT="gccbuild"
-    - DIST="ubuntu:zesty"       INTENT="clangbuild"
+    - DIST="ubuntu:artful"      INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
