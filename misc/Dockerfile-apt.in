@@ -38,7 +38,8 @@ RUN retry apt-get install -y \
     libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
     libreadline-dev python-all-dev \
     libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
-    nodejs-legacy npm imagemagick
+    nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
+    npm imagemagick
 ENV BINTRAY_REPO	"@BINTRAY_REPO@"
 ENV DISTRELEASE		"@DISTRELEASE@"
 
