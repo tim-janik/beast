@@ -260,14 +260,13 @@ CLEANFILES += bsehack.idl
 
 # == bseapi.idl ==
 AUXTYPES_PY = $(topdir)/bse/AuxTypes.py
-bseapi_outputs = bseapi_interfaces.hh bseapi_interfaces.cc bseapi_handles.hh bseapi_handles.cc .bseapi.stamp
-$(bseapi_outputs): bseapi.idl bseapi-inserts.hh $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
-	$(QGEN)
-	$(Q) $(AIDACC) -x CxxStub -x $(AUXTYPES_PY) -G strip-path=$(topdir)/ \
-	       --insertions $(srcdir)/bseapi-inserts.hh $<
+../bse/%_interfaces.hh ../bse/%_interfaces.cc ../bse/%_handles.hh ../bse/%_handles.cc ../bse/.%.stamp \
+%_interfaces.hh %_interfaces.cc %_handles.hh %_handles.cc .%.stamp: %.idl bseapi-inserts.hh $(AIDACC) $(AIDACC_CXXSTUB_PY) $(AUXTYPES_PY)
+	$(QGEN) # MAKE(1) supports parallel execution of a multiple-outputs-rule *only* for pattern rules (with '%')
+	$(Q) $(AIDACC) -x CxxStub -x $(AUXTYPES_PY) -G strip-path=$(topdir)/ --insertions $(srcdir)/bseapi-inserts.hh $<
 	$(Q) sed -i -e '1i#define _(x) x' bseapi_interfaces.cc && sed -i -e '1i#undef _' bseapi_interfaces.cc
-	$(Q) touch .bseapi.stamp # indicates completion without errors
-CLEANFILES += $(bseapi_outputs)
+	$(Q) touch .bseapi.stamp # memorize completion without errors
+CLEANFILES += bseapi_interfaces.hh bseapi_interfaces.cc bseapi_handles.hh bseapi_handles.cc .bseapi.stamp
 $(srcdir)/bseutils.cc: bseapi_interfaces.hh bseapi_interfaces.cc .bseapi.stamp
 $(srcdir)/bsestartup.cc: bseapi_handles.hh bseapi_handles.cc .bseapi.stamp
 $(libbse_@MAJOR@_la_OBJECTS): .bseapi.stamp	# needed dependency to force file generation
