@@ -15,14 +15,12 @@ env:
     - DIST="ubuntu:xenial"      INTENT="gccbuild,distcheck"
     - DIST="ubuntu:artful"      INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
-    - DIST="debian:stretch"     INTENT="gccbuild"
     - DIST="ubuntu:artful"      INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
-    - env: DIST="debian:stretch"     INTENT="gccbuild"
-    - env: DIST="ubuntu:zesty"       INTENT="clangbuild"
+    - env: DIST="ubuntu:artful"      INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
     - env: DIST="debian:unstable"    INTENT="clangbuild"
   fast_finish: true
