@@ -924,7 +924,7 @@ main (int   argc,
     }
   else if (argc >= 2 && String ("--return_unless1") == argv[1])
     {
-      return_unless (1, 7);
+      return_unless (1, 8);
       return 0;
     }
 
