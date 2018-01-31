@@ -11,12 +11,12 @@ plugindir = $(bselibdir)/plugins
 ## Blep OSC
 bsebleposc_la_SOURCES = bsebleposc.cc bleposcdata.cc
 bsebleposc_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-bsebleposc_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+bsebleposc_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 plugin_LTLIBRARIES = bsebleposc.la
 
 noinst_PROGRAMS = designblep testblep
 
-progs_ldadd    	  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS)
+progs_ldadd    	  = ../../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
 designblep_SOURCES = designblep.cc
 designblep_LDADD   = $(progs_ldadd)
