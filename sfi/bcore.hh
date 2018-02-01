@@ -5,6 +5,7 @@
 #include <sfi/blob.hh>
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
+#include <sfi/unicode.hh>
 #include <sfi/glib-extra.hh>
 #include <numeric>
 #include <algorithm>

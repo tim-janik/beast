@@ -8,6 +8,7 @@ AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip \
 	bcore.hh	formatter.hh	path.hh		platform.hh	strings.hh	\
+	unicode.hh	\
 	cxxaux.hh	\
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
 	glib-extra.hh			sfiwrapper.hh	 \
@@ -26,6 +27,7 @@ sfi_public_headers = $(strip \
 )
 sfi_all_sources = $(strip \
 	bcore.cc	formatter.cc	path.cc		platform.cc	strings.cc	\
+	unicode.cc	\
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
