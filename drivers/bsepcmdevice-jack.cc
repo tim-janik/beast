@@ -377,7 +377,7 @@ jack_status_to_error_msg (jack_status_t status)
   if (status & JackClientZombie)
     return _("Client zombified failure.");
 
-  return Rapicorn::string_format (_("Unknown JACK status: 0x%03x"), status);
+  return Bse::string_format (_("Unknown JACK status: 0x%03x"), status);
 }
 
 void
