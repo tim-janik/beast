@@ -38,6 +38,20 @@ struct NoDelete {                       // Dummy deleter
   void operator() (const char*) {}      // Prevent delete on const data
 };
 
+// == StringBlob ==
+class StringBlob : public BlobImpl {
+  String                string_;
+  virtual String        string          () override { return string_; }
+public:
+  explicit              StringBlob      (const String &name, const String &str = "");
+};
+
+StringBlob::StringBlob (const String &name, const String &str) :
+  BlobImpl (name, str.size(), NULL), string_ (str)
+{
+  data_ = string_.data();
+}
+
 // == ByteBlob ==
 template<class Deleter>
 class ByteBlob : public BlobImpl {
@@ -45,12 +59,12 @@ class ByteBlob : public BlobImpl {
   Deleter               deleter_;
   virtual String        string          () override;
 public:
-  explicit              ByteBlob        (const String &name, size_t dsize, const char *data, const Deleter &deleter, const String &str = "");
+  explicit              ByteBlob        (const String &name, size_t dsize, const char *data, const Deleter &deleter);
   virtual              ~ByteBlob        ()              { deleter_ (data_); }
 };
 
 template<class Deleter>
-ByteBlob<Deleter>::ByteBlob (const String &name, size_t dsize, const char *data, const Deleter &deleter, const String &str) :
+ByteBlob<Deleter>::ByteBlob (const String &name, size_t dsize, const char *data, const Deleter &deleter) :
   BlobImpl (name, dsize, data), deleter_ (deleter)
 {}
 
@@ -147,7 +161,7 @@ Blob::from_url (const String &url)
 Blob
 Blob::from_string (const String &name, const String &data)
 {
-  return Blob (std::make_shared<ByteBlob<NoDelete> > (name, data.size(), data.c_str(), NoDelete(), data));
+  return Blob (std::make_shared<StringBlob> (name, data));
 }
 
 static String // provides errno on error
