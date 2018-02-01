@@ -18,8 +18,8 @@ ring_SOURCES  = ring.cc
 # misctests
 TAPTESTS          += misctests
 misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
-misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la
-misctests_SOURCES  = misctests.cc
+misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBZ_LIBS)
+misctests_SOURCES  = misctests.cc utf8tests.cc
 $(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
