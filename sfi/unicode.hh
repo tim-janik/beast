@@ -12,22 +12,35 @@ size_t                  utf8_to_unicode         (const std::string &str, std::ve
 size_t                  utf8_to_unicode         (const char *str, uint32_t *codepoints);
 size_t                  utf8len                 (const std::string &str);
 size_t                  utf8len                 (const char *str);
-constexpr inline bool   valid_unicode           (uint32_t u);
+constexpr inline bool   unicode_is_valid        (uint32_t u);
+constexpr inline bool   unicode_is_assigned     (uint32_t u);
+constexpr uint32_t      unicode_last_codepoint  = 0x10FFFF;
 
 // == Implementations ==
-/// Return whether @a u matches any of the defined Unicode planes.
+/// Return whether @a u matches any of the assigned Unicode planes.
 constexpr inline bool
-valid_unicode (uint32_t u)
+unicode_is_assigned (uint32_t u)
 {
-  return ((u >=   0x0000 && u <=   0xFFFF) ||   // BMP - Basic Multilingual Plane
-          (u >=  0x10000 && u <=  0x14FFF) ||   // SMP - Supplementary Multilingual Plane
-          (u >=  0x16000 && u <=  0x18FFF) ||   // SMP - Supplementary Multilingual Plane
-          (u >=  0x1B000 && u <=  0x1BFFF) ||   // SMP - Supplementary Multilingual Plane
-          (u >=  0x1D000 && u <=  0x1FFFF) ||   // SMP - Supplementary Multilingual Plane
-          (u >=  0x20000 && u <=  0x2FFFF) ||   // SIP - Supplementary Ideographic Plane
-          (u >=  0xE0000 && u <=  0xE0FFF) ||   // SSP - Supplementary Special-purpose Plane
-          (u >=  0xF0000 && u <=  0xFFFFF) ||   // SPUA-A - Supplementary Private Use Area Plane
-          (u >= 0x100000 && u <= 0x10FFFF));    // SPUA-B - Supplementary Private Use Area Plane
+  const bool assigned =
+    (u >=   0x0000 && u <=   0xD7FF) ||   // BMP - Basic Multilingual Plane (below surrogates at 0xD800)
+    (u >=   0xE000 && u <=   0xFFFF) ||   // BMP - Basic Multilingual Plane (above surrogates at 0xDFFF)
+    (u >=  0x10000 && u <=  0x14FFF) ||   // SMP - Supplementary Multilingual Plane
+    (u >=  0x16000 && u <=  0x18FFF) ||   // SMP - Supplementary Multilingual Plane
+    (u >=  0x1B000 && u <=  0x1BFFF) ||   // SMP - Supplementary Multilingual Plane
+    (u >=  0x1D000 && u <=  0x1FFFF) ||   // SMP - Supplementary Multilingual Plane
+    (u >=  0x20000 && u <=  0x2FFFF) ||   // SIP - Supplementary Ideographic Plane
+    (u >=  0xE0000 && u <=  0xE0FFF) ||   // SSP - Supplementary Special-purpose Plane
+    (u >=  0xF0000 && u <=  0xFFFFF) ||   // SPUA-A - Supplementary Private Use Area Plane
+    (u >= 0x100000 && u <= 0x10FFFF);     // SPUA-B - Supplementary Private Use Area Plane
+  return __builtin_expect (assigned, true);
+}
+
+/// Return whether @a u is an allowed Unicode codepoint within 0x10FFFF and not part of a UTF-16 surrogate pair.
+constexpr inline bool
+unicode_is_valid (uint32_t u)
+{
+  const bool valid = u <= 0x10FFFF && (u & 0x1FF800) != 0xD800;
+  return __builtin_expect (valid, true);
 }
 
 } // Bse

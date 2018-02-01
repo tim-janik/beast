@@ -125,12 +125,11 @@ test_utf8_funcs()
   glib_utf8len = g_utf8_strlen (str.c_str(), -1);
   TCMP (bse_utf8len, ==, glib_utf8len);
   std::vector<uint32_t> codepoints;
+  for (size_t i = 1; i <= unicode_last_codepoint; i++)
+    TASSERT (unicode_is_assigned (i) <= unicode_is_valid (i));
   for (size_t i = 1; i <= 0x10FFFF; i++)
-    {
-      if (!valid_unicode (i))
-        continue;
+    if (unicode_is_assigned (i))
       codepoints.push_back (i);
-    }
   std::string big = string_from_unicode (codepoints);
   bse_utf8len = utf8len (big.c_str());
   glib_utf8len = g_utf8_strlen (big.c_str(), -1);
