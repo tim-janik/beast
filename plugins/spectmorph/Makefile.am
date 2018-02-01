@@ -13,7 +13,7 @@ plugindir = $(bselibdir)/plugins
 ## SpectMorph OSC
 spectmorphosc_la_SOURCES = spectmorphosc.cc
 spectmorphosc_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-spectmorphosc_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(LIBBSE_LIBS) $(SPECTMORPH_LIBS)
+spectmorphosc_la_LIBADD  = ../../bse/libbse-@MAJOR@.la $(SFI_LIBS) $(SPECTMORPH_LIBS)
 plugin_LTLIBRARIES = spectmorphosc.la
 
 EXTRA_DIST += spectmorphosc.idl
