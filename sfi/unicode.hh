@@ -14,7 +14,12 @@ size_t                  utf8len                 (const std::string &str);
 size_t                  utf8len                 (const char *str);
 constexpr inline bool   unicode_is_valid        (uint32_t u);
 constexpr inline bool   unicode_is_assigned     (uint32_t u);
+constexpr inline bool   unicode_is_noncharacter (uint32_t u);
+constexpr inline bool   unicode_is_character    (uint32_t u);
+constexpr inline bool   unicode_is_control_code (uint32_t u);
+constexpr inline bool   unicode_is_private      (uint32_t u);
 constexpr uint32_t      unicode_last_codepoint  = 0x10FFFF;
+
 
 // == Implementations ==
 /// Return whether @a u matches any of the assigned Unicode planes.
@@ -41,6 +46,37 @@ unicode_is_valid (uint32_t u)
 {
   const bool valid = u <= 0x10FFFF && (u & 0x1FF800) != 0xD800;
   return __builtin_expect (valid, true);
+}
+
+/// Return whether @a u is one of the 66 Unicode noncharacters.
+constexpr inline bool
+unicode_is_noncharacter (uint32_t u)
+{
+  const bool noncharacter = (u >= 0xFDD0 && u <= 0xFDEF) || (u & 0xFFFE) == 0xFFFE;
+  return __builtin_expect (noncharacter, false);
+}
+
+/// Return whether @a u is not one of the 66 Unicode noncharacters.
+constexpr inline bool
+unicode_is_character (uint32_t u)
+{
+  return __builtin_expect (!unicode_is_noncharacter (u), true);
+}
+
+/// Return whether @a u is one of the 65 Unicode control codes.
+constexpr inline bool
+unicode_is_control_code (uint32_t u)
+{
+  const bool control = (u >= 0x00 && u <= 0x1F) || (u >= 0x7F && u <= 0x9f);
+  return __builtin_expect (control, false);
+}
+
+/// Return whether @a u is in one of the 3 private use areas of Unicode.
+constexpr inline bool
+unicode_is_private (uint32_t u)
+{
+  const bool priv = (u >= 0xE000 && u <= 0xF8FF) || (u >= 0xF0000 && u <= 0xFFFFD) || (u >= 0x100000 && u <= 0x10FFFD);
+  return __builtin_expect (priv, false);
 }
 
 } // Bse
