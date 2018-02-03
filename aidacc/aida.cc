@@ -15,6 +15,7 @@
 #include <semaphore.h>
 #include <poll.h>
 #include <stddef.h>             // ptrdiff_t
+#include <signal.h>
 #ifdef  HAVE_SYS_EVENTFD_H
 #include <sys/eventfd.h>
 #endif // HAVE_SYS_EVENTFD_H
@@ -157,84 +158,125 @@ executable_name()
 }
 
 // == Assertions ==
-static std::function<void()> assertion_hook;
+static std::function<void (const ::std::string&)> global_error_hook;
+static FatalAbortFlags global_fatal_abort_flags = FatalAbortFlags (0);
 
-void
-fatal_assertion_hook (const std::function<void()> &hook)
+/// Retrieve global fatal abort flags.
+FatalAbortFlags
+fatal_abort_flags ()
 {
-  assertion_hook = hook;
+  return global_fatal_abort_flags;
 }
 
-static void
-print_stderr_failed_assertion (const char *file, unsigned int line, const char *func, const char *prefix, const ::std::string &message, int p_errno)
+/// Add @a flags to the global fatal_abort_flags().
+void
+fatal_abort_set_flags (FatalAbortFlags flags)
 {
-  String out;
+  global_fatal_abort_flags = global_fatal_abort_flags | flags;
+}
+
+/// Remove @a flags from the global fatal_abort_flags().
+void
+fatal_abort_unset_flags (FatalAbortFlags flags)
+{
+  global_fatal_abort_flags &= ~flags;
+}
+
+/// Call @a hook from within fatal_abort() and failed_assertion().
+void
+error_hook (const std::function<void (const ::std::string&)> &hook)
+{
+  global_error_hook = hook;
+}
+
+// Mimick relevant parts of glibc's abort_msg_s
+struct AbortMsg {
+  const char *msg = NULL;
+};
+static AbortMsg abort_msg;
+
+/// Exit the program with SIGABRT, leaving @a message for core dump readouts.
+void
+fatal_abort (const std::string &message)
+{
+  abort_msg.msg = message.c_str();      // store abort message for core dumps
+  __sync_synchronize();
+  fflush (stdout);
+  fputs (message.c_str(), stderr);
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    fputs ("\n", stderr);
+  fflush (stderr);
+  if (global_error_hook)
+    global_error_hook (message);
+  if ((global_fatal_abort_flags & FatalAbortFlags::SEND_SIGQUIT) != 0)
+    raise (SIGQUIT);
+  abort();                              // default action for SIGABRT is core dump
+  _exit (-1);                           // ensure noreturn
+}
+
+/// Construct newline-terminated diagnostics message from @a diag.
+std::string
+diagnostic_message (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno)
+{
+  String message;
   if (file)
-    out += String (file) + ":";
-  if (line && file)
-    out += posix_sprintf ("%u:", line);
+    message = line ? posix_sprintf ("%s:%u", file, line) : file;
   if (func)
     {
-      if (!out.empty())
-        out += " ";
-      out += String (func) + "():";
+      if (!message.empty())
+        message += ": ";
+      message += func;
+      message += "()";
     }
-  if (!out.empty())
-    out += " ";
-  if (prefix)
-    out += prefix;
-  if (message.empty())
+  const String prg = executable_path();
+  if (!prg.empty())
+    {
+      if (message.empty())
+        message = prg;
+      else
+        message = prg + ": " + message;
+    }
+  String prefix;
+  switch (kind) {
+  case 'W':     prefix = "WARNING";     break;
+  case 'I':     prefix = "INFO";        break;
+  case 'D':     prefix = "DEBUG";       break;
+  case 'E':     prefix = "ERROR";       break;
+  case 'F':     prefix = "FATAL";       break;
+  default:
+  case ' ':                             break;
+  }
+  if (!prefix.empty())
+    {
+      if (!message.empty())
+        message += ": ";
+      message += prefix;
+    }
+  if (!message.empty())
+    message += ": ";
+  if (diag.empty() && p_errno)
     {
       const char *serr = strerror (p_errno);
-      out += serr ? serr : posix_sprintf ("unknown error %d", p_errno);
+      message += serr ? serr : posix_sprintf ("unknown error (errno=%d)", p_errno);
     }
+  else if (diag.empty())
+    message += "statement should not be reached";
   else
-    out += "failed assertion: " + message;
-  if (out.size() && out[out.size() - 1] != '\n')
-    out += "\n";
-  fflush (stdout);
-  fputs (out.c_str(), stderr);
-  fflush (stderr);
+    message += diag;
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    message += "\n";
+  return message;
 }
 
+/// Print an error message for failing assertions and possibly abort().
 void
 failed_assertion (const char *file, unsigned int line, const char *func, const ::std::string &cmessage, int p_errno)
 {
-  const bool isfatal = assertion_hook != NULL;
-  const String message = cmessage.empty() && !p_errno ? "unreached" : cmessage;
-  const char *const fatalprefix = isfatal ? "FATAL: " : NULL;
-#ifdef __GLIBC__
-  if (isfatal)
-    {
-      if (assertion_hook)
-        {
-          // ensure printouts from assertion_hook() are preceeded by an assertion
-          // message even if that means printing the assertion twice with glibc
-          print_stderr_failed_assertion (file, line, func, fatalprefix, message, p_errno);
-          assertion_hook();
-        }
-      fflush (stdout);
-      fflush (stderr);
-      // use glibc assert helpers to set __abort_msg for core files
-      if (message.empty())
-        ::__assert_perror_fail (p_errno, file, line, func);
-      else
-        ::__assert_fail (message.c_str(), file, line, func);
-      _exit (255);
-    }
-#endif
-  print_stderr_failed_assertion (file, line, func, fatalprefix, message, p_errno);
-  if (assertion_hook)
-    {
-      assertion_hook();
-      fflush (stdout);
-      fflush (stderr);
-    }
-  if (!isfatal)
-    return;
-  abort();
-  _exit (255);
+  const bool isfatal = (global_fatal_abort_flags & FatalAbortFlags::FATAL_ASSERTIONS) != 0;
+  const std::string msg = diagnostic_message (file, line, func, isfatal ? 'F': 'W', cmessage, p_errno);
+  fatal_abort (cmessage);
 }
+
 
 // == String Utilitiies ==
 static locale_t

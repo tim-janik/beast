@@ -182,9 +182,6 @@ template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
 template<class T>
 struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
 
-std::string     executable_path                 () AIDA_PURE;
-std::string     executable_name                 () AIDA_PURE;
-
 /// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
 template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
 template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>                       { typedef T type; };
@@ -192,12 +189,22 @@ template<typename T> struct RemoveSharedPtr<const ::std::shared_ptr<T>>         
 template<typename T> struct RemoveSharedPtr<volatile ::std::shared_ptr<T>>              { typedef T type; };
 template<typename T> struct RemoveSharedPtr<const volatile ::std::shared_ptr<T>>        { typedef T type; };
 
-// == Assertions ==
-/// Print an error message for failing assertions and possibly abort().
-void    failed_assertion       (const char *file, unsigned int line, const char *func, const ::std::string &message, int p_errno = 0);
-/// Call @a hook from failed_assertion() and force it to abort().
-void    fatal_assertion_hook   (const std::function<void()> &hook);
-
+// == Aborting and assertions ==
+enum class FatalAbortFlags {
+  SEND_SIGQUIT          = 0x01, //< Prevents apport from catching intended assert/abort crashes by aborting with SIGQUIT.
+  FATAL_ASSERTIONS      = 0x10, //< Make failing assertions fatal.
+  FATAL_WARNINGS        = 0x20, //< Make warnings fatal and abort.
+};
+AIDA_DEFINE_FLAGS_ARITHMETIC (FatalAbortFlags);
+FatalAbortFlags fatal_abort_flags               ();
+void            fatal_abort_set_flags           (FatalAbortFlags flags);
+void            fatal_abort_unset_flags         (FatalAbortFlags flags);
+void            fatal_abort                     (const std::string &message) AIDA_NORETURN;
+void            error_hook                      (const std::function<void (const ::std::string&)> &hook);
+void            failed_assertion                (const char *file, unsigned int line, const char *func, const ::std::string &message, int p_errno = 0);
+std::string     diagnostic_message              (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno);
+std::string     executable_path                 () AIDA_PURE;
+std::string     executable_name                 () AIDA_PURE;
 
 // == String Utilitiies ==
 String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
