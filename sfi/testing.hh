@@ -57,10 +57,10 @@ public:
 
 
 // === test maintenance ===
-int     run                ();  ///< Run all registered tests.
-bool    verbose            ();  ///< Indicates whether tests should run verbosely.
-bool    slow               ();  ///< Indicates whether slow tests should be run.
-void    test_output       (int kind, const String &string);
+int     run             ();     ///< Run all registered tests.
+bool    verbose         ();     ///< Indicates whether tests should run verbosely.
+bool    slow            ();     ///< Indicates whether slow tests should be run.
+void    test_output     (int kind, const String &string);
 
 
 /// == Stringify Args ==
@@ -93,7 +93,7 @@ double   random_frange          (double begin, double end);             ///< Ret
 
 #define TASSERT__AT(LINE, cond)                 \
   do { if (BSE_ISLIKELY (cond)) break;          \
-    ::Bse::assertion_failed (__FILE__, LINE, #cond); } while (0)
+    AIDA_ASSERTION_FAILED (#cond); } while (0)
 
 #define TCMP_op(a,cmp,b,sa,sb,cast)                                     \
   do { if (a cmp b) break;                                              \
@@ -104,7 +104,7 @@ double   random_frange          (double begin, double end);             ///< Ret
                                                 __tcmp_va.c_str(),      \
                                                 #cmp,                   \
                                                 __tcmp_vb.c_str());     \
-    ::Bse::assertion_failed (__FILE__, __LINE__, __tcmp_as.c_str());    \
+    AIDA_ASSERTION_FAILED (__tcmp_as.c_str());                          \
   } while (0)
 
 template<typename Callee> double

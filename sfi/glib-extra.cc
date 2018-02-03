@@ -1030,35 +1030,6 @@ g_scanner_new64 (const GScannerConfig *config_templ)
 
 namespace Bse {
 
-// === assertion_failed ===
-static std::function<void()> current_assertion_hook;
-
-void
-assertion_failed (const char *file, uint line, const char *expr)
-{
-  String msg= file ? file : program_alias();
-  if (line > 0)
-    msg += String (":") + std::to_string (line);
-  msg += ": assertion failed: ";
-  msg += expr ? expr : "statement must be unreached";
-  if (msg[msg.size() - 1] != '\n')
-    msg += "\n";
-  fflush (stdout);
-  fputs (msg.c_str(), stderr);
-  fflush (stderr);
-  // run hook, e.g. to abort test programs
-  if (current_assertion_hook)
-    current_assertion_hook();
-}
-
-void
-assertion_failed_hook (const std::function<void()> &hook)
-{
-  if (hook && current_assertion_hook)
-    assertion_failed (__FILE__, __LINE__, "current_assertion_hook == NULL");
-  current_assertion_hook = hook;
-}
-
 // == BSE_INSTALLPATH ==
 static String installpath_topdir;
 

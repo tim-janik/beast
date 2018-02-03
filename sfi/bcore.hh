@@ -33,6 +33,9 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Aida::void_t;
+using   Aida::error_hook;
+using   Aida::executable_path;
+using   Aida::executable_name;
 
 // == Diagnostics ==
 template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
@@ -180,9 +183,7 @@ namespace Internal {
 extern bool                     debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                            debug_key_enabled       (const char *conditional) BSE_PURE;
 void                            debug_diagnostic        (const char *prefix, const std::string &message);
-std::string                     diagnostic_message      (const char *file, int line, const char *func, char kind, const std::string &info);
 void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
-void                            fatal_abort             (const std::string &message) BSE_NORETURN BSE_NOINLINE;
 void                            printout_string         (const String &string);
 void                            printerr_string         (const String &string);
 } // Internal
@@ -233,9 +234,8 @@ debug_enabled (const char *conditional)
 template<class ...Args> void BSE_NORETURN
 fatal_error (const char *format, const Args &...args)
 {
-  const String msg = Internal::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...));
-  printerr ("%s", msg);
-  Internal::fatal_abort (msg);
+  const String msg = Aida::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...), 0);
+  Aida::fatal_abort (msg);
 }
 
 /// Issue a printf-like warning message.
@@ -264,9 +264,9 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (__FILE__, __LINE__, #cond); return __VA_ARGS__; } while (0)
+#define BSE_ASSERT_RETURN(cond, ...)     AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
 /// Return from the current function and issue an assertion warning.
-#define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (__FILE__, __LINE__, NULL); return __VA_ARGS__; } while (0)
+#define BSE_ASSERT_RETURN_UNREACHED(...) AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
 #ifdef BSE_CONVENIENCE
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)

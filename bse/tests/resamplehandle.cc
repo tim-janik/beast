@@ -467,7 +467,6 @@ main (int   argc,
   test_state_length ("FPU");
   run_tests ("FPU");
   /* load plugins */
-  Bse::assertion_failed_hook (NULL); // hack to allow test reinitialization
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())

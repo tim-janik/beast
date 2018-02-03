@@ -15,6 +15,7 @@
 #include <semaphore.h>
 #include <poll.h>
 #include <stddef.h>             // ptrdiff_t
+#include <signal.h>
 #ifdef  HAVE_SYS_EVENTFD_H
 #include <sys/eventfd.h>
 #endif // HAVE_SYS_EVENTFD_H
@@ -23,14 +24,16 @@
 #include <deque>
 #include <unordered_map>
 #include <unordered_set>
+#if defined __APPLE__
+#include <mach-o/dyld.h>        // _NSGetExecutablePath
+#endif // __APPLE__
 
 // == Auxillary macros ==
-#ifndef __GNUC__
-#define __PRETTY_FUNCTION__                     __func__
-#endif
 #define AIDA_CPP_PASTE2i(a,b)                   a ## b // indirection required to expand __LINE__ etc
 #define AIDA_CPP_PASTE2(a,b)                    AIDA_CPP_PASTE2i (a,b)
-#define AIDA_DEBUG(...)                         ({ dprintf (2, __VA_ARGS__); dprintf (2, "\n"); })
+#ifndef AIDA_DEBUG
+#define AIDA_DEBUG(...)                         ({ fprintf (stderr, __VA_ARGS__); fputs ("\n", stderr); })
+#endif
 
 // == printf helper ==
 #define LLI     (long long int)
@@ -89,6 +92,191 @@ public:
 // == VirtualEnableSharedFromThisBase ==
 VirtualEnableSharedFromThisBase::~VirtualEnableSharedFromThisBase()
 {} // force emission of vtable
+
+// == executable_path ==
+static std::string
+get_executable_path()
+{
+  const ssize_t max_size = 8100;
+  char system_result[max_size + 1 + 1] = { 0, };
+  ssize_t system_result_size = -1;
+
+#if defined __linux__ || defined __CYGWIN__ || defined __MSYS__
+  system_result_size = readlink ("/proc/self/exe", system_result, max_size);
+  if (system_result_size < 0)
+    {
+      strcpy (system_result, "/proc/self/exe");
+      system_result_size = 0;
+    }
+#elif defined __APPLE__
+  { // int _NSGetExecutablePath(char* buf, uint32_t* bufsize);
+    uint32_t bufsize = max_size;
+    if (_NSGetExecutablePath (system_result, &bufsize) == 0 &&
+        bufsize <= max_size)
+      system_result_size = bufsize;
+  }
+#elif defined _WIN32
+  // DWORD GetModuleFileNameA (HMODULE hModule, LPSTR lpFileName, DWORD size);
+  system_result_size = GetModuleFileNameA (0, system_result, max_size);
+  if (system_result_size <= 0 || system_result_size >= max_size)
+    system_result_size = -1;    // error, possibly not enough space
+  else
+    {
+      system_result[system_result_size] = 0;
+      // early conversion to unix slashes
+      char *winslash;
+      while ((winslash = strchr (system_result, '\\')) != NULL)
+        *winslash = '/';
+    }
+#else
+#error "Platform lacks executable_path() implementation"
+#endif
+
+  if (system_result_size < 0)
+    system_result[0] = 0;
+  return std::string (system_result);
+}
+
+/// Retrieve the path to the currently running executable.
+std::string
+executable_path()
+{
+  static std::string cached_executable_path = get_executable_path();
+  return cached_executable_path;
+}
+
+//// Retrieve the name part of executable_path().
+std::string
+executable_name()
+{
+  static std::string cached_executable_name = [] () {
+    std::string path = executable_path();
+    const char *slash = strrchr (path.c_str(), '/');
+    return slash ? slash + 1 : path;
+  } ();
+  return cached_executable_name;
+}
+
+// == Assertions ==
+static std::function<void (const ::std::string&)> global_error_hook;
+static FatalAbortFlags global_fatal_abort_flags = FatalAbortFlags (0);
+
+/// Retrieve global fatal abort flags.
+FatalAbortFlags
+fatal_abort_flags ()
+{
+  return global_fatal_abort_flags;
+}
+
+/// Add @a flags to the global fatal_abort_flags().
+void
+fatal_abort_set_flags (FatalAbortFlags flags)
+{
+  global_fatal_abort_flags = global_fatal_abort_flags | flags;
+}
+
+/// Remove @a flags from the global fatal_abort_flags().
+void
+fatal_abort_unset_flags (FatalAbortFlags flags)
+{
+  global_fatal_abort_flags &= ~flags;
+}
+
+/// Call @a hook from within fatal_abort() and failed_assertion().
+void
+error_hook (const std::function<void (const ::std::string&)> &hook)
+{
+  global_error_hook = hook;
+}
+
+// Mimick relevant parts of glibc's abort_msg_s
+struct AbortMsg {
+  const char *msg = NULL;
+};
+static AbortMsg abort_msg;
+
+/// Exit the program with SIGABRT, leaving @a message for core dump readouts.
+void
+fatal_abort (const std::string &message)
+{
+  abort_msg.msg = message.c_str();      // store abort message for core dumps
+  __sync_synchronize();
+  fflush (stdout);
+  fputs (message.c_str(), stderr);
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    fputs ("\n", stderr);
+  fflush (stderr);
+  if (global_error_hook)
+    global_error_hook (message);
+  if ((global_fatal_abort_flags & FatalAbortFlags::SEND_SIGQUIT) != 0)
+    raise (SIGQUIT);
+  abort();                              // default action for SIGABRT is core dump
+  _exit (-1);                           // ensure noreturn
+}
+
+/// Construct newline-terminated diagnostics message from @a diag.
+std::string
+diagnostic_message (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno)
+{
+  String message;
+  if (file)
+    message = line ? posix_sprintf ("%s:%u", file, line) : file;
+  if (func)
+    {
+      if (!message.empty())
+        message += ": ";
+      message += func;
+      message += "()";
+    }
+  const String prg = executable_path();
+  if (!prg.empty())
+    {
+      if (message.empty())
+        message = prg;
+      else
+        message = prg + ": " + message;
+    }
+  String prefix;
+  switch (kind) {
+  case 'W':     prefix = "WARNING";     break;
+  case 'I':     prefix = "INFO";        break;
+  case 'D':     prefix = "DEBUG";       break;
+  case 'E':     prefix = "ERROR";       break;
+  case 'F':     prefix = "FATAL";       break;
+  default:
+  case ' ':                             break;
+  }
+  if (!prefix.empty())
+    {
+      if (!message.empty())
+        message += ": ";
+      message += prefix;
+    }
+  if (!message.empty())
+    message += ": ";
+  if (diag.empty() && p_errno)
+    {
+      const char *serr = strerror (p_errno);
+      message += serr ? serr : posix_sprintf ("unknown error (errno=%d)", p_errno);
+    }
+  else if (diag.empty())
+    message += "statement should not be reached";
+  else
+    message += diag;
+  if (message.size() && message.data()[message.size() - 1] != '\n')
+    message += "\n";
+  return message;
+}
+
+/// Print an error message for failing assertions and possibly abort().
+void
+failed_assertion (const char *file, unsigned int line, const char *func, const ::std::string &cmessage, int p_errno)
+{
+  const bool isfatal = (global_fatal_abort_flags & FatalAbortFlags::FATAL_ASSERTIONS) != 0;
+  const std::string msg = diagnostic_message (file, line, func, isfatal ? 'F': 'W', cmessage, p_errno);
+  fatal_abort (cmessage);
+}
+
 
 // == String Utilitiies ==
 static locale_t
@@ -3332,13 +3520,7 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
   pthread_mutex_unlock (&global_dispatcher_mutex);
   // simple hash collision check (sanity check, see below)
   if (AIDA_UNLIKELY (size_before == size_after))
-    {
-      errno = EKEYREJECTED;
-      perror (posix_sprintf ("%s:%u: Aida::ServerConnection::MethodRegistry::register_method: "
-                             "duplicate hash registration (%016llx%016llx)",
-                             __FILE__, __LINE__, LLU mentry.hashhi, LLU mentry.hashlo).c_str());
-      abort();
-    }
+    AIDA_ASSERTION_FAILED (posix_sprintf ("method_hash_is_unregistered (%016llx%016llx)", LLU mentry.hashhi, LLU mentry.hashlo));
 }
 
 // == RemoteHandle Event Handlers ==
@@ -3751,3 +3933,11 @@ static const ServerConnection::MethodEntry implicit_base_methods[] = {
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
 } // Aida
+
+
+// == __abort_msg ==
+Aida::AbortMsg  *aida_abort_msg = &Aida::abort_msg;
+#ifdef  __ELF__
+// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
+extern "C" Aida::AbortMsg *__abort_msg __attribute__ ((weak, alias ("aida_abort_msg")));
+#endif // __ELF__

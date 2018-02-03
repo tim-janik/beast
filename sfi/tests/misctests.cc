@@ -904,16 +904,19 @@ main (int   argc,
     }
   else if (argc >= 2 && String ("--assert_return0") == argv[1])
     {
+      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
       assert_return (0, 0);
       return 0;
     }
   else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
     {
+      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
       assert_return_unreached (0);
       return 0;
     }
   else if (argc >= 2 && String ("--fatal_error") == argv[1])
     {
+      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
       fatal_error ("got argument --fatal_error");
       return 0;
     }
@@ -924,7 +927,7 @@ main (int   argc,
     }
   else if (argc >= 2 && String ("--return_unless1") == argv[1])
     {
-      return_unless (1, 7);
+      return_unless (1, 8);
       return 0;
     }
 

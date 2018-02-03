@@ -29,8 +29,6 @@ namespace Aida {
 #define AIDA_PRINTF(fix, arx)   __attribute__ ((__format__ (__printf__, fix, arx)))
 #define AIDA_ISLIKELY(expr)     __builtin_expect (bool (expr), 1)
 #define AIDA_UNLIKELY(expr)     __builtin_expect (bool (expr), 0)
-#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (__FILE__, __LINE__, #expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (__FILE__, __LINE__, "unreached"); return __VA_ARGS__; } while (0)
 #else   // !__GNUC__
 #define AIDA_UNUSED
 #define AIDA_DEPRECATED
@@ -40,16 +38,57 @@ namespace Aida {
 #define AIDA_PRINTF(fix, arx)
 #define AIDA_ISLIKELY(expr)     expr
 #define AIDA_UNLIKELY(expr)     expr
-#define AIDA_ASSERT_RETURN(expr,...)      do { } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { return __VA_ARGS__; } while (0)
 #endif
 #ifndef AIDA_ASSERTION_FAILED
-#define AIDA_ASSERTION_FAILED(f,l,expr)   ({ dprintf (2, "%s:%u: assertion failed: %s\n", f, l, expr); abort(); })
+#define AIDA_ASSERTION_FAILED(...)        ::Aida::failed_assertion (__FILE__, __LINE__, __func__, __VA_ARGS__)
 #endif
+#define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (#expr); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED ("unreached"); return __VA_ARGS__; } while (0)
 #define AIDA_LIKELY             AIDA_ISLIKELY
 #define AIDA_CLASS_NON_COPYABLE(ClassName)  \
   /*copy-ctor*/ ClassName  (const ClassName&) = delete; \
   ClassName&    operator=  (const ClassName&) = delete
+
+// == Operations on flags enum classes ==
+#define AIDA_DEFINE_ENUM_EQUALITY(Enum)         \
+  constexpr bool    operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
+  constexpr bool    operator== (int64_t n, Enum v) { return n == int64_t (v); } \
+  constexpr bool    operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
+  constexpr bool    operator!= (int64_t n, Enum v) { return n != int64_t (v); }
+#define AIDA_DEFINE_FLAGS_ARITHMETIC(Enum)      \
+  constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
+  constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
+  constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
+  constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
+  constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
+  constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
+  constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
+  constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
+  constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
+  constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
+  constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
+  constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
+  constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
+  constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
+  constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
+  constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
+  constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
+  constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
+  constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
+  constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
+  constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
+  constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
+  constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
+  constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); } \
+  constexpr Enum&   operator^= (Enum &e, auto n)   { e = Enum (e ^ int64_t (n)); return e; } \
+  constexpr Enum&   operator|= (Enum &e, auto n)   { e = Enum (e | int64_t (n)); return e; } \
+  constexpr Enum&   operator&= (Enum &e, auto n)   { e = Enum (e & int64_t (n)); return e; } \
+  constexpr Enum&   operator+= (Enum &e, auto n)   { e = Enum (e + int64_t (n)); return e; } \
+  constexpr Enum&   operator-= (Enum &e, auto n)   { e = Enum (e - int64_t (n)); return e; } \
+  constexpr Enum&   operator*= (Enum &e, auto n)   { e = Enum (e * int64_t (n)); return e; } \
+  constexpr Enum&   operator/= (Enum &e, auto n)   { e = Enum (e / int64_t (n)); return e; } \
+  constexpr Enum&   operator%= (Enum &e, auto n)   { e = Enum (e % int64_t (n)); return e; } \
+  AIDA_DEFINE_ENUM_EQUALITY (Enum)
 
 // == Type Imports ==
 using std::vector;
@@ -149,6 +188,23 @@ template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>               
 template<typename T> struct RemoveSharedPtr<const ::std::shared_ptr<T>>                 { typedef T type; };
 template<typename T> struct RemoveSharedPtr<volatile ::std::shared_ptr<T>>              { typedef T type; };
 template<typename T> struct RemoveSharedPtr<const volatile ::std::shared_ptr<T>>        { typedef T type; };
+
+// == Aborting and assertions ==
+enum class FatalAbortFlags {
+  SEND_SIGQUIT          = 0x01, //< Prevents apport from catching intended assert/abort crashes by aborting with SIGQUIT.
+  FATAL_ASSERTIONS      = 0x10, //< Make failing assertions fatal.
+  FATAL_WARNINGS        = 0x20, //< Make warnings fatal and abort.
+};
+AIDA_DEFINE_FLAGS_ARITHMETIC (FatalAbortFlags);
+FatalAbortFlags fatal_abort_flags               ();
+void            fatal_abort_set_flags           (FatalAbortFlags flags);
+void            fatal_abort_unset_flags         (FatalAbortFlags flags);
+void            fatal_abort                     (const std::string &message) AIDA_NORETURN;
+void            error_hook                      (const std::function<void (const ::std::string&)> &hook);
+void            failed_assertion                (const char *file, unsigned int line, const char *func, const ::std::string &message, int p_errno = 0);
+std::string     diagnostic_message              (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno);
+std::string     executable_path                 () AIDA_PURE;
+std::string     executable_name                 () AIDA_PURE;
 
 // == String Utilitiies ==
 String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
