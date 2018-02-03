@@ -3933,3 +3933,11 @@ static const ServerConnection::MethodEntry implicit_base_methods[] = {
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
 } // Aida
+
+
+// == __abort_msg ==
+Aida::AbortMsg  *aida_abort_msg = &Aida::abort_msg;
+#ifdef  __ELF__
+// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
+extern "C" Aida::AbortMsg *__abort_msg __attribute__ ((weak, alias ("aida_abort_msg")));
+#endif // __ELF__
