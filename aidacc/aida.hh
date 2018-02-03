@@ -182,6 +182,9 @@ template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
 template<class T>
 struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
 
+std::string     executable_path                 () AIDA_PURE;
+std::string     executable_name                 () AIDA_PURE;
+
 /// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
 template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
 template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>                       { typedef T type; };
