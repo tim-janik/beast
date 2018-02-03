@@ -200,8 +200,6 @@ fir_test_filter_sse (bool        verbose,
     }
   if (errors)
     printf ("*** %d errors detected\n", errors);
-  else
-    printf ("filter implementation ok.\n");
 
   return (errors == 0);
 }

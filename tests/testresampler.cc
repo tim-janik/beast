@@ -54,6 +54,7 @@ struct Options {
   double                  max_threshold_db;
   BseResampler2Precision  precision;
   bool                    filter_impl_verbose;
+  bool                    verbose;
   string		  program_name;
 
   Options() :
@@ -66,11 +67,14 @@ struct Options {
     max_threshold_db (0),
     precision (BSE_RESAMPLER2_PREC_96DB),
     filter_impl_verbose (false),
+    verbose (false),
     program_name ("testresampler")
   {
   }
   void parse (int *argc_p, char **argv_p[]);
 } options;
+
+string verbose_output;
 
 static void
 usage ()
@@ -103,13 +107,14 @@ usage ()
   printf (" --frequency=<freq>     use <freq> as sine test frequency [%f]\n", options.frequency);
   printf (" --block-size=<bs>      use <bs> as resampler block size [%d]\n", options.block_size);
   printf (" --filter-impl-verbose  print reordered coefficients (debugging only)\n");
+  printf (" --verbose              enable verbose output for accuracy or filter-impl\n");
   printf ("\n");
   printf ("Accuracy test options:\n");
   printf (" --freq-scan=<fmin>,<fmax>,<finc>\n");
   printf ("                        scan frequency frequency range [<fmin>..<fmax>]\n");
   printf ("                        incrementing frequencies by <finc> after each scan point\n");
   printf (" --freq-scan-verbose    print frequency scanning error table (freq, dB-diff)\n");
-  printf (" --max-threshold=<val>  assert that the effective precision is at least <val> dB [%f]\n", options.max_threshold_db);
+  printf (" --max-threshold=<val>  check that the effective precision is at least <val> dB [%f]\n", options.max_threshold_db);
   /*           ::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   printf ("\n");
   printf ("Examples:\n");
@@ -276,6 +281,8 @@ Options::parse (int   *argc_p,
 	}
       else if (check_arg (argc, argv, &i, "--filter-impl-verbose"))
 	filter_impl_verbose = true;
+      else if (check_arg (argc, argv, &i, "--verbose"))
+	verbose = true;
       else if (check_arg (argc, argv, &i, "--up"))
         resample_type = RES_UPSAMPLE;
       else if (check_arg (argc, argv, &i, "--down"))
@@ -301,7 +308,14 @@ Options::parse (int   *argc_p,
 static int
 test_filter_impl()
 {
-  return Bse::Block::test_resampler2 (options.filter_impl_verbose) ? 0 : 1;
+  bool filter_ok = Bse::Block::test_resampler2 (options.filter_impl_verbose);
+
+  if (filter_ok)
+    verbose_output += "filter implementation ok.\n";
+  else
+    verbose_output += "errors detected in filter implementation.\n";
+
+  return filter_ok ? 0 : 1;
 }
 
 static double
@@ -363,20 +377,20 @@ perform_test()
       double end_time = gettime();
       if (RESAMPLE == RES_DOWNSAMPLE)
 	{
-	  printf ("  (performance will be normalized to downsampler output samples)\n");
+	  verbose_output += "  (performance will be normalized to downsampler output samples)\n";
 	  k /= 2;
 	}
       else if (RESAMPLE == RES_UPSAMPLE)
 	{
-	  printf ("  (performance will be normalized to upsampler input samples)\n");
+	  verbose_output += "  (performance will be normalized to upsampler input samples)\n";
 	}
-      printf ("  total samples processed = %lld\n", k);
-      printf ("  processing_time = %f\n", end_time - start_time);
-      printf ("  samples / second = %f\n", k / (end_time - start_time));
-      printf ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n",
-	      k / (end_time - start_time) / 44100.0);
-      printf ("  or one 44100 Hz stream takes %f %% CPU usage\n", 
-	        100.0 / (k / (end_time - start_time) / 44100.0));
+      verbose_output += string_format ("  total samples processed = %lld\n", k);
+      verbose_output += string_format ("  processing_time = %f\n", end_time - start_time);
+      verbose_output += string_format ("  samples / second = %f\n", k / (end_time - start_time));
+      verbose_output += string_format ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n",
+	                               k / (end_time - start_time) / 44100.0);
+      verbose_output += string_format ("  or one 44100 Hz stream takes %f %% CPU usage\n",
+	                               100.0 / (k / (end_time - start_time) / 44100.0));
     }
   else if (TEST == TEST_ACCURACY || TEST == TEST_ERROR_TABLE || TEST == TEST_ERROR_SPECTRUM)
     {
@@ -389,10 +403,10 @@ perform_test()
       if (TEST == TEST_ACCURACY)
 	{
 	  if (freq_scanning)
-	    printf ("#   input frequency range used [ %.2f Hz, %.2f Hz ] (SR = 44100.0 Hz, freq increment = %.2f)\n",
+	    verbose_output += string_format ("#   input frequency range used [ %.2f Hz, %.2f Hz ] (SR = 44100.0 Hz, freq increment = %.2f)\n",
 		freq_min, freq_max, freq_inc);
 	  else
-	    printf ("#   input frequency used to perform test = %.2f Hz (SR = 44100.0 Hz)\n", options.frequency);
+	    verbose_output += string_format ("#   input frequency used to perform test = %.2f Hz (SR = 44100.0 Hz)\n", options.frequency);
 	}
 
       double max_diff = 0;
@@ -493,7 +507,7 @@ perform_test()
 		      correct_output *= correct_volume;
 		      if (TEST == TEST_ERROR_TABLE)
 			{
-			  printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
+			  verbose_output += string_format ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
 			}
 		      else if (TEST == TEST_ERROR_SPECTRUM)
 			{
@@ -512,15 +526,19 @@ perform_test()
 	    }
 	  double test_frequency_max_diff_db = 20 * log (test_frequency_max_diff) / log (10);
 	  if (options.freq_scan_verbose)
-	    printf ("%.17f %.17f\n", test_frequency, test_frequency_max_diff_db);
+	    verbose_output += string_format ("%.17f %.17f\n", test_frequency, test_frequency_max_diff_db);
 	}
       double max_diff_db = 20 * log (max_diff) / log (10);
       if (TEST == TEST_ACCURACY)
 	{
-	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
+	  verbose_output += string_format ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
 	  if (options.max_threshold_db < 0)
-	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
-	  assert_return (max_diff_db < options.max_threshold_db, -1);
+	    verbose_output += string_format ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
+	  if (max_diff_db > options.max_threshold_db)
+            {
+              verbose_output += string_format ("# TEST FAILED: accuracy not below threshold\n");
+              return 1;
+            }
 	}
       else if (TEST == TEST_ERROR_SPECTRUM)
 	{
@@ -563,7 +581,7 @@ perform_test()
 		  double normalized_error = bse_complex_abs (bse_complex (fft_error[i * 2], fft_error[i * 2 + 1])) / normalize;
 		  double normalized_error_db = 20 * log (normalized_error) / log (10);
 
-		  printf ("%f %f\n", i / double (FFT_SIZE) * 44100 * freq_scale, normalized_error_db);
+		  verbose_output += string_format ("%f %f\n", i / double (FFT_SIZE) * 44100 * freq_scale, normalized_error_db);
 		}
 	    }
 	}
@@ -596,7 +614,7 @@ perform_test()
 	check = output2;
 
       for (unsigned int i = 0; i < block_size; i++)
-	printf ("%.17f\n", check[i]);
+	verbose_output += string_format ("%.17f\n", check[i]);
     }
   delete ups;
   delete downs;
@@ -604,19 +622,19 @@ perform_test()
 }
 
 template <int TEST> int
-perform_test ()
+perform_test()
 {
   const char *instruction_set = Bse::Block::impl_name();
 
   switch (resample_type)
     {
-    case RES_DOWNSAMPLE:  printf ("for factor 2 downsampling using %s instructions\n", instruction_set);
+    case RES_DOWNSAMPLE:  verbose_output += string_format ("for factor 2 downsampling using %s instructions\n", instruction_set);
 			  return perform_test<TEST, RES_DOWNSAMPLE> ();
-    case RES_UPSAMPLE:	  printf ("for factor 2 upsampling using %s instructions\n", instruction_set);
+    case RES_UPSAMPLE:	  verbose_output += string_format ("for factor 2 upsampling using %s instructions\n", instruction_set);
 			  return perform_test<TEST, RES_UPSAMPLE> ();
-    case RES_SUBSAMPLE:	  printf ("for factor 2 subsampling using %s instructions\n", instruction_set);
+    case RES_SUBSAMPLE:	  verbose_output += string_format ("for factor 2 subsampling using %s instructions\n", instruction_set);
 			  return perform_test<TEST, RES_SUBSAMPLE> ();
-    case RES_OVERSAMPLE:  printf ("for factor 2 oversampling using %s instructions\n", instruction_set);
+    case RES_OVERSAMPLE:  verbose_output += string_format ("for factor 2 oversampling using %s instructions\n", instruction_set);
 			  return perform_test<TEST, RES_OVERSAMPLE> ();
     default:		  usage();
 			  return 1;
@@ -628,13 +646,37 @@ perform_test()
 {
   switch (test_type)
     {
-    case TEST_PERFORMANCE:    printf ("performance test "); return perform_test<TEST_PERFORMANCE> ();
-    case TEST_ACCURACY:	      printf ("# accuracy test "); return perform_test<TEST_ACCURACY> ();
-    case TEST_ERROR_TABLE:    printf ("# error table test "); return perform_test<TEST_ERROR_TABLE> ();
-    case TEST_ERROR_SPECTRUM: printf ("# error spectrum test "); return perform_test<TEST_ERROR_SPECTRUM> ();
-    case TEST_IMPULSE:	      printf ("# impulse response test "); return perform_test<TEST_IMPULSE> ();
+    case TEST_PERFORMANCE:    verbose_output += "performance test "; return perform_test<TEST_PERFORMANCE> ();
+    case TEST_ACCURACY:	      verbose_output += "# accuracy test "; return perform_test<TEST_ACCURACY> ();
+    case TEST_ERROR_TABLE:    verbose_output += "# error table test "; return perform_test<TEST_ERROR_TABLE> ();
+    case TEST_ERROR_SPECTRUM: verbose_output += "# error spectrum test "; return perform_test<TEST_ERROR_SPECTRUM> ();
+    case TEST_IMPULSE:	      verbose_output += "# impulse response test "; return perform_test<TEST_IMPULSE> ();
     case TEST_FILTER_IMPL:    return test_filter_impl();
     default:		      usage(); return 1;
+    }
+}
+
+static string
+test_title()
+{
+  if (test_type == TEST_FILTER_IMPL)
+    {
+      return "testresampler filter implementation";
+    }
+  else
+    {
+      assert_return (test_type == TEST_ACCURACY, "*bad test type*");
+
+      const char *instruction_set = Bse::Block::impl_name();
+      const char *rname = "*bad resample name*";
+      switch (resample_type)
+        {
+          case RES_UPSAMPLE:    rname = "up  "; break;
+          case RES_DOWNSAMPLE:  rname = "down"; break;
+          case RES_SUBSAMPLE:   rname = "sub "; break;
+          case RES_OVERSAMPLE:  rname = "over"; break;
+        }
+      return string_format ("testresampler accuracy/%s/%s %2d bit", instruction_set, rname, options.precision);
     }
 }
 
@@ -683,5 +725,32 @@ main (int argc, char **argv)
       printerr ("testresampler: too many arguments\n");
       exit (1);
     }
-  return perform_test();
+
+  int result = perform_test();
+
+  // tests that report pass or fail
+  if (test_type == TEST_ACCURACY || test_type == TEST_FILTER_IMPL)
+    {
+      if (options.verbose)
+        {
+          printf ("%s", verbose_output.c_str());
+        }
+      else // summarize test result
+        {
+          if (result == 0)
+            {
+              printf ("  PASS     %s\n", test_title().c_str());
+            }
+          else
+            {
+              printf ("%s\n", verbose_output.c_str());
+              printf ("  FAIL     %s\n", test_title().c_str());
+            }
+        }
+    }
+  else // always be verbose on the other tests
+    {
+      printf ("%s", verbose_output.c_str());
+    }
+  return result;
 }
