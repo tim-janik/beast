@@ -49,6 +49,47 @@ namespace Aida {
   /*copy-ctor*/ ClassName  (const ClassName&) = delete; \
   ClassName&    operator=  (const ClassName&) = delete
 
+// == Operations on flags enum classes ==
+#define AIDA_DEFINE_ENUM_EQUALITY(Enum)         \
+  constexpr bool    operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
+  constexpr bool    operator== (int64_t n, Enum v) { return n == int64_t (v); } \
+  constexpr bool    operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
+  constexpr bool    operator!= (int64_t n, Enum v) { return n != int64_t (v); }
+#define AIDA_DEFINE_FLAGS_ARITHMETIC(Enum)      \
+  constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
+  constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
+  constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
+  constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
+  constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
+  constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
+  constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
+  constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
+  constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
+  constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
+  constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
+  constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
+  constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
+  constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
+  constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
+  constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
+  constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
+  constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
+  constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
+  constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
+  constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
+  constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
+  constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
+  constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); } \
+  constexpr Enum&   operator^= (Enum &e, auto n)   { e = Enum (e ^ int64_t (n)); return e; } \
+  constexpr Enum&   operator|= (Enum &e, auto n)   { e = Enum (e | int64_t (n)); return e; } \
+  constexpr Enum&   operator&= (Enum &e, auto n)   { e = Enum (e & int64_t (n)); return e; } \
+  constexpr Enum&   operator+= (Enum &e, auto n)   { e = Enum (e + int64_t (n)); return e; } \
+  constexpr Enum&   operator-= (Enum &e, auto n)   { e = Enum (e - int64_t (n)); return e; } \
+  constexpr Enum&   operator*= (Enum &e, auto n)   { e = Enum (e * int64_t (n)); return e; } \
+  constexpr Enum&   operator/= (Enum &e, auto n)   { e = Enum (e / int64_t (n)); return e; } \
+  constexpr Enum&   operator%= (Enum &e, auto n)   { e = Enum (e % int64_t (n)); return e; } \
+  AIDA_DEFINE_ENUM_EQUALITY (Enum)
+
 // == Type Imports ==
 using std::vector;
 typedef int8_t              int8;
