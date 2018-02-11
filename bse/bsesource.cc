@@ -2076,7 +2076,7 @@ SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
     osource = input->idata.osource;
   else
     osource = NULL;
-  return osource->as<SourceIfaceP>();
+  return osource ? osource->as<SourceIfaceP>() : NULL;
 }
 
 bool
@@ -2133,7 +2133,7 @@ String
 SourceImpl::ichannel_ident (int input_channel)
 {
   BseSource *self = as<BseSource*>();
-  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), 0);
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), "");
   return BSE_SOURCE_ICHANNEL_IDENT (self, input_channel);
 }
 
@@ -2142,7 +2142,7 @@ String
 SourceImpl::ichannel_label (int input_channel)
 {
   BseSource *self = as<BseSource*>();
-  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), 0);
+  assert_return (size_t (input_channel) < BSE_SOURCE_N_ICHANNELS (self), "");
   return BSE_SOURCE_ICHANNEL_LABEL (self, input_channel);
 }
 
@@ -2235,7 +2235,6 @@ SourceImpl::set_input (const String &ichannel_ident, SourceIface &omodule, const
     }
   return error;
 }
-
 
 Error
 SourceImpl::set_input_by_id (int input_channel, SourceIface &omodule, int output_channel)
