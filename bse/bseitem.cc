@@ -1454,21 +1454,24 @@ String
 ItemImpl::get_type_authors ()
 {
   BseItem *self = as<BseItem*>();
-  return bse_type_get_authors (G_OBJECT_TYPE (self));
+  const char *r = bse_type_get_authors (G_OBJECT_TYPE (self));
+  return r ? r : "";
 }
 
 String
 ItemImpl::get_type_blurb ()
 {
   BseItem *self = as<BseItem*>();
-  return bse_type_get_blurb (G_OBJECT_TYPE (self));
+  const char *r = bse_type_get_blurb (G_OBJECT_TYPE (self));
+  return r ? r : "";
 }
 
 String
 ItemImpl::get_type_license ()
 {
   BseItem *self = as<BseItem*>();
-  return bse_type_get_license (G_OBJECT_TYPE (self));
+  const char *r = bse_type_get_license (G_OBJECT_TYPE (self));
+  return r ? r : "";
 }
 
 String
@@ -1493,7 +1496,8 @@ String
 ItemImpl::get_name ()
 {
   BseItem *self = as<BseItem*>();
-  return BSE_OBJECT_UNAME (self);
+  const char *r = BSE_OBJECT_UNAME (self);
+  return r ? r : "";
 }
 
 String
