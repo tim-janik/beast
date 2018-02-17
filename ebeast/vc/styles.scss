@@ -1,8 +1,8 @@
 /* GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html */
 
 /* == FontAwesome == */
-@import        '../node_modules/font-awesome/scss/font-awesome.scss';
 $fa-font-path: '../node_modules/font-awesome/fonts/';
+@import        '../node_modules/font-awesome/scss/font-awesome.scss';
 
 /* == User Settings & Overrides == */
 @import 'mixins.scss';
