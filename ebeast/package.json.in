@@ -5,10 +5,9 @@
   "main": "main.js",
   "dependencies": {
     "electron": "^1.4.15",
-    "mithril": "^1.0.1",
-    "vue": "^2.2.6",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.1.1",
-    "font-awesome": "^4.7.0"
+    "vue": "^2.2.6"
   },
   "devDependencies": {
     "node-gyp": "^3.5.0",
