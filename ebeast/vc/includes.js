@@ -14,4 +14,4 @@ const Vue = require ('vue/dist/vue.common.js');
 window.Vue = Vue;
 
 // load Vue components, bundled from ./bundle.js
-require ('../objects/vc-bundle.js');
+require ('../assets/components.js'); // generated from vc/bundle.js
