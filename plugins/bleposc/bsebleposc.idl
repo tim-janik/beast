@@ -24,7 +24,7 @@ interface BlepOsc : Effect {
     Real    frequency	     = Freq(_("Frequency"), _("Constant Frequency (used when frequency input is not connected"), 440.0, STANDARD);
     Int     transpose        = (_("Transpose"), _("Transposition of the oscillator frequency in semitones"),
                                 0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
-    Int     fine_tune        = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"), STANDARD);
+    Int     fine_tune        = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"), STANDARD ":f:dial:skip-default");
     Real    freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, -5.0, 5.0, 0.01, STANDARD ":f:scale");
   };
   group _("Shape") {
