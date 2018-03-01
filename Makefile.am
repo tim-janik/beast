@@ -47,6 +47,7 @@ include aidacc/tests/Makefile.sub
 
 # == ebeast/ ==
 include ebeast/Makefile.sub
+include ebeast/v8bse/Makefile.sub
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
