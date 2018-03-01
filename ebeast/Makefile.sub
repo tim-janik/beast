@@ -2,7 +2,7 @@
 
 ebeast-all: with_npm ebeast/vue-components.html
 
-EBEAST_CLEANFILES =
+EBEAST_MOSTLYCLEANFILES =
 
 # Considerations for building the ebeast bundle:
 # - The target dir for all build rules has to be app/, because Electron expects to find the
@@ -37,11 +37,12 @@ ebeast_lint_js_files = $(strip		\
 )
 
 # == with_npm ==
-with_npm:
 if WITH_NPM
 with_npm:		ebeast/.appstamp
 install-exec-local:	ebeast-install-exec-bundle
 uninstall-local:	ebeast-uninstall-bundle
+else
+with_npm:
 endif
 
 # == ebeast/.npmstamp ==
@@ -51,7 +52,8 @@ ebeast/.npmstamp: ebeast/package.json.in ./config.status
 	$(Q) ./config.status --file ebeast/package.json
 	$(Q) cd ebeast/ && npm install
 	$(Q) touch $@
-EBEAST_CLEANFILES += ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
+# npm install is expensive so keep node_modules/ across mostlyclean
+EBEAST_NPM_CLEANFILES = ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
 
 # == ebeast/.appstamp ==
 ebeast/app/:
@@ -65,7 +67,8 @@ ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSE
 	$(Q) cp -P $(ebeast_app_files) ebeast/app/
 	$(Q) cp -L ebeast/v8bse/v8bse.node ebeast/app/assets/
 	$(Q) cp -P ebeast/package.json ebeast/app/
-EBEAST_CLEANFILES += ebeast/.appstamp ebeast/app/
+	$(Q) touch $@
+EBEAST_MOSTLYCLEANFILES += ebeast/.appstamp ebeast/app/
 
 # == EBEAST_APP_ASSETS_CSS ==
 EBEAST_APP_ASSETS_CSS = ebeast/app/assets/stylesheets.css ebeast/app/assets/gradient-01.png
@@ -105,7 +108,7 @@ ebeast/.lintstamp: $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc
 	$(Q) rm -f $@
 	$(Q) ebeast/node_modules/.bin/eslint -f unix $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc_vue_files)
 	$(Q) touch $@
-EBEAST_CLEANFILES += ebeast/.lintstamp
+EBEAST_MOSTLYCLEANFILES += ebeast/.lintstamp
 
 # == Docs for .vue files ==
 ebeast/vue-components.html: $(ebeast_vc_vue_files) Makefile
@@ -120,7 +123,7 @@ ebeast/vue-components.html: $(ebeast_vc_vue_files) Makefile
 	$(Q) sed 's/^  // ; s/^### /\n### /' < $(@:.html=.tmp1) > $(@:.html=.tmp2)
 	$(Q) $(PANDOC) --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $(@:.html=.tmp2)
 	$(Q) rm -f $(@:.html=.tmp*)
-EBEAST_CLEANFILES += ebeast/vue-components.html
+EBEAST_MOSTLYCLEANFILES += ebeast/vue-components.html
 
 # == ebeast/bundlecache/ ==
 ebeast/bundlecache/ebeast: ebeast/.appstamp
@@ -132,7 +135,7 @@ ebeast/bundlecache/ebeast: ebeast/.appstamp
 	$(Q) mv ebeast/bundletemp/bundlecache/ ebeast/
 	$(Q) rmdir ebeast/bundletemp
 	$(Q) test -x ebeast/bundlecache/ebeast
-EBEAST_CLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
+EBEAST_MOSTLYCLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
 
 # == ebeast/bundlecache/ installation ==
 ebeast-install-exec-bundle: ebeast/bundlecache/ebeast
@@ -159,8 +162,10 @@ ebeast-run: ebeast/.appstamp
 GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
 
 # == ebeast-clean ==
-ebeast-clean:
-	rm -f $(filter-out %/, $(EBEAST_CLEANFILES))
-	rm -fr $(filter %/, $(EBEAST_CLEANFILES))
-.PHONY: ebeast-clean
+ebeast-mostlyclean: ebeast-v8bse-clean
+	rm -f $(filter-out %/, $(EBEAST_MOSTLYCLEANFILES))
+	rm -fr $(filter %/, $(EBEAST_MOSTLYCLEANFILES))
+ebeast-clean: ebeast-mostlyclean
+	rm -rf $(EBEAST_NPM_CLEANFILES)
+.PHONY: ebeast-clean ebeast-mostlyclean
 mostlyclean-local: ebeast-clean
