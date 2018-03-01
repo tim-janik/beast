@@ -39,8 +39,8 @@ ebeast_lint_js_files = $(strip		\
 # == with_npm ==
 if WITH_NPM
 with_npm:		ebeast/.appstamp
-install-exec-local:	ebeast-install-exec-bundle
-uninstall-local:	ebeast-uninstall-bundle
+install-exec-local:	ebeast-install
+uninstall-local:	ebeast-uninstall
 else
 with_npm:
 endif
@@ -127,9 +127,9 @@ EBEAST_MOSTLYCLEANFILES += ebeast/vue-components.html
 
 # == ebeast/bundlecache/ ==
 ebeast/bundlecache/ebeast: ebeast/.appstamp
-	$(AM_V_GEN)
+	@echo "  BUILD   " $(@D);
 	$(Q) rm -rf ebeast/bundlecache/ ebeast/bundletemp/
-	$(Q) time ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
+	$(Q) \time -f '  real     %es' ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
 	$(Q) mv `for f in ebeast/bundletemp/*/ ; do :; done && echo $$f` ebeast/bundletemp/bundlecache/ # rename <appname>-<platform>-<arch>/
 	@: # bundle polishing goes here...
 	$(Q) mv ebeast/bundletemp/bundlecache/ ebeast/
@@ -137,15 +137,14 @@ ebeast/bundlecache/ebeast: ebeast/.appstamp
 	$(Q) test -x ebeast/bundlecache/ebeast
 EBEAST_MOSTLYCLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
 
-# == ebeast/bundlecache/ installation ==
-ebeast-install-exec-bundle: ebeast/bundlecache/ebeast
-	$(AM_V_GEN)
+# == ebeast/ installations ==
+ebeast-install: ebeast/bundlecache/ebeast
 	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
 	rm -rf "$(DESTDIR)$(beastdir)/bundle" "$(DESTDIR)$(beastdir)/app"
 	cp -RP ebeast/bundlecache "$(DESTDIR)$(beastdir)/bundle"
 	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/"
 	ln -s ../../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
-ebeast-uninstall-bundle:
+ebeast-uninstall:
 	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/"
 
 # == ebeast-run ==
