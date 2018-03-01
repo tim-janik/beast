@@ -1,0 +1,66 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+ebeast-v8bse-all: ebeast/v8bse/v8bse.node
+
+EBEAST_V8BSE_CLEANFILES =
+
+# == ebeast/v8bse/v8bse.cc ==
+# generate v8 Bse bindings
+ebeast/v8bse/v8bse.cc: bse/bseapi.idl ebeast/v8bse/V8Stub.py
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x ebeast/v8bse/V8Stub.py $< -o $@.tmp -G strip-path=$(abs_top_srcdir)/
+	$(Q) mv $@.tmp $@
+EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/v8bse.cc ebeast/v8bse/v8bse.cc.tmp ebeast/v8bse/*.py[co]
+
+# == ebeast/v8bse/v8bse.node ==
+# see also: /usr/include/nodejs/common.gypi
+ebeast/v8bse/v8bse.node: ebeast/v8bse/v8bse.cc $(ebeast_v8bse_sources:%=ebeast/v8bse/%) ebeast/v8bse/binding.gyp ebeast/.npmstamp
+	@echo "  COMPILE " $@;
+	$(Q) rm -fr $@ ebeast/v8bse/build/
+	$(Q) cd $(@D) && $(EBEAST_V8BSE_NODE_GYP) rebuild --dist-url=https://atom.io/download/electron \
+		$(if $(findstring 1, $(V)) , --verbose, --silent)
+	$(Q) ln -sv build/Release/v8bse.node ebeast/v8bse/
+# node-gyp caches downloads in $HOME and requires the electron target version
+EBEAST_V8BSE_NODE_GYP = $(strip						\
+	sed -n '/^ \ "version":/s/.*"\([0-9.]\+\)".*/\1/p'		\
+		../node_modules/electron/package.json > $(@F).tmpev	\
+	&& ELECTRON_VERSION=`grep '^[0-9.]\+$$' $(@F).tmpev`		\
+	&& rm $(@F).tmpev						\
+	&& HOME=../node_modules/node-gyp/cache/				\
+	   CXX="$(CXX)" CXXFLAGS="$(ebeast_v8bse_cxxflags)"		\
+	../node_modules/.bin/node-gyp --target="$$ELECTRON_VERSION"	\
+)
+EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/v8bse.node ebeast/v8bse/v8bse.node.tmpev ebeast/v8bse/build/
+# leave cleaning of ebeast/node_modules/node-gyp/cache/ to ../node_modules/ cleanups
+# ebeast/v8bse/ relative paths
+ebeast_v8bse_sources     = nodemodule.cc
+ebeast_v8bse_incdirs     =  ../../ ../../external/v8pp/ $(patsubst -%, , $(patsubst -I%, %, $(LIBBSE_CFLAGS)))
+ebeast_v8bse_libs        = $(LIBBSE_LIBS) -L$(abs_top_builddir)/bse/.libs -lbse-@MAJOR@
+ebeast_v8bse_cxxflags    = $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS $(CXXFLAGS)
+ebeast_v8bse_rmflags     = -fno-exceptions -fno-rtti -std=gnu++0x
+
+# == ebeast/v8bse/binding.gyp ==
+ebeast_v8bse_comma = ,
+ebeast/v8bse/binding.gyp: Makefile # binding.gyp needs Makefile variables
+	$(AM_V_GEN)
+	@echo "{                                             # -*- mode: javascript -*-"			 >$@
+	@echo "  'targets': ["											>>$@
+	@echo "    {"												>>$@
+	@echo "      'target_name': 'v8bse',"									>>$@
+	@echo "      'sources':      [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_sources)) ],"	>>$@
+	@echo "      'cflags!':      [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_rmflags)) ],"	>>$@
+	@echo "      'cflags_cc!':   [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_rmflags)) ],"	>>$@
+	@echo "      'include_dirs': [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_incdirs)) ],"	>>$@
+	@echo "      'libraries':    [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_libs))"		>>$@
+	@echo "                        '-Wl,-rpath,$(bselibdir)' ],"						>>$@
+	@echo "    }"												>>$@
+	@echo "  ]"												>>$@
+	@echo "}"												>>$@
+EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/binding.gyp
+
+# == ebeast-v8bse-clean ==
+ebeast-v8bse-clean:
+	rm -f $(filter-out %/, $(EBEAST_V8BSE_CLEANFILES))
+	rm -fr $(filter %/, $(EBEAST_V8BSE_CLEANFILES))
+.PHONY: ebeast-v8bse-clean
+mostlyclean-local: ebeast-v8bse-clean
