@@ -40,7 +40,7 @@ include res/Makefile.sub
 
 # == aidacc/ ==
 include aidacc/Makefile.sub
-BUILT_SOURCES	+= $(AIDACC)
+BUILT_SOURCES	+= aidacc-all
 
 # == aidacc/tests/ ==
 include aidacc/tests/Makefile.sub
