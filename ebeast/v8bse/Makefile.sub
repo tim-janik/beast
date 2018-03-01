@@ -6,9 +6,9 @@ EBEAST_V8BSE_CLEANFILES =
 
 # == ebeast/v8bse/v8bse.cc ==
 # generate v8 Bse bindings
-ebeast/v8bse/v8bse.cc: bse/bseapi.idl ebeast/v8bse/V8Stub.py
+ebeast/v8bse/v8bse.cc: bse/bseapi.idl ebeast/v8bse/V8Stub.py $(AIDACC)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x ebeast/v8bse/V8Stub.py $< -o $@.tmp -G strip-path=$(abs_top_srcdir)/
+	$(Q) $(AIDACC) -x ebeast/v8bse/V8Stub.py $< -o $@.tmp -G strip-path=$(abs_top_srcdir)/
 	$(Q) mv $@.tmp $@
 EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/v8bse.cc ebeast/v8bse/v8bse.cc.tmp ebeast/v8bse/*.py[co]
 
