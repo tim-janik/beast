@@ -1,5 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
+aidacc-all: $(AIDACC)
+
 AIDACC_CLEANFILES =
 
 # == aidacc files ==
@@ -75,28 +77,28 @@ aidacc/Parser.py: aidacc/Parser.g
 	$(Q) mv $@.tmp2 $@ && rm -f $@.tmp $@.errors
 AIDACC_CLEANFILES += aidacc/Parser.py
 
-# == clean-aidacc ==
-clean-aidacc:
+# == aidacc-clean ==
+aidacc-clean:
 	rm -f $(AIDACC_CLEANFILES) aidacc/*.$(OBJEXT)
-.PHONY: clean-aidacc
-clean-local: clean-aidacc
+.PHONY: aidacc-clean
+clean-local: aidacc-clean
 AIDACC_CLEANFILES += aidacc/*.py[co]
 
-# == check-aidacc ==
-check-aidacc-build-test: $(AIDACC)
+# == aidacc-check ==
+aidacc-check-build-test: $(AIDACC)
 	$(QTEST)
 	$(Q) $(AIDACC) -x TypeMap --list-formats | grep -q AidaTypeMap
-check-aidacc: check-aidacc-build-test
-.PHONY: check-aidacc check-aidacc-build-test
-check-local: check-aidacc
+aidacc-check: aidacc-check-build-test
+.PHONY: aidacc-check aidacc-check-build-test
+check-local: aidacc-check
 
-# == installcheck-aidacc ==
+# == aidacc-installcheck ==
 # for now, we keep aidacc uninstalled
 AIDACC_INSTALLABLE = $(AIDACC)
-installcheck-aidacc:
+aidacc-installcheck:
 	$(QTEST)
 	$(Q) PATH="$(bindir):$$PATH" $(AIDACC_INSTALLABLE) -x CxxStub -x ExtractDocs -x TypeMap --list-formats > aidacc/$@.tmp && \
 	  grep -F -q CxxStub aidacc/$@.tmp && grep -F -q TypeMap aidacc/$@.tmp && grep -F -q ExtractDocs aidacc/$@.tmp
 	$(Q) rm -f aidacc/$@.tmp
-.PHONY: installcheck-aidacc
-installcheck-local: installcheck-aidacc
+.PHONY: aidacc-installcheck
+installcheck-local: aidacc-installcheck
