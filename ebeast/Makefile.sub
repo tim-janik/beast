@@ -1,0 +1,166 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+ebeast-all: with_npm ebeast/vue-components.html
+
+EBEAST_CLEANFILES =
+
+# Considerations for building the ebeast bundle:
+# - The target dir for all build rules has to be app/, because Electron expects to find the
+#   file resources/app[.asar]/package.json on startup (unless extra args are given).
+# - For .map files and a number of other references to work correctly, we have to build most
+#   resources *inside* app/, using sources formerly copyied into app/.
+# - Packaging the bundle with electron-packager takes quite some time, so we only build it
+#   at installation time and cache the result in bundlecache/ (unless app/ changes).
+
+# == ebeast files ==
+ebeast_app_files = $(strip 		\
+	ebeast/app.js			\
+	ebeast/index.html		\
+	ebeast/main.js			\
+	ebeast/menus.js			\
+)
+ebeast_vc_vue_files = $(strip		\
+	ebeast/vc/aboutdialog.vue	\
+	ebeast/vc/button-bar.vue	\
+	ebeast/vc/button.vue		\
+	ebeast/vc/icon-button.vue	\
+	ebeast/vc/modaldialog.vue	\
+	ebeast/vc/playcontrols.vue	\
+	ebeast/vc/projectshell.vue	\
+)
+ebeast_lint_html_files = $(strip	\
+	ebeast/index.html		\
+)
+ebeast_lint_js_files = $(strip		\
+	ebeast/*.js			\
+	ebeast/vc/*.js			\
+)
+
+# == with_npm ==
+with_npm:
+if WITH_NPM
+with_npm:		ebeast/.appstamp
+install-exec-local:	ebeast-install-exec-bundle
+uninstall-local:	ebeast-uninstall-bundle
+endif
+
+# == ebeast/.npmstamp ==
+ebeast/.npmstamp: ebeast/package.json.in ./config.status
+	$(AM_V_GEN)
+	$(Q) rm -rf ebeast/app/	# force app and asset rebuilds, since we're updating the build tools
+	$(Q) ./config.status --file ebeast/package.json
+	$(Q) cd ebeast/ && npm install
+	$(Q) touch $@
+EBEAST_CLEANFILES += ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
+
+# == ebeast/.appstamp ==
+ebeast/app/:
+	$(AM_V_GEN)
+	$(Q) rm -rf ebeast/app/
+	$(Q) mkdir $@/ $@/vc $@/assets/
+	$(Q) ln -s ../node_modules ebeast/app/
+ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/.npmstamp | ebeast/app/ ebeast/.lintstamp
+	$(AM_V_GEN)
+	$(Q) rm -rf ebeast/bundlecache/				# avoid installing stale app/ files
+	$(Q) cp -P $(ebeast_app_files) ebeast/app/
+	$(Q) cp -L ebeast/v8bse/v8bse.node ebeast/app/assets/
+	$(Q) cp -P ebeast/package.json ebeast/app/
+EBEAST_CLEANFILES += ebeast/.appstamp ebeast/app/
+
+# == EBEAST_APP_ASSETS_CSS ==
+EBEAST_APP_ASSETS_CSS = ebeast/app/assets/stylesheets.css ebeast/app/assets/gradient-01.png
+ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/.npmstamp | ebeast/app/
+	$(QGEN) # NOTE: scss source and output file names must be final, because .map is derived from it
+	$(Q) cp -P ebeast/app.scss ebeast/app/
+	$(Q) cp -P ebeast/vc/*.scss ebeast/app/vc/
+	$(Q) cd ebeast/app/ && ./node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
+ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
+	$(AM_V_GEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
+	$(Q)        # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
+	$(Q) tr '\n' ' ' < ebeast/app/assets/stylesheets.css | \
+	     sed -nr 's/.*\bgradient-01\s*\{[^}]*-im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $(@:%.png=%.cli)
+	$(Q) test -s $(@:%.png=%.cli) # check that we actually found the -im-convert directive
+	$(Q) convert $$(cat $(@:%.png=%.cli)) $(@:%.png=%.tmp.png)
+	$(Q) rm -f $(@:%.png=%.cli) && mv $(@:%.png=%.tmp.png) $@
+
+# == EBEAST_APP_ASSETS_VUE ==
+EBEAST_APP_ASSETS_VUE = ebeast/app/vc/includes.js ebeast/app/assets/components.js
+EBEAST_VC_MOSTJS := $(filter-out ebeast/vc/includes.js, $(wildcard ebeast/vc/*.js))
+ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) | ebeast/app/
+	$(AM_V_GEN)
+	$(Q) cp -P $(EBEAST_VC_MOSTJS) ebeast/app/vc/
+	$(Q) cp -P $< ebeast/app/vc/
+ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js ebeast/.npmstamp | ebeast/app/
+	$(AM_V_GEN) # app/vc/bundle.js was copied with app/vc/includes.js
+	@: # collect all 'require' dependencies of bundle.js in app/vc/
+	$(Q) cp -P $(ebeast_vc_vue_files) ebeast/app/vc/
+	@: # all files required by vc/bundle.js are present, generate assets/components.js
+	$(Q) cd ebeast/app/ && \
+	node_modules/.bin/browserify --ignore-missing --no-builtins --no-commondir --no-browser-field \
+	  --insert-global-vars="global" -d -t vueify -e ebeast/vc/bundle.js -o assets/components.js
+
+# == ebeast/.lintstamp ==
+ebeast/.lintstamp: $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc_vue_files) ebeast/.npmstamp
+	$(AM_V_GEN)
+	$(Q) rm -f $@
+	$(Q) ebeast/node_modules/.bin/eslint -f unix $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc_vue_files)
+	$(Q) touch $@
+EBEAST_CLEANFILES += ebeast/.lintstamp
+
+# == Docs for .vue files ==
+ebeast/vue-components.html: $(ebeast_vc_vue_files) Makefile
+	$(AM_V_GEN)
+	$(Q) rm -f $(@:.html=.tmp1)
+	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
+	@: # extract <docs/> blocks from *.vue and use these as input to pandoc
+	$(Q) for i in $(sort $(ebeast_vc_vue_files)) ; do \
+	  sed -n '1h;1!H;$${g; s|.*<docs>\(.*\)</docs>.*|\1|i; T; p }' < $$i >> $(@:.html=.tmp1) || exit $$? ; \
+	  echo >> $(@:.html=.tmp1) ; \
+	done
+	$(Q) sed 's/^  // ; s/^### /\n### /' < $(@:.html=.tmp1) > $(@:.html=.tmp2)
+	$(Q) $(PANDOC) --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $(@:.html=.tmp2)
+	$(Q) rm -f $(@:.html=.tmp*)
+EBEAST_CLEANFILES += ebeast/vue-components.html
+
+# == ebeast/bundlecache/ ==
+ebeast/bundlecache/ebeast: ebeast/.appstamp
+	$(AM_V_GEN)
+	$(Q) rm -rf ebeast/bundlecache/ ebeast/bundletemp/
+	$(Q) time ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
+	$(Q) mv `for f in ebeast/bundletemp/*/ ; do :; done && echo $$f` ebeast/bundletemp/bundlecache/ # rename <appname>-<platform>-<arch>/
+	@: # bundle polishing goes here...
+	$(Q) mv ebeast/bundletemp/bundlecache/ ebeast/
+	$(Q) rmdir ebeast/bundletemp
+	$(Q) test -x ebeast/bundlecache/ebeast
+EBEAST_CLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
+
+# == ebeast/bundlecache/ installation ==
+ebeast-install-exec-bundle: ebeast/bundlecache/ebeast
+	$(AM_V_GEN)
+	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
+	rm -rf "$(DESTDIR)$(beastdir)/bundle" "$(DESTDIR)$(beastdir)/app"
+	cp -RP ebeast/bundlecache "$(DESTDIR)$(beastdir)/bundle"
+	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/"
+	ln -s ../../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
+ebeast-uninstall-bundle:
+	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/"
+
+# == ebeast-run ==
+ebeast-run: ebeast/.appstamp
+	export ELECTRON_ENABLE_LOGGING=1 && \
+	$(GTK2_DARK) \
+	LD_PRELOAD="$(abs_top_builddir)/bse/.libs/libbse-@MAJOR@.so" \
+	ebeast/node_modules/electron/dist/electron ebeast/app
+# NOTE1, prefer LD_PRELOAD over LD_LIBRARY_PATH, to pick up $(builddir)/libbse *before* /usr/lib/libbse
+# NOTE2, add --js-flags="--expose-gc" to the command line to enable global.gc();
+# If libdbusmenu-glib.so is missing, electron 1.4.15 displays a Gtk+2 menu bar, ignoring
+# the BrowserWindow.darkTheme option. Here, we preselect a commonly installed dark Gtk+2
+# theme if it's present.
+GTK2_DARK = $(shell test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && echo 'GTK2_RC_FILES=/usr/share/themes/Ambiance/gtk-2.0/gtkrc')
+
+# == ebeast-clean ==
+ebeast-clean:
+	rm -f $(filter-out %/, $(EBEAST_CLEANFILES))
+	rm -fr $(filter %/, $(EBEAST_CLEANFILES))
+.PHONY: ebeast-clean
+mostlyclean-local: ebeast-clean
