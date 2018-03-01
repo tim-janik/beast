@@ -49,7 +49,7 @@ mostlyclean-local: clean-ebeast-app
 app/: .npmstamp
 	$(QGEN)
 	$(Q) rm -rf app/
-	$(Q) mkdir -p $@/vc $@/assets/
+	$(Q) mkdir app/ $@/vc $@/assets/
 	$(Q) ln -s ../node_modules app/
 APP_FILES = index.html app.js main.js menus.js
 app/package.json: $(APP_FILES) $(CSS_ASSETS) $(VUE_ASSETS) v8bse/v8bse.node .npmstamp vue-components.html | app/
