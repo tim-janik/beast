@@ -3,13 +3,13 @@
 
   <title>Beast - Music Synthesizer and Composer</title>
 
-  <link rel="stylesheet" href="objects/app.css">
+  <link rel="stylesheet" href="assets/stylesheets.css">
 
   <script>
   'use strict';
   window.Electron = require ('electron').remote;
-  window.Bse = require ('./v8bse/v8bse.node');
-  window.T = (txt) => { return txt; }; // translation indicator
+  window.Bse = require ('./assets/v8bse.node'); // adding '/' avoids node_modules/-relative lookup
+  window.T = (txt) => { return txt; };   // translation indicator
   // Load jQuery + utils + Vue + components
   require ('./vc/includes.js');
   Vue.config.productionTip = false;
