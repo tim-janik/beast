@@ -142,8 +142,8 @@ ebeast-install: ebeast/bundlecache/ebeast
 	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
 	rm -rf "$(DESTDIR)$(beastdir)/bundle" "$(DESTDIR)$(beastdir)/app"
 	cp -RP ebeast/bundlecache "$(DESTDIR)$(beastdir)/bundle"
-	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/"
-	ln -s ../../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
+	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/bundle/"
+	ln -s ../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
 ebeast-uninstall:
 	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/"
 
