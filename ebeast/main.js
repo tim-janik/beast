@@ -109,6 +109,7 @@ function create_window ()
     width: 				1820, // calling win.maximize() causes flicker
     height: 				1365, // using a big initial size avoids flickering
     backgroundColor: 			backgroundColor,
+    autoHideMenuBar:			false,
     webPreferences: {
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
