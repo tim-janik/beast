@@ -26,7 +26,8 @@
   </div>
 
   <script>
-  window.Shell = (new Vue ({ el: '#mount-vue' })).$refs['Shell'];
+  window.vue_root = new Vue ({ el: '#mount-vue' });
+  window.Shell = window.vue_root.$refs['Shell'];
   </script>
 
 </body>
