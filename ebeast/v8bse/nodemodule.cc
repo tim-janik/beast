@@ -205,7 +205,7 @@ static uv_prepare_t            bse_uv_preparer;
 
 // register bindings and start Bse
 static void
-v8bse_register_module (v8::Local<v8::Object> exports)
+v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> module)
 {
   assert (bse_v8stub == NULL);
   v8::Isolate *const isolate = v8::Isolate::GetCurrent();
@@ -219,8 +219,12 @@ v8bse_register_module (v8::Local<v8::Object> exports)
     Bse::program_alias_init (Bse::Path::cwd()); // a guess at the actual electron application
 
   // prepare Bse environment
-  const char *canary = "library/demo/partymonster.bse";
-  const std::string installpath = Bse::Path::realpath (Bse::Path::abspath ("..")); // ebeast/..
+  v8::Local<v8::String> v8_modulefile = module->Get (v8pp::to_v8 (isolate, "filename")).As<v8::String>();
+  // get from $beastroot/ebeast-bundle/app/assets/v8bse.node -> $beastroot/Demo/...
+  const std::string modulefile = Bse::Path::abspath (v8pp::from_v8<std::string> (isolate, v8_modulefile));
+  const std::string beastroot = Bse::Path::join (Bse::Path::dirname (modulefile), "..", "..", "..");
+  const std::string installpath = Bse::Path::realpath (beastroot);
+  const char *canary = "Demos/partymonster.bse";
   if (!Bse::Path::check (Bse::Path::join (installpath, canary), "r"))
     Bse::fatal_error ("%s: BSE: failed to locate library containing '%s'", installpath, canary);
   Bse::installpath_override (installpath);

@@ -49,6 +49,9 @@ include aidacc/tests/Makefile.sub
 include ebeast/Makefile.sub
 include ebeast/v8bse/Makefile.sub
 
+# == Demos/ ==
+include Demos/Makefile.sub
+
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING

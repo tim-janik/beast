@@ -1,0 +1,11 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+Demos-install:   install-Demos_installDATA
+Demos-uninstall: uninstall-Demos_installDATA
+
+Demos_install_DATA = $(strip		\
+	Demos/partymonster.bse		\
+	Demos/stereo-through.bse	\
+	Demos/x2-midi-test.bse		\
+)
+Demos_installdir = $(beastdatadir)/Demos

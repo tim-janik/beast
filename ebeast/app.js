@@ -28,7 +28,8 @@ AppMethods.status = function (message) {
 module.exports.start_app = function () { // application setup after onready
   if (!App.current_project) {
     App.current_project = Bse.server.create_project ('Untitled');
+    let example = __dirname + "/../../" + 'Demos/partymonster.bse';
     if (App.current_project)
-      App.current_project.restore_from_file ('../library/demo/partymonster.bse');
+      App.current_project.restore_from_file (example);
   }
 };
