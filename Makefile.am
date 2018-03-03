@@ -64,6 +64,10 @@ include Effects/Makefile.sub
 # == keys/ ==
 include keys/Makefile.sub
 
+# == skins/ ==
+include skins/Makefile.sub
+include skins/images/Makefile.sub
+
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
