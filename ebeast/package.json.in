@@ -12,6 +12,7 @@
   "devDependencies": {
     "node-gyp": "^3.5.0",
     "node-sass": "^4.5.3",
+    "electron-devtools-installer": "^2.2.3",
     "electron-packager": "^8.6.0",
     "browserify": "^14.1.0",
     "vueify": "^9.4.1",

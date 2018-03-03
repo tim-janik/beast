@@ -4,6 +4,15 @@ ebeast-all: with_npm ebeast/vue-components.html
 
 EBEAST_MOSTLYCLEANFILES =
 
+# Running ebeast:
+# - Use 'make run' to start ebeast from the development tree, this ensures that libbse
+#   is picked up from the development tree (instead of an installed version) and that
+#   electron finds the ebeast app/ files.
+# - DevTools can be activated with Shft+Ctrl+I when run from the devleopment tree.
+#   To use DevTools on the installed ebeast bundle, install electron-devtools-installer
+#   as npm package in $(beastdir)/bundle/app/.
+# - WHen DevTools are enabled, Shift+Ctrl+R can initiate an ebeast page reload.
+#
 # Considerations for building the ebeast bundle:
 # - The target dir for all build rules has to be app/, because Electron expects to find the
 #   file resources/app[.asar]/package.json on startup (unless extra args are given).

@@ -7,7 +7,6 @@ const file_menu = [
 ];
 const view_menu = [
   { label: T('Toggle &Fullscreen'), 	 role: 'toggle-fulscreen', 	accelerator: 'F11', },
-  { label: T('Toggle &Developer Tools'), role: 'toggle-devtools',  	accelerator: 'Shift+Ctrl+I', },
 ];
 const help_menu = [
   { label: T('&About...'),		role: 'about-dialog',		},
@@ -40,11 +39,7 @@ module.exports.build_menubar = function () {
 // handle menu activations
 function menu_command (role, _data) {
   const BrowserWindow = Electron.getCurrentWindow(); // http://electron.atom.io/docs/api/browser-window/
-  const WebContents = BrowserWindow.webContents;     // http://electron.atom.io/docs/api/web-contents/
   switch (role) {
-  case 'toggle-devtools':
-    WebContents.toggleDevTools();
-    break;
   case 'toggle-fulscreen':
     BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
     break;

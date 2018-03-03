@@ -8,6 +8,7 @@
   <script>
   'use strict';
   window.Electron = require ('electron').remote;
+  const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
   window.Bse = require ('./assets/v8bse.node'); // adding '/' avoids node_modules/-relative lookup
   window.T = (txt) => { return txt; };   // translation indicator
   // Load jQuery + utils + Vue + components
@@ -16,6 +17,15 @@
   Vue.config.silent = true;
   // Load application code, start application once DOM is ready
   $(require ('./app.js').start_app);
+  // show DevTools on hotkey
+  if (HAVE_DEVELOPMENT_TOOLS)
+    document.addEventListener ("keydown", (event) => {
+      const code = event.which || event.keyCode;
+      if (event.shiftKey && event.ctrlKey && code == 73) // Shift+Ctrl+I
+	Electron.getCurrentWindow().toggleDevTools();
+      if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
+	window.location.reload();
+    });
   </script>
 
 </head>

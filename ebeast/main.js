@@ -3,6 +3,15 @@ const Electron = require ('electron');
 const ElectronDefaultApp = process.defaultApp !== undefined; // indicates unpackaged electron app
 const Eapp = Electron.app;
 
+// add development hooks
+const HAVE_DEVELOPMENT_TOOLS = function() {
+  try {
+    const { default: installExtension, VUEJS_DEVTOOLS } = require ('electron-devtools-installer');
+    Eapp.on ('ready', () => { installExtension (VUEJS_DEVTOOLS); });
+    return true;
+  } catch (e) {	return false; }
+} ();
+
 // split command line options and return one at a time
 function pop_arg (args) {
   if (!args.length)
@@ -109,7 +118,9 @@ function create_window ()
     width: 				1820, // calling win.maximize() causes flicker
     height: 				1365, // using a big initial size avoids flickering
     backgroundColor: 			backgroundColor,
+    autoHideMenuBar:			false,
     webPreferences: {
+      devTools: 			HAVE_DEVELOPMENT_TOOLS,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
       defaultMonospaceFontSize:		parseInt (defaultMonospaceFontSize),
@@ -126,6 +137,7 @@ function create_window ()
     darkTheme: true,
   };
   win = new Electron.BrowserWindow (options);
+  win.HAVE_DEVELOPMENT_TOOLS = HAVE_DEVELOPMENT_TOOLS;
   win.bse_argv = project_files;
   win.once ('ready-to-show', () => { win.show(); });
   win.loadURL ('file:///' + __dirname + '/index.html');
