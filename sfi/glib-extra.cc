@@ -1055,13 +1055,13 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
     case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/plugins" + _libs;
     case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/drivers" + _libs;
-    case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir + "/library" : CONFIGURE_INSTALLPATH_DATADIR;
+    case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
     case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
     case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/Effects";
     case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/Instruments";
-    case INSTALLPATH_DATADIR_SCRIPTS:                   return installpath (INSTALLPATH_DATADIR) + "/scripts";
-    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
+    case INSTALLPATH_DATADIR_SCRIPTS:                   return installpath (INSTALLPATH_DATADIR) + "/scripts"; // unused
+    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
     case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
     case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
     case INSTALLPATH_BEASTDIR:                          return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTDIR;
