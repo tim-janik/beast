@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= po sfi bse plugins drivers pybeast beast-gtk launchers library tools docs data ebeast .
+SUBDIRS		= po sfi bse plugins drivers pybeast beast-gtk launchers library tools docs data .
 
 # == make setup ==
 DEFS                    += -DBSE_CONVENIENCE
@@ -44,6 +44,10 @@ BUILT_SOURCES	+= aidacc-all
 
 # == aidacc/tests/ ==
 include aidacc/tests/Makefile.sub
+
+# == ebeast/ ==
+include ebeast/Makefile.sub
+include ebeast/v8bse/Makefile.sub
 
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/

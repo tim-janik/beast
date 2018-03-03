@@ -737,8 +737,6 @@ sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
-ebeast/Makefile
-ebeast/v8bse/Makefile
 bse/pybse/Makefile
 bse/tests/Makefile
 plugins/Makefile
