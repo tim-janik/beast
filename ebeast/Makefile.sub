@@ -57,7 +57,6 @@ endif
 # == ebeast/.npmstamp ==
 ebeast/.npmstamp: ebeast/package.json.in ./config.status
 	$(AM_V_GEN)
-	$(Q) rm -rf ebeast/app/	# force app and asset rebuilds, since we're updating the build tools
 	$(Q) ./config.status --file ebeast/package.json
 	$(Q) cd ebeast/ && npm install
 	$(Q) touch $@
@@ -65,7 +64,7 @@ ebeast/.npmstamp: ebeast/package.json.in ./config.status
 EBEAST_NPM_CLEANFILES = ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
 
 # == ebeast/.appstamp ==
-ebeast/app/:
+ebeast/app/: ebeast/.npmstamp # .npmstamp influences all app/ and asset builds
 	$(AM_V_GEN)
 	$(Q) rm -rf ebeast/app/
 	$(Q) mkdir $@/ $@/vc $@/assets/
