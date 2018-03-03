@@ -137,7 +137,7 @@ EBEAST_MOSTLYCLEANFILES += ebeast/vue-components.html
 ebeast/bundlecache/ebeast: ebeast/.appstamp
 	@echo "  BUILD   " $(@D);
 	$(Q) rm -rf ebeast/bundlecache/ ebeast/bundletemp/
-	$(Q) \time -f '  real     %es' ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
+	$(Q) ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
 	$(Q) mv `for f in ebeast/bundletemp/*/ ; do :; done && echo $$f` ebeast/bundletemp/bundlecache/ # rename <appname>-<platform>-<arch>/
 	@: # bundle polishing goes here...
 	$(Q) mv ebeast/bundletemp/bundlecache/ ebeast/
