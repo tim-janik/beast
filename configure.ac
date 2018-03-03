@@ -749,7 +749,6 @@ beast-gtk/gxk/Makefile
 beast-gtk/icons/Makefile
 launchers/Makefile
 library/Makefile
-library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
