@@ -750,7 +750,6 @@ beast-gtk/icons/Makefile
 launchers/Makefile
 library/Makefile
 library/effects/Makefile
-library/samples/Makefile
 library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
