@@ -1058,7 +1058,7 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir + "/library" : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
     case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
-    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/effects";
+    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/Effects";
     case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/Instruments";
     case INSTALLPATH_DATADIR_SCRIPTS:                   return installpath (INSTALLPATH_DATADIR) + "/scripts";
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
