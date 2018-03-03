@@ -1,0 +1,12 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+Effects-install:   install-Effects_installDATA
+Effects-uninstall: uninstall-Effects_installDATA
+
+Effects_install_DATA = $(strip			\
+	Effects/atan-canyon.bse			\
+	Effects/bqs-compressor.bse		\
+	Effects/bqs-reverb.bse			\
+	Effects/bqs-saturation-and-reverb.bse	\
+)
+Effects_installdir = $(beastdatadir)/Effects
