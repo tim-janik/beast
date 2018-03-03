@@ -58,6 +58,9 @@ include Instruments/Makefile.sub
 # == Samples/ ==
 include Samples/Makefile.sub
 
+# == Effects/ ==
+include Effects/Makefile.sub
+
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
