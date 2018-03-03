@@ -52,6 +52,9 @@ include ebeast/v8bse/Makefile.sub
 # == Demos/ ==
 include Demos/Makefile.sub
 
+# == Instruments/ ==
+include Instruments/Makefile.sub
+
 # == doc/ install ==
 projectdocsdir   = $(beastdocdir)/
 projectdocs_DATA = HACKING README NEWS COPYING
