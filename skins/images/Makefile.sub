@@ -1,0 +1,13 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+skins-images-install:   install-skins_images_installDATA
+skins-images-uninstall: uninstall-skins_images_installDATA
+
+skins_images_install_DATA = $(strip	\
+	skins/images/biogreen.jpg	\
+	skins/images/blueimpress.jpg	\
+	skins/images/brownforms.jpg	\
+	skins/images/moonpaper.png	\
+	skins/images/silvervein.png	\
+)
+skins_images_installdir = $(beastdatadir)/skins/images
