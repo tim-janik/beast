@@ -28,15 +28,6 @@ ebeast_app_files = $(strip 		\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 )
-ebeast_vc_vue_files = $(strip		\
-	ebeast/vc/aboutdialog.vue	\
-	ebeast/vc/button-bar.vue	\
-	ebeast/vc/button.vue		\
-	ebeast/vc/icon-button.vue	\
-	ebeast/vc/modaldialog.vue	\
-	ebeast/vc/playcontrols.vue	\
-	ebeast/vc/projectshell.vue	\
-)
 ebeast_lint_html_files = $(strip	\
 	ebeast/index.html		\
 )
@@ -53,6 +44,19 @@ uninstall-local:	ebeast-uninstall
 else
 with_npm:
 endif
+
+# == ebeast_vc_vue_files ==
+ebeast_vc_vue_files ?= # Construct the list of Vue component files from the require() statements in vc/bundle.js
+ebeast_vc_uncomment_cc = sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
+ebeast_vc_grep_require = grep -o 'require *([^)]\+)' | sed "s/require *( *['\"]//g ; s/['\"])//g"
+ebeast/vc/components.inc: ebeast/vc/bundle.js # list bundled components
+	@echo '  UPDATE  ' $@
+	$(Q) echo "ebeast_vc_vue_files = \\"					 > $@.tmp
+	$(Q) $(ebeast_vc_uncomment_cc) ebeast/vc/bundle.js | \
+	     $(ebeast_vc_grep_require) | sed 's,^\./,ebeast/vc/, ; s/$$/ \\/'	>> $@.tmp
+	$(Q) mv $@.tmp $@
+EBEAST_MOSTLYCLEANFILES += ebeast/vc/components.inc ebeast/vc/components.inc.tmp
+-include ebeast/vc/components.inc
 
 # == ebeast/.npmstamp ==
 ebeast/.npmstamp: ebeast/package.json.in ./config.status
