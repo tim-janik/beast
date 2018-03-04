@@ -1043,7 +1043,6 @@ std::string
 installpath (InstallpathType installpath_type)
 {
   const bool ovr = !installpath_topdir.empty();
-  const std::string _libs = ovr ? std::string ("/") + CONFIGURE_INSTALLPATH_OBJDIR : "";
   switch (installpath_type)
     {
     case INSTALLPATH_BSEINCLUDEDIR:                     return CONFIGURE_INSTALLPATH_BSEINCLUDEDIR;
@@ -1053,8 +1052,8 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
     case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
-    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/plugins" + _libs;
-    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/drivers" + _libs;
+    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_DATADIR) + "/plugins";
+    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_DATADIR) + "/drivers";
     case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
     case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
