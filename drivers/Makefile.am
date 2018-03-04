@@ -6,7 +6,7 @@ DEFS        += @DEFINE__FILE_DIR__@ $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\") -DBSE_P
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 # Plugin bsedevice-alsa
-driversdir          = $(bselibdir)/drivers
+driversdir          = $(beastdatadir)/drivers
 drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 drivers_ldflags     = -avoid-version
 drivers_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
