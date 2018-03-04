@@ -2,6 +2,7 @@
 #include "bcore.hh"
 #include <string.h>
 #include <libintl.h>
+#include <sys/stat.h>
 
 void
 g_object_disconnect_any (gpointer object,
@@ -1039,6 +1040,16 @@ installpath_override (const String &topdir)
   installpath_topdir = topdir;
 }
 
+static std::string
+append_objdir (const std::string &path) // return path/.libs if it exists
+{
+  const std::string path_libs = path + "/" + CONFIGURE_INSTALLPATH_OBJDIR;
+  struct stat sbuf = { 0, };
+  if (stat (path_libs.c_str(), &sbuf) == 0)
+    return path_libs;
+  return path;
+}
+
 std::string
 installpath (InstallpathType installpath_type)
 {
@@ -1052,8 +1063,8 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
     case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
-    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_DATADIR) + "/plugins";
-    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_DATADIR) + "/drivers";
+    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/plugins");
+    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/drivers");
     case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
     case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
