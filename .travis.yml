@@ -40,6 +40,7 @@ install:
 
 script:
   # Build inside docker container
+  - TZ=GMT date
   - misc/dockerbuild.sh "$DIST" "$INTENT"
   - docker ps -a
 

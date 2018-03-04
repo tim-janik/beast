@@ -2,6 +2,8 @@
 
 # Pick distribution to start from
 FROM @DIST@
+RUN TZ=GMT date
+
 MAINTAINER Tim Janik <timj@gnu.org>
 
 # Automation tools and convenience commands
@@ -55,6 +57,8 @@ RUN retry apt-get install -y \
     bison flex cython xvfb \
     libpango1.0-dev python2.7-dev python-all-dev python-enum34
 
+RUN TZ=GMT date
+
 # Build project
 RUN cd /usr/src/ && \
     git clone /tmp/$PROJECT.git
@@ -75,6 +79,8 @@ RUN nice make install
 RUN nice make installcheck
 RUN nice make dist
 RUN nice make uninstall
+
+RUN TZ=GMT date
 
 # Carry out distcheck test if desired
 RUN `intent distcheck` && \

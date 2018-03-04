@@ -57,20 +57,17 @@ endif
 # == ebeast/.npmstamp ==
 ebeast/.npmstamp: ebeast/package.json.in ./config.status
 	$(AM_V_GEN)
-	$(Q) rm -rf ebeast/app/	# force app and asset rebuilds, since we're updating the build tools
 	$(Q) ./config.status --file ebeast/package.json
 	$(Q) cd ebeast/ && npm install
+	$(Q) rm -rf ebeast/app/ # npm influences all app/ and asset builds
+	$(Q) mkdir ebeast/app/ ebeast/app/vc ebeast/app/assets/
+	$(Q) ln -s ../node_modules ebeast/app/
 	$(Q) touch $@
 # npm install is expensive so keep node_modules/ across mostlyclean
 EBEAST_NPM_CLEANFILES = ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
 
 # == ebeast/.appstamp ==
-ebeast/app/:
-	$(AM_V_GEN)
-	$(Q) rm -rf ebeast/app/
-	$(Q) mkdir $@/ $@/vc $@/assets/
-	$(Q) ln -s ../node_modules ebeast/app/
-ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/.npmstamp | ebeast/app/ ebeast/.lintstamp
+ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/.npmstamp | ebeast/.lintstamp
 	$(AM_V_GEN)
 	$(Q) rm -rf ebeast/bundlecache/				# avoid installing stale app/ files
 	$(Q) cp -P $(ebeast_app_files) ebeast/app/
@@ -81,7 +78,7 @@ EBEAST_MOSTLYCLEANFILES += ebeast/.appstamp ebeast/app/
 
 # == EBEAST_APP_ASSETS_CSS ==
 EBEAST_APP_ASSETS_CSS = ebeast/app/assets/stylesheets.css ebeast/app/assets/gradient-01.png
-ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/.npmstamp | ebeast/app/
+ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/.npmstamp
 	$(QGEN) # NOTE: scss source and output file names must be final, because .map is derived from it
 	$(Q) cp -P ebeast/app.scss ebeast/app/
 	$(Q) cp -P ebeast/vc/*.scss ebeast/app/vc/
@@ -98,11 +95,11 @@ ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
 # == EBEAST_APP_ASSETS_VUE ==
 EBEAST_APP_ASSETS_VUE = ebeast/app/vc/includes.js ebeast/app/assets/components.js
 EBEAST_VC_MOSTJS := $(filter-out ebeast/vc/includes.js, $(wildcard ebeast/vc/*.js))
-ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) | ebeast/app/
+ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/.npmstamp
 	$(AM_V_GEN)
 	$(Q) cp -P $(EBEAST_VC_MOSTJS) ebeast/app/vc/
 	$(Q) cp -P $< ebeast/app/vc/
-ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js ebeast/.npmstamp | ebeast/app/
+ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js ebeast/.npmstamp
 	$(AM_V_GEN) # app/vc/bundle.js was copied with app/vc/includes.js
 	@: # collect all 'require' dependencies of bundle.js in app/vc/
 	$(Q) cp -P $(ebeast_vc_vue_files) ebeast/app/vc/
@@ -138,7 +135,7 @@ EBEAST_MOSTLYCLEANFILES += ebeast/vue-components.html
 ebeast/bundlecache/ebeast: ebeast/.appstamp
 	@echo "  BUILD   " $(@D);
 	$(Q) rm -rf ebeast/bundlecache/ ebeast/bundletemp/
-	$(Q) \time -f '  real     %es' ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
+	$(Q) ebeast/node_modules/.bin/electron-packager ebeast/app ebeast --out=ebeast/bundletemp
 	$(Q) mv `for f in ebeast/bundletemp/*/ ; do :; done && echo $$f` ebeast/bundletemp/bundlecache/ # rename <appname>-<platform>-<arch>/
 	@: # bundle polishing goes here...
 	$(Q) mv ebeast/bundletemp/bundlecache/ ebeast/
