@@ -5,8 +5,6 @@ const AppMethods = {
   __proto__ : Electron.app
 };
 const App = {	// global App object with defaults
-  current_project: undefined,
-  project: function () { return this.current_project; },
   show_about: false,
   __proto__ : AppMethods
 };
@@ -26,10 +24,4 @@ AppMethods.status = function (message) {
 
 // == export start_app() ==
 module.exports.start_app = function () { // application setup after onready
-  if (!App.current_project) {
-    App.current_project = Bse.server.create_project ('Untitled');
-    let example = __dirname + "/../../" + 'Demos/partymonster.bse';
-    if (App.current_project)
-      App.current_project.restore_from_file (example);
-  }
 };

@@ -15,7 +15,7 @@
 <template>
   <div class="vc-projectshell">
     Project Shell. <br />
-    <vc-playcontrols> </vc-playcontrols>
+    <vc-playcontrols :project="project"> </vc-playcontrols>
     <br />
     {{ message }}
     <br />
@@ -57,10 +57,14 @@ module.exports = {
     project: function () {
       if (!this.bse_project)
 	this.bse_project = this['bse-project'];
-      if (!this.bse_project)
+      if (!this.bse_project) {
 	this.bse_project = Bse.server.create_project ('Untitled');
+	let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
+	if (this.bse_project)
+	  this.bse_project.restore_from_file (example);
+      }
       return this.bse_project;
-    }
+    },
   },
   props: {
     'bse-project': {
