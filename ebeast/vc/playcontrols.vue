@@ -29,9 +29,10 @@
 <script>
 module.exports = {
   name: 'vc-playcontrols',
+  props: [ 'project' ],
   methods:  {
     bclick (method, e) {
-      let project = App.project(), m = project[method], message;
+      let project = this.project, m = project[method], message;
       if (m !== undefined) {
 	let result = m.call (project);
 	if (result == undefined)
