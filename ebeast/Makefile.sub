@@ -24,12 +24,11 @@ EBEAST_MOSTLYCLEANFILES =
 # == ebeast files ==
 ebeast_app_files = $(strip 		\
 	ebeast/app.js			\
-	ebeast/index.html		\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 )
 ebeast_lint_html_files = $(strip	\
-	ebeast/index.html		\
+	ebeast/window.html		\
 )
 ebeast_lint_js_files = $(strip		\
 	ebeast/*.js			\
@@ -63,26 +62,36 @@ ebeast/.npmstamp: ebeast/package.json.in ./config.status
 	$(AM_V_GEN)
 	$(Q) ./config.status --file ebeast/package.json
 	$(Q) cd ebeast/ && npm install
-	$(Q) rm -rf ebeast/app/ # npm influences all app/ and asset builds
-	$(Q) mkdir ebeast/app/ ebeast/app/vc ebeast/app/assets/
-	$(Q) ln -s ../node_modules ebeast/app/
 	$(Q) touch $@
 # npm install is expensive so keep node_modules/ across mostlyclean
 EBEAST_NPM_CLEANFILES = ebeast/.npmstamp ebeast/package.json ebeast/node_modules/
 
+# == ebeast/app/window.html ==
+# Instead of adding window.html to ebeast_app_files, we use it as a stamp for the creation
+# of ebeast/app/ and subdirectories. That's done so dependent rules don't need to be rerun
+# because of frequently ebeast/app/ updates. It'd be simpler to let .npmstamp handle
+# creation of ebeast/app/, but that'd mix in the time consuming 'npm install'.
+ebeast/app/window.html: ebeast/window.html ebeast/.npmstamp # npm influences all app/ and asset builds
+	$(AM_V_GEN)
+	$(Q) rm -rf ebeast/app/
+	$(Q) mkdir ebeast/app/ ebeast/app/vc ebeast/app/assets/
+	$(Q) ln -s ../node_modules ebeast/app/
+	$(Q) cp -P $< ebeast/app/
+EBEAST_MOSTLYCLEANFILES += ebeast/app/
+
 # == ebeast/.appstamp ==
-ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/.npmstamp | ebeast/.lintstamp
+ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/app/window.html | ebeast/.lintstamp
 	$(AM_V_GEN)
 	$(Q) rm -rf ebeast/bundlecache/				# avoid installing stale app/ files
 	$(Q) cp -P $(ebeast_app_files) ebeast/app/
 	$(Q) cp -L ebeast/v8bse/v8bse.node ebeast/app/assets/
 	$(Q) cp -P ebeast/package.json ebeast/app/
 	$(Q) touch $@
-EBEAST_MOSTLYCLEANFILES += ebeast/.appstamp ebeast/app/
+EBEAST_MOSTLYCLEANFILES += ebeast/.appstamp
 
 # == EBEAST_APP_ASSETS_CSS ==
 EBEAST_APP_ASSETS_CSS = ebeast/app/assets/stylesheets.css ebeast/app/assets/gradient-01.png
-ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/.npmstamp
+ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/app/window.html
 	$(QGEN) # NOTE: scss source and output file names must be final, because .map is derived from it
 	$(Q) cp -P ebeast/app.scss ebeast/app/
 	$(Q) cp -P ebeast/vc/*.scss ebeast/app/vc/
@@ -99,11 +108,11 @@ ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
 # == EBEAST_APP_ASSETS_VUE ==
 EBEAST_APP_ASSETS_VUE = ebeast/app/vc/includes.js ebeast/app/assets/components.js
 EBEAST_VC_MOSTJS := $(filter-out ebeast/vc/includes.js, $(wildcard ebeast/vc/*.js))
-ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/.npmstamp
+ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/app/window.html
 	$(AM_V_GEN)
 	$(Q) cp -P $(EBEAST_VC_MOSTJS) ebeast/app/vc/
 	$(Q) cp -P $< ebeast/app/vc/
-ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js ebeast/.npmstamp
+ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js
 	$(AM_V_GEN) # app/vc/bundle.js was copied with app/vc/includes.js
 	@: # collect all 'require' dependencies of bundle.js in app/vc/
 	$(Q) cp -P $(ebeast_vc_vue_files) ebeast/app/vc/
