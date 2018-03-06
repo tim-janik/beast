@@ -15,8 +15,6 @@
   require ('./vc/includes.js');
   Vue.config.productionTip = false;
   Vue.config.silent = true;
-  // Load application code, start application once DOM is ready
-  $(require ('./app.js').start_app);
   // show DevTools on hotkey
   if (HAVE_DEVELOPMENT_TOOLS)
     document.addEventListener ("keydown", (event) => {
@@ -31,13 +29,17 @@
 </head>
 <body>
 
-  <div id="mount-vue">
-    <vc-projectshell ref="Shell"></vc-projectshell>
+  <div id="vue-mountpoint">
+    <vc-projectshell ref="vwin-shell" ></vc-projectshell>
   </div>
 
   <script>
-  window.vue_root = new Vue ({ el: '#mount-vue' });
-  window.Shell = window.vue_root.$refs['Shell'];
+  // Create Vuw AppWindow singleton
+  window.Apw = new require ('./app.js').VueAppWindow ({
+    el: '#vue-mountpoint',
+  });
+
+  window.Shell = window.Apw.$refs['vwin-shell'];
   </script>
 
 </body>
