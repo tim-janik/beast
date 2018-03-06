@@ -23,8 +23,6 @@
     <vc-button @click="frob (1, $event)">1</vc-button>
     <vc-button @click="frob (2, $event)">2</vc-button>
     <vc-button @click="frob (3, $event)">3</vc-button>
-    <vc-aboutdialog v-if="App.show_about_dialog" @close="App.show_about_dialog = false">
-    </vc-aboutdialog>
   </div>
 </template>
 

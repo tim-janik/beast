@@ -31,6 +31,7 @@
 
   <div id="vue-mountpoint">
     <vc-projectshell ref="vwin-shell" ></vc-projectshell>
+    <vc-aboutdialog v-if="App.show_about_dialog" @close="App.show_about_dialog = false"></vc-aboutdialog>
   </div>
 
   <script>
