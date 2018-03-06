@@ -19,11 +19,11 @@
     <br />
     {{ message }}
     <br />
-    <vc-button @click="show_aboutdialog = true">About</vc-button>
+    <vc-button @click="App.show_about_dialog = true">About</vc-button>
     <vc-button @click="frob (1, $event)">1</vc-button>
     <vc-button @click="frob (2, $event)">2</vc-button>
     <vc-button @click="frob (3, $event)">3</vc-button>
-    <vc-aboutdialog v-if="show_aboutdialog" @close="show_aboutdialog = false">
+    <vc-aboutdialog v-if="App.show_about_dialog" @close="App.show_about_dialog = false">
     </vc-aboutdialog>
   </div>
 </template>
@@ -34,7 +34,7 @@ module.exports = {
   data: function() {
     let d = {
       message: 'Interpolated text',
-      show_aboutdialog: false,
+      App: App,
     };
     for (const attrname in Electron.app)
       d[attrname] = Electron.app[attrname];
@@ -44,7 +44,7 @@ module.exports = {
     command (cmd) {
       switch (cmd) {
 	case 'about-dialog':
-	  this.show_aboutdialog = !this.show_aboutdialog;
+	  App.show_about_dialog = !App.show_about_dialog;
 	  break;
 	default:
 	  console.log ('SHELLCOMMAND: ' + cmd);

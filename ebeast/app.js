@@ -12,8 +12,8 @@ class AppWindow {
     Object.assign (this, default_data);
   }
   display_about_dialog (...visible) { if (visible.length) this.show_about_ = visible[0]; return this.show_about_; }
-  get about_dialog ()	{ return this.show_about_; }
-  set about_dialog (v)	{ this.show_about_ = v; }
+  get show_about_dialog ()		{ return this.show_about_; }
+  set show_about_dialog (v)		{ this.show_about_ = v; }
   status (...msgs)			{ console.log (msgs.join (' ')); }
 }
 

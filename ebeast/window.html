@@ -35,9 +35,8 @@
 
   <script>
   // Create Vuw AppWindow singleton
-  window.App = new require ('./app.js').VueAppWindow ({
-    el: '#vue-mountpoint',
-  });
+  window.App = new require ('./app.js').VueAppWindow ({});
+  window.App.$mount ('#vue-mountpoint'); // mount callbacks need window.App ready
 
   window.Shell = window.App.$refs['vwin-shell'];
   </script>
