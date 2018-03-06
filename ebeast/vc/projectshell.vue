@@ -23,6 +23,8 @@
     <vc-button @click="frob (1, $event)">1</vc-button>
     <vc-button @click="frob (2, $event)">2</vc-button>
     <vc-button @click="frob (3, $event)">3</vc-button>
+    <br />
+    <vc-track-list :song="song"></vc-track-list>
   </div>
 </template>
 
@@ -51,6 +53,14 @@ module.exports = {
 	  this.bse_project.restore_from_file (example);
       }
       return this.bse_project;
+    },
+    song: function () {
+      let s, supers = this.project.get_supers();
+      for (s of supers) {
+	if (s instanceof Bse.Song)
+	  return s;
+      }
+      return undefined;
     },
   },
   props: {
