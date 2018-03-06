@@ -35,6 +35,11 @@
   </div>
 
   <script>
+  // Hookup a global Vue mixin to allow 'data' cloning from 'data_tmpl'
+  Vue.mixin ({ beforeCreate: function () {
+    if (!this.$options.data && this.$options.data_tmpl)
+      this.$options.data = Object.assign ({}, this.$options.data_tmpl);
+  } });
   // Create Vue AppWindow singleton
   window.App = new require ('./app.js').VueAppWindow ({});
   // Patch Vue.prototype to make App known inside all Vue components
