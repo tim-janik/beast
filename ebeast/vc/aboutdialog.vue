@@ -29,10 +29,10 @@
 
 <script>
 function about_pairs() {
-  const App = Electron.app;
+  const elap = Electron.app;
   const os = require ('os');
   return [
-    [ 'Application:',	App.getName() + ' ' + App.getVersion() ],
+    [ 'Application:',	elap.getName() + ' ' + elap.getVersion() ],
     [ 'OS:',		process.platform + ' ' + process.arch + ' (' + os.release() + ')' ],
     [ 'Electron:',	process.versions.electron ],
     [ 'Chrome:',	process.versions.chrome ],
@@ -42,13 +42,13 @@ function about_pairs() {
     [ 'Bse:',		Bse.server.get_version() ],
     [ 'Vorbis:',	Bse.server.get_vorbis_version() ],
     [ 'Libuv:',		process.versions.uv ],
-    [ 'Executable:',	App.getPath ('exe') ],
+    [ 'Executable:',	elap.getPath ('exe') ],
     [ 'jQuery:',	jQuery.fn.jquery ],
     [ 'Vuejs:',		Vue.version ],
-    [ 'Working Dir:',	App.getAppPath() ],
-    [ 'Desktop Dir:',	App.getPath ('desktop') ],
-    [ 'Config Path:',	App.getPath ('userData') ],
-    [ 'Music Path:',	App.getPath ('music') ],
+    [ 'Working Dir:',	elap.getAppPath() ],
+    [ 'Desktop Dir:',	elap.getPath ('desktop') ],
+    [ 'Config Path:',	elap.getPath ('userData') ],
+    [ 'Music Path:',	elap.getPath ('music') ],
   ];
 }
 module.exports = {
