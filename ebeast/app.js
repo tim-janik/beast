@@ -14,6 +14,7 @@ class AppWindow {
   display_about_dialog (...visible) { if (visible.length) this.show_about_ = visible[0]; return this.show_about_; }
   get about_dialog ()	{ return this.show_about_; }
   set about_dialog (v)	{ this.show_about_ = v; }
+  status (...msgs)			{ console.log (msgs.join (' ')); }
 }
 
 // Export constructor to create AppWindow as Vue component
@@ -25,20 +26,3 @@ exports.VueAppWindow = function (vue_options) {
 // == Menus ==
 const menus = require ('./menus.js');
 Electron.Menu.setApplicationMenu (menus.build_menubar());
-
-// == App *OLD* ==
-const AppMethods = {
-  __proto__ : Electron.app
-};
-const App = {	// global App object with defaults
-  show_about: false,
-  __proto__ : AppMethods
-};
-Object.preventExtensions (App);
-window.App = App;
-
-// == App.status() ==
-// update status bar with the given text
-AppMethods.status = function (message) {
-  console.log ('STATUS:' + message);
-};

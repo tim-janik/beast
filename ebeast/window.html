@@ -35,11 +35,11 @@
 
   <script>
   // Create Vuw AppWindow singleton
-  window.Apw = new require ('./app.js').VueAppWindow ({
+  window.App = new require ('./app.js').VueAppWindow ({
     el: '#vue-mountpoint',
   });
 
-  window.Shell = window.Apw.$refs['vwin-shell'];
+  window.Shell = window.App.$refs['vwin-shell'];
   </script>
 
 </body>
