@@ -12,6 +12,8 @@ const vue_components = [
   require ('./playcontrols.vue'),
   require ('./modaldialog.vue'),
   require ('./aboutdialog.vue'),
+  require ('./track-list.vue'),
+  require ('./track-view.vue'),
   require ('./projectshell.vue'),
 ];
 
