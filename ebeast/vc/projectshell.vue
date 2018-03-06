@@ -40,16 +40,6 @@ module.exports = {
     return d;
   },
   methods: {
-    command (cmd) {
-      switch (cmd) {
-	case 'about-dialog':
-	  App.show_about_dialog = !App.show_about_dialog;
-	  break;
-	default:
-	  console.log ('SHELLCOMMAND: ' + cmd);
-	  break;
-      }
-    },
     frob (w, e) { App.status (w); },
   },
   computed: {

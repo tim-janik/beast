@@ -40,6 +40,9 @@ module.exports.build_menubar = function () {
 function menu_command (role, _data) {
   const BrowserWindow = Electron.getCurrentWindow(); // http://electron.atom.io/docs/api/browser-window/
   switch (role) {
+  case 'about-dialog':
+    App.show_about_dialog = !App.show_about_dialog;
+    break;
   case 'toggle-fulscreen':
     BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
     break;
@@ -54,7 +57,7 @@ function menu_command (role, _data) {
     });
     break;
   default:
-    Shell.command (role, _data);
+    console.log ('unhandled menu command: ' + role);
     break;
   }
 }
