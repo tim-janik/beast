@@ -21,6 +21,8 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bseengine.hh>
 
+#include <QMutex>
+
 #include <stdio.h>
 
 using std::string;
