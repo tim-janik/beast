@@ -80,7 +80,8 @@ ebeast/app/window.html: ebeast/window.html ebeast/.npmstamp # npm influences all
 EBEAST_MOSTLYCLEANFILES += ebeast/app/
 
 # == ebeast/.appstamp ==
-ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node ebeast/app/window.html | ebeast/.lintstamp
+ebeast/.appstamp: ebeast/app/window.html | ebeast/.lintstamp
+ebeast/.appstamp: $(ebeast_app_files) $(EBEAST_APP_ASSETS_CSS) $(EBEAST_APP_ASSETS_VUE) ebeast/v8bse/v8bse.node
 	$(AM_V_GEN)
 	$(Q) rm -rf ebeast/bundlecache/				# avoid installing stale app/ files
 	$(Q) cp -P $(ebeast_app_files) ebeast/app/
@@ -108,7 +109,7 @@ ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
 # == EBEAST_APP_ASSETS_VUE ==
 EBEAST_APP_ASSETS_VUE = ebeast/app/vc/includes.js ebeast/app/assets/components.js
 EBEAST_VC_MOSTJS := $(filter-out ebeast/vc/includes.js, $(wildcard ebeast/vc/*.js))
-ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/app/window.html
+ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/app/window.html | ebeast/.lintstamp
 	$(AM_V_GEN)
 	$(Q) cp -P $(EBEAST_VC_MOSTJS) ebeast/app/vc/
 	$(Q) cp -P $< ebeast/app/vc/
