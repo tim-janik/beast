@@ -34,7 +34,6 @@ module.exports = {
   data: function() {
     let d = {
       message: 'Interpolated text',
-      App: App,
     };
     for (const attrname in Electron.app)
       d[attrname] = Electron.app[attrname];

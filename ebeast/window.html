@@ -34,10 +34,12 @@
   </div>
 
   <script>
-  // Create Vuw AppWindow singleton
+  // Create Vue AppWindow singleton
   window.App = new require ('./app.js').VueAppWindow ({});
-  window.App.$mount ('#vue-mountpoint'); // mount callbacks need window.App ready
-
+  // Patch Vue.prototype to make App known inside all Vue components
+  Vue.prototype.App = window.App;
+  // Mount Vue *after* window.App is setup, as it's needed by Vue component callbacks
+  window.App.$mount ('#vue-mountpoint');
   window.Shell = window.App.$refs['vwin-shell'];
   </script>
 
