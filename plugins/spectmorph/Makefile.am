@@ -8,7 +8,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))
 AM_CXXFLAGS += $(SPECTMORPH_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE -DQT_NO_EMIT
 
 # install plugins under:
-plugindir = $(bselibdir)/plugins
+plugindir = $(beastdatadir)/plugins
 
 ## SpectMorph OSC
 spectmorphosc_la_SOURCES = spectmorphosc.cc
