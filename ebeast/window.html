@@ -14,7 +14,7 @@
   // Load jQuery + utils + Vue + components
   require ('./vc/includes.js');
   Vue.config.productionTip = false;
-  Vue.config.silent = true;
+  Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
   // show DevTools on hotkey
   if (HAVE_DEVELOPMENT_TOOLS)
     document.addEventListener ("keydown", (event) => {
