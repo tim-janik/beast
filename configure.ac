@@ -753,3 +753,38 @@ docs/images/Makefile
 ])
 
 AC_OUTPUT
+
+# == Configuration summary ==
+printexpandvar()
+{
+	_x="$1";
+	while echo " $_x" | fgrep -q '${'; do
+		_x=$(eval echo "$_x")
+	done
+	echo -n "$_x"
+}
+
+AM_COND_IF(WITH_MMX_SSE, [summary_mmx_sse=yes], [summary_mmx_sse=no])
+AM_COND_IF(WITH_NPM, [summary_npm=yes], [summary_npm=no])
+if test x$BSE_HAVE_LIBMAD = x1; then
+  summary_libmad=yes
+else
+  summary_libmad=no
+fi
+
+cat <<EOF
+
+Autoconfiguration complete.
+
+	Building package:		$PACKAGE-$VERSION
+
+	Install Prefix:			`printexpandvar ${prefix}`
+	Binaries:			`printexpandvar ${bindir}`
+	Beast Program Directory:	`printexpandvar ${beastdir}`
+
+	Development mode:		${ENABLE_DEVEL_MODE_FALSE:+enabled}${ENABLE_DEVEL_MODE_TRUE:+disabled}
+	MMX/SSE optimizations:		${summary_mmx_sse}
+	NPM available:			${summary_npm}
+	MP3 support using libmad:	${summary_libmad}
+
+EOF
