@@ -1,10 +1,9 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-projectshell - Main shell used to display a BSE project
+  ## vc-projectshell - Shell for editing and display of a Bse.Project.
   ### Props:
-  - **bse-project** - A *Bse.Project* instance to be displayed and edited.
-  - **project** - Read-only, the value of *bse-project*.
+  - **project** - Implicit, using App.bse_project().
 </docs>
 
 <style lang="scss">
@@ -44,15 +43,10 @@ module.exports = {
   },
   computed: {
     project: function () {
-      if (!this.bse_project)
-	this.bse_project = this['bse-project'];
-      if (!this.bse_project) {
-	this.bse_project = Bse.server.create_project ('Untitled');
-	let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
-	if (this.bse_project)
-	  this.bse_project.restore_from_file (example);
-      }
-      return this.bse_project;
+      const bse_project = App.bse_project();
+      if (!(bse_project instanceof Bse.Project))
+	throw new Error ('wrong type, expected: Bse.Project');
+      return bse_project;
     },
     song: function () {
       let s, supers = this.project.get_supers();
@@ -61,12 +55,6 @@ module.exports = {
 	  return s;
       }
       return undefined;
-    },
-  },
-  props: {
-    'bse-project': {
-      type: Object,
-      validator (value) { return value instanceof Bse.Project; },
     },
   },
 };
