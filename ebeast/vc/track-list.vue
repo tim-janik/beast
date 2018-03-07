@@ -27,7 +27,9 @@
 <script>
 module.exports = {
   name: 'vc-track-list',
-  props: [ 'song' ],
+  props: {
+    song: { type: Bse.Song }
+  },
   methods:  {
     list_tracks () {
       if (!this.song) return [];
