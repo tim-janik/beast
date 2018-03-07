@@ -6,7 +6,7 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 # install plugins under:
-plugindir = $(bselibdir)/plugins
+plugindir = $(beastdatadir)/plugins
 
 ## Blep OSC
 bsebleposc_la_SOURCES = bsebleposc.cc bleposcdata.cc
