@@ -1273,7 +1273,7 @@ ProjectImpl::create_song (const String &name)
       push_undo (__func__, *this, remove_song_lambda);
     }
   bse_item_undo_close (ustack);
-  return song->as<SongIfaceP>();
+  return song ? song->as<SongIfaceP>() : NULL;
 }
 
 CSynthIfaceP
@@ -1295,7 +1295,7 @@ ProjectImpl::create_csynth (const String &name)
       push_undo (__func__, *this, remove_csynth_lambda);
     }
   bse_item_undo_close (ustack);
-  return csynth->as<CSynthIfaceP>();
+  return csynth ? csynth->as<CSynthIfaceP>() : NULL;
 }
 
 MidiSynthIfaceP
@@ -1317,7 +1317,7 @@ ProjectImpl::create_midi_synth (const String &name)
       push_undo (__func__, *this, remove_midi_synth_lambda);
     }
   bse_item_undo_close (ustack);
-  return midi_synth->as<MidiSynthIfaceP>();
+  return midi_synth ? midi_synth->as<MidiSynthIfaceP>() : NULL;
 }
 
 WaveRepoIfaceP
