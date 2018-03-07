@@ -605,6 +605,7 @@ master_bus_name (void)
 BseSource*
 bse_song_ensure_master (BseSong *self)
 {
+  assert_return (BSE_IS_SONG (self), NULL);
   Bse::SongImpl *this_ = self->as<Bse::SongImpl*>();
   BseSource *child = (BseSource*) bse_song_find_master (self);
   if (!child)
