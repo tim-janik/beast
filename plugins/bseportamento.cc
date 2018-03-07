@@ -2,8 +2,6 @@
 #include "bseportamento.genidl.hh"
 #include <bse/bsemathsignal.hh>
 
-using namespace std;
-
 using std::max;
 
 namespace Bse {
