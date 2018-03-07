@@ -119,8 +119,7 @@ ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebea
 	$(Q) cp -P $(ebeast_vc_vue_files) ebeast/app/vc/
 	@: # all files required by vc/bundle.js are present, generate assets/components.js
 	$(Q) cd ebeast/app/ && \
-	node_modules/.bin/browserify --no-builtins --no-commondir --no-browser-field \
-	  --insert-global-vars="global" -d -t vueify -e vc/bundle.js -o assets/components.js
+	node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
 
 # == ebeast/.lintstamp ==
 ebeast/.lintstamp: $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc_vue_files) ebeast/.npmstamp
