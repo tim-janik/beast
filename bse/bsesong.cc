@@ -775,7 +775,7 @@ SongImpl::find_any_track_for_part (PartIface &part)
   assert_return (dynamic_cast<ItemImpl*> (&part)->parent() == this, NULL);
   BsePart *bpart = part.as<BsePart*>();
   BseTrack *track = bse_song_find_first_track (self, bpart);
-  return track->as<TrackIfaceP> ();
+  return track ? track->as<TrackIfaceP> () : NULL;
 }
 
 BusIfaceP
