@@ -1373,7 +1373,7 @@ ItemImpl::common_ancestor (ItemIface &other)
   BseItem *self = as<BseItem*>();
   BseItem *bo = other.as<BseItem*>();
   BseItem *common = bse_item_common_ancestor (self, bo);
-  return common->as<ItemIfaceP>();
+  return common ? common->as<ItemIfaceP>() : NULL;
 }
 
 bool
