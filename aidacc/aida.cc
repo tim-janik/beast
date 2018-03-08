@@ -2662,7 +2662,7 @@ ObjectMap<Instance>::next_index ()
   const size_t FREE_LENGTH = 31;
   if (free_list_.size() > FREE_LENGTH)
     {
-      const size_t prandom = fnv1a_bytehash64 ((uint8*) free_list_.data(), sizeof (free_list_.data()) * free_list_.size());
+      const size_t prandom = fnv1a_bytehash64 ((uint8*) free_list_.data(), sizeof (*free_list_.data()) * free_list_.size());
       const size_t end = free_list_.size(), j = prandom % (end - 1);
       assert (j < end - 1); // use end-1 to avoid popping the last pushed slot
       idx = free_list_[j];
