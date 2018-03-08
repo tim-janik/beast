@@ -1243,7 +1243,7 @@ TrackImpl::get_part (int tick)
 {
   BseTrack *self = as<BseTrack*>();
   BseTrackEntry *entry = bse_track_lookup_tick (self, tick);
-  return entry ? entry->part->as<PartIfaceP>() : NULL;
+  return bse_cast<PartIfaceP> (entry->part);
 }
 
 int

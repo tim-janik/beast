@@ -57,6 +57,7 @@ typedef enum				/*< skip >*/
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
 
 /* --- typedefs & structures --- */
+
 struct BseObject : GObject {
   Bse::ObjectImpl       *cxxobject_;
   Bse::ObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
@@ -87,6 +88,15 @@ struct BseObject : GObject {
     return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
+
+template<class ObjectImplP>
+ObjectImplP bse_cast (BseObject *object)
+{
+  if (object)
+    return object->as<ObjectImplP>();
+  else
+    return nullptr;
+}
 
 struct BseObjectClass : GObjectClass {
   gboolean              (*editable_property)    (BseObject      *object, /* for set_property/get_property implementations */
