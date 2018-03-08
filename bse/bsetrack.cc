@@ -1277,8 +1277,7 @@ TrackImpl::get_output_source ()
 {
   BseTrack *self = as<BseTrack*>();
   BseSource *child = bse_track_get_output (self);
-  return child->as<SourceIfaceP>();
-  return child->as<SourceIfaceP>();
+  return child ? child->as<SourceIfaceP>() : NULL;
 }
 
 ItemSeq

@@ -605,6 +605,7 @@ master_bus_name (void)
 BseSource*
 bse_song_ensure_master (BseSong *self)
 {
+  assert_return (BSE_IS_SONG (self), NULL);
   Bse::SongImpl *this_ = self->as<Bse::SongImpl*>();
   BseSource *child = (BseSource*) bse_song_find_master (self);
   if (!child)
@@ -775,7 +776,7 @@ SongImpl::find_any_track_for_part (PartIface &part)
   assert_return (dynamic_cast<ItemImpl*> (&part)->parent() == this, NULL);
   BsePart *bpart = part.as<BsePart*>();
   BseTrack *track = bse_song_find_first_track (self, bpart);
-  return track->as<TrackIfaceP> ();
+  return track ? track->as<TrackIfaceP> () : NULL;
 }
 
 BusIfaceP

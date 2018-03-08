@@ -270,8 +270,9 @@ bst_item_view_select (BstItemView *self,
   assert_return (BST_IS_ITEM_VIEW (self));
   assert_return (BSE_IS_ITEM (itemid));
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
-  if (self->tree && item.get_parent().proxy_id() == self->container)
+  if (self->tree && parent && parent.proxy_id() == self->container)
     {
       GtkTreeIter witer;
       if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))
@@ -296,8 +297,9 @@ bst_item_view_get_proxy_row (BstItemView *self,
   assert_return (BST_IS_ITEM_VIEW (self), -1);
   assert_return (BSE_IS_ITEM (itemid), -1);
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
-  if (self->tree && item.get_parent().proxy_id() == self->container)
+  if (self->tree && parent && parent.proxy_id() == self->container)
     {
       GtkTreeIter witer;
       if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))

@@ -1325,7 +1325,7 @@ ContainerImpl::lookup_item (const String &uname)
 {
   BseContainer *self = as<BseContainer*>();
   BseItem *child = bse_container_lookup_item (self, uname.c_str());
-  return child->as<ItemIfaceP>();
+  return child ? child->as<ItemIfaceP>() : NULL;
 }
 
 ItemIfaceP
@@ -1334,7 +1334,7 @@ ContainerImpl::get_item (const String &item_type, int seq_id)
   BseContainer *self = as<BseContainer*>();
   GType type = g_type_from_name (item_type.c_str());
   BseItem *child = bse_container_get_item (self, type, seq_id);
-  return child->as<ItemIfaceP>();
+  return child ? child->as<ItemIfaceP>() : NULL;
 }
 
 static gboolean
