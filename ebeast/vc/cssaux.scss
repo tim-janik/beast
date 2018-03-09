@@ -1,0 +1,12 @@
+/* This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 */
+
+/* HSV (HSB) to RGBA */
+@function hsv($hue, $satb, $value, $a: 1) {
+  @if $value == 0 {
+    @return hsla(0, 0, 0, $a)
+  } @else {
+    $lumi: $value * (1 - ($satb / 100) / 2);
+    $satl: $satb * $value / if($lumi < 50, $lumi * 2, 200 - $lumi * 2);
+    @return hsla($hue, $satl, $lumi, $a);
+  }
+}
