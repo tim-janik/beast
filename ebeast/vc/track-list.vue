@@ -6,16 +6,6 @@
   - **project** - The BSE project containing playback tracks.
 </docs>
 
-<style lang="scss">
-  @import 'mixins.scss';
-  .vc-track-list {
-    display: inline-flex; flex-direction: column;
-    background-color: $vc-button-border;
-    border: 1px solid $vc-button-border;
-    border-radius: $vc-button-radius; }
-  .vc-track-list > *	{ margin: 0; }
-</style>
-
 <template>
 
   <div class="vc-track-list" >
@@ -23,6 +13,16 @@
   </div>
 
 </template>
+
+<style lang="scss">
+  @import 'mixins.scss';
+  .vc-track-list {
+    display: block;
+    white-space: nowrap; overflow: scroll;
+    background-color: $vc-button-border;
+    border: 1px solid $vc-button-border; }
+  .vc-track-list > *	{ margin: 0; }
+</style>
 
 <script>
 module.exports = {
