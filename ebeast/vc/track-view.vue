@@ -33,9 +33,8 @@ module.exports = {
   },
   methods: {
     list_parts () {
-      const song = App.bse_song();
-      let items = song.list_children();
-      let parts = items.filter (item => item instanceof Bse.Part);
+      const tparts = this.track.list_parts();
+      const parts = tparts.map (tpart => tpart.part);
       return parts;
     },
   },
