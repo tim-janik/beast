@@ -10,7 +10,7 @@
 <template>
 
   <span class="vc-part-thumb" >
-    [ {{ part.get_name() }} ]
+    [{{ part.get_name() }}]
   </span>
 
 </template>
@@ -18,7 +18,8 @@
 <style lang="scss">
   @import 'mixins.scss';
   .vc-part-thumb {
-    background-color: $vc-button-border;
+    background-color: hsv(190, 75%, 55%);
+    font-size: 80%;
     border: 1px solid $vc-button-border;
     border-radius: $vc-button-radius; }
   .vc-part-thumb > *	{ margin: 0; }
