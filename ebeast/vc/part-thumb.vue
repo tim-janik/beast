@@ -4,7 +4,6 @@
   ## vc-part-thumb - Vue template to display a part thumbnail
   ### Props:
   - **part** - The BsePart to display.
-  - **song** - Implicit, using App.bse_song().
 </docs>
 
 <template>
