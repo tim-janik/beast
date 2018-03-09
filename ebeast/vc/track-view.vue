@@ -11,6 +11,7 @@
 
   <div class="vc-track-view" >
     [ {{ track.get_name() }} ]
+    <vc-part-thumb v-for="item in list_parts()" :part="item"></vc-part-thumb>
   </div>
 
 </template>
@@ -31,6 +32,12 @@ module.exports = {
     'track': { type: Bse.Track, },
   },
   methods: {
+    list_parts () {
+      const song = App.bse_song();
+      let items = song.list_children();
+      let parts = items.filter (item => item instanceof Bse.Part);
+      return parts;
+    },
   },
   data_tmpl: {
     name: "Track-Label2",
