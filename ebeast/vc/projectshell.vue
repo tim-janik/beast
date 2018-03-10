@@ -30,6 +30,7 @@
 <script>
 module.exports = {
   name: 'vc-projectshell',
+  provide () { return { 'vc-projectshell': this }; },
   data: function() {
     let d = {
       message: 'Interpolated text',

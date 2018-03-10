@@ -3,7 +3,7 @@
 <docs>
   ## vc-playcontrols - A container holding the play and seek controls for a song
   ### Props:
-  - **project** - The BSE object providing playback API.
+  - **project** - Injected, using vc-projectshell.project.
 </docs>
 
 <style lang="scss">
@@ -15,13 +15,13 @@
 
   <vc-button-bar
       class="vc-playcontrols" >
-    <vc-icon-button hotkey="L"     icon="fa-fast-backward" @click="bclick ('...Last')"></vc-icon-button>
-    <vc-icon-button hotkey="B"     icon="fa-backward"      @click="bclick ('...Backwards')"></vc-icon-button>
-    <vc-icon-button hotkey="Space" icon="fa-stop"          @click="bclick ('stop')"></vc-icon-button>
-    <vc-icon-button hotkey="P"     icon="fa-play"          @click="bclick ('play')"></vc-icon-button>
-    <vc-icon-button hotkey="R"     icon="fa-circle"        @click="bclick ('...Record')"></vc-icon-button>
-    <vc-icon-button hotkey="F"     icon="fa-forward"       @click="bclick ('...Forwards')"></vc-icon-button>
-    <vc-icon-button hotkey="N"     icon="fa-fast-forward"  @click="bclick ('...Next')"></vc-icon-button>
+    <vc-icon-button hotkey="L"     icon="fa-fast-backward" @click="pcall ('...Last')"></vc-icon-button>
+    <vc-icon-button hotkey="B"     icon="fa-backward"      @click="pcall ('...Backwards')"></vc-icon-button>
+    <vc-icon-button hotkey="Space" icon="fa-stop"          @click="pcall ('stop')"></vc-icon-button>
+    <vc-icon-button hotkey="P"     icon="fa-play"          @click="pcall ('play')"></vc-icon-button>
+    <vc-icon-button hotkey="R"     icon="fa-circle"        @click="pcall ('...Record')"></vc-icon-button>
+    <vc-icon-button hotkey="F"     icon="fa-forward"       @click="pcall ('...Forwards')"></vc-icon-button>
+    <vc-icon-button hotkey="N"     icon="fa-fast-forward"  @click="pcall ('...Next')"></vc-icon-button>
   </vc-button-bar>
 
 </template>
@@ -29,9 +29,12 @@
 <script>
 module.exports = {
   name: 'vc-playcontrols',
-  props: [ 'project' ],
+  inject: [ 'vc-projectshell' ],
+  computed: {
+    project: function () { return this['vc-projectshell'].project; },
+  },
   methods:  {
-    bclick (method, e) {
+    pcall (method, e) {
       let project = this.project, m = project[method], message;
       if (m !== undefined) {
 	let result = m.call (project);
