@@ -2,8 +2,10 @@
 
 /* HSV (HSB) to RGBA */
 @function hsv($hue, $satb, $value, $a: 1) {
-  @if $value == 0 {
-    @return hsla(0, 0, 0, $a)
+  @if $satb == 0 {
+    @return hsla($hue, 0, $value, $a)
+  } @else if $value == 0 {
+    @return hsla($hue, 0, 0, $a)
   } @else {
     $lumi: $value * (1 - ($satb / 100) / 2);
     $satl: $satb * $value / if($lumi < 50, $lumi * 2, 200 - $lumi * 2);
