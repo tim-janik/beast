@@ -10,8 +10,11 @@
 <template>
 
   <div class="vc-track-view" >
-    [ {{ track.get_name() }} ]
-    <vc-part-thumb v-for="item in list_parts()" :part="item"></vc-part-thumb>
+    <span class="vc-track-view-label">{{ track.get_name() }}</span>
+    <span class="vc-track-view-partlist" >
+      <vc-part-thumb v-for="tp in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
+		     :part="tp.part" :tick="tp.tick"></vc-part-thumb>
+    </span>
   </div>
 
 </template>
@@ -23,6 +26,15 @@
     border: 1px solid $vc-button-border;
     border-radius: $vc-button-radius; }
   .vc-track-view > *	{ margin: 0; }
+  .vc-track-view-label {
+    display: inline-block; width: 7em;
+    text-overflow: ellipsis;
+    overflow: hidden; white-space: nowrap;
+  }
+  .vc-track-view-partlist {
+    display: inline-block;
+    position: relative;
+  }
 </style>
 
 <script>
@@ -30,13 +42,6 @@ module.exports = {
   name: 'vc-track-view',
   props: {
     'track': { type: Bse.Track, },
-  },
-  methods: {
-    list_parts () {
-      const tparts = this.track.list_parts();
-      const parts = tparts.map (tpart => tpart.part);
-      return parts;
-    },
   },
   data_tmpl: {
     name: "Track-Label2",
