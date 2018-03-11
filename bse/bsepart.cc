@@ -2179,6 +2179,13 @@ PartImpl::get_min_note ()
   return BSE_MIN_NOTE;
 }
 
+int
+PartImpl::get_last_tick ()
+{
+  BsePart *self = as<BsePart*>();
+  return self->last_tick_SL;
+}
+
 Error
 PartImpl::change_control (int id, int tick, MidiSignal control_type, double value)
 {
