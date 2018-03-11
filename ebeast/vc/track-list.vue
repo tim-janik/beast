@@ -9,7 +9,10 @@
 <template>
 
   <div class="vc-track-list" >
-    <vc-track-view v-for="item in list_tracks()" :song="song" :track="item"></vc-track-view>
+    <div class="vc-track-list-inner" >
+      <vc-track-view v-for="(item, index) in list_tracks()" :key="item.unique_id()"
+		     :song="song" :track="item" :index="index"></vc-track-view>
+    </div>
   </div>
 
 </template>
@@ -17,7 +20,6 @@
 <style lang="scss">
   @import 'mixins.scss';
   .vc-track-list {
-    display: block;
     white-space: nowrap; overflow: scroll;
     background-color: $vc-button-border;
     border: 1px solid $vc-button-border; }
