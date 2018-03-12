@@ -12,8 +12,8 @@
   <div class="vc-track-view" >
     <span class="vc-track-view-label">{{ track.get_name() }}</span>
     <span class="vc-track-view-partlist" >
-      <vc-part-thumb v-for="tp in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
-		     :part="tp.part" :tick="tp.tick"></vc-part-thumb>
+      <vc-part-thumb v-for="(tp, pindex) in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
+		     :part="tp.part" :tick="tp.tick" :track-index="index" :index="pindex" ></vc-part-thumb>
     </span>
   </div>
 
@@ -42,6 +42,7 @@ module.exports = {
   name: 'vc-track-view',
   props: {
     'track': { type: Bse.Track, },
+    'index': { type: Number, },
   },
   data_tmpl: {
     name: "Track-Label2",
