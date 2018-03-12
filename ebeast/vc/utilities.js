@@ -89,3 +89,27 @@ exports.split_comma = (str) => {
     result.push (item);
   return result;
 };
+
+/** Parse CSS colors (via invisible DOM element) and yield an array of rgba tuples. */
+function parse_colors (colorstr) {
+  let result = [];
+  if (!parse_colors.span) {
+    parse_colors.span = document.createElement ('span');
+    parse_colors.span.style.display = 'none';
+    document.body.appendChild (parse_colors.span);
+  }
+  for (const c of exports.split_comma (colorstr)) {
+    parse_colors.span.style.color = c;
+    const style = getComputedStyle (parse_colors.span);
+    let m = style.color.match (/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+    if (m)
+      result.push ([m[1], m[2], m[3], 1]);
+    else {
+      m = style.color.match (/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/i);
+      if (m)
+	result.push ([m[1], m[2], m[3], m[4]]);
+    }
+  }
+  return result;
+}
+exports.parse_colors = parse_colors;
