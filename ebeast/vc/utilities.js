@@ -61,3 +61,31 @@ exports.fnv1a_hash = (str) => {
   }
   return hash;
 };
+
+/** Split a string when encountering a comma, while preserving quoted or parenthesized segments. */
+exports.split_comma = (str) => {
+  let result = [], item = '', sdepth = 0, ddepth = 0, pdepth = 0, kdepth = 0, cdepth = 0, bslash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (c === ',' && 0 == (sdepth + ddepth + pdepth + kdepth + cdepth)) {
+      if (item) {
+	result.push (item);
+	item = '';
+      }
+    } else {
+      item += c;
+      if (c === '[') kdepth++;
+      if (c === ']' && kdepth) kdepth--;
+      if (c === '(') pdepth++;
+      if (c === ')' && pdepth) pdepth--;
+      if (c === '{') cdepth++;
+      if (c === '}' && cdepth) cdepth--;
+      if (c === "'" && !bslash) sdepth = !sdepth;
+      if (c === '"' && !bslash) ddepth = !ddepth;
+    }
+    bslash = !bslash && c === '\\' && (sdepth || ddepth);
+  }
+  if (item)
+    result.push (item);
+  return result;
+};
