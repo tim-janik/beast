@@ -50,3 +50,14 @@ exports.clone_descriptors = (target, source, closure) => {
   return target;
   // Usage: clone_descriptors (window, fakewin.__proto__, fakewin);
 };
+
+/** Produce hash code from a String, using an FNV-1a variant. */
+exports.fnv1a_hash = (str) => {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < str.length; ++i) {
+    // Note, charCodeAt can return values > 255
+    const next = 0x1000193 * (hash ^ str.charCodeAt (i));
+    hash = next >>> 0; // % 4294967296, i.e. treat as 32 bit unsigned
+  }
+  return hash;
+};
