@@ -19,11 +19,9 @@
   .vc-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: 1em; /* FIXME: inject */
-    border-radius: 3px; /* FIXME */
-    --part-thumb-font: bold 8px sans-serif; /* italic small-caps bold 12px serif */
-    --part-thumb-font-color: rgba(255, 255, 255, 0.7);
-    --part-thumb-note-color: rgba(255, 255, 255, 0.7);
-    --part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0;
+    border-radius: $vc-theme-border-radius;
+    --part-thumb-font-color: $vc-part-thumb-font-color; --part-thumb-font: $vc-part-thumb-font;
+    --part-thumb-note-color: $vc-part-thumb-note-color; --part-thumb-colors: $vc-part-thumb-colors;
   }
 </style>
 
