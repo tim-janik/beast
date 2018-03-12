@@ -2,9 +2,9 @@
 'use strict';
 
 /** VueifyObject - turn a regular object into a Vue instance.
- * The @a object passed in is used as the Vue 'data' object. Properties
- * with a getter (and possibly setter) are turned into Vue 'computed'
- * properties, methods are carried over as methods on the Vue() instance.
+ * The *object* passed in is used as the Vue `data` object. Properties
+ * with a getter (and possibly setter) are turned into Vue `computed`
+ * properties, methods are carried over as `methods` on the Vue() instance.
  */
 exports.VueifyObject = function (object = {}, vue_options = {}) {
   let voptions = Object.assign ({}, vue_options);
@@ -25,7 +25,7 @@ exports.VueifyObject = function (object = {}, vue_options = {}) {
   return new Vue (voptions);
 };
 
-/// Copy PropertyDescriptors from source to target, optionally binding handlers against closure
+/** Copy PropertyDescriptors from source to target, optionally binding handlers against closure. */
 exports.clone_descriptors = (target, source, closure) => {
   // See also: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign completeAssign()
   const descriptors = Object.getOwnPropertyNames (source).reduce ((descriptors, pname) => {
