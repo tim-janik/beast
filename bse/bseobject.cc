@@ -36,6 +36,13 @@ ObjectImpl::debug_name ()
   return bse_object_debug_name (this->as<BseObject*>());
 }
 
+int32_t
+ObjectImpl::unique_id ()
+{
+  BseObject *bo = *this;
+  return bo->unique_id;
+}
+
 int64_t
 ObjectImpl::proxy_id ()
 {
