@@ -20,20 +20,24 @@
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: 1em; /* FIXME: inject */
     border-radius: 3px; /* FIXME */
-    --background-color: hsv(190, 75%, 67%);
-    --note-color: hsv(190, 55%, 85%);
-    --font-color: hsv(0, 0%, 100%, 0.75);
-    --font: bold 8px sans-serif; /* italic small-caps bold 12px serif */
+    --part-thumb-font: bold 8px sans-serif; /* italic small-caps bold 12px serif */
+    --part-thumb-font-color: rgba(255, 255, 255, 0.7);
+    --part-thumb-note-color: rgba(255, 255, 255, 0.7);
+    --part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0;
   }
 </style>
 
 <script>
+const Util = require ('./utilities.js');
+
 const tick_quant = 384; // FIXME
 module.exports = {
   name: 'vc-part-thumb',
   props: {
     'part': { type: Bse.Part, },
     'tick': { type: Number, },
+    'index': { type: Number, },
+    'track-index': { type: Number, },
   },
   computed: {
     tickscale: function() { return 10 / 384.0; }, // FIXME
@@ -60,22 +64,32 @@ module.exports = {
 };
 
 function render_canvas () {
+  // canvas setup
   const canvas = this.$refs['canvas'], ctx = canvas.getContext ('2d');
   const style = getComputedStyle (canvas), part = this.part;
   const width = canvas.clientWidth, height = canvas.clientHeight;
   canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
-  // paint part
-  ctx.fillStyle = style.getPropertyValue ('--background-color');
+  const part_name = part.get_name();
+  // color setup
+  const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
+  let cindex;
+  cindex = this.trackIndex;			// - color per track
+  cindex = (cindex + 1013904223) * 1664557;	//   LCG randomization step
+  cindex = this.index;				// - color per part
+  cindex = Util.fnv1a_hash (part_name);		// - color from part name
+  const bgcol = colors[(cindex >>> 0) % colors.length];
+  // paint part background
+  ctx.fillStyle = bgcol;
   ctx.fillRect (0, 0, width, height);
   // draw name
-  ctx.fillStyle = style.getPropertyValue ('--font-color');
-  ctx.font = style.getPropertyValue ('--font');
+  ctx.font = style.getPropertyValue ('--part-thumb-font');
+  ctx.fillStyle = style.getPropertyValue ('--part-thumb-font-color');
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText (part.get_name(), 1.5, .5);
+  ctx.fillText (part_name, 1.5, .5);
   // paint notes
-  ctx.fillStyle = style.getPropertyValue ('--note-color');
+  ctx.fillStyle = style.getPropertyValue ('--part-thumb-note-color');
   const pnotes = part.list_notes_crossing (0, MAXINT);
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
@@ -84,4 +98,5 @@ function render_canvas () {
     ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1);
   }
 }
+
 </script>
