@@ -22,6 +22,7 @@
 <style lang="scss">
   @import 'mixins.scss';
   .vc-track-view {
+    display: flex; align-items: center; /* vertical centering */
     background-color: $vc-button-border;
     border: 1px solid $vc-button-border;
     border-radius: $vc-button-radius; }
@@ -34,6 +35,7 @@
   .vc-track-view-partlist {
     display: inline-block;
     position: relative;
+    height: $vc-track-list-row-height;	/* fixed height is required to accurately calculate vertical scroll area */
   }
 </style>
 
