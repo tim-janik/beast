@@ -92,7 +92,8 @@ EBEAST_MOSTLYCLEANFILES += ebeast/.appstamp
 
 # == EBEAST_APP_ASSETS_CSS ==
 EBEAST_APP_ASSETS_CSS = ebeast/app/assets/stylesheets.css ebeast/app/assets/gradient-01.png
-ebeast/app/assets/stylesheets.css: ebeast/app.scss ebeast/vc/*.scss ebeast/app/window.html
+ebeast_scss_deps := ebeast/app.scss $(wildcard ebeast/vc/*.scss)
+ebeast/app/assets/stylesheets.css: $(ebeast_scss_deps) ebeast/app/window.html
 	$(QGEN) # NOTE: scss source and output file names must be final, because .map is derived from it
 	$(Q) cp -P ebeast/app.scss ebeast/app/
 	$(Q) cp -P ebeast/vc/*.scss ebeast/app/vc/
@@ -113,7 +114,7 @@ ebeast/app/vc/includes.js: ebeast/vc/includes.js $(EBEAST_VC_MOSTJS) ebeast/app/
 	$(AM_V_GEN)
 	$(Q) cp -P $(EBEAST_VC_MOSTJS) ebeast/app/vc/
 	$(Q) cp -P $< ebeast/app/vc/
-ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js
+ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebeast/app/vc/includes.js $(ebeast_scss_deps)
 	$(AM_V_GEN) # app/vc/bundle.js was copied with app/vc/includes.js
 	@: # collect all 'require' dependencies of bundle.js in app/vc/
 	$(Q) cp -P $(ebeast_vc_vue_files) ebeast/app/vc/
