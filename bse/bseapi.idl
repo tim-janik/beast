@@ -637,8 +637,9 @@ interface Project;
 interface Object {
   String      uname      = String ("UName", "Unique object name", GUI);
   String      debug_name (); ///< Object name useful for debugging output.
-  int64       proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
+  int32       unique_id  (); ///< Generate a unique stable ID for this object, similar to a hash of its address.
   void        notify     (String detail); ///< Emit notification event for object state or property changes.
+  int64       proxy_id   (); ///< Helper ID for the old SfiGlue interface.
 };
 
 /// A list of Item or derived objects.
@@ -724,6 +725,7 @@ interface Part : Item {
   SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
   int32          get_max_note              ();           ///< Retrieve the maximum note supported in this part.
   int32          get_min_note              ();           ///< Retrieve the minimum note supported in this part.
+  int32          get_last_tick             ();           ///< Retrieve the maximum tick any control or note plus duration spans.
   Error          change_control            (int32 id, int32 tick, MidiSignal control_type, float64 value); ///< Change an existing control event within a part.
   Error          change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
   Error          delete_event              (int32 id); ///< Delete an existing event from a part.

@@ -1,0 +1,64 @@
+<!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<html><head>
+
+  <title>Beast - Music Synthesizer and Composer</title>
+
+  <link rel="stylesheet" href="assets/stylesheets.css">
+
+  <script>
+  'use strict';
+  window.Electron = require ('electron').remote;
+  const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
+  window.Bse = require ('./assets/v8bse.node'); // adding '/' avoids node_modules/-relative lookup
+  window.T = (txt) => { return txt; };   // translation indicator
+  // Load jQuery + utils + Vue + components
+  require ('./vc/includes.js');
+  Vue.config.productionTip = false;
+  Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
+  const MAXINT = 2147483647, MAXUINT = 4294967295;
+  { MAXINT; MAXUINT; } // used
+  // show DevTools on hotkey
+  if (HAVE_DEVELOPMENT_TOOLS)
+    document.addEventListener ("keydown", (event) => {
+      const code = event.which || event.keyCode;
+      if (event.shiftKey && event.ctrlKey && code == 73) // Shift+Ctrl+I
+	Electron.getCurrentWindow().toggleDevTools();
+      if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
+	window.location.reload();
+    });
+  // Electron.getCurrentWindow().webContents.setZoomFactor(1)
+  </script>
+
+</head>
+<body>
+
+  <div id="vue-mountpoint">
+    <vc-projectshell ref="vwin-shell" ></vc-projectshell>
+    <vc-aboutdialog v-if="App.show_about_dialog" @close="App.show_about_dialog = false"></vc-aboutdialog>
+  </div>
+
+  <script>
+  // Hookup a global Vue mixin to allow 'data' cloning from 'data_tmpl'
+  Vue.mixin ({ beforeCreate: function () {
+    if (!this.$options.data && this.$options.data_tmpl)
+      this.$options.data = Object.assign ({}, this.$options.data_tmpl);
+    if (this.$options.customized_render && this.$options.render && !this.$options.render.mixin_customized_render) {
+      const render = this.$options.render, customized_render = this.$options.customized_render;
+      this.$options.render = function (createElement) {
+	const element = render.call (this, createElement);
+	return customized_render.call (this, createElement, element);
+      };
+      this.$options.render.mixin_customized_render = true;
+    }
+  } });
+  // Create Vue AppWindow singleton
+  window.App = new require ('./app.js').VueAppWindow ({});
+  // Patch Vue.prototype to make App known inside all Vue components
+  Vue.prototype.App = window.App;
+  // Mount Vue *after* window.App is setup, as it's needed by Vue component callbacks
+  window.App.$mount ('#vue-mountpoint');
+  window.Shell = window.App.$refs['vwin-shell'];
+  </script>
+
+</body>
+</html>

@@ -282,6 +282,7 @@ public:
   virtual SongTiming     get_timing             (int tick) override;
   virtual int            get_max_note           () override;
   virtual int            get_min_note           () override;
+  virtual int            get_last_tick          () override;
   virtual Error      change_control         (int id, int tick, MidiSignal control_type, double value) override;
   virtual Error      change_note            (int id, int tick, int duration, int note, int fine_tune, double velocity) override;
   virtual Error      delete_event           (int id) override;

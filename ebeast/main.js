@@ -140,7 +140,7 @@ function create_window ()
   win.HAVE_DEVELOPMENT_TOOLS = HAVE_DEVELOPMENT_TOOLS;
   win.bse_argv = project_files;
   win.once ('ready-to-show', () => { win.show(); });
-  win.loadURL ('file:///' + __dirname + '/index.html');
+  win.loadURL ('file:///' + __dirname + '/window.html');
   // win.webContents.openDevTools();
   win.on ('closed', () => { win = null; });
 

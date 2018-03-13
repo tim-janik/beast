@@ -52,11 +52,13 @@ ebeast/v8bse/binding.gyp: Makefile # binding.gyp needs Makefile variables
 	@echo "      'cflags_cc!':   [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_rmflags)) ],"	>>$@
 	@echo "      'include_dirs': [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_incdirs)) ],"	>>$@
 	@echo "      'libraries':    [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_libs))"		>>$@
-	@echo "                        '-Wl,-rpath,$(bselibdir)' ],"						>>$@
+	@echo "                       \"'-Wl,-rpath,"'$$$$'"ORIGIN/../../../lib/'\" ],"				>>$@
 	@echo "    }"												>>$@
 	@echo "  ]"												>>$@
 	@echo "}"												>>$@
 EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/binding.gyp
+# Adding -rpath,'$ORIGIN' requires single-quotes for this Makefile's subshell, escaping '$' in the current
+# Makefile, escaping '$' in the generated *.target.mk file and signle-quotes for the *.target.mk subshell.
 
 # == ebeast-v8bse-clean ==
 ebeast-v8bse-clean:

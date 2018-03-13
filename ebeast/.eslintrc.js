@@ -13,6 +13,8 @@ module.exports = {
     "App": false,
     "Shell": false,
     "T": false,
+    "MAXINT": false,
+    "MAXUINT": false,
     "module": true /* allow mods */
   },
   "rules": {

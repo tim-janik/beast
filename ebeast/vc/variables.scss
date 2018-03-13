@@ -28,3 +28,12 @@ $vc-button-active-border:	#555555;
 $vc-glow-control:		#0080ff;
 $vc-focus-outline:		1px solid $vc-glow-control;
 $vc-boxshadow-color:		fade(#000000, 30%);
+
+/* == track-list == */
+$vc-track-list-row-height: 2em;
+
+/* == vc-part-thumb == */
+$vc-part-thumb-font: bold 0.75em sans-serif; /* format: italic small-caps bold 12px serif */
+$vc-part-thumb-font-color: rgba(255, 255, 255, 0.7);
+$vc-part-thumb-note-color: rgba(255, 255, 255, 0.7);
+$vc-part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0;

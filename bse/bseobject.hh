@@ -16,10 +16,11 @@ public:
   // template<class BseObjectPtr> BseObjectPtr as (); // provided by ObjectIface
   virtual BseObject*  as_bse_object () override { return gobject_; }
   virtual std::string    debug_name () override;
-  virtual int64_t        proxy_id   () override;
+  virtual int32_t        unique_id  () override;
   virtual std::string    uname      () const;
   virtual void           uname      (const std::string &newname);
   virtual void           notify     (const String &detail) override;
+  virtual int64_t        proxy_id   () override;
 };
 typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 
