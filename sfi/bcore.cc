@@ -240,35 +240,49 @@ printerr_string (const String &string)
 
 bool debug_any_enabled = true; // initialized by debug_key_enabled()
 
+std::string
+debug_key_value (const std::string &key)
+{
+  // cache $BSE_DEBUG and setup debug_any_enabled;
+  static const std::string debug_flags = [] () {
+    const char *f = getenv ("BSE_DEBUG");
+    const std::string flags = !f ? "" : ":" + std::string (f) + ":";
+    debug_any_enabled = !flags.empty() && flags != ":none:";
+    return flags;
+  } ();
+  // find key in colon-separated debug flags
+  static const std::string all = ":all:", none = ":none:";
+  const std::string condr = ":no-" + key + ":";
+  const std::string condc = ":" + key + ":";
+  const std::string conde = ":" + key + "=";
+  const ssize_t pa = debug_flags.rfind (all);
+  const ssize_t pn = debug_flags.rfind (none);
+  const ssize_t pr = debug_flags.rfind (condr);
+  const ssize_t pc = debug_flags.rfind (condc);
+  const ssize_t pe = debug_flags.rfind (conde);
+  const ssize_t pmax = std::max (pr, std::max (std::max (pa, pn), std::max (pc, pe)));
+  if (pn == pmax || pr == pmax)
+    return "false";     // found no key or ':none:' or ':no-key:'
+  if (pa == pmax || pc == pmax)
+    return "true";      // last setting is ':key:' or ':all:'
+  // pe == pmax, assignment via equal sign
+  const ssize_t pv = pe + conde.size();
+  const ssize_t pw = debug_flags.find (":", pv);
+  const std::string value = debug_flags.substr (pv, pw < 0 ? pw : pw - pv);
+  return value;
+}
+
+bool
+debug_key_enabled (const std::string &conditional)
+{
+  const std::string value = debug_key_value (conditional);
+  return !value.empty() && (strchr ("123456789yYtT", value[0]) || strncasecmp (value.c_str(), "on", 2) == 0);
+}
+
 bool
 debug_key_enabled (const char *conditional)
 {
-  // cache $BSE_DEBUG and setup debug_any_enabled;
-  static const char *const debug_flags = [] () {
-    const char *f = getenv ("BSE_DEBUG");
-    std::string flags = !f ? "" : ":" + std::string (f) + ":";
-    char *result = new char [flags.size() + 1];
-    if (result)
-      strcpy (result, flags.data());
-    debug_any_enabled = result && result[0];
-    return result;
-  } ();
-  // find conditional in colon-separated $BSE_DEBUG
-  if (conditional && debug_flags)
-    {
-      const char *const flag = strstr (debug_flags, conditional);
-      const int l = strlen (conditional);
-      if (flag && flag > debug_flags && flag[-1] == ':' && l)
-        {
-          if (flag[l] == ':' || // also allow =1 =yes =true =on
-              (flag[l] == '=' && (strchr ("123456789yYtT", flag[l + 1]) ||
-                                  strncasecmp (flag + l, "=on", 3) == 0)))
-            return true;
-        }
-      else if (strstr (debug_flags, ":all:") != NULL)
-        return true;
-    }
-  return false;
+  return debug_key_enabled (std::string (conditional ? conditional : ""));
 }
 
 void

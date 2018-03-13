@@ -182,6 +182,8 @@ compare_greater (const Value &v1, const Value &v2)
 namespace Internal {
 extern bool                     debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
 bool                            debug_key_enabled       (const char *conditional) BSE_PURE;
+bool                            debug_key_enabled       (const std::string &conditional) BSE_PURE;
+std::string                     debug_key_value         (const std::string &key) BSE_PURE;
 void                            debug_diagnostic        (const char *prefix, const std::string &message);
 void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
 void                            printout_string         (const String &string);
