@@ -95,10 +95,10 @@ public:
     resize (n_frames, n_channels);
   }
   /**
-   * @returns the number of frames that are available for reading
-   *
    * Check available read space in the ringbuffer.
    * This function may only be called from the consumer thread.
+   *
+   * @returns the number of frames that are available for reading
    */
   uint
   get_readable_frames()
@@ -112,13 +112,13 @@ public:
     return wpos - rpos;
   }
   /**
-   * @returns the number of successfully read frames
-   *
    * Read data from the ringbuffer; if there is not enough data
    * in the ringbuffer, the function will return the number of frames
    * that could be read without blocking.
    *
    * This function should be called from the consumer thread.
+   *
+   * @returns the number of successfully read frames
    */
   uint
   read (uint    n_frames,
@@ -140,10 +140,10 @@ public:
     return can_read;
   }
   /**
-   * @returns the number of frames that can be written
-   *
    * Check available write space in the ringbuffer.
    * This function should be called from the producer thread.
+   *
+   * @returns the number of frames that can be written
    */
   uint
   get_writable_frames()
@@ -158,13 +158,13 @@ public:
     return rpos - wpos - 1;
   }
   /**
-   * @returns the number of successfully written frames
-   *
    * Write data to the ringbuffer; if there is not enough free space
    * in the ringbuffer, the function will return the amount of frames
    * consumed by a partial write (without blocking).
    *
    * This function may only be called from the producer thread.
+   *
+   * @returns the number of successfully written frames
    */
   uint
   write (uint      n_frames,
@@ -192,9 +192,10 @@ public:
     return can_write;
   }
   /**
-   * @returns the maximum number of frames that the ringbuffer can contain
-   *
+   * Get total size of the ringbuffer.
    * This function can be called from any thread.
+   *
+   * @returns the maximum number of frames that the ringbuffer can contain
    */
   uint
   get_total_n_frames() const
@@ -203,9 +204,10 @@ public:
     return channel_buffer_size_ - 1;
   }
   /**
-   * @returns the number of elements that are part of one frame
-   *
+   * Get number of channels.
    * This function can be called from any thread.
+   *
+   * @returns the number of elements that are part of one frame
    */
   uint
   get_n_channels() const
