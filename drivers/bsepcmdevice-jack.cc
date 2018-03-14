@@ -25,6 +25,8 @@ using std::max;
 using std::copy;
 using Bse::Block;
 
+#define JDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
+
 namespace {
 
 /**
@@ -248,9 +250,6 @@ public:
   }
 };
 
-
-#define PDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
-
 /* macro for jack dropout tests - see below */
 #define TEST_DROPOUT() if (unlink ("/tmp/drop") == 0) usleep (1.5 * 1000000. * jack->buffer_frames / handle->mix_freq); /* sleep 1.5 * buffer size */
 
@@ -321,7 +320,7 @@ static gpointer parent_class = NULL;
 static void
 error_callback_silent (const char *msg)
 {
-  PDEBUG ("JACK: %s\n", msg);
+  JDEBUG ("JACK: %s\n", msg);
 }
 
 static void
@@ -353,7 +352,7 @@ connect_jack (BsePcmDeviceJACK *self, jack_status_t &status)
 
   jack_set_error_function (error_callback_show);
 
-  PDEBUG ("attaching to JACK server returned status: %d\n", status);
+  JDEBUG ("attaching to JACK server returned status: %d\n", status);
   return (self->jack_client != nullptr);
 }
 
@@ -701,7 +700,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
           Bse::warning ("JACK driver: ring buffer size not correct: (jack->buffer_frames != buffer_frames)\n");
           error = Bse::Error::INTERNAL;
         }
-      PDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
+      JDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
 
       /* initialize output ringbuffer with silence
        * this will prevent dropouts at initialization, when no data is there at all
@@ -771,7 +770,7 @@ bse_pcm_device_jack_open (BseDevice     *device,
       disconnect_jack (self);
       delete jack;
     }
-  PDEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", dname, handle->readable, handle->writable, bse_error_blurb (error));
+  JDEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", dname, handle->readable, handle->writable, bse_error_blurb (error));
 
   return error;
 }
@@ -884,7 +883,7 @@ jack_device_latency (BsePcmHandle *handle,
     }
   
   uint total_latency = jack->buffer_frames + jack_rlatency + jack_wlatency;
-  PDEBUG ("jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+  JDEBUG ("jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
           jack_rlatency / double (handle->mix_freq) * 1000,
           jack_wlatency / double (handle->mix_freq) * 1000,
           jack->buffer_frames / double (handle->mix_freq) * 1000,
