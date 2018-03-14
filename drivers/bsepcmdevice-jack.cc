@@ -250,6 +250,8 @@ public:
 
 
 #define PDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
+
+/* macro for jack dropout tests - see below */
 #define TEST_DROPOUT() if (unlink ("/tmp/drop") == 0) usleep (1.5 * 1000000. * jack->buffer_frames / handle->mix_freq); /* sleep 1.5 * buffer size */
 
 /* --- JACK PCM handle --- */
@@ -801,6 +803,27 @@ jack_device_check_io (BsePcmHandle *handle,
 {
   JackPcmHandle *jack = (JackPcmHandle*) handle;
   assert_return (jack->jack_client != NULL, false);
+
+  if (0)
+    {
+      /* One of the things that we want to test is whether the JACK driver would
+       * recover properly if a dropout should occur.
+       *
+       * Since dropouts occur rarely, we can use the TEST_DROPOUT macro. This
+       * will check if /tmp/drop exists, and if so, sleep for some time to
+       * ensure BSE can't write to/read from the ring buffer in time. Such an
+       * artificial dropout can be created using
+       *
+       * $ touch /tmp/drop
+       *
+       * The file will be removed and a sleep will happen.
+       *
+       *  - for production builds, the macro should never be used
+       *  - the macro invocation can be moved to other places in the source code
+       *    to introduce a dropout there
+       */
+      TEST_DROPOUT();
+    }
 
   /* enable processing in callback (if not already active) */
   jack->atomic_active = 1;
