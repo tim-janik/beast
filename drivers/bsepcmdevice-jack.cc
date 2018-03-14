@@ -267,25 +267,18 @@ struct JackPcmHandle
   FrameRingBuffer<float>  input_ringbuffer;
   FrameRingBuffer<float>  output_ringbuffer;
 
-  std::atomic<int>        atomic_active;
-  std::atomic<int>        atomic_xruns;
-  int                     printed_xruns;
+  std::atomic<int>        atomic_active {0};
+  std::atomic<int>        atomic_xruns {0};
+  int                     printed_xruns = 0;
 
-  bool			  is_down;
-  bool                    printed_is_down;
+  bool			  is_down = false;
+  bool                    printed_is_down = false;
 
-  uint64                  device_read_counter;
-  uint64                  device_write_counter;
+  uint64                  device_read_counter = 0;
+  uint64                  device_write_counter = 0;
 
   JackPcmHandle (jack_client_t *jack_client) :
-    jack_client (jack_client),
-    atomic_active (0),
-    atomic_xruns (0),
-    printed_xruns (0),
-    is_down (false),
-    printed_is_down (false),
-    device_read_counter (0),
-    device_write_counter (0)
+    jack_client (jack_client)
   {
     memset (&handle, 0, sizeof (handle));
   }
@@ -394,20 +387,17 @@ disconnect_jack (BsePcmDeviceJACK *self)
 }
 
 struct DeviceDetails {
-  uint ports, input_ports, output_ports, physical_ports, terminal_ports;
-  bool default_device;
+  uint ports = 0;
+  uint input_ports = 0;
+  uint output_ports = 0;
+  uint physical_ports = 0;
+  uint terminal_ports = 0;
+  bool default_device = false;
+
   vector<string> input_port_names;
   vector<string> output_port_names;
-  DeviceDetails() :
-    ports (0),
-    input_ports (0),
-    output_ports (0),
-    physical_ports (0),
-    terminal_ports (0),
-    default_device (false)
-  {
-  }
 };
+
 }
 
 static map<string, DeviceDetails>
