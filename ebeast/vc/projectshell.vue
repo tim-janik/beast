@@ -6,26 +6,36 @@
   - **project** - Implicit, using App.bse_project().
 </docs>
 
+<template>
+  <div class="vc-projectshell">
+    <div class="vc-projectshell-track-area">
+      Project Shell. <br />
+      <vc-playcontrols :project="project"> </vc-playcontrols>
+      <br />
+      {{ message }}
+      <br />
+      <vc-button @click="App.show_about_dialog = true">About</vc-button>
+      <vc-button @click="frob (1, $event)">1</vc-button>
+      <vc-button @click="frob (2, $event)">2</vc-button>
+      <vc-button @click="frob (3, $event)">3</vc-button>
+      <br />
+      <vc-track-list :song="song"></vc-track-list>
+    </div>
+    <div class="vc-projectshell-part-area">
+      <vc-piano-roll></vc-piano-roll>
+    </div>
+  </div>
+</template>
+
 <style lang="scss">
   @import 'mixins.scss';
   .vc-projectshell { }
+  .vc-projectshell-part-area {
+    white-space: nowrap; overflow-h: hidden; overflow-y: scroll;
+    background-color: $vc-button-border;
+    height: 350px;
+    border: 1px solid red; }
 </style>
-
-<template>
-  <div class="vc-projectshell">
-    Project Shell. <br />
-    <vc-playcontrols :project="project"> </vc-playcontrols>
-    <br />
-    {{ message }}
-    <br />
-    <vc-button @click="App.show_about_dialog = true">About</vc-button>
-    <vc-button @click="frob (1, $event)">1</vc-button>
-    <vc-button @click="frob (2, $event)">2</vc-button>
-    <vc-button @click="frob (3, $event)">3</vc-button>
-    <br />
-    <vc-track-list :song="song"></vc-track-list>
-  </div>
-</template>
 
 <script>
 module.exports = {
