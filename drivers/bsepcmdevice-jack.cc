@@ -697,7 +697,8 @@ bse_pcm_device_jack_open (BseDevice     *device,
       // the ringbuffer should be exactly as big as requested
       if (jack->buffer_frames != buffer_frames)
         {
-          Bse::warning ("JACK driver: ring buffer size not correct: (jack->buffer_frames != buffer_frames)\n");
+          Bse::warning ("JACK driver: ring buffer size not correct: (jack->buffer_frames != buffer_frames); (%u != %u)\n",
+                        jack->buffer_frames, buffer_frames);
           error = Bse::Error::INTERNAL;
         }
       JDEBUG ("ringbuffer size = %.3fms", jack->buffer_frames / double (handle->mix_freq) * 1000);
