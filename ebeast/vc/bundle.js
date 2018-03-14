@@ -9,6 +9,7 @@ const vue_components = [
   require ('./button.vue'),
   require ('./icon-button.vue'),
   require ('./button-bar.vue'),
+  require ('./piano-roll.vue'),
   require ('./playcontrols.vue'),
   require ('./part-thumb.vue'),
   require ('./modaldialog.vue'),
