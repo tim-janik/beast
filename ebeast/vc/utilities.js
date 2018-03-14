@@ -123,3 +123,28 @@ exports.dash_xto = (ctx, x, y, w, d) => {
       ctx.moveTo (p, y);
   }
 };
+
+/** Fill and stroke a canvas rectangle with rounded corners. */
+exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = true) => {
+  if (typeof radius === 'number')
+    radius = [ radius, radius, radius, radius ];
+  else if (typeof radius === 'object' && radius.length == 4)
+    ; // top-left, top-right, bottom-right, bottom-left
+  else
+    throw new Error ('invalid or missing radius');
+  ctx.beginPath();
+  ctx.moveTo           (x + radius[0],         y);
+  ctx.lineTo           (x + width - radius[1], y);
+  ctx.quadraticCurveTo (x + width,             y,                      x + width,             y + radius[1]);
+  ctx.lineTo           (x + width,             y + height - radius[2]);
+  ctx.quadraticCurveTo (x + width,             y + height,             x + width - radius[2], y + height);
+  ctx.lineTo           (x + radius[3],         y + height);
+  ctx.quadraticCurveTo (x,                     y + height,             x,                     y + height - radius[3]);
+  ctx.lineTo           (x,                     y + radius[0]);
+  ctx.quadraticCurveTo (x,                     y,                      x + radius[0],         y);
+  ctx.closePath();
+  if (fill)
+    ctx.fill();
+  if (stroke)
+    ctx.stroke();
+};
