@@ -113,3 +113,13 @@ function parse_colors (colorstr) {
   return result;
 }
 exports.parse_colors = parse_colors;
+
+/** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
+exports.dash_xto = (ctx, x, y, w, d) => {
+  for (let i = 0, p = x; p < x + w; p = p + d[i++ % d.length]) {
+    if (i % 2)
+      ctx.lineTo (p, y);
+    else
+      ctx.moveTo (p, y);
+  }
+};
