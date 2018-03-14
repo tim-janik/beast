@@ -82,7 +82,7 @@ template<class T>
 class FrameRingBuffer {
   //BIRNET_PRIVATE_COPY (FrameRingBuffer);
 private:
-  vector<vector<T>>   channel_buffer_;
+  vector<vector<T> >  channel_buffer_;
   std::atomic<int>    atomic_read_frame_pos_;
   std::atomic<int>    atomic_write_frame_pos_;
   uint                channel_buffer_size_;       // = n_frames + 1; the extra frame allows us to
