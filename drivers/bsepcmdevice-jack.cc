@@ -183,7 +183,7 @@ public:
 	fast_copy (write1, &channel_buffer_[ch][wpos], frames[ch]);
 	fast_copy (write2, &channel_buffer_[ch][0], frames[ch] + write1);
       }
- 
+
     // It is important that the data from the previous writes get written
     // to memory *before* the index variable is updated.
     //
@@ -872,7 +872,7 @@ jack_device_latency (BsePcmHandle *handle,
 
       jack_wlatency = max (jack_wlatency, out_lrange.max);
     }
-  
+
   uint total_latency = jack->buffer_frames + jack_rlatency + jack_wlatency;
   JDEBUG ("jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
           jack_rlatency / double (handle->mix_freq) * 1000,
@@ -963,11 +963,11 @@ bse_pcm_device_jack_class_init (BsePcmDeviceJACKClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
-  
+
   parent_class = g_type_class_peek_parent (klass);
-  
+
   gobject_class->finalize = bse_pcm_device_jack_finalize;
-  
+
   device_class->list_devices = bse_pcm_device_jack_list_devices;
   const char *name = "jack";
   const char *syntax = _("device");
