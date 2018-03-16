@@ -153,6 +153,12 @@ exports.dash_xto = (ctx, x, y, w, d) => {
   }
 };
 
+/** Draw a horizontal rect `(x,y,width,height)` with pixel gaps of width `stipple` */
+exports.hstippleRect = function (ctx, x, y, width, height, stipple) {
+  for (let s = x; s + stipple < x + width; s += 2 * stipple)
+    ctx.fillRect (s, y, stipple, height);
+};
+
 /** Fill and stroke a canvas rectangle with rounded corners. */
 exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = true) => {
   if (typeof radius === 'number')
