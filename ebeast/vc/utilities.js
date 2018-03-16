@@ -114,6 +114,35 @@ function parse_colors (colorstr) {
 }
 exports.parse_colors = parse_colors;
 
+/** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
+exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
+  /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
+   * backing store to match the hardware screen pixel size.
+   * Note, just assigning canvas.width *without* assigning canvas.style.width may lead to
+   * resizes in the absence of other constraints. So to render at screen pixel size, we
+   * always have to assign canvas.style.{width|height}.
+   */
+  const cw = Math.round (csswidth), ch = Math.round (cssheight);
+  const pw = Math.round (window.devicePixelRatio * cw);
+  const ph = Math.round (window.devicePixelRatio * ch);
+  if (cw != canvas.style.width || ch != canvas.style.height ||
+      pw != canvas.width || ph != canvas.height || fill_style) {
+    canvas.style.width = cw + 'px';
+    canvas.style.height = ch + 'px';
+    canvas.width = pw;
+    canvas.height = ph;
+    const ctx = canvas.getContext ('2d');
+    if (!fill_style || fill_style === true)
+      ctx.clearRect (0, 0, canvas.width, canvas.height);
+    else {
+      ctx.fillStyle = fill_style;
+      ctx.fillRect (0, 0, canvas.width, canvas.height);
+    }
+    return true;
+  }
+  return false;
+};
+
 /** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
 exports.dash_xto = (ctx, x, y, w, d) => {
   for (let i = 0, p = x; p < x + w; p = p + d[i++ % d.length]) {
