@@ -183,3 +183,18 @@ exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = tru
   if (stroke)
     ctx.stroke();
 };
+
+/** Add color stops from `stoparray` to `grad`, `stoparray` is an array: [(offset,color)...] */
+function gradient_apply_stops (grad, stoparray) {
+  for (const g of stoparray)
+    grad.addColorStop (g[0], g[1]);
+}
+exports.gradient_apply_stops = gradient_apply_stops;
+
+/** Create a new linear gradient at (x1,y1,x2,y2) with color stops `stoparray` */
+function linear_gradient_from (ctx, stoparray, x1, y1, x2, y2) {
+  const grad = ctx.createLinearGradient (x1, y1, x2, y2);
+  gradient_apply_stops (grad, stoparray);
+  return grad;
+}
+exports.linear_gradient_from = linear_gradient_from;
