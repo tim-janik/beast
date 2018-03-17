@@ -114,6 +114,19 @@ function parse_colors (colorstr) {
 }
 exports.parse_colors = parse_colors;
 
+/** Retrieve a new object with the properties of `obj` resolved against the style of `el` */
+function compute_style_properties (el, obj) {
+  const style = getComputedStyle (el);
+  let props = {};
+  for (let key in obj) {
+    const result = style.getPropertyValue (obj[key]);
+    if (result !== undefined)
+      props[key] = result;
+  }
+  return props;
+}
+exports.compute_style_properties = compute_style_properties;
+
 /** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
 exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
   /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
