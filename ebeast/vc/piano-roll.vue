@@ -24,11 +24,23 @@
   .vc-piano-roll canvas {
     display: block;
     image-rendering: pixelated /*ff: crisp-edges*/;
+    --piano-roll-light-row:    $vc-piano-roll-light-row;
+    --piano-roll-dark-row:     $vc-piano-roll-dark-row;
+    --piano-roll-semitone12:   $vc-piano-roll-semitone12;
+    --piano-roll-semitone6:    $vc-piano-roll-semitone6;
+    --piano-roll-grid-main1:   $vc-piano-roll-grid-main1;
+    --piano-roll-grid-sub1:    $vc-piano-roll-grid-sub1;
+    --piano-roll-white-base:   $vc-piano-roll-white-base;
+    --piano-roll-white-glint:  $vc-piano-roll-white-glint;
+    --piano-roll-white-border: $vc-piano-roll-white-border;
+    --piano-roll-black-base:   $vc-piano-roll-black-base;
+    --piano-roll-black-glint:  $vc-piano-roll-black-glint;
+    --piano-roll-black-shine:  $vc-piano-roll-black-shine;
+    --piano-roll-black-border: $vc-piano-roll-black-border;
   }
   .vc-piano-roll-piano {
     --piano-roll-font: $vc-piano-roll-font;
     --piano-roll-font-color: $vc-piano-roll-font-color;
-    --piano-roll-colors: $vc-piano-roll-colors;
   }
   .vc-piano-roll-notes {
   }
@@ -132,16 +144,34 @@ function piano_layout () {
   return Object.freeze (layout); // effectively 'const'
 }
 
+const cs_values = {
+  light_row: 		'--piano-roll-light-row',
+  dark_row:  		'--piano-roll-dark-row',
+  semitone6:		'--piano-roll-semitone6',
+  semitone12:		'--piano-roll-semitone12',
+  grid_main1:		'--piano-roll-grid-main1',
+  grid_sub1:		'--piano-roll-grid-sub1',
+  white_base:   	'--piano-roll-white-base',
+  white_glint:  	'--piano-roll-white-glint',
+  white_border: 	'--piano-roll-white-border',
+  black_base:   	'--piano-roll-black-base',
+  black_glint:  	'--piano-roll-black-glint',
+  black_shine:  	'--piano-roll-black-shine',
+  black_border: 	'--piano-roll-black-border',
+};
+
 function render_notes (layout) {
   // canvas setup
   const canvas = this.$refs['notes-canvas'], ctx = canvas.getContext ('2d');
+  // computed styles
+  const cs = Util.compute_style_properties (canvas, cs_values);
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.csswidth, layout.cssheight, '#303030');
+  Util.resize_canvas (canvas, layout.csswidth, layout.cssheight, cs.light_row);
   // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
   const th = layout.thickness;
 
   // paint black key rows
-  ctx.fillStyle = '#272727';
+  ctx.fillStyle = cs.dark_row;
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
     for (let r = 0; r < layout.row_colors.length; r++) {
@@ -156,7 +186,7 @@ function render_notes (layout) {
   ctx.lineCap = 'butt'; // chrome 'butt' has a 0.5 pixel bug, so we use fillRect
 
   // draw half octave separators
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = cs.semitone6;
   const stipple = round (2 * window.devicePixelRatio);
   const qy = layout.wkeys[3][0]; // separator between F|G
   for (let oct = 0; oct < layout.octaves; oct++) {
@@ -171,15 +201,15 @@ function render_notes (layout) {
   for (let gx = 0, g = 0; gx < canvas.width; g++) {
     gx = g * grid_dist;
     if (g % 4 == 0) {
-      ctx.fillStyle = '#555';
+      ctx.fillStyle = cs.grid_main1;
     } else {
-      ctx.fillStyle = '#3b3b3b';
+      ctx.fillStyle = cs.grid_sub1;
     }
     ctx.fillRect (gx, gy1, th, gy2 - gy1);
   }
 
   // draw octave separators
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = cs.semitone12;
   for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
     const oy = layout.yoffset - oct * layout.oct_length;
     ctx.fillRect (0, oy, canvas.width, th);
@@ -189,8 +219,10 @@ function render_notes (layout) {
 function render_piano (layout) {
   // canvas setup
   const canvas = this.$refs['piano-canvas'], ctx = canvas.getContext ('2d');
+  // computed styles
+  const cs = Util.compute_style_properties (canvas, cs_values);
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, '#303030');
+  Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, cs.light_row);
   // we draw piano keys horizontally within their boundaries, but verticaly overlapping by one th
   const th = layout.thickness, hf = th * 0.5; // thickness/2 fraction
 
@@ -198,7 +230,7 @@ function render_piano (layout) {
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
     // draw white keys
-    ctx.fillStyle = '#ccc';
+    ctx.fillStyle = cs.white_base;
     ctx.lineWidth = th;
     for (let k = 0; k < layout.wkeys.length; k++) {
       const p = layout.wkeys[k];
@@ -206,28 +238,27 @@ function render_piano (layout) {
       const w = layout.white_width, h = p[1];
       ctx.fillRect   (x + th, y - h + th, w - 2 * th, h - th);	// v-overlap by 1*th
       const sx = x + hf, sy = y - h + hf;			// stroke coords
-      ctx.strokeStyle = '#eeeeee';  // highlight
+      ctx.strokeStyle = cs.white_glint;		// highlight
       ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
-      ctx.strokeStyle = '#111111';  // border
+      ctx.strokeStyle = cs.white_border;	// border
       ctx.strokeRect (sx, sy, w - th, h);			// v-overlap by 1*th
     }
     // draw black keys
-    ctx.fillStyle = '#181818';
+    ctx.fillStyle = cs.black_base;
     ctx.lineWidth = th;
     for (let k = 0; k < layout.bkeys.length; k++) {
       const p = layout.bkeys[k];
       const x = 0, y = oy - p[0];
       const w = layout.black_width, h = p[1];
-      const gradient = [ [0, '#181818'], [.08, '#181818'], [.15, '#555'],   [1, '#181818'] ];
+      const gradient = [ [0, cs.black_base], [.08, cs.black_base], [.15, cs.black_shine],   [1, cs.black_base] ];
       ctx.fillStyle = Util.linear_gradient_from (ctx, gradient, x + th, y - h / 2, x + w - 2 * th, y - h / 2);
       ctx.fillRect   (x + th, y - h + th, w - 2 * th, h - th);	// v-overlap by 1*th
       const sx = x + hf, sy = y - h + hf;			// stroke coords
-      ctx.strokeStyle = '#3a3a3a';  // highlight
+      ctx.strokeStyle = cs.black_glint;		// highlight
       ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
-      ctx.strokeStyle = '#222222';  // border
+      ctx.strokeStyle = cs.black_border;	// border
       ctx.strokeRect (sx, sy, w - th, h);
     }
-    ctx.fillStyle = '#000';
   }
 }
 
