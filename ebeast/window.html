@@ -34,31 +34,46 @@
 <body>
 
   <div id="vue-mountpoint">
-    <vc-projectshell ref="vwin-shell" ></vc-projectshell>
-    <vc-aboutdialog v-if="App.show_about_dialog" @close="App.show_about_dialog = false"></vc-aboutdialog>
+    <vc-projectshell ref="Vue-prototype-Shell" ></vc-projectshell>
+    <vc-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></vc-aboutdialog>
   </div>
 
   <script>
-  // Hookup a global Vue mixin to allow 'data' cloning from 'data_tmpl'
-  Vue.mixin ({ beforeCreate: function () {
-    if (!this.$options.data && this.$options.data_tmpl)
-      this.$options.data = Object.assign ({}, this.$options.data_tmpl);
-    if (this.$options.customized_render && this.$options.render && !this.$options.render.mixin_customized_render) {
-      const render = this.$options.render, customized_render = this.$options.customized_render;
-      this.$options.render = function (createElement) {
-	const element = render.call (this, createElement);
-	return customized_render.call (this, createElement, element);
-      };
-      this.$options.render.mixin_customized_render = true;
-    }
-  } });
-  // Create Vue AppWindow singleton
-  window.App = new require ('./app.js').VueAppWindow ({});
-  // Patch Vue.prototype to make App known inside all Vue components
-  Vue.prototype.App = window.App;
-  // Mount Vue *after* window.App is setup, as it's needed by Vue component callbacks
-  window.App.$mount ('#vue-mountpoint');
-  window.Shell = window.App.$refs['vwin-shell'];
+  // Install a global Vue mixin for common component functionality
+  Vue.mixin ({
+    beforeCreate: function () {
+      // Allow automatic `data` construction (cloning) from `data_tmpl`
+      if (this.$options.data_tmpl)
+	this.$options.data = Object.assign ({}, this.$options.data_tmpl,
+					    typeof this.$options.data === 'function' ?
+					    this.$options.data.call (this) :
+					    this.$options.data);
+      // Allow `customized_render` to alter the `render` method behavior
+      if (this.$options.customized_render && this.$options.render && !this.$options.render.mixin_customized_render) {
+	const render = this.$options.render, customized_render = this.$options.customized_render;
+	this.$options.render = function (createElement) {
+	  const element = render.call (this, createElement);
+	  return customized_render.call (this, createElement, element);
+	};
+	this.$options.render.mixin_customized_render = true;
+      }
+    },
+  });
+  {
+    // Shell will inject itself into all Vue components, make it global
+    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
+    // App.Shell placeholder until the Shell VueComponent is created
+    const shell_placeholder = {
+      show_about_dialog: false,
+      Shell_placeholder: true		// flag causing replacement later on
+    };
+    // Create Vue root instance, which immediately creates Shell
+    const vue_mountpoint = new Vue ({
+      el:   '#vue-mountpoint',
+      data: { Shell: shell_placeholder },
+    });
+    assert (vue_mountpoint); // unused
+  }
   </script>
 
 </body>

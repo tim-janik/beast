@@ -40,7 +40,7 @@ module.exports = {
       return tracks;
     },
     bclick (method, e) {
-      let project = App.project(), m = project[method], message;
+      let project = Shell.project(), m = project[method], message;
       if (m !== undefined) {
 	let result = m.call (project);
 	if (result == undefined)
@@ -49,7 +49,7 @@ module.exports = {
       }
       else
 	message = method + ': unimplemented';
-      App.status (message);
+      Shell.status (message);
     },
   },
 };

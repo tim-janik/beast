@@ -76,8 +76,8 @@ $(document).keydown (function (event) {
     const hotkeys = $(document).data()['hotkeys'];
     if (hotkeys === undefined)
       return;
-    App.status ('HOTKEY: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
-		' (' + document.activeElement.tagName + ')');
+    Shell.status ('HOTKEY: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
+		  ' (' + document.activeElement.tagName + ')');
     for (let key in hotkeys) {
       if (match_hotkey_event (event, key)) {
 	const hotkey_callbacks = hotkeys[key];

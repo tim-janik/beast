@@ -11,7 +11,6 @@ module.exports = {
     "Mithril": false,
     "Vue": false,
     "Bse": false,
-    "App": false,
     "Shell": false,
     "T": false,
     "MAXINT": false,

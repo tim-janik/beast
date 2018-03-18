@@ -46,7 +46,7 @@ module.exports = {
       return this.tickscale * Math.floor ((last_tick + tick_quant - 1) / tick_quant) * tick_quant;
     },
   },
-  customized_render (createElement, result) {
+  customized_render (createElement, result) { // FIXME
     // queue render_canvas into main loop so $el / canvas are updated
     clearTimeout (this.timer);
     const RENDER_ASYNC = true;

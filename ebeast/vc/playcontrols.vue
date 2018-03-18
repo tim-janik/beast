@@ -44,7 +44,7 @@ module.exports = {
       }
       else
 	message = method + ': unimplemented';
-      App.status (message);
+      Shell.status (message);
     },
   },
 };
