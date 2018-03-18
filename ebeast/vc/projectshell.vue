@@ -32,8 +32,9 @@
 <script>
 module.exports = {
   name: 'vc-projectshell',
-  provide () { return { 'vc-projectshell': this }; },
-  methods: {
+  data_tmpl: {
+    part: undefined,
+    show_about_dialog: false,
   },
   computed: {
     project: function () {
@@ -53,6 +54,25 @@ module.exports = {
 	  return s;
       }
       return undefined;
+    },
+  },
+  created() {
+    // delete `Shell` dummy on toplebel if present
+    let p = this;
+    while (p.$parent)
+      p = p.$parent;
+    if (p.Shell && p.Shell.Shell_placeholder)
+      delete p.Shell;
+    // inject Shell into all Vue components
+    Vue.prototype.Shell = this;
+    assert (this === p.Shell);
+    // force root updates with new Shell properties in place
+    (p || this).$forceUpdate();
+  },
+  provide () { return { 'vc-projectshell': this }; },
+  methods: {
+    status (...args) {
+      console.log (...args);
     },
   },
 };
