@@ -14,7 +14,7 @@
       <vc-track-list :song="song"></vc-track-list>
     </div>
     <div class="vc-projectshell-part-area">
-      <vc-piano-roll></vc-piano-roll>
+      <vc-piano-roll :part="this.piano_roll_part"></vc-piano-roll>
     </div>
   </div>
 </template>
@@ -33,7 +33,7 @@
 module.exports = {
   name: 'vc-projectshell',
   data_tmpl: {
-    part: undefined,
+    piano_roll_part: undefined,
     show_about_dialog: false,
   },
   computed: {
@@ -71,6 +71,10 @@ module.exports = {
   },
   provide () { return { 'vc-projectshell': this }; },
   methods: {
+    open_part_edit (part) {
+      assert (part instanceof Bse.Part);
+      this.piano_roll_part = part;
+    },
     status (...args) {
       console.log (...args);
     },

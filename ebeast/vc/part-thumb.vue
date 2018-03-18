@@ -9,7 +9,7 @@
 
 <template>
 
-  <canvas ref="canvas" class="vc-part-thumb" @click="$forceUpdate()"
+  <canvas ref="canvas" class="vc-part-thumb" @click="Shell.open_part_edit (part)"
 	  :style="{ left: this.pxoffset + 'px', width: this.canvas_width + 'px', }" ></canvas>
 
 </template>
