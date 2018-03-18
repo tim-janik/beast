@@ -24,7 +24,3 @@ exports.VueAppWindow = function (vue_options) {
   const util = require ('./vc/utilities.js');
   return util.VueifyObject (new AppWindow (vue_options.data || {}), vue_options);
 };
-
-// == Menus ==
-const menus = require ('./menus.js');
-Electron.Menu.setApplicationMenu (menus.build_menubar());

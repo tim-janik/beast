@@ -74,6 +74,10 @@
     });
     assert (vue_mountpoint); // unused
   }
+  { // setup menubar
+    const menus = require ('./menus.js');
+    Electron.Menu.setApplicationMenu (menus.build_menubar());
+  }
   </script>
 
 </body>
