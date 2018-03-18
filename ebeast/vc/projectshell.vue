@@ -9,16 +9,8 @@
 <template>
   <div class="vc-projectshell">
     <div class="vc-projectshell-track-area">
-      Project Shell. <br />
+      Project Shell:
       <vc-playcontrols :project="project"> </vc-playcontrols>
-      <br />
-      {{ message }}
-      <br />
-      <vc-button @click="App.show_about_dialog = true">About</vc-button>
-      <vc-button @click="frob (1, $event)">1</vc-button>
-      <vc-button @click="frob (2, $event)">2</vc-button>
-      <vc-button @click="frob (3, $event)">3</vc-button>
-      <br />
       <vc-track-list :song="song"></vc-track-list>
     </div>
     <div class="vc-projectshell-part-area">
@@ -41,16 +33,7 @@
 module.exports = {
   name: 'vc-projectshell',
   provide () { return { 'vc-projectshell': this }; },
-  data: function() {
-    let d = {
-      message: 'Interpolated text',
-    };
-    for (const attrname in Electron.app)
-      d[attrname] = Electron.app[attrname];
-    return d;
-  },
   methods: {
-    frob (w, e) { App.status (w); },
   },
   computed: {
     project: function () {
