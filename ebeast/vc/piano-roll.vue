@@ -24,19 +24,23 @@
   .vc-piano-roll canvas {
     display: block;
     image-rendering: pixelated /*ff: crisp-edges*/;
-    --piano-roll-light-row:    $vc-piano-roll-light-row;
-    --piano-roll-dark-row:     $vc-piano-roll-dark-row;
-    --piano-roll-semitone12:   $vc-piano-roll-semitone12;
-    --piano-roll-semitone6:    $vc-piano-roll-semitone6;
-    --piano-roll-grid-main1:   $vc-piano-roll-grid-main1;
-    --piano-roll-grid-sub1:    $vc-piano-roll-grid-sub1;
-    --piano-roll-white-base:   $vc-piano-roll-white-base;
-    --piano-roll-white-glint:  $vc-piano-roll-white-glint;
-    --piano-roll-white-border: $vc-piano-roll-white-border;
-    --piano-roll-black-base:   $vc-piano-roll-black-base;
-    --piano-roll-black-glint:  $vc-piano-roll-black-glint;
-    --piano-roll-black-shine:  $vc-piano-roll-black-shine;
-    --piano-roll-black-border: $vc-piano-roll-black-border;
+    --piano-roll-light-row:    		$vc-piano-roll-light-row;
+    --piano-roll-dark-row:     		$vc-piano-roll-dark-row;
+    --piano-roll-semitone12:   		$vc-piano-roll-semitone12;
+    --piano-roll-semitone6:    		$vc-piano-roll-semitone6;
+    --piano-roll-grid-main1:   		$vc-piano-roll-grid-main1;
+    --piano-roll-grid-sub1:    		$vc-piano-roll-grid-sub1;
+    --piano-roll-white-base:   		$vc-piano-roll-white-base;
+    --piano-roll-white-glint:  		$vc-piano-roll-white-glint;
+    --piano-roll-white-border: 		$vc-piano-roll-white-border;
+    --piano-roll-black-base:   		$vc-piano-roll-black-base;
+    --piano-roll-black-glint:  		$vc-piano-roll-black-glint;
+    --piano-roll-black-shine:  		$vc-piano-roll-black-shine;
+    --piano-roll-black-border: 		$vc-piano-roll-black-border;
+    --piano-roll-key-font:     		$vc-piano-roll-key-font;
+    --piano-roll-key-font-color: 	$vc-piano-roll-key-font-color;
+    --piano-roll-note-font:    		$vc-piano-roll-note-font;
+    --piano-roll-note-font-color:	$vc-piano-roll-note-font-color;
   }
   .vc-piano-roll-piano {
     --piano-roll-font: $vc-piano-roll-font;
@@ -159,6 +163,8 @@ const cs_values = {
   black_glint:  	'--piano-roll-black-glint',
   black_shine:  	'--piano-roll-black-shine',
   black_border: 	'--piano-roll-black-border',
+  key_font:		'--piano-roll-key-font',
+  key_font_color:	'--piano-roll-key-font-color',
 };
 
 function render_notes (layout) {
@@ -261,16 +267,18 @@ function render_piano (layout) {
       ctx.strokeRect (sx, sy, w - th, h);
     }
   }
+
   // figure font size for piano key labels
   const avg_height = layout.wkeys.reduce ((a, p) => a += p[1], 0) / layout.wkeys.length;
   const px = avg_height - 2 * (th + 1);	// base font size on  average white key size
   if (px >= 6) {
-    ctx.font = 'normal ' + px + 'px sans-serif'; // style.getPropertyValue ('--part-thumb-font');
+    const px_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    ctx.font = px_parts[0] + ' ' + px + 'px ' + (px_parts[1] || '');
     // measure Midi labels, faster if batched into an array
     const midi_labels = Util.midi_label ([...Util.range (0, layout.octaves * (layout.wkeys.length + layout.bkeys.length))]);
     const label_spans = Util.canvas_ink_vspan (ctx.font, midi_labels);
     // draw names
-    ctx.fillStyle = '#111'; // style.getPropertyValue ('--part-thumb-font-color');
+    ctx.fillStyle = cs.key_font_color;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     const white2midi = [ 0, 2, 4,   5, 7, 9, 11 ];

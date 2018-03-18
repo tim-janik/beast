@@ -39,20 +39,24 @@ $vc-part-thumb-note-color: rgba(255, 255, 255, 0.7);
 $vc-part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0;
 
 /* == vc-piano-roll == */
-$vc-piano-roll-font:	     bold 0.75em sans-serif; /* format: italic small-caps bold 12px serif */
-$vc-piano-roll-font-color:   rgba(5, 5, 5, 0.7);
-$vc-piano-roll-light-row:    #303030;	/* background row color for notes */
-$vc-piano-roll-dark-row:     #272727;	/* background row color for notes */
-$vc-piano-roll-semitone12:   #555555;	/* separator per octave */
-$vc-piano-roll-semitone6:    #555555;	/* separator after 6 semitones */
-$vc-piano-roll-grid-main1:   #555555;	/* separator, usually per measure */
-$vc-piano-roll-grid-sub1:    #3b3b3b;	/* separator, usually per quarter */
-$vc-piano-roll-white-base:   #cccccc;	/* base color for white piano key */
-$vc-piano-roll-white-glint:  #eeeeee;	/* highlight on white piano key */
-$vc-piano-roll-white-border: #111111;	/* border around white piano key */
-$vc-piano-roll-black-base:   #181818;	/* base color for black piano key */
-$vc-piano-roll-black-glint:  #3a3a3a;	/* highlight on black piano key */
-$vc-piano-roll-black-shine:  #666666;	/* reflection on black piano key */
-$vc-piano-roll-black-border: #222222;	/* border around black piano key */
+$vc-piano-roll-font:	     	bold 0.75em sans-serif;	/* format: italic small-caps bold 12px serif */
+$vc-piano-roll-font-color:   	rgba(5, 5, 5, 0.7);
+$vc-piano-roll-light-row:    	#303030;		/* background row color for notes */
+$vc-piano-roll-dark-row:     	#272727;		/* background row color for notes */
+$vc-piano-roll-semitone12:   	#555555;		/* separator per octave */
+$vc-piano-roll-semitone6:    	#555555;		/* separator after 6 semitones */
+$vc-piano-roll-grid-main1:   	#555555;		/* separator, usually per measure */
+$vc-piano-roll-grid-sub1:    	#3b3b3b;		/* separator, usually per quarter */
+$vc-piano-roll-white-base:   	#cccccc;		/* base color for white piano key */
+$vc-piano-roll-white-glint:  	#eeeeee;		/* highlight on white piano key */
+$vc-piano-roll-white-border: 	#111111;		/* border around white piano key */
+$vc-piano-roll-black-base:   	#181818;		/* base color for black piano key */
+$vc-piano-roll-black-glint:  	#3a3a3a;		/* highlight on black piano key */
+$vc-piano-roll-black-shine:  	#666666;		/* reflection on black piano key */
+$vc-piano-roll-black-border: 	#222222;		/* border around black piano key */
+$vc-piano-roll-key-font:     	bold 9px sans-serif;   	/* the '9px' part is dynamically resized */
+$vc-piano-roll-key-font-color:  #221111;
+$vc-piano-roll-note-font:      	normal 9px sans-serif; 	/* the '9px' part is dynamically resized */
+$vc-piano-roll-note-font-color:	#111111;
 
 
