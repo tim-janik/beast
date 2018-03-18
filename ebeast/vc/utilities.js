@@ -222,3 +222,53 @@ function linear_gradient_from (ctx, stoparray, x1, y1, x2, y2) {
   return grad;
 }
 exports.linear_gradient_from = linear_gradient_from;
+
+/** Measure ink span of a canvas text string or an array */
+function canvas_ink_vspan (font_style, textish = 'gM') {
+  let canvas, ctx, cwidth = 64, cheight = 64;
+  function measure_vspan (text) {
+    const cache_key = font_style + ':' + text;
+    let result = canvas_ink_vspan.cache[cache_key];
+    if (!result)
+      {
+	if (canvas === undefined) {
+	  canvas = document.createElement ('canvas');
+	  ctx = canvas.getContext ('2d');
+	}
+	/* BUG: electron-1.8.3 (chrome-59) is unstable (shows canvas memory
+	 * corruption) at tiny zoom levels without canvas size assignments.
+	 */
+	const text_em = ctx.measureText ("MW").width;
+	const twidth = Math.max (text_em * 2, ctx.measureText (text).width);
+	cwidth = Math.max (cwidth, 2 * twidth);
+	cheight = Math.max (cheight, 3 * text_em);
+	canvas.width = cwidth;
+	canvas.height = cheight;
+	ctx.fillStyle = '#000000';
+	ctx.fillRect (0, 0, canvas.width, canvas.height);
+	ctx.font = font_style;
+	ctx.fillStyle = '#ffffff';
+	ctx.textBaseline = 'top';
+	ctx.fillText (text, 0, 0);
+	const pixels = ctx.getImageData (0, 0, canvas.width, canvas.height).data;
+	let start = -1, end = -1;
+	for (let row = 0; row < canvas.height; row++)
+	  for (let col = 0; col < canvas.width; col++) {
+	    let index = (row * canvas.width + col) * 4; // RGBA
+	    if (pixels[index + 0] > 0) {
+	      if (start < 0)
+		start = row;
+	      else
+		end = row;
+	      break;
+	    }
+	  }
+	result = start >= 0 && end >= 0 ? [start, end - start] : [0, 0];
+	canvas_ink_vspan.cache[cache_key] = result;
+      }
+    return result;
+  }
+  return Array.isArray (textish) ? textish.map (txt => measure_vspan (txt)) : measure_vspan (textish);
+}
+canvas_ink_vspan.cache = [];
+exports.canvas_ink_vspan = canvas_ink_vspan;
