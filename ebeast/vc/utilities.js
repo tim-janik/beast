@@ -1,6 +1,8 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+exports.vue_mixins = {};
+
 /** Throw an Error containing `msg` if `cond` fails to be true */
 function assert (cond, msg) {
   if (!cond) {
@@ -24,6 +26,18 @@ function* range (bound, end, step = 1) {
     yield bound;
 }
 exports.range = range;
+
+/** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
+exports.vue_mixins.data_tmpl = {
+  beforeCreate: function () {
+    // Automatically create `data` (via cloning) from `data_tmpl`
+    if (this.$options.data_tmpl)
+      this.$options.data = Object.assign ({}, this.$options.data_tmpl,
+					  typeof this.$options.data === 'function' ?
+					  this.$options.data.call (this) :
+					  this.$options.data);
+  },
+};
 
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
