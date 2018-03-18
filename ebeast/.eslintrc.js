@@ -6,6 +6,7 @@ module.exports = {
     "node": true
   },
   "globals": {
+    "assert": false,
     "Electron": false,
     "Mithril": false,
     "Vue": false,

@@ -1,6 +1,19 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+/** Throw an Error containing `msg` if `cond` fails to be true */
+function assert (cond, msg) {
+  if (!cond) {
+    msg = msg || "Assertion failed";
+    if (typeof Error !== "undefined") {
+      throw new Error (msg);
+    }
+    throw msg; // fallback
+  }
+  // globally: window.assert = require ('./vc/utilities.js').assert;
+}
+exports.assert = assert;
+
 /** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
 function* range (bound, end, step = 1) {
   if (end === undefined) {

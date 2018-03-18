@@ -17,6 +17,7 @@
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
   const MAXINT = 2147483647, MAXUINT = 4294967295;
   { MAXINT; MAXUINT; } // used
+  window.assert = require ('./vc/utilities.js').assert;
   // show DevTools on hotkey
   if (HAVE_DEVELOPMENT_TOOLS)
     document.addEventListener ("keydown", (event) => {
