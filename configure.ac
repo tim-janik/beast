@@ -569,12 +569,10 @@ AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
     if test "x$with_spectmorph" != "xno"; then
         dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
         PKG_CHECK_MODULES(SPECTMORPH, spectmorph >= 0.3.4, [found_spectmorph="yes"], [found_spectmorph="no"])
-        PKG_CHECK_MODULES(SPECTMORPHGUI, spectmorphgui >= 0.3.4, [found_spectmorphgui="yes"], [found_spectmorphgui="no"])
+        PKG_CHECK_MODULES(SPECTMORPHGLUI, spectmorphglui >= 0.3.4, [found_spectmorphglui="yes"], [found_spectmorphglui="no"])
 
         dnl automatically build with spectmorph support, if it was found by pkg-config
-        if test "x$found_spectmorph-$found_spectmorphgui" = "xyes-yes"; then
-            QT5_MOC=`pkg-config --variable host_bins Qt5Core`/moc
-
+        if test "x$found_spectmorph-$found_spectmorphglui" = "xyes-yes"; then
             with_spectmorph="yes"
         else
             with_spectmorph="no"
@@ -582,9 +580,8 @@ AC_DEFUN([MC_SPECTMORPH_REQUIREMENTS],
     fi
     AC_SUBST(SPECTMORPH_CFLAGS)
     AC_SUBST(SPECTMORPH_LIBS)
-    AC_SUBST(SPECTMORPHGUI_CFLAGS)
-    AC_SUBST(SPECTMORPHGUI_LIBS)
-    AC_SUBST(QT5_MOC)
+    AC_SUBST(SPECTMORPHGLUI_CFLAGS)
+    AC_SUBST(SPECTMORPHGLUI_LIBS)
 
     AM_CONDITIONAL(WITH_SPECTMORPH, [test "x$with_spectmorph" != "xno"])
 ])
