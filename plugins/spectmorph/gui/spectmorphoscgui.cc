@@ -7,43 +7,57 @@
 #include <vector>
 #include <string>
 
-#include <QApplication>
-
-#include "spectmorphoscgui.hh"
+#include "spectmorphglui.hh"
 
 using namespace SpectMorph;
 
 using std::string;
 using std::vector;
 
-OscGui::OscGui (MorphPlanPtr plan, const string& title) :
-  morph_plan (plan)
+class OscGui : public SignalReceiver
 {
-  window = new MorphPlanWindow (morph_plan, title);
-  connect (morph_plan.c_ptr(), SIGNAL (plan_changed()), this, SLOT (on_plan_changed()));
+  MorphPlanPtr      morph_plan;
+  MorphPlanWindow   window;
 
-  MorphPlanControl *control_widget = new MorphPlanControl (morph_plan, MorphPlanControl::NO_VOLUME);
-  window->add_control_widget (control_widget);
+public:
+  OscGui (MorphPlanPtr plan, const std::string& title) :
+    morph_plan (plan),
+    window (title, /* win_id */ 0, /* resize */ false, morph_plan, MorphPlanControl::NO_VOLUME)
+  {
+    connect (morph_plan->signal_plan_changed, this, &OscGui::on_plan_changed);
 
-  window->show();
-}
+    window.show();
+  }
 
-void
-OscGui::on_plan_changed()
-{
-  vector<unsigned char> data;
-  MemOut mo (&data);
-  morph_plan->save (&mo);
-  printf ("%s\n", HexString::encode (data).c_str());
-  fflush (stdout);
-}
+  void
+  on_plan_changed()
+  {
+    vector<unsigned char> data;
+    MemOut mo (&data);
+    morph_plan->save (&mo);
+    printf ("%s\n", HexString::encode (data).c_str());
+    fflush (stdout);
+  }
+
+  void
+  run()
+  {
+    bool quit = false;
+
+    window.set_close_callback ([&]() { quit = true; });
+
+    while (!quit)
+      {
+        window.wait_for_event();
+        window.process_events();
+      }
+  }
+};
 
 int
 main (int argc, char **argv)
 {
   sm_init (&argc, &argv);
-
-  QApplication app (argc, argv);
 
   if (argc != 2)
     {
@@ -64,12 +78,13 @@ main (int argc, char **argv)
   MorphPlanPtr morph_plan = new MorphPlan();
   morph_plan->set_plan_str (plan_str);
 
+  // show window, run mainloop
   OscGui gui (morph_plan, argv[1]);
-  int rc = app.exec();
+  gui.run();
 
   // let parent know that the user closed the gui window
   printf ("quit\n");
   fflush (stdout);
 
-  return rc;
+  return 0;
 }
