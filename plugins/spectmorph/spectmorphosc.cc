@@ -21,7 +21,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bseengine.hh>
 
-#include <QMutex>
+#include <mutex>
 
 #include <stdio.h>
 
@@ -70,7 +70,7 @@ class Osc : public OscBase {
     void
     process (unsigned int n_values)
     {
-      QMutexLocker lock (&osc->morph_plan_synth_mutex());
+      std::lock_guard<std::mutex> lock (osc->morph_plan_synth_mutex());
 
       if (istream (ICHANNEL_CTRL_IN1).connected)
         {
@@ -206,7 +206,7 @@ class Osc : public OscBase {
           morph_plan_voice = morph_plan_synth->add_voice();
         }
 
-      QMutexLocker lock (&osc->morph_plan_synth_mutex());
+      std::lock_guard<std::mutex> lock (osc->morph_plan_synth_mutex());
       MorphPlanPtr plan = osc->take_new_morph_plan();
       if (plan)
         morph_plan_synth->update_plan (plan);
@@ -223,7 +223,7 @@ class Osc : public OscBase {
   MorphPlanPtr     m_new_morph_plan;
   MorphPlanSynth  *m_morph_plan_synth;
   uint64           last_tick_stamp;
-  QMutex           m_morph_plan_synth_mutex;
+  std::mutex       m_morph_plan_synth_mutex;
 
 public:
   MorphPlanPtr
@@ -233,7 +233,7 @@ public:
     m_new_morph_plan = NULL;
     return plan;
   }
-  QMutex&
+  std::mutex&
   morph_plan_synth_mutex()
   {
     return m_morph_plan_synth_mutex;
@@ -241,7 +241,7 @@ public:
   MorphPlanSynth *
   morph_plan_synth (float mix_freq)
   {
-    QMutexLocker lock (&m_morph_plan_synth_mutex);
+    std::lock_guard<std::mutex> lock (m_morph_plan_synth_mutex);
 
     if (!m_morph_plan_synth)
       m_morph_plan_synth = new MorphPlanSynth (mix_freq);
@@ -340,7 +340,7 @@ public:
           m_morph_plan = new MorphPlan();
           m_morph_plan->set_plan_str (plan.c_str());
             {
-              QMutexLocker lock (&m_morph_plan_synth_mutex);
+              std::lock_guard<std::mutex> lock (m_morph_plan_synth_mutex);
               m_new_morph_plan = m_morph_plan;
             }
 #if 0
