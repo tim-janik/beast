@@ -68,27 +68,33 @@ module.exports = {
     hzoom:	1.0,
   },
   computed: {
-    piano_keys: function() { return 120; },
-    piano_height: function() { return 84 * floor ((this.piano_keys + 12 - 1) / 12) + 1; },
+    piano_keys: function() { return 120; }, // FIXME
+    piano_height: function() { return 84 * floor ((this.piano_keys + 12 - 1) / 12) + 1; }, // FIXME
   },
-  customized_render (createElement, result) {
-    // queue render_canvas into main loop so $el / canvas are updated
-    Promise.resolve().then (() => {
-      if (this.$el) {
-	const layout = this.piano_layout();
-	this.render_piano (layout);
-	this.render_notes (layout);
-      }
-    });
-    return result;
+  mounted() {
+    /* DOM and $el is in place, now:
+     * a) render into the canvases, we call render_canvas() for this;
+     * b) re-render the canvases if anything changes, for this we install a watcher
+     */
+    if (!this.unwatch_render_canvas)
+      this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
+    this.render_canvas();
   },
   beforeDestroy() {
-    clearTimeout (this.timer);
+    if (this.unwatch_render_canvas) {
+      this.unwatch_render_canvas();
+      this.unwatch_render_canvas = undefined;
+    }
   },
   methods: {
     piano_layout: piano_layout,
     render_piano: render_piano,
     render_notes: render_notes,
+    render_canvas () {
+      const layout = this.piano_layout();
+      this.render_piano (layout);	// render piano first, it fills some caches that render_notes utilizes
+      this.render_notes (layout);
+    },
   },
 };
 
