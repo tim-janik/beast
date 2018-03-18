@@ -110,7 +110,8 @@ function piano_layout () {
     wkeys:		[], 			// [ [offset,size] * 7 ]
     row_colors:		[ 1, 2, 1, 2, 1,   1, 2, 1, 2, 1, 2, 1 ],		// distinct key colors
     white_width:	54,			// length of white keys
-    black_width:	0.65,			// length of black keys (pre-init factor)
+    black_width:	0.55,			// length of black keys (pre-init factor)
+    label_keys:		1,			// 0=none, 1=roots, 2=whites
   };
   const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
   const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
@@ -258,6 +259,38 @@ function render_piano (layout) {
       ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
       ctx.strokeStyle = cs.black_border;	// border
       ctx.strokeRect (sx, sy, w - th, h);
+    }
+  }
+  // figure font size for piano key labels
+  const avg_height = layout.wkeys.reduce ((a, p) => a += p[1], 0) / layout.wkeys.length;
+  const px = avg_height - 2 * (th + 1);	// base font size on  average white key size
+  if (px >= 6) {
+    ctx.font = 'normal ' + px + 'px sans-serif'; // style.getPropertyValue ('--part-thumb-font');
+    // measure Midi labels, faster if batched into an array
+    const midi_labels = Util.midi_label ([...Util.range (0, layout.octaves * (layout.wkeys.length + layout.bkeys.length))]);
+    const label_spans = Util.canvas_ink_vspan (ctx.font, midi_labels);
+    // draw names
+    ctx.fillStyle = '#111'; // style.getPropertyValue ('--part-thumb-font-color');
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const white2midi = [ 0, 2, 4,   5, 7, 9, 11 ];
+    // TODO: use actualBoundingBoxAscent once measureText() becomes more sophisticated
+    for (let oct = 0; oct < layout.octaves; oct++) {
+      const oy = layout.yoffset - oct * layout.oct_length;
+      // skip non-roots / roots according to configuration
+      for (let k = 0; k < layout.wkeys.length; k++) {
+	if ((k && layout.label_keys < 2) || layout.label_keys < 1)
+	  continue;
+	// draw white key
+	const p = layout.wkeys[k];
+	const x = 0, y = oy - p[0];
+	const w = layout.white_width, h = p[1];
+	const midi_key = oct * 12 + white2midi[k];
+	const label = midi_labels[midi_key], vspan = label_spans[midi_key];
+	const twidth = ctx.measureText (label).width;
+	const tx = x + w - 2 * (th + 1) - twidth, ty = y - h + (h - vspan[1]) / 2 - vspan[0];
+	ctx.fillText (label, tx, ty);
+      }
     }
   }
 }
