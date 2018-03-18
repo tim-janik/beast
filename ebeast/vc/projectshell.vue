@@ -37,10 +37,14 @@ module.exports = {
   },
   computed: {
     project: function () {
-      const bse_project = App.bse_project();
-      if (!(bse_project instanceof Bse.Project))
-	throw new Error ('wrong type, expected: Bse.Project');
-      return bse_project;
+      if (!this.project_) {
+	this.project_ = Bse.server.create_project ('Untitled');
+	if (this.project_) {
+	  let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
+	  this.project_.restore_from_file (example);
+	}
+      }
+      return this.project_;
     },
     song: function () {
       let s, supers = this.project.get_supers();

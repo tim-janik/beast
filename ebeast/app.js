@@ -17,16 +17,6 @@ class AppWindow {
   get show_about_dialog ()		{ return this.show_about_; }
   set show_about_dialog (v)		{ this.show_about_ = v; }
   status (...msgs)			{ console.log (msgs.join (' ')); }
-  bse_project() {
-    if (!this.project_) {
-      this.project_ = Bse.server.create_project ('Untitled');
-      if (this.project_) {
-	let example = __dirname + "/../../" + 'Demos/partymonster.bse';
-	this.project_.restore_from_file (example);
-      }
-    }
-    return this.project_;
-  }
 }
 
 // Export constructor to create AppWindow as Vue component
