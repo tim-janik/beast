@@ -23,7 +23,6 @@ EBEAST_MOSTLYCLEANFILES =
 
 # == ebeast files ==
 ebeast_app_files = $(strip 		\
-	ebeast/app.js			\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 )
