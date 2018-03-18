@@ -1,6 +1,17 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+/** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
+function* range (bound, end, step = 1) {
+  if (end === undefined) {
+    end = bound;
+    bound = 0;
+  }
+  for (; bound < end; bound += step)
+    yield bound;
+}
+exports.range = range;
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
