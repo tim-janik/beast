@@ -114,7 +114,7 @@ function piano_layout () {
     octaves:		0,			// number of octaves to display
     thickness:		1,			// if ratio in [0..2]
     yoffset:		piano_roll_cssheight,	// y coordinate of lowest octave
-    qn_pixels:		25,			// pixels per quarter note
+    beat_pixels:	25,			// pixels per quarter note
     row:		7,
     bkeys:		[], 			// [ [offset,size] * 5 ]
     wkeys:		[], 			// [ [offset,size] * 7 ]
@@ -133,7 +133,7 @@ function piano_layout () {
   layout.octaves = round (layout.cssheight / layout.oct_length);
   layout.thickness = Math.max (round (ratio * 0.5), 1);
   layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
-  layout.qn_pixels = round (layout.qn_pixels * ratio * this.hzoom);
+  layout.beat_pixels = round (layout.beat_pixels * ratio * this.hzoom);
   layout.row = round (ratio * layout.row * this.vzoom);
   layout.oct_length = layout.row * 12;
   layout.white_width = round (layout.white_width * ratio);
@@ -171,6 +171,8 @@ const cs_values = {
   black_border: 	'--piano-roll-black-border',
   key_font:		'--piano-roll-key-font',
   key_font_color:	'--piano-roll-key-font-color',
+  note_font:		'--piano-roll-note-font',
+  note_font_color:	'--piano-roll-note-font-color',
 };
 
 function render_notes (layout) {
@@ -210,9 +212,9 @@ function render_notes (layout) {
   // draw vertical grid lines
   const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
   const gy2 = layout.yoffset; // align with outer piano border
-  const grid_dist = layout.qn_pixels;
+  const beat_dist = layout.beat_pixels;
   for (let gx = 0, g = 0; gx < canvas.width; g++) {
-    gx = g * grid_dist;
+    gx = g * beat_dist;
     if (g % 4 == 0) {
       ctx.fillStyle = cs.grid_main1;
     } else {
@@ -226,6 +228,24 @@ function render_notes (layout) {
   for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
     const oy = layout.yoffset - oct * layout.oct_length;
     ctx.fillRect (0, oy, canvas.width, th);
+  }
+
+  // paint notes
+  const part = this.part;
+  if (part) {
+    const px_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    const px = layout.row - 2;
+    ctx.font = px_parts[0] + ' ' + px + 'px ' + (px_parts[1] || '');
+    ctx.fillStyle = cs.key_font_color;
+    // draw notes
+    const pnotes = part.list_notes_crossing (0, MAXINT);
+    const tickscale = layout.beat_pixels / 384;
+    for (const note of pnotes) {
+      const oct = floor (note.note / 12), key = note.note - oct * 12;
+      const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
+      const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
+      ctx.fillRect (nx, ny - layout.row, nw, layout.row);
+    }
   }
 }
 
@@ -280,11 +300,11 @@ function render_piano (layout) {
   if (px >= 6) {
     const px_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
     ctx.font = px_parts[0] + ' ' + px + 'px ' + (px_parts[1] || '');
+    ctx.fillStyle = cs.key_font_color;
     // measure Midi labels, faster if batched into an array
     const midi_labels = Util.midi_label ([...Util.range (0, layout.octaves * (layout.wkeys.length + layout.bkeys.length))]);
     const label_spans = Util.canvas_ink_vspan (ctx.font, midi_labels);
     // draw names
-    ctx.fillStyle = cs.key_font_color;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     const white2midi = [ 0, 2, 4,   5, 7, 9, 11 ];
