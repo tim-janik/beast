@@ -272,3 +272,15 @@ function canvas_ink_vspan (font_style, textish = 'gM') {
 }
 canvas_ink_vspan.cache = [];
 exports.canvas_ink_vspan = canvas_ink_vspan;
+
+/** Retrieve the 'C-1' .. 'G8' label for midi note numbers */
+function midi_label (numish) {
+  function one_label (num) {
+    const letter = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
+    const oct = Math.floor (num / letter.length) - 1;
+    const key = num % letter.length;
+    return letter[key] + oct;
+  }
+  return Array.isArray (numish) ? numish.map (n => one_label (n)) : one_label (numish);
+}
+exports.midi_label = midi_label;
