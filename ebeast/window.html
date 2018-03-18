@@ -17,7 +17,6 @@
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
   const MAXINT = 2147483647, MAXUINT = 4294967295;
   { MAXINT; MAXUINT; } // used
-  window.assert = require ('./vc/utilities.js').assert;
   // show DevTools on hotkey
   if (HAVE_DEVELOPMENT_TOOLS)
     document.addEventListener ("keydown", (event) => {
@@ -27,7 +26,13 @@
       if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
 	window.location.reload();
     });
-  // Electron.getCurrentWindow().webContents.setZoomFactor(1)
+  // Utilities
+  {
+    const Util = require ('./vc/utilities.js');
+    window.assert = Util.assert;
+    Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
+  }
+  // Electron.getCurrentWindow().webContents.setZoomFactor (1);
   </script>
 
 </head>
@@ -39,26 +44,6 @@
   </div>
 
   <script>
-  // Install a global Vue mixin for common component functionality
-  Vue.mixin ({
-    beforeCreate: function () {
-      // Allow automatic `data` construction (cloning) from `data_tmpl`
-      if (this.$options.data_tmpl)
-	this.$options.data = Object.assign ({}, this.$options.data_tmpl,
-					    typeof this.$options.data === 'function' ?
-					    this.$options.data.call (this) :
-					    this.$options.data);
-      // Allow `customized_render` to alter the `render` method behavior
-      if (this.$options.customized_render && this.$options.render && !this.$options.render.mixin_customized_render) {
-	const render = this.$options.render, customized_render = this.$options.customized_render;
-	this.$options.render = function (createElement) {
-	  const element = render.call (this, createElement);
-	  return customized_render.call (this, createElement, element);
-	};
-	this.$options.render.mixin_customized_render = true;
-      }
-    },
-  });
   {
     // Shell will inject itself into all Vue components, make it global
     Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
