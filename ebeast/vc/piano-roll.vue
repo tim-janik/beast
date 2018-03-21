@@ -105,6 +105,14 @@ module.exports = {
       this.render_notes (layout);
     },
     dom_updated() {
+      if (!this.resize_observer)
+	this.resize_observer = new window.ResizeObserver (entries => { this.$forceUpdate(); console.log ("pong!"); });
+      if (this.resizable_scrollarea != this.$refs.scrollarea) {
+	if (this.resizable_scrollarea)
+	  this.resize_observer.unobserve (this.resizable_scrollarea);
+	this.resizable_scrollarea = this.$refs.scrollarea;
+	this.resize_observer.observe (this.resizable_scrollarea);
+      }
       if (this.hscrollbar != this.$refs.hscrollbar) {
 	this.hscrollbar = this.$refs.hscrollbar;
 	this.$forceUpdate(); // setup hscrollbar percentage
