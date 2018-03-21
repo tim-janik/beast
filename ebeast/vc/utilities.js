@@ -39,6 +39,27 @@ exports.vue_mixins.data_tmpl = {
   },
 };
 
+/** Vue mixin to create a kebab-case ('two-words') getter proxy for camelCase ('twoWords') props */
+exports.vue_mixins.hyphen_props = {
+  beforeCreate: function () {
+    for (let cc in this.$options.props) {
+      const hyphenated = hyphenate (cc);
+      if (hyphenated === cc || (this.$options.computed && hyphenated in this.$options.computed))
+	continue;
+      if (!this.$options.computed)
+	this.$options.computed = {};
+      this.$options.computed[hyphenated] = function() { return this[cc]; };
+    }
+  },
+};
+
+/** Generate a kebab-case ('two-words') identifier from a camelCase ('twoWords') identifier */
+function hyphenate (string) {
+  const uppercase_boundary =  /\B([A-Z])/g;
+  return string.replace (uppercase_boundary, '-$1').toLowerCase();
+}
+exports.hyphenate = hyphenate;
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
