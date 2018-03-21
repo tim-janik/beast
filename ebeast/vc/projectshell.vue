@@ -13,8 +13,8 @@
       <vc-playcontrols :project="project"> </vc-playcontrols>
       <vc-track-list :song="song"></vc-track-list>
     </div>
-    <div class="vc-projectshell-part-area">
-      <vc-piano-roll :part="this.piano_roll_part"></vc-piano-roll>
+    <div class="vc-projectshell-part-area" style="display: flex; overflow: hidden;" >
+      <vc-piano-roll :piano-part="this.piano_roll_part" ></vc-piano-roll>
     </div>
   </div>
 </template>
@@ -23,10 +23,8 @@
   @import 'mixins.scss';
   .vc-projectshell { }
   .vc-projectshell-part-area {
-    white-space: nowrap; overflow-h: hidden; overflow-y: scroll;
     background-color: $vc-button-border;
-    height: 350px;
-    border: 1px solid red; }
+    height: 350px; }
 </style>
 
 <script>
