@@ -12,7 +12,15 @@
 <template>
 
   <div class="vc-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
-    <vc-hscrollbar ref="hscrollbar" slider-size='45' style='margin:10px' ></vc-hscrollbar>
+    <div style="display: flex; width: 100%; flex-shrink: 0;">
+      <div ref="piano-roll-buttons" class="vc-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
+	<button >W</button>
+	<button >q</button>
+	<button >B</button>
+	<button >g</button>
+      </div>
+      <vc-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></vc-hscrollbar>
+    </div>
     <div ref="scrollcontainer" style="overflow-y: scroll" >
       <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
 	<div :style="{
@@ -22,8 +30,8 @@
 		     width: '100%',
 		     'background-color': 'blue',
 		     }" >
-	  <canvas ref="piano-canvas" class="vc-piano-roll-piano" :style="{ width:  54 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="vc-piano-roll-notes" :style="{ width: 384 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="piano-canvas" class="vc-piano-roll-piano" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="vc-piano-roll-notes" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
 	</div>
       </div>
     </div>
@@ -35,6 +43,9 @@
   @import 'mixins.scss';
   .vc-piano-roll {
     border: 1px solid red;
+  }
+  .vc-piano-roll-buttons {
+    font: $vc-piano-roll-buttons-font;
   }
   .vc-piano-roll canvas {
     display: block;
@@ -60,6 +71,8 @@
   .vc-piano-roll-piano {
     --piano-roll-font: $vc-piano-roll-font;
     --piano-roll-font-color: $vc-piano-roll-font-color;
+    --piano-roll-key-length: $vc-piano-roll-key-length;
+    width: $vc-piano-roll-key-length;
   }
   .vc-piano-roll-notes {
   }
@@ -192,16 +205,18 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     bkeys:		[], 			// [ [offset,size] * 5 ]
     wkeys:		[], 			// [ [offset,size] * 7 ]
     row_colors:		[ 1, 2, 1, 2, 1,   1, 2, 1, 2, 1, 2, 1 ],		// distinct key colors
-    white_width:	54,			// length of white keys
+    white_width:	54,			// length of white keys, --piano-roll-key-length
     black_width:	0.55,			// length of black keys (pre-init factor)
     label_keys:		1,			// 0=none, 1=roots, 2=whites
   };
   const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
   const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
+  const key_length = parseFloat (piano_style.getPropertyValue ('--piano-roll-key-length'));
   // scale layout
   const sbr = this.$refs.scrollarea.getBoundingClientRect();
   const ratio = window.devicePixelRatio;
   const layout_height = round (ratio * layout.cssheight);
+  layout.white_width = key_length || layout.white_width; // allow CSS override
   layout.piano_csswidth = layout.white_width;
   layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
   layout.beat_pixels = round (layout.beat_pixels * ratio * this.hzoom);
@@ -241,6 +256,8 @@ function render_piano (canvas, cstyle, layout) {
   // resize canvas to match onscreen pixels, paint bg with white key row color
   const light_row = csp ('--piano-roll-light-row');
   Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, light_row);
+  const piano_buttons = this.$refs['piano-roll-buttons'];
+  piano_buttons.style.width = layout.piano_csswidth + 'px';
   // we draw piano keys horizontally within their boundaries, but verticaly overlapping by one th
   const th = layout.thickness, hf = th * 0.5; // thickness/2 fraction
 

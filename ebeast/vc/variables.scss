@@ -58,5 +58,6 @@ $vc-piano-roll-key-font:     	bold 9px sans-serif;   	/* the '9px' part is dynam
 $vc-piano-roll-key-font-color:  #221111;
 $vc-piano-roll-note-font:      	normal 9px sans-serif; 	/* the '9px' part is dynamically resized */
 $vc-piano-roll-note-font-color:	#88cc88;
-
+$vc-piano-roll-key-length:	88px;
+$vc-piano-roll-buttons-font:	normal 9px sans-serif;	/* size must fit into vc-piano-roll-key-length */
 
