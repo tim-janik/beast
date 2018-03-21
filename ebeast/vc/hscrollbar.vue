@@ -128,6 +128,21 @@ module.exports = {
 	document.removeEventListener ("mouseup",   this.drag_stop);
       }
     },
+    wheel_event (ev) {
+      if (ev.deltaX != 0 && ((ev.deltaX > 0 && this.value < 1) || (ev.deltaX < 0 && this.value > 0))) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	const tbr = this.$refs.track.getBoundingClientRect();
+	const sbr = this.$refs.slider.getBoundingClientRect();
+	const currentx = sbr.left - tbr.left;
+	const targetx = currentx + ev.deltaX * 0.1;
+	const range = tbr.width - sbr.width;
+	this.value = targetx / range;
+      }
+    },
+  },
+  mounted() {
+    this.$el.addEventListener ('wheel', e => this.wheel_event (e));
   },
   beforeDestroy () {
     document.removeEventListener ("mousemove", this.drag_move);
