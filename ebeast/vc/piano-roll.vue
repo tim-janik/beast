@@ -3,14 +3,29 @@
 <docs>
   ## vc-piano-roll - Vue template to display a part as a piano roll
   ### Props:
-  - **part** - The BsePart to display.
+  - **piano-part** - The `BsePart` to display.
+  ### data:
+  - **hscrollbar** - The horizontal scrollbar component, used to provide the virtual scrolling position for the notes canvas.
+  - **part** - Retrieve the `BsePart` set via the `piano-part` property.
 </docs>
 
 <template>
-
-  <div class="vc-piano-roll" :style="{ height: piano_roll_cssheight + 'px', 'background-color': 'blue', }" >
-    <canvas ref="piano-canvas" class="vc-piano-roll-piano" :style="{ width:   54 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-    <canvas ref="notes-canvas" class="vc-piano-roll-notes" :style="{ width: 3840 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+  <div class="vc-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
+    <vc-hscrollbar ref="hscrollbar" slider-size='45' style='margin:10px' ></vc-hscrollbar>
+    <div ref="scrollcontainer" style="overflow-y: scroll" >
+      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
+	<div :style="{
+		     display: 'flex',
+		     'flex-direction': 'row',
+		     height: piano_roll_cssheight + 'px',
+		     width: '100%',
+		     'background-color': 'blue',
+		     }" >
+	  <canvas ref="piano-canvas" class="vc-piano-roll-piano" :style="{ width:  54 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="vc-piano-roll-notes" :style="{ width: 384 + 'px', height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	</div>
+      </div>
+    </div>
   </div>
 
 </template>
@@ -18,8 +33,7 @@
 <style lang="scss">
   @import 'mixins.scss';
   .vc-piano-roll {
-    display: flex;
-    flex-direction: row;
+    border: 1px solid red;
   }
   .vc-piano-roll canvas {
     display: block;
@@ -57,28 +71,23 @@ const piano_roll_cssheight = 841;
 
 module.exports = {
   name: 'vc-piano-roll',
+  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
-    'part': { type: Bse.Part, },
+    'piano-part': [Bse.Part],
   },
   data_tmpl: {
-    qnpt:	4,	// quarter notes per tact
-    tpqn:	384,	// ticks per quarter note
-    last_tick:	384,
-    vzoom:	1.0,
-    hzoom:	1.0,
+    qnpt:		4,	// quarter notes per tact
+    tpqn:		384,	// ticks per quarter note
+    last_tick:		384,
+    vzoom:		1.0,
+    hzoom:		1.0,
+    hscrollbar:		undefined,
+    part_:		undefined,
   },
   computed: {
     piano_keys: function() { return 120; }, // FIXME
     piano_height: function() { return 84 * floor ((this.piano_keys + 12 - 1) / 12) + 1; }, // FIXME
-  },
-  mounted() {
-    /* DOM and $el is in place, now:
-     * a) render into the canvases, we call render_canvas() for this;
-     * b) re-render the canvases if anything changes, for this we install a watcher
-     */
-    if (!this.unwatch_render_canvas)
-      this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
-    this.render_canvas();
+    part:		function () { return this['piano-part']; },
   },
   beforeDestroy() {
     if (this.unwatch_render_canvas) {
@@ -95,6 +104,19 @@ module.exports = {
       this.render_piano (layout);	// render piano first, it fills some caches that render_notes utilizes
       this.render_notes (layout);
     },
+    dom_updated() {
+      if (this.hscrollbar != this.$refs.hscrollbar) {
+	this.hscrollbar = this.$refs.hscrollbar;
+	this.$forceUpdate(); // setup hscrollbar percentage
+      }
+      /* DOM and $el is in place, now:
+       * a) render into the canvases, we call render_canvas() for this;
+       * b) re-render the canvases if anything changes, for this we install a watcher
+       */
+      if (!this.unwatch_render_canvas)
+	this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
+      this.render_canvas();
+    },
   },
 };
 
@@ -108,13 +130,15 @@ function piano_layout () {
    */
   let layout = {
     cssheight:		piano_roll_cssheight,
-    csswidth:		0,			// derived from last_tick
     piano_csswidth:	0,			// derived from white_width
+    notes_csswidth:	0,			// display width, determined by parent
+    virt_width:		0,			// virtual width in CSS pixels, derived from last_tick
     oct_length:		84,			// initially css pixels, = 12 * 7
     octaves:		0,			// number of octaves to display
     thickness:		1,			// if ratio in [0..2]
     yoffset:		piano_roll_cssheight,	// y coordinate of lowest octave
-    beat_pixels:	25,			// pixels per quarter note
+    xscroll:		0,			// horizontal scroll position
+    beat_pixels:	50,			// pixels per quarter note
     row:		7,
     bkeys:		[], 			// [ [offset,size] * 5 ]
     wkeys:		[], 			// [ [offset,size] * 7 ]
@@ -126,18 +150,26 @@ function piano_layout () {
   const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
   const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
   // scale layout
+  const sbr = this.$refs.scrollarea.getBoundingClientRect();
   const ratio = window.devicePixelRatio;
   const layout_height = round (ratio * layout.cssheight);
-  layout.csswidth = Math.max (this.last_tick, 384) * 10;
   layout.piano_csswidth = layout.white_width;
+  layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
+  layout.beat_pixels = round (layout.beat_pixels * ratio * this.hzoom);
+  layout.virt_width = floor (384 * floor (this.last_tick / 384));
   layout.octaves = round (layout.cssheight / layout.oct_length);
   layout.thickness = Math.max (round (ratio * 0.5), 1);
   layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
-  layout.beat_pixels = round (layout.beat_pixels * ratio * this.hzoom);
   layout.row = round (ratio * layout.row * this.vzoom);
   layout.oct_length = layout.row * 12;
   layout.white_width = round (layout.white_width * ratio);
   layout.black_width = round (layout.white_width * layout.black_width);
+  // hscrollbar setup
+  if (this.hscrollbar) {
+    if (this.hscrollbar.percentage !== undefined)
+      this.hscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
+    layout.xscroll = this.hscrollbar.value * layout.virt_width;
+  }
   // assign white key positions and aligned sizes
   let last = layout.oct_length;
   for (let i = white_offsets.length - 1; i >= 0; i--) {
@@ -181,7 +213,7 @@ function render_notes (layout) {
   // computed styles
   const cs = Util.compute_style_properties (canvas, cs_values);
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.csswidth, layout.cssheight, cs.light_row);
+  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, cs.light_row);
   // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
   const th = layout.thickness;
 
@@ -199,28 +231,31 @@ function render_notes (layout) {
   // line thickness and line cap
   ctx.lineWidth = th;
   ctx.lineCap = 'butt'; // chrome 'butt' has a 0.5 pixel bug, so we use fillRect
+  const lsx = layout.xscroll;
 
   // draw half octave separators
   ctx.fillStyle = cs.semitone6;
-  const stipple = round (2 * window.devicePixelRatio);
+  const stipple = round (3 * window.devicePixelRatio), stipple2 = 2 * stipple;
   const qy = layout.wkeys[3][0]; // separator between F|G
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
-    Util.hstippleRect (ctx, th, oy - qy, canvas.width, th, stipple);
+    Util.hstippleRect (ctx, th - lsx % stipple2, oy - qy, canvas.width, th, stipple);
   }
 
   // draw vertical grid lines
   const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
   const gy2 = layout.yoffset; // align with outer piano border
   const beat_dist = layout.beat_pixels;
-  for (let gx = 0, g = 0; gx < canvas.width; g++) {
-    gx = g * beat_dist;
-    if (g % 4 == 0) {
+  const grid_divider = 4 * beat_dist; // largest grid divider
+  let grid = floor (lsx / grid_divider);
+  for (let gx = 0; gx - lsx < canvas.width; grid++) {
+    gx = grid * beat_dist;
+    if (grid % 4 == 0) {
       ctx.fillStyle = cs.grid_main1;
     } else {
       ctx.fillStyle = cs.grid_sub1;
     }
-    ctx.fillRect (gx, gy1, th, gy2 - gy1);
+    ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
   }
 
   // draw octave separators
@@ -233,9 +268,9 @@ function render_notes (layout) {
   // paint notes
   const part = this.part;
   if (part) {
-    const px_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
-    const px = layout.row - 2;
-    ctx.font = px_parts[0] + ' ' + px + 'px ' + (px_parts[1] || '');
+    const fpx_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    const fpx = layout.row - 2;
+    ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
     ctx.fillStyle = cs.key_font_color;
     // draw notes
     const pnotes = part.list_notes_crossing (0, MAXINT);
@@ -244,7 +279,7 @@ function render_notes (layout) {
       const oct = floor (note.note / 12), key = note.note - oct * 12;
       const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
-      ctx.fillRect (nx, ny - layout.row, nw, layout.row);
+      ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
     }
   }
 }
@@ -296,10 +331,10 @@ function render_piano (layout) {
 
   // figure font size for piano key labels
   const avg_height = layout.wkeys.reduce ((a, p) => a += p[1], 0) / layout.wkeys.length;
-  const px = avg_height - 2 * (th + 1);	// base font size on  average white key size
-  if (px >= 6) {
-    const px_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
-    ctx.font = px_parts[0] + ' ' + px + 'px ' + (px_parts[1] || '');
+  const fpx = avg_height - 2 * (th + 1);	// base font size on average white key size
+  if (fpx >= 6) {
+    const fpx_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
     ctx.fillStyle = cs.key_font_color;
     // measure Midi labels, faster if batched into an array
     const midi_labels = Util.midi_label ([...Util.range (0, layout.octaves * (layout.wkeys.length + layout.bkeys.length))]);
