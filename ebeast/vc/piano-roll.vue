@@ -151,6 +151,10 @@ module.exports = {
        */
       if (!this.unwatch_render_canvas)
 	this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
+      if (!this.scroller) {
+	this.scroller = {};
+	this.$refs.scrollarea.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
+      }
       this.render_canvas();
     },
     render_canvas () {
