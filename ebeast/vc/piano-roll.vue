@@ -119,6 +119,27 @@ module.exports = {
     piano_layout: piano_layout,
     render_piano: render_piano,
     render_notes: render_notes,
+    dom_updated() {
+      if (!this.resize_observer)
+	this.resize_observer = new window.ResizeObserver (entries => { this.$forceUpdate(); });
+      if (this.resizable_scrollarea != this.$refs.scrollarea) {
+	if (this.resizable_scrollarea)
+	  this.resize_observer.unobserve (this.resizable_scrollarea);
+	this.resizable_scrollarea = this.$refs.scrollarea;
+	this.resize_observer.observe (this.resizable_scrollarea);
+      }
+      if (this.hscrollbar != this.$refs.hscrollbar) {
+	this.hscrollbar = this.$refs.hscrollbar;
+	this.$forceUpdate(); // setup hscrollbar percentage
+      }
+      /* DOM and $el is in place, now:
+       * a) render into the canvases, we call render_canvas() for this;
+       * b) re-render the canvases if anything changes, for this we install a watcher
+       */
+      if (!this.unwatch_render_canvas)
+	this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
+      this.render_canvas();
+    },
     render_canvas () {
       // canvas setup
       const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
@@ -144,27 +165,6 @@ module.exports = {
 	}
 	this.auto_scrollto = undefined;
       }
-    },
-    dom_updated() {
-      if (!this.resize_observer)
-	this.resize_observer = new window.ResizeObserver (entries => { this.$forceUpdate(); console.log ("pong!"); });
-      if (this.resizable_scrollarea != this.$refs.scrollarea) {
-	if (this.resizable_scrollarea)
-	  this.resize_observer.unobserve (this.resizable_scrollarea);
-	this.resizable_scrollarea = this.$refs.scrollarea;
-	this.resize_observer.observe (this.resizable_scrollarea);
-      }
-      if (this.hscrollbar != this.$refs.hscrollbar) {
-	this.hscrollbar = this.$refs.hscrollbar;
-	this.$forceUpdate(); // setup hscrollbar percentage
-      }
-      /* DOM and $el is in place, now:
-       * a) render into the canvases, we call render_canvas() for this;
-       * b) re-render the canvases if anything changes, for this we install a watcher
-       */
-      if (!this.unwatch_render_canvas)
-	this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
-      this.render_canvas();
     },
   },
 };
@@ -234,89 +234,6 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     layout.bkeys.push ([key_start, key_end - key_start]);
   }
   return Object.freeze (layout); // effectively 'const'
-}
-
-function render_notes (canvas, cstyle, layout) {
-  const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
-  const light_row = cstyle.getPropertyValue ('--piano-roll-light-row');
-  // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, light_row);
-  console.log (canvas, layout.notes_csswidth, layout.cssheight, light_row);
-  // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
-  const th = layout.thickness;
-
-  // paint black key rows
-  const dark_row = csp ('--piano-roll-dark-row');
-  ctx.fillStyle = dark_row;
-  for (let oct = 0; oct < layout.octaves; oct++) {
-    const oy = layout.yoffset - oct * layout.oct_length;
-    for (let r = 0; r < layout.row_colors.length; r++) {
-      if (layout.row_colors[r] > 1) {
-	ctx.fillRect (0, oy - r * layout.row - layout.row, canvas.width, layout.row);
-      }
-    }
-  }
-
-  // line thickness and line cap
-  ctx.lineWidth = th;
-  ctx.lineCap = 'butt'; // chrome 'butt' has a 0.5 pixel bug, so we use fillRect
-  const lsx = layout.xscroll;
-
-  // draw half octave separators
-  const semitone6 = csp ('--piano-roll-semitone6');
-  ctx.fillStyle = semitone6;
-  const stipple = round (3 * window.devicePixelRatio), stipple2 = 2 * stipple;
-  const qy = layout.wkeys[3][0]; // separator between F|G
-  for (let oct = 0; oct < layout.octaves; oct++) {
-    const oy = layout.yoffset - oct * layout.oct_length;
-    Util.hstippleRect (ctx, th - lsx % stipple2, oy - qy, canvas.width, th, stipple);
-  }
-
-  // draw vertical grid lines
-  const grid_main1 = csp ('--piano-roll-grid-main1');
-  const grid_sub1 = csp ('--piano-roll-grid-sub1');
-  const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
-  const gy2 = layout.yoffset; // align with outer piano border
-  const beat_dist = layout.beat_pixels;
-  const grid_divider = 4 * beat_dist; // largest grid divider
-  let grid = floor (lsx / grid_divider);
-  for (let gx = 0; gx - lsx < canvas.width; grid++) {
-    gx = grid * beat_dist;
-    if (grid % 4 == 0) {
-      ctx.fillStyle = grid_main1;
-    } else {
-      ctx.fillStyle = grid_sub1;
-    }
-    ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
-  }
-
-  // draw octave separators
-  const semitone12 = csp ('--piano-roll-semitone12');
-  ctx.fillStyle = semitone12;
-  for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
-    const oy = layout.yoffset - oct * layout.oct_length;
-    ctx.fillRect (0, oy, canvas.width, th);
-  }
-
-  // paint notes
-  const note_font = csp ('--piano-roll-note-font');
-  const note_font_color = csp ('--piano-roll-note-font-color');
-  const part = this.part;
-  if (part) {
-    const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
-    const fpx = layout.row - 2;
-    ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
-    ctx.fillStyle = note_font_color;
-    // draw notes
-    const pnotes = part.list_notes_crossing (0, MAXINT);
-    const tickscale = layout.beat_pixels / 384;
-    for (const note of pnotes) {
-      const oct = floor (note.note / 12), key = note.note - oct * 12;
-      const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
-      const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
-      ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
-    }
-  }
 }
 
 function render_piano (canvas, cstyle, layout) {
@@ -402,6 +319,88 @@ function render_piano (canvas, cstyle, layout) {
 	const tx = x + w - 2 * (th + 1) - twidth, ty = y - h + (h - vspan[1]) / 2 - vspan[0];
 	ctx.fillText (label, tx, ty);
       }
+    }
+  }
+}
+
+function render_notes (canvas, cstyle, layout) {
+  const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
+  const light_row = cstyle.getPropertyValue ('--piano-roll-light-row');
+  // resize canvas to match onscreen pixels, paint bg with white key row color
+  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, light_row);
+  // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
+  const th = layout.thickness;
+
+  // paint black key rows
+  const dark_row = csp ('--piano-roll-dark-row');
+  ctx.fillStyle = dark_row;
+  for (let oct = 0; oct < layout.octaves; oct++) {
+    const oy = layout.yoffset - oct * layout.oct_length;
+    for (let r = 0; r < layout.row_colors.length; r++) {
+      if (layout.row_colors[r] > 1) {
+	ctx.fillRect (0, oy - r * layout.row - layout.row, canvas.width, layout.row);
+      }
+    }
+  }
+
+  // line thickness and line cap
+  ctx.lineWidth = th;
+  ctx.lineCap = 'butt'; // chrome 'butt' has a 0.5 pixel bug, so we use fillRect
+  const lsx = layout.xscroll;
+
+  // draw half octave separators
+  const semitone6 = csp ('--piano-roll-semitone6');
+  ctx.fillStyle = semitone6;
+  const stipple = round (3 * window.devicePixelRatio), stipple2 = 2 * stipple;
+  const qy = layout.wkeys[3][0]; // separator between F|G
+  for (let oct = 0; oct < layout.octaves; oct++) {
+    const oy = layout.yoffset - oct * layout.oct_length;
+    Util.hstippleRect (ctx, th - lsx % stipple2, oy - qy, canvas.width, th, stipple);
+  }
+
+  // draw vertical grid lines
+  const grid_main1 = csp ('--piano-roll-grid-main1');
+  const grid_sub1 = csp ('--piano-roll-grid-sub1');
+  const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
+  const gy2 = layout.yoffset; // align with outer piano border
+  const beat_dist = layout.beat_pixels;
+  const grid_divider = 4 * beat_dist; // largest grid divider
+  let grid = floor (lsx / grid_divider);
+  for (let gx = 0; gx - lsx < canvas.width; grid++) {
+    gx = grid * beat_dist;
+    if (grid % 4 == 0) {
+      ctx.fillStyle = grid_main1;
+    } else {
+      ctx.fillStyle = grid_sub1;
+    }
+    ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
+  }
+
+  // draw octave separators
+  const semitone12 = csp ('--piano-roll-semitone12');
+  ctx.fillStyle = semitone12;
+  for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
+    const oy = layout.yoffset - oct * layout.oct_length;
+    ctx.fillRect (0, oy, canvas.width, th);
+  }
+
+  // paint notes
+  const note_font = csp ('--piano-roll-note-font');
+  const note_font_color = csp ('--piano-roll-note-font-color');
+  const part = this.part;
+  if (part) {
+    const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    const fpx = layout.row - 2;
+    ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
+    ctx.fillStyle = note_font_color;
+    // draw notes
+    const pnotes = part.list_notes_crossing (0, MAXINT);
+    const tickscale = layout.beat_pixels / 384;
+    for (const note of pnotes) {
+      const oct = floor (note.note / 12), key = note.note - oct * 12;
+      const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
+      const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
+      ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
     }
   }
 }
