@@ -60,6 +60,17 @@ function hyphenate (string) {
 }
 exports.hyphenate = hyphenate;
 
+/** Vue mixin to provide a `dom_updated` hook.
+ * This mixin is a bit of a sledge hammer, usually it's better to have something
+ * similar to a paint_canvas() method and just use $watch (this.paint_canvas);
+ * to update automatically.
+ * A dom_updated() method is only really needed to operate on initialized $refs[].
+ */
+exports.vue_mixins.dom_updated = {
+  mounted: function () { this.dom_updated(); },
+  updated: function () { this.dom_updated(); },
+};
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
