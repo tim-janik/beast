@@ -10,6 +10,7 @@
 </docs>
 
 <template>
+
   <div class="vc-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
     <vc-hscrollbar ref="hscrollbar" slider-size='45' style='margin:10px' ></vc-hscrollbar>
     <div ref="scrollcontainer" style="overflow-y: scroll" >
@@ -119,9 +120,13 @@ module.exports = {
     render_piano: render_piano,
     render_notes: render_notes,
     render_canvas () {
-      const layout = this.piano_layout();
-      this.render_piano (layout);	// render piano first, it fills some caches that render_notes utilizes
-      this.render_notes (layout);
+      // canvas setup
+      const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
+      const notes_canvas = this.$refs['notes-canvas'], notes_style = getComputedStyle (notes_canvas);
+      const layout = this.piano_layout (piano_canvas, piano_style, notes_canvas, notes_style);
+      // render piano first, it fills some caches that render_notes utilizes
+      this.render_piano (piano_canvas, piano_style, layout);
+      this.render_notes (notes_canvas, notes_style, layout);
       // scrollto an area with visible notes
       if (this.auto_scrollto !== undefined) {
 	const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
@@ -164,7 +169,7 @@ module.exports = {
   },
 };
 
-function piano_layout () {
+function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   this.last_tick = Math.max (this.last_tick, this.part ? this.part.get_last_tick() : 0);
   /* By design, each octave consists of 12 aligned rows that are used for note placement.
    * Each row is always pixel aligned. Consequently, the pixel area assigned to an octave
@@ -231,38 +236,18 @@ function piano_layout () {
   return Object.freeze (layout); // effectively 'const'
 }
 
-const cs_values = {
-  light_row: 		'--piano-roll-light-row',
-  dark_row:  		'--piano-roll-dark-row',
-  semitone6:		'--piano-roll-semitone6',
-  semitone12:		'--piano-roll-semitone12',
-  grid_main1:		'--piano-roll-grid-main1',
-  grid_sub1:		'--piano-roll-grid-sub1',
-  white_base:   	'--piano-roll-white-base',
-  white_glint:  	'--piano-roll-white-glint',
-  white_border: 	'--piano-roll-white-border',
-  black_base:   	'--piano-roll-black-base',
-  black_glint:  	'--piano-roll-black-glint',
-  black_shine:  	'--piano-roll-black-shine',
-  black_border: 	'--piano-roll-black-border',
-  key_font:		'--piano-roll-key-font',
-  key_font_color:	'--piano-roll-key-font-color',
-  note_font:		'--piano-roll-note-font',
-  note_font_color:	'--piano-roll-note-font-color',
-};
-
-function render_notes (layout) {
-  // canvas setup
-  const canvas = this.$refs['notes-canvas'], ctx = canvas.getContext ('2d');
-  // computed styles
-  const cs = Util.compute_style_properties (canvas, cs_values);
+function render_notes (canvas, cstyle, layout) {
+  const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
+  const light_row = cstyle.getPropertyValue ('--piano-roll-light-row');
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, cs.light_row);
+  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, light_row);
+  console.log (canvas, layout.notes_csswidth, layout.cssheight, light_row);
   // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
   const th = layout.thickness;
 
   // paint black key rows
-  ctx.fillStyle = cs.dark_row;
+  const dark_row = csp ('--piano-roll-dark-row');
+  ctx.fillStyle = dark_row;
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
     for (let r = 0; r < layout.row_colors.length; r++) {
@@ -278,7 +263,8 @@ function render_notes (layout) {
   const lsx = layout.xscroll;
 
   // draw half octave separators
-  ctx.fillStyle = cs.semitone6;
+  const semitone6 = csp ('--piano-roll-semitone6');
+  ctx.fillStyle = semitone6;
   const stipple = round (3 * window.devicePixelRatio), stipple2 = 2 * stipple;
   const qy = layout.wkeys[3][0]; // separator between F|G
   for (let oct = 0; oct < layout.octaves; oct++) {
@@ -287,6 +273,8 @@ function render_notes (layout) {
   }
 
   // draw vertical grid lines
+  const grid_main1 = csp ('--piano-roll-grid-main1');
+  const grid_sub1 = csp ('--piano-roll-grid-sub1');
   const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
   const gy2 = layout.yoffset; // align with outer piano border
   const beat_dist = layout.beat_pixels;
@@ -295,27 +283,30 @@ function render_notes (layout) {
   for (let gx = 0; gx - lsx < canvas.width; grid++) {
     gx = grid * beat_dist;
     if (grid % 4 == 0) {
-      ctx.fillStyle = cs.grid_main1;
+      ctx.fillStyle = grid_main1;
     } else {
-      ctx.fillStyle = cs.grid_sub1;
+      ctx.fillStyle = grid_sub1;
     }
     ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
   }
 
   // draw octave separators
-  ctx.fillStyle = cs.semitone12;
+  const semitone12 = csp ('--piano-roll-semitone12');
+  ctx.fillStyle = semitone12;
   for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
     const oy = layout.yoffset - oct * layout.oct_length;
     ctx.fillRect (0, oy, canvas.width, th);
   }
 
   // paint notes
+  const note_font = csp ('--piano-roll-note-font');
+  const note_font_color = csp ('--piano-roll-note-font-color');
   const part = this.part;
   if (part) {
-    const fpx_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
     const fpx = layout.row - 2;
     ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
-    ctx.fillStyle = cs.key_font_color;
+    ctx.fillStyle = note_font_color;
     // draw notes
     const pnotes = part.list_notes_crossing (0, MAXINT);
     const tickscale = layout.beat_pixels / 384;
@@ -328,21 +319,26 @@ function render_notes (layout) {
   }
 }
 
-function render_piano (layout) {
-  // canvas setup
-  const canvas = this.$refs['piano-canvas'], ctx = canvas.getContext ('2d');
-  // computed styles
-  const cs = Util.compute_style_properties (canvas, cs_values);
+function render_piano (canvas, cstyle, layout) {
+  const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, cs.light_row);
+  const light_row = csp ('--piano-roll-light-row');
+  Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, light_row);
   // we draw piano keys horizontally within their boundaries, but verticaly overlapping by one th
   const th = layout.thickness, hf = th * 0.5; // thickness/2 fraction
 
   // draw piano keys
+  const white_base = csp ('--piano-roll-white-base');
+  const white_glint = csp ('--piano-roll-white-glint');
+  const white_border = csp ('--piano-roll-white-border');
+  const black_base = csp ('--piano-roll-black-base');
+  const black_glint = csp ('--piano-roll-black-glint');
+  const black_shine = csp ('--piano-roll-black-shine');
+  const black_border = csp ('--piano-roll-black-border');
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
     // draw white keys
-    ctx.fillStyle = cs.white_base;
+    ctx.fillStyle = white_base;
     ctx.lineWidth = th;
     for (let k = 0; k < layout.wkeys.length; k++) {
       const p = layout.wkeys[k];
@@ -350,25 +346,25 @@ function render_piano (layout) {
       const w = layout.white_width, h = p[1];
       ctx.fillRect   (x + th, y - h + th, w - 2 * th, h - th);	// v-overlap by 1*th
       const sx = x + hf, sy = y - h + hf;			// stroke coords
-      ctx.strokeStyle = cs.white_glint;		// highlight
+      ctx.strokeStyle = white_glint;		// highlight
       ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
-      ctx.strokeStyle = cs.white_border;	// border
+      ctx.strokeStyle = white_border;		// border
       ctx.strokeRect (sx, sy, w - th, h);			// v-overlap by 1*th
     }
     // draw black keys
-    ctx.fillStyle = cs.black_base;
+    ctx.fillStyle = black_base;
     ctx.lineWidth = th;
     for (let k = 0; k < layout.bkeys.length; k++) {
       const p = layout.bkeys[k];
       const x = 0, y = oy - p[0];
       const w = layout.black_width, h = p[1];
-      const gradient = [ [0, cs.black_base], [.08, cs.black_base], [.15, cs.black_shine],   [1, cs.black_base] ];
+      const gradient = [ [0, black_base], [.08, black_base], [.15, black_shine],   [1, black_base] ];
       ctx.fillStyle = Util.linear_gradient_from (ctx, gradient, x + th, y - h / 2, x + w - 2 * th, y - h / 2);
       ctx.fillRect   (x + th, y - h + th, w - 2 * th, h - th);	// v-overlap by 1*th
       const sx = x + hf, sy = y - h + hf;			// stroke coords
-      ctx.strokeStyle = cs.black_glint;		// highlight
+      ctx.strokeStyle = black_glint;		// highlight
       ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
-      ctx.strokeStyle = cs.black_border;	// border
+      ctx.strokeStyle = black_border;		// border
       ctx.strokeRect (sx, sy, w - th, h);
     }
   }
@@ -377,9 +373,11 @@ function render_piano (layout) {
   const avg_height = layout.wkeys.reduce ((a, p) => a += p[1], 0) / layout.wkeys.length;
   const fpx = avg_height - 2 * (th + 1);	// base font size on average white key size
   if (fpx >= 6) {
-    const fpx_parts = cs.key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+    const key_font = csp ('--piano-roll-key-font');
+    const key_font_color = csp ('--piano-roll-key-font-color');
+    const fpx_parts = key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
     ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
-    ctx.fillStyle = cs.key_font_color;
+    ctx.fillStyle = key_font_color;
     // measure Midi labels, faster if batched into an array
     const midi_labels = Util.midi_label ([...Util.range (0, layout.octaves * (layout.wkeys.length + layout.bkeys.length))]);
     const label_spans = Util.canvas_ink_vspan (ctx.font, midi_labels);
