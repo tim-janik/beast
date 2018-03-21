@@ -81,13 +81,32 @@ module.exports = {
     last_tick:		384,
     vzoom:		1.0,
     hzoom:		1.0,
+    auto_scrollto:	-2,
     hscrollbar:		undefined,
     part_:		undefined,
   },
   computed: {
     piano_keys: function() { return 120; }, // FIXME
     piano_height: function() { return 84 * floor ((this.piano_keys + 12 - 1) / 12) + 1; }, // FIXME
-    part:		function () { return this['piano-part']; },
+    part:		function () {
+      const piano_part = this['piano-part'];
+      if (!this.auto_scrolls)
+	this.auto_scrolls = {};
+      if (piano_part !== this.part_) {
+	if (this.part_ && this.$refs.scrollarea) {
+	  const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
+	  const sbr = this.$refs.scrollarea.getBoundingClientRect();
+	  if (sbr.height > vbr.height)
+	    this.auto_scrolls[this.part_.unique_id()] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
+	}
+	this.part_ = piano_part;
+	if (this.part_)
+	  this.auto_scrollto = this.auto_scrolls[this.part_.unique_id()];
+	if (this.auto_scrollto === undefined)
+	  this.auto_scrollto = -1;
+      }
+      return this.part_;
+    },
   },
   beforeDestroy() {
     if (this.unwatch_render_canvas) {
@@ -103,6 +122,23 @@ module.exports = {
       const layout = this.piano_layout();
       this.render_piano (layout);	// render piano first, it fills some caches that render_notes utilizes
       this.render_notes (layout);
+      // scrollto an area with visible notes
+      if (this.auto_scrollto !== undefined) {
+	const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
+	const sbr = this.$refs.scrollarea.getBoundingClientRect();
+	if (sbr.height > vbr.height) {
+	  let scroll_top, scroll_behavior = 'smooth';
+	  if (this.auto_scrollto >= 0)
+	    scroll_top = (sbr.height - vbr.height) * this.auto_scrollto;
+	  else {
+	    scroll_top = (sbr.height - vbr.height) / 2;
+	    if (this.auto_scrollto < -1)
+	      scroll_behavior = 'auto'; // initial scroll pos, avoid animation
+	  }
+	  this.$refs.scrollarea.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
+	}
+	this.auto_scrollto = undefined;
+      }
     },
     dom_updated() {
       if (!this.resize_observer)
