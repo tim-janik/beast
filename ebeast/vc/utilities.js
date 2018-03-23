@@ -257,28 +257,51 @@ function compute_style_properties (el, obj) {
 }
 exports.compute_style_properties = compute_style_properties;
 
+const modal_mouse_guard = function (ev) {
+  for (let shield of document._vc_modal_shields)
+    if (!ev.cancelBubble) {
+      if (ev.target == shield) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
+
+const modal_keyboard_guard = function (ev) {
+  const ESCAPE = 27;
+  for (let shield of document._vc_modal_shields)
+    if (!ev.cancelBubble) {
+      if (event.keyCode == ESCAPE) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
+
 /** Add a modal overlay to <body/>, prevent DOM clicks and focus movements */
-function modal_shield (close_handler) {
-  if (!(document.body._vc_modal_shields instanceof Array))
-    document.body._vc_modal_shields = [];
+function modal_shield (close_handler, preserve_element) {
+  // prevent focus during modal shield
+  const focus_guard = install_focus_guard (preserve_element);
+  // keep a shield list and handle keyboard / mouse events on the shield
+  if (!(document._vc_modal_shields instanceof Array)) {
+    document._vc_modal_shields = [];
+    document.addEventListener ('mousedown', modal_mouse_guard);
+    document.addEventListener ('keydown', modal_keyboard_guard);
+  }
+  // install shield element on <body/>
   const shield = document.createElement ("div");
+  document._vc_modal_shields.unshift (shield);
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
 		 'background-color: rgba(0,0,0,0.05);';
   document.body.appendChild (shield);
-  document.body._vc_modal_shields.push (shield);
-  const event_guard = function (ev) {
-    if (ev.target == shield) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      shield.destroy();
-    }
-  };
-  document.addEventListener ('mousedown', event_guard);
+  // destroying the shield
   shield.destroy = function (call_handler = true) {
     if (shield.parentNode)
       shield.parentNode.removeChild (shield);
-    array_remove (document.body._vc_modal_shields, shield);
-    document.removeEventListener ('mousedown', event_guard);
+    array_remove (document._vc_modal_shields, shield);
+    focus_guard.restore();
     if (close_handler && call_handler) {
       const close_handler_once = close_handler;
       close_handler = undefined; // guard against recursion
