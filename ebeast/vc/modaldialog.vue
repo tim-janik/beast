@@ -113,67 +113,25 @@
 </template>
 
 <script>
-
-function focus_chain_constrain() {
-  function is_descendant (ancestor, descendant) {
-    do {
-      if (descendant === ancestor)
-	return true;
-    } while ((descendant = descendant.parentNode));
-    return false;
-  }
-  // save last focussed element
-  this.focus_chain_last_active = document.activeElement;
-  // find focusable children which are outside of this.$el
-  const saved_elements =
-    Array.prototype.filter.call (document.all,
-				 o => o.tabIndex > -1 && !is_descendant (this.$el, o));
-  // unset their tabIndex to prevent focus and create a restoration closure
-  this.focus_chain_restores =
-    saved_elements.map (o => {
-      const oldindex = o.tabIndex;
-      o.tabIndex = -1;
-      return () => o.tabIndex = oldindex;
-    });
-}
-function focus_chain_restore () {
-  // restore saved tabIndex fields
-  if (this.focus_chain_restores)
-    this.focus_chain_restores.forEach (f => f());
-  this.focus_chain_restores = null;
-  // restore last focussed element
-  if (this.focus_chain_last_active)
-    this.focus_chain_last_active.focus();
-  this.focus_chain_last_active = null;
-}
+const Util = require ('./utilities.js');
 
 module.exports = {
   name: 'vc-modaldialog',
-  created () {
-    window.addEventListener ('keydown', this.global_keydown);
-  },
   mounted () {
-    focus_chain_constrain.call (this);
+    this.shield = Util.modal_shield (this.close);
     this.$refs.bclose.$el.focus();
   },
   beforeDestroy () {
-    focus_chain_restore.call (this);
-  },
-  destroyed () {
-    window.removeEventListener ('keydown', this.global_keydown);
+    if (this.shield)
+      this.shield.destroy (false);
   },
   methods: {
     close (event) {
+      if (this.shield)
+	this.shield.destroy (false);
       if (event instanceof Event)
 	event.preventDefault();
       this.$emit ('close');
-    },
-    global_keydown (event) {
-      const ESCAPE = 27;
-      // TODO: ignore ESCAPE if document.activeElement is in hotkeys.js:textarea_types
-      if (event.keyCode == ESCAPE)
-	this.close();
-      // non-global alternative: @keydown.esc="close"
     },
   },
 };
