@@ -16,6 +16,12 @@ function assert (cond, msg) {
 }
 exports.assert = assert;
 
+/** Remove element `item` from `array` */
+function array_remove (array, item) {
+  return array.filter (each => each !== item);
+}
+exports.array_remove = array_remove;
+
 /** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
 function* range (bound, end, step = 1) {
   if (end === undefined) {
