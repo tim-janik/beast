@@ -18,7 +18,12 @@ exports.assert = assert;
 
 /** Remove element `item` from `array` */
 function array_remove (array, item) {
-  return array.filter (each => each !== item);
+  for (let i = 0; i < array.length; i++)
+    if (item === array[i]) {
+      array.splice (i, 1);
+      break;
+    }
+  return array;
 }
 exports.array_remove = array_remove;
 
