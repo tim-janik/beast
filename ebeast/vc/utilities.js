@@ -54,7 +54,11 @@ exports.vue_mixins.hyphen_props = {
 	continue;
       if (!this.$options.computed)
 	this.$options.computed = {};
-      this.$options.computed[hyphenated] = function() { return this[cc]; };
+      Object.defineProperty (this, hyphenated, {
+	get() { return this[cc]; },
+	enumerable: false,
+	configurable: false
+      });
     }
   },
 };
