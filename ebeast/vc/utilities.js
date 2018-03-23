@@ -289,6 +289,67 @@ function modal_shield (close_handler) {
 }
 exports.modal_shield = modal_shield;
 
+/** Recursively prevent `node` from being focussed */
+const prevent_focus = (array, node, preserve) => {
+  if (node == preserve)
+    return;
+  if (node.tabIndex > -1) {
+    if (node._vc_focus_guard > 0)
+      node._vc_focus_guard += 1;
+    else {
+      node._vc_focus_guard = 1;
+      node._vc_focus_guard_tabIndex = node.tabIndex;
+      node.tabIndex = -1;
+    }
+    array.push (node);
+  }
+  if (node.firstChild)
+    prevent_focus (array, node.firstChild, preserve);
+  if (node.nextSibling)
+    prevent_focus (array, node.nextSibling, preserve);
+};
+
+/** Restore `node`s focus ability when the last focus guard is destroyed */
+const restore_focus = (node) => {
+  if (node._vc_focus_guard > 0) {
+    node._vc_focus_guard -= 1;
+    if (node._vc_focus_guard == 0) {
+      node.tabIndex = node._vc_focus_guard_tabIndex;
+      delete node._vc_focus_guard_tabIndex;
+      delete node._vc_focus_guard;
+    }
+  }
+};
+
+/** Prevent all DOM elements from getting focus.
+ * Preseve focus ability for `preserve_element` and its descendants.
+ * Returns a `guard` object on which guard.restore() must be called to
+ * restore the DOM elements.
+ */
+function install_focus_guard (preserve_element) {
+  const guard = {
+    elements: [],
+    restore: () => {
+      if (!guard.elements)
+	return;
+      for (let node of guard.elements)
+	restore_focus (node);
+      guard.elements = undefined;
+      if (guard.last_focus)
+	guard.last_focus.focus();
+      guard.last_focus = undefined;
+    },
+  };
+  // save last focussed element
+  guard.last_focus = document.activeElement;
+  // disable focusable elements outside of preserve_element
+  prevent_focus (guard.elements, document, preserve_element);
+  // remove focus if the current focus is a guarded element
+  if (document.activeElement && document.activeElement._vc_focus_guard > 0)
+    document.activeElement.blur();
+  return guard;
+}
+
 /** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
 exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
   /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
