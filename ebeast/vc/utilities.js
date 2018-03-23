@@ -203,6 +203,38 @@ function compute_style_properties (el, obj) {
 }
 exports.compute_style_properties = compute_style_properties;
 
+/** Add a modal overlay to <body/>, prevent DOM clicks and focus movements */
+function modal_shield (close_handler) {
+  if (!(document.body._vc_modal_shields instanceof Array))
+    document.body._vc_modal_shields = [];
+  const shield = document.createElement ("div");
+  shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
+		 'background-color: rgba(0,0,0,0.05);';
+  document.body.appendChild (shield);
+  document.body._vc_modal_shields.push (shield);
+  const event_guard = function (ev) {
+    if (ev.target == shield) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      shield.destroy();
+    }
+  };
+  document.addEventListener ('mousedown', event_guard);
+  shield.destroy = function (call_handler = true) {
+    if (shield.parentNode)
+      shield.parentNode.removeChild (shield);
+    array_remove (document.body._vc_modal_shields, shield);
+    document.removeEventListener ('mousedown', event_guard);
+    if (close_handler && call_handler) {
+      const close_handler_once = close_handler;
+      close_handler = undefined; // guard against recursion
+      close_handler_once();
+    }
+  };
+  return shield;
+}
+exports.modal_shield = modal_shield;
+
 /** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
 exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
   /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
