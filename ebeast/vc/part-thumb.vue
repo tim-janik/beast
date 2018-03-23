@@ -9,7 +9,7 @@
 
 <template>
 
-  <canvas ref="canvas" class="vc-part-thumb" @click="$forceUpdate()"
+  <canvas ref="canvas" class="vc-part-thumb" @click="Shell.open_part_edit (part)"
 	  :style="{ left: this.pxoffset + 'px', width: this.canvas_width + 'px', }" ></canvas>
 
 </template>
@@ -46,18 +46,23 @@ module.exports = {
       return this.tickscale * Math.floor ((last_tick + tick_quant - 1) / tick_quant) * tick_quant;
     },
   },
-  customized_render (createElement, result) {
-    // queue render_canvas into main loop so $el / canvas are updated
-    clearTimeout (this.timer);
-    const RENDER_ASYNC = true;
-    if (RENDER_ASYNC)
-      this.timer = setTimeout (() => render_canvas.call (this), 0);
-    else
-      Promise.resolve().then (() => render_canvas.call (this));
-    return result;
+  methods: {
+    render_canvas: render_canvas,
+  },
+  mounted() {
+    /* DOM and $el is in place, now:
+     * a) render into the canvas, we call render_canvas() for this;
+     * b) re-render the canvases if anything changes, for this we install a watcher
+     */
+    if (!this.unwatch_render_canvas)
+      this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
+    this.render_canvas();
   },
   beforeDestroy() {
-    clearTimeout (this.timer);
+    if (this.unwatch_render_canvas) {
+      this.unwatch_render_canvas();
+      this.unwatch_render_canvas = undefined;
+    }
   },
 };
 

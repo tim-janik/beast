@@ -6,48 +6,44 @@
   - **project** - Implicit, using App.bse_project().
 </docs>
 
+<template>
+  <div class="vc-projectshell">
+    <div class="vc-projectshell-track-area">
+      Project Shell:
+      <vc-playcontrols :project="project"> </vc-playcontrols>
+      <vc-track-list :song="song"></vc-track-list>
+    </div>
+    <div class="vc-projectshell-part-area" style="display: flex; overflow: hidden;" >
+      <vc-piano-roll :piano-part="this.piano_roll_part" ></vc-piano-roll>
+    </div>
+  </div>
+</template>
+
 <style lang="scss">
   @import 'mixins.scss';
   .vc-projectshell { }
+  .vc-projectshell-part-area {
+    background-color: $vc-button-border;
+    height: 350px; }
 </style>
-
-<template>
-  <div class="vc-projectshell">
-    Project Shell. <br />
-    <vc-playcontrols :project="project"> </vc-playcontrols>
-    <br />
-    {{ message }}
-    <br />
-    <vc-button @click="App.show_about_dialog = true">About</vc-button>
-    <vc-button @click="frob (1, $event)">1</vc-button>
-    <vc-button @click="frob (2, $event)">2</vc-button>
-    <vc-button @click="frob (3, $event)">3</vc-button>
-    <br />
-    <vc-track-list :song="song"></vc-track-list>
-  </div>
-</template>
 
 <script>
 module.exports = {
   name: 'vc-projectshell',
-  provide () { return { 'vc-projectshell': this }; },
-  data: function() {
-    let d = {
-      message: 'Interpolated text',
-    };
-    for (const attrname in Electron.app)
-      d[attrname] = Electron.app[attrname];
-    return d;
-  },
-  methods: {
-    frob (w, e) { App.status (w); },
+  data_tmpl: {
+    piano_roll_part: undefined,
+    show_about_dialog: false,
   },
   computed: {
     project: function () {
-      const bse_project = App.bse_project();
-      if (!(bse_project instanceof Bse.Project))
-	throw new Error ('wrong type, expected: Bse.Project');
-      return bse_project;
+      if (!this.project_) {
+	this.project_ = Bse.server.create_project ('Untitled');
+	if (this.project_) {
+	  let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
+	  this.project_.restore_from_file (example);
+	}
+      }
+      return this.project_;
     },
     song: function () {
       let s, supers = this.project.get_supers();
@@ -56,6 +52,29 @@ module.exports = {
 	  return s;
       }
       return undefined;
+    },
+  },
+  created() {
+    // delete `Shell` dummy on toplebel if present
+    let p = this;
+    while (p.$parent)
+      p = p.$parent;
+    if (p.Shell && p.Shell.Shell_placeholder)
+      delete p.Shell;
+    // inject Shell into all Vue components
+    Vue.prototype.Shell = this;
+    assert (this === p.Shell);
+    // force root updates with new Shell properties in place
+    (p || this).$forceUpdate();
+  },
+  provide () { return { 'vc-projectshell': this }; },
+  methods: {
+    open_part_edit (part) {
+      assert (part instanceof Bse.Part);
+      this.piano_roll_part = part;
+    },
+    status (...args) {
+      console.log (...args);
     },
   },
 };

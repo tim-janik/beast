@@ -7,12 +7,15 @@ console.assert (window.Vue !== undefined);
 // load Vue components
 const vue_components = [
   require ('./button.vue'),
-  require ('./icon-button.vue'),
   require ('./button-bar.vue'),
+  require ('./color-picker.vue'),
+  require ('./icon-button.vue'),
+  require ('./piano-roll.vue'),
   require ('./playcontrols.vue'),
   require ('./part-thumb.vue'),
   require ('./modaldialog.vue'),
   require ('./aboutdialog.vue'),
+  require ('./hscrollbar.vue'),
   require ('./track-list.vue'),
   require ('./track-view.vue'),
   require ('./projectshell.vue'),

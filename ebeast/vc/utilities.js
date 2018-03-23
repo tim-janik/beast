@@ -1,6 +1,91 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+exports.vue_mixins = {};
+
+/** Throw an Error containing `msg` if `cond` fails to be true */
+function assert (cond, msg) {
+  if (!cond) {
+    msg = msg || "Assertion failed";
+    if (typeof Error !== "undefined") {
+      throw new Error (msg);
+    }
+    throw msg; // fallback
+  }
+  // globally: window.assert = require ('./vc/utilities.js').assert;
+}
+exports.assert = assert;
+
+/** Remove element `item` from `array` */
+function array_remove (array, item) {
+  for (let i = 0; i < array.length; i++)
+    if (item === array[i]) {
+      array.splice (i, 1);
+      break;
+    }
+  return array;
+}
+exports.array_remove = array_remove;
+
+/** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
+function* range (bound, end, step = 1) {
+  if (end === undefined) {
+    end = bound;
+    bound = 0;
+  }
+  for (; bound < end; bound += step)
+    yield bound;
+}
+exports.range = range;
+
+/** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
+exports.vue_mixins.data_tmpl = {
+  beforeCreate: function () {
+    // Automatically create `data` (via cloning) from `data_tmpl`
+    if (this.$options.data_tmpl)
+      this.$options.data = Object.assign ({}, this.$options.data_tmpl,
+					  typeof this.$options.data === 'function' ?
+					  this.$options.data.call (this) :
+					  this.$options.data);
+  },
+};
+
+/** Vue mixin to create a kebab-case ('two-words') getter proxy for camelCase ('twoWords') props */
+exports.vue_mixins.hyphen_props = {
+  beforeCreate: function () {
+    for (let cc in this.$options.props) {
+      const hyphenated = hyphenate (cc);
+      if (hyphenated === cc || (this.$options.computed && hyphenated in this.$options.computed))
+	continue;
+      if (!this.$options.computed)
+	this.$options.computed = {};
+      Object.defineProperty (this, hyphenated, {
+	get() { return this[cc]; },
+	enumerable: false,
+	configurable: false
+      });
+    }
+  },
+};
+
+/** Generate a kebab-case ('two-words') identifier from a camelCase ('twoWords') identifier */
+function hyphenate (string) {
+  const uppercase_boundary =  /\B([A-Z])/g;
+  return string.replace (uppercase_boundary, '-$1').toLowerCase();
+}
+exports.hyphenate = hyphenate;
+
+/** Vue mixin to provide a `dom_updated` hook.
+ * This mixin is a bit of a sledge hammer, usually it's better to have something
+ * similar to a paint_canvas() method and just use $watch (this.paint_canvas);
+ * to update automatically.
+ * A dom_updated() method is only really needed to operate on initialized $refs[].
+ */
+exports.vue_mixins.dom_updated = {
+  mounted: function () { this.dom_updated(); },
+  updated: function () { this.dom_updated(); },
+};
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
@@ -90,6 +175,51 @@ exports.split_comma = (str) => {
   return result;
 };
 
+/** Parse hexadecimal CSS color with 3 or 6 digits into [ R, G, B ]. */
+function parse_hex_color (colorstr) {
+  if (colorstr.substr (0, 1) == '#') {
+    let hex = colorstr.substr (1);
+    if (hex.length == 3)
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    return [ parseInt (hex.substr (0, 2), 16),
+	     parseInt (hex.substr (2, 2), 16),
+	     parseInt (hex.substr (4, 2), 16) ];
+  }
+  return undefined;
+}
+exports.parse_hex_color = parse_hex_color;
+
+/** Parse hexadecimal CSS color into luminosity. */
+// https://en.wikipedia.org/wiki/Relative_luminance
+function parse_hex_luminosity (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+exports.parse_hex_luminosity = parse_hex_luminosity;
+
+/** Parse hexadecimal CSS color into brightness. */
+// https://www.w3.org/TR/AERT/#color-contrast
+function parse_hex_brightness (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+}
+exports.parse_hex_brightness = parse_hex_brightness;
+
+/** Parse hexadecimal CSS color into perception corrected grey. */
+// http://alienryderflex.com/hsp.html
+function parse_hex_pgrey (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return Math.sqrt (0.299 * rgb[0] * rgb[0] + 0.587 * rgb[1] * rgb[1] + 0.114 * rgb[2] * rgb[2]);
+}
+exports.parse_hex_pgrey = parse_hex_pgrey;
+
+/** Parse hexadecimal CSS color into average grey. */
+function parse_hex_average (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.3333 * rgb[0] + 0.3333 * rgb[1] + 0.3333 * rgb[2];
+}
+exports.parse_hex_average = parse_hex_average;
+
 /** Parse CSS colors (via invisible DOM element) and yield an array of rgba tuples. */
 function parse_colors (colorstr) {
   let result = [];
@@ -113,3 +243,279 @@ function parse_colors (colorstr) {
   return result;
 }
 exports.parse_colors = parse_colors;
+
+/** Retrieve a new object with the properties of `obj` resolved against the style of `el` */
+function compute_style_properties (el, obj) {
+  const style = getComputedStyle (el);
+  let props = {};
+  for (let key in obj) {
+    const result = style.getPropertyValue (obj[key]);
+    if (result !== undefined)
+      props[key] = result;
+  }
+  return props;
+}
+exports.compute_style_properties = compute_style_properties;
+
+const modal_mouse_guard = function (ev) {
+  for (let shield of document._vc_modal_shields)
+    if (!ev.cancelBubble) {
+      if (ev.target == shield) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
+
+const modal_keyboard_guard = function (ev) {
+  const ESCAPE = 27;
+  for (let shield of document._vc_modal_shields)
+    if (!ev.cancelBubble) {
+      if (event.keyCode == ESCAPE) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
+
+/** Add a modal overlay to <body/>, prevent DOM clicks and focus movements */
+function modal_shield (close_handler, preserve_element) {
+  // prevent focus during modal shield
+  const focus_guard = install_focus_guard (preserve_element);
+  // keep a shield list and handle keyboard / mouse events on the shield
+  if (!(document._vc_modal_shields instanceof Array)) {
+    document._vc_modal_shields = [];
+    document.addEventListener ('mousedown', modal_mouse_guard);
+    document.addEventListener ('keydown', modal_keyboard_guard);
+  }
+  // install shield element on <body/>
+  const shield = document.createElement ("div");
+  document._vc_modal_shields.unshift (shield);
+  shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
+		 'background-color: rgba(0,0,0,0.05);';
+  document.body.appendChild (shield);
+  // destroying the shield
+  shield.destroy = function (call_handler = true) {
+    if (shield.parentNode)
+      shield.parentNode.removeChild (shield);
+    array_remove (document._vc_modal_shields, shield);
+    focus_guard.restore();
+    if (close_handler && call_handler) {
+      const close_handler_once = close_handler;
+      close_handler = undefined; // guard against recursion
+      close_handler_once();
+    }
+  };
+  return shield;
+}
+exports.modal_shield = modal_shield;
+
+/** Recursively prevent `node` from being focussed */
+const prevent_focus = (array, node, preserve) => {
+  if (node == preserve)
+    return;
+  if (node.tabIndex > -1) {
+    if (node._vc_focus_guard > 0)
+      node._vc_focus_guard += 1;
+    else {
+      node._vc_focus_guard = 1;
+      node._vc_focus_guard_tabIndex = node.tabIndex;
+      node.tabIndex = -1;
+    }
+    array.push (node);
+  }
+  if (node.firstChild)
+    prevent_focus (array, node.firstChild, preserve);
+  if (node.nextSibling)
+    prevent_focus (array, node.nextSibling, preserve);
+};
+
+/** Restore `node`s focus ability when the last focus guard is destroyed */
+const restore_focus = (node) => {
+  if (node._vc_focus_guard > 0) {
+    node._vc_focus_guard -= 1;
+    if (node._vc_focus_guard == 0) {
+      node.tabIndex = node._vc_focus_guard_tabIndex;
+      delete node._vc_focus_guard_tabIndex;
+      delete node._vc_focus_guard;
+    }
+  }
+};
+
+/** Prevent all DOM elements from getting focus.
+ * Preseve focus ability for `preserve_element` and its descendants.
+ * Returns a `guard` object on which guard.restore() must be called to
+ * restore the DOM elements.
+ */
+function install_focus_guard (preserve_element) {
+  const guard = {
+    elements: [],
+    restore: () => {
+      if (!guard.elements)
+	return;
+      for (let node of guard.elements)
+	restore_focus (node);
+      guard.elements = undefined;
+      if (guard.last_focus)
+	guard.last_focus.focus();
+      guard.last_focus = undefined;
+    },
+  };
+  // save last focussed element
+  guard.last_focus = document.activeElement;
+  // disable focusable elements outside of preserve_element
+  prevent_focus (guard.elements, document, preserve_element);
+  // remove focus if the current focus is a guarded element
+  if (document.activeElement && document.activeElement._vc_focus_guard > 0)
+    document.activeElement.blur();
+  return guard;
+}
+
+/** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
+exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
+  /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
+   * backing store to match the hardware screen pixel size.
+   * Note, just assigning canvas.width *without* assigning canvas.style.width may lead to
+   * resizes in the absence of other constraints. So to render at screen pixel size, we
+   * always have to assign canvas.style.{width|height}.
+   */
+  const cw = Math.round (csswidth), ch = Math.round (cssheight);
+  const pw = Math.round (window.devicePixelRatio * cw);
+  const ph = Math.round (window.devicePixelRatio * ch);
+  if (cw != canvas.style.width || ch != canvas.style.height ||
+      pw != canvas.width || ph != canvas.height || fill_style) {
+    canvas.style.width = cw + 'px';
+    canvas.style.height = ch + 'px';
+    canvas.width = pw;
+    canvas.height = ph;
+    const ctx = canvas.getContext ('2d');
+    if (!fill_style || fill_style === true)
+      ctx.clearRect (0, 0, canvas.width, canvas.height);
+    else {
+      ctx.fillStyle = fill_style;
+      ctx.fillRect (0, 0, canvas.width, canvas.height);
+    }
+    return true;
+  }
+  return false;
+};
+
+/** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
+exports.dash_xto = (ctx, x, y, w, d) => {
+  for (let i = 0, p = x; p < x + w; p = p + d[i++ % d.length]) {
+    if (i % 2)
+      ctx.lineTo (p, y);
+    else
+      ctx.moveTo (p, y);
+  }
+};
+
+/** Draw a horizontal rect `(x,y,width,height)` with pixel gaps of width `stipple` */
+exports.hstippleRect = function (ctx, x, y, width, height, stipple) {
+  for (let s = x; s + stipple < x + width; s += 2 * stipple)
+    ctx.fillRect (s, y, stipple, height);
+};
+
+/** Fill and stroke a canvas rectangle with rounded corners. */
+exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = true) => {
+  if (typeof radius === 'number')
+    radius = [ radius, radius, radius, radius ];
+  else if (typeof radius === 'object' && radius.length == 4)
+    ; // top-left, top-right, bottom-right, bottom-left
+  else
+    throw new Error ('invalid or missing radius');
+  ctx.beginPath();
+  ctx.moveTo           (x + radius[0],         y);
+  ctx.lineTo           (x + width - radius[1], y);
+  ctx.quadraticCurveTo (x + width,             y,                      x + width,             y + radius[1]);
+  ctx.lineTo           (x + width,             y + height - radius[2]);
+  ctx.quadraticCurveTo (x + width,             y + height,             x + width - radius[2], y + height);
+  ctx.lineTo           (x + radius[3],         y + height);
+  ctx.quadraticCurveTo (x,                     y + height,             x,                     y + height - radius[3]);
+  ctx.lineTo           (x,                     y + radius[0]);
+  ctx.quadraticCurveTo (x,                     y,                      x + radius[0],         y);
+  ctx.closePath();
+  if (fill)
+    ctx.fill();
+  if (stroke)
+    ctx.stroke();
+};
+
+/** Add color stops from `stoparray` to `grad`, `stoparray` is an array: [(offset,color)...] */
+function gradient_apply_stops (grad, stoparray) {
+  for (const g of stoparray)
+    grad.addColorStop (g[0], g[1]);
+}
+exports.gradient_apply_stops = gradient_apply_stops;
+
+/** Create a new linear gradient at (x1,y1,x2,y2) with color stops `stoparray` */
+function linear_gradient_from (ctx, stoparray, x1, y1, x2, y2) {
+  const grad = ctx.createLinearGradient (x1, y1, x2, y2);
+  gradient_apply_stops (grad, stoparray);
+  return grad;
+}
+exports.linear_gradient_from = linear_gradient_from;
+
+/** Measure ink span of a canvas text string or an array */
+function canvas_ink_vspan (font_style, textish = 'gM') {
+  let canvas, ctx, cwidth = 64, cheight = 64;
+  function measure_vspan (text) {
+    const cache_key = font_style + ':' + text;
+    let result = canvas_ink_vspan.cache[cache_key];
+    if (!result)
+      {
+	if (canvas === undefined) {
+	  canvas = document.createElement ('canvas');
+	  ctx = canvas.getContext ('2d');
+	}
+	/* BUG: electron-1.8.3 (chrome-59) is unstable (shows canvas memory
+	 * corruption) at tiny zoom levels without canvas size assignments.
+	 */
+	const text_em = ctx.measureText ("MW").width;
+	const twidth = Math.max (text_em * 2, ctx.measureText (text).width);
+	cwidth = Math.max (cwidth, 2 * twidth);
+	cheight = Math.max (cheight, 3 * text_em);
+	canvas.width = cwidth;
+	canvas.height = cheight;
+	ctx.fillStyle = '#000000';
+	ctx.fillRect (0, 0, canvas.width, canvas.height);
+	ctx.font = font_style;
+	ctx.fillStyle = '#ffffff';
+	ctx.textBaseline = 'top';
+	ctx.fillText (text, 0, 0);
+	const pixels = ctx.getImageData (0, 0, canvas.width, canvas.height).data;
+	let start = -1, end = -1;
+	for (let row = 0; row < canvas.height; row++)
+	  for (let col = 0; col < canvas.width; col++) {
+	    let index = (row * canvas.width + col) * 4; // RGBA
+	    if (pixels[index + 0] > 0) {
+	      if (start < 0)
+		start = row;
+	      else
+		end = row;
+	      break;
+	    }
+	  }
+	result = start >= 0 && end >= 0 ? [start, end - start] : [0, 0];
+	canvas_ink_vspan.cache[cache_key] = result;
+      }
+    return result;
+  }
+  return Array.isArray (textish) ? textish.map (txt => measure_vspan (txt)) : measure_vspan (textish);
+}
+canvas_ink_vspan.cache = [];
+exports.canvas_ink_vspan = canvas_ink_vspan;
+
+/** Retrieve the 'C-1' .. 'G8' label for midi note numbers */
+function midi_label (numish) {
+  function one_label (num) {
+    const letter = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
+    const oct = Math.floor (num / letter.length) - 1;
+    const key = num % letter.length;
+    return letter[key] + oct;
+  }
+  return Array.isArray (numish) ? numish.map (n => one_label (n)) : one_label (numish);
+}
+exports.midi_label = midi_label;

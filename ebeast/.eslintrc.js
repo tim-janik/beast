@@ -6,11 +6,11 @@ module.exports = {
     "node": true
   },
   "globals": {
+    "assert": false,
     "Electron": false,
     "Mithril": false,
     "Vue": false,
     "Bse": false,
-    "App": false,
     "Shell": false,
     "T": false,
     "MAXINT": false,

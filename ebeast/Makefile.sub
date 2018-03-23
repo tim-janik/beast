@@ -23,7 +23,6 @@ EBEAST_MOSTLYCLEANFILES =
 
 # == ebeast files ==
 ebeast_app_files = $(strip 		\
-	ebeast/app.js			\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 )
@@ -168,7 +167,7 @@ ebeast-uninstall:
 	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/"
 
 # == ebeast-run ==
-ebeast-run: ebeast/.appstamp
+ebeast-run: ebeast/.appstamp ebeast/vue-components.html
 	export ELECTRON_ENABLE_LOGGING=1 && \
 	$(GTK2_DARK) \
 	LD_PRELOAD="$(abs_top_builddir)/bse/.libs/libbse-@MAJOR@.so" \
