@@ -14,10 +14,10 @@
   <div class="vc-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
     <div style="display: flex; width: 100%; flex-shrink: 0;">
       <div ref="piano-roll-buttons" class="vc-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
-	<button >W</button>
+	<button >I</button>
+	<button >m</button>
 	<button >q</button>
-	<button >B</button>
-	<button >g</button>
+	<vc-color-picker style="flex-shrink: 1" ></vc-color-picker>
       </div>
       <vc-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></vc-hscrollbar>
     </div>
