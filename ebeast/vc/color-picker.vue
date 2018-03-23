@@ -12,8 +12,8 @@
 
   <div class="vc-color-picker" style="position: relative; display: flex;" >
     <button :style="{ 'background-color': color, color: contrast }" @click="open_dropdown()" ><slot>⁜</slot></button>
-    <div ref="dropdown" class="vc-color-picker-dropdown"
-	 style="display: none; flex-direction: column; position: absolute; z-index: 91; top: 100%;
+    <div ref="dropdown" class="vc-color-picker-dropdown" v-if="visible_dropdown"
+	 style="display: flex; flex-direction: column; position: absolute; z-index: 91; top: 100%;
 		box-shadow: 3px 3px 16px 0px rgba(0,0,0,0.9);
 		background-color: #4e4e4e; color: #f1f1f1; font-size: 1rem; padding: 10px; " >
       <div style="display: flex; flex-direction: row;"
@@ -89,7 +89,8 @@ module.exports = {
   },
   data: function() {
     return {
-    value: this['initial-color'],
+      value: this['initial-color'],
+      visible_dropdown: false,
   }; },
   computed: {
     contrast: function () { return Util.parse_hex_pgrey (this.value) > 0x7f ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.5)'; },
@@ -111,19 +112,15 @@ module.exports = {
   },
   methods: {
     hide() {
-      const dropdown = this.$refs.dropdown;
-      dropdown.style.display = 'none';
+      this.visible_dropdown = false;
       this.shield.destroy (false); // false prevents recursion
       this.shield = undefined;
     },
     open_dropdown() {
-      const dropdown = this.$refs.dropdown;
-      if (!dropdown)
-	return;
       if (this.shield)
 	this.shield.destroy();
       this.shield = Util.modal_shield (this.hide);
-      dropdown.style.display = 'flex';
+      this.visible_dropdown = true;
     },
     select (hex) {
       if (hex.match(/#[a-f0-9]{6}/i))
