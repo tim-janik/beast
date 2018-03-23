@@ -337,6 +337,14 @@ public:
           edit_settings = false;
           break;
         case PROP_PLAN:
+          if (plan == "")
+            {
+              /* we don't want the huge default plan string in the idl file,
+               * so we special case "" here to mean: load default plan
+               */
+              plan = default_plan_str();
+              notify ("plan");
+            }
           m_morph_plan = new MorphPlan();
           m_morph_plan->set_plan_str (plan.c_str());
             {
@@ -352,6 +360,31 @@ public:
           break;
       }
     return false;
+  }
+  string
+  default_plan_str()
+  {
+    string filename = sm_get_default_plan();
+
+    MorphPlanPtr plan = new MorphPlan();
+
+    GenericIn *in = StdioIn::open (filename);
+    if (in)
+      {
+        plan->load (in);
+        delete in;
+      }
+    else
+      {
+        g_printerr ("Error opening '%s'.\n", filename.c_str());
+        // in this case we fail gracefully and start with an empty plan
+      }
+
+    vector<unsigned char> data;
+    MemOut mo (&data);
+    plan->save (&mo);
+
+    return HexString::encode (data);
   }
   Osc()
   {
