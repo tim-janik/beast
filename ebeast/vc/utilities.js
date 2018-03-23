@@ -166,6 +166,51 @@ exports.split_comma = (str) => {
   return result;
 };
 
+/** Parse hexadecimal CSS color with 3 or 6 digits into [ R, G, B ]. */
+function parse_hex_color (colorstr) {
+  if (colorstr.substr (0, 1) == '#') {
+    let hex = colorstr.substr (1);
+    if (hex.length == 3)
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    return [ parseInt (hex.substr (0, 2), 16),
+	     parseInt (hex.substr (2, 2), 16),
+	     parseInt (hex.substr (4, 2), 16) ];
+  }
+  return undefined;
+}
+exports.parse_hex_color = parse_hex_color;
+
+/** Parse hexadecimal CSS color into luminosity. */
+// https://en.wikipedia.org/wiki/Relative_luminance
+function parse_hex_luminosity (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+exports.parse_hex_luminosity = parse_hex_luminosity;
+
+/** Parse hexadecimal CSS color into brightness. */
+// https://www.w3.org/TR/AERT/#color-contrast
+function parse_hex_brightness (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+}
+exports.parse_hex_brightness = parse_hex_brightness;
+
+/** Parse hexadecimal CSS color into perception corrected grey. */
+// http://alienryderflex.com/hsp.html
+function parse_hex_pgrey (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return Math.sqrt (0.299 * rgb[0] * rgb[0] + 0.587 * rgb[1] * rgb[1] + 0.114 * rgb[2] * rgb[2]);
+}
+exports.parse_hex_pgrey = parse_hex_pgrey;
+
+/** Parse hexadecimal CSS color into average grey. */
+function parse_hex_average (colorstr) {
+  const rgb = parse_hex_color (colorstr);
+  return 0.3333 * rgb[0] + 0.3333 * rgb[1] + 0.3333 * rgb[2];
+}
+exports.parse_hex_average = parse_hex_average;
+
 /** Parse CSS colors (via invisible DOM element) and yield an array of rgba tuples. */
 function parse_colors (colorstr) {
   let result = [];
