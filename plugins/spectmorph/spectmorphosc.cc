@@ -364,21 +364,8 @@ public:
   string
   default_plan_str()
   {
-    string filename = sm_get_default_plan();
-
     MorphPlanPtr plan = new MorphPlan();
-
-    GenericIn *in = StdioIn::open (filename);
-    if (in)
-      {
-        plan->load (in);
-        delete in;
-      }
-    else
-      {
-        g_printerr ("Error opening '%s'.\n", filename.c_str());
-        // in this case we fail gracefully and start with an empty plan
-      }
+    plan->load_default();
 
     vector<unsigned char> data;
     MemOut mo (&data);
