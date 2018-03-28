@@ -402,7 +402,7 @@ bse_job_force_reset (BseModule *module)
 }
 
 /**
- * \fn BseEngineAccessFunc
+ * @fn BseEngineAccessFunc
  * @param module	Module to operate on
  * @param data	Accessor data
  *
@@ -473,7 +473,7 @@ bse_engine_add_user_callback (gpointer      data,
 }
 
 /**
- * \fn BseEngineProbeFunc
+ * @fn BseEngineProbeFunc
  * @param data  	user data passed in to bse_job_probe_request()
  * @param n_values	number of values probed
  * @param tick_stamp	engine time in microseconds of the probe
@@ -711,7 +711,7 @@ bse_job_resume_at (BseModule *module,
   return job;
 }
 /**
- * \fn BseEnginePollFunc
+ * @fn BseEnginePollFunc
  * @param data	Data of poll function
  * @param n_values	Minimum number of values the engine wants to process
  * @param timeout_p	Location of timeout value
