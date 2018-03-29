@@ -136,6 +136,7 @@ class Generator:
   def __init__ (self, idl_file):
     assert len (idl_file) > 0
     self.ntab = 26
+    self.gen_docs = False
     self.namespaces = []
     self.insertions = {}
     self.idl_file = idl_file
@@ -586,7 +587,8 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += self.generate_interface_pointerdefs (type_info)
     # declare
-    s += self.generate_shortdoc (type_info)     # doxygen IDL snippet
+    if self.gen_docs:
+      s += self.generate_shortdoc (type_info)     # doxygen IDL snippet
     s += 'class %s' % classC
     # inherit
     precls, heritage, cl, ddc = self.interface_class_inheritance (type_info)
@@ -669,8 +671,9 @@ class Generator:
     s += ' ///< Convenience alias for the IDL type %s.\n' % type_info.name
     return s
   def generate_method_decl (self, class_info, functype, pad):
-    s = '  '
-    copydoc = 'See ' + self.type2cpp (class_info) + '::' + functype.name + '()'
+    s, copydoc = '  ', ''
+    if self.gen_docs:
+      copydoc = 'See ' + self.type2cpp (class_info) + '::' + functype.name + '()'
     if self.gen_mode == G4SERVANT:
       s += 'virtual '
     s += self.F (self.R (functype.rtype))
@@ -838,9 +841,10 @@ class Generator:
     s += '}\n'
     return s
   def generate_client_method_stub (self, class_info, mtype):
-    s = ''
+    s,copydoc = '', ''
     hasret = mtype.rtype.storage != Decls.VOID
-    copydoc = 'See ' + self.type2cpp (class_info) + '::' + mtype.name + '()'
+    if self.gen_docs:
+      copydoc = 'See ' + self.type2cpp (class_info) + '::' + mtype.name + '()'
     # prototype
     s += self.C (mtype.rtype) + '\n'
     q = '%s::%s (' % (self.C (class_info), mtype.name)
@@ -909,7 +913,10 @@ class Generator:
     return s
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
-    copydoc = 'See ' + self.type2cpp (class_info) + '::' + fident
+    if self.gen_docs:
+      copydoc = 'See ' + self.type2cpp (class_info) + '::' + fident
+    else:
+      copydoc = ''
     if self.gen_mode == G4SERVANT:
       v, v0, rptr, ptr = 'virtual ', ' = 0', 'P', '*'
     tname = self.C (ftype)
@@ -925,8 +932,9 @@ class Generator:
       s += '  ' + v + self.F ('void') + pid + ' (' + tname + ptr + ')%s; \t///< %s\n' % (v0, copydoc)
     return s
   def generate_client_property_stub (self, class_info, fident, ftype):
-    s = ''
-    tname, copydoc = self.C (ftype), 'See ' + self.type2cpp (class_info) + '::' + fident
+    s, tname, copydoc = '', self.C (ftype), ''
+    if self.gen_docs:
+      copydoc = 'See ' + self.type2cpp (class_info) + '::' + fident
     # getter prototype
     s += tname + '\n'
     q = '%s::%s (' % (self.C (class_info), fident)
@@ -1471,6 +1479,8 @@ def generate (namespace_list, **args):
   gg.gen_aidaids = True
   gg.gen_inclusions = config['inclusions']
   for opt in config['backend-options']:
+    if opt == 'docs':
+      gg.gen_docs = True
     if opt.startswith ('macro='):
       gg.cppmacro = opt[6:]
     if opt.startswith ('strip-path='):
