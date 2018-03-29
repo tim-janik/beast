@@ -20,8 +20,8 @@
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: $vc-track-list-row-height;
     border-radius: $vc-theme-border-radius;
-    --part-thumb-font-color: $vc-part-thumb-font-color; --part-thumb-font: $vc-part-thumb-font;
-    --part-thumb-note-color: $vc-part-thumb-note-color; --part-thumb-colors: $vc-part-thumb-colors;
+    --part-thumb-font-color: #{$vc-part-thumb-font-color}; --part-thumb-font: #{$vc-part-thumb-font};
+    --part-thumb-note-color: #{$vc-part-thumb-note-color}; --part-thumb-colors: #{$vc-part-thumb-colors};
   }
 </style>
 
