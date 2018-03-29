@@ -631,6 +631,7 @@ interface Source;
 interface Project;
 
 /** Base type for all BSE objects.
+ *
  * ### Events:
  * - **notify** - A notification event for property changes, the event field *detail* contains the property name.
  */

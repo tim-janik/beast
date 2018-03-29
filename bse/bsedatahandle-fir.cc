@@ -354,8 +354,12 @@ public:
 
 using namespace Bse;
 
-/**
- * <pre>
+/** Create a `GslDataHandle` with a FIR highpass.
+ * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
+ * @param order       number of filter coefficients
+ *
+ * Cutoff Frequency example:
+ * ```
  *           __________
  *          /
  *         /
@@ -363,9 +367,7 @@ using namespace Bse;
  *  _____/ |
  *         |
  *    cutoff_freq
- * </pre>
- * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
- * @param order       number of filter coefficients
+ * ```
  */
 GslDataHandle*
 bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
