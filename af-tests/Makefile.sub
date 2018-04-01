@@ -22,7 +22,7 @@ AF_TESTS_BSE2WAV = $(strip					\
 	  --bse-pcm-driver null=nosleep				\
 	  --bse-midi-driver null				\
 	  --bse-rcfile "/dev/null"				\
-	  --bse-override-plugin-globs '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so' \
+	  --bse-override-plugin-globs '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so:$(top_builddir)/plugins/bleposc/.libs/*.so' \
 	  --bse-override-sample-path '$(top_srcdir)/af-tests:$(top_srcdir)/library/samples' \
 	  --bse-disable-randomization )
 
