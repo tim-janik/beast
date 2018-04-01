@@ -199,7 +199,7 @@ TESTS_BSEFILE_CHECK_LOAD = $(strip				\
 	  --bse-pcm-driver null=nosleep				\
 	  --bse-midi-driver null				\
 	  --bse-override-sample-path '$(top_srcdir)/af-tests:$(top_srcdir)/library/samples' \
-	  --bse-override-plugin-globs '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so' \
+	  --bse-override-plugin-globs '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so:$(top_builddir)/plugins/bleposc/.libs/*.so' \
 	  --bse-rcfile "/dev/null" )
 tests/bsefile-checklist-%-test: tests/bsefile-checklist
 	$(Q) for tfile in `cat $(@:-test=)` ; do			\
