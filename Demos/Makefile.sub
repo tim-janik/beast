@@ -7,5 +7,6 @@ Demos_install_DATA = $(strip		\
 	Demos/partymonster.bse		\
 	Demos/stereo-through.bse	\
 	Demos/x2-midi-test.bse		\
+	Demos/bleposc-mini-demo.bse	\
 )
 Demos_installdir = $(beastdatadir)/Demos
