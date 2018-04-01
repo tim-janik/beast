@@ -51,6 +51,7 @@ class Osc : public OscBase {
     Osc            *osc;
     float           current_freq;
     float           frequency;
+    float           gain;
 
     enum class State { IDLE, ON, RELEASE, DONE };
     State           state;
@@ -101,6 +102,7 @@ class Osc : public OscBase {
           float new_velocity = istream (ICHANNEL_VELOCITY_IN).connected ? velocity_in[0] : 1.0;
           int   midi_velocity = CLAMP (sm_round_positive (new_velocity * 127), 0, 127);
 
+          gain = velocity_to_gain (new_velocity, morph_plan_voice->output()->velocity_sensitivity());
           retrigger (new_freq, midi_velocity);
 
           state = State::ON;
@@ -180,9 +182,9 @@ class Osc : public OscBase {
                 ostream_set (OCHANNEL_DONE_OUT, const_values (0));
             }
 
-          // apply velocity
-          if (istream (ICHANNEL_VELOCITY_IN).connected && audio_out[0])
-            Block::mul (n_values, audio_out[0], istream (ICHANNEL_VELOCITY_IN).values);
+          // apply gain
+          if (audio_out[0])
+            Block::scale (n_values, audio_out[0], audio_out[0], gain);
         }
       osc->update_shared_state (tick_stamp(), mix_freq());
     }
