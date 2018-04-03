@@ -136,7 +136,7 @@ ebeast/vue-components.html: $(ebeast_vc_vue_files) Makefile
 	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
 	@: # extract <docs/> blocks from *.vue and use these as input to pandoc
 	$(Q) for i in $(sort $(ebeast_vc_vue_files)) ; do \
-	  sed -n '1h;1!H;$${g; s|.*<docs>\(.*\)</docs>.*|\1|i; T; p }' < $$i >> $(@:.html=.tmp1) || exit $$? ; \
+	  sed -n '/^<docs>\s*$$/{ :loop n; /^<\/docs>/q; p;  b loop }'  < $$i >> $(@:.html=.tmp1) || exit $$? ; \
 	  echo >> $(@:.html=.tmp1) ; \
 	done
 	$(Q) sed 's/^  // ; s/^### /\n### /' < $(@:.html=.tmp1) > $(@:.html=.tmp2)
