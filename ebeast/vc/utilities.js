@@ -280,7 +280,7 @@ const modal_keyboard_guard = function (ev) {
     }
 };
 
-/** Add a modal overlay to <body/>, prevent DOM clicks and focus movements */
+/** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
 function modal_shield (close_handler, preserve_element) {
   // prevent focus during modal shield
   const focus_guard = install_focus_guard (preserve_element);
