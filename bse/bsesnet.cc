@@ -81,7 +81,7 @@ bse_snet_init (BseSNet *self)
  *
  * Mark @a child as internal via bse_item_set_internal() and
  * add special protection so to not destroy it automatically
- * upon g_object_dispose().
+ * upon g_object_run_dispose().
  */
 void
 bse_snet_intern_child (BseSNet *self,
