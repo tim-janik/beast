@@ -144,10 +144,11 @@ param_proxy_changed (GtkWidget *entry,
 		  }
 	      }
 	}
+      const int64_t proxy_id = item ? item.proxy_id() : 0;
       /* we get lots of notifications from focus-out, so try to optimize */
-      if (sfi_value_get_proxy (&param->value) != (item ? item.proxy_id() : 0))
+      if (sfi_value_get_proxy (&param->value) != proxy_id)
 	{
-	  sfi_value_set_proxy (&param->value, item.proxy_id());
+	  sfi_value_set_proxy (&param->value, proxy_id);
 	  gxk_param_apply_value (param);
 	}
       else if (!item && string[0]) /* make sure the entry is correctly updated */

@@ -50,28 +50,28 @@
   .vc-piano-roll canvas {
     display: block;
     image-rendering: pixelated /*ff: crisp-edges*/;
-    --piano-roll-light-row:    		$vc-piano-roll-light-row;
-    --piano-roll-dark-row:     		$vc-piano-roll-dark-row;
-    --piano-roll-semitone12:   		$vc-piano-roll-semitone12;
-    --piano-roll-semitone6:    		$vc-piano-roll-semitone6;
-    --piano-roll-grid-main1:   		$vc-piano-roll-grid-main1;
-    --piano-roll-grid-sub1:    		$vc-piano-roll-grid-sub1;
-    --piano-roll-white-base:   		$vc-piano-roll-white-base;
-    --piano-roll-white-glint:  		$vc-piano-roll-white-glint;
-    --piano-roll-white-border: 		$vc-piano-roll-white-border;
-    --piano-roll-black-base:   		$vc-piano-roll-black-base;
-    --piano-roll-black-glint:  		$vc-piano-roll-black-glint;
-    --piano-roll-black-shine:  		$vc-piano-roll-black-shine;
-    --piano-roll-black-border: 		$vc-piano-roll-black-border;
-    --piano-roll-key-font:     		$vc-piano-roll-key-font;
-    --piano-roll-key-font-color: 	$vc-piano-roll-key-font-color;
-    --piano-roll-note-font:    		$vc-piano-roll-note-font;
-    --piano-roll-note-font-color:	$vc-piano-roll-note-font-color;
+    --piano-roll-light-row:    		#{$vc-piano-roll-light-row};
+    --piano-roll-dark-row:     		#{$vc-piano-roll-dark-row};
+    --piano-roll-semitone12:   		#{$vc-piano-roll-semitone12};
+    --piano-roll-semitone6:    		#{$vc-piano-roll-semitone6};
+    --piano-roll-grid-main1:   		#{$vc-piano-roll-grid-main1};
+    --piano-roll-grid-sub1:    		#{$vc-piano-roll-grid-sub1};
+    --piano-roll-white-base:   		#{$vc-piano-roll-white-base};
+    --piano-roll-white-glint:  		#{$vc-piano-roll-white-glint};
+    --piano-roll-white-border: 		#{$vc-piano-roll-white-border};
+    --piano-roll-black-base:   		#{$vc-piano-roll-black-base};
+    --piano-roll-black-glint:  		#{$vc-piano-roll-black-glint};
+    --piano-roll-black-shine:  		#{$vc-piano-roll-black-shine};
+    --piano-roll-black-border: 		#{$vc-piano-roll-black-border};
+    --piano-roll-key-font:     		#{$vc-piano-roll-key-font};
+    --piano-roll-key-font-color: 	#{$vc-piano-roll-key-font-color};
+    --piano-roll-note-font:    		#{$vc-piano-roll-note-font};
+    --piano-roll-note-font-color:	#{$vc-piano-roll-note-font-color};
   }
   .vc-piano-roll-piano {
-    --piano-roll-font: $vc-piano-roll-font;
-    --piano-roll-font-color: $vc-piano-roll-font-color;
-    --piano-roll-key-length: $vc-piano-roll-key-length;
+    --piano-roll-font: #{$vc-piano-roll-font};
+    --piano-roll-font-color: #{$vc-piano-roll-font-color};
+    --piano-roll-key-length: #{$vc-piano-roll-key-length};
     width: $vc-piano-roll-key-length;
   }
   .vc-piano-roll-notes {

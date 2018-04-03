@@ -34,7 +34,6 @@ beast-gtk/bstpatternctrl.cc
 beast-gtk/bstpianorollctrl.cc
 beast-gtk/bstplayback.cc
 beast-gtk/bstpreferences.cc
-beast-gtk/bstprocedure.cc
 beast-gtk/bstprofiler.cc
 beast-gtk/bstprojectctrl.cc
 beast-gtk/bstsampleeditor.cc
@@ -67,7 +66,6 @@ bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc
 bse/bseinstrumentoutput.cc
-bse/bsejanitor.cc
 bse/bseladspamodule.cc
 bse/bsemain.cc
 bse/bsemidicontroller.cc
