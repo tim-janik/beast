@@ -410,7 +410,7 @@ monotonic_counter ()
 static std::string
 get_executable_path()
 {
-  const ssize_t max_size = 4000;
+  const ssize_t max_size = 8100;
   char system_result[max_size + 1 + 1] = { 0, };
   ssize_t system_result_size = -1;
 
@@ -422,33 +422,35 @@ get_executable_path()
       system_result_size = 0;
     }
 #elif defined __APPLE__
-  {
+  { // int _NSGetExecutablePath(char* buf, uint32_t* bufsize);
     uint32_t bufsize = max_size;
-    if (_NSGetExecutablePath (system_result, &bufsize) == 0)
+    if (_NSGetExecutablePath (system_result, &bufsize) == 0 &&
+        bufsize <= max_size)
       system_result_size = bufsize;
   }
 #elif defined _WIN32
-  unsigned long bufsize = max_size;
-  system_result_size = GetModuleFileNameA (0, system_result, bufsize);
-  if (system_result_size == 0 || system_result_size == bufsize)
-    system_result_size = -1;    /* Error, possibly not enough space. */
+  // DWORD GetModuleFileNameA (HMODULE hModule, LPSTR lpFileName, DWORD size);
+  system_result_size = GetModuleFileNameA (0, system_result, max_size);
+  if (system_result_size <= 0 || system_result_size >= max_size)
+    system_result_size = -1;    // error, possibly not enough space
   else
     {
-      system_result[system_result_size] = '\0';
-      /* Early conversion to unix slashes instead of more changes everywhere else .. */
+      system_result[system_result_size] = 0;
+      // early conversion to unix slashes
       char *winslash;
       while ((winslash = strchr (system_result, '\\')) != NULL)
         *winslash = '/';
     }
 #else
-#warning "Platform lacks executable_path() implementation"
+#error "Platform lacks executable_path() implementation"
 #endif
 
-  if (system_result_size != -1)
-    return std::string (system_result);
-  return std::string();
+  if (system_result_size < 0)
+    system_result[0] = 0;
+  return std::string (system_result);
 }
 
+/// Retrieve the path to the currently running executable.
 std::string
 executable_path()
 {
@@ -456,6 +458,7 @@ executable_path()
   return cached_executable_path;
 }
 
+//// Retrieve the name part of executable_path().
 std::string
 executable_name()
 {
