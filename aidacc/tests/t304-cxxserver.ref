@@ -315,9 +315,6 @@ class I_FirstInterfaceIface;
 typedef std::shared_ptr<I_FirstInterfaceIface> I_FirstInterfaceIfaceP;
 typedef std::weak_ptr  <I_FirstInterfaceIface> I_FirstInterfaceIfaceW;
 
-/** @interface FirstInterface
- * See also the corresponding C++ servant class I_FirstInterfaceIface. */
-/// See also the corresponding IDL class FirstInterface.
 class I_FirstInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -330,7 +327,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          void_func             () = 0; 	///< See FirstInterface::void_func()
+  virtual void                          void_func             () = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -759,9 +756,6 @@ class I_UIWidgetAreaIface;
 typedef std::shared_ptr<I_UIWidgetAreaIface> I_UIWidgetAreaIfaceP;
 typedef std::weak_ptr  <I_UIWidgetAreaIface> I_UIWidgetAreaIfaceW;
 
-/** @interface UIWidgetArea
- * See also the corresponding C++ servant class I_UIWidgetAreaIface. */
-/// See also the corresponding IDL class UIWidgetArea.
 class I_UIWidgetAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -774,28 +768,28 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual bool                          dummy    () const = 0; 	///< See UIWidgetArea::dummy
-  virtual void                          dummy    (bool) = 0; 	///< See UIWidgetArea::dummy
-  virtual std::string                   on_click () const = 0; 	///< See UIWidgetArea::on_click
-  virtual void                          on_click (const std::string&) = 0; 	///< See UIWidgetArea::on_click
-  virtual double                        simple_method       () = 0; 	///< See UIWidgetArea::simple_method()
-  virtual double                        single_arg          (int n) = 0; 	///< See UIWidgetArea::single_arg()
-  virtual double                        single_arg2         (int n = 5) = 0; 	///< See UIWidgetArea::single_arg2()
+  virtual bool                          dummy    () const = 0; 	///< 
+  virtual void                          dummy    (bool) = 0; 	///< 
+  virtual std::string                   on_click () const = 0; 	///< 
+  virtual void                          on_click (const std::string&) = 0; 	///< 
+  virtual double                        simple_method       () = 0; 	///< 
+  virtual double                        single_arg          (int n) = 0; 	///< 
+  virtual double                        single_arg2         (int n = 5) = 0; 	///< 
   virtual double                        two_args            (int n,
-                                                             double r) = 0; 	///< See UIWidgetArea::two_args()
+                                                             double r) = 0; 	///< 
   virtual double                        two_args2           (int n = 6,
-                                                             double r = 7.7) = 0; 	///< See UIWidgetArea::two_args2()
+                                                             double r = 7.7) = 0; 	///< 
   virtual double                        multi_args          (bool b,
                                                              int64_t n,
                                                              double r,
                                                              int i,
                                                              const std::string &s = "String ding",
-                                                             double y = 5) = 0; 	///< See UIWidgetArea::multi_args()
+                                                             double y = 5) = 0; 	///< 
   virtual double                        self_method         (I_UIWidgetAreaIface &ba1,
-                                                             I_UIWidgetAreaIface &ba2) = 0; 	///< See UIWidgetArea::self_method()
-  virtual void                          void_method         () = 0; 	///< See UIWidgetArea::void_method()
-  virtual std::string                   on_click2out        () = 0; 	///< See UIWidgetArea::on_click2out()
-  virtual void                          on_click2in         (const std::string &command) = 0; 	///< See UIWidgetArea::on_click2in()
+                                                             I_UIWidgetAreaIface &ba2) = 0; 	///< 
+  virtual void                          void_method         () = 0; 	///< 
+  virtual std::string                   on_click2out        () = 0; 	///< 
+  virtual void                          on_click2in         (const std::string &command) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "dummy", &I_UIWidgetAreaIface::dummy, &I_UIWidgetAreaIface::dummy);
@@ -810,9 +804,6 @@ class I_ParentIface;
 typedef std::shared_ptr<I_ParentIface> I_ParentIfaceP;
 typedef std::weak_ptr  <I_ParentIface> I_ParentIfaceW;
 
-/** @interface Parent
- * See also the corresponding C++ servant class I_ParentIface. */
-/// See also the corresponding IDL class Parent.
 class I_ParentIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -836,9 +827,6 @@ class I_ChildIface;
 typedef std::shared_ptr<I_ChildIface> I_ChildIfaceP;
 typedef std::weak_ptr  <I_ChildIface> I_ChildIfaceW;
 
-/** @interface Child
- * See also the corresponding C++ servant class I_ChildIface. */
-/// See also the corresponding IDL class Child.
 class I_ChildIface : public virtual I_ParentIface
 {
 protected:
@@ -864,9 +852,6 @@ class I_DescendantIface;
 typedef std::shared_ptr<I_DescendantIface> I_DescendantIfaceP;
 typedef std::weak_ptr  <I_DescendantIface> I_DescendantIfaceW;
 
-/** @interface Descendant
- * See also the corresponding C++ servant class I_DescendantIface. */
-/// See also the corresponding IDL class Descendant.
 class I_DescendantIface : public virtual I_ChildIface
 {
 protected:
@@ -892,9 +877,6 @@ class I_GrandChildIface;
 typedef std::shared_ptr<I_GrandChildIface> I_GrandChildIfaceP;
 typedef std::weak_ptr  <I_GrandChildIface> I_GrandChildIfaceW;
 
-/** @interface GrandChild
- * See also the corresponding C++ servant class I_GrandChildIface. */
-/// See also the corresponding IDL class GrandChild.
 class I_GrandChildIface : public virtual I_DescendantIface
 {
 protected:
@@ -963,9 +945,6 @@ class I_QuickIfaceIface;
 typedef std::shared_ptr<I_QuickIfaceIface> I_QuickIfaceIfaceP;
 typedef std::weak_ptr  <I_QuickIfaceIface> I_QuickIfaceIfaceW;
 
-/** @interface QuickIface
- * See also the corresponding C++ servant class I_QuickIfaceIface. */
-/// See also the corresponding IDL class QuickIface.
 class I_QuickIfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -978,7 +957,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          simple_function   (int i = 9) = 0; 	///< See QuickIface::simple_function()
+  virtual void                          simple_function   (int i = 9) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -990,9 +969,6 @@ class I_MethodTestInterfaceIface;
 typedef std::shared_ptr<I_MethodTestInterfaceIface> I_MethodTestInterfaceIfaceP;
 typedef std::weak_ptr  <I_MethodTestInterfaceIface> I_MethodTestInterfaceIfaceW;
 
-/** @interface MethodTestInterface
- * See also the corresponding C++ servant class I_MethodTestInterfaceIface. */
-/// See also the corresponding IDL class MethodTestInterface.
 class I_MethodTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1005,29 +981,29 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          method_with_void           () = 0; 	///< See MethodTestInterface::method_with_void()
+  virtual void                          method_with_void           () = 0; 	///< 
   virtual bool                          method_with_bools          (bool input,
-                                                                    bool optval = 0) = 0; 	///< See MethodTestInterface::method_with_bools()
+                                                                    bool optval = 0) = 0; 	///< 
   virtual int                           method_with_ints32         (int input,
-                                                                    int optval = -2) = 0; 	///< See MethodTestInterface::method_with_ints32()
+                                                                    int optval = -2) = 0; 	///< 
   virtual int64_t                       method_with_ints64         (int64_t input,
-                                                                    int64_t optval = 576460752303423488) = 0; 	///< See MethodTestInterface::method_with_ints64()
+                                                                    int64_t optval = 576460752303423488) = 0; 	///< 
   virtual double                        method_with_floats         (double input,
-                                                                    double optval = 309.9) = 0; 	///< See MethodTestInterface::method_with_floats()
+                                                                    double optval = 309.9) = 0; 	///< 
   virtual std::string                   method_with_string         (const std::string &input,
-                                                                    const std::string &optval = "default") = 0; 	///< See MethodTestInterface::method_with_string()
+                                                                    const std::string &optval = "default") = 0; 	///< 
   virtual QuickEnum                     method_with_enum           (QuickEnum input,
-                                                                    QuickEnum optval = QuickEnum (0)) = 0; 	///< See MethodTestInterface::method_with_enum()
+                                                                    QuickEnum optval = QuickEnum (0)) = 0; 	///< 
   virtual SrvT_QuickRecord              method_with_record         (const SrvT_QuickRecord &input,
-                                                                    const SrvT_QuickRecord &optval = SrvT_QuickRecord()) = 0; 	///< See MethodTestInterface::method_with_record()
+                                                                    const SrvT_QuickRecord &optval = SrvT_QuickRecord()) = 0; 	///< 
   virtual SrvT_QuickSequence            method_with_sequence       (const SrvT_QuickSequence &input,
-                                                                    const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0; 	///< See MethodTestInterface::method_with_sequence()
+                                                                    const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0; 	///< 
   virtual I_GrandChildIfaceP            method_with_interface      (I_GrandChildIface &input,
-                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0; 	///< See MethodTestInterface::method_with_interface()
+                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0; 	///< 
   virtual Aida::Any                     method_with_anys           (const Aida::Any &input,
-                                                                    const Aida::Any &optval) = 0; 	///< See MethodTestInterface::method_with_anys()
+                                                                    const Aida::Any &optval) = 0; 	///< 
   virtual I_QuickIfaceIfaceP            method_with_quickiface     (I_QuickIfaceIface &input,
-                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0; 	///< See MethodTestInterface::method_with_quickiface()
+                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1039,9 +1015,6 @@ class I_SignalTestInterfaceIface;
 typedef std::shared_ptr<I_SignalTestInterfaceIface> I_SignalTestInterfaceIfaceP;
 typedef std::weak_ptr  <I_SignalTestInterfaceIface> I_SignalTestInterfaceIfaceW;
 
-/** @interface SignalTestInterface
- * See also the corresponding C++ servant class I_SignalTestInterfaceIface. */
-/// See also the corresponding IDL class SignalTestInterface.
 class I_SignalTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1065,9 +1038,6 @@ class I_ChildInheritingSignalsIface;
 typedef std::shared_ptr<I_ChildInheritingSignalsIface> I_ChildInheritingSignalsIfaceP;
 typedef std::weak_ptr  <I_ChildInheritingSignalsIface> I_ChildInheritingSignalsIfaceW;
 
-/** @interface ChildInheritingSignals
- * See also the corresponding C++ servant class I_ChildInheritingSignalsIface. */
-/// See also the corresponding IDL class ChildInheritingSignals.
 class I_ChildInheritingSignalsIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
@@ -1093,9 +1063,6 @@ class I_AnotherChildIface;
 typedef std::shared_ptr<I_AnotherChildIface> I_AnotherChildIfaceP;
 typedef std::weak_ptr  <I_AnotherChildIface> I_AnotherChildIfaceW;
 
-/** @interface AnotherChild
- * See also the corresponding C++ servant class I_AnotherChildIface. */
-/// See also the corresponding IDL class AnotherChild.
 class I_AnotherChildIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
@@ -1121,9 +1088,6 @@ class I_PropertyTesterIface;
 typedef std::shared_ptr<I_PropertyTesterIface> I_PropertyTesterIfaceP;
 typedef std::weak_ptr  <I_PropertyTesterIface> I_PropertyTesterIfaceW;
 
-/** @interface PropertyTester
- * See also the corresponding C++ servant class I_PropertyTesterIface. */
-/// See also the corresponding IDL class PropertyTester.
 class I_PropertyTesterIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1136,28 +1100,28 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual bool                          bool_prop      () const = 0; 	///< See PropertyTester::bool_prop
-  virtual void                          bool_prop      (bool) = 0; 	///< See PropertyTester::bool_prop
-  virtual int                           int32_prop     () const = 0; 	///< See PropertyTester::int32_prop
-  virtual void                          int32_prop     (int) = 0; 	///< See PropertyTester::int32_prop
-  virtual int64_t                       int64_prop     () const = 0; 	///< See PropertyTester::int64_prop
-  virtual void                          int64_prop     (int64_t) = 0; 	///< See PropertyTester::int64_prop
-  virtual double                        float64_prop   () const = 0; 	///< See PropertyTester::float64_prop
-  virtual void                          float64_prop   (double) = 0; 	///< See PropertyTester::float64_prop
-  virtual std::string                   string_prop    () const = 0; 	///< See PropertyTester::string_prop
-  virtual void                          string_prop    (const std::string&) = 0; 	///< See PropertyTester::string_prop
-  virtual QuickEnum                     enum_prop      () const = 0; 	///< See PropertyTester::enum_prop
-  virtual void                          enum_prop      (QuickEnum) = 0; 	///< See PropertyTester::enum_prop
-  virtual SrvT_QuickRecord              record_prop    () const = 0; 	///< See PropertyTester::record_prop
-  virtual void                          record_prop    (const SrvT_QuickRecord&) = 0; 	///< See PropertyTester::record_prop
-  virtual SrvT_QuickSequence            sequence_prop  () const = 0; 	///< See PropertyTester::sequence_prop
-  virtual void                          sequence_prop  (const SrvT_QuickSequence&) = 0; 	///< See PropertyTester::sequence_prop
-  virtual I_GrandChildIfaceP            interface_prop () const = 0; 	///< See PropertyTester::interface_prop
-  virtual void                          interface_prop (I_GrandChildIface*) = 0; 	///< See PropertyTester::interface_prop
-  virtual I_PropertyTesterIfaceP        self_prop      () const = 0; 	///< See PropertyTester::self_prop
-  virtual void                          self_prop      (I_PropertyTesterIface*) = 0; 	///< See PropertyTester::self_prop
-  virtual Aida::Any                     any_prop       () const = 0; 	///< See PropertyTester::any_prop
-  virtual void                          any_prop       (const Aida::Any&) = 0; 	///< See PropertyTester::any_prop
+  virtual bool                          bool_prop      () const = 0; 	///< 
+  virtual void                          bool_prop      (bool) = 0; 	///< 
+  virtual int                           int32_prop     () const = 0; 	///< 
+  virtual void                          int32_prop     (int) = 0; 	///< 
+  virtual int64_t                       int64_prop     () const = 0; 	///< 
+  virtual void                          int64_prop     (int64_t) = 0; 	///< 
+  virtual double                        float64_prop   () const = 0; 	///< 
+  virtual void                          float64_prop   (double) = 0; 	///< 
+  virtual std::string                   string_prop    () const = 0; 	///< 
+  virtual void                          string_prop    (const std::string&) = 0; 	///< 
+  virtual QuickEnum                     enum_prop      () const = 0; 	///< 
+  virtual void                          enum_prop      (QuickEnum) = 0; 	///< 
+  virtual SrvT_QuickRecord              record_prop    () const = 0; 	///< 
+  virtual void                          record_prop    (const SrvT_QuickRecord&) = 0; 	///< 
+  virtual SrvT_QuickSequence            sequence_prop  () const = 0; 	///< 
+  virtual void                          sequence_prop  (const SrvT_QuickSequence&) = 0; 	///< 
+  virtual I_GrandChildIfaceP            interface_prop () const = 0; 	///< 
+  virtual void                          interface_prop (I_GrandChildIface*) = 0; 	///< 
+  virtual I_PropertyTesterIfaceP        self_prop      () const = 0; 	///< 
+  virtual void                          self_prop      (I_PropertyTesterIface*) = 0; 	///< 
+  virtual Aida::Any                     any_prop       () const = 0; 	///< 
+  virtual void                          any_prop       (const Aida::Any&) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "bool_prop", &I_PropertyTesterIface::bool_prop, &I_PropertyTesterIface::bool_prop);
@@ -1184,9 +1148,6 @@ class I_UseIncludesIface;
 typedef std::shared_ptr<I_UseIncludesIface> I_UseIncludesIfaceP;
 typedef std::weak_ptr  <I_UseIncludesIface> I_UseIncludesIfaceW;
 
-/** @interface UseIncludes
- * See also the corresponding C++ servant class I_UseIncludesIface. */
-/// See also the corresponding IDL class UseIncludes.
 class I_UseIncludesIface : public virtual IncludeCheck::I_SomeInterfaceIface
 {
 protected:
@@ -1212,9 +1173,6 @@ class I_ButtonAreaIface;
 typedef std::shared_ptr<I_ButtonAreaIface> I_ButtonAreaIfaceP;
 typedef std::weak_ptr  <I_ButtonAreaIface> I_ButtonAreaIfaceW;
 
-/** @interface ButtonArea
- * See also the corresponding C++ servant class I_ButtonAreaIface. */
-/// See also the corresponding IDL class ButtonArea.
 class I_ButtonAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1227,14 +1185,14 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual std::string                   on_click   () const = 0; 	///< See ButtonArea::on_click
-  virtual void                          on_click   (const std::string&) = 0; 	///< See ButtonArea::on_click
-  virtual std::string                   on_click2  () const = 0; 	///< See ButtonArea::on_click2
-  virtual void                          on_click2  (const std::string&) = 0; 	///< See ButtonArea::on_click2
-  virtual std::string                   on_click3  () const = 0; 	///< See ButtonArea::on_click3
-  virtual void                          on_click3  (const std::string&) = 0; 	///< See ButtonArea::on_click3
-  virtual ClickType                     click_type () const = 0; 	///< See ButtonArea::click_type
-  virtual void                          click_type (ClickType) = 0; 	///< See ButtonArea::click_type
+  virtual std::string                   on_click   () const = 0; 	///< 
+  virtual void                          on_click   (const std::string&) = 0; 	///< 
+  virtual std::string                   on_click2  () const = 0; 	///< 
+  virtual void                          on_click2  (const std::string&) = 0; 	///< 
+  virtual std::string                   on_click3  () const = 0; 	///< 
+  virtual void                          on_click3  (const std::string&) = 0; 	///< 
+  virtual ClickType                     click_type () const = 0; 	///< 
+  virtual void                          click_type (ClickType) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "on_click", &I_ButtonAreaIface::on_click, &I_ButtonAreaIface::on_click);
@@ -1252,9 +1210,6 @@ typedef std::shared_ptr<I_PureMethodsIface> I_PureMethodsIfaceP;
 typedef std::weak_ptr  <I_PureMethodsIface> I_PureMethodsIfaceW;
 
 
-/** @interface PureMethods
- * See also the corresponding C++ servant class I_PureMethodsIface. */
-/// See also the corresponding IDL class PureMethods.
 class I_PureMethodsIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1267,7 +1222,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual int                           pure_method        (double f) = 0; 	///< See PureMethods::pure_method()
+  virtual int                           pure_method        (double f) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1282,9 +1237,6 @@ class I_NameTestsIface;
 typedef std::shared_ptr<I_NameTestsIface> I_NameTestsIfaceP;
 typedef std::weak_ptr  <I_NameTestsIface> I_NameTestsIfaceW;
 
-/** @interface NameTests
- * See also the corresponding C++ servant class I_NameTestsIface. */
-/// See also the corresponding IDL class NameTests.
 class I_NameTestsIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1299,7 +1251,7 @@ public:
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::SrvT_QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
-                                                                   const OtherNamespace::SrvT_SomeRecord &sr) = 0; 	///< See NameTests::args_from_other_namespace()
+                                                                   const OtherNamespace::SrvT_SomeRecord &sr) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1314,9 +1266,6 @@ class I_CompressorIface;
 typedef std::shared_ptr<I_CompressorIface> I_CompressorIfaceP;
 typedef std::weak_ptr  <I_CompressorIface> I_CompressorIfaceW;
 
-/** @interface Compressor
- * See also the corresponding C++ servant class I_CompressorIface. */
-/// See also the corresponding IDL class Compressor.
 class I_CompressorIface : public virtual Aida::ImplicitBase
 {
 protected:
@@ -1329,10 +1278,10 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual double                        threshold () const = 0; 	///< See Compressor::threshold
-  virtual void                          threshold (double) = 0; 	///< See Compressor::threshold
-  virtual double                        ratio     () const = 0; 	///< See Compressor::ratio
-  virtual void                          ratio     (double) = 0; 	///< See Compressor::ratio
+  virtual double                        threshold () const = 0; 	///< 
+  virtual void                          threshold (double) = 0; 	///< 
+  virtual double                        ratio     () const = 0; 	///< 
+  virtual void                          ratio     (double) = 0; 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "threshold", &I_CompressorIface::threshold, &I_CompressorIface::threshold);
@@ -1378,9 +1327,6 @@ class I_SoundModuleIface;
 typedef std::shared_ptr<I_SoundModuleIface> I_SoundModuleIfaceP;
 typedef std::weak_ptr  <I_SoundModuleIface> I_SoundModuleIfaceW;
 
-/** @interface SoundModule
- * See also the corresponding C++ servant class I_SoundModuleIface. */
-/// See also the corresponding IDL class SoundModule.
 class I_SoundModuleIface : public virtual Aida::ImplicitBase
 {
 protected:
