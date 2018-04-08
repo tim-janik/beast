@@ -33,24 +33,45 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 using   Aida::Any;
 using   Aida::EventFd;
 using   Aida::void_t;
-using   Aida::error_hook;
-using   Aida::executable_path;
-using   Aida::executable_name;
 
-// == Diagnostics ==
-template<class... Args> String      string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
-template<class... Args> String      string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
-template<class... Args> void        printout             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
-template<class... Args> void        printerr             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
-template<class ...Args> void        fatal_error          (const char *format, const Args &...args) BSE_NORETURN;
-template<class ...Args> void        warning              (const char *format, const Args &...args);
-template<class ...Args> void        warn                 (const char *format, const Args &...args);
-template<class ...Args> void        info                 (const char *format, const Args &...args);
-template<class ...Args> inline void dump                 (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
-template<class ...Args> inline void debug                (const char *conditional, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
-inline bool                         debug_enabled        (const char *conditional) BSE_ALWAYS_INLINE BSE_PURE;
+// == Feature Toggles ==
 String                              feature_toggle_find  (const String &config, const String &feature, const String &fallback = "0");
 bool                                feature_toggle_bool  (const char *config, const char *feature);
+
+// == Diagnostics ==
+enum class DebugFlags {
+  FATAL_WARNINGS = 1,
+  SIGQUIT_ON_ABORT = 2,
+};
+AIDA_DEFINE_FLAGS_ARITHMETIC (DebugFlags);
+
+template<class... Args> String string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class... Args> String string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class ...Args> void   fatal_error          (const char *format, const Args &...args) BSE_NORETURN;
+template<class ...Args> void   warning              (const char *format, const Args &...args);
+template<class ...Args> void   info                 (const char *format, const Args &...args);
+template<class... Args> void   printout             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+template<class... Args> void   printerr             (const char *format, const Args &...args) BSE_PRINTF (1, 0);
+void                           set_debug_flags      (DebugFlags flags);
+inline bool                    debug_enabled        () BSE_ALWAYS_INLINE BSE_PURE;
+bool                           debug_key_enabled    (const char *conditional) BSE_PURE;
+bool                           debug_key_enabled    (const ::std::string &conditional) BSE_PURE;
+::std::string                  debug_key_value      (const char *conditional) BSE_PURE;
+template<class ...Args> void   debug                (const char *cond, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
+/// Issue a printf()-like debug message if `cond` is enabled in $BSE_DEBUG.
+#define BSE_DEBUG(cond, ...) ::Bse::debug_message (__FILE__, __LINE__, __func__, cond, __VA_ARGS__)
+
+// == Diagnostic Helpers ==
+template<class ...Args>
+void   debug_message        (const char *file, int line, const char *func, const char *cond, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
+void   diag_debug_message   (const char *file, int line, const char *func, const char *cond, const ::std::string &message);
+void   diag_failed_assert   (const char *file, int line, const char *func, const char *stmt);
+void   diag_fatal_error     (const ::std::string &message) BSE_NORETURN;
+void   diag_warning         (const ::std::string &message);
+void   diag_info            (const ::std::string &message);
+void   diag_printout        (const ::std::string &message);
+void   diag_printerr        (const ::std::string &message);
+void   diag_abort_hook      (const std::function<void (const ::std::string&)> &hook);
 
 // == Small Utilities ==
 /// Erase element @a value from std::vector @a v if it's present.
@@ -180,85 +201,74 @@ compare_greater (const Value &v1, const Value &v2)
 
 // == Implementation Details ==
 namespace Internal {
-extern bool                     debug_any_enabled;  //< Indicates if $BSE_DEBUG enables some debug settings.
-bool                            debug_key_enabled       (const char *conditional) BSE_PURE;
-bool                            debug_key_enabled       (const std::string &conditional) BSE_PURE;
-std::string                     debug_key_value         (const std::string &key) BSE_PURE;
-void                            debug_diagnostic        (const char *prefix, const std::string &message);
-void                            diagnostic              (const char *file, int line, const char *func, char kind, const std::string &info);
-void                            printout_string         (const String &string);
-void                            printerr_string         (const String &string);
+extern bool debug_enabled_flag;
 } // Internal
 
-/// Print a message on stdout (and flush stdout) ala printf(), using the POSIX/C locale.
-template<class... Args> void
-printout (const char *format, const Args &...args)
-{
-  Internal::printout_string (string_format (format, args...));
-}
-
-/// Print a message on stderr (and flush stderr) ala printf(), using the POSIX/C locale.
-template<class... Args> void
-printerr (const char *format, const Args &...args)
-{
-  Internal::printerr_string (string_format (format, args...));
-}
-
-/// Issue a printf-like message if @a conditional is enabled by $BSE_DEBUG.
-template<class ...Args> inline void BSE_ALWAYS_INLINE
-dump (const char *conditional, const char *format, const Args &...args)
-{
-  if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
-    Internal::diagnostic (NULL, 0, NULL, ' ', string_format (format, args...));
-}
-
-/// Issue a printf-like debugging message if @a conditional is enabled by $BSE_DEBUG.
-template<class ...Args> inline void BSE_ALWAYS_INLINE
-debug (const char *conditional, const char *format, const Args &...args)
-{
-  if (BSE_UNLIKELY (Internal::debug_any_enabled) && Internal::debug_key_enabled (conditional))
-    Internal::debug_diagnostic (conditional, string_format (format, args...));
-}
-
-/// Check if @a conditional is enabled by $BSE_DEBUG.
+/// Check if any kind of debugging is enabled by $BSE_DEBUG.
 inline bool BSE_ALWAYS_INLINE BSE_PURE
-debug_enabled (const char *conditional)
+debug_enabled()
 {
-  if (BSE_UNLIKELY (Internal::debug_any_enabled))
-    return Internal::debug_key_enabled (conditional);
-  return false;
+  return BSE_UNLIKELY (Internal::debug_enabled_flag);
 }
 
 /** Issue a printf-like message and abort the program, this function will not return.
  * Avoid using this in library code, aborting may take precious user data with it,
- * library code should instead use info() or assert_return().
+ * library code should instead use warning(), info() or assert_return().
  */
 template<class ...Args> void BSE_NORETURN
 fatal_error (const char *format, const Args &...args)
 {
-  const String msg = Aida::diagnostic_message (NULL, 0, NULL, 'F', string_format (format, args...), 0);
-  Aida::fatal_abort (msg);
-}
-
-/// Issue a printf-like warning message.
-template<class ...Args> void BSE_NORETURN
-warn (const char *format, const Args &...args)
-{
-  Internal::diagnostic (NULL, 0, NULL, 'W', string_format (format, args...));
+  diag_fatal_error (string_format (format, args...));
 }
 
 /// Issue a printf-like warning message.
 template<class ...Args> void BSE_NORETURN
 warning (const char *format, const Args &...args)
 {
-  Internal::diagnostic (NULL, 0, NULL, 'W', string_format (format, args...));
+  diag_warning (string_format (format, args...));
 }
 
 /// Issue an informative printf-like message.
 template<class ...Args> void BSE_NORETURN
 info (const char *format, const Args &...args)
 {
-  Internal::diagnostic (NULL, 0, NULL, 'I', string_format (format, args...));
+  diag_info (string_format (format, args...));
+}
+
+/// Print a message on stdout (and flush stdout) ala printf(), using the POSIX/C locale.
+template<class... Args> void
+printout (const char *format, const Args &...args)
+{
+  diag_printout (string_format (format, args...));
+}
+
+/// Print a message on stderr (and flush stderr) ala printf(), using the POSIX/C locale.
+template<class... Args> void
+printerr (const char *format, const Args &...args)
+{
+  diag_printerr (string_format (format, args...));
+}
+
+/// Issue a printf-like debugging message if `cond` is enabled by $BSE_DEBUG.
+template<class ...Args> inline void BSE_ALWAYS_INLINE
+debug (const char *cond, const char *format, const Args &...args)
+{
+  if (BSE_UNLIKELY (debug_enabled()))
+    {
+      if (BSE_UNLIKELY (debug_key_enabled (cond)))
+        diag_debug_message (NULL, 0, NULL, cond, string_format (format, args...));
+    }
+}
+
+/// Issue a printf-like debugging message if `cond` is enabled by $BSE_DEBUG.
+template<class ...Args> inline void BSE_ALWAYS_INLINE
+debug_message (const char *file, int line, const char *func, const char *cond, const char *format, const Args &...args)
+{
+  if (BSE_UNLIKELY (debug_enabled()))
+    {
+      if (BSE_UNLIKELY (debug_key_enabled (cond)))
+        diag_debug_message (file, line, func, cond, string_format (format, args...));
+    }
 }
 
 // == External Helpers ==
