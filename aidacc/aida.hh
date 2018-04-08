@@ -39,11 +39,9 @@ namespace Aida {
 #define AIDA_ISLIKELY(expr)     expr
 #define AIDA_UNLIKELY(expr)     expr
 #endif
-#ifndef AIDA_ASSERTION_FAILED
-#define AIDA_ASSERTION_FAILED(...)        ::Aida::failed_assertion (__FILE__, __LINE__, __func__, __VA_ARGS__)
-#endif
+#define AIDA_ASSERTION_FAILED(stmt)       ::Aida::assertion_failed (__FILE__, __LINE__, __func__, stmt)
 #define AIDA_ASSERT_RETURN(expr,...)      do { if (AIDA_ISLIKELY (expr)) break; AIDA_ASSERTION_FAILED (#expr); return __VA_ARGS__; } while (0)
-#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED ("unreached"); return __VA_ARGS__; } while (0)
+#define AIDA_ASSERT_RETURN_UNREACHED(...) do { AIDA_ASSERTION_FAILED (NULL); return __VA_ARGS__; } while (0)
 #define AIDA_LIKELY             AIDA_ISLIKELY
 #define AIDA_CLASS_NON_COPYABLE(ClassName)  \
   /*copy-ctor*/ ClassName  (const ClassName&) = delete; \
@@ -189,25 +187,7 @@ template<typename T> struct RemoveSharedPtr<const ::std::shared_ptr<T>>         
 template<typename T> struct RemoveSharedPtr<volatile ::std::shared_ptr<T>>              { typedef T type; };
 template<typename T> struct RemoveSharedPtr<const volatile ::std::shared_ptr<T>>        { typedef T type; };
 
-// == Aborting and assertions ==
-enum class FatalAbortFlags {
-  SEND_SIGQUIT          = 0x01, //< Prevents apport from catching intended assert/abort crashes by aborting with SIGQUIT.
-  FATAL_ASSERTIONS      = 0x10, //< Make failing assertions fatal.
-  FATAL_WARNINGS        = 0x20, //< Make warnings fatal and abort.
-};
-AIDA_DEFINE_FLAGS_ARITHMETIC (FatalAbortFlags);
-FatalAbortFlags fatal_abort_flags               ();
-void            fatal_abort_set_flags           (FatalAbortFlags flags);
-void            fatal_abort_unset_flags         (FatalAbortFlags flags);
-void            fatal_abort                     (const std::string &message) AIDA_NORETURN;
-void            error_hook                      (const std::function<void (const ::std::string&)> &hook);
-void            failed_assertion                (const char *file, unsigned int line, const char *func, const ::std::string &message, int p_errno = 0);
-std::string     diagnostic_message              (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno);
-std::string     executable_path                 () AIDA_PURE;
-std::string     executable_name                 () AIDA_PURE;
-
 // == String Utilitiies ==
-String       posix_sprintf                (const char *format, ...) AIDA_PRINTF (1, 2);
 bool         string_match_identifier_tail (const String &ident, const String &tail);
 bool         string_startswith            (const String &string, const String &fragment);
 String       string_to_cquote             (const String &str);
@@ -219,6 +199,7 @@ String       string_join                  (const String &junctor, const StringVe
 StringVector string_split_any             (const String &string, const String &splitchars = "", size_t maxn = size_t (-1));
 bool         string_option_check          (const String &option_string, const String &option);
 String       string_demangle_cxx          (const char *mangled_identifier);
+void         assertion_failed             (const char *file, int line, const char *func, const char *stmt);
 
 /// Provide demangled stringified name for a @a Type.
 template<class T> AIDA_PURE static inline String
@@ -244,17 +225,6 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
   static_assert (sizeof (Num) == 1, "");
   return fnv1a_bytehash64 (ztdata, ztdata + n);
 }
-
-// == PosixLocaleGuard ==
-/// Use the POSIX locale in the current thread once a PosixLocaleGuard is created and until it is destroyed.
-class PosixLocaleGuard {
-  struct  Locale;
-  Locale &locale_;
-  int64   localemem_[1];
-public:
-  /*ctor*/  PosixLocaleGuard();
-  /*dtor*/ ~PosixLocaleGuard();
-};
 
 // == VirtualEnableSharedFromThis ==
 /// Helper class for VirtualEnableSharedFromThis.
