@@ -16,8 +16,8 @@ namespace {
 using namespace Bse;
 using namespace std;
 
-#define EDUMP(...)      Bse::dump ("midi-events", __VA_ARGS__)
-#define VDUMP(...)      Bse::dump ("midi-voice", __VA_ARGS__)
+#define EDUMP(...)      Bse::debug ("midi-events", __VA_ARGS__)
+#define VDUMP(...)      Bse::debug ("midi-voice", __VA_ARGS__)
 
 /* --- variables --- */
 static std::mutex global_midi_mutex;

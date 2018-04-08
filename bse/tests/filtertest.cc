@@ -280,7 +280,7 @@ butterwoth_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_BUTTERWORTH;
-  Aida::error_hook ([&] (const ::std::string &msg) { print_filter_on_abort (req, fdes); });
+  diag_abort_hook ([&] (const ::std::string &msg) { print_filter_on_abort (req, fdes); });
   TOK();
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
@@ -343,7 +343,7 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1000, 4000, -77, 1500, 3500);
   }
-  Bse::error_hook (NULL);
+  diag_abort_hook (NULL);
   TOK();
   TDONE();
 }
@@ -356,7 +356,7 @@ chebychev1_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;
-  Aida::error_hook ([&] (const ::std::string &msg) { print_filter_on_abort (req, fdes); });
+  diag_abort_hook ([&] (const ::std::string &msg) { print_filter_on_abort (req, fdes); });
   const double gaineps = 1e-7;
   TOK();
   {
@@ -419,7 +419,7 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.001, 8000, 12000, -78, 8500, 11500);
   }
-  Bse::error_hook (NULL);
+  diag_abort_hook (NULL);
   TOK();
   TDONE();
 }
@@ -698,7 +698,7 @@ generic_filter_tests (const char        *test_name,
     {
       const BseIIRFilterRequest *req = filters[i].filter_request;
       BseIIRFilterDesign fdes;
-      Aida::error_hook ([&] (const ::std::string &msg) { print_filter_on_abort (*req, fdes); });
+      diag_abort_hook ([&] (const ::std::string &msg) { print_filter_on_abort (*req, fdes); });
       bool success = bse_iir_filter_design (req, &fdes);
       TASSERT (success == true);
       if (filters[i].zeros)
@@ -772,7 +772,7 @@ generic_filter_tests (const char        *test_name,
         }
       if (i % tick_count == 0)
         TOK();
-      Bse::error_hook (NULL);
+      diag_abort_hook (NULL);
     }
   TDONE();
 }
@@ -782,7 +782,7 @@ main (int    argc,
       char **argv)
 {
   bse_init_test (&argc, argv);
-  Bse::error_hook (NULL);
+  diag_abort_hook (NULL);
   butterwoth_tests ();
   chebychev1_tests ();
   test_problem_candidates ();

@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define PDEBUG(...)     Bse::debug ("procs", __VA_ARGS__)
-#define CHECK_DEBUG()   Bse::debug_enabled ("procs")
+#define CHECK_PDEBUG()   Bse::debug_key_enabled ("procs")
 #define HACK_DEBUG /* very slow and leaks memory */ while (0) Bse::printerr
 
 /* --- macros --- */
@@ -241,7 +241,7 @@ bse_procedure_call (BseProcedureClass  *proc,
     error = Bse::Error::PROC_PARAM_INVAL;
   else
     {
-      if (CHECK_DEBUG())
+      if (CHECK_PDEBUG())
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
             PDEBUG ("executing procedure \"%s\" on object %s",

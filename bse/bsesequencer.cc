@@ -17,7 +17,7 @@
 #include <vector>
 
 #define SDEBUG(...)     Bse::debug ("sequencer", __VA_ARGS__)
-#define SDUMP(...)      Bse::dump ("sequencer-events", __VA_ARGS__)
+#define SDUMP(...)      Bse::debug ("sequencer-events", __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 

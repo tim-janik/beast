@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define UDEBUG(...)     Bse::debug ("undo", __VA_ARGS__)
-#define CHECK_DEBUG()   Bse::debug_enabled ("undo")
+#define CHECK_UDEBUG()   Bse::debug_key_enabled ("undo")
 
 /* --- functions --- */
 BseUndoStack*
@@ -300,7 +300,7 @@ bse_undo_stack_undo (BseUndoStack *self)
       self->n_undo_groups--;
       self->dirt_counter--;
       UDEBUG ("EXECUTE UNDO: %s", group->name);
-      if (CHECK_DEBUG())
+      if (CHECK_UDEBUG())
         {
           SfiRing *ring = group->undo_steps;
           for (ring = group->undo_steps; ring; ring = sfi_ring_walk (ring, group->undo_steps))
