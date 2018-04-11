@@ -48,11 +48,11 @@ ENV DISTRELEASE		"@DISTRELEASE@"
 # Build and install SpectMorph 0.4.0
 ### Dependencies
 RUN retry apt-get install -y \
-    libao-dev qtbase5-dev libfftw3-dev libboost-dev libsndfile1-dev
+    libao-dev qtbase5-dev libfftw3-dev libsndfile1-dev
 ### Clone repository
 RUN cd /usr/src/ && \
-    retry git clone http://space.twc.de/public/git/spectmorph.git
-    # && \ cd /usr/src/spectmorph && git checkout 0.4.0 -b stable (0.4.0 is not released yet)
+    retry git clone http://space.twc.de/public/git/spectmorph.git && \
+    cd /usr/src/spectmorph && git checkout 0.4.0 -b stable
 ### Compile
 RUN cd /usr/src/spectmorph/ && \
     nice ./autogen.sh --prefix=/usr && \
