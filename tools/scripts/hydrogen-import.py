@@ -9,6 +9,7 @@
 import xml.etree.ElementTree as ET
 import os
 import sys
+import re
 import subprocess
 import argparse
 
@@ -71,6 +72,9 @@ def parse_kit (dir_name):
 
   hydrogen_kit = HydrogenKit()
   hydrogen_kit.notes = []
+  hydrogen_kit.license = None
+  hydrogen_kit.author = None
+  hydrogen_kit.info = None
   for child in root:
     if normalize_tag (child) == "name":
       hydrogen_kit.name = child.text
@@ -79,6 +83,9 @@ def parse_kit (dir_name):
     elif normalize_tag (child) == "info":
       hydrogen_kit.info = child.text
     elif normalize_tag (child) == "license":
+      hydrogen_kit.license = child.text
+    elif normalize_tag (child) == "licence":
+      # this seems to be a spelling mistake, but we parse it anyway
       hydrogen_kit.license = child.text
     elif normalize_tag (child) == "instrumentList":
       for il_child in child:
@@ -154,9 +161,37 @@ def do_import (dir_name):
   if channels != 1 and channels != 2:
     die ("unsupported channels: %d" % channels)
 
+  blurb_items = []
+  if (hydrogen_kit.author):
+    blurb_items.append ("Author: %s" % hydrogen_kit.author)
+
+  if (hydrogen_kit.license):
+    blurb_items.append ("License: %s" % hydrogen_kit.license)
+
+  if (hydrogen_kit.info):
+    # some drumkits have html content, we filter <...> here
+    no_html_info = hydrogen_kit.info
+    no_html_info = no_html_info.replace('\n', ' ').replace('\r', '')
+    no_html_info = re.sub (r'<[^>]+>', '', no_html_info)
+    blurb_items.append ("Info: %s" % no_html_info)
+
+  if (blurb_items):
+    blurb = ""
+    for s in blurb_items:
+      s = s.replace('\n', ' ').replace('\r', '').replace("'", "")
+      #s = re.sub('[^-_@: A-Za-z0-9]+', '', s)
+      if blurb:
+        blurb += " - "
+      blurb += s
+
+    blurb = "blurb='%s'" % blurb
+  else:
+    blurb = ""
+  print ("***", blurb, "***")
+
   system_or_die ("rm -f '%s'" % bsewave)
   system_or_die ("bsewavetool create '%s' %d" % (bsewave, channels))
-  system_or_die ("bsewavetool xinfo '%s' --wave play-type=plain-wave-%d label='%s'" % (bsewave, channels, kit_name))
+  system_or_die ("bsewavetool xinfo '%s' --wave play-type=plain-wave-%d label='%s' %s" % (bsewave, channels, kit_name, blurb))
 
   for note in hydrogen_kit.notes:
     full_filename = kit_dir + "/" + note.filename
