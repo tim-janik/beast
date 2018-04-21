@@ -321,6 +321,9 @@ bse_wave_load_wave_file (BseWave      *self,
                     bse_item_set (self, "uname", wdsc->name, NULL);
                   self->xinfos = bse_xinfos_dup_consolidated (wdsc->xinfos, FALSE);
                   bse_wave_set_locator (self, file_name, wave_name);
+                  const char *blurb = bse_xinfos_get_value (self->xinfos, "blurb");
+                  if (blurb)
+                    bse_item_set (self, "blurb", blurb, NULL);
                 }
               else
                 ; /* error still set from bse_wave_chunk_create() */
