@@ -2,14 +2,6 @@
 
 # Hydrogen to BEAST drumkit converter
 #
-# Usage:
-#
-#   apt install hydrogen hydrogen-drumkits
-#
-#   himport.py             # list all available hydrogen drumkits
-#   himport.py GMkit       # import one drumkit (from list)
-#   himport.py all         # import all drumkits
-#
 # Author: Stefan Westerfeld <stefan@space.twc.de>
 #
 # CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
@@ -18,6 +10,9 @@ import xml.etree.ElementTree as ET
 import os
 import sys
 import subprocess
+import argparse
+
+IMPORT_DIR = "/usr/share/hydrogen/data/drumkits"
 
 def die (message):
   print ("himport.py: " + message, file=sys.stderr)
@@ -37,9 +32,9 @@ def get_format (filename):
 
 def list_kits():
   all_kits = []
-  for kit in os.listdir ("/usr/share/hydrogen/data/drumkits"):
+  for kit in os.listdir (IMPORT_DIR):
     try:
-      os.stat ("/usr/share/hydrogen/data/drumkits/%s/drumkit.xml" % kit)
+      os.stat ("%s/%s/drumkit.xml" % (IMPORT_DIR, kit))
       all_kits.append (kit)
     except:
       pass
@@ -66,7 +61,7 @@ def normalize_tag (child):
 
 def parse_kit (dir_name):
   kit_name = dir_name
-  kit_dir = "/usr/share/hydrogen/data/drumkits/" + kit_name
+  kit_dir = IMPORT_DIR + "/" + kit_name
   kit = kit_dir + "/drumkit.xml"
 
   tree = ET.parse (kit)
@@ -143,7 +138,7 @@ def parse_kit (dir_name):
 
 def do_import (dir_name):
   kit_name = dir_name
-  kit_dir = "/usr/share/hydrogen/data/drumkits/" + kit_name
+  kit_dir = IMPORT_DIR + "/" + kit_name
   kit = kit_dir + "/drumkit.xml"
   bsewave = kit_name + ".bsewave"
 
@@ -192,15 +187,54 @@ def do_import (dir_name):
     if convert_to_flac:
       os.unlink (tmp_flac_filename)
 
-if len (sys.argv) == 2:
-  if sys.argv[1] == "all":
-    for kit in list_kits():
-      do_import (kit)
-  else:
-    do_import (sys.argv[1])
-else:
-  print ("usage: himport.py <kit_name>")
-  print ()
-  print ("where kit_name is one of the drumkits in /usr/share/hydrogen/data/drumkits:")
+parser = argparse.ArgumentParser (description='Import Hydrogen Drumkits')
+parser.add_argument ('--list', action="store_true", dest="list", default=False, help='list available drumkits')
+parser.add_argument ('--import', nargs='+', dest="import_some", help='import some drumkit')
+parser.add_argument ('--import-all', action="store_true", dest="import_all", default=False, help='import all drumkits')
+parser.add_argument ('-I', help='set input directory')
+args = parser.parse_args()
+if (args.I):
+  IMPORT_DIR = os.path.abspath (args.I)
+
+if (args.list):
   for kit in list_kits():
-    print ("  " + kit)
+    print (kit)
+elif (args.import_some):
+  for kit in args.import_some:
+    do_import (kit)
+elif (args.import_all):
+  for kit in list_kits():
+    do_import (kit)
+else:
+  print ("""
+Hydrogen to BEAST drumkit converter
+
+Usage:
+
+Converting installed drumkits:
+
+  apt install hydrogen hydrogen-drumkits
+
+  hydrogen-import.py --list          # list all available hydrogen drumkits
+  hydrogen-import.py --import GMkit  # import one drumkit (from list)
+  hydrogen-import.py --import-all    # import all drumkits
+
+Downloading some .deb packages and import all drumkits:
+
+  # download .debs
+
+  wget https://launchpad.net/~kxstudio-debian/+archive/ubuntu/apps/+files/hydrogen_0.9.6.1-1kxstudio1_amd64.deb
+  wget https://launchpad.net/~kxstudio-debian/+archive/ubuntu/music/+files/hydrogen-drumkits_2016.08.01-1kxstudio1_all.deb
+
+  # extract .debs
+
+  dpkg -x hydrogen_0.9.6.1-1kxstudio1_amd64.deb kxstudio-kits
+  dpkg -x hydrogen-drumkits_2016.08.01-1kxstudio1_all.deb kxstudio-kits
+
+  # import drumkits
+
+  hydrogen-import.py -I kxstudio-kits/usr/share/hydrogen/data/drumkits --import-all    # import all drumkits
+
+  # remove extracted files (you may also want do remove downloaded debs)
+  rm -rf kxstudio-kits
+""")
