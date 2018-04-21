@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Hydrogen to BEAST drumkit converter
 #
@@ -20,11 +20,11 @@ import sys
 import subprocess
 
 def die (message):
-  print >> sys.stderr, "himport.py: " + message
+  print ("himport.py: " + message, file=sys.stderr)
   exit (1)
 
 def system_or_die (command):
-  print "+++ %s" % command
+  print ("+++ %s" % command)
   return_code = subprocess.call (command, shell=True)
   if return_code != 0:
     die ("executing command '%s' failed, return_code=%d" % (command, return_code))
@@ -127,18 +127,18 @@ def parse_kit (dir_name):
               hydrogen_kit.notes.append (hydrogen_note)
             except:
               # we don't die here because there are broken drumkits that reference non-existent files
-              print "WARNING: soundfile %s missing, not importing that instrument" % (kit_dir + "/" + note_filename)
+              print ("WARNING: soundfile %s missing, not importing that instrument" % (kit_dir + "/" + note_filename))
           else:
-            print "note_filename", note_filename
-            print "note_volume", note_volume
-            print "note_gain", note_gain
-            print "WARNING: instrument from kit %s could not be imported, missing required fields" % kit_name
+            print ("note_filename", note_filename)
+            print ("note_volume", note_volume)
+            print ("note_gain", note_gain)
+            print ("WARNING: instrument from kit %s could not be imported, missing required fields" % kit_name)
 
           instrument_index += 1
         else:
-          print "UNPARSED INSTRUMENT LIST CHILD:", il_child.tag
+          print ("UNPARSED INSTRUMENT LIST CHILD:", il_child.tag)
     else:
-      print "UNPARSED CHILD:", child.tag
+      print ("UNPARSED CHILD:", child.tag)
   return hydrogen_kit
 
 def do_import (dir_name):
@@ -166,7 +166,7 @@ def do_import (dir_name):
   for note in hydrogen_kit.notes:
     full_filename = kit_dir + "/" + note.filename
 
-    print "importing note %d, filename %s, channels %d" % (note.index, note.filename, note.channels)
+    print ("importing note %d, filename %s, channels %d" % (note.index, note.filename, note.channels))
 
     # mono to stereo conversion is necessary if some notes are mono and others
     # are stereo in order to get a working bsewave in this case, we convert all
@@ -199,8 +199,8 @@ if len (sys.argv) == 2:
   else:
     do_import (sys.argv[1])
 else:
-  print "usage: himport.py <kit_name>"
-  print
-  print "where kit_name is one of the drumkits in /usr/share/hydrogen/data/drumkits:"
+  print ("usage: himport.py <kit_name>")
+  print ()
+  print ("where kit_name is one of the drumkits in /usr/share/hydrogen/data/drumkits:")
   for kit in list_kits():
-    print "  " + kit
+    print ("  " + kit)
