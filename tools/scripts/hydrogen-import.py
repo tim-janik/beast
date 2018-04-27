@@ -12,6 +12,8 @@ import sys
 import re
 import subprocess
 import argparse
+import tempfile
+import tarfile
 
 IMPORT_DIR = "/usr/share/hydrogen/data/drumkits"
 
@@ -225,13 +227,24 @@ def do_import (dir_name):
 parser = argparse.ArgumentParser (description='Import Hydrogen Drumkits')
 parser.add_argument ('--list', action="store_true", dest="list", default=False, help='list available drumkits')
 parser.add_argument ('--import', nargs='+', dest="import_some", help='import some drumkit')
+parser.add_argument ('--import-file', nargs='+', dest="import_file", help='import .h2drumkit file')
 parser.add_argument ('--import-all', action="store_true", dest="import_all", default=False, help='import all drumkits')
 parser.add_argument ('-I', help='set input directory')
 args = parser.parse_args()
 if (args.I):
   IMPORT_DIR = os.path.abspath (args.I)
 
-if (args.list):
+if (args.import_file):
+  for filename in args.import_file:
+    with tempfile.TemporaryDirectory() as tmpdir:
+      tar = tarfile.open (filename, "r")
+      tar.extractall (tmpdir)
+      IMPORT_DIR = tmpdir
+
+      # typically we'll just have one kit here
+      for kit in list_kits():
+        do_import (kit)
+elif (args.list):
   for kit in list_kits():
     print (kit)
 elif (args.import_some):
@@ -245,6 +258,10 @@ else:
 Hydrogen to BEAST drumkit converter
 
 Usage:
+
+Import one single drumkit:
+
+  hydrogen-import.py --import-file Classic-626.h2drumkit
 
 Converting installed drumkits:
 
