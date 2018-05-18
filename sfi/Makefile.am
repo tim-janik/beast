@@ -7,7 +7,9 @@ DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RET
 AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip \
-	bcore.hh	formatter.hh	path.hh		platform.hh	strings.hh	\
+	bcore.hh		\
+	backtrace.hh		\
+	formatter.hh	path.hh		platform.hh	strings.hh	\
 	unicode.hh	\
 	cxxaux.hh	\
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
@@ -26,7 +28,9 @@ sfi_public_headers = $(strip \
 	testing.hh	\
 )
 sfi_all_sources = $(strip \
-	bcore.cc	formatter.cc	path.cc		platform.cc	strings.cc	\
+	bcore.cc		\
+	backtrace.cc		\
+	formatter.cc	path.cc		platform.cc	strings.cc	\
 	unicode.cc	\
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
