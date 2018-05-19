@@ -446,18 +446,20 @@ read_maps ()
   while (!feof (fmaps))
     {
       size_t addr = 0, end = 0, offset, inode = 0;
-      char perms[9 + 1], filename[1234 + 1] = "", device[9 + 1] = "";
+      char perms[9 + 1], device[9 + 1] = "";
       count = fscanf (fmaps, "%zx-%zx %9s %zx %9s %zu", &addr, &end, perms, &offset, device, &inode);
       if (count < 1)
         break;
-      char c = fgetc (fmaps);
+      int c = fgetc (fmaps);
       while (c == ' ')
         c = fgetc (fmaps);
-      if (c != '\n')
-        {
-          ungetc (c, fmaps);
-          count = fscanf (fmaps, "%1234s\n", filename);
-        }
+      std::string filename;
+      if (!feof (fmaps))
+        while (c != EOF && c && c != '\n')
+          {
+            filename += c;
+            c = fgetc (fmaps);
+          }
       if (filename[0])
         mv.push_back (Mapping { addr, end, filename });
     }
