@@ -122,7 +122,8 @@ doc_sources.lst: Makefile
 #
 # BSE library
 #
-bselib_LTLIBRARIES                   = libbse-@MAJOR@.la
+bselibexecdir			     = $(bselibdir)
+bselibexec_LTLIBRARIES               = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
@@ -136,6 +137,23 @@ libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	-version-info $(LT_VERSION_INFO)		\
 )
 #	-Wl,-Bsymbolic
+# split off debug info
+SED_SONAME = sed -n "/^library_names='/{ s/^[^']*'\([^ ']*\).*/\1/; p; q }"
+install-exec-debug:
+	mkdir -p "$(DESTDIR)$(bselibexecdir)/.debug/"
+	for lib in $(bselibexec_LTLIBRARIES) ; do \
+	  soname=$$($(SED_SONAME) "$$lib") && \
+	  objcopy --only-keep-debug "$(DESTDIR)$(bselibexecdir)/$$soname" "$(DESTDIR)$(bselibexecdir)/.debug/$$soname.debug" && \
+	  objcopy --strip-debug --add-gnu-debuglink="$(DESTDIR)$(bselibexecdir)/.debug/$$soname.debug" "$(DESTDIR)$(bselibexecdir)/$$soname" \
+	  || { echo "$$0: objcopy failed for: $(DESTDIR)$(bselibexecdir)/$$soname" >&2; exit 2; }; \
+	done
+uninstall-split-debug:
+	for lib in $(bselibexec_LTLIBRARIES) ; do \
+	  soname=$$($(SED_SONAME) "$$lib") && \
+	  rm -f "$(DESTDIR)$(bselibexecdir)/.debug/$$soname.debug" ; \
+	done
+install-exec-hook: install-exec-debug
+uninstall-local: uninstall-split-debug
 # setup sources, their dependancies and commands
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
@@ -145,7 +163,7 @@ SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
-	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibdir)
+	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibexecdir)
 install-exec-hook: install-exec-ldconfig
 
 # == gslfft.cc ==
