@@ -6,18 +6,25 @@
 
 namespace Bse {
 
+/// Print a C++ backtrace to stdout/stderr.
+extern inline bool print_backtrace (const char *file, int line, const char *func) BSE_ALWAYS_INLINE;
 
-// == Debugging Aids ==
-extern int       (*backtrace_pointers)      (void **buffer, int size);  ///< Capture stack frames for a backtrace (on __GLIBC__).
-String             pretty_backtrace         (void **ptrs, ssize_t nptrs, const char *file, int line, const char *func);
-StringVector       pretty_backtrace_symbols (void **pointers, const int nptrs);
-#define BSE_BACKTRACE_MAXDEPTH   1024                   ///< Maximum depth for runtime backtrace generation.
 /// Print backtrace of the current line to stderr.
-#define BSE_BACKTRACE()          ({ ::Bse::printerr ("%s", BSE_BACKTRACE_STRING()); })
-/// Generate a string that contains a backtrace of the current line.
-#define BSE_BACKTRACE_STRING()   ({ void *__p_[BSE_BACKTRACE_MAXDEPTH]; \
-      const String __s_ = ::Bse::pretty_backtrace (__p_, ::Bse::backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), \
-                                                   __FILE__, __LINE__, __func__); __s_; })
+#define BSE_BACKTRACE()          ({ ::Bse::print_backtrace (__FILE__, __LINE__, __func__); })
+
+// == Implementation ==
+namespace Internal {
+extern int (*backtrace_pointers)    (void **buffer, int size);  ///< Capture stack frames for a backtrace (on __GLIBC__).
+bool         backtrace_print_frames (const char *file, int line, const char *func, void **ptrs, ssize_t nptrs);
+} // Internal
+
+inline bool
+print_backtrace (const char *file, int line, const char *func)
+{
+  void *frames[1024];
+  const int n = ::Bse::Internal::backtrace_pointers (frames, sizeof (frames) / sizeof (frames[0]));
+  return ::Bse::Internal::backtrace_print_frames (file, line, func, frames, n);
+}
 
 } // Bse
 

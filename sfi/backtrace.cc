@@ -6,17 +6,21 @@
 #include <setjmp.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include "../config/config.h"   // HAVE_EXECINFO_H
 #ifdef  HAVE_EXECINFO_H
 #include <execinfo.h>           // _EXECINFO_H
 #endif // HAVE_EXECINFO_H
 
 namespace Bse {
 
-// == backtraces ==
-#ifdef _EXECINFO_H
-int (*backtrace_pointers) (void **buffer, int size) = &::backtrace; // GLibc only
-#else  // !_EXECINFO_H
-static int
+// == Prototypes ==
+static StringVector addr2line_backtrace_symbols (void **pointers, const int nptrs);
+static bool         backtrace_may_ptrace        ();
+static bool         backtrace_have_gdb          ();
+static bool         backtrace_print_gdb         (bool full);
+
+// == backtrace() ==
+static BSE_UNUSED int
 dummy_backtrace (void **buffer, int size)
 {
   if (size)
@@ -26,10 +30,132 @@ dummy_backtrace (void **buffer, int size)
     }
   return 0;
 }
-int (*backtrace_pointers) (void **buffer, int size) = &dummy_backtrace;
+#ifdef _EXECINFO_H
+int (*Internal::backtrace_pointers) (void **buffer, int size) = &::backtrace; // GLibc only
+#else  // !_EXECINFO_H
+int (*Internal::backtrace_pointers) (void **buffer, int size) = &dummy_backtrace;
 #endif // !_EXECINFO_H
 
+// == backtrace_print_frames ==
+/// Print out a backtrace based on @a ptrs.
+bool
+Internal::backtrace_print_frames (const char *file, int line, const char *func, void **ptrs, ssize_t nptrs)
+{
+  // print intro
+  char buffer[512];
+  fflush (stdout);
+  fputs ("Backtrace[", stderr);
+  snprintf (buffer, sizeof (buffer), "%u", getpid());
+  fputs (buffer, stderr);
+  fputs ("] at ", stderr);
+  snprintf (buffer, sizeof (buffer), "0x%016llx", (unsigned long long) ptrdiff_t (ptrs[0]));
+  fputs (buffer, stderr);
+  if (file && file[0])
+    {
+      fputs (" (from ", stderr);
+      fputs (file, stderr);
+      if (line > 0)
+        {
+          snprintf (buffer, sizeof (buffer), ":%u", line);
+          fputs (buffer, stderr);
+        }
+      if (func && func[0])
+        {
+          fputs (":", stderr);
+          fputs (func, stderr);
+        }
+      fputs (")", stderr);
+    }
+  fputs (":\n", stderr);
+  // try addr2line backtrace
+  const char *missingnote = NULL;
+  if (nptrs)
+    {
+      const StringVector symbols = addr2line_backtrace_symbols (ptrs, nptrs);
+      if (!symbols.empty())
+        {
+          for (size_t i = 0; i < symbols.size(); i++)
+            {
+              fputs ("  ", stderr);
+              fputs (symbols[i].c_str(), stderr);
+              fputs ("\n", stderr);
+            }
+          fflush (stderr);
+          return true;
+        }
+      else
+        missingnote = missingnote ? missingnote : "need addr2line for backtrace frame names";
+    }
+  // try gdb backtrace
+  if (!backtrace_have_gdb())
+    missingnote = missingnote ? missingnote : "need working gdb for a detailed backtrace";
+  else if (!backtrace_may_ptrace())
+    missingnote = missingnote ? missingnote : "need ptrace permissions for a detailed backtrace, try: echo 0 > /proc/sys/kernel/yama/ptrace_scope";
+  else
+    {
+      fflush (stderr);
+      memset (buffer, 0, sizeof (buffer)); // shortens gdb output
+      return backtrace_print_gdb (true);
+    }
+  // note about missing tools
+  if (missingnote)
+    {
+      fputs ("  NOTE: ", stderr);
+      fputs (missingnote, stderr);
+      fputs ("\n", stderr);
+    }
+  // try backtrace_symbols_fd
+#ifdef _EXECINFO_H
+  if (nptrs)
+    {
+      fflush (stderr);
+      backtrace_symbols_fd (ptrs, nptrs, STDERR_FILENO);
+      return true;
+    }
+#endif // _EXECINFO_H
+  // give up
+  fputs ("  <no backtrace method available>\n", stderr);
+  fflush (stderr);
+  return false;
+}
 
+// == GDB Backtrace ==
+static const char *const bin_gdb = "/usr/bin/gdb";
+static const char *const ptrace_scope = "/proc/sys/kernel/yama/ptrace_scope";
+
+/// Check /proc/sys/kernel/yama/ptrace_scope for working ptrace().
+static bool
+backtrace_may_ptrace()
+{
+  bool allow_ptrace = false;
+#ifdef  __linux__
+  FILE *f = fopen (ptrace_scope, "r");
+  size_t flag = -1;
+  if (fscanf (f, "%zx", &flag) == 1)
+    allow_ptrace = flag == 0;
+  fclose (f);
+#else
+  allow_ptrace = true;
+#endif
+  return allow_ptrace;
+}
+
+/// Check for /usr/bin/gdb and /proc/sys/kernel/yama/ptrace_scope for working ptrace().
+static bool
+backtrace_have_gdb()
+{
+  return access (bin_gdb, X_OK) == 0;
+}
+
+static bool
+backtrace_print_gdb (bool full)
+{
+  std::string cmd = string_format ("%s -p %u --batch -ex 'thread apply all backtrace %s' >&2",
+                                   bin_gdb, getpid(), full ? "full" : "");
+  if (system (cmd.c_str()) == 0)
+    return true;
+  return false;
+}
 
 // == Sub-Process ==
 struct PExec {
@@ -340,8 +466,8 @@ read_maps ()
 }
 
 /// Generate a list of strings describing backtrace frames from the given frame pointers using addr2line(1).
-StringVector
-pretty_backtrace_symbols (void **pointers, const int nptrs)
+static StringVector
+addr2line_backtrace_symbols (void **pointers, const int nptrs)
 {
   // fetch process maps to correlate pointers
   MappingVector maps = read_maps();
@@ -416,33 +542,6 @@ pretty_backtrace_symbols (void **pointers, const int nptrs)
         }
     }
   return symbols;
-}
-
-/// Generate a pretty backtrace string, given backtrace pointers and using pretty_backtrace_symbols().
-String
-pretty_backtrace (void **ptrs, ssize_t nptrs, const char *file, int line, const char *func)
-{
-  void *fallback = __builtin_return_address (0);
-  if (nptrs < 0)
-    {
-      ptrs = &fallback;
-      nptrs = 1;
-    }
-  StringVector symbols = pretty_backtrace_symbols (ptrs, nptrs);
-  String where;
-  if (file && file[0])
-    where += file;
-  if (!where.empty() && line > 0)
-    where += string_format (":%u", line);
-  if (func && func[0])
-    {
-      if (!where.empty())
-        where += ":";
-      where += func;
-    }
-  if (!where.empty())
-    where = " (from " + where + ")";
-  return string_format ("Backtrace at 0x%016x%s:\n  %s\n", ptrs[0], where, string_join ("\n  ", symbols));
 }
 
 } // Bse

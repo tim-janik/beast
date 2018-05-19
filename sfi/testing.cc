@@ -22,10 +22,7 @@ namespace Test {
 static void
 test_assertion_failed (const std::string &message)
 {
-  void *__p_[BSE_BACKTRACE_MAXDEPTH] = { 0, };
-  String btmsg = pretty_backtrace (__p_, backtrace_pointers (__p_, sizeof (__p_) / sizeof (__p_[0])), __FILE__, __LINE__, NULL);
-  if (btmsg.size())
-    printerr ("%s", btmsg.c_str());
+  print_backtrace (__FILE__, __LINE__, NULL);
 }
 
 /** Initialize the Bse core for a test program.
