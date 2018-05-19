@@ -56,7 +56,7 @@ t279-assertions-test: misctests
 	$(Q) (trap ':' SIGTRAP && ./misctests --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
 	$(Q) ./misctests --backtrace          2>t279-assertions-test.tmp && \
 		grep -qi 'Backtrace'		t279-assertions-test.tmp && \
-		grep -qi 'in my_compare_func'	t279-assertions-test.tmp || $(QDIE) --backtrace failed
+		grep -qi 'in.*my_compare_func'	t279-assertions-test.tmp || $(QDIE) --backtrace failed
 	$(Q) rm -f t279-assertions-test.tmp
 	@echo "  PASS    " $@
 check-local: t279-assertions-test
