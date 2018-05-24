@@ -10,6 +10,11 @@ AM_CXXFLAGS += $(BSE_CFLAGS) $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../libbse-@MAJOR@.la $(BSE_LIBS)
 
+TAPTESTS	  += integrity
+integrity_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
+integrity_LDADD    = ../libbse-@MAJOR@.la $(SFI_LIBS)
+integrity_SOURCES  = integrity.cc
+
 TAPTESTS          += misctests
 misctests_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
 misctests_LDADD    = ../libbse-@MAJOR@.la $(SFI_LIBS)
