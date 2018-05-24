@@ -69,6 +69,8 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_SENTINEL            __attribute__ ((__sentinel__))
 #define BSE_UNUSED              __attribute__ ((__unused__))
 #define BSE_USED                __attribute__ ((__used__))
+#define BSE_COLD                __attribute__ ((__cold__))
+#define BSE_HOT                 __attribute__ ((__hot__))
 /// @}
 
 /// Return silently if @a cond does not evaluate to true, with return value @a ...
