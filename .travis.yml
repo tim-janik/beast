@@ -14,6 +14,7 @@ env:
   matrix:
     - DIST="ubuntu:xenial"      INTENT="gccbuild,distcheck"
     - DIST="ubuntu:artful"      INTENT="gccbuild"
+    - DIST="ubuntu:bionic"      INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
     - DIST="ubuntu:artful"      INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
