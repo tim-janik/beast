@@ -31,7 +31,6 @@ enum
   PROP_LOG_MESSAGES
 };
 
-
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
@@ -1392,5 +1391,207 @@ ServerImpl::tick_stamp_from_systime (int64 systime_usecs)
 {
   return bse_engine_tick_stamp_from_systime (systime_usecs);
 }
+
+struct SAreaBlock {
+  char    *start = NULL;
+  size_t   length = 0;
+  explicit SAreaBlock (size_t sz = 0) : length (sz)    {}
+  void     zero ()                                      { memset (start, 0, length); }
+};
+struct SharedArea {
+  int64                   shm_id = 0;
+  SAreaBlock              area;
+  std::vector<SAreaBlock> blocks; // free list
+  ~SharedArea()
+  {
+    const size_t s = sum();
+    if (s != area.length)
+      warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, area.length - s);
+    if (area.length)
+      delete[] area.start;
+  }
+  size_t
+  sum () const
+  {
+    size_t s = 0;
+    for (const auto b : blocks)
+      s += b.length;
+    return s;
+  }
+  void
+  create (int64 newid, size_t areasize)
+  {
+    assert_return (shm_id == 0 && newid != 0);
+    assert_return (area.length == 0 && areasize > 0);
+    area.start = new char[areasize];
+    area.length = areasize;
+    shm_id = newid;
+    release (area);
+  }
+  void
+  release (const SAreaBlock &ab)
+  {
+    assert_return (ab.start >= area.start);
+    assert_return (ab.length > 0);
+    assert_return (ab.start + ab.length <= area.start + area.length);
+    ssize_t overlaps_existing = -1, before = -1, after = -1;
+    for (size_t i = 0; i < blocks.size(); i++)
+      if (ab.start == blocks[i].start + blocks[i].length)
+        after = i;
+      else if (ab.start + ab.length == blocks[i].start)
+        before = i;
+      else if (ab.start + ab.length > blocks[i].start &&
+               ab.start < blocks[i].start + blocks[i].length)
+        overlaps_existing = i;
+    assert_return (overlaps_existing == -1);
+    // merge with existing blocks
+    if (after >= 0)
+      {
+        blocks[after].length += ab.length;
+        if (before >= 0)
+          {
+            blocks[after].length += blocks[before].length;
+            blocks.erase (blocks.begin() + before);
+          }
+        return;
+      }
+    if (before >= 0)
+      {
+        blocks[before].length += ab.length;
+        blocks[before].start = ab.start;
+        return;
+      }
+    // add isolated block to free list
+    blocks.push_back (ab);
+  }
+  ssize_t
+  fit_block (size_t length) const
+  {
+    ssize_t candidate = -1;
+    for (size_t i = 0; i < blocks.size(); i++)
+      if (length == blocks[i].length)
+        return i;
+      else if (length < blocks[i].length)
+        {
+          if (candidate < 0)
+            candidate = i;
+          else if (blocks[i].length - length < blocks[candidate].length - length)
+            candidate = i;
+        }
+    return candidate;
+  }
+  bool
+  alloc (SAreaBlock &ab)
+  {
+    assert_return (ab.start == NULL, false);
+    assert_return (ab.length > 0, false);
+    // find block
+    ssize_t candidate = fit_block (ab.length);
+    // merge freed blocks
+    if (candidate < 0 && blocks.size())
+      {
+        auto isless_start = [this] (const SAreaBlock &a, const SAreaBlock &ab) -> bool {
+          return a.start < ab.start;
+        };
+        std::sort (blocks.begin(), blocks.end(), isless_start);
+        for (size_t i = blocks.size() - 1; i > 0; i--)
+          if (blocks[i-1].start + blocks[i-1].length == blocks[i].start) // adjacent
+            {
+              blocks[i-1].length += blocks[i].length;
+              blocks.erase (blocks.begin() + i);
+            }
+      }
+    // find block again
+    candidate = fit_block (ab.length);
+    if (candidate < 0)
+      return false;     // OOM
+    // allocate from end of larger block
+    blocks[candidate].length -= ab.length;
+    ab.start = blocks[candidate].start + blocks[candidate].length;
+    // unlist if block wasn't larger
+    if (blocks[candidate].length == 0)
+      blocks.erase (blocks.begin() + candidate);
+    return true;
+  }
+};
+static std::vector<SharedArea> shared_areas;
+
+SharedMemory
+ServerImpl::get_shared_memory (int64 id)
+{
+  SharedMemory sm;
+  for (size_t i = 0; i < shared_areas.size(); i++)
+    if (shared_areas[i].shm_id == id)
+      {
+        sm.shm_creator = this_thread_getpid();
+        sm.shm_id = shared_areas[i].shm_id;
+        sm.shm_length = shared_areas[i].area.length;
+        sm.shm_start = ptrdiff_t (shared_areas[i].area.start);
+        break;
+      }
+  return sm;
+}
+
+static SharedBlock
+allocate_shared_block (int64 length)
+{
+  SharedBlock m;
+  if (length < 1)
+    return m;
+  SAreaBlock ab;
+  ab.length = length;
+  // allocate from existing shared memory areas
+  int64 maxid = 1111;
+  for (size_t i = 0; i < shared_areas.size(); i++)
+    if (shared_areas[i].alloc (ab))
+      {
+        m.shm_id = shared_areas[i].shm_id;
+        m.mem_start = ab.start;
+        m.mem_length = ab.length;
+        return m;
+      }
+    else
+      maxid = std::max (maxid, shared_areas[i].shm_id);
+  // allocate a new area
+  const ssize_t area_size = std::max (length, ssize_t (2) * 1024 * 1024);
+  shared_areas.resize (shared_areas.size() + 1);
+  shared_areas.back().create (maxid + 1111, area_size);
+  // allocate block from new area
+  const bool block_in_new_area = shared_areas.back().alloc (ab);
+  assert_return (block_in_new_area, m);
+  m.shm_id = shared_areas.back().shm_id;
+  m.mem_start = ab.start;
+  m.mem_length = ab.length;
+  return m;
+}
+
+SharedBlock
+ServerImpl::allocate_shared_block (int64 length)
+{
+  return Bse::allocate_shared_block (length);
+}
+
+static void
+release_shared_block (const SharedBlock &m)
+{
+  for (size_t i = 0; i < shared_areas.size(); i++)
+    if (shared_areas[i].shm_id == m.shm_id)
+      {
+        SAreaBlock ab;
+        ab.start = (char*) m.mem_start;
+        ab.length = m.mem_length;
+        shared_areas[i].release (ab);
+        return;
+      }
+  assert_return (!"invalid shared_memory_id");
+}
+
+void
+ServerImpl::release_shared_block (const SharedBlock &block)
+{
+  return Bse::release_shared_block (block);
+}
+
+// FIXME: alignment, huge pages, mmap
 
 } // Bse
