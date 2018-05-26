@@ -17,6 +17,7 @@ QGEN    = $(Q:@=@echo '  GEN     ' $@; )
 QTEST   = @echo '  TEST    ' $@;
 QSTDERR = $(Q:@=2>/dev/null)
 QSTDOUT = $(Q:@=1>/dev/null)
+QSTDIO  = $(Q:@=1>/dev/null 2>&1)
 QDIE    = bash -c 'echo "  ERROR    $@: $$@" >&2; exit 127' _
 
 # == GITSTAMP ==

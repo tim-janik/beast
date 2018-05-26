@@ -3,6 +3,7 @@
 #define __BSE_BCORE_HH__
 
 #include <sfi/blob.hh>
+#include <sfi/backtrace.hh>
 #include <sfi/platform.hh>
 #include <sfi/strings.hh>
 #include <sfi/unicode.hh>
