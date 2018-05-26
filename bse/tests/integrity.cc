@@ -40,10 +40,10 @@ main (int argc, char *argv[])
 
   if (tests)
     for (const auto &te : *tests)
-      {
-        printerr ("  TESTING  %s:%u: %s...\n", te.file, te.line, te.func);
+      { // note, more than one space after "TESTING:" confuses emacs file:line matches
+        printerr ("  TESTING: %s:%u: %s…\n", te.file, te.line, te.func);
         te.test();
-        printerr ("  DONE     %s:%u: %s\n", te.file, te.line, te.func);
+        printerr ("    …DONE  (%s)\n", te.func);
       }
 
   return 0;
