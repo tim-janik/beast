@@ -663,7 +663,7 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
         break;
       }
     default:
-      Bse::warn ("unhandled Any: %s; string=%s", any.repr(), string);
+      Bse::warning ("unhandled Any: %s; string=%s", any.repr(), string);
       return false;
     }
   return true;

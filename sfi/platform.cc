@@ -8,6 +8,9 @@
 #include <sys/time.h>
 #include <execinfo.h>           // _EXECINFO_H
 #include <sys/syscall.h>        // SYS_gettid
+#if defined __APPLE__
+#include <mach-o/dyld.h>        // _NSGetExecutablePath
+#endif // __APPLE__
 #ifdef  _WIN32                  // includes _WIN64
 #include <windows.h>
 #endif  // _WIN32
@@ -404,6 +407,69 @@ monotonic_counter ()
 }
 
 // == program and executable names ==
+static std::string
+get_executable_path()
+{
+  const ssize_t max_size = 8100;
+  char system_result[max_size + 1 + 1] = { 0, };
+  ssize_t system_result_size = -1;
+
+#if defined __linux__ || defined __CYGWIN__ || defined __MSYS__
+  system_result_size = readlink ("/proc/self/exe", system_result, max_size);
+  if (system_result_size < 0)
+    {
+      strcpy (system_result, "/proc/self/exe");
+      system_result_size = 0;
+    }
+#elif defined __APPLE__
+  { // int _NSGetExecutablePath(char* buf, uint32_t* bufsize);
+    uint32_t bufsize = max_size;
+    if (_NSGetExecutablePath (system_result, &bufsize) == 0 &&
+        bufsize <= max_size)
+      system_result_size = bufsize;
+  }
+#elif defined _WIN32
+  // DWORD GetModuleFileNameA (HMODULE hModule, LPSTR lpFileName, DWORD size);
+  system_result_size = GetModuleFileNameA (0, system_result, max_size);
+  if (system_result_size <= 0 || system_result_size >= max_size)
+    system_result_size = -1;    // error, possibly not enough space
+  else
+    {
+      system_result[system_result_size] = 0;
+      // early conversion to unix slashes
+      char *winslash;
+      while ((winslash = strchr (system_result, '\\')) != NULL)
+        *winslash = '/';
+    }
+#else
+#error "Platform lacks executable_path() implementation"
+#endif
+
+  if (system_result_size < 0)
+    system_result[0] = 0;
+  return std::string (system_result);
+}
+
+/// Retrieve the path to the currently running executable.
+std::string
+executable_path()
+{
+  static std::string cached_executable_path = get_executable_path();
+  return cached_executable_path;
+}
+
+//// Retrieve the name part of executable_path().
+std::string
+executable_name()
+{
+  static std::string cached_executable_name = [] () {
+    std::string path = executable_path();
+    const char *slash = strrchr (path.c_str(), '/');
+    return slash ? slash + 1 : path;
+  } ();
+  return cached_executable_name;
+}
+
 static String cached_program_alias;
 
 String

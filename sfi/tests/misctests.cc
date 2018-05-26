@@ -904,19 +904,19 @@ main (int   argc,
     }
   else if (argc >= 2 && String ("--assert_return0") == argv[1])
     {
-      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
+      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       assert_return (0, 0);
       return 0;
     }
   else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
     {
-      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
+      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       assert_return_unreached (0);
       return 0;
     }
   else if (argc >= 2 && String ("--fatal_error") == argv[1])
     {
-      Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::SEND_SIGQUIT);
+      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       fatal_error ("got argument --fatal_error");
       return 0;
     }

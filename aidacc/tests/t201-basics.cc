@@ -96,8 +96,21 @@ test_strings()
 }
 TEST_ADD (test_strings);
 
+static void
+test_aida_posix_printf ()
+{
+  // check Aida's posix_printf
+  String f0911 = Aida::Any (0.911).to_string();
+  TASSERT (f0911.size() >= 3);
+  TASSERT (f0911[0] == '0');
+  TASSERT (f0911[1] == '.');
+  TASSERT (f0911[2] == '9');
+}
+TEST_ADD (test_aida_posix_printf);
+
 int
 main (int argc, const char **argv)
 {
+  setlocale (LC_ALL, "");
   return TestChain::run (argc, argv);
 }

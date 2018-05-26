@@ -26,11 +26,6 @@ testfft_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
 testfft_LDADD    = ../libbse-@MAJOR@.la
 testfft_SOURCES  = testfft.cc
 
-TAPTESTS        += testcxx
-testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
-testcxx_LDADD    = ../libbse-@MAJOR@.la $(SFI_LIBS)
-testcxx_SOURCES  = testcxx.cc
-
 TAPTESTS           += subnormals
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE -ffast-math
 subnormals_LDADD    = ../libbse-@MAJOR@.la $(SFI_LIBS)

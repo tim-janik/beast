@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
+#define CHECK_LDEBUG()  Bse::debug_key_enabled ("leaks")
 
 namespace Bse {
 ObjectImpl::ObjectImpl (BseObject *bobj) :
@@ -82,7 +83,7 @@ ObjectImpl::uname (const std::string &newname)
 void
 objects_debug_leaks ()
 {
-  if (Bse::debug_enabled ("leaks"))
+  if (CHECK_LDEBUG())
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       for (list = objects; list; list = list->next)

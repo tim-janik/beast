@@ -36,7 +36,8 @@ test_assertion_failed (const std::string &message)
 void
 init (int *argcp, char **argv, const StringVector &args)
 {
-  Aida::error_hook (test_assertion_failed);
+  Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
+  diag_abort_hook (test_assertion_failed);
   unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
   g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
   sfi_init (argcp, argv, Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));

@@ -217,97 +217,237 @@ url_show (const char *url)
   return false;
 }
 
-// == Internal ==
-namespace Internal {
-
-void
-printout_string (const String &string)
+// == Diagnostics ==
+static ::std::string
+diag_format (bool with_executable, const char *file, int line, const char *func, char kind, const std::string &info, bool will_abort = false)
 {
-  // some platforms (_WIN32) don't properly flush on '\n'
-  fflush (stderr); // preserve ordering
-  fputs (string.c_str(), stdout);
-  fflush (stdout);
+  const ::std::string executable = with_executable ? executable_path() : "";
+  ::std::string sout;
+  if (!executable.empty())
+    sout += executable + ": ";
+  if (file && file[0])
+    {
+      sout += file;
+      if (line > 0)
+        sout += string_format (":%u", line);
+      sout += ": ";
+    }
+  if (func && func[0])
+    {
+      sout += func;
+      sout += ": ";
+    }
+  switch (kind) {
+  case 'A':     sout += "assertion failed: "; break;
+  case 'F':     sout += "fatal: ";      break;
+  case 'W':     sout += "warning: ";    break;
+  case 'E':
+    if (will_abort)
+      sout += "fatal-error: ";
+    else
+      sout += "error: ";
+    break;
+  default: ;
+  }
+  sout += info;
+  if (!sout.empty() && sout[sout.size() - 1] != '\n')
+    sout += "\n";
+  return sout;
 }
 
-void
-printerr_string (const String &string)
-{
-  // some platforms (_WIN32) don't properly flush on '\n'
-  fflush (stdout); // preserve ordering
-  fputs (string.c_str(), stderr);
-  fflush (stderr);
-}
-
-bool debug_any_enabled = true; // initialized by debug_key_enabled()
-
+/// Check if `conditional` is enabled by $BSE_DEBUG.
 bool
 debug_key_enabled (const char *conditional)
 {
+  const std::string value = debug_key_value (conditional);
+  return !value.empty() && (strchr ("123456789yYtT", value[0]) || strncasecmp (value.c_str(), "on", 2) == 0);
+}
+
+/// Check if `conditional` is enabled by $BSE_DEBUG.
+bool
+debug_key_enabled (const ::std::string &conditional)
+{
+  return debug_key_enabled (conditional.c_str());
+}
+
+bool Internal::debug_enabled_flag = true;
+
+static uint64 global_debug_flags = 0;
+
+void
+set_debug_flags (DebugFlags flags)
+{
+  global_debug_flags = global_debug_flags | flags;
+}
+
+/// Retrieve the value assigned to debug key `conditional` in $BSE_DEBUG.
+::std::string
+debug_key_value (const char *conditional)
+{
   // cache $BSE_DEBUG and setup debug_any_enabled;
-  static const char *const debug_flags = [] () {
+  static const std::string debug_flags = [] () {
     const char *f = getenv ("BSE_DEBUG");
-    std::string flags = !f ? "" : ":" + std::string (f) + ":";
-    char *result = new char [flags.size() + 1];
-    if (result)
-      strcpy (result, flags.data());
-    debug_any_enabled = result && result[0];
-    return result;
+    const std::string flags = !f ? "" : ":" + std::string (f) + ":";
+    Internal::debug_enabled_flag = !flags.empty() && flags != ":none:";
+    const ssize_t fw = flags.rfind (":fatal-warnings:");
+    const ssize_t nf = flags.rfind (":no-fatal-warnings:");
+    if (fw >= 0 && nf <= fw)
+      global_debug_flags = global_debug_flags | Bse::DebugFlags::FATAL_WARNINGS;
+    const ssize_t sq = flags.rfind (":sigquit-on-abort:");
+    const ssize_t nq = flags.rfind (":no-sigquit-on-abort:");
+    if (sq >= 0 && nq <= sq)
+      global_debug_flags = global_debug_flags | Bse::DebugFlags::SIGQUIT_ON_ABORT;
+    return flags;
   } ();
-  // find conditional in colon-separated $BSE_DEBUG
-  if (conditional && debug_flags)
-    {
-      const char *const flag = strstr (debug_flags, conditional);
-      const int l = strlen (conditional);
-      if (flag && flag > debug_flags && flag[-1] == ':' && l)
-        {
-          if (flag[l] == ':' || // also allow =1 =yes =true =on
-              (flag[l] == '=' && (strchr ("123456789yYtT", flag[l + 1]) ||
-                                  strncasecmp (flag + l, "=on", 3) == 0)))
-            return true;
-        }
-      else if (strstr (debug_flags, ":all:") != NULL)
-        return true;
-    }
-  return false;
+  // find key in colon-separated debug flags
+  const ::std::string key = conditional ? conditional : "";
+  static const std::string all = ":all:", none = ":none:";
+  const std::string condr = ":no-" + key + ":";
+  const std::string condc = ":" + key + ":";
+  const std::string conde = ":" + key + "=";
+  const ssize_t pa = debug_flags.rfind (all);
+  const ssize_t pn = debug_flags.rfind (none);
+  const ssize_t pr = debug_flags.rfind (condr);
+  const ssize_t pc = debug_flags.rfind (condc);
+  const ssize_t pe = debug_flags.rfind (conde);
+  const ssize_t pmax = std::max (pr, std::max (std::max (pa, pn), std::max (pc, pe)));
+  if (pn == pmax || pr == pmax)
+    return "false";     // found no key or ':none:' or ':no-key:'
+  if (pa == pmax || pc == pmax)
+    return "true";      // last setting is ':key:' or ':all:'
+  // pe == pmax, assignment via equal sign
+  const ssize_t pv = pe + conde.size();
+  const ssize_t pw = debug_flags.find (":", pv);
+  const std::string value = debug_flags.substr (pv, pw < 0 ? pw : pw - pv);
+  return value;
 }
 
 void
-diagnostic (const char *file, int line, const char *func, char kind, const std::string &info)
+diag_info (const ::std::string &message)
 {
-  String msg = Aida::diagnostic_message (file, line, func, kind, info, 0);
+  diag_printerr (diag_format (true, NULL, 0, NULL, 'I', message));
+}
+
+void
+diag_printout (const ::std::string &message)
+{
+  // some platforms (_WIN32) don't properly flush on '\n'
+  fflush (stderr); // preserve ordering
+  fputs (message.c_str(), stdout);
   fflush (stdout);
-  printerr ("%s", msg);
+}
+
+void
+diag_printerr (const ::std::string &message)
+{
+  // some platforms (_WIN32) don't properly flush on '\n'
+  fflush (stdout); // preserve ordering
+  fputs (message.c_str(), stderr);
   fflush (stderr);
 }
 
+static std::function<void (const ::std::string&)> global_abort_hook;
+
+/// Call `hook` for fatal_error() and diag_failed_assert().
 void
-debug_diagnostic (const char *prefix, const std::string &message)
+diag_abort_hook (const std::function<void (const ::std::string&)> &hook)
 {
-  struct timeval tv = { 0, };
-  gettimeofday (&tv, NULL);
-  const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
-  const String pprefix = prefix ? prefix : executable_name();
-  printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, pprefix, message, newline);
+  global_abort_hook = hook;
+}
+
+void
+diag_debug_message (const char *file, int line, const char *func, const char *cond, const ::std::string &message)
+{
+  if (!cond || debug_key_enabled (cond))
+    {
+      struct timeval tv = { 0, };
+      gettimeofday (&tv, NULL);
+      const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
+      printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, cond ? cond : executable_name().c_str(), message, newline);
+    }
+}
+
+// Mimick relevant parts of glibc's abort_msg_s
+struct AbortMsg {
+  const char *msg = NULL;
+};
+static AbortMsg abort_msg;
+
+#define ABORT_WITH_MESSAGE(abort_message)                          do { \
+  diag_printerr (abort_message);                                        \
+  __sync_synchronize();                                                 \
+  if (global_abort_hook)                                                \
+    global_abort_hook (abort_message);                                  \
+  abort_msg.msg = abort_message.c_str();                                \
+  __sync_synchronize();                                                 \
+  if (global_debug_flags & Bse::DebugFlags::SIGQUIT_ON_ABORT)           \
+    raise (SIGQUIT);                                                    \
+  ::abort();   /* default action for SIGABRT is core dump */            \
+  _exit (-1);  /* ensure noreturn */                                    \
+} while (0)
+
+static void
+aida_diagnostic_impl (const char *file, int line, const char *func, char kind, const char *msg, bool will_abort)
+{
+  const ::std::string diag_message = diag_format (true, file, line, func, kind, msg);
+  if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
+    ABORT_WITH_MESSAGE (diag_message);
+  diag_printerr (diag_message);
+}
+
+void
+diag_failed_assert (const char *file, int line, const char *func, const char *stmt)
+{
+  const ::std::string abort_message = diag_format (true, file, line, func, 'A', stmt ? stmt : "state unreachable");
+  if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
+    ABORT_WITH_MESSAGE (abort_message);
+  diag_printerr (abort_message);
+}
+
+void
+diag_warning (const ::std::string &message)
+{
+  const ::std::string msg = diag_format (true, NULL, 0, NULL, 'W', message);
+  if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
+    ABORT_WITH_MESSAGE (msg);
+  diag_printerr (diag_format (true, NULL, 0, NULL, 'W', message));
+}
+
+void
+diag_fatal_error (const ::std::string &message)
+{
+  const ::std::string abort_message = diag_format (true, NULL, 0, NULL, 'E', message);
+  ABORT_WITH_MESSAGE (abort_message);
 }
 
 struct EarlyStartup101 {
   EarlyStartup101()
   {
     if (debug_key_enabled ("") ||       // force debug_any_enabled initialization
-        debug_any_enabled)              // print startup time if *any* debugging is enabled
+        debug_enabled())                // print startup time if *any* debugging is enabled
       {
         const time_t now = time (NULL);
         struct tm gtm = { 0, };
         gmtime_r (&now, &gtm);
         char buffer[1024] = { 0, };
         strftime (buffer, sizeof (buffer) - 1, "%Y-%m-%d %H:%M:%S UTC", &gtm);
-        debug_diagnostic (NULL, "startup: " + String() + buffer);
+        diag_debug_message (NULL, 0, NULL, "startup", ::std::string (buffer));
       }
   }
 };
 
 static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
-} // Internal
-
 } // Bse
+
+// == aidacc/aida.cc ==
+#define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort) \
+  ::Bse::aida_diagnostic_impl (file, line, func, kind, message, will_abort)
+#include "aidacc/aida.cc"
+
+// == __abort_msg ==
+::Bse::AbortMsg *bse_abort_msg = &::Bse::abort_msg;
+#ifdef  __ELF__
+// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
+extern "C" ::Bse::AbortMsg *__abort_msg __attribute__ ((weak, alias ("bse_abort_msg")));
+#endif // __ELF__

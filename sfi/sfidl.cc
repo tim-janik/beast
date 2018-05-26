@@ -17,8 +17,6 @@ program_alias ()
 
 int main (int argc, char **argv)
 {
-  Aida::fatal_abort_set_flags (Aida::FatalAbortFlags::FATAL_ASSERTIONS | Aida::FatalAbortFlags::FATAL_WARNINGS);
-
   Options options;
   Parser parser;
 

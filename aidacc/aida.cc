@@ -24,23 +24,61 @@
 #include <deque>
 #include <unordered_map>
 #include <unordered_set>
-#if defined __APPLE__
-#include <mach-o/dyld.h>        // _NSGetExecutablePath
-#endif // __APPLE__
 
-// == Auxillary macros ==
-#define AIDA_CPP_PASTE2i(a,b)                   a ## b // indirection required to expand __LINE__ etc
-#define AIDA_CPP_PASTE2(a,b)                    AIDA_CPP_PASTE2i (a,b)
+// == Customizable Macros ==
 #ifndef AIDA_DEBUG
-#define AIDA_DEBUG(...)                         ({ fprintf (stderr, __VA_ARGS__); fputs ("\n", stderr); })
+#define AIDA_DEBUG(...)                         AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, __func__, 'D', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
+#endif
+#ifndef AIDA_DIAGNOSTIC_IMPL
+/** Macro to print out Aida diagnostics (like failed assertions or debug messages) */
+#define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort)       do { ::std::string s; \
+  if (file) s += file;                                                  \
+  if (line) s += ::Aida::posix_sprintf (":%u", line);                   \
+  if (file) s += ": ";                                                  \
+  if (func) s += func + ::std::string (": ");                           \
+  if (kind == 'A') s += "assertion failed: ";                           \
+  if (kind == 'E' && will_abort) s += "fatal-error: ";                  \
+  if (kind == 'E' && !will_abort) s += "error: ";                       \
+  if (kind == 'W') s += "warning: ";                                    \
+  s += message;                                                         \
+  if (s.size() && s[s.size() - 1] != '\n') s += "\n";                   \
+  fputs (s.c_str(), stderr);                                            \
+  } while (0)
 #endif
 
 // == printf helper ==
 #define LLI     (long long int)
 #define LLU     (long long unsigned int)
+#ifndef AIDA_POSIX_VSPRINTF
+/** Macro to print into a ::std::string with printf()-like `format` using the POSIX locale (or use "C" as fallback, see ::locale_t). */
+#define AIDA_POSIX_VSPRINTF(format, vargs)                           ({ \
+  static locale_t posix_c_locale = newlocale (LC_ALL_MASK, "C", NULL);  \
+  locale_t saved_locale = uselocale (posix_c_locale);                   \
+  char buffer[4000 + 1 + 1] = { 0, };                                   \
+  vsnprintf (buffer, 4000, format, vargs);                              \
+  buffer[4000] = 0;                                                     \
+  uselocale (saved_locale);                                             \
+  ::std::string s (buffer); s; })
+#endif
 
 /// The Aida namespace provides all IDL functionality exported to C++.
 namespace Aida {
+
+static ::std::string
+posix_sprintf (const char *format, ...)
+{
+  va_list args;
+  va_start (args, format);
+  ::std::string r = AIDA_POSIX_VSPRINTF (format, args);
+  va_end (args);
+  return r;
+}
+
+void
+assertion_failed (const char *file, int line, const char *func, const char *stmt)
+{
+  AIDA_DIAGNOSTIC_IMPL (file, line, func, 'A', stmt ? stmt : "state unreachable", false);
+}
 
 // == Type Helpers ==
 typedef std::weak_ptr<OrbObject>    OrbObjectW;
@@ -93,260 +131,7 @@ public:
 VirtualEnableSharedFromThisBase::~VirtualEnableSharedFromThisBase()
 {} // force emission of vtable
 
-// == executable_path ==
-static std::string
-get_executable_path()
-{
-  const ssize_t max_size = 8100;
-  char system_result[max_size + 1 + 1] = { 0, };
-  ssize_t system_result_size = -1;
-
-#if defined __linux__ || defined __CYGWIN__ || defined __MSYS__
-  system_result_size = readlink ("/proc/self/exe", system_result, max_size);
-  if (system_result_size < 0)
-    {
-      strcpy (system_result, "/proc/self/exe");
-      system_result_size = 0;
-    }
-#elif defined __APPLE__
-  { // int _NSGetExecutablePath(char* buf, uint32_t* bufsize);
-    uint32_t bufsize = max_size;
-    if (_NSGetExecutablePath (system_result, &bufsize) == 0 &&
-        bufsize <= max_size)
-      system_result_size = bufsize;
-  }
-#elif defined _WIN32
-  // DWORD GetModuleFileNameA (HMODULE hModule, LPSTR lpFileName, DWORD size);
-  system_result_size = GetModuleFileNameA (0, system_result, max_size);
-  if (system_result_size <= 0 || system_result_size >= max_size)
-    system_result_size = -1;    // error, possibly not enough space
-  else
-    {
-      system_result[system_result_size] = 0;
-      // early conversion to unix slashes
-      char *winslash;
-      while ((winslash = strchr (system_result, '\\')) != NULL)
-        *winslash = '/';
-    }
-#else
-#error "Platform lacks executable_path() implementation"
-#endif
-
-  if (system_result_size < 0)
-    system_result[0] = 0;
-  return std::string (system_result);
-}
-
-/// Retrieve the path to the currently running executable.
-std::string
-executable_path()
-{
-  static std::string cached_executable_path = get_executable_path();
-  return cached_executable_path;
-}
-
-//// Retrieve the name part of executable_path().
-std::string
-executable_name()
-{
-  static std::string cached_executable_name = [] () {
-    std::string path = executable_path();
-    const char *slash = strrchr (path.c_str(), '/');
-    return slash ? slash + 1 : path;
-  } ();
-  return cached_executable_name;
-}
-
-// == Assertions ==
-static std::function<void (const ::std::string&)> global_error_hook;
-static FatalAbortFlags global_fatal_abort_flags = FatalAbortFlags (0);
-
-/// Retrieve global fatal abort flags.
-FatalAbortFlags
-fatal_abort_flags ()
-{
-  return global_fatal_abort_flags;
-}
-
-/// Add @a flags to the global fatal_abort_flags().
-void
-fatal_abort_set_flags (FatalAbortFlags flags)
-{
-  global_fatal_abort_flags = global_fatal_abort_flags | flags;
-}
-
-/// Remove @a flags from the global fatal_abort_flags().
-void
-fatal_abort_unset_flags (FatalAbortFlags flags)
-{
-  global_fatal_abort_flags &= ~flags;
-}
-
-/// Call @a hook from within fatal_abort() and failed_assertion().
-void
-error_hook (const std::function<void (const ::std::string&)> &hook)
-{
-  global_error_hook = hook;
-}
-
-// Mimick relevant parts of glibc's abort_msg_s
-struct AbortMsg {
-  const char *msg = NULL;
-};
-static AbortMsg abort_msg;
-
-/// Exit the program with SIGABRT, leaving @a message for core dump readouts.
-void
-fatal_abort (const std::string &message)
-{
-  abort_msg.msg = message.c_str();      // store abort message for core dumps
-  __sync_synchronize();
-  fflush (stdout);
-  fputs (message.c_str(), stderr);
-  if (message.size() && message.data()[message.size() - 1] != '\n')
-    fputs ("\n", stderr);
-  fflush (stderr);
-  if (global_error_hook)
-    global_error_hook (message);
-  if ((global_fatal_abort_flags & FatalAbortFlags::SEND_SIGQUIT) != 0)
-    raise (SIGQUIT);
-  abort();                              // default action for SIGABRT is core dump
-  _exit (-1);                           // ensure noreturn
-}
-
-/// Construct newline-terminated diagnostics message from @a diag.
-std::string
-diagnostic_message (const char *file, uint line, const char *func, char kind, const std::string &diag, int p_errno)
-{
-  String message;
-  if (file)
-    message = line ? posix_sprintf ("%s:%u", file, line) : file;
-  if (func)
-    {
-      if (!message.empty())
-        message += ": ";
-      message += func;
-      message += "()";
-    }
-  const String prg = executable_path();
-  if (!prg.empty())
-    {
-      if (message.empty())
-        message = prg;
-      else
-        message = prg + ": " + message;
-    }
-  String prefix;
-  switch (kind) {
-  case 'W':     prefix = "WARNING";     break;
-  case 'I':     prefix = "INFO";        break;
-  case 'D':     prefix = "DEBUG";       break;
-  case 'E':     prefix = "ERROR";       break;
-  case 'F':     prefix = "FATAL";       break;
-  default:
-  case ' ':                             break;
-  }
-  if (!prefix.empty())
-    {
-      if (!message.empty())
-        message += ": ";
-      message += prefix;
-    }
-  if (!message.empty())
-    message += ": ";
-  if (diag.empty() && p_errno)
-    {
-      const char *serr = strerror (p_errno);
-      message += serr ? serr : posix_sprintf ("unknown error (errno=%d)", p_errno);
-    }
-  else if (diag.empty())
-    message += "statement should not be reached";
-  else
-    message += diag;
-  if (message.size() && message.data()[message.size() - 1] != '\n')
-    message += "\n";
-  return message;
-}
-
-/// Print an error message for failing assertions and possibly abort().
-void
-failed_assertion (const char *file, unsigned int line, const char *func, const ::std::string &cmessage, int p_errno)
-{
-  const bool isfatal = (global_fatal_abort_flags & FatalAbortFlags::FATAL_ASSERTIONS) != 0;
-  const std::string msg = diagnostic_message (file, line, func, isfatal ? 'F': 'W', cmessage, p_errno);
-  fatal_abort (cmessage);
-}
-
-
 // == String Utilitiies ==
-static locale_t
-new_posix_locale ()
-{
-  locale_t posix_locale = newlocale (LC_ALL_MASK, "POSIX.UTF-8", NULL);
-  if (!posix_locale)
-    posix_locale = newlocale (LC_ALL_MASK, "C.UTF-8", NULL);
-  if (!posix_locale)
-    posix_locale = newlocale (LC_ALL_MASK, "POSIX", NULL);
-  if (!posix_locale)
-    posix_locale = newlocale (LC_ALL_MASK, "C", NULL);
-  if (!posix_locale)
-    posix_locale = newlocale (LC_ALL_MASK, NULL, NULL);
-  AIDA_ASSERT_RETURN (posix_locale != NULL, NULL);
-  return posix_locale; // release: freelocale (posix_locale);
-}
-
-struct PosixLocaleGuard::Locale {
-  locale_t locale;
-};
-
-PosixLocaleGuard::PosixLocaleGuard() :
-  locale_ (*new (localemem_) Locale())
-{
-  static locale_t posix_locale = new_posix_locale();
-  static_assert (sizeof (localemem_) <= sizeof (locale_t), "");
-  locale_.locale = uselocale (posix_locale);
-}
-
-PosixLocaleGuard::~PosixLocaleGuard()
-{
-  uselocale (locale_.locale);
-}
-
-static inline String
-posix_locale_vprintf (const char *format, va_list vargs)
-{
-  String string;
-  constexpr int STACK_BUFFER_SIZE = 2048;
-  va_list pargs;
-  char buffer[STACK_BUFFER_SIZE + 1] = { 0, };
-  va_copy (pargs, vargs);
-  const int l = vsnprintf (buffer, STACK_BUFFER_SIZE, format, pargs);
-  va_end (pargs);
-  if (l < 0)
-    string = format; // error?
-  else if (l < STACK_BUFFER_SIZE)
-    string = String (buffer, l);
-  else
-    {
-      string.resize (l + 1, 0);
-      va_copy (pargs, vargs);
-      const int j = vsnprintf (&string[0], string.size(), format, pargs);
-      va_end (pargs);
-      string.resize (std::min (l, std::max (j, 0)));
-    }
-  return string;
-}
-
-String
-posix_sprintf (const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  const String result = posix_locale_vprintf (format, args);
-  va_end (args);
-  return result;
-}
-
 static inline constexpr bool
 c_isalnum (uint8 c)
 {
@@ -3520,7 +3305,7 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
   pthread_mutex_unlock (&global_dispatcher_mutex);
   // simple hash collision check (sanity check, see below)
   if (AIDA_UNLIKELY (size_before == size_after))
-    AIDA_ASSERTION_FAILED (posix_sprintf ("method_hash_is_unregistered (%016llx%016llx)", LLU mentry.hashhi, LLU mentry.hashlo));
+    AIDA_ASSERTION_FAILED (posix_sprintf ("method_hash_is_unregistered (%016llx%016llx)", LLU mentry.hashhi, LLU mentry.hashlo).c_str());
 }
 
 // == RemoteHandle Event Handlers ==
@@ -3553,7 +3338,7 @@ remote_handle_event_handler_del (int64 id)
 {
   std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
   remote_handle_event_handler_map.erase (id);
-  dprintf (2, "%s: TODO: verify this function gets called: id=%zd", __func__, size_t (id));
+  dprintf (2, "%s: TODO: verify this function gets called: id=%zd", __func__, size_t (id)); // FIXME
 }
 
 // == ImplicitBase <-> RemoteHandle RPC ==
@@ -3933,11 +3718,3 @@ static const ServerConnection::MethodEntry implicit_base_methods[] = {
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
 } // Aida
-
-
-// == __abort_msg ==
-Aida::AbortMsg  *aida_abort_msg = &Aida::abort_msg;
-#ifdef  __ELF__
-// allow 'print __abort_msg->msg' when debugging core files for apport/gdb to pick up
-extern "C" Aida::AbortMsg *__abort_msg __attribute__ ((weak, alias ("aida_abort_msg")));
-#endif // __ELF__

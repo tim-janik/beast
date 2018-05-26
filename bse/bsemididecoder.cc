@@ -4,7 +4,8 @@
 #include "bseengine.hh"
 #include <string.h>
 
-#define MDEBUG(...)     Bse::debug ("midi-decoder", __VA_ARGS__)
+#define MDEBUG(...)     BSE_DEBUG ("midi-decoder", __VA_ARGS__)
+//#define MDEBUG(...)     ::Bse::debug ("midi-decoder", __VA_ARGS__)
 
 /* --- prototypes --- */
 static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);
