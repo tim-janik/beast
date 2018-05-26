@@ -21,6 +21,7 @@ env:
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
+    - env: DIST="ubuntu:bionic"      INTENT="gccbuild"
     - env: DIST="ubuntu:artful"      INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
     - env: DIST="debian:unstable"    INTENT="clangbuild"
