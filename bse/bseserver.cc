@@ -1396,6 +1396,7 @@ struct SAreaBlock {
   char    *start = NULL;
   size_t   length = 0;
   explicit SAreaBlock (size_t sz = 0) : length (sz)    {}
+  void     reset (size_t sz = 0)                        { start = NULL; length = sz; }
   void     zero ()                                      { memset (start, 0, length); }
 };
 struct SharedArea {
@@ -1593,5 +1594,43 @@ ServerImpl::release_shared_block (const SharedBlock &block)
 }
 
 // FIXME: alignment, huge pages, mmap
+
+// == Allocator Tests ==
+BSE_INTEGRITY_TEST (bse_server_test_allocator);
+static void
+bse_server_test_allocator()
+{
+  const ssize_t mb = 1024 * 1024;
+  const ssize_t sz = 3 * mb;
+  SharedArea sa;
+  sa.create (-1, sz);
+  assert_return (sa.sum() == sz);
+  bool success;
+  SAreaBlock s1 (mb);
+  success = sa.alloc (s1);
+  assert_return (success);
+  assert_return (sa.sum() == sz - mb);
+  SAreaBlock s2 (mb);
+  success = sa.alloc (s2);
+  assert_return (success);
+  assert_return (sa.sum() == sz - 2 * mb);
+  SAreaBlock s3 (mb);
+  success = sa.alloc (s3);
+  assert_return (success);
+  assert_return (sa.sum() == 0);
+  sa.release (s1);
+  assert_return (sa.sum() == mb);
+  sa.release (s3);
+  assert_return (sa.sum() == 2 * mb);
+  s1.reset (2 * mb);
+  success = sa.alloc (s1);
+  assert_return (success == false); // must fail due to fragmentation
+  sa.release (s2);
+  assert_return (sa.sum() == 3 * mb);
+  success = sa.alloc (s1);
+  assert_return (success);
+  sa.release (s1);
+  assert_return (sa.sum() == sz);
+}
 
 } // Bse
