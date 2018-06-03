@@ -186,7 +186,7 @@ af-tests/soundfont-test: af-tests/soundfont-test.bse af-tests/soundfont-test.ref
 	$(Q) $(AF_TESTS_BSE2WAV) $@.bse $@.wav
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $@.tmp
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
-	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
+	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold $(FLUID_THRESHOLD)
 	$(Q) rm -f $@.wav $@.tmp
 check-af-tests: af-tests/soundfont-test
 
