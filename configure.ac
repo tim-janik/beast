@@ -154,15 +154,20 @@ CXX="$CXX -std=gnu++14"
 test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 
 # == Compiler flags ==
+# disable invalid "can't wrap" optimizations for signed / pointers
+no_invalid_flags="-fno-strict-overflow"
+# disable invalid optimizations of pointer casts
+no_invalid_flags="$no_invalid_flags -fno-strict-aliasing"
 # needs gcc >= 5, clang >= 3.4
-c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations" # -Wdate-time -Wconversion -Wshadow
+c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations -Werror-implicit-function-declaration"
+c_warnings="$c_warnings -Werror=incompatible-pointer-types" # -Wdate-time -Wconversion -Wshadow
 cxx_warnings="-Wsign-promo -Woverloaded-virtual" # -Wnon-virtual-dtor  -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
 gcc_c_only_flags="-fno-cond-mismatch -fdevirtualize-speculatively"
 compiler_flags="-pipe"
-optimization_flags="-O3 -funroll-loops -ftree-vectorize"
+optimization_flags="-O3 -funroll-loops -ftree-vectorize $no_invalid_flags"
 FAST_MATH_FLAGS="-ffast-math"
-gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im"
+gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fno-delete-null-pointer-checks"
 gcc_fast_math="-fivopts"
 clang_fix_flags="-Qunused-arguments"		# avoid bogus -pthread warning (llvm#7798)
 x86_flags="-minline-all-stringops"
