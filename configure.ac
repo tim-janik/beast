@@ -155,7 +155,7 @@ test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 
 # == Compiler flags ==
 # needs gcc >= 5, clang >= 3.4
-c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations" # -Wdate-time -Wconversion -Wshadow
+c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations -Werror-implicit-function-declaration" # -Wdate-time -Wconversion -Wshadow
 cxx_warnings="-Wsign-promo -Woverloaded-virtual" # -Wnon-virtual-dtor  -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
 gcc_c_only_flags="-fno-cond-mismatch -fdevirtualize-speculatively"
