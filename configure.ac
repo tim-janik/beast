@@ -156,6 +156,8 @@ test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 # == Compiler flags ==
 # disable invalid "can't wrap" optimizations for signed / pointers
 no_invalid_flags="-fno-strict-overflow"
+# disable invalid optimizations of pointer casts
+no_invalid_flags="$no_invalid_flags -fno-strict-aliasing"
 # needs gcc >= 5, clang >= 3.4
 c_warnings="-Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations -Werror-implicit-function-declaration"
 c_warnings="$c_warnings -Werror=incompatible-pointer-types" # -Wdate-time -Wconversion -Wshadow
