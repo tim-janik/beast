@@ -54,10 +54,12 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 /// Bse macros that are shorthands for <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attributes</a>.
 /// @{
 #define BSE_ALWAYS_INLINE       __attribute__ ((always_inline))
+#define BSE_COLD                __attribute__ ((__cold__))
 #define BSE_CONST               __attribute__ ((__const__))
 #define BSE_CONSTRUCTOR	        __attribute__ ((constructor,used))      // gcc-3.3 also needs "used" to emit code
 #define BSE_DEPRECATED          __attribute__ ((__deprecated__))
 #define BSE_FORMAT(fx)          __attribute__ ((__format_arg__ (fx)))
+#define BSE_HOT                 __attribute__ ((__hot__))
 #define BSE_MALLOC              __attribute__ ((__malloc__))
 #define BSE_MAY_ALIAS           __attribute__ ((may_alias))
 #define BSE_NOINLINE	        __attribute__ ((noinline))
@@ -69,8 +71,7 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_SENTINEL            __attribute__ ((__sentinel__))
 #define BSE_UNUSED              __attribute__ ((__unused__))
 #define BSE_USED                __attribute__ ((__used__))
-#define BSE_COLD                __attribute__ ((__cold__))
-#define BSE_HOT                 __attribute__ ((__hot__))
+#define BSE_WEAK                __attribute__ ((__weak__))
 /// @}
 
 /// Return silently if @a cond does not evaluate to true, with return value @a ...

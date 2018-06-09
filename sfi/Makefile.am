@@ -44,6 +44,7 @@ sfi_all_sources = $(strip \
 	entropy.cc		\
 	randomhash.cc		\
 	testing.cc	\
+	weaksym.cc	\
 )
 sfi_extra_sources = $(strip \
 )
