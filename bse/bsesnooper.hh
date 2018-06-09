@@ -14,7 +14,7 @@
 /* --- BseSnooper source --- */
 
 struct BseSnooper : BseSource {
-  volatile guint  active_context_id;
+  BseModule *module;
 };
 
 struct BseSnooperClass : BseSourceClass
@@ -22,8 +22,8 @@ struct BseSnooperClass : BseSourceClass
 
 enum
 {
-  BSE_SNOOPER_ICHANNEL_MONO,
-  BSE_SNOOPER_N_ICHANNELS
+  BSE_SNOOPER_JCHANNEL_MONO,
+  BSE_SNOOPER_N_JCHANNELS
 };
 
 #endif /* __BSE_SNOOPER_H__ */
