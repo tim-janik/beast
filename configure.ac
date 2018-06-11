@@ -315,14 +315,8 @@ BSE_CFLAGS="$BSE_CFLAGS ${PTHREAD_CFLAGS:--D_REENTRANT}"
 BSE_LIBS="$BSE_LIBS ${PTHREAD_LIBS:--lpthread}"
 
 # == fluidsynth version check ==
-if $PKG_CONFIG "fluidsynth >= 1.1.7"; then
-  # new version: should produce correct check-af-tests output
-  FLUID_THRESHOLD=99.99
-else
-  # old version: incorrect test output, use lower threshold
-  FLUID_THRESHOLD=99.7
-fi
-AC_SUBST(FLUID_THRESHOLD)
+FLUID_VERSION=`$PKG_CONFIG --modversion fluidsynth`
+AC_SUBST(FLUID_VERSION)
 
 # == libz ==
 AC_CHECK_LIB(z, gzsetparams, [ LIBZ_LIBS='' ; test "$ac_cv_header_zlib_h" = yes && LIBZ_LIBS='-lz' ])
