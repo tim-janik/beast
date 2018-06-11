@@ -26,6 +26,8 @@ AF_TESTS_BSE2WAV = $(strip					\
 	  --bse-override-sample-path '$(top_srcdir)/af-tests:$(top_srcdir)/library/samples' \
 	  --bse-disable-randomization )
 
+VERSIONCMP = $(top_srcdir)/af-tests/versioncmp.sh
+
 # == af-tests/adsrtest ==
 af-tests/adsrtest: af-tests/adsrtest.bse af-tests/adsrtest.ref
 	$(QWAVCHECK)	# ADSR Test checks the mono channel envelope rendering
@@ -186,7 +188,7 @@ af-tests/soundfont-test: af-tests/soundfont-test.bse af-tests/soundfont-test.ref
 	$(Q) $(AF_TESTS_BSE2WAV) $@.bse $@.wav
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $@.tmp
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
-	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold $(FLUID_THRESHOLD)
+	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold $(shell $(VERSIONCMP) $(FLUID_VERSION) 1.1.7 99.99 99.7)
 	$(Q) rm -f $@.wav $@.tmp
 check-af-tests: af-tests/soundfont-test
 
