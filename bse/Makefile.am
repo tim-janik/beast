@@ -58,6 +58,7 @@ bse_public_headers = $(strip \
 	bseincluder.hh		\
 	ladspa.hh		\
 	memory.hh		\
+	monitor.hh		\
 	testobject.hh		\
 )
 # BSE C & C++ sources
@@ -99,6 +100,7 @@ bse_sources = $(strip \
 	bsebasics.cc		\
 	bseprobe.cc		\
 	memory.cc		\
+	monitor.cc		\
 	testobject.cc		\
 )
 # BSE Synthesis Modules

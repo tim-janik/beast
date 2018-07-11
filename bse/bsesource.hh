@@ -303,6 +303,7 @@ public:
   virtual int32        get_automation_channel  (const String &property_name) override;
   virtual void         request_probes          (const ProbeRequestSeq &prseq) override; // bseprobe.cc
   virtual int          get_mix_freq            () override;                             // bseprobe.cc
+  virtual SignalMonitorIfaceP create_signal_monitor (int32 ochannel) override;
 };
 
 } // Bse
