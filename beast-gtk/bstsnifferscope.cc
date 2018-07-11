@@ -15,6 +15,7 @@ static void
 bst_sniffer_scope_init (BstSnifferScope *self)
 {
   new (&self->source) Bse::SourceH();
+  new (&self->monitor) Bse::SignalMonitorH();
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
@@ -49,6 +50,7 @@ bst_sniffer_scope_finalize (GObject *object)
   G_OBJECT_CLASS (bst_sniffer_scope_parent_class)->finalize (object);
   using namespace Bse;
   self->source.~SourceH();
+  self->monitor.~SignalMonitorH();
 }
 
 static void
@@ -259,13 +261,11 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *klass)
 void
 bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
 {
-  if (source)
-    {
-      if (!source.has_outputs())
-        source = Bse::SourceH();
-    }
-  if (self->source)
-    ; // FIXME: self->source.sig_probes() -= self->probes_handler;
+  if (source and !source.has_outputs())
+    source = Bse::SourceH();
+  return_unless (source != self->source);
+  if (self->monitor)
+    self->monitor = Bse::SignalMonitorH();
   self->source = source;
   if (self->source)
     {
@@ -274,6 +274,9 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
       //};
       bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
       bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
+      if (self->source.n_ochannels() >= 1) // TODO: extend to channels 1 & 2
+        self->monitor = self->source.create_signal_monitor (0);
+      static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
     }
 }
 
