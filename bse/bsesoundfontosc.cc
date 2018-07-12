@@ -609,11 +609,11 @@ bse_sound_font_osc_context_create (BseSource *source,
 
   module = bse_module_new (&sound_font_osc_class, sound_font_osc);
 
-  /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, module);
-
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

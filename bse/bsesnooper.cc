@@ -187,7 +187,7 @@ bse_snooper_context_create (BseSource *source,
   snoop_data->ref_count += 1;
 
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_imodule (source, context_handle, snooper->module);
+  bse_source_set_context_imodule (source, context_handle, snooper->module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -206,7 +206,7 @@ bse_snooper_context_dismiss (BseSource     *source,
   assert_return (snoop_data->ref_count > 0);
   snoop_data->ref_count -= 1;
   if (snoop_data->ref_count)    /* prevent automatic discarding from engine */
-    bse_source_set_context_imodule (source, context_handle, NULL);
+    bse_source_set_context_imodule (source, context_handle, NULL, trans);
   else
     snooper->module = NULL; // module will be auto destroyed by BseSource->context_dismiss()
   /* chain parent class' handler */

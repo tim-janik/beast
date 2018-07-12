@@ -482,8 +482,8 @@ ladspa_derived_context_create (BseSource *source,
       bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * bse_engine_block_size ());
 
   module = bse_module_new (klass->gsl_class, ldata);
-  bse_source_set_context_module (source, context_handle, module);
   bse_trans_add (trans, bse_job_integrate (module));
+  bse_source_set_context_module (source, context_handle, module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (derived_parent_class)->context_create (source, context_handle, trans);

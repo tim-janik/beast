@@ -191,7 +191,8 @@ bse_midi_voice_input_context_create (BseSource *source,
   bse_source_set_context_omodule (source, context_handle,
 				  bse_midi_receiver_create_sub_voice (mcontext.midi_receiver,
                                                                       mcontext.midi_channel,
-                                                                      mcontext.voice_id, trans));
+                                                                      mcontext.voice_id, trans),
+                                  trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (voice_input_parent_class)->context_create (source, context_handle, trans);
@@ -215,7 +216,7 @@ bse_midi_voice_input_context_dismiss (BseSource *source,
 
   module = bse_source_get_context_omodule (source, context_handle);
   bse_midi_receiver_discard_sub_voice (mcontext.midi_receiver, mcontext.midi_channel, mcontext.voice_id, module, trans);
-  bse_source_set_context_omodule (source, context_handle, NULL);
+  bse_source_set_context_omodule (source, context_handle, NULL, trans);
 
   bse_midi_voice_switch_unref_poly_voice (self->voice_switch, context_handle, trans);
 
@@ -234,10 +235,10 @@ bse_midi_voice_switch_context_create (BseSource *source,
   /* we simply wrap the modules from BseMidiReceiver */
   bse_source_set_context_imodule (source, context_handle,
                                   bse_midi_receiver_get_poly_voice_input (mcontext.midi_receiver,
-                                                                          mcontext.midi_channel, mcontext.voice_id));
+                                                                          mcontext.midi_channel, mcontext.voice_id), trans);
   bse_source_set_context_omodule (source, context_handle,
 				  bse_midi_receiver_get_poly_voice_output (mcontext.midi_receiver,
-                                                                           mcontext.midi_channel, mcontext.voice_id));
+                                                                           mcontext.midi_channel, mcontext.voice_id), trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (voice_switch_parent_class)->context_create (source, context_handle, trans);
@@ -255,8 +256,8 @@ bse_midi_voice_switch_context_dismiss (BseSource *source,
    */
 
   bse_trans_add (trans, bse_job_kill_inputs (bse_source_get_context_imodule (source, context_handle)));
-  bse_source_set_context_imodule (source, context_handle, NULL);
-  bse_source_set_context_omodule (source, context_handle, NULL);
+  bse_source_set_context_imodule (source, context_handle, NULL, trans);
+  bse_source_set_context_omodule (source, context_handle, NULL, trans);
 
   bse_midi_voice_switch_unref_poly_voice (self, context_handle, trans);
 

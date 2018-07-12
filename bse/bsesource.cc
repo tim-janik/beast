@@ -847,9 +847,7 @@ bse_source_dismiss_context (BseSource *source,
 }
 
 void
-bse_source_set_context_imodule (BseSource *source,
-				guint	   context_handle,
-				BseModule *imodule)
+bse_source_set_context_imodule (BseSource *source, uint context_handle, BseModule *imodule, BseTrans *trans)
 {
   BseSourceContext *context;
 
@@ -903,9 +901,7 @@ bse_source_get_context_imodule (BseSource *source,
 }
 
 void
-bse_source_set_context_omodule (BseSource *source,
-				guint	   context_handle,
-				BseModule *omodule)
+bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModule *omodule, BseTrans *trans)
 {
   BseSourceContext *context;
 
@@ -967,9 +963,7 @@ bse_source_get_context_omodule (BseSource *source,
 }
 
 void
-bse_source_set_context_module (BseSource *source,
-			       guint      context_handle,
-			       BseModule *module)
+bse_source_set_context_module (BseSource *source, uint context_handle, BseModule *module, BseTrans *trans)
 {
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
@@ -978,9 +972,9 @@ bse_source_set_context_module (BseSource *source,
   assert_return (BSE_MODULE_N_ISTREAMS (module) + BSE_MODULE_N_JSTREAMS (module) >= BSE_SOURCE_N_ICHANNELS (source));
 
   if (BSE_SOURCE_N_ICHANNELS (source))
-    bse_source_set_context_imodule (source, context_handle, module);
+    bse_source_set_context_imodule (source, context_handle, module, trans);
   if (BSE_SOURCE_N_OCHANNELS (source))
-    bse_source_set_context_omodule (source, context_handle, module);
+    bse_source_set_context_omodule (source, context_handle, module, trans);
 }
 
 void

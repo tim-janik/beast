@@ -160,12 +160,8 @@ guint	    bse_source_class_add_ochannel      	(BseSourceClass	*source_class,
 						 const gchar	*label,
 						 const gchar	*blurb);
 void        bse_source_class_inherit_channels   (BseSourceClass *source_class);
-void		bse_source_set_context_imodule	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*imodule);
-void		bse_source_set_context_omodule	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*omodule);
+void		bse_source_set_context_imodule	(BseSource *source, uint context_handle, BseModule *imodule, BseTrans *trans);
+void		bse_source_set_context_omodule	(BseSource *source, uint context_handle, BseModule *omodule, BseTrans *trans);
 BseModule*	bse_source_get_context_imodule	(BseSource	*source,
 						 guint		 context_handle);
 BseModule*	bse_source_get_context_omodule	(BseSource	*source,
@@ -203,9 +199,7 @@ void       bse_source_input_backup_to_undo      (BseSource      *source,
 /* convenience */
 void   	   bse_source_class_cache_engine_class  (BseSourceClass	*source_class,
 						 const BseModuleClass *engine_class);
-void	   bse_source_set_context_module	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*module);
+void	   bse_source_set_context_module	(BseSource *source, uint context_handle, BseModule *module, BseTrans *trans);
 void	   bse_source_update_modules	        (BseSource	*source,
 						 guint		 member_offset,
 						 gpointer	 member_data,

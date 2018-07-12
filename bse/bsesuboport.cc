@@ -182,11 +182,11 @@ bse_sub_oport_context_create (BseSource *source,
     }
   BseModule *module = bse_module_new (BSE_SOURCE_GET_CLASS (self)->engine_class, NULL);
 
-  /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_imodule (source, context_handle, module);
-
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_imodule (source, context_handle, module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
