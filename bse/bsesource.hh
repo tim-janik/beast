@@ -265,10 +265,14 @@ void    bse_source_probes_modules_changed       (BseSource      *source);
 namespace Bse {
 
 class SourceImpl : public ItemImpl, public virtual SourceIface {
+  void                 activate_monitor        ();
+  void                 deactivate_monitor      ();
   void                 omodule_changed         (BseModule *module, bool added, BseTrans *trans);
   friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
+  friend void ::bse_source_reset               (BseSource*);
+  friend void ::bse_source_prepare             (BseSource*);
 protected:
-  virtual             ~SourceImpl           ();
+  virtual             ~SourceImpl              ();
 public:
   explicit             SourceImpl              (BseObject*);
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;

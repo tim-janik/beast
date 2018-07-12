@@ -402,6 +402,8 @@ bse_source_prepare (BseSource *source)
   source->contexts = g_bsearch_array_create (&context_config);
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+  self->activate_monitor();
   source_notify_properties (source);
   g_object_thaw_notify (source);
   g_object_unref (source);
@@ -415,24 +417,24 @@ bse_source_real_reset (BseSource *source)
 void
 bse_source_reset (BseSource *source)
 {
-  guint n_contexts;
-
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
   assert_return (source->contexts != NULL);
 
   g_object_ref (source);
   g_object_freeze_notify (source);
-  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+  self->deactivate_monitor();
+  uint n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
       BseTrans *trans = bse_trans_open ();
       while (n_contexts)
-	{
-	  BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, n_contexts - 1);
-	  bse_source_dismiss_context (source, context->id, trans);
-	  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
-	}
+        {
+          BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, n_contexts - 1);
+          bse_source_dismiss_context (source, context->id, trans);
+          n_contexts = BSE_SOURCE_N_CONTEXTS (source);
+        }
       bse_trans_commit (trans);
     }
   bse_engine_wait_on_trans ();
@@ -2102,6 +2104,16 @@ void
 SourceImpl::omodule_changed (BseModule *module, bool added, BseTrans *trans)
 {
   bse_trans_add (trans, bse_job_access (module, check_module, NULL, NULL));
+}
+
+void
+SourceImpl::activate_monitor ()
+{
+}
+
+void
+SourceImpl::deactivate_monitor ()
+{
 }
 
 SourceIfaceP
