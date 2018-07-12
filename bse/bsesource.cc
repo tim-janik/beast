@@ -964,19 +964,21 @@ bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModul
     bse_source_probes_modules_changed (source);
 }
 
-SfiRing*
-bse_source_list_omodules (BseSource *source)
+void
+bse_source_list_omodules (BseSource *source, std::vector<BseModule*> &modules)
 {
-  guint i, n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
-  SfiRing *ring = NULL;
+  const uint n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
+  const size_t offset = modules.size();
   if (BSE_SOURCE_N_OCHANNELS (source))
-    for (i = 0; i < n_contexts; i++)
+    for (uint i = 0; i < n_contexts; i++)
       {
         BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, i);
         if (context->u.mods.omodule)
-          ring = sfi_ring_append (ring, context->u.mods.omodule);
+          modules.push_back (context->u.mods.omodule);
       }
-  return ring;
+  std::sort (modules.begin() + offset, modules.end());
+  auto end = std::unique (modules.begin() + offset, modules.end()); // collapses dups
+  modules.erase (end, modules.end()); // eliminate std::move leftovers
 }
 
 BseModule*
@@ -2109,6 +2111,9 @@ SourceImpl::omodule_changed (BseModule *module, bool added, BseTrans *trans)
 void
 SourceImpl::activate_monitor ()
 {
+  BseSource *self = as<BseSource*>();
+  std::vector<BseModule*> omodules;
+  bse_source_list_omodules (self, omodules);
 }
 
 void

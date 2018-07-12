@@ -257,7 +257,7 @@ guint*		bse_source_context_ids		(BseSource	*source,
 						 guint		*n_ids);
 gboolean	bse_source_has_context		(BseSource	*source,
 						 guint		 context_handle);
-SfiRing*        bse_source_list_omodules        (BseSource      *source);
+void            bse_source_list_omodules        (BseSource *source, std::vector<BseModule*> &modules);
 /* implemented in bseprobe.cc */
 void    bse_source_clear_probes                 (BseSource      *source);
 void    bse_source_probes_modules_changed       (BseSource      *source);
