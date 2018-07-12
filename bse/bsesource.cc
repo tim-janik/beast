@@ -900,11 +900,23 @@ bse_source_get_context_imodule (BseSource *source,
   return context->u.mods.imodule;
 }
 
+static bool
+source_find_omodule (BseSource *source, BseModule *omodule)
+{
+  const uint n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
+  if (BSE_SOURCE_N_OCHANNELS (source))
+    for (uint i = 0; i < n_contexts; i++)
+      {
+        BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, i);
+        if (context->u.mods.omodule == omodule)
+          return true;
+      }
+  return false;
+}
+
 void
 bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModule *omodule, BseTrans *trans)
 {
-  BseSourceContext *context;
-
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
   assert_return (context_handle > 0);
@@ -912,18 +924,40 @@ bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModul
   if (omodule)
     assert_return (BSE_MODULE_N_OSTREAMS (omodule) >= BSE_SOURCE_N_OCHANNELS (source));
 
-  context = context_lookup (source, context_handle);
+  BseSourceContext *context = context_lookup (source, context_handle);
   if (!context)
     {
       Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
-  if (omodule)
-    assert_return (context->u.mods.omodule == NULL);
-  else
-    assert_return (context->u.mods.omodule != NULL);
 
-  context->u.mods.omodule = omodule;
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+
+  // add module
+  if (omodule)
+    {
+      assert_return (context->u.mods.omodule == NULL);
+      const bool seen_module = source_find_omodule (source, omodule);
+      context->u.mods.omodule = omodule;
+      if (!seen_module)         // notify on first module reference
+        self->omodule_changed (omodule, true, trans);
+    }
+
+  // remove module
+  if (!omodule)
+    {
+      assert_return (context->u.mods.omodule != NULL);
+      omodule = context->u.mods.omodule; // save for notification
+      context->u.mods.omodule = NULL;
+      const bool seen_module = source_find_omodule (source, omodule);
+      if (!seen_module)         // notify on last module reference
+        {
+          context->u.mods.omodule = omodule; // keep reference around during notification
+          self->omodule_changed (context->u.mods.omodule, false, trans);
+          context->u.mods.omodule = NULL;
+        }
+    }
+
   if (source->probes)
     bse_source_probes_modules_changed (source);
 }
@@ -2057,6 +2091,18 @@ SourceImpl::SourceImpl (BseObject *bobj) :
 
 SourceImpl::~SourceImpl ()
 {}
+
+static void /* Engine Thread */
+check_module (BseModule *module, void *data)
+{
+  // we only get here if the module's ENGINE_NODE_IS_INTEGRATED
+}
+
+void
+SourceImpl::omodule_changed (BseModule *module, bool added, BseTrans *trans)
+{
+  bse_trans_add (trans, bse_job_access (module, check_module, NULL, NULL));
+}
 
 SourceIfaceP
 SourceImpl::ichannel_get_osource (int input_channel, int input_joint)

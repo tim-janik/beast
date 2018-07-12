@@ -265,6 +265,8 @@ void    bse_source_probes_modules_changed       (BseSource      *source);
 namespace Bse {
 
 class SourceImpl : public ItemImpl, public virtual SourceIface {
+  void                 omodule_changed         (BseModule *module, bool added, BseTrans *trans);
+  friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
 protected:
   virtual             ~SourceImpl           ();
 public:
