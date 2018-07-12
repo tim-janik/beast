@@ -305,6 +305,7 @@ public:
   virtual int          get_mix_freq            () override;                             // bseprobe.cc
   virtual SignalMonitorIfaceP create_signal_monitor (int32 ochannel) override;
 };
+typedef std::shared_ptr<SourceImpl> SourceImplP;
 
 } // Bse
 

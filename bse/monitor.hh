@@ -8,11 +8,13 @@
 namespace Bse {
 
 class SignalMonitorImpl : public virtual SignalMonitorIface {
-  BseSnooper            *snooper_ = NULL;
+  SourceImplP            source_;
+  uint32                 ochannel_;
 protected:
   virtual               ~SignalMonitorImpl  ();
+  friend class           FriendAllocator<SignalMonitorImpl>;
 public:
-  explicit               SignalMonitorImpl  (BseSnooper *snooper);
+  explicit               SignalMonitorImpl  (SourceImplP source, uint ochannel);
   virtual int64          get_shm_id         () override;
   virtual SourceIfaceP   get_osource        () override;
   virtual int64          get_shm_offset     () override;

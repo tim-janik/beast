@@ -3,18 +3,15 @@
 
 namespace Bse {
 
-SignalMonitorImpl::SignalMonitorImpl (BseSnooper *snooper) :
-  snooper_ (snooper)
+SignalMonitorImpl::SignalMonitorImpl (SourceImplP source, uint ochannel) :
+  source_ (source), ochannel_ (ochannel)
 {
-  assert_return (snooper != NULL);
-  g_object_ref (snooper_);
+  assert_return (source != NULL);
+  assert_return (ochannel < size_t (source->n_ochannels()));
 }
 
 SignalMonitorImpl::~SignalMonitorImpl ()
-{
-  g_object_unref (snooper_);
-  snooper_ = NULL;
-}
+{}
 
 int64
 SignalMonitorImpl::get_shm_id ()
@@ -25,7 +22,7 @@ SignalMonitorImpl::get_shm_id ()
 SourceIfaceP
 SignalMonitorImpl::get_osource ()
 {
-  return NULL;
+  return source_;
 }
 
 int64
@@ -37,7 +34,7 @@ SignalMonitorImpl::get_shm_offset()
 int32
 SignalMonitorImpl::get_ochannel()
 {
-  return 0;
+  return ochannel_;
 }
 
 int64
@@ -65,7 +62,10 @@ SignalMonitorImpl::get_probe_features ()
 SignalMonitorIfaceP
 SourceImpl::create_signal_monitor (int32 ochannel)
 {
-  return NULL;
+  assert_return (ochannel >= 0, NULL);
+  assert_return (ochannel < n_ochannels(), NULL);
+  SignalMonitorImplP mon = FriendAllocator<SignalMonitorImpl>::make_shared (this->as<SourceImplP>(), ochannel);
+  return mon;
 }
 
 } // Bse
