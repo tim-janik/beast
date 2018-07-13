@@ -271,10 +271,14 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   void                 cmon_activate           ();
   void                 cmon_deactivate         ();
   void                 cmon_omodule_changed    (BseModule *module, bool added, BseTrans *trans);
+  void                 cmon_add_probe          (uint ochannel, const ProbeFeatures &pf);
+  void                 cmon_sub_probe          (uint ochannel, const ProbeFeatures &pf);
+  ChannelMonitor&      cmon_get                (uint ochannel);
   void                 cmon_delete             ();
   friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
   friend void ::bse_source_reset               (BseSource*);
   friend void ::bse_source_prepare             (BseSource*);
+  friend class SignalMonitorImpl;
 protected:
   virtual             ~SourceImpl              ();
 public:

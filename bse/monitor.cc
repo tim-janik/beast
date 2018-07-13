@@ -12,12 +12,9 @@ SignalMonitorImpl::SignalMonitorImpl (SourceImplP source, uint ochannel) :
 }
 
 SignalMonitorImpl::~SignalMonitorImpl ()
-{}
-
-int64
-SignalMonitorImpl::get_shm_id ()
 {
-  return 0;
+  source_->cmon_sub_probe (ochannel_, probe_features_); // potentially deletes module
+  probe_features_ = ProbeFeatures();
 }
 
 SourceIfaceP
@@ -26,16 +23,22 @@ SignalMonitorImpl::get_osource ()
   return source_;
 }
 
-int64
-SignalMonitorImpl::get_shm_offset()
-{
-  return 0;
-}
-
 int32
 SignalMonitorImpl::get_ochannel()
 {
   return ochannel_;
+}
+
+int64
+SignalMonitorImpl::get_shm_id ()
+{
+  return 0;
+}
+
+int64
+SignalMonitorImpl::get_shm_offset()
+{
+  return 0;
 }
 
 int64
@@ -52,17 +55,36 @@ SignalMonitorImpl::get_frame_duration ()
 
 void
 SignalMonitorImpl::set_probe_features (const ProbeFeatures &pf)
-{}
+{
+  return_unless (pf != probe_features_);
+  source_->cmon_add_probe (ochannel_, pf);              // potentially creates new module
+  source_->cmon_sub_probe (ochannel_, probe_features_); // potentially deletes module
+  probe_features_ = pf;
+}
 
 ProbeFeatures
 SignalMonitorImpl::get_probe_features ()
 {
-  return ProbeFeatures();
+  return probe_features_;
 }
 
 // == SourceImpl ==
 struct SourceImpl::ChannelMonitor {
+  uint          probe_range = 0;
+  uint          probe_energie = 0;
+  uint          probe_samples = 0;
+  uint          probe_fft = 0;
+  bool          needs_module ()  { return probe_range || probe_energie || probe_samples || probe_fft; }
 };
+
+SourceImpl::ChannelMonitor&
+SourceImpl::cmon_get (uint ochannel)
+{
+  assert_return (ochannel < size_t (n_ochannels()), *(ChannelMonitor*) NULL);
+  if (!cmons_)
+    cmons_ = new ChannelMonitor[n_ochannels()];
+  return cmons_[ochannel];
+}
 
 void
 SourceImpl::cmon_delete ()
@@ -71,6 +93,46 @@ SourceImpl::cmon_delete ()
     {
       delete[] cmons_;
       cmons_ = NULL;
+    }
+}
+
+void
+SourceImpl::cmon_add_probe (uint ochannel, const ProbeFeatures &pf)
+{
+  assert_return (ochannel < size_t (n_ochannels()));
+  ChannelMonitor &cmon = cmon_get (ochannel);
+  const bool needed_module = cmon.needs_module();
+  if (pf.probe_range)
+    cmon.probe_range += 1;
+  if (pf.probe_energie)
+    cmon.probe_energie += 1;
+  if (pf.probe_samples)
+    cmon.probe_samples += 1;
+  if (pf.probe_fft)
+    cmon.probe_fft += 1;
+  if (needed_module != cmon.needs_module())
+    {
+      // add module
+    }
+}
+
+void
+SourceImpl::cmon_sub_probe (uint ochannel, const ProbeFeatures &pf)
+{
+  assert_return (ochannel < size_t (n_ochannels()));
+  ChannelMonitor &cmon = cmon_get (ochannel);
+  const bool needed_module = cmon.needs_module();
+  if (pf.probe_range)
+    cmon.probe_range -= 1;
+  if (pf.probe_energie)
+    cmon.probe_energie -= 1;
+  if (pf.probe_samples)
+    cmon.probe_samples -= 1;
+  if (pf.probe_fft)
+    cmon.probe_fft -= 1;
+  if (needed_module != cmon.needs_module())
+    {
+      // kill module
     }
 }
 

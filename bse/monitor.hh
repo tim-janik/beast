@@ -10,6 +10,7 @@ namespace Bse {
 class SignalMonitorImpl : public virtual SignalMonitorIface {
   SourceImplP            source_;
   uint32                 ochannel_;
+  ProbeFeatures          probe_features_;
 protected:
   virtual               ~SignalMonitorImpl  ();
   friend class           FriendAllocator<SignalMonitorImpl>;
