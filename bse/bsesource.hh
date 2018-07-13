@@ -269,6 +269,7 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   class ChannelMonitor;
   ChannelMonitor      *cmons_ = NULL;
   void                 cmon_activate           ();
+  bool                 cmon_needed             ();
   void                 cmon_deactivate         ();
   void                 cmon_omodule_changed    (BseModule *module, bool added, BseTrans *trans);
   void                 cmon_add_probe          (uint ochannel, const ProbeFeatures &pf);

@@ -74,7 +74,12 @@ struct SourceImpl::ChannelMonitor {
   uint          probe_energie = 0;
   uint          probe_samples = 0;
   uint          probe_fft = 0;
+  BseModule    *module = NULL;
   bool          needs_module ()  { return probe_range || probe_energie || probe_samples || probe_fft; }
+  /*des*/      ~ChannelMonitor()
+  {
+    assert_return (module == NULL);
+  }
 };
 
 SourceImpl::ChannelMonitor&
@@ -157,17 +162,77 @@ SourceImpl::cmon_omodule_changed (BseModule *module, bool added, BseTrans *trans
   bse_trans_add (trans, bse_job_access (module, check_module, NULL, NULL));
 }
 
+bool
+SourceImpl::cmon_needed ()
+{
+  return_unless (cmons_ != NULL, false);
+  BseSource *self = as<BseSource*>();
+  return_unless (BSE_SOURCE_PREPARED (self), false);
+  const uint noc = n_ochannels();
+  for (size_t i = 0; i < noc; i++)
+    if (cmons_[i].needs_module())
+      return true;
+  return false;
+}
+
+struct MonitorData {
+};
+
+static void
+monitor_process (BseModule *module, uint n_values)
+{
+  printerr ("%s: n_values=%d\n", __func__, n_values);
+}
+
 void // called on BseSource.prepare
 SourceImpl::cmon_activate ()
 {
+  return_unless (cmon_needed());
   BseSource *self = as<BseSource*>();
+  BseTrans *trans = bse_trans_open ();
   std::vector<BseModule*> omodules;
   bse_source_list_omodules (self, omodules);
+  const uint noc = n_ochannels();
+  for (size_t i = 0; i < noc; i++)
+    if (cmons_[i].needs_module() && !cmons_[i].module)
+      {
+        static const BseModuleClass monitor_class = {
+          0,                            // n_istreams
+          1,                            // n_jstreams
+          0,                            // n_ostreams
+          monitor_process,              // process
+          NULL,                         // process_defer
+          NULL,                         // reset
+          (BseModuleFreeFunc) g_free,   // free
+          Bse::ModuleFlag::CHEAP,       // mflags
+        };
+        // MonitorData *monitor_data = (MonitorData*) monitorer->module->user_data;
+        MonitorData *monitor_data = g_new0 (MonitorData, 1);
+        cmons_[i].module = bse_module_new (&monitor_class, monitor_data);
+        bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
+        bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
+        for (auto omodule : omodules)
+          bse_trans_add (trans, bse_job_connect (cmons_[i].module, 0, omodule, i));
+      }
+  bse_trans_commit (trans);
 }
 
 void // called on BseSource.reset
 SourceImpl::cmon_deactivate ()
 {
+  return_unless (cmons_ != NULL);
+  BseTrans *trans = NULL;
+  const uint noc = n_ochannels();
+  for (size_t i = 0; i < noc; i++)
+    if (cmons_[i].module)
+      {
+        if (!trans)
+          trans = bse_trans_open ();
+	bse_trans_add (trans, bse_job_discard (cmons_[i].module));
+        cmons_[i].module = NULL;
+      }
+  if (trans)
+    bse_trans_commit (trans);
 }
 
 } // Bse
