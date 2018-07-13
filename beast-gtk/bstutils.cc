@@ -55,44 +55,94 @@ event_loop_quit (uint8 exit_code)
     event_loop_quit_code = exit_code;
 }
 
+struct LambdaHandler {
+  std::function<bool()> lambda;
+  uint id = 0;
+};
+
+static std::vector<LambdaHandler> frame_handlers;
+static size_t frame_handler_cur = 0, frame_handler_max = 0;
+
+static void
+remove_handler (uint handler_id, bool warn_missing)
+{
+  for (size_t i = 0; i < frame_handlers.size(); i++)
+    if (frame_handlers[i].id == handler_id)
+      {
+        frame_handlers.erase (frame_handlers.begin() + i);
+        if (i < frame_handler_cur)
+          frame_handler_cur--;
+        frame_handler_max--;
+        return;
+      }
+  Bse::warning  ("%s: invalid frame handler id: %u", __func__, handler_id);
+}
+
+static int
+call_frame_handlers (void*)
+{
+  frame_handler_max = frame_handlers.size(); // store end mark to ignore new handlers during this run
+  for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++)
+    {
+      const uint current_id = frame_handlers[frame_handler_cur].id;
+      // the next two calls may alter frame_handler_cur and frame_handler_max
+      if (!frame_handlers[frame_handler_cur].lambda())
+        remove_handler (current_id, false);
+    }
+  return true;
+}
+
 void
 remove_handler (uint *handler_id)
 {
   assert_return (handler_id != NULL);
   if (*handler_id)
     {
-      const uint id = *handler_id;
-      *handler_id = 0; // reset *before* callback execution
-      g_source_remove (id); // callback execution
+      remove_handler (*handler_id, true);
+      *handler_id = 0;
     }
 }
 
-uint
-add_frame_handler (const std::function<void()> &func)
+static void
+reinstall_frame_handler()
 {
-  typedef std::function<bool()> Lambda;
-  const Lambda lambda = [func] () {
-    func();
-    return true;
-  };
-  return add_frame_handler (lambda);
+  static uint timeout_id = 0;
+  const bool engine_active = bse_server.engine_active();
+  if (engine_active && !timeout_id)
+    timeout_id = g_timeout_add_full (GTK_PRIORITY_REDRAW, 16, call_frame_handlers, NULL, NULL);
+  else if (!engine_active && timeout_id)
+    {
+      g_source_remove (timeout_id);
+      timeout_id = 0;
+    }
+}
+
+static uint
+initialize_frame_handlers()
+{
+  const uint64 hid = bse_server.on ("enginechange", [] (const Aida::Event&) { reinstall_frame_handler(); });
+  (void) hid; // dismiss, never call off (hid);
+  reinstall_frame_handler();
+  return 0x1234beeb; // first handler id
 }
 
 uint
 add_frame_handler (const std::function<bool()> &func)
 {
-  typedef std::function<bool()> Lambda;
-  Lambda *lambda = new Lambda (func);
-  auto caller = [] (void *data) -> int {
-    Lambda *lambda = (Lambda*) data;
-    return (*lambda) ();
+  static uint frame_handler_id = initialize_frame_handlers();
+  LambdaHandler lh { func, frame_handler_id++ };
+  frame_handlers.push_back (lh); // pushes size() beyond frame_handler_max
+  return lh.id;
+}
+
+uint
+add_frame_handler (const std::function<void()> &func)
+{
+  std::function<bool()> lambda = [func] () {
+    func();
+    return true;
   };
-  auto deleter = [] (void *data) {
-    Lambda *lambda = (Lambda*) data;
-    delete lambda;
-  };
-  const uint id = g_timeout_add_full (GTK_PRIORITY_REDRAW, 16, caller, lambda, deleter);
-  return id;
+  return add_frame_handler (lambda);
 }
 
 } // Bst
