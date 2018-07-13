@@ -275,7 +275,13 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
       bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
       bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
       if (self->source.n_ochannels() >= 1) // TODO: extend to channels 1 & 2
-        self->monitor = self->source.create_signal_monitor (0);
+        {
+          self->monitor = self->source.create_signal_monitor (0);
+          Bse::ProbeFeatures features;
+          features.probe_range = true;
+          features.probe_energie = true;
+          self->monitor.set_probe_features (features);
+        }
       static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
     }
 }
