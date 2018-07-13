@@ -403,7 +403,7 @@ bse_source_prepare (BseSource *source)
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
   Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
-  self->activate_monitor();
+  self->cmon_activate();
   source_notify_properties (source);
   g_object_thaw_notify (source);
   g_object_unref (source);
@@ -424,7 +424,7 @@ bse_source_reset (BseSource *source)
   g_object_ref (source);
   g_object_freeze_notify (source);
   Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
-  self->deactivate_monitor();
+  self->cmon_deactivate();
   uint n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
@@ -942,7 +942,7 @@ bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModul
       const bool seen_module = source_find_omodule (source, omodule);
       context->u.mods.omodule = omodule;
       if (!seen_module)         // notify on first module reference
-        self->omodule_changed (omodule, true, trans);
+        self->cmon_omodule_changed (omodule, true, trans);
     }
 
   // remove module
@@ -955,7 +955,7 @@ bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModul
       if (!seen_module)         // notify on last module reference
         {
           context->u.mods.omodule = omodule; // keep reference around during notification
-          self->omodule_changed (context->u.mods.omodule, false, trans);
+          self->cmon_omodule_changed (context->u.mods.omodule, false, trans);
           context->u.mods.omodule = NULL;
         }
     }
@@ -2094,31 +2094,9 @@ SourceImpl::SourceImpl (BseObject *bobj) :
 {}
 
 SourceImpl::~SourceImpl ()
-{}
-
-static void /* Engine Thread */
-check_module (BseModule *module, void *data)
 {
-  // we only get here if the module's ENGINE_NODE_IS_INTEGRATED
-}
-
-void
-SourceImpl::omodule_changed (BseModule *module, bool added, BseTrans *trans)
-{
-  bse_trans_add (trans, bse_job_access (module, check_module, NULL, NULL));
-}
-
-void
-SourceImpl::activate_monitor ()
-{
-  BseSource *self = as<BseSource*>();
-  std::vector<BseModule*> omodules;
-  bse_source_list_omodules (self, omodules);
-}
-
-void
-SourceImpl::deactivate_monitor ()
-{
+  if (cmons_)
+    cmon_delete();
 }
 
 SourceIfaceP
