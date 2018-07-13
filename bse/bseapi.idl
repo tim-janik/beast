@@ -1222,12 +1222,16 @@ sequence CategorySeq {
 /** Main Bse remote origin object.
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
+ *
+ * ### Events:
+ * - **enginechange** - A notification event for DSP engine changes, the event field *active* contains the activateion state.
  */
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
+  bool          engine_active   ();                     ///< Retrieve DSP engine activateion state, see also: "enginechange" Event.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
   SharedMemory  get_shared_memory  (int64 id);          ///< Retrieve SharedMemory from id.

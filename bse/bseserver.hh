@@ -92,12 +92,14 @@ struct SharedBlock {
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   TestObjectImplP    test_object_;
 protected:
-  virtual                 ~ServerImpl ();
+  virtual            ~ServerImpl            ();
 public:
+  void                enginechange          (bool active);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
   explicit                 ServerImpl       (BseObject*);
   virtual TestObjectIfaceP get_test_object  () override;
+  virtual bool             engine_active    () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   (int64 id) override;
   virtual String        get_mp3_version     () override;

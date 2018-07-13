@@ -571,6 +571,7 @@ bse_server_open_devices (BseServer *self)
       self->pcm_omodule = bse_pcm_omodule_insert (pcm_handle, self->pcm_writer, trans);
       bse_trans_commit (trans);
       self->dev_use_count++;
+      ServerImpl::instance().enginechange (true);
     }
   else
     {
@@ -623,6 +624,7 @@ bse_server_close_devices (BseServer *self)
       self->pcm_device = NULL;
       g_object_unref (self->midi_device);
       self->midi_device = NULL;
+      ServerImpl::instance().enginechange (false);
     }
 }
 
@@ -1002,6 +1004,21 @@ ServerImpl::ServerImpl (BseObject *bobj) :
 
 ServerImpl::~ServerImpl ()
 {}
+
+void
+ServerImpl::enginechange (bool active)
+{
+  Aida::Event ev ("enginechange");
+  ev["active"] = active ? "1" : "0";
+  trigger (ev);                 // emit "enginechange"
+}
+
+bool
+ServerImpl::engine_active ()
+{
+  BseServer *self = as<BseServer*>();
+  return self->dev_use_count;
+}
 
 TestObjectIfaceP
 ServerImpl::get_test_object ()
