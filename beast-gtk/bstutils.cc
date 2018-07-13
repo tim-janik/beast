@@ -55,8 +55,47 @@ event_loop_quit (uint8 exit_code)
     event_loop_quit_code = exit_code;
 }
 
-} // Bst                                                                                                 |
+void
+remove_handler (uint *handler_id)
+{
+  assert_return (handler_id != NULL);
+  if (*handler_id)
+    {
+      const uint id = *handler_id;
+      *handler_id = 0; // reset *before* callback execution
+      g_source_remove (id); // callback execution
+    }
+}
 
+uint
+add_frame_handler (const std::function<void()> &func)
+{
+  typedef std::function<bool()> Lambda;
+  const Lambda lambda = [func] () {
+    func();
+    return true;
+  };
+  return add_frame_handler (lambda);
+}
+
+uint
+add_frame_handler (const std::function<bool()> &func)
+{
+  typedef std::function<bool()> Lambda;
+  Lambda *lambda = new Lambda (func);
+  auto caller = [] (void *data) -> int {
+    Lambda *lambda = (Lambda*) data;
+    return (*lambda) ();
+  };
+  auto deleter = [] (void *data) {
+    Lambda *lambda = (Lambda*) data;
+    delete lambda;
+  };
+  const uint id = g_timeout_add_full (GTK_PRIORITY_REDRAW, 16, caller, lambda, deleter);
+  return id;
+}
+
+} // Bst
 
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;

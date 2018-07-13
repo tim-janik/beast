@@ -10,8 +10,11 @@
 namespace Bst {
 
 // == event loop ==
-int  event_loop_run  ();
-void event_loop_quit (uint8 exit_code = 0);
+int  event_loop_run    ();
+void event_loop_quit   (uint8 exit_code = 0);
+uint add_frame_handler (const std::function<void()> &func);
+uint add_frame_handler (const std::function<bool()> &func);
+void remove_handler    (uint *handler_id);
 
 } // Bst
 
