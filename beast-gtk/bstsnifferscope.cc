@@ -16,6 +16,7 @@ bst_sniffer_scope_init (BstSnifferScope *self)
 {
   new (&self->source) Bse::SourceH();
   new (&self->monitor) Bse::SignalMonitorH();
+  self->mon_handler = 0;
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
@@ -49,6 +50,7 @@ bst_sniffer_scope_finalize (GObject *object)
   g_free (self->rvalues);
   G_OBJECT_CLASS (bst_sniffer_scope_parent_class)->finalize (object);
   using namespace Bse;
+  Bst::remove_handler (&self->mon_handler);
   self->source.~SourceH();
   self->monitor.~SignalMonitorH();
 }
@@ -264,6 +266,7 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
   if (source and !source.has_outputs())
     source = Bse::SourceH();
   return_unless (source != self->source);
+  Bst::remove_handler (&self->mon_handler);
   if (self->monitor)
     self->monitor = Bse::SignalMonitorH();
   self->source = source;
@@ -281,6 +284,10 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           features.probe_range = true;
           features.probe_energie = true;
           self->monitor.set_probe_features (features);
+          auto framecb = [self] () {
+            printerr ("%s: shmid=%u shmoff=0x%04x\n", __func__, self->monitor.get_shm_id(), self->monitor.get_shm_offset());
+          };
+          self->mon_handler = Bst::add_frame_handler (framecb);
         }
       static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
     }
