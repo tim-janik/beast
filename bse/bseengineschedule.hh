@@ -4,20 +4,17 @@
 
 #include <bse/bseengineprivate.hh>
 
-typedef struct
-{
+struct EngineCycle {
   EngineNode *last;	/* resolve node */
   SfiRing    *nodes;	/* of type EngineNode* */
   guint       seen_deferred_node : 1;
-} EngineCycle;
-typedef struct
-{
+};
+struct EngineQuery {
   guint    leaf_level;
   SfiRing *cycles;	/* of type Cycle* */
   SfiRing *cycle_nodes;	/* of type EngineNode* */
-} EngineQuery;
-struct _EngineSchedule
-{
+};
+struct EngineSchedule {
   guint     n_items;
   guint     leaf_levels;
   SfiRing **nodes;	/* EngineNode* */

@@ -14,20 +14,6 @@ enum ProcessCost {
   CHEAP,
   EXPENSIVE
 };
-struct JStream {
-  const float **values;
-  uint          n_connections;
-  /* private: */
-  uint          jcount; /* reserved */
-};
-struct IStream {
-  const float  *values;
-  gboolean      connected;
-};
-struct OStream {
-  float        *values;
-  gboolean      connected;
-};
 
 class Effect;
 
@@ -40,11 +26,10 @@ public:
   virtual void              reset           () = 0;
   virtual void              process         (uint n_values) = 0;
   virtual const ProcessCost cost            ();
-  inline const IStream&     istream         (uint istream_index) const;
-  inline const JStream&     jstream         (uint jstream_index) const;
-  inline const OStream&     ostream         (uint ostream_index) const;
-  void                      ostream_set     (uint ostream_index,
-                                             const float *values);
+  inline const IStream&     istream         (uint istream_index) const  { return intern_module->istreams[istream_index]; }
+  inline const JStream&     jstream         (uint jstream_index) const  { return intern_module->jstreams[jstream_index]; }
+  inline const OStream&     ostream         (uint ostream_index) const  { return intern_module->ostreams[ostream_index]; }
+  void                      ostream_set     (uint ostream_index, const float *values);
   const float*              const_values    (float  value);
   inline const uint         mix_freq        () const;
   inline const uint         block_size      () const;
@@ -176,7 +161,7 @@ SynthesisModule::Trampoline<M,P,SynthesisModule::NeedAutoUpdateTag>::
 auto_update_accessor (BseModule *bmodule,      /* Engine Thread */
                       gpointer   data)
 {
-  M *m = static_cast<M*> (BSE_MODULE_GET_USER_DATA (bmodule));
+  M *m = static_cast<M*> (bmodule->user_data);
   AutoUpdateData *au = static_cast<AutoUpdateData*> (data);
   typename P::IDType prop_id = static_cast<typename P::IDType> (au->prop_id);
   if (0)        // check M::auto_update() member and prototype
@@ -212,24 +197,6 @@ inline guint64
 SynthesisModule::tick_stamp ()
 {
   return bse_module_tick_stamp (engine_module());
-}
-inline const IStream&
-SynthesisModule::istream (uint         istream_index) const
-{
-  void *istreams = BSE_MODULE_GET_ISTREAMSP (intern_module);
-  return reinterpret_cast<IStream*> (istreams)[istream_index];
-}
-inline const JStream&
-SynthesisModule::jstream (uint         jstream_index) const
-{
-  void *jstreams = BSE_MODULE_GET_JSTREAMSP (intern_module);
-  return reinterpret_cast<JStream*> (jstreams)[jstream_index];
-}
-inline const OStream&
-SynthesisModule::ostream (uint         ostream_index) const
-{
-  void *ostreams = BSE_MODULE_GET_OSTREAMSP (intern_module);
-  return reinterpret_cast<OStream*> (ostreams)[ostream_index];
 }
 template<class T, typename P>
 class SynthesisModule::ClosureP1 : public SynthesisModule::Closure {

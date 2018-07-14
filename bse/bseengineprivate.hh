@@ -23,11 +23,7 @@
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 
-/* --- typedefs --- */
-typedef struct _EngineSchedule EngineSchedule;
-
 /* --- transactions --- */
-typedef union  _EngineTimedJob EngineTimedJob;
 typedef enum /*< skip >*/
 {
   ENGINE_JOB_NOP,
@@ -55,8 +51,7 @@ typedef enum /*< skip >*/
   ENGINE_JOB_MESSAGE,
   ENGINE_JOB_LAST
 } EngineJobType;
-struct _BseJob
-{
+struct BseJob {
   EngineJobType       job_id;
   BseJob	     *next;
   union {
@@ -104,15 +99,13 @@ struct _BseJob
     } timed_job;
   };
 };
-struct _BseTrans
-{
+struct BseTrans {
   BseJob   *jobs_head;
   BseJob   *jobs_tail;
   guint	    comitted : 1;
   BseTrans *cqt_next;	/* com-thread-queue */
 };
-union _EngineTimedJob
-{
+union EngineTimedJob {
   struct {
     EngineJobType       type;           /* common */
     EngineTimedJob     *next;           /* common */

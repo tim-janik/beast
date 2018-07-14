@@ -6,12 +6,11 @@
 #include "gslcommon.hh"
 
 // == Typedefs ==
-typedef struct _EngineSchedule EngineSchedule;
-typedef union  _EngineTimedJob EngineTimedJob;
 struct EngineInput;
 struct EngineJInput;
 struct EngineOutput;
-struct BseModule;
+struct EngineSchedule;
+union  EngineTimedJob;
 struct EngineNode {		  // fields sorted by order of processing access
   virtual ~EngineNode() {}
   std::recursive_mutex rec_mutex; // processing lock

@@ -1354,11 +1354,6 @@ bse_engine_init()
 {
   assert_return (bse_engine_initialized == FALSE);
   bse_engine_initialized = TRUE;
-  /* assert correct implmentation of accessor macros defined in bsedefs.hh */
-  assert_return (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
-  assert_return (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
-  assert_return (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
-  assert_return (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
   /* setup threading */
   Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */

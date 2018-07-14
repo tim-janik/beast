@@ -19,7 +19,6 @@
 
 
 /* --- typedefs --- */
-typedef struct _BseJob                   BseJob;
 /* bsedefs.hh:
  * typedef void (*BseEngineAccessFunc)  (BseModule      *module,
  *                                       gpointer        data);
@@ -54,7 +53,7 @@ typedef enum    /*< skip >*/
   BSE_COST_EXPENSIVE    = 1 << 1
 } BseCostType;
 /* class, filled out by user */
-struct _BseModuleClass
+struct BseModuleClass
 {
   guint               n_istreams;
   guint               n_jstreams;
@@ -65,8 +64,10 @@ struct _BseModuleClass
   BseModuleFreeFunc   free;             /* UserThread */
   BseCostType         mflags;
 };
+
+namespace Bse {
 /* module, constructed by engine */
-struct BseModule : EngineNode {
+struct Module : EngineNode {
   const BseModuleClass *klass = NULL;
   gpointer              user_data = NULL;
   BseIStream           *istreams = NULL;	// input streams
@@ -74,24 +75,21 @@ struct BseModule : EngineNode {
   BseOStream           *ostreams = NULL;     	// output streams
 };
 /* streams, constructed by engine */
-struct _BseJStream
-{
-  const gfloat **values;
-  guint          n_connections; /* scheduler update */
+struct JStream {
+  const float **values;
+  uint          n_connections;  // scheduler update
   /*< private >*/
-  guint          jcount;        /* internal field */
+  uint          jcount;         // internal field
 };
-struct _BseIStream
-{
-  const gfloat *values;
-  gboolean      connected;      /* scheduler update */
+struct IStream {
+  const float *values;
+  bool         connected;       // scheduler update
 };
-struct _BseOStream
-{
-  gfloat     *values;
-  gboolean    connected;
+struct OStream {
+  float *values;
+  bool   connected;
 };
-
+} // Bse
 
 /* --- interface (UserThread functions) --- */
 BseModule* bse_module_new               (const BseModuleClass *klass,
@@ -200,14 +198,13 @@ guint64    bse_engine_tick_stamp_from_systime (guint64       systime);
 #define    BSE_CONTROL_CHECK(index)           ((bse_engine_control_mask() & (index)) == 0)
 
 /* --- thread handling --- */
-typedef struct
-{
+struct BseEngineLoop {
   glong         timeout;
   gboolean      fds_changed;
   guint         n_fds;
   GPollFD      *fds;
   gboolean      revents_filled;
-} BseEngineLoop;
+};
 
 gboolean    bse_engine_prepare                (BseEngineLoop       *loop);
 gboolean    bse_engine_check                  (const BseEngineLoop *loop);
