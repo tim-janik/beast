@@ -124,7 +124,7 @@ snooper_process (BseModule *module,
       const float *wave_in = jstream.values[0];
       float min = wave_in[0], max = wave_in[0];
       float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
-      bool seen_nan = FALSE, seen_pinf = FALSE, seen_ninf = FALSE, seen_subn = FALSE;
+      bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
 
       for (uint j = 0; j < jstream.n_connections; j++)
         for (uint i = 0; i < n_values; i++)
@@ -137,7 +137,7 @@ snooper_process (BseModule *module,
               {
                 seen_nan |= BSE_FLOAT_IS_NAN (v);
                 seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
-                seen_ninf |= BSE_FLOAT_IS_INF_POSITIVE (v);
+                seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
               }
             else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
               seen_subn = true;
