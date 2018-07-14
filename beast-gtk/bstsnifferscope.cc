@@ -298,6 +298,9 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           self->monitor.set_probe_features (features);
           Bse::MonitorFields *mfields = monitor_fields_from_shm (self->monitor.get_shm_id(), self->monitor.get_shm_offset());
           auto framecb = [self, mfields] () {
+            static int64 gen = 0;
+            return_unless (gen != mfields->gen);
+            gen = mfields->gen;
             printerr ("%s: shmid=%u shmoff=0x%04x data: %x %f %f %f %f\n",
                       __func__, self->monitor.get_shm_id(), self->monitor.get_shm_offset(),
                       mfields->gen, mfields->min, mfields->max, mfields->energy, mfields->tip);
