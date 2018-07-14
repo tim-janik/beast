@@ -200,11 +200,14 @@ SourceImpl::cmon_needed ()
 }
 
 struct MonitorData {
+  MonitorFields *mfields = NULL;
 };
 
 static void
 monitor_process (BseModule *module, uint n_values)
 {
+  MonitorData *monitor_data = (MonitorData*) module->user_data;
+  MonitorFields *mfields = monitor_data->mfields;
   const BseJStream &jstream = BSE_MODULE_JSTREAM (module, 0);
   if (jstream.n_connections)
     {
@@ -229,15 +232,21 @@ monitor_process (BseModule *module, uint n_values)
               seen_subn = true;
           }
       avg /= double (n_values) * jstream.n_connections;
-      Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-                     max, min, avg,
-                     jstream.n_connections, n_values,
-                     first, last,
-                     BSE_FREQ_FROM_VALUE (avg),
-                     seen_nan ? " +NAN" : "",
-                     seen_pinf ? " +PINF" : "",
-                     seen_ninf ? " +NINF" : "",
-                     seen_subn ? " +SUBNORM" : "");
+      mfields->min = min;
+      mfields->max = max;
+      mfields->energy = avg; // FIXME: calc energy properly
+      mfields->tip = MAX (mfields->tip * 0.98, avg);
+      __sync_fetch_and_add (&mfields->gen, 1);
+      if (0)
+        Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                       max, min, avg,
+                       jstream.n_connections, n_values,
+                       first, last,
+                       BSE_FREQ_FROM_VALUE (avg),
+                       seen_nan ? " +NAN" : "",
+                       seen_pinf ? " +PINF" : "",
+                       seen_ninf ? " +NINF" : "",
+                       seen_subn ? " +SUBNORM" : "");
     }
 }
 
@@ -263,8 +272,8 @@ SourceImpl::cmon_activate ()
           (BseModuleFreeFunc) g_free,   // free
           Bse::ModuleFlag::CHEAP,       // mflags
         };
-        // MonitorData *monitor_data = (MonitorData*) monitorer->module->user_data;
         MonitorData *monitor_data = g_new0 (MonitorData, 1);
+        monitor_data->mfields = cmon_get_fields (i);
         cmons_[i].module = bse_module_new (&monitor_class, monitor_data);
         bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
         bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
