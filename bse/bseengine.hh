@@ -66,14 +66,6 @@ struct BseModuleClass
 };
 
 namespace Bse {
-/* module, constructed by engine */
-struct Module : EngineNode {
-  const BseModuleClass *klass = NULL;
-  gpointer              user_data = NULL;
-  BseIStream           *istreams = NULL;	// input streams
-  BseJStream           *jstreams = NULL;     	// joint (multiconnect) input streams
-  BseOStream           *ostreams = NULL;     	// output streams
-};
 /* streams, constructed by engine */
 struct JStream {
   const float **values;

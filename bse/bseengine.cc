@@ -49,14 +49,14 @@ bse_module_new (const BseModuleClass *klass,
   /* setup BseModule */
   module->klass = klass;
   module->user_data = user_data;
-  module->istreams = klass->n_istreams ? sfi_new_struct0 (BseIStream, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
-  module->jstreams = klass->n_jstreams ? sfi_new_struct0 (BseJStream, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
+  module->istreams = klass->n_istreams ? sfi_new_struct0 (Bse::IStream, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
+  module->jstreams = klass->n_jstreams ? sfi_new_struct0 (Bse::JStream, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
   module->ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (module));
 
   /* setup EngineNode */
-  module->inputs = ENGINE_NODE_N_ISTREAMS (module) ? sfi_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
-  module->jinputs = ENGINE_NODE_N_JSTREAMS (module) ? sfi_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
-  module->outputs = ENGINE_NODE_N_OSTREAMS (module) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (module)) : NULL;
+  module->inputs = ENGINE_NODE_N_ISTREAMS (module) ? sfi_new_struct0 (Bse::EngineInput, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
+  module->jinputs = ENGINE_NODE_N_JSTREAMS (module) ? sfi_new_struct0 (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
+  module->outputs = ENGINE_NODE_N_OSTREAMS (module) ? sfi_new_struct0 (Bse::EngineOutput, ENGINE_NODE_N_OSTREAMS (module)) : NULL;
   module->output_nodes = NULL;
   module->integrated = FALSE;
   for (size_t i = 0; i < ENGINE_NODE_N_OSTREAMS (module); i++)
@@ -125,8 +125,7 @@ gboolean
 bse_module_is_scheduled (BseModule *module)
 {
   assert_return (module != NULL, FALSE);
-  EngineNode *node = ENGINE_NODE (module);
-  return ENGINE_NODE_IS_INTEGRATED (node) && ENGINE_NODE_IS_SCHEDULED (node);
+  return ENGINE_NODE_IS_INTEGRATED (module) && ENGINE_NODE_IS_SCHEDULED (module);
 }
 
 /**
@@ -143,7 +142,7 @@ bse_job_integrate (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = sfi_new_struct0 (Bse::Job, 1);
   job->job_id = ENGINE_JOB_INTEGRATE;
   job->data.node = ENGINE_NODE (module);
   job->data.free_with_job = TRUE;
@@ -514,20 +513,19 @@ bse_job_probe_request (BseModule         *module,
                        gpointer           data)
 {
   assert_return (module != NULL, NULL);
-  EngineNode *node = ENGINE_NODE (module);
   assert_return (probe_func != NULL, NULL);
 
-  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->probe));
+  Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->probe));
   tjob->type = ENGINE_JOB_PROBE_JOB;
   tjob->tick_stamp = 0;
   tjob->probe.data = data;
   tjob->probe.probe_func = probe_func;
-  tjob->probe.n_ostreams = ENGINE_NODE_N_OSTREAMS (node);
-  tjob->probe.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
+  tjob->probe.n_ostreams = ENGINE_NODE_N_OSTREAMS (module);
+  tjob->probe.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (module));
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
-  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.node = module;
   job->timed_job.tjob = tjob;
 
   return job;
@@ -563,7 +561,7 @@ bse_job_flow_access (BseModule    *module,
   assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   assert_return (access_func != NULL, NULL);
-  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
+  Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_FLOW_JOB;
   tjob->tick_stamp = tick_stamp;
   tjob->access.free_func = free_func;
@@ -604,7 +602,7 @@ bse_job_boundary_access (BseModule    *module,
   assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   assert_return (access_func != NULL, NULL);
-  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
+  Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = tick_stamp;
   tjob->access.free_func = free_func;
@@ -642,7 +640,7 @@ bse_job_boundary_discard (BseModule *module)
 {
   assert_return (module != NULL, NULL);
 
-  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
+  Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = 0;
   tjob->access.free_func = NULL;
@@ -1283,7 +1281,7 @@ bse_engine_configure (guint            latency_ms,
 {
   static std::condition_variable sync_cond;
   static std::mutex sync_mutex;
-  static gboolean sync_lock = FALSE;
+  static bool sync_lock = false;
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
   BseJob *job;
@@ -1308,7 +1306,7 @@ bse_engine_configure (guint            latency_ms,
     job->sync.lock_mutex = &sync_mutex;
     job->sync.lock_cond = &sync_cond;
     job->sync.lock_p = &sync_lock;
-    sync_lock = FALSE;
+    sync_lock = false;
     trans = bse_trans_open();
     bse_trans_add (trans, job);
     bse_trans_commit (trans);
@@ -1332,7 +1330,7 @@ bse_engine_configure (guint            latency_ms,
 
   /* unblock master */
   sync_mutex.lock();
-  sync_lock = FALSE;
+  sync_lock = false;
   sync_cond.notify_one();
   sync_mutex.unlock();
   /* ensure SYNC job got collected */

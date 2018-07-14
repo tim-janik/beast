@@ -5,19 +5,19 @@
 #include <bse/bseengineprivate.hh>
 
 struct EngineCycle {
-  EngineNode *last;	/* resolve node */
-  SfiRing    *nodes;	/* of type EngineNode* */
+  Bse::Module *last;	/* resolve node */
+  SfiRing    *nodes;	/* of type Bse::Module* */
   guint       seen_deferred_node : 1;
 };
 struct EngineQuery {
   guint    leaf_level;
   SfiRing *cycles;	/* of type Cycle* */
-  SfiRing *cycle_nodes;	/* of type EngineNode* */
+  SfiRing *cycle_nodes;	/* of type Bse::Module* */
 };
 struct EngineSchedule {
   guint     n_items;
   guint     leaf_levels;
-  SfiRing **nodes;	/* EngineNode* */
+  SfiRing **nodes;	/* Bse::Module* */
   SfiRing **cycles;	/* SfiRing* */
   guint	    secured : 1;
   guint	    in_pqueue : 1;
@@ -34,9 +34,9 @@ EngineSchedule*	_engine_schedule_new		(void);
 void		_engine_schedule_clear		(EngineSchedule	*schedule);
 void		_engine_schedule_destroy	(EngineSchedule	*schedule);
 void		_engine_schedule_consumer_node	(EngineSchedule	*schedule,
-						 EngineNode	*node);
+						 Bse::Module	*node);
 void		_engine_schedule_secure		(EngineSchedule	*schedule);
-EngineNode*	_engine_schedule_pop_node	(EngineSchedule	*schedule);
+Bse::Module*	_engine_schedule_pop_node	(EngineSchedule	*schedule);
 SfiRing*	_engine_schedule_pop_cycle	(EngineSchedule	*schedule);
 void		_engine_schedule_restart	(EngineSchedule	*schedule);
 void		_engine_schedule_unsecure	(EngineSchedule	*schedule);

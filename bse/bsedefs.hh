@@ -84,19 +84,21 @@ struct BseWave;
 struct BseWaveRepo;
 struct BseWaveRepoClass;
 // == Bse Engine Module Types ==
-struct BseJob;
-struct BseTrans;
 struct BseModuleClass;
 namespace Bse {
 struct Module;
 struct IStream;
 struct JStream;
 struct OStream;
+struct Job;
+struct Trans;
 } // Bse
 typedef Bse::Module  BseModule;
 typedef Bse::JStream BseJStream;
 typedef Bse::IStream BseIStream;
 typedef Bse::OStream BseOStream;
+typedef Bse::Job     BseJob;
+typedef Bse::Trans   BseTrans;
 /* --- Bse Loader --- */
 struct BseLoader;
 typedef struct _BseWaveDsc              BseWaveDsc;
