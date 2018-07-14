@@ -1549,6 +1549,7 @@ allocate_shared_block (int64 length)
         m.shm_id = shared_areas[i].shm_id;
         m.mem_start = ab.start;
         m.mem_length = ab.length;
+        m.mem_offset = ((char*) m.mem_start) - shared_areas[i].area.start;
         return m;
       }
     else
@@ -1563,6 +1564,7 @@ allocate_shared_block (int64 length)
   m.shm_id = shared_areas.back().shm_id;
   m.mem_start = ab.start;
   m.mem_length = ab.length;
+  m.mem_offset = ((char*) m.mem_start) - shared_areas.back().area.start;
   return m;
 }
 
@@ -1581,6 +1583,7 @@ release_shared_block (const SharedBlock &m)
         SAreaBlock ab;
         ab.start = (char*) m.mem_start;
         ab.length = m.mem_length;
+        assert_return (shared_areas[i].area.start + m.mem_offset == m.mem_start);
         shared_areas[i].release (ab);
         return;
       }
