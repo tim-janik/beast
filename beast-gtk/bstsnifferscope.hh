@@ -16,7 +16,7 @@
 typedef struct {
   GtkWidget    parent_instance;
   Bse::SourceH source;
-  Bse::SignalMonitorH monitor;
+  Bse::SignalMonitorH lmonitor, rmonitor;
   uint                mon_handler;
   size_t       probes_handler;
   guint        n_values;

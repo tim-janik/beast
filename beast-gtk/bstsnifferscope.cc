@@ -15,7 +15,8 @@ static void
 bst_sniffer_scope_init (BstSnifferScope *self)
 {
   new (&self->source) Bse::SourceH();
-  new (&self->monitor) Bse::SignalMonitorH();
+  new (&self->lmonitor) Bse::SignalMonitorH();
+  new (&self->rmonitor) Bse::SignalMonitorH();
   self->mon_handler = 0;
   GtkWidget *widget = GTK_WIDGET (self);
 
@@ -52,7 +53,8 @@ bst_sniffer_scope_finalize (GObject *object)
   using namespace Bse;
   Bst::remove_handler (&self->mon_handler);
   self->source.~SourceH();
-  self->monitor.~SignalMonitorH();
+  self->lmonitor.~SignalMonitorH();
+  self->rmonitor.~SignalMonitorH();
 }
 
 static void
@@ -216,30 +218,19 @@ sniffer_scope_shift (BstSnifferScope *self)
 }
 
 static void
-scope_probes_notify (BstSnifferScope *self, const Bse::ProbeSeq &pseq)
+scope_draw_range (BstSnifferScope *self, float lmin, float lmax, float rmin, float rmax)
 {
   if (GTK_WIDGET_DRAWABLE (self))
     {
-      const Bse::Probe *lprobe = NULL, *rprobe = NULL;
-      for (size_t i = 0; i < pseq.size() && (!lprobe || !rprobe); i++)
-        if (pseq[i].channel == 0)
-          lprobe = &pseq[i];
-        else if (pseq[i].channel == 1)
-          rprobe = &pseq[i];
-      if (lprobe && lprobe->probe_features.probe_range && rprobe && rprobe->probe_features.probe_range)
-        {
-          sniffer_scope_shift (self);
-          self->lvalues[0] = MAX (ABS (lprobe->min), ABS (lprobe->max));
-          self->rvalues[0] = MAX (ABS (rprobe->min), ABS (rprobe->max));
-          gint x, width;
-          sniffer_scope_lregion (self, &x, &width);
-          sniffer_scope_draw_bar (self, x + width - 1, self->lvalues[0]);
-          sniffer_scope_rregion (self, &x, &width);
-          sniffer_scope_draw_bar (self, x, self->rvalues[0]);
-        }
+      sniffer_scope_shift (self);
+      self->lvalues[0] = MAX (ABS (lmin), ABS (lmax));
+      self->rvalues[0] = MAX (ABS (rmin), ABS (rmax));
+      int x, width;
+      sniffer_scope_lregion (self, &x, &width);
+      sniffer_scope_draw_bar (self, x + width - 1, self->lvalues[0]);
+      sniffer_scope_rregion (self, &x, &width);
+      sniffer_scope_draw_bar (self, x, self->rvalues[0]);
     }
-  bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
-  bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
 }
 
 static void
@@ -279,31 +270,30 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
     source = Bse::SourceH();
   return_unless (source != self->source);
   Bst::remove_handler (&self->mon_handler);
-  if (self->monitor)
-    self->monitor = Bse::SignalMonitorH();
+  self->lmonitor = Bse::SignalMonitorH();
+  self->rmonitor = Bse::SignalMonitorH();
   self->source = source;
   if (self->source)
     {
-      // FIXME: self->probes_handler = self->source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
-      //return scope_probes_notify (self, pseq);
-      //};
       bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
       bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
-      if (self->source.n_ochannels() >= 1) // TODO: extend to channels 1 & 2
+      if (self->source.n_ochannels() >= 2)
         {
-          self->monitor = self->source.create_signal_monitor (0);
+          self->lmonitor = self->source.create_signal_monitor (0);
+          self->rmonitor = self->source.create_signal_monitor (1);
           Bse::ProbeFeatures features;
           features.probe_range = true;
-          features.probe_energie = true;
-          self->monitor.set_probe_features (features);
-          Bse::MonitorFields *mfields = monitor_fields_from_shm (self->monitor.get_shm_id(), self->monitor.get_shm_offset());
-          auto framecb = [self, mfields] () {
-            static int64 gen = 0;
-            return_unless (gen != mfields->gen);
-            gen = mfields->gen;
-            printerr ("%s: shmid=%u shmoff=0x%04x data: %x %f %f %f %f\n",
-                      __func__, self->monitor.get_shm_id(), self->monitor.get_shm_offset(),
-                      mfields->gen, mfields->min, mfields->max, mfields->energy, mfields->tip);
+          self->lmonitor.set_probe_features (features);
+          self->rmonitor.set_probe_features (features);
+          Bse::MonitorFields *lfields = monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
+          Bse::MonitorFields *rfields = monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
+          auto framecb = [self, lfields, rfields] () {
+            scope_draw_range (self, lfields->min, lfields->max, rfields->min, rfields->max);
+            if (0)
+              printerr ("SnifferScope: (%x.%x/%x %x.%x/%x) %f,%f %f,%f\n",
+                        self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(), lfields->gen,
+                        self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(), rfields->gen,
+                        lfields->min, lfields->max, rfields->min, rfields->max);
           };
           self->mon_handler = Bst::add_frame_handler (framecb);
         }
