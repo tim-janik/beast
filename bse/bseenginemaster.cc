@@ -113,7 +113,7 @@ propagate_update_suspend (EngineNode *node)
 	if (node->inputs[i].src_node)
 	  propagate_update_suspend (node->inputs[i].src_node);
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-	for (i = 0; i < node->module.jstreams[j].jcount; i++)
+	for (i = 0; i < node->module().jstreams[j].jcount; i++)
 	  propagate_update_suspend (node->jinputs[j][i].src_node);
     }
 }
@@ -131,10 +131,10 @@ master_idisconnect_node (EngineNode *node,
 
   node->inputs[istream].src_node = NULL;
   node->inputs[istream].src_stream = ~0;
-  node->module.istreams[istream].connected = 0;	/* scheduler update */
+  node->module().istreams[istream].connected = 0;	/* scheduler update */
   was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
-  src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
+  src_node->module().ostreams[ostream].connected = 0; /* scheduler update */
   src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
@@ -155,15 +155,15 @@ master_jdisconnect_node (EngineNode *node,
   gboolean was_consumer;
 
   assert_return (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
-                 node->module.jstreams[jstream].jcount > 0 &&
+                 node->module().jstreams[jstream].jcount > 0 &&
                  src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
-  i = --node->module.jstreams[jstream].jcount;
+  i = --node->module().jstreams[jstream].jcount;
   node->jinputs[jstream][con] = node->jinputs[jstream][i];
-  node->module.jstreams[jstream].values[i] = NULL; /* float**values 0-termination */
+  node->module().jstreams[jstream].values[i] = NULL; /* float**values 0-termination */
   was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
-  src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
+  src_node->module().ostreams[ostream].connected = 0; /* scheduler update */
   src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
@@ -181,7 +181,7 @@ master_disconnect_node_outputs (EngineNode *src_node, EngineNode *dest_node)
     if (dest_node->inputs[i].src_node == src_node)
       master_idisconnect_node (dest_node, i);
   for (uint j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
-    for (uint i = 0; i < dest_node->module.jstreams[j].jcount; i++)
+    for (uint i = 0; i < dest_node->module().jstreams[j].jcount; i++)
       if (dest_node->jinputs[j][i].src_node == src_node)
 	master_jdisconnect_node (dest_node, j, i--);
 }
@@ -327,8 +327,8 @@ master_process_job (BseJob *job)
 	if (node->inputs[istream].src_node)
 	  master_idisconnect_node (node, istream);
       for (jstream = 0; jstream < ENGINE_NODE_N_JSTREAMS (node); jstream++)
-	while (node->module.jstreams[jstream].jcount)
-	  master_jdisconnect_node (node, jstream, node->module.jstreams[jstream].jcount - 1);
+	while (node->module().jstreams[jstream].jcount)
+	  master_jdisconnect_node (node, jstream, node->module().jstreams[jstream].jcount - 1);
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_KILL_OUTPUTS:
@@ -341,7 +341,7 @@ master_process_job (BseJob *job)
       break;
     case ENGINE_JOB_DISCARD:
       node = job->data.node;
-      JOB_DEBUG ("discard(%p, %p)", node, node->module.klass);
+      JOB_DEBUG ("discard(%p, %p)", node, node->module().klass);
       assert_return (node->integrated == TRUE);
       job->data.free_with_job = TRUE;  /* ownership passed on to cause destruction in UserThread */
       /* discard schedule so node may be freed */
@@ -352,8 +352,8 @@ master_process_job (BseJob *job)
 	if (node->inputs[istream].src_node)
 	  master_idisconnect_node (node, istream);
       for (jstream = 0; jstream < ENGINE_NODE_N_JSTREAMS (node); jstream++)
-	while (node->module.jstreams[jstream].jcount)
-	  master_jdisconnect_node (node, jstream, node->module.jstreams[jstream].jcount - 1);
+	while (node->module().jstreams[jstream].jcount)
+	  master_jdisconnect_node (node, jstream, node->module().jstreams[jstream].jcount - 1);
       /* kill outputs */
       while (node->output_nodes)
 	master_disconnect_node_outputs (node, (EngineNode*) node->output_nodes->data);
@@ -441,11 +441,11 @@ master_process_job (BseJob *job)
       assert_return (node->inputs[istream].src_node == NULL);
       node->inputs[istream].src_node = src_node;
       node->inputs[istream].src_stream = ostream;
-      node->module.istreams[istream].connected = 0;	/* scheduler update */
+      node->module().istreams[istream].connected = 0;	/* scheduler update */
       /* remove from consumer list */
       was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
-      src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
+      src_node->module().ostreams[ostream].connected = 0; /* scheduler update */
       src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
@@ -463,16 +463,16 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("jconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
       assert_return (node->integrated == TRUE);
       assert_return (src_node->integrated == TRUE);
-      con = node->module.jstreams[jstream].jcount++;
-      node->jinputs[jstream] = g_renew (EngineJInput, node->jinputs[jstream], node->module.jstreams[jstream].jcount);
-      node->module.jstreams[jstream].values = g_renew (const gfloat*, node->module.jstreams[jstream].values, node->module.jstreams[jstream].jcount + 1);
-      node->module.jstreams[jstream].values[node->module.jstreams[jstream].jcount] = NULL; /* float**values 0-termination */
+      con = node->module().jstreams[jstream].jcount++;
+      node->jinputs[jstream] = g_renew (EngineJInput, node->jinputs[jstream], node->module().jstreams[jstream].jcount);
+      node->module().jstreams[jstream].values = g_renew (const gfloat*, node->module().jstreams[jstream].values, node->module().jstreams[jstream].jcount + 1);
+      node->module().jstreams[jstream].values[node->module().jstreams[jstream].jcount] = NULL; /* float**values 0-termination */
       node->jinputs[jstream][con].src_node = src_node;
       node->jinputs[jstream][con].src_stream = ostream;
       /* remove from consumer list */
       was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
-      src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
+      src_node->module().ostreams[ostream].connected = 0; /* scheduler update */
       src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
@@ -497,12 +497,12 @@ master_process_job (BseJob *job)
       ostream = job->connection.src_ostream;
       JOB_DEBUG ("jdisconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
       assert_return (node->integrated == TRUE);
-      assert_return (node->module.jstreams[jstream].jcount > 0);
-      for (con = 0; con < node->module.jstreams[jstream].jcount; con++)
+      assert_return (node->module().jstreams[jstream].jcount > 0);
+      for (con = 0; con < node->module().jstreams[jstream].jcount; con++)
 	if (node->jinputs[jstream][con].src_node == src_node &&
 	    node->jinputs[jstream][con].src_stream == ostream)
 	  break;
-      if (con < node->module.jstreams[jstream].jcount)
+      if (con < node->module().jstreams[jstream].jcount)
 	{
 	  master_jdisconnect_node (node, jstream, con);
 	  master_need_reflow |= TRUE;
@@ -522,7 +522,7 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
       assert_return (node->integrated == TRUE);
       node->counter = Bse::TickStamp::current();
-      job->access.access_func (&node->module, job->access.data);
+      job->access.access_func (&node->module(), job->access.data);
       break;
     case ENGINE_JOB_PROBE_JOB:
       node = job->timed_job.node;
@@ -717,17 +717,17 @@ master_take_probes (EngineNode   *node,
       uint i;
       assert_return (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
       /* swap output buffers with probe buffers */
-      BseOStream *ostreams = node->module.ostreams;
-      node->module.ostreams = tjob->probe.ostreams;
+      BseOStream *ostreams = node->module().ostreams;
+      node->module().ostreams = tjob->probe.ostreams;
       tjob->probe.ostreams = ostreams;
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         {
           /* restore real ostream buffer pointers */
           ostreams[i].values = node->outputs[i].buffer;
           /* store real ostream buffer pointers */
-          node->outputs[i].buffer = node->module.ostreams[i].values;
+          node->outputs[i].buffer = node->module().ostreams[i].values;
           /* preserve connection flags */
-          node->module.ostreams[i].connected = ostreams[i].connected;
+          node->module().ostreams[i].connected = ostreams[i].connected;
         }
     }
   else if (ptype == PROBE_VIRTUAL)
@@ -737,7 +737,7 @@ master_take_probes (EngineNode   *node,
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         {
           EngineInput *input = node->inputs + i;
-          if (input->real_node && input->real_node->module.ostreams[input->real_stream].connected)
+          if (input->real_node && input->real_node->module().ostreams[input->real_stream].connected)
             {
               tjob->probe.ostreams[i].connected = true;
               bse_block_copy_float (n_values, tjob->probe.ostreams[i].values, input->real_node->outputs[input->real_stream].buffer);
@@ -764,8 +764,8 @@ master_update_node_state (EngineNode *node,
   if (UNLIKELY (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
     {
       /* for suspended nodes, reset() occours later */
-      if (node->module.klass->reset)
-        node->module.klass->reset (&node->module);
+      if (node->module().klass->reset)
+        node->module().klass->reset (&node->module());
       node->needs_reset = FALSE;
     }
   tjob = node_pop_flow_job (node, max_tick);
@@ -774,7 +774,7 @@ master_update_node_state (EngineNode *node,
       {
         TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
                     node, node->sched_tag, (long long unsigned int) tjob->tick_stamp, (long long unsigned int) node->counter);
-        tjob->access.access_func (&node->module, tjob->access.data);
+        tjob->access.access_func (&node->module(), tjob->access.data);
         tjob = node_pop_flow_job (node, max_tick);
       }
     while (tjob);
@@ -812,29 +812,29 @@ master_process_locked_node (EngineNode *node,
 	      ENGINE_NODE_LOCK (inode);
 	      if (inode->counter < final_counter)
 		master_process_locked_node (inode, final_counter - node->counter);
-	      node->module.istreams[i].values = inode->outputs[node->inputs[i].real_stream].buffer;
-	      node->module.istreams[i].values += diff;
+	      node->module().istreams[i].values = inode->outputs[node->inputs[i].real_stream].buffer;
+	      node->module().istreams[i].values += diff;
 	      ENGINE_NODE_UNLOCK (inode);
 	    }
 	  else
-	    node->module.istreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+	    node->module().istreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
 	}
       /* ensure all jstream inputs have n_values available */
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-	for (i = 0; i < node->module.jstreams[j].n_connections; i++) /* assumes scheduled node */
+	for (i = 0; i < node->module().jstreams[j].n_connections; i++) /* assumes scheduled node */
 	  {
 	    EngineNode *inode = node->jinputs[j][i].real_node;
 
 	    ENGINE_NODE_LOCK (inode);
 	    if (inode->counter < final_counter)
 	      master_process_locked_node (inode, final_counter - node->counter);
-	    node->module.jstreams[j].values[i] = inode->outputs[node->jinputs[j][i].real_stream].buffer;
-	    node->module.jstreams[j].values[i] += diff;
+	    node->module().jstreams[j].values[i] = inode->outputs[node->jinputs[j][i].real_stream].buffer;
+	    node->module().jstreams[j].values[i] += diff;
 	    ENGINE_NODE_UNLOCK (inode);
 	  }
       /* update obuffer pointer (FIXME: need this before flow job callbacks?) */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-        node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+        node->module().ostreams[i].values = node->outputs[i].buffer + diff;
       if (diff && needs_probe_reset)
         for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
           bse_block_fill_float (diff, node->outputs[i].buffer, 0.0);
@@ -844,19 +844,19 @@ master_process_locked_node (EngineNode *node,
 	{
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-	    if (node->module.ostreams[i].connected)
-	      node->module.ostreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+	    if (node->module().ostreams[i].connected)
+	      node->module().ostreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
           node->needs_reset = TRUE;
 	}
       else
-        node->module.klass->process (&node->module, new_counter - node->counter);
+        node->module().klass->process (&node->module(), new_counter - node->counter);
       /* catch obuffer pointer changes */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	{
 	  /* FIXME: this takes the worst possible performance hit to support obuffer pointer virtualization */
-	  if (node->module.ostreams[i].connected &&
-              node->module.ostreams[i].values != node->outputs[i].buffer + diff)
-            bse_block_copy_float (new_counter - node->counter, node->outputs[i].buffer + diff, node->module.ostreams[i].values);
+	  if (node->module().ostreams[i].connected &&
+              node->module().ostreams[i].values != node->outputs[i].buffer + diff)
+            bse_block_copy_float (new_counter - node->counter, node->outputs[i].buffer + diff, node->module().ostreams[i].values);
 	}
       /* update node counter */
       node->counter = new_counter;
@@ -1016,11 +1016,11 @@ master_process_flow (void)
 	      if (profile->profile_maxtime > uint64 (bse_profile_modules))
 		Bse::printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->module.klass->process);
+                               profile->profile_node->module().klass->process);
 	      else
 		Bse::printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->module.klass->process);
+                               profile->profile_node->module().klass->process);
 	    }
 	}
 
@@ -1161,7 +1161,7 @@ _engine_master_dispatch_jobs (void)
               {
                 TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",
                             node, node->sched_tag, (long long int) tjob->tick_stamp, (long long int) node->counter);
-                tjob->access.access_func (&node->module, tjob->access.data);
+                tjob->access.access_func (&node->module(), tjob->access.data);
                 tjob = node_pop_boundary_job (node, last_block_tick, current);
               }
           }

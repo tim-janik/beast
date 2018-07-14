@@ -5,26 +5,25 @@
 #include "bseengine.hh"
 #include "gslcommon.hh"
 
-#define	ENGINE_NODE(module)		((EngineNode*) (module))
-#define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
-#define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
-#define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
+#define	ENGINE_NODE(module)		(module)
+#define ENGINE_NODE_N_OSTREAMS(node)	((node)->module().klass->n_ostreams)
+#define ENGINE_NODE_N_ISTREAMS(node)	((node)->module().klass->n_istreams)
+#define ENGINE_NODE_N_JSTREAMS(node)	((node)->module().klass->n_jstreams)
 #define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
 #define	ENGINE_NODE_IS_INTEGRATED(node)	((node)->integrated)
 #define	ENGINE_NODE_IS_VIRTUAL(node)	((node)->virtual_node)
 #define	ENGINE_NODE_IS_SUSPENDED(nod,s) ((s) < (nod)->next_active)
-#define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
-#define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
-#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & BSE_COST_CHEAP) != 0)
-#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & BSE_COST_EXPENSIVE) != 0)
+#define	ENGINE_NODE_IS_DEFERRED(node)	(false)
+#define	ENGINE_NODE_IS_SCHEDULED(node)	(node->sched_tag)
+#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module().klass->mflags & BSE_COST_CHEAP) != 0)
+#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module().klass->mflags & BSE_COST_EXPENSIVE) != 0)
 #define	ENGINE_NODE_LOCK(node)		(node)->rec_mutex.lock()
 #define	ENGINE_NODE_UNLOCK(node)	(node)->rec_mutex.unlock()
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 
 /* --- typedefs --- */
-typedef struct _EngineNode     EngineNode;
 typedef struct _EngineSchedule EngineSchedule;
 
 /* --- transactions --- */
@@ -140,64 +139,23 @@ union _EngineTimedJob
 
 
 /* --- module nodes --- */
-typedef struct
-{
+struct EngineInput {
   EngineNode *src_node;
   guint	      src_stream;	/* ostream of src_node */
   /* valid if istream[].connected, setup by scheduler */
   EngineNode *real_node;	/* set to NULL if !connected */
   guint	      real_stream;	/* ostream of real_node */
-} EngineInput;
-typedef struct
-{
+};
+struct EngineJInput {
   EngineNode *src_node;
   guint	      src_stream;	/* ostream of src_node */
   /* valid if < jstream[].n_connections, setup by scheduler */
   EngineNode *real_node;
   guint       real_stream;	/* ostream of real_node */
-} EngineJInput;
-typedef struct
-{
+};
+struct EngineOutput {
   gfloat *buffer;
   guint	  n_outputs;
-} EngineOutput;
-struct _EngineNode		  // fields sorted by order of processing access
-{
-  BseModule	 module;
-  std::recursive_mutex rec_mutex; // processing lock
-  guint64	 counter = 0;     // <= Bse::TickStamp::current() */
-  EngineInput	*inputs = NULL;	  // [ENGINE_NODE_N_ISTREAMS()] */
-  EngineJInput **jinputs = NULL;  // [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
-  EngineOutput	*outputs = NULL;  // [ENGINE_NODE_N_OSTREAMS()] */
-  // timed jobs
-  EngineTimedJob *flow_jobs = NULL;			// active jobs */
-  EngineTimedJob *probe_jobs = NULL;		        // probe requests */
-  EngineTimedJob *boundary_jobs = NULL;		        // active jobs */
-  EngineTimedJob *tjob_head = NULL, *tjob_tail = NULL;	// trash list */
-  // suspend/activation time
-  guint64        next_active = 0;                       // result of suspend state updates
-  // master-node-list
-  EngineNode	*mnl_next = NULL;
-  EngineNode	*mnl_prev = NULL;
-  guint		 integrated : 1;
-  guint		 virtual_node : 1;
-  guint		 is_consumer : 1;
-  // suspension
-  guint		 update_suspend : 1;    	// whether suspend state needs updating
-  guint		 in_suspend_call : 1;   	// recursion barrier during suspend state updates
-  guint		 needs_reset : 1;	        // flagged at resumption
-  // scheduler
-  guint		 cleared_ostreams : 1;	        // whether ostream[].connected was cleared already
-  guint		 sched_tag : 1;	        	// whether this node is contained in the schedule
-  guint		 sched_recurse_tag : 1; 	// recursion flag used during scheduling
-  guint		 sched_leaf_level = 0;
-  guint64        local_active = 0;              // local suspend state stamp
-  EngineNode	*toplevel_next = NULL;	        // master-consumer-list, FIXME: overkill, using a SfiRing is good enough
-  SfiRing	*output_nodes = NULL;	        // EngineNode* ring of nodes in ->outputs[]
-  _EngineNode() :
-    integrated (0), virtual_node (0), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
-    cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0)
-  {}
 };
 
 #endif // __BSE_ENGINE_PRIVATE_H__

@@ -2,7 +2,7 @@
 #ifndef __BSE_ENGINE_H__
 #define __BSE_ENGINE_H__
 
-#include <bse/bsedefs.hh>
+#include <bse/bseenginenode.hh>
 
 /* --- constants --- */
 #define BSE_STREAM_MAX_VALUES                   (1024 /* power of 2 and <= 16384 */)
@@ -66,8 +66,7 @@ struct _BseModuleClass
   BseCostType         mflags;
 };
 /* module, constructed by engine */
-struct _BseModule
-{
+struct BseModule : EngineNode {
   const BseModuleClass *klass = NULL;
   gpointer              user_data = NULL;
   BseIStream           *istreams = NULL;	// input streams

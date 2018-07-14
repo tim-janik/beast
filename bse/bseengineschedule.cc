@@ -72,11 +72,12 @@ static inline void
 unschedule_cycle (EngineSchedule *sched,
 		  SfiRing        *ring)
 {
+  EngineNode *node = (EngineNode*) ring->data;
   guint leaf_level;
   SfiRing *walk;
 
-  assert_return (ENGINE_NODE_IS_SCHEDULED (ENGINE_NODE (ring->data)) == TRUE);
-  leaf_level = ENGINE_NODE (ring->data)->sched_leaf_level;
+  assert_return (ENGINE_NODE_IS_SCHEDULED (node) == TRUE);
+  leaf_level = node->sched_leaf_level;
   assert_return (leaf_level <= sched->leaf_levels);
   assert_return (sched->n_items > 0);
 
@@ -584,7 +585,7 @@ clean_ostreams (EngineNode *node)
       guint i;
 
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-	node->module.ostreams[i].connected = FALSE;
+	node->module().ostreams[i].connected = FALSE;
       node->cleared_ostreams = TRUE;
     }
 }
@@ -637,7 +638,7 @@ subschedule_child (EngineSchedule *schedule,
 
   /* flag connected ostream */
   clean_ostreams (child);
-  child->module.ostreams[child_ostream].connected = TRUE;
+  child->module().ostreams[child_ostream].connected = TRUE;
 
   /* schedule away if necessary */
   if (ENGINE_NODE_IS_SCHEDULED (child))
@@ -693,12 +694,12 @@ subschedule_query_node (EngineSchedule *schedule,
       child = subschedule_skip_virtuals (schedule, child, &child_ostream);
       if (!child)
 	{
-	  node->module.istreams[i].connected = FALSE;
+	  node->module().istreams[i].connected = FALSE;
 	  node->inputs[i].real_node = NULL;
 	}
       else
 	{
-	  node->module.istreams[i].connected = TRUE;
+	  node->module().istreams[i].connected = TRUE;
 	  node->inputs[i].real_node = child;
 	  node->inputs[i].real_stream = child_ostream;
 	  subschedule_child (schedule, node, query, child, child_ostream);
@@ -707,7 +708,7 @@ subschedule_query_node (EngineSchedule *schedule,
   /* eliminate dead virtual ends in jstreams */
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     {
-      BseJStream *jstream = node->module.jstreams + j;
+      BseJStream *jstream = node->module().jstreams + j;
 
       /* we check this jstream's connections for virtual dead-ends.
        * valid connections stay at (are moved to) the array front and
@@ -747,7 +748,7 @@ subschedule_query_node (EngineSchedule *schedule,
     }
   /* schedule valid jstream connections */
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-    for (i = 0; i < node->module.jstreams[j].n_connections; i++)
+    for (i = 0; i < node->module().jstreams[j].n_connections; i++)
       {
 	EngineNode *child = node->jinputs[j][i].real_node;
 	guint child_ostream = node->jinputs[j][i].real_stream;

@@ -52,6 +52,7 @@ bse_public_headers = $(strip \
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
 	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
+	bseenginenode.hh	\
 	bseengineprivate.hh	\
 	bseieee754.hh		\
 	bseincluder.hh		\

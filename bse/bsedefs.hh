@@ -85,16 +85,16 @@ struct BseWave;
 struct BseWaveRepo;
 struct BseWaveRepoClass;
 /* --- BseModule special handling --- */
-typedef struct _BseModule                  BseModule;
+struct BseModule;
 typedef struct _BseModuleClass             BseModuleClass;
 typedef struct _BseIStream                 BseIStream;
 typedef struct _BseJStream                 BseJStream;
 typedef struct _BseOStream                 BseOStream;
-/* dereference some BseModule members without including bseengine.hh */
-#define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[1])
-#define	BSE_MODULE_GET_ISTREAMSP(bsemodule)	(((gpointer*) bsemodule)[2])
-#define	BSE_MODULE_GET_JSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[3])
-#define	BSE_MODULE_GET_OSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[4])
+/* FIXME: dereference some BseModule members without including bseengine.hh */
+#define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[23])
+#define	BSE_MODULE_GET_ISTREAMSP(bsemodule)	(((gpointer*) bsemodule)[24])
+#define	BSE_MODULE_GET_JSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[25])
+#define	BSE_MODULE_GET_OSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[26])
 /* --- Bse Loader --- */
 struct BseLoader;
 typedef struct _BseWaveDsc              BseWaveDsc;

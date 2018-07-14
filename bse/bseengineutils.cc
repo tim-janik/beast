@@ -89,30 +89,30 @@ bse_engine_free_node (EngineNode *node)
   assert_return (node->boundary_jobs == NULL);
   assert_return (node->tjob_head == NULL);
   assert_return (node->probe_jobs == NULL);
-  if (node->module.ostreams)
+  if (node->module().ostreams)
     {
       /* bse_engine_block_size() may have changed since allocation */
-      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (node), node->module.ostreams);
+      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (node), node->module().ostreams);
       sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
-  if (node->module.istreams)
+  if (node->module().istreams)
     {
-      sfi_delete_structs (BseIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
+      sfi_delete_structs (BseIStream, ENGINE_NODE_N_ISTREAMS (node), node->module().istreams);
       sfi_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
     }
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     {
       g_free (node->jinputs[j]);
-      g_free (node->module.jstreams[j].values);
+      g_free (node->module().jstreams[j].values);
     }
-  if (node->module.jstreams)
+  if (node->module().jstreams)
     {
-      sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
+      sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->module().jstreams);
       sfi_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
     }
-  klass = node->module.klass;
-  user_data = node->module.user_data;
-  delete node;
+  klass = node->module().klass;
+  user_data = node->module().user_data;
+  delete &node->module(); // FIXME
 
   /* allow the free function to free the klass as well */
   if (klass->free)
@@ -531,7 +531,8 @@ _engine_push_processed_cycle (SfiRing *cycle)
 {
   assert_return (cycle != NULL);
   assert_return (pqueue_n_cycles > 0);
-  assert_return (ENGINE_NODE_IS_SCHEDULED (cycle->data));
+  EngineNode *node = (EngineNode*) cycle->data;
+  assert_return (ENGINE_NODE_IS_SCHEDULED (node));
 }
 
 void

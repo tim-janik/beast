@@ -4,6 +4,7 @@
 #include "gslcommon.hh"
 #include "bseengineutils.hh"
 #include "bseenginemaster.hh"
+#include "bseengineprivate.hh"
 #include "bsestartup.hh"        // for TaskRegistry
 #include <fcntl.h>
 #include <errno.h>
@@ -35,9 +36,6 @@ BseModule*
 bse_module_new (const BseModuleClass *klass,
 		gpointer              user_data)
 {
-  EngineNode *node;
-  guint i;
-
   assert_return (klass != NULL, NULL);
   assert_return (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
@@ -46,29 +44,29 @@ bse_module_new (const BseModuleClass *klass,
       return NULL;
     }
 
-  node = new EngineNode;
+  BseModule *module = new BseModule;
 
   /* setup BseModule */
-  node->module.klass = klass;
-  node->module.user_data = user_data;
-  node->module.istreams = klass->n_istreams ? sfi_new_struct0 (BseIStream, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
-  node->module.jstreams = klass->n_jstreams ? sfi_new_struct0 (BseJStream, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
-  node->module.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
+  module->klass = klass;
+  module->user_data = user_data;
+  module->istreams = klass->n_istreams ? sfi_new_struct0 (BseIStream, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
+  module->jstreams = klass->n_jstreams ? sfi_new_struct0 (BseJStream, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
+  module->ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (module));
 
   /* setup EngineNode */
-  node->inputs = ENGINE_NODE_N_ISTREAMS (node) ? sfi_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
-  node->jinputs = ENGINE_NODE_N_JSTREAMS (node) ? sfi_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
-  node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
-  node->output_nodes = NULL;
-  node->integrated = FALSE;
-  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-    node->outputs[i].buffer = node->module.ostreams[i].values;
-  node->flow_jobs = NULL;
-  node->boundary_jobs = NULL;
-  node->probe_jobs = NULL;
-  node->tjob_head = node->tjob_tail = NULL;
+  module->inputs = ENGINE_NODE_N_ISTREAMS (module) ? sfi_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (module)) : NULL;
+  module->jinputs = ENGINE_NODE_N_JSTREAMS (module) ? sfi_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (module)) : NULL;
+  module->outputs = ENGINE_NODE_N_OSTREAMS (module) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (module)) : NULL;
+  module->output_nodes = NULL;
+  module->integrated = FALSE;
+  for (size_t i = 0; i < ENGINE_NODE_N_OSTREAMS (module); i++)
+    module->outputs[i].buffer = module->ostreams[i].values;
+  module->flow_jobs = NULL;
+  module->boundary_jobs = NULL;
+  module->probe_jobs = NULL;
+  module->tjob_head = module->tjob_tail = NULL;
 
-  return &node->module;
+  return module;
 }
 
 /**
