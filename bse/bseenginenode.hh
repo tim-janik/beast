@@ -16,19 +16,22 @@ struct EngineOutput;
 union  EngineTimedJob;
 
 /// DSP Engine Module
-struct Module { 		  // fields sorted by order of processing access
+class Module { 		  // fields sorted by order of processing access
+  std::recursive_mutex   rec_mutex_; // processing lock
+public:
   explicit               Module (const BseModuleClass &klass);
   virtual               ~Module ();
+  inline void            lock   ()      { rec_mutex_.lock(); }
+  inline void            unlock ()      { rec_mutex_.unlock(); }
   const BseModuleClass  &klass;
   gpointer               user_data = NULL;
   BseIStream            *istreams = NULL;	// input streams
   BseJStream            *jstreams = NULL;     	// joint (multiconnect) input streams
   BseOStream            *ostreams = NULL;     	// output streams
-  std::recursive_mutex   rec_mutex; // processing lock
   guint64                counter = 0;     // <= Bse::TickStamp::current() */
-  EngineInput	        *inputs = NULL;	  // [ENGINE_NODE_N_ISTREAMS()] */
-  EngineJInput         **jinputs = NULL;  // [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
-  EngineOutput	        *outputs = NULL;  // [ENGINE_NODE_N_OSTREAMS()] */
+  EngineInput	        *inputs = NULL;	  // [BSE_MODULE_N_ISTREAMS()] */
+  EngineJInput         **jinputs = NULL;  // [BSE_MODULE_N_JSTREAMS()][jstream->jcount] */
+  EngineOutput	        *outputs = NULL;  // [BSE_MODULE_N_OSTREAMS()] */
   // timed jobs
   EngineTimedJob        *flow_jobs = NULL;			// active jobs
   EngineTimedJob        *probe_jobs = NULL;		        // probe requests // FIXME: remove?

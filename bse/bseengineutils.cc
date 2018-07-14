@@ -437,7 +437,7 @@ _engine_pop_unprocessed_node (void)
   if (node)
     {
       pqueue_n_nodes += 1;
-      ENGINE_NODE_LOCK (node);
+      node->lock();
     }
   pqueue_mutex.unlock();
   return node;
@@ -470,12 +470,12 @@ _engine_push_processed_node (Bse::Module *node)
 {
   assert_return (node != NULL);
   assert_return (pqueue_n_nodes > 0);
-  assert_return (ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (BSE_MODULE_IS_SCHEDULED (node));
   pqueue_mutex.lock();
   assert_return (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
-  ENGINE_NODE_UNLOCK (node);
+  node->unlock();
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
     pqueue_done_cond.notify_one();
   pqueue_mutex.unlock();
@@ -493,7 +493,7 @@ _engine_push_processed_cycle (SfiRing *cycle)
   assert_return (cycle != NULL);
   assert_return (pqueue_n_cycles > 0);
   Bse::Module *node = (Bse::Module*) cycle->data;
-  assert_return (ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (BSE_MODULE_IS_SCHEDULED (node));
 }
 
 void

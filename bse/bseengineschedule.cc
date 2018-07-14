@@ -34,7 +34,7 @@ _engine_schedule_new (void)
 static inline void
 unschedule_virtual (EngineSchedule *sched, Bse::Module *vnode)
 {
-  assert_return (ENGINE_NODE_IS_SCHEDULED (vnode) == TRUE);
+  assert_return (BSE_MODULE_IS_SCHEDULED (vnode) == TRUE);
   assert_return (sched->n_items > 0);
 
   /* SCHED_DEBUG ("unschedule_virtual(%p)", vnode); */
@@ -48,7 +48,7 @@ unschedule_node (EngineSchedule *sched, Bse::Module *node)
 {
   guint leaf_level;
 
-  assert_return (ENGINE_NODE_IS_SCHEDULED (node) == TRUE);
+  assert_return (BSE_MODULE_IS_SCHEDULED (node) == TRUE);
   leaf_level = node->sched_leaf_level;
   assert_return (leaf_level <= sched->leaf_levels);
   assert_return (sched->n_items > 0);
@@ -70,7 +70,7 @@ unschedule_cycle (EngineSchedule *sched,
   guint leaf_level;
   SfiRing *walk;
 
-  assert_return (ENGINE_NODE_IS_SCHEDULED (node) == TRUE);
+  assert_return (BSE_MODULE_IS_SCHEDULED (node) == TRUE);
   leaf_level = node->sched_leaf_level;
   assert_return (leaf_level <= sched->leaf_levels);
   assert_return (sched->n_items > 0);
@@ -80,7 +80,7 @@ unschedule_cycle (EngineSchedule *sched,
   for (walk = ring; walk; walk = sfi_ring_walk (walk, ring))
     {
       Bse::Module *node = (Bse::Module*) walk->data;
-      if (!ENGINE_NODE_IS_SCHEDULED (node))
+      if (!BSE_MODULE_IS_SCHEDULED (node))
         Bse::warning ("%s: node(%p) in schedule ring(%p) is untagged", __func__, node, ring);
       node->sched_leaf_level = 0;
       node->sched_tag = FALSE;
@@ -189,8 +189,8 @@ schedule_virtual (EngineSchedule *sched,
   assert_return (sched != NULL);
   assert_return (sched->secured == FALSE);
   assert_return (vnode != NULL);
-  assert_return (ENGINE_NODE_IS_VIRTUAL (vnode));
-  assert_return (!ENGINE_NODE_IS_SCHEDULED (vnode));
+  assert_return (BSE_MODULE_IS_VIRTUAL (vnode));
+  assert_return (!BSE_MODULE_IS_SCHEDULED (vnode));
 
   /* SCHED_DEBUG ("schedule_virtual(%p)", vnode); */
   vnode->sched_tag = TRUE;
@@ -198,7 +198,7 @@ schedule_virtual (EngineSchedule *sched,
   sched->vnodes = sfi_ring_append (sched->vnodes, vnode);
   sched->n_items++;
   guint i;
-  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (vnode); i++)
+  for (i = 0; i < BSE_MODULE_N_ISTREAMS (vnode); i++)
     {
       vnode->inputs[i].real_node = NULL;
       vnode->inputs[i].real_stream = 0;
@@ -214,7 +214,7 @@ schedule_node (EngineSchedule *sched,
   assert_return (sched != NULL);
   assert_return (sched->secured == FALSE);
   assert_return (node != NULL);
-  assert_return (!ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (!BSE_MODULE_IS_SCHEDULED (node));
 
   /* SCHED_DEBUG ("schedule_node(%p,%u)", node, leaf_level); */
   node->sched_leaf_level = leaf_level;
@@ -224,7 +224,7 @@ schedule_node (EngineSchedule *sched,
     _engine_mnl_node_changed (node);
   _engine_schedule_grow (sched, leaf_level);
   /* could do 3-stage scheduling by expensiveness */
-  sched->nodes[leaf_level] = (ENGINE_NODE_IS_EXPENSIVE (node) ? sfi_ring_prepend : sfi_ring_append) (sched->nodes[leaf_level], node);
+  sched->nodes[leaf_level] = (BSE_MODULE_IS_EXPENSIVE (node) ? sfi_ring_prepend : sfi_ring_append) (sched->nodes[leaf_level], node);
   sched->n_items++;
 }
 
@@ -241,7 +241,7 @@ schedule_cycle (EngineSchedule *sched,
   for (walk = cycle_nodes; walk; walk = sfi_ring_walk (walk, cycle_nodes))
     {
       Bse::Module *node = (Bse::Module*) walk->data;
-      assert_return (!ENGINE_NODE_IS_SCHEDULED (node));
+      assert_return (!BSE_MODULE_IS_SCHEDULED (node));
       node->sched_leaf_level = leaf_level;
       node->sched_tag = TRUE;
       node->cleared_ostreams = FALSE;
@@ -360,8 +360,8 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
   assert_return (schedule != NULL);
   assert_return (schedule->secured == FALSE);
   assert_return (node != NULL);
-  assert_return (ENGINE_NODE_IS_CONSUMER (node));
-  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (BSE_MODULE_IS_CONSUMER (node));
+  assert_return (BSE_MODULE_IS_VIRTUAL (node) == FALSE);
 
   subschedule_query_node (schedule, node, &query);
   assert_return (query.cycles == NULL);	/* paranoid */
@@ -377,7 +377,7 @@ determine_suspension_reset (Bse::Module *node)
   assert_return (node->update_suspend == FALSE, FALSE);
   assert_return (node->in_suspend_call == FALSE, FALSE);
 
-  if (!ENGINE_NODE_IS_VIRTUAL (node))
+  if (!BSE_MODULE_IS_VIRTUAL (node))
     return node->needs_reset;
 
   SfiRing *ring;
@@ -406,7 +406,7 @@ determine_suspension_state (Bse::Module *node,
     {
       node->in_suspend_call = TRUE;
       SfiRing *ring;    /* calculate outer suspend constraints */
-      if (ENGINE_NODE_IS_CONSUMER (node))
+      if (BSE_MODULE_IS_CONSUMER (node))
         stamp = 0;
       gboolean keep_state = FALSE;
       for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
@@ -545,7 +545,7 @@ query_add_cycle (EngineQuery *query,
 
   cycle->last = dep;
   cycle->nodes = sfi_ring_prepend (NULL, node);
-  cycle->seen_deferred_node = ENGINE_NODE_IS_DEFERRED (node); /* dep will be checked when added to nodes */
+  cycle->seen_deferred_node = BSE_MODULE_IS_DEFERRED (node); /* dep will be checked when added to nodes */
   query->cycles = sfi_ring_append (query->cycles, cycle);
 }
 
@@ -561,7 +561,7 @@ query_merge_cycles (EngineQuery *query,
     {
       EngineCycle *cycle = (EngineCycle*) walk->data;
       cycle->nodes = sfi_ring_prepend (cycle->nodes, node);
-      cycle->seen_deferred_node |= ENGINE_NODE_IS_DEFERRED (node);
+      cycle->seen_deferred_node |= BSE_MODULE_IS_DEFERRED (node);
     }
   /* merge child cycles into our cycle list */
   query->cycles = sfi_ring_concat (query->cycles, child_query->cycles);
@@ -574,11 +574,11 @@ query_merge_cycles (EngineQuery *query,
 static inline void
 clean_ostreams (Bse::Module *node)
 {
-  if (!node->cleared_ostreams && !ENGINE_NODE_IS_SCHEDULED (node))
+  if (!node->cleared_ostreams && !BSE_MODULE_IS_SCHEDULED (node))
     {
       guint i;
 
-      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
 	node->ostreams[i].connected = FALSE;
       node->cleared_ostreams = TRUE;
     }
@@ -587,10 +587,10 @@ clean_ostreams (Bse::Module *node)
 static inline void
 subschedule_trace_virtual_input (EngineSchedule *schedule, Bse::Module *node, uint istream)
 {
-  if (!ENGINE_NODE_IS_SCHEDULED (node))
+  if (!BSE_MODULE_IS_SCHEDULED (node))
     schedule_virtual (schedule, node);
   Bse::EngineInput *input = node->inputs + istream;
-  if (input->src_node && ENGINE_NODE_IS_VIRTUAL (input->src_node))
+  if (input->src_node && BSE_MODULE_IS_VIRTUAL (input->src_node))
     {
       subschedule_trace_virtual_input (schedule, input->src_node, input->src_stream);
       Bse::EngineInput *src_input = input->src_node->inputs + input->src_stream;
@@ -607,7 +607,7 @@ subschedule_trace_virtual_input (EngineSchedule *schedule, Bse::Module *node, ui
 static inline Bse::Module*
 subschedule_skip_virtuals (EngineSchedule *schedule, Bse::Module *node, uint *ostream_p)
 {
-  if (node && ENGINE_NODE_IS_VIRTUAL (node))
+  if (node && BSE_MODULE_IS_VIRTUAL (node))
     {
       subschedule_trace_virtual_input (schedule, node, *ostream_p);
       Bse::EngineInput *input = node->inputs + *ostream_p;
@@ -624,14 +624,14 @@ subschedule_child (EngineSchedule *schedule,
 		   Bse::Module     *child,
 		   guint           child_ostream)
 {
-  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (BSE_MODULE_IS_VIRTUAL (node) == FALSE);
 
   /* flag connected ostream */
   clean_ostreams (child);
   child->ostreams[child_ostream].connected = TRUE;
 
   /* schedule away if necessary */
-  if (ENGINE_NODE_IS_SCHEDULED (child))
+  if (BSE_MODULE_IS_SCHEDULED (child))
     query->leaf_level = MAX (query->leaf_level, child->sched_leaf_level + 1);
   else if (child->sched_recurse_tag)	/* cycle */
     query_add_cycle (query, child, node);
@@ -665,7 +665,7 @@ subschedule_query_node (EngineSchedule *schedule,
 {
   guint i, j;
 
-  assert_return (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  assert_return (BSE_MODULE_IS_VIRTUAL (node) == FALSE);
   assert_return (node->sched_recurse_tag == FALSE);
   assert_return (query->leaf_level == 0);
 
@@ -677,7 +677,7 @@ subschedule_query_node (EngineSchedule *schedule,
   /* SCHED_DEBUG ("sched_query(%p)", node); */
   node->sched_recurse_tag = TRUE;
   /* schedule input stream children */
-  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
+  for (i = 0; i < BSE_MODULE_N_ISTREAMS (node); i++)
     {
       Bse::Module *child = node->inputs[i].src_node;
       guint child_ostream = node->inputs[i].src_stream;
@@ -696,7 +696,7 @@ subschedule_query_node (EngineSchedule *schedule,
 	}
     }
   /* eliminate dead virtual ends in jstreams */
-  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+  for (j = 0; j < BSE_MODULE_N_JSTREAMS (node); j++)
     {
       BseJStream *jstream = node->jstreams + j;
 
@@ -737,7 +737,7 @@ subschedule_query_node (EngineSchedule *schedule,
 	}
     }
   /* schedule valid jstream connections */
-  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+  for (j = 0; j < BSE_MODULE_N_JSTREAMS (node); j++)
     for (i = 0; i < node->jstreams[j].n_connections; i++)
       {
 	Bse::Module *child = node->jinputs[j][i].real_node;

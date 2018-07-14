@@ -78,7 +78,7 @@ static SfiRing        *probe_node_list = NULL;
 static void
 add_consumer (Bse::Module *node)
 {
-  assert_return (ENGINE_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
+  assert_return (BSE_MODULE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
 
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
@@ -89,7 +89,7 @@ remove_consumer (Bse::Module *node)
 {
   Bse::Module *tmp, *last = NULL;
 
-  assert_return (!ENGINE_NODE_IS_CONSUMER (node) || !node->integrated);
+  assert_return (!BSE_MODULE_IS_CONSUMER (node) || !node->integrated);
 
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
@@ -109,10 +109,10 @@ propagate_update_suspend (Bse::Module *node)
     {
       guint i, j;
       node->update_suspend = TRUE;
-      for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_ISTREAMS (node); i++)
 	if (node->inputs[i].src_node)
 	  propagate_update_suspend (node->inputs[i].src_node);
-      for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+      for (j = 0; j < BSE_MODULE_N_JSTREAMS (node); j++)
 	for (i = 0; i < node->jstreams[j].jcount; i++)
 	  propagate_update_suspend (node->jinputs[j][i].src_node);
     }
@@ -125,13 +125,13 @@ master_idisconnect_node (Bse::Module *node, uint istream)
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
 
-  assert_return (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert_return (ostream < BSE_MODULE_N_OSTREAMS (src_node) &&
                  src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   node->inputs[istream].src_node = NULL;
   node->inputs[istream].src_stream = ~0;
   node->istreams[istream].connected = 0;	/* scheduler update */
-  was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
+  was_consumer = BSE_MODULE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->ostreams[ostream].connected = 0; /* scheduler update */
   src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
@@ -140,7 +140,7 @@ master_idisconnect_node (Bse::Module *node, uint istream)
   /* update suspension state of input */
   propagate_update_suspend (src_node);
   /* add to consumer list */
-  if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
+  if (!was_consumer && BSE_MODULE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
 
@@ -153,14 +153,14 @@ master_jdisconnect_node (Bse::Module *node,
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
 
-  assert_return (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert_return (ostream < BSE_MODULE_N_OSTREAMS (src_node) &&
                  node->jstreams[jstream].jcount > 0 &&
                  src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   i = --node->jstreams[jstream].jcount;
   node->jinputs[jstream][con] = node->jinputs[jstream][i];
   node->jstreams[jstream].values[i] = NULL; /* float**values 0-termination */
-  was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
+  was_consumer = BSE_MODULE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->ostreams[ostream].connected = 0; /* scheduler update */
   src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
@@ -169,17 +169,17 @@ master_jdisconnect_node (Bse::Module *node,
   /* update suspension state of input */
   propagate_update_suspend (src_node);
   /* add to consumer list */
-  if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
+  if (!was_consumer && BSE_MODULE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
 
 static void
 master_disconnect_node_outputs (Bse::Module *src_node, Bse::Module *dest_node)
 {
-  for (uint i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
+  for (uint i = 0; i < BSE_MODULE_N_ISTREAMS (dest_node); i++)
     if (dest_node->inputs[i].src_node == src_node)
       master_idisconnect_node (dest_node, i);
-  for (uint j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
+  for (uint j = 0; j < BSE_MODULE_N_JSTREAMS (dest_node); j++)
     for (uint i = 0; i < dest_node->jstreams[j].jcount; i++)
       if (dest_node->jinputs[j][i].src_node == src_node)
 	master_jdisconnect_node (dest_node, j, i--);
@@ -304,7 +304,7 @@ master_process_job (BseJob *job)
       assert_return (node->sched_tag == FALSE);
       job->data.free_with_job = FALSE;  /* ownership taken over */
       _engine_mnl_integrate (node);
-      if (ENGINE_NODE_IS_CONSUMER (node))
+      if (BSE_MODULE_IS_CONSUMER (node))
 	add_consumer (node);
       node->counter = Bse::TickStamp::current();
       NODE_FLAG_RECONNECT (node);
@@ -317,10 +317,10 @@ master_process_job (BseJob *job)
       node = job->data.node;
       JOB_DEBUG ("kill_inputs(%p)", node);
       assert_return (node->integrated == TRUE);
-      for (istream = 0; istream < ENGINE_NODE_N_ISTREAMS (node); istream++)
+      for (istream = 0; istream < BSE_MODULE_N_ISTREAMS (node); istream++)
 	if (node->inputs[istream].src_node)
 	  master_idisconnect_node (node, istream);
-      for (jstream = 0; jstream < ENGINE_NODE_N_JSTREAMS (node); jstream++)
+      for (jstream = 0; jstream < BSE_MODULE_N_JSTREAMS (node); jstream++)
 	while (node->jstreams[jstream].jcount)
 	  master_jdisconnect_node (node, jstream, node->jstreams[jstream].jcount - 1);
       master_need_reflow |= TRUE;
@@ -342,17 +342,17 @@ master_process_job (BseJob *job)
       master_need_reflow |= TRUE;
       master_schedule_discard ();
       /* kill inputs */
-      for (istream = 0; istream < ENGINE_NODE_N_ISTREAMS (node); istream++)
+      for (istream = 0; istream < BSE_MODULE_N_ISTREAMS (node); istream++)
 	if (node->inputs[istream].src_node)
 	  master_idisconnect_node (node, istream);
-      for (jstream = 0; jstream < ENGINE_NODE_N_JSTREAMS (node); jstream++)
+      for (jstream = 0; jstream < BSE_MODULE_N_JSTREAMS (node); jstream++)
 	while (node->jstreams[jstream].jcount)
 	  master_jdisconnect_node (node, jstream, node->jstreams[jstream].jcount - 1);
       /* kill outputs */
       while (node->output_nodes)
 	master_disconnect_node_outputs (node, (Bse::Module*) node->output_nodes->data);
       /* remove from consumer list */
-      if (ENGINE_NODE_IS_CONSUMER (node))
+      if (BSE_MODULE_IS_CONSUMER (node))
 	{
 	  _engine_mnl_remove (node);
 	  remove_consumer (node);
@@ -387,11 +387,11 @@ master_process_job (BseJob *job)
       node = job->data.node;
       JOB_DEBUG ("toggle_consumer(%p)", node);
       assert_return (node->integrated == TRUE);
-      was_consumer = ENGINE_NODE_IS_CONSUMER (node);
+      was_consumer = BSE_MODULE_IS_CONSUMER (node);
       node->is_consumer = job->job_id == ENGINE_JOB_SET_CONSUMER;
-      if (was_consumer != ENGINE_NODE_IS_CONSUMER (node))
+      if (was_consumer != BSE_MODULE_IS_CONSUMER (node))
 	{
-	  if (ENGINE_NODE_IS_CONSUMER (node))
+	  if (BSE_MODULE_IS_CONSUMER (node))
 	    add_consumer (node);
 	  else
 	    remove_consumer (node);
@@ -437,7 +437,7 @@ master_process_job (BseJob *job)
       node->inputs[istream].src_stream = ostream;
       node->istreams[istream].connected = 0;	/* scheduler update */
       /* remove from consumer list */
-      was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
+      was_consumer = BSE_MODULE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->ostreams[ostream].connected = 0; /* scheduler update */
       src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
@@ -445,7 +445,7 @@ master_process_job (BseJob *job)
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
       propagate_update_suspend (src_node);
-      if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
+      if (was_consumer && !BSE_MODULE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
@@ -464,7 +464,7 @@ master_process_job (BseJob *job)
       node->jinputs[jstream][con].src_node = src_node;
       node->jinputs[jstream][con].src_stream = ostream;
       /* remove from consumer list */
-      was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
+      was_consumer = BSE_MODULE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->ostreams[ostream].connected = 0; /* scheduler update */
       src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
@@ -472,7 +472,7 @@ master_process_job (BseJob *job)
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
       propagate_update_suspend (src_node);
-      if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
+      if (was_consumer && !BSE_MODULE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
@@ -709,12 +709,12 @@ master_take_probes (Bse::Module   *node,
   if (ptype == PROBE_SCHEDULED)
     {
       uint i;
-      assert_return (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
+      assert_return (tjob->probe.n_ostreams == BSE_MODULE_N_OSTREAMS (node));
       /* swap output buffers with probe buffers */
       BseOStream *ostreams = node->ostreams;
       node->ostreams = tjob->probe.ostreams;
       tjob->probe.ostreams = ostreams;
-      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
         {
           /* restore real ostream buffer pointers */
           ostreams[i].values = node->outputs[i].buffer;
@@ -728,7 +728,7 @@ master_take_probes (Bse::Module   *node,
     {
       uint i;
       /* copy output buffers to probe buffers */
-      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
         {
           Bse::EngineInput *input = node->inputs + i;
           if (input->real_node && input->real_node->ostreams[input->real_stream].connected)
@@ -755,7 +755,7 @@ master_update_node_state (Bse::Module *node,
   /* if a reset is pending, it needs to be handled *before*
    * flow jobs change state.
    */
-  if (UNLIKELY (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
+  if (UNLIKELY (node->needs_reset && !BSE_MODULE_IS_SUSPENDED (node, node->counter)))
     {
       /* for suspended nodes, reset() occours later */
       if (node->klass.reset)
@@ -797,47 +797,47 @@ master_process_locked_node (Bse::Module *node,
         new_counter = MIN (node->next_active, new_counter);
       diff = node->counter - current_stamp;
       /* ensure all istream inputs have n_values available */
-      for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_ISTREAMS (node); i++)
 	{
 	  Bse::Module *inode = node->inputs[i].real_node;
 
 	  if (inode)
 	    {
-	      ENGINE_NODE_LOCK (inode);
+	      inode->lock();
 	      if (inode->counter < final_counter)
 		master_process_locked_node (inode, final_counter - node->counter);
 	      node->istreams[i].values = inode->outputs[node->inputs[i].real_stream].buffer;
 	      node->istreams[i].values += diff;
-	      ENGINE_NODE_UNLOCK (inode);
+	      inode->unlock();
 	    }
 	  else
 	    node->istreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
 	}
       /* ensure all jstream inputs have n_values available */
-      for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+      for (j = 0; j < BSE_MODULE_N_JSTREAMS (node); j++)
 	for (i = 0; i < node->jstreams[j].n_connections; i++) /* assumes scheduled node */
 	  {
 	    Bse::Module *inode = node->jinputs[j][i].real_node;
 
-	    ENGINE_NODE_LOCK (inode);
+	    inode->lock();
 	    if (inode->counter < final_counter)
 	      master_process_locked_node (inode, final_counter - node->counter);
 	    node->jstreams[j].values[i] = inode->outputs[node->jinputs[j][i].real_stream].buffer;
 	    node->jstreams[j].values[i] += diff;
-	    ENGINE_NODE_UNLOCK (inode);
+	    inode->unlock();
 	  }
       /* update obuffer pointer (FIXME: need this before flow job callbacks?) */
-      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
         node->ostreams[i].values = node->outputs[i].buffer + diff;
       if (diff && needs_probe_reset)
-        for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+        for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
           bse_block_fill_float (diff, node->outputs[i].buffer, 0.0);
       needs_probe_reset = false;
       /* process() node */
-      if (UNLIKELY (ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
+      if (UNLIKELY (BSE_MODULE_IS_SUSPENDED (node, node->counter)))
 	{
 	  /* suspended node processing behaviour */
-	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+	  for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
 	    if (node->ostreams[i].connected)
 	      node->ostreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
           node->needs_reset = TRUE;
@@ -845,7 +845,7 @@ master_process_locked_node (Bse::Module *node,
       else
         node->klass.process (node, new_counter - node->counter);
       /* catch obuffer pointer changes */
-      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+      for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
 	{
 	  /* FIXME: this takes the worst possible performance hit to support obuffer pointer virtualization */
 	  if (node->ostreams[i].connected &&
@@ -995,9 +995,9 @@ master_process_flow (void)
         {
           node = (Bse::Module*) ring->data; /* current ring may be removed during master_take_probes() */
           ring = sfi_ring_walk (ring, probe_node_list);
-          if (!ENGINE_NODE_IS_SCHEDULED (node))
+          if (!BSE_MODULE_IS_SCHEDULED (node))
             master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
-          else if (ENGINE_NODE_IS_VIRTUAL (node)) /* scheduled && virtual */
+          else if (BSE_MODULE_IS_VIRTUAL (node)) /* scheduled && virtual */
             master_take_probes (node, current_stamp, n_values, PROBE_VIRTUAL);
           else
             master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);

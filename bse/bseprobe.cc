@@ -412,7 +412,7 @@ private:
   handle_probe (ProbeData   &pdata,
                 guint        n_values,   /* bse_engine_block_size() */
                 guint64      tick_stamp,
-                guint        n_ostreams, /* ENGINE_NODE_N_OSTREAMS() */
+                guint        n_ostreams, /* BSE_MODULE_N_OSTREAMS() */
                 BseOStream **ostreams_p)
   {
     assert_return (pdata.n_pending > 0);

@@ -29,13 +29,13 @@ Module::Module (const BseModuleClass &_klass) :
   integrated (false), virtual_node (0), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
   cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0)
 {
-  this->istreams = ENGINE_NODE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::IStream, ENGINE_NODE_N_ISTREAMS (this)) : NULL;
-  this->jstreams = ENGINE_NODE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::JStream, ENGINE_NODE_N_JSTREAMS (this)) : NULL;
-  this->ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (this));
-  this->inputs = ENGINE_NODE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::EngineInput, ENGINE_NODE_N_ISTREAMS (this)) : NULL;
-  this->jinputs = ENGINE_NODE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (this)) : NULL;
-  this->outputs = ENGINE_NODE_N_OSTREAMS (this) ? sfi_new_struct0 (Bse::EngineOutput, ENGINE_NODE_N_OSTREAMS (this)) : NULL;
-  for (size_t i = 0; i < ENGINE_NODE_N_OSTREAMS (this); i++)
+  this->istreams = BSE_MODULE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::IStream, BSE_MODULE_N_ISTREAMS (this)) : NULL;
+  this->jstreams = BSE_MODULE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::JStream, BSE_MODULE_N_JSTREAMS (this)) : NULL;
+  this->ostreams = _engine_alloc_ostreams (BSE_MODULE_N_OSTREAMS (this));
+  this->inputs = BSE_MODULE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::EngineInput, BSE_MODULE_N_ISTREAMS (this)) : NULL;
+  this->jinputs = BSE_MODULE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::EngineJInput*, BSE_MODULE_N_JSTREAMS (this)) : NULL;
+  this->outputs = BSE_MODULE_N_OSTREAMS (this) ? sfi_new_struct0 (Bse::EngineOutput, BSE_MODULE_N_OSTREAMS (this)) : NULL;
+  for (size_t i = 0; i < BSE_MODULE_N_OSTREAMS (this); i++)
     this->outputs[i].buffer = this->ostreams[i].values;
 }
 
@@ -52,23 +52,23 @@ Module::~Module()
   if (this->ostreams)
     {
       // bse_engine_block_size() may have changed since allocation
-      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (this), this->ostreams);
-      sfi_delete_structs (Bse::EngineOutput, ENGINE_NODE_N_OSTREAMS (this), this->outputs);
+      bse_engine_free_ostreams (BSE_MODULE_N_OSTREAMS (this), this->ostreams);
+      sfi_delete_structs (Bse::EngineOutput, BSE_MODULE_N_OSTREAMS (this), this->outputs);
     }
   if (this->istreams)
     {
-      sfi_delete_structs (Bse::IStream, ENGINE_NODE_N_ISTREAMS (this), this->istreams);
-      sfi_delete_structs (Bse::EngineInput, ENGINE_NODE_N_ISTREAMS (this), this->inputs);
+      sfi_delete_structs (Bse::IStream, BSE_MODULE_N_ISTREAMS (this), this->istreams);
+      sfi_delete_structs (Bse::EngineInput, BSE_MODULE_N_ISTREAMS (this), this->inputs);
     }
-  for (size_t j = 0; j < ENGINE_NODE_N_JSTREAMS (this); j++)
+  for (size_t j = 0; j < BSE_MODULE_N_JSTREAMS (this); j++)
     {
       g_free (this->jinputs[j]);
       g_free (this->jstreams[j].values);
     }
   if (this->jstreams)
     {
-      sfi_delete_structs (Bse::JStream, ENGINE_NODE_N_JSTREAMS (this), this->jstreams);
-      sfi_delete_structs (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (this), this->jinputs);
+      sfi_delete_structs (Bse::JStream, BSE_MODULE_N_JSTREAMS (this), this->jstreams);
+      sfi_delete_structs (Bse::EngineJInput*, BSE_MODULE_N_JSTREAMS (this), this->jinputs);
     }
   void *_user_data = this->user_data;
   this->user_data = NULL;
@@ -120,7 +120,7 @@ bse_module_tick_stamp (BseModule *module)
 {
   assert_return (module != NULL, 0);
 
-  return ENGINE_NODE (module)->counter;
+  return module->counter;
 }
 
 /**
@@ -144,7 +144,7 @@ bse_module_has_source (BseModule *module,
   assert_return (module != NULL, FALSE);
   assert_return (istream < BSE_MODULE_N_ISTREAMS (module), FALSE);
 
-  return ENGINE_NODE (module)->inputs[istream].src_node != NULL;
+  return module->inputs[istream].src_node != NULL;
 }
 
 /**
@@ -161,7 +161,7 @@ gboolean
 bse_module_is_scheduled (BseModule *module)
 {
   assert_return (module != NULL, FALSE);
-  return ENGINE_NODE_IS_INTEGRATED (module) && ENGINE_NODE_IS_SCHEDULED (module);
+  return module->integrated && BSE_MODULE_IS_SCHEDULED (module);
 }
 
 /**
@@ -180,7 +180,7 @@ bse_job_integrate (BseModule *module)
 
   job = sfi_new_struct0 (Bse::Job, 1);
   job->job_id = ENGINE_JOB_INTEGRATE;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
   job->data.free_with_job = TRUE;
 
   return job;
@@ -203,7 +203,7 @@ bse_job_discard (BseModule *module)
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_DISCARD;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
 
   return job;
 }
@@ -225,7 +225,7 @@ bse_job_kill_inputs (BseModule *module)
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_INPUTS;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
 
   return job;
 }
@@ -247,7 +247,7 @@ bse_job_kill_outputs (BseModule *module)
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_OUTPUTS;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
 
   return job;
 }
@@ -280,9 +280,9 @@ bse_job_connect (BseModule *src_module,
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ICONNECT;
-  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_istream;
-  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_node = src_module;
   job->connection.src_ostream = src_ostream;
 
   return job;
@@ -315,9 +315,9 @@ bse_job_jconnect (BseModule *src_module,
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JCONNECT;
-  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_jstream;
-  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_node = src_module;
   job->connection.src_ostream = src_ostream;
 
   return job;
@@ -344,7 +344,7 @@ bse_job_disconnect (BseModule *dest_module,
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_IDISCONNECT;
-  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_istream;
   job->connection.src_node = NULL;
   job->connection.src_ostream = ~0;
@@ -382,9 +382,9 @@ bse_job_jdisconnect (BseModule *dest_module,
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JDISCONNECT;
-  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_jstream;
-  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_node = src_module;
   job->connection.src_ostream = src_ostream;
 
   return job;
@@ -394,14 +394,12 @@ BseJob*
 bse_job_set_consumer (BseModule *module,
 		      gboolean   is_toplevel_consumer)
 {
-  BseJob *job;
-
   assert_return (module != NULL, NULL);
-  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
 
   return job;
 }
@@ -428,7 +426,7 @@ bse_job_force_reset (BseModule *module)
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FORCE_RESET;
-  job->data.node = ENGINE_NODE (module);
+  job->data.node = module;
 
   return job;
 }
@@ -469,7 +467,7 @@ bse_job_access (BseModule    *module,
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
-  job->access.node = ENGINE_NODE (module);
+  job->access.node = module;
   job->access.access_func = access_func;
   job->access.data = data;
   job->access.free_func = free_func;
@@ -556,8 +554,8 @@ bse_job_probe_request (BseModule         *module,
   tjob->tick_stamp = 0;
   tjob->probe.data = data;
   tjob->probe.probe_func = probe_func;
-  tjob->probe.n_ostreams = ENGINE_NODE_N_OSTREAMS (module);
-  tjob->probe.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (module));
+  tjob->probe.n_ostreams = BSE_MODULE_N_OSTREAMS (module);
+  tjob->probe.ostreams = _engine_alloc_ostreams (BSE_MODULE_N_OSTREAMS (module));
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
@@ -594,7 +592,7 @@ bse_job_flow_access (BseModule    *module,
 {
   BseJob *job;
   assert_return (module != NULL, NULL);
-  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   assert_return (access_func != NULL, NULL);
   Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
@@ -605,7 +603,7 @@ bse_job_flow_access (BseModule    *module,
   tjob->access.access_func = access_func;
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
-  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.node = module;
   job->timed_job.tjob = tjob;
   return job;
 }
@@ -635,7 +633,7 @@ bse_job_boundary_access (BseModule    *module,
 {
   BseJob *job;
   assert_return (module != NULL, NULL);
-  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   assert_return (access_func != NULL, NULL);
   Bse::EngineTimedJob *tjob = (Bse::EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
@@ -646,7 +644,7 @@ bse_job_boundary_access (BseModule    *module,
   tjob->access.access_func = access_func;
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
-  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.node = module;
   job->timed_job.tjob = tjob;
   return job;
 }
@@ -685,7 +683,7 @@ bse_job_boundary_discard (BseModule *module)
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
-  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.node = module;
   job->timed_job.tjob = tjob;
 
   return job;
@@ -706,10 +704,10 @@ BseJob*
 bse_job_suspend_now (BseModule *module)
 {
   assert_return (module != NULL, NULL);
-  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
-  job->tick.node = ENGINE_NODE (module);
+  job->tick.node = module;
   job->tick.stamp = Bse::TickStamp::max_stamp();
   return job;
 }
@@ -733,11 +731,11 @@ bse_job_resume_at (BseModule *module,
                    guint64    tick_stamp)
 {
   assert_return (module != NULL, NULL);
-  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
-  job->tick.node = ENGINE_NODE (module);
+  job->tick.node = module;
   job->tick.stamp = tick_stamp;
   return job;
 }
@@ -1199,7 +1197,7 @@ bse_module_new_virtual (guint       n_iostreams,
   vclass->klass.n_ostreams = n_iostreams;
   vclass->free_data = free_data;
   module = bse_module_new (&vclass->klass, user_data);
-  ENGINE_NODE (module)->virtual_node = TRUE;
+  module->virtual_node = true;
   return module;
 }
 /* --- initialization --- */
