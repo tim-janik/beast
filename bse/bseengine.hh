@@ -68,11 +68,11 @@ struct _BseModuleClass
 /* module, constructed by engine */
 struct _BseModule
 {
-  const BseModuleClass *klass;
-  gpointer              user_data;
-  BseIStream           *istreams;	/* input streams */
-  BseJStream           *jstreams;     	/* joint (multiconnect) input streams */
-  BseOStream           *ostreams;     	/* output streams */
+  const BseModuleClass *klass = NULL;
+  gpointer              user_data = NULL;
+  BseIStream           *istreams = NULL;	// input streams
+  BseJStream           *jstreams = NULL;     	// joint (multiconnect) input streams
+  BseOStream           *ostreams = NULL;     	// output streams
 };
 /* streams, constructed by engine */
 struct _BseJStream

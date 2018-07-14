@@ -112,8 +112,7 @@ bse_engine_free_node (EngineNode *node)
     }
   klass = node->module.klass;
   user_data = node->module.user_data;
-  node->rec_mutex.~recursive_mutex();
-  sfi_delete_struct (EngineNode, node);
+  delete node;
 
   /* allow the free function to free the klass as well */
   if (klass->free)

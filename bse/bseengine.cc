@@ -46,7 +46,7 @@ bse_module_new (const BseModuleClass *klass,
       return NULL;
     }
 
-  node = sfi_new_struct0 (EngineNode, 1);
+  node = new EngineNode;
 
   /* setup BseModule */
   node->module.klass = klass;
@@ -61,7 +61,6 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  new (&node->rec_mutex) std::recursive_mutex();
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
