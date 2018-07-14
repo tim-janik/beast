@@ -1397,7 +1397,7 @@ struct SAreaBlock {
   size_t   length = 0;
   explicit SAreaBlock (size_t sz = 0) : length (sz)    {}
   void     reset (size_t sz = 0)                        { start = NULL; length = sz; }
-  void     zero ()                                      { memset (start, 0, length); }
+  void     zero () const                                { memset (start, 0, length); }
 };
 struct SharedArea {
   int64                   shm_id = 0;
@@ -1464,6 +1464,7 @@ struct SharedArea {
       }
     // add isolated block to free list
     blocks.push_back (ab);
+    ab.zero();
   }
   ssize_t
   fit_block (size_t length) const
