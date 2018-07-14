@@ -169,7 +169,40 @@ struct MonitorData {
 static void
 monitor_process (BseModule *module, uint n_values)
 {
-  printerr ("%s: n_values=%d\n", __func__, n_values);
+  const BseJStream &jstream = BSE_MODULE_JSTREAM (module, 0);
+  if (jstream.n_connections)
+    {
+      const float *wave_in = jstream.values[0];
+      float min = wave_in[0], max = wave_in[0];
+      float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
+      bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
+      for (uint j = 0; j < jstream.n_connections; j++)
+        for (uint i = 0; i < n_values; i++)
+          {
+            const float v = wave_in[i];
+            max = max > v ? max : v;
+            min = min < v ? min : v;
+            avg += v;
+            if (UNLIKELY (BSE_FLOAT_IS_NANINF (v)))
+              {
+                seen_nan |= BSE_FLOAT_IS_NAN (v);
+                seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
+                seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
+              }
+            else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
+              seen_subn = true;
+          }
+      avg /= double (n_values) * jstream.n_connections;
+      Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                     max, min, avg,
+                     jstream.n_connections, n_values,
+                     first, last,
+                     BSE_FREQ_FROM_VALUE (avg),
+                     seen_nan ? " +NAN" : "",
+                     seen_pinf ? " +PINF" : "",
+                     seen_ninf ? " +NINF" : "",
+                     seen_subn ? " +SUBNORM" : "");
+    }
 }
 
 void // called on BseSource.prepare
