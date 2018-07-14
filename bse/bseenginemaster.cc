@@ -335,7 +335,7 @@ master_process_job (BseJob *job)
       break;
     case ENGINE_JOB_DISCARD:
       node = job->data.node;
-      JOB_DEBUG ("discard(%p, %p)", node, node->klass);
+      JOB_DEBUG ("discard(%p, %p)", node, &node->klass);
       assert_return (node->integrated == TRUE);
       job->data.free_with_job = TRUE;  /* ownership passed on to cause destruction in UserThread */
       /* discard schedule so node may be freed */
@@ -758,8 +758,8 @@ master_update_node_state (Bse::Module *node,
   if (UNLIKELY (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
     {
       /* for suspended nodes, reset() occours later */
-      if (node->klass->reset)
-        node->klass->reset (node);
+      if (node->klass.reset)
+        node->klass.reset (node);
       node->needs_reset = FALSE;
     }
   tjob = node_pop_flow_job (node, max_tick);
@@ -843,7 +843,7 @@ master_process_locked_node (Bse::Module *node,
           node->needs_reset = TRUE;
 	}
       else
-        node->klass->process (node, new_counter - node->counter);
+        node->klass.process (node, new_counter - node->counter);
       /* catch obuffer pointer changes */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	{
@@ -1010,11 +1010,11 @@ master_process_flow (void)
 	      if (profile->profile_maxtime > uint64 (bse_profile_modules))
 		Bse::printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->klass->process);
+                               profile->profile_node->klass.process);
 	      else
 		Bse::printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->klass->process);
+                               profile->profile_node->klass.process);
 	    }
 	}
 

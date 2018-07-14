@@ -17,8 +17,9 @@ union  EngineTimedJob;
 
 /// DSP Engine Module
 struct Module { 		  // fields sorted by order of processing access
-  virtual ~Module() {}
-  const BseModuleClass  *klass = NULL;
+  explicit               Module (const BseModuleClass &klass);
+  virtual               ~Module ();
+  const BseModuleClass  &klass;
   gpointer               user_data = NULL;
   BseIStream            *istreams = NULL;	// input streams
   BseJStream            *jstreams = NULL;     	// joint (multiconnect) input streams
@@ -29,10 +30,10 @@ struct Module { 		  // fields sorted by order of processing access
   EngineJInput         **jinputs = NULL;  // [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	        *outputs = NULL;  // [ENGINE_NODE_N_OSTREAMS()] */
   // timed jobs
-  EngineTimedJob        *flow_jobs = NULL;			// active jobs */
-  EngineTimedJob        *probe_jobs = NULL;		        // probe requests */
-  EngineTimedJob        *boundary_jobs = NULL;		        // active jobs */
-  EngineTimedJob        *tjob_head = NULL, *tjob_tail = NULL;	// trash list */
+  EngineTimedJob        *flow_jobs = NULL;			// active jobs
+  EngineTimedJob        *probe_jobs = NULL;		        // probe requests // FIXME: remove?
+  EngineTimedJob        *boundary_jobs = NULL;		        // active jobs
+  EngineTimedJob        *tjob_head = NULL, *tjob_tail = NULL;	// trash list
   // suspend/activation time
   guint64                next_active = 0;                       // result of suspend state updates
   // master-node-list
@@ -53,10 +54,6 @@ struct Module { 		  // fields sorted by order of processing access
   guint64                local_active = 0;              // local suspend state stamp
   Module	        *toplevel_next = NULL;	        // master-consumer-list, FIXME: overkill, using a SfiRing is good enough
   SfiRing	        *output_nodes = NULL;	        // EngineNode* ring of nodes in ->outputs[]
-  Module() :
-    integrated (0), virtual_node (0), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
-    cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0)
-  {}
 };
 } // Bse
 

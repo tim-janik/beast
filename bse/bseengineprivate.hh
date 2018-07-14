@@ -6,9 +6,9 @@
 #include "gslcommon.hh"
 
 #define	ENGINE_NODE(module)		(module)
-#define ENGINE_NODE_N_OSTREAMS(node)	((node)->klass->n_ostreams)
-#define ENGINE_NODE_N_ISTREAMS(node)	((node)->klass->n_istreams)
-#define ENGINE_NODE_N_JSTREAMS(node)	((node)->klass->n_jstreams)
+#define ENGINE_NODE_N_OSTREAMS(node)	((node)->klass.n_ostreams)
+#define ENGINE_NODE_N_ISTREAMS(node)	((node)->klass.n_istreams)
+#define ENGINE_NODE_N_JSTREAMS(node)	((node)->klass.n_jstreams)
 #define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
 #define	ENGINE_NODE_IS_INTEGRATED(node)	((node)->integrated)
@@ -16,8 +16,8 @@
 #define	ENGINE_NODE_IS_SUSPENDED(nod,s) ((s) < (nod)->next_active)
 #define	ENGINE_NODE_IS_DEFERRED(node)	(false)
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(node->sched_tag)
-#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->klass->mflags & BSE_COST_CHEAP) != 0)
-#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->klass->mflags & BSE_COST_EXPENSIVE) != 0)
+#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->klass.mflags & BSE_COST_CHEAP) != 0)
+#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->klass.mflags & BSE_COST_EXPENSIVE) != 0)
 #define	ENGINE_NODE_LOCK(node)		(node)->rec_mutex.lock()
 #define	ENGINE_NODE_UNLOCK(node)	(node)->rec_mutex.unlock()
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))

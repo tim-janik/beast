@@ -106,7 +106,7 @@ bse_engine_free_node (Bse::Module *node)
       sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->jstreams);
       sfi_delete_structs (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
     }
-  const BseModuleClass *klass = node->klass;
+  const BseModuleClass *klass = &node->klass;
   void *user_data = node->user_data;
   delete node;
 
