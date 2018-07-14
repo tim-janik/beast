@@ -25,9 +25,9 @@
 namespace Bse {
 
 Module::Module (const BseModuleClass &_klass) :
-  klass (_klass),
-  integrated (false), virtual_node (0), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
-  cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0)
+  klass (_klass), n_istreams (_klass.n_istreams), n_jstreams (_klass.n_jstreams), n_ostreams (_klass.n_ostreams),
+  integrated (false), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
+  cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0), virtual_node (0)
 {
   this->istreams = BSE_MODULE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::IStream, BSE_MODULE_N_ISTREAMS (this)) : NULL;
   this->jstreams = BSE_MODULE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::JStream, BSE_MODULE_N_JSTREAMS (this)) : NULL;
@@ -37,6 +37,9 @@ Module::Module (const BseModuleClass &_klass) :
   this->outputs = BSE_MODULE_N_OSTREAMS (this) ? sfi_new_struct0 (Bse::EngineOutput, BSE_MODULE_N_OSTREAMS (this)) : NULL;
   for (size_t i = 0; i < BSE_MODULE_N_OSTREAMS (this); i++)
     this->outputs[i].buffer = this->ostreams[i].values;
+  assert_return (_klass.n_istreams <= 255);
+  assert_return (_klass.n_jstreams <= 255);
+  assert_return (_klass.n_ostreams <= 255);
 }
 
 Module::~Module()
