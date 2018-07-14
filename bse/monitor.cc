@@ -150,18 +150,6 @@ SourceImpl::create_signal_monitor (int32 ochannel)
   return mon;
 }
 
-static void /* Engine Thread */
-check_module (BseModule *module, void *data)
-{
-  // we only get here if the module's ENGINE_NODE_IS_INTEGRATED
-}
-
-void
-SourceImpl::cmon_omodule_changed (BseModule *module, bool added, BseTrans *trans)
-{
-  bse_trans_add (trans, bse_job_access (module, check_module, NULL, NULL));
-}
-
 bool
 SourceImpl::cmon_needed ()
 {
@@ -212,9 +200,24 @@ SourceImpl::cmon_activate ()
         bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
         bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
         for (auto omodule : omodules)
-          bse_trans_add (trans, bse_job_connect (cmons_[i].module, 0, omodule, i));
+          bse_trans_add (trans, bse_job_jconnect (omodule, i, cmons_[i].module, 0));
       }
   bse_trans_commit (trans);
+}
+
+void
+SourceImpl::cmon_omodule_changed (BseModule *module, bool added, BseTrans *trans)
+{
+  return_unless (cmons_ != NULL);
+  const uint noc = n_ochannels();
+  for (size_t i = 0; i < noc; i++)
+    if (cmons_[i].module)
+      {
+        if (added)
+          bse_trans_add (trans, bse_job_jconnect (module, i, cmons_[i].module, 0));
+        else
+          bse_trans_add (trans, bse_job_jdisconnect (cmons_[i].module, 0, module, i));
+      }
 }
 
 void // called on BseSource.reset
