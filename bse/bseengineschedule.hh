@@ -2,7 +2,7 @@
 #ifndef __BSE_ENGINE_SCHEDULE_H__
 #define __BSE_ENGINE_SCHEDULE_H__
 
-#include <bse/bseenginenode.hh>
+#include <bse/bseengineprivate.hh>
 
 typedef struct
 {

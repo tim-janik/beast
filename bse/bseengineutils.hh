@@ -2,7 +2,7 @@
 #ifndef __BSE_ENGINE_UTIL_H__
 #define __BSE_ENGINE_UTIL_H__
 
-#include <bse/bseenginenode.hh>
+#include <bse/bseengineprivate.hh>
 
 /* --- UserThread --- */
 void		_engine_free_trans		(BseTrans      *trans);

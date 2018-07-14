@@ -3,7 +3,7 @@
 #include "bseblockutils.hh"
 #include "gslcommon.hh"
 #include "bsemain.hh" /* bse_log_handler */
-#include "bseenginenode.hh"
+#include "bseengineprivate.hh"
 #include "bseengineutils.hh"
 #include "bseengineschedule.hh"
 #include "bseieee754.hh"

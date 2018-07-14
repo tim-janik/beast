@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#ifndef __BSE_ENGINE_NODE_H__
-#define __BSE_ENGINE_NODE_H__
+#ifndef __BSE_ENGINE_PRIVATE_H__
+#define __BSE_ENGINE_PRIVATE_H__
 
 #include "bseengine.hh"
 #include "gslcommon.hh"
@@ -200,4 +200,4 @@ struct _EngineNode		  // fields sorted by order of processing access
   {}
 };
 
-#endif // __BSE_ENGINE_NODE_H__
+#endif // __BSE_ENGINE_PRIVATE_H__

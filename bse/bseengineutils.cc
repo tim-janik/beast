@@ -2,7 +2,7 @@
 #include "bseengineutils.hh"
 #include "bseblockutils.hh"
 #include "gslcommon.hh"
-#include "bseenginenode.hh"
+#include "bseengineprivate.hh"
 #include "bseengineschedule.hh"
 #include "bsemathsignal.hh"
 #include <unordered_map>

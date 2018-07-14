@@ -25,7 +25,6 @@ bse_public_headers = $(strip \
 	gsldatahandle-mad.hh	           	gslfilehash.hh	gsldatautils.hh	\
 	gslwaveosc.hh		gslosctable.hh	gslmagic.hh	\
 	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
-	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
 	bsestartup.hh		\
 	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
 	bsebus.hh		bsecategories.hh 	\
@@ -53,6 +52,10 @@ bse_public_headers = $(strip \
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
 	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
+	bseengineprivate.hh	\
+	bseieee754.hh		\
+	bseincluder.hh		\
+	ladspa.hh		\
 	testobject.hh		\
 )
 # BSE C & C++ sources
