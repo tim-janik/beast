@@ -77,42 +77,7 @@ static void
 bse_engine_free_node (Bse::Module *node)
 {
   assert_return (node != NULL);
-  assert_return (node->output_nodes == NULL);
-  assert_return (node->integrated == FALSE);
-  assert_return (node->sched_tag == FALSE);
-  assert_return (node->sched_recurse_tag == FALSE);
-  assert_return (node->flow_jobs == NULL);
-  assert_return (node->boundary_jobs == NULL);
-  assert_return (node->tjob_head == NULL);
-  assert_return (node->probe_jobs == NULL);
-  if (node->ostreams)
-    {
-      /* bse_engine_block_size() may have changed since allocation */
-      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (node), node->ostreams);
-      sfi_delete_structs (Bse::EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
-    }
-  if (node->istreams)
-    {
-      sfi_delete_structs (BseIStream, ENGINE_NODE_N_ISTREAMS (node), node->istreams);
-      sfi_delete_structs (Bse::EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
-    }
-  for (uint j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-    {
-      g_free (node->jinputs[j]);
-      g_free (node->jstreams[j].values);
-    }
-  if (node->jstreams)
-    {
-      sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->jstreams);
-      sfi_delete_structs (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
-    }
-  const BseModuleClass *klass = &node->klass;
-  void *user_data = node->user_data;
   delete node;
-
-  /* allow the free function to free the klass as well */
-  if (klass->free)
-    klass->free (user_data, klass);
 }
 
 static void

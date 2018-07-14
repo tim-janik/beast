@@ -41,6 +41,40 @@ Module::Module (const BseModuleClass &_klass) :
 
 Module::~Module()
 {
+  assert_return (this->output_nodes == NULL);
+  assert_return (this->integrated == false);
+  assert_return (this->sched_tag == false);
+  assert_return (this->sched_recurse_tag == false);
+  assert_return (this->flow_jobs == NULL);
+  assert_return (this->boundary_jobs == NULL);
+  assert_return (this->tjob_head == NULL);
+  assert_return (this->probe_jobs == NULL);
+  if (this->ostreams)
+    {
+      // bse_engine_block_size() may have changed since allocation
+      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (this), this->ostreams);
+      sfi_delete_structs (Bse::EngineOutput, ENGINE_NODE_N_OSTREAMS (this), this->outputs);
+    }
+  if (this->istreams)
+    {
+      sfi_delete_structs (Bse::IStream, ENGINE_NODE_N_ISTREAMS (this), this->istreams);
+      sfi_delete_structs (Bse::EngineInput, ENGINE_NODE_N_ISTREAMS (this), this->inputs);
+    }
+  for (size_t j = 0; j < ENGINE_NODE_N_JSTREAMS (this); j++)
+    {
+      g_free (this->jinputs[j]);
+      g_free (this->jstreams[j].values);
+    }
+  if (this->jstreams)
+    {
+      sfi_delete_structs (Bse::JStream, ENGINE_NODE_N_JSTREAMS (this), this->jstreams);
+      sfi_delete_structs (Bse::EngineJInput*, ENGINE_NODE_N_JSTREAMS (this), this->jinputs);
+    }
+  void *_user_data = this->user_data;
+  this->user_data = NULL;
+  // allow the free function to free the klass as well
+  if (klass.free)
+    klass.free (_user_data, &klass);
 }
 
 } // Bse
