@@ -260,6 +260,18 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *klass)
   widget_class->unrealize = bst_sniffer_scope_unrealize;
 }
 
+static Bse::MonitorFields*
+monitor_fields_from_shm (int64 shm_id, uint32 shm_offset)
+{
+  Bse::SharedMemory sm = bse_server.get_shared_memory (shm_id);
+  assert_return (sm.shm_id == shm_id, NULL);
+  assert_return (sm.shm_creator == Bse::this_thread_getpid(), NULL);
+  char *shm_start = (char*) sm.shm_start; // allowed if sm.shm_creator matches our pid
+  assert_return (shm_start != NULL, NULL);
+  assert_return (shm_offset + sizeof (Bse::MonitorFields) <= size_t (sm.shm_length), NULL);
+  return (Bse::MonitorFields*) (shm_start + shm_offset);
+}
+
 void
 bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
 {
@@ -284,8 +296,11 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           features.probe_range = true;
           features.probe_energie = true;
           self->monitor.set_probe_features (features);
-          auto framecb = [self] () {
-            printerr ("%s: shmid=%u shmoff=0x%04x\n", __func__, self->monitor.get_shm_id(), self->monitor.get_shm_offset());
+          Bse::MonitorFields *mfields = monitor_fields_from_shm (self->monitor.get_shm_id(), self->monitor.get_shm_offset());
+          auto framecb = [self, mfields] () {
+            printerr ("%s: shmid=%u shmoff=0x%04x data: %x %f %f %f %f\n",
+                      __func__, self->monitor.get_shm_id(), self->monitor.get_shm_offset(),
+                      mfields->gen, mfields->min, mfields->max, mfields->energy, mfields->tip);
           };
           self->mon_handler = Bst::add_frame_handler (framecb);
         }
