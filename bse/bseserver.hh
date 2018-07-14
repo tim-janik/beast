@@ -82,13 +82,6 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 
 namespace Bse {
 
-struct SharedBlock {
-  int64 shm_id = 0;
-  int32 mem_offset = 0;
-  int32 mem_length = 0;
-  void *mem_start = NULL;
-};
-
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   TestObjectImplP    test_object_;
 protected:

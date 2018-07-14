@@ -84,6 +84,13 @@ namespace Bse {
 Icon icon_from_pixstream (const guint8 *pixstream);
 bool icon_sanitize (Icon *icon);
 
+struct SharedBlock { // TODO: move to memory.hh
+  int64 shm_id = 0;
+  int32 mem_offset = 0;
+  int32 mem_length = 0;
+  void *mem_start = NULL;
+};
+
 } // Bse
 
 #endif /* __BSE_UTILS_H__ */

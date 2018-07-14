@@ -5,6 +5,7 @@
 #include "bsecontainer.hh"
 #include "bsestorage.hh"
 #include "gslcommon.hh"
+#include "bseserver.hh"
 #include "bseengine.hh"
 
 
@@ -2095,8 +2096,7 @@ SourceImpl::SourceImpl (BseObject *bobj) :
 
 SourceImpl::~SourceImpl ()
 {
-  if (cmons_)
-    cmon_delete();
+  cmon_delete();        // delete cmons_ and cmon_block_
 }
 
 SourceIfaceP

@@ -268,6 +268,7 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   // == Channel Monitors
   class ChannelMonitor;
   ChannelMonitor      *cmons_ = NULL;
+  SharedBlock          cmon_block_;
   void                 cmon_activate           ();
   bool                 cmon_needed             ();
   void                 cmon_deactivate         ();
@@ -276,6 +277,8 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   void                 cmon_sub_probe          (uint ochannel, const ProbeFeatures &pf);
   ChannelMonitor&      cmon_get                (uint ochannel);
   void                 cmon_delete             ();
+  SharedBlock          cmon_get_block          ();
+  MonitorFields*       cmon_get_fields         (uint ochannel);
   friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
   friend void ::bse_source_reset               (BseSource*);
   friend void ::bse_source_prepare             (BseSource*);

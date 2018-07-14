@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "monitor.hh"
 #include "bseengine.hh"
+#include "bseserver.hh"
 
 namespace Bse {
 
@@ -32,13 +33,20 @@ SignalMonitorImpl::get_ochannel()
 int64
 SignalMonitorImpl::get_shm_id ()
 {
-  return 0;
+  SharedBlock sb = source_->cmon_get_block();
+  return sb.shm_id;
 }
 
 int64
 SignalMonitorImpl::get_shm_offset()
 {
-  return 0;
+  SharedBlock sb = source_->cmon_get_block();
+  MonitorFields *fields0 = source_->cmon_get_fields (0);
+  assert_return (sb.mem_start == (void*) fields0, 0);
+  MonitorFields *fieldsn = source_->cmon_get_fields (ochannel_);
+  const size_t channel_offset = ((char*) fieldsn) - ((char*) fields0);
+  return sb.mem_offset + channel_offset;
+  static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
 }
 
 int64
@@ -91,6 +99,28 @@ SourceImpl::cmon_get (uint ochannel)
   return cmons_[ochannel];
 }
 
+static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (sizeof (MonitorFields), BSE_CACHE_LINE_ALIGNMENT);
+
+SharedBlock
+SourceImpl::cmon_get_block ()
+{
+  if (!cmon_block_.mem_length)
+    {
+      const size_t size_needed = aligned_sizeof_MonitorFields * n_ochannels();
+      cmon_block_ = BSE_SERVER.allocate_shared_block (size_needed);
+    }
+  return cmon_block_;
+}
+
+MonitorFields*
+SourceImpl::cmon_get_fields (uint ochannel)
+{
+  assert_return (ochannel < size_t (n_ochannels()), NULL);
+  const SharedBlock sb = cmon_get_block();
+  MonitorFields *mfields = (MonitorFields*) sb.mem_start;
+  return &mfields[ochannel];
+}
+
 void
 SourceImpl::cmon_delete ()
 {
@@ -98,6 +128,12 @@ SourceImpl::cmon_delete ()
     {
       delete[] cmons_;
       cmons_ = NULL;
+    }
+  if (cmon_block_.mem_length)
+    {
+      const SharedBlock sb = cmon_block_;
+      cmon_block_ = SharedBlock();
+      BSE_SERVER.release_shared_block (sb);
     }
 }
 
