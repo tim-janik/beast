@@ -147,13 +147,15 @@ install-exec-debug:
 	  objcopy --strip-debug --add-gnu-debuglink="$(DESTDIR)$(bselibexecdir)/.debug/$$soname.debug" "$(DESTDIR)$(bselibexecdir)/$$soname" \
 	  || { echo "$$0: objcopy failed for: $(DESTDIR)$(bselibexecdir)/$$soname" >&2; exit 2; }; \
 	done
-uninstall-split-debug:
+uninstall-split-debug: # needs to run before 'uninstall' deletes $(bselibexec_LTLIBRARIES) from $(DESTDIR)$(bselibexecdir)/
 	for lib in $(bselibexec_LTLIBRARIES) ; do \
-	  soname=$$($(SED_SONAME) "$$lib") && \
+	  test -e "$(DESTDIR)$(bselibexecdir)/$$lib" || continue; \
+	  soname=$$($(SED_SONAME) "$(DESTDIR)$(bselibexecdir)/$$lib") && \
 	  rm -f "$(DESTDIR)$(bselibexecdir)/.debug/$$soname.debug" ; \
 	done
 install-exec-hook: install-exec-debug
-uninstall-local: uninstall-split-debug
+pre_uninstall_bselibexec_hook := $(strip uninstall-bselibexecLTLIBRARIES) # hook to run before and keep automake uninstall-bselibexecLTLIBRARIES
+$(pre_uninstall_bselibexec_hook): uninstall-split-debug # run uninstall-split-debug *before* make 'uninstall'
 # setup sources, their dependancies and commands
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=

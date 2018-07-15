@@ -184,7 +184,7 @@ bse_context_merger_context_dismiss (BseSource     *source,
 {
   BseModule *module;
 
-  /* if the BseModule wasn't created within context_handle, we would
+  /* if the BseModule wasn't created within context_create, we would
    * just need to disconnect it from connections within this context
    * and not discard it. however, that's somewhat tedious since it
    * requires poking around in BseSource internals which we can't do here.
@@ -199,7 +199,7 @@ bse_context_merger_context_dismiss (BseSource     *source,
       ContextModuleData *cmdata = (ContextModuleData*) module->user_data;
       assert_return (cmdata->ref_count > 0);
       cmdata->ref_count--;
-      if (cmdata->ref_count)	/* prevent discarding from engine */
+      if (cmdata->ref_count)	/* prevent automatic discarding from engine */
 	{
 	  bse_source_set_context_imodule (source, context_handle, NULL);
 	  bse_source_set_context_omodule (source, context_handle, NULL);
