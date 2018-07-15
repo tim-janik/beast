@@ -199,56 +199,69 @@ SourceImpl::cmon_needed ()
   return false;
 }
 
-struct MonitorData {
-  MonitorFields *mfields = NULL;
+static const BseModuleClass monitor_module_class = {
+  0,                            // n_istreams
+  1,                            // n_jstreams
+  0,                            // n_ostreams
+  NULL,                         // process
+  NULL,                         // process_defer
+  NULL,                         // reset
+  NULL,                         // free
+  Bse::ModuleFlag::NORMAL,      // mflags
 };
 
-static void
-monitor_process (BseModule *module, uint n_values)
-{
-  MonitorData *monitor_data = (MonitorData*) module->user_data;
-  MonitorFields *mfields = monitor_data->mfields;
-  const BseJStream &jstream = BSE_MODULE_JSTREAM (module, 0);
-  if (jstream.n_connections)
-    {
-      const float *wave_in = jstream.values[0];
-      float min = wave_in[0], max = wave_in[0];
-      float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
-      bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
-      for (uint j = 0; j < jstream.n_connections; j++)
-        for (uint i = 0; i < n_values; i++)
-          {
-            const float v = wave_in[i];
-            max = max > v ? max : v;
-            min = min < v ? min : v;
-            avg += v;
-            if (UNLIKELY (BSE_FLOAT_IS_NANINF (v)))
-              {
-                seen_nan |= BSE_FLOAT_IS_NAN (v);
-                seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
-                seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
-              }
-            else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
-              seen_subn = true;
-          }
-      avg /= double (n_values) * jstream.n_connections;
-      mfields->min = min;
-      mfields->max = max;
-      mfields->energy = avg; // FIXME: calc energy properly
-      mfields->tip = MAX (mfields->tip * 0.98, avg);
-      __sync_fetch_and_add (&mfields->gen, 1);
-      if (0)
-        Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-                       max, min, avg,
-                       jstream.n_connections, n_values,
-                       first, last,
-                       BSE_FREQ_FROM_VALUE (avg),
-                       seen_nan ? " +NAN" : "",
-                       seen_pinf ? " +PINF" : "",
-                       seen_ninf ? " +NINF" : "",
-                       seen_subn ? " +SUBNORM" : "");
-    }
-}
+class MonitorModule : public Bse::Module {
+  MonitorFields *mfields_ = NULL;
+public:
+  MonitorModule (MonitorFields *fields) : Module (monitor_module_class), mfields_ (fields) {}
+  virtual void
+  reset () override
+  {}
+  virtual void
+  process (uint n_values) override
+  {
+    const BseJStream &jstream = BSE_MODULE_JSTREAM (this, 0);
+    if (jstream.n_connections)
+      {
+        const float *wave_in = jstream.values[0];
+        float min = wave_in[0], max = wave_in[0];
+        float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
+        bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
+        for (uint j = 0; j < jstream.n_connections; j++)
+          for (uint i = 0; i < n_values; i++)
+            {
+              const float v = wave_in[i];
+              max = max > v ? max : v;
+              min = min < v ? min : v;
+              avg += v;
+              if (UNLIKELY (BSE_FLOAT_IS_NANINF (v)))
+                {
+                  seen_nan |= BSE_FLOAT_IS_NAN (v);
+                  seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
+                  seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
+                }
+              else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
+                seen_subn = true;
+            }
+        avg /= double (n_values) * jstream.n_connections;
+        mfields_->min = min;
+        mfields_->max = max;
+        mfields_->energy = avg; // FIXME: calc energy properly
+        mfields_->tip = MAX (mfields_->tip * 0.98, avg);
+        __sync_fetch_and_add (&mfields_->gen, 1);
+        if (0)
+          Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                         max, min, avg,
+                         jstream.n_connections, n_values,
+                         first, last,
+                         BSE_FREQ_FROM_VALUE (avg),
+                         seen_nan ? " +NAN" : "",
+                         seen_pinf ? " +PINF" : "",
+                         seen_ninf ? " +NINF" : "",
+                         seen_subn ? " +SUBNORM" : "");
+      }
+  }
+};
 
 void // called on BseSource.prepare
 SourceImpl::cmon_activate ()
@@ -262,19 +275,7 @@ SourceImpl::cmon_activate ()
   for (size_t i = 0; i < noc; i++)
     if (cmons_[i].needs_module() && !cmons_[i].module)
       {
-        static const BseModuleClass monitor_class = {
-          0,                            // n_istreams
-          1,                            // n_jstreams
-          0,                            // n_ostreams
-          monitor_process,              // process
-          NULL,                         // process_defer
-          NULL,                         // reset
-          (BseModuleFreeFunc) g_free,   // free
-          Bse::ModuleFlag::CHEAP,       // mflags
-        };
-        MonitorData *monitor_data = g_new0 (MonitorData, 1);
-        monitor_data->mfields = cmon_get_fields (i);
-        cmons_[i].module = bse_module_new (&monitor_class, monitor_data);
+        cmons_[i].module = new MonitorModule (cmon_get_fields (i));
         bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
         bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
         for (auto omodule : omodules)
