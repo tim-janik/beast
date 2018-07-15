@@ -289,4 +289,113 @@ bse_aligned_allocator_tests()
   assert_return (sa.sum() == asz);
 }
 
+/* Use a simple, fast dedicated RNG, because:
+ * a) we need to be able to reset the RNG to compare results from different runs;
+ * b) it should be really fast to not affect the allocator benchmarking.
+ */
+static uint32 quick_rand32_seed = 2147483563;
+static inline uint32
+quick_rand32 ()
+{
+  quick_rand32_seed = 1664525 * quick_rand32_seed + 1013904223;
+  return quick_rand32_seed;
+}
+
+template<int C>
+static void
+bse_aligned_allocator_benchloop (uint32 seed)
+{
+  constexpr const size_t RUNS = 37;
+  constexpr const int64 MAX_CHUNK_SIZE = 8192;
+  constexpr const int64 N_ALLOCS = 3333;
+  constexpr const int64 RESIDENT = N_ALLOCS / 5;
+  static AlignedBlock blocks[N_ALLOCS];
+  auto loop_aa = [&] () {
+    quick_rand32_seed = seed;
+    for (size_t j = 0; j < RUNS; j++)
+      {
+        for (size_t i = 0; i < N_ALLOCS; i++)
+          {
+            const size_t length = 1 + ((quick_rand32() * MAX_CHUNK_SIZE) >> 32);
+            if (C == 1)
+              blocks[i] = allocate_aligned_block (0, length);
+            if (C == 2)
+              {
+                blocks[i].mem_id = 1;
+                blocks[i].block_length = length;
+                // blocks[i].block_start = memalign (BSE_CACHE_LINE_ALIGNMENT, blocks[i].block_length);
+                const int posix_memalign_result = posix_memalign (&blocks[i].block_start, BSE_CACHE_LINE_ALIGNMENT, blocks[i].block_length);
+                assert_return (posix_memalign_result == 0);
+              }
+            assert_return (blocks[i].block_length > 0);
+            if (i > RESIDENT && (i & 1))
+              {
+                AlignedBlock &rblock = blocks[i - RESIDENT];
+                // Bse::printerr ("%d) AlignedBlock{%u,%x,%x,%p}\n", i, rblock.shm_id, rblock.mem_offset, rblock.mem_length, rblock.mem_start);
+                if (C == 1)
+                  release_aligned_block (rblock);
+                if (C == 2)
+                  {
+                    memset (rblock.block_start, 0, rblock.block_length);
+                    free (rblock.block_start);
+                  }
+                rblock = AlignedBlock();
+              }
+          }
+        for (size_t j = 0; j < N_ALLOCS; j++)
+          {
+            const uint i = (quick_rand32() * N_ALLOCS) >> 32;
+            if (blocks[i].block_length)
+              {
+                if (C == 1)
+                  release_aligned_block (blocks[i]);
+                if (C == 2)
+                  {
+                    memset (blocks[i].block_start, 0, blocks[i].block_length);
+                    free (blocks[i].block_start);
+                  }
+                blocks[i] = AlignedBlock();
+              }
+          }
+        for (size_t i = 0; i < N_ALLOCS; i++)
+          if (blocks[i].block_length)
+            {
+              if (C == 1)
+                release_aligned_block (blocks[i]);
+              if (C == 2)
+                {
+                  memset (blocks[i].block_start, 0, blocks[i].block_length);
+                  free (blocks[i].block_start);
+                }
+              blocks[i] = AlignedBlock();
+            }
+      }
+  };
+  Bse::Test::Timer timer (0.1);
+  const double bench_aa = timer.benchmark (loop_aa);
+  const size_t n_allocations = RUNS * N_ALLOCS;
+  const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
+  const char *anames[] = { NULL,
+                           "bse_alac",
+                           "memalign",
+  };
+  Bse::printerr ("%s benchmark # timing: %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
+                 anames[C], n_allocations, bench_aa, ns_p_a);
+}
+
+BSE_INTEGRITY_TEST (bse_aligned_allocator_benchmark);
+static void
+bse_aligned_allocator_benchmark()
+{
+  // ensure block allocator is initialized
+  release_aligned_block (allocate_aligned_block (0, MEMORY_AREA_SIZE));
+  // phi = 1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475
+  // 2^64 / phi = 11400714819323198485.95161058762180694985
+  // 2^32 / phi = 2654435769.49723029647758477079
+  bse_aligned_allocator_benchloop<1> (2147483563);
+  bse_aligned_allocator_benchloop<2> (2147483563);
+  bse_aligned_allocator_benchloop<1> (2654435769);
+  bse_aligned_allocator_benchloop<2> (2654435769);
+}
+
 } // Bse
