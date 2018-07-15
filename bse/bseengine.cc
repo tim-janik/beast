@@ -80,6 +80,12 @@ Module::~Module()
     klass.free (_user_data, &klass);
 }
 
+struct LegacyModule : Module {
+  explicit     LegacyModule (const BseModuleClass &klass) : Module (klass) {}
+  virtual void process      (uint n_values) override { return klass.process (this, n_values); }
+  virtual void reset        () override              { if (klass.reset) klass.reset (this); }
+};
+
 } // Bse
 
 /**
@@ -103,7 +109,7 @@ bse_module_new (const BseModuleClass *klass,
       Bse::warning ("%s: Delay cycle processing not yet implemented", __func__);
       return NULL;
     }
-  BseModule *module = new BseModule (*klass);
+  BseModule *module = new Bse::LegacyModule (*klass);
   module->user_data = user_data;
   return module;
 }

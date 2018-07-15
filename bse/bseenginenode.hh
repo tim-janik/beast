@@ -19,10 +19,12 @@ union  EngineTimedJob;
 class Module {            // fields sorted by order of processing access
   std::recursive_mutex   rec_mutex_; // processing lock
 public:
-  explicit               Module (const BseModuleClass &klass);
-  virtual               ~Module ();
-  inline void            lock   ()      { rec_mutex_.lock(); }
-  inline void            unlock ()      { rec_mutex_.unlock(); }
+  explicit              Module  (const BseModuleClass &klass);
+  virtual              ~Module  ();
+  inline void           lock    ()      { rec_mutex_.lock(); }
+  inline void           unlock  ()      { rec_mutex_.unlock(); }
+  virtual void          process (uint n_values) = 0;
+  virtual void          reset   () = 0;
   const BseModuleClass  &klass;
   const uint8            n_istreams;
   const uint8            n_jstreams;

@@ -758,9 +758,8 @@ master_update_node_state (Bse::Module *node,
   if (UNLIKELY (node->needs_reset && !BSE_MODULE_IS_SUSPENDED (node, node->counter)))
     {
       /* for suspended nodes, reset() occours later */
-      if (node->klass.reset)
-        node->klass.reset (node);
-      node->needs_reset = FALSE;
+      node->reset();
+      node->needs_reset = false;
     }
   tjob = node_pop_flow_job (node, max_tick);
   if (UNLIKELY (tjob != NULL))
@@ -843,7 +842,7 @@ master_process_locked_node (Bse::Module *node,
           node->needs_reset = TRUE;
 	}
       else
-        node->klass.process (node, new_counter - node->counter);
+        node->process (new_counter - node->counter);
       /* catch obuffer pointer changes */
       for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
 	{
@@ -1008,13 +1007,13 @@ master_process_flow (void)
 	  if (profile->profile_node)
 	    {
 	      if (profile->profile_maxtime > uint64 (bse_profile_modules))
-		Bse::printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
+		Bse::printout ("Excess Node: %p  Duration: %llu usecs     (%p)         \n",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->klass.process);
+                               &profile->profile_node->klass);
 	      else
-		Bse::printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
+		Bse::printout ("Slowest Node: %p  Duration: %llu usecs     (%p)         \r",
                                profile->profile_node, (long long unsigned int) profile->profile_maxtime,
-                               profile->profile_node->klass.process);
+                               &profile->profile_node->klass);
 	    }
 	}
 
