@@ -100,7 +100,7 @@ bse_mult_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     NULL,                       /* free */
-    BSE_COST_CHEAP,             /* cost */
+    Bse::ModuleFlag::CHEAP,             /* cost */
   };
   // BseMult *mult = BSE_MULT (source);
   BseModule *module;

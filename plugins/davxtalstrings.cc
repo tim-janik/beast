@@ -474,7 +474,7 @@ dav_xtal_strings_context_create (BseSource *source,
     NULL,				/* process_defer */
     xmod_reset,				/* reset */
     xmod_free,				/* free */
-    BSE_COST_NORMAL,			/* cost */
+    Bse::ModuleFlag::NORMAL,			/* cost */
   };
   DavXtalStrings *self = DAV_XTAL_STRINGS (source);
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);

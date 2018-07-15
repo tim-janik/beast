@@ -15,6 +15,7 @@
 #define BSE_MODULE_IBUFFER(module, stream)      (BSE_MODULE_ISTREAM ((module), (stream)).values)
 #define BSE_MODULE_JBUFFER(module, stream, con) (BSE_MODULE_JSTREAM ((module), (stream)).values[con])
 #define BSE_MODULE_OBUFFER(module, stream)      (BSE_MODULE_OSTREAM ((module), (stream)).values)
+#define	BSE_MODULE_IS_EXPENSIVE(module)	        (0 != (size_t ((module)->klass.mflags) & size_t (Bse::ModuleFlag::EXPENSIVE)))
 #define BSE_ENGINE_MAX_POLLFDS                  (128)
 
 
@@ -46,27 +47,16 @@ typedef void     (*BseModuleResetFunc)  (BseModule     *module);
 typedef void     (*BseModuleFreeFunc)   (gpointer        data,
                                          const BseModuleClass *klass);
 
-typedef enum    /*< skip >*/
-{
-  BSE_COST_NORMAL       = 0,
-  BSE_COST_CHEAP        = 1 << 0,
-  BSE_COST_EXPENSIVE    = 1 << 1
-} BseCostType;
-/* class, filled out by user */
-struct BseModuleClass
-{
-  guint               n_istreams;
-  guint               n_jstreams;
-  guint               n_ostreams;
-  BseProcessFunc      process;          /* EngineThread */
-  BseProcessDeferFunc process_defer;    /* EngineThread */
-  BseModuleResetFunc  reset;            /* EngineThread */
-  BseModuleFreeFunc   free;             /* UserThread */
-  BseCostType         mflags;
+namespace Bse {
+
+enum class ModuleFlag {
+  NORMAL        = 0,      ///< Nutral flag
+  CHEAP         = 1 << 0, ///< Very short or NOP as process() function
+  EXPENSIVE     = 1 << 1, ///< Indicate lengthy process() functio
+  VIRTUAL_      = 1 << 7, ///< Flag used internally
 };
 
-namespace Bse {
-/* streams, constructed by engine */
+// streams, constructed by engine
 struct JStream {
   const float **values;
   uint          n_connections;  // scheduler update
@@ -81,7 +71,20 @@ struct OStream {
   float *values;
   bool   connected;
 };
+
 } // Bse
+
+// class, filled out by user
+struct BseModuleClass {
+  uint                n_istreams;
+  uint                n_jstreams;
+  uint                n_ostreams;
+  BseProcessFunc      process;          // EngineThread
+  BseProcessDeferFunc process_defer;    // EngineThread
+  BseModuleResetFunc  reset;            // EngineThread
+  BseModuleFreeFunc   free;             // UserThread
+  Bse::ModuleFlag     mflags;
+};
 
 /* --- interface (UserThread functions) --- */
 BseModule* bse_module_new               (const BseModuleClass *klass,

@@ -27,7 +27,7 @@ namespace Bse {
 Module::Module (const BseModuleClass &_klass) :
   klass (_klass), n_istreams (_klass.n_istreams), n_jstreams (_klass.n_jstreams), n_ostreams (_klass.n_ostreams),
   integrated (false), is_consumer (0), update_suspend (0), in_suspend_call (0), needs_reset (0),
-  cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0), virtual_node (0)
+  cleared_ostreams (0), sched_tag (0), sched_recurse_tag (0)
 {
   this->istreams = BSE_MODULE_N_ISTREAMS (this) ? sfi_new_struct0 (Bse::IStream, BSE_MODULE_N_ISTREAMS (this)) : NULL;
   this->jstreams = BSE_MODULE_N_JSTREAMS (this) ? sfi_new_struct0 (Bse::JStream, BSE_MODULE_N_JSTREAMS (this)) : NULL;
@@ -1188,7 +1188,7 @@ bse_module_new_virtual (guint       n_iostreams,
       NULL,			/* process_defer */
       NULL,			/* reset */
       virtual_module_free,	/* free */
-      BSE_COST_CHEAP
+      Bse::ModuleFlag (size_t (Bse::ModuleFlag::CHEAP) | size_t (Bse::ModuleFlag::VIRTUAL_))
     },
     NULL,			/* free_data */
   };
@@ -1200,7 +1200,6 @@ bse_module_new_virtual (guint       n_iostreams,
   vclass->klass.n_ostreams = n_iostreams;
   vclass->free_data = free_data;
   module = bse_module_new (&vclass->klass, user_data);
-  module->virtual_node = true;
   return module;
 }
 /* --- initialization --- */

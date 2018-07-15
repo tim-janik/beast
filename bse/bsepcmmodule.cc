@@ -120,7 +120,7 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     bse_pcm_module_data_free,	/* free */
-    BSE_COST_CHEAP,		/* cost */
+    Bse::ModuleFlag::CHEAP,		/* cost */
   };
   BsePCMModuleData *mdata;
   BseModule *module;
@@ -222,7 +222,7 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
     NULL,                       /* process_defer */
     bse_pcm_imodule_reset,      /* reset */
     bse_pcm_module_data_free,	/* free */
-    BSE_COST_EXPENSIVE,		/* cost */
+    Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
   BsePCMModuleData *mdata;
   BseModule *module;

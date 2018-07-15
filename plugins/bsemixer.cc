@@ -338,7 +338,7 @@ bse_mixer_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
-    BSE_COST_CHEAP,		/* flags */
+    Bse::ModuleFlag::CHEAP,		/* flags */
   };
   Mixer *mixer = g_new0 (Mixer, 1);
   BseModule *module;

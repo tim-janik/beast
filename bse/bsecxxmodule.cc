@@ -140,15 +140,15 @@ delete_module (gpointer        data,
   delete m;
 }
 
-static BseCostType
+static Bse::ModuleFlag
 module_flags_from_process_cost (ProcessCost cost)
 {
   switch (cost)
     {
-    case EXPENSIVE:     return BSE_COST_EXPENSIVE;
-    case CHEAP:         return BSE_COST_CHEAP;
+    case EXPENSIVE:     return Bse::ModuleFlag::EXPENSIVE;
+    case CHEAP:         return Bse::ModuleFlag::CHEAP;
     default:
-    case NORMAL:        return BSE_COST_NORMAL;
+    case NORMAL:        return Bse::ModuleFlag::NORMAL;
     }
 }
 
@@ -171,9 +171,9 @@ Effect::create_engine_class (SynthesisModule *sample_module,
         NULL,                   /* process_defer */
         reset_module,           /* reset */
         delete_module,          /* free */
-        BSE_COST_NORMAL,        /* mflags */
+        Bse::ModuleFlag::NORMAL,        /* mflags */
       };
-      klass.mflags = BseCostType (cost >= 0 ? cost : module_flags_from_process_cost (sample_module->cost()));
+      klass.mflags = cost >= 0 ? ModuleFlag (cost) : module_flags_from_process_cost (sample_module->cost());
       klass.n_istreams = n_istreams >= 0 ? n_istreams : (BSE_SOURCE_N_ICHANNELS (source) -
                                                          BSE_SOURCE_N_JOINT_ICHANNELS (source));
       klass.n_jstreams = n_jstreams >= 0 ? n_jstreams : BSE_SOURCE_N_JOINT_ICHANNELS (source);

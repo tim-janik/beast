@@ -59,7 +59,6 @@ public:
   guint64                local_active = 0;              // local suspend state stamp
   Module                *toplevel_next = NULL;          // master-consumer-list, FIXME: overkill, using a SfiRing is good enough
   SfiRing               *output_nodes = NULL;           // EngineNode* ring of nodes in ->outputs[]
-  uint                   virtual_node : 1;
 };
 } // Bse
 

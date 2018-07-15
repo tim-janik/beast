@@ -7,11 +7,9 @@
 
 #define	BSE_MODULE_IS_SUSPENDED(nod,s)  ((s) < (nod)->next_active)
 #define	BSE_MODULE_IS_DEFERRED(module)	(false)
-#define	BSE_MODULE_IS_CHEAP(module)	(((module)->klass.mflags & BSE_COST_CHEAP) != 0)
-#define	BSE_MODULE_IS_EXPENSIVE(module)	(((module)->klass.mflags & BSE_COST_EXPENSIVE) != 0)
 #define	BSE_MODULE_IS_CONSUMER(module)	((module)->is_consumer && (module)->output_nodes == NULL)
-#define	BSE_MODULE_IS_VIRTUAL(module)   ((module)->virtual_node)
 #define	BSE_MODULE_IS_SCHEDULED(module)	((module)->sched_tag)
+#define	BSE_MODULE_IS_VIRTUAL(module)   (0 != (size_t ((module)->klass.mflags) & size_t (Bse::ModuleFlag::VIRTUAL_)))
 
 /* --- transactions --- */
 typedef enum /*< skip >*/

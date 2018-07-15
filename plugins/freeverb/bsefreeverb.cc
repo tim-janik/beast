@@ -256,7 +256,7 @@ bse_free_verb_context_create (BseSource *source,
     NULL,			/* process_defer */
     free_verb_reset,		/* reset */
     free_verb_destroy,		/* free */
-    BSE_COST_EXPENSIVE,		/* cost */
+    Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
   BseFreeVerb *self = BSE_FREE_VERB (source);
   BseFreeVerbCpp *cpp = g_new0 (BseFreeVerbCpp, 1);

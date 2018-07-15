@@ -267,7 +267,7 @@ bse_constant_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
-    BSE_COST_CHEAP,		/* flags */
+    Bse::ModuleFlag::CHEAP,		/* flags */
   };
   ConstantModule *constant = g_new0 (ConstantModule, 1);
   BseModule *module;

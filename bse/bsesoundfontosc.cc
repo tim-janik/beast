@@ -602,7 +602,7 @@ bse_sound_font_osc_context_create (BseSource *source,
     NULL,			    /* process_defer */
     sound_font_osc_reset,	    /* reset */
     (BseModuleFreeFunc) g_free,	    /* free */
-    BSE_COST_CHEAP,		    /* flags */
+    Bse::ModuleFlag::CHEAP,		    /* flags */
   };
   SoundFontOscModule *sound_font_osc = g_new0 (SoundFontOscModule, 1);
   BseModule *module;

@@ -378,7 +378,7 @@ bse_iir_filter_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
-    BSE_COST_NORMAL,		/* flags */
+    Bse::ModuleFlag::NORMAL,		/* flags */
   };
   BseIIRFilter *filt = BSE_IIR_FILTER (source);
   FilterModule *fmod = g_new0 (FilterModule, 1);

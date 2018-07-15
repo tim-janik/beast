@@ -402,7 +402,7 @@ bse_simple_adsr_context_create (BseSource *source,
     NULL,                       	/* process_defer */
     simple_adsr_reset,               	/* reset */
     (BseModuleFreeFunc) g_free,		/* free */
-    BSE_COST_CHEAP,			/* cost */
+    Bse::ModuleFlag::CHEAP,			/* cost */
   };
   BseSimpleADSR *simple_adsr = BSE_SIMPLE_ADSR (source);
   SimpleADSR *env = g_new0 (SimpleADSR, 1);

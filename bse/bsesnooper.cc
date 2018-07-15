@@ -168,7 +168,7 @@ bse_snooper_context_create (BseSource *source,
     NULL,                       // process_defer
     NULL,                       // reset
     (BseModuleFreeFunc) g_free, // free
-    BSE_COST_CHEAP,             // mflags
+    Bse::ModuleFlag::CHEAP,             // mflags
   };
   BseSnooper *snooper = BSE_SNOOPER (source);
 

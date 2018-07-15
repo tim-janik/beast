@@ -233,7 +233,7 @@ bse_pcm_input_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
-    BSE_COST_CHEAP,		/* cost */
+    Bse::ModuleFlag::CHEAP,		/* cost */
   };
   ModData *mdata = g_new0 (ModData, 1);
   BseModule *module = bse_module_new (&pcm_input_mclass, mdata);

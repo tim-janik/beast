@@ -176,7 +176,7 @@ bse_sub_oport_context_create (BseSource *source,
         NULL,                           // process_defer
         NULL,                           // reset
         NULL,                           // free
-        BSE_COST_CHEAP,                 // mflags
+        Bse::ModuleFlag::CHEAP,                 // mflags
       };
       bse_source_class_cache_engine_class (BSE_SOURCE_GET_CLASS (self), &module_class);
     }
