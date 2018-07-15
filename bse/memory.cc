@@ -203,7 +203,8 @@ allocate_aligned_block (uint32 mem_id, uint32 length)
   if (mem_id == 0)
     {
       for (size_t i = 0; i < shared_areas.size(); i++)
-        if (shared_areas[i]->alloc_ext (ext))
+        if (ISLIKELY (shared_areas[i]->external == false) and
+            shared_areas[i]->alloc_ext (ext))
           {
             am.mem_id = shared_areas[i]->mem_id;
             am.block_length = ext.length;
