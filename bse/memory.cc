@@ -367,7 +367,7 @@ template<int C>
 static void
 bse_aligned_allocator_benchloop (uint32 seed)
 {
-  constexpr const size_t RUNS = 19;
+  constexpr const size_t RUNS = 11;
   constexpr const int64 MAX_CHUNK_SIZE = 8192;
   constexpr const int64 N_ALLOCS = 5555;
   constexpr const int64 RESIDENT = N_ALLOCS / 3;
@@ -376,6 +376,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
     quick_rand32_seed = seed;
     for (size_t j = 0; j < RUNS; j++)
       {
+        // allocate random sizes
         for (size_t i = 0; i < N_ALLOCS; i++)
           {
             const size_t length = 1 + ((quick_rand32() * MAX_CHUNK_SIZE) >> 32);
@@ -389,15 +390,37 @@ bse_aligned_allocator_benchloop (uint32 seed)
                 rblock = AlignedBlock();
               }
           }
+        // shuffle some blocks
+        for (size_t j = 0; j < N_ALLOCS / 2; j++)
+          {
+            const uint i1 = j * 2;
+            const uint i2 = (quick_rand32() * N_ALLOCS) >> 32;
+            const uint i3 = (i1 + i2) / 2;
+            if (i1 == i2 || i2 == i3 || i3 == i1)
+              continue; // avoid double free
+            const uint l1 = blocks[i1].block_length;
+            const uint l2 = blocks[i2].block_length;
+            const uint l3 = blocks[i3].block_length;
+            if (l1)
+              TestAllocator<C>::release_block (blocks[i1]);
+            if (l2)
+              TestAllocator<C>::release_block (blocks[i2]);
+            if (l3)
+              TestAllocator<C>::release_block (blocks[i3]);
+            blocks[i2] = TestAllocator<C>::allocate_block (0, l1 ? l1 : MAX_CHUNK_SIZE / 3);
+            blocks[i1] = TestAllocator<C>::allocate_block (0, l3 ? l3 : MAX_CHUNK_SIZE / 3);
+            blocks[i3] = TestAllocator<C>::allocate_block (0, l2 ? l2 : MAX_CHUNK_SIZE / 3);
+          }
+        // release blocks randomized (frees ca 59%)
         for (size_t j = 0; j < N_ALLOCS; j++)
           {
             const uint i = (quick_rand32() * N_ALLOCS) >> 32;
-            if (blocks[i].block_length)
-              {
-                TestAllocator<C>::release_block (blocks[i]);
-                blocks[i] = AlignedBlock();
-              }
+            if (!blocks[i].block_length)
+              continue;
+            TestAllocator<C>::release_block (blocks[i]);
+            blocks[i] = AlignedBlock();
           }
+        // release everything
         for (size_t i = 0; i < N_ALLOCS; i++)
           if (blocks[i].block_length)
             {
@@ -408,7 +431,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   };
   Bse::Test::Timer timer (0.1);
   const double bench_aa = timer.benchmark (loop_aa);
-  const size_t n_allocations = RUNS * N_ALLOCS;
+  const size_t n_allocations = RUNS * N_ALLOCS * (1 + 3.0 / 2);
   const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
   Bse::printerr ("%s benchmark # timing: %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
                  TestAllocator<C>::name(), n_allocations, bench_aa, ns_p_a);
