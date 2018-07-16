@@ -1392,215 +1392,64 @@ ServerImpl::tick_stamp_from_systime (int64 systime_usecs)
   return bse_engine_tick_stamp_from_systime (systime_usecs);
 }
 
-struct SharedAreaExtent {
-  uint32   start = 0;
-  uint32   length = 0;
-  explicit SharedAreaExtent (uint32 sz = 0) : length (sz) {}
-  void     reset (uint32 sz = 0)                          { start = 0; length = sz; }
-  void     zero (char *area) const                        { memset (area + start, 0, length); }
-};
+#define SHARED_MEMORY_AREA_SIZE (4 * 1024 * 1024)
 
-struct SharedArea {
-  int64                         shm_id = 0;
-  char                         *memory = NULL;
-  SharedAreaExtent              area;
-  std::vector<SharedAreaExtent> extents; // free list
-  ~SharedArea()
-  {
-    const ssize_t s = sum();
-    if (s != area.length)
-      warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, area.length - s);
-    if (memory)
-      delete[] memory;
-  }
-  size_t
-  sum () const
-  {
-    size_t s = 0;
-    for (const auto b : extents)
-      s += b.length;
-    return s;
-  }
-  void
-  create (int64 newid, size_t areasize)
-  {
-    assert_return (shm_id == 0 && newid != 0);
-    assert_return (area.length == 0 && areasize > 0);
-    shm_id = newid;
-    memory = new char[areasize];
-    area.start = 0;
-    area.length = areasize;
-    release (area);
-  }
-  void
-  release (const SharedAreaExtent &ext)
-  {
-    assert_return (ext.start >= area.start);
-    assert_return (ext.length > 0);
-    assert_return (ext.start + ext.length <= area.start + area.length);
-    ssize_t overlaps_existing = -1, before = -1, after = -1;
-    for (size_t i = 0; i < extents.size(); i++)
-      if (ext.start == extents[i].start + extents[i].length)
-        after = i;
-      else if (ext.start + ext.length == extents[i].start)
-        before = i;
-      else if (ext.start + ext.length > extents[i].start &&
-               ext.start < extents[i].start + extents[i].length)
-        overlaps_existing = i;
-    assert_return (overlaps_existing == -1);
-    // merge with existing extents
-    if (after >= 0)
-      {
-        extents[after].length += ext.length;
-        if (before >= 0)
-          {
-            extents[after].length += extents[before].length;
-            extents.erase (extents.begin() + before);
-          }
-        return;
-      }
-    if (before >= 0)
-      {
-        extents[before].length += ext.length;
-        extents[before].start = ext.start;
-        return;
-      }
-    // add isolated block to free list
-    extents.push_back (ext);
-    ext.zero (memory);
-  }
-  ssize_t
-  fit_block (size_t length) const
-  {
-    ssize_t candidate = -1;
-    for (size_t i = 0; i < extents.size(); i++)
-      if (length == extents[i].length)
-        return i;
-      else if (length < extents[i].length)
-        {
-          if (candidate < 0)
-            candidate = i;
-          else if (extents[i].length - length < extents[candidate].length - length)
-            candidate = i;
-        }
-    return candidate;
-  }
-  bool
-  alloc (SharedAreaExtent &ext)
-  {
-    assert_return (ext.start == 0, false);
-    assert_return (ext.length > 0, false);
-    // find block
-    ssize_t candidate = fit_block (ext.length);
-    // merge freed extents
-    if (candidate < 0 && extents.size())
-      {
-        auto isless_start = [this] (const SharedAreaExtent &a, const SharedAreaExtent &b) -> bool {
-          return a.start < b.start;
-        };
-        std::sort (extents.begin(), extents.end(), isless_start);
-        for (size_t i = extents.size() - 1; i > 0; i--)
-          if (extents[i-1].start + extents[i-1].length == extents[i].start) // adjacent
-            {
-              extents[i-1].length += extents[i].length;
-              extents.erase (extents.begin() + i);
-            }
-      }
-    // find block again
-    candidate = fit_block (ext.length);
-    if (candidate < 0)
-      return false;     // OOM
-    // allocate from end of larger block
-    extents[candidate].length -= ext.length;
-    ext.start = extents[candidate].start + extents[candidate].length;
-    // unlist if block wasn't larger
-    if (extents[candidate].length == 0)
-      extents.erase (extents.begin() + candidate);
-    return true;
-  }
-};
-static std::vector<SharedArea> shared_areas;
+static std::vector<uint32> shared_memory_area_ids;
 
 SharedMemory
-ServerImpl::get_shared_memory (int64 id)
+ServerImpl::get_shared_memory (int64 shm_id)
 {
   SharedMemory sm;
-  for (size_t i = 0; i < shared_areas.size(); i++)
-    if (shared_areas[i].shm_id == id)
+  bool found_shm_id = false;
+  for (auto id : shared_memory_area_ids)
+    if (id == shm_id)
       {
-        sm.shm_creator = this_thread_getpid();
-        sm.shm_id = shared_areas[i].shm_id;
-        sm.shm_length = shared_areas[i].area.length;
-        sm.shm_start = ptrdiff_t (shared_areas[i].area.start);
+        found_shm_id = true;
         break;
       }
+  assert_return (found_shm_id, sm);
+  MemoryArea ma = find_memory_area (shm_id);
+  sm.shm_id = ma.mem_id;
+  sm.shm_start = ma.mem_start;
+  sm.shm_length = ma.mem_length;
+  sm.shm_creator = this_thread_getpid();
   return sm;
-}
-
-static SharedBlock
-allocate_shared_block (int64 length)
-{
-  SharedBlock m;
-  if (length < 1)
-    return m;
-  SharedAreaExtent ext;
-  ext.length = length;
-  // allocate from existing shared memory areas
-  int64 maxid = 1111;
-  for (size_t i = 0; i < shared_areas.size(); i++)
-    if (shared_areas[i].alloc (ext))
-      {
-        m.shm_id = shared_areas[i].shm_id;
-        m.mem_offset = ext.start;
-        m.mem_length = ext.length;
-        m.mem_start = shared_areas[i].memory + m.mem_offset;
-        return m;
-      }
-    else
-      maxid = std::max (maxid, shared_areas[i].shm_id);
-  // allocate a new area
-  const ssize_t area_size = std::max (length, ssize_t (2) * 1024 * 1024);
-  shared_areas.resize (shared_areas.size() + 1);
-  shared_areas.back().create (maxid + 1111, area_size);
-  // allocate block from new area
-  const bool block_in_new_area = shared_areas.back().alloc (ext);
-  assert_return (block_in_new_area, m);
-  m.shm_id = shared_areas.back().shm_id;
-  m.mem_offset = ext.start;
-  m.mem_length = ext.length;
-  m.mem_start = shared_areas.back().memory + m.mem_offset;
-  return m;
 }
 
 SharedBlock
 ServerImpl::allocate_shared_block (int64 length)
 {
-  return Bse::allocate_shared_block (length);
-}
-
-static void
-release_shared_block (const SharedBlock &m)
-{
-  for (size_t i = 0; i < shared_areas.size(); i++)
-    if (shared_areas[i].shm_id == m.shm_id)
-      {
-        SharedAreaExtent ext;
-        ext.start = m.mem_offset;
-        ext.length = m.mem_length;
-        assert_return (shared_areas[i].memory + m.mem_offset == m.mem_start);
-        shared_areas[i].release (ext);
-        return;
-      }
-  assert_return (!"invalid shared_memory_id");
+  SharedBlock sb;
+  assert_return (length <= SHARED_MEMORY_AREA_SIZE, sb);
+  return_unless (length > 0, sb);
+  AlignedBlock ab;
+  for (size_t i = 0; i < shared_memory_area_ids.size(); i++)
+    {
+      ab = allocate_aligned_block (shared_memory_area_ids[i], length);
+      if (ab.block_start)
+        break;
+    }
+  if (!ab.block_start)
+    {
+      shared_memory_area_ids.push_back (create_memory_area (SHARED_MEMORY_AREA_SIZE, 2 * BSE_CACHE_LINE_ALIGNMENT).mem_id);
+      ab = allocate_aligned_block (shared_memory_area_ids.back(), length);
+    }
+  assert_return (ab.block_start != NULL, sb);
+  sb.shm_id = ab.mem_id;
+  sb.mem_length = ab.block_length;
+  sb.mem_start = ab.block_start;
+  sb.mem_offset = uint64 (sb.mem_start) - find_memory_area (sb.shm_id).mem_start;
+  return sb;
 }
 
 void
-ServerImpl::release_shared_block (const SharedBlock &block)
+ServerImpl::release_shared_block (const SharedBlock &sb)
 {
-  return Bse::release_shared_block (block);
+  assert_return (sb.shm_id == uint32 (sb.shm_id));
+  assert_return (sb.mem_length == int32 (sb.mem_length));
+  AlignedBlock ab { uint32 (sb.shm_id), uint32 (sb.mem_length), sb.mem_start };
+  release_aligned_block (ab);
 }
-
-// FIXME: alignment, huge pages, mmap
 
 // == Allocator Tests ==
 BSE_INTEGRITY_TEST (bse_server_test_allocator);
@@ -1608,36 +1457,26 @@ static void
 bse_server_test_allocator()
 {
   const ssize_t mb = 1024 * 1024;
-  const ssize_t sz = 3 * mb;
-  SharedArea sa;
-  sa.create (-1, sz);
-  assert_return (sa.sum() == sz);
-  bool success;
-  SharedAreaExtent s1 (mb);
-  success = sa.alloc (s1);
-  assert_return (success);
-  assert_return (sa.sum() == sz - mb);
-  SharedAreaExtent s2 (mb);
-  success = sa.alloc (s2);
-  assert_return (success);
-  assert_return (sa.sum() == sz - 2 * mb);
-  SharedAreaExtent s3 (mb);
-  success = sa.alloc (s3);
-  assert_return (success);
-  assert_return (sa.sum() == 0);
-  sa.release (s1);
-  assert_return (sa.sum() == mb);
-  sa.release (s3);
-  assert_return (sa.sum() == 2 * mb);
-  s1.reset (2 * mb);
-  success = sa.alloc (s1);
-  assert_return (success == false); // must fail due to fragmentation
-  sa.release (s2);
-  assert_return (sa.sum() == 3 * mb);
-  success = sa.alloc (s1);
-  assert_return (success);
-  sa.release (s1);
-  assert_return (sa.sum() == sz);
+  SharedBlock sb1 = BSE_SERVER.allocate_shared_block (mb);
+  assert_return (sb1.mem_start);
+  SharedBlock sb2 = BSE_SERVER.allocate_shared_block (mb);
+  assert_return (sb2.mem_start);
+  SharedBlock sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  assert_return (sb3.mem_start);
+  assert_return (sb3.shm_id != sb1.shm_id);     // 1mb + 1mb + 3mb won't fit into 4mb area
+  BSE_SERVER.release_shared_block (sb3);
+  BSE_SERVER.release_shared_block (sb2);
+  sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  assert_return (sb3.mem_start);
+  assert_return (sb3.shm_id == sb1.shm_id);     // now sb1 and sb3 fit the same area
+  sb2 = BSE_SERVER.allocate_shared_block (1);
+  assert_return (sb2.mem_start);
+  assert_return (sb2.shm_id != sb3.shm_id);     // but nothing else
+  assert_return (BSE_SERVER.get_shared_memory (sb2.shm_id).shm_id == sb2.shm_id); // is shared?
+  assert_return (BSE_SERVER.get_shared_memory (sb3.shm_id).shm_id == sb3.shm_id); // is shared?
+  BSE_SERVER.release_shared_block (sb3);
+  BSE_SERVER.release_shared_block (sb2);
+  BSE_SERVER.release_shared_block (sb1);
 }
 
 } // Bse
