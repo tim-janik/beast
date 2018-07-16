@@ -5,7 +5,7 @@
 
   <link rel="stylesheet" href="assets/stylesheets.css">
 
-  <script>
+  <script> /* Load Electron, Bse, Vue, setup DevTools and Util */
   'use strict';
   window.Electron = require ('electron').remote;
   const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
@@ -25,6 +25,7 @@
 	Electron.getCurrentWindow().toggleDevTools();
       if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
 	window.location.reload();
+      // Electron.getCurrentWindow().webContents.setZoomFactor (1);
     });
   // Utilities
   {
@@ -32,7 +33,8 @@
     window.assert = Util.assert;
     Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
   }
-  // Electron.getCurrentWindow().webContents.setZoomFactor (1);
+  // Hookup 60fps repaints during DSP engine activity
+  Bse.server.on ('enginechange', (ev) => { window.ev = ev; console.log ("server enginechange"); } );
   </script>
 
 </head>
