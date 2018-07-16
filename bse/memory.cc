@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "memory.hh"
 #include <sfi/testing.hh>
+#include <sys/mman.h>
 
 #define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))
 #define MEMORY_AREA_SIZE                (size_t (4) * 1024 * 1024)
@@ -24,6 +25,7 @@ struct SharedArea {
   SharedAreaExtent              area;
   std::vector<SharedAreaExtent> extents; // free list
   char                         *memory = NULL;
+  std::function<void (SharedArea&)> mem_release;
   bool                          external;
   SharedArea (uint32 areasize, uint32 alignment, bool is_external) :
     mem_id (shared_area_nextid++), mem_alignment (alignment), external (is_external)
@@ -35,17 +37,35 @@ struct SharedArea {
     area.length = MEM_ALIGN (areasize, mem_alignment);
     assert_return (area.length >= areasize);
     area.start = 0;
-    memory = new char[area.length];
+    {
+      const int protection = PROT_READ | PROT_WRITE;
+      const int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+      memory = (char*) MAP_FAILED;
+      if (area.length >= 2 * 1024 * 1024)
+        memory = (char*) mmap (NULL, area.length, protection, flags | MAP_HUGETLB, -1, 0);
+      if (memory == MAP_FAILED && area.length >= 4096)
+        memory = (char*) mmap (NULL, area.length, protection, flags, -1, 0);
+      if (memory != MAP_FAILED)
+        mem_release = [] (SharedArea &self) { munmap (self.memory, self.area.length); self.memory = NULL; };
+      else
+        {
+          const int posix_memalign_result = posix_memalign ((void**) &memory, mem_alignment, area.length);
+          if (posix_memalign_result)
+            fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", area.length, strerror (posix_memalign_result));
+          mem_release = [] (SharedArea &self) { free (self.memory); self.memory = NULL; };
+        }
+    }
     assert_return (memory != NULL);
     release_ext (area);
+    assert_return ((size_t (memory) & (mem_alignment - 1)) == 0); // ensure alignment
   }
   ~SharedArea()
   {
     const ssize_t s = sum();
     if (s != area.length)
       warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, area.length - s);
-    if (memory)
-      delete[] memory;
+    if (mem_release)
+      mem_release (*this);
   }
   size_t
   sum () const
@@ -249,8 +269,6 @@ release_aligned_block (const AlignedBlock &am)
   sa.release_ext (ext);
 }
 
-// TODO: alignment, huge pages, mmap
-
 // == Allocator Tests ==
 BSE_INTEGRITY_TEST (bse_aligned_allocator_tests);
 static void
@@ -403,7 +421,7 @@ bse_aligned_allocator_benchmark()
   // ensure block allocator is initialized
   if (1)
     {
-      const size_t r = 32;
+      const size_t r = 16;
       AlignedBlock b[r];
       for (size_t j = 0; j < r; j++)
         b[j] = allocate_aligned_block (0, MEMORY_AREA_SIZE);
