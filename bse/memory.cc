@@ -125,16 +125,16 @@ struct SharedArea {
   fit_block (size_t length) const
   {
     ssize_t candidate = -1;
-    for (size_t i = 0; i < extents.size(); i++)
-      if (length == extents[i].length)
-        return i;
-      else if (length < extents[i].length)
-        {
-          if (candidate < 0)
-            candidate = i;
-          else if (extents[i].length < extents[candidate].length)
-            candidate = i;
-        }
+    for (size_t j = 0; j < extents.size(); j++)
+      {
+        const size_t i = extents.size() - 1 - j; // recent blocks are at the end
+        if (ISLIKELY (length == extents[i].length))
+          return i;
+        if (UNLIKELY (length < extents[i].length) and
+            (UNLIKELY (candidate < 0) ||
+             extents[i].length < extents[candidate].length))
+          candidate = i;
+      }
     return candidate;
   }
   bool
