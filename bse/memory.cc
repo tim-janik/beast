@@ -36,6 +36,8 @@ struct SharedArea {
     assert_return (area.length == 0 && areasize > 0);
     area.length = MEM_ALIGN (areasize, mem_alignment);
     assert_return (area.length >= areasize);
+    if (area.length >= 1024 * 1024)
+      extents.reserve (1024);
     area.start = 0;
     {
       const int protection = PROT_READ | PROT_WRITE;
@@ -444,7 +446,7 @@ bse_aligned_allocator_benchmark()
   // ensure block allocator is initialized
   if (1)
     {
-      const size_t r = 16;
+      const size_t r = 4;
       AlignedBlock b[r];
       for (size_t j = 0; j < r; j++)
         b[j] = allocate_aligned_block (0, MEMORY_AREA_SIZE);
