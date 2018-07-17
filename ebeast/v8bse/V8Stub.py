@@ -159,6 +159,7 @@ class Generator:
         v8pp_class_types += [ tp ]
     # C++ class type aliases for v8pp::class_
     s += '\n// v8pp::class_ aliases\n'
+    s += 'typedef %-40s V8ppType_AidaEvent;\n' % 'v8pp::class_<Aida::Event>'
     s += 'typedef %-40s V8ppType_AidaRemoteHandle;\n' % 'v8pp::class_<Aida::RemoteHandle>'
     for tp in v8pp_class_types:
       s += 'typedef %-40s %s;\n' % ('v8pp::class_<%s>' % colon_typename (tp), v8ppclass_type (tp))
@@ -181,6 +182,7 @@ class Generator:
     s += '\n// Main binding stub\n'
     s += 'struct V8stub final {\n'
     s += '  v8::Isolate                             *const isolate_;\n'
+    s += '  %-40s %s;\n' % ('V8ppType_AidaEvent', 'AidaEvent_class_')
     s += '  %-40s %s;\n' % ('V8ppType_AidaRemoteHandle', 'AidaRemoteHandle_class_')
     for tp in v8pp_class_types:
       s += '  %-40s %s;\n' % (v8ppclass_type (tp), v8ppclass (tp))
@@ -192,12 +194,42 @@ class Generator:
     # V8stub ctor - begin
     s += '\nV8stub::V8stub (v8::Isolate *const __v8isolate) :\n'
     s += '  isolate_ (__v8isolate),\n'
+    s += '  AidaEvent_class_ (__v8isolate),\n'
     s += '  AidaRemoteHandle_class_ (__v8isolate),\n'
     for tp in v8pp_class_types:
       s += '  %s (__v8isolate),\n' % v8ppclass (tp)
     s += '  module_ (__v8isolate)\n'
     s += '{\n'
     s += '  v8::HandleScope __v8scope (__v8isolate);\n'
+    # Aida::Event
+    s += '  AidaEvent_class_\n'
+    s += '    .ctor<std::string>()\n'
+    s += '  ;\n'
+    # .on()
+    s += '  auto __event_attach__ = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n'
+    s += '    Aida::RemoteHandle *__remotehandle = V8ppType_AidaRemoteHandle::unwrap_object (__v8isolate, __v8args.This());\n'
+    s += '    if (!__remotehandle || __v8args.Length() != 2 || !__v8args[0]->IsString() || !__v8args[1]->IsFunction())\n'
+    s += '      __v8return_exception (__v8isolate, __v8args, "V8stub: .on (type, listener): invalid invocation");\n'
+    s += '    V8ppCopyablePersistentObject __v8pthis (__v8isolate, __v8args.This()->ToObject());\n'
+    s += '    std::string __event = v8pp::from_v8<std::string> (__v8isolate, __v8args[0]);\n'
+    s += '    V8ppCopyablePersistentFunction __v8pfunc (__v8isolate, v8::Local<v8::Function>::Cast (__v8args[1]));\n'
+    s += '    auto event_handler = [__v8isolate, __remotehandle, __v8pthis, __v8pfunc] (const Aida::Event &const_event) -> void {\n'
+    s += '      v8::HandleScope __v8scope (__v8isolate);\n'
+    s += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
+    s += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'
+    s += '      Aida::Event *event = const_cast<Aida::Event*> (&const_event);\n'
+    s += '      v8::Handle<v8::Value> __v8event = V8ppType_AidaEvent::reference_external (__v8isolate, event);\n'
+    s += '      v8::Local<v8::Value> __v8result = v8pp::call_v8 (__v8isolate, __v8func, __v8this, __v8event);\n'
+    s += '      V8ppType_AidaEvent::unreference_external (__v8isolate, event);\n'
+    s += '      (void) __v8result;\n'
+    s += '    };\n'
+    s += '    const uint64_t __hid = __remotehandle->__event_attach__ (__event, event_handler);\n'
+    # FIXME: add disconnect for __hid
+    s += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n'
+    s += '  };\n'
+    s += '  AidaRemoteHandle_class_\n'
+    s += '    .set ("__event_attach__", __event_attach__)\n'
+    s += '  ;\n'
     # Wrapper registration
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
@@ -305,7 +337,8 @@ jsinit = r"""
 (function (exports) {
   const jsinit = @jsinit_def@;
   jsinit.base_objects.forEach (obj => {
-    obj.prototype.on = function (signal, handler) {
+    obj.prototype.on = function (type, listener) { return this.__event_attach__ (type, listener); };
+    obj.prototype.__on_ = function (signal, handler) {
       const connector = this['__on_' + signal.replace (/[^a-z0-9]/gi, '_')];
       if (connector instanceof Function)
         return connector.call (this, handler);
