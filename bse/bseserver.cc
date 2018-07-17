@@ -1009,7 +1009,7 @@ void
 ServerImpl::enginechange (bool active)
 {
   Aida::Event ev ("enginechange");
-  ev["active"] = active ? "1" : "0";
+  ev["active"] = active;
   trigger (ev);                 // emit "enginechange"
 }
 

@@ -34,7 +34,7 @@
     Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
   }
   // Hookup 60fps repaints during DSP engine activity
-  Bse.server.on ('enginechange', (ev) => { window.ev = ev; console.log ("server enginechange"); } );
+  Bse.server.on ('enginechange', (ev) => { console.log ("Bse: enginechange: " + ev.active); } );
   </script>
 
 </head>
