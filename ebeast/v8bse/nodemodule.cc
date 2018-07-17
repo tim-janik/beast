@@ -191,6 +191,43 @@ struct convert_AidaSequence
   }
 };
 
+typedef v8pp::class_<Aida::Event>                V8ppType_AidaEvent;
+typedef v8pp::class_<Aida::RemoteHandle>         V8ppType_AidaRemoteHandle;
+
+static void
+aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info)
+{
+  v8::Isolate *const __v8isolate = info.GetIsolate();
+  const std::string __pname = v8pp::from_v8<std::string> (__v8isolate, property);
+  const Aida::Event *const __event = V8ppType_AidaEvent::unwrap_object (__v8isolate, info.This());
+  return_unless (__event != NULL);
+  v8::ReturnValue<v8::Value> __v8ret = info.GetReturnValue();
+  const Aida::Any &__any = (*__event)[__pname];
+  switch (__any.kind())
+    {
+    case Aida::BOOL:		__v8ret.Set (__any.get<bool>()); break;
+    case Aida::FLOAT64:         __v8ret.Set (__any.get<double>()); break;
+    case Aida::INT32: 		__v8ret.Set (__any.get<int32>()); break;
+    case Aida::INT64:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<int64>())); break;
+    case Aida::STRING:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<std::string>())); break;
+    case Aida::ENUM: {
+      const std::string __str = Aida::enum_value_to_string (__any.get_enum_typename(), __any.as_int64(), "+");
+      __v8ret.Set (v8pp::to_v8 (__v8isolate, __str));
+      break; }
+    case Aida::REMOTE: {
+      const Aida::RemoteHandle __rhandle = __any.get_untyped_remote_handle();
+      __v8ret.Set (v8pp::to_v8 (__v8isolate, aida_remote_handle_wrap_native (__v8isolate, __rhandle)));
+      break; }
+    case Aida::SEQUENCE:
+    case Aida::RECORD:
+    case Aida::INSTANCE:
+    case Aida::ANY:
+    case Aida::UNTYPED:
+    case Aida::TRANSITION:
+    default:        	; // undefined
+    }
+}
+
 #include "v8bse.cc"
 
 // v8pp binding for Bse

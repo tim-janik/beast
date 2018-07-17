@@ -205,6 +205,8 @@ class Generator:
     s += '  AidaEvent_class_\n'
     s += '    .ctor<std::string>()\n'
     s += '  ;\n'
+    s += '  AidaEvent_class_.class_function_template()->InstanceTemplate()->SetHandler (\n'
+    s += '    v8::NamedPropertyHandlerConfiguration (aida_event_generic_getter));\n'
     # .on()
     s += '  auto __event_attach__ = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n'
     s += '    Aida::RemoteHandle *__remotehandle = V8ppType_AidaRemoteHandle::unwrap_object (__v8isolate, __v8args.This());\n'
