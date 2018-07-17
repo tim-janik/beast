@@ -209,7 +209,7 @@ class Generator:
     s += '  auto __event_attach__ = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n'
     s += '    Aida::RemoteHandle *__remotehandle = V8ppType_AidaRemoteHandle::unwrap_object (__v8isolate, __v8args.This());\n'
     s += '    if (!__remotehandle || __v8args.Length() != 2 || !__v8args[0]->IsString() || !__v8args[1]->IsFunction())\n'
-    s += '      __v8return_exception (__v8isolate, __v8args, "V8stub: .on (type, listener): invalid invocation");\n'
+    s += '      __v8return_exception (__v8isolate, __v8args, "V8stub: Aida::RemoteHandle.on (type, listener): invalid arguments");\n'
     s += '    V8ppCopyablePersistentObject __v8pthis (__v8isolate, __v8args.This()->ToObject());\n'
     s += '    std::string __event = v8pp::from_v8<std::string> (__v8isolate, __v8args[0]);\n'
     s += '    V8ppCopyablePersistentFunction __v8pfunc (__v8isolate, v8::Local<v8::Function>::Cast (__v8args[1]));\n'
