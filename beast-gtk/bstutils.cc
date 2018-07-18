@@ -123,7 +123,7 @@ initialize_frame_handlers()
   const uint64 hid = bse_server.on ("enginechange", [] (const Aida::Event&) { reinstall_frame_handler(); });
   (void) hid; // dismiss, never call off (hid);
   reinstall_frame_handler();
-  return 0x1234beeb; // first handler id
+  return 0x200000; // first handler id
 }
 
 uint
