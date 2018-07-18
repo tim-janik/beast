@@ -519,3 +519,61 @@ function midi_label (numish) {
   return Array.isArray (numish) ? numish.map (n => one_label (n)) : one_label (numish);
 }
 exports.midi_label = midi_label;
+
+let frame_handler_id = 0x200000,
+    frame_handler_active = false,
+    frame_handler_timer = undefined,
+    frame_handler_cur = 0,
+    frame_handler_max = 0,
+    frame_handler_array = undefined;
+
+function call_frame_handlers () {
+  const active = frame_handler_active;
+  frame_handler_max = frame_handler_array.length;
+  for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++) {
+    const handler_id = frame_handler_array[frame_handler_cur][1];
+    const handler_result = frame_handler_array[frame_handler_cur][0] (active);
+    if (handler_result !== undefined && !handler_result)
+      remove_frame_handler (handler_id);
+  }
+}
+
+function reinstall_frame_handler() {
+  if (frame_handler_timer !== undefined) {
+    clearInterval (frame_handler_timer);
+    frame_handler_timer = undefined;
+  }
+  if (frame_handler_active)
+    frame_handler_timer = window.setInterval (() => window.requestAnimationFrame (call_frame_handlers), 40);
+  else
+    call_frame_handlers(); // call one last time with frame_handler_active == false
+}
+
+function remove_frame_handler (handler_id) {
+  for (let i = frame_handler_array.length - 1; i >= 0; i--)
+    if (frame_handler_array[i][1] == handler_id) {
+      frame_handler_array.splice (i, 1);
+      if (i < frame_handler_cur)
+	frame_handler_cur--;
+      frame_handler_max--;
+      return;
+    }
+  console.log ("remove_frame_handler(" + handler_id + "): invalid id");
+}
+
+/// Install a permanent redraw handler, to run as long as the DSP engine is active.
+function add_frame_handler (handlerfunc) {
+  if (frame_handler_array === undefined) { // must initialize
+    frame_handler_active = Boolean (Bse.server.engine_active());
+    frame_handler_array = [];
+    Bse.server.on ('enginechange', (ev) => {
+      frame_handler_active = Boolean (ev.active);
+      reinstall_frame_handler();
+    } );
+  }
+  const handler_id = frame_handler_id++;
+  frame_handler_array.push ([handlerfunc, handler_id]);
+  reinstall_frame_handler();
+  return function() { remove_frame_handler (handler_id); };
+}
+exports.add_frame_handler = add_frame_handler;
