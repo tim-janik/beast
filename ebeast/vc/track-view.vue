@@ -10,7 +10,13 @@
 <template>
 
   <div class="vc-track-view" >
-    <span class="vc-track-view-label">{{ track.get_name() }}</span>
+    <div class="vc-track-view-control">
+      <span class="vc-track-view-label">{{ track.get_name() }}</span>
+      <div class="vc-track-view-meter">
+	<div class="vc-track-view-lv0"></div>
+	<div class="vc-track-view-lv1" style="transform: scaleX(1.0);"></div>
+      </div>
+    </div>
     <span class="vc-track-view-partlist" >
       <vc-part-thumb v-for="(tp, pindex) in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
 		     :part="tp.part" :tick="tp.tick" :track-index="index" :index="pindex" ></vc-part-thumb>
@@ -21,12 +27,30 @@
 
 <style lang="scss">
   @import 'mixins.scss';
+  .vc-track-view-lv0, .vc-track-view-lv1 {
+    position: absolute;
+    width: 100%; height: 100%;
+  }
+  .vc-track-view-lv0 {
+    background: linear-gradient(to right, #080, #880 66%, #800);
+  }
+  .vc-track-view-lv1 {
+    background-color: rgba( 0, 0, 0, .65);
+    transform-origin: center right;
+    will-change: transform;
+  }
+  .vc-track-view-meter {
+    height: 6px;
+    position: relative;
+  }
+  .vc-track-view-control {
+    margin-right: 5px;
+  }
   .vc-track-view {
     display: flex; align-items: center; /* vertical centering */
     background-color: $vc-button-border;
     border: 1px solid $vc-button-border;
     border-radius: $vc-button-radius; }
-  .vc-track-view > *	{ margin: 0; }
   .vc-track-view-label {
     display: inline-block; width: 7em;
     text-overflow: ellipsis;
