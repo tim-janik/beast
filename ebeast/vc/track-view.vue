@@ -14,7 +14,7 @@
       <span class="vc-track-view-label">{{ track.get_name() }}</span>
       <div class="vc-track-view-meter">
 	<div class="vc-track-view-lv0"></div>
-	<div class="vc-track-view-lv1" style="transform: scaleX(1.0);"></div>
+	<div class="vc-track-view-lv1" ref="level1"></div>
       </div>
     </div>
     <span class="vc-track-view-partlist" >
@@ -32,7 +32,7 @@
     width: 100%; height: 100%;
   }
   .vc-track-view-lv0 {
-    background: linear-gradient(to right, #080, #880 66%, #800);
+    background: linear-gradient(to right, #0b0, #bb0 66%, #b00);
   }
   .vc-track-view-lv1 {
     background-color: rgba( 0, 0, 0, .65);
@@ -64,8 +64,11 @@
 </style>
 
 <script>
+const Util = require ('./utilities.js');
+
 module.exports = {
   name: 'vc-track-view',
+  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'index': { type: Number, },
@@ -73,5 +76,25 @@ module.exports = {
   data_tmpl: {
     name: "Track-Label2",
   },
+  beforeDestroy() {
+    if (this.remove_frame_handler) {
+      this.remove_frame_handler();
+      this.remove_frame_handler = undefined;
+    }
+  },
+  methods: {
+    update_levels: update_levels,
+    dom_updated() {
+      if (!this.remove_frame_handler)
+	this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
+    },
+  },
 };
+
+function update_levels (active) {
+  const notes_canvas = this.$refs['level1'];
+  const value = active ? Math.random() : 1.0;
+  notes_canvas.style.transform = "scaleX(" + value + ")";
+}
+
 </script>
