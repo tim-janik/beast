@@ -75,7 +75,6 @@ struct BseSuper;
 struct BseSuperClass;
 struct BseTrack;
 struct BseTrackClass;
-typedef struct  _BseTrans                  BseTrans;
 typedef struct  _BseUndoStack		   BseUndoStack;
 typedef struct  _BseUndoStep               BseUndoStep;
 typedef struct  _BseVirtualThroughput      BseVirtualThroughput;
@@ -84,17 +83,22 @@ typedef struct  _BseVoice		   BseVoice;
 struct BseWave;
 struct BseWaveRepo;
 struct BseWaveRepoClass;
-/* --- BseModule special handling --- */
-typedef struct _BseModule                  BseModule;
-typedef struct _BseModuleClass             BseModuleClass;
-typedef struct _BseIStream                 BseIStream;
-typedef struct _BseJStream                 BseJStream;
-typedef struct _BseOStream                 BseOStream;
-/* dereference some BseModule members without including bseengine.hh */
-#define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[1])
-#define	BSE_MODULE_GET_ISTREAMSP(bsemodule)	(((gpointer*) bsemodule)[2])
-#define	BSE_MODULE_GET_JSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[3])
-#define	BSE_MODULE_GET_OSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[4])
+// == Bse Engine Module Types ==
+struct BseModuleClass;
+namespace Bse {
+struct Module;
+struct IStream;
+struct JStream;
+struct OStream;
+struct Job;
+struct Trans;
+} // Bse
+typedef Bse::Module  BseModule;
+typedef Bse::JStream BseJStream;
+typedef Bse::IStream BseIStream;
+typedef Bse::OStream BseOStream;
+typedef Bse::Job     BseJob;
+typedef Bse::Trans   BseTrans;
 /* --- Bse Loader --- */
 struct BseLoader;
 typedef struct _BseWaveDsc              BseWaveDsc;

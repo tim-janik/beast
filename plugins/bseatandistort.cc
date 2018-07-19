@@ -191,7 +191,7 @@ bse_atan_distort_context_create (BseSource *source,
     NULL,                         /* process_defer */
     NULL,                         /* reset */
     (BseModuleFreeFunc) g_free,	  /* free */
-    BSE_COST_NORMAL,		  /* cost */
+    Bse::ModuleFlag::NORMAL,		  /* cost */
   };
   BseAtanDistort *self = BSE_ATAN_DISTORT (source);
   AtanDistortModule *admod;

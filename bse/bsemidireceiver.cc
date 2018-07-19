@@ -522,7 +522,7 @@ create_midi_control_module_L (MidiReceiver      *self,
     NULL,                               /* process_defer */
     NULL,                               /* reset */
     (BseModuleFreeFunc) g_free,         /* free */
-    BSE_COST_CHEAP
+    Bse::ModuleFlag::CHEAP
   };
   MidiCModuleData *cdata;
   BseModule *module;
@@ -866,7 +866,7 @@ create_voice_input_L (VoiceInputTable *table,
     NULL,                               /* process_defer */
     voice_input_module_reset_U,         /* reset */
     voice_input_module_free_U,		/* free */
-    BSE_COST_CHEAP
+    Bse::ModuleFlag::CHEAP
   };
   VoiceInput *vinput = new VoiceInput;
 
@@ -1001,7 +1001,7 @@ create_voice_switch_module_L (BseTrans *trans)
     NULL,                               /* process_defer */
     NULL,                               /* reset */
     voice_switch_module_free_U,         /* free */
-    BSE_COST_CHEAP
+    Bse::ModuleFlag::CHEAP
   };
   VoiceSwitch *vswitch = g_new0 (VoiceSwitch, 1);
 

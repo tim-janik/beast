@@ -291,7 +291,7 @@ dav_syn_drum_context_create (BseSource *source,
     NULL,                               /* process_defer */
     dmod_reset,                         /* reset */
     (BseModuleFreeFunc) g_free,         /* free */
-    BSE_COST_NORMAL,                    /* cost */
+    Bse::ModuleFlag::NORMAL,                    /* cost */
   };
   DavSynDrum *self = DAV_SYN_DRUM (source);
   DavSynDrumModule *dmod = g_new0 (DavSynDrumModule, 1);

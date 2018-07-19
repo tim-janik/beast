@@ -2,24 +2,24 @@
 #ifndef __BSE_ENGINE_H__
 #define __BSE_ENGINE_H__
 
-#include <bse/bsedefs.hh>
+#include <bse/bseenginenode.hh>
 
 /* --- constants --- */
 #define BSE_STREAM_MAX_VALUES                   (1024 /* power of 2 and <= 16384 */)
-#define BSE_MODULE_N_OSTREAMS(module)           ((module)->klass->n_ostreams)
-#define BSE_MODULE_N_ISTREAMS(module)           ((module)->klass->n_istreams)
-#define BSE_MODULE_N_JSTREAMS(module)           ((module)->klass->n_jstreams)
+#define BSE_MODULE_N_OSTREAMS(module)           ((module)->n_ostreams)
+#define BSE_MODULE_N_ISTREAMS(module)           ((module)->n_istreams)
+#define BSE_MODULE_N_JSTREAMS(module)           ((module)->n_jstreams)
 #define BSE_MODULE_ISTREAM(module, stream)      ((module)->istreams[(stream)])
 #define BSE_MODULE_JSTREAM(module, stream)      ((module)->jstreams[(stream)])
 #define BSE_MODULE_OSTREAM(module, stream)      ((module)->ostreams[(stream)])
 #define BSE_MODULE_IBUFFER(module, stream)      (BSE_MODULE_ISTREAM ((module), (stream)).values)
 #define BSE_MODULE_JBUFFER(module, stream, con) (BSE_MODULE_JSTREAM ((module), (stream)).values[con])
 #define BSE_MODULE_OBUFFER(module, stream)      (BSE_MODULE_OSTREAM ((module), (stream)).values)
+#define	BSE_MODULE_IS_EXPENSIVE(module)	        (0 != (size_t ((module)->klass.mflags) & size_t (Bse::ModuleFlag::EXPENSIVE)))
 #define BSE_ENGINE_MAX_POLLFDS                  (128)
 
 
 /* --- typedefs --- */
-typedef struct _BseJob                   BseJob;
 /* bsedefs.hh:
  * typedef void (*BseEngineAccessFunc)  (BseModule      *module,
  *                                       gpointer        data);
@@ -36,7 +36,7 @@ typedef gboolean (*BseEngineTimerFunc)  (gpointer       data,
 typedef void     (*BseEngineProbeFunc)  (gpointer       data,
 					 guint          n_values,	/* bse_engine_block_size() */
 					 guint64        tick_stamp,
-					 guint          n_ostreams,	/* ENGINE_NODE_N_OSTREAMS() */
+					 guint          n_ostreams,	/* BSE_MODULE_N_OSTREAMS() */
 					 BseOStream   **ostreams_p);
 typedef void     (*BseProcessFunc)      (BseModule     *module,
                                          guint          n_values);
@@ -47,52 +47,44 @@ typedef void     (*BseModuleResetFunc)  (BseModule     *module);
 typedef void     (*BseModuleFreeFunc)   (gpointer        data,
                                          const BseModuleClass *klass);
 
-typedef enum    /*< skip >*/
-{
-  BSE_COST_NORMAL       = 0,
-  BSE_COST_CHEAP        = 1 << 0,
-  BSE_COST_EXPENSIVE    = 1 << 1
-} BseCostType;
-/* class, filled out by user */
-struct _BseModuleClass
-{
-  guint               n_istreams;
-  guint               n_jstreams;
-  guint               n_ostreams;
-  BseProcessFunc      process;          /* EngineThread */
-  BseProcessDeferFunc process_defer;    /* EngineThread */
-  BseModuleResetFunc  reset;            /* EngineThread */
-  BseModuleFreeFunc   free;             /* UserThread */
-  BseCostType         mflags;
-};
-/* module, constructed by engine */
-struct _BseModule
-{
-  const BseModuleClass *klass;
-  gpointer              user_data;
-  BseIStream           *istreams;	/* input streams */
-  BseJStream           *jstreams;     	/* joint (multiconnect) input streams */
-  BseOStream           *ostreams;     	/* output streams */
-};
-/* streams, constructed by engine */
-struct _BseJStream
-{
-  const gfloat **values;
-  guint          n_connections; /* scheduler update */
-  /*< private >*/
-  guint          jcount;        /* internal field */
-};
-struct _BseIStream
-{
-  const gfloat *values;
-  gboolean      connected;      /* scheduler update */
-};
-struct _BseOStream
-{
-  gfloat     *values;
-  gboolean    connected;
+namespace Bse {
+
+enum class ModuleFlag {
+  NORMAL        = 0,      ///< Nutral flag
+  CHEAP         = 1 << 0, ///< Very short or NOP as process() function
+  EXPENSIVE     = 1 << 1, ///< Indicate lengthy process() functio
+  VIRTUAL_      = 1 << 7, ///< Flag used internally
 };
 
+// streams, constructed by engine
+struct JStream {
+  const float **values;
+  uint          n_connections;  // scheduler update
+  /*< private >*/
+  uint          jcount;         // internal field
+};
+struct IStream {
+  const float *values;
+  bool         connected;       // scheduler update
+};
+struct OStream {
+  float *values;
+  bool   connected;
+};
+
+} // Bse
+
+// class, filled out by user
+struct BseModuleClass {
+  uint                n_istreams;
+  uint                n_jstreams;
+  uint                n_ostreams;
+  BseProcessFunc      process;          // EngineThread
+  BseProcessDeferFunc process_defer;    // EngineThread
+  BseModuleResetFunc  reset;            // EngineThread
+  BseModuleFreeFunc   free;             // UserThread
+  Bse::ModuleFlag     mflags;
+};
 
 /* --- interface (UserThread functions) --- */
 BseModule* bse_module_new               (const BseModuleClass *klass,
@@ -201,14 +193,13 @@ guint64    bse_engine_tick_stamp_from_systime (guint64       systime);
 #define    BSE_CONTROL_CHECK(index)           ((bse_engine_control_mask() & (index)) == 0)
 
 /* --- thread handling --- */
-typedef struct
-{
+struct BseEngineLoop {
   glong         timeout;
   gboolean      fds_changed;
   guint         n_fds;
   GPollFD      *fds;
   gboolean      revents_filled;
-} BseEngineLoop;
+};
 
 gboolean    bse_engine_prepare                (BseEngineLoop       *loop);
 gboolean    bse_engine_check                  (const BseEngineLoop *loop);

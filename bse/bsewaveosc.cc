@@ -423,7 +423,7 @@ bse_wave_osc_context_create (BseSource *source,
     NULL,                       /* process_defer */
     wosc_reset,                 /* reset */
     wosc_free,                  /* free */
-    BSE_COST_NORMAL,            /* cost */
+    Bse::ModuleFlag::NORMAL,            /* cost */
   };
   BseWaveOsc *self = BSE_WAVE_OSC (source);
   GslWaveOscData *wosc = g_new0 (GslWaveOscData, 1);

@@ -501,7 +501,7 @@ bse_biquad_filter_context_create (BseSource *source,
     NULL,                       	/* process_defer */
     biquad_filter_reset,		/* reset */
     (BseModuleFreeFunc) g_free,		/* free */
-    BSE_COST_NORMAL,			/* flags */
+    Bse::ModuleFlag::NORMAL,			/* flags */
   };
   BseBiquadFilter *self = BSE_BIQUAD_FILTER (source);
   FilterModule *fmod = g_new0 (FilterModule, 1);

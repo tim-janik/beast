@@ -2,7 +2,7 @@
 #include "bseengineutils.hh"
 #include "bseblockutils.hh"
 #include "gslcommon.hh"
-#include "bseenginenode.hh"
+#include "bseengineprivate.hh"
 #include "bseengineschedule.hh"
 #include "bsemathsignal.hh"
 #include <unordered_map>
@@ -14,8 +14,8 @@
 #define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
 
 /* --- prototypes --- */
-static inline void      engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
-                                                                 EngineTimedJob **trash_tjobs_tail);
+static inline void      engine_fetch_process_queue_trash_jobs_U (Bse::EngineTimedJob **trash_tjobs_head,
+                                                                 Bse::EngineTimedJob **trash_tjobs_tail);
 
 /* --- UserThread --- */
 BseOStream*
@@ -38,7 +38,7 @@ _engine_alloc_ostreams (guint n)
 }
 
 static void
-bse_engine_free_timed_job (EngineTimedJob *tjob)
+bse_engine_free_timed_job (Bse::EngineTimedJob *tjob)
 {
   switch (tjob->type)
     {
@@ -74,50 +74,10 @@ bse_engine_free_ostreams (guint         n_ostreams,
 }
 
 static void
-bse_engine_free_node (EngineNode *node)
+bse_engine_free_node (Bse::Module *node)
 {
-  const BseModuleClass *klass;
-  gpointer user_data;
-  guint j;
-
   assert_return (node != NULL);
-  assert_return (node->output_nodes == NULL);
-  assert_return (node->integrated == FALSE);
-  assert_return (node->sched_tag == FALSE);
-  assert_return (node->sched_recurse_tag == FALSE);
-  assert_return (node->flow_jobs == NULL);
-  assert_return (node->boundary_jobs == NULL);
-  assert_return (node->tjob_head == NULL);
-  assert_return (node->probe_jobs == NULL);
-  if (node->module.ostreams)
-    {
-      /* bse_engine_block_size() may have changed since allocation */
-      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (node), node->module.ostreams);
-      sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
-    }
-  if (node->module.istreams)
-    {
-      sfi_delete_structs (BseIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
-      sfi_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
-    }
-  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-    {
-      g_free (node->jinputs[j]);
-      g_free (node->module.jstreams[j].values);
-    }
-  if (node->module.jstreams)
-    {
-      sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
-      sfi_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
-    }
-  klass = node->module.klass;
-  user_data = node->module.user_data;
-  node->rec_mutex.~recursive_mutex();
-  sfi_delete_struct (EngineNode, node);
-
-  /* allow the free function to free the klass as well */
-  if (klass->free)
-    klass->free (user_data, klass);
+  delete node;
 }
 
 static void
@@ -191,8 +151,8 @@ static BseTrans       *cqueue_trans_trash_tail = NULL;
 static BseTrans       *cqueue_trans_active_head = NULL;
 static BseTrans       *cqueue_trans_active_tail = NULL;
 static BseJob         *cqueue_trans_job = NULL;
-static EngineTimedJob *cqueue_tjobs_trash_head = NULL;
-static EngineTimedJob *cqueue_tjobs_trash_tail = NULL;
+static Bse::EngineTimedJob *cqueue_tjobs_trash_head = NULL;
+static Bse::EngineTimedJob *cqueue_tjobs_trash_tail = NULL;
 static guint64         cqueue_commit_base_stamp = 1;
 guint64
 _engine_enqueue_trans (BseTrans *trans)
@@ -268,7 +228,7 @@ _engine_pop_job (gboolean update_commit_stamp)
       /* before adding trash jobs to the cqueue, make sure pending pqueue trash
        * jobs can be collected (these need to be collected first in the USerThread).
        */
-      EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
+      Bse::EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
       engine_fetch_process_queue_trash_jobs_U (&trash_tjobs_head, &trash_tjobs_tail);
       if (cqueue_trans_active_head)	/* currently processing transaction */
 	{
@@ -355,7 +315,7 @@ void
 bse_engine_user_thread_collect (void)
 {
   BseTrans *trans;
-  EngineTimedJob *tjobs;
+  Bse::EngineTimedJob *tjobs;
   cqueue_trans_mutex.lock();
   tjobs = cqueue_tjobs_trash_head;
   cqueue_tjobs_trash_head = cqueue_tjobs_trash_tail = NULL;
@@ -364,7 +324,7 @@ bse_engine_user_thread_collect (void)
   cqueue_trans_mutex.unlock();
   while (tjobs)
     {
-      EngineTimedJob *tjob = tjobs;
+      Bse::EngineTimedJob *tjob = tjobs;
       tjobs = tjob->next;
       tjob->next = NULL;
       bse_engine_free_timed_job (tjob);
@@ -395,12 +355,12 @@ static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
 static std::condition_variable pqueue_done_cond;
-static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
-static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
+static Bse::EngineTimedJob    *pqueue_trash_tjobs_head = NULL;
+static Bse::EngineTimedJob    *pqueue_trash_tjobs_tail = NULL;
 
 static inline void
-engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
-                                         EngineTimedJob **trash_tjobs_tail)
+engine_fetch_process_queue_trash_jobs_U (Bse::EngineTimedJob **trash_tjobs_head,
+                                         Bse::EngineTimedJob **trash_tjobs_tail)
 {
   if (G_UNLIKELY (pqueue_trash_tjobs_head != NULL))
     {
@@ -438,7 +398,7 @@ _engine_set_schedule (EngineSchedule *sched)
 void
 _engine_unset_schedule (EngineSchedule *sched)
 {
-  EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
+  Bse::EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
   assert_return (sched != NULL);
   pqueue_mutex.lock();
   if (UNLIKELY (pqueue_schedule != sched))
@@ -468,22 +428,22 @@ _engine_unset_schedule (EngineSchedule *sched)
       cqueue_trans_mutex.unlock();
     }
 }
-EngineNode*
+Bse::Module*
 _engine_pop_unprocessed_node (void)
 {
-  EngineNode *node;
+  Bse::Module *node;
   pqueue_mutex.lock();
   node = pqueue_schedule ? _engine_schedule_pop_node (pqueue_schedule) : NULL;
   if (node)
     {
       pqueue_n_nodes += 1;
-      ENGINE_NODE_LOCK (node);
+      node->lock();
     }
   pqueue_mutex.unlock();
   return node;
 }
 static inline void
-collect_user_jobs_L (EngineNode *node)
+collect_user_jobs_L (Bse::Module *node)
 {
   if (UNLIKELY (node->tjob_head != NULL))
     {
@@ -498,7 +458,7 @@ collect_user_jobs_L (EngineNode *node)
     }
 }
 void
-_engine_node_collect_jobs (EngineNode *node)
+_engine_node_collect_jobs (Bse::Module *node)
 {
   assert_return (node != NULL);
   pqueue_mutex.lock();
@@ -506,16 +466,16 @@ _engine_node_collect_jobs (EngineNode *node)
   pqueue_mutex.unlock();
 }
 void
-_engine_push_processed_node (EngineNode *node)
+_engine_push_processed_node (Bse::Module *node)
 {
   assert_return (node != NULL);
   assert_return (pqueue_n_nodes > 0);
-  assert_return (ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (BSE_MODULE_IS_SCHEDULED (node));
   pqueue_mutex.lock();
   assert_return (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
-  ENGINE_NODE_UNLOCK (node);
+  node->unlock();
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
     pqueue_done_cond.notify_one();
   pqueue_mutex.unlock();
@@ -532,7 +492,8 @@ _engine_push_processed_cycle (SfiRing *cycle)
 {
   assert_return (cycle != NULL);
   assert_return (pqueue_n_cycles > 0);
-  assert_return (ENGINE_NODE_IS_SCHEDULED (cycle->data));
+  Bse::Module *node = (Bse::Module*) cycle->data;
+  assert_return (BSE_MODULE_IS_SCHEDULED (node));
 }
 
 void
@@ -545,17 +506,17 @@ _engine_wait_on_unprocessed (void)
 
 
 /* -- master node list --- */
-static EngineNode      *master_node_list_head = NULL;
-static EngineNode      *master_node_list_tail = NULL;
+static Bse::Module      *master_node_list_head = NULL;
+static Bse::Module      *master_node_list_tail = NULL;
 
-EngineNode*
+Bse::Module*
 _engine_mnl_head (void)
 {
   return master_node_list_head;
 }
 
 void
-_engine_mnl_remove (EngineNode *node)
+_engine_mnl_remove (Bse::Module *node)
 {
   assert_return (node->integrated == TRUE);
 
@@ -574,7 +535,7 @@ _engine_mnl_remove (EngineNode *node)
 }
 
 void
-_engine_mnl_integrate (EngineNode *node)
+_engine_mnl_integrate (Bse::Module *node)
 {
   assert_return (node->integrated == FALSE);
   assert_return (node->flow_jobs == NULL);
@@ -592,9 +553,9 @@ _engine_mnl_integrate (EngineNode *node)
 }
 
 void
-_engine_mnl_node_changed (EngineNode *node)
+_engine_mnl_node_changed (Bse::Module *node)
 {
-  EngineNode *sibling;
+  Bse::Module *sibling;
 
   assert_return (node->integrated == TRUE);
 

@@ -467,7 +467,7 @@ bse_standard_osc_context_create (BseSource *source,
     NULL,                         /* process_defer */
     standard_osc_reset,           /* reset */
     (BseModuleFreeFunc) g_free,	  /* free */
-    BSE_COST_NORMAL,		  /* cost */
+    Bse::ModuleFlag::NORMAL,		  /* cost */
   };
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
   GslOscData *osc = g_new0 (GslOscData, 1);

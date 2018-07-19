@@ -328,7 +328,7 @@ bse_sequencer_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
-    BSE_COST_CHEAP,		/* flags */
+    Bse::ModuleFlag::CHEAP,		/* flags */
   };
   BseSequencer *seq = BSE_SEQUENCER (source);
   SeqModule *smod = g_new0 (SeqModule, 1);

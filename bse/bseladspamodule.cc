@@ -444,7 +444,7 @@ ladspa_derived_context_create (BseSource *source,
     NULL,			/* process_defer */
     ladspa_module_reset,	/* reset */
     ladspa_module_free_data,	/* free */
-    BSE_COST_EXPENSIVE,		/* cost */
+    Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
   BseLadspaModule *self = BSE_LADSPA_MODULE (source);
   BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);

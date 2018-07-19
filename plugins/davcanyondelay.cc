@@ -284,7 +284,7 @@ dav_canyon_delay_context_create (BseSource *source,
     NULL,                               /* process_defer */
     canyon_delay_reset,                 /* reset */
     canyon_delay_free,                  /* free */
-    BSE_COST_NORMAL,                    /* cost */
+    Bse::ModuleFlag::NORMAL,                    /* cost */
   };
   DavCanyonDelay *self = DAV_CANYON_DELAY (source);
   DavCanyonDelayModule *cmod = g_new0 (DavCanyonDelayModule, 1);

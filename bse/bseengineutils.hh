@@ -2,7 +2,7 @@
 #ifndef __BSE_ENGINE_UTIL_H__
 #define __BSE_ENGINE_UTIL_H__
 
-#include <bse/bseenginenode.hh>
+#include <bse/bseengineprivate.hh>
 
 /* --- UserThread --- */
 void		_engine_free_trans		(BseTrans      *trans);
@@ -14,13 +14,13 @@ void            bse_engine_user_thread_collect	(void);
 
 /* --- MasterThread --- */
 void		_engine_recycle_const_values	(bool remove_all);
-void		_engine_node_collect_jobs	(EngineNode	*node);
+void		_engine_node_collect_jobs	(Bse::Module	*node);
 /* master node list */
-void		_engine_mnl_remove		(EngineNode	*node);
-void		_engine_mnl_node_changed	(EngineNode	*node);
-void		_engine_mnl_integrate		(EngineNode	*node);
+void		_engine_mnl_remove		(Bse::Module	*node);
+void		_engine_mnl_node_changed	(Bse::Module	*node);
+void		_engine_mnl_integrate		(Bse::Module	*node);
 #define BSE_ENGINE_MNL_UNSCHEDULED_TJOB_NODE(node)	(!(node)->sched_tag && ((node)->flow_jobs || (node)->probe_jobs))
-EngineNode*	_engine_mnl_head		(void);
+Bse::Module*	_engine_mnl_head		(void);
 
 /* communication routines for threads:
  * UserThread   - main application
@@ -43,8 +43,8 @@ gboolean	_engine_job_pending	(void);
 /* --- node processing queue --- */
 void	    _engine_set_schedule		(EngineSchedule	*schedule);
 void	    _engine_unset_schedule		(EngineSchedule	*schedule);
-EngineNode* _engine_pop_unprocessed_node	(void);
-void	    _engine_push_processed_node		(EngineNode	*node);
+Bse::Module* _engine_pop_unprocessed_node	(void);
+void	    _engine_push_processed_node		(Bse::Module	*node);
 SfiRing*    _engine_pop_unprocessed_cycle	(void);
 void	    _engine_push_processed_cycle	(SfiRing	*cycle);
 void	    _engine_wait_on_unprocessed		(void);
