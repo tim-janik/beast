@@ -38,6 +38,12 @@ function* range (bound, end, step = 1) {
 }
 exports.range = range;
 
+/** Return @a x clamped into @a min and @a max. */
+function clamp (x, min, max) {
+  return x < min ? min : x > max ? max : x;
+}
+exports.clamp = clamp;
+
 /** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
 exports.vue_mixins.data_tmpl = {
   beforeCreate: function () {
