@@ -528,7 +528,7 @@ exports.midi_label = midi_label;
 
 let frame_handler_id = 0x200000,
     frame_handler_active = false,
-    frame_handler_timer = undefined,
+    frame_handler_callback_id = undefined,
     frame_handler_cur = 0,
     frame_handler_max = 0,
     frame_handler_array = undefined;
@@ -542,15 +542,17 @@ function call_frame_handlers () {
     if (handler_result !== undefined && !handler_result)
       remove_frame_handler (handler_id);
   }
+  if (frame_handler_active)
+    frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
 }
 
 function reinstall_frame_handler() {
-  if (frame_handler_timer !== undefined) {
-    clearInterval (frame_handler_timer);
-    frame_handler_timer = undefined;
+  if (frame_handler_callback_id !== undefined) {
+    window.cancelAnimationFrame (frame_handler_callback_id);
+    frame_handler_callback_id = undefined;
   }
   if (frame_handler_active)
-    frame_handler_timer = window.setInterval (() => window.requestAnimationFrame (call_frame_handlers), 40);
+    frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   else
     call_frame_handlers(); // call one last time with frame_handler_active == false
 }
