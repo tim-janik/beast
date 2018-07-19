@@ -31,7 +31,6 @@ enum
   PROP_LOG_MESSAGES
 };
 
-
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
@@ -1391,6 +1390,93 @@ int64
 ServerImpl::tick_stamp_from_systime (int64 systime_usecs)
 {
   return bse_engine_tick_stamp_from_systime (systime_usecs);
+}
+
+#define SHARED_MEMORY_AREA_SIZE (4 * 1024 * 1024)
+
+static std::vector<uint32> shared_memory_area_ids;
+
+SharedMemory
+ServerImpl::get_shared_memory (int64 shm_id)
+{
+  SharedMemory sm;
+  bool found_shm_id = false;
+  for (auto id : shared_memory_area_ids)
+    if (id == shm_id)
+      {
+        found_shm_id = true;
+        break;
+      }
+  assert_return (found_shm_id, sm);
+  MemoryArea ma = find_memory_area (shm_id);
+  sm.shm_id = ma.mem_id;
+  sm.shm_start = ma.mem_start;
+  sm.shm_length = ma.mem_length;
+  sm.shm_creator = this_thread_getpid();
+  return sm;
+}
+
+SharedBlock
+ServerImpl::allocate_shared_block (int64 length)
+{
+  SharedBlock sb;
+  assert_return (length <= SHARED_MEMORY_AREA_SIZE, sb);
+  return_unless (length > 0, sb);
+  AlignedBlock ab;
+  for (size_t i = 0; i < shared_memory_area_ids.size(); i++)
+    {
+      ab = allocate_aligned_block (shared_memory_area_ids[i], length);
+      if (ab.block_start)
+        break;
+    }
+  if (!ab.block_start)
+    {
+      shared_memory_area_ids.push_back (create_memory_area (SHARED_MEMORY_AREA_SIZE, 2 * BSE_CACHE_LINE_ALIGNMENT).mem_id);
+      ab = allocate_aligned_block (shared_memory_area_ids.back(), length);
+    }
+  assert_return (ab.block_start != NULL, sb);
+  sb.shm_id = ab.mem_id;
+  sb.mem_length = ab.block_length;
+  sb.mem_start = ab.block_start;
+  sb.mem_offset = uint64 (sb.mem_start) - find_memory_area (sb.shm_id).mem_start;
+  return sb;
+}
+
+void
+ServerImpl::release_shared_block (const SharedBlock &sb)
+{
+  assert_return (sb.shm_id == uint32 (sb.shm_id));
+  assert_return (sb.mem_length == int32 (sb.mem_length));
+  AlignedBlock ab { uint32 (sb.shm_id), uint32 (sb.mem_length), sb.mem_start };
+  release_aligned_block (ab);
+}
+
+// == Allocator Tests ==
+BSE_INTEGRITY_TEST (bse_server_test_allocator);
+static void
+bse_server_test_allocator()
+{
+  const ssize_t mb = 1024 * 1024;
+  SharedBlock sb1 = BSE_SERVER.allocate_shared_block (mb);
+  assert_return (sb1.mem_start);
+  SharedBlock sb2 = BSE_SERVER.allocate_shared_block (mb);
+  assert_return (sb2.mem_start);
+  SharedBlock sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  assert_return (sb3.mem_start);
+  assert_return (sb3.shm_id != sb1.shm_id);     // 1mb + 1mb + 3mb won't fit into 4mb area
+  BSE_SERVER.release_shared_block (sb3);
+  BSE_SERVER.release_shared_block (sb2);
+  sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  assert_return (sb3.mem_start);
+  assert_return (sb3.shm_id == sb1.shm_id);     // now sb1 and sb3 fit the same area
+  sb2 = BSE_SERVER.allocate_shared_block (1);
+  assert_return (sb2.mem_start);
+  assert_return (sb2.shm_id != sb3.shm_id);     // but nothing else
+  assert_return (BSE_SERVER.get_shared_memory (sb2.shm_id).shm_id == sb2.shm_id); // is shared?
+  assert_return (BSE_SERVER.get_shared_memory (sb3.shm_id).shm_id == sb3.shm_id); // is shared?
+  BSE_SERVER.release_shared_block (sb3);
+  BSE_SERVER.release_shared_block (sb2);
+  BSE_SERVER.release_shared_block (sb1);
 }
 
 } // Bse

@@ -82,14 +82,24 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 
 namespace Bse {
 
+struct SharedBlock {
+  int64 shm_id = 0;
+  int32 mem_offset = 0;
+  int32 mem_length = 0;
+  void *mem_start = NULL;
+};
+
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   TestObjectImplP    test_object_;
 protected:
   virtual                 ~ServerImpl ();
 public:
+  SharedBlock         allocate_shared_block (int64 length);
+  void                release_shared_block  (const SharedBlock &block);
   explicit                 ServerImpl       (BseObject*);
   virtual TestObjectIfaceP get_test_object  () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
+  virtual SharedMemory  get_shared_memory   (int64 id) override;
   virtual String        get_mp3_version     () override;
   virtual String        get_vorbis_version  () override;
   virtual String        get_ladspa_path     () override;

@@ -767,6 +767,14 @@ sequence FloatSeq {
   float64 floats;
 };
 
+/// Descriptor for a shared memory region.
+record SharedMemory {
+  int64  shm_creator;   ///< IPC id of the shared memory creator process.
+  int64  shm_id;        ///< Identifier for the associated shared memory area.
+  int64  shm_start;     ///< Shared memory area location.
+  int64  shm_length;    ///< Shared memory area length in bytes
+};
+
 /// Bits representing a selection of probe sample data features.
 record ProbeFeatures {
   bool          probe_range;
@@ -1198,6 +1206,7 @@ interface Server : Container {
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
+  SharedMemory  get_shared_memory  (int64 id);          ///< Retrieve SharedMemory from id.
   String        get_ladspa_path ();                     ///< Retrieve ladspa search path.
   String        get_plugin_path ();                     ///< Retrieve plugin search path.
   String        get_instrument_path ();                 ///< Retrieve instrument search path.

@@ -84,7 +84,7 @@ cpu_info_sigill_handler (int dummy)
 
 #if     defined __i386__
 #  define x86_has_cpuid()       ({                              \
-  unsigned int __eax, __ecx;                                    \
+  unsigned int __eax = 0, __ecx = 0;                            \
   __asm__ __volatile__                                          \
     (                                                           \
      /* copy EFLAGS into eax and ecx */                         \
@@ -101,7 +101,7 @@ cpu_info_sigill_handler (int dummy)
   __result;                                                     \
 })
 /* save EBX around CPUID, because gcc doesn't like it to be clobbered with -fPIC */
-#  define x86_cpuid(input, eax, ebx, ecx, edx)  \
+#  define x86_cpuid(input, count, eax, ebx, ecx, edx) \
   __asm__ __volatile__ (                        \
     /* save ebx in esi */                       \
     "mov %%ebx, %%esi \n\t"                     \
@@ -111,7 +111,7 @@ cpu_info_sigill_handler (int dummy)
     "xchg %%ebx, %%esi"                         \
     : "=a" (eax), "=S" (ebx),                   \
       "=c" (ecx), "=d" (edx)                    \
-    : "0" (input)                               \
+    : "0" (input), "2" (count)                  \
     : "cc")
 #elif   defined __x86_64__ || defined __amd64__
 /* CPUID is always present on AMD64, see:
@@ -121,7 +121,7 @@ cpu_info_sigill_handler (int dummy)
  */
 #  define x86_has_cpuid()                       (1)
 /* save EBX around CPUID, because gcc doesn't like it to be clobbered with -fPIC */
-#  define x86_cpuid(input, eax, ebx, ecx, edx)  \
+#  define x86_cpuid(input, count, eax, ebx, ecx, edx) \
   __asm__ __volatile__ (                        \
     /* save ebx in esi */                       \
     "mov %%rbx, %%rsi \n\t"                     \
@@ -131,11 +131,11 @@ cpu_info_sigill_handler (int dummy)
     "xchg %%rbx, %%rsi"                         \
     : "=a" (eax), "=S" (ebx),                   \
       "=c" (ecx), "=d" (edx)                    \
-    : "0" (input)                               \
+    : "0" (input), "2" (count)                  \
     : "cc")
 #else
 #  define x86_has_cpuid()                       (false)
-#  define x86_cpuid(input, eax, ebx, ecx, edx)  do {} while (0)
+#  define x86_cpuid(input, count, eax, ebx, ecx, edx)  do {} while (0)
 #endif
 
 static bool
@@ -147,8 +147,8 @@ get_x86_cpu_features (CPUInfo *ci)
     return false;
 
   /* query intel CPUID range */
-  unsigned int eax, ebx, ecx, edx;
-  x86_cpuid (0, eax, ebx, ecx, edx);
+  unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;
+  x86_cpuid (0, 0, eax, ebx, ecx, edx);
   unsigned int v_ebx = ebx, v_ecx = ecx, v_edx = edx;
   char *vendor = ci->cpu_vendor;
   *((unsigned int*) &vendor[0]) = ebx;
@@ -157,7 +157,7 @@ get_x86_cpu_features (CPUInfo *ci)
   vendor[12] = 0;
   if (eax >= 1)                 /* may query version and feature information */
     {
-      x86_cpuid (1, eax, ebx, ecx, edx);
+      x86_cpuid (1, 0, eax, ebx, ecx, edx);
       if (ecx & (1 << 0))
         ci->x86_sse3 = true;
       if (ecx & (1 << 9))
@@ -191,12 +191,12 @@ get_x86_cpu_features (CPUInfo *ci)
     }
 
   /* query extended CPUID range */
-  x86_cpuid (0x80000000, eax, ebx, ecx, edx);
+  x86_cpuid (0x80000000, 0, eax, ebx, ecx, edx);
   if (eax >= 0x80000001 &&      /* may query extended feature information */
       v_ebx == 0x68747541 &&    /* AuthenticAMD */
       v_ecx == 0x444d4163 && v_edx == 0x69746e65)
     {
-      x86_cpuid (0x80000001, eax, ebx, ecx, edx);
+      x86_cpuid (0x80000001, 0, eax, ebx, ecx, edx);
       if (edx & (1 << 31))
         ci->x86_3dnow = true;
       if (edx & (1 << 22))

@@ -3,7 +3,7 @@
 #define __BSE_UTILS_H__
 
 #include <bse/bsedefs.hh>
-#include <bse/bseenums.hh>
+#include <bse/memory.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsecompat.hh>
 
