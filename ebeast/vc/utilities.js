@@ -577,3 +577,25 @@ function add_frame_handler (handlerfunc) {
   return function() { remove_frame_handler (handler_id); };
 }
 exports.add_frame_handler = add_frame_handler;
+
+let bse_server_shared_arrays = [];
+
+/// Retrieve shared memory arrays from BSE shared memory ids.
+function array_fields_from_shm (shm_id, shm_offset) {
+  if (bse_server_shared_arrays[shm_id] === undefined) {
+    const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
+    console.assert (array_buffer.byteLength > 0);
+    bse_server_shared_arrays[shm_id] = {
+      'array_buffer':  array_buffer,
+      'int32_array':   new Int32Array (array_buffer),
+      'float32_array': new Float32Array (array_buffer),
+      'float64_array': new Float64Array (array_buffer),
+    };
+  }
+  let fields = Object.assign ({}, bse_server_shared_arrays[shm_id]);
+  fields.int32_offset = shm_offset / 4;
+  fields.float32_offset = shm_offset / 4;
+  fields.float64_offset = shm_offset / 8;
+  return fields;
+}
+exports.array_fields_from_shm = array_fields_from_shm;
