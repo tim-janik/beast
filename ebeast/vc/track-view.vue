@@ -85,16 +85,30 @@ module.exports = {
   methods: {
     update_levels: update_levels,
     dom_updated() {
-      if (!this.remove_frame_handler)
-	this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
+      if (this.track) {
+	this.lmonitor = this.track.create_signal_monitor (0);
+	this.rmonitor = this.track.create_signal_monitor (1);
+	let pf = Bse.ProbeFeatures();
+	pf.probe_range = true;
+	this.lmonitor.set_probe_features (pf);
+	this.rmonitor.set_probe_features (pf);
+	this.lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset());
+	this.rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
+	if (!this.remove_frame_handler)
+	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
+      }
     },
   },
 };
 
 function update_levels (active) {
   const notes_canvas = this.$refs['level1'];
-  const value = active ? Math.random() : 1.0;
-  notes_canvas.style.transform = "scaleX(" + value + ")";
+  // see Bse.MonitorFields layout
+  const vmin = this.lfields['float64_array'][this.lfields.float64_offset + 0];
+  const vmax = this.lfields['float64_array'][this.lfields.float64_offset + 1];
+  const value = Util.clamp (Math.max (Math.abs (vmin), Math.abs (vmax)), 0, 1);
+  const scale = active ? 1.0 - value : 1;
+  notes_canvas.style.transform = "scaleX(" + scale + ")";
 }
 
 </script>
