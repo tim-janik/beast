@@ -38,6 +38,8 @@
     background-color: rgba( 0, 0, 0, .65);
     transform-origin: center right;
     will-change: transform;
+    --scalex: 1;
+    transform: scaleX(var(--scalex));
   }
   .vc-track-view-meter {
     height: 6px;
@@ -102,13 +104,14 @@ module.exports = {
 };
 
 function update_levels (active) {
-  const notes_canvas = this.$refs['level1'];
+  const level1 = this.$refs['level1'];
   // see Bse.MonitorFields layout
   const vmin = this.lfields['float64_array'][this.lfields.float64_offset + 0];
   const vmax = this.lfields['float64_array'][this.lfields.float64_offset + 1];
   const value = Util.clamp (Math.max (Math.abs (vmin), Math.abs (vmax)), 0, 1);
   const scale = active ? 1.0 - value : 1;
-  notes_canvas.style.transform = "scaleX(" + scale + ")";
+  // level1.style.transform = "scaleX(" + scale + ")";
+  level1.style.setProperty ('--scalex', scale);
 }
 
 </script>
