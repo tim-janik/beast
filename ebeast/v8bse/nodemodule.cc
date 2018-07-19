@@ -230,15 +230,30 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
 
 #include "v8bse.cc"
 
-// v8pp binding for Bse
-static V8stub *bse_v8stub = NULL;
-
 // event loop integration
 static uv_poll_t               bse_uv_watcher;
 static Aida::ClientConnectionP bse_client_connection;
 static Bse::ServerH            bse_server;
 static uv_async_t              bse_uv_dispatcher;
 static uv_prepare_t            bse_uv_preparer;
+
+/// Retrieve an ArrayBuffer from a BSE shared memory id.
+static v8::Local<v8::Object>
+bse_server_create_shared_memory_array_buffer (uint64 shm_id)
+{
+  v8::Isolate *const isolate = v8::Isolate::GetCurrent();
+  v8::Local<v8::ArrayBuffer> ab;
+  Bse::SharedMemory sm = bse_server.get_shared_memory (shm_id);
+  return_unless (uint64 (sm.shm_id) == shm_id, ab);
+  return_unless (sm.shm_creator == Bse::this_thread_getpid(), ab);
+  char *shm_start = (char*) sm.shm_start; // allowed if sm.shm_creator matches our pid
+  return_unless (shm_start != NULL, ab);
+  ab = v8::ArrayBuffer::New (isolate, shm_start, sm.shm_length);
+  return ab;
+}
+
+// v8pp binding for Bse
+static V8stub *bse_v8stub = NULL;
 
 // register bindings and start Bse
 static void
@@ -321,9 +336,12 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
   v8::Maybe<bool> ok = exports->SetPrototype (context, module_instance);
   assert (ok.FromJust() == true);
 
+  // manual binding extensions
+  V8ppType_BseServer &server_class = bse_v8stub->BseServer_class_;
+  server_class.set ("create_shared_memory_array_buffer", bse_server_create_shared_memory_array_buffer);
+
   // export server handle
-  V8ppType_BseServer &class_ = bse_v8stub->BseServer_class_;
-  v8::Local<v8::Object> v8_server = class_.import_external (isolate, new Bse::ServerH (bse_server));
+  v8::Local<v8::Object> v8_server = server_class.import_external (isolate, new Bse::ServerH (bse_server));
   module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"),
                                       v8_server, v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
 
