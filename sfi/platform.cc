@@ -58,10 +58,18 @@ colorize_tty (int fd)
 }
 
 /// Return ANSI code for the specified color if stdout & stderr should be colorized, see colorize_tty().
-const char*
-color (Colors acolor)
+std::string
+color (Colors acolor, Colors c1, Colors c2, Colors c3, Colors c4, Colors c5, Colors c6)
 {
-  return colorize_tty() ? color_code (acolor) : "";
+  return_unless (colorize_tty(), "");
+  std::string out = color_code (acolor);
+  out += color_code (c1);
+  out += color_code (c2);
+  out += color_code (c3);
+  out += color_code (c4);
+  out += color_code (c5);
+  out += color_code (c6);
+  return out;
 }
 
 /// Return ANSI code for the specified color.

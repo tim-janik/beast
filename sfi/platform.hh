@@ -26,7 +26,8 @@ enum Colors {
 };
 enum class Colorize : int8 { NEVER = 0, ALWAYS = 1, AUTO = 2 };
 const char*     color_code      (Colors acolor);
-const char*     color           (Colors acolor);
+std::string     color           (Colors acolor, Colors c1 = Colors::NONE, Colors c2 = Colors::NONE, Colors c3 = Colors::NONE,
+                                 Colors c4 = Colors::NONE, Colors c5 = Colors::NONE, Colors c6 = Colors::NONE);
 void            configure       (Colorize colorize);
 bool            colorize_tty    (int fd = -1);
 } // AnsiColors
