@@ -46,7 +46,7 @@ SignalMonitorImpl::get_shm_offset()
   MonitorFields *fieldsn = source_->cmon_get_fields (ochannel_);
   const size_t channel_offset = ((char*) fieldsn) - ((char*) fields0);
   return sb.mem_offset + channel_offset;
-  static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
+  static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64), "");
 }
 
 int64
