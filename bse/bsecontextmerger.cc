@@ -171,7 +171,7 @@ bse_context_merger_context_create (BseSource    *source,
     }
 
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, module);
+  bse_source_set_context_module (source, context_handle, module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -201,8 +201,8 @@ bse_context_merger_context_dismiss (BseSource     *source,
       cmdata->ref_count--;
       if (cmdata->ref_count)	/* prevent automatic discarding from engine */
 	{
-	  bse_source_set_context_imodule (source, context_handle, NULL);
-	  bse_source_set_context_omodule (source, context_handle, NULL);
+	  bse_source_set_context_imodule (source, context_handle, NULL, trans);
+	  bse_source_set_context_omodule (source, context_handle, NULL, trans);
 	}
     }
 

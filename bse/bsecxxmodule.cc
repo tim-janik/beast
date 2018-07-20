@@ -433,11 +433,12 @@ Effect::class_init (CxxBaseClass *klass)
       Effect *self = static_cast<Effect*> (base);
       BseModule *engine_module = self->integrate_engine_module (context_handle, trans);
 
-      /* setup module i/o streams with BseSource i/o channels */
-      bse_source_set_context_module (source, context_handle, engine_module);
-
       /* reset module */
       bse_trans_add (trans, bse_job_force_reset (engine_module));
+
+      /* setup module i/o streams with BseSource i/o channels */
+      bse_source_set_context_module (source, context_handle, engine_module, trans);
+
       /* configure module */
       SynthesisModule::Closure *clo = self->make_module_config_closure();
       if (clo)
@@ -457,12 +458,12 @@ Effect::class_init (CxxBaseClass *klass)
       if (BSE_SOURCE_N_ICHANNELS (source))
         {
           engine_module = bse_source_get_context_imodule (source, context_handle);
-          bse_source_set_context_imodule (source, context_handle, NULL);
+          bse_source_set_context_imodule (source, context_handle, NULL, trans);
         }
       if (BSE_SOURCE_N_OCHANNELS (source))
         {
           engine_module = bse_source_get_context_omodule (source, context_handle);
-          bse_source_set_context_omodule (source, context_handle, NULL);
+          bse_source_set_context_omodule (source, context_handle, NULL, trans);
         }
 
       self->dismiss_engine_module (engine_module, context_handle, trans);

@@ -343,13 +343,13 @@ bse_sub_synth_context_create (BseSource *source,
   mdata_in->synth_context_handle = foreign_context_handle;
   mdata_out->synth_context_handle = foreign_context_handle;
 
-  /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_imodule (source, context_handle, imodule);
-  bse_source_set_context_omodule (source, context_handle, omodule);
-
   /* commit modules to engine */
   bse_trans_add (trans, bse_job_integrate (imodule));
   bse_trans_add (trans, bse_job_integrate (omodule));
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_imodule (source, context_handle, imodule, trans);
+  bse_source_set_context_omodule (source, context_handle, omodule, trans);
 
   if (shortcut)
     {

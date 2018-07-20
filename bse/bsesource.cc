@@ -5,6 +5,7 @@
 #include "bsecontainer.hh"
 #include "bsestorage.hh"
 #include "gslcommon.hh"
+#include "bseserver.hh"
 #include "bseengine.hh"
 
 
@@ -402,6 +403,8 @@ bse_source_prepare (BseSource *source)
   source->contexts = g_bsearch_array_create (&context_config);
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+  self->cmon_activate();
   source_notify_properties (source);
   g_object_thaw_notify (source);
   g_object_unref (source);
@@ -415,24 +418,24 @@ bse_source_real_reset (BseSource *source)
 void
 bse_source_reset (BseSource *source)
 {
-  guint n_contexts;
-
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
   assert_return (source->contexts != NULL);
 
   g_object_ref (source);
   g_object_freeze_notify (source);
-  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+  self->cmon_deactivate();
+  uint n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
       BseTrans *trans = bse_trans_open ();
       while (n_contexts)
-	{
-	  BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, n_contexts - 1);
-	  bse_source_dismiss_context (source, context->id, trans);
-	  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
-	}
+        {
+          BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, n_contexts - 1);
+          bse_source_dismiss_context (source, context->id, trans);
+          n_contexts = BSE_SOURCE_N_CONTEXTS (source);
+        }
       bse_trans_commit (trans);
     }
   bse_engine_wait_on_trans ();
@@ -847,9 +850,7 @@ bse_source_dismiss_context (BseSource *source,
 }
 
 void
-bse_source_set_context_imodule (BseSource *source,
-				guint	   context_handle,
-				BseModule *imodule)
+bse_source_set_context_imodule (BseSource *source, uint context_handle, BseModule *imodule, BseTrans *trans)
 {
   BseSourceContext *context;
 
@@ -902,13 +903,23 @@ bse_source_get_context_imodule (BseSource *source,
   return context->u.mods.imodule;
 }
 
-void
-bse_source_set_context_omodule (BseSource *source,
-				guint	   context_handle,
-				BseModule *omodule)
+static bool
+source_find_omodule (BseSource *source, BseModule *omodule)
 {
-  BseSourceContext *context;
+  const uint n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
+  if (BSE_SOURCE_N_OCHANNELS (source))
+    for (uint i = 0; i < n_contexts; i++)
+      {
+        BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, i);
+        if (context->u.mods.omodule == omodule)
+          return true;
+      }
+  return false;
+}
 
+void
+bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModule *omodule, BseTrans *trans)
+{
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
   assert_return (context_handle > 0);
@@ -916,35 +927,59 @@ bse_source_set_context_omodule (BseSource *source,
   if (omodule)
     assert_return (BSE_MODULE_N_OSTREAMS (omodule) >= BSE_SOURCE_N_OCHANNELS (source));
 
-  context = context_lookup (source, context_handle);
+  BseSourceContext *context = context_lookup (source, context_handle);
   if (!context)
     {
       Bse::warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
-  if (omodule)
-    assert_return (context->u.mods.omodule == NULL);
-  else
-    assert_return (context->u.mods.omodule != NULL);
 
-  context->u.mods.omodule = omodule;
+  Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
+
+  // add module
+  if (omodule)
+    {
+      assert_return (context->u.mods.omodule == NULL);
+      const bool seen_module = source_find_omodule (source, omodule);
+      context->u.mods.omodule = omodule;
+      if (!seen_module)         // notify on first module reference
+        self->cmon_omodule_changed (omodule, true, trans);
+    }
+
+  // remove module
+  if (!omodule)
+    {
+      assert_return (context->u.mods.omodule != NULL);
+      omodule = context->u.mods.omodule; // save for notification
+      context->u.mods.omodule = NULL;
+      const bool seen_module = source_find_omodule (source, omodule);
+      if (!seen_module)         // notify on last module reference
+        {
+          context->u.mods.omodule = omodule; // keep reference around during notification
+          self->cmon_omodule_changed (context->u.mods.omodule, false, trans);
+          context->u.mods.omodule = NULL;
+        }
+    }
+
   if (source->probes)
     bse_source_probes_modules_changed (source);
 }
 
-SfiRing*
-bse_source_list_omodules (BseSource *source)
+void
+bse_source_list_omodules (BseSource *source, std::vector<BseModule*> &modules)
 {
-  guint i, n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
-  SfiRing *ring = NULL;
+  const uint n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
+  const size_t offset = modules.size();
   if (BSE_SOURCE_N_OCHANNELS (source))
-    for (i = 0; i < n_contexts; i++)
+    for (uint i = 0; i < n_contexts; i++)
       {
         BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, i);
         if (context->u.mods.omodule)
-          ring = sfi_ring_append (ring, context->u.mods.omodule);
+          modules.push_back (context->u.mods.omodule);
       }
-  return ring;
+  std::sort (modules.begin() + offset, modules.end());
+  auto end = std::unique (modules.begin() + offset, modules.end()); // collapses dups
+  modules.erase (end, modules.end()); // eliminate std::move leftovers
 }
 
 BseModule*
@@ -967,9 +1002,7 @@ bse_source_get_context_omodule (BseSource *source,
 }
 
 void
-bse_source_set_context_module (BseSource *source,
-			       guint      context_handle,
-			       BseModule *module)
+bse_source_set_context_module (BseSource *source, uint context_handle, BseModule *module, BseTrans *trans)
 {
   assert_return (BSE_IS_SOURCE (source));
   assert_return (BSE_SOURCE_PREPARED (source));
@@ -978,9 +1011,9 @@ bse_source_set_context_module (BseSource *source,
   assert_return (BSE_MODULE_N_ISTREAMS (module) + BSE_MODULE_N_JSTREAMS (module) >= BSE_SOURCE_N_ICHANNELS (source));
 
   if (BSE_SOURCE_N_ICHANNELS (source))
-    bse_source_set_context_imodule (source, context_handle, module);
+    bse_source_set_context_imodule (source, context_handle, module, trans);
   if (BSE_SOURCE_N_OCHANNELS (source))
-    bse_source_set_context_omodule (source, context_handle, module);
+    bse_source_set_context_omodule (source, context_handle, module, trans);
 }
 
 void
@@ -2062,7 +2095,9 @@ SourceImpl::SourceImpl (BseObject *bobj) :
 {}
 
 SourceImpl::~SourceImpl ()
-{}
+{
+  cmon_delete();        // delete cmons_ and cmon_block_
+}
 
 SourceIfaceP
 SourceImpl::ichannel_get_osource (int input_channel, int input_joint)

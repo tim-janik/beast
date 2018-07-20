@@ -160,12 +160,8 @@ guint	    bse_source_class_add_ochannel      	(BseSourceClass	*source_class,
 						 const gchar	*label,
 						 const gchar	*blurb);
 void        bse_source_class_inherit_channels   (BseSourceClass *source_class);
-void		bse_source_set_context_imodule	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*imodule);
-void		bse_source_set_context_omodule	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*omodule);
+void		bse_source_set_context_imodule	(BseSource *source, uint context_handle, BseModule *imodule, BseTrans *trans);
+void		bse_source_set_context_omodule	(BseSource *source, uint context_handle, BseModule *omodule, BseTrans *trans);
 BseModule*	bse_source_get_context_imodule	(BseSource	*source,
 						 guint		 context_handle);
 BseModule*	bse_source_get_context_omodule	(BseSource	*source,
@@ -203,9 +199,7 @@ void       bse_source_input_backup_to_undo      (BseSource      *source,
 /* convenience */
 void   	   bse_source_class_cache_engine_class  (BseSourceClass	*source_class,
 						 const BseModuleClass *engine_class);
-void	   bse_source_set_context_module	(BseSource	*source,
-						 guint		 context_handle,
-						 BseModule	*module);
+void	   bse_source_set_context_module	(BseSource *source, uint context_handle, BseModule *module, BseTrans *trans);
 void	   bse_source_update_modules	        (BseSource	*source,
 						 guint		 member_offset,
 						 gpointer	 member_data,
@@ -263,7 +257,7 @@ guint*		bse_source_context_ids		(BseSource	*source,
 						 guint		*n_ids);
 gboolean	bse_source_has_context		(BseSource	*source,
 						 guint		 context_handle);
-SfiRing*        bse_source_list_omodules        (BseSource      *source);
+void            bse_source_list_omodules        (BseSource *source, std::vector<BseModule*> &modules);
 /* implemented in bseprobe.cc */
 void    bse_source_clear_probes                 (BseSource      *source);
 void    bse_source_probes_modules_changed       (BseSource      *source);
@@ -271,8 +265,26 @@ void    bse_source_probes_modules_changed       (BseSource      *source);
 namespace Bse {
 
 class SourceImpl : public ItemImpl, public virtual SourceIface {
+  // == Channel Monitors
+  class ChannelMonitor;
+  ChannelMonitor      *cmons_ = NULL;
+  SharedBlock          cmon_block_;
+  void                 cmon_activate           ();
+  bool                 cmon_needed             ();
+  void                 cmon_deactivate         ();
+  void                 cmon_omodule_changed    (BseModule *module, bool added, BseTrans *trans);
+  void                 cmon_add_probe          (uint ochannel, const ProbeFeatures &pf);
+  void                 cmon_sub_probe          (uint ochannel, const ProbeFeatures &pf);
+  ChannelMonitor&      cmon_get                (uint ochannel);
+  void                 cmon_delete             ();
+  SharedBlock          cmon_get_block          ();
+  MonitorFields*       cmon_get_fields         (uint ochannel);
+  friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
+  friend void ::bse_source_reset               (BseSource*);
+  friend void ::bse_source_prepare             (BseSource*);
+  friend class SignalMonitorImpl;
 protected:
-  virtual             ~SourceImpl           ();
+  virtual             ~SourceImpl              ();
 public:
   explicit             SourceImpl              (BseObject*);
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
@@ -303,7 +315,9 @@ public:
   virtual int32        get_automation_channel  (const String &property_name) override;
   virtual void         request_probes          (const ProbeRequestSeq &prseq) override; // bseprobe.cc
   virtual int          get_mix_freq            () override;                             // bseprobe.cc
+  virtual SignalMonitorIfaceP create_signal_monitor (int32 ochannel) override;
 };
+typedef std::shared_ptr<SourceImpl> SourceImplP;
 
 } // Bse
 

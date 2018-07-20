@@ -209,16 +209,16 @@ bse_atan_distort_context_create (BseSource *source,
   /* create a BseModule with AtanDistortModule as user_data */
   module = bse_module_new (&admod_class, admod);
 
+  /* commit module to engine */
+  bse_trans_add (trans, bse_job_integrate (module));
+
   /* the istreams and ostreams of our BseModule map 1:1 to
    * BseAtanDistort's input/output channels, so we can call
    * bse_source_set_context_module() which does all the internal
    * crap of mapping istreams/ostreams of the module to
    * input/output channels of BseAtanDistort
    */
-  bse_source_set_context_module (source, context_handle, module);
-
-  /* commit module to engine */
-  bse_trans_add (trans, bse_job_integrate (module));
+  bse_source_set_context_module (source, context_handle, module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

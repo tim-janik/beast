@@ -124,7 +124,7 @@ snooper_process (BseModule *module,
       const float *wave_in = jstream.values[0];
       float min = wave_in[0], max = wave_in[0];
       float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
-      bool seen_nan = FALSE, seen_pinf = FALSE, seen_ninf = FALSE, seen_subn = FALSE;
+      bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
 
       for (uint j = 0; j < jstream.n_connections; j++)
         for (uint i = 0; i < n_values; i++)
@@ -137,7 +137,7 @@ snooper_process (BseModule *module,
               {
                 seen_nan |= BSE_FLOAT_IS_NAN (v);
                 seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
-                seen_ninf |= BSE_FLOAT_IS_INF_POSITIVE (v);
+                seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
               }
             else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
               seen_subn = true;
@@ -187,7 +187,7 @@ bse_snooper_context_create (BseSource *source,
   snoop_data->ref_count += 1;
 
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_imodule (source, context_handle, snooper->module);
+  bse_source_set_context_imodule (source, context_handle, snooper->module, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -206,7 +206,7 @@ bse_snooper_context_dismiss (BseSource     *source,
   assert_return (snoop_data->ref_count > 0);
   snoop_data->ref_count -= 1;
   if (snoop_data->ref_count)    /* prevent automatic discarding from engine */
-    bse_source_set_context_imodule (source, context_handle, NULL);
+    bse_source_set_context_imodule (source, context_handle, NULL, trans);
   else
     snooper->module = NULL; // module will be auto destroyed by BseSource->context_dismiss()
   /* chain parent class' handler */

@@ -331,7 +331,7 @@ private:
   {
     if (!omodules)
       {
-        omodules = bse_source_list_omodules (source);
+        // FIXME: omodules = bse_source_list_omodules (source);
         /* remove dupes */
         omodules = sfi_ring_sort (omodules, sfi_pointer_cmp, NULL);
         omodules = sfi_ring_uniq (omodules, sfi_pointer_cmp, NULL);

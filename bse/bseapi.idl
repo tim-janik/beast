@@ -814,6 +814,27 @@ sequence ProbeRequestSeq {
   ProbeRequest probe_requests;
 };
 
+/// Layout of SignalMonitor fields within shared memory.
+record MonitorFields {
+  float64       min;                    ///< Minimum value of the last frame.
+  float64       max;                    ///< Maximum value of the last frame.
+  float64       energy;                 ///< Energy of the last frame.
+  float64       tip;                    ///< Tip energy of the last couple frames.
+  int64         gen;                    ///< Gneration counter, updated on every modification.
+};
+
+/// Interface for monitoring output signals.
+interface SignalMonitor {
+  int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
+  Source        get_osource        ();                  ///< Retrieve output module the SignalSnooper is connected to.
+  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorFields of @a ochannel.
+  int32         get_ochannel       ();                  ///< Offset into shm_id for MonitorFields of @a ochannel.
+  int64         get_mix_freq       ();                  ///< Mix frame at which SnoopFields values are calculated.
+  int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of SnoopFields values.
+  void          set_probe_features (ProbeFeatures pf);  ///< Configure probe features.
+  ProbeFeatures get_probe_features ();                  ///< Get configured probe features.
+};
+
 /// Base interface type for synthesis modules with input or output streams.
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
@@ -865,6 +886,9 @@ interface Source : Item {
   void        request_probes (ProbeRequestSeq prseq);
   /// Signal arrival of new probe values.
   // signal void probes         (ProbeSeq a);
+
+  /// Create signal monitor for an output channel.
+  SignalMonitor create_signal_monitor (int32 ochannel);
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.
@@ -1198,12 +1222,16 @@ sequence CategorySeq {
 /** Main Bse remote origin object.
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
+ *
+ * ### Events:
+ * - **enginechange** - A notification event for DSP engine changes, the event field *active* contains the activateion state.
  */
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
+  bool          engine_active   ();                     ///< Retrieve DSP engine activateion state, see also: "enginechange" Event.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
   SharedMemory  get_shared_memory  (int64 id);          ///< Retrieve SharedMemory from id.
