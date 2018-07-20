@@ -377,26 +377,17 @@ struct AbortMsg {
 static AbortMsg abort_msg;
 
 #define ABORT_WITH_MESSAGE(abort_message)                          do { \
-  diag_printerr (abort_message);                                        \
+  Bse::diag_printerr (abort_message);                                   \
   __sync_synchronize();                                                 \
-  if (global_abort_hook)                                                \
-    global_abort_hook (abort_message);                                  \
-  abort_msg.msg = abort_message.c_str();                                \
+  if (Bse::global_abort_hook)                                           \
+    Bse::global_abort_hook (abort_message);                             \
+  Bse::abort_msg.msg = abort_message.c_str();                           \
   __sync_synchronize();                                                 \
-  if (global_debug_flags & Bse::DebugFlags::SIGQUIT_ON_ABORT)           \
+  if (Bse::global_debug_flags & Bse::DebugFlags::SIGQUIT_ON_ABORT)      \
     raise (SIGQUIT);                                                    \
   ::abort();   /* default action for SIGABRT is core dump */            \
-  _exit (-1);  /* ensure noreturn */                                    \
+  ::_exit (-1);  /* ensure noreturn */                                  \
 } while (0)
-
-static void
-aida_diagnostic_impl (const char *file, int line, const char *func, char kind, const char *msg, bool will_abort)
-{
-  const ::std::string diag_message = diag_format (true, file, line, func, kind, msg);
-  if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (diag_message);
-  diag_printerr (diag_message);
-}
 
 void
 diag_failed_assert (const char *file, int line, const char *func, const char *stmt)
@@ -444,6 +435,20 @@ static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 } // Bse
 
 // == aidacc/aida.cc ==
+static void
+aida_diagnostic_impl (const char *file, int line, const char *func, char kind, const char *msg, bool will_abort)
+{
+  if (kind == 'D' and not will_abort)
+    {
+      Bse::diag_debug_message (file, line, func, "aida", msg);
+      return;
+    }
+  const ::std::string diag_message = Bse::diag_format (true, file, line, func, kind, msg);
+  if (kind != 'D' && Bse::global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
+    ABORT_WITH_MESSAGE (diag_message);
+  Bse::diag_printerr (diag_message);
+}
+
 // Parse BSE_CONFIG=gc-seconds=N
 static uint
 aida_gc_seconds (uint default_msecs)
@@ -472,7 +477,7 @@ aida_defer_handler (uint msecs, int (*func) (void*), void *data)
 #define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        aida_defer_handler (msecs, func, data)
 #define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                g_source_remove (id)
 #define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort) \
-  ::Bse::aida_diagnostic_impl (file, line, func, kind, message, will_abort)
+  aida_diagnostic_impl (file, line, func, kind, message, will_abort)
 #include "aidacc/aida.cc"
 
 // == __abort_msg ==
