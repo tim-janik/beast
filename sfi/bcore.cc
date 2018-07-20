@@ -226,6 +226,16 @@ diag_format (bool with_executable, const char *file, int line, const char *func,
 {
   const ::std::string executable = with_executable ? executable_path() : "";
   ::std::string sout;
+  using namespace AnsiColors;
+  bool need_reset = true;
+  if (kind == 'F' or will_abort)
+    sout += color (BG_RED, FG_WHITE, BOLD);
+  else if (kind == 'W')
+    sout += color (FG_YELLOW);
+  else if (kind == 'A' or kind == 'E')
+    sout += color (FG_RED, BOLD);
+  else
+    need_reset = false;
   if (!executable.empty())
     sout += executable + ": ";
   if (file && file[0])
@@ -252,6 +262,9 @@ diag_format (bool with_executable, const char *file, int line, const char *func,
     break;
   default: ;
   }
+  const bool need_space = sout.size() && sout[sout.size() - 1] == ' ';
+  if (need_reset)
+    sout = string_rstrip (sout) + color (RESET) + (need_space ? " " : "");
   sout += info;
   if (!sout.empty() && sout[sout.size() - 1] != '\n')
     sout += "\n";
