@@ -26,9 +26,8 @@
 #include <unordered_set>
 
 // == Customizable Macros ==
-#ifndef AIDA_DEBUG
-#define AIDA_DEBUG(...)                         AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, __func__, 'D', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
-#endif
+#define AIDA_DEBUG(...)                         AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, "", 'D', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
+#define AIDA_WARN(...)                          AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, __func__, 'W', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
 #ifndef AIDA_DIAGNOSTIC_IMPL
 /** Macro to print out Aida diagnostics (like failed assertions or debug messages) */
 #define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort)       do { ::std::string s; \
@@ -2833,7 +2832,7 @@ ClientConnectionImpl::dispatch ()
       break;
     default: // result/reply messages are handled in call_remote
       {
-        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_WARN ("msgid should not occur: %016llx", LLU msgid);
         AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
@@ -2891,7 +2890,7 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
         {
           ProtoReader frr (*fr);
           const uint64 retid = frr.pop_int64(); // rethh = frr.pop_int64(), rethl = frr.pop_int64();
-          AIDA_DEBUG ("msgid should not occur: %016llx", LLU retid);
+          AIDA_WARN ("msgid should not occur: %016llx", LLU retid);
           delete fr;
         }
     }
@@ -3214,7 +3213,7 @@ ServerConnectionImpl::dispatch ()
     default:
       {
         // const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_WARN ("msgid should not occur: %016llx", LLU msgid);
         AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
