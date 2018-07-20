@@ -50,6 +50,5 @@ struct BseMainArgs {
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
-extern GMainContext    *bse_main_context;
 
 #endif /* __BSE_MAIN_H__ */

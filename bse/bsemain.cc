@@ -29,7 +29,6 @@ static void     init_aida_idl ();
 
 /* --- variables --- */
 /* from bse.hh */
-GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static BseMainArgs       default_main_args = {
   1,                    // n_processors
@@ -74,6 +73,8 @@ static int initialized_for_unit_testing = -1;
 static void
 bse_init_intern()
 {
+  assert_return (bse_main_context == NULL);
+
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
     {

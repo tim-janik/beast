@@ -30,6 +30,9 @@ static_assert (DBL_MIN      <= 1E-37, "");
 static_assert (DBL_MAX      >= 1E+37, "");
 static_assert (DBL_EPSILON  <= 1E-9, "");
 
+// == Event Loop ==
+GMainContext *bse_main_context = NULL; // initialized by bse_init_intern()
+
 namespace Bse {
 
 // == Memory Utilities ==
@@ -441,6 +444,33 @@ static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 } // Bse
 
 // == aidacc/aida.cc ==
+// Parse BSE_CONFIG=gc-seconds=N
+static uint
+aida_gc_seconds (uint default_msecs)
+{
+  const char *ev = getenv ("BSE_CONFIG");
+  if (ev)
+    {
+      const std::string v = Bse::feature_toggle_find (ev, "gc-seconds", "");
+      if (!v.empty())
+        return Bse::string_to_uint (v);
+    }
+  return (default_msecs + 999) / 1000;
+}
+
+static uint
+aida_defer_handler (uint msecs, int (*func) (void*), void *data)
+{
+  assert_return (bse_main_context != NULL, 0);
+  static const uint gc_seconds = aida_gc_seconds (msecs);
+  GSource *source = gc_seconds ? g_timeout_source_new_seconds (gc_seconds) : g_idle_source_new();
+  g_source_set_callback (source, func, data, NULL);
+  uint id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+#define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        aida_defer_handler (msecs, func, data)
+#define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                g_source_remove (id)
 #define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort) \
   ::Bse::aida_diagnostic_impl (file, line, func, kind, message, will_abort)
 #include "aidacc/aida.cc"
