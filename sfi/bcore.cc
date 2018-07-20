@@ -366,7 +366,14 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
       struct timeval tv = { 0, };
       gettimeofday (&tv, NULL);
       const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
-      printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, cond ? cond : executable_name().c_str(), message, newline);
+      using namespace AnsiColors;
+      const std::string col = color (FG_CYAN, BOLD), reset = color (RESET);
+      const std::string ul = cond ? color (UNDERLINE) : "", nl = cond ? color (UNDERLINE_OFF) : "";
+      std::string sout;
+      sout += string_format ("%s%u.%06u ", col, tv.tv_sec, tv.tv_usec); // cyan timestamp
+      sout += string_format ("%s%s%s:", ul, cond ? cond : executable_name().c_str(), nl); // underlined cond
+      sout += string_format ("%s %s", reset, message); // normal print message
+      printerr ("%s%s", sout, newline);
     }
 }
 
