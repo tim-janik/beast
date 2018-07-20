@@ -2693,7 +2693,7 @@ public:
         seen_garbage_ = true;
         ProtoMsg *fb = ProtoMsg::_new (3);
         fb->add_header1 (MSGID_META_SEEN_GARBAGE, 0, 0);
-        AIDA_DEBUG ("GCStats: ClientConnectionImpl: SEEN_GARBAGE (%016llx)", LLU coo.orbid());
+        AIDA_DEBUG ("GC: ClientConnectionImpl: SEEN_GARBAGE (%016llx)", LLU coo.orbid());
         ProtoMsg *fr = this->call_remote (fb); // takes over fb
         assert (fr == NULL);
       }
@@ -2786,7 +2786,7 @@ ClientConnectionImpl::gc_sweep (const ProtoMsg *fb)
   fr->add_int64 (trashids.size()); // length
   for (auto v : trashids)
     fr->add_int64 (v); // items
-  AIDA_DEBUG ("GCStats: ClientConnectionImpl: GARBAGE_REPORT: %zu trash ids", trashids.size());
+  AIDA_DEBUG ("GC: ClientConnectionImpl: GARBAGE_REPORT: %zu trash ids", trashids.size());
   post_peer_msg (fr);
   seen_garbage_ = false;
 }
@@ -3057,7 +3057,7 @@ ServerConnectionImpl::start_garbage_collection()
   sweep_remotes_->swap (live_remotes_);
   ProtoMsg *fb = ProtoMsg::_new (3);
   fb->add_header2 (MSGID_META_GARBAGE_SWEEP, 0, 0);
-  AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_SWEEP: %zu candidates", sweep_remotes_->size());
+  AIDA_DEBUG ("GC: ServerConnectionImpl: GARBAGE_SWEEP: %zu candidates", sweep_remotes_->size());
   post_peer_msg (fb);
 }
 
@@ -3197,7 +3197,7 @@ ServerConnectionImpl::dispatch ()
               }
           delete sweep_remotes_;                // deletes references
           sweep_remotes_ = NULL;
-          AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_COLLECTED: considered=%llu retained=%llu purged=%llu active=%zu",
+          AIDA_DEBUG ("GC: ServerConnectionImpl: GARBAGE_COLLECTED: considered=%llu retained=%llu purged=%llu active=%zu",
                       LLU sweeps, LLU retain, LLU (sweeps - retain), live_remotes_.size());
         }
       break;
