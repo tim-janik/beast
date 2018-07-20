@@ -45,6 +45,10 @@
   fputs (s.c_str(), stderr);                                            \
   } while (0)
 #endif
+#ifndef AIDA_DEFER_GARBAGE_COLLECTION
+#define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        ({ func (data); 0; })
+#define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                ({ (void) id; })
+#endif
 
 // == printf helper ==
 #define LLI     (long long int)
@@ -3010,6 +3014,7 @@ class ServerConnectionImpl : public ServerConnection {
   ImplicitBaseP            remote_origin_;
   std::unordered_map<size_t, EmitResultHandler> emit_result_map_;
   std::unordered_set<OrbObjectP> live_remotes_, *sweep_remotes_;
+  uint64_t                 defer_garbage_collection_id_ = 0;
   AIDA_CLASS_NON_COPYABLE (ServerConnectionImpl);
   void                  start_garbage_collection ();
 public:
@@ -3068,6 +3073,11 @@ ServerConnectionImpl::ServerConnectionImpl (const std::string &protocol) :
 
 ServerConnectionImpl::~ServerConnectionImpl()
 {
+  if (defer_garbage_collection_id_)
+    {
+      AIDA_DEFER_GARBAGE_COLLECTION_CANCEL (defer_garbage_collection_id_);
+      defer_garbage_collection_id_ = 0;
+    }
   connection_registry->unregister_connection (*this);
   AIDA_ASSERT_RETURN (! "~ServerConnectionImpl not properly implemented");
 }
@@ -3156,7 +3166,16 @@ ServerConnectionImpl::dispatch ()
       {
         const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
         if (hashhigh == 0 && hashlow == 0) // convention, hash=(0,0)
-          start_garbage_collection();
+          {
+            auto start_collection = [] (void *data) -> int {
+              ServerConnectionImpl *self = (ServerConnectionImpl*) data;
+              self->defer_garbage_collection_id_ = 0;
+              self->start_garbage_collection();
+              return 0;
+            };
+            if (defer_garbage_collection_id_ == 0)
+              defer_garbage_collection_id_ = AIDA_DEFER_GARBAGE_COLLECTION (5 * 1000, start_collection, this);
+          }
       }
       break;
     case MSGID_META_GARBAGE_REPORT:
