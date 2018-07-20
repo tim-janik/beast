@@ -38,6 +38,7 @@ ebeast_v8bse_incdirs     =  ../../ ../../external/v8pp/ $(patsubst -%, , $(patsu
 ebeast_v8bse_libs        = $(LIBBSE_LIBS) -L$(abs_top_builddir)/bse/.libs -lbse-@MAJOR@
 ebeast_v8bse_cxxflags    = $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS $(CXXFLAGS)
 ebeast_v8bse_rmflags     = -fno-exceptions -fno-rtti -std=gnu++0x
+ebeast_v8bse_ccflags     = -Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-fallthrough
 
 # == ebeast/v8bse/binding.gyp ==
 ebeast_v8bse_comma = ,
@@ -50,6 +51,7 @@ ebeast/v8bse/binding.gyp: Makefile # binding.gyp needs Makefile variables
 	@echo "      'sources':      [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_sources)) ],"	>>$@
 	@echo "      'cflags!':      [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_rmflags)) ],"	>>$@
 	@echo "      'cflags_cc!':   [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_rmflags)) ],"	>>$@
+	@echo "      'cflags_cc':    [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_ccflags)) ],"	>>$@
 	@echo "      'include_dirs': [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_incdirs)) ],"	>>$@
 	@echo "      'libraries':    [ $(patsubst %, '%'$(ebeast_v8bse_comma), $(ebeast_v8bse_libs))"		>>$@
 	@echo "                       \"'-Wl,-rpath,"'$$$$'"ORIGIN/../../../lib/'\" ],"				>>$@

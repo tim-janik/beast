@@ -1557,8 +1557,9 @@ Any::set_ibase (ImplicitBase *ibase)
     }
 }
 
+/// Use Any.get<DerivedType>() instead.
 RemoteHandle
-Any::get_handle () const
+Any::get_untyped_remote_handle () const
 {
   return kind() == REMOTE ? u_.rhandle() : RemoteHandle::__aida_null_handle__();
 }

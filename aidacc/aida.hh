@@ -665,6 +665,7 @@ public:
   String    get_enum_typename () const;                 ///< Get the enum typename from an enum holding any.
   void      set_enum (const String &enum_typename,
                       int64 value);                     ///< Set Any to hold an enum value.
+  RemoteHandle get_untyped_remote_handle () const;
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
@@ -702,9 +703,8 @@ private:
   C*                 cast_ibase  () const               { return dynamic_cast<C*> (get_ibasep().get()); }
   template<typename SP>
   SP                 cast_ibasep () const               { return std::dynamic_pointer_cast<typename SP::element_type> (get_ibasep()); }
-  RemoteHandle       get_handle  () const;
   template<typename H>
-  H                  cast_handle () const               { return H::down_cast (get_handle()); }
+  H                  cast_handle () const               { return H::down_cast (get_untyped_remote_handle()); }
   void               set_handle  (const RemoteHandle &handle);
   const Any*         get_any     () const;
   void               set_any     (const Any *value);
