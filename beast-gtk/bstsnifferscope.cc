@@ -297,7 +297,7 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           };
           self->mon_handler = Bst::add_frame_handler (framecb);
         }
-      static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64));
+      static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64), "");
     }
 }
 
