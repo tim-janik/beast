@@ -13,7 +13,9 @@
     <div class="vc-track-view-control">
       <span class="vc-track-view-label">{{ track.get_name() }}</span>
       <div class="vc-track-view-meter">
-	<div class="vc-track-view-lv0"></div>
+	<div class="vc-track-view-lbg"></div>
+	<div class="vc-track-view-lv0" ref="level0"></div>
+	<div class="vc-track-view-lsp"></div>
 	<div class="vc-track-view-lv1" ref="level1"></div>
       </div>
     </div>
@@ -27,22 +29,32 @@
 
 <style lang="scss">
   @import 'mixins.scss';
-  .vc-track-view-lv0, .vc-track-view-lv1 {
-    position: absolute;
-    width: 100%; height: 100%;
-  }
-  .vc-track-view-lv0 {
+  $vc-track-view-level-height: 3px;
+  $vc-track-view-level-space: 1px;
+  .vc-track-view-lbg {
+    height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
     background: linear-gradient(to right, #0b0, #bb0 66%, #b00);
   }
-  .vc-track-view-lv1 {
-    background-color: rgba( 0, 0, 0, .65);
+  .vc-track-view-lbg, .vc-track-view-lv0, .vc-track-view-lsp, .vc-track-view-lv1 {
+    position: absolute;
+    width: 100%;
+  }
+  .vc-track-view-lv0	{ top: 0px; }
+  .vc-track-view-lsp	{ top: $vc-track-view-level-height; height: $vc-track-view-level-space; }
+  .vc-track-view-lv1	{ top: $vc-track-view-level-height + $vc-track-view-level-space; }
+  .vc-track-view-lsp {
+    background-color: rgba( 0, 0, 0, .80);
+  }
+  .vc-track-view-lv0, .vc-track-view-lv1 {
+    height: $vc-track-view-level-height;
+    background-color: rgba( 0, 0, 0, .75);
     transform-origin: center right;
     will-change: transform;
     --scalex: 1;
     transform: scaleX(var(--scalex));
   }
   .vc-track-view-meter {
-    height: 6px;
+    height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
     position: relative;
   }
   .vc-track-view-control {
@@ -104,14 +116,20 @@ module.exports = {
 };
 
 function update_levels (active) {
-  const level1 = this.$refs['level1'];
   // see Bse.MonitorFields layout
-  const vmin = this.lfields['float64_array'][this.lfields.float64_offset + 0];
-  const vmax = this.lfields['float64_array'][this.lfields.float64_offset + 1];
-  const value = Util.clamp (Math.max (Math.abs (vmin), Math.abs (vmax)), 0, 1);
-  const scale = active ? 1.0 - value : 1;
-  // level1.style.transform = "scaleX(" + scale + ")";
-  level1.style.setProperty ('--scalex', scale);
+  const vmin0 = this.lfields['float64_array'][this.lfields.float64_offset + 0];
+  const vmax0 = this.lfields['float64_array'][this.lfields.float64_offset + 1];
+  const value0 = Util.clamp (Math.max (Math.abs (vmin0), Math.abs (vmax0)), 0, 1);
+  const scale0 = active ? 1.0 - value0 : 1;
+  const vmin1 = this.rfields['float64_array'][this.rfields.float64_offset + 0];
+  const vmax1 = this.rfields['float64_array'][this.rfields.float64_offset + 1];
+  const value1 = Util.clamp (Math.max (Math.abs (vmin1), Math.abs (vmax1)), 0, 1);
+  const scale1 = active ? 1.0 - value1 : 1;
+  // level.style.transform = "scaleX(" + scale + ")";
+  const level0 = this.$refs['level0'];
+  level0.style.setProperty ('--scalex', scale0);
+  const level1 = this.$refs['level1'];
+  level1.style.setProperty ('--scalex', scale1);
 }
 
 </script>
