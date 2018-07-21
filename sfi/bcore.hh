@@ -441,4 +441,9 @@ AsyncBlockingQueue<Value>::swap (std::list<Value> &list)
 
 } // Bse
 
+// == Event Loop ==
+#ifdef  __G_LIB_H__
+extern GMainContext    *bse_main_context;
+#endif
+
 #endif // __BSE_BCORE_HH__

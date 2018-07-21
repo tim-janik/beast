@@ -26,9 +26,8 @@
 #include <unordered_set>
 
 // == Customizable Macros ==
-#ifndef AIDA_DEBUG
-#define AIDA_DEBUG(...)                         AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, __func__, 'D', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
-#endif
+#define AIDA_DEBUG(...)                         AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, "", 'D', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
+#define AIDA_WARN(...)                          AIDA_DIAGNOSTIC_IMPL (__FILE__, __LINE__, __func__, 'W', ::Aida::posix_sprintf (__VA_ARGS__).c_str(), false)
 #ifndef AIDA_DIAGNOSTIC_IMPL
 /** Macro to print out Aida diagnostics (like failed assertions or debug messages) */
 #define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort)       do { ::std::string s; \
@@ -44,6 +43,10 @@
   if (s.size() && s[s.size() - 1] != '\n') s += "\n";                   \
   fputs (s.c_str(), stderr);                                            \
   } while (0)
+#endif
+#ifndef AIDA_DEFER_GARBAGE_COLLECTION
+#define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        ({ func (data); 0; })
+#define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                ({ (void) id; })
 #endif
 
 // == printf helper ==
@@ -2689,7 +2692,7 @@ public:
         seen_garbage_ = true;
         ProtoMsg *fb = ProtoMsg::_new (3);
         fb->add_header1 (MSGID_META_SEEN_GARBAGE, 0, 0);
-        AIDA_DEBUG ("GCStats: ClientConnectionImpl: SEEN_GARBAGE (%016llx)", LLU coo.orbid());
+        AIDA_DEBUG ("GC: ClientConnectionImpl: SEEN_GARBAGE (%016llx)", LLU coo.orbid());
         ProtoMsg *fr = this->call_remote (fb); // takes over fb
         assert (fr == NULL);
       }
@@ -2782,7 +2785,7 @@ ClientConnectionImpl::gc_sweep (const ProtoMsg *fb)
   fr->add_int64 (trashids.size()); // length
   for (auto v : trashids)
     fr->add_int64 (v); // items
-  AIDA_DEBUG ("GCStats: ClientConnectionImpl: GARBAGE_REPORT: %zu trash ids", trashids.size());
+  AIDA_DEBUG ("GC: ClientConnectionImpl: GARBAGE_REPORT: %zu trash ids", trashids.size());
   post_peer_msg (fr);
   seen_garbage_ = false;
 }
@@ -2829,7 +2832,7 @@ ClientConnectionImpl::dispatch ()
       break;
     default: // result/reply messages are handled in call_remote
       {
-        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_WARN ("msgid should not occur: %016llx", LLU msgid);
         AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
@@ -2887,7 +2890,7 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
         {
           ProtoReader frr (*fr);
           const uint64 retid = frr.pop_int64(); // rethh = frr.pop_int64(), rethl = frr.pop_int64();
-          AIDA_DEBUG ("msgid should not occur: %016llx", LLU retid);
+          AIDA_WARN ("msgid should not occur: %016llx", LLU retid);
           delete fr;
         }
     }
@@ -3010,6 +3013,7 @@ class ServerConnectionImpl : public ServerConnection {
   ImplicitBaseP            remote_origin_;
   std::unordered_map<size_t, EmitResultHandler> emit_result_map_;
   std::unordered_set<OrbObjectP> live_remotes_, *sweep_remotes_;
+  uint64_t                 defer_garbage_collection_id_ = 0;
   AIDA_CLASS_NON_COPYABLE (ServerConnectionImpl);
   void                  start_garbage_collection ();
 public:
@@ -3052,7 +3056,7 @@ ServerConnectionImpl::start_garbage_collection()
   sweep_remotes_->swap (live_remotes_);
   ProtoMsg *fb = ProtoMsg::_new (3);
   fb->add_header2 (MSGID_META_GARBAGE_SWEEP, 0, 0);
-  AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_SWEEP: %zu candidates", sweep_remotes_->size());
+  AIDA_DEBUG ("GC: ServerConnectionImpl: GARBAGE_SWEEP: %zu candidates", sweep_remotes_->size());
   post_peer_msg (fb);
 }
 
@@ -3068,6 +3072,11 @@ ServerConnectionImpl::ServerConnectionImpl (const std::string &protocol) :
 
 ServerConnectionImpl::~ServerConnectionImpl()
 {
+  if (defer_garbage_collection_id_)
+    {
+      AIDA_DEFER_GARBAGE_COLLECTION_CANCEL (defer_garbage_collection_id_);
+      defer_garbage_collection_id_ = 0;
+    }
   connection_registry->unregister_connection (*this);
   AIDA_ASSERT_RETURN (! "~ServerConnectionImpl not properly implemented");
 }
@@ -3156,7 +3165,16 @@ ServerConnectionImpl::dispatch ()
       {
         const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
         if (hashhigh == 0 && hashlow == 0) // convention, hash=(0,0)
-          start_garbage_collection();
+          {
+            auto start_collection = [] (void *data) -> int {
+              ServerConnectionImpl *self = (ServerConnectionImpl*) data;
+              self->defer_garbage_collection_id_ = 0;
+              self->start_garbage_collection();
+              return 0;
+            };
+            if (defer_garbage_collection_id_ == 0)
+              defer_garbage_collection_id_ = AIDA_DEFER_GARBAGE_COLLECTION (5 * 1000, start_collection, this);
+          }
       }
       break;
     case MSGID_META_GARBAGE_REPORT:
@@ -3178,7 +3196,7 @@ ServerConnectionImpl::dispatch ()
               }
           delete sweep_remotes_;                // deletes references
           sweep_remotes_ = NULL;
-          AIDA_DEBUG ("GCStats: ServerConnectionImpl: GARBAGE_COLLECTED: considered=%llu retained=%llu purged=%llu active=%zu",
+          AIDA_DEBUG ("GC: ServerConnectionImpl: GARBAGE_COLLECTED: considered=%llu retained=%llu purged=%llu active=%zu",
                       LLU sweeps, LLU retain, LLU (sweeps - retain), live_remotes_.size());
         }
       break;
@@ -3195,7 +3213,7 @@ ServerConnectionImpl::dispatch ()
     default:
       {
         // const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-        AIDA_DEBUG ("msgid should not occur: %016llx", LLU msgid);
+        AIDA_WARN ("msgid should not occur: %016llx", LLU msgid);
         AIDA_ASSERT_RETURN (! "invalid message id");
       }
       break;
