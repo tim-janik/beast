@@ -226,6 +226,16 @@ diag_format (bool with_executable, const char *file, int line, const char *func,
 {
   const ::std::string executable = with_executable ? executable_path() : "";
   ::std::string sout;
+  using namespace AnsiColors;
+  bool need_reset = true;
+  if (kind == 'F' or will_abort)
+    sout += color (BG_RED, FG_WHITE, BOLD);
+  else if (kind == 'W')
+    sout += color (FG_YELLOW);
+  else if (kind == 'A' or kind == 'E')
+    sout += color (FG_RED, BOLD);
+  else
+    need_reset = false;
   if (!executable.empty())
     sout += executable + ": ";
   if (file && file[0])
@@ -252,6 +262,9 @@ diag_format (bool with_executable, const char *file, int line, const char *func,
     break;
   default: ;
   }
+  const bool need_space = sout.size() && sout[sout.size() - 1] == ' ';
+  if (need_reset)
+    sout = string_rstrip (sout) + color (RESET) + (need_space ? " " : "");
   sout += info;
   if (!sout.empty() && sout[sout.size() - 1] != '\n')
     sout += "\n";
@@ -366,7 +379,14 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
       struct timeval tv = { 0, };
       gettimeofday (&tv, NULL);
       const char *const newline = !message.empty() && message.data()[message.size() - 1] == '\n' ? "" : "\n";
-      printerr ("%u.%06u %s: %s%s", tv.tv_sec, tv.tv_usec, cond ? cond : executable_name().c_str(), message, newline);
+      using namespace AnsiColors;
+      const std::string col = color (FG_CYAN, BOLD), reset = color (RESET);
+      const std::string ul = cond ? color (UNDERLINE) : "", nl = cond ? color (UNDERLINE_OFF) : "";
+      std::string sout;
+      sout += string_format ("%s%u.%06u ", col, tv.tv_sec, tv.tv_usec); // cyan timestamp
+      sout += string_format ("%s%s%s:", ul, cond ? cond : executable_name().c_str(), nl); // underlined cond
+      sout += string_format ("%s %s", reset, message); // normal print message
+      printerr ("%s%s", sout, newline);
     }
 }
 

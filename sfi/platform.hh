@@ -7,6 +7,31 @@
 
 namespace Bse {
 
+// == AnsiColors ==
+/// The AnsiColors namespace contains utility functions for colored terminal output
+namespace AnsiColors {
+/// ANSI color symbols.
+enum Colors {
+  NONE,
+  RESET,                ///< Reset combines BOLD_OFF, ITALICS_OFF, UNDERLINE_OFF, INVERSE_OFF, STRIKETHROUGH_OFF.
+  BOLD, BOLD_OFF,
+  ITALICS, ITALICS_OFF,
+  UNDERLINE, UNDERLINE_OFF,
+  INVERSE, INVERSE_OFF,
+  STRIKETHROUGH, STRIKETHROUGH_OFF,
+  FG_BLACK, FG_RED, FG_GREEN, FG_YELLOW, FG_BLUE, FG_MAGENTA, FG_CYAN, FG_WHITE,
+  FG_DEFAULT,
+  BG_BLACK, BG_RED, BG_GREEN, BG_YELLOW, BG_BLUE, BG_MAGENTA, BG_CYAN, BG_WHITE,
+  BG_DEFAULT,
+};
+enum class Colorize : int8 { NEVER = 0, ALWAYS = 1, AUTO = 2 };
+const char*     color_code      (Colors acolor);
+std::string     color           (Colors acolor, Colors c1 = Colors::NONE, Colors c2 = Colors::NONE, Colors c3 = Colors::NONE,
+                                 Colors c4 = Colors::NONE, Colors c5 = Colors::NONE, Colors c6 = Colors::NONE);
+void            configure       (Colorize colorize);
+bool            colorize_tty    (int fd = -1);
+} // AnsiColors
+
 // == Timestamp Handling ==
 uint64  timestamp_startup    ();        // µseconds
 uint64  timestamp_realtime   ();        // µseconds

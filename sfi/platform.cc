@@ -16,6 +16,105 @@
 
 namespace Bse {
 
+// == AnsiColors ==
+namespace AnsiColors {
+
+static std::atomic<Colorize> colorize_cache { Colorize::AUTO };
+
+/// Override the environment variable $BSE_COLOR (which may contain "always", "never" or "auto").
+void
+configure (Colorize colorize)
+{
+  atomic_store (&colorize_cache, colorize);
+}
+
+/// Check whether the tty @a fd should use colorization, checks BSE_COLOR if @a fd == -1.
+bool
+colorize_tty (int fd)
+{
+  if (fd >= 0)
+    return isatty (fd);
+  const Colorize colcache = atomic_load (&colorize_cache);
+  return_unless (colcache == Colorize::AUTO, bool (colcache));
+  const char *ev = getenv ("BSE_COLOR");
+  if (ev)
+    {
+      while (ev[0] == ' ')
+        ev++;
+      if (strncasecmp (ev, "always", 6) == 0)
+        {
+          atomic_store (&colorize_cache, Colorize::ALWAYS);
+          return true;
+        }
+      else if (strncasecmp (ev, "never", 5) == 0)
+        {
+          atomic_store (&colorize_cache, Colorize::NEVER);
+          return false;
+        }
+    }
+  const bool tty_output = isatty (1) && isatty (2);
+  atomic_store (&colorize_cache, tty_output ? Colorize::ALWAYS : Colorize::NEVER);
+  return tty_output;
+}
+
+/// Return ANSI code for the specified color if stdout & stderr should be colorized, see colorize_tty().
+std::string
+color (Colors acolor, Colors c1, Colors c2, Colors c3, Colors c4, Colors c5, Colors c6)
+{
+  return_unless (colorize_tty(), "");
+  std::string out = color_code (acolor);
+  out += color_code (c1);
+  out += color_code (c2);
+  out += color_code (c3);
+  out += color_code (c4);
+  out += color_code (c5);
+  out += color_code (c6);
+  return out;
+}
+
+/// Return ANSI code for the specified color.
+const char*
+color_code (Colors acolor)
+{
+  switch (acolor)
+    {
+    default: ;
+    case NONE:              return "";
+    case RESET:             return "\033[0m";
+    case BOLD:              return "\033[1m";
+    case BOLD_OFF:          return "\033[22m";
+    case ITALICS:           return "\033[3m";
+    case ITALICS_OFF:       return "\033[23m";
+    case UNDERLINE:         return "\033[4m";
+    case UNDERLINE_OFF:     return "\033[24m";
+    case INVERSE:           return "\033[7m";
+    case INVERSE_OFF:       return "\033[27m";
+    case STRIKETHROUGH:     return "\033[9m";
+    case STRIKETHROUGH_OFF: return "\033[29m";
+    case FG_BLACK:          return "\033[30m";
+    case FG_RED:            return "\033[31m";
+    case FG_GREEN:          return "\033[32m";
+    case FG_YELLOW:         return "\033[33m";
+    case FG_BLUE:           return "\033[34m";
+    case FG_MAGENTA:        return "\033[35m";
+    case FG_CYAN:           return "\033[36m";
+    case FG_WHITE:          return "\033[37m";
+    case FG_DEFAULT:        return "\033[39m";
+    case BG_BLACK:          return "\033[40m";
+    case BG_RED:            return "\033[41m";
+    case BG_GREEN:          return "\033[42m";
+    case BG_YELLOW:         return "\033[43m";
+    case BG_BLUE:           return "\033[44m";
+    case BG_MAGENTA:        return "\033[45m";
+    case BG_CYAN:           return "\033[46m";
+    case BG_WHITE:          return "\033[47m";
+    case BG_DEFAULT:        return "\033[49m";
+    }
+}
+
+} // AnsiColors
+
+
 // == cpu_info ==
 // figure architecture name from compiler
 static const char*
