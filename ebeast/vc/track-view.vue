@@ -56,6 +56,10 @@
   .vc-track-view-meter {
     height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
     position: relative;
+    /* Pushing this element onto its own compositing layer helps to reduce
+     * the compositing overhead for the layers contained within.
+     */
+    will-change: auto;
   }
   .vc-track-view-control {
     margin-right: 5px;
