@@ -41,12 +41,11 @@ int64
 SignalMonitorImpl::get_shm_offset()
 {
   SharedBlock sb = source_->cmon_get_block();
-  MonitorFields *fields0 = source_->cmon_get_fields (0);
+  char *fields0 = source_->cmon_monitor_field_start (0);
   assert_return (sb.mem_start == (void*) fields0, 0);
-  MonitorFields *fieldsn = source_->cmon_get_fields (ochannel_);
-  const size_t channel_offset = ((char*) fieldsn) - ((char*) fields0);
+  char *fieldsn = source_->cmon_monitor_field_start (ochannel_);
+  const size_t channel_offset = fieldsn - fields0;
   return sb.mem_offset + channel_offset;
-  static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64), "");
 }
 
 int64
@@ -99,7 +98,7 @@ SourceImpl::cmon_get (uint ochannel)
   return cmons_[ochannel];
 }
 
-static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (sizeof (MonitorFields), BSE_CACHE_LINE_ALIGNMENT);
+static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (MonitorField::END_BYTE, BSE_CACHE_LINE_ALIGNMENT);
 
 SharedBlock
 SourceImpl::cmon_get_block ()
@@ -112,13 +111,13 @@ SourceImpl::cmon_get_block ()
   return cmon_block_;
 }
 
-MonitorFields*
-SourceImpl::cmon_get_fields (uint ochannel)
+char*
+SourceImpl::cmon_monitor_field_start (uint ochannel)
 {
   assert_return (ochannel < size_t (n_ochannels()), NULL);
   const SharedBlock sb = cmon_get_block();
-  MonitorFields *mfields = (MonitorFields*) sb.mem_start;
-  return &mfields[ochannel];
+  char *mfields = (char*) sb.mem_start;
+  return mfields + aligned_sizeof_MonitorFields * ochannel;
 }
 
 void
@@ -211,9 +210,20 @@ static const BseModuleClass monitor_module_class = {
 };
 
 class MonitorModule : public Bse::Module {
-  MonitorFields *mfields_ = NULL;
+  union {
+    char  *char8_;
+    double *f64_;
+    float *f32_;
+  };
+  int64 counter_ = 0;
+  float tip_ = 0;
+  inline float&  f32 (MonitorField mf)   { return f32_[size_t (mf) / 4]; }
+  inline double& f64 (MonitorField mf)   { return f64_[size_t (mf) / 8]; }
 public:
-  MonitorModule (MonitorFields *fields) : Module (monitor_module_class), mfields_ (fields) {}
+  MonitorModule (char *mfields) :
+    Module (monitor_module_class),
+    char8_ (mfields)
+  {}
   virtual void
   reset () override
   {}
@@ -244,11 +254,13 @@ public:
                 seen_subn = true;
             }
         avg /= double (n_values) * jstream.n_connections;
-        mfields_->min = min;
-        mfields_->max = max;
-        mfields_->energy = avg; // FIXME: calc energy properly
-        mfields_->tip = MAX (mfields_->tip * 0.98, avg);
-        __sync_fetch_and_add (&mfields_->gen, 1);
+        f32 (MonitorField::F32_MIN) = min;
+        f32 (MonitorField::F32_MAX) = max;
+        f32 (MonitorField::F32_ENERGY) = avg; // FIXME: calc energy properly
+        tip_ = MAX (tip_ * 0.98, avg);
+        f32 (MonitorField::F32_TIP) = tip_;
+        counter_ += 1;
+        f64 (MonitorField::F64_GENERATION) = counter_;
         if (0)
           Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
                          max, min, avg,
@@ -275,7 +287,7 @@ SourceImpl::cmon_activate ()
   for (size_t i = 0; i < noc; i++)
     if (cmons_[i].needs_module() && !cmons_[i].module)
       {
-        cmons_[i].module = new MonitorModule (cmon_get_fields (i));
+        cmons_[i].module = new MonitorModule (cmon_monitor_field_start (i));
         bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
         bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
         for (auto omodule : omodules)

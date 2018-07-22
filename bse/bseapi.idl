@@ -520,6 +520,17 @@ enum MusicalTuning {
                                "as well as six equally imperfect fifths.")),
 };
 
+/// Offsets for signal monitoring fields in bytes, field type and size is used as prefix.
+enum MonitorField {
+  F64_GENERATION        =       0 * 4,  ///< Generation counter, updated on every modification.
+  /* F64_GENERATION     also:   1 * 4, */
+  F32_MIN               =       2 * 4,  ///< Minimum value of the last frame.
+  F32_MAX               =       3 * 4,  ///< Maximum value of the last frame.
+  F32_ENERGY            =       4 * 4,  ///< Energy of the last frame.
+  F32_TIP               =       5 * 4,  ///< Tip energy of the last couple frames.
+  END_BYTE              =       6 * 4,  ///< Total length of all MonitorField values in bytes.
+};
+
 // == Bse Constants ==
 Const MIN_NOTE      = 0;
 Const MAX_NOTE      = 131;          // 123
@@ -814,21 +825,12 @@ sequence ProbeRequestSeq {
   ProbeRequest probe_requests;
 };
 
-/// Layout of SignalMonitor fields within shared memory.
-record MonitorFields {
-  float64       min;                    ///< Minimum value of the last frame.
-  float64       max;                    ///< Maximum value of the last frame.
-  float64       energy;                 ///< Energy of the last frame.
-  float64       tip;                    ///< Tip energy of the last couple frames.
-  int64         gen;                    ///< Gneration counter, updated on every modification.
-};
-
 /// Interface for monitoring output signals.
 interface SignalMonitor {
   int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
   Source        get_osource        ();                  ///< Retrieve output module the SignalSnooper is connected to.
-  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorFields of @a ochannel.
-  int32         get_ochannel       ();                  ///< Offset into shm_id for MonitorFields of @a ochannel.
+  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorField values of @a ochannel.
+  int32         get_ochannel       ();                  ///< Offset into shm_id for MonitorField values of @a ochannel.
   int64         get_mix_freq       ();                  ///< Mix frame at which SnoopFields values are calculated.
   int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of SnoopFields values.
   void          set_probe_features (ProbeFeatures pf);  ///< Configure probe features.

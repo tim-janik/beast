@@ -278,7 +278,7 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   ChannelMonitor&      cmon_get                (uint ochannel);
   void                 cmon_delete             ();
   SharedBlock          cmon_get_block          ();
-  MonitorFields*       cmon_get_fields         (uint ochannel);
+  char*                cmon_monitor_field_start (uint ochannel);
   friend void ::bse_source_set_context_omodule (BseSource*, uint, BseModule*, BseTrans*);
   friend void ::bse_source_reset               (BseSource*);
   friend void ::bse_source_prepare             (BseSource*);
