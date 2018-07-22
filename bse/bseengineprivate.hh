@@ -42,51 +42,54 @@ typedef enum /*< skip >*/
 
 namespace Bse {
 
-struct Job {
-  EngineJobType job_id;
-  Job          *next;
+struct Job final {
+  Job() {}
+  EngineJobType job_id = ENGINE_JOB_NOP;
+  Job          *next = NULL;
   union {
     struct {
-      Module    *node;
-      bool       free_with_job;
-      char	*message;
-    } data;
-    struct {
-      std::mutex              *lock_mutex;
-      std::condition_variable *lock_cond;
-      bool                    *lock_p;
-    } sync;
-    struct {
-      Module    *node;
-      uint64     stamp;
-    } tick;
-    struct {
-      Module     *dest_node;
-      uint        dest_ijstream;
-      Module     *src_node;
-      uint        src_ostream;
-    } connection;
-    struct {
-      Module               *node;
-      BseEngineAccessFunc   access_func;
-      gpointer	            data;
-      BseFreeFunc           free_func;
-    } access;
-    struct {
-      BseEnginePollFunc poll_func;
-      gpointer	        data;
-      BseFreeFunc       free_func;
-      uint              n_fds;
-      GPollFD	       *fds;
+      BseEnginePollFunc poll_func = NULL;
+      gpointer	        data = NULL;
+      BseFreeFunc       free_func = NULL;
+      GPollFD	       *fds = NULL;
+      uint              n_fds = 0;
     } poll;
     struct {
-      BseEngineTimerFunc timer_func;
-      gpointer	         data;
-      BseFreeFunc        free_func;
+      Module    *node = NULL;
+      bool       free_with_job = 0;
+    } data;
+    struct {
+      char	*message = NULL;
+    } msg;
+    struct {
+      std::mutex              *lock_mutex = NULL;
+      std::condition_variable *lock_cond = NULL;
+      bool                    *lock_p = NULL;
+    } sync;
+    struct {
+      Module    *node = NULL;
+      uint64     stamp = 0;
+    } tick;
+    struct {
+      Module     *dest_node = NULL;
+      uint        dest_ijstream = 0;
+      Module     *src_node = NULL;
+      uint        src_ostream = 0;
+    } connection;
+    struct {
+      Module               *node = NULL;
+      BseEngineAccessFunc   access_func = NULL;
+      gpointer	            data = NULL;
+      BseFreeFunc           free_func = NULL;
+    } access;
+    struct {
+      BseEngineTimerFunc timer_func = NULL;
+      gpointer	         data = NULL;
+      BseFreeFunc        free_func = NULL;
     } timer;
     struct {
-      Module         *node;
-      EngineTimedJob *tjob;
+      Module         *node = NULL;
+      EngineTimedJob *tjob = NULL;
     } timed_job;
   };
 };

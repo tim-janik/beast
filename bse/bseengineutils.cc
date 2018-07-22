@@ -89,10 +89,11 @@ bse_engine_free_job (BseJob *job)
     {
     case ENGINE_JOB_INTEGRATE:
     case ENGINE_JOB_DISCARD:
-    case ENGINE_JOB_MESSAGE:
       if (job->data.node && job->data.free_with_job)
         bse_engine_free_node (job->data.node);
-      g_free (job->data.message);
+      break;
+    case ENGINE_JOB_MESSAGE:
+      g_free (job->msg.message);
       break;
     case ENGINE_JOB_ACCESS:
       if (job->access.free_func)
@@ -116,7 +117,7 @@ bse_engine_free_job (BseJob *job)
       break;
     default: ;
     }
-  sfi_delete_struct (BseJob, job);
+  delete job;
 }
 
 static void

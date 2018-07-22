@@ -551,10 +551,10 @@ master_process_job (BseJob *job)
       node->boundary_jobs = insert_timed_job (node->boundary_jobs, tjob);
       break;
     case ENGINE_JOB_MESSAGE:
-      if (job->data.message)
+      if (job->msg.message)
         {
           JOB_DEBUG ("debug");
-          Bse::printerr ("BSE-ENGINE: %s\n", job->data.message);
+          Bse::printerr ("BSE-ENGINE: %s\n", job->msg.message);
         }
       else
         JOB_DEBUG ("nop");
