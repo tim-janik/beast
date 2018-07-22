@@ -54,6 +54,8 @@ def v8ppclass_type (tp):
   return 'V8ppType_' + identifier_name ('', tp)
 def v8ppclass (tp):
   return identifier_name ('', tp) + '_class_'
+def v8ppenum (tp):
+  return identifier_name ('', tp) + '_enum_'
 
 class Generator:
   def __init__ (self, idl_file, module_name):
@@ -151,12 +153,14 @@ class Generator:
     self.namespace = namespaces[0][0].name
     del namespaces, max_namespaces
     # Collect v8pp::class_ types
-    v8pp_class_types = []
+    v8pp_enum_types, v8pp_class_types = [], []
     for tp in types:
       if tp.is_forward:
         continue
       if tp.storage in (Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE):
         v8pp_class_types += [ tp ]
+      elif tp.storage == Decls.ENUM:
+        v8pp_enum_types += [ tp ]
     # C++ class type aliases for v8pp::class_
     s += '\n// v8pp::class_ aliases\n'
     s += 'typedef %-40s V8ppType_AidaEvent;\n' % 'v8pp::class_<Aida::Event>'
@@ -184,8 +188,10 @@ class Generator:
     s += '  v8::Isolate                             *const isolate_;\n'
     s += '  %-40s %s;\n' % ('V8ppType_AidaEvent', 'AidaEvent_class_')
     s += '  %-40s %s;\n' % ('V8ppType_AidaRemoteHandle', 'AidaRemoteHandle_class_')
-    for tp in v8pp_class_types:
+    for tp in v8pp_class_types: # Generate Class Wrappers
       s += '  %-40s %s;\n' % (v8ppclass_type (tp), v8ppclass (tp))
+    for tp in v8pp_enum_types:  # Generate Enum submodules
+      s += '  v8pp::module                             %s;\n' % v8ppenum (tp)
     s += '  v8pp::module                             module_;\n'
     s += 'public:\n'
     s += '  explicit    V8stub (v8::Isolate *const __v8isolate);\n'
@@ -196,11 +202,19 @@ class Generator:
     s += '  isolate_ (__v8isolate),\n'
     s += '  AidaEvent_class_ (__v8isolate),\n'
     s += '  AidaRemoteHandle_class_ (__v8isolate),\n'
-    for tp in v8pp_class_types:
+    for tp in v8pp_class_types: # Initialize Class Wrappers
       s += '  %s (__v8isolate),\n' % v8ppclass (tp)
+    for tp in v8pp_enum_types:  # Initialize Enum submodules
+      s += '  %s (__v8isolate),\n' % v8ppenum (tp)
     s += '  module_ (__v8isolate)\n'
     s += '{\n'
     s += '  v8::HandleScope __v8scope (__v8isolate);\n'
+    # Generate Enum submodule constants
+    for tp in v8pp_enum_types:
+      for opt in tp.options:
+        (ident, label, blurb, number) = opt
+        s += '  %s.set_const ("%s", %s);\n' % (v8ppenum (tp), ident, identifier_name ('::', tp, ident))
+      s += '  module_.set ("%s", %s);\n' % (tp.name, v8ppenum (tp))
     # Aida::Event
     s += '  AidaEvent_class_\n'
     s += '    .ctor<std::string>()\n'
