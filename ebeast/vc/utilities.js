@@ -600,10 +600,32 @@ function array_fields_from_shm (shm_id, shm_offset) {
       'float64_array': new Float64Array (array_buffer),
     };
   }
-  let fields = Object.assign ({}, bse_server_shared_arrays[shm_id]);
-  fields.int32_offset = shm_offset / 4;
-  fields.float32_offset = shm_offset / 4;
-  fields.float64_offset = shm_offset / 8;
-  return fields;
+  console.assert ((shm_offset & 0xf) == 0);
+  let afields = Object.assign ({}, bse_server_shared_arrays[shm_id]);
+  afields.int32_offset = shm_offset / afields.int32_array.BYTES_PER_ELEMENT; // 4
+  afields.float32_offset = shm_offset / afields.float32_array.BYTES_PER_ELEMENT; // 4
+  afields.float64_offset = shm_offset / afields.float64_array.BYTES_PER_ELEMENT; // 8
+  return afields;
 }
 exports.array_fields_from_shm = array_fields_from_shm;
+
+/// Access int32 subarray within arrays returned from array_fields_from_shm().
+function array_fields_i32 (afields, byte_offset) {
+  console.assert ((byte_offset & 0x3) == 0); // 4 - 1
+  return afields.int32_array.subarray (afields.int32_offset + byte_offset / afields.int32_array.BYTES_PER_ELEMENT);
+}
+exports.array_fields_i32 = array_fields_i32;
+
+/// Access float32 subarray within arrays returned from array_fields_from_shm().
+function array_fields_f32 (afields, byte_offset) {
+  console.assert ((byte_offset & 0x3) == 0); // 4 - 1
+  return afields.float32_array.subarray (afields.float32_offset + byte_offset / afields.float32_array.BYTES_PER_ELEMENT);
+}
+exports.array_fields_f32 = array_fields_f32;
+
+/// Access float64 subarray within arrays returned from array_fields_from_shm().
+function array_fields_f64 (afields, byte_offset) {
+  console.assert ((byte_offset & 0x7) == 0); // 8 - 1
+  return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
+}
+exports.array_fields_f64 = array_fields_f64;
