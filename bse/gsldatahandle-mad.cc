@@ -406,7 +406,7 @@ dh_mad_open (GslDataHandle      *dhandle,
     setup->n_values = n;
   else
     {
-      error = Bse::Error::NO_DATA;
+      error = Bse::Error::NO_DATA_AVAILABLE;
       goto OPEN_FAILED;
     }
 

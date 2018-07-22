@@ -39,7 +39,7 @@ enum Error {
   // content errors
   NO_HEADER                 = Enum (19, "", _("Failed to detect header")),
   NO_SEEK_INFO              = Enum (20, "", _("Failed to retrieve seek information")),
-  NO_DATA                   = Enum (21, "", _("No data available")),
+  NO_DATA_AVAILABLE         = Enum (21, "", _("No data available")),
   DATA_CORRUPT              = Enum (22, "", _("Data corrupt")),
   WRONG_N_CHANNELS          = Enum (23, "", _("Wrong number of channels")),
   FORMAT_INVALID            = Enum (24, "", _("Invalid format")),

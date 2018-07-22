@@ -87,7 +87,7 @@ smf_read_header (int        fd,
   if (header->n_tracks < 1)
     {
       MDEBUG ("midi file without tracks");
-      return Bse::Error::NO_DATA;
+      return Bse::Error::NO_DATA_AVAILABLE;
     }
   if (header->division & 0x8000)        // FIXME: this allowes only tpqn
     {
