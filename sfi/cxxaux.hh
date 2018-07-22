@@ -49,7 +49,7 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_MAX(a,b)            ((a) >= (b) ? (a) : (b))                ///< Yield the greater value of @a a and @a b.
 #define BSE_CLAMP(v,mi,ma)      ((v) < (mi) ? (mi) : ((v) > (ma) ? (ma) : (v))) ///< Yield @a v clamped to [ @a mi .. @a ma ].
 #define BSE_ARRAY_SIZE(array)   (sizeof (array) / sizeof ((array)[0]))          ///< Yield the number of C @a array elements.
-#define BSE_ALIGN(size, base)   ((base) * (((size) + (base) - 1) / (base)))     ///< Round up @a size to multiples of @a base.
+#define BSE_ALIGN(size, base)   ((base) * ((size_t (size) + (base) - 1) / (base))) ///< Round up @a size to multiples of @a base.
 /// @addtogroup GCC Attributes
 /// Bse macros that are shorthands for <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">GCC Attributes</a>.
 /// @{
