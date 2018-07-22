@@ -209,7 +209,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return Bse::Error::NO_DATA;	/* requested bitstream not available */
+      return Bse::Error::NO_DATA_AVAILABLE;	/* requested bitstream not available */
     }
 
   vhandle->soffset = 0;
@@ -226,7 +226,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return Bse::Error::NO_DATA;
+      return Bse::Error::NO_DATA_AVAILABLE;
     }
 
   vhandle->max_block_size = vorbis_info_blocksize (vi, 0);

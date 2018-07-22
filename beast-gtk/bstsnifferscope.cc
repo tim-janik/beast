@@ -251,16 +251,30 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *klass)
   widget_class->unrealize = bst_sniffer_scope_unrealize;
 }
 
-static Bse::MonitorFields*
+class MonitorFieldU {
+  union {
+    char *char8_ = NULL;
+    float *f32_;
+    double *f64_;
+  };
+public:
+  explicit       MonitorFieldU (char *c) : char8_ (c)   {}
+  inline float&  f32           (Bse::MonitorField mf) const   { return f32_[size_t (mf) / 4]; }
+  inline double& f64           (Bse::MonitorField mf) const   { return f64_[size_t (mf) / 8]; }
+};
+
+static MonitorFieldU
 monitor_fields_from_shm (int64 shm_id, uint32 shm_offset)
 {
+  const MonitorFieldU mfu0 { NULL };
+  assert_return ((shm_offset & 0x0f) == 0, mfu0); // must have alginment >= 16 bytes
   Bse::SharedMemory sm = bse_server.get_shared_memory (shm_id);
-  assert_return (sm.shm_id == shm_id, NULL);
-  assert_return (sm.shm_creator == Bse::this_thread_getpid(), NULL);
+  assert_return (sm.shm_id == shm_id, mfu0);
+  assert_return (sm.shm_creator == Bse::this_thread_getpid(), mfu0);
   char *shm_start = (char*) sm.shm_start; // allowed if sm.shm_creator matches our pid
-  assert_return (shm_start != NULL, NULL);
-  assert_return (shm_offset + sizeof (Bse::MonitorFields) <= size_t (sm.shm_length), NULL);
-  return (Bse::MonitorFields*) (shm_start + shm_offset);
+  assert_return (shm_start != NULL, mfu0);
+  assert_return (shm_offset + size_t (Bse::MonitorField::END_BYTE) <= size_t (sm.shm_length), mfu0);
+  return MonitorFieldU { (char*) (shm_start + shm_offset) };
 }
 
 void
@@ -285,19 +299,24 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           features.probe_range = true;
           self->lmonitor.set_probe_features (features);
           self->rmonitor.set_probe_features (features);
-          Bse::MonitorFields *lfields = monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
-          Bse::MonitorFields *rfields = monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
+          MonitorFieldU lfields = monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
+          MonitorFieldU rfields = monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
           auto framecb = [self, lfields, rfields] () {
-            scope_draw_range (self, lfields->min, lfields->max, rfields->min, rfields->max);
+            scope_draw_range (self,
+                              lfields.f32 (Bse::MonitorField::F32_MIN), lfields.f32 (Bse::MonitorField::F32_MAX),
+                              rfields.f32 (Bse::MonitorField::F32_MIN), rfields.f32 (Bse::MonitorField::F32_MAX));
             if (0)
               printerr ("SnifferScope: (%x.%x/%x %x.%x/%x) %f,%f %f,%f\n",
-                        self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(), lfields->gen,
-                        self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(), rfields->gen,
-                        lfields->min, lfields->max, rfields->min, rfields->max);
+                        self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(),
+                        lfields.f64 (Bse::MonitorField::F64_GENERATION),
+                        self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(),
+                        rfields.f64 (Bse::MonitorField::F64_GENERATION),
+                        lfields.f32 (Bse::MonitorField::F32_MIN), lfields.f32 (Bse::MonitorField::F32_MAX),
+                        rfields.f32 (Bse::MonitorField::F32_MIN), rfields.f32 (Bse::MonitorField::F32_MAX));
           };
           self->mon_handler = Bst::add_frame_handler (framecb);
         }
-      static_assert (sizeof (Bse::MonitorFields) == sizeof (double) * 4 + sizeof (int64), "");
+      static_assert (size_t (Bse::MonitorField::END_BYTE) >= sizeof (double) + 4 + sizeof (float), "");
     }
 }
 

@@ -385,7 +385,7 @@ aiff_load_file_info (void         *data,
       afile->data_size < (afile->bit_depth + 7) / 8 * afile->n_values)
     {
       aiff_file_free (afile);
-      *error_p = Bse::Error::NO_DATA;
+      *error_p = Bse::Error::NO_DATA_AVAILABLE;
       return NULL;
     }
   fi = sfi_new_struct0 (FileInfo, 1);

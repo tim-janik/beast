@@ -110,8 +110,12 @@ module.exports = {
 	pf.probe_range = true;
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
-	this.lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset());
-	this.rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
+	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset());
+	this.lmin = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_MIN);
+	this.lmax = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_MAX);
+	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
+	this.rmin = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_MIN);
+	this.rmax = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_MAX);
 	if (!this.remove_frame_handler)
 	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
       }
@@ -121,13 +125,9 @@ module.exports = {
 
 function update_levels (active) {
   // see Bse.MonitorFields layout
-  const vmin0 = this.lfields['float64_array'][this.lfields.float64_offset + 0];
-  const vmax0 = this.lfields['float64_array'][this.lfields.float64_offset + 1];
-  const value0 = Util.clamp (Math.max (Math.abs (vmin0), Math.abs (vmax0)), 0, 1);
+  const value0 = Util.clamp (Math.max (Math.abs (this.lmin[0]), Math.abs (this.lmax[0])), 0, 1);
   const scale0 = active ? 1.0 - value0 : 1;
-  const vmin1 = this.rfields['float64_array'][this.rfields.float64_offset + 0];
-  const vmax1 = this.rfields['float64_array'][this.rfields.float64_offset + 1];
-  const value1 = Util.clamp (Math.max (Math.abs (vmin1), Math.abs (vmax1)), 0, 1);
+  const value1 = Util.clamp (Math.max (Math.abs (this.rmin[0]), Math.abs (this.rmax[0])), 0, 1);
   const scale1 = active ? 1.0 - value1 : 1;
   // level.style.transform = "scaleX(" + scale + ")";
   const level0 = this.$refs['level0'];
