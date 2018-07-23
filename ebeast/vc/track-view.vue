@@ -84,8 +84,8 @@
 
 <script>
 const Util = require ('./utilities.js');
-const mindb = -96.0;
-const maxdb = +12.0;
+const mindb = -48.0; // -96.0;
+const maxdb =  +6.0; // +12.0;
 
 module.exports = {
   name: 'vc-track-view',
