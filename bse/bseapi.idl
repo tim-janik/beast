@@ -526,8 +526,8 @@ enum MonitorField {
   /* F64_GENERATION     also:   1 * 4, */
   F32_MIN               =       2 * 4,  ///< Minimum value of the last frame.
   F32_MAX               =       3 * 4,  ///< Maximum value of the last frame.
-  F32_ENERGY            =       4 * 4,  ///< Energy of the last frame.
-  F32_TIP               =       5 * 4,  ///< Tip energy of the last couple frames.
+  F32_DB_SPL            =       4 * 4,  ///< Sound pressure level in dB SPL of the last frame.
+  F32_DB_TIP            =       5 * 4,  ///< Maximum recent dB SPL.
   END_BYTE              =       6 * 4,  ///< Total length of all MonitorField values in bytes.
 };
 
