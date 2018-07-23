@@ -289,7 +289,8 @@ public:
     const float avg_sqsum = vsqsum / n_values;
     const float db_spl = avg_sqsum > 0.0 ? 10 * log10 (avg_sqsum) : MIN_DB_SPL;
     f32 (MonitorField::F32_DB_SPL) = db_spl;
-    db_tip_ = MAX (db_tip_ * 0.98, db_spl);
+    constexpr float DBOFFSET = ABS (MIN_DB_SPL) * 1.5;
+    db_tip_ = MAX ((DBOFFSET + db_tip_) * 0.999, DBOFFSET + db_spl) - DBOFFSET;
     f32 (MonitorField::F32_DB_TIP) = db_tip_;
     counter_ += 1;
     f64 (MonitorField::F64_GENERATION) = counter_;
