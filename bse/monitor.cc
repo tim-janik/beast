@@ -81,11 +81,11 @@ SignalMonitorImpl::get_probe_features ()
 // == SourceImpl ==
 struct SourceImpl::ChannelMonitor {
   uint           probe_range = 0;
-  uint           probe_energie = 0;
+  uint           probe_energy = 0;
   uint           probe_samples = 0;
   uint           probe_fft = 0;
   MonitorModule *module = NULL;
-  bool           needs_module ()  { return probe_range || probe_energie || probe_samples || probe_fft; }
+  bool           needs_module ()  { return probe_range || probe_energy || probe_samples || probe_fft; }
   /*des*/       ~ChannelMonitor()
   {
     assert_return (module == NULL);
@@ -146,8 +146,8 @@ SourceImpl::cmon_add_probe (uint ochannel, const ProbeFeatures &pf)
   ChannelMonitor &cmon = cmon_get (ochannel);
   if (pf.probe_range)
     cmon.probe_range += 1;
-  if (pf.probe_energie)
-    cmon.probe_energie += 1;
+  if (pf.probe_energy)
+    cmon.probe_energy += 1;
   if (pf.probe_samples)
     cmon.probe_samples += 1;
   if (pf.probe_fft)
@@ -164,8 +164,8 @@ SourceImpl::cmon_sub_probe (uint ochannel, const ProbeFeatures &pf)
   const bool needed_module = cmon.needs_module();
   if (pf.probe_range)
     cmon.probe_range -= 1;
-  if (pf.probe_energie)
-    cmon.probe_energie -= 1;
+  if (pf.probe_energy)
+    cmon.probe_energy -= 1;
   if (pf.probe_samples)
     cmon.probe_samples -= 1;
   if (pf.probe_fft)
@@ -241,10 +241,10 @@ public:
   reset () override
   {}
   void
-  configure (bool probe_range, bool probe_energie, bool probe_samples, bool probe_fft) // EngineThread
+  configure (bool probe_range, bool probe_energy, bool probe_samples, bool probe_fft) // EngineThread
   {
     need_minmax_ = probe_range;
-    need_dbspl_ = probe_energie;
+    need_dbspl_ = probe_energy;
     // TODO: probe_samples
     // TODO: probe_fft
   }
@@ -309,7 +309,7 @@ SourceImpl::cmon_activate ()
   std::vector<BseModule*> omodules;
   bse_source_list_omodules (self, omodules);
   const uint noc = n_ochannels();
-  struct Flags { bool probe_range = 0, probe_energie = 0, probe_samples = 0, probe_fft = 0; };
+  struct Flags { bool probe_range = 0, probe_energy = 0, probe_samples = 0, probe_fft = 0; };
   for (size_t i = 0; i < noc; i++)
     if (cmons_[i].needs_module())
       {
@@ -323,12 +323,12 @@ SourceImpl::cmon_activate ()
           }
         Flags f;
         f.probe_range = cmons_[i].probe_range > 0;
-        f.probe_energie = cmons_[i].probe_energie > 0;
+        f.probe_energy = cmons_[i].probe_energy > 0;
         f.probe_samples = cmons_[i].probe_samples > 0;
         f.probe_fft = cmons_[i].probe_fft > 0;
         MonitorModule *monitor_module = cmons_[i].module;
         auto monitor_module_configure = [monitor_module, f] () {
-          monitor_module->configure (f.probe_range, f.probe_energie, f.probe_samples, f.probe_fft);
+          monitor_module->configure (f.probe_range, f.probe_energy, f.probe_samples, f.probe_fft);
         };
         bse_trans_add (trans, bse_job_access (cmons_[i].module, monitor_module_configure));
       }

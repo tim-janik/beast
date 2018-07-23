@@ -144,8 +144,8 @@ class ProbeQueue {
         requests.range -= 1;
       }
     /* fill probe energie */
-    probe_features.probe_energie = requests.energie > 0;
-    if (probe_features.probe_energie)
+    probe_features.probe_energy = requests.energie > 0;
+    if (probe_features.probe_energy)
       {
         /* silently ignore xruns on energie calculation */
         probe.energie = energie_accu > 0 ? 10 * log10 (energie_accu / n_computed) : -999;
@@ -269,7 +269,7 @@ public:
     int old_age = max_age;
     if (channel_features.probe_range)
       max_age = requests.range = MAX_QUEUE_LENGTH;
-    if (channel_features.probe_energie)
+    if (channel_features.probe_energy)
       max_age = requests.energie = MAX_QUEUE_LENGTH;
     if (channel_features.probe_samples)
       max_age = requests.samples = MAX_QUEUE_LENGTH;

@@ -789,7 +789,7 @@ record SharedMemory {
 /// Bits representing a selection of probe sample data features.
 record ProbeFeatures {
   bool          probe_range;
-  bool          probe_energie;
+  bool          probe_energy;
   bool          probe_samples;
   bool          probe_fft;
 };

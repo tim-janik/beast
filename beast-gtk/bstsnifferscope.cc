@@ -342,7 +342,7 @@ bst_source_queue_probe_request (SfiProxy              source,
 {
   Bse::ProbeFeatures features;
   features.probe_range = 0 != (pfeature & BST_SOURCE_PROBE_RANGE);
-  features.probe_energie = 0 != (pfeature & BST_SOURCE_PROBE_ENERGIE);
+  features.probe_energy = 0 != (pfeature & BST_SOURCE_PROBE_ENERGY);
   features.probe_samples = 0 != (pfeature & BST_SOURCE_PROBE_SAMPLES);
   features.probe_fft = 0 != (pfeature & BST_SOURCE_PROBE_FFT);
   Bse::ProbeRequest request;
