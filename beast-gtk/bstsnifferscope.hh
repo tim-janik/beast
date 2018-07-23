@@ -31,7 +31,7 @@ void       bst_sniffer_scope_set_sniffer    (BstSnifferScope *scope, Bse::Source
 
 typedef enum {
   BST_SOURCE_PROBE_RANGE   = 0x01,
-  BST_SOURCE_PROBE_ENERGIE = 0x02,
+  BST_SOURCE_PROBE_ENERGY  = 0x02,
   BST_SOURCE_PROBE_SAMPLES = 0x04,
   BST_SOURCE_PROBE_FFT     = 0x08,
 } BstSourceProbeFeature;

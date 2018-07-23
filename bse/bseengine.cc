@@ -187,10 +187,10 @@ bse_job_integrate (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (Bse::Job, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_INTEGRATE;
   job->data.node = module;
-  job->data.free_with_job = TRUE;
+  job->data.free_with_job = true;
 
   return job;
 }
@@ -210,7 +210,7 @@ bse_job_discard (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_DISCARD;
   job->data.node = module;
 
@@ -232,7 +232,7 @@ bse_job_kill_inputs (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_KILL_INPUTS;
   job->data.node = module;
 
@@ -254,7 +254,7 @@ bse_job_kill_outputs (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_KILL_OUTPUTS;
   job->data.node = module;
 
@@ -287,7 +287,7 @@ bse_job_connect (BseModule *src_module,
   assert_return (dest_module != NULL, NULL);
   assert_return (dest_istream < BSE_MODULE_N_ISTREAMS (dest_module), NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_ICONNECT;
   job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_istream;
@@ -322,7 +322,7 @@ bse_job_jconnect (BseModule *src_module,
   assert_return (dest_module != NULL, NULL);
   assert_return (dest_jstream < BSE_MODULE_N_JSTREAMS (dest_module), NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_JCONNECT;
   job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_jstream;
@@ -351,7 +351,7 @@ bse_job_disconnect (BseModule *dest_module,
   assert_return (dest_module != NULL, NULL);
   assert_return (dest_istream < BSE_MODULE_N_ISTREAMS (dest_module), NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_IDISCONNECT;
   job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_istream;
@@ -389,7 +389,7 @@ bse_job_jdisconnect (BseModule *dest_module,
   assert_return (src_module != NULL, NULL);
   assert_return (src_ostream < BSE_MODULE_N_OSTREAMS (src_module), NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_JDISCONNECT;
   job->connection.dest_node = dest_module;
   job->connection.dest_ijstream = dest_jstream;
@@ -406,7 +406,7 @@ bse_job_set_consumer (BseModule *module,
   assert_return (module != NULL, NULL);
   assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
 
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
   job->data.node = module;
 
@@ -433,7 +433,7 @@ bse_job_force_reset (BseModule *module)
 
   assert_return (module != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_FORCE_RESET;
   job->data.node = module;
 
@@ -464,23 +464,33 @@ bse_job_force_reset (BseModule *module)
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
-bse_job_access (BseModule    *module,
-		BseEngineAccessFunc access_func,
-		gpointer      data,
-		BseFreeFunc   free_func)
+bse_job_access (BseModule *module, BseEngineAccessFunc access_func, void *data, BseFreeFunc free_func)
 {
-  BseJob *job;
-
+  typedef std::function<void()> StdVoidFunction;
   assert_return (module != NULL, NULL);
   assert_return (access_func != NULL, NULL);
-
-  job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_ACCESS;
   job->access.node = module;
-  job->access.access_func = access_func;
+  auto wrapper = [module, access_func, data] () { access_func (module,  data); };
+  job->access.function = new StdVoidFunction (wrapper);
   job->access.data = data;
   job->access.free_func = free_func;
+  return job;
+}
 
+BseJob*
+bse_job_access (BseModule *module, const std::function<void()> &engine_thread_lambda) /* EngineThread */
+{
+  typedef std::function<void()> StdVoidFunction;
+  assert_return (module != NULL, NULL);
+  assert_return (engine_thread_lambda != NULL, NULL);
+  BseJob *job = new BseJob;
+  job->job_id = ENGINE_JOB_ACCESS;
+  job->access.node = module;
+  job->access.function = new StdVoidFunction (engine_thread_lambda);
+  job->access.data = NULL;
+  job->access.free_func = NULL;
   return job;
 }
 
@@ -494,15 +504,13 @@ bse_job_access (BseModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_engine_add_user_callback (gpointer      data,
-                              BseFreeFunc   free_func)
+bse_engine_add_user_callback (void *data, BseFreeFunc free_func)
 {
   assert_return (free_func != NULL);
-
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_ACCESS;
   job->access.node = NULL;
-  job->access.access_func = NULL;
+  job->access.function = NULL;
   job->access.data = data;
   job->access.free_func = free_func;
 
@@ -566,7 +574,7 @@ bse_job_probe_request (BseModule         *module,
   tjob->probe.n_ostreams = BSE_MODULE_N_OSTREAMS (module);
   tjob->probe.ostreams = _engine_alloc_ostreams (BSE_MODULE_N_OSTREAMS (module));
 
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_PROBE_JOB;
   job->timed_job.node = module;
   job->timed_job.tjob = tjob;
@@ -610,7 +618,7 @@ bse_job_flow_access (BseModule    *module,
   tjob->access.free_func = free_func;
   tjob->access.data = data;
   tjob->access.access_func = access_func;
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_FLOW_JOB;
   job->timed_job.node = module;
   job->timed_job.tjob = tjob;
@@ -651,7 +659,7 @@ bse_job_boundary_access (BseModule    *module,
   tjob->access.free_func = free_func;
   tjob->access.data = data;
   tjob->access.access_func = access_func;
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
   job->timed_job.node = module;
   job->timed_job.tjob = tjob;
@@ -690,7 +698,7 @@ bse_job_boundary_discard (BseModule *module)
   tjob->access.data = NULL;
   tjob->access.access_func = bse_engine_boundary_discard;
 
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
   job->timed_job.node = module;
   job->timed_job.tjob = tjob;
@@ -714,7 +722,7 @@ bse_job_suspend_now (BseModule *module)
 {
   assert_return (module != NULL, NULL);
   assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_SUSPEND;
   job->tick.node = module;
   job->tick.stamp = Bse::TickStamp::max_stamp();
@@ -742,7 +750,7 @@ bse_job_resume_at (BseModule *module,
   assert_return (module != NULL, NULL);
   assert_return (BSE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_RESUME;
   job->tick.node = module;
   job->tick.stamp = tick_stamp;
@@ -796,7 +804,7 @@ bse_job_add_poll (BseEnginePollFunc    poll_func,
   if (n_fds)
     assert_return (fds != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_ADD_POLL;
   job->poll.poll_func = poll_func;
   job->poll.data = data;
@@ -824,7 +832,7 @@ bse_job_remove_poll (BseEnginePollFunc poll_func,
 
   assert_return (poll_func != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_REMOVE_POLL;
   job->poll.poll_func = poll_func;
   job->poll.data = data;
@@ -855,7 +863,7 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 
   assert_return (timer_func != NULL, NULL);
 
-  job = sfi_new_struct0 (BseJob, 1);
+  job = new BseJob;
   job->job_id = ENGINE_JOB_ADD_TIMER;
   job->timer.timer_func = timer_func;
   job->timer.data = data;
@@ -878,9 +886,9 @@ bse_job_debug (const gchar *debug)
 {
   assert_return (debug != NULL, NULL);
 
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_MESSAGE;
-  job->data.message = g_strdup (debug);
+  job->msg.message = g_strdup (debug);
   return job;
 }
 
@@ -897,9 +905,9 @@ bse_job_debug (const gchar *debug)
 BseJob*
 bse_job_nop (void)
 {
-  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_MESSAGE;
-  job->data.message = NULL;
+  job->msg.message = NULL;
   return job;
 }
 
@@ -1343,7 +1351,7 @@ bse_engine_configure (guint            latency_ms,
   /* block master */
   {
     std::unique_lock<std::mutex> sync_guard (sync_mutex);
-    job = sfi_new_struct0 (BseJob, 1);
+    job = new BseJob;
     job->job_id = ENGINE_JOB_SYNC;
     job->sync.lock_mutex = &sync_mutex;
     job->sync.lock_cond = &sync_cond;

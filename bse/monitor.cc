@@ -2,8 +2,11 @@
 #include "monitor.hh"
 #include "bseengine.hh"
 #include "bseserver.hh"
+#include "bseblockutils.hh"
 
 namespace Bse {
+
+struct MonitorModule;
 
 SignalMonitorImpl::SignalMonitorImpl (SourceImplP source, uint ochannel) :
   source_ (source), ochannel_ (ochannel)
@@ -77,13 +80,13 @@ SignalMonitorImpl::get_probe_features ()
 
 // == SourceImpl ==
 struct SourceImpl::ChannelMonitor {
-  uint          probe_range = 0;
-  uint          probe_energie = 0;
-  uint          probe_samples = 0;
-  uint          probe_fft = 0;
-  BseModule    *module = NULL;
-  bool          needs_module ()  { return probe_range || probe_energie || probe_samples || probe_fft; }
-  /*des*/      ~ChannelMonitor()
+  uint           probe_range = 0;
+  uint           probe_energy = 0;
+  uint           probe_samples = 0;
+  uint           probe_fft = 0;
+  MonitorModule *module = NULL;
+  bool           needs_module ()  { return probe_range || probe_energy || probe_samples || probe_fft; }
+  /*des*/       ~ChannelMonitor()
   {
     assert_return (module == NULL);
   }
@@ -141,19 +144,16 @@ SourceImpl::cmon_add_probe (uint ochannel, const ProbeFeatures &pf)
 {
   assert_return (ochannel < size_t (n_ochannels()));
   ChannelMonitor &cmon = cmon_get (ochannel);
-  const bool needed_module = cmon.needs_module();
   if (pf.probe_range)
     cmon.probe_range += 1;
-  if (pf.probe_energie)
-    cmon.probe_energie += 1;
+  if (pf.probe_energy)
+    cmon.probe_energy += 1;
   if (pf.probe_samples)
     cmon.probe_samples += 1;
   if (pf.probe_fft)
     cmon.probe_fft += 1;
-  if (needed_module != cmon.needs_module())
-    {
-      // add module
-    }
+  if (cmon.needs_module())
+    cmon_activate();
 }
 
 void
@@ -164,8 +164,8 @@ SourceImpl::cmon_sub_probe (uint ochannel, const ProbeFeatures &pf)
   const bool needed_module = cmon.needs_module();
   if (pf.probe_range)
     cmon.probe_range -= 1;
-  if (pf.probe_energie)
-    cmon.probe_energie -= 1;
+  if (pf.probe_energy)
+    cmon.probe_energy -= 1;
   if (pf.probe_samples)
     cmon.probe_samples -= 1;
   if (pf.probe_fft)
@@ -209,69 +209,94 @@ static const BseModuleClass monitor_module_class = {
   Bse::ModuleFlag::NORMAL,      // mflags
 };
 
+#define MIN_DB_SPL      -140    // -140dB is beyond float mantissa precision
+
 class MonitorModule : public Bse::Module {
+  AlignedBlock ablock_;
+  float       *fblock_ = NULL;
+  int64 counter_ = 0;
+  float db_tip_ = MIN_DB_SPL;
   union {
     char  *char8_;
     double *f64_;
     float *f32_;
   };
-  int64 counter_ = 0;
-  float tip_ = 0;
+  bool need_minmax_ = false, need_dbspl_ = false;
   inline float&  f32 (MonitorField mf)   { return f32_[size_t (mf) / 4]; }
   inline double& f64 (MonitorField mf)   { return f64_[size_t (mf) / 8]; }
 public:
   MonitorModule (char *mfields) :
     Module (monitor_module_class),
     char8_ (mfields)
-  {}
+  {
+    ablock_ = allocate_aligned_block (0, BSE_STREAM_MAX_VALUES * sizeof (float));
+    assert_return (ablock_.block_start);
+    fblock_ = (float*) ablock_.block_start;
+  }
+  virtual ~MonitorModule()
+  {
+    release_aligned_block (ablock_);
+  }
   virtual void
   reset () override
   {}
+  void
+  configure (bool probe_range, bool probe_energy, bool probe_samples, bool probe_fft) // EngineThread
+  {
+    need_minmax_ = probe_range;
+    need_dbspl_ = probe_energy;
+    // TODO: probe_samples
+    // TODO: probe_fft
+  }
+  inline float
+  calc_features (uint n_values, const float *ivalues, float *vmin, float *vmax)
+  {
+    if (need_minmax_ && need_dbspl_)
+      return bse_block_calc_float_range_and_square_sum (n_values, ivalues, vmin, vmax);
+    else if (need_minmax_)
+      bse_block_calc_float_range (n_values, ivalues, vmin, vmax);
+    else if (need_dbspl_)
+      return bse_block_calc_float_square_sum (n_values, ivalues);
+    return 0;
+  }
   virtual void
-  process (uint n_values) override
+  process (uint n_values) override // EngineThread
   {
     const BseJStream &jstream = BSE_MODULE_JSTREAM (this, 0);
-    if (jstream.n_connections)
+    float vmin = 0, vmax = 0, vsqsum = 0;
+    if (jstream.n_connections == 1)
+      vsqsum = calc_features (n_values, jstream.values[0], &vmin, &vmax);
+    else if (!need_dbspl_ && jstream.n_connections > 1)
       {
-        const float *wave_in = jstream.values[0];
-        float min = wave_in[0], max = wave_in[0];
-        float avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
-        bool seen_nan = false, seen_pinf = false, seen_ninf = false, seen_subn = false;
-        for (uint j = 0; j < jstream.n_connections; j++)
-          for (uint i = 0; i < n_values; i++)
-            {
-              const float v = wave_in[i];
-              max = max > v ? max : v;
-              min = min < v ? min : v;
-              avg += v;
-              if (UNLIKELY (BSE_FLOAT_IS_NANINF (v)))
-                {
-                  seen_nan |= BSE_FLOAT_IS_NAN (v);
-                  seen_pinf |= BSE_FLOAT_IS_INF_POSITIVE (v);
-                  seen_ninf |= BSE_FLOAT_IS_INF_NEGATIVE (v);
-                }
-              else if (UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)))
-                seen_subn = true;
-            }
-        avg /= double (n_values) * jstream.n_connections;
-        f32 (MonitorField::F32_MIN) = min;
-        f32 (MonitorField::F32_MAX) = max;
-        f32 (MonitorField::F32_ENERGY) = avg; // FIXME: calc energy properly
-        tip_ = MAX (tip_ * 0.98, avg);
-        f32 (MonitorField::F32_TIP) = tip_;
-        counter_ += 1;
-        f64 (MonitorField::F64_GENERATION) = counter_;
-        if (0)
-          Bse::printout ("Monitor: max=%+1.5f min=%+1.5f avg=%+1.5f cons=%u values=%u [%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-                         max, min, avg,
-                         jstream.n_connections, n_values,
-                         first, last,
-                         BSE_FREQ_FROM_VALUE (avg),
-                         seen_nan ? " +NAN" : "",
-                         seen_pinf ? " +PINF" : "",
-                         seen_ninf ? " +NINF" : "",
-                         seen_subn ? " +SUBNORM" : "");
+        for (int j = 0; j < int (jstream.n_connections); j++)
+          {
+            float tmin = vmin, tmax = vmax;
+            vsqsum = calc_features (n_values, jstream.values[j], &tmin, &tmax);
+            vmin = MIN (vmin, tmin);
+            vmax = MAX (vmax, tmax);
+          }
       }
+    else if (need_dbspl_ && jstream.n_connections > 1)
+      {
+        // blocks must be added before we can calc square sums
+        bse_block_copy_float (n_values, fblock_, jstream.values[0]);
+        for (int j = 1; j < int (jstream.n_connections); j++)
+          bse_block_add_floats (n_values, fblock_, jstream.values[j]);
+        vsqsum = calc_features (n_values, fblock_, &vmin, &vmax);
+      }
+    f32 (MonitorField::F32_MIN) = vmin;
+    f32 (MonitorField::F32_MAX) = vmax;
+    const float avg_sqsum = vsqsum / n_values;
+    const float db_spl = avg_sqsum > 0.0 ? 10 * log10 (avg_sqsum) : MIN_DB_SPL;
+    f32 (MonitorField::F32_DB_SPL) = db_spl;
+    db_tip_ = MAX (db_tip_ * 0.98, db_spl);
+    f32 (MonitorField::F32_DB_TIP) = db_tip_;
+    counter_ += 1;
+    f64 (MonitorField::F64_GENERATION) = counter_;
+    if (0)
+      Bse::printout ("Monitor(%p): counter=%x [%+1.5f, %+1.5f] %+.2f (%+.2f) nj=%d nv=%d\n",
+                     char8_, counter_, vmin, vmax, db_spl, db_tip_,
+                     jstream.n_connections, n_values);
   }
 };
 
@@ -284,14 +309,28 @@ SourceImpl::cmon_activate ()
   std::vector<BseModule*> omodules;
   bse_source_list_omodules (self, omodules);
   const uint noc = n_ochannels();
+  struct Flags { bool probe_range = 0, probe_energy = 0, probe_samples = 0, probe_fft = 0; };
   for (size_t i = 0; i < noc; i++)
-    if (cmons_[i].needs_module() && !cmons_[i].module)
+    if (cmons_[i].needs_module())
       {
-        cmons_[i].module = new MonitorModule (cmon_monitor_field_start (i));
-        bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
-        bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
-        for (auto omodule : omodules)
-          bse_trans_add (trans, bse_job_jconnect (omodule, i, cmons_[i].module, 0));
+        if (!cmons_[i].module)
+          {
+            cmons_[i].module = new MonitorModule (cmon_monitor_field_start (i));
+            bse_trans_add (trans, bse_job_integrate (cmons_[i].module));
+            bse_trans_add (trans, bse_job_set_consumer (cmons_[i].module, TRUE));
+            for (auto omodule : omodules)
+              bse_trans_add (trans, bse_job_jconnect (omodule, i, cmons_[i].module, 0));
+          }
+        Flags f;
+        f.probe_range = cmons_[i].probe_range > 0;
+        f.probe_energy = cmons_[i].probe_energy > 0;
+        f.probe_samples = cmons_[i].probe_samples > 0;
+        f.probe_fft = cmons_[i].probe_fft > 0;
+        MonitorModule *monitor_module = cmons_[i].module;
+        auto monitor_module_configure = [monitor_module, f] () {
+          monitor_module->configure (f.probe_range, f.probe_energy, f.probe_samples, f.probe_fft);
+        };
+        bse_trans_add (trans, bse_job_access (cmons_[i].module, monitor_module_configure));
       }
   bse_trans_commit (trans);
 }

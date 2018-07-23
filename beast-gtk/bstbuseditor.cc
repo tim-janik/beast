@@ -83,12 +83,12 @@ bus_probes_notify (BstBusEditor *self, const Bse::ProbeSeq &pseq)
       lprobe = &pseq[i];
     else if (pseq[i].channel == 1)
       rprobe = &pseq[i];
-  if (self->lbeam && lprobe && lprobe->probe_features.probe_energie)
+  if (self->lbeam && lprobe && lprobe->probe_features.probe_energy)
     bst_db_beam_set_value (self->lbeam, lprobe->energie);
-  if (self->rbeam && rprobe && rprobe->probe_features.probe_energie)
+  if (self->rbeam && rprobe && rprobe->probe_features.probe_energy)
     bst_db_beam_set_value (self->rbeam, rprobe->energie);
-  bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGIE, 20.0);
-  bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
+  bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
+  bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
 }
 
 static GtkWidget*
@@ -180,8 +180,8 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       // FIXME: self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
       //return bus_probes_notify (self, pseq);
       //};
-      bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGIE, 20.0);
-      bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
+      bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
+      bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
     }
 }
 
