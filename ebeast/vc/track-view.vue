@@ -165,7 +165,8 @@ function update_levels (active) {
     const lev = (clamp (dbspl, mindb, maxdb) - mindb) / (maxdb - mindb);
     // scale covertip from 100% down to just the amount above the tip
     let transform = 'scaleX(' + pxrs_round (1 - tip) + ')';
-    covertip.style.setProperty ('transform', transform);
+    if (transform != covertip.style.getPropertyValue ('transform'))	// reduce style recalculations
+      covertip.style.setProperty ('transform', transform);
     // scale and translate middle cover
     if (lev + pxrs + tw * pxrs <= tip) {
       const width = (tip - lev) - tw * pxrs;
@@ -175,7 +176,8 @@ function update_levels (active) {
       // hide covermid if level and tip are aligned
       transform = 'scaleX(0)';
     }
-    covermid.style.setProperty ('transform', transform);
+    if (transform != covermid.style.getPropertyValue ('transform'))	// reduce style recalculations
+      covermid.style.setProperty ('transform', transform);
   }
 }
 
