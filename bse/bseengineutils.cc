@@ -96,6 +96,7 @@ bse_engine_free_job (BseJob *job)
       g_free (job->msg.message);
       break;
     case ENGINE_JOB_ACCESS:
+      delete job->access.function;
       if (job->access.free_func)
 	job->access.free_func (job->access.data);
       break;

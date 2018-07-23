@@ -77,10 +77,10 @@ struct Job final {
       uint        src_ostream = 0;
     } connection;
     struct {
-      Module               *node = NULL;
-      BseEngineAccessFunc   access_func = NULL;
-      gpointer	            data = NULL;
-      BseFreeFunc           free_func = NULL;
+      Module                *node = NULL;
+      std::function<void()> *function = NULL;
+      BseFreeFunc            free_func = NULL;
+      void                  *data = NULL;
     } access;
     struct {
       BseEngineTimerFunc timer_func = NULL;

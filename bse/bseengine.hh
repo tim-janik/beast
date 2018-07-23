@@ -133,6 +133,8 @@ BseJob*    bse_job_add_timer            (BseEngineTimerFunc    timer_func,
                                          gpointer              data,
                                          BseFreeFunc           free_func);
 BseJob*    bse_job_access               (BseModule            *module,
+                                         const std::function<void()> &lambda); /* EngineThread */
+BseJob*    bse_job_access               (BseModule            *module,
                                          BseEngineAccessFunc   access_func,     /* EngineThread */
                                          gpointer              data,
                                          BseFreeFunc           free_func);      /* UserThread */

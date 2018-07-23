@@ -464,23 +464,33 @@ bse_job_force_reset (BseModule *module)
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
-bse_job_access (BseModule    *module,
-		BseEngineAccessFunc access_func,
-		gpointer      data,
-		BseFreeFunc   free_func)
+bse_job_access (BseModule *module, BseEngineAccessFunc access_func, void *data, BseFreeFunc free_func)
 {
-  BseJob *job;
-
+  typedef std::function<void()> StdVoidFunction;
   assert_return (module != NULL, NULL);
   assert_return (access_func != NULL, NULL);
-
-  job = new BseJob;
+  BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_ACCESS;
   job->access.node = module;
-  job->access.access_func = access_func;
+  auto wrapper = [module, access_func, data] () { access_func (module,  data); };
+  job->access.function = new StdVoidFunction (wrapper);
   job->access.data = data;
   job->access.free_func = free_func;
+  return job;
+}
 
+BseJob*
+bse_job_access (BseModule *module, const std::function<void()> &engine_thread_lambda) /* EngineThread */
+{
+  typedef std::function<void()> StdVoidFunction;
+  assert_return (module != NULL, NULL);
+  assert_return (engine_thread_lambda != NULL, NULL);
+  BseJob *job = new BseJob;
+  job->job_id = ENGINE_JOB_ACCESS;
+  job->access.node = module;
+  job->access.function = new StdVoidFunction (engine_thread_lambda);
+  job->access.data = NULL;
+  job->access.free_func = NULL;
   return job;
 }
 
@@ -494,15 +504,13 @@ bse_job_access (BseModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_engine_add_user_callback (gpointer      data,
-                              BseFreeFunc   free_func)
+bse_engine_add_user_callback (void *data, BseFreeFunc free_func)
 {
   assert_return (free_func != NULL);
-
   BseJob *job = new BseJob;
   job->job_id = ENGINE_JOB_ACCESS;
   job->access.node = NULL;
-  job->access.access_func = NULL;
+  job->access.function = NULL;
   job->access.data = data;
   job->access.free_func = free_func;
 

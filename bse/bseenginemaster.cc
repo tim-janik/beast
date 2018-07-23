@@ -513,10 +513,10 @@ master_process_job (BseJob *job)
       break;
     case ENGINE_JOB_ACCESS:
       node = job->access.node;
-      JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
+      JOB_DEBUG ("access node(%p): %p()", node, job->access.function);
       assert_return (node->integrated == TRUE);
       node->counter = Bse::TickStamp::current();
-      job->access.access_func (node, job->access.data);
+      (*job->access.function) ();
       break;
     case ENGINE_JOB_PROBE_JOB:
       node = job->timed_job.node;
