@@ -14,9 +14,11 @@
       <span class="vc-track-view-label">{{ track.get_name() }}</span>
       <div class="vc-track-view-meter">
 	<div class="vc-track-view-lbg" ref="levelbg"></div>
-	<div class="vc-track-view-lv0" ref="level0"></div>
+	<div class="vc-track-view-cm0" ref="covermid0"></div>
+	<div class="vc-track-view-ct0" ref="covertip0"></div>
 	<div class="vc-track-view-lsp"></div>
-	<div class="vc-track-view-lv1" ref="level1"></div>
+	<div class="vc-track-view-cm1" ref="covermid1"></div>
+	<div class="vc-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
     <span class="vc-track-view-partlist" >
@@ -36,24 +38,22 @@
     --db-zpc: 66.66%;
     background: linear-gradient(to right, #0b0, #bb0 var(--db-zpc), #b00);
   }
-  .vc-track-view-lbg, .vc-track-view-lv0, .vc-track-view-lsp, .vc-track-view-lv1 {
-    position: absolute;
-    width: 100%;
-  }
-  .vc-track-view-lv0	{ top: 0px; }
-  .vc-track-view-lsp	{ top: $vc-track-view-level-height; height: $vc-track-view-level-space; }
-  .vc-track-view-lv1	{ top: $vc-track-view-level-height + $vc-track-view-level-space; }
+  .vc-track-view-ct0, .vc-track-view-cm0, .vc-track-view-ct1, .vc-track-view-cm1,
+  .vc-track-view-lbg, .vc-track-view-lsp	{ position: absolute; width: 100%; }
+  .vc-track-view-ct0, .vc-track-view-cm0	{ top: 0px; }
+  .vc-track-view-lsp				{ top: $vc-track-view-level-height; height: $vc-track-view-level-space; }
+  .vc-track-view-ct1, .vc-track-view-cm1	{ top: $vc-track-view-level-height + $vc-track-view-level-space; }
   .vc-track-view-lsp {
     background-color: rgba( 0, 0, 0, .80);
   }
-  .vc-track-view-lv0, .vc-track-view-lv1 {
+  .vc-track-view-ct0, .vc-track-view-cm0, .vc-track-view-ct1, .vc-track-view-cm1 {
     height: $vc-track-view-level-height;
     background-color: rgba( 0, 0, 0, .75);
     transform-origin: center right;
     will-change: transform;
-    --scalex: 1;
-    transform: scaleX(var(--scalex));
+    transform: scaleX(1);
   }
+  .vc-track-view-cm0, .vc-track-view-cm1	{ width: 100%; -x-background-color: red; }
   .vc-track-view-meter {
     height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
     position: relative;
@@ -124,8 +124,8 @@ module.exports = {
 	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
 	this.rdbspl = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_SPL);
 	this.rdbtip = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_TIP);
-	this.value0 = null;
-	this.value1 = null;
+	// cache level width in pxiels to avoid expensive recalculations in fps handler
+	this.level_width = levelbg.getBoundingClientRect().width;
 	// trigger frequent screen updates
 	if (!this.remove_frame_handler)
 	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
@@ -137,23 +137,45 @@ module.exports = {
 const clamp = Util.clamp;
 
 function update_levels (active) {
-  const level0 = this.$refs['level0'];
-  const level1 = this.$refs['level1'];
+  /* Paint model:
+   * |                                           ######| dark tip cover layer, $refs['covertipN']
+   * |             #############################       | dark middle cover, $refs['covermidN']
+   * |-36dB+++++++++++++++++++++++++++++++0++++++++12dB| dB gradient, $refs['levelbg']
+   *  ^^^^^^^^^^^^^ visible level (-24dB)       ^ visible tip (+6dB)
+   */
+  const covertip0 = this.$refs['covertip0'], covermid0 = this.$refs['covermid0'];
+  const covertip1 = this.$refs['covertip1'], covermid1 = this.$refs['covermid1'];
+  const level_width = this.level_width, pxrs = 1.0 / level_width; // pixel width fraction between 0..1
   if (!active) {
-    level0.style.setProperty ('--scalex', 1);
-    level1.style.setProperty ('--scalex', 1);
+    covertip0.style.setProperty ('transform', 'scaleX(1)');
+    covertip1.style.setProperty ('transform', 'scaleX(1)');
+    covermid0.style.setProperty ('transform', 'scaleX(0)');
+    covermid1.style.setProperty ('transform', 'scaleX(0)');
     return;
   }
-  // map dB SPL to a 0..1 paint range
-  const value0 = 1.0 - (clamp (this.ldbspl[0], mindb, maxdb) - mindb) / (maxdb - mindb);
-  const value1 = 1.0 - (clamp (this.rdbspl[0], mindb, maxdb) - mindb) / (maxdb - mindb);
-  if (this.value0 != value0) {
-    level0.style.setProperty ('--scalex', value0);
-    this.value0 = value0;
-  }
-  if (this.value1 != value1) {
-    level1.style.setProperty ('--scalex', value1);
-    this.value1 = value1;
+  const tw = 2; // tip thickness in pixels
+  const pxrs_round = (fraction) => Math.round (fraction / pxrs) * pxrs; // scale up, round to pixel, scale down
+  // handle multiple channels
+  const channels = [ [this.ldbspl[0], this.ldbtip[0], covertip0, covermid0],
+		     [this.rdbspl[0], this.rdbtip[0], covertip1, covermid1], ];
+  for (const chan_entry of channels) {
+    const [dbspl, dbtip, covertip, covermid] = chan_entry;
+    // map dB SPL to a 0..1 paint range
+    const tip = (clamp (dbtip, mindb, maxdb) - mindb) / (maxdb - mindb);
+    const lev = (clamp (dbspl, mindb, maxdb) - mindb) / (maxdb - mindb);
+    // scale covertip from 100% down to just the amount above the tip
+    let transform = 'scaleX(' + pxrs_round (1 - tip) + ')';
+    covertip.style.setProperty ('transform', transform);
+    // scale and translate middle cover
+    if (lev + pxrs + tw * pxrs <= tip) {
+      const width = (tip - lev) - tw * pxrs;
+      const trnlx = level_width - level_width * tip + tw; // translate left in pixels
+      transform = 'translateX(-' + Math.round (trnlx) + 'px) scaleX(' + pxrs_round (width) + ')';
+    } else {
+      // hide covermid if level and tip are aligned
+      transform = 'scaleX(0)';
+    }
+    covermid.style.setProperty ('transform', transform);
   }
 }
 
