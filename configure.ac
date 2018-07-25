@@ -684,16 +684,6 @@ AC_DEFUN([MC_PYTHON_REQUIREMENTS],
   AM_PATH_PYTHON($PYTHON_REQUIRED)
   dnl # AC_REQUIRE([AC_PYTHON_DEVEL]) # AC_PYTHON_DEVEL is usually provided by autoconf-archive
   AC_PYTHON_DEVEL([>= $PYTHON_REQUIRED])
-  AC_MSG_CHECKING([for working Python extension compilation])
-  PYTHON_CPPFLAGS="$PYTHON_CPPFLAGS -fno-strict-aliasing" # needed by Python headers
-  saved_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS -Wall -Werror"     # verify sane Python module builds
-  AC_TRY_COMPILE([#include <Python.h>], [Py_InitModule(0,0);], py_build=ok, py_build=failed)
-  CPPFLAGS="$saved_CPPFLAGS"
-  AC_MSG_RESULT($py_build)
-  if test "$py_build" != "ok" ; then
-    AC_MSG_ERROR([failed to build extension against Python (>=$PYTHON_REQUIRED) headers])
-  fi
   if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
     AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
   fi
