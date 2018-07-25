@@ -36,9 +36,4 @@ typedef enum {
   BST_SOURCE_PROBE_FFT     = 0x08,
 } BstSourceProbeFeature;
 
-void bst_source_queue_probe_request (SfiProxy              source,
-				     guint                 ochannel_id,
-				     BstSourceProbeFeature pfeature,
-				     gfloat                frequency);
-
 #endif /* __BST_SNIFFER_SCOPE_H__ */

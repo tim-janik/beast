@@ -267,21 +267,6 @@ bst_scrollgraph_unrealize (GtkWidget *widget)
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->unrealize (widget);
 }
 
-static void
-bst_scrollgraph_scroll_bars (BstScrollgraph *self)
-{
-  GtkWidget *widget = GTK_WIDGET (self);
-  self->bar_offset = (self->bar_offset + self->n_bars - 1) % self->n_bars;
-  if (GTK_WIDGET_DRAWABLE (widget))
-    {
-      GdkWindow *drawable = self->canvas;
-      if (HORIZONTAL (self))
-        gdk_window_scroll (drawable, self->direction == Bst::Direction::DIR_LEFT ? -1 : 1, 0);
-      else
-        gdk_window_scroll (drawable, 0, self->direction == Bst::Direction::DIR_UP ? -1 : 1);
-    }
-}
-
 static GxkColorDots*
 create_color_dots (void)
 {
@@ -383,6 +368,22 @@ bst_scrollgraph_clear (BstScrollgraph *self)
   gtk_widget_queue_draw (widget);
 }
 
+#if 0 // OUTDATED
+static void
+bst_scrollgraph_scroll_bars (BstScrollgraph *self)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  self->bar_offset = (self->bar_offset + self->n_bars - 1) % self->n_bars;
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      GdkWindow *drawable = self->canvas;
+      if (HORIZONTAL (self))
+        gdk_window_scroll (drawable, self->direction == Bst::Direction::DIR_LEFT ? -1 : 1, 0);
+      else
+        gdk_window_scroll (drawable, 0, self->direction == Bst::Direction::DIR_UP ? -1 : 1);
+    }
+}
+
 static void
 bst_scrollgraph_probes_notify (BstScrollgraph *self, const Bse::ProbeSeq &pseq)
 {
@@ -422,6 +423,7 @@ bst_scrollgraph_probes_notify (BstScrollgraph *self, const Bse::ProbeSeq &pseq)
   float mix_freq = self->source.get_mix_freq();
   bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
 }
+#endif
 
 static void
 bst_scrollgraph_io_changed (BstScrollgraph *self)
@@ -469,8 +471,8 @@ bst_scrollgraph_set_source (BstScrollgraph *self, Bse::SourceH source, uint ocha
                          "signal::release", bst_scrollgraph_release_item, self,
                          "swapped-signal::io_changed", bst_scrollgraph_io_changed, self,
                          NULL);
-      float mix_freq = self->source.get_mix_freq();
-      bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
+      // float mix_freq = self->source.get_mix_freq();
+      // bst_source_queue_probe_request (self->source.proxy_id(), self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
       bst_scrollgraph_io_changed (self);
     }
 }
