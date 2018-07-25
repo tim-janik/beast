@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS = icons . tests # pybse
+SUBDIRS = icons . tests
 
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
 AM_CPPFLAGS += -I$(top_srcdir)
