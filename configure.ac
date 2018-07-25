@@ -314,6 +314,10 @@ dnl # FIXME: BSE_LIBS=`printf %s "$BSE_LIBS" | sed 's/\(-pthread\b\)/\1 -lpthrea
 BSE_CFLAGS="$BSE_CFLAGS ${PTHREAD_CFLAGS:--D_REENTRANT}"
 BSE_LIBS="$BSE_LIBS ${PTHREAD_LIBS:--lpthread}"
 
+# == fluidsynth version check ==
+FLUID_VERSION=`$PKG_CONFIG --modversion fluidsynth`
+AC_SUBST(FLUID_VERSION)
+
 # == libz ==
 AC_CHECK_LIB(z, gzsetparams, [ LIBZ_LIBS='' ; test "$ac_cv_header_zlib_h" = yes && LIBZ_LIBS='-lz' ])
 if test -z "$LIBZ_LIBS"; then
