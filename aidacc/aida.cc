@@ -3357,7 +3357,6 @@ remote_handle_event_handler_del (int64 id)
 {
   std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
   remote_handle_event_handler_map.erase (id);
-  dprintf (2, "%s: TODO: verify this function gets called: id=%zd", __func__, size_t (id)); // FIXME
 }
 
 // == ImplicitBase <-> RemoteHandle RPC ==

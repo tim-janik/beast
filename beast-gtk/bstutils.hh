@@ -9,6 +9,14 @@
 
 namespace Bst {
 
+#ifndef assert
+#define assert(cond)            ({                                      \
+  if (!BSE_ISLIKELY (cond)) {                                           \
+    Bse::diag_failed_assert (__FILE__, __LINE__, __func__, #cond);      \
+    Bse::diag_fatal_error ("aborting due to failed assertion"); }       \
+    })
+#endif
+
 // == event loop ==
 int  event_loop_run    ();
 void event_loop_quit   (uint8 exit_code = 0);

@@ -12,7 +12,6 @@
 #include "bstpreferences.hh"
 #include "../topbuildid.hh"
 #include "../config/config.h"
-#include <Python.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -97,9 +96,6 @@ main (int argc, char *argv[])
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
 
-  // setup Python
-  Py_Initialize();
-
   // initialize threading and GLib types
   Bse::this_thread_set_name ("Beast GUI");
   Bse::TaskRegistry::add (Bse::this_thread_get_name(), Bse::this_thread_getpid(), Bse::this_thread_gettid());
@@ -129,8 +125,6 @@ main (int argc, char *argv[])
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
-  PySys_SetArgvEx (argc, argv, 0);
-
   main_init_sfi_glue();
 
   main_init_gxk();
@@ -158,8 +152,6 @@ main (int argc, char *argv[])
 static void
 main_init_argv0_installpaths (const char *argv0)
 {
-  // Rapicorn and Python both need accurate argv0 excutable names
-  Py_SetProgramName (const_cast<char*> (argv0));
   // check for a libtool-linked, uninstalled executable (name)
   const char *const exe = argv0;
   const char *const slash = strrchr (exe, '/');
@@ -479,52 +471,11 @@ main_splash_down ()
   bst_splash_release_grab (beast_splash);
 }
 
-#define Py_None_INCREF()        ({ Py_INCREF (Py_None); Py_None;  })
-
-static PyObject*
-main_quit (PyObject *self, PyObject *args)
-{
-  int exit_code = 0;
-  if (PyTuple_Check (args) && PyTuple_GET_SIZE (args) > 0)
-    {
-      if (!PyArg_ParseTuple (args, "i:main_quit", &exit_code))
-        return NULL;
-    }
-  Bst::event_loop_quit (exit_code);
-  return Py_None_INCREF();
-}
-
-static PyObject*
-main_loop (PyObject *self, PyObject *args)
-{
-  if (!PyArg_ParseTuple (args, ":main_loop"))
-    return NULL;
-  const int quit_code = Bst::event_loop_run();
-  return Py_BuildValue ("i", quit_code);
-}
-
-static PyMethodDef embedded_bst_methods[] = {
-  { "main_quit", main_quit, METH_VARARGS, "Quit the currently running main event loop." },
-  { "main_loop", main_loop, METH_VARARGS, "Run the main event loop until main_quit()." },
-  { NULL, NULL, 0, NULL }
-};
-
 static int
 main_run_event_loop ()
 {
-  // register embedded methods
-  static BSE_UNUSED bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
-
-  // run main loop from Python
-  String pyfile = Bse::Path::join (Bse::installpath (Bse::INSTALLPATH_PYBEASTDIR), "main.py");
-  FILE *fp = fopen (pyfile.c_str(), "r");
-  if (!fp)
-    {
-      perror (string_format ("%s: failed to open file %s", Bse::executable_name(), Bse::string_to_cquote (pyfile)).c_str());
-      exit (7);
-    }
-  const int pyexitcode = PyRun_AnyFileExFlags (fp, pyfile.c_str(), false, NULL);
-  fclose (fp);
+  // Run event loop until quit() is called
+  const int quit_code = Bst::event_loop_run();
 
   // run pending cleanup handlers
   bst_message_dialogs_popdown ();
@@ -537,7 +488,7 @@ main_run_event_loop ()
     }
   GDK_THREADS_ENTER ();
 
-  return pyexitcode;
+  return quit_code;
 }
 
 static void
@@ -570,9 +521,6 @@ main_cleanup ()
       GDK_THREADS_LEAVE ();
     }
 
-  // Python cleanup
-  Py_Finalize();
-
   // misc cleanups
   Bse::objects_debug_leaks();
   Bse::TaskRegistry::remove (Bse::this_thread_gettid());
@@ -584,12 +532,6 @@ void
 bst_main_loop_wakeup ()
 {
   g_main_context_wakeup (g_main_context_default ());
-}
-
-static void
-echo_test_handler (const std::string &msg)
-{
-  printout ("BST-Thread: got signal with message: %s\n", msg.c_str());
 }
 
 static void
