@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 import sys, os, re
 pkginstall_configvars = {

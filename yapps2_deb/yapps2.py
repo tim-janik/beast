@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 #
 # Yapps 2 - yet another python parser system
