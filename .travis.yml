@@ -16,11 +16,13 @@ env:
     - DIST="ubuntu:artful"      INTENT="gccbuild"
     - DIST="ubuntu:bionic"      INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
+    - DIST="ubuntu:cosmic"      INTENT="gccbuild"
     - DIST="ubuntu:artful"      INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
+    - env: DIST="ubuntu:cosmic"      INTENT="gccbuild"
     - env: DIST="ubuntu:artful"      INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
     - env: DIST="debian:unstable"    INTENT="clangbuild"
