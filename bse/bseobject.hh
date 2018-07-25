@@ -9,6 +9,10 @@ namespace Bse {
 
 class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
   BseObject             *gobject_;
+protected:
+  typedef Aida::KeyValue KV;
+  void  emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
+                    const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
 public:
   explicit               ObjectImpl (BseObject*);
   virtual               ~ObjectImpl ();

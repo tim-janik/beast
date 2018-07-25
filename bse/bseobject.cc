@@ -52,14 +52,33 @@ ObjectImpl::proxy_id ()
 }
 
 void
+ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
+                        const KV &a4, const KV &a5, const KV &a6, const KV &a7)
+{
+  Aida::Event ev (type);
+  const KV *args[] = { &a1, &a2, &a3, &a4, &a5, &a6, &a7 };
+  for (size_t i = 0; i < sizeof (args) / sizeof (args[0]); i++)
+    if (!args[i]->key.empty())
+      ev[args[i]->key] = args[i]->value;
+  const char *ctype = type.c_str();
+  const char *colon = strchr (ctype, ':');
+  const size_t type_len = colon && colon[1] ? colon - ctype : 0;
+  if (type_len)
+    ev["detail"] = &colon[1];
+  trigger (ev);         // emits "notify:detail"
+  if (type_len)
+    {
+      ev["type"] = type.substr (0, type_len);
+      trigger (ev);     // emits "notify"
+    }
+  // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
+}
+
+void
 ObjectImpl::notify (const String &detail)
 {
   assert_return (detail.empty() == false);
-  Aida::Event ev ("notify:" + detail);
-  ev["detail"] = detail;
-  trigger (ev);                 // emit "notify:detail"
-  ev["type"] = "notify";
-  trigger (ev);                 // emit "notify"
+  emit_event ("notify:" + detail);
 }
 
 std::string
