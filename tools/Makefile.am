@@ -16,6 +16,7 @@ doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
 	$(Q) echo $(patsubst %, tools/%, $(HEADERS) $(SOURCES)) > $@
+CLEANFILES += doc_sources.lst
 
 #
 # tools to build

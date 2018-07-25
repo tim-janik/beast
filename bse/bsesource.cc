@@ -126,8 +126,6 @@ bse_source_dispose (GObject *object)
 {
   BseSource *source = BSE_SOURCE (object);
 
-  if (source->probes)
-    bse_source_clear_probes (source);
   bse_source_clear_ochannels (source);
   if (BSE_SOURCE_PREPARED (source))
     {
@@ -145,11 +143,7 @@ static void
 bse_source_finalize (GObject *object)
 {
   BseSource *source = BSE_SOURCE (object);
-  guint i;
-
-  if (source->probes)
-    bse_source_clear_probes (source);
-  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
+  for (uint i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
       g_free (BSE_SOURCE_INPUT (source, i)->jdata.joints);
   g_free (source->inputs);
@@ -799,8 +793,6 @@ bse_source_real_context_dismiss	(BseSource *source,
 	bse_trans_add (trans, bse_job_discard (context->u.mods.omodule));
       context->u.mods.imodule = NULL;
       context->u.mods.omodule = NULL;
-      if (source->probes)
-        bse_source_probes_modules_changed (source);
     }
 }
 
@@ -960,9 +952,6 @@ bse_source_set_context_omodule (BseSource *source, uint context_handle, BseModul
           context->u.mods.omodule = NULL;
         }
     }
-
-  if (source->probes)
-    bse_source_probes_modules_changed (source);
 }
 
 void
@@ -2467,6 +2456,13 @@ SourceImpl::clear_outputs ()
     }
   bse_item_undo_close (ustack);
   g_object_unref (self);
+}
+
+int
+SourceImpl::get_mix_freq ()
+{
+  BseSource *self = as<BseSource*>();
+  return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
 
 } // Bse

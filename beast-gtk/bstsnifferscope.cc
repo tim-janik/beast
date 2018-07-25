@@ -289,8 +289,6 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
   self->source = source;
   if (self->source)
     {
-      bst_source_queue_probe_request (self->source.proxy_id(), 0, BST_SOURCE_PROBE_RANGE, 20.0);
-      bst_source_queue_probe_request (self->source.proxy_id(), 1, BST_SOURCE_PROBE_RANGE, 20.0);
       if (self->source.n_ochannels() >= 2)
         {
           self->lmonitor = self->source.create_signal_monitor (0);
@@ -318,41 +316,4 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
         }
       static_assert (size_t (Bse::MonitorField::END_BYTE) >= sizeof (double) + 4 + sizeof (float), "");
     }
-}
-
-static Bse::ProbeRequestSeq probe_request_seq;
-
-static gboolean
-source_probe_idle_request (gpointer data)
-{
-  GDK_THREADS_ENTER ();
-  Bse::ProbeRequestSeq prs;
-  prs.swap (probe_request_seq);
-  if (prs.size())
-    Bse::SourceH::down_cast (prs[0].source).request_probes (prs);
-  GDK_THREADS_LEAVE ();
-  return FALSE;
-}
-
-void
-bst_source_queue_probe_request (SfiProxy              source,
-                                guint                 ochannel_id,
-                                BstSourceProbeFeature pfeature,
-                                gfloat                frequency)
-{
-  Bse::ProbeFeatures features;
-  features.probe_range = 0 != (pfeature & BST_SOURCE_PROBE_RANGE);
-  features.probe_energy = 0 != (pfeature & BST_SOURCE_PROBE_ENERGY);
-  features.probe_samples = 0 != (pfeature & BST_SOURCE_PROBE_SAMPLES);
-  features.probe_fft = 0 != (pfeature & BST_SOURCE_PROBE_FFT);
-  Bse::ProbeRequest request;
-  request.source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
-  request.channel = ochannel_id;
-  request.probe_features = features;
-  request.frequency = frequency;
-  if (BST_GCONFIG (slow_scopes) && !(features.probe_samples || features.probe_fft))
-    request.frequency = MIN (request.frequency, 4);
-  if (probe_request_seq.size() == 0)
-    g_idle_add_full (G_PRIORITY_LOW + 5, source_probe_idle_request, NULL, NULL);  // GTK_PRIORITY_REDRAW + 5
-  probe_request_seq.push_back (std::move (request));
 }

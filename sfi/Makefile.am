@@ -53,6 +53,7 @@ sfi_extra_sources = $(strip \
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
 	$(Q) echo $(patsubst %, sfi/%, $(sfi_public_headers) $(sfi_all_sources)) > $@
+CLEANFILES += doc_sources.lst
 
 # == libsfi-@MAJOR@.so ==
 noinst_LTLIBRARIES            = libsfi-@MAJOR@.la

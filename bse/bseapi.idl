@@ -794,37 +794,6 @@ record ProbeFeatures {
   bool          probe_fft;
 };
 
-/// Probe sample data.
-record Probe {
-  int32         channel;
-  int64         block_stamp;
-  float64       mix_freq;
-  ProbeFeatures probe_features;
-  float64       min;			// FIXME: rename to range_min
-  float64       max;
-  float64       energie;
-  FloatSeq      sample_data;
-  FloatSeq      fft_data;
-};
-
-/// A list of Probe records.
-sequence ProbeSeq {
-  Probe probes;
-};
-
-/// Realtime probe request specification.
-record ProbeRequest {
-  Item          source; // FIXME: use 'Source' here, but that's not fully defined in the C++ client bindings at this point
-  int32         channel;
-  float64	frequency;
-  ProbeFeatures probe_features;
-};
-
-/// List of probe requests.
-sequence ProbeRequestSeq {
-  ProbeRequest probe_requests;
-};
-
 /// Interface for monitoring output signals.
 interface SignalMonitor {
   int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
@@ -884,10 +853,6 @@ interface Source : Item {
   void set_pos (float64 x_pos, float64 y_pos);
   /// Retrieve the current mixing frequency used for probes.
   int32       get_mix_freq   ();
-  /// Query sample probes from a number of sources.
-  void        request_probes (ProbeRequestSeq prseq);
-  /// Signal arrival of new probe values.
-  // signal void probes         (ProbeSeq a);
 
   /// Create signal monitor for an output channel.
   SignalMonitor create_signal_monitor (int32 ochannel);

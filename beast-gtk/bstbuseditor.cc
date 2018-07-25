@@ -74,6 +74,7 @@ bus_editor_release_item (SfiProxy      item,
   bst_bus_editor_set_bus (self, 0);
 }
 
+#if 0 // OUTDATED
 static void
 bus_probes_notify (BstBusEditor *self, const Bse::ProbeSeq &pseq)
 {
@@ -90,6 +91,7 @@ bus_probes_notify (BstBusEditor *self, const Bse::ProbeSeq &pseq)
   bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
   bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
 }
+#endif
 
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
@@ -180,8 +182,8 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       // FIXME: self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
       //return bus_probes_notify (self, pseq);
       //};
-      bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
-      bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
+      //bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
+      //bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
     }
 }
 
