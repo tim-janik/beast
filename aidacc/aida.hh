@@ -794,6 +794,18 @@ public:
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
 };
 
+// == ==
+struct KeyValue {
+  std::string key;
+  Any         value;
+};
+namespace KeyValueArgs {
+struct KeyValueConstructor {
+  std::string key;
+  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
+};
+inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
+};
 
 // == ProtoMsg ==
 union ProtoUnion {
