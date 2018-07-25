@@ -98,7 +98,6 @@ bse_sources = $(strip \
 	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
 	bsebusmodule.cc		\
 	bsebasics.cc		\
-	bseprobe.cc		\
 	memory.cc		\
 	monitor.cc		\
 	testobject.cc		\
