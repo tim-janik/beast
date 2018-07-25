@@ -45,6 +45,7 @@ doc_sources = $(gxk_headers) $(gxk_c_sources) $(gxk_extra_sources)
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
 	$(Q) echo $(patsubst %, beast-gtk/gxk/%, $(doc_sources)) > $@
+CLEANFILES += doc_sources.lst
 
 GLIB_MKENUMS = glib-mkenums
 

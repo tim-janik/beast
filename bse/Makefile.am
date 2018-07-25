@@ -125,6 +125,7 @@ doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
 	$(Q) echo $(patsubst %, bse/%, $(doc_sources)) > $@
+CLEANFILES += doc_sources.lst
 
 #
 # BSE library

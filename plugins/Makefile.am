@@ -29,6 +29,7 @@ doc_sources = $(idl_files) $(SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
 	$(Q) echo $(patsubst %, plugins/%, $(doc_sources)) > $@
+CLEANFILES += doc_sources.lst
 
 
 # setup generation of C++ plugins from idl files
