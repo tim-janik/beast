@@ -48,6 +48,9 @@
 #define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        ({ func (data); 0; })
 #define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                ({ (void) id; })
 #endif
+#ifndef assert_return
+#define assert_return(cond,...)         assert (cond)
+#endif
 
 // == printf helper ==
 #define LLI     (long long int)
@@ -933,7 +936,6 @@ public:
 typedef std::unordered_map<ImplicitBase*, ImplicitBaseExtra*> ImplicitBaseExtraMap;
 static std::mutex           implicit_base_extras_mutex_;
 static ImplicitBaseExtraMap implicit_base_extras_;
-static uint64               implicit_base_handler_counter_ = 0x1001;
 
 ImplicitBase::~ImplicitBase()
 {
@@ -951,6 +953,8 @@ ImplicitBase::~ImplicitBase()
   else
     locker.unlock();
 }
+
+static uint64 implicit_base_event_handler_next_id = 0xe000000 + 1; // see: BSE_STARTID_EVENT_HANDLER
 
 /// Attach an event @a handler function to a specific event @a type.
 uint64
@@ -977,7 +981,7 @@ ImplicitBase::__event_attach__ (const String &type, EventHandlerF handler)
     }
   extra->handlers.resize (extra->handlers.size() + 1);
   ImplicitBaseExtra::Handler &next = extra->handlers.back();
-  next.id = implicit_base_handler_counter_++;
+  next.id = implicit_base_event_handler_next_id++;
   next.names = std::move (words);
   next.handler = handler;
   return next.id;
@@ -2875,7 +2879,7 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
           fbr.skip_header();
           std::string msg = fbr.pop_string();
           std::string dom = fbr.pop_string();
-          warning_printf ("%s: %s", dom.c_str(), msg.c_str());
+          AIDA_WARN ("%s: %s", dom.c_str(), msg.c_str());
           delete fr;
         }
 #endif
@@ -3328,35 +3332,42 @@ ServerConnection::MethodRegistry::register_method (const MethodEntry &mentry)
 }
 
 // == RemoteHandle Event Handlers ==
-typedef std::unordered_map<int64, EventHandlerF> RemoteHandleEventHandlerMap;
+struct SimplePairHash {
+public:
+  template<typename T, typename U> size_t
+  operator() (const std::pair<T, U> &pair) const
+  {
+    return std::hash<T>() (pair.first) ^ std::hash<U>() (pair.second);
+  }
+};
+typedef std::unordered_map<std::pair<uint64, uint64>, EventHandlerF, SimplePairHash> RemoteHandleEventHandlerMap;
 static std::mutex                  remote_handle_event_handler_map_mutex;
 static RemoteHandleEventHandlerMap remote_handle_event_handler_map;
 
-static int64
-remote_handle_event_handler_add (EventHandlerF handlerf)
+static void
+remote_handle_event_handler_add (uint64 orbid, uint64 iface_hid, EventHandlerF handlerf)
 {
-  static uint64 remote_handle_event_handler_counter = 0x111;
   std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
-  const uint64 id = remote_handle_event_handler_counter++;
-  remote_handle_event_handler_map[id] = handlerf;
-  return id;
+  remote_handle_event_handler_map[{orbid, iface_hid}] = handlerf;
 }
 
 static EventHandlerF
-remote_handle_event_handler_get (int64 id)
+remote_handle_event_handler_get (uint64 orbid, uint64 iface_hid)
 {
+  std::pair<uint64, uint64> key = {orbid, iface_hid};
   std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
-  auto it = remote_handle_event_handler_map.find (id);
+  auto it = remote_handle_event_handler_map.find (key);
   if (it != remote_handle_event_handler_map.end())
     return it->second;
   return NULL;
 }
 
 static void
-remote_handle_event_handler_del (int64 id)
+remote_handle_event_handler_del (uint64 orbid, uint64 iface_hid)
 {
+  std::pair<uint64, uint64> key = {orbid, iface_hid};
   std::lock_guard<std::mutex> locker (remote_handle_event_handler_map_mutex);
-  remote_handle_event_handler_map.erase (id);
+  remote_handle_event_handler_map.erase (key);
 }
 
 // == ImplicitBase <-> RemoteHandle RPC ==
@@ -3574,6 +3585,7 @@ RemoteHandle::__event_detach__ (uint64 arg_connection_id)
   AIDA_ASSERT_RETURN (*this != NULL, false);
   Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
   Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_DETACHID__);
+  remote_handle_event_handler_del (this->__aida_orbid__(), arg_connection_id);
   __p_ <<= int64_t (arg_connection_id);
   fr = __o_.invoke (&__p_);
   Aida::ProtoReader __f_ (*fr);
@@ -3603,6 +3615,10 @@ ImplicitBase____event_detachid__ (Aida::ProtoReader &fbr)
 uint64
 RemoteHandle::__event_detach__ (const std::string &arg_type)
 {
+  AIDA_WARN ("Aida::RemoteHandle::__event_detach__(string): function unimplemented");
+  return false;
+  /* TODO: we need a list of detached connection ids as retval to call remote_handle_event_handler_del
+   */
   Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
   Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_DETACHNS__);
   __p_ <<= arg_type;
@@ -3636,17 +3652,17 @@ RemoteHandle::__event_attach__ (const std::string &arg_typ3, EventHandlerF handl
 {
   AIDA_ASSERT_RETURN (*this != NULL, 0);
   AIDA_ASSERT_RETURN (handler_func != NULL, 0);
-  const int64_t arg_eventhandler = remote_handle_event_handler_add (handler_func);
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_ATTACH__);
+  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (4 + 1), *fr = NULL;
+  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_ATTACH__); // ids needed: 1 message type, 2 hash hi / lo, 1 for self
   __p_ <<= arg_typ3;
-  __p_ <<= arg_eventhandler;
   fr = __o_.invoke (&__p_);
   Aida::ProtoReader __f_ (*fr);
   __f_.skip_header();
   int64_t  retval;
   __f_ >>= retval;
   delete fr;
+  if (retval)
+    remote_handle_event_handler_add (this->__aida_orbid__(), retval, handler_func);
   return retval;
 }
 
@@ -3655,71 +3671,75 @@ ImplicitBase____event_attach__ (Aida::ProtoReader &fbr)
 {
   Aida::ServerConnection *const server_connection = &Aida::ProtoScope::current_server_connection();
   AIDA_ASSERT_RETURN (server_connection != NULL, NULL);
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
+  AIDA_ASSERT_RETURN (fbr.remaining() == 4 + 1, NULL);
   ImplicitBase *self;
   fbr.skip_header();
   self = fbr.pop_instance<ImplicitBase>().get();
   AIDA_ASSERT_RETURN (self != NULL, NULL);
   std::string  arg_type;
   fbr >>= arg_type;
-  int64_t  arg_eventhandler;
-  fbr >>= arg_eventhandler;
+  const uint64 current_event_handler_id = implicit_base_event_handler_next_id;
   // code executed when the attached handler function is deleted
-  auto deleter = [server_connection, arg_eventhandler] (void*) {
-    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1);
+  auto deleter = [self, server_connection, current_event_handler_id] (void*) {
+    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1);
     Aida::ProtoScopeDisconnect __o_ (__p_, *server_connection, AIDA_HASH___EVENT_CALLBACK__);
-    __p_ <<= arg_eventhandler;
+    __p_ <<= self;
+    __p_ <<= current_event_handler_id;
     server_connection->post_peer_msg (&__p_);
-    // FIXME: is this function *really* called?
   };
   auto dtor = std::shared_ptr<void> (NULL, deleter);
   // code executed as attached handler
-  auto handler = [self, arg_eventhandler, server_connection, dtor] (const Event &event) {
+  auto handler = [self, current_event_handler_id, server_connection, dtor] (const Event &event) {
     Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1 + 1);
     Aida::ProtoScopeEmit1Way __o_ (__p_, *server_connection, AIDA_HASH___EVENT_CALLBACK__);
     __p_ <<= self;
-    __p_ <<= arg_eventhandler;
+    __p_ <<= current_event_handler_id;
     Aida::Any arg_event (event.fields());
     __p_ <<= arg_event;
     server_connection->post_peer_msg (&__p_);
   };
   // attach handler to event type
   int64_t rval = self->__event_attach__ (arg_type, handler);
+  const uint64 real_event_handler_id = rval;
   Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___EVENT_ATTACH__);
   rb <<= rval;
+  assert_return (current_event_handler_id == real_event_handler_id, &rb);
   return &rb;
 }
 
 static void
 remote_handle_dispatch_event_discard_handler (Aida::ProtoReader &fbr)
 {
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1); // ::dispath popped msgid
-  const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
-  const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
-  AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
-  int64_t arg_eventhandler;
-  fbr >>= arg_eventhandler;
-  remote_handle_event_handler_del (arg_eventhandler);
-}
-
-static void
-remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1 + 1 + 1); // ::dispath popped msgid
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1 + 1); // ::dispatch popped msgid
   const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
   const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
   AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
   RemoteHandle self = RemoteHandle::__aida_null_handle__();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL);
-  int64_t arg_eventhandler;
-  fbr >>= arg_eventhandler;
+  int64_t iface_hid;
+  fbr >>= iface_hid;
+  remote_handle_event_handler_del (self.__aida_orbid__(), iface_hid);
+}
+
+static void
+remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
+{
+  AIDA_ASSERT_RETURN (fbr.remaining() == 3-1 + 1 + 1 + 1); // ::dispatch popped msgid
+  const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
+  const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
+  AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
+  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  fbr >>= self;
+  AIDA_ASSERT_RETURN (self != NULL);
+  int64_t iface_hid;
+  fbr >>= iface_hid;
   Aida::Any arg_event;
   fbr >>= arg_event;
   Event event (arg_event.get<AnyDict>());
-  EventHandlerF handler_func = remote_handle_event_handler_get (arg_eventhandler);
-  AIDA_ASSERT_RETURN (handler_func != NULL);
-  handler_func (event); // self
+  EventHandlerF handler_func = remote_handle_event_handler_get (self.__aida_orbid__(), iface_hid);
+  if (handler_func) // handler might have been deleted
+    handler_func (event); // self
 }
 
 static const ServerConnection::MethodEntry implicit_base_methods[] = {
