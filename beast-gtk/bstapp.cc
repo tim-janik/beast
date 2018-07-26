@@ -299,10 +299,10 @@ bst_app_destroy (GtkObject *object)
         bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), Bse::ProjectH());
       self->project.deactivate();
       bse_proxy_disconnect (self->project.proxy_id(),
-                            "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
       bse_server.destroy_project (self->project);
+      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
 
@@ -330,9 +330,9 @@ bst_app_finalize (GObject *object)
       //FIXME: self->project.sig_state_changed() -= self->sig_state_changed_id;
       self->sig_state_changed_id = 0;
       bse_proxy_disconnect (self->project.proxy_id(),
-                            "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
+      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
   if (self->ppages)
@@ -356,15 +356,14 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
+  self->treechange_hid = self->project.on ("treechange", [self] (const Aida::Event&) { bst_app_reload_pages (self); });
 #if 0 // FIXME
   self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
     gxk_widget_update_actions (self);
   };
 #endif
-  
+
   bse_proxy_connect (self->project.proxy_id(),
-                     "swapped_signal::item-added", bst_app_reload_pages, self,
-                     "swapped_signal::item-remove", bst_app_reload_pages, self,
                      "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
                      NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project.proxy_id(), "%s");
