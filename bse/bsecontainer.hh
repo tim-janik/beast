@@ -109,6 +109,7 @@ public:
   virtual ItemIfaceP get_item       (const String &item_type, int seq_id) override;
   virtual ItemSeq    list_children  ();
 };
+typedef std::shared_ptr<ContainerImpl> ContainerImplP;
 
 } // Bse
 
