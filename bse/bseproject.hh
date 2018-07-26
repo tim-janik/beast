@@ -71,6 +71,7 @@ namespace Bse {
 
 class ProjectImpl : public ContainerImpl, public virtual ProjectIface {
 protected:
+  virtual void               post_init           () override;
   virtual                   ~ProjectImpl         ();
 public:
   explicit                   ProjectImpl         (BseObject*);
@@ -106,6 +107,7 @@ public:
   virtual MidiNotifierIfaceP get_midi_notifier   () override;
   virtual void               remove_snet         (SNetIface &snet) override;
 };
+typedef std::shared_ptr<ProjectImpl> ProjectImplP;
 
 } // Bse
 
