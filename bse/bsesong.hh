@@ -68,7 +68,8 @@ namespace Bse {
 
 class SongImpl : public SNetImpl, public virtual SongIface {
 protected:
-  virtual            ~SongImpl                ();
+  virtual void              post_init               () override;
+  virtual                  ~SongImpl                ();
 public:
   explicit                  SongImpl                (BseObject*);
   virtual double            bpm                     () const override;
