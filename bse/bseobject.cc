@@ -55,13 +55,26 @@ void
 ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
                         const KV &a4, const KV &a5, const KV &a6, const KV &a7)
 {
+  const char ident_chars[] =
+    "0123456789"
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ":";
   Aida::Event ev (type);
   const KV *args[] = { &a1, &a2, &a3, &a4, &a5, &a6, &a7 };
   for (size_t i = 0; i < sizeof (args) / sizeof (args[0]); i++)
     if (!args[i]->key.empty())
       ev[args[i]->key] = args[i]->value;
   const char *ctype = type.c_str();
+  for (size_t i = 0; ctype[i]; i++)
+    if (!strchr (ident_chars, ctype[i]))
+      {
+        Bse::warning ("invalid characters in Event type: %s", ctype);
+        break;
+      }
   const char *colon = strchr (ctype, ':');
+  if (colon && colon != strrchr (ctype, ':'))
+    Bse::warning ("too many colons in Event type: %s", ctype);
   const size_t type_len = colon && colon[1] ? colon - ctype : 0;
   if (type_len)
     ev["detail"] = &colon[1];
