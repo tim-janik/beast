@@ -433,7 +433,6 @@ typedef std::vector<TypeHash> TypeHashList;
 #define AIDA_HASH___AIDA_SET__          0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL
 #define AIDA_HASH___EVENT_ATTACH__      0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL
 #define AIDA_HASH___EVENT_DETACHID__    0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL
-#define AIDA_HASH___EVENT_DETACHNS__    0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL
 #define AIDA_HASH___EVENT_CALLBACK__    0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL
 
 
@@ -554,7 +553,6 @@ public:
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
-  uint64                  __event_detach__     (const String &type);
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
   bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }
@@ -790,10 +788,21 @@ public:
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
   uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
-  uint64                      __event_detach__    (const String &type);                                 //: AIDAID __event_detachns__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
 };
 
+// == ==
+struct KeyValue {
+  std::string key;
+  Any         value;
+};
+namespace KeyValueArgs {
+struct KeyValueConstructor {
+  std::string key;
+  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
+};
+inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
+};
 
 // == ProtoMsg ==
 union ProtoUnion {

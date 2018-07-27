@@ -21,6 +21,9 @@ public:
   virtual void           uname      (const std::string &newname);
   virtual void           notify     (const String &detail) override;
   virtual int64_t        proxy_id   () override;
+  typedef Aida::KeyValue KV;
+  void  emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
+                    const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
 };
 typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 

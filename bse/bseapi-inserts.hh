@@ -6,14 +6,21 @@ struct DUMMY { // dummy class for auto indentation
 
 handle_scope:Object:
   uint64_t      on       (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->RemoteHandle::__event_attach__ (type, handler); }
-  bool          off      (uint64_t connection_id)                                   { return this->RemoteHandle::__event_detach__ (connection_id); }
-  uint64_t      off      (const ::std::string &type)                                { return this->RemoteHandle::__event_detach__ (type); }
+  void          off      (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
+  void          off      (uint64_t connection_id)
+  {
+    if (connection_id && !this->RemoteHandle::__event_detach__ (connection_id))
+      Bse::warning ("Bse::Object.off(): unknown handler id: %u", connection_id);
+  }
 
 interface_scope:Object:
   uint64_t      on       (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
-  bool          off      (uint64_t connection_id)                                   { return this->ImplicitBase::__event_detach__ (connection_id); }
-  uint64_t      off      (const ::std::string &type)                                { return this->ImplicitBase::__event_detach__ (type); }
-  void          trigger  (const ::Aida::Event &event)                               { return this->ImplicitBase::__event_emit__ (event); }
+  void          off      (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
+  void          off      (uint64_t connection_id)
+  {
+    if (connection_id && !this->ImplicitBase::__event_detach__ (connection_id))
+      Bse::warning ("Bse::ObjectIface.off(): unknown handler id: %u", connection_id);
+  }
   // as<BseObjectPtr>()
   template<class BseObjectPtr, typename ::std::enable_if<std::is_pointer<BseObjectPtr>::value, bool>::type = true>
   BseObjectPtr           as ()
