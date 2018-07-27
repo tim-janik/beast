@@ -58,32 +58,30 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
   const char ident_chars[] =
     "0123456789"
     "abcdefghijklmnopqrstuvwxyz"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    ":";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const char *const ctype = type.c_str(), *const colon = strchr (ctype, ':');
+  const String name = colon ? type.substr (0, colon - ctype) : type;
+  const String detail = colon ? type.substr (colon - ctype + 1) : "";
+  for (size_t i = 0; name[i]; i++)
+    if (!strchr (ident_chars, name[i]))
+      {
+        Bse::warning ("invalid characters in Event type: %s", type);
+        break;
+      }
+  for (size_t i = 0; detail[i]; i++)
+    if (!strchr (ident_chars, detail[i]))
+      {
+        Bse::warning ("invalid characters in Event type: %s", type);
+        break;
+      }
   Aida::Event ev (type);
   const KV *args[] = { &a1, &a2, &a3, &a4, &a5, &a6, &a7 };
   for (size_t i = 0; i < sizeof (args) / sizeof (args[0]); i++)
     if (!args[i]->key.empty())
       ev[args[i]->key] = args[i]->value;
-  const char *ctype = type.c_str();
-  for (size_t i = 0; ctype[i]; i++)
-    if (!strchr (ident_chars, ctype[i]))
-      {
-        Bse::warning ("invalid characters in Event type: %s", ctype);
-        break;
-      }
-  const char *colon = strchr (ctype, ':');
-  if (colon && colon != strrchr (ctype, ':'))
-    Bse::warning ("too many colons in Event type: %s", ctype);
-  const size_t type_len = colon && colon[1] ? colon - ctype : 0;
-  if (type_len)
-    ev["detail"] = &colon[1];
-  trigger (ev);         // emits "notify:detail"
-  if (type_len)
-    {
-      ev["type"] = type.substr (0, type_len);
-      trigger (ev);     // emits "notify"
-    }
+  ev["name"] = name;
+  ev["detail"] = detail;
+  __event_emit__ (ev);          // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
   // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
 }
 
