@@ -1008,9 +1008,8 @@ ServerImpl::~ServerImpl ()
 void
 ServerImpl::enginechange (bool active)
 {
-  Aida::Event ev ("enginechange");
-  ev["active"] = active;
-  trigger (ev);                 // emit "enginechange"
+  using namespace Aida::KeyValueArgs;
+  emit_event ("enginechange", "active"_v = active);
 }
 
 bool
