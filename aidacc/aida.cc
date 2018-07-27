@@ -924,7 +924,7 @@ class ImplicitBaseExtra {
 public:
   explicit           ImplicitBaseExtra () = default;
   struct Handler {
-    StringVector  names;                        // event type + optional list of namespaces
+    String        type;                         // event type name
     EventHandlerF handler;
     int64         id = 0;
   };
@@ -960,8 +960,7 @@ static uint64 implicit_base_event_handler_next_id = 0xe000000 + 1; // see: BSE_S
 uint64
 ImplicitBase::__event_attach__ (const String &type, EventHandlerF handler)
 {
-  StringVector words = string_split_any (type, ".");
-  if (words.size() < 1 || words[0].empty() || !handler)
+  if (type.empty() || !handler)
     return 0;
   std::lock_guard<std::mutex> locker (implicit_base_extras_mutex_);
   ImplicitBaseExtra *extra = implicit_base_extras_[this];
@@ -982,7 +981,7 @@ ImplicitBase::__event_attach__ (const String &type, EventHandlerF handler)
   extra->handlers.resize (extra->handlers.size() + 1);
   ImplicitBaseExtra::Handler &next = extra->handlers.back();
   next.id = implicit_base_event_handler_next_id++;
-  next.names = std::move (words);
+  next.type = type;
   next.handler = handler;
   return next.id;
 }
@@ -997,7 +996,7 @@ ImplicitBase::__event_detach__ (int64 connection_id)
     for (auto hit = it->second->handlers.begin(); hit != it->second->handlers.end(); ++hit)
       if (hit->id == connection_id)
         {
-          hit->names.clear();
+          hit->type.clear();
           hit->handler = NULL;
           hit->id = 0;
           if (it->second->signal_emissions)
@@ -1009,70 +1008,13 @@ ImplicitBase::__event_detach__ (int64 connection_id)
   return false;
 }
 
-static inline bool
-matches_event_namespace (const String &namespace_, const StringVector event_names)
-{
-  for (size_t i = 1; i < event_names.size(); i++) // skip event_names[0] which is not a namespace
-    if (namespace_ == event_names[i])
-      return true;
-  return false;
-}
-
-/// Detach all handlers from an event @a type, possibly using namespaces.
-uint64
-ImplicitBase::__event_detach__ (const String &type)
-{
-  // https://api.jquery.com/event.namespace/
-  StringVector words = string_split_any (type, ".");
-  if (words.size() < 1)
-    return 0;
-  std::lock_guard<std::mutex> locker (implicit_base_extras_mutex_);
-  ImplicitBaseExtraMap::iterator it = implicit_base_extras_.find (this);
-  if (it == implicit_base_extras_.end())
-    return 0;
-  uint64 removed = 0;
-  for (auto hit = it->second->handlers.begin(); hit != it->second->handlers.end(); ++hit)
-    if (hit->names.size() && (words[0].empty() ||         // no signal type given, just namespaces
-                              words[0] == hit->names[0])) // signal type matches
-      {
-        bool remove_handler = true;
-        for (size_t i = 1; i < words.size(); i++)         // check *all* namespaces
-          if (!matches_event_namespace (words[i], hit->names))
-            {
-              remove_handler = false;
-              break;
-            }
-        if (!remove_handler)
-          continue;
-        hit->names.clear();
-        hit->handler = NULL;
-        hit->id = 0;
-        it->second->empty_handlers++;
-        removed++;
-      }
-  return removed;
-}
-
-static inline bool
-match_namespaced_event_type (const String &type, const String &namespace_, const StringVector &names)
-{
-  // https://api.jquery.com/event.namespace/
-  if (names.size() < 1 || type != names[0])
-    return false;
-  if (namespace_.empty())
-    return true;
-  for (size_t i = 1; i < names.size(); i++)
-    if (names[i] == namespace_)
-      return true;
-  return false;
-}
-
 /// Dispatch @a event by calling all handlers associated with the event type (and its namespace).
 void
 ImplicitBase::__event_emit__ (const Event &event)
 {
   const String type = event["type"].get<String>();
-  const String namespace_ = event["namespace"].get<String>();
+  const char *const ctype = type.c_str(), *const colon = strchr (ctype, ':');
+  const String plain_type = colon ? type.substr (0, colon - ctype) : type;
   if (type.empty())
     return;
   std::unique_lock<std::mutex> locker (implicit_base_extras_mutex_);
@@ -1087,12 +1029,13 @@ ImplicitBase::__event_emit__ (const Event &event)
   while (pos < extra->handlers.size())
     {
       const ImplicitBaseExtra::Handler &h = extra->handlers[pos++];
-      if (h.id == 0 || !match_namespaced_event_type (type, namespace_, h.names))
-        continue;
-      EventHandlerF func = h.handler;
-      locker.unlock();
-      func (event);
-      locker.lock();
+      if (h.id != 0 && (type == h.type || plain_type == h.type))
+        {
+          EventHandlerF func = h.handler;
+          locker.unlock();
+          func (event);
+          locker.lock();
+        }
     }
   extra->signal_emissions--;
 }
@@ -3613,41 +3556,6 @@ ImplicitBase____event_detachid__ (Aida::ProtoReader &fbr)
 }
 
 uint64
-RemoteHandle::__event_detach__ (const std::string &arg_type)
-{
-  AIDA_WARN ("Aida::RemoteHandle::__event_detach__(string): function unimplemented");
-  return false;
-  /* TODO: we need a list of detached connection ids as retval to call remote_handle_event_handler_del
-   */
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, AIDA_HASH___EVENT_DETACHNS__);
-  __p_ <<= arg_type;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int64_t  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
-}
-
-static Aida::ProtoMsg*
-ImplicitBase____event_detachns__ (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  ImplicitBase *self;
-  fbr.skip_header();
-  self = fbr.pop_instance<ImplicitBase>().get();
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_type;
-  fbr >>= arg_type;
-  int64_t rval = self->__event_detach__ (arg_type);
-  Aida::ProtoMsg &rb = *ProtoMsg::renew_into_result (fbr, MSGID_CALL_RESULT, AIDA_HASH___EVENT_DETACHNS__);
-  rb <<= rval;
-  return &rb;
-}
-
-uint64
 RemoteHandle::__event_attach__ (const std::string &arg_typ3, EventHandlerF handler_func)
 {
   AIDA_ASSERT_RETURN (*this != NULL, 0);
@@ -3751,7 +3659,6 @@ static const ServerConnection::MethodEntry implicit_base_methods[] = {
   { AIDA_HASH___AIDA_SET__,             ImplicitBase____aida_set__, },
   { AIDA_HASH___EVENT_ATTACH__,         ImplicitBase____event_attach__, },
   { AIDA_HASH___EVENT_DETACHID__,       ImplicitBase____event_detachid__, },
-  { AIDA_HASH___EVENT_DETACHNS__,       ImplicitBase____event_detachns__, },
 };
 static ServerConnection::MethodRegistry implicit_base_method_registry (implicit_base_methods);
 
