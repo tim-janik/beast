@@ -33,9 +33,10 @@ namespace Bse {
 
 class MidiSynthImpl : public SNetImpl, public virtual MidiSynthIface {
 protected:
-  virtual  ~MidiSynthImpl ();
+  virtual     ~MidiSynthImpl  ();
+  virtual void post_init      () override;
 public:
-  explicit  MidiSynthImpl (BseObject*);
+  explicit     MidiSynthImpl  (BseObject*);
 };
 
 } // Bse

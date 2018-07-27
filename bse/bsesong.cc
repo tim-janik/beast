@@ -549,8 +549,6 @@ bse_song_set_solo_bus (BseSong        *self,
 static void
 bse_song_init (BseSong *self)
 {
-  BseSNet *snet = BSE_SNET (self);
-
   bse_item_set (self, "uname", _("Song"), NULL);
 
   Bse::SongTiming timing;
@@ -578,21 +576,6 @@ bse_song_init (BseSong *self)
   self->loop_enabled_SL = 0;
   self->loop_left_SL = -1;
   self->loop_right_SL = -1;
-
-  /* post processing slot */
-  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
-  bse_snet_intern_child (snet, self->postprocess);
-  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-
-  /* output */
-  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
-  bse_snet_intern_child (snet, self->output);
-
-  /* postprocess <-> output */
-  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
-			     self->postprocess, 0);
-  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
-			     self->postprocess, 1);
 }
 
 static const gchar*
@@ -765,6 +748,27 @@ namespace Bse {
 SongImpl::SongImpl (BseObject *bobj) :
   SNetImpl (bobj)
 {}
+
+void
+SongImpl::post_init()
+{
+  this->SNetImpl::post_init(); // must chain
+  BseSong *self = as<BseSong*>();
+  /* post processing slot */
+  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
+  bse_snet_intern_child (self, self->postprocess);
+  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
+
+  /* output */
+  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  bse_snet_intern_child (self, self->output);
+
+  /* postprocess <-> output */
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
+			     self->postprocess, 0);
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
+			     self->postprocess, 1);
+}
 
 SongImpl::~SongImpl ()
 {}

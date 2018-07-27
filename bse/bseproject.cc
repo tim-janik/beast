@@ -178,16 +178,6 @@ bse_project_init (BseProject *self,
   self->deactivate_usecs = 3 * 1000000;
   self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
   bse_midi_receiver_enter_farm (self->midi_receiver);
-  /* we always have a wave-repo */
-  BseWaveRepo *wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
-                                                               "uname", "Wave-Repository",
-                                                               NULL);
-  BseSoundFontRepo *sfrepo = (BseSoundFontRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SOUND_FONT_REPO,
-                                                                          "uname", "Sound-Font-Repository",
-                                                                          NULL);
-  /* with fixed uname */
-  BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
-  BSE_OBJECT_SET_FLAGS (sfrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
 static void
@@ -952,6 +942,23 @@ namespace Bse {
 ProjectImpl::ProjectImpl (BseObject *bobj) :
   ContainerImpl (bobj)
 {}
+
+void
+ProjectImpl::post_init()
+{
+  this->ContainerImpl::post_init(); // must chain
+  BseProject *self = as<BseProject*>();
+  /* we always have a wave-repo */
+  BseWaveRepo *wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
+                                                               "uname", "Wave-Repository",
+                                                               NULL);
+  BseSoundFontRepo *sfrepo = (BseSoundFontRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SOUND_FONT_REPO,
+                                                                          "uname", "Sound-Font-Repository",
+                                                                          NULL);
+  /* with fixed uname */
+  BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
+  BSE_OBJECT_SET_FLAGS (sfrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
+}
 
 ProjectImpl::~ProjectImpl ()
 {}

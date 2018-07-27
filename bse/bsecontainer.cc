@@ -252,7 +252,10 @@ bse_container_add_item (BseContainer *container,
 
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
   if (item->parent != NULL)
-    g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
+    {
+      g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
+      container->as<Bse::ContainerImplP>()->emit_event ("treechange:additem");
+    }
 
   g_object_thaw_notify (G_OBJECT (item));
   g_object_thaw_notify (G_OBJECT (container));
@@ -349,7 +352,10 @@ bse_container_remove_item (BseContainer *container,
   g_object_freeze_notify (G_OBJECT (container));
   g_object_freeze_notify (G_OBJECT (item));
   if (!finalizing_container)
-    g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVE], 0, item, seqid);
+    {
+      container->as<Bse::ContainerImplP>()->emit_event ("treechange:removeitem");
+      g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVE], 0, item, seqid);
+    }
   BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
   g_object_thaw_notify (G_OBJECT (item));
   g_object_thaw_notify (G_OBJECT (container));

@@ -83,8 +83,6 @@ BSE_BUILTIN_TYPE (BseMidiSynth)
 static void
 bse_midi_synth_init (BseMidiSynth *self)
 {
-  BseSNet *snet = BSE_SNET (self);
-
   bse_item_set (self, "uname", _("Midi-Synth"), NULL);
 
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
@@ -92,77 +90,6 @@ bse_midi_synth_init (BseMidiSynth *self)
   self->midi_channel_id = 1;
   self->n_voices = 16;
   self->volume_factor = bse_db_to_factor (0);
-
-  /* midi voice modules */
-  self->voice_input = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
-  bse_snet_intern_child (snet, self->voice_input);
-  self->voice_switch = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
-  bse_snet_intern_child (snet, self->voice_switch);
-  bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
-
-  /* context merger */
-  self->context_merger = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
-  bse_snet_intern_child (snet, self->context_merger);
-
-  /* midi voice switch <-> context merger */
-  bse_source_must_set_input (self->context_merger, 0,
-                             self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_LEFT);
-  bse_source_must_set_input (self->context_merger, 1,
-                             self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
-
-  /* post processing slot */
-  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
-  bse_snet_intern_child (snet, self->postprocess);
-  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-
-  /* context merger <-> postprocess */
-  bse_source_must_set_input (self->postprocess, 0,
-                             self->context_merger, 0);
-  bse_source_must_set_input (self->postprocess, 1,
-                             self->context_merger, 1);
-
-  /* output */
-  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
-  bse_snet_intern_child (snet, self->output);
-
-  /* postprocess <-> output */
-  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
-                             self->postprocess, 0);
-  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
-                             self->postprocess, 1);
-
-  /* sub synth */
-  self->sub_synth = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
-                                                          "in_port_1", "frequency",
-                                                          "in_port_2", "gate",
-                                                          "in_port_3", "velocity",
-                                                          "in_port_4", "aftertouch",
-                                                          "out_port_1", "left-audio",
-                                                          "out_port_2", "right-audio",
-                                                          "out_port_3", "unused",
-                                                          "out_port_4", "synth-done",
-                                                          NULL);
-  bse_snet_intern_child (snet, self->sub_synth);
-
-  /* voice input <-> sub-synth */
-  bse_source_must_set_input (self->sub_synth, 0,
-                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
-  bse_source_must_set_input (self->sub_synth, 1,
-                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
-  bse_source_must_set_input (self->sub_synth, 2,
-                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
-  bse_source_must_set_input (self->sub_synth, 3,
-                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
-
-  /* sub-synth <-> voice switch */
-  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT,
-                             self->sub_synth, 0);
-  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT,
-                             self->sub_synth, 1);
-  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
-                             self->sub_synth, 3);
-
-  bse_misi_synth_update_midi_channel (self);
 }
 
 static void
@@ -465,6 +392,83 @@ namespace Bse {
 MidiSynthImpl::MidiSynthImpl (BseObject *bobj) :
   SNetImpl (bobj)
 {}
+
+void
+MidiSynthImpl::post_init()
+{
+  this->SNetImpl::post_init(); // must chain
+  BseMidiSynth *self = as<BseMidiSynth*>();
+  /* midi voice modules */
+  self->voice_input = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
+  bse_snet_intern_child (self, self->voice_input);
+  self->voice_switch = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
+  bse_snet_intern_child (self, self->voice_switch);
+  bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
+
+  /* context merger */
+  self->context_merger = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  bse_snet_intern_child (self, self->context_merger);
+
+  /* midi voice switch <-> context merger */
+  bse_source_must_set_input (self->context_merger, 0,
+                             self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_LEFT);
+  bse_source_must_set_input (self->context_merger, 1,
+                             self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
+
+  /* post processing slot */
+  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
+  bse_snet_intern_child (self, self->postprocess);
+  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
+
+  /* context merger <-> postprocess */
+  bse_source_must_set_input (self->postprocess, 0,
+                             self->context_merger, 0);
+  bse_source_must_set_input (self->postprocess, 1,
+                             self->context_merger, 1);
+
+  /* output */
+  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  bse_snet_intern_child (self, self->output);
+
+  /* postprocess <-> output */
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
+                             self->postprocess, 0);
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
+                             self->postprocess, 1);
+
+  /* sub synth */
+  self->sub_synth = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
+                                                          "in_port_1", "frequency",
+                                                          "in_port_2", "gate",
+                                                          "in_port_3", "velocity",
+                                                          "in_port_4", "aftertouch",
+                                                          "out_port_1", "left-audio",
+                                                          "out_port_2", "right-audio",
+                                                          "out_port_3", "unused",
+                                                          "out_port_4", "synth-done",
+                                                          NULL);
+  bse_snet_intern_child (self, self->sub_synth);
+
+  /* voice input <-> sub-synth */
+  bse_source_must_set_input (self->sub_synth, 0,
+                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
+  bse_source_must_set_input (self->sub_synth, 1,
+                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
+  bse_source_must_set_input (self->sub_synth, 2,
+                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
+  bse_source_must_set_input (self->sub_synth, 3,
+                             self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
+
+  /* sub-synth <-> voice switch */
+  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT,
+                             self->sub_synth, 0);
+  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT,
+                             self->sub_synth, 1);
+  bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
+                             self->sub_synth, 3);
+
+  bse_misi_synth_update_midi_channel (self);
+}
 
 MidiSynthImpl::~MidiSynthImpl ()
 {}

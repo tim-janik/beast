@@ -9,6 +9,8 @@ namespace Bse {
 
 class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
   BseObject             *gobject_;
+protected:
+  virtual void           post_init  ();
 public:
   explicit               ObjectImpl (BseObject*);
   virtual               ~ObjectImpl ();

@@ -13,6 +13,9 @@
 #define CHECK_LDEBUG()  Bse::debug_key_enabled ("leaks")
 
 namespace Bse {
+
+static void (ObjectImpl::*object_impl_post_init) () = NULL;
+
 ObjectImpl::ObjectImpl (BseObject *bobj) :
   gobject_ (bobj)
 {
@@ -20,6 +23,14 @@ ObjectImpl::ObjectImpl (BseObject *bobj) :
   assert_return (gobject_->cxxobject_ == NULL);
   g_object_ref (gobject_);
   gobject_->cxxobject_ = this;
+  if (BSE_UNLIKELY (!object_impl_post_init))
+    object_impl_post_init = &ObjectImpl::post_init;
+}
+
+void
+ObjectImpl::post_init ()
+{
+  // this->BasetypeImpl::post_init(); // must chain
 }
 
 ObjectImpl::~ObjectImpl ()
@@ -1051,5 +1062,6 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
   assert_return (cxxo == *object, NULL);
   assert_return (object == *cxxo, NULL);
+  (cxxo->*Bse::object_impl_post_init) ();
   return object;
 }
