@@ -14,7 +14,6 @@ handle_scope:Object:
   }
 
 interface_scope:Object:
-  void          trigger  (const ::Aida::Event &event)                               { return this->ImplicitBase::__event_emit__ (event); }
   uint64_t      on       (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
   void          off      (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
   void          off      (uint64_t connection_id)
