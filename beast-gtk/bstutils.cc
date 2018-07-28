@@ -281,63 +281,37 @@ bst_gui_error_bell (gpointer widget)
     }
 }
 
-typedef struct {
-  GtkWindow *window;
-  SfiProxy   proxy;
-  gchar     *title1;
-  gchar     *title2;
-} TitleSync;
-
-static void
-sync_title (TitleSync *tsync)
-{
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (tsync->proxy));
-  const String name = item.get_name();
-  gchar *s = g_strconcat (tsync->title1, name.c_str(), tsync->title2, NULL);
-  g_object_set (tsync->window, "title", s, NULL);
-  g_free (s);
-}
-
-static void
-free_title_sync (gpointer data)
-{
-  TitleSync *tsync = (TitleSync*) data;
-
-  bse_proxy_disconnect (tsync->proxy,
-                        "any_signal", sync_title, tsync,
-                        NULL);
-  g_free (tsync->title1);
-  g_free (tsync->title2);
-  g_free (tsync);
-}
-
 void
 bst_window_sync_title_to_proxy (gpointer     window,
                                 SfiProxy     proxy,
                                 const gchar *title_format)
 {
-  const char *p;
-
   assert_return (GTK_IS_WINDOW (window));
   if (proxy)
     {
       assert_return (BSE_IS_ITEM (proxy));
       assert_return (title_format != NULL);
-      /* assert_return (strstr (title_format, "%s") != NULL); */
     }
-  p = title_format ? strstr (title_format, "%s") : NULL;
-  if (proxy && p)
+  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  if (item)
     {
-      TitleSync *tsync = g_new0 (TitleSync, 1);
-      tsync->window = (GtkWindow*) window;
-      tsync->proxy = proxy;
-      tsync->title1 = g_strndup (title_format, p - title_format);
-      tsync->title2 = g_strdup (p + 2);
-      bse_proxy_connect (tsync->proxy,
-                         "swapped_signal::property-notify::uname", sync_title, tsync,
-                         NULL);
-      g_object_set_data_full ((GObject*) window, "bst-title-sync", tsync, free_title_sync);
-      sync_title (tsync);
+      const char *const p = title_format ? strstr (title_format, "%s") : NULL;
+      const std::string t1 = p ? std::string (title_format, p - title_format) : title_format;
+      const std::string t2 = p ? p + 2 : "";
+      auto setter = [t1, t2, item, window] () {
+        Bse::ItemH itemh = item;
+        const String name = itemh.get_name_or_type();
+        const std::string title = t1 + name + t2;
+        g_object_set (window, "title", title.c_str(), NULL);
+      };
+      const uint64 hid = item.on ("notify:uname", [setter] (const Aida::Event&) { setter(); });
+      typedef std::pair<Bse::ItemH, ptrdiff_t> HandlerDeleter;
+      g_object_set_data_full ((GObject*) window, "bst-title-sync", new HandlerDeleter (item, hid), [] (void *data) {
+          HandlerDeleter *d = (HandlerDeleter*) data;
+          d->first.off (d->second);
+          delete d;
+        });
+      setter();
     }
   else
     {
