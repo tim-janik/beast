@@ -145,6 +145,28 @@ add_frame_handler (const std::function<void()> &func)
   return add_frame_handler (lambda);
 }
 
+void
+scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::Aida::EventHandlerF handler)
+{
+  assert_return (remote_handle && *remote_handle);
+  const uint64 hid = remote_handle->__event_attach__ (type, handler);
+  if (hid)
+    remote_handle->__on_handle_delete__ ([remote_handle, hid] () {
+        remote_handle->__event_detach__ (hid);
+      });
+}
+
+void
+scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::std::function<void()> vfunc)
+{
+  assert_return (remote_handle && *remote_handle);
+  const uint64 hid = remote_handle->__event_attach__ (type, [vfunc] (const Aida::Event&) { vfunc(); });
+  if (hid)
+    remote_handle->__on_handle_delete__ ([remote_handle, hid] () {
+        remote_handle->__event_detach__ (hid);
+      });
+}
+
 } // Bst
 
 /* --- variables --- */
