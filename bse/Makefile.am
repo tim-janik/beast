@@ -18,89 +18,247 @@ AIDACC        = $(topdir)/aidacc/aidacc
 #
 # BSE public header files
 bse_public_headers = $(strip \
-	gsldefs.hh \
-	gslfft.hh		gsloscillator.hh	gsldatahandle.hh	gslwavechunk.hh \
-	gslfilter.hh		gslcommon.hh \
-	gsldatahandle-vorbis.hh	gslvorbis-enc.hh	gsldatacache.hh	gslvorbis-cutter.hh \
-	gsldatahandle-mad.hh	           	gslfilehash.hh	gsldatautils.hh	\
-	gslwaveosc.hh		gslosctable.hh	gslmagic.hh	\
-	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
-	bsestartup.hh		\
-	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
-	bsebus.hh		bsecategories.hh 	\
-	bsefilter.hh    		bsebiquadfilter.hh	\
-	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-							effectbase.hh			\
-				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
-	bseglobals.hh		bseglue.hh		bseitem.hh			\
-	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
-	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
-	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
-	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
-	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			\
-	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
-				bseproject.hh						bseserver.hh \
-	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
-	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
-	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
-        bsesoundfont.hh         bsesoundfontpreset.hh   bsesoundfontosc.hh              bsesoundfontrepo.hh \
-	bsesubsynth.hh		bsesuper.hh		bsetrack.hh			bsetype.hh \
-	bseutils.hh		bsemidivoice.hh		bsewave.hh			bsewaveosc.hh \
-	bsecsynth.hh		bsewaverepo.hh		bseladspamodule.hh		bsepcmwriter.hh \
-	bsecompat.hh		bseundostack.hh		bsemidiinput.hh			bsemididecoder.hh \
-	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
-	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
-	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
-	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
-	bseenginenode.hh	\
-	bseengineprivate.hh	\
-	bseieee754.hh		\
-	bseincluder.hh		\
-	ladspa.hh		\
-	memory.hh		\
-	monitor.hh		\
-	testobject.hh		\
+	bse.hh				\
+	bsebiquadfilter.hh		\
+	bseblockutils.hh		\
+	bsebus.hh			\
+	bsecategories.hh		\
+	bsecompat.hh			\
+	bseconfig.h			\
+	bseconstant.hh			\
+	bseconstvalues.hh		\
+	bsecontainer.hh			\
+	bsecontextmerger.hh		\
+	bsecsynth.hh			\
+	bsecxxarg.hh			\
+	bsecxxbase.hh			\
+	bsecxxclosure.hh		\
+	bsecxxmodule.hh			\
+	bsecxxplugin.hh			\
+	bsecxxutils.hh			\
+	bsecxxvalue.hh			\
+	bsedatahandle-flac.hh		\
+	bsedefs.hh			\
+	bsedevice.hh			\
+	bseeditablesample.hh		\
+	bseengine.hh			\
+	bseenginemaster.hh		\
+	bseenginenode.hh		\
+	bseengineprivate.hh		\
+	bseengineschedule.hh		\
+	bseengineutils.hh		\
+	bseenums.hh			\
+	bseexports.hh			\
+	bsefilter.hh			\
+	bsegconfig.hh			\
+	bsegenclosures.hh		\
+	bseglobals.hh			\
+	bseglue.hh			\
+	bseieee754.hh			\
+	bseincluder.hh			\
+	bseinstrumentinput.hh		\
+	bseinstrumentoutput.hh		\
+	bseitem.hh			\
+	bseladspa.hh			\
+	bseladspamodule.hh		\
+	bseloader.hh			\
+	bsemain.hh			\
+	bsemath.hh			\
+	bsemathsignal.hh		\
+	bsemidicontroller.hh		\
+	bsemididecoder.hh		\
+	bsemididevice-null.hh		\
+	bsemididevice-oss.hh		\
+	bsemididevice.hh		\
+	bsemidievent.hh			\
+	bsemidifile.hh			\
+	bsemidiinput.hh			\
+	bsemidinotifier.hh		\
+	bsemidireceiver.hh		\
+	bsemidisynth.hh			\
+	bsemidivoice.hh			\
+	bsenote.hh			\
+	bseobject.hh			\
+	bseparam.hh			\
+	bsepart.hh			\
+	bsepcmdevice-null.hh		\
+	bsepcmdevice-oss.hh		\
+	bsepcmdevice.hh			\
+	bsepcminput.hh			\
+	bsepcmoutput.hh			\
+	bsepcmwriter.hh			\
+	bseplugin.hh			\
+	bseproject.hh			\
+	bseresampler.hh			\
+	bseresamplerimpl.hh		\
+	bsesequencer.hh			\
+	bseserver.hh			\
+	bsesnet.hh			\
+	bsesnooper.hh			\
+	bsesong.hh			\
+	bsesoundfont.hh			\
+	bsesoundfontosc.hh		\
+	bsesoundfontpreset.hh		\
+	bsesoundfontrepo.hh		\
+	bsesource.hh			\
+	bsestandardosc.hh		\
+	bsestandardsynths.hh		\
+	bsestartup.hh			\
+	bsestorage.hh			\
+	bsesubiport.hh			\
+	bsesuboport.hh			\
+	bsesubsynth.hh			\
+	bsesuper.hh			\
+	bsetrack.hh			\
+	bsetype.hh			\
+	bseundostack.hh			\
+	bseutils.hh			\
+	bsewave.hh			\
+	bsewaveosc.hh			\
+	bsewaverepo.hh			\
+	effectbase.hh			\
+	gslcommon.hh			\
+	gsldatacache.hh			\
+	gsldatahandle-mad.hh		\
+	gsldatahandle-vorbis.hh		\
+	gsldatahandle.hh		\
+	gsldatautils.hh			\
+	gsldefs.hh			\
+	gslfft.hh			\
+	gslfilehash.hh			\
+	gslfilter.hh			\
+	gslmagic.hh			\
+	gsloscillator.hh		\
+	gslosctable.hh			\
+	gslvorbis-cutter.hh		\
+	gslvorbis-enc.hh		\
+	gslwavechunk.hh			\
+	gslwaveosc.hh			\
+	ladspa.hh			\
+	memory.hh			\
+	monitor.hh			\
+	testobject.hh			\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-				gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
-	gslfilter.cc		gslcommon.cc \
-	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
-	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
-	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
-	bsestartup.cc		\
-	bseengine.cc		bseenginemaster.cc	bseengineschedule.cc		bseengineutils.cc \
-	bsebus.cc		bsecategories.cc 	\
-	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
-	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
-				bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
-	bseglobals.cc		bseglue.cc		bseitem.cc			\
-	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
-	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
-	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \
-	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
-	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			\
-	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
-				bseproject.cc						bseserver.cc \
-	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
-	bsesoundfontrepo.cc	bsesoundfont.cc		bsesoundfontpreset.cc		bsesoundfontosc.cc \
-	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
-	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
-	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
-	bseutils.cc		bsemidivoice.cc		bsewave.cc			bsewaveosc.cc \
-	bsecsynth.cc		bsewaverepo.cc		bseladspamodule.cc		bsepcmwriter.cc \
-	bsecompat.cc		bseundostack.cc		bsemidiinput.cc			bsemididecoder.cc \
-	bsenote.cc		bsemidifile.cc		bseblockutils.cc		\
-	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
-	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
-	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
-	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
-	bsebusmodule.cc		\
-	bsebasics.cc		\
-	memory.cc		\
-	monitor.cc		\
-	testobject.cc		\
+	bsebasics.cc			\
+	bsebiquadfilter.cc		\
+	bseblockutils.cc		\
+	bsebus.cc			\
+	bsebusmodule.cc			\
+	bsecategories.cc		\
+	bsecompat.cc			\
+	bseconstant.cc			\
+	bseconstvalues.cc		\
+	bsecontainer.cc			\
+	bsecontextmerger.cc		\
+	bsecsynth.cc			\
+	bsecxxarg.cc			\
+	bsecxxbase.cc			\
+	bsecxxclosure.cc		\
+	bsecxxmodule.cc			\
+	bsecxxplugin.cc			\
+	bsecxxutils.cc			\
+	bsecxxvalue.cc			\
+	bsedatahandle-fir.cc		\
+	bsedatahandle-flac.cc		\
+	bsedatahandle-resample.cc	\
+	bsedevice.cc			\
+	bseeditablesample.cc		\
+	bseengine.cc			\
+	bseenginemaster.cc		\
+	bseengineschedule.cc		\
+	bseengineutils.cc		\
+	bseenums.cc			\
+	bsefilter-ellf.cc		\
+	bsefilter.cc			\
+	bsegconfig.cc			\
+	bseglobals.cc			\
+	bseglue.cc			\
+	bseinstrumentinput.cc		\
+	bseinstrumentoutput.cc		\
+	bseitem.cc			\
+	bseladspa.cc			\
+	bseladspamodule.cc		\
+	bseloader-aiff.cc		\
+	bseloader-bsewave.cc		\
+	bseloader-flac.cc		\
+	bseloader-guspatch.cc		\
+	bseloader-mad.cc		\
+	bseloader-oggvorbis.cc		\
+	bseloader-wav.cc		\
+	bseloader.cc			\
+	bsemain.cc			\
+	bsemath.cc			\
+	bsemathsignal.cc		\
+	bsemidicontroller.cc		\
+	bsemididecoder.cc		\
+	bsemididevice-null.cc		\
+	bsemididevice-oss.cc		\
+	bsemididevice.cc		\
+	bsemidievent.cc			\
+	bsemidifile.cc			\
+	bsemidiinput.cc			\
+	bsemidinotifier.cc		\
+	bsemidireceiver.cc		\
+	bsemidisynth.cc			\
+	bsemidivoice.cc			\
+	bsenote.cc			\
+	bseobject.cc			\
+	bseparam.cc			\
+	bsepart.cc			\
+	bsepcmdevice-null.cc		\
+	bsepcmdevice-oss.cc		\
+	bsepcmdevice.cc			\
+	bsepcminput.cc			\
+	bsepcmoutput.cc			\
+	bsepcmwriter.cc			\
+	bseplugin.cc			\
+	bseproject.cc			\
+	bseresampler.cc			\
+	bsesequencer.cc			\
+	bseserver.cc			\
+	bsesnet.cc			\
+	bsesnooper.cc			\
+	bsesong.cc			\
+	bsesoundfont.cc			\
+	bsesoundfontosc.cc		\
+	bsesoundfontpreset.cc		\
+	bsesoundfontrepo.cc		\
+	bsesource.cc			\
+	bsestandardosc.cc		\
+	bsestandardsynths.cc		\
+	bsestartup.cc			\
+	bsestorage.cc			\
+	bsesubiport.cc			\
+	bsesuboport.cc			\
+	bsesubsynth.cc			\
+	bsesuper.cc			\
+	bsetrack.cc			\
+	bsetype.cc			\
+	bseundostack.cc			\
+	bseutils.cc			\
+	bsewave.cc			\
+	bsewaveosc.cc			\
+	bsewaverepo.cc			\
+	gslcommon.cc			\
+	gsldatacache.cc			\
+	gsldatahandle-mad.cc		\
+	gsldatahandle-vorbis.cc		\
+	gsldatahandle.cc		\
+	gsldatautils.cc			\
+	gslfilehash.cc			\
+	gslfilter.cc			\
+	gslmagic.cc			\
+	gsloscillator.cc		\
+	gslosctable.cc			\
+	gslvorbis-cutter.cc		\
+	gslvorbis-enc.cc		\
+	gslwavechunk.cc			\
+	gslwaveosc.cc			\
+	memory.cc			\
+	monitor.cc			\
+	testobject.cc			\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
