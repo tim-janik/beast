@@ -302,7 +302,6 @@ bst_app_destroy (GtkObject *object)
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
       bse_server.destroy_project (self->project);
-      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
 
@@ -332,7 +331,6 @@ bst_app_finalize (GObject *object)
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
   if (self->ppages)
@@ -356,7 +354,7 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
-  self->treechange_hid = self->project.on ("treechange", [self] (const Aida::Event&) { bst_app_reload_pages (self); });
+  Bst::scoped_on (&self->project, "treechange", [self] () { bst_app_reload_pages (self); });
 #if 0 // FIXME
   self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
     gxk_widget_update_actions (self);
