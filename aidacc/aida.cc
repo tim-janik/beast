@@ -51,6 +51,9 @@
 #ifndef assert_return
 #define assert_return(cond,...)         assert (cond)
 #endif
+#ifndef return_unless
+#define return_unless(cond, ...)        do { if (cond) break; return __VA_ARGS__; } while (0)
+#endif
 
 // == printf helper ==
 #define LLI     (long long int)
@@ -1694,7 +1697,9 @@ OrbObject::OrbObject (uint64 orbid) :
 {}
 
 OrbObject::~OrbObject()
-{} // keep to force vtable emission
+{
+  assert_return (handle_scope_hooks_.empty());
+}
 
 ClientConnection*
 OrbObject::client_connection ()
@@ -1725,6 +1730,20 @@ RemoteHandle::RemoteHandle (OrbObjectP orbo) :
   orbop_ (orbo ? orbo : __aida_null_orb_object__())
 {}
 
+RemoteHandle::~RemoteHandle()
+{
+  __handle_scope_clear__();
+}
+
+RemoteHandle&
+RemoteHandle::operator= (const RemoteHandle& other)
+{
+  return_unless (this != &other, *this);
+  this->__handle_scope_clear__();
+  orbop_ = other.orbop_;
+  return *this;
+}
+
 /// Upgrade a @a Null RemoteHandle into a handle for an existing object.
 void
 RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
@@ -1733,8 +1752,31 @@ RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
   orbop_ = orbop ? orbop : __aida_null_orb_object__();
 }
 
-RemoteHandle::~RemoteHandle()
-{}
+void
+RemoteHandle::__handle_scope_clear__ ()
+{
+  if (orbop_ && !orbop_->handle_scope_hooks_.empty())
+    {
+      OrbObjectP op = orbop_;
+    call_deleters:
+      for (size_t i = 0; i < op->handle_scope_hooks_.size(); i++)
+        if (op->handle_scope_hooks_[i].rhandle == this)
+          {
+            ::std::function<void()> deleter = op->handle_scope_hooks_[i].deleter;
+            op->handle_scope_hooks_.erase (op->handle_scope_hooks_.begin() + i);
+            deleter(); // may change handle_scope_hooks_
+            goto call_deleters;
+          }
+    }
+}
+
+void
+RemoteHandle::__on_handle_delete__ (const std::function<void()> &deleter)
+{
+  assert_return (deleter != NULL);
+  assert_return (orbop_ != NULL);
+  orbop_->handle_scope_hooks_.push_back ({ this, deleter });
+}
 
 // == ProtoMsg ==
 ProtoMsg::ProtoMsg (uint32 _ntypes) :
