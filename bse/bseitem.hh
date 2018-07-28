@@ -93,12 +93,6 @@ BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);
 void            bse_item_set_parent          (BseItem         *item,
                                               BseItem         *parent);
-Bse::Error    bse_item_exec                (gpointer         item,
-                                              const gchar     *procedure,
-                                              ...);
-Bse::Error    bse_item_exec_void           (gpointer         item,
-                                              const gchar     *procedure,
-                                              ...); /* ignore return values */
 /* undo-aware functions */
 void          bse_item_set_valist_undoable   (gpointer         object,
                                               const gchar     *first_property_name,
@@ -114,12 +108,6 @@ BseUndoStack* bse_item_undo_open_str         (void *item, const std::string &str
 #define       bse_item_undo_open(item,...)   bse_item_undo_open_str (item, Bse::string_format (__VA_ARGS__).c_str())
 void          bse_item_undo_close            (BseUndoStack    *ustack);
 /* undo helper functions */
-void          bse_item_push_undo_proc        (gpointer         item,
-                                              const gchar     *procedure,
-                                              ...);
-void          bse_item_push_redo_proc        (gpointer         item,
-                                              const gchar     *procedure,
-                                              ...);
 void          bse_item_backup_to_undo        (BseItem         *self,
                                               BseUndoStack    *ustack);
 void          bse_item_push_undo_storage     (BseItem         *self,

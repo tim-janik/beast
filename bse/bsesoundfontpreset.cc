@@ -2,7 +2,6 @@
 #include "bsesoundfontpreset.hh"
 #include "bsemain.hh"
 #include "bsestorage.hh"
-#include "bseprocedure.hh"
 #include "gsldatahandle.hh"
 #include "bseserver.hh"
 #include "bseloader.hh"

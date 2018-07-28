@@ -2,7 +2,6 @@
 #include "bseplugin.hh"
 #include "../config/config.h"
 #include "bsecategories.hh"
-#include "bseprocedure.hh"
 #include "bseobject.hh"
 #include "bseenums.hh"
 #include "bsemain.hh"
@@ -363,7 +362,6 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
           {
             BseExportNodeEnum *enode;
             BseExportNodeClass *cnode;
-            BseExportNodeProc *pnode;
           case BSE_EXPORT_NODE_LINK:
           case BSE_EXPORT_NODE_HOOK:
             break;
@@ -382,10 +380,6 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             type_info->class_finalize = cnode->class_finalize;
             type_info->instance_size = cnode->instance_size;
             type_info->instance_init = cnode->instance_init;
-            break;
-          case BSE_EXPORT_NODE_PROC:
-            pnode = (BseExportNodeProc*) node;
-            bse_procedure_complete_info (pnode, type_info);
             break;
           default: ;
           }
@@ -467,15 +461,6 @@ bse_plugin_init_types (BsePlugin *plugin)
       case BSE_EXPORT_NODE_ENUM:
       case BSE_EXPORT_NODE_RECORD:
       case BSE_EXPORT_NODE_SEQUENCE:
-      case BSE_EXPORT_NODE_PROC:
-        type = g_type_from_name (node->name);
-        if (type)
-          {
-            g_message ("%s: plugin contains type already registered: %s",
-                       plugin->fname, node->name);
-            return;
-          }
-        break;
       default: ;
       }
 
@@ -488,7 +473,6 @@ bse_plugin_init_types (BsePlugin *plugin)
           BseExportNodeClass *cnode;
           BseExportNodeEnum *enode;
           BseExportNodeHook *hnode;
-          const gchar *error;
         case BSE_EXPORT_NODE_LINK:
           break;
         case BSE_EXPORT_NODE_HOOK:
@@ -515,12 +499,6 @@ bse_plugin_init_types (BsePlugin *plugin)
           cnode = (BseExportNodeClass*) node;
           type = bse_type_register_dynamic (g_type_from_name (cnode->parent),
                                             node->name, G_TYPE_PLUGIN (plugin));
-          break;
-        case BSE_EXPORT_NODE_PROC:
-          error = bse_procedure_type_register (node->name, plugin, &type);
-          if (error)
-            g_message ("%s: while registering procedure \"%s\": %s",
-                       plugin->fname, node->name, error);
           break;
         default:
           g_message ("%s: plugin contains invalid type node (%u)", plugin->fname, node->ntype);

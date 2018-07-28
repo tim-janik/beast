@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseplugin.hh>
-#include <bse/bseprocedure.hh>
 #include <bse/bseitem.hh>
 #include <bse/bsecontainer.hh>
 #include <bse/bseproject.hh>

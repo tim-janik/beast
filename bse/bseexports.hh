@@ -2,7 +2,7 @@
 #ifndef __BSE_EXPORTS_H__
 #define __BSE_EXPORTS_H__
 
-#include	<bse/bseprocedure.hh>
+#include       <bse/bseparam.hh>
 
 /* --- export node types --- */
 typedef enum {
@@ -13,7 +13,6 @@ typedef enum {
   BSE_EXPORT_NODE_RECORD,
   BSE_EXPORT_NODE_SEQUENCE,
   BSE_EXPORT_NODE_CLASS,
-  BSE_EXPORT_NODE_PROC
 } BseExportNodeType;
 
 /* --- common export node data --- */
@@ -88,14 +87,6 @@ typedef struct {
   GInstanceInitFunc  instance_init;
 } BseExportNodeClass;
 
-/* --- procedure export node --- */
-typedef struct {
-  BseExportNode     node;
-  guint             private_id;
-  BseProcedureInit  init;
-  BseProcedureExec  exec;
-} BseExportNodeProc;
-
 /* --- plugin identity export --- */
 /* plugin export identity (name, bse-version and actual types) */
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
@@ -130,10 +121,6 @@ BsePlugin*      bse_exports__add_node   (const BseExportIdentity *identity,     
                                          BseExportNode           *enode);
 void            bse_exports__del_node   (BsePlugin               *plugin,       // bseplugin.cc
                                          BseExportNode           *enode);
-
-/* implementation prototype */
-void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
-					 GTypeInfo               *info);
 
 /* --- export config --- */
 #ifdef   __MMX__

@@ -4,12 +4,8 @@
 
 #include	<bse/bsedefs.hh>
 
-/* --- typedefs --- */
-#define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
-
 /* type macros
  */
-#define	BSE_TYPE_IS_PROCEDURE(type)	(G_TYPE_FUNDAMENTAL (type) == BSE_TYPE_PROCEDURE)
 #define	BSE_CLASS_NAME(class)		(g_type_name (G_TYPE_FROM_CLASS (class)))
 #define	BSE_CLASS_TYPE(class)		(G_TYPE_FROM_CLASS (class))
 #define	BSE_TYPE_IS_OBJECT(type)	(g_type_is_a ((type), BSE_TYPE_OBJECT))
@@ -83,7 +79,6 @@ GParamSpec*     bse_param_spec_enum (const gchar    *name,
 
 // == type initializers ==
 void    bse_type_register_enums                 ();
-void    bse_type_register_procedure_info        (GTypeInfo *info);
 void    bse_type_register_object_info           (GTypeInfo *info);
 void    bse_param_types_init			();
 
