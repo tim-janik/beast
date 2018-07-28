@@ -205,7 +205,6 @@ bst_canvas_source_destroy (GtkObject *object)
       bse_proxy_disconnect (csource->source.proxy_id(),
 			    "any_signal", gtk_object_destroy, csource,
 			    "any_signal", source_channels_changed, csource,
-			    "any_signal", source_name_changed, csource,
 			    "any_signal", source_pos_changed, csource,
 			    "any_signal", source_icon_changed, csource,
 			    NULL);
@@ -235,10 +234,10 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   csource->source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
   if (csource->source)
     csource->source.use();
+  Bst::scoped_on (&csource->source, "notify:uname", [csource] () { source_name_changed (csource); });
   bse_proxy_connect (csource->source.proxy_id(),
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
-		     "swapped_signal::property-notify::uname", source_name_changed, csource,
 		     "swapped_signal::property-notify::pos-x", source_pos_changed, csource,
 		     "swapped_signal::property-notify::pos-y", source_pos_changed, csource,
 		     "swapped_signal::icon-changed", source_icon_changed, csource,
