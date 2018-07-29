@@ -30,9 +30,11 @@ bst_canvas_link_init (BstCanvasLink *clink)
   clink->ocsource = NULL;
   clink->ochannel = ~0;
   clink->oc_handler = 0;
+  new (&clink->oc_bsesource) Bse::SourceH();
   clink->icsource = NULL;
   clink->ichannel = ~0;
   clink->ic_handler = 0;
+  new (&clink->ic_bsesource) Bse::SourceH();
   clink->link_view = NULL;
 }
 
@@ -49,6 +51,18 @@ bst_canvas_link_destroy (GtkObject *object)
   bst_canvas_link_set_icsource (clink, NULL, 0);
 
   GTK_OBJECT_CLASS (bst_canvas_link_parent_class)->destroy (object);
+}
+
+static void
+bst_canvas_link_finalize (GObject *object)
+{
+  BstCanvasLink *self = BST_CANVAS_LINK (object);
+
+  G_OBJECT_CLASS (bst_canvas_link_parent_class)->finalize (object);
+
+  using namespace Bse;
+  self->oc_bsesource.~SourceH();
+  self->ic_bsesource.~SourceH();
 }
 
 GnomeCanvasItem*
@@ -204,14 +218,11 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 
   if (clink->ocsource)
     {
-      if (clink->ocsource->source) /* source may be destroyed already */
-	bse_proxy_disconnect (clink->ocsource->source.proxy_id(),
-			      "any_signal", clink_view_check_update, clink,
-			      NULL);
       if (g_signal_handler_is_connected (clink->ocsource, clink->oc_handler))
 	gtk_signal_disconnect (GTK_OBJECT (clink->ocsource), clink->oc_handler);
       gtk_object_unref (GTK_OBJECT (clink->ocsource));
     }
+  clink->oc_bsesource = Bse::SourceH();
   clink->ocsource = ocsource;
   clink->ochannel = ochannel;
   if (clink->ocsource)
@@ -221,9 +232,8 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bse_proxy_connect (clink->ocsource->source.proxy_id(),
-			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
-			 NULL);
+      clink->oc_bsesource = clink->ocsource->source; // only needed for scpoed_on
+      Bst::scoped_on (&clink->oc_bsesource, "notify:uname", [clink] () { clink_view_check_update (clink); });
       bst_canvas_link_update (clink);
     }
 }
@@ -239,14 +249,11 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 
   if (clink->icsource)
     {
-      if (clink->icsource->source) /* source may be destroyed already */
-	bse_proxy_disconnect (clink->icsource->source.proxy_id(),
-			      "any_signal", clink_view_check_update, clink,
-			      NULL);
       if (g_signal_handler_is_connected (clink->icsource, clink->ic_handler))
         gtk_signal_disconnect (GTK_OBJECT (clink->icsource), clink->ic_handler);
       gtk_object_unref (GTK_OBJECT (clink->icsource));
     }
+  clink->ic_bsesource = Bse::SourceH();
   clink->icsource = icsource;
   clink->ichannel = ichannel;
   if (clink->icsource)
@@ -256,9 +263,8 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bse_proxy_connect (clink->icsource->source.proxy_id(),
-			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
-			 NULL);
+      clink->ic_bsesource = clink->icsource->source; // only needed for scpoed_on
+      Bst::scoped_on (&clink->ic_bsesource, "notify:uname", [clink] () { clink_view_check_update (clink); });
       bst_canvas_link_update (clink);
     }
 }
@@ -585,13 +591,14 @@ bst_canvas_link_child_event (GnomeCanvasItem *item,
 static void
 bst_canvas_link_class_init (BstCanvasLinkClass *klass)
 {
-  GtkObjectClass *object_class;
-  GnomeCanvasItemClass *canvas_item_class;
-  // GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  gobject_class->finalize = bst_canvas_link_finalize;
 
-  object_class = GTK_OBJECT_CLASS (klass);
-  canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
-
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   object_class->destroy = bst_canvas_link_destroy;
+
+  GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
   canvas_item_class->event = bst_canvas_link_event;
+
+  // GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass);
 }
