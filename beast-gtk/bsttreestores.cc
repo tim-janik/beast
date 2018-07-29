@@ -184,16 +184,14 @@ bst_file_store_destroy (GtkTreeModel *model)
 struct ProxyStore {
   GxkListWrapper *self = NULL;
   int (*row_from_proxy) (ProxyStore *ps, SfiProxy proxy) = NULL;
+  /* child list specific */
   struct {
     SfiUPool  *ipool = NULL;
     gchar     *child_type = NULL;
     SfiProxy   containerid = 0;
-  } cl;       /* child list specific */
-  struct {
-    struct {
-      SfiRing *items = NULL;
-    } pq;       /* proxy sequence specific */
-  } u;
+  } cl;
+  /* proxy sequence specific */
+  std::vector<SfiProxy> proxies;
 };
 
 static void
@@ -534,10 +532,10 @@ get_proxy (const SfiRing *ring)
 }
 
 static gint
-item_seq_store_row_from_proxy (ProxyStore *ps,
-                               SfiProxy    proxy)
+item_seq_store_row_from_proxy (ProxyStore *ps, SfiProxy proxy)
 {
-  return sfi_ring_index (ps->u.pq.items, (gpointer) proxy);
+  const auto it = std::find (ps->proxies.begin(), ps->proxies.end(), proxy);
+  return it == ps->proxies.end() ? -1 : it - ps->proxies.begin();
 }
 
 static void
@@ -545,18 +543,14 @@ item_seq_store_destroy_data (gpointer data)
 {
   ProxyStore *ps = (ProxyStore*) data;
   gxk_list_wrapper_notify_clear (ps->self);
-  SfiRing *ring;
-  for (ring = ps->u.pq.items; ring; ring = sfi_ring_walk (ring, ps->u.pq.items))
-    proxy_store_item_unlisten_on (ps, get_proxy (ring), -1);
-  sfi_ring_free (ps->u.pq.items);
+  for (auto proxy : ps->proxies)
+    proxy_store_item_unlisten_on (ps, proxy, -1);
   delete ps;
 }
 
 static gint
-proxy_cmp_sorted (gconstpointer value1, gconstpointer value2, gpointer data)
+proxy_cmp_sorted (SfiProxy p1, SfiProxy p2)
 {
-  SfiProxy p1 = (SfiProxy) value1;
-  SfiProxy p2 = (SfiProxy) value2;
   if (!p1 || !p2)
     return p2 ? -1 : p1 != 0;
   Bse::ItemH item1 = Bse::ItemH::down_cast (bse_server.from_proxy (p1));
@@ -587,28 +581,24 @@ bst_item_seq_store_set (GtkTreeModel   *model,
       ProxyStore *ps = new ProxyStore;
       ps->self = GXK_LIST_WRAPPER (model);
       ps->row_from_proxy = item_seq_store_row_from_proxy;
-      guint i;
-      for (i = 0; i < iseq->n_items; i++)
-        ps->u.pq.items = sfi_ring_append (ps->u.pq.items, (gpointer) iseq->items[i]);
+      for (uint i = 0; i < iseq->n_items; i++)
+        ps->proxies.push_back (iseq->items[i]);
       if (g_object_get_long (model, "sorted-proxies"))
-        ps->u.pq.items = sfi_ring_sort (ps->u.pq.items, proxy_cmp_sorted, NULL);
-      SfiRing *ring;
-      for (ring = ps->u.pq.items; ring; ring = sfi_ring_walk (ring, ps->u.pq.items))
-        proxy_store_item_listen_on (ps, get_proxy (ring));
+        std::sort (ps->proxies.begin(), ps->proxies.end(), proxy_cmp_sorted);
+      for (auto proxy : ps->proxies)
+        proxy_store_item_listen_on (ps, proxy);
       g_object_set_data_full ((GObject*) model, "ProxyStore", ps, item_seq_store_destroy_data);
     }
 }
 
 gint
-bst_item_seq_store_add (GtkTreeModel   *model,
-                        SfiProxy        proxy)
+bst_item_seq_store_add (GtkTreeModel *model, SfiProxy proxy)
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
+  ps->proxies.push_back (proxy);
   if (g_object_get_long (model, "sorted-proxies"))
-    ps->u.pq.items = sfi_ring_insert_sorted (ps->u.pq.items, (gpointer) proxy, proxy_cmp_sorted, NULL);
-  else
-    ps->u.pq.items = sfi_ring_append (ps->u.pq.items, (gpointer) proxy);
-  gint row = proxy_store_item_listen_on (ps, proxy);
+    std::sort (ps->proxies.begin(), ps->proxies.end(), proxy_cmp_sorted);
+  int row = proxy_store_item_listen_on (ps, proxy);
   return row;
 }
 
@@ -618,7 +608,7 @@ bst_item_seq_store_remove (GtkTreeModel   *model,
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
   int row = item_seq_store_row_from_proxy (ps, proxy);
-  ps->u.pq.items = sfi_ring_remove (ps->u.pq.items, (gpointer) proxy);
+  ps->proxies.erase (std::find (ps->proxies.begin(), ps->proxies.end(), proxy));
   proxy_store_item_unlisten_on (ps, proxy, row);
   return row;
 }
@@ -640,10 +630,10 @@ bst_item_seq_store_raise (GtkTreeModel   *model,
   int row = item_seq_store_row_from_proxy (ps, proxy);
   if (row > 0)
     {
-      ps->u.pq.items = sfi_ring_remove (ps->u.pq.items, (gpointer) proxy);
+      ps->proxies.erase (std::find (ps->proxies.begin(), ps->proxies.end(), proxy));
       proxy_store_item_unlisten_on (ps, proxy, row);
       row -= 1;
-      ps->u.pq.items = sfi_ring_insert (ps->u.pq.items, (gpointer) proxy, row);
+      ps->proxies.insert (ps->proxies.begin() + row, proxy);
       proxy_store_item_listen_on (ps, proxy);
     }
   return row;
@@ -654,8 +644,7 @@ bst_item_seq_store_can_lower (GtkTreeModel   *model,
                               SfiProxy        proxy)
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
-  int row = item_seq_store_row_from_proxy (ps, proxy);
-  return row >= 0 && sfi_ring_tail (ps->u.pq.items)->data != (gpointer) proxy;
+  return !ps->proxies.empty() && ps->proxies.back() != proxy;
 }
 
 gint
@@ -664,12 +653,12 @@ bst_item_seq_store_lower (GtkTreeModel   *model,
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
   int row = item_seq_store_row_from_proxy (ps, proxy);
-  if (row >= 0 && sfi_ring_tail (ps->u.pq.items)->data != (gpointer) proxy)
+  if (row >= 0 && ps->proxies.back() != proxy)
     {
-      ps->u.pq.items = sfi_ring_remove (ps->u.pq.items, (gpointer) proxy);
+      ps->proxies.erase (ps->proxies.begin() + row);
       proxy_store_item_unlisten_on (ps, proxy, row);
       row += 1;
-      ps->u.pq.items = sfi_ring_insert (ps->u.pq.items, (gpointer) proxy, row);
+      ps->proxies.insert (ps->proxies.begin() + row, proxy);
       proxy_store_item_listen_on (ps, proxy);
     }
   return row;
@@ -680,9 +669,8 @@ bst_item_seq_store_dup (GtkTreeModel   *model)
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
   BseIt3mSeq *iseq = bse_it3m_seq_new ();
-  SfiRing *ring;
-  for (ring = ps->u.pq.items; ring; ring = sfi_ring_walk (ring, ps->u.pq.items))
-    bse_it3m_seq_append (iseq, (SfiProxy) ring->data);
+  for (auto proxy : ps->proxies)
+    bse_it3m_seq_append (iseq, proxy);
   return iseq;
 }
 
@@ -701,7 +689,7 @@ bst_item_seq_store_get_proxy (GtkTreeModel *model,
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
   if (ps && row >= 0)
-    return get_proxy (sfi_ring_nth (ps->u.pq.items, row));
+    return ps->proxies.at (row);
   return 0;
 }
 
