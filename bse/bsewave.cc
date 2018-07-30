@@ -2,7 +2,6 @@
 #include "bsewave.hh"
 #include "bsemain.hh"
 #include "bsestorage.hh"
-#include "bseprocedure.hh"
 #include "gslwavechunk.hh"
 #include "gsldatahandle.hh"
 #include "bseserver.hh"

@@ -2,7 +2,6 @@
 #include "bseglue.hh"
 #include "bseparam.hh"
 #include "bseitem.hh"
-#include "bseprocedure.hh"
 #include "bsecategories.hh"
 #include "bsemain.hh"
 #include <string.h>
@@ -44,9 +43,6 @@ typedef struct {
 /* --- prototypes --- */
 static SfiGlueIFace*    bglue_describe_iface            (SfiGlueContext *context,
 							 const char     *iface);
-static char**           bglue_list_proc_names           (SfiGlueContext *context);
-static char**           bglue_list_method_names         (SfiGlueContext *context,
-							 const char     *iface_name);
 static char*            bglue_base_iface                (SfiGlueContext *context);
 static char**           bglue_iface_children            (SfiGlueContext *context,
 							 const char     *iface_name);
@@ -143,8 +139,8 @@ bse_glue_context_intern (const char *user)
   static const SfiGlueContextTable bse_glue_table = {
     bglue_describe_iface,
     NULL /*describe_proc*/,
-    bglue_list_proc_names,
-    bglue_list_method_names,
+    NULL /*list_proc_names*/,
+    NULL /*list_method_names*/,
     bglue_base_iface,
     bglue_iface_children,
     NULL /*exec_proc*/,
@@ -520,47 +516,6 @@ bse_glue_enum_index (GType enum_type,
   g_type_class_unref (eclass);
 
   return index;
-}
-
-static char**
-bglue_list_proc_names (SfiGlueContext *context)
-{
-  Bse::CategorySeq cseq = bse_categories_match_typed ("/Proc/""*", BSE_TYPE_PROCEDURE);
-  char **p;
-  uint i;
-
-  p = g_new (char*, cseq.size() + 1);
-  for (i = 0; i < cseq.size(); i++)
-    p[i] = g_strdup (cseq[i].otype.c_str());
-  p[i] = NULL;
-
-  return p;
-}
-
-static char**
-bglue_list_method_names (SfiGlueContext *context,
-                         const char     *iface_name)
-{
-  GType type = g_type_from_name (iface_name);
-  char **p, *prefix;
-  uint i, l, n_procs;
-
-  if (!g_type_is_a (type, BSE_TYPE_ITEM))
-    return NULL;
-
-  prefix = g_strdup_format ("%s+", g_type_name (type));
-  l = strlen (prefix);
-
-  Bse::CategorySeq cseq = bse_categories_match_typed ("/Methods/" "*", BSE_TYPE_PROCEDURE);
-  p = g_new (char*, cseq.size() + 1);
-  n_procs = 0;
-  for (i = 0; i < cseq.size(); i++)
-    if (strncmp (cseq[i].otype.c_str(), prefix, l) == 0)
-      p[n_procs++] = g_strdup (cseq[i].otype.c_str() + l);
-  p[n_procs] = NULL;
-  g_free (prefix);
-
-  return p;
 }
 
 static char*

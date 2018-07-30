@@ -47,7 +47,6 @@ struct BsePart;
 struct BsePartClass;
 struct BsePcmWriter;
 struct BsePcmWriterClass;
-typedef struct  _BseProcedureClass         BseProcedureClass;
 struct BseProject;
 struct BseProjectClass;
 typedef struct  _BseScriptControl          BseScriptControl;
@@ -123,9 +122,6 @@ typedef BseObject*    (*BseUPathResolver)    (gpointer           func_data,
                                               GType              required_type,
                                               const gchar       *path,
 					      gchar	       **error);
-typedef gboolean      (*BseProcedureShare)   (gpointer           func_data,
-                                              const gchar       *proc_name,
-                                              gfloat             progress);
 typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               GType              type,
                                               gpointer           user_data);

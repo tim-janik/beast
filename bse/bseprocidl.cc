@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
 #include "bsecategories.hh"
-#include "bseprocedure.hh"
 #include "bseglue.hh"
 #include <sfi/sfiglue.hh>
 #include <stdio.h>
@@ -218,6 +217,7 @@ void printPSpec (const char *dir, GParamSpec *pspec)
 
 void printMethods (const std::string& iface)
 {
+#if 0
   Bse::CategorySeq cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (size_t i = 0; i < cseq.size(); i++)
     {
@@ -270,6 +270,7 @@ void printMethods (const std::string& iface)
 	}
       g_type_class_unref (klass);
     }
+#endif
 }
 
 /* FIXME: we might want to have a sfi_glue_iface_parent () method */

@@ -387,7 +387,6 @@ bse_param_spec_enum (const gchar    *name,
 void
 bse_type_init (void)
 {
-  GTypeInfo info;
   static const struct {
     GType   *const type_p;
     GType   (*register_type) (void);
@@ -395,7 +394,6 @@ bse_type_init (void)
 #include "bsegentype_array.cc"  // include class type id builtin variable declarations
   };
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
-  static GTypeFundamentalInfo finfo = { GTypeFundamentalFlags (0), };
   guint i;
 
   assert_return (quark_blurb == 0);
@@ -415,16 +413,6 @@ bse_type_init (void)
 
   /* initialize builtin enumerations */
   bse_type_register_enums ();
-
-  /* BSE_TYPE_PROCEDURE
-   */
-  memset (&finfo, 0, sizeof (finfo));
-  finfo.type_flags = GTypeFundamentalFlags (G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_DERIVABLE);
-  memset (&info, 0, sizeof (info));
-  bse_type_register_procedure_info (&info);
-  g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, GTypeFlags (0));
-  bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
-  assert_return (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */
   {

@@ -23,53 +23,148 @@ LIBS += # -lefence # -pg
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
-	bsttrackrollctrl.hh	bstxframe.hh	bstscrollgraph.hh 	\
-	bstdbmeter.hh		bstbusmixer.hh	bstbuseditor.hh		bstitemseqdialog.hh  \
-	bstcanvassource.hh	bstapp.hh	bstasciipixbuf.hh	bstcanvaslink.hh	    \
-	bstpatterncolumns.hh	bstxkb.hh	bstpatternview.hh	bstpatternctrl.hh    \
-	bstkeybindings.hh	bstprofiler.hh	bstgrowbar.hh		bstbusview.hh        \
-	bstpianorollctrl.hh	bstpartview.hh	bstpianoroll.hh		bstplayback.hh	    \
-	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	\
-	bstauxdialogs.hh		bstsegment.hh	bsteventrollctrl.hh	bsteventroll.hh	    \
-	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
-	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
-	bstparamview.hh		bstmenus.hh	bstparam.hh		bstpartdialog.hh	    \
-	bstqsampler.hh		bstpreferences.hh			bstsequence.hh	    	\
-	bstsnetrouter.hh		bstsplash.hh	bsttrackview.hh		bstsupershell.hh	    \
-	bstusermessage.hh	bstdial.hh	bsttracksynthdialog.hh	bstwaveeditor.hh	    \
-	bstzoomedwindow.hh	bstskinconfig.hh	bstmsgabsorb.hh		bstsampleeditor.hh   \
-				bsttreestores.hh	bstbseutils.hh		bstutils.hh	    \
-	bstdefs.hh \
-	bstsoundfontview.hh	bstsoundfontpresetview.hh  \
+	bstapp.hh			\
+	bstasciipixbuf.hh		\
+	bstauxdialogs.hh		\
+	bstbseutils.hh			\
+	bstbuseditor.hh			\
+	bstbusmixer.hh			\
+	bstbusview.hh			\
+	bstcanvaslink.hh		\
+	bstcanvassource.hh		\
+	bstcluehunter.hh		\
+	bstdbmeter.hh			\
+	bstdefs.hh			\
+	bstdial.hh			\
+	bsteventroll.hh			\
+	bsteventrollctrl.hh		\
+	bstfiledialog.hh		\
+	bstgconfig.hh			\
+	bstgrowbar.hh			\
+	bstitemseqdialog.hh		\
+	bstitemview.hh			\
+	bstkeybindings.hh		\
+	bstknob.hh			\
+	bstlogadjustment.hh		\
+	bstmenus.hh			\
+	bstmsgabsorb.hh			\
+	bstparam.hh			\
+	bstparamview.hh			\
+	bstpartdialog.hh		\
+	bstpartview.hh			\
+	bstpatterncolumns.hh		\
+	bstpatternctrl.hh		\
+	bstpatternview.hh		\
+	bstpianoroll.hh			\
+	bstpianorollctrl.hh		\
+	bstplayback.hh			\
+	bstpreferences.hh		\
+	bstprofiler.hh			\
+	bstprojectctrl.hh		\
+	bstqsampler.hh			\
+	bstsampleeditor.hh		\
+	bstscrollgraph.hh		\
+	bstsegment.hh			\
+	bstsequence.hh			\
+	bstservermonitor.hh		\
+	bstskinconfig.hh		\
+	bstsnetrouter.hh		\
+	bstsnifferscope.hh		\
+	bstsoundfontpresetview.hh	\
+	bstsoundfontview.hh		\
+	bstsplash.hh			\
+	bstsupershell.hh		\
+	bsttrackroll.hh			\
+	bsttrackrollctrl.hh		\
+	bsttracksynthdialog.hh		\
+	bsttrackview.hh			\
+	bsttreestores.hh		\
+	bstusermessage.hh		\
+	bstutils.hh			\
+	bstwaveeditor.hh		\
+	bstwaveview.hh			\
+	bstxframe.hh			\
+	bstxkb.hh			\
+	bstzoomedwindow.hh		\
 )
 # BEAST sources to build the program from
 bst_cc_sources = $(strip \
-	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
-	bstdbmeter.cc		bstbusmixer.cc	bstbuseditor.cc		bstitemseqdialog.cc \
-	bstcanvassource.cc	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
-	bstpatterncolumns.cc	bstxkb.cc	bstpatternview.cc	bstpatternctrl.cc   \
-	bstkeybindings.cc	bstprofiler.cc	bstgrowbar.cc		bstbusview.cc       \
-	bstpianorollctrl.cc	bstpartview.cc	bstpianoroll.cc		bstplayback.cc	    \
-	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	\
-	bstauxdialogs.cc	bstsegment.cc	bsteventrollctrl.cc	bsteventroll.cc	    \
-	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
-	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
-	bstparamview.cc		bstmenus.cc	bstparam.cc		bstpartdialog.cc    \
-	bstqsampler.cc	      bstpreferences.cc				bstsequence.cc	    \
-	bstsnetrouter.cc	bstsplash.cc	bsttrackview.cc		bstsupershell.cc    \
-	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
-	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
-			       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
-	bstsoundfontview.cc	bstsoundfontpresetview.cc	        \
+	bstapp.cc			\
+	bstasciipixbuf.cc		\
+	bstauxdialogs.cc		\
+	bstbseutils.cc			\
+	bstbuseditor.cc			\
+	bstbusmixer.cc			\
+	bstbusview.cc			\
+	bstcanvaslink.cc		\
+	bstcanvassource.cc		\
+	bstcluehunter.cc		\
+	bstdbmeter.cc			\
+	bstdial.cc			\
+	bsteventroll.cc			\
+	bsteventrollctrl.cc		\
+	bstfiledialog.cc		\
+	bstgconfig.cc			\
+	bstgrowbar.cc			\
+	bstitemseqdialog.cc		\
+	bstitemview.cc			\
+	bstkeybindings.cc		\
+	bstknob.cc			\
+	bstlogadjustment.cc		\
+	bstmenus.cc			\
+	bstmsgabsorb.cc			\
+	bstparam.cc			\
+	bstparamview.cc			\
+	bstpartdialog.cc		\
+	bstpartview.cc			\
+	bstpatterncolumns.cc		\
+	bstpatternctrl.cc		\
+	bstpatternview.cc		\
+	bstpianoroll.cc			\
+	bstpianorollctrl.cc		\
+	bstplayback.cc			\
+	bstpreferences.cc		\
+	bstprofiler.cc			\
+	bstprojectctrl.cc		\
+	bstqsampler.cc			\
+	bstsampleeditor.cc		\
+	bstscrollgraph.cc		\
+	bstsegment.cc			\
+	bstsequence.cc			\
+	bstservermonitor.cc		\
+	bstskinconfig.cc		\
+	bstsnetrouter.cc		\
+	bstsnifferscope.cc		\
+	bstsoundfontpresetview.cc	\
+	bstsoundfontview.cc		\
+	bstsplash.cc			\
+	bstsupershell.cc		\
+	bsttrackroll.cc			\
+	bsttrackrollctrl.cc		\
+	bsttracksynthdialog.cc		\
+	bsttrackview.cc			\
+	bsttreestores.cc		\
+	bstusermessage.cc		\
+	bstutils.cc			\
+	bstwaveeditor.cc		\
+	bstwaveview.cc			\
+	bstxframe.cc			\
+	bstxkb.cc			\
+	bstzoomedwindow.cc		\
 )
 # BEAST sources that get included (don't have own .lo rules)
-beast_extra_files = $(strip 						\
-	bstparam-automation.cc						\
-	bstparam-choice.cc		bstparam-note-sequence.cc	\
-	bstparam-note-spinner.cc	bstparam-proxy.cc		\
-	bstparam-color-spinner.cc	bstparam-scale.cc		\
-	bstparam-searchpath.cc		bstparam-time.cc		\
-	bstparam-item-seq.cc		bstmarshal.list			\
+beast_extra_files = $(strip 		\
+	bstmarshal.list			\
+	bstparam-choice.cc		\
+	bstparam-color-spinner.cc	\
+	bstparam-item-seq.cc		\
+	bstparam-note-sequence.cc	\
+	bstparam-note-spinner.cc	\
+	bstparam-proxy.cc		\
+	bstparam-scale.cc		\
+	bstparam-searchpath.cc		\
+	bstparam-time.cc		\
+	bstparam-automation.cc		\
 )
 
 doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)

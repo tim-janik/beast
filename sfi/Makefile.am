@@ -6,45 +6,80 @@ SUBDIRS      = . tests
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 AM_CPPFLAGS += -I$(top_srcdir)
 
-sfi_public_headers = $(strip \
-	bcore.hh		\
+sfi_public_headers = $(strip	\
 	backtrace.hh		\
-	formatter.hh	path.hh		platform.hh	strings.hh	\
-	unicode.hh	\
-	cxxaux.hh	\
-	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
-	glib-extra.hh			sfiwrapper.hh	 \
-	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
-	sfinote.hh	sfiparams.hh	sfiprimitives.hh	sfiserial.hh	\
-	sfitime.hh	sfitypes.hh	sfivalues.hh	\
-	sfivisitors.hh	sfiustore.hh	\
-	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
-			sfi.hh						\
-	gbsearcharray.hh \
+	bcore.hh		\
 	blob.hh			\
+	cxxaux.hh		\
 	datalist.hh		\
 	entropy.hh		\
+	formatter.hh		\
+	gbsearcharray.hh	\
+	glib-extra.hh		\
+	path.hh			\
+	platform.hh		\
 	randomhash.hh		\
-	testing.hh	\
+	sfi.hh			\
+	sficomport.hh		\
+	sficomwire.hh		\
+	sficxx.hh		\
+	sfifilecrawler.hh	\
+	sfiglue.hh		\
+	sfigluecodec.hh		\
+	sfiglueproxy.hh		\
+	sfimemory.hh		\
+	sfinote.hh		\
+	sfiparams.hh		\
+	sfiprimitives.hh	\
+	sfiring.hh		\
+	sfiserial.hh		\
+	sfistore.hh		\
+	sfitime.hh		\
+	sfitypes.hh		\
+	sfiustore.hh		\
+	sfivalues.hh		\
+	sfivisitors.hh		\
+	sfivmarshal.hh		\
+	sfiwrapper.hh		\
+	strings.hh		\
+	testing.hh		\
+	unicode.hh		\
 )
-sfi_all_sources = $(strip \
-	bcore.cc		\
+sfi_all_sources = $(strip	\
 	backtrace.cc		\
-	formatter.cc	path.cc		platform.cc	strings.cc	\
-	unicode.cc	\
-	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
-	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
-	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
-	sfinote.cc	sfiparams.cc			sfiserial.cc	\
-	sfitime.cc	sfitypes.cc	sfivalues.cc	\
-	sfivisitors.cc	sfiustore.cc	\
-			sfiring.cc	sfimemory.cc	sficomport.cc	\
+	bcore.cc		\
 	blob.cc			\
 	datalist.cc		\
 	entropy.cc		\
+	formatter.cc		\
+	glib-extra.cc		\
+	path.cc			\
+	platform.cc		\
 	randomhash.cc		\
-	testing.cc	\
-	weaksym.cc	\
+	sficomport.cc		\
+	sficomwire.cc		\
+	sfifilecrawler.cc	\
+	sfiglue.cc		\
+	sfigluecodec.cc		\
+	sfiglueproxy.cc		\
+	sfimemory.cc		\
+	sfinote.cc		\
+	sfiparams.cc		\
+	sfiprimitives.cc	\
+	sfiring.cc		\
+	sfiserial.cc		\
+	sfistore.cc		\
+	sfitime.cc		\
+	sfitypes.cc		\
+	sfiustore.cc		\
+	sfivalues.cc		\
+	sfivisitors.cc		\
+	sfivmarshal.cc		\
+	sfiwrapper.cc		\
+	strings.cc		\
+	testing.cc		\
+	unicode.cc		\
+	weaksym.cc		\
 )
 sfi_extra_sources = $(strip \
 )
