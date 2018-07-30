@@ -107,6 +107,13 @@ gxk_assortment_select_data (GxkAssortment          *self,
   gxk_assortment_select (self, gxk_assortment_find_data (self, entry_user_data));
 }
 
+void
+gxk_assortment_select_pred (GxkAssortment *self, const std::function<bool (void *user_data)> &pred)
+{
+  assert_return (GXK_IS_ASSORTMENT (self));
+  gxk_assortment_select (self, gxk_assortment_find_pred (self, pred));
+}
+
 GxkAssortmentEntry*
 gxk_assortment_find_data (GxkAssortment          *self,
                           gpointer                entry_user_data)
@@ -117,6 +124,19 @@ gxk_assortment_find_data (GxkAssortment          *self,
     {
       GxkAssortmentEntry *entry = (GxkAssortmentEntry*) slist->data;
       if (entry->user_data == entry_user_data)
+        return entry;
+    }
+  return NULL;
+}
+
+GxkAssortmentEntry*
+gxk_assortment_find_pred (GxkAssortment *self, const std::function<bool (void *user_data)> &pred)
+{
+  assert_return (GXK_IS_ASSORTMENT (self), NULL);
+  for (GSList *slist = self->entries; slist; slist = slist->next)
+    {
+      GxkAssortmentEntry *entry = (GxkAssortmentEntry*) slist->data;
+      if (pred (entry->user_data))
         return entry;
     }
   return NULL;

@@ -512,6 +512,8 @@ constexpr uint64 CONNECTION_MASK = 0x0000ffff;
 class OrbObject {
   const uint64        orbid_;
   std::vector<String> cached_aux_data_;
+  struct HandleDeleteHook { RemoteHandle *rhandle = NULL; std::function<void()> deleter; };
+  std::vector<HandleDeleteHook> handle_scope_hooks_;
   friend class RemoteHandle;
 protected:
   explicit                  OrbObject         (uint64 orbid);
@@ -524,6 +526,7 @@ public:
 };
 
 // == RemoteHandle ==
+/// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
   OrbObjectP        orbop_;
   template<class Parent>
@@ -532,6 +535,7 @@ class RemoteHandle {
   };
   typedef NullRemoteHandleT<RemoteHandle> NullRemoteHandle;
   static OrbObjectP __aida_null_orb_object__ ();
+  void              __handle_scope_clear__   ();
 protected:
   explicit          RemoteHandle             (OrbObjectP);
   explicit          RemoteHandle             () : orbop_ (__aida_null_orb_object__()) {}
@@ -550,9 +554,11 @@ public:
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
+  void                    __on_handle_delete__ (const std::function<void()> &deleter);
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
+  RemoteHandle&           operator=            (const RemoteHandle& other); // copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
   bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }

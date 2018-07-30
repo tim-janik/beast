@@ -39,8 +39,18 @@ module.exports = {
       if (!this.project_) {
 	this.project_ = Bse.server.create_project ('Untitled');
 	if (this.project_) {
+	  this.title_hid_ = this.project_.on ("notify:uname", () => {
+	    if (this.project_) {
+	      const name = this.project_.get_name_or_type();
+	      document.title = name + ' - Beast';
+	    }
+	  });
+	}
+	if (this.project_) {
 	  let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
 	  this.project_.restore_from_file (example);
+	  const path = require ('path');
+	  this.project_.set_name (path.basename (example));
 	}
       }
       return this.project_;

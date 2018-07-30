@@ -302,7 +302,6 @@ bst_app_destroy (GtkObject *object)
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
       bse_server.destroy_project (self->project);
-      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
 
@@ -332,7 +331,6 @@ bst_app_finalize (GObject *object)
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      self->project.off (&self->treechange_hid);
       self->project = Bse::ProjectH(); // NULL
     }
   if (self->ppages)
@@ -356,7 +354,7 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
-  self->treechange_hid = self->project.on ("treechange", [self] (const Aida::Event&) { bst_app_reload_pages (self); });
+  Bst::scoped_on (&self->project, "treechange", [self] () { bst_app_reload_pages (self); });
 #if 0 // FIXME
   self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
     gxk_widget_update_actions (self);
@@ -412,40 +410,39 @@ bst_app_get_current_super (BstApp *app)
   return 0;
 }
 
-static void
-app_update_page_item (SfiProxy itemid, const char *property_name, BstApp *self)
-{
-  GxkAssortmentEntry *entry = gxk_assortment_find_data (self->ppages, (void*) itemid);
-  if (entry)
-    {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
-      g_free (entry->label);
-      entry->label = g_strdup (item.get_name_or_type().c_str());
-      gxk_assortment_changed (self->ppages, entry);
-    }
-}
-
-static void
-ppage_item_free (gpointer user_data,
-                 GObject *object,
-                 gpointer owner)
-{
-  BstApp *self = BST_APP (owner);
-  SfiProxy item = (SfiProxy) user_data;
-  bse_proxy_disconnect (item, "any-signal::property-notify::uname", app_update_page_item, self, NULL);
-  if (GTK_IS_WIDGET (object))
-    gtk_widget_destroy (GTK_WIDGET (object));
-  Bse::ItemH::down_cast (bse_server.from_proxy (item)).unuse();
-}
+struct AppPage {
+  Bse::SuperH super;
+  uint64 update_hid = 0;
+  AppPage (Bse::SuperH sp) :
+    super (sp)
+  {
+    if (super)
+      super.use();
+  }
+  ~AppPage()
+  {
+    if (update_hid)
+      super.off (update_hid);
+    if (super)
+      super.unuse();
+  }
+};
 
 static void
 bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
 {
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (itemid));
   const gchar *stock;
-  String name = item.get_name_or_type();
-  item.use();
-  bse_proxy_connect (itemid, "signal::property-notify::uname", app_update_page_item, self, NULL);
+  String name = super.get_name_or_type();
+  AppPage *apage = new AppPage (super);
+  auto uname_change = [self, apage] () {
+    GxkAssortmentEntry *entry = gxk_assortment_find_data (self->ppages, apage);
+    return_unless (entry);
+    g_free (entry->label);
+    entry->label = g_strdup (apage->super.get_name_or_type().c_str());
+    gxk_assortment_changed (self->ppages, entry);
+  };
+  apage->update_hid = super.on ("notify:uname", uname_change);
   String tip;
   if (BSE_IS_WAVE_REPO (itemid))
     {
@@ -475,7 +472,13 @@ bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
       g_object_ref (page);
       gtk_object_sink (GTK_OBJECT (page));
     }
-  gxk_assortment_insert (self->ppages, position, name.c_str(), stock, tip.c_str(), (void*) itemid, (GObject*) page, self, ppage_item_free);
+  gxk_assortment_insert (self->ppages, position, name.c_str(), stock, tip.c_str(), apage, (GObject*) page, self,
+                         [] (void *data, GObject *object, gpointer owner) {
+                           if (GTK_IS_WIDGET (object))
+                             gtk_widget_destroy (GTK_WIDGET (object));
+                           delete (AppPage*) data;
+                         });
+  uname_change();
   if (page)
     g_object_unref (page);
 }
@@ -500,6 +503,12 @@ super_rating_lesser (Bse::SuperH &a, Bse::SuperH &b)
   return proxy_rate_item (a.proxy_id()) < proxy_rate_item (b.proxy_id());
 }
 
+static std::function<bool (void*)>
+app_page_predicate (Bse::ItemH item)
+{
+  return [item] (void *ap) { return ((AppPage*) ap)->super == item; };
+}
+
 static void
 bst_app_reload_pages (BstApp *self)
 {
@@ -508,7 +517,7 @@ bst_app_reload_pages (BstApp *self)
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  SfiProxy old_super = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
+  Bse::SuperH old_super = self->ppages->selected ? ((AppPage*) self->ppages->selected->user_data)->super : Bse::SuperH();
 
   // collect Super objects that need their own view
   Bse::SuperSeq sseq = self->project.get_supers();
@@ -526,12 +535,11 @@ bst_app_reload_pages (BstApp *self)
   for (GSList *slist = self->ppages->entries; slist; slist = slist->next)
     {
       GxkAssortmentEntry *entry = (GxkAssortmentEntry*) slist->data;
-      const SfiProxy view_proxy = (SfiProxy) entry->user_data;
-      Bse::SuperH super;
+      Bse::SuperH found, super = ((AppPage*) entry->user_data)->super;
       for (auto &candidate : sseq)
-        if (candidate.proxy_id() == view_proxy)
-          super = candidate;
-      if (!super)
+        if (candidate.proxy_id() == super.proxy_id())
+          found = candidate;
+      if (!found)
         outdated = sfi_ring_append (outdated, entry);
     }
   while (outdated)
@@ -546,7 +554,7 @@ bst_app_reload_pages (BstApp *self)
   for (auto &super : sseq)
     {
       SfiProxy view_proxy = super.proxy_id();
-      if (!gxk_assortment_find_data (self->ppages, (void*) view_proxy))
+      if (!gxk_assortment_find_pred (self->ppages, app_page_predicate (super)))
         {
           bst_app_add_page_item (self, pos, view_proxy);
           if (!first_unseen)
@@ -559,11 +567,11 @@ bst_app_reload_pages (BstApp *self)
 
   // re-select current page
   if (first_unseen && self->select_unseen_super)
-    gxk_assortment_select_data (self->ppages, (void*) first_unseen);
-  else if (old_super && gxk_assortment_find_data (self->ppages, (void*) old_super))
-    gxk_assortment_select_data (self->ppages, (void*) old_super);
+    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::down_cast (bse_server.from_proxy (first_unseen))));
+  else if (old_super && gxk_assortment_find_pred (self->ppages, app_page_predicate (old_super)))
+    gxk_assortment_select_pred (self->ppages, app_page_predicate (old_super));
   else if (first_synth)
-    gxk_assortment_select_data (self->ppages, (void*) first_synth);
+    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::down_cast (bse_server.from_proxy (first_synth))));
   self->select_unseen_super = FALSE;
   // restore focus
   if (old_focus)

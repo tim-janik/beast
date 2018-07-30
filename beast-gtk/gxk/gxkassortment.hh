@@ -51,8 +51,8 @@ typedef struct {
 GType           gxk_assortment_entry_get_type   (void);
 GType               gxk_assortment_get_type     (void);
 GxkAssortment*      gxk_assortment_new          (void);
-GxkAssortmentEntry* gxk_assortment_find_data    (GxkAssortment          *self,
-                                                 gpointer                entry_user_data);
+GxkAssortmentEntry* gxk_assortment_find_data    (GxkAssortment *self, gpointer entry_user_data);
+GxkAssortmentEntry* gxk_assortment_find_pred    (GxkAssortment *self, const std::function<bool (void *user_data)> &pred);
 GxkAssortmentEntry* gxk_assortment_insert       (GxkAssortment          *self,
                                                  guint                   position,
                                                  const gchar            *label,
@@ -70,8 +70,8 @@ void                gxk_assortment_dispose      (GxkAssortment          *self);
 void          gxk_assortment_block_selection    (GxkAssortment          *self);
 void          gxk_assortment_select             (GxkAssortment          *self,
                                                  GxkAssortmentEntry     *entry);
-void          gxk_assortment_select_data        (GxkAssortment          *self,
-                                                 gpointer                entry_user_data);
+void          gxk_assortment_select_data        (GxkAssortment *self, gpointer entry_user_data);
+void          gxk_assortment_select_pred        (GxkAssortment *self, const std::function<bool (void *user_data)> &pred);
 void          gxk_assortment_unblock_selection  (GxkAssortment          *self);
 void          gxk_assortment_manage_menu        (GxkAssortment          *self,
                                                  GtkMenu                *menu);

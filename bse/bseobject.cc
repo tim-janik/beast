@@ -310,7 +310,10 @@ static void
 bse_object_do_set_uname (BseObject   *object,
 			 const gchar *uname)
 {
+  Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
   g_object_set_qdata_full ((GObject*) object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
+  if (self)
+    self->notify ("uname");
 }
 
 static void
