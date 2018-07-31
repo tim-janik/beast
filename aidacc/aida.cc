@@ -1697,9 +1697,7 @@ OrbObject::OrbObject (uint64 orbid) :
 {}
 
 OrbObject::~OrbObject()
-{
-  assert_return (handle_scope_hooks_.empty());
-}
+{}
 
 ClientConnection*
 OrbObject::client_connection ()
@@ -1726,21 +1724,41 @@ RemoteHandle::__aida_null_orb_object__ ()
   return null_orbo;
 }
 
+RemoteHandle::RemoteHandle () :
+  orbop_ (__aida_null_orb_object__())
+{}
+
 RemoteHandle::RemoteHandle (OrbObjectP orbo) :
   orbop_ (orbo ? orbo : __aida_null_orb_object__())
 {}
 
-RemoteHandle::~RemoteHandle()
+RemoteHandle::RemoteHandle (const RemoteHandle &y) :
+  orbop_ (y.orbop_)
+{}
+
+RemoteHandle::RemoteHandle (RemoteHandle &&other) noexcept :
+  orbop_ (other.orbop_)
 {
-  __handle_scope_clear__();
+  other.orbop_ = __aida_null_orb_object__();
 }
+
+RemoteHandle::~RemoteHandle()
+{}
 
 RemoteHandle&
 RemoteHandle::operator= (const RemoteHandle& other)
 {
   return_unless (this != &other, *this);
-  this->__handle_scope_clear__();
   orbop_ = other.orbop_;
+  return *this;
+}
+
+RemoteHandle&
+RemoteHandle::operator= (RemoteHandle &&other)
+{
+  return_unless (this != &other, *this);
+  orbop_ = other.orbop_;
+  other.orbop_ = __aida_null_orb_object__();
   return *this;
 }
 
@@ -1752,30 +1770,38 @@ RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
   orbop_ = orbop ? orbop : __aida_null_orb_object__();
 }
 
+// == DetacherHooks ==
 void
-RemoteHandle::__handle_scope_clear__ ()
+DetacherHooks::__clear_hooks__ (RemoteHandle *scopedhandle)
 {
-  if (orbop_ && !orbop_->handle_scope_hooks_.empty())
+  while (!detach_ids_.empty())
     {
-      OrbObjectP op = orbop_;
-    call_deleters:
-      for (size_t i = 0; i < op->handle_scope_hooks_.size(); i++)
-        if (op->handle_scope_hooks_[i].rhandle == this)
-          {
-            ::std::function<void()> deleter = op->handle_scope_hooks_[i].deleter;
-            op->handle_scope_hooks_.erase (op->handle_scope_hooks_.begin() + i);
-            deleter(); // may change handle_scope_hooks_
-            goto call_deleters;
-          }
+      const uint64 hid = detach_ids_.back();
+      detach_ids_.pop_back();
+      scopedhandle->__event_detach__ (hid);
     }
 }
 
 void
-RemoteHandle::__on_handle_delete__ (const std::function<void()> &deleter)
+DetacherHooks::__swap_hooks__ (DetacherHooks &other)
 {
-  assert_return (deleter != NULL);
-  assert_return (orbop_ != NULL);
-  orbop_->handle_scope_hooks_.push_back ({ this, deleter });
+  std::swap (other.detach_ids_, detach_ids_);
+}
+
+void
+DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type, EventHandlerF handler)
+{
+  assert_return (scopedhandle != NULL);
+  assert_return (*scopedhandle != NULL);
+  const uint64 hid = scopedhandle->__event_attach__ (type, handler);
+  if (hid)
+    detach_ids_.push_back (hid);
+}
+
+void
+DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type, std::function<void()> vfunc)
+{
+  __manage_event__ (scopedhandle, type, [vfunc] (const Aida::Event&) { vfunc(); });
 }
 
 // == ProtoMsg ==
