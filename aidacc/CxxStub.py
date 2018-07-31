@@ -654,7 +654,7 @@ class Generator:
       s += 'void operator>>= (Aida::ProtoReader&, %sP&);\n' % self.C (type_info)
     # typedef alias
     if self.gen_mode == G4STUB:
-      s += self.generate_shortalias (type_info)
+      s += self.generate_handle_typedefs (type_info)
     return s
   def generate_shortdoc (self, type_info):      # doxygen snippets
     classC = self.C (type_info) # class name
@@ -663,12 +663,13 @@ class Generator:
     s += ' * See also the corresponding C++ %s class %s. */\n' % (xkind, classC)
     s += '/// See also the corresponding IDL class %s.\n' % type_info.name
     return s
-  def generate_shortalias (self, type_info):
+  def generate_handle_typedefs (self, type_info):
     assert self.gen_mode == G4STUB
     s = ''
-    alias = self.type2cpp (type_info) + 'H'
-    s += 'typedef %s %s;' % (self.C (type_info), alias)
+    cxxtypename = self.type2cpp (type_info)
+    s += 'typedef %s %sH;' % (self.C (type_info), cxxtypename)
     s += ' ///< Convenience alias for the IDL type %s.\n' % type_info.name
+    s += 'typedef ::Aida::ScopedHandle<%sH> %sS;\n' % (cxxtypename, cxxtypename)
     return s
   def generate_method_decl (self, class_info, functype, pad):
     s, copydoc = '  ', ''
