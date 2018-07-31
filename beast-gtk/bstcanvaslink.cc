@@ -30,11 +30,11 @@ bst_canvas_link_init (BstCanvasLink *clink)
   clink->ocsource = NULL;
   clink->ochannel = ~0;
   clink->oc_handler = 0;
-  new (&clink->oc_bsesource) Bse::SourceH();
+  new (&clink->oc_bsesource) Bse::SourceS();
   clink->icsource = NULL;
   clink->ichannel = ~0;
   clink->ic_handler = 0;
-  new (&clink->ic_bsesource) Bse::SourceH();
+  new (&clink->ic_bsesource) Bse::SourceS();
   clink->link_view = NULL;
 }
 
@@ -61,8 +61,8 @@ bst_canvas_link_finalize (GObject *object)
   G_OBJECT_CLASS (bst_canvas_link_parent_class)->finalize (object);
 
   using namespace Bse;
-  self->oc_bsesource.~SourceH();
-  self->ic_bsesource.~SourceH();
+  self->oc_bsesource.~SourceS();
+  self->ic_bsesource.~SourceS();
 }
 
 GnomeCanvasItem*
@@ -232,8 +232,8 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      clink->oc_bsesource = clink->ocsource->source; // only needed for scpoed_on
-      Bst::scoped_on (&clink->oc_bsesource, "notify:uname", [clink] () { clink_view_check_update (clink); });
+      clink->oc_bsesource = clink->ocsource->source.__copy_handle__(); // only needed to manage event handlers
+      clink->oc_bsesource.on ("notify:uname", [clink] () { clink_view_check_update (clink); });
       bst_canvas_link_update (clink);
     }
 }
@@ -263,8 +263,8 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      clink->ic_bsesource = clink->icsource->source; // only needed for scpoed_on
-      Bst::scoped_on (&clink->ic_bsesource, "notify:uname", [clink] () { clink_view_check_update (clink); });
+      clink->ic_bsesource = clink->icsource->source.__copy_handle__(); // only needed to manage event handlers
+      clink->ic_bsesource.on ("notify:uname", [clink] () { clink_view_check_update (clink); });
       bst_canvas_link_update (clink);
     }
 }
