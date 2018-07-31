@@ -193,7 +193,7 @@ bst_app_unregister (BstApp *app)
 static void
 bst_app_init (BstApp *self)
 {
-  new (&self->project) Bse::ProjectH();
+  new (&self->project) Bse::ProjectS();
   GtkWidget *widget = GTK_WIDGET (self);
   GxkActionList *al1;
 
@@ -342,7 +342,7 @@ bst_app_finalize (GObject *object)
 
   G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
   using namespace Bse;
-  self->project.~ProjectH();
+  self->project.~ProjectS();
 }
 
 BstApp*
@@ -354,7 +354,7 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
-  Bst::scoped_on (&self->project, "treechange", [self] () { bst_app_reload_pages (self); });
+  self->project.on ("treechange", [self] () { bst_app_reload_pages (self); });
 #if 0 // FIXME
   self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
     gxk_widget_update_actions (self);
@@ -411,8 +411,7 @@ bst_app_get_current_super (BstApp *app)
 }
 
 struct AppPage {
-  Bse::SuperH super;
-  uint64 update_hid = 0;
+  Bse::SuperS super;
   AppPage (Bse::SuperH sp) :
     super (sp)
   {
@@ -421,8 +420,6 @@ struct AppPage {
   }
   ~AppPage()
   {
-    if (update_hid)
-      super.off (update_hid);
     if (super)
       super.unuse();
   }
@@ -442,7 +439,7 @@ bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
     entry->label = g_strdup (apage->super.get_name_or_type().c_str());
     gxk_assortment_changed (self->ppages, entry);
   };
-  apage->update_hid = super.on ("notify:uname", uname_change);
+  apage->super.on ("notify:uname", uname_change);
   String tip;
   if (BSE_IS_WAVE_REPO (itemid))
     {
