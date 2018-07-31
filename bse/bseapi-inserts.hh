@@ -4,16 +4,6 @@ IGNORE:
 struct DUMMY { // dummy class for auto indentation
 
 
-handle_scope:Object:
-  uint64_t on  (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->RemoteHandle::__event_attach__ (type, handler); }
-  uint64_t on  (const ::std::string &type, ::std::function<void()> vfunc) { return this->RemoteHandle::__event_attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
-  void     off (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
-  void     off (uint64_t connection_id)
-  {
-    if (connection_id && !this->RemoteHandle::__event_detach__ (connection_id))
-      Bse::warning ("Bse::Object.off(): unknown handler id: %u", connection_id);
-  }
-
 interface_scope:Object:
   BSE_USE_RESULT
   uint64_t on  (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
