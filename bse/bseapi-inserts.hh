@@ -15,7 +15,9 @@ handle_scope:Object:
   }
 
 interface_scope:Object:
+  BSE_USE_RESULT
   uint64_t on  (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
+  BSE_USE_RESULT
   uint64_t on  (const ::std::string &type, ::std::function<void()> vfunc) { return this->ImplicitBase::__event_attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
   void     off (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
   void     off (uint64_t connection_id)
