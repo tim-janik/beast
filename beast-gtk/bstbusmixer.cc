@@ -146,7 +146,7 @@ bus_mixer_set_container (BstItemView *iview,
           SfiProxy item = (SfiProxy) g_slist_pop_head (&self->unlisteners);
           bus_mixer_item_removed (0, item, 0, self);
         }
-      bse_proxy_disconnect (iview->container,
+      bse_proxy_disconnect (iview->container.proxy_id(),
                             "any-signal", bus_mixer_item_added, self,
                             "any-signal", bus_mixer_item_removed, self,
                             NULL);
@@ -154,14 +154,14 @@ bus_mixer_set_container (BstItemView *iview,
   BST_ITEM_VIEW_CLASS (bst_bus_mixer_parent_class)->set_container (iview, container);
   if (iview->container)
     {
-      bse_proxy_connect (iview->container,
+      bse_proxy_connect (iview->container.proxy_id(),
                          "signal::item_added", bus_mixer_item_added, self,
                          "signal::item_remove", bus_mixer_item_removed, self,
                          NULL);
-      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (iview->container));
+      Bse::ContainerH container = iview->container;
       Bse::ItemSeq items = container.list_children();
       for (size_t i = 0; i < items.size(); i++)
-        bus_mixer_item_added (iview->container, items[i].proxy_id(), self);
+        bus_mixer_item_added (container.proxy_id(), items[i].proxy_id(), self);
     }
 }
 
@@ -171,7 +171,7 @@ bus_mixer_action_exec (gpointer data,
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (iview->container));
+  Bse::SongH song = Bse::SongH::down_cast (iview->container);
   switch (action)
     {
     case ACTION_ADD_BUS:
@@ -206,7 +206,7 @@ bus_mixer_action_check (gpointer data,
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (iview->container));
+  Bse::SongH song = Bse::SongH::down_cast (iview->container);
   switch (action)
     {
     case ACTION_ADD_BUS:

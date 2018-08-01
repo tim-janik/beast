@@ -98,22 +98,20 @@ sound_font_view_action_exec (gpointer                data,
 {
   BstSoundFontView *self = BST_SOUND_FONT_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy sfrepo = item_view->container;
+  Bse::SoundFontRepoH sfrepo = Bse::SoundFontRepoH::down_cast (item_view->container);
   switch (action)
     {
-      SfiProxy item;
     case ACTION_LOAD_SOUND_FONT:
-      bst_file_dialog_popup_load_sound_font (item_view, BST_ITEM_VIEW (self)->container, FALSE);
+      bst_file_dialog_popup_load_sound_font (item_view, sfrepo.proxy_id(), FALSE);
       break;
     case ACTION_LOAD_SOUND_FONT_LIB:
-      bst_file_dialog_popup_load_sound_font (item_view, BST_ITEM_VIEW (self)->container, TRUE);
+      bst_file_dialog_popup_load_sound_font (item_view, sfrepo.proxy_id(), TRUE);
       break;
     case ACTION_DELETE_SOUND_FONT:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (self));
       {
-        Bse::SoundFontRepoH repo = Bse::SoundFontRepoH::down_cast (bse_server.from_proxy (sfrepo));
+        SfiProxy item = bst_item_view_get_current (BST_ITEM_VIEW (self));
         Bse::SoundFontH sound_font = Bse::SoundFontH::down_cast (bse_server.from_proxy (item));
-        repo.remove_sound_font (sound_font);
+        sfrepo.remove_sound_font (sound_font);
       }
       break;
     default:

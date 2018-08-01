@@ -112,7 +112,7 @@ track_view_fill_value (BstItemView *iview,
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
   guint seqid = row + 1;
-  Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (iview->container));
+  Bse::ContainerH container = iview->container;
   Bse::ItemH item = container.get_item (BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
   if (!item)
     return; // item is probably already destructed
@@ -494,11 +494,11 @@ get_track (void *data, int row)
 static void
 track_view_marks_changed (BstTrackView *self)
 {
-  SfiProxy song = BST_ITEM_VIEW (self)->container;
+  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
   if (self->troll && song)
     {
       SfiInt lleft, lright, pointer;
-      bse_proxy_get (song, "loop_left", &lleft, "loop_right", &lright, "tick_pointer", &pointer, NULL);
+      bse_proxy_get (song.proxy_id(), "loop_left", &lleft, "loop_right", &lright, "tick_pointer", &pointer, NULL);
       bst_track_roll_set_marker (self->troll, 1, lleft, lleft >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 2, lright, lright >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 3, pointer, pointer >= 0 ? BST_TRACK_ROLL_MARKER_POS : BST_TRACK_ROLL_MARKER_NONE);
@@ -508,20 +508,20 @@ track_view_marks_changed (BstTrackView *self)
 static void
 track_view_repeat_toggled (BstTrackView *self)
 {
-  SfiProxy song = BST_ITEM_VIEW (self)->container;
+  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
   if (song && self->repeat_toggle)
-    bse_proxy_set (song, "loop_enabled", GTK_TOGGLE_BUTTON (self->repeat_toggle)->active, NULL);
+    bse_proxy_set (song.proxy_id(), "loop_enabled", GTK_TOGGLE_BUTTON (self->repeat_toggle)->active, NULL);
 }
 
 static void
 track_view_repeat_changed (BstTrackView *self)
 {
-  SfiProxy song = BST_ITEM_VIEW (self)->container;
+  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
   if (song && self->repeat_toggle)
     {
       GtkToggleButton *toggle = GTK_TOGGLE_BUTTON (self->repeat_toggle);
       gboolean enabled;
-      bse_proxy_get (song, "loop_enabled", &enabled, NULL);
+      bse_proxy_get (song.proxy_id(), "loop_enabled", &enabled, NULL);
       if (toggle->active != enabled)
 	gtk_toggle_button_set_active (toggle, enabled);
     }
@@ -606,7 +606,8 @@ bst_track_view_init (BstTrackView *self)
 
   /* track roll controller */
   self->tctrl = bst_track_roll_controller_new (self->troll);
-  bst_track_roll_controller_set_song (self->tctrl, iview->container);
+  Bse::SongH song = Bse::SongH::down_cast (iview->container);
+  bst_track_roll_controller_set_song (self->tctrl, song ? song.proxy_id() : 0);
   gxk_widget_publish_action_list (self, "tctrl-canvas-tools", bst_track_roll_controller_canvas_actions (self->tctrl));
   gxk_widget_publish_action_list (self, "tctrl-hpanel-tools", bst_track_roll_controller_hpanel_actions (self->tctrl));
   gxk_widget_publish_action_list (self, "tctrl-quant-tools", bst_track_roll_controller_quant_actions (self->tctrl));
@@ -685,19 +686,26 @@ track_view_set_container (BstItemView *iview,
 			  SfiProxy     new_container)
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
-  if (BSE_IS_SONG (iview->container))
-    bse_proxy_disconnect (iview->container,
+  Bse::SongH song = Bse::SongH::down_cast (iview->container);
+  if (song)
+    bse_proxy_disconnect (song.proxy_id(),
 			  "any_signal", track_view_pointer_changed, self,
 			  "any_signal", track_view_marks_changed, self,
 			  "any_signal", track_view_repeat_changed, self,
 			  NULL);
   BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->set_container (iview, new_container);
   if (self->troll)
-    bst_track_roll_setup (self->troll, iview->container ? iview->tree : NULL, iview->container);
-  if (BSE_IS_SONG (iview->container))
     {
-      bst_track_roll_controller_set_song (self->tctrl, iview->container);
-      bse_proxy_connect (iview->container,
+      if (iview->container)
+        bst_track_roll_setup (self->troll, iview->tree, iview->container.proxy_id());
+      else
+        bst_track_roll_setup (self->troll, NULL, 0);
+    }
+  song = Bse::SongH::down_cast (iview->container);
+  if (song)
+    {
+      bst_track_roll_controller_set_song (self->tctrl, song.proxy_id());
+      bse_proxy_connect (song.proxy_id(),
 			 "swapped_signal::pointer-changed", track_view_pointer_changed, self,
 			 "swapped_signal::property-notify::loop-left", track_view_marks_changed, self,
 			 "swapped_signal::property-notify::loop-right", track_view_marks_changed, self,
@@ -755,7 +763,7 @@ track_view_action_exec (gpointer data,
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
+  Bse::SongH song = Bse::SongH::down_cast (item_view->container);
 
   Bse::TrackH track;
   switch (action)

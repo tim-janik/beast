@@ -127,22 +127,20 @@ wave_view_action_exec (gpointer data, size_t action)
 {
   BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy wrepo = item_view->container;
+  Bse::WaveRepoH wrepo = Bse::WaveRepoH::down_cast (item_view->container);
   switch (action)
     {
-      SfiProxy item;
     case ACTION_LOAD_WAVE:
-      bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, FALSE);
+      bst_file_dialog_popup_load_wave (item_view, wrepo.proxy_id(), FALSE);
       break;
     case ACTION_LOAD_WAVE_LIB:
-      bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, TRUE);
+      bst_file_dialog_popup_load_wave (item_view, wrepo.proxy_id(), TRUE);
       break;
     case ACTION_DELETE_WAVE:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (self));
       {
-        Bse::WaveRepoH repo = Bse::WaveRepoH::down_cast (bse_server.from_proxy (wrepo));
+        SfiProxy item = bst_item_view_get_current (BST_ITEM_VIEW (self));
         Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (item));
-        repo.remove_wave (wave);
+        wrepo.remove_wave (wave);
       }
       break;
     case ACTION_EDIT_WAVE:

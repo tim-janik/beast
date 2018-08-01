@@ -39,7 +39,7 @@ bst_item_view_class_init (BstItemViewClass *klass)
 static void
 bst_item_view_init (BstItemView *self)
 {
-  self->container = 0;
+  new (&self->container) Bse::ContainerS();
 }
 
 static void
@@ -64,6 +64,9 @@ bst_item_view_finalize (GObject *object)
     g_object_unref (self->wlist);
 
   G_OBJECT_CLASS (bst_item_view_parent_class)->finalize (object);
+
+  using namespace Bse;
+  self->container.~ContainerS();
 }
 
 void
@@ -231,7 +234,7 @@ item_view_set_container (BstItemView *self,
 {
   if (self->container)
     {
-      bse_proxy_disconnect (self->container,
+      bse_proxy_disconnect (self->container.proxy_id(),
 			    "any_signal", bst_item_view_release_container, self,
 			    NULL);
       if (self->wlist)
@@ -239,14 +242,14 @@ item_view_set_container (BstItemView *self,
       if (self->pview)
 	bst_param_view_set_item (BST_PARAM_VIEW (self->pview), 0);
     }
-  self->container = new_container;
+  self->container = Bse::ContainerH::down_cast (bse_server.from_proxy (new_container));
   if (self->container)
     {
-      bse_proxy_connect (self->container,
+      bse_proxy_connect (self->container.proxy_id(),
 			 "swapped_signal::release", bst_item_view_release_container, self,
 			 NULL);
       if (self->wlist)
-	bst_child_list_wrapper_setup (self->wlist, self->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type);
+	bst_child_list_wrapper_setup (self->wlist, self->container.proxy_id(), BST_ITEM_VIEW_GET_CLASS (self)->item_type);
     }
 }
 
@@ -272,7 +275,7 @@ bst_item_view_select (BstItemView *self,
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
   Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
-  if (self->tree && parent && parent.proxy_id() == self->container)
+  if (self->tree && parent && parent.proxy_id() == self->container.proxy_id())
     {
       GtkTreeIter witer;
       if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))
@@ -299,7 +302,7 @@ bst_item_view_get_proxy_row (BstItemView *self,
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
   Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
-  if (self->tree && parent && parent.proxy_id() == self->container)
+  if (self->tree && parent && parent.proxy_id() == self->container.proxy_id())
     {
       GtkTreeIter witer;
       if (bst_child_list_wrapper_get_iter (self->wlist, &witer, itemid))
