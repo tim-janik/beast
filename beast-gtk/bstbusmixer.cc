@@ -147,15 +147,18 @@ bus_mixer_set_container (BstItemView *iview,
           bus_mixer_item_removed (0, item, 0, self);
         }
       bse_proxy_disconnect (iview->container.proxy_id(),
-                            "any-signal", bus_mixer_item_added, self,
                             "any-signal", bus_mixer_item_removed, self,
                             NULL);
     }
   BST_ITEM_VIEW_CLASS (bst_bus_mixer_parent_class)->set_container (iview, container);
   if (iview->container)
     {
+      auto item_added = [self] (const Aida::Event &ev) {
+        Bse::ItemH item = ev["item"];
+        bus_mixer_item_added (BST_ITEM_VIEW (self)->container.proxy_id(), item.proxy_id(), self);
+      };
+      iview->container.on ("treechange:additem", item_added);
       bse_proxy_connect (iview->container.proxy_id(),
-                         "signal::item_added", bus_mixer_item_added, self,
                          "signal::item_remove", bus_mixer_item_removed, self,
                          NULL);
       Bse::ContainerH container = iview->container;
