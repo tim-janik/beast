@@ -32,6 +32,10 @@ G_DEFINE_TYPE (BstBusEditor, bst_bus_editor, GTK_TYPE_ALIGNMENT);
 static void
 bst_bus_editor_init (BstBusEditor *self)
 {
+  new (&self->source) Bse::SourceS();
+  new (&self->lmonitor) Bse::SignalMonitorS();
+  new (&self->rmonitor) Bse::SignalMonitorS();
+  self->mon_handler = 0;
   /* complete GUI */
   gxk_radget_complete (GTK_WIDGET (self), "beast", "bus-editor", NULL);
   /* create tool actions */
@@ -54,6 +58,11 @@ bst_bus_editor_finalize (GObject *object)
   BstBusEditor *self = BST_BUS_EDITOR (object);
   bst_bus_editor_set_bus (self, 0);
   G_OBJECT_CLASS (bst_bus_editor_parent_class)->finalize (object);
+  using namespace Bse;
+  Bst::remove_handler (&self->mon_handler);
+  self->source.~SourceS();
+  self->lmonitor.~SignalMonitorS();
+  self->rmonitor.~SignalMonitorS();
 }
 
 GtkWidget*
@@ -73,25 +82,6 @@ bus_editor_release_item (SfiProxy      item,
   assert_return (self->item == item);
   bst_bus_editor_set_bus (self, 0);
 }
-
-#if 0 // OUTDATED
-static void
-bus_probes_notify (BstBusEditor *self, const Bse::ProbeSeq &pseq)
-{
-  const Bse::Probe *lprobe = NULL, *rprobe = NULL;
-  for (size_t i = 0; i < pseq.size() && (!lprobe || !rprobe); i++)
-    if (pseq[i].channel == 0)
-      lprobe = &pseq[i];
-    else if (pseq[i].channel == 1)
-      rprobe = &pseq[i];
-  if (self->lbeam && lprobe && lprobe->probe_features.probe_energy)
-    bst_db_beam_set_value (self->lbeam, lprobe->energie);
-  if (self->rbeam && rprobe && rprobe->probe_features.probe_energy)
-    bst_db_beam_set_value (self->rbeam, rprobe->energie);
-  bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
-  bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
-}
-#endif
 
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
@@ -124,17 +114,21 @@ bst_bus_editor_set_bus (BstBusEditor *self,
     assert_return (BSE_IS_BUS (item));
   if (self->item)
     {
+      Bst::remove_handler (&self->mon_handler);
+      self->lmonitor = NULL;
+      self->rmonitor = NULL;
       Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
-      // FIXME: source.sig_probes() -= self->probes_handler;
       bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
+      self->source = NULL;
       while (self->params)
         gxk_param_destroy ((GxkParam*) sfi_ring_pop_head (&self->params));
     }
   self->item = item;
   if (self->item)
     {
+      self->source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
       GParamSpec *pspec;
       SfiRing *ring;
       bse_proxy_connect (self->item,
@@ -178,12 +172,27 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
         gxk_param_update ((GxkParam*) ring->data);
       /* setup scope */
-      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
-      // FIXME: self->probes_handler = source.sig_probes() += [self] (const Bse::ProbeSeq &pseq) {
-      //return bus_probes_notify (self, pseq);
-      //};
-      //bst_source_queue_probe_request (self->item, 0, BST_SOURCE_PROBE_ENERGY, 20.0);
-      //bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGY, 20.0);
+      Bse::ProbeFeatures features;
+      features.probe_energy = true;
+      self->lmonitor = self->source.create_signal_monitor (0);
+      self->rmonitor = self->source.create_signal_monitor (1);
+      self->lmonitor.set_probe_features (features);
+      self->rmonitor.set_probe_features (features);
+      Bst::MonitorFieldU lfields = Bst::monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
+      Bst::MonitorFieldU rfields = Bst::monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
+      auto framecb = [self, lfields, rfields] () {
+        bst_db_beam_set_value (self->lbeam, lfields.f32 (Bse::MonitorField::F32_DB_SPL));
+        bst_db_beam_set_value (self->rbeam, rfields.f32 (Bse::MonitorField::F32_DB_SPL));
+        if (0)
+          printerr ("BstBusEditor: (%x.%x/%x %x.%x/%x) ldb=%f rdb=%f\n",
+                    self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(),
+                    lfields.f64 (Bse::MonitorField::F64_GENERATION),
+                    self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(),
+                    rfields.f64 (Bse::MonitorField::F64_GENERATION),
+                    lfields.f32 (Bse::MonitorField::F32_DB_SPL),
+                    rfields.f32 (Bse::MonitorField::F32_DB_SPL));
+      };
+      self->mon_handler = Bst::add_frame_handler (framecb);
     }
 }
 
