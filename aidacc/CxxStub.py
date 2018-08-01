@@ -597,7 +597,7 @@ class Generator:
     if self.gen_mode == G4STUB:
       for sg in type_info.signals:
         s += self.generate_client_signal_decl (sg, type_info)
-      s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
+      s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
       s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
     s += 'protected:\n'
@@ -614,7 +614,7 @@ class Generator:
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
       s += '  template<class RemoteHandle>\n'
-      s += '  ' + self.F ('static %s' % classH) + 'down_cast (RemoteHandle smh) '
+      s += '  ' + self.F ('static %s' % classH) + 'down_cast (const RemoteHandle &smh) '
       s += '{ return smh == NULL ? %s() : __aida_cast__ (smh, smh.__aida_typelist__()); }\n' % classH
       s += '  ' + self.F ('explicit') + '%s ();\n' % classH # ctor
       #s += '  ' + self.F ('inline') + '%s (const %s &src)' % (classH, classH) # copy ctor
@@ -803,7 +803,7 @@ class Generator:
     s += '  static const Aida::TypeHash type_hash = Aida::TypeHash (%s);\n' % self.class_digest (class_info)
     s += '  return type_hash;\n'
     s += '}\n'
-    s += '%s\n%s::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)\n{\n' % classH2 # similar to ctor
+    s += '%s\n%s::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)\n{\n' % classH2 # similar to ctor
     s += '  const Aida::TypeHash &mine = __aida_typeid__();\n'
     s += '  %s target;\n' % classH
     s += '  for (size_t i = 0; i < types.size(); i++)\n'
