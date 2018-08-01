@@ -120,8 +120,7 @@ reinstall_frame_handler()
 static uint
 initialize_frame_handlers()
 {
-  const uint64 hid = bse_server.on ("enginechange", [] (const Aida::Event&) { reinstall_frame_handler(); });
-  (void) hid; // dismiss, never call off (hid);
+  bse_server.on ("enginechange", [] (const Aida::Event&) { reinstall_frame_handler(); });
   reinstall_frame_handler();
   return 0x200000; // first handler id
 }
@@ -170,8 +169,14 @@ scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::std::
 } // Bst
 
 /* --- variables --- */
+/** Global handle to communicate with the remote BSE server instance.
+ * Initialize with *new in order to avoid calls to ~ServerS from atexit() handlers,
+ * since the dtor would make remote calls and around atexit time the remote end
+ * has been shutdown.
+ */
+Bse::ServerS &bse_server = *new Bse::ServerS(); // avoid ~ServerS from atexit() handlers
+
 static GtkIconFactory *stock_icon_factory = NULL;
-Bse::ServerH bse_server;
 
 /* --- functions --- */
 void
@@ -317,21 +322,19 @@ bst_window_sync_title_to_proxy (gpointer     window,
   Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
   if (item)
     {
+      Bse::ItemS *itemp = new Bse::ItemS (item);
       const char *const p = title_format ? strstr (title_format, "%s") : NULL;
       const std::string t1 = p ? std::string (title_format, p - title_format) : title_format;
       const std::string t2 = p ? p + 2 : "";
-      auto setter = [t1, t2, item, window] () {
-        Bse::ItemH itemh = item;
-        const String name = itemh.get_name_or_type();
+      auto setter = [t1, t2, itemp, window] () {
+        const String name = itemp->get_name_or_type();
         const std::string title = t1 + name + t2;
         g_object_set (window, "title", title.c_str(), NULL);
       };
-      const uint64 hid = item.on ("notify:uname", [setter] (const Aida::Event&) { setter(); });
-      typedef std::pair<Bse::ItemH, ptrdiff_t> HandlerDeleter;
-      g_object_set_data_full ((GObject*) window, "bst-title-sync", new HandlerDeleter (item, hid), [] (void *data) {
-          HandlerDeleter *d = (HandlerDeleter*) data;
-          d->first.off (d->second);
-          delete d;
+      itemp->on ("notify:uname", [setter] (const Aida::Event&) { setter(); });
+      g_object_set_data_full ((GObject*) window, "bst-title-sync", itemp, [] (void *data) {
+          Bse::ItemS *itemp = (Bse::ItemS*) data;
+          delete itemp; // deletes notify:uname handler
         });
       setter();
     }

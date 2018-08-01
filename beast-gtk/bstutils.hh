@@ -33,7 +33,7 @@ void scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::
 } // Bst
 
 // == Bse Server (BSE remote origin) ==
-extern Bse::ServerH bse_server;
+extern Bse::ServerS &bse_server;
 
 
 /* --- GUI utilities --- */
