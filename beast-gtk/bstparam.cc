@@ -205,22 +205,24 @@ bst_param_new_object (GParamSpec  *pspec,
 }
 
 /* --- proxy binding --- */
+static Bse::ItemS* proxy_binding_item (GxkParam *param);
+
 static void
 proxy_binding_set_value (GxkParam     *param,
                          const GValue *value)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
-  if (item)
-    sfi_glue_proxy_set_property (item.proxy_id(), param->pspec->name, value);
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
+    sfi_glue_proxy_set_property (itemp->proxy_id(), param->pspec->name, value);
 }
 
 static void
 proxy_binding_get_value (GxkParam *param, GValue *value)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
-  if (item)
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
     {
-      const GValue *cvalue = sfi_glue_proxy_get_property (item.proxy_id(), param->pspec->name);
+      const GValue *cvalue = sfi_glue_proxy_get_property (itemp->proxy_id(), param->pspec->name);
       if (cvalue)
 	g_value_transform (cvalue, value);
       else
@@ -234,16 +236,17 @@ static void
 proxy_binding_weakref (gpointer data, SfiProxy junk)
 {
   GxkParam *param = (GxkParam*) data;
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
+  Bse::ItemS *itemp = proxy_binding_item (param);
   param->bdata[0].v_pointer = NULL;
   param->bdata[1].v_long = 0;  /* already disconnected */
   delete itemp;
+  assert_return (NULL == proxy_binding_item (param));
 }
 
 static void
 proxy_binding_destroy (GxkParam *param)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
+  Bse::ItemS *itemp = proxy_binding_item (param);
   if (param->bdata[1].v_long)
     {
       sfi_glue_signal_disconnect (itemp->proxy_id(), param->bdata[1].v_long);
@@ -252,30 +255,31 @@ proxy_binding_destroy (GxkParam *param)
   param->bdata[0].v_pointer = NULL;
   param->bdata[1].v_long = 0;
   delete itemp;
+  assert_return (NULL == proxy_binding_item (param));
 }
 
 static void
 proxy_binding_start_grouping (GxkParam *param)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
-  if (item)
-    item.group_undo (string_format ("Modify %s", g_param_spec_get_nick (param->pspec)));
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
+    itemp->group_undo (string_format ("Modify %s", g_param_spec_get_nick (param->pspec)));
 }
 
 static void
 proxy_binding_stop_grouping (GxkParam *param)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
-  if (item)
-    item.ungroup_undo();
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
+    itemp->ungroup_undo();
 }
 
 static gboolean
 proxy_binding_check_writable (GxkParam *param)
 {
-  Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer, &item = *itemp;
-  if (item)
-    return item.editable_property (param->pspec->name);
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
+    return itemp->editable_property (param->pspec->name);
   else
     return false;
 }
@@ -290,6 +294,13 @@ static GxkParamBinding proxy_binding = {
   proxy_binding_start_grouping,
   proxy_binding_stop_grouping,
 };
+
+static Bse::ItemS*
+proxy_binding_item (GxkParam *param)
+{
+  assert_return (param && param->binding == &proxy_binding, NULL);
+  return (Bse::ItemS*) param->bdata[0].v_pointer;
+}
 
 GxkParam*
 bst_param_new_proxy (GParamSpec *pspec, SfiProxy proxy)
@@ -306,15 +317,21 @@ bst_param_set_item (GxkParam *param, Bse::ItemH item)
   assert_return (GXK_IS_PARAM (param));
   assert_return (param->binding == &proxy_binding);
 
-  if (param->bdata[0].v_pointer)
+  Bse::ItemS *itemp = proxy_binding_item (param);
+  if (itemp)
     proxy_binding_destroy (param);
-  param->bdata[0].v_pointer = new Bse::ItemH (item);
   if (item)
     {
+      itemp = new Bse::ItemS (item);
+      assert_return (item == itemp->__copy_handle__());
+      param->bdata[0].v_pointer = itemp;
+      itemp = proxy_binding_item (param);
+      assert_return (itemp != NULL);
+      assert_return (item == itemp->__copy_handle__());
       gchar *sig = g_strconcat ("property-notify::", param->pspec->name, NULL);
-      param->bdata[1].v_long = sfi_glue_signal_connect_swapped (item.proxy_id(), sig, (void*) gxk_param_update, param);
+      param->bdata[1].v_long = sfi_glue_signal_connect_swapped (itemp->proxy_id(), sig, (void*) gxk_param_update, param);
       g_free (sig);
-      sfi_glue_proxy_weak_ref (item.proxy_id(), proxy_binding_weakref, param);
+      sfi_glue_proxy_weak_ref (itemp->proxy_id(), proxy_binding_weakref, param);
     }
 }
 
@@ -338,8 +355,9 @@ bst_param_get_item (GxkParam *param)
   assert_return (GXK_IS_PARAM (param), item);
   if (param->binding == &proxy_binding)
     {
-      Bse::ItemH *itemp = (Bse::ItemH*) param->bdata[0].v_pointer;
-      item = *itemp;
+      Bse::ItemS *itemp = proxy_binding_item (param);
+      if (itemp)
+        item = *itemp;
     }
   return item;
 }
@@ -406,10 +424,12 @@ bst_param_new_rec (GParamSpec *pspec,
 
 
 // == Aida::Parameter binding ==
+static Bse::ObjectS* aida_property_binding_object (GxkParam *param);
+
 static void
 aida_property_binding_set_value (GxkParam *param, const GValue *value)
 {
-  Bse::ObjectHandle &handle = *(Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  Bse::ObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
   Any any;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
@@ -438,15 +458,15 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  handle.__aida_set__ (pspec->name, any);
+  objectp->__aida_set__ (pspec->name, any);
 }
 
 static void
 aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 {
-  Bse::ObjectHandle &handle = *(Bse::ObjectHandle*) param->bdata[0].v_pointer;
+  Bse::ObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
-  Any any = handle.__aida_get__(pspec->name);
+  Any any = objectp->__aida_get__ (pspec->name);
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {
@@ -491,20 +511,17 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 static void
 aida_property_binding_destroy (GxkParam *param)
 {
-  Bse::ObjectHandle *handlep = (Bse::ObjectHandle*) param->bdata[0].v_pointer;
-  assert_return (handlep);
-  const uint64 hid = ptrdiff_t (param->bdata[1].v_pointer);
+  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  assert_return (objectp);
   param->bdata[0].v_pointer = NULL;
-  param->bdata[1].v_pointer = NULL;
-  handlep->off (hid);
-  delete handlep;
+  delete objectp;
 }
 
 static gboolean
 aida_property_binding_check_writable (GxkParam *param)
 {
-  Bse::ObjectHandle *handlep = (Bse::ObjectHandle*) param->bdata[0].v_pointer;
-  assert_return (handlep, false);
+  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  assert_return (objectp, false);
   return true;
 }
 
@@ -517,18 +534,24 @@ static GxkParamBinding aida_property_binding = {
   aida_property_binding_check_writable,
 };
 
-GxkParam*
-bst_param_new_property (GParamSpec *pspec, const Bse::ObjectHandle handle)
+static Bse::ObjectS*
+aida_property_binding_object (GxkParam *param)
 {
+  assert_return (param && param->binding == &aida_property_binding, NULL);
+  return (Bse::ObjectS*) param->bdata[0].v_pointer;
+}
+
+GxkParam*
+bst_param_new_property (GParamSpec *pspec, const Bse::ObjectH handle)
+{
+  assert_return (handle != NULL, NULL);
   GxkParam *param = gxk_param_new (pspec, &aida_property_binding, NULL);
-  Bse::ObjectHandle *handlep = new Bse::ObjectHandle (handle);
-  param->bdata[0].v_pointer = handlep;
+  Bse::ObjectS *objectp = new Bse::ObjectS (handle);
+  param->bdata[0].v_pointer = objectp;
   auto notify = [param] (const Aida::Event &event) {
     gxk_param_update (param);
   };
-  const uint64 hid = handlep->on (String ("notify:") + param->pspec->name, notify);
-  static_assert (sizeof (param->bdata[1].v_pointer) == sizeof (hid), "");
-  param->bdata[1].v_pointer = (void*) ptrdiff_t (hid);
+  objectp->on (String ("notify:") + param->pspec->name, notify);
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }

@@ -30,11 +30,11 @@ struct _BstCanvasLink
   BstCanvasSource *ocsource;
   guint            ochannel;
   gulong           oc_handler;
-  Bse::SourceH     oc_bsesource;
+  Bse::SourceS     oc_bsesource;
   BstCanvasSource *icsource;
   guint            ichannel;
   gulong           ic_handler;
-  Bse::SourceH     ic_bsesource;
+  Bse::SourceS     ic_bsesource;
 
   guint		   in_move : 1;
   gdouble          start_move_dx, start_move_dy;

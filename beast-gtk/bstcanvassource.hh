@@ -21,7 +21,7 @@ struct _BstCanvasSource
 {
   GnomeCanvasGroup parent_object;
 
-  Bse::SourceH     source;
+  Bse::SourceS     source;
 
   GtkWidget	  *params_dialog;
   GtkWidget	  *source_info;

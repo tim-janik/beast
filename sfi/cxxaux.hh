@@ -70,6 +70,7 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_SCANF(fx, ax)       __attribute__ ((__format__ (__scanf__, fx, ax)))
 #define BSE_SENTINEL            __attribute__ ((__sentinel__))
 #define BSE_UNUSED              __attribute__ ((__unused__))
+#define BSE_USE_RESULT          __attribute__ ((warn_unused_result))
 #define BSE_USED                __attribute__ ((__used__))
 #define BSE_WEAK                __attribute__ ((__weak__))
 /// @}

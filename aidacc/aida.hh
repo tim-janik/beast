@@ -512,8 +512,6 @@ constexpr uint64 CONNECTION_MASK = 0x0000ffff;
 class OrbObject {
   const uint64        orbid_;
   std::vector<String> cached_aux_data_;
-  struct HandleDeleteHook { RemoteHandle *rhandle = NULL; std::function<void()> deleter; };
-  std::vector<HandleDeleteHook> handle_scope_hooks_;
   friend class RemoteHandle;
 protected:
   explicit                  OrbObject         (uint64 orbid);
@@ -535,15 +533,15 @@ class RemoteHandle {
   };
   typedef NullRemoteHandleT<RemoteHandle> NullRemoteHandle;
   static OrbObjectP __aida_null_orb_object__ ();
-  void              __handle_scope_clear__   ();
 protected:
   explicit          RemoteHandle             (OrbObjectP);
-  explicit          RemoteHandle             () : orbop_ (__aida_null_orb_object__()) {}
+  explicit          RemoteHandle             ();
   const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
-  /*copy*/                RemoteHandle         (const RemoteHandle &y) : orbop_ (y.orbop_) {}
+  /*copy*/                RemoteHandle         (const RemoteHandle &y);         ///< Copy ctor
+  /*move*/                RemoteHandle         (RemoteHandle &&other) noexcept; ///< Move ctor
   virtual                ~RemoteHandle         ();
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
@@ -554,11 +552,11 @@ public:
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
-  void                    __on_handle_delete__ (const std::function<void()> &deleter);
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
-  RemoteHandle&           operator=            (const RemoteHandle& other); // copy assignment
+  RemoteHandle&           operator=            (const RemoteHandle &other); ///< Copy assignment
+  RemoteHandle&           operator=            (RemoteHandle &&other);      ///< Move assignment
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
   bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }
@@ -588,6 +586,101 @@ public:
   explicit RemoteMember () : RemoteHandle() {}
   void     operator=   (const RemoteHandle &src) { RemoteHandle::operator= (src); }
 };
+
+/// Auxillary class for the ScopedHandle<> implementation.
+class DetacherHooks {
+  std::vector<uint64>   detach_ids_;
+protected:
+  void __swap_hooks__   (DetacherHooks &other);
+  void __clear_hooks__  (RemoteHandle *scopedhandle);
+  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, EventHandlerF handler);
+  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, std::function<void()> vfunc);
+};
+
+/// ScopedHandle<> is a std::move()-only RemoteHandle with automatic event handler cleanup.
+template<class RH>
+class ScopedHandle : public RH, private DetacherHooks {
+  static_assert (std::is_base_of<Aida::RemoteHandle, RH>::value, "");
+public:
+  /*copy*/      ScopedHandle    (const ScopedHandle&) = delete; ///< Not copy-constructible
+  ScopedHandle& operator=       (const ScopedHandle&) = delete; ///< Not copy-assignable
+  explicit      ScopedHandle    () : RH() {}                    ///< Default constructor
+  explicit      ScopedHandle    (ScopedHandle &&rh) noexcept;   ///< Move constructor
+  ScopedHandle& operator=       (ScopedHandle &&rh);            ///< Move assignment
+  explicit      ScopedHandle    (const RH &rh);                 ///< Construct via RemoteHandle copy
+  ScopedHandle& operator=       (const RH &rh);                 ///< Assignment via RemoteHandle
+  virtual      ~ScopedHandle    ();                             ///< Destructor for handler cleanups.
+  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
+  void          on              (const ::std::string &type, EventHandlerF handler);
+  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
+  void          on              (const ::std::string &type, std::function<void()> vfunc);
+  /// Copy as RemoteHandle
+  RH            __copy_handle__ () const  { return *this; }
+  // Provide RemoteHandle boolean operations
+  using         RH::operator==;
+  using         RH::operator!=;
+  using         RH::operator bool;
+};
+
+// == Implementations ==
+template<class RH>
+ScopedHandle<RH>::ScopedHandle (const RH &rh)
+{
+  /* NOTE: We cannot use the RH copy constructor here, because for that to work, the C++ standard
+   * requires us to know about *all* virtual base classes and copy-construct those for this case.
+   * That's impossible for a template argument, so we need to default construct and after that
+   * use assignment. See: https://stackoverflow.com/a/34995780 */
+  RH::operator= (rh);
+}
+
+template<class RH>
+ScopedHandle<RH>::ScopedHandle (ScopedHandle &&sh) noexcept
+{
+  RH::operator= (sh);
+  this->DetacherHooks::__swap_hooks__ (sh);
+}
+
+template<class RH> ScopedHandle<RH>&
+ScopedHandle<RH>::operator= (const RH &rh)
+{
+  if (this != &rh)
+    {
+      this->DetacherHooks::__clear_hooks__ (this);
+      RH::operator= (rh);
+    }
+  return *this;
+}
+
+template<class RH> ScopedHandle<RH>&
+ScopedHandle<RH>::operator= (ScopedHandle<RH> &&sh)
+{
+  if (this != &sh)
+    {
+      this->DetacherHooks::__clear_hooks__ (this); // may throw
+      RH &t = *this, &r = sh;
+      t = std::move (r);
+      this->DetacherHooks::__swap_hooks__ (sh);
+    }
+  return *this;
+}
+
+template<class RH>
+ScopedHandle<RH>::~ScopedHandle ()
+{
+  this->DetacherHooks::__clear_hooks__ (this);
+}
+
+template<class RH> void
+ScopedHandle<RH>::on (const ::std::string &type, ::Aida::EventHandlerF handler)
+{
+  this->DetacherHooks::__manage_event__ (this, type, handler);
+}
+
+template<class RH> void
+ScopedHandle<RH>::on (const ::std::string &type, ::std::function<void()> vfunc)
+{
+  this->DetacherHooks::__manage_event__ (this, type, vfunc);
+}
 
 // == Any Type ==
 class Any /// Generic value type that can hold values of all other types.

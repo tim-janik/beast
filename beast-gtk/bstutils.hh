@@ -24,16 +24,10 @@ uint add_frame_handler (const std::function<void()> &func);
 uint add_frame_handler (const std::function<bool()> &func);
 void remove_handler    (uint *handler_id);
 
-
-/// Attach event handler to @a remote_handle and automatically detach the handler when the handle is deleted or re-assigned.
-void scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::Aida::EventHandlerF handler);
-/// Attach event handler to @a remote_handle and automatically detach the handler when the handle is deleted or re-assigned.
-void scoped_on (Aida::RemoteHandle *remote_handle, const ::std::string &type, ::std::function<void()> vfunc);
-
 } // Bst
 
 // == Bse Server (BSE remote origin) ==
-extern Bse::ServerH bse_server;
+extern Bse::ServerS &bse_server;
 
 
 /* --- GUI utilities --- */

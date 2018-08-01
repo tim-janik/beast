@@ -62,7 +62,7 @@ G_DEFINE_TYPE (BstCanvasSource, bst_canvas_source, GNOME_TYPE_CANVAS_GROUP);
 static void
 bst_canvas_source_init (BstCanvasSource *csource)
 {
-  new (&csource->source) Bse::SourceH();
+  new (&csource->source) Bse::SourceS();
 
   csource->params_dialog = NULL;
   csource->source_info = NULL;
@@ -89,7 +89,7 @@ bst_canvas_source_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
   using namespace Bse;
-  self->source.~SourceH();
+  self->source.~SourceS();
 }
 
 static void
@@ -234,7 +234,7 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   csource->source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
   if (csource->source)
     csource->source.use();
-  Bst::scoped_on (&csource->source, "notify:uname", [csource] () { source_name_changed (csource); });
+  csource->source.on ("notify:uname", [csource] () { source_name_changed (csource); });
   bse_proxy_connect (csource->source.proxy_id(),
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
