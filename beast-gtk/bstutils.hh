@@ -24,6 +24,21 @@ uint add_frame_handler (const std::function<void()> &func);
 uint add_frame_handler (const std::function<bool()> &func);
 void remove_handler    (uint *handler_id);
 
+// == Shared Memory Monitors ==
+class MonitorFieldU {
+  union {
+    char *char8_ = NULL;
+    float *f32_;
+    double *f64_;
+  };
+public:
+  explicit       MonitorFieldU (char *c) : char8_ (c)   {}
+  inline float&  f32           (Bse::MonitorField mf) const   { return f32_[size_t (mf) / 4]; }
+  inline double& f64           (Bse::MonitorField mf) const   { return f64_[size_t (mf) / 8]; }
+};
+
+MonitorFieldU monitor_fields_from_shm (int64 shm_id, uint32 shm_offset);
+
 } // Bst
 
 // == Bse Server (BSE remote origin) ==

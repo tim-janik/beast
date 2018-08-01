@@ -605,6 +605,7 @@ public:
   /*copy*/      ScopedHandle    (const ScopedHandle&) = delete; ///< Not copy-constructible
   ScopedHandle& operator=       (const ScopedHandle&) = delete; ///< Not copy-assignable
   explicit      ScopedHandle    () : RH() {}                    ///< Default constructor
+  ScopedHandle& operator=       (std::nullptr_t);               ///< Reset / unset handle
   explicit      ScopedHandle    (ScopedHandle &&rh) noexcept;   ///< Move constructor
   ScopedHandle& operator=       (ScopedHandle &&rh);            ///< Move assignment
   explicit      ScopedHandle    (const RH &rh);                 ///< Construct via RemoteHandle copy
@@ -623,6 +624,14 @@ public:
 };
 
 // == Implementations ==
+template<class RH> ScopedHandle<RH>&
+ScopedHandle<RH>::operator= (std::nullptr_t)
+{
+  this->DetacherHooks::__clear_hooks__ (this);
+  RH::operator= (RH());
+  return *this;
+}
+
 template<class RH>
 ScopedHandle<RH>::ScopedHandle (const RH &rh)
 {

@@ -21,6 +21,9 @@ struct _BstBusEditor
 {
   GtkAlignment      parent_object;
   SfiProxy          item;
+  Bse::SourceS      source;
+  Bse::SignalMonitorS lmonitor, rmonitor;
+  uint                mon_handler;
   size_t            probes_handler = 0;
   SfiRing          *params;
   BstDBBeam        *lbeam, *rbeam;
