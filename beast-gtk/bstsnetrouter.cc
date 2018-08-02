@@ -292,17 +292,16 @@ bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
   if (self->snet)
     {
       bst_snet_router_destroy_contents (self);
-      bse_proxy_disconnect (self->snet.proxy_id(),
-                            "any_signal", bst_snet_router_item_added, self,
-                            NULL);
       self->snet = NULL;
     }
   self->snet = snet;
   if (self->snet)
     {
-      bse_proxy_connect (self->snet.proxy_id(),
-                         "swapped_signal::item_added", bst_snet_router_item_added, self,
-                         NULL);
+      auto item_added = [self] (const Aida::Event &ev) {
+        Bse::ItemH item = ev["item"];
+        bst_snet_router_item_added (self, item.proxy_id(), self->snet.proxy_id());
+      };
+      self->snet.on ("treechange:additem", item_added);
       bst_snet_router_update (self);
       bst_snet_router_adjust_region (self);
     }
