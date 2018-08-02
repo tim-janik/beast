@@ -141,7 +141,7 @@ cat >$DEBIAN/control <<-__EOF
 	 .
 	 It supports a wide range of standards in the field, such as MIDI,
 	 FLAC/WAV/AIFF/MP3/OggVorbis audio files and LADSPA modules.
-	 It allows for multitrack editing, unlimited undo/redo support,
+	 It allows multitrack editing, has unlimited undo/redo support,
 	 real-time synthesis support, 32bit audio rendering and MMX/SSE
 	 utilisation for synthesis plugins.
 	 .
