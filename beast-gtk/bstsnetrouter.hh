@@ -26,7 +26,7 @@ struct _BstSNetRouter
   GtkWidget	   *palette_text;
   GtkAdjustment    *adjustment;
 
-  Bse::SNetH        snet;
+  Bse::SNetS        snet;
 
   GxkActionGroup   *canvas_tool;
   GxkActionGroup   *channel_toggle;
