@@ -1,4 +1,4 @@
-Beast 0.11.0:
+Beast 0.11.0:					(2017-06-27)
 
 * Added Soundfont support so Beast can play .sf2 files. [stw]
 * Execute the DSP engine multi threaded with `nproc` many threads.
@@ -251,7 +251,7 @@ Overview of Changes in BEAST/BSE 0.7.0:
 * Moved source base to automake-1.9 and added support for gcc-4.2
 * Lots of major and minor fixes and improvements
 * Bugzilla issues resolved: #337703, #342186, #343301, #340386, #340307
-* Updated Canadian English translation [Adam Weinberger] 
+* Updated Canadian English translation [Adam Weinberger]
 * Updated German translation [Hendrik Richter, Jens Seidel]
 * Updated Spanish translation [Francisco Javier F. Serrador]
 * Updated Czech translation [Miloslav Trmac]
@@ -274,7 +274,7 @@ Overview of Changes in BEAST/BSE 0.6.6:
 * Fixed stale header files, left out by make uninstall
 * Rewrote message dialogs and message mechanisms
 * Ported MIDI event recording script to new BSE core
-* Updated Canadian English translation [Adam Weinberger] 
+* Updated Canadian English translation [Adam Weinberger]
 * Updated Czech translation [Miloslav Trmac]
 * Updated Italian translation [Petrecca Michele]
 * Updated Spanish translation [Francisco Javier F. Serrador]
@@ -302,7 +302,7 @@ Overview of Changes in BEAST/BSE 0.6.5:
 * AMD64 fixes [Stefan Westerfeld]
 * Lots of miscellaneous bug fixes
 * Updated British English translation [David Lodge]
-* Updated Canadian English translation [Adam Weinberger] 
+* Updated Canadian English translation [Adam Weinberger]
 * Updated Czech translation [Miloslav Trmac]
 * Updated Dutch translation [Tino Meinen]
 * Updated Spanish translation [Jorge Gonzalez]
@@ -352,7 +352,7 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Mime type fixes [Artem Popov, Tim Janik]
 * Improved GUI responsiveness
 * Made message dialog appearance configurable
-* Consistent support for dialog closing with Escape 
+* Consistent support for dialog closing with Escape
 * Dialog size and resizing adaptions for 800x600 screens
 * Lots of miscellaneous bug fixes and refactoring
 * Updated Brazilian Portuguese translation [Raphael Higino]
