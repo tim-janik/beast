@@ -158,13 +158,14 @@ EBEAST_MOSTLYCLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
 
 # == ebeast/ installations ==
 ebeast-install: ebeast/bundlecache/ebeast
-	$(MKDIR_P) "$(DESTDIR)$(beastdir)"
+	$(MKDIR_P) "$(DESTDIR)$(beastdir)" "$(DESTDIR)$(beastbindir)"
 	rm -rf "$(DESTDIR)$(beastdir)/bundle" "$(DESTDIR)$(beastdir)/app"
 	cp -RP ebeast/bundlecache "$(DESTDIR)$(beastdir)/bundle"
 	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/bundle/"
 	ln -s ../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
+	ln -sf ../bundle/ebeast "$(DESTDIR)$(beastbindir)/ebeast"
 ebeast-uninstall:
-	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/"
+	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/" "$(DESTDIR)$(beastbindir)/ebeast"
 
 # == ebeast-run ==
 ebeast-run: ebeast/.appstamp ebeast/vue-components.html
