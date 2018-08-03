@@ -57,17 +57,15 @@ test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 # build in ./tmpdeb/
 BEASTDIR=/opt/$(misc/mkbuildid.sh -p | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
-RAPICORNPREFIXDIR=$DESTDIR$BEASTDIR
+BEASTPREFIXDIR=$DESTDIR$BEASTDIR
 DEBDOCDIR=$DESTDIR$BEASTDIR/doc
 DEBIAN=$DESTDIR/DEBIAN
 rm -rf $DEBIAN
 mkdir -p $DEBIAN
 
-export PATH="$RAPICORNPREFIXDIR/bin:$PATH"
-export LD_LIBRARY_PATH="$RAPICORNPREFIXDIR/lib"
-export PKG_CONFIG_PATH=$RAPICORNPREFIXDIR/lib/pkgconfig
-export PKG_CONFIG_RAPICORN_PREFIX=$RAPICORNPREFIXDIR
-export PKG_CONFIG_RAPICORN_17_PREFIX=$RAPICORNPREFIXDIR
+export PATH="$BEASTPREFIXDIR/bin:$PATH"
+export LD_LIBRARY_PATH="$BEASTPREFIXDIR/lib"
+export PKG_CONFIG_PATH=$BEASTPREFIXDIR/lib/pkgconfig
 export PKG_CONFIG_BSE_BEASTDESTDIR=$DESTDIR
 export AIDACC_DESTDIR=$DESTDIR
 
@@ -76,29 +74,13 @@ echo "CC=$CC CFLAGS=$CFLAGS"
 echo "CXX=$CXX CXXFLAGS=$CXXFLAGS"
 echo "BEASTDIR=$BEASTDIR"
 echo "DESTDIR=$DESTDIR"
-echo "RAPICORNPREFIXDIR=$RAPICORNPREFIXDIR"
+echo "BEASTPREFIXDIR=$BEASTPREFIXDIR"
 echo "PATH=$PATH"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
-echo "PKG_CONFIG_RAPICORN_PREFIX=$PKG_CONFIG_RAPICORN_PREFIX"
-echo "PKG_CONFIG_RAPICORN_17_PREFIX=$PKG_CONFIG_RAPICORN_17_PREFIX"
 echo "PKG_CONFIG_BSE_PREFIX=$PKG_CONFIG_BSE_PREFIX"
 echo "AIDACC_DESTDIR=$AIDACC_DESTDIR"
 echo "DEBIAN=$DEBIAN"
-
-# clone and build rapicorn
-if ! test -x $DESTDIR/$BEASTDIR/bin/rapidrun ; then
-    R=https://github.com/tim-janik/rapicorn.git
-    R=../rapicorn/.git/
-    if test -d $R ; then
-      RAPICORNHEAD=$(GIT_DIR=$R git rev-parse HEAD)
-    else
-      R=git://github.com/tim-janik/rapicorn.git
-      RAPICORNHEAD=496351a0798f5ea0eb3eb2419d8d1249853afbc6 # 17.0.0
-    fi
-    git_clone $R rapicorn $RAPICORNHEAD
-    build_checked rapicorn ./autogen.sh --prefix="$BEASTDIR"
-fi
 
 # clone and build beast
 BEASTEXE=$BEASTDIR/bin/beast
@@ -122,7 +104,6 @@ D="$D, libasound2, libflac8 (>= 1.2.1), libfluidsynth1 (>= 1.0.6), libmad0"
 D="$D, libogg0, libvorbis0a (>= 1.3.2), libvorbisenc2, libvorbisfile3"
 D="$D, libglib2.0-0 (>= 2.32.3), libpango-1.0-0 (>= 1.14.0), librsvg2-2 (>= 2.40.5)"
 D="$D, libgdk-pixbuf2.0-0, libgtk2.0-0 (>= 2.12.12), libgnomecanvas2-0 (>= 2.4.0)"
-# D="$D, librapicorn-17-0 (>= 17.0.0~rc1), python-rapicorn, rapicorn, librapicorn-dev"
 
 # DEBIAN/control
 cat >$DEBIAN/control <<-__EOF
