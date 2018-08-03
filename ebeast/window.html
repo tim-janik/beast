@@ -7,16 +7,43 @@
 
   <script> /* Load Electron, Bse, Vue, setup DevTools and Util */
   'use strict';
-  window.Electron = require ('electron').remote;
+  // stderr logging of console messages
+  if (console !== undefined) {
+    const duplog = function (ofun) {
+      return function() {
+	process.stderr.write ([...arguments].join (' ') + '\n');
+	return ofun.call (this, ...arguments);
+      };
+    };
+    console.log = duplog (console.log);
+    console.info = duplog (console.info);
+    console.warn = duplog (console.warn);
+    console.error = duplog (console.error);
+  }
+  const assert = console.assert;
+  // load Electronjs utilities
+  const Electron = require ('electron').remote;
+  // provide global constants
+  const MAXINT = 2147483647, MAXUINT = 4294967295;
+  { MAXINT; MAXUINT; } // linter: not unused
   const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
-  window.Bse = require ('./assets/v8bse.node'); // adding '/' avoids node_modules/-relative lookup
-  window.T = (txt) => { return txt; };   // translation indicator
-  // Load jQuery + utils + Vue + components
-  require ('./vc/includes.js');
+  window.BEASTDIR = __dirname + '/../../'; // $prefix/beast-$VESION/bundle/app/../../
+  // pull in jQuery
+  console.assert (window.jQuery === undefined);
+  const $ = require ('jquery');
+  window.$ = window.jQuery = $;
+  // initialize BSE plus binding
+  const Bse = require ('./assets/v8bse.node'); // adding './' avoids node_modules/-relative lookup
+  const T = (txt) => { return txt; };   // translation indicator
+  { Bse; T; } // linter: not unused
+  // load and configure Vue
+  console.assert (window.Vue === undefined);
+  const Vue = require ('vue/dist/vue.common.js');
+  window.Vue = Vue;
   Vue.config.productionTip = false;
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
-  const MAXINT = 2147483647, MAXUINT = 4294967295;
-  { MAXINT; MAXUINT; } // used
+  // load Vue components, bundled via vc/bundle.js
+  require ('./assets/components.js'); // adding './' avoids node_modules/-relative lookup
   // show DevTools on hotkey
   if (HAVE_DEVELOPMENT_TOOLS)
     document.addEventListener ("keydown", (event) => {
@@ -27,12 +54,6 @@
 	window.location.reload();
       // Electron.getCurrentWindow().webContents.setZoomFactor (1);
     });
-  // Utilities
-  {
-    const Util = require ('./vc/utilities.js');
-    window.assert = Util.assert;
-    Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
-  }
   </script>
 
 </head>
@@ -57,7 +78,7 @@
       el:   '#vue-mountpoint',
       data: { Shell: shell_placeholder },
     });
-    assert (vue_mountpoint); // unused
+    assert (vue_mountpoint); // $root
   }
   { // setup menubar
     const menus = require ('./menus.js');

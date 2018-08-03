@@ -23,7 +23,9 @@ gen_buildid() {
   DESC=
   COMMITID="${1-HEAD}"
   test -e "$DOTGIT" &&							# Try 'git describe', shallow repos will yield ''
-      DESC=$(git describe --match '[0-9]*.*[0-9]' --abbrev=5 $COMMITID 2>/dev/null)
+    DESC=$(git describe --match '[0-9]*.[0-9]*.*[0-9v]' --abbrev=7 $COMMITID 2>/dev/null)
+	# Note, the above should use "--match '[0-9]*.*[0-9]' --match 0.0.0-dev", but git describe (<v2.14.3)
+	# only considers the first '--match' argument, so we tweak the pattern to match both.
   test -e "$DOTGIT" -a -n "$DESC" ||					# Check for git and git's version info
       { printf %s "${ACINIT_VERSION-0.0.0}+tarball" ; return ; }	# otherwise treat as tarball
   [[ "$DESC" =~ ([0-9]+[.][_#%+0-9.a-z-]*)-([0-9]+-g[a-f0-9]+)$ ]] ||	# Split version from git postfix
