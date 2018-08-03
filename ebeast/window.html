@@ -7,6 +7,19 @@
 
   <script> /* Load Electron, Bse, Vue, setup DevTools and Util */
   'use strict';
+  // stderr logging of console messages
+  if (console !== undefined) {
+    const duplog = function (ofun) {
+      return function() {
+	process.stderr.write ([...arguments].join (' ') + '\n');
+	return ofun.call (this, ...arguments);
+      };
+    };
+    console.log = duplog (console.log);
+    console.info = duplog (console.info);
+    console.warn = duplog (console.warn);
+    console.error = duplog (console.error);
+  }
   const assert = console.assert;
   // load Electronjs utilities
   const Electron = require ('electron').remote;
