@@ -120,6 +120,13 @@ ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebea
 	@: # all files required by vc/bundle.js are present, generate assets/components.js
 	$(Q) cd ebeast/app/ && \
 	node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
+	@: # check for component pitfalls
+	@echo '  CHECK   ' 'Vue component file pitfalls'
+	$(Q) for f in ebeast/app/vc/*.* ; do \
+	  sed -e "s,^,$$f:," "$$f" | $(ebeast_vc_uncomment_js) | \
+	  grep --color=auto '\b__dirname\b' && \
+	  { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; rm $@ ; exit 1; } ; \
+	done || :
 	@: # purge build-only files
 	$(Q) cd ebeast/app/vc/ && rm bundle.js $(notdir $(ebeast_vc_vue_files))
 
