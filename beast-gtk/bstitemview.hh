@@ -27,7 +27,7 @@ struct _BstItemView
 
   GtkWidget	 *pview;
 
-  SfiProxy	 container;
+  Bse::ContainerS container;
   SfiProxy	 auto_select;
   GtkWidget    **op_widgets;
 };

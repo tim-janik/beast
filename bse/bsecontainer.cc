@@ -254,7 +254,8 @@ bse_container_add_item (BseContainer *container,
   if (item->parent != NULL)
     {
       g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
-      container->as<Bse::ContainerImplP>()->emit_event ("treechange:additem");
+      using namespace Aida::KeyValueArgs;
+      container->as<Bse::ContainerImplP>()->emit_event ("treechange:additem", "item"_v = item->as<Bse::ItemIfaceP>());
     }
 
   g_object_thaw_notify (G_OBJECT (item));
@@ -353,7 +354,8 @@ bse_container_remove_item (BseContainer *container,
   g_object_freeze_notify (G_OBJECT (item));
   if (!finalizing_container)
     {
-      container->as<Bse::ContainerImplP>()->emit_event ("treechange:removeitem");
+      using namespace Aida::KeyValueArgs;
+      container->as<Bse::ContainerImplP>()->emit_event ("treechange:removeitem", "item"_v = item->as<Bse::ItemIfaceP>());
       g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVE], 0, item, seqid);
     }
   BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);

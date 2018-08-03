@@ -131,7 +131,7 @@ bst_snet_router_finalize (GObject *object)
 
   G_OBJECT_CLASS (bst_snet_router_parent_class)->finalize (object);
   using namespace Bse;
-  self->snet.~SNetH();
+  self->snet.~SNetS();
 }
 
 static void
@@ -292,17 +292,16 @@ bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
   if (self->snet)
     {
       bst_snet_router_destroy_contents (self);
-      bse_proxy_disconnect (self->snet.proxy_id(),
-                            "any_signal", bst_snet_router_item_added, self,
-                            NULL);
-      self->snet = Bse::SNetH();
+      self->snet = NULL;
     }
   self->snet = snet;
   if (self->snet)
     {
-      bse_proxy_connect (self->snet.proxy_id(),
-                         "swapped_signal::item_added", bst_snet_router_item_added, self,
-                         NULL);
+      auto item_added = [self] (const Aida::Event &ev) {
+        Bse::ItemH item = ev["item"];
+        bst_snet_router_item_added (self, item.proxy_id(), self->snet.proxy_id());
+      };
+      self->snet.on ("treechange:additem", item_added);
       bst_snet_router_update (self);
       bst_snet_router_adjust_region (self);
     }
@@ -966,7 +965,7 @@ bst_snet_router_build_page (Bse::SNetH snet)
 static void
 bst_snet_router_init (BstSNetRouter      *self)
 {
-  new (&self->snet) Bse::SNetH();
+  new (&self->snet) Bse::SNetS();
   GnomeCanvas *canvas = GNOME_CANVAS (self);
   GxkActionList *canvas_modules, *toolbar_modules, *palette_modules;
   uint i, n;

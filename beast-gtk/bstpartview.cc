@@ -87,8 +87,7 @@ part_view_action_exec (gpointer                data,
 {
   BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy songid = item_view->container;
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+  Bse::SongH song = Bse::SongH::down_cast (item_view->container);
   Bse::PartH part;
   switch (action)
     {
