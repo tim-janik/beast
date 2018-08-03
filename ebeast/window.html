@@ -9,6 +9,7 @@
   'use strict';
   window.Electron = require ('electron').remote;
   const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
+  window.BEASTDIR = __dirname + '/../../'; // $prefix/beast-$VESION/bundle/app/../../
   window.Bse = require ('./assets/v8bse.node'); // adding '/' avoids node_modules/-relative lookup
   window.T = (txt) => { return txt; };   // translation indicator
   // Load jQuery + utils + Vue + components
@@ -57,7 +58,7 @@
       el:   '#vue-mountpoint',
       data: { Shell: shell_placeholder },
     });
-    assert (vue_mountpoint); // unused
+    assert (vue_mountpoint); // $root
   }
   { // setup menubar
     const menus = require ('./menus.js');

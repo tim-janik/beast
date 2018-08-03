@@ -43,19 +43,6 @@ else
 with_npm:
 endif
 
-# == ebeast_vc_vue_files ==
-ebeast_vc_vue_files ?= # Construct the list of Vue component files from the require() statements in vc/bundle.js
-ebeast_vc_uncomment_cc = sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
-ebeast_vc_grep_require = grep -o 'require *([^)]\+)' | sed "s/require *( *['\"]//g ; s/['\"])//g"
-ebeast/vc/components.inc: ebeast/vc/bundle.js # list bundled components
-	@echo '  UPDATE  ' $@
-	$(Q) echo "ebeast_vc_vue_files = \\"					 > $@.tmp
-	$(Q) $(ebeast_vc_uncomment_cc) ebeast/vc/bundle.js | \
-	     $(ebeast_vc_grep_require) | sed 's,^\./,ebeast/vc/, ; s/$$/ \\/'	>> $@.tmp
-	$(Q) mv $@.tmp $@
-EBEAST_MOSTLYCLEANFILES += ebeast/vc/components.inc ebeast/vc/components.inc.tmp
--include ebeast/vc/components.inc
-
 # == ebeast/.npmstamp ==
 ebeast/.npmstamp: ebeast/package.json.in ./config.status
 	$(AM_V_GEN)
@@ -106,6 +93,19 @@ ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
 	$(Q) convert $$(cat $(@:%.png=%.cli)) $(@:%.png=%.tmp.png)
 	$(Q) rm -f $(@:%.png=%.cli) && mv $(@:%.png=%.tmp.png) $@
 
+# == ebeast_vc_vue_files ==
+ebeast_vc_vue_files ?= # Construct the list of Vue component files from the require() statements in vc/bundle.js
+ebeast_vc_uncomment_js = sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
+ebeast_vc_grep_require = grep -o 'require *([^)]\+)' | sed "s/require *( *['\"]//g ; s/['\"])//g"
+ebeast/vc/components.inc: ebeast/vc/bundle.js	# list bundled components in ebeast_vc_vue_files
+	@echo '  UPDATE  ' $@
+	$(Q) echo "ebeast_vc_vue_files = \\"					 > $@.tmp
+	$(Q) $(ebeast_vc_uncomment_js) ebeast/vc/bundle.js | \
+	     $(ebeast_vc_grep_require) | sed 's,^\./,ebeast/vc/, ; s/$$/ \\/'	>> $@.tmp
+	$(Q) mv $@.tmp $@
+EBEAST_MOSTLYCLEANFILES += ebeast/vc/components.inc ebeast/vc/components.inc.tmp
+-include ebeast/vc/components.inc		# include ebeast_vc_vue_files components list
+
 # == EBEAST_APP_ASSETS_VUE ==
 EBEAST_APP_ASSETS_VUE = ebeast/app/vc/includes.js ebeast/app/assets/components.js
 EBEAST_VC_MOSTJS := $(filter-out ebeast/vc/includes.js, $(wildcard ebeast/vc/*.js))
@@ -120,6 +120,15 @@ ebeast/app/assets/components.js: ebeast/vc/bundle.js $(ebeast_vc_vue_files) ebea
 	@: # all files required by vc/bundle.js are present, generate assets/components.js
 	$(Q) cd ebeast/app/ && \
 	node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
+	@: # check for component pitfalls
+	@echo '  CHECK   ' 'Vue component file pitfalls'
+	$(Q) for f in ebeast/app/vc/*.* ; do \
+	  sed -e "s,^,$$f:," "$$f" | $(ebeast_vc_uncomment_js) | \
+	  grep --color=auto '\b__dirname\b' && \
+	  { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; rm $@ ; exit 1; } ; \
+	done || :
+	@: # purge build-only files
+	$(Q) cd ebeast/app/vc/ && rm bundle.js $(notdir $(ebeast_vc_vue_files))
 
 # == ebeast/.lintstamp ==
 ebeast/.lintstamp: $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc_vue_files) ebeast/.npmstamp

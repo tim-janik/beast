@@ -47,7 +47,8 @@ module.exports = {
 	  });
 	}
 	if (this.project_) {
-	  let example = __dirname + "/../../../" + 'Demos/partymonster.bse';
+	  // __dirname is invalid inside vue components
+	  let example = window.BEASTDIR + '/Demos/partymonster.bse';
 	  this.project_.restore_from_file (example);
 	  const path = require ('path');
 	  this.project_.set_name (path.basename (example));
