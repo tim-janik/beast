@@ -3,19 +3,6 @@
 
 exports.vue_mixins = {};
 
-/** Throw an Error containing `msg` if `cond` fails to be true */
-function assert (cond, msg) {
-  if (!cond) {
-    msg = msg || "Assertion failed";
-    if (typeof Error !== "undefined") {
-      throw new Error (msg);
-    }
-    throw msg; // fallback
-  }
-  // globally: window.assert = require ('./vc/utilities.js').assert;
-}
-exports.assert = assert;
-
 /** Remove element `item` from `array` */
 function array_remove (array, item) {
   for (let i = 0; i < array.length; i++)
