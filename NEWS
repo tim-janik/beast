@@ -1,3 +1,37 @@
+Beast 0.12.0-beta.1:
+
+* EBEAST: development of a new user interface based on Electronjs has
+  started and the first (pre-alpha) bits are shipped and installed
+  with this release under $prefix/beast-0-12/bin/ebeast.
+* EBEAST: added About, Tracks with dB meters, Parts with thumbnails.
+* EBEAST: added Play controls, Piano roll, color picker palette.
+* Upgrade to Electron-1.8, Vue-2.5, Chrome-59.0, V8-5.9, Node-8.2.
+* Added internal integrity tests.
+* Added various documentation improvements.
+* Fixed memory corruption crash, #25. [stw]
+* Fixed fluid synth test on Bionic, #42. [stw]
+* Fixed crash when adding mixer bus during playback. [stw]
+* Merged and enhanced the new Beast IDL layer AIDA.
+* Introduced asynchronous Events to replace signals.
+* Removed all C procedures, migrated method calls to Aida IDL.
+* Removed large chunks of old and outdated code.
+* Integrated required utilities from Rapicorn.
+* Removed Rapicorn as build and runtime dependency.
+* Removed Python runtime dependency.
+* Work around apport reporting assertion tests.
+* Handle UTF-8 mixed with Latin-1 gracefully.
+* Renamed Demos/, Effects/, etc resource directories.
+* Added shared memory allocator with external bookkeeping (without
+  boundary tags). Communicate dB meter levels and other values via
+  shared memory between DSP engine and UI code.
+* Continued migration of C structs to C++ classes.
+* Adjusted remote reference GC for Beast work loads.
+* Added ANSI colors to logging output for non-dumb terminals.
+* Reduced libbse.so size down to 14% by splitting debug syms.
+* Clarified licensing, Beast is released under LGPL-2.1+.
+* Adapted code to depend on and make use of C++14.
+* Fixed code to compile cleanly with g++-7.2.
+
 Beast 0.11.0:					(2017-06-27)
 
 * Added Soundfont support so Beast can play .sf2 files. [stw]
