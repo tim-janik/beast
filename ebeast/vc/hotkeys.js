@@ -1,6 +1,9 @@
 // GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html
 'use strict';
 
+// assert jQuery
+console.assert ($ !== undefined);
+
 // == Keys ==
 const KeyCode = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
