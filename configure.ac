@@ -12,7 +12,7 @@ AC_PREREQ(2.57)
 # * MICRO:           Increment with every release, increments must *not* break ABI
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
-# * ~RC:             Release candidate, may contain ~rc[0-9]+ or nothing
+# * -RC:             Pre-release suffix, may be empty or contain -beta.[0-9]+
 AC_INIT([beast], [0.0.0-dev])
 :;   ABI_VERSION=[0.0.0]
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
