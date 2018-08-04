@@ -93,7 +93,7 @@ fi
 test -x $DESTDIR/$BEASTEXE || die "failed to build Beast executable: $BEASTEXE"
 
 NAME="beast"
-VERSION=$(./tmpdeb/beast/misc/mkbuildid.sh -p)
+VERSION=$(./tmpdeb/beast/misc/mkbuildid.sh -p | sed 's/-/~/g')
 GITCOMMIT=`git rev-parse --verify HEAD`
 ARCH=$(dpkg --print-architecture)
 DUSIZE=$(cd $DESTDIR && du -k -s .)
