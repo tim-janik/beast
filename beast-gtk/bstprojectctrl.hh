@@ -16,8 +16,7 @@
 /* --- typedefs & structures --- */
 typedef struct {
   GtkHBox	 parent_instance;
-  Bse::ProjectH  project;
-  size_t         sig_state_changed_id;
+  Bse::ProjectS  project;
   GxkLed	*led;
   GtkWidget	*stop;
   GtkWidget	*rew;
