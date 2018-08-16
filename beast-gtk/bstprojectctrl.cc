@@ -42,7 +42,7 @@ bst_project_ctrl_finalize (GObject *object)
   bst_project_ctrl_set_project (self, Bse::ProjectH());
   G_OBJECT_CLASS (bst_project_ctrl_parent_class)->finalize (object);
   using namespace Bse;
-  self->project.~ProjectH();
+  self->project.~ProjectS();
 }
 
 static void
@@ -79,8 +79,7 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal::release", project_release, self,
                             NULL);
-      // FIXME: self->project.sig_state_changed() -= self->sig_state_changed_id;
-      self->sig_state_changed_id = 0;
+      self->project = NULL;
     }
   self->project = project;
   if (self->project)
@@ -88,7 +87,11 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
       bse_proxy_connect (self->project.proxy_id(),
 			 "swapped_signal::release", project_release, self,
 			 NULL);
-      // FIXME: self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) { project_state_changed (self, state); };
+      self->project.on ("statechanged", [self] (const Aida::Event &ev) {
+          const Bse::ProjectState state = ev["state"].get<Bse::ProjectState>();
+          printerr ("BST: statechanged: %d\n", state);
+          project_state_changed (self, state);
+        });
       project_state_changed (self, self->project.get_state());
     }
   else if (self->led)
@@ -98,8 +101,7 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
 static void
 bst_project_ctrl_init (BstProjectCtrl *self)
 {
-  new (&self->project) Bse::ProjectH();
-  self->sig_state_changed_id = 0;
+  new (&self->project) Bse::ProjectS();
   GtkWidget *box = GTK_WIDGET (self);
   GtkWidget *frame;
   guint spaceing = 0;
