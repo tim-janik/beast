@@ -107,7 +107,7 @@ installcheck-buildtest:
 installcheck-local: installcheck-buildtest
 
 # == topbuildid.c ==
-topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p)
+topbuildid ::= $(shell ./git-version.sh)
 topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
 topbuildidcc_gen ::= $(shell \
 	echo '\#include "topbuildid.hh"'                                  > topbuildid.tmp && \
