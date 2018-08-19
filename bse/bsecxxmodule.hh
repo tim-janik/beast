@@ -78,6 +78,7 @@ class EffectBase : public CxxBase {};
 class Effect : public EffectBase {
 private:
   guint64                   last_module_update;
+  BseSource*                bsesource            () const { return BSE_SOURCE (gobject()); }
 public:
   /* BseObject functionality */
   explicit                  Effect               ();
@@ -88,20 +89,20 @@ public:
                                                   Value           &value,
                                                   GParamSpec      *pspec);
   /* BseSource accessors */
-  bool          is_prepared()               const { return BSE_SOURCE_PREPARED (gobject()); }
-  guint         n_ichannels()               const { return BSE_SOURCE_N_ICHANNELS (gobject()); }
-  guint         n_joint_ichannels()         const { return BSE_SOURCE_N_JOINT_ICHANNELS (gobject()); }
-  guint         n_ochannels()               const { return BSE_SOURCE_N_OCHANNELS (gobject()); }
-  bool          is_joint_ichannel (guint i) const { return BSE_SOURCE_IS_JOINT_ICHANNEL (gobject(), i); }
-  guint         ichannels_istream (guint i) const { return BSE_SOURCE_ICHANNEL_ISTREAM (gobject(), i); }
-  guint         ichannels_jstream (guint i) const { return BSE_SOURCE_ICHANNEL_JSTREAM (gobject(), i); }
-  guint         ochannels_ostream (guint i) const { return BSE_SOURCE_OCHANNEL_OSTREAM (gobject(), i); }
-  const gchar*  ichannel_ident    (guint i) const { return BSE_SOURCE_ICHANNEL_IDENT (gobject(), i); }
-  const gchar*  ichannel_label    (guint i) const { return BSE_SOURCE_ICHANNEL_LABEL (gobject(), i); }
-  const gchar*  ichannel_blurb    (guint i) const { return BSE_SOURCE_ICHANNEL_BLURB (gobject(), i); }
-  const gchar*  ochannel_ident    (guint i) const { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
-  const gchar*  ochannel_label    (guint i) const { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
-  const gchar*  ochannel_blurb    (guint i) const { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
+  bool          is_prepared()               const { return BSE_SOURCE_PREPARED (bsesource()); }
+  guint         n_ichannels()               const { return BSE_SOURCE_N_ICHANNELS (bsesource()); }
+  guint         n_joint_ichannels()         const { return BSE_SOURCE_N_JOINT_ICHANNELS (bsesource()); }
+  guint         n_ochannels()               const { return BSE_SOURCE_N_OCHANNELS (bsesource()); }
+  bool          is_joint_ichannel (guint i) const { return BSE_SOURCE_IS_JOINT_ICHANNEL (bsesource(), i); }
+  guint         ichannels_istream (guint i) const { return BSE_SOURCE_ICHANNEL_ISTREAM (bsesource(), i); }
+  guint         ichannels_jstream (guint i) const { return BSE_SOURCE_ICHANNEL_JSTREAM (bsesource(), i); }
+  guint         ochannels_ostream (guint i) const { return BSE_SOURCE_OCHANNEL_OSTREAM (bsesource(), i); }
+  const gchar*  ichannel_ident    (guint i) const { return BSE_SOURCE_ICHANNEL_IDENT (bsesource(), i); }
+  const gchar*  ichannel_label    (guint i) const { return BSE_SOURCE_ICHANNEL_LABEL (bsesource(), i); }
+  const gchar*  ichannel_blurb    (guint i) const { return BSE_SOURCE_ICHANNEL_BLURB (bsesource(), i); }
+  const gchar*  ochannel_ident    (guint i) const { return BSE_SOURCE_OCHANNEL_IDENT (bsesource(), i); }
+  const gchar*  ochannel_label    (guint i) const { return BSE_SOURCE_OCHANNEL_LABEL (bsesource(), i); }
+  const gchar*  ochannel_blurb    (guint i) const { return BSE_SOURCE_OCHANNEL_BLURB (bsesource(), i); }
   virtual SynthesisModule*  create_module              (uint             context_handle,
                                                         BseTrans        *trans) = 0;
   virtual SynthesisModule::

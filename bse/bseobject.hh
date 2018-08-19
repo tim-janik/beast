@@ -44,9 +44,7 @@ typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 #define BSE_OBJECT_TYPE(object)		  (G_TYPE_FROM_INSTANCE (object))
 #define BSE_OBJECT_TYPE_NAME(object)	  (g_type_name (BSE_OBJECT_TYPE (object)))
 #define BSE_OBJECT_UNAME(object)	  ((gchar*) g_datalist_id_get_data (&((GObject*) (object))->qdata, bse_quark_uname))
-#define BSE_OBJECT_FLAGS(object)	  (((BseObject*) (object))->flags)
-#define BSE_OBJECT_SET_FLAGS(object, f)	  (BSE_OBJECT_FLAGS (object) |= (f))
-#define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
+#define BSE_OBJECT_FLAGS(object)	  ((object)->BseObject::get_flags())
 #define BSE_OBJECT_IS_LOCKED(object)	  (((BseObject*) (object))->lock_count > 0)
 #define BSE_OBJECT_DISPOSING(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSING) > 0)
 #define BSE_OBJECT_IN_RESTORE(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_IN_RESTORE) > 0)
@@ -66,7 +64,14 @@ typedef enum				/*< skip >*/
 struct BseObject : GObject {
   Bse::ObjectImpl       *cxxobject_;
   Bse::ObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
-  guint16	         flags;
+private:
+  uint16	         flags_;
+protected:
+  void                   change_flags (uint16 f, bool ason);
+public:
+  void                   set_flag    (BseObjectFlags f) { change_flags (uint16 (f), true); }
+  void                   unset_flag  (BseObjectFlags f) { change_flags (uint16 (f), false); }
+  inline uint16          get_flags() const      { return flags_; }
   guint16	         lock_count;
   guint		         unique_id;
   operator               Bse::ObjectImpl* ()          { return cxxobject_; }

@@ -43,7 +43,7 @@ static gpointer		 bus_parent_class = NULL;
 static void
 bse_bus_init (BseBus *self)
 {
-  BSE_OBJECT_SET_FLAGS (self, BSE_SOURCE_FLAG_PRIVATE_INPUTS);
+  self->set_flag (BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->left_volume = 1.0;
   self->right_volume = 1.0;
   self->synced = TRUE;

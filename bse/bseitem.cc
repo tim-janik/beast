@@ -217,9 +217,9 @@ bse_item_update_state (BseItem *self)
   /* update state */
   if ((BSE_OBJECT_FLAGS (self) & BSE_ITEM_FLAG_INTERN) ||
       (self->parent && BSE_ITEM_INTERNAL (self->parent)))
-    BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
+    self->set_flag (BSE_ITEM_FLAG_INTERN_BRANCH);
   else
-    BSE_OBJECT_UNSET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
+    self->unset_flag (BSE_ITEM_FLAG_INTERN_BRANCH);
 
   /* compare state and recurse if necessary */
   if (BSE_IS_CONTAINER (self) && (old_internal != BSE_ITEM_INTERNAL (self)))
@@ -247,9 +247,9 @@ bse_item_set_internal (void    *item,
   assert_return (BSE_IS_ITEM (self));
 
   if (internal)
-    BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
+    self->set_flag (BSE_ITEM_FLAG_INTERN);
   else
-    BSE_OBJECT_UNSET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
+    self->unset_flag (BSE_ITEM_FLAG_INTERN);
   bse_item_update_state (self);
 }
 

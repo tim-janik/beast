@@ -554,8 +554,8 @@ bse_song_init (BseSong *self)
   Bse::SongTiming timing;
   bse_song_timing_get_default (&timing);
 
-  BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  self->unset_flag (BSE_SNET_FLAG_USER_SYNTH);
+  self->set_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
 
   self->musical_tuning = Bse::MusicalTuning::OD_12_TET;
 
@@ -953,14 +953,17 @@ void
 SongImpl::musical_tuning (MusicalTuning tuning)
 {
   BseSong *self = as<BseSong*>();
-  if (!BSE_SOURCE_PREPARED (self) && self->musical_tuning != tuning)
+  if (self->musical_tuning != tuning)
     {
       const char prop[] = "musical_tuning";
-      push_property_undo (prop);
-      self->musical_tuning = tuning;
-      SfiRing *ring;
-      for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-        bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+      if (!BSE_SOURCE_PREPARED (self))
+        {
+          push_property_undo (prop);
+          self->musical_tuning = tuning;
+          SfiRing *ring;
+          for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+            bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+        }
       notify (prop);
     }
 }

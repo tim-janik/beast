@@ -12,6 +12,15 @@
 #define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
 #define CHECK_LDEBUG()  Bse::debug_key_enabled ("leaks")
 
+void
+BseObject::change_flags (uint16 f, bool ason)
+{
+  if (ason)
+    flags_ |= f;
+  else
+    flags_ &= ~f;
+}
+
 namespace Bse {
 
 static void (ObjectImpl::*object_impl_post_init) () = NULL;
@@ -80,7 +89,7 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
         break;
       }
   for (size_t i = 0; detail[i]; i++)
-    if (!strchr (ident_chars, detail[i]))
+    if (!strchr (ident_chars, detail[i]) and detail[i] != '_')
       {
         Bse::warning ("invalid characters in Event type: %s", type);
         break;
@@ -240,7 +249,7 @@ bse_object_init (BseObject *object)
   assert_return (in_bse_object_new);
   object->cxxobject_ = NULL;
   object->cxxobjref_ = NULL;
-  object->flags = 0;
+  object->unset_flag (BseObjectFlags (~0)); // flags_ = 0;
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
   sfi_ustore_insert (object_id_ustore, object->unique_id, object);
@@ -267,7 +276,7 @@ bse_object_do_dispose (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
 
-  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
+  object->set_flag (BSE_OBJECT_FLAG_DISPOSING);
 
   if (BSE_OBJECT_IN_RESTORE (object))
     Bse::warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
@@ -278,7 +287,7 @@ bse_object_do_dispose (GObject *gobject)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 
-  BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
+  object->unset_flag (BSE_OBJECT_FLAG_DISPOSING);
 
   if (object->cxxobjref_)
     {
@@ -328,7 +337,7 @@ bse_object_do_set_property (GObject      *gobject,
       gchar *string;
 
     case PROP_UNAME:
-      if (!(object->flags & BSE_OBJECT_FLAG_FIXED_UNAME))
+      if (!(object->get_flags() & BSE_OBJECT_FLAG_FIXED_UNAME))
 	{
 	  object_unames_ht_remove (object);
 	  string = g_strdup_stripped (g_value_get_string (value));
@@ -698,7 +707,7 @@ bse_object_restore_start (BseObject  *object,
   assert_return (BSE_IS_STORAGE (storage));
   if (!BSE_OBJECT_IN_RESTORE (object))
     {
-      BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
+      object->set_flag (BSE_OBJECT_FLAG_IN_RESTORE);
       bse_storage_add_restorable (storage, object);
       BSE_OBJECT_GET_CLASS (object)->restore_start (object, storage);
     }
@@ -735,7 +744,7 @@ bse_object_restore_finish (BseObject *object,
   if (BSE_OBJECT_IN_RESTORE (object))
     {
       BSE_OBJECT_GET_CLASS (object)->restore_finish (object, vmajor, vminor, vmicro);
-      BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
+      object->unset_flag (BSE_OBJECT_FLAG_IN_RESTORE);
     }
 }
 
