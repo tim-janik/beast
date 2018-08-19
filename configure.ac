@@ -6,15 +6,15 @@ m4_include(config/glib-gettext.m4)
 AC_PREREQ(2.57)
 
 # == Package & Version ==
-# VERSION: MAJOR.MINOR.MICRO~RC:
-# * MAJOR:           Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
-# * MINOR:           Increment for significant changes or ABI breaks, resets MICRO
-# * MICRO:           Increment with every release, increments must *not* break ABI
-# * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
-# * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
-# * -RC:             Pre-release suffix, may be empty or contain -beta.[0-9]+
-AC_INIT([beast], [0.13.0-alpha])
-:;   ABI_VERSION=[0.13.0]
+# VERSION: MAJOR.MINOR.MICRO-RC
+# * MAJOR:       Increment on major API breaks, *forces* ABI break, resets MINOR, MICRO and ABI_VERSION
+# * MINOR:       Increment for significant changes or ABI breaks, resets MICRO
+# * MICRO:       Increment with every release, increments must *not* break ABI
+# * -RC:         Pre-release suffix, may be empty or contain -beta.[0-9]+
+AC_INIT([beast], [m4_esyscmd_s([./git-version.sh -s])])
+# * ABI_VERSION: Record the latest version since ABI compatibility has been kept
+# * ABI changes: Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
+[ABI_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.0/'`]
 AC_CONFIG_SRCDIR([bse/bseserver.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
@@ -23,10 +23,9 @@ AC_CANONICAL_TARGET                                     # architecture informati
 AM_INIT_AUTOMAKE(1.9 no-dist no-define foreign subdir-objects)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
-[MAJOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
-[MINOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
-[MICRO=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
-AC_SUBST(BEAST_VERSION)
+[MAJOR=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+[MINOR=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+[MICRO=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [Beast Version])
 AC_DEFINE_UNQUOTED(BEAST_EXEC_POSTFIX, "-$MAJOR.$MINOR.$MICRO", [Beast executable postfix])
@@ -35,9 +34,9 @@ AC_SUBST(MAJOR)
 AC_SUBST(MINOR)
 AC_SUBST(MICRO)
 # calculate ABI age
-ABI_MAJOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
-ABI_MINOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
-ABI_MICRO=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+ABI_MAJOR=[`echo "$ABI_VERSION" | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+ABI_MINOR=[`echo "$ABI_VERSION" | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+ABI_MICRO=[`echo "$ABI_VERSION" | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
 test "$ABI_MAJOR" = "$MAJOR" || {
   AC_MSG_ERROR([ABI_VERSION must match MAJOR version: $ABI_MAJOR == $MAJOR])
 }
