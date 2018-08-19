@@ -100,7 +100,7 @@ RUN `intent package` && \
     TARDIR=${TARBALL%.tar*} && \
     TARPACKAGE=${TARDIR%-*} && \
     TARVERSION=${TARDIR#*-} && \
-    BUILDID=`misc/mkbuildid.sh -p` && \
+    BUILDID=`./git-version.sh` && \
     DEBVERSION=$BUILDID-0${DISTRELEASE:-local}${TRAVIS_JOB_NUMBER:+~travis${TRAVIS_JOB_NUMBER#*.}} && \
     DEB_TARBALL="$TARPACKAGE"_"${DEBVERSION%-*}.orig.tar.xz" && \
     COMMITID=`git rev-parse HEAD` && \
