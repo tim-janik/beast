@@ -953,14 +953,17 @@ void
 SongImpl::musical_tuning (MusicalTuning tuning)
 {
   BseSong *self = as<BseSong*>();
-  if (!BSE_SOURCE_PREPARED (self) && self->musical_tuning != tuning)
+  if (self->musical_tuning != tuning)
     {
       const char prop[] = "musical_tuning";
-      push_property_undo (prop);
-      self->musical_tuning = tuning;
-      SfiRing *ring;
-      for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-        bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+      if (!BSE_SOURCE_PREPARED (self))
+        {
+          push_property_undo (prop);
+          self->musical_tuning = tuning;
+          SfiRing *ring;
+          for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+            bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+        }
       notify (prop);
     }
 }
