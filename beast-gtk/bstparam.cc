@@ -458,7 +458,8 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  objectp->__aida_set__ (pspec->name, any);
+  if (!objectp->__aida_set__ (pspec->name, any))
+    Bse::warning ("%s: __aida_set__: unknown value name: %s", __func__, pspec->name);
 }
 
 static void
@@ -467,6 +468,8 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
   Bse::ObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
   Any any = objectp->__aida_get__ (pspec->name);
+  if (any.empty())
+    Bse::warning ("%s: __aida_get__: unknown value name: %s (empty return value)", __func__, pspec->name);
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {
