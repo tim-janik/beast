@@ -89,7 +89,6 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
 			 NULL);
       self->project.on ("statechanged", [self] (const Aida::Event &ev) {
           const Bse::ProjectState state = ev["state"].get<Bse::ProjectState>();
-          printerr ("BST: statechanged: %d\n", state);
           project_state_changed (self, state);
         });
       project_state_changed (self, self->project.get_state());
