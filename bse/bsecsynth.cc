@@ -60,8 +60,8 @@ static void
 bse_csynth_init (BseCSynth *self)
 {
   bse_item_set (self, "uname", _("Synth"), NULL);
-  BSE_OBJECT_SET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  self->set_flag (BSE_SNET_FLAG_USER_SYNTH);
+  self->unset_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
 }
 
 static void

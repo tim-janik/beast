@@ -105,7 +105,7 @@ alloc_id_above (guint n)
 static void
 bse_track_init (BseTrack *self)
 {
-  BSE_OBJECT_SET_FLAGS (self, BSE_SOURCE_FLAG_PRIVATE_INPUTS);
+  self->set_flag (BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->snet = NULL;
   self->pnet = NULL;
   self->sound_font_preset = NULL;
