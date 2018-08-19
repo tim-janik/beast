@@ -89,7 +89,7 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
         break;
       }
   for (size_t i = 0; detail[i]; i++)
-    if (!strchr (ident_chars, detail[i]))
+    if (!strchr (ident_chars, detail[i]) and detail[i] != '_')
       {
         Bse::warning ("invalid characters in Event type: %s", type);
         break;
