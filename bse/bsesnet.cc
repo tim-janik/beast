@@ -922,6 +922,7 @@ SNetImpl::auto_activate (bool v)
     self->set_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
   else
     self->unset_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  notify ("auto_activate");
 }
 
 Error
