@@ -205,7 +205,7 @@ main (int   argc,
 static void
 wavetool_print_version (void)
 {
-  printout ("bsewavetool version %s\n", ::Internal::buildid());
+  printout ("bsewavetool version %s\n", bse_topbuildid());
   printout ("Refer to beast --version for more version information.\n");
   printout ("bsewavetool comes with ABSOLUTELY NO WARRANTY.\n");
   printout ("You may redistribute copies of bsewavetool under the terms\n");
