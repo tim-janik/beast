@@ -1,3 +1,1 @@
-namespace Internal {
-const char* buildid() __attribute__ ((const));
-} // Internal
+const char* bse_topbuildid () __attribute__ ((const));
