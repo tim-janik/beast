@@ -326,12 +326,10 @@ bst_app_finalize (GObject *object)
 
   if (self->project)
     {
-      //FIXME: self->project.sig_state_changed() -= self->sig_state_changed_id;
-      self->sig_state_changed_id = 0;
       bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      self->project = Bse::ProjectH(); // NULL
+      self->project = NULL;
     }
   if (self->ppages)
     {
@@ -355,11 +353,7 @@ bst_app_new (Bse::ProjectH project)
 
   self->project = project;
   self->project.on ("treechange", [self] () { bst_app_reload_pages (self); });
-#if 0 // FIXME
-  self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) {
-    gxk_widget_update_actions (self);
-  };
-#endif
+  self->project.on ("statechanged", [self] () { gxk_widget_update_actions (self); });
 
   bse_proxy_connect (self->project.proxy_id(),
                      "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,

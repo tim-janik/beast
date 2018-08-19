@@ -24,7 +24,6 @@ struct _BstApp
   GxkDialog       window;
 
   Bse::ProjectS   project;
-  size_t          sig_state_changed_id;
 
   guint           select_unseen_super : 1;
 
