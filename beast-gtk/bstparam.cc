@@ -426,6 +426,20 @@ bst_param_new_rec (GParamSpec *pspec,
 // == Aida::Parameter binding ==
 static Bse::ObjectS* aida_property_binding_object (GxkParam *param);
 
+static std::string
+name_to_identifier (const std::string &name)
+{
+  if (strchr (name.c_str(), '-'))
+    {
+      std::string identifier (name);
+      for (size_t i = 0; i < identifier.size(); i++)
+        if (identifier[i] == '-')
+          identifier[i] = '_';
+      return identifier;
+    }
+  return name;
+}
+
 static void
 aida_property_binding_set_value (GxkParam *param, const GValue *value)
 {
@@ -458,8 +472,8 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  if (!objectp->__aida_set__ (pspec->name, any))
-    Bse::warning ("%s: __aida_set__: unknown value name: %s", __func__, pspec->name);
+  if (!objectp->__aida_set__ (name_to_identifier (pspec->name), any))
+    Bse::warning ("%s: __aida_set__: unknown value name: %s", __func__, name_to_identifier (pspec->name));
 }
 
 static void
@@ -467,9 +481,9 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 {
   Bse::ObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
-  Any any = objectp->__aida_get__ (pspec->name);
+  Any any = objectp->__aida_get__ (name_to_identifier (pspec->name));
   if (any.empty())
-    Bse::warning ("%s: __aida_get__: unknown value name: %s (empty return value)", __func__, pspec->name);
+    Bse::warning ("%s: __aida_get__: unknown value name: %s (empty return value)", __func__, name_to_identifier (pspec->name));
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {
@@ -554,7 +568,7 @@ bst_param_new_property (GParamSpec *pspec, const Bse::ObjectH handle)
   auto notify = [param] (const Aida::Event &event) {
     gxk_param_update (param);
   };
-  objectp->on (String ("notify:") + param->pspec->name, notify);
+  objectp->on (String ("notify:") + name_to_identifier (param->pspec->name), notify);
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
