@@ -32,6 +32,10 @@ typedef enum                            /*< skip >*/
 struct BseItem : BseObject {
   guint         use_count;
   BseItem      *parent;
+  void          set_flag    (BseItemFlags f)   { change_flags (uint16 (f), true); }
+  void          unset_flag  (BseItemFlags f)   { change_flags (uint16 (f), false); }
+  using BseObject::set_flag;
+  using BseObject::unset_flag;
 };
 
 struct BseItemClass : BseObjectClass {

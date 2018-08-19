@@ -187,7 +187,7 @@ bse_storage_turn_readable (BseStorage  *self,
   self->dblocks = dblocks;
   self->n_dblocks = n_dblocks;
   self->data.blobs = blobs;
-  BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_DBLOCK_CONTAINED);
+  self->set_flag (BSE_STORAGE_DBLOCK_CONTAINED);
 }
 
 void
@@ -239,7 +239,7 @@ bse_storage_reset (BseStorage *self)
   g_free (self->free_me);
   self->free_me = NULL;
 
-  BSE_OBJECT_UNSET_FLAGS (self, BSE_STORAGE_MODE_MASK);
+  self->unset_flag (BSE_STORAGE_MODE_MASK);
 }
 
 static gulong
@@ -296,7 +296,7 @@ bse_storage_prepare_write (BseStorage    *self,
   mode = BseStorageMode (mode & BSE_STORAGE_MODE_MASK);
   if (mode & BSE_STORAGE_DBLOCK_CONTAINED)
     mode = BseStorageMode (mode | BSE_STORAGE_SELF_CONTAINED);
-  BSE_OBJECT_SET_FLAGS (self, mode);
+  self->set_flag (mode);
   bse_storage_break (self);
   bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION);
 }
@@ -778,7 +778,8 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
         return expected_token;
       if (Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
         {
-          item->__aida_set__ (identifier, any);
+          if (!item->__aida_set__ (identifier, any))
+            Bse::warning ("%s: invalid property name: %s", __func__, identifier);
         }
       else
         bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",

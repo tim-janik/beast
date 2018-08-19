@@ -6,9 +6,9 @@
 static void
 bse_device_init (BseDevice *self)
 {
-  BSE_OBJECT_UNSET_FLAGS (self, (BSE_DEVICE_FLAG_OPEN |
-				 BSE_DEVICE_FLAG_READABLE |
-				 BSE_DEVICE_FLAG_WRITABLE));
+  self->unset_flag (BSE_DEVICE_FLAG_OPEN);
+  self->unset_flag (BSE_DEVICE_FLAG_READABLE);
+  self->unset_flag (BSE_DEVICE_FLAG_WRITABLE);
 }
 
 SfiRing*
@@ -118,11 +118,11 @@ bse_device_set_opened (BseDevice      *self,
   assert_return (device_name != NULL);
   assert_return (readable || writable);
   self->open_device_name = g_strdup (device_name);
-  BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_OPEN);
+  self->set_flag (BSE_DEVICE_FLAG_OPEN);
   if (readable)
-    BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_READABLE);
+    self->set_flag (BSE_DEVICE_FLAG_READABLE);
   if (writable)
-    BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_WRITABLE);
+    self->set_flag (BSE_DEVICE_FLAG_WRITABLE);
   g_free (self->open_device_args);
   self->open_device_args = NULL;
 }
@@ -143,9 +143,9 @@ bse_device_close (BseDevice *self)
   g_free (self->open_device_args);
   self->open_device_args = NULL;
 
-  BSE_OBJECT_UNSET_FLAGS (self, (BSE_DEVICE_FLAG_OPEN |
-                                 BSE_DEVICE_FLAG_READABLE |
-                                 BSE_DEVICE_FLAG_WRITABLE));
+  self->unset_flag (BSE_DEVICE_FLAG_OPEN);
+  self->unset_flag (BSE_DEVICE_FLAG_READABLE);
+  self->unset_flag (BSE_DEVICE_FLAG_WRITABLE);
 }
 
 BseDeviceEntry*

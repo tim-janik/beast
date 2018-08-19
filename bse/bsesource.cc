@@ -395,7 +395,7 @@ bse_source_prepare (BseSource *source)
   g_object_freeze_notify (source);
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   source->contexts = g_bsearch_array_create (&context_config);
-  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
+  source->set_flag (BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
   Bse::SourceImpl *self = source->as<Bse::SourceImpl*>();
   self->cmon_activate();
@@ -434,7 +434,7 @@ bse_source_reset (BseSource *source)
     }
   bse_engine_wait_on_trans ();
   BSE_SOURCE_GET_CLASS (source)->reset (source);
-  BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);    /* guard properties until _after_ reset() */
+  source->unset_flag (BSE_SOURCE_FLAG_PREPARED);    /* guard properties until _after_ reset() */
   g_bsearch_array_free (source->contexts, &context_config);
   source->contexts = NULL;
   source_notify_properties (source);
@@ -1466,7 +1466,7 @@ collect_inputs_flat (SfiRing *ring, BseSource *source)
 	    BseSource *isource = input->jdata.joints[j].osource;
 	    if (!BSE_SOURCE_COLLECTED (isource))
 	      {
-		BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
+		isource->set_flag (BSE_SOURCE_FLAG_COLLECTED);
 		ring = sfi_ring_append (ring, isource);
 	      }
 	  }
@@ -1475,7 +1475,7 @@ collect_inputs_flat (SfiRing *ring, BseSource *source)
 	  BseSource *isource = input->idata.osource;
 	  if (!BSE_SOURCE_COLLECTED (isource))
 	    {
-	      BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
+	      isource->set_flag (BSE_SOURCE_FLAG_COLLECTED);
 	      ring = sfi_ring_append (ring, isource);
 	    }
 	}
@@ -1511,7 +1511,7 @@ bse_source_free_collection (SfiRing *ring)
   for (node = ring; node; node = sfi_ring_walk (node, ring))
     {
       BseSource *source = BSE_SOURCE (node->data);
-      BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
+      source->unset_flag (BSE_SOURCE_FLAG_COLLECTED);
     }
   sfi_ring_free (ring);
 }
@@ -1537,7 +1537,7 @@ bse_source_test_input_recursive (BseSource      *source,
 
   assert_return (BSE_IS_SOURCE (source) && BSE_IS_SOURCE (test), FALSE);
 
-  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
+  source->set_flag (BSE_SOURCE_FLAG_COLLECTED);
   last = ring = sfi_ring_append (NULL, source);
   gboolean match = last->data == test;
   for (node = ring; node && !match; node = sfi_ring_walk (node, ring))

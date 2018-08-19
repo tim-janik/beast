@@ -26,7 +26,7 @@ typedef enum    /*< skip >*/
   BSE_STORAGE_DBLOCK_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
 } BseStorageMode;
 #define BSE_STORAGE_FLAGS_USHIFT         (BSE_OBJECT_FLAGS_USHIFT + 2)
-#define BSE_STORAGE_MODE_MASK            (BSE_STORAGE_SELF_CONTAINED | BSE_STORAGE_DBLOCK_CONTAINED)
+#define BSE_STORAGE_MODE_MASK            (BseStorageMode (BSE_STORAGE_SELF_CONTAINED | BSE_STORAGE_DBLOCK_CONTAINED))
 
 
 /* --- compatibility --- */
@@ -63,6 +63,11 @@ struct BseStorage : BseObject {
   gfloat                 mix_freq;
   gfloat                 osc_freq;
   guint                  n_channels;
+
+  void           set_flag    (BseStorageMode f)   { change_flags (uint16 (f), true); }
+  void           unset_flag  (BseStorageMode f)   { change_flags (uint16 (f), false); }
+  using BseObject::set_flag;
+  using BseObject::unset_flag;
 
   /* storage blob */
   class Blob {
