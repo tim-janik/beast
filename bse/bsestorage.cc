@@ -778,7 +778,8 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
         return expected_token;
       if (Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
         {
-          item->__aida_set__ (identifier, any);
+          if (!item->__aida_set__ (identifier, any))
+            Bse::warning ("%s: invalid property name: %s", __func__, identifier);
         }
       else
         bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",
