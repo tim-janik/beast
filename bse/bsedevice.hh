@@ -30,8 +30,12 @@ typedef enum    /*< skip >*/
 /* --- BseDevice structs --- */
 struct BseDevice : BseObject {
   /* valid while BSE_DEVICE_OPEN() */
-  gchar                 *open_device_name;
-  gchar                 *open_device_args;
+  char *open_device_name;
+  char *open_device_args;
+  void set_flag    (BseDeviceFlags f)   { change_flags (uint16 (f), true); }
+  void unset_flag  (BseDeviceFlags f)   { change_flags (uint16 (f), false); }
+  using BseObject::set_flag;
+  using BseObject::unset_flag;
 };
 struct BseDeviceClass : BseObjectClass {
   gint                  driver_rating;

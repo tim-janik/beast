@@ -961,8 +961,8 @@ ProjectImpl::post_init()
                                                                           "uname", "Sound-Font-Repository",
                                                                           NULL);
   /* with fixed uname */
-  BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
-  BSE_OBJECT_SET_FLAGS (sfrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
+  wrepo->set_flag (BSE_OBJECT_FLAG_FIXED_UNAME);
+  sfrepo->set_flag (BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
 ProjectImpl::~ProjectImpl ()

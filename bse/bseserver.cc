@@ -160,7 +160,7 @@ static void
 bse_server_init (BseServer *self)
 {
   assert_return (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
-  BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
+  self->set_flag (BSE_ITEM_FLAG_SINGLETON);
 
   self->engine_source = NULL;
   self->projects = NULL;
