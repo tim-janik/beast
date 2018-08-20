@@ -48,16 +48,10 @@ extra-gitdist:
 .PHONY: extra-gitdist
 
 # === check: check-before / check-after ===
-.PHONY: check-before check-after check-devel
+.PHONY: check-before check-after
 check-am: check-before
 check-local: check-after
 check-local: ; @:
-check-devel: ; @:
-
-# == check-devel ==
-if ENABLE_DEVEL_MODE
-check-after: check-devel
-endif
 
 # == TAPTESTS ==
 # tests run through taptool.sh
