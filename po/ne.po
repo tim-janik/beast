@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -1419,7 +1419,7 @@ msgstr "CPU #"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
 
@@ -1451,7 +1451,7 @@ msgstr ""
 msgid "Change..."
 msgstr "परिवर्तन गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1516,7 +1516,7 @@ msgstr "खाली गर्नुहोस्"
 msgid "Clear the current selection"
 msgstr "हालको चयन खाली गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, c-format
 msgid "Close %s"
 msgstr "%s बन्द गर्नुहोस्"
@@ -1540,7 +1540,7 @@ msgid "Color Entry"
 msgstr "रङ प्रविष्टि"
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "टिप्पणी"
 
@@ -2299,7 +2299,7 @@ msgstr ""
 msgid "Direction"
 msgstr "दिशा"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr "परिवर्तन छोड्नुहोस्"
 
@@ -2931,7 +2931,7 @@ msgstr "पाद नियन्त्रक"
 msgid "Format"
 msgstr "ढाँचा"
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3761,7 +3761,7 @@ msgstr "लोड गर्नुहोस्..."
 msgid "Loading \"%s\""
 msgstr "\"%s\" लोड हुँदैछ"
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' स्किन लोड हुँदैछ"
@@ -3853,7 +3853,7 @@ msgstr "मिडि सङ्केत ३"
 msgid "MIDI Signal 4"
 msgstr "मिडि सङ्केत ४"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI सिन्थेसाइजर: %s"
@@ -4173,7 +4173,7 @@ msgid "Muted"
 msgstr "मौन गराइएको"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "नाम"
 
@@ -4501,7 +4501,7 @@ msgstr "खोल्न असफल"
 msgid "Open file browser"
 msgstr "फाइल ब्राउजर खोल्नुहोस्"
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4543,7 +4543,7 @@ msgstr "उत्पत्ती:  %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr "ओर्फन अंश"
 
@@ -4861,7 +4861,7 @@ msgstr "सकरात्मक मान रङ"
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर"
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "प्राथमिकता"
 
@@ -5390,7 +5390,7 @@ msgstr "प्रभावको रूपमा बचत गर्नुहो
 msgid "Save As Instrument..."
 msgstr "बाजाको रूपमा बचत गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 msgid "Save Changes"
 msgstr "परिवर्तन बचत गर्नुहोस्"
 
@@ -5414,7 +5414,7 @@ msgstr "सिन्थेसाइजर मेस प्रभाव फोल
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "सिन्थेसाइजर मेस बाजा फोल्डरमा बचत गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr "यसको सञ्झ्याल बन्द गर्नु पहिले परियोजना बचत गर्नुहुन्छ ?"
 
@@ -5809,7 +5809,7 @@ msgstr "एकल: अरू बसलाई मौन गराउनुहो�
 msgid "Song"
 msgstr "गीत"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, c-format
 msgid "Song: %s"
 msgstr "गीत: %s"
@@ -6097,7 +6097,7 @@ msgstr "सिन्थेसाइजर"
 msgid "Synthesizer Selection: %s"
 msgstr "सिन्थेसाइजर चयन: %s"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "सिन्थेसाइजर: %s"
@@ -6249,7 +6249,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "आगत<->निर्गत पोर्ट सम्बन्ध स्थापना गर्न पोर्टको नाम अद्वितिय नाम छ"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr "परियोजना परिमार्जन गरिएको छ।"
 
@@ -6558,7 +6558,7 @@ msgstr "फिल्टर नगरिएको अडियो सङ्के
 msgid "Unfiltered Input"
 msgstr "फिल्टर नगरिएको आगत"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6733,7 +6733,7 @@ msgstr "तरङ्ग फारम"
 msgid "Wave Output"
 msgstr "तरङ निर्गत"
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr "तरङ्ग भण्डारण"
 
@@ -6750,7 +6750,7 @@ msgstr "ओस्सिलेटर स्रोतको रूपमा प्
 msgid "Wave_s"
 msgstr "तरङ्ग"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "तरङ्ग"
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -1433,7 +1433,7 @@ msgstr ""
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 #, fuzzy
 msgid "Cancel"
 msgstr "Ot_kaži"
@@ -1467,7 +1467,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Izmeni..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1534,7 +1534,7 @@ msgstr "Očisti"
 msgid "Clear the current selection"
 msgstr "Očisti tekući izbor"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "_Zatvori"
@@ -1558,7 +1558,7 @@ msgid "Color Entry"
 msgstr "Unos boje"
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "Primedba"
 
@@ -2338,7 +2338,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Pravac"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr ""
 
@@ -3012,7 +3012,7 @@ msgstr "Upravljač"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3862,7 +3862,7 @@ msgstr "Učitaj..."
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Učitavam motiv „%s“"
@@ -3957,7 +3957,7 @@ msgstr "MIDI signal 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI signal 4"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, fuzzy, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Novi MIDI sintetizator"
@@ -4281,7 +4281,7 @@ msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "Ime"
 
@@ -4608,7 +4608,7 @@ msgstr ""
 msgid "Open file browser"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4651,7 +4651,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr ""
 
@@ -4978,7 +4978,7 @@ msgstr "Boja pozitivne vrednosti"
 msgid "Postprocessor"
 msgstr "Procedura"
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "Postavke"
 
@@ -5526,7 +5526,7 @@ msgstr "Sačuvaj kao efekat"
 msgid "Save As Instrument..."
 msgstr "Sačuvaj kao instrument"
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 #, fuzzy
 msgid "Save Changes"
 msgstr "Oblikuj opseg"
@@ -5551,7 +5551,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5935,7 +5935,7 @@ msgstr ""
 msgid "Song"
 msgstr "P_esma"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, fuzzy, c-format
 msgid "Song: %s"
 msgstr "Sačuvaj: %s"
@@ -6237,7 +6237,7 @@ msgstr "_Sintetizatori"
 msgid "Synthesizer Selection: %s"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, fuzzy, c-format
 msgid "Synthesizer: %s"
 msgstr "_Sintetizatori"
@@ -6397,7 +6397,7 @@ msgstr ""
 "Ime porta je jedinstveno ime za uspostavu veza između ulazno<->izlaznih "
 "portova"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr ""
 
@@ -6718,7 +6718,7 @@ msgstr "Nefiltrirani zvučni signal"
 msgid "Unfiltered Input"
 msgstr "Nefiltriran ulaz"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6898,7 +6898,7 @@ msgstr "Oblik talasa"
 msgid "Wave Output"
 msgstr "Talasni izlaz"
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr ""
 
@@ -6916,7 +6916,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr "_Talasi"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Talasi"
 
