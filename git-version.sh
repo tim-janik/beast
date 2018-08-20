@@ -11,7 +11,7 @@ cd "$(dirname "$0")"
 
 # If present, git knows the canonical version
 if test -d ${GIT_DIR:-.git} -o -f .git ; then
-  VERSION=$(git describe --match '[0-9]*.[0-9]*.*[0-9a]' $FORMAT)
+  VERSION=$(git describe --match '[0-9]*.[0-9]*.*[0-9a]' --first-parent $FORMAT)
   rm -f git-version.cache	# Cache file is stale if git works
   echo "$VERSION"
   exit 0
