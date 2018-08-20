@@ -252,9 +252,6 @@ done
 echo " $ld_help_text" | grep -q -e "--hash-style" && AM_LDFLAGS="$AM_LDFLAGS -Wl,--hash-style=both"
 AC_SUBST(AM_LDFLAGS)
 
-DEFINE__FILE_DIR__=
-AC_SUBST(DEFINE__FILE_DIR__)
-
 # == Utilities and build tools ==
 AC_PROG_MAKE_SET()
 AM_SILENT_RULES([yes])
