@@ -252,14 +252,6 @@ done
 echo " $ld_help_text" | grep -q -e "--hash-style" && AM_LDFLAGS="$AM_LDFLAGS -Wl,--hash-style=both"
 AC_SUBST(AM_LDFLAGS)
 
-# == ENABLE_DEVEL_MODE ==
-# check for development build rules, which require acess to .git/
-enable_devel_mode=0
-if echo " $PACKAGE_VERSION" | grep -q '~wip' ; then
-    enable_devel_mode=1
-fi
-AC_DEFINE_UNQUOTED(ENABLE_DEVEL_MODE, $enable_devel_mode, [Add development aids to the build])
-AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = x1)
 DEFINE__FILE_DIR__=
 AC_SUBST(DEFINE__FILE_DIR__)
 
@@ -782,7 +774,6 @@ Autoconfiguration complete.
 	Binaries:			`printexpandvar ${bindir}`
 	Beast Program Directory:	`printexpandvar ${beastdir}`
 
-	Development mode:		${ENABLE_DEVEL_MODE_FALSE:+enabled}${ENABLE_DEVEL_MODE_TRUE:+disabled}
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}
 	MP3 support using libmad:	${summary_libmad}
