@@ -110,10 +110,10 @@ installcheck-local: installcheck-buildtest
 topbuildid ::= $(shell ./git-version.sh)
 topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
 topbuildidcc_gen ::= $(shell \
-	echo '\#include "topbuildid.hh"'                                  > topbuildid.tmp && \
-	echo 'const char* bse_topbuildid () { return "$(topbuildid)"; }' >> topbuildid.tmp && \
-	( cmp topbuildid.tmp topbuildid.cc 2>/dev/null && \
-	  rm -f topbuildid.tmp || (mv topbuildid.tmp topbuildid.cc && \
+	( echo '\#include "topbuildid.hh"' && \
+	  echo 'const char* bse_topbuildid () { return "$(topbuildid)"; }' ) > topbuildid.$$$$.tmp && \
+	( cmp topbuildid.$$$$.tmp topbuildid.cc 2>/dev/null && \
+	  rm -f topbuildid.$$$$.tmp || (mv topbuildid.$$$$.tmp topbuildid.cc && \
 				   echo "  UPDATE  " topbuildid.cc) ))	# "update rule" for topbuildid.cc
 CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
 buildid:
