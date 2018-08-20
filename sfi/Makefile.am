@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
 SUBDIRS      = . tests
-DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
+DEFS        += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 AM_CPPFLAGS += -I$(top_srcdir)
 
 sfi_public_headers = $(strip	\

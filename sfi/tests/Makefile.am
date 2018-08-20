@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
 DEFS	    += -D__TOPDIR__="\"$(abs_top_srcdir)/\""
-DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
+DEFS	    += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)

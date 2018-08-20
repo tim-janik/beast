@@ -2,7 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
-DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_COMPILATION
+DEFS        += -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_COMPILATION
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
 
 # install plugins under:

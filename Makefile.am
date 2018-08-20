@@ -106,9 +106,15 @@ installcheck-buildtest:
 .PHONY: installcheck-buildtest
 installcheck-local: installcheck-buildtest
 
-# == topbuildid.cc ==
-topbuildid ::= $(shell $(topdir)/misc/mkbuildid.sh -p topbuildid.cc topbuildid.hh) # "update rule" for topbuildid.cc
-topbuildid.cc: # avoid explicit deps, 'topbuildid::=' ensures updates
+# == topbuildid.c ==
+topbuildid ::= $(shell ./git-version.sh)
+topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
+topbuildidcc_gen ::= $(shell \
+	( echo '\#include "topbuildid.hh"' && \
+	  echo 'const char* bse_topbuildid () { return "$(topbuildid)"; }' ) > topbuildid.$$$$.tmp && \
+	( cmp topbuildid.$$$$.tmp topbuildid.cc 2>/dev/null && \
+	  rm -f topbuildid.$$$$.tmp || (mv topbuildid.$$$$.tmp topbuildid.cc && \
+				   echo "  UPDATE  " topbuildid.cc) ))	# "update rule" for topbuildid.cc
 CLEANFILES += topbuildid.cc	# preserve across 'mostlyclean' if unchanged to avoid expensive rebuilds
 buildid:
 	@echo $(topbuildid)
@@ -137,8 +143,10 @@ dist: all
 	$(Q) rm -rf .tmpdist/ &&					\
 	  mkdir .tmpdist/ &&						\
 	  tar -C .tmpdist/ -xf $(distname).tar &&			\
+	  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&		\
+	  ./git-version.sh > "$$EXTRA_GITDIST_DIR/git-version.cache" &&	\
 	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
-		  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&	\
+		  EXTRA_GITDIST_DIR="$$EXTRA_GITDIST_DIR" &&		\
 	  cd .tmpdist/$(distname)/ &&					\
 	  ./autogen.sh --help >/dev/null &&				\
 	  cd ../ &&							\
