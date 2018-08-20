@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2003-10-25 21:45+0800\n"
 "Last-Translator: storm119 <bbbush@163.com>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
@@ -1397,7 +1397,7 @@ msgstr ""
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 #, fuzzy
 msgid "Cancel"
 msgstr "输入通道使用中"
@@ -1431,7 +1431,7 @@ msgstr ""
 msgid "Change..."
 msgstr "更改..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1500,7 +1500,7 @@ msgstr "/编辑(E)/清除修改历史(_C)"
 msgid "Clear the current selection"
 msgstr "删除当前选择的音轨"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "/文件(F)/关闭(_C)"
@@ -1524,7 +1524,7 @@ msgid "Color Entry"
 msgstr ""
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "注释"
 
@@ -2307,7 +2307,7 @@ msgstr ""
 msgid "Direction"
 msgstr "描述"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr ""
 
@@ -2949,7 +2949,7 @@ msgstr "控制器"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3819,7 +3819,7 @@ msgstr "加载..."
 msgid "Loading \"%s\""
 msgstr "正在加载“%s”"
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "正在加载波形文件“%s”"
@@ -3914,7 +3914,7 @@ msgstr ""
 msgid "MIDI Signal 4"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, fuzzy, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "/项目(P)/新建MIDI合成器"
@@ -4243,7 +4243,7 @@ msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr ""
 
@@ -4577,7 +4577,7 @@ msgstr ""
 msgid "Open file browser"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4620,7 +4620,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr ""
 
@@ -4950,7 +4950,7 @@ msgstr ""
 msgid "Postprocessor"
 msgstr "过程"
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "配置"
 
@@ -5516,7 +5516,7 @@ msgstr "加载波形文件"
 msgid "Save As Instrument..."
 msgstr "正在保存项目“%s”"
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 #, fuzzy
 msgid "Save Changes"
 msgstr "范围形状"
@@ -5542,7 +5542,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5926,7 +5926,7 @@ msgstr ""
 msgid "Song"
 msgstr "曲目(_S)"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, fuzzy, c-format
 msgid "Song: %s"
 msgstr "保存：%s"
@@ -6214,7 +6214,7 @@ msgstr "合成器(_S)"
 msgid "Synthesizer Selection: %s"
 msgstr "合成器(_S)"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, fuzzy, c-format
 msgid "Synthesizer: %s"
 msgstr "合成器(_S)"
@@ -6363,7 +6363,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr ""
 
@@ -6676,7 +6676,7 @@ msgstr ""
 msgid "Unfiltered Input"
 msgstr "删除输入"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6863,7 +6863,7 @@ msgstr ""
 msgid "Wave Output"
 msgstr "输出"
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr ""
 
@@ -6882,7 +6882,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr "/波形文件(_s)"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "波形"
 

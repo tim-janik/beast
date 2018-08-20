@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2010-04-11 12:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
@@ -1397,7 +1397,7 @@ msgstr "CPE št."
 msgid "CPU%"
 msgstr "CPE%"
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 msgid "Cancel"
 msgstr "Prekliči"
 
@@ -1430,7 +1430,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Spremeni ..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1494,7 +1494,7 @@ msgstr "Počisti"
 msgid "Clear the current selection"
 msgstr "Počisti trenutni izbor"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, c-format
 msgid "Close %s"
 msgstr "Zapri %s"
@@ -1518,7 +1518,7 @@ msgid "Color Entry"
 msgstr "Barvni vnos"
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "Opomba"
 
@@ -2281,7 +2281,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Smer"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr "Zavrzi spremembe"
 
@@ -2908,7 +2908,7 @@ msgstr "Nadzornik nog"
 msgid "Format"
 msgstr "Vrsta"
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr "Opomba ali opis proste oblike"
 
@@ -3748,7 +3748,7 @@ msgstr "Naloži ..."
 msgid "Loading \"%s\""
 msgstr "Nalaganje \"%s\""
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Nalaganje preobleke `%s'"
@@ -3840,7 +3840,7 @@ msgstr "MIDI signal 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI signal 4"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Sintetizator MIDI: %s"
@@ -4163,7 +4163,7 @@ msgid "Muted"
 msgstr "Nemo"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "Ime"
 
@@ -4496,7 +4496,7 @@ msgstr "Napaka med odpiranjem"
 msgid "Open file browser"
 msgstr "Odpri brskalnik datotek"
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4539,7 +4539,7 @@ msgstr "Izvor:   %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr "Osiroteli deli"
 
@@ -4860,7 +4860,7 @@ msgstr "Barva pozitivne vrednosti"
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "Možnosti"
 
@@ -5387,7 +5387,7 @@ msgstr "Shrani kot učinek ..."
 msgid "Save As Instrument..."
 msgstr "Shrani kot inštrument ..."
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 msgid "Save Changes"
 msgstr "Shrani spremembe"
 
@@ -5411,7 +5411,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr "Ali želite shraniti spremembe projekta pred zapiranjem?"
 
@@ -5802,7 +5802,7 @@ msgstr "Solo: Utišanje vseh ostalih vodil"
 msgid "Song"
 msgstr "_Skladba"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, c-format
 msgid "Song: %s"
 msgstr "Skladba: %s"
@@ -6090,7 +6090,7 @@ msgstr "Sintetizator"
 msgid "Synthesizer Selection: %s"
 msgstr "Izbira sintetizatorja: %s"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizator: %s"
@@ -6249,7 +6249,7 @@ msgid ""
 msgstr ""
 "Ime vrat je edinstveno ime za vzpostavljanje razmerij vhodna<->izhodna vrata"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr "Projekt je bil spremenjen."
 
@@ -6566,7 +6566,7 @@ msgstr "Nefiltriran zvočni signal"
 msgid "Unfiltered Input"
 msgstr "Nefiltriran vhod"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr "Edinstveno ime tega predmeta"
 
@@ -6742,7 +6742,7 @@ msgstr "Valovna oblika"
 msgid "Wave Output"
 msgstr "Valovni izhod"
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr "Skladišče valov"
 
@@ -6759,7 +6759,7 @@ msgstr "Val uporabljen kot vir oscilatorja"
 msgid "Wave_s"
 msgstr "Val_ovi"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Valovi"
 
