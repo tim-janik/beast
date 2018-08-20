@@ -5,7 +5,7 @@ topdir = $(abs_top_srcdir)
 
 SUBDIRS = icons . tests
 
-DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
+DEFS        += -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
 AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>

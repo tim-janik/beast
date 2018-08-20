@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS =
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
-DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
+DEFS        += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(BSE_CFLAGS) $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 
 noinst_PROGRAMS = $(ALLTESTS)
