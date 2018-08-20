@@ -1,7 +1,4 @@
-== Beast 0.12.0-beta.1:				(2018-08-04)
-
-[.caution]
-_Note: This is a beta release. Please file new issues for any bugs you find in it._
+== Beast 0.12.0:					(2018-08-20)
 
 .System Requirements
 * Linux - Ubuntu 16.10 is needed to install the `.deb` package
@@ -31,6 +28,8 @@ _Note: This is a beta release. Please file new issues for any bugs you find in i
 * Clarified licensing, Beast is released under LGPL-2.1+.
 * Added various documentation improvements.
 * Added internal integrity tests.
+* Display summary message at the end of configure. #33
+* Adjusted versioning and provide wip/latest-stable for rolling updates.
 
 .Size Reductions
 * Removed CPython runtime dependency.
@@ -42,6 +41,11 @@ _Note: This is a beta release. Please file new issues for any bugs you find in i
 * Upgrade to Electron-1.8, Vue-2.5, Chrome-59.0, V8-5.9, Node-8.2.
 * Adapted code to depend on and make use of C++14.
 * Fixed code to compile cleanly with g++-7.2.
+
+.Regression Fixes
+* Fixed 'auto_activate' networks not working. #38
+* Unhardcode launcher icon file type. #57
+* Fixed activity led staying dark. #62
 
 .Bug Fixes
 * Fixed memory corruption crash. #25 [stw]
