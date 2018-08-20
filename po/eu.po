@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2006-08-08 17:07+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
@@ -1385,7 +1385,7 @@ msgstr "#PUZ"
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 #, fuzzy
 msgid "Cancel"
 msgstr "_Utzi"
@@ -1420,7 +1420,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Aldatu..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1485,7 +1485,7 @@ msgstr "Garbitu"
 msgid "Clear the current selection"
 msgstr "Unean hautatutakoa garbitzen du"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, c-format
 msgid "Close %s"
 msgstr "Itxi %s"
@@ -1508,7 +1508,7 @@ msgid "Color Entry"
 msgstr "Kolore-sarrera"
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "Iruzkina"
 
@@ -2276,7 +2276,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Noranzkoa"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr ""
 
@@ -2908,7 +2908,7 @@ msgstr "Oineko kontroladorea"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3742,7 +3742,7 @@ msgstr "Kargatu..."
 msgid "Loading \"%s\""
 msgstr "\"%s\" kargatzen"
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' azala kargatzen"
@@ -3836,7 +3836,7 @@ msgstr "MIDI seinalea 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI seinalea 4"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI sintetizadorea: %s"
@@ -4159,7 +4159,7 @@ msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "Izena"
 
@@ -4482,7 +4482,7 @@ msgstr ""
 msgid "Open file browser"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4524,7 +4524,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr ""
 
@@ -4845,7 +4845,7 @@ msgstr "Balio positiboaren kolorea"
 msgid "Postprocessor"
 msgstr "prozesatzen"
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "Hobespenak"
 
@@ -5380,7 +5380,7 @@ msgstr "Gorde efektu gisa..."
 msgid "Save As Instrument..."
 msgstr "Gorde instrumentu gisa..."
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 #, fuzzy
 msgid "Save Changes"
 msgstr "Forma-barrutia"
@@ -5405,7 +5405,7 @@ msgstr "Gorde sintetizadore maila efektuen karpetan"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Gorde sintetizadore maila intrumentuen karpetan"
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5780,7 +5780,7 @@ msgstr ""
 msgid "Song"
 msgstr "Ka_nta"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, c-format
 msgid "Song: %s"
 msgstr "Abestia: %s"
@@ -6081,7 +6081,7 @@ msgstr "_Sintetizadoreak"
 msgid "Synthesizer Selection: %s"
 msgstr "Sintetizadore hautapena: %s"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizadorea: %s"
@@ -6241,7 +6241,7 @@ msgstr ""
 "Atakaren izena sarrera<->irteera ataken arteko harremanak ezartzeko "
 "erabiltzen den izen esklusiboa da"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr "Proiketua aldatua izan da."
 
@@ -6554,7 +6554,7 @@ msgstr "Iragazi gabeko audio-seinalea"
 msgid "Unfiltered Input"
 msgstr "Iragazi gabeko sarrera"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6729,7 +6729,7 @@ msgstr "Uhinaren forma"
 msgid "Wave Output"
 msgstr "Uhin-irteera"
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr "Uhin biltegia"
 
@@ -6747,7 +6747,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr "U_hinak"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Uhinak"
 

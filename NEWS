@@ -1,38 +1,68 @@
-Beast 0.12.0-beta.1:
+== Beast 0.13.0-alpha:
 
-* EBEAST: development of a new user interface based on Electronjs has
-  started and the first (pre-alpha) bits are shipped and installed
-  with this release under $prefix/beast-0-12/bin/ebeast.
-* EBEAST: added About, Tracks with dB meters, Parts with thumbnails.
-* EBEAST: added Play controls, Piano roll, color picker palette.
-* Upgrade to Electron-1.8, Vue-2.5, Chrome-59.0, V8-5.9, Node-8.2.
-* Added internal integrity tests.
-* Added various documentation improvements.
-* Fixed memory corruption crash, #25. [stw]
-* Fixed fluid synth test on Bionic, #42. [stw]
-* Fixed crash when adding mixer bus during playback. [stw]
-* Merged and enhanced the new Beast IDL layer AIDA.
-* Introduced asynchronous Events to replace signals.
-* Removed all C procedures, migrated method calls to Aida IDL.
-* Removed large chunks of old and outdated code.
-* Integrated required utilities from Rapicorn.
-* Removed Rapicorn as build and runtime dependency.
-* Removed Python runtime dependency.
-* Work around apport reporting assertion tests.
-* Handle UTF-8 mixed with Latin-1 gracefully.
-* Renamed Demos/, Effects/, etc resource directories.
+[.caution]
+_Note: This is the master branch of Beast, which contains alpha version software.
+Beware of file format instabilities and report any bugs you find in it._
+
+
+== Beast 0.12.0:					(2018-08-20)
+
+.System Requirements
+* Linux - Ubuntu 16.10 is needed to install the `.deb` package
+
+.New Features
+* New user interface: *EBEAST*, an electron based DAW GUI
+* Added ANSI colors to logging output for non-dumb terminals.
 * Added shared memory allocator with external bookkeeping (without
   boundary tags). Communicate dB meter levels and other values via
   shared memory between DSP engine and UI code.
+
+.User Interface EBEAST
+* Development of a new user interface based on Electronjs has
+  started and the first (pre-alpha) bits are shipped and installed
+  with this release under $prefix/beast-0-12/bin/ebeast.
+* Added About, Tracks with dB meters, Parts with thumbnails.
+* Added Play Controls, Piano Roll, color picker palette.
+
+.Improvements
+* Merged and enhanced the new Beast IDL layer AIDA.
+* Introduced asynchronous Events to replace signals.
+* Removed all C procedures, migrated method calls to Aida IDL.
+* Integrated required utilities from Rapicorn.
+* Renamed Demos/, Effects/, etc resource directories.
 * Continued migration of C structs to C++ classes.
 * Adjusted remote reference GC for Beast work loads.
-* Added ANSI colors to logging output for non-dumb terminals.
-* Reduced libbse.so size down to 14% by splitting debug syms.
 * Clarified licensing, Beast is released under LGPL-2.1+.
+* Added various documentation improvements.
+* Added internal integrity tests.
+* Display summary message at the end of configure. #33
+* Adjusted versioning and provide wip/latest-stable for rolling updates.
+
+.Size Reductions
+* Removed CPython runtime dependency.
+* Removed large chunks of old and outdated code.
+* Removed Rapicorn as build and runtime dependency.
+* Reduced libbse.so size down to 14% by splitting debug syms.
+
+.Upgrades
+* Upgrade to Electron-1.8, Vue-2.5, Chrome-59.0, V8-5.9, Node-8.2.
 * Adapted code to depend on and make use of C++14.
 * Fixed code to compile cleanly with g++-7.2.
 
-Beast 0.11.0:					(2017-06-27)
+.Regression Fixes
+* Fixed 'auto_activate' networks not working. #38
+* Unhardcode launcher icon file type. #57
+* Fixed activity led staying dark. #62
+
+.Bug Fixes
+* Fixed memory corruption crash. #25 [stw]
+* Fixed fluid synth test on Bionic. #42 [stw]
+* Fixed crash when adding mixer bus during playback. [stw]
+* Work around apport reporting assertion tests.
+* Handle UTF-8 mixed with Latin-1 gracefully.
+
+
+== Beast 0.11.0:					(2017-06-27)
 
 * Added Soundfont support so Beast can play .sf2 files. [stw]
 * Execute the DSP engine multi threaded with `nproc` many threads.
@@ -59,7 +89,7 @@ Beast 0.11.0:					(2017-06-27)
 * The Beast project now provides Debian binary packages at:
   https://testbit.eu/pub/dists/beast/debs
 
-Beast 0.10.0:					(2016-04-07)
+== Beast 0.10.0:					(2016-04-07)
 
 * Memory leak and stability fixes.
 * Removal of deprecated Glib/Gtk+ functions.
@@ -83,7 +113,7 @@ Beast 0.10.0:					(2016-04-07)
 * Split up Beast main() methods to run event loop from Python.
 * Port libbse to use C++11 scoped enums.
 
-Overview of Changes in BEAST/BSE 0.9.2:		(2015-09-16)
+== Beast 0.9.2:					(2015-09-16)
 
 * Workarounds were added for broken GLib compatibility.
 * Files for the BSE runtime are now compressed and stored via rapidres(1).
@@ -96,7 +126,7 @@ Overview of Changes in BEAST/BSE 0.9.2:		(2015-09-16)
 * All files are now installed under versioned directories, e.g. /usr/share/beast-0.9/
 * Execute audio tests with 'make check' for development versions.
 
-Overview of Changes in BEAST/BSE 0.9.0:		(2014-10-28)
+== Beast 0.9.0:					(2014-10-28)
 
 * Fixed missing includes. [stw]
 * Updates to build with Rapicorn1410.
@@ -110,7 +140,7 @@ Overview of Changes in BEAST/BSE 0.9.0:		(2014-10-28)
 * Updates to the manual pages.
 * Improved utilization of compiler vectorizations.
 
-Overview of Changes in BEAST/BSE 0.8.2:		(2013-07-06)
+== Beast 0.8.2:					(2013-07-06)
 
 * Introduced Rapicorn1307 dependency.
 * Establish Aida remote interfacing between Beast and BSE.
@@ -122,20 +152,20 @@ Overview of Changes in BEAST/BSE 0.8.2:		(2013-07-06)
 * Beast now ships complete documentation builds in tarballs.
 
 
-Overview of Changes in BEAST/BSE 0.8.0:		(2013-03-25)
+== Beast 0.8.0:					(2013-03-25)
 
 * Added use of the Rapicorn library, require version 13.0.0.
 * Adapted IDL types to other projects.
 * Adapted code to make use of C++11 and STL threads.
 * Various performance improvements through EventFD, Spinlocks, lambdas, etc.
 * Major documentation improvements, see: http://dev.testbit.eu/beast/latest/
-* Fixed printf format-security issues (#665097). [Alessio Treglia]
+* Fixed printf format-security issues (GB#665097). [Alessio Treglia]
 * Lots of code cleanups, licensing cleanups.
 
 
-Overview of Changes in BEAST/BSE 0.7.8:
+== Overview of Changes in BEAST/BSE 0.7.8:
 
-* Wave oscillator fixes for 96k samples (bug #612281). [stw]
+* Wave oscillator fixes for 96k samples (GB#612281). [stw]
 * Performance improvements of the scheme shell. [stw]
 * Allow Alt+MouseButton1 to drag synthesis modules.
 * Merged plugin libraries, improved build times.
@@ -147,7 +177,7 @@ Overview of Changes in BEAST/BSE 0.7.8:
 * Improved Beast startup time.
 
 
-Overview of Changes in BEAST/BSE 0.7.6:
+== Overview of Changes in BEAST/BSE 0.7.6:
 
 * Packaging fixups, download and integrate documentation from beast wiki.
 * Work around regressions introduced in recent GLib and GTK+ versions.
@@ -158,7 +188,7 @@ Overview of Changes in BEAST/BSE 0.7.6:
 * Improved DavOrgan frequency handling.
 
 
-Overview of Changes in BEAST/BSE 0.7.4:
+== Overview of Changes in BEAST/BSE 0.7.4:
 
 * Renamed the project to Better Audio System / Better Sound Engine
 * Moved project website to: http://beast.testbit.eu/
@@ -177,14 +207,14 @@ Overview of Changes in BEAST/BSE 0.7.4:
 * Added e-Telugu translation [Veeven]
 
 
-Overview of Changes in BEAST/BSE 0.7.2:
+== Overview of Changes in BEAST/BSE 0.7.2:
 
 * Moved Beast/BSE to GNU LGPL, use AS-IS license for examples
 * Module changes and additions:
-  ArtsCompressor       - Relicensed to LGPL with permission from Matthias Kretz
-  BseContribSampleAndHold - Relicensed to LGPL with permission from Artem Popov
-  DavXTalStrings          - Use deterministic random numbers for unit tests
-  BseNoise                - Improved random number generator
+  - ArtsCompressor          - Relicensed to LGPL with permission from Matthias Kretz
+  - BseContribSampleAndHold - Relicensed to LGPL with permission from Artem Popov
+  - DavXTalStrings          - Use deterministic random numbers for unit tests
+  - BseNoise                - Improved random number generator
 * Switched to autogenerated ChangeLogs
 * Error bell can be muted in beast preferences dialog
 * Added multisample creation/editing command line tool: bsewavetool
@@ -200,9 +230,9 @@ Overview of Changes in BEAST/BSE 0.7.2:
 * Added support for gcc-4.4 and automake-1.10
 * Added support for guile-1.8, guile-1.6 remains as minimum requirement
 * Various fixes, improvements and much improved test coverage.
-* Bug fixes: #452604, #468229, #344388, #451086, #450724, #454121, #491552,
-             #450490, #441936, #336766, #433431, #474332, #474244, #456879,
-             #456408, #424897 [Tim Janik, Stefan Westerfeld]
+* Bug fixes: GB#452604, GB#468229, GB#344388, GB#451086, GB#450724, GB#454121,
+      GB#491552, GB#450490, GB#441936, GB#336766, GB#433431, GB#474332,
+      GB#474244, GB#456879, GB#456408, GB#424897 [Tim Janik, Stefan Westerfeld]
 * Migrated translation support to use awk, sed and po/Makefile.am.
 * Updated German translation [Mario Blättermann]
 * Updated Italien translation [Michele Petrecca]
@@ -217,7 +247,7 @@ Overview of Changes in BEAST/BSE 0.7.2:
 * Added Ukrainian translation [Maxim V. Dziumanenko]
 
 
-Overview of Changes in BEAST/BSE 0.7.1:
+== Overview of Changes in BEAST/BSE 0.7.1:
 
 * Fixed SUID security vulnerability by validating success of seteuid/setreuid,
   related security advisories, describing the vulnerability:
@@ -233,10 +263,10 @@ Overview of Changes in BEAST/BSE 0.7.1:
     Kirnberger-3 and Young
   [Hanno Behrens, Tim Janik]
 * Module changes and additions:
-  Quantizer         - Simulate 1-32 Bit quantization effects
-  DavXTalStrings    - Added semitone transposition function [Stefan Westerfeld]
-  DavOrgan	    - Added semitone transposition function [Stefan Westerfeld]
-  Summation	    - Added difference channel [Tim Janik, Stefan Westerfeld]
+  - Quantizer      - Simulate 1-32 Bit quantization effects
+  - DavXTalStrings - Added semitone transposition function [Stefan Westerfeld]
+  - DavOrgan       - Added semitone transposition function [Stefan Westerfeld]
+  - Summation      - Added difference channel [Tim Janik, Stefan Westerfeld]
 * Fixed exported symbol set to simplify external plugin building
 * Improved startup time by linking multiple plugins into a single library
 * Fixed LADSPA plugin loading to bind symbols only locally
@@ -247,44 +277,44 @@ Overview of Changes in BEAST/BSE 0.7.1:
 * Applied miscellaneous accelerator and cosmetic fixes
 * Improved documentation and label strings
 * Fixed library dependencies in bse.pc
-* Fixed tact numbers in TrackRoll #346916 [Stefan Westerfeld]
-* Fixed all reported beast crashes: #340437 #347319
-* Other bug fixes: #364041 #386862 #387364 #336366 #353135 #353442
+* Fixed tact numbers in TrackRoll GB#346916 [Stefan Westerfeld]
+* Fixed all reported beast crashes: GB#340437 GB#347319
+* Other bug fixes: GB#364041 GB#386862 GB#387364 GB#336366 GB#353135 GB#353442
 * Fixes for gcc-3.3 and GNU/kFreeBSD
 * Updated Italian translation [Petrecca Michele]
 
 
-Overview of Changes in BEAST/BSE 0.7.0:
+== Overview of Changes in BEAST/BSE 0.7.0:
 
 * Renamed scheme shell to bsescm
 * Optimized core functions for MMX/SSE with runtime CPU detection
 * Fixed CPU profiler to work with newer Linux kernels
 * New probing code for optimized volume meters and FFT scopes
 * Plugins/Module changes:
-  StandardOscillator    - Added semitone transposition function
-  FreeVerb              - Fixed distortions due to subnormal handling
-  GusPatchEnvelope      - Better approximation of GUS Patch envelopes [Stefan]
-  Adder                 - Deprecated in favour of BseSummation
-  Constant		- Number of output channels reduced to 4
-  DavSynDrum            - Fixed retrigger logic [Stefan]
+  - StandardOscillator - Added semitone transposition function
+  - FreeVerb           - Fixed distortions due to subnormal handling
+  - GusPatchEnvelope   - Better approximation of GUS Patch envelopes [Stefan]
+  - Adder              - Deprecated in favour of BseSummation
+  - Constant           - Number of output channels reduced to 4
+  - DavSynDrum         - Fixed retrigger logic [Stefan]
 * Added support for MMX/SSE-optimized plugins
 * Converted runtime documentation system to use a local web browser
 * Relicensed all example scripts and BSE files under an "AS IS" license
 * New loadable Instruments/Effects:
-  BQS Organ
-  BQS SynDrum
-  BQS Fretless Bass		[Stefan Westerfeld]
-  BQS Queek Synth
-  BQS MoogSaw Bass		[Stefan Westerfeld]
-  BQS Merp Pad
-  BQS Compressor		[Stefan Westerfeld]
-  BQS Reverb			[Stefan Westerfeld]
-  BQS Saturation And Reverb	[Stefan Westerfeld]
+  - BQS Organ
+  - BQS SynDrum
+  - BQS Fretless Bass         [Stefan Westerfeld]
+  - BQS Queek Synth
+  - BQS MoogSaw Bass          [Stefan Westerfeld]
+  - BQS Merp Pad
+  - BQS Compressor            [Stefan Westerfeld]
+  - BQS Reverb                [Stefan Westerfeld]
+  - BQS Saturation And Reverb [Stefan Westerfeld]
 * Major code reorganizations, only one library is installed now: libbse
 * Vastly extended test coverage of many core mechanisms
 * Moved source base to automake-1.9 and added support for gcc-4.2
 * Lots of major and minor fixes and improvements
-* Bugzilla issues resolved: #337703, #342186, #343301, #340386, #340307
+* Bugzilla issues resolved: GB#337703, GB#342186, GB#343301, GB#340386, GB#340307
 * Updated Canadian English translation [Adam Weinberger]
 * Updated German translation [Hendrik Richter, Jens Seidel]
 * Updated Spanish translation [Francisco Javier F. Serrador]
@@ -296,7 +326,7 @@ Overview of Changes in BEAST/BSE 0.7.0:
 * Added Nepali translation [Pawan Chitrakar]
 
 
-Overview of Changes in BEAST/BSE 0.6.6:
+== Overview of Changes in BEAST/BSE 0.6.6:
 
 * Improved error messages
 * Improved script handling
@@ -315,18 +345,18 @@ Overview of Changes in BEAST/BSE 0.6.6:
 * Added Basque translation [Hizkuntza Politikarako Sailburuordetza]
 
 
-Overview of Changes in BEAST/BSE 0.6.5:
+== Overview of Changes in BEAST/BSE 0.6.5:
 
 * New supported file formats:
-  GUS Patches  - Load patchfiles as ordinary samples [Stefan Westerfeld]
-  BseWave      - A new tool bsewavetool allows creation and compression
-                 of multi-sample files which can be loaded by beast.
-                 This tool is experimental and not currently being installed,
-                 ask questions or report problems with it on beast@gnome.org.
+  - GUS Patches - Load patchfiles as ordinary samples [Stefan Westerfeld]
+  - BseWave     - A new tool bsewavetool allows creation and compression
+                  of multi-sample files which can be loaded by beast.
+                  This tool is experimental and not currently being installed,
+                  ask questions or report problems with it on beast@gnome.org.
 * New Effects:
-  Saturator    - Saturate audio signals, implements various saturation types.
+  - Saturator - Saturate audio signals, implements various saturation types.
 * New scripts:
-  Track Busses - Automatically create mixer busses for tracks
+  - Track Busses - Automatically create mixer busses for tracks
 * Fixed MIDI file import to create required mixer setup
 * Added playback position indicator to piano roll
 * Fixate zoom position while zooming piano roll
@@ -344,7 +374,7 @@ Overview of Changes in BEAST/BSE 0.6.5:
 * Added Kinyarwanda translation [Steve Murphy]
 
 
-Overview of Changes in BEAST/BSE 0.6.4:
+== Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
 * Added -N and -n=<nicelevel> options to drop nice level priorities
@@ -360,17 +390,17 @@ Overview of Changes in BEAST/BSE 0.6.4:
 * Updated Spanish translation [Jorge Gonzalez]
 
 
-Overview of Changes in BEAST/BSE 0.6.3:
+== Overview of Changes in BEAST/BSE 0.6.3:
 
 * The package now depends on GLib-2.4 and Gtk+-2.4
 * New/ported/improved Effects:
-  BseContribSampleAndHold - a sample and hold module by Artem Popov
-  BseSummation            - a replacement for multiple BseAdder effects
-  DavBassFilter           - added trigger input for use in instruments and
-                            implemented MIDI automation for all parameters
-  BseNoise                - ported to IDL/C++ [Stefan Westerfeld]
-  ArtsCompressor          - cleanups, major usability improvements
-                            [Stefan Westerfeld]
+  - BseContribSampleAndHold - a sample and hold module by Artem Popov
+  - BseSummation            - a replacement for multiple BseAdder effects
+  - DavBassFilter           - added trigger input for use in instruments and
+                              implemented MIDI automation for all parameters
+  - BseNoise                - ported to IDL/C++ [Stefan Westerfeld]
+  - ArtsCompressor          - cleanups, major usability improvements
+                              [Stefan Westerfeld]
 * Added song mixer with freely connectable busses
 * Added spline-scale-based DB meters
 * Added MIDI event automation framework
@@ -404,7 +434,7 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Added Italian translation [Petrecca Michele]
 
 
-Overview of Changes in BEAST/BSE 0.6.2:
+== Overview of Changes in BEAST/BSE 0.6.2:
 
 * Rewrote scrollbar sizing, so tracks and parts are easily resizable
 * Lots of small GUI enhancements and fixes
@@ -432,7 +462,7 @@ Overview of Changes in BEAST/BSE 0.6.2:
 * Lots of adaptions to GLib/Gtk+-2.4
 
 
-Overview of Changes in BEAST/BSE 0.6.1:
+== Overview of Changes in BEAST/BSE 0.6.1:
 
 * Added suid wrapper which acquires nice level -20, then drops privileges
 * Improved latency/block-size handling of the synthesis engine
@@ -456,7 +486,7 @@ Overview of Changes in BEAST/BSE 0.6.1:
 * Lots of GUI fixes
 
 
-Overview of Changes in BEAST/BSE 0.6.0:
+== Overview of Changes in BEAST/BSE 0.6.0:
 
 * Moved RC file from ~/.beastrc to ~/.beast/beastrc
 * Lots of major and minor GUI improvements
@@ -484,12 +514,12 @@ Overview of Changes in BEAST/BSE 0.6.0:
 * Miscellaneous bug fixes and cleanups
 
 
-Overview of Changes in BEAST/BSE 0.5.6:
+== Overview of Changes in BEAST/BSE 0.5.6:
 
 * New (or ported) modules:
-  BseEvaluator  - highly experimental (available with --devel) expression
-                  evaluator by Stefan Westerfeld
-  DavBassFilter - a low-pass resonant TB-303 style filter by David A. Bartold
+  - BseEvaluator  - highly experimental (available with --devel) expression
+                    evaluator by Stefan Westerfeld
+  - DavBassFilter - a low-pass resonant TB-303 style filter by David A. Bartold
 * Added support for author and licensing information for plugins,
   available as "Show Info" in the button3 popup menu on modules
 * Started MIDI file import ability
@@ -524,13 +554,13 @@ Overview of Changes in BEAST/BSE 0.5.6:
 * Miscellaneous bug fixes, lots of code cleanups
 
 
-Overview of Changes in BEAST/BSE 0.5.5:
+== Overview of Changes in BEAST/BSE 0.5.5:
 
 * New (or ported) modules:
-  DavCanyonDelay - Canyon Echo by David A. Bartold
-  BseMidiInput   - Monophonic MIDI Keyboard input module
-  BseBalance     - Stereo panorama position module
-  ArtsCompressor - Mono and stereo compressor [Stefan Westerfeld]
+  - DavCanyonDelay - Canyon Echo by David A. Bartold
+  - BseMidiInput   - Monophonic MIDI Keyboard input module
+  - BseBalance     - Stereo panorama position module
+  - ArtsCompressor - Mono and stereo compressor [Stefan Westerfeld]
 * Added utility script to crop and duplicate parts [Stefan Westerfeld]
 * Added "Party Monster" demo song [Stefan Westerfeld]
 * Implemented ability to use sequencer as modulation source
@@ -558,10 +588,10 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Lots of bug fixes
 
 
-Overview of Changes in BEAST/BSE 0.5.4:
+== Overview of Changes in BEAST/BSE 0.5.4:
 
 * Ported and improved synthesis module from David A. Bartold:
-  DavSynDrum - Synthetic drum generator
+  - DavSynDrum - Synthetic drum generator
 * Added support for control event editing
 * Added per-note velocity and fine-tune editing
 * Added support for per-track and per-song special effects
@@ -570,7 +600,7 @@ Overview of Changes in BEAST/BSE 0.5.4:
 * Miscellaneous bug fixes
 
 
-Overview of Changes in BEAST/BSE 0.5.3:
+== Overview of Changes in BEAST/BSE 0.5.3:
 
 * Seperated core plugin loading from LADSPA plugin loading
 * Fixed memory leaks in various places
@@ -578,7 +608,7 @@ Overview of Changes in BEAST/BSE 0.5.3:
 * Fixed bsesh (script) communication for systems with short writes
 
 
-Overview of Changes in BEAST/BSE 0.5.2:
+== Overview of Changes in BEAST/BSE 0.5.2:
 
 * Implemented unlimited Undo/Redo facilities
 * Tracks now support waves directly as Synth input
@@ -598,7 +628,7 @@ Overview of Changes in BEAST/BSE 0.5.2:
 * Miscellaneous major and minor code fixes
 
 
-Overview of Changes in BEAST/BSE 0.5.1:
+== Overview of Changes in BEAST/BSE 0.5.1:
 
 * Added support for LADSPA plugins
 * Improved synthesis network router display
@@ -607,13 +637,13 @@ Overview of Changes in BEAST/BSE 0.5.1:
 * Fixed memory leaks during playback
 
 
-Overview of Changes in BEAST/BSE 0.5.0:
+== Overview of Changes in BEAST/BSE 0.5.0:
 
 * Moved BSE into its own thread
 * Added IDL based code generator [Stefan Westerfeld]
 * Deployed new middleware layer
 * Major documentation generation improvements [Alper Ersoy]
-* Generate structure documentation [Timj, Alper]
+* Generate structure documentation [Tim Janik, Alper Ersoy]
 * Added documentation about Gtk+ GUI extensions
 * Made documentation browser navigatable
 * Improved MIDI support
@@ -624,7 +654,7 @@ Overview of Changes in BEAST/BSE 0.5.0:
 * Bug fixes and major cleanups
 
 
-Overview of Changes in BEAST/BSE 0.4.1:
+== Overview of Changes in BEAST/BSE 0.4.1:
 
 * Added cool startup splash-screen from Jimmac
 * Added GSL - a common sound routine library for BSE and aRts
@@ -643,15 +673,15 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Many (not yet all) synthesis modules got ported to the
   new engine and got improved in quality and speed
 * New synthesis modules:
-  FreeVerb	  - a reverb based on code by Jeremy Wakefield
-  BiquadFilter    - various basic IIR (resonance) filter types
-  ADSR Envelope   - a simple envelope generator
-  IIR Filter      - various IIR filter types
-  Ports/SubSynth  - allows synthesis network rerouting
-  Constant        - constant value output module
-  WaveOsc         - Anti-aliasing wave playback
-  Sequencer	  - a mini sequencer for harmonic tone switches
-  Amplifier	  - a VCA equivalent with featurefull control variants
+  - FreeVerb       - a reverb based on code by Jeremy Wakefield
+  - BiquadFilter   - various basic IIR (resonance) filter types
+  - ADSR Envelope  - a simple envelope generator
+  - IIR Filter     - various IIR filter types
+  - Ports/SubSynth - allows synthesis network rerouting
+  - Constant       - constant value output module
+  - WaveOsc        - Anti-aliasing wave playback
+  - Sequencer      - a mini sequencer for harmonic tone switches
+  - Amplifier      - a VCA equivalent with featurefull control variants
 * Joint (multi-connect) channel support, allowing multiple input
   connections per channel on some modules
 * Major speed improvements to the threading layer by using pthreads
@@ -665,7 +695,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * A huge amount of bug fixes
 
 
-Overview of Changes in BEAST/BSE 0.4.0:
+== Overview of Changes in BEAST/BSE 0.4.0:
 
 * Various effects are supported for sequencer notes now
 * Sequencer and mixer cleanups and speedups
@@ -673,12 +703,12 @@ Overview of Changes in BEAST/BSE 0.4.0:
 * Complete reimplementation of the type and parameter systems
   for integration with upcomming GLib 1.4 facilities.
 * New synthesis modules:
-  DavXTalString - string synthesizer
-  DavGuitar     - physical modelling acoustic guitar
-  DavChorus     - chorusing filter
+  - DavXTalString - string synthesizer
+  - DavGuitar     - physical modelling acoustic guitar
+  - DavChorus     - chorusing filter
 
 
-Overview of Changes in BEAST/BSE 0.3.3:
+== Overview of Changes in BEAST/BSE 0.3.3:
 
 * Fixed font specification in pattern editor
 * GNOME Canvas redrawing workarounds
@@ -686,7 +716,7 @@ Overview of Changes in BEAST/BSE 0.3.3:
 * Libtool update
 
 
-Overview of Changes in BEAST/BSE 0.3.2:
+== Overview of Changes in BEAST/BSE 0.3.2:
 
 * Songs have a pattern play list now that can be altered
 * Major overhaul of the mixing engine which is now agressively
@@ -697,18 +727,18 @@ Overview of Changes in BEAST/BSE 0.3.2:
 * Enabled procedure support for the pattern editor to supply
   spreadsheet like editing facilities
 * New synthesis modules:
-  BseMixer       - mix 4->1 channels with adjustable volumes
-  DavOrgan       - a modifiable Additive Organ Synthesizer
-  DavSynDrum     - a synthesized drum generator
-  DavCanyonDelay - adds deep, long delay echo effects
-  DavBassFilter  - TB-303 low-pass resonant filter clone
+  - BseMixer       - mix 4->1 channels with adjustable volumes
+  - DavOrgan       - a modifiable Additive Organ Synthesizer
+  - DavSynDrum     - a synthesized drum generator
+  - DavCanyonDelay - adds deep, long delay echo effects
+  - DavBassFilter  - TB-303 low-pass resonant filter clone
 * Pattern editor keytable display
 * Simple sample views for samples used in a project
 * More test files in the test/ subdirectory ;)
 * Vast amounts of code cleanups and bug fixes ;)
 
 
-Overview of Changes in BEAST/BSE 0.3.1:
+== Overview of Changes in BEAST/BSE 0.3.1:
 
 * Fixed a dumb major bug in the ALSA backend that could prevent
   it from playing at all
@@ -725,12 +755,11 @@ Overview of Changes in BEAST/BSE 0.3.1:
 * Miscellaneous minor bugfixes
 
 
-What's new in BEAST/BSE 0.3.0:
+== What's new in BEAST/BSE 0.3.0:
 
 * Synthesis networks implemented, plugins currently imlemented:
   - noise generator
-  - generic oscillator for various wave forms, such as
-    sine, saw, triangle...
+  - generic oscillator for various wave forms, such as sine, saw, triangle...
   - FIR filter with lowpass and highpass mode
   - multiplier
   - adder (can also run in subtract mode)

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2006-10-04 12:02+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -1512,7 +1512,7 @@ msgstr "CPU#"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -1546,7 +1546,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Aanpassen..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1612,7 +1612,7 @@ msgstr "Wissen"
 msgid "Clear the current selection"
 msgstr "Huidige selectie wissen"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, c-format
 msgid "Close %s"
 msgstr "%s sluiten"
@@ -1636,7 +1636,7 @@ msgid "Color Entry"
 msgstr "Kleurinvoer"
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "Opmerking"
 
@@ -2403,7 +2403,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Richting"
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr "Wijzigingen verwerpen"
 
@@ -3048,7 +3048,7 @@ msgstr "Voetbediening"
 msgid "Format"
 msgstr "Format"
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr "Vrije-vorm bijschrift of omschrijving"
 
@@ -3909,7 +3909,7 @@ msgstr "Laden..."
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Laden van skin `%s'"
@@ -4007,7 +4007,7 @@ msgstr "MIDI signaal 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI signaal 4"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI synthesizer: %s"
@@ -4337,7 +4337,7 @@ msgid "Muted"
 msgstr "Gedempt"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "Naam"
 
@@ -4678,7 +4678,7 @@ msgstr "Openen mislukt"
 msgid "Open file browser"
 msgstr "Bestandsbeheer openen"
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4721,7 +4721,7 @@ msgstr "Oorsprong: %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr "Overgebleven delen"
 
@@ -5050,7 +5050,7 @@ msgstr "Kleur positieve waarde"
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "Voorkeuren"
 
@@ -5599,7 +5599,7 @@ msgstr "Opslaan als effect..."
 msgid "Save As Instrument..."
 msgstr "Opslaan als instrument..."
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 msgid "Save Changes"
 msgstr "Wijzigingen opslaan"
 
@@ -5623,7 +5623,7 @@ msgstr "Synthesizersnet opslaan in effectenmap"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Synthesizersnet opslaan in instrumentenmap"
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr "Wilt u het project opslaan voordat het venster gesloten wordt?"
 
@@ -6022,7 +6022,7 @@ msgid "Song"
 msgstr "_Nummer"
 
 # nummer
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, c-format
 msgid "Song: %s"
 msgstr "Lied: %s"
@@ -6322,7 +6322,7 @@ msgstr "Synthesizer"
 msgid "Synthesizer Selection: %s"
 msgstr "Synthesizer selectie: %s"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
@@ -6484,7 +6484,7 @@ msgstr ""
 "De poortnaam is een unieke naam om een relatie ingangspoort<->uitgangspoort "
 "tot stand te brengen"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr "Er zijn wijzigingen in het project aangebracht."
 
@@ -6802,7 +6802,7 @@ msgstr "Ongefilterd audiosignaal"
 msgid "Unfiltered Input"
 msgstr "Ongefilterde ingang"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr "Unieke naam voor dit project"
 
@@ -6982,7 +6982,7 @@ msgid "Wave Output"
 msgstr "Wave uitgang"
 
 # beter woord voor verzameling?
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr "Wave collectie"
 
@@ -7001,7 +7001,7 @@ msgstr "Wave die als oscillatorbron gebruikt wordt"
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Waves"
 

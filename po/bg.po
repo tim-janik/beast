@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 00:58+0200\n"
+"POT-Creation-Date: 2018-08-20 16:20+0200\n"
 "PO-Revision-Date: 2005-02-23 10:04+0200\n"
 "Last-Translator: Iassen Pramatarov <turin@fsa-bg.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -1347,7 +1347,7 @@ msgstr ""
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:598
+#: beast-gtk/bstapp.cc:592
 #, fuzzy
 msgid "Cancel"
 msgstr "_Отказ"
@@ -1380,7 +1380,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Промяна..."
 
-#: beast-gtk/bstapp.cc:593
+#: beast-gtk/bstapp.cc:587
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1444,7 +1444,7 @@ msgstr "Изчистване"
 msgid "Clear the current selection"
 msgstr "Изчистване на избраното в момента"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:585
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "_Затваряне"
@@ -1467,7 +1467,7 @@ msgid "Color Entry"
 msgstr ""
 
 #: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Comment"
 msgstr "Коментар"
 
@@ -2219,7 +2219,7 @@ msgstr ""
 msgid "Direction"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:597
+#: beast-gtk/bstapp.cc:591
 msgid "Discard Changes"
 msgstr ""
 
@@ -2841,7 +2841,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:939
+#: bse/bseobject.cc:948
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3664,7 +3664,7 @@ msgstr "Зареждане..."
 msgid "Loading \"%s\""
 msgstr "Зареждане на \"%s\""
 
-#: beast-gtk/bstapp.cc:747
+#: beast-gtk/bstapp.cc:741
 #, c-format
 msgid "Loading skin `%s'"
 msgstr ""
@@ -3756,7 +3756,7 @@ msgstr "MIDI сигнал 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI сигнал 4"
 
-#: beast-gtk/bstapp.cc:458
+#: beast-gtk/bstapp.cc:452
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI синтезатор: %s"
@@ -4073,7 +4073,7 @@ msgid "Muted"
 msgstr "Заглушено"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:929
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
 msgid "Name"
 msgstr "Име"
 
@@ -4400,7 +4400,7 @@ msgstr "Грешка при отварянето"
 msgid "Open file browser"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:680 beast-gtk/bstapp.cc:688
+#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
 #: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
 #, c-format
 msgid "Opening project `%s'"
@@ -4442,7 +4442,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1031
+#: bse/bsesong.cc:1034
 msgid "Orphan Parts"
 msgstr "Несвързани откъси"
 
@@ -4759,7 +4759,7 @@ msgstr "Цвят за положителна стойност"
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:887
+#: beast-gtk/bstapp.cc:881
 msgid "Preferences"
 msgstr "Настройки"
 
@@ -5280,7 +5280,7 @@ msgstr "Запазване като ефект..."
 msgid "Save As Instrument..."
 msgstr "Запазване като инструмент..."
 
-#: beast-gtk/bstapp.cc:596
+#: beast-gtk/bstapp.cc:590
 #, fuzzy
 msgid "Save Changes"
 msgstr "Запазване: %s"
@@ -5305,7 +5305,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:595
+#: beast-gtk/bstapp.cc:589
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5694,7 +5694,7 @@ msgstr ""
 msgid "Song"
 msgstr "_Песен"
 
-#: beast-gtk/bstapp.cc:453
+#: beast-gtk/bstapp.cc:447
 #, c-format
 msgid "Song: %s"
 msgstr "Песен: %s"
@@ -5977,7 +5977,7 @@ msgstr "Синтезатор"
 msgid "Synthesizer Selection: %s"
 msgstr "Избиране на синтезатор: %s"
 
-#: beast-gtk/bstapp.cc:463
+#: beast-gtk/bstapp.cc:457
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Синтезатор: %s"
@@ -6125,7 +6125,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:586
 msgid "The project has been modified."
 msgstr ""
 
@@ -6433,7 +6433,7 @@ msgstr "Нефилтриран звуков сигнал"
 msgid "Unfiltered Input"
 msgstr "Нефилтриран вход"
 
-#: bse/bseobject.cc:929
+#: bse/bseobject.cc:938
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6607,7 +6607,7 @@ msgstr ""
 msgid "Wave Output"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:448
+#: beast-gtk/bstapp.cc:442
 msgid "Wave Repository"
 msgstr ""
 
@@ -6624,7 +6624,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:446 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr ""
 
