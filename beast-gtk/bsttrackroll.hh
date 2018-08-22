@@ -46,7 +46,7 @@ struct _BstTrackRoll
 {
   GxkScrollCanvas   parent_instance;
 
-  SfiProxy          proxy;
+  Bse::SongS        song;
   GtkTreeView      *tree;
   guint             n_scopes;   /* does not always reflect number of rows */
   GtkWidget       **scopes;
@@ -101,9 +101,7 @@ struct _BstTrackRollClass
 
 /* --- prototypes --- */
 GType   bst_track_roll_get_type            (void);
-void    bst_track_roll_setup               (BstTrackRoll           *troll,
-                                            GtkTreeView            *tree,
-                                            SfiProxy                song);
+void    bst_track_roll_setup               (BstTrackRoll *troll, GtkTreeView *tree, Bse::SongH song);
 gdouble bst_track_roll_set_hzoom           (BstTrackRoll           *troll,
                                             gdouble                 hzoom);
 void    bst_track_roll_set_track_callback  (BstTrackRoll           *self,
