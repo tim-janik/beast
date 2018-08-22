@@ -123,7 +123,7 @@ esac
 
 dnl # MC_ASSERT_VERSION(versioncmd, requiredversion)
 AC_DEFUN([MC_ASSERT_VERSION], [
-	   ac_versionout=`( [$1] ) 2>&1 | tr '\n' ' ' | sed 's/^[^0-9]*//'`
+	   [ ac_versionout=`( $1 ) 2>&1 | tr '\n' ' ' | sed 's,^/[^ ]\+:,, ; s/^[^0-9]*//'` ]
 	   MC_CHECK_VERSION([$ac_versionout], [$2], [], [
 			      AC_MSG_ERROR([failed to detect version $2: $1])
 			    ])
