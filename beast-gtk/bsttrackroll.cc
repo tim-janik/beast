@@ -179,7 +179,6 @@ static void
 track_roll_release_proxy (BstTrackRoll *self)
 {
   bse_proxy_disconnect (self->song.proxy_id(),
-                        "any_signal", track_roll_release_proxy, self,
                         "any_signal", track_roll_song_item_removed, self,
                         NULL);
   self->song = NULL;
@@ -211,8 +210,8 @@ bst_track_roll_setup (BstTrackRoll *self, GtkTreeView *tree, Bse::SongH song)
   self->song = song;
   if (self->song)
     {
+      self->song.on ("dispose", [self] (const Aida::Event&) { track_roll_release_proxy (self); });
       bse_proxy_connect (self->song.proxy_id(),
-                         "swapped_signal::release", track_roll_release_proxy, self,
                          "swapped_signal::item-remove", track_roll_song_item_removed, self,
                          NULL);
     }
