@@ -672,9 +672,7 @@ class Generator:
     s += 'typedef ::Aida::ScopedHandle<%sH> %sS;\n' % (cxxtypename, cxxtypename)
     return s
   def generate_method_decl (self, class_info, functype, pad):
-    s, copydoc = '  ', ''
-    if self.gen_docs:
-      copydoc = 'See ' + self.type2cpp (class_info) + '::' + functype.name + '()'
+    s = '  '
     if self.gen_mode == G4SERVANT:
       s += 'virtual '
     s += self.F (self.R (functype.rtype))
@@ -689,7 +687,11 @@ class Generator:
     s += ')'
     if self.gen_mode == G4SERVANT and functype.pure:
       s += ' = 0'
-    s += '; \t///< %s\n' % copydoc
+    s += ';'
+    if self.gen_docs:
+      copydoc = 'See ' + self.type2cpp (class_info) + '::' + functype.name + '()'
+      s += ' \t///< %s' % copydoc
+    s += '\n'
     return s
   def generate_class_accept_accessor (self, tp):
     s, classH = '', self.C (tp)
