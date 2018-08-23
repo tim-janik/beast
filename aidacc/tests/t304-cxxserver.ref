@@ -327,7 +327,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          void_func             () = 0; 	///< 
+  virtual void                          void_func             () = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -772,24 +772,24 @@ public:
   virtual void                          dummy    (bool) = 0; 	///< 
   virtual std::string                   on_click () const = 0; 	///< 
   virtual void                          on_click (const std::string&) = 0; 	///< 
-  virtual double                        simple_method       () = 0; 	///< 
-  virtual double                        single_arg          (int n) = 0; 	///< 
-  virtual double                        single_arg2         (int n = 5) = 0; 	///< 
+  virtual double                        simple_method       () = 0;
+  virtual double                        single_arg          (int n) = 0;
+  virtual double                        single_arg2         (int n = 5) = 0;
   virtual double                        two_args            (int n,
-                                                             double r) = 0; 	///< 
+                                                             double r) = 0;
   virtual double                        two_args2           (int n = 6,
-                                                             double r = 7.7) = 0; 	///< 
+                                                             double r = 7.7) = 0;
   virtual double                        multi_args          (bool b,
                                                              int64_t n,
                                                              double r,
                                                              int i,
                                                              const std::string &s = "String ding",
-                                                             double y = 5) = 0; 	///< 
+                                                             double y = 5) = 0;
   virtual double                        self_method         (I_UIWidgetAreaIface &ba1,
-                                                             I_UIWidgetAreaIface &ba2) = 0; 	///< 
-  virtual void                          void_method         () = 0; 	///< 
-  virtual std::string                   on_click2out        () = 0; 	///< 
-  virtual void                          on_click2in         (const std::string &command) = 0; 	///< 
+                                                             I_UIWidgetAreaIface &ba2) = 0;
+  virtual void                          void_method         () = 0;
+  virtual std::string                   on_click2out        () = 0;
+  virtual void                          on_click2in         (const std::string &command) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "dummy", &I_UIWidgetAreaIface::dummy, &I_UIWidgetAreaIface::dummy);
@@ -957,7 +957,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          simple_function   (int i = 9) = 0; 	///< 
+  virtual void                          simple_function   (int i = 9) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -981,29 +981,29 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          method_with_void           () = 0; 	///< 
+  virtual void                          method_with_void           () = 0;
   virtual bool                          method_with_bools          (bool input,
-                                                                    bool optval = 0) = 0; 	///< 
+                                                                    bool optval = 0) = 0;
   virtual int                           method_with_ints32         (int input,
-                                                                    int optval = -2) = 0; 	///< 
+                                                                    int optval = -2) = 0;
   virtual int64_t                       method_with_ints64         (int64_t input,
-                                                                    int64_t optval = 576460752303423488) = 0; 	///< 
+                                                                    int64_t optval = 576460752303423488) = 0;
   virtual double                        method_with_floats         (double input,
-                                                                    double optval = 309.9) = 0; 	///< 
+                                                                    double optval = 309.9) = 0;
   virtual std::string                   method_with_string         (const std::string &input,
-                                                                    const std::string &optval = "default") = 0; 	///< 
+                                                                    const std::string &optval = "default") = 0;
   virtual QuickEnum                     method_with_enum           (QuickEnum input,
-                                                                    QuickEnum optval = QuickEnum (0)) = 0; 	///< 
+                                                                    QuickEnum optval = QuickEnum (0)) = 0;
   virtual SrvT_QuickRecord              method_with_record         (const SrvT_QuickRecord &input,
-                                                                    const SrvT_QuickRecord &optval = SrvT_QuickRecord()) = 0; 	///< 
+                                                                    const SrvT_QuickRecord &optval = SrvT_QuickRecord()) = 0;
   virtual SrvT_QuickSequence            method_with_sequence       (const SrvT_QuickSequence &input,
-                                                                    const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0; 	///< 
+                                                                    const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0;
   virtual I_GrandChildIfaceP            method_with_interface      (I_GrandChildIface &input,
-                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0; 	///< 
+                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0;
   virtual Aida::Any                     method_with_anys           (const Aida::Any &input,
-                                                                    const Aida::Any &optval) = 0; 	///< 
+                                                                    const Aida::Any &optval) = 0;
   virtual I_QuickIfaceIfaceP            method_with_quickiface     (I_QuickIfaceIface &input,
-                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0; 	///< 
+                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1222,7 +1222,7 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual int                           pure_method        (double f) = 0; 	///< 
+  virtual int                           pure_method        (double f) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1251,7 +1251,7 @@ public:
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::SrvT_QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
-                                                                   const OtherNamespace::SrvT_SomeRecord &sr) = 0; 	///< 
+                                                                   const OtherNamespace::SrvT_SomeRecord &sr) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
