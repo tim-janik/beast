@@ -690,9 +690,8 @@ track_view_set_container (BstItemView *iview,
       bse_proxy_disconnect (self->song.proxy_id(),
                             "any_signal", track_view_pointer_changed, self,
                             "any_signal", track_view_marks_changed, self,
-                            "any_signal", track_view_repeat_changed, self,
                             NULL);
-      self->song = NULL; /* disconnect */
+      self->song = NULL; // disconnects event handlers
     }
   BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->set_container (iview, new_container);
   if (self->troll)
