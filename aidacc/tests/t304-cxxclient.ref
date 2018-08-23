@@ -319,7 +319,7 @@ public:
   template<class RemoteHandle>
   static FirstInterfaceHandle   down_cast (const RemoteHandle &smh) { return smh == NULL ? FirstInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      FirstInterfaceHandle ();
-  void                          void_func            (); 	///< 
+  void                          void_func            ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -757,24 +757,24 @@ public:
   void                          dummy    (bool); 	///< 
   std::string                   on_click () const; 	///< 
   void                          on_click (const std::string&); 	///< 
-  double                        simple_method      (); 	///< 
-  double                        single_arg         (int n); 	///< 
-  double                        single_arg2        (int n = 5); 	///< 
+  double                        simple_method      ();
+  double                        single_arg         (int n);
+  double                        single_arg2        (int n = 5);
   double                        two_args           (int n,
-                                                    double r); 	///< 
+                                                    double r);
   double                        two_args2          (int n = 6,
-                                                    double r = 7.7); 	///< 
+                                                    double r = 7.7);
   double                        multi_args         (bool b,
                                                     int64_t n,
                                                     double r,
                                                     int i,
                                                     const std::string &s = "String ding",
-                                                    double y = 5); 	///< 
+                                                    double y = 5);
   double                        self_method        (UIWidgetAreaHandle &ba1,
-                                                    UIWidgetAreaHandle &ba2); 	///< 
-  void                          void_method        (); 	///< 
-  std::string                   on_click2out       (); 	///< 
-  void                          on_click2in        (const std::string &command); 	///< 
+                                                    UIWidgetAreaHandle &ba2);
+  void                          void_method        ();
+  std::string                   on_click2out       ();
+  void                          on_click2in        (const std::string &command);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "dummy", &UIWidgetAreaHandle::dummy, &UIWidgetAreaHandle::dummy);
@@ -907,7 +907,7 @@ public:
   template<class RemoteHandle>
   static QuickIfaceHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? QuickIfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      QuickIfaceHandle ();
-  void                          simple_function  (int i = 9); 	///< 
+  void                          simple_function  (int i = 9);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -924,29 +924,29 @@ public:
   template<class RemoteHandle>
   static MethodTestInterfaceHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? MethodTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      MethodTestInterfaceHandle ();
-  void                          method_with_void          (); 	///< 
+  void                          method_with_void          ();
   bool                          method_with_bools         (bool input,
-                                                           bool optval = 0); 	///< 
+                                                           bool optval = 0);
   int                           method_with_ints32        (int input,
-                                                           int optval = -2); 	///< 
+                                                           int optval = -2);
   int64_t                       method_with_ints64        (int64_t input,
-                                                           int64_t optval = 576460752303423488); 	///< 
+                                                           int64_t optval = 576460752303423488);
   double                        method_with_floats        (double input,
-                                                           double optval = 309.9); 	///< 
+                                                           double optval = 309.9);
   std::string                   method_with_string        (const std::string &input,
-                                                           const std::string &optval = "default"); 	///< 
+                                                           const std::string &optval = "default");
   QuickEnum                     method_with_enum          (QuickEnum input,
-                                                           QuickEnum optval = QuickEnum (0)); 	///< 
+                                                           QuickEnum optval = QuickEnum (0));
   ClnT_QuickRecord              method_with_record        (const ClnT_QuickRecord &input,
-                                                           const ClnT_QuickRecord &optval = ClnT_QuickRecord()); 	///< 
+                                                           const ClnT_QuickRecord &optval = ClnT_QuickRecord());
   ClnT_QuickSequence            method_with_sequence      (const ClnT_QuickSequence &input,
-                                                           const ClnT_QuickSequence &optval = ClnT_QuickSequence()); 	///< 
+                                                           const ClnT_QuickSequence &optval = ClnT_QuickSequence());
   GrandChildHandle              method_with_interface     (GrandChildHandle &input,
-                                                           GrandChildHandle &optval = *(GrandChildHandle*) NULL); 	///< 
+                                                           GrandChildHandle &optval = *(GrandChildHandle*) NULL);
   Aida::Any                     method_with_anys          (const Aida::Any &input,
-                                                           const Aida::Any &optval); 	///< 
+                                                           const Aida::Any &optval);
   QuickIfaceHandle              method_with_quickiface    (QuickIfaceHandle &input,
-                                                           QuickIfaceHandle &iface0 = *(QuickIfaceHandle*) NULL); 	///< 
+                                                           QuickIfaceHandle &iface0 = *(QuickIfaceHandle*) NULL);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1117,7 +1117,7 @@ public:
   template<class RemoteHandle>
   static PureMethodsHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? PureMethodsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PureMethodsHandle ();
-  int                           pure_method       (double f); 	///< 
+  int                           pure_method       (double f);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1139,7 +1139,7 @@ public:
   explicit                      NameTestsHandle ();
   void                          args_from_other_namespace (const InterfaceTests::ClnT_QuickRecord &qr,
                                                            RapicornAidaTest::ClickType qe,
-                                                           const OtherNamespace::ClnT_SomeRecord &sr); 	///< 
+                                                           const OtherNamespace::ClnT_SomeRecord &sr);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
