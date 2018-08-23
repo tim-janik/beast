@@ -101,18 +101,18 @@ aidacc_tests_t204_aidatests_SOURCES =	\
 	aidacc/aida.cc			\
 	aidacc/tests/t204-aidatests.cc
 
-# == clean-aidacc-tests ==
-clean-aidacc-tests:
+# == aidacc-tests-clean ==
+aidacc-tests-clean:
 	rm -f $(AIDACC_TESTS_CLEANFILES) aidacc/tests/*.$(OBJEXT)
-.PHONY: clean-aidacc-tests
-clean-aidacc: clean-aidacc-tests
+.PHONY: aidacc-tests-clean
+aidacc-clean: aidacc-tests-clean
 
-# == check-aidacc-tests ==
-check-aidacc-tests: $(aidacc_tests_checkrules)
-check-aidacc-tests: $(sort $(aidacc_tests_binaries:aidacc/tests/%=check-aidacc-tests-%))
-check-aidacc-tests-PHONY:
-.PHONY: $(aidacc_tests_checkrules) check-aidacc-tests check-aidacc-tests-PHONY
-check-aidacc-tests-%: aidacc/tests/% check-aidacc-tests-PHONY
+# == aidacc-tests-check ==
+aidacc-tests-check: $(aidacc_tests_checkrules)
+aidacc-tests-check: $(sort $(aidacc_tests_binaries:aidacc/tests/%=aidacc-tests-check-%))
+aidacc-tests-check-PHONY:
+.PHONY: $(aidacc_tests_checkrules) aidacc-tests-check aidacc-tests-check-PHONY
+aidacc-tests-check-%: aidacc/tests/% aidacc-tests-check-PHONY
 	@echo '  EXEC    ' $<
 	$(Q) $<
-check-aidacc: check-aidacc-tests
+aidacc-check: aidacc-tests-check
