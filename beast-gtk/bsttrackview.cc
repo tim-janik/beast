@@ -510,7 +510,7 @@ static void
 track_view_repeat_toggled (BstTrackView *self)
 {
   if (self->song && self->repeat_toggle)
-    bse_proxy_set (self->song.proxy_id(), "loop_enabled", GTK_TOGGLE_BUTTON (self->repeat_toggle)->active, NULL);
+    self->song.loop_enabled (GTK_TOGGLE_BUTTON (self->repeat_toggle)->active);
 }
 
 static void
@@ -519,8 +519,7 @@ track_view_repeat_changed (BstTrackView *self)
   if (self->song && self->repeat_toggle)
     {
       GtkToggleButton *toggle = GTK_TOGGLE_BUTTON (self->repeat_toggle);
-      gboolean enabled;
-      bse_proxy_get (self->song.proxy_id(), "loop_enabled", &enabled, NULL);
+      gboolean enabled = self->song.loop_enabled();
       if (toggle->active != enabled)
 	gtk_toggle_button_set_active (toggle, enabled);
     }
@@ -707,12 +706,12 @@ track_view_set_container (BstItemView *iview,
   if (self->song)
     {
       bst_track_roll_controller_set_song (self->tctrl, self->song.proxy_id());
+      self->song.on ("notify:loop_enabled", [self]() { track_view_repeat_changed (self); });
       bse_proxy_connect (self->song.proxy_id(),
 			 "swapped_signal::pointer-changed", track_view_pointer_changed, self,
 			 "swapped_signal::property-notify::loop-left", track_view_marks_changed, self,
 			 "swapped_signal::property-notify::loop-right", track_view_marks_changed, self,
 			 "swapped_signal::property-notify::tick-pointer", track_view_marks_changed, self,
-			 "swapped_signal::property-notify::loop-enabled", track_view_repeat_changed, self,
 			 NULL);
       track_view_marks_changed (self);
       track_view_repeat_changed (self);
