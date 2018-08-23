@@ -4,29 +4,29 @@ NOINST_TESTS     =
 TESTS_CLEANFILES = $(NOINST_TESTS)
 noinst_PROGRAMS += $(NOINST_TESTS)
 
-# == clean-tests ==
-clean-tests:
+# == tests-clean ==
+tests-clean:
 	rm -f $(TESTS_CLEANFILES) tests/*.$(OBJEXT)
-clean-local: clean-tests
-.PHONY: clean-tests
+clean-local: tests-clean
+.PHONY: tests-clean
 
-# == check-tests ==
+# == tests-check ==
 tests_check_TARGETS =
-check-tests: $(tests_check_TARGETS)
-check-local: check-tests
-.PHONY: check-tests
+tests-check: $(tests_check_TARGETS)
+check-local: tests-check
+.PHONY: tests-check
 define tests_foreach_RULE
 $(TESTPRG)\ CHECK: $(TESTPRG)
 	@echo '  EXEC    ' $(TESTPRG) ; $(TESTPRG)
-check-tests: $(TESTPRG)\ CHECK
+tests-check: $(TESTPRG)\ CHECK
 .PHONY: $(TESTPRG)\ CHECK
 endef
 $(foreach TESTPRG,$(NOINST_TESTS),$(eval $(call tests_foreach_RULE,$(TESTPRG))))
 
-# == installcheck-tests ==
-installcheck-tests:
-installcheck-local: installcheck-tests
-.PHONY: installcheck-tests
+# == tests-installcheck ==
+tests-installcheck:
+installcheck-local: tests-installcheck
+.PHONY: tests-installcheck
 
 # == suite1 ==
 NOINST_TESTS         += tests/suite1
@@ -97,8 +97,8 @@ tests-testresampler-check-precision20:
 tests-testresampler-check-precision24:
 	$(QTEST)
 	$(Q) tests/testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,983 --max-threshold=126
-check-tests: tests-testresampler-check-filter-impl tests-testresampler-check-precision8 tests-testresampler-check-precision12
-check-tests: tests-testresampler-check-precision16 tests-testresampler-check-precision20 tests-testresampler-check-precision24
+tests-check: tests-testresampler-check-filter-impl tests-testresampler-check-precision8 tests-testresampler-check-precision12
+tests-check: tests-testresampler-check-precision16 tests-testresampler-check-precision20 tests-testresampler-check-precision24
 tests-testresampler-check-all:
 	: ## test SSE filter implementation
 	tests/testresampler filter-impl
@@ -212,7 +212,7 @@ tests/bsefile-checklist-%-test: tests/bsefile-checklist
 	      && echo "  OK       Loading: $$tfile" ;			\
 	    fi ; done ; rm -f $@.log $(@:-test=)
 TESTS_CLEANFILES += tests/bsefile-checklist tests/bsefile-checklist-? tests/bsefile-checklist-?-test tests/bsefile-checklist-?-test.log
-check-tests: tests/bsefile-checklist-a-test tests/bsefile-checklist-b-test tests/bsefile-checklist-c-test \
+tests-check: tests/bsefile-checklist-a-test tests/bsefile-checklist-b-test tests/bsefile-checklist-c-test \
 		tests/bsefile-checklist-d-test tests/bsefile-checklist-e-test
 
 # == tests-bse-version-check ==
@@ -230,4 +230,4 @@ tests-bse-version-check: tests/bsefiles.list
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
 .PHONY: tests-bse-version-check
-#check-tests: tests-bse-version-check
+#tests-check: tests-bse-version-check
