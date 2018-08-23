@@ -847,11 +847,11 @@ class Generator:
     s,copydoc = '', ''
     hasret = mtype.rtype.storage != Decls.VOID
     if self.gen_docs:
-      copydoc = 'See ' + self.type2cpp (class_info) + '::' + mtype.name + '()'
+      copydoc = ' /// See ' + self.type2cpp (class_info) + '::' + mtype.name + '()'
     # prototype
     s += self.C (mtype.rtype) + '\n'
     q = '%s::%s (' % (self.C (class_info), mtype.name)
-    s += q + self.Args (mtype, 'arg_', len (q)) + ') /// %s\n{\n' % copydoc
+    s += q + self.Args (mtype, 'arg_', len (q)) + ')%s\n{\n' % copydoc
     # vars, procedure
     s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + %u), *fr = NULL;\n' % len (mtype.args) # header + self + args
     if hasret:
@@ -917,7 +917,7 @@ class Generator:
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
     if self.gen_docs:
-      copydoc = 'See ' + self.type2cpp (class_info) + '::' + fident
+      copydoc = ' \t///< See ' + self.type2cpp (class_info) + '::' + fident
     else:
       copydoc = ''
     if self.gen_mode == G4SERVANT:
@@ -925,23 +925,23 @@ class Generator:
     tname = self.C (ftype)
     pid = fident + ' ' * max (0, pad - len (fident))
     if ftype.storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
-      s += '  ' + v + self.F (tname)  + pid + ' () const%s; \t///< %s\n' % (v0, copydoc)
-      s += '  ' + v + self.F ('void') + pid + ' (' + tname + ')%s; \t///< %s\n' % (v0, copydoc)
+      s += '  ' + v + self.F (tname)  + pid + ' () const%s;%s\n' % (v0, copydoc)
+      s += '  ' + v + self.F ('void') + pid + ' (' + tname + ')%s;%s\n' % (v0, copydoc)
     elif ftype.storage in (Decls.STRING, Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
-      s += '  ' + v + self.F (tname)  + pid + ' () const%s; \t///< %s\n' % (v0, copydoc)
-      s += '  ' + v + self.F ('void') + pid + ' (const ' + tname + '&)%s; \t///< %s\n' % (v0, copydoc)
+      s += '  ' + v + self.F (tname)  + pid + ' () const%s;%s\n' % (v0, copydoc)
+      s += '  ' + v + self.F ('void') + pid + ' (const ' + tname + '&)%s;%s\n' % (v0, copydoc)
     elif ftype.storage == Decls.INTERFACE:
-      s += '  ' + v + self.F (tname + rptr)  + pid + ' () const%s; \t///< %s\n' % (v0, copydoc)
-      s += '  ' + v + self.F ('void') + pid + ' (' + tname + ptr + ')%s; \t///< %s\n' % (v0, copydoc)
+      s += '  ' + v + self.F (tname + rptr)  + pid + ' () const%s;%s\n' % (v0, copydoc)
+      s += '  ' + v + self.F ('void') + pid + ' (' + tname + ptr + ')%s;%s\n' % (v0, copydoc)
     return s
   def generate_client_property_stub (self, class_info, fident, ftype):
     s, tname, copydoc = '', self.C (ftype), ''
     if self.gen_docs:
-      copydoc = 'See ' + self.type2cpp (class_info) + '::' + fident
+      copydoc = ' /// See ' + self.type2cpp (class_info) + '::' + fident
     # getter prototype
     s += tname + '\n'
     q = '%s::%s (' % (self.C (class_info), fident)
-    s += q + ') const /// %s\n{\n' % copydoc
+    s += q + ') const%s\n{\n' % copydoc
     s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;\n'
     s += '  Aida::ProtoScopeCall2Way __o_ (__p_, *this, %s);\n' % self.getter_digest (class_info, fident, ftype)
     s += '  fr = __o_.invoke (&__p_);\n' # deletes __p_
@@ -957,9 +957,9 @@ class Generator:
     # setter prototype
     s += 'void\n'
     if ftype.storage in (Decls.STRING, Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
-      s += q + 'const ' + tname + ' &value) /// %s\n{\n' % copydoc
+      s += q + 'const ' + tname + ' &value)%s\n{\n' % copydoc
     else:
-      s += q + tname + ' value) /// %s\n{\n' % copydoc
+      s += q + tname + ' value)%s\n{\n' % copydoc
     s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;\n' # header + self + value
     s += '  Aida::ProtoScopeCall1Way __o_ (__p_, *this, %s);\n' % self.setter_digest (class_info, fident, ftype)
     ident_type_args = [('value', ftype)]
