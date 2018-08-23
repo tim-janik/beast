@@ -681,27 +681,32 @@ rule power:
           term                                  {{ result = term }}
         ( '\*\*' unary                          {{ result = result ** unary }}
         )*                                      {{ return result }}
+
 rule term:                                      # numerical/string term
           '(TRUE|True|true)'                    {{ return 1; }}
         | '(FALSE|False|false)'                 {{ return 0; }}
-        | IDENT                                 {{ result = constant_lookup (IDENT); }}
-          (string                               {{ ASp (result, IDENT); ASp (string); result += string }}
-          )*                                    {{ return result }}
         | INTEGER                               {{ return int (INTEGER); }}
         | HEXINT                                {{ return int (HEXINT, 16); }}
         | FULLFLOAT                             {{ return float (FULLFLOAT); }}
         | FRACTFLOAT                            {{ return float (FRACTFLOAT); }}
-        | '\(' expression '\)'                  {{ return expression; }}
-        | string                                {{ return string; }}
+        | '\(' expression '\)'                  {{ return expression }}
+        | ident_or_string                       {{ return ident_or_string }}
+        | '_' '\(' ident_or_string '\)'         {{ return '_(' + ident_or_string + ')' }}
 
+rule ident_or_string:
+          string                                {{ result = string }}
+          ( string_concatenation                {{ result = quote (unquote (result) + unquote (string_concatenation)) }}
+          )*                                    {{ return result }}
+        | IDENT                                 {{ result = constant_lookup (IDENT); isconst = 1 }}
+          (                                     {{ if isconst: ASp (result, IDENT); isconst = 0 }}
+            string_concatenation                {{ result = quote (unquote (result) + unquote (string_concatenation)) }}
+          )*                                    {{ return result }}
+
+rule string_concatenation:
+      string                                    {{ return string }}
+    | IDENT                                     {{ con = constant_lookup (IDENT); ASp (con, IDENT) }}
+                                                {{ return con }}
 rule string:
-          '_' '\(' plain_string '\)'            {{ return '_(' + plain_string + ')' }}
-        | plain_string                          {{ return plain_string }}
-rule plain_string:
-        STRING                                  {{ result = quote (eval (STRING)) }}
-        ( ( STRING                              {{ result = quote (unquote (result) + eval (STRING)) }}
-          | IDENT                               {{ con = constant_lookup (IDENT); ASp (con, IDENT) }}
-                                                {{ result = quote (unquote (result) + unquote (con)) }}
-          ) )*                                  {{ return result }}
-%%
+    STRING                                      {{ return quote (eval (STRING)) }}
 
+%%

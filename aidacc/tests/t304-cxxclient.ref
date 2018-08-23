@@ -221,7 +221,7 @@ enum class ExtensiveEnum : int64_t {
   V33 = 43,
   V34 = 44, // "foo"
   V35 = 42,
-  V36 = 42, // "foo""4"
+  V36 = 42, // "foo4"
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace::ExtensiveEnum"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  ExtensiveEnum  e) { __p_ <<= Aida::EnumValue (e); }
@@ -3539,7 +3539,7 @@ static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Exte
   "V35.label=" "foo" "\0"
   "V36.value=42\0"
   "V36.label=" "foo" "\0"
-  "V36.blurb=" "foo""4" "\0"
+  "V36.blurb=" "foo4" "\0"
 };
 template<> const EnumInfo&
 enum_info<MandatoryNamespace::ExtensiveEnum> ()
@@ -3579,7 +3579,7 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
     { int64_t (MandatoryNamespace::ExtensiveEnum::V33), "V33", "foo", NULL },
     { int64_t (MandatoryNamespace::ExtensiveEnum::V34), "V34", "foo", "foo" },
     { int64_t (MandatoryNamespace::ExtensiveEnum::V35), "V35", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V36), "V36", "foo", "foo""4" },
+    { int64_t (MandatoryNamespace::ExtensiveEnum::V36), "V36", "foo", "foo4" },
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
 } // specialization

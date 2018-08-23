@@ -21,6 +21,9 @@ namespace MandatoryNamespace {
 
 // simple constant tests
 Const S = "string";
+Const SsS = S "s" S;
+Const SSS = S S S;
+Const ssSssSS = "s" "s" S "s" "s" S S;
 Const S2 = "concatenated" "string";
 Const A = 1 + 3 * 5 + 2 ** 3 % 11 + 1.5;	// 25.5
 // reassignment: Const A = 1;

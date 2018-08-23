@@ -16,7 +16,7 @@
 .../t302-fail.idl:17:17: NameError: redefining keyword: TRUE
 >  Const TRUE = 17; // invalid constant name
 >                  ^
-.../t302-fail.idl:19:24: Trying to find ';': STRING, IDENT, '\)', '_', '\*\*', '\*', '/', '%', '\+', '-', '<<', '>>', '&', '\^', '\|', ';', ',', '}', got '_'
+.../t302-fail.idl:19:24: NameError: undeclared constant: _
 >  Const tmp = "invalid" _("i18n string") "concatenation";
 >                         ^
 .../t302-fail.idl:21:1: Trying to find one of ...
