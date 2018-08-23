@@ -3,15 +3,15 @@
 AF_TESTS_CLEANFILES =
 
 # == clean-tests ==
-clean-af-tests:
+af-tests-clean:
 	rm -f $(AF_TESTS_CLEANFILES) af-tests/*.$(OBJEXT)
-clean-local: clean-af-tests
-.PHONY: clean-af-tests
+clean-local: af-tests-clean
+.PHONY: af-tests-clean
 
-# == check-af-tests ==
-check-af-tests:
-check-local: check-af-tests
-.PHONY: check-af-tests
+# == af-tests-check ==
+af-tests-check:
+check-local: af-tests-check
+.PHONY: af-tests-check
 
 # == MACROS ==
 AF_TESTS_BSE2WAV = $(strip					\
@@ -35,7 +35,7 @@ af-tests/adsrtest: af-tests/adsrtest.bse af-tests/adsrtest.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/adsrtest
+af-tests-check: af-tests/adsrtest
 
 # == af-tests/adsr-wave-1-test ==
 af-tests/adsr-wave-1-test: af-tests/adsr-wave-1-test.bse af-tests/adsr-wave-1-test.ref af-tests/pseudo-saw.bsewave
@@ -45,7 +45,7 @@ af-tests/adsr-wave-1-test: af-tests/adsr-wave-1-test.bse af-tests/adsr-wave-1-te
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/adsr-wave-1-test
+af-tests-check: af-tests/adsr-wave-1-test
 
 # == af-tests/adsr-wave-2-test ==
 af-tests/adsr-wave-2-test: af-tests/adsr-wave-2-test.bse af-tests/adsr-wave-2-test.ref af-tests/pseudo-stereo.bsewave
@@ -55,7 +55,7 @@ af-tests/adsr-wave-2-test: af-tests/adsr-wave-2-test.bse af-tests/adsr-wave-2-te
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/adsr-wave-2-test
+af-tests-check: af-tests/adsr-wave-2-test
 
 # == af-tests/artscompressor ==
 af-tests/artscompressor: af-tests/artscompressor.bse af-tests/artscompressor.ref
@@ -64,7 +64,7 @@ af-tests/artscompressor: af-tests/artscompressor.bse af-tests/artscompressor.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-# FIXME: check-af-tests: af-tests/artscompressor
+# FIXME: af-tests-check: af-tests/artscompressor
 
 # == af-tests/bseadder ==
 af-tests/bseadder: af-tests/bseadder.bse af-tests/bseadder.ref
@@ -73,7 +73,7 @@ af-tests/bseadder: af-tests/bseadder.bse af-tests/bseadder.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/bseadder
+af-tests-check: af-tests/bseadder
 
 # == af-tests/balance ==
 af-tests/balance: af-tests/balance.bse af-tests/balance.ref
@@ -83,7 +83,7 @@ af-tests/balance: af-tests/balance.bse af-tests/balance.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/balance
+af-tests-check: af-tests/balance
 
 # == af-tests/freak-noise ==
 af-tests/freak-noise: af-tests/freak-noise.bse af-tests/freak-noise.ref
@@ -92,7 +92,7 @@ af-tests/freak-noise: af-tests/freak-noise.bse af-tests/freak-noise.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/freak-noise
+af-tests-check: af-tests/freak-noise
 
 # == af-tests/minisong ==
 af-tests/minisong: af-tests/minisong.bse af-tests/minisong.ref
@@ -102,7 +102,7 @@ af-tests/minisong: af-tests/minisong.bse af-tests/minisong.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 98.00
 	$(Q) rm -f $@.wav $@.tmp
-# FIXME: check-af-tests: af-tests/minisong
+# FIXME: af-tests-check: af-tests/minisong
 
 # == af-tests/organsong ==
 af-tests/organsong: af-tests/organsong.bse af-tests/organsong.ref
@@ -111,7 +111,7 @@ af-tests/organsong: af-tests/organsong.bse af-tests/organsong.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 98.00
 	$(Q) rm -f $@.wav $@.tmp
-# FIXME: check-af-tests: af-tests/organsong
+# FIXME: af-tests-check: af-tests/organsong
 
 # == af-tests/osc-test ==
 af-tests/osc-test: af-tests/osc-test.bse af-tests/osc-test.ref
@@ -120,7 +120,7 @@ af-tests/osc-test: af-tests/osc-test.bse af-tests/osc-test.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.90
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/osc-test
+af-tests-check: af-tests/osc-test
 
 # == af-tests/osctranspose1 ==
 af-tests/osctranspose1: af-tests/osctranspose1.bse af-tests/osctranspose1.ref
@@ -129,7 +129,7 @@ af-tests/osctranspose1: af-tests/osctranspose1.bse af-tests/osctranspose1.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/osctranspose1
+af-tests-check: af-tests/osctranspose1
 
 # == af-tests/osctranspose2 ==
 af-tests/osctranspose2: af-tests/osctranspose2.bse af-tests/osctranspose2.ref
@@ -138,7 +138,7 @@ af-tests/osctranspose2: af-tests/osctranspose2.bse af-tests/osctranspose2.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/osctranspose2
+af-tests-check: af-tests/osctranspose2
 
 
 # == af-tests/partymonster ==
@@ -150,7 +150,7 @@ af-tests/partymonster: $(topdir)/library/demo/partymonster.bse af-tests/partymon
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
 slowcheck: af-tests/partymonster
-# FIXME: takes too long: check-af-tests: af-tests/partymonster
+# FIXME: takes too long: af-tests-check: af-tests/partymonster
 
 # == af-tests/plain-wave-1-test ==
 af-tests/plain-wave-1-test: af-tests/plain-wave-1-test.bse af-tests/plain-wave-1-test.ref af-tests/pseudo-square-env.bsewave
@@ -160,7 +160,7 @@ af-tests/plain-wave-1-test: af-tests/plain-wave-1-test.bse af-tests/plain-wave-1
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/plain-wave-1-test
+af-tests-check: af-tests/plain-wave-1-test
 
 # == af-tests/plain-wave-2-test ==
 af-tests/plain-wave-2-test: af-tests/plain-wave-2-test.bse af-tests/plain-wave-2-test.ref af-tests/pseudo-stereo-env.bsewave
@@ -170,7 +170,7 @@ af-tests/plain-wave-2-test: af-tests/plain-wave-2-test.bse af-tests/plain-wave-2
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/plain-wave-2-test
+af-tests-check: af-tests/plain-wave-2-test
 
 # == af-tests/simple-loop ==
 af-tests/simple-loop: af-tests/simple-loop.bse af-tests/simple-loop.ref
@@ -180,7 +180,7 @@ af-tests/simple-loop: af-tests/simple-loop.bse af-tests/simple-loop.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-# FIXME: check-af-tests: af-tests/simple-loop
+# FIXME: af-tests-check: af-tests/simple-loop
 
 # == af-tests/soundfont-test ==
 af-tests/soundfont-test: af-tests/soundfont-test.bse af-tests/soundfont-test.ref af-tests/minfluid.sf2 af-tests/minfluid.sf2.LICENSE
@@ -191,7 +191,7 @@ af-tests/soundfont-test: af-tests/soundfont-test.bse af-tests/soundfont-test.ref
 	@: # fluidsynth >= 1.1.7 contains a modulator bugfix (FluidSynth/fluidsynth#194), so lower the thresholds for older versions
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold $(shell $(VERSIONCMP) $(FLUID_VERSION) 1.1.7 99.99 99.7)
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/soundfont-test
+af-tests-check: af-tests/soundfont-test
 
 # == af-tests/sum-diff-test ==
 af-tests/sum-diff-test: af-tests/sum-diff-test.bse af-tests/sum-diff-test.ref
@@ -200,7 +200,7 @@ af-tests/sum-diff-test: af-tests/sum-diff-test.bse af-tests/sum-diff-test.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/sum-diff-test
+af-tests-check: af-tests/sum-diff-test
 
 # == af-tests/syndrum ==
 af-tests/syndrum: af-tests/syndrum.bse af-tests/syndrum.ref
@@ -210,7 +210,7 @@ af-tests/syndrum: af-tests/syndrum.bse af-tests/syndrum.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 91.00
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/syndrum
+af-tests-check: af-tests/syndrum
 
 # == af-tests/velocity ==
 af-tests/velocity: af-tests/velocity.bse af-tests/velocity.ref
@@ -220,7 +220,7 @@ af-tests/velocity: af-tests/velocity.bse af-tests/velocity.ref
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/velocity
+af-tests-check: af-tests/velocity
 
 # == af-tests/xtalstringssong ==
 af-tests/xtalstringssong: af-tests/xtalstringssong.bse af-tests/xtalstringssong.ref
@@ -229,4 +229,4 @@ af-tests/xtalstringssong: af-tests/xtalstringssong.bse af-tests/xtalstringssong.
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $@.tmp
 	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.90
 	$(Q) rm -f $@.wav $@.tmp
-check-af-tests: af-tests/xtalstringssong
+af-tests-check: af-tests/xtalstringssong

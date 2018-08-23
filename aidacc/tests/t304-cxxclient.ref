@@ -311,19 +311,20 @@ namespace MandatoryNamespace {
 
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static FirstInterfaceHandle   __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static FirstInterfaceHandle   __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~FirstInterfaceHandle () override;
   template<class RemoteHandle>
-  static FirstInterfaceHandle   down_cast (RemoteHandle smh) { return smh == NULL ? FirstInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static FirstInterfaceHandle   down_cast (const RemoteHandle &smh) { return smh == NULL ? FirstInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      FirstInterfaceHandle ();
   void                          void_func            (); 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef FirstInterfaceHandle FirstInterfaceH; ///< Convenience alias for the IDL type FirstInterface.
+typedef ::Aida::ScopedHandle<FirstInterfaceH> FirstInterfaceS;
 
 class ClnT_XFooRecord
 {
@@ -744,13 +745,13 @@ namespace InterfaceTests {
 
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
-  static UIWidgetAreaHandle     __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static UIWidgetAreaHandle     __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~UIWidgetAreaHandle () override;
   template<class RemoteHandle>
-  static UIWidgetAreaHandle     down_cast (RemoteHandle smh) { return smh == NULL ? UIWidgetAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static UIWidgetAreaHandle     down_cast (const RemoteHandle &smh) { return smh == NULL ? UIWidgetAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UIWidgetAreaHandle ();
   bool                          dummy    () const; 	///< 
   void                          dummy    (bool); 	///< 
@@ -781,31 +782,33 @@ public:
   }
 };
 typedef UIWidgetAreaHandle UIWidgetAreaH; ///< Convenience alias for the IDL type UIWidgetArea.
+typedef ::Aida::ScopedHandle<UIWidgetAreaH> UIWidgetAreaS;
 
 class ParentHandle : public virtual Aida::RemoteHandle
 {
-  static ParentHandle           __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ParentHandle           __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~ParentHandle () override;
   template<class RemoteHandle>
-  static ParentHandle           down_cast (RemoteHandle smh) { return smh == NULL ? ParentHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static ParentHandle           down_cast (const RemoteHandle &smh) { return smh == NULL ? ParentHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ParentHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef ParentHandle ParentH; ///< Convenience alias for the IDL type Parent.
+typedef ::Aida::ScopedHandle<ParentH> ParentS;
 
 class ChildHandle : public virtual ParentHandle
 {
-  static ChildHandle            __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ChildHandle            __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~ChildHandle () override;
   template<class RemoteHandle>
-  static ChildHandle            down_cast (RemoteHandle smh) { return smh == NULL ? ChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static ChildHandle            down_cast (const RemoteHandle &smh) { return smh == NULL ? ChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -813,16 +816,17 @@ public:
   }
 };
 typedef ChildHandle ChildH; ///< Convenience alias for the IDL type Child.
+typedef ::Aida::ScopedHandle<ChildH> ChildS;
 
 class DescendantHandle : public virtual ChildHandle
 {
-  static DescendantHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static DescendantHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~DescendantHandle () override;
   template<class RemoteHandle>
-  static DescendantHandle       down_cast (RemoteHandle smh) { return smh == NULL ? DescendantHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static DescendantHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? DescendantHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      DescendantHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -830,16 +834,17 @@ public:
   }
 };
 typedef DescendantHandle DescendantH; ///< Convenience alias for the IDL type Descendant.
+typedef ::Aida::ScopedHandle<DescendantH> DescendantS;
 
 class GrandChildHandle : public virtual DescendantHandle
 {
-  static GrandChildHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static GrandChildHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~GrandChildHandle () override;
   template<class RemoteHandle>
-  static GrandChildHandle       down_cast (RemoteHandle smh) { return smh == NULL ? GrandChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static GrandChildHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? GrandChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      GrandChildHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -847,6 +852,7 @@ public:
   }
 };
 typedef GrandChildHandle GrandChildH; ///< Convenience alias for the IDL type GrandChild.
+typedef ::Aida::ScopedHandle<GrandChildH> GrandChildS;
 
 class ClnT_QuickRecord
 {
@@ -893,29 +899,30 @@ void operator>>= (Aida::ProtoReader&, ClnT_QuickSequence&);
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
-  static QuickIfaceHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static QuickIfaceHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~QuickIfaceHandle () override;
   template<class RemoteHandle>
-  static QuickIfaceHandle       down_cast (RemoteHandle smh) { return smh == NULL ? QuickIfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static QuickIfaceHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? QuickIfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      QuickIfaceHandle ();
   void                          simple_function  (int i = 9); 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef QuickIfaceHandle QuickIfaceH; ///< Convenience alias for the IDL type QuickIface.
+typedef ::Aida::ScopedHandle<QuickIfaceH> QuickIfaceS;
 
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static MethodTestInterfaceHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static MethodTestInterfaceHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~MethodTestInterfaceHandle () override;
   template<class RemoteHandle>
-  static MethodTestInterfaceHandle down_cast (RemoteHandle smh) { return smh == NULL ? MethodTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static MethodTestInterfaceHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? MethodTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      MethodTestInterfaceHandle ();
   void                          method_with_void          (); 	///< 
   bool                          method_with_bools         (bool input,
@@ -944,31 +951,33 @@ public:
   {}
 };
 typedef MethodTestInterfaceHandle MethodTestInterfaceH; ///< Convenience alias for the IDL type MethodTestInterface.
+typedef ::Aida::ScopedHandle<MethodTestInterfaceH> MethodTestInterfaceS;
 
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  static SignalTestInterfaceHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static SignalTestInterfaceHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~SignalTestInterfaceHandle () override;
   template<class RemoteHandle>
-  static SignalTestInterfaceHandle down_cast (RemoteHandle smh) { return smh == NULL ? SignalTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static SignalTestInterfaceHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? SignalTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SignalTestInterfaceHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef SignalTestInterfaceHandle SignalTestInterfaceH; ///< Convenience alias for the IDL type SignalTestInterface.
+typedef ::Aida::ScopedHandle<SignalTestInterfaceH> SignalTestInterfaceS;
 
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
-  static ChildInheritingSignalsHandle __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ChildInheritingSignalsHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~ChildInheritingSignalsHandle () override;
   template<class RemoteHandle>
-  static ChildInheritingSignalsHandle down_cast (RemoteHandle smh) { return smh == NULL ? ChildInheritingSignalsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static ChildInheritingSignalsHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? ChildInheritingSignalsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildInheritingSignalsHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -976,16 +985,17 @@ public:
   }
 };
 typedef ChildInheritingSignalsHandle ChildInheritingSignalsH; ///< Convenience alias for the IDL type ChildInheritingSignals.
+typedef ::Aida::ScopedHandle<ChildInheritingSignalsH> ChildInheritingSignalsS;
 
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
-  static AnotherChildHandle     __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static AnotherChildHandle     __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~AnotherChildHandle () override;
   template<class RemoteHandle>
-  static AnotherChildHandle     down_cast (RemoteHandle smh) { return smh == NULL ? AnotherChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static AnotherChildHandle     down_cast (const RemoteHandle &smh) { return smh == NULL ? AnotherChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      AnotherChildHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -993,16 +1003,17 @@ public:
   }
 };
 typedef AnotherChildHandle AnotherChildH; ///< Convenience alias for the IDL type AnotherChild.
+typedef ::Aida::ScopedHandle<AnotherChildH> AnotherChildS;
 
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
-  static PropertyTesterHandle   __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static PropertyTesterHandle   __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~PropertyTesterHandle () override;
   template<class RemoteHandle>
-  static PropertyTesterHandle   down_cast (RemoteHandle smh) { return smh == NULL ? PropertyTesterHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static PropertyTesterHandle   down_cast (const RemoteHandle &smh) { return smh == NULL ? PropertyTesterHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PropertyTesterHandle ();
   bool                          bool_prop      () const; 	///< 
   void                          bool_prop      (bool); 	///< 
@@ -1042,19 +1053,20 @@ public:
   }
 };
 typedef PropertyTesterHandle PropertyTesterH; ///< Convenience alias for the IDL type PropertyTester.
+typedef ::Aida::ScopedHandle<PropertyTesterH> PropertyTesterS;
 } // InterfaceTests
 
 namespace RapicornAidaTest {
 
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
-  static UseIncludesHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static UseIncludesHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~UseIncludesHandle () override;
   template<class RemoteHandle>
-  static UseIncludesHandle      down_cast (RemoteHandle smh) { return smh == NULL ? UseIncludesHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static UseIncludesHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? UseIncludesHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UseIncludesHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
@@ -1062,16 +1074,17 @@ public:
   }
 };
 typedef UseIncludesHandle UseIncludesH; ///< Convenience alias for the IDL type UseIncludes.
+typedef ::Aida::ScopedHandle<UseIncludesH> UseIncludesS;
 
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
-  static ButtonAreaHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static ButtonAreaHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~ButtonAreaHandle () override;
   template<class RemoteHandle>
-  static ButtonAreaHandle       down_cast (RemoteHandle smh) { return smh == NULL ? ButtonAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static ButtonAreaHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? ButtonAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ButtonAreaHandle ();
   std::string                   on_click   () const; 	///< 
   void                          on_click   (const std::string&); 	///< 
@@ -1090,37 +1103,39 @@ public:
   }
 };
 typedef ButtonAreaHandle ButtonAreaH; ///< Convenience alias for the IDL type ButtonArea.
+typedef ::Aida::ScopedHandle<ButtonAreaH> ButtonAreaS;
 
 class PureMethodsHandle;
 
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
-  static PureMethodsHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static PureMethodsHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~PureMethodsHandle () override;
   template<class RemoteHandle>
-  static PureMethodsHandle      down_cast (RemoteHandle smh) { return smh == NULL ? PureMethodsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static PureMethodsHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? PureMethodsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PureMethodsHandle ();
   int                           pure_method       (double f); 	///< 
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef PureMethodsHandle PureMethodsH; ///< Convenience alias for the IDL type PureMethods.
+typedef ::Aida::ScopedHandle<PureMethodsH> PureMethodsS;
 } // RapicornAidaTest
 
 namespace Other {
 
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
-  static NameTestsHandle        __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static NameTestsHandle        __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~NameTestsHandle () override;
   template<class RemoteHandle>
-  static NameTestsHandle        down_cast (RemoteHandle smh) { return smh == NULL ? NameTestsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static NameTestsHandle        down_cast (const RemoteHandle &smh) { return smh == NULL ? NameTestsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      NameTestsHandle ();
   void                          args_from_other_namespace (const InterfaceTests::ClnT_QuickRecord &qr,
                                                            RapicornAidaTest::ClickType qe,
@@ -1129,19 +1144,20 @@ public:
   {}
 };
 typedef NameTestsHandle NameTestsH; ///< Convenience alias for the IDL type NameTests.
+typedef ::Aida::ScopedHandle<NameTestsH> NameTestsS;
 } // Other
 
 namespace BseTest {
 
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
-  static CompressorHandle       __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static CompressorHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~CompressorHandle () override;
   template<class RemoteHandle>
-  static CompressorHandle       down_cast (RemoteHandle smh) { return smh == NULL ? CompressorHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static CompressorHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? CompressorHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      CompressorHandle ();
   double                        threshold () const; 	///< 
   void                          threshold (double); 	///< 
@@ -1154,6 +1170,7 @@ public:
   }
 };
 typedef CompressorHandle CompressorH; ///< Convenience alias for the IDL type Compressor.
+typedef ::Aida::ScopedHandle<CompressorH> CompressorS;
 
 class ClnT_RecordForGroups
 {
@@ -1188,18 +1205,19 @@ void operator>>= (Aida::ProtoReader&, ClnT_RecordForGroups&);
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
-  static SoundModuleHandle      __aida_cast__ (Aida::RemoteHandle&, const Aida::TypeHashList&);
+  static SoundModuleHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*Des*/              ~SoundModuleHandle () override;
   template<class RemoteHandle>
-  static SoundModuleHandle      down_cast (RemoteHandle smh) { return smh == NULL ? SoundModuleHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
+  static SoundModuleHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? SoundModuleHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SoundModuleHandle ();
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
 typedef SoundModuleHandle SoundModuleH; ///< Convenience alias for the IDL type SoundModule.
+typedef ::Aida::ScopedHandle<SoundModuleH> SoundModuleS;
 } // BseTest
 #endif /* __CLNT__aidacc_tests_t304_testpass_idl */
 // --- Generated by AidaCxxStub ---
@@ -1285,7 +1303,7 @@ FirstInterfaceHandle::__aida_typeid__()
   return type_hash;
 }
 FirstInterfaceHandle
-FirstInterfaceHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+FirstInterfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   FirstInterfaceHandle target;
@@ -1997,7 +2015,7 @@ UIWidgetAreaHandle::__aida_typeid__()
   return type_hash;
 }
 UIWidgetAreaHandle
-UIWidgetAreaHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+UIWidgetAreaHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   UIWidgetAreaHandle target;
@@ -2206,7 +2224,7 @@ ParentHandle::__aida_typeid__()
   return type_hash;
 }
 ParentHandle
-ParentHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+ParentHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   ParentHandle target;
@@ -2228,7 +2246,7 @@ ChildHandle::__aida_typeid__()
   return type_hash;
 }
 ChildHandle
-ChildHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+ChildHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   ChildHandle target;
@@ -2250,7 +2268,7 @@ DescendantHandle::__aida_typeid__()
   return type_hash;
 }
 DescendantHandle
-DescendantHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+DescendantHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   DescendantHandle target;
@@ -2272,7 +2290,7 @@ GrandChildHandle::__aida_typeid__()
   return type_hash;
 }
 GrandChildHandle
-GrandChildHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+GrandChildHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   GrandChildHandle target;
@@ -2358,7 +2376,7 @@ QuickIfaceHandle::__aida_typeid__()
   return type_hash;
 }
 QuickIfaceHandle
-QuickIfaceHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+QuickIfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   QuickIfaceHandle target;
@@ -2389,7 +2407,7 @@ MethodTestInterfaceHandle::__aida_typeid__()
   return type_hash;
 }
 MethodTestInterfaceHandle
-MethodTestInterfaceHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+MethodTestInterfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   MethodTestInterfaceHandle target;
@@ -2595,7 +2613,7 @@ SignalTestInterfaceHandle::__aida_typeid__()
   return type_hash;
 }
 SignalTestInterfaceHandle
-SignalTestInterfaceHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+SignalTestInterfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   SignalTestInterfaceHandle target;
@@ -2617,7 +2635,7 @@ ChildInheritingSignalsHandle::__aida_typeid__()
   return type_hash;
 }
 ChildInheritingSignalsHandle
-ChildInheritingSignalsHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+ChildInheritingSignalsHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   ChildInheritingSignalsHandle target;
@@ -2639,7 +2657,7 @@ AnotherChildHandle::__aida_typeid__()
   return type_hash;
 }
 AnotherChildHandle
-AnotherChildHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+AnotherChildHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   AnotherChildHandle target;
@@ -2661,7 +2679,7 @@ PropertyTesterHandle::__aida_typeid__()
   return type_hash;
 }
 PropertyTesterHandle
-PropertyTesterHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+PropertyTesterHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   PropertyTesterHandle target;
@@ -2928,7 +2946,7 @@ UseIncludesHandle::__aida_typeid__()
   return type_hash;
 }
 UseIncludesHandle
-UseIncludesHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+UseIncludesHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   UseIncludesHandle target;
@@ -2950,7 +2968,7 @@ ButtonAreaHandle::__aida_typeid__()
   return type_hash;
 }
 ButtonAreaHandle
-ButtonAreaHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+ButtonAreaHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   ButtonAreaHandle target;
@@ -3060,7 +3078,7 @@ PureMethodsHandle::__aida_typeid__()
   return type_hash;
 }
 PureMethodsHandle
-PureMethodsHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+PureMethodsHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   PureMethodsHandle target;
@@ -3099,7 +3117,7 @@ NameTestsHandle::__aida_typeid__()
   return type_hash;
 }
 NameTestsHandle
-NameTestsHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+NameTestsHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   NameTestsHandle target;
@@ -3137,7 +3155,7 @@ CompressorHandle::__aida_typeid__()
   return type_hash;
 }
 CompressorHandle
-CompressorHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+CompressorHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   CompressorHandle target;
@@ -3252,7 +3270,7 @@ SoundModuleHandle::__aida_typeid__()
   return type_hash;
 }
 SoundModuleHandle
-SoundModuleHandle::__aida_cast__ (Aida::RemoteHandle &other, const Aida::TypeHashList &types)
+SoundModuleHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)
 {
   const Aida::TypeHash &mine = __aida_typeid__();
   SoundModuleHandle target;
@@ -3669,9 +3687,6 @@ static_assert (Aida::TypeHash { AIDA_HASH___EVENT_ATTACH__ } ==
 static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHID__ } ==
                Aida::TypeHash { 0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL },
                "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHID__ 	0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHNS__ } ==
-               Aida::TypeHash { 0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHNS__ 	0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL");
 static_assert (Aida::TypeHash { AIDA_HASH___EVENT_CALLBACK__ } ==
                Aida::TypeHash { 0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL },
                "Expecting hash defined as:\n#define AIDA_HASH___EVENT_CALLBACK__ 	0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL");
