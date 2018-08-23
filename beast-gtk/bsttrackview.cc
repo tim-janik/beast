@@ -81,6 +81,8 @@ bst_track_view_finalize (GObject *object)
     bst_track_roll_controller_unref (self->tctrl);
 
   G_OBJECT_CLASS (bst_track_view_parent_class)->finalize (object);
+
+  delete_inplace (self->song);
 }
 
 GtkWidget*
@@ -494,11 +496,10 @@ get_track (void *data, int row)
 static void
 track_view_marks_changed (BstTrackView *self)
 {
-  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
-  if (self->troll && song)
+  if (self->troll && self->song)
     {
       SfiInt lleft, lright, pointer;
-      bse_proxy_get (song.proxy_id(), "loop_left", &lleft, "loop_right", &lright, "tick_pointer", &pointer, NULL);
+      bse_proxy_get (self->song.proxy_id(), "loop_left", &lleft, "loop_right", &lright, "tick_pointer", &pointer, NULL);
       bst_track_roll_set_marker (self->troll, 1, lleft, lleft >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 2, lright, lright >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 3, pointer, pointer >= 0 ? BST_TRACK_ROLL_MARKER_POS : BST_TRACK_ROLL_MARKER_NONE);
@@ -508,20 +509,18 @@ track_view_marks_changed (BstTrackView *self)
 static void
 track_view_repeat_toggled (BstTrackView *self)
 {
-  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
-  if (song && self->repeat_toggle)
-    bse_proxy_set (song.proxy_id(), "loop_enabled", GTK_TOGGLE_BUTTON (self->repeat_toggle)->active, NULL);
+  if (self->song && self->repeat_toggle)
+    bse_proxy_set (self->song.proxy_id(), "loop_enabled", GTK_TOGGLE_BUTTON (self->repeat_toggle)->active, NULL);
 }
 
 static void
 track_view_repeat_changed (BstTrackView *self)
 {
-  Bse::SongH song = Bse::SongH::down_cast (BST_ITEM_VIEW (self)->container);
-  if (song && self->repeat_toggle)
+  if (self->song && self->repeat_toggle)
     {
       GtkToggleButton *toggle = GTK_TOGGLE_BUTTON (self->repeat_toggle);
       gboolean enabled;
-      bse_proxy_get (song.proxy_id(), "loop_enabled", &enabled, NULL);
+      bse_proxy_get (self->song.proxy_id(), "loop_enabled", &enabled, NULL);
       if (toggle->active != enabled)
 	gtk_toggle_button_set_active (toggle, enabled);
     }
@@ -530,6 +529,8 @@ track_view_repeat_changed (BstTrackView *self)
 static void
 bst_track_view_init (BstTrackView *self)
 {
+  new_inplace (self->song);
+
   BstItemView *iview = BST_ITEM_VIEW (self);
   GtkWidget *treehs, *trackgb, *vscroll;
   GtkObject *adjustment;
@@ -606,8 +607,7 @@ bst_track_view_init (BstTrackView *self)
 
   /* track roll controller */
   self->tctrl = bst_track_roll_controller_new (self->troll);
-  Bse::SongH song = Bse::SongH::down_cast (iview->container);
-  bst_track_roll_controller_set_song (self->tctrl, song ? song.proxy_id() : 0);
+  bst_track_roll_controller_set_song (self->tctrl, self->song ? self->song.proxy_id() : 0);
   gxk_widget_publish_action_list (self, "tctrl-canvas-tools", bst_track_roll_controller_canvas_actions (self->tctrl));
   gxk_widget_publish_action_list (self, "tctrl-hpanel-tools", bst_track_roll_controller_hpanel_actions (self->tctrl));
   gxk_widget_publish_action_list (self, "tctrl-quant-tools", bst_track_roll_controller_quant_actions (self->tctrl));
@@ -686,13 +686,15 @@ track_view_set_container (BstItemView *iview,
 			  SfiProxy     new_container)
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
-  Bse::SongH song = Bse::SongH::down_cast (iview->container);
-  if (song)
-    bse_proxy_disconnect (song.proxy_id(),
-			  "any_signal", track_view_pointer_changed, self,
-			  "any_signal", track_view_marks_changed, self,
-			  "any_signal", track_view_repeat_changed, self,
-			  NULL);
+  if (self->song)
+    {
+      bse_proxy_disconnect (self->song.proxy_id(),
+                            "any_signal", track_view_pointer_changed, self,
+                            "any_signal", track_view_marks_changed, self,
+                            "any_signal", track_view_repeat_changed, self,
+                            NULL);
+      self->song = NULL; /* disconnect */
+    }
   BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->set_container (iview, new_container);
   if (self->troll)
     {
@@ -701,11 +703,11 @@ track_view_set_container (BstItemView *iview,
       else
         bst_track_roll_setup (self->troll, NULL, Bse::SongH());
     }
-  song = Bse::SongH::down_cast (iview->container);
-  if (song)
+  self->song = Bse::SongH::down_cast (iview->container);
+  if (self->song)
     {
-      bst_track_roll_controller_set_song (self->tctrl, song.proxy_id());
-      bse_proxy_connect (song.proxy_id(),
+      bst_track_roll_controller_set_song (self->tctrl, self->song.proxy_id());
+      bse_proxy_connect (self->song.proxy_id(),
 			 "swapped_signal::pointer-changed", track_view_pointer_changed, self,
 			 "swapped_signal::property-notify::loop-left", track_view_marks_changed, self,
 			 "swapped_signal::property-notify::loop-right", track_view_marks_changed, self,
@@ -763,15 +765,14 @@ track_view_action_exec (gpointer data,
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (item_view->container);
 
   Bse::TrackH track;
   switch (action)
     {
       SfiProxy item;
     case ACTION_ADD_TRACK:
-      song.group_undo ("Add Track");
-      track = song.create_track();
+      self->song.group_undo ("Add Track");
+      track = self->song.create_track();
       if (track)
 	{
 	  gchar *string = g_strdup_format ("Track-%02X", track.get_seqid());
@@ -780,21 +781,21 @@ track_view_action_exec (gpointer data,
 	  bst_item_view_select (item_view, track.proxy_id());
           track.ensure_output();
 	}
-      song.ungroup_undo();
+      self->song.ungroup_undo();
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
-      song.group_undo ("Delete Track");
+      self->song.group_undo ("Delete Track");
       Bse::PartSeq pseq = track.list_parts_uniq();
-      song.remove_track (track);
+      self->song.remove_track (track);
       for (const auto &part : pseq)
         {
           Bse::PartH p = part;
-          if (!song.find_any_track_for_part (p))
-            song.remove_part (p);
+          if (!self->song.find_any_track_for_part (p))
+            self->song.remove_part (p);
         }
-      song.ungroup_undo();
+      self->song.ungroup_undo();
       break;
     }
   gxk_widget_update_actions_downwards (self);
