@@ -4817,9 +4817,6 @@ static_assert (Aida::TypeHash { AIDA_HASH___EVENT_ATTACH__ } ==
 static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHID__ } ==
                Aida::TypeHash { 0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL },
                "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHID__ 	0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHNS__ } ==
-               Aida::TypeHash { 0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHNS__ 	0x3eb29bca7cef2451ULL, 0x992c5e5eb39f509cULL");
 static_assert (Aida::TypeHash { AIDA_HASH___EVENT_CALLBACK__ } ==
                Aida::TypeHash { 0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL },
                "Expecting hash defined as:\n#define AIDA_HASH___EVENT_CALLBACK__ 	0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL");
