@@ -37,7 +37,7 @@ module.exports = {
     'part': { type: Bse.Part, },
     'tick': { type: Number, },
     'index': { type: Number, },
-    'track-index': { type: Number, },
+    'trackindex': { type: Number, },
   },
   computed: {
     tickscale: function() { return 10 / 384.0; }, // FIXME
@@ -82,7 +82,7 @@ function render_canvas () {
   // color setup
   const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
   let cindex;
-  cindex = this.trackIndex;			// - color per track
+  cindex = this.trackindex;			// - color per track
   cindex = (cindex + 1013904223) * 1664557;	//   LCG randomization step
   cindex = this.index;				// - color per part
   cindex = Util.fnv1a_hash (part_name);		// - color from part name

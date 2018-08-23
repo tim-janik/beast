@@ -12,8 +12,8 @@
 
   <div class="vc-track-list" >
     <div class="vc-track-list-inner" >
-      <vc-track-view v-for="(item, index) in list_tracks()" :key="item.unique_id()"
-		     :song="song" :track="item" :index="index"></vc-track-view>
+      <vc-track-view v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
+		     :song="song" :track="item" :trackindex="tindex"></vc-track-view>
     </div>
   </div>
 

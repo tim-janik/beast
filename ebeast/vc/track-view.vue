@@ -24,10 +24,7 @@
 	<div class="vc-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
-    <span class="vc-track-view-partlist" >
-      <vc-part-thumb v-for="(tp, pindex) in track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
-		     :part="tp.part" :tick="tp.tick" :track-index="index" :index="pindex" ></vc-part-thumb>
-    </span>
+    <vc-part-list :track="this.track" :trackindex="trackindex" ></vc-part-list>
   </div>
 
 </template>
@@ -78,11 +75,6 @@
     text-overflow: ellipsis;
     overflow: hidden; white-space: nowrap;
   }
-  .vc-track-view-partlist {
-    display: inline-block;
-    position: relative;
-    height: $vc-track-list-row-height;	/* fixed height is required to accurately calculate vertical scroll area */
-  }
 </style>
 
 <script>
@@ -94,7 +86,7 @@ module.exports = {
   mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
-    'index': { type: Number, },
+    'trackindex': { type: Number, },
   },
   data_tmpl: {
     name: "Track-Label2",

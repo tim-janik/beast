@@ -20,6 +20,7 @@ const vue_components = [
   require ('./fed-object.vue'),
   require ('./piano-roll.vue'),
   require ('./playcontrols.vue'),
+  require ('./part-list.vue'),
   require ('./part-thumb.vue'),
   require ('./modaldialog.vue'),
   require ('./aboutdialog.vue'),
