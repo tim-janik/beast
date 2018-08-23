@@ -768,10 +768,10 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual bool                          dummy    () const = 0; 	///< 
-  virtual void                          dummy    (bool) = 0; 	///< 
-  virtual std::string                   on_click () const = 0; 	///< 
-  virtual void                          on_click (const std::string&) = 0; 	///< 
+  virtual bool                          dummy    () const = 0;
+  virtual void                          dummy    (bool) = 0;
+  virtual std::string                   on_click () const = 0;
+  virtual void                          on_click (const std::string&) = 0;
   virtual double                        simple_method       () = 0;
   virtual double                        single_arg          (int n) = 0;
   virtual double                        single_arg2         (int n = 5) = 0;
@@ -1100,28 +1100,28 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual bool                          bool_prop      () const = 0; 	///< 
-  virtual void                          bool_prop      (bool) = 0; 	///< 
-  virtual int                           int32_prop     () const = 0; 	///< 
-  virtual void                          int32_prop     (int) = 0; 	///< 
-  virtual int64_t                       int64_prop     () const = 0; 	///< 
-  virtual void                          int64_prop     (int64_t) = 0; 	///< 
-  virtual double                        float64_prop   () const = 0; 	///< 
-  virtual void                          float64_prop   (double) = 0; 	///< 
-  virtual std::string                   string_prop    () const = 0; 	///< 
-  virtual void                          string_prop    (const std::string&) = 0; 	///< 
-  virtual QuickEnum                     enum_prop      () const = 0; 	///< 
-  virtual void                          enum_prop      (QuickEnum) = 0; 	///< 
-  virtual SrvT_QuickRecord              record_prop    () const = 0; 	///< 
-  virtual void                          record_prop    (const SrvT_QuickRecord&) = 0; 	///< 
-  virtual SrvT_QuickSequence            sequence_prop  () const = 0; 	///< 
-  virtual void                          sequence_prop  (const SrvT_QuickSequence&) = 0; 	///< 
-  virtual I_GrandChildIfaceP            interface_prop () const = 0; 	///< 
-  virtual void                          interface_prop (I_GrandChildIface*) = 0; 	///< 
-  virtual I_PropertyTesterIfaceP        self_prop      () const = 0; 	///< 
-  virtual void                          self_prop      (I_PropertyTesterIface*) = 0; 	///< 
-  virtual Aida::Any                     any_prop       () const = 0; 	///< 
-  virtual void                          any_prop       (const Aida::Any&) = 0; 	///< 
+  virtual bool                          bool_prop      () const = 0;
+  virtual void                          bool_prop      (bool) = 0;
+  virtual int                           int32_prop     () const = 0;
+  virtual void                          int32_prop     (int) = 0;
+  virtual int64_t                       int64_prop     () const = 0;
+  virtual void                          int64_prop     (int64_t) = 0;
+  virtual double                        float64_prop   () const = 0;
+  virtual void                          float64_prop   (double) = 0;
+  virtual std::string                   string_prop    () const = 0;
+  virtual void                          string_prop    (const std::string&) = 0;
+  virtual QuickEnum                     enum_prop      () const = 0;
+  virtual void                          enum_prop      (QuickEnum) = 0;
+  virtual SrvT_QuickRecord              record_prop    () const = 0;
+  virtual void                          record_prop    (const SrvT_QuickRecord&) = 0;
+  virtual SrvT_QuickSequence            sequence_prop  () const = 0;
+  virtual void                          sequence_prop  (const SrvT_QuickSequence&) = 0;
+  virtual I_GrandChildIfaceP            interface_prop () const = 0;
+  virtual void                          interface_prop (I_GrandChildIface*) = 0;
+  virtual I_PropertyTesterIfaceP        self_prop      () const = 0;
+  virtual void                          self_prop      (I_PropertyTesterIface*) = 0;
+  virtual Aida::Any                     any_prop       () const = 0;
+  virtual void                          any_prop       (const Aida::Any&) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "bool_prop", &I_PropertyTesterIface::bool_prop, &I_PropertyTesterIface::bool_prop);
@@ -1185,14 +1185,14 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual std::string                   on_click   () const = 0; 	///< 
-  virtual void                          on_click   (const std::string&) = 0; 	///< 
-  virtual std::string                   on_click2  () const = 0; 	///< 
-  virtual void                          on_click2  (const std::string&) = 0; 	///< 
-  virtual std::string                   on_click3  () const = 0; 	///< 
-  virtual void                          on_click3  (const std::string&) = 0; 	///< 
-  virtual ClickType                     click_type () const = 0; 	///< 
-  virtual void                          click_type (ClickType) = 0; 	///< 
+  virtual std::string                   on_click   () const = 0;
+  virtual void                          on_click   (const std::string&) = 0;
+  virtual std::string                   on_click2  () const = 0;
+  virtual void                          on_click2  (const std::string&) = 0;
+  virtual std::string                   on_click3  () const = 0;
+  virtual void                          on_click3  (const std::string&) = 0;
+  virtual ClickType                     click_type () const = 0;
+  virtual void                          click_type (ClickType) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "on_click", &I_ButtonAreaIface::on_click, &I_ButtonAreaIface::on_click);
@@ -1278,10 +1278,10 @@ public:
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual double                        threshold () const = 0; 	///< 
-  virtual void                          threshold (double) = 0; 	///< 
-  virtual double                        ratio     () const = 0; 	///< 
-  virtual void                          ratio     (double) = 0; 	///< 
+  virtual double                        threshold () const = 0;
+  virtual void                          threshold (double) = 0;
+  virtual double                        ratio     () const = 0;
+  virtual void                          ratio     (double) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "threshold", &I_CompressorIface::threshold, &I_CompressorIface::threshold);
