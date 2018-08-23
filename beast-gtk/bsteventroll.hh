@@ -36,9 +36,9 @@ struct _BstEventRoll
 {
   GxkScrollCanvas parent_instance;
 
-  Bse::PartH          part;
+  Bse::PartS      part;
   Bse::MidiSignal control_type;
-  GtkWidget          *child;
+  GtkWidget      *child;
 
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */

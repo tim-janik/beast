@@ -62,7 +62,8 @@ enum {
 static void
 bst_track_roll_init (BstTrackRoll *self)
 {
-  new (&self->start_track) Bse::TrackH();
+  new_inplace (self->song);
+  new_inplace (self->start_track);
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   self->tpt = 384 * 4;
@@ -104,7 +105,7 @@ bst_track_roll_finalize (GObject *object)
   BstTrackRoll *self = BST_TRACK_ROLL (object);
   guint i;
 
-  bst_track_roll_setup (self, NULL, 0);
+  bst_track_roll_setup (self, NULL, Bse::SongH());
 
   if (self->scope_update)
     {
@@ -117,8 +118,8 @@ bst_track_roll_finalize (GObject *object)
   g_free (self->scopes);
 
   G_OBJECT_CLASS (bst_track_roll_parent_class)->finalize (object);
-  using namespace Bse;
-  self->start_track.~TrackH();
+  delete_inplace (self->start_track);
+  delete_inplace (self->song);
 }
 
 static void
@@ -177,24 +178,18 @@ track_roll_song_item_removed (BstTrackRoll *self)
 static void
 track_roll_release_proxy (BstTrackRoll *self)
 {
-  bse_proxy_disconnect (self->proxy,
-                        "any_signal", track_roll_release_proxy, self,
+  bse_proxy_disconnect (self->song.proxy_id(),
                         "any_signal", track_roll_song_item_removed, self,
                         NULL);
-  Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).unuse();
-  self->proxy = 0;
+  self->song = NULL;
 }
 
 void
-bst_track_roll_setup (BstTrackRoll   *self,
-                      GtkTreeView    *tree,
-                      SfiProxy        song)
+bst_track_roll_setup (BstTrackRoll *self, GtkTreeView *tree, Bse::SongH song)
 {
   assert_return (BST_IS_TRACK_ROLL (self));
   if (tree)
     assert_return (GTK_IS_TREE_VIEW (tree));
-  if (song)
-    assert_return (BSE_IS_SONG (song));
 
   if (self->tree)
     {
@@ -210,14 +205,13 @@ bst_track_roll_setup (BstTrackRoll   *self,
                         NULL);
     }
 
-  if (self->proxy)
+  if (self->song)
     track_roll_release_proxy (self);
-  self->proxy = song;
-  if (self->proxy)
+  self->song = song;
+  if (self->song)
     {
-      Bse::ItemH::down_cast (bse_server.from_proxy (self->proxy)).use();
-      bse_proxy_connect (self->proxy,
-                         "swapped_signal::release", track_roll_release_proxy, self,
+      self->song.on ("dispose", [self] (const Aida::Event&) { track_roll_release_proxy (self); });
+      bse_proxy_connect (self->song.proxy_id(),
                          "swapped_signal::item-remove", track_roll_song_item_removed, self,
                          NULL);
     }

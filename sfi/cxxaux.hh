@@ -88,6 +88,20 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_DECLARE_VLA(Type, var, count)          Type var[count] ///< Declare a variable length array (clang++ uses std::vector<>).
 #endif
 
+/// Call inplace new operator by automatically inferring the Type.
+template<class Type, class ...Ts> __attribute__ ((always_inline)) inline void
+new_inplace (Type &typemem, Ts &&... args)
+{
+  new (&typemem) Type (std::forward<Ts> (args)...);
+}
+
+/// Call inplace delete operator by automatically inferring the Type.
+template<class Type> __attribute__ ((always_inline)) inline void
+delete_inplace (Type &typemem)
+{
+  typemem.~Type();
+}
+
 /**
  * A std::make_shared<>() wrapper class to access private ctor & dtor.
  * To call std::make_shared<T>() on a class @a T, its constructor and

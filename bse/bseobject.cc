@@ -275,14 +275,18 @@ static void
 bse_object_do_dispose (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
+  assert_return (BSE_OBJECT_IN_RESTORE (object) == false);
 
   object->set_flag (BSE_OBJECT_FLAG_DISPOSING);
 
-  if (BSE_OBJECT_IN_RESTORE (object))
-    Bse::warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
-
   /* perform release notification */
   g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
+
+  {
+    Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
+    if (self)
+      self->emit_event ("dispose");
+  }
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
@@ -292,8 +296,9 @@ bse_object_do_dispose (GObject *gobject)
   if (object->cxxobjref_)
     {
       object->cxxobjref_->reset();
-      delete object->cxxobjref_;
+      Bse::ObjectImplP *cxxobjref = object->cxxobjref_;
       object->cxxobjref_ = NULL;
+      delete cxxobjref;
     }
 }
 

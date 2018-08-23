@@ -697,9 +697,9 @@ track_view_set_container (BstItemView *iview,
   if (self->troll)
     {
       if (iview->container)
-        bst_track_roll_setup (self->troll, iview->tree, iview->container.proxy_id());
+        bst_track_roll_setup (self->troll, iview->tree, Bse::SongH::down_cast (iview->container));
       else
-        bst_track_roll_setup (self->troll, NULL, 0);
+        bst_track_roll_setup (self->troll, NULL, Bse::SongH());
     }
   song = Bse::SongH::down_cast (iview->container);
   if (song)

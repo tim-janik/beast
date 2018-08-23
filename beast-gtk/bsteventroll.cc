@@ -77,7 +77,7 @@ event_roll_class_setup_skin (BstEventRollClass *klass)
 static void
 bst_event_roll_init (BstEventRoll *self)
 {
-  new (&self->part) Bse::PartH();
+  new_inplace (self->part);
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
@@ -131,7 +131,7 @@ bst_event_roll_finalize (GObject *object)
 
   G_OBJECT_CLASS (bst_event_roll_parent_class)->finalize (object);
   using namespace Bse;
-  self->part.~PartH();
+  delete_inplace (self->part);
 }
 
 static void
@@ -595,12 +595,6 @@ event_roll_update (BstEventRoll *self,
   gxk_widget_update_actions (self); /* update controllers */
 }
 
-static void
-event_roll_unset_proxy (BstEventRoll *self)
-{
-  bst_event_roll_set_part (self);
-}
-
 void
 bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
 {
@@ -608,15 +602,14 @@ bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
 
   if (self->part)
     bse_proxy_disconnect (self->part.proxy_id(),
-                          "any-signal", event_roll_unset_proxy, self,
                           "any-signal", event_roll_range_changed, self,
                           "any-signal", event_roll_update, self,
                           NULL);
   self->part = part;
   if (self->part)
     {
+      self->part.on ("dispose", [self] () { bst_event_roll_set_part (self); });
       bse_proxy_connect (self->part.proxy_id(),
-			 "swapped-signal::release", event_roll_unset_proxy, self,
                          "swapped-signal::property-notify::last-tick", event_roll_range_changed, self,
 			 "swapped-signal::range-changed", event_roll_update, self,
 			 NULL);
