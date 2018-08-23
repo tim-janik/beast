@@ -1016,8 +1016,6 @@ interface Song : SNet {
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
-  // bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
-  // int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
   // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
   // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
   group _("Timing") {
@@ -1032,7 +1030,8 @@ interface Song : SNet {
                                          STANDARD  ":unprepared");
   };
   group _("Looping") {
-    bool loop_enabled = Bool (_("Loop Enabled"), "", STORAGE ":skip-default:skip-undo", false);
+    bool  loop_enabled = Bool (_("Loop Enabled"), "", STORAGE ":skip-default:skip-undo", false);
+    int32 loop_left    = Range (_("Loop Left"), "", STORAGE ":skip-default:skip-undo", -1, MAXINT31, 384, -1);
   };
 };
 
