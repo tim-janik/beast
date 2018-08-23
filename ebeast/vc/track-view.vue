@@ -24,7 +24,6 @@
 	<div class="vc-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
-    <vc-part-list :track="this.track" :trackindex="trackindex" ></vc-part-list>
   </div>
 
 </template>

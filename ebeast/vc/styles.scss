@@ -40,6 +40,7 @@ $vc-switch-knob:		$vc-button-foreground !default;
 $vc-focus-outline:		1px solid $vc-glow-control !default;	// suitable for rectangular outlines
 $vc-focus-box-shadow:		0 0 0 1px $vc-glow-control !default;	// suitable for rounded outlines
 $vc-boxshadow-color:		fade(#000000, 30%) !default;
+$vc-scrollbar-thickness:	7px !default;
 
 // vc-track-list
 $vc-track-list-row-height: 2em !default;
