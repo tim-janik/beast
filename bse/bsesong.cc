@@ -24,7 +24,6 @@ enum
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_PNET,
-  PROP_LOOP_ENABLED,
   PROP_LOOP_LEFT,
   PROP_LOOP_RIGHT,
   PROP_TICK_POINTER,
@@ -144,7 +143,6 @@ bse_song_set_property (GObject      *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-      gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
     case PROP_PNET:
@@ -180,16 +178,6 @@ bse_song_set_property (GObject      *object,
     case PROP_TPQN:
       self->tpqn = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
-      break;
-    case PROP_LOOP_ENABLED:
-      vbool = sfi_value_get_bool (value);
-      vbool = vbool && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
-      if (vbool != self->loop_enabled_SL)
-	{
-	  BSE_SEQUENCER_LOCK ();
-	  self->loop_enabled_SL = vbool;
-	  BSE_SEQUENCER_UNLOCK ();
-	}
       break;
     case PROP_LOOP_LEFT:
       vint = sfi_value_get_int (value);
@@ -261,9 +249,6 @@ bse_song_get_property (GObject     *object,
       break;
     case PROP_TPQN:
       sfi_value_set_int (value, self->tpqn);
-      break;
-    case PROP_LOOP_ENABLED:
-      sfi_value_set_bool (value, self->loop_enabled_SL);
       break;
     case PROP_LOOP_LEFT:
       sfi_value_set_int (value, self->loop_left_SL);
@@ -720,10 +705,6 @@ bse_song_class_init (BseSongClass *klass)
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Looping"),
-			      PROP_LOOP_ENABLED,
-			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
-					      FALSE, SFI_PARAM_STORAGE ":skip-default:skip-undo"));
-  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_LEFT,
 			      sfi_pspec_int ("loop_left", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
@@ -965,6 +946,32 @@ SongImpl::musical_tuning (MusicalTuning tuning)
             bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
         }
       notify (prop);
+    }
+}
+
+bool
+SongImpl::loop_enabled() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong *>();
+
+  return self->loop_enabled_SL;
+}
+
+void
+SongImpl::loop_enabled (bool enabled)
+{
+  BseSong *self = as<BseSong*>();
+
+  enabled = enabled && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
+  if (enabled != self->loop_enabled_SL)
+    {
+      // this property has no undo
+
+      BSE_SEQUENCER_LOCK ();
+      self->loop_enabled_SL = enabled;
+      BSE_SEQUENCER_UNLOCK ();
+
+      notify ("loop_enabled");
     }
 }
 

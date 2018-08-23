@@ -1031,6 +1031,9 @@ interface Song : SNet {
                                            "tuning system defines the number and spacing of frequency values applied."),
                                          STANDARD  ":unprepared");
   };
+  group _("Looping") {
+    bool loop_enabled = Bool (_("Loop Enabled"), "", STORAGE ":skip-default:skip-undo", false);
+  };
 };
 
 ///< Structure containing meta data for multi wave samples.

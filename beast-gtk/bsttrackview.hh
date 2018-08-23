@@ -21,6 +21,7 @@ typedef	struct	_BstTrackViewClass BstTrackViewClass;
 struct _BstTrackView
 {
   BstItemView	          parent_object;
+  Bse::SongS              song;
   BstTrackRoll	         *troll;
   BstTrackRollController *tctrl;
   GtkWidget		 *repeat_toggle;

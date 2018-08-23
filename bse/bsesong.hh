@@ -74,8 +74,10 @@ public:
   explicit                  SongImpl                (BseObject*);
   virtual double            bpm                     () const override;
   virtual void              bpm                     (double val) override;
-  virtual MusicalTuning musical_tuning          () const override;
+  virtual MusicalTuning     musical_tuning          () const override;
   virtual void              musical_tuning          (MusicalTuning tuning) override;
+  virtual bool              loop_enabled            () const override;
+  virtual void              loop_enabled            (bool enabled) override;
   virtual SongTiming        get_timing              (int tick);
   virtual TrackIfaceP       find_any_track_for_part (PartIface &part) override;
   virtual BusIfaceP         create_bus              () override;
