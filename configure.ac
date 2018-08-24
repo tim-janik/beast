@@ -12,6 +12,7 @@ AC_PREREQ(2.57)
 # * MICRO:       Increment with every release, increments must *not* break ABI
 # * -RC:         Pre-release suffix, may be empty or contain -beta.[0-9]+
 AC_INIT([beast], [m4_esyscmd_s([./git-version.sh -s])])
+die() { AC_MSG_ERROR([$1]) ; exit -1 ; }
 # * ABI_VERSION: Record the latest version since ABI compatibility has been kept
 # * ABI changes: Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
 [ABI_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.0/'`]
@@ -87,8 +88,8 @@ AC_SUBST(uname_V)
 
 # == Check srcdir == builddir ==
 echo "checking for srcdir==builddir... (#buildapi-variable-no-builddir)" # see https://github.com/cgwalters/build-api
-TEST_SRCDIR=`cd $srcdir ; /bin/pwd -P`
-TEST_BUILDDIR=`cd . ; /bin/pwd -P`
+TEST_SRCDIR=`cd $srcdir && pwd -P` || die "failed to cd or pwd"
+TEST_BUILDDIR=`cd . && pwd -P`	   || die "failed to cd or pwd"
 test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
   AC_MSG_ERROR([builds require builddir == srcdir (use e.g. git-worktree instead)])
 }
@@ -694,17 +695,6 @@ AC_DEFUN([MC_PYTHON_REQUIREMENTS],
   fi
 ])
 
-AC_MSG_CHECKING(whether source dir equals build dir)
-TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
-TEST_BUILDDIR=`cd . ; /bin/pwd`
-if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
-    AC_MSG_RESULT(yes)
-    SRCEQBUILDRULE=''
-else
-    AC_MSG_RESULT(no)
-    AC_MSG_WARN([disabling some build rules because srcdir != builddir])
-    SRCEQBUILDRULE='#'
-fi
 AC_CHECK_PROGS(PERL, perl5 perl)
 if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
     AC_MSG_WARN([failed to detect perl (version >= 5.002), disabling dependent build rules])
