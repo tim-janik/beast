@@ -71,6 +71,20 @@ AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation di
 # package library defaults
 enable_static=no ; enable_shared=yes
 
+# == System info ==
+AC_MSG_CHECKING([for uname -s...]) ; uname_S=`uname -s 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_S])
+AC_MSG_CHECKING([for uname -m...]) ; uname_M=`uname -m 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_M])
+AC_MSG_CHECKING([for uname -o...]) ; uname_O=`uname -o 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_O])
+AC_MSG_CHECKING([for uname -r...]) ; uname_R=`uname -r 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_R])
+AC_MSG_CHECKING([for uname -p...]) ; uname_P=`uname -p 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_P])
+AC_MSG_CHECKING([for uname -v...]) ; uname_V=`uname -v 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_V])
+AC_SUBST(uname_S)
+AC_SUBST(uname_M)
+AC_SUBST(uname_O)
+AC_SUBST(uname_R)
+AC_SUBST(uname_P)
+AC_SUBST(uname_V)
+
 # == Check srcdir == builddir ==
 echo "checking for srcdir==builddir... (#buildapi-variable-no-builddir)" # see https://github.com/cgwalters/build-api
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd -P`
@@ -195,11 +209,10 @@ else
   AC_MSG_ERROR([unknown C++ compiler])
 fi
 AC_SUBST(FAST_MATH_FLAGS)
-uname_m=`uname -m`
-if test "$uname_m" = x86_64 ; then	# AMD64
+if test "$uname_M" = x86_64 ; then	# AMD64
     AM_CFLAGS="$AM_CFLAGS $x86_flags $x86_64_flags"
     AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags $x86_64_flags"
-elif echo "$uname_m" | grep -q '^i.*86$' ; then
+elif echo "$uname_M" | grep -q '^i.*86$' ; then
     AM_CFLAGS="$AM_CFLAGS $x86_flags"
     AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags"
 fi
