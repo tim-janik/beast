@@ -1,7 +1,6 @@
 # Beast & Bse                                    -*- Mode: shell-script; -*-
 
 m4_include(acbeast.m4)
-m4_include(config/glib-gettext.m4)
 
 AC_PREREQ(2.57)
 
@@ -12,6 +11,7 @@ AC_PREREQ(2.57)
 # * MICRO:       Increment with every release, increments must *not* break ABI
 # * -RC:         Pre-release suffix, may be empty or contain -beta.[0-9]+
 AC_INIT([beast], [m4_esyscmd_s([./git-version.sh -s])])
+die() { AC_MSG_ERROR([$1]) ; exit -1 ; }
 # * ABI_VERSION: Record the latest version since ABI compatibility has been kept
 # * ABI changes: Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
 [ABI_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.0/'`]
@@ -71,10 +71,24 @@ AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation di
 # package library defaults
 enable_static=no ; enable_shared=yes
 
+# == System info ==
+AC_MSG_CHECKING([for uname -s...]) ; uname_S=`uname -s 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_S])
+AC_MSG_CHECKING([for uname -m...]) ; uname_M=`uname -m 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_M])
+AC_MSG_CHECKING([for uname -o...]) ; uname_O=`uname -o 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_O])
+AC_MSG_CHECKING([for uname -r...]) ; uname_R=`uname -r 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_R])
+AC_MSG_CHECKING([for uname -p...]) ; uname_P=`uname -p 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_P])
+AC_MSG_CHECKING([for uname -v...]) ; uname_V=`uname -v 2>/dev/null || echo none` ; AC_MSG_RESULT([$uname_V])
+AC_SUBST(uname_S)
+AC_SUBST(uname_M)
+AC_SUBST(uname_O)
+AC_SUBST(uname_R)
+AC_SUBST(uname_P)
+AC_SUBST(uname_V)
+
 # == Check srcdir == builddir ==
 echo "checking for srcdir==builddir... (#buildapi-variable-no-builddir)" # see https://github.com/cgwalters/build-api
-TEST_SRCDIR=`cd $srcdir ; /bin/pwd -P`
-TEST_BUILDDIR=`cd . ; /bin/pwd -P`
+TEST_SRCDIR=`cd $srcdir && pwd -P` || die "failed to cd or pwd"
+TEST_BUILDDIR=`cd . && pwd -P`	   || die "failed to cd or pwd"
 test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
   AC_MSG_ERROR([builds require builddir == srcdir (use e.g. git-worktree instead)])
 }
@@ -151,6 +165,9 @@ AC_LIBTOOL_DLOPEN
 # == C++ Dialect ==
 CXX="$CXX -std=gnu++14"
 test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
+AC_MSG_CHECKING([compiler version])
+cc_version_line1=`${CXX} --version | head -n1`
+AC_MSG_RESULT([$cc_version_line1])
 
 # == Compiler flags ==
 # disable invalid "can't wrap" optimizations for signed / pointers
@@ -178,7 +195,7 @@ x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
 #x86_64_flags="$x86_64_flags -msse4.1 -msse4.2"	# Intel since 2008, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
-AC_MSG_CHECKING([for known C++ compiler])
+AC_MSG_CHECKING([compiler flavour])
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
@@ -195,11 +212,10 @@ else
   AC_MSG_ERROR([unknown C++ compiler])
 fi
 AC_SUBST(FAST_MATH_FLAGS)
-uname_m=`uname -m`
-if test "$uname_m" = x86_64 ; then	# AMD64
+if test "$uname_M" = x86_64 ; then	# AMD64
     AM_CFLAGS="$AM_CFLAGS $x86_flags $x86_64_flags"
     AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags $x86_64_flags"
-elif echo "$uname_m" | grep -q '^i.*86$' ; then
+elif echo "$uname_M" | grep -q '^i.*86$' ; then
     AM_CFLAGS="$AM_CFLAGS $x86_flags"
     AM_CXXFLAGS="$AM_CXXFLAGS $x86_flags"
 fi
@@ -392,7 +408,7 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
   AC_SUBST(GETTEXT_PACKAGE)
 
   # check for proper gettext support
-  AM_GLIB_GNU_GETTEXT([external])
+  AM_GNU_GETTEXT([external])
   test -z "$ac_cv_path_XGETTEXT" && {
     AC_MSG_ERROR(["Failed to detect gettext, required for internationalization." \
       "GNU gettext is available from: http://www.gnu.org/software/gettext/"])
@@ -681,17 +697,6 @@ AC_DEFUN([MC_PYTHON_REQUIREMENTS],
   fi
 ])
 
-AC_MSG_CHECKING(whether source dir equals build dir)
-TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
-TEST_BUILDDIR=`cd . ; /bin/pwd`
-if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
-    AC_MSG_RESULT(yes)
-    SRCEQBUILDRULE=''
-else
-    AC_MSG_RESULT(no)
-    AC_MSG_WARN([disabling some build rules because srcdir != builddir])
-    SRCEQBUILDRULE='#'
-fi
 AC_CHECK_PROGS(PERL, perl5 perl)
 if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
     AC_MSG_WARN([failed to detect perl (version >= 5.002), disabling dependent build rules])
