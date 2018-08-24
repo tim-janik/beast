@@ -13,7 +13,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # PO_LINGUAS  : command line override for ALL_LINGUAS (subset)
 # GMOFILES    : .gmo files for all TRANSLATIONS (GNU .mo)
 # POFILES     : .po files for all TRANSLATIONS
-# DATADIRNAME : setup by GLIB_GNU_GETTEXT for installation
 # Files:
 # POTSCAN     : list of project sources with translations
 # POTSKIP     : list of translatable project sources to skip

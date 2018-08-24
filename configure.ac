@@ -1,7 +1,6 @@
 # Beast & Bse                                    -*- Mode: shell-script; -*-
 
 m4_include(acbeast.m4)
-m4_include(config/glib-gettext.m4)
 
 AC_PREREQ(2.57)
 
@@ -409,7 +408,7 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
   AC_SUBST(GETTEXT_PACKAGE)
 
   # check for proper gettext support
-  AM_GLIB_GNU_GETTEXT([external])
+  AM_GNU_GETTEXT([external])
   test -z "$ac_cv_path_XGETTEXT" && {
     AC_MSG_ERROR(["Failed to detect gettext, required for internationalization." \
       "GNU gettext is available from: http://www.gnu.org/software/gettext/"])
