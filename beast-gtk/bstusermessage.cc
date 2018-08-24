@@ -298,7 +298,7 @@ repeat_dialog (GxkDialog *dialog)
   if (label)
     {
       gint count = g_object_get_int (dialog, "BEAST-user-message-count");
-      gchar *rstr = g_strdup_format (dngettext (bst_gettext_domain(), _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
+      gchar *rstr = g_strdup_format (_("Message has been repeated %u time", "Message has been repeated %u times", count), count);
       g_object_set_int (dialog, "BEAST-user-message-count", count + 1);
       gtk_label_set_text (label, rstr);
       g_free (rstr);
