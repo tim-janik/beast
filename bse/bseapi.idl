@@ -552,6 +552,9 @@ Const STANDARD      = STORAGE ":G";
 Const NOTEHINTS     = STANDARD ":note";
 Const FINETUNEHINTS = STANDARD ":finetune";
 Const VELOCITYHINTS = STANDARD ":velocity";
+/* extra options */
+Const SKIP_DEFAULT  = ":skip-default:";
+Const SKIP_UNDO     = ":skip-undo:";
 
 /// Stringeq - a variable length list of test strings.
 sequence StringSeq {
@@ -1030,8 +1033,8 @@ interface Song : SNet {
                                          STANDARD  ":unprepared");
   };
   group _("Looping") {
-    bool  loop_enabled = Bool (_("Loop Enabled"), "", STORAGE ":skip-default:skip-undo", false);
-    int32 loop_left    = Range (_("Loop Left"), "", STORAGE ":skip-default:skip-undo", -1, MAXINT31, 384, -1);
+    bool  loop_enabled = Bool (_("Loop Enabled"), "", STORAGE SKIP_DEFAULT SKIP_UNDO, false);
+    int32 loop_left    = Range (_("Loop Left"), "", STORAGE SKIP_DEFAULT SKIP_UNDO, -1, MAXINT31, 384, -1);
   };
 };
 
