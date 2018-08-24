@@ -56,7 +56,7 @@ TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
-#EXTRA_DIST += LINGUAS POTIGNORE POTSCAN POTSKIP $(POFILES) messages.pot
+#EXTRA_DIST += LINGUAS POTIGNORE potscan.list POTSKIP $(POFILES) messages.pot
 #EXTRA_DIST += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
 #EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk $(INTLFIXDIR)/intlfix-las.awk
 CLEANFILES  += $(GMOFILES)
@@ -99,7 +99,7 @@ uninstall:
 	  rm -f "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ; \
 	done ; test "$$c" = 0 || echo
 
-# check for translatable files missing from POTSCAN
+# check for translatable files missing from potscan.list
 check-local: check-unlisted
 check-unlisted:
 	@echo "Check top source directory for missing translations..."
@@ -184,15 +184,25 @@ CLEANFILES += check-messages.pot
 
 CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 
-$(srcdir)/messages.pot check-messages.pot: POTSCAN
+POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
+POTSCAN_SKIP  = '(^|/)tests/|^aidacc/'
+
+potscan.list: $(GITSTAMP)
+	$(AM_V_GEN)
+	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
+	$(Q) grep -E $(POTSCAN_MATCH) $@.tmp1 > $@.tmp2
+	$(Q) grep -vE $(POTSCAN_SKIP) $@.tmp2 > $@.tmp3
+	$(Q) mv $@.tmp3 $@ && rm -f $@.tmp1 $@.tmp2
+
+$(srcdir)/messages.pot check-messages.pot: potscan.list
 	@echo "Building $(@F)..."
 	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
-	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < POTSCAN > $(POTLIST) \
+	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < potscan.list > $(POTLIST) \
 	&& cp $(POTLIST) $(TMPLIST) && mkdir -p $(TMPDIR)/
 	@$(foreach TYPE, $(POSRC_TYPES), \
 	  $(call prepare_pot_source, $(TYPE), $(TMPLIST)))
 	@test `wc -l < $(TMPLIST)` -eq 0 || { \
-	  echo "WARNING: unknown POTSCAN entries:" ; \
+	  echo "WARNING: unknown potscan.list entries:" ; \
 	  sed 's/^/  /' $(TMPLIST) ; \
 	} >&2
 	@echo "  Extracting translatable strings with xgettext..."
@@ -234,7 +244,7 @@ unlisted:
 	$(Q) (cd $(top_srcdir) && set -o pipefail \
 	&& find . $(FIND_NOHIDDEN) -type f $(patsubst %, ! -path \*/%, $(IGNORE_UNLISTED)) -print) \
 	| sed 's,^\./,,' \
-	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
+	| grep -vxF -f $(srcdir)/potscan.list -f $(srcdir)/POTSKIP \
 	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
 	@ # scanning file types...
 	$(foreach TYPE, $(POSRC_TYPES), \
@@ -243,7 +253,7 @@ unlisted:
 	@ # report...
 	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
 	@if test -e unlisted ; then \
-	  echo "Missing `wc -l <unlisted` untranslated file(s) from POTSCAN, see:"; head -n7 -v "`pwd`/unlisted" ; \
+	  echo "Missing `wc -l <unlisted` untranslated file(s) from potscan.list, see:"; head -n7 -v "`pwd`/unlisted" ; \
 	else echo "Done, all files listed." ; fi
 DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
