@@ -180,6 +180,7 @@ check-update-po: Makefile $(srcdir)/messages.pot
 	done ; echo
 	$(Q) rm -f check-messages.pot
 .PHONY: check-update-po
+CLEANFILES += check-messages.pot
 
 CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 
