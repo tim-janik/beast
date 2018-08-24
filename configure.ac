@@ -166,6 +166,9 @@ AC_LIBTOOL_DLOPEN
 # == C++ Dialect ==
 CXX="$CXX -std=gnu++14"
 test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
+AC_MSG_CHECKING([compiler version])
+cc_version_line1=`${CXX} --version | head -n1`
+AC_MSG_RESULT([$cc_version_line1])
 
 # == Compiler flags ==
 # disable invalid "can't wrap" optimizations for signed / pointers
@@ -193,7 +196,7 @@ x86_64_flags="-mcx16"				# for CMPXCHG16B, in AMD64 since 2005
 #x86_64_flags="$x86_64_flags -msse4.1 -msse4.2"	# Intel since 2008, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx"		# Intel since 2011, AMD since 2011
 #x86_64_flags="$x86_64_flags -mavx2"		# Intel since 2013, AMD since 2015
-AC_MSG_CHECKING([for known C++ compiler])
+AC_MSG_CHECKING([compiler flavour])
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
