@@ -128,7 +128,8 @@ CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
 POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 
-EXTRA_DIST += poscan.list	# needed for tarball builds
+noinst_DATA += poscan.list
+EXTRA_DIST  += poscan.list	# needed for tarball builds
 poscan.list: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
