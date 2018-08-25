@@ -15,7 +15,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # POFILES     : .po files for all TRANSLATIONS
 #
 # Files:
-# POTIGNORE   : ERE patterns of project sources to ignore
 # LINGUAS     : list of supported languages
 # poscan.list : list of translatable files tracked in git
 
@@ -23,7 +22,7 @@ TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
-#EXTRA_DIST += LINGUAS POTIGNORE poscan.list $(POFILES) messages.po
+#EXTRA_DIST += LINGUAS poscan.list $(POFILES) messages.po
 #EXTRA_DIST += $(INTLFIXDIR)/intltool-merge
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
