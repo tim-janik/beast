@@ -22,10 +22,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 
 # Translatable file types
 #
-POSRC_TYPES          += XML
-POSRC_XML_PATTERN     = '\.xml\(.in\)\?$$'
-POSRC_XML_FILTER      = gawk -f $(INTLFIXDIR)/intlfix-xml.awk
-#
 POSRC_TYPES          += IDL
 POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
 POSRC_IDL_FILTER      =
@@ -46,7 +42,6 @@ POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
 #EXTRA_DIST += LINGUAS POTIGNORE poscan.list POTSKIP $(POFILES) messages.po
 #EXTRA_DIST += $(INTLFIXDIR)/intltool-merge
-#EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
