@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 03:42+0200\n"
 "PO-Revision-Date: 2010-06-23 21:18+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -1257,7 +1257,7 @@ msgstr "Éléments disponibles :"
 msgid "Available Outputs"
 msgstr "Sorties disponibles"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr "Post-processeurs disponibles"
 
@@ -1266,7 +1266,7 @@ msgstr "Post-processeurs disponibles"
 msgid "Available Presets"
 msgstr "Sons disponibles"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "Entrées disponibles"
@@ -1275,7 +1275,7 @@ msgstr "Entrées disponibles"
 msgid "Available Synthesizers"
 msgstr "Synthétiseurs disponibles"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 msgid "Available Waves"
 msgstr "Sons disponibles"
 
@@ -1619,8 +1619,8 @@ msgstr "Échec du CODEC"
 msgid "Color Entry"
 msgstr "Saisie d'une couleur"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -2306,7 +2306,7 @@ msgstr "Supprime la piste actuellement sélectionnée"
 msgid "Delete the currently selected wave"
 msgstr "Supprime le son actuellement sélectionnée"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr "Dénominateur"
 
@@ -3018,7 +3018,7 @@ msgstr "Contrôleur de pied"
 msgid "Format"
 msgstr "Format"
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr "Commentaire ou description de forme libre"
 
@@ -3768,7 +3768,7 @@ msgstr ""
 msgid "List of available sound font presets to choose as track instrument"
 msgstr "Liste des sons disponibles à choisir en tant que piste d'instrument "
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 #, fuzzy
 msgid "List of available sound fonts to choose track instrument from"
 msgstr "Liste des sons disponibles pour le choix d'une piste d'instrument"
@@ -3778,7 +3778,7 @@ msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 "Liste des réseaux de synthèse disponibles pour le choix d'un instrument MIDI"
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 "Liste des réseaux de synthèse disponibles pour le choix d'un post-processeur"
@@ -3800,7 +3800,7 @@ msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 "Liste des signaux de synthèse disponibles pour utilisation en entrée de bus"
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr "Liste des sons disponibles pour le choix d'une piste d'instrument"
 
@@ -3907,7 +3907,11 @@ msgstr "Chargement..."
 msgid "Location"
 msgstr "Emplacement"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 msgid "Looping"
 msgstr "Boucles"
 
@@ -3956,7 +3960,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 msgid "MIDI Instrument"
 msgstr "Instrument MIDI"
@@ -4009,7 +4013,7 @@ msgid "Manual trigger for the drum"
 msgstr "Déclencheur manuel pour la batterie"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 msgid "Master"
 msgstr "Maître"
 
@@ -4037,15 +4041,15 @@ msgstr "Maître [réel]"
 msgid "Max Voices"
 msgstr "Voix max"
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Nombre maximum de voix pour une exécution simultanée"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr "Dénominateur du tempo des mesures, doit être une puissance de 2"
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr "Numérateur du tempo des mesures"
 
@@ -4108,7 +4112,7 @@ msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "Canal MIDI assigné à cette piste ; 0 utilise un canal interne par piste"
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Canal MIDI assigné à cette piste, 0 utilise un canal privé par piste"
 
@@ -4133,7 +4137,7 @@ msgstr "Sortie audio mixée"
 msgid "Mixer"
 msgstr "Table de mixage"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr "Bus de la table de mixage connectés à la sortie de la piste"
 
@@ -4143,7 +4147,7 @@ msgstr ""
 "Table de mixage des bus utilisés en tant que sortie pour les signaux "
 "synthétisés"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr "Bus de mixage utilisés en tant que sortie pour cette piste"
 
@@ -4303,7 +4307,7 @@ msgid "Muted"
 msgstr "Rendu muet "
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 msgid "Name"
 msgstr "Nom"
 
@@ -4530,7 +4534,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Notes et informations à propos du présent cycle de parution"
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4556,11 +4560,11 @@ msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Nombre d'octaves affectées par la modulation de fréquence exponentielle"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Number of ticks per quarter note"
 msgstr "Nombre de battements par noire"
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr "Numérateur"
 
@@ -4688,7 +4692,7 @@ msgstr "Origine :  %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 msgid "Orphan Parts"
 msgstr "Mesures orphelines"
 
@@ -4764,7 +4768,7 @@ msgstr "Port de sortie %u"
 msgid "Output Signal Monitor"
 msgstr "Moniteur du signal de sortie"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 msgid "Output Signals"
 msgstr "Signaux de sortie"
 
@@ -5010,7 +5014,7 @@ msgstr "Position prise"
 msgid "Positive Value Color"
 msgstr "Couleur d'une valeur positive"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 msgid "Postprocessor"
 msgstr "Post-processeur"
 
@@ -5973,7 +5977,7 @@ msgstr "Solo"
 msgid "Solo: mute all other busses"
 msgstr "Solo : coupe tous les autres bus"
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "_Mélodie"
@@ -6239,7 +6243,7 @@ msgstr "Module de synthèse actuellement occupé"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Module de synthèse actuellement occupé"
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 "Réseau de synthèse ou son à utiliser en tant qu'instrument par cette piste"
@@ -6252,7 +6256,7 @@ msgstr "Réseau de synthèse à utiliser en tant qu'instrument MIDI"
 msgid "Synthesis network to be used as instrument"
 msgstr "Réseau de synthèse à utiliser en tant qu'instrument"
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Réseau de synthèse utilisé en post-traitement"
@@ -6598,7 +6602,7 @@ msgstr "Priorité d'exécution de la tâche de -20 (haute) à +19 (basse)"
 msgid "Threshold [dB]"
 msgstr "Seuil [dB]"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Ticks"
 msgstr "Tops d'horloge"
 
@@ -6624,7 +6628,7 @@ msgstr "Saisie horodatage"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 msgid "Timing"
 msgstr "Tempo"
 
@@ -6786,7 +6790,7 @@ msgstr "Signal audio non filtré"
 msgid "Unfiltered Input"
 msgstr "Entrée non filtrée"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 msgid "Unique name of this object"
 msgstr "Dénomination unique de cet objet"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 03:42+0200\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -1209,7 +1209,7 @@ msgstr "إنشاء عناصر"
 msgid "Available Outputs"
 msgstr "التهييئات المتوفّرة"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 #, fuzzy
 msgid "Available Postprocessors"
 msgstr "التهييئات المتوفّرة"
@@ -1219,7 +1219,7 @@ msgstr "التهييئات المتوفّرة"
 msgid "Available Presets"
 msgstr "التهييئات المتوفّرة"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "التهييئات المتوفّرة"
@@ -1229,7 +1229,7 @@ msgstr "التهييئات المتوفّرة"
 msgid "Available Synthesizers"
 msgstr "التهييئات المتوفّرة"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 #, fuzzy
 msgid "Available Waves"
 msgstr "التهييئات المتوفّرة"
@@ -1580,8 +1580,8 @@ msgstr "فشل التحقق!\n"
 msgid "Color Entry"
 msgstr "إدخال مباشر"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 #, fuzzy
 msgid "Comment"
 msgstr "ملاحظة"
@@ -2323,7 +2323,7 @@ msgstr "لغة الخطوط المختارة حاليا"
 msgid "Delete the currently selected wave"
 msgstr "لغة الخطوط المختارة حاليا"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr ""
 
@@ -3087,7 +3087,7 @@ msgstr ""
 msgid "Format"
 msgstr "التهيئة"
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3898,7 +3898,7 @@ msgstr ""
 msgid "List of available sound font presets to choose as track instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 msgid "List of available sound fonts to choose track instrument from"
 msgstr ""
 
@@ -3906,7 +3906,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3922,7 +3922,7 @@ msgstr ""
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
@@ -4038,7 +4038,11 @@ msgstr "تحميل..."
 msgid "Location"
 msgstr "الموقع"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 #, fuzzy
 msgid "Looping"
 msgstr "ووجهت وصلات دائرية"
@@ -4093,7 +4097,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 msgid "MIDI Instrument"
 msgstr ""
@@ -4146,7 +4150,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 #, fuzzy
 msgid "Master"
 msgstr "جاري تعليق السيد..."
@@ -4181,15 +4185,15 @@ msgstr "جاري تعليق السيد..."
 msgid "Max Voices"
 msgstr "<كل الأصوات>"
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr ""
 
@@ -4254,7 +4258,7 @@ msgstr "لون GDK fill"
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
@@ -4281,7 +4285,7 @@ msgstr "جهاز خرج الصوت"
 msgid "Mixer"
 msgstr " فتح جهاز هندسة الصوت"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr ""
 
@@ -4289,7 +4293,7 @@ msgstr ""
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4466,7 +4470,7 @@ msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 #, fuzzy
 msgid "Name"
 msgstr "اسم"
@@ -4715,7 +4719,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4738,11 +4742,11 @@ msgstr "عدد السطور في البكسبف"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Number of ticks per quarter note"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr ""
 
@@ -4868,7 +4872,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 #, fuzzy
 msgid "Orphan Parts"
 msgstr "<b>الأجزاء الشفّافة</b>"
@@ -4950,7 +4954,7 @@ msgstr "منفذ الاستماع"
 msgid "Output Signal Monitor"
 msgstr "مراقبة شدة صوت الإخراج الصوتي"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 #, fuzzy
 msgid "Output Signals"
 msgstr "جهاز الخرج:"
@@ -5220,7 +5224,7 @@ msgstr "تاريخ أخذ الصورة"
 msgid "Positive Value Color"
 msgstr "لون GDK fill"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 msgid "Postprocessor"
 msgstr ""
 
@@ -6257,7 +6261,7 @@ msgstr "سولو الطبل"
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "فا_صل جديد"
@@ -6532,7 +6536,7 @@ msgstr ""
 msgid "Synthesis module used internally by BseBus"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
@@ -6544,7 +6548,7 @@ msgstr ""
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
@@ -6852,7 +6856,7 @@ msgstr ""
 msgid "Threshold [dB]"
 msgstr "عتبة الطّول"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 #, fuzzy
 msgid "Ticks"
 msgstr "طقطقات لنقرات"
@@ -6881,7 +6885,7 @@ msgstr "إدخال مباشر"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 msgid "Timing"
 msgstr ""
 
@@ -7061,7 +7065,7 @@ msgstr "اشارة معرفة من طرف المستخدم 1"
 msgid "Unfiltered Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 #, fuzzy
 msgid "Unique name of this object"
 msgstr "الدور الميسر لهذا الجسم"

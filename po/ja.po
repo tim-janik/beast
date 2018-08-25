@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 03:42+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -1147,7 +1147,7 @@ msgstr "利用可能なアイテム:"
 msgid "Available Outputs"
 msgstr "利用可能な入力"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr "利用可能なポストプロセッサ"
 
@@ -1156,7 +1156,7 @@ msgstr "利用可能なポストプロセッサ"
 msgid "Available Presets"
 msgstr "利用可能な波形"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "利用可能な入力"
@@ -1165,7 +1165,7 @@ msgstr "利用可能な入力"
 msgid "Available Synthesizers"
 msgstr "利用可能なシンセサイザ"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 msgid "Available Waves"
 msgstr "利用可能な波形"
 
@@ -1497,8 +1497,8 @@ msgstr ""
 msgid "Color Entry"
 msgstr "色エントリ"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "コメント"
 
@@ -2187,7 +2187,7 @@ msgstr "現在選択しているトラックを削除"
 msgid "Delete the currently selected wave"
 msgstr "現在選択している wave を削除"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr ""
 
@@ -2888,7 +2888,7 @@ msgstr "フットコントローラ"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3618,7 +3618,7 @@ msgstr "副ネットワークを選択するための、利用可能なネット
 msgid "List of available sound font presets to choose as track instrument"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 #, fuzzy
 msgid "List of available sound fonts to choose track instrument from"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
@@ -3628,7 +3628,7 @@ msgstr "トラックインスゥルメントとして選択する、利用可能
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "トラック情報を選択するための、利用可能なシンセネットワークのリスト"
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "ポストプロセッサを選択するための、利用可能なシンセネットワークのリスト"
 
@@ -3644,7 +3644,7 @@ msgstr "トラック情報を選択するための、利用可能なシンセネ
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
@@ -3753,7 +3753,11 @@ msgstr "読み込み中..."
 msgid "Location"
 msgstr "場所"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 msgid "Looping"
 msgstr "ループ"
 
@@ -3800,7 +3804,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 msgid "MIDI Instrument"
 msgstr "MIDI インストゥルメント"
@@ -3849,7 +3853,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 #, fuzzy
 msgid "Master"
 msgstr "主音量"
@@ -3882,15 +3886,15 @@ msgstr "値 [浮動小数]"
 msgid "Max Voices"
 msgstr "最大音数"
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "同時再生する最大音声数"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr ""
 
@@ -3955,7 +3959,7 @@ msgstr ""
 "このトラック 0 に割当てられている MIDI チャネルはプライベートパートラックチャ"
 "ネルを使っています"
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "このトラック 0 に割当てられている MIDI チャネルはプライベートパートラックチャ"
@@ -3982,7 +3986,7 @@ msgstr "ミックスされたオーディオ出力"
 msgid "Mixer"
 msgstr "ミキサー"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr "トラック出力に接続するミキサーバス"
 
@@ -3990,7 +3994,7 @@ msgstr "トラック出力に接続するミキサーバス"
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "シンセ信号の出力として使われるミキサーバス"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4148,7 +4152,7 @@ msgid "Muted"
 msgstr "ミュート"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 msgid "Name"
 msgstr "名前"
 
@@ -4367,7 +4371,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "このリリースサイクルについてのノートと情報"
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "演奏中シーケンサは未検証のトラックのノートを無視します"
@@ -4388,11 +4392,11 @@ msgstr "列数"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "指数関数的周波数変調の影響を受けるオクターブ数"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Number of ticks per quarter note"
 msgstr "4分ノート当りのティック数"
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr ""
 
@@ -4508,7 +4512,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 msgid "Orphan Parts"
 msgstr "パートを破棄"
 
@@ -4581,7 +4585,7 @@ msgstr "出力ポート %u"
 msgid "Output Signal Monitor"
 msgstr "入力信号"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 msgid "Output Signals"
 msgstr "出力信号"
 
@@ -4825,7 +4829,7 @@ msgstr "確保した位置"
 msgid "Positive Value Color"
 msgstr "正の値の色"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 msgid "Postprocessor"
 msgstr "ポストプロセッサ"
 
@@ -5782,7 +5786,7 @@ msgstr "ソロ"
 msgid "Solo: mute all other busses"
 msgstr "ソロ: 他のすべてのバスをミュート"
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "曲(_S)"
@@ -6037,7 +6041,7 @@ msgstr "シンセモジュールは現在ビュジーです"
 msgid "Synthesis module used internally by BseBus"
 msgstr "シンセモジュールは現在ビュジーです"
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "このトラックでインストゥルメントとして使うシンセネットワーク"
 
@@ -6050,7 +6054,7 @@ msgstr "インストゥルメントとして使うシンセネットワーク"
 msgid "Synthesis network to be used as instrument"
 msgstr "インストゥルメントとして使うシンセネットワーク"
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr "ポストプロセッサとして使うシンセネットワーク"
@@ -6347,7 +6351,7 @@ msgstr "スレッド優先度(-20:最高 〜 +19:最低)"
 msgid "Threshold [dB]"
 msgstr "スレッシュホールド"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Ticks"
 msgstr "ティック"
 
@@ -6374,7 +6378,7 @@ msgstr "時間エントリ"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 msgid "Timing"
 msgstr "タイミング"
 
@@ -6537,7 +6541,7 @@ msgstr "未フィルターのオーディオ信号"
 msgid "Unfiltered Input"
 msgstr "未フィルターの入力"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 msgid "Unique name of this object"
 msgstr ""
 

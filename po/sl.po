@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 03:42+0200\n"
 "PO-Revision-Date: 2010-04-11 12:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
@@ -1178,7 +1178,7 @@ msgstr "Predmeti na voljo:"
 msgid "Available Outputs"
 msgstr "Dostopni izhodi"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 #, fuzzy
 msgid "Available Postprocessors"
 msgstr "Ukazi, ki so na voljo:\n"
@@ -1188,7 +1188,7 @@ msgstr "Ukazi, ki so na voljo:\n"
 msgid "Available Presets"
 msgstr "Razpoložljivi valovi"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "Dostopni vhodi"
@@ -1197,7 +1197,7 @@ msgstr "Dostopni vhodi"
 msgid "Available Synthesizers"
 msgstr "Razpoložljivi sintetizatorji"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 msgid "Available Waves"
 msgstr "Razpoložljivi valovi"
 
@@ -1517,8 +1517,8 @@ msgstr "Napaka KODEKA"
 msgid "Color Entry"
 msgstr "Barvni vnos"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "Opomba"
 
@@ -2207,7 +2207,7 @@ msgstr "Izbris trenutno izbrane sledi"
 msgid "Delete the currently selected wave"
 msgstr "Izbris trenutno izbranega vala"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr "Imenovalec"
 
@@ -2908,7 +2908,7 @@ msgstr "Nadzornik nog"
 msgid "Format"
 msgstr "Vrsta"
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr "Opomba ali opis proste oblike"
 
@@ -3640,7 +3640,7 @@ msgstr "Seznam dostopnih sinteznih omrežij za izbiro podomrežja"
 msgid "List of available sound font presets to choose as track instrument"
 msgstr "Seznam razpoložljivih valov za izbiro kot inštrument sledi"
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 #, fuzzy
 msgid "List of available sound fonts to choose track instrument from"
 msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
@@ -3649,7 +3649,7 @@ msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "Seznam razpoložljivih sinteznih omrežij za izbiro inštrumenta MIDI"
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3665,7 +3665,7 @@ msgstr "Seznam dostopnih sinteznih omrežij za izbiro inštrumenta sledi"
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Seznam razpoložljivih sinteznih signalov za uporabo kot vhod vodila"
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
 
@@ -3772,7 +3772,11 @@ msgstr "Nalaganje ..."
 msgid "Location"
 msgstr "Mesto"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 msgid "Looping"
 msgstr "Zankanje"
 
@@ -3819,7 +3823,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 msgid "MIDI Instrument"
 msgstr "Instrumenti MIDI"
@@ -3869,7 +3873,7 @@ msgid "Manual trigger for the drum"
 msgstr "Ročni sprožilec za boben"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 msgid "Master"
 msgstr "Glavni predmet"
 
@@ -3897,15 +3901,15 @@ msgstr "Glavno [plavajoč]"
 msgid "Max Voices"
 msgstr "Največ glasov"
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Največje število glasov za hkratno predvajanje"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr "Izmeri imenovalec, mora biti potenca števila 2"
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr "Izberi števec"
 
@@ -3967,7 +3971,7 @@ msgstr "Barva srednje vrstice"
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr "Midi kanal, dodeljen tej sledi, 0 uporablja notranji kanal za sled"
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi kanal dodeljen tej sledi, 0 uporablja zasebni kanal na sled"
 
@@ -3992,7 +3996,7 @@ msgstr "Mešani zvočni izhod"
 msgid "Mixer"
 msgstr "Mešalnik"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr "Vodila mešalnika povezana z izhodom sledi"
 
@@ -4000,7 +4004,7 @@ msgstr "Vodila mešalnika povezana z izhodom sledi"
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Vodila mešalnika uporabljena kot izhod za signale sinteze"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr "Mešalna vodila uporabljena kot izhod za to sled"
 
@@ -4163,7 +4167,7 @@ msgid "Muted"
 msgstr "Nemo"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 msgid "Name"
 msgstr "Ime"
 
@@ -4387,7 +4391,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Opombe in podrobnosti o tem ciklu izdaje"
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4409,11 +4413,11 @@ msgstr "Število vrstic"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Število oktav na katere vpliva eksponentna modulacija frekvence"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Number of ticks per quarter note"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr "Števec"
 
@@ -4539,7 +4543,7 @@ msgstr "Izvor:   %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 msgid "Orphan Parts"
 msgstr "Osiroteli deli"
 
@@ -4614,7 +4618,7 @@ msgstr "Izhodna vrata %u"
 msgid "Output Signal Monitor"
 msgstr "Nadzor izhodnih signalov"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 msgid "Output Signals"
 msgstr "Izhodni signali"
 
@@ -4856,7 +4860,7 @@ msgstr "Vzet položaj"
 msgid "Positive Value Color"
 msgstr "Barva pozitivne vrednosti"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 msgid "Postprocessor"
 msgstr ""
 
@@ -5797,7 +5801,7 @@ msgstr "Solo"
 msgid "Solo: mute all other busses"
 msgstr "Solo: Utišanje vseh ostalih vodil"
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "_Skladba"
@@ -6052,7 +6056,7 @@ msgstr "Modul sinteze je trenutno zaposlen"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Modul sinteze je trenutno zaposlen"
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Sintezno omrežje ali val za uporabo kot inštrument na tej sledi"
 
@@ -6064,7 +6068,7 @@ msgstr "Sintezno omrežje za uporabo kot inštrument MIDI"
 msgid "Synthesis network to be used as instrument"
 msgstr "Omrežje sinteze za uporabo kot inštrument"
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
@@ -6377,7 +6381,7 @@ msgstr "Prednost niti od -20 (visoka) do +19 (nizka)"
 msgid "Threshold [dB]"
 msgstr "Prag [dB]"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 #, fuzzy
 msgid "Ticks"
 msgstr "Preskoči na vrednosti"
@@ -6404,7 +6408,7 @@ msgstr "Vnos časa"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 #, fuzzy
 msgid "Timing"
 msgstr "<b>Način časa:</b>"
@@ -6566,7 +6570,7 @@ msgstr "Nefiltriran zvočni signal"
 msgid "Unfiltered Input"
 msgstr "Nefiltriran vhod"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 msgid "Unique name of this object"
 msgstr "Edinstveno ime tega predmeta"
 

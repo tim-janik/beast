@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 03:42+0200\n"
 "PO-Revision-Date: 2005-02-23 10:04+0200\n"
 "Last-Translator: Iassen Pramatarov <turin@fsa-bg.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -1133,7 +1133,7 @@ msgstr ""
 msgid "Available Outputs"
 msgstr "Налични изходи"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr ""
 
@@ -1142,7 +1142,7 @@ msgstr ""
 msgid "Available Presets"
 msgstr "Налични входове"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "Налични входове"
@@ -1151,7 +1151,7 @@ msgstr "Налични входове"
 msgid "Available Synthesizers"
 msgstr "Налични синтезатори"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 msgid "Available Waves"
 msgstr ""
 
@@ -1466,8 +1466,8 @@ msgstr ""
 msgid "Color Entry"
 msgstr ""
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "Коментар"
 
@@ -2147,7 +2147,7 @@ msgstr "Изтриване на избраната писта"
 msgid "Delete the currently selected wave"
 msgstr ""
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr ""
 
@@ -2841,7 +2841,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3559,7 +3559,7 @@ msgstr ""
 msgid "List of available sound font presets to choose as track instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 msgid "List of available sound fonts to choose track instrument from"
 msgstr ""
 
@@ -3567,7 +3567,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3583,7 +3583,7 @@ msgstr ""
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
@@ -3688,7 +3688,11 @@ msgstr "Зареждане..."
 msgid "Location"
 msgstr "Местоположение"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 msgid "Looping"
 msgstr ""
 
@@ -3735,7 +3739,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 msgid "MIDI Instrument"
 msgstr "MIDI инструмент"
@@ -3784,7 +3788,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 msgid "Master"
 msgstr ""
 
@@ -3812,15 +3816,15 @@ msgstr ""
 msgid "Max Voices"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr ""
 
@@ -3882,7 +3886,7 @@ msgstr ""
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
@@ -3907,7 +3911,7 @@ msgstr "Смесен звуков изход"
 msgid "Mixer"
 msgstr "Смесител"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr ""
 
@@ -3915,7 +3919,7 @@ msgstr ""
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4073,7 +4077,7 @@ msgid "Muted"
 msgstr "Заглушено"
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 msgid "Name"
 msgstr "Име"
 
@@ -4290,7 +4294,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Бележки и подробности за текущата версия"
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4312,11 +4316,11 @@ msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Брой октави, които да се повлияят от експоненциалната честотна модулация"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Number of ticks per quarter note"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr ""
 
@@ -4442,7 +4446,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 msgid "Orphan Parts"
 msgstr "Несвързани откъси"
 
@@ -4514,7 +4518,7 @@ msgstr "Изходен порт %u"
 msgid "Output Signal Monitor"
 msgstr "Наблюдение на изходните сигнали"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 msgid "Output Signals"
 msgstr "Изходни сигнали"
 
@@ -4755,7 +4759,7 @@ msgstr ""
 msgid "Positive Value Color"
 msgstr "Цвят за положителна стойност"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 msgid "Postprocessor"
 msgstr ""
 
@@ -5689,7 +5693,7 @@ msgstr ""
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "_Песен"
@@ -5939,7 +5943,7 @@ msgstr "Ситнезаторният модул в момента е зает"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Ситнезаторният модул в момента е зает"
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
@@ -5951,7 +5955,7 @@ msgstr ""
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
@@ -6246,7 +6250,7 @@ msgstr ""
 msgid "Threshold [dB]"
 msgstr "Праг [dB]"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 msgid "Ticks"
 msgstr ""
 
@@ -6272,7 +6276,7 @@ msgstr ""
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 msgid "Timing"
 msgstr ""
 
@@ -6433,7 +6437,7 @@ msgstr "Нефилтриран звуков сигнал"
 msgid "Unfiltered Input"
 msgstr "Нефилтриран вход"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 msgid "Unique name of this object"
 msgstr ""
 
