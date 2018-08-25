@@ -56,7 +56,7 @@ TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
-#EXTRA_DIST += LINGUAS POTIGNORE potscan.list POTSKIP $(POFILES) messages.po
+#EXTRA_DIST += LINGUAS POTIGNORE poscan.list POTSKIP $(POFILES) messages.po
 #EXTRA_DIST += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
 #EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk $(INTLFIXDIR)/intlfix-las.awk
 CLEANFILES  += $(GMOFILES)
@@ -99,7 +99,7 @@ uninstall:
 	  rm -f "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ; \
 	done ; test "$$c" = 0 || echo
 
-# check for translatable files missing from potscan.list
+# check for translatable files missing from poscan.list
 check-local: check-unlisted
 check-unlisted:
 	@echo "Check top source directory for missing translations..."
@@ -187,7 +187,7 @@ CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
 POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/'
 
-potscan.list: $(GITSTAMP)
+poscan.list: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
 	$(Q) grep -E $(POTSCAN_MATCH) $@.tmp1 > $@.tmp2
@@ -205,10 +205,10 @@ XGETTEXT_TMPDIR = $(XGETTEXT) "--package-name=$(PACKAGE)" "--package-version=$(V
 		  --foreign-user --from-code=UTF-8 -D $(TMPDIR)/ -D $(abs_top_srcdir) \
 		  $(patsubst %, --keyword=%, $(KEYWORDS)) $(patsubst %, --flag=%,    $(TEXTFLAGS))
 
-$(srcdir)/messages.po check-messages.po: potscan.list
+$(srcdir)/messages.po check-messages.po: poscan.list
 	$(AM_V_GEN)
 	$(Q) rm -f potscan.all potscan.tmp && rm -rf $(TMPDIR)/
-	$(Q) cp potscan.list potscan.all && mkdir -p $(TMPDIR)/
+	$(Q) cp poscan.list potscan.all && mkdir -p $(TMPDIR)/
 	$(Q) # process .idl files as C++
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.idl$$')
 	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po --force-po -L C++
@@ -246,7 +246,7 @@ unlisted:
 	$(Q) (cd $(top_srcdir) && set -o pipefail \
 	&& find . $(FIND_NOHIDDEN) -type f $(patsubst %, ! -path \*/%, $(IGNORE_UNLISTED)) -print) \
 	| sed 's,^\./,,' \
-	| grep -vxF -f $(srcdir)/potscan.list -f $(srcdir)/POTSKIP \
+	| grep -vxF -f $(srcdir)/poscan.list -f $(srcdir)/POTSKIP \
 	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
 	@ # scanning file types...
 	$(foreach TYPE, $(POSRC_TYPES), \
@@ -255,7 +255,7 @@ unlisted:
 	@ # report...
 	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
 	@if test -e unlisted ; then \
-	  echo "Missing `wc -l <unlisted` untranslated file(s) from potscan.list, see:"; head -n7 -v "`pwd`/unlisted" ; \
+	  echo "Missing `wc -l <unlisted` untranslated file(s) from poscan.list, see:"; head -n7 -v "`pwd`/unlisted" ; \
 	else echo "Done, all files listed." ; fi
 DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
