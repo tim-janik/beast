@@ -30,14 +30,6 @@ POSRC_TYPES          += SCM
 POSRC_SCM_PATTERN     = '\.scm\(.in\)\?$$'
 POSRC_SCM_FILTER      = sed -f $(INTLFIXDIR)/intlfix-scm.sed
 #
-POSRC_TYPES          += KEYS
-POSRC_KEYS_PATTERN    = '\.keys\(.in\)\?$$'
-POSRC_KEYS_FILTER     = gawk -f $(INTLFIXDIR)/intlfix-las.awk
-#
-POSRC_TYPES          += DESKTOP
-POSRC_DESKTOP_PATTERN = '\.desktop\(.in\)\?$$'
-POSRC_DESKTOP_FILTER  = gawk -f $(INTLFIXDIR)/intlfix-las.awk
-#
 POSRC_TYPES          += IDL
 POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
 POSRC_IDL_FILTER      =
@@ -58,7 +50,7 @@ POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
 #EXTRA_DIST += LINGUAS POTIGNORE poscan.list POTSKIP $(POFILES) messages.po
 #EXTRA_DIST += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
-#EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk $(INTLFIXDIR)/intlfix-las.awk
+#EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
@@ -224,7 +216,7 @@ $(srcdir)/messages.po check-messages.po: poscan.list
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(keys|desktop)(\.in)?$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
-	    gawk -f $(INTLFIXDIR)/intlfix-las.awk $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	    gawk -f ./xt9n-las.awk $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
 	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L C
 	$(Q) # extract .vue files and parse as JS
