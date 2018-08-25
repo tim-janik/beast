@@ -3,6 +3,8 @@ include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
 POSRC_TYPES =
+INGIT_CLEANFILES =
+CLEANFILES += $(INGIT_CLEANFILES)
 
 # Verbosity macros
 Qignore = $(if $(findstring 1, $(V)) ,, : )
@@ -22,8 +24,7 @@ TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
-#EXTRA_DIST += LINGUAS poscan.list $(POFILES) messages.po
-#EXTRA_DIST += $(INTLFIXDIR)/intltool-merge
+#EXTRA_DIST += LINGUAS $(POFILES) messages.po
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
@@ -127,13 +128,14 @@ CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
 POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 
+EXTRA_DIST += poscan.list	# needed for tarball builds
 poscan.list: $(GITSTAMP)
 	$(AM_V_GEN)
 	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
 	$(Q) grep -E $(POTSCAN_MATCH) $@.tmp1 > $@.tmp2
 	$(Q) grep -vE $(POTSCAN_SKIP) $@.tmp2 > $@.tmp3
 	$(Q) mv $@.tmp3 $@ && rm -f $@.tmp1 $@.tmp2
-EXTRA_DIST += poscan.list	# needed for tarball builds
+INGIT_CLEANFILES += @INGIT@ poscan.list
 
 # (split_lines, INPUTFILE, OUTPUTFILE, pattern)
 split_lines = test -e $(1) -a -w . && { \
