@@ -23,18 +23,12 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
-INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
 #EXTRA_DIST += LINGUAS $(POFILES) messages.po
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
-POTLIST      = $(abs_builddir)/POTLIST
-TMPLIST      = $(abs_builddir)/POTLIST.tmp
 TMPDIR       = tmp-cpots
-I18NPATTERN  = '\b[NUQ]\?_[[:space:]]*([[:space:]]*"'
-INLTFIXPATTERN = '\b__INTLFIX__\b.*'$(I18NPATTERN)
 LOCALEDIR    = $(beastlocaledir)
-NEWLINE	    := $(shell echo)
 
 all: $(GMOFILES)
 
@@ -123,8 +117,6 @@ check-update-po: Makefile $(srcdir)/messages.po
 .PHONY: check-update-po
 CLEANFILES += check-messages.po
 
-CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
-
 POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
 POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 
@@ -182,6 +174,7 @@ $(srcdir)/messages.po check-messages.po: poscan.list
 	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o messages.po -j
 	$(Q) # cleanup
 	$(Q) rm -rf $(TMPDIR)/ && rm -f potscan.all
+CLEANFILES += $(TMPDIR)/
 
 # clean INTLMERGE leftovers
 CLEANFILES += intlmerge.tmpcache
