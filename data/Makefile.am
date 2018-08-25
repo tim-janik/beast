@@ -31,16 +31,13 @@ beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 CLEANFILES += beast-audio-x-bse.png
 
 # intltool-merge translation rules
-PODEPS          = $(wildcard $(top_srcdir)/po/*.po)
-INTLMERGE_CACHE = $(top_builddir)/po/intlmerge.tmpcache
-$(INTLMERGE_CACHE): $(PODEPS)
-	LC_ALL=C $(INTLMERGE) -d -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po /dev/null /dev/null
+	LC_ALL=C $(INTLMERGE) -d -u $(top_srcdir)/po /dev/null /dev/null
 %.desktop: %.desktop.in	$(INTLMERGE_CACHE)
-	LC_ALL=C $(INTLMERGE) -d -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+	LC_ALL=C $(INTLMERGE) -d -u $(top_srcdir)/po $< $@
 %.xml: %.xml.in		$(INTLMERGE_CACHE)
-	LC_ALL=C $(INTLMERGE) -x -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+	LC_ALL=C $(INTLMERGE) -x -u $(top_srcdir)/po $< $@
 %.keys: %.keys.in	$(INTLMERGE_CACHE)
-	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+	LC_ALL=C $(INTLMERGE) -k -u $(top_srcdir)/po $< $@
 
 # generate and install .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
 dotdesktopdir = $(beastsharedir)/applications
