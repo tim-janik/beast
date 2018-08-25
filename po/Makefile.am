@@ -13,10 +13,12 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # PO_LINGUAS  : command line override for ALL_LINGUAS (subset)
 # GMOFILES    : .gmo files for all TRANSLATIONS (GNU .mo)
 # POFILES     : .po files for all TRANSLATIONS
+#
 # Files:
 # POTSKIP     : list of translatable project sources to skip
 # POTIGNORE   : ERE patterns of project sources to ignore
 # LINGUAS     : list of supported languages
+# poscan.list : list of translatable files tracked in git
 
 # Translatable file types
 #
@@ -146,7 +148,7 @@ CLEANFILES += check-messages.po
 CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 
 POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
-POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/'
+POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 
 poscan.list: $(GITSTAMP)
 	$(AM_V_GEN)
@@ -154,6 +156,7 @@ poscan.list: $(GITSTAMP)
 	$(Q) grep -E $(POTSCAN_MATCH) $@.tmp1 > $@.tmp2
 	$(Q) grep -vE $(POTSCAN_SKIP) $@.tmp2 > $@.tmp3
 	$(Q) mv $@.tmp3 $@ && rm -f $@.tmp1 $@.tmp2
+EXTRA_DIST += poscan.list	# needed for tarball builds
 
 # (split_lines, INPUTFILE, OUTPUTFILE, pattern)
 split_lines = test -e $(1) -a -w . && { \
