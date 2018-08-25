@@ -20,22 +20,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # LINGUAS     : list of supported languages
 # poscan.list : list of translatable files tracked in git
 
-# Translatable file types
-#
-POSRC_TYPES          += IDL
-POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
-POSRC_IDL_FILTER      =
-#
-POSRC_TYPES          += PROC
-POSRC_PROC_NAME	      = Procedure Files
-POSRC_PROC_PATTERN    = '\.proc\(.in\)\?$$'
-POSRC_PROC_FILTER     =
-#
-POSRC_TYPES          += CCH
-POSRC_CCH_NAME	      = C/C++ Files
-POSRC_CCH_PATTERN     = '\.[hcHC][hcHC]\?\(.in\)\?$$'
-POSRC_CCH_FILTER      =
-
 TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
