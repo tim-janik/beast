@@ -25,10 +25,6 @@ POSRC_TYPES          += XML
 POSRC_XML_PATTERN     = '\.xml\(.in\)\?$$'
 POSRC_XML_FILTER      = gawk -f $(INTLFIXDIR)/intlfix-xml.awk
 #
-POSRC_TYPES          += SCM
-POSRC_SCM_PATTERN     = '\.scm\(.in\)\?$$'
-POSRC_SCM_FILTER      = sed -f $(INTLFIXDIR)/intlfix-scm.sed
-#
 POSRC_TYPES          += IDL
 POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
 POSRC_IDL_FILTER      =
@@ -48,7 +44,7 @@ GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
 INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
 #EXTRA_DIST += LINGUAS POTIGNORE poscan.list POTSKIP $(POFILES) messages.po
-#EXTRA_DIST += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
+#EXTRA_DIST += $(INTLFIXDIR)/intltool-merge
 #EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
@@ -89,23 +85,6 @@ uninstall:
 	  printf "%-10s" "$$lang" ; \
 	  rm -f "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ; \
 	done ; test "$$c" = 0 || echo
-
-# check SCM i18n string extraction
-check-local: check-scm-strings
-.PHONY: check-scm-strings
-check-scm-strings:
-	@echo "Check po files missing translation strings..."
-	@for lang in $(TRANSLATIONS); do	\
-	  file=$(srcdir)/$$lang.po ;		\
-	  echo $(ECHO_N) "  $$lang.po: " ;	\
-	  for pattern in $(CHECK_SCM_PATS) ; do	\
-	    grep -Fq $$pattern $$file || {	\
-	      echo "$$file: misses strings from: $$pattern" ; exit 1 ; } \
-	  done ;				\
-	  echo "OK" ;				\
-	done
-CHECK_SCM_PATS=$(strip					\
-)
 
 shdie = { echo "ERROR:" $(1) >&2 ; exit $(or $(2), 127) ; }
 
