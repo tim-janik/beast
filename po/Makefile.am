@@ -14,7 +14,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # GMOFILES    : .gmo files for all TRANSLATIONS (GNU .mo)
 # POFILES     : .po files for all TRANSLATIONS
 # Files:
-# POTSCAN     : list of project sources with translations
 # POTSKIP     : list of translatable project sources to skip
 # POTIGNORE   : ERE patterns of project sources to ignore
 # LINGUAS     : list of supported languages
