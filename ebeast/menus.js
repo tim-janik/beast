@@ -2,19 +2,19 @@
 
 // == Application Menu ==
 const file_menu = [
-  { label: T('&Open...'),		role: 'open-file',		accelerator: 'Ctrl+O', },
-  { label: T('&Quit'),			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
+  { label: _('&Open...'),		role: 'open-file',		accelerator: 'Ctrl+O', },
+  { label: _('&Quit'),			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
 ];
 const view_menu = [
-  { label: T('Toggle &Fullscreen'), 	 role: 'toggle-fulscreen', 	accelerator: 'F11', },
+  { label: _('Toggle &Fullscreen'), 	 role: 'toggle-fulscreen', 	accelerator: 'F11', },
 ];
 const help_menu = [
-  { label: T('&About...'),		role: 'about-dialog',		},
+  { label: _('&About...'),		role: 'about-dialog',		},
 ];
 const menubar_menus = [
-  { label: T('&File'), 			submenu: file_menu,		accelerator: 'Alt+F' },
-  { label: T('&View'), 			submenu: view_menu,		accelerator: 'Alt+W' },
-  { label: T('&Help'), 			submenu: help_menu,		accelerator: 'Alt+H' },
+  { label: _('&File'), 			submenu: file_menu,		accelerator: 'Alt+F' },
+  { label: _('&View'), 			submenu: view_menu,		accelerator: 'Alt+W' },
+  { label: _('&Help'), 			submenu: help_menu,		accelerator: 'Alt+H' },
 ];
 
 // add 'click' handlers to menu templates

@@ -53,4 +53,6 @@ module.exports = {
     },
   },
 };
+// i18n example
+if (0) { _("Audio"); }
 </script>
