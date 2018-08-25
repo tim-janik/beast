@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -89,6 +89,12 @@ msgstr "  zvolte různé typy událostí (řídicí signály, spojité ovladače
 msgid "  selects one of 3 predefined colors"
 msgstr "  výběr jedné ze 3 předdefinovaných barev"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -106,6 +112,36 @@ msgstr "%s: automatizace z ovládacího prvku MIDI: %s"
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: automatizace z ovládacího prvku MIDI: %s (kanál MIDI: %d)"
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "O _aplikaci..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_Soubor"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "Nápo_věda"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_Otevřít..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "U_končit"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "_Zobrazit"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -1001,7 +1037,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "Zeslabit úroveň řídicího vstupu 2"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "Zvuk"
 
@@ -1567,7 +1604,7 @@ msgid "Compressed audio output 2"
 msgstr "Výstup komprimovaného zvuku 2"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "nastavit"
 
@@ -2573,7 +2610,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "Zadejte umístění dokumentu nebo souboru"
 
@@ -2897,7 +2934,7 @@ msgid "Filters/IIR Filter"
 msgstr "/Filtry/Filtr basů"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "Hledat v aktuálním dokumentu"
 
@@ -3102,17 +3139,17 @@ msgid "Generic Keys"
 msgstr "Obecné klávesy"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Jít o stranu zpět"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Jít o stranu vpřed"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "Jít do indexu prohlížeče"
 
@@ -3801,7 +3838,7 @@ msgid "Loading..."
 msgstr "Načítám..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Umístění"
 
@@ -3826,7 +3863,7 @@ msgid "Lost Part"
 msgstr "Ztracený part"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Snížit"
 
@@ -3975,14 +4012,11 @@ msgid "Message Type"
 msgstr "Typ zprávy"
 
 #: beast-gtk/bstusermessage.cc:301
-#, c-format
+#, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "Zpráva byla zopakována %u-krát"
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr "Zpráva byla zopakována %u-krát"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "Zpráva byla zopakována %u-krát"
+msgstr[1] "Zpráva byla zopakována %u-krát"
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5114,7 +5148,7 @@ msgid "RC Files"
 msgstr "Soubory RC"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "Zvýšit"
 
@@ -5179,7 +5213,7 @@ msgid "Release counter"
 msgstr "Uvolnit čítač"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Znovu načíst aktuální stranu"
 
@@ -5220,13 +5254,13 @@ msgstr "Přejmenovat"
 msgid "Rename parts"
 msgstr "Přejmenovat party"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Opakovat"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "Opakovat přehrávání mezi hranicemi smyčky"
 
@@ -6428,6 +6462,10 @@ msgstr "Pole pro zadání času"
 msgid "Timing"
 msgstr "Časování"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "Přepínací tlačítko"
@@ -6867,7 +6905,7 @@ msgid "_Add"
 msgstr "_Přidat"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "_Použít"
 
@@ -6877,7 +6915,7 @@ msgid "_Audio Sources"
 msgstr "_Zdroje zvuku"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "_Zpět"
 
@@ -6887,7 +6925,7 @@ msgid "_Beast Website..."
 msgstr "_WWW stránky BEAST..."
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "_Zrušit"
 
@@ -6935,12 +6973,12 @@ msgid "_Filters"
 msgstr "_Filtry"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "_Hledat"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "_Vpřed"
 
@@ -6954,7 +6992,7 @@ msgid "_Import MIDI..."
 msgstr "_Importovat MIDI..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "_Index"
 
@@ -7025,7 +7063,7 @@ msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "_Obnovit"
 
@@ -7613,6 +7651,9 @@ msgstr "nemohu přidat část vlny ze souboru \"%s\": %s"
 # FIXME: s/Voixes/Voices/
 #~ msgid "Max Voixes"
 #~ msgstr "Max hlasů"
+
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "Zpráva byla zopakována %u-krát"
 
 # Různá zpráva :-)
 #~ msgid "Miscellaneous Message"

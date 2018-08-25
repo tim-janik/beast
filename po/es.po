@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2010-08-24 20:42+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
@@ -93,6 +93,12 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr "  selecciona uno de 3 colores predefinidos"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -110,6 +116,36 @@ msgstr "%s: automatización desde control MIDI: %s"
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: automatización desde control MIDI: %s (canal MIDI: %d)"
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "_Acerca de…"
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_Archivo"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "Ay_uda"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_Abrir…"
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "_Salir"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "_Ver"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -1050,7 +1086,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "Atenúa el nivel de la entrada de control 2"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "Sonido"
 
@@ -1623,7 +1660,7 @@ msgid "Compressed audio output 2"
 msgstr "Salida de sonido comprimido 2"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "Configurar"
 
@@ -2623,7 +2660,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "Introduzca el documento o la ubicación del archivo"
 
@@ -2945,7 +2982,7 @@ msgid "Filters/IIR Filter"
 msgstr "/Filtros/Filtro de bajos"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "Buscar en el documento actual"
 
@@ -3153,17 +3190,17 @@ msgid "Generic Keys"
 msgstr "Teclas genéricas"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Retroceder una página"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Adelantar una página"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "Ir al índice del navegador"
 
@@ -3866,7 +3903,7 @@ msgid "Loading..."
 msgstr "Cargando…"
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Ubicación"
 
@@ -3891,7 +3928,7 @@ msgid "Lost Part"
 msgstr "Parte perdida"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Bajar"
 
@@ -4041,14 +4078,11 @@ msgid "Message Type"
 msgstr "Tipo de mensaje"
 
 #: beast-gtk/bstusermessage.cc:301
-#, c-format
+#, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "El mensaje ha sido repetido %u vez"
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr "El mensaje ha sido repetido %u veces"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "El mensaje ha sido repetido %u vez"
+msgstr[1] "El mensaje ha sido repetido %u vez"
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5203,7 +5237,7 @@ msgid "RC Files"
 msgstr "Archivos RC"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "Elevar"
 
@@ -5267,7 +5301,7 @@ msgid "Release counter"
 msgstr "Contador de liberación"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Recargar la página actual"
 
@@ -5308,13 +5342,13 @@ msgstr "Renombrar"
 msgid "Rename parts"
 msgstr "Renombrar partes"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Repetir"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "Repetir reproducción entre los puntos del bucle"
 
@@ -6546,6 +6580,10 @@ msgstr "Entrada de tiempo"
 msgid "Timing"
 msgstr "Sincronización"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "Botón de activación"
@@ -6983,7 +7021,7 @@ msgid "_Add"
 msgstr "_Añadir"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "_Aplicar"
 
@@ -6993,7 +7031,7 @@ msgid "_Audio Sources"
 msgstr "Fuentes de _sonido"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "_Atrás"
 
@@ -7002,7 +7040,7 @@ msgid "_Beast Website..."
 msgstr "_Sitio web de BEAST…"
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -7050,12 +7088,12 @@ msgid "_Filters"
 msgstr "_Filtros"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "_Buscar"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "_Adelante"
 
@@ -7069,7 +7107,7 @@ msgid "_Import MIDI..."
 msgstr "_Importar MIDI…"
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "_Índice"
 
@@ -7140,7 +7178,7 @@ msgid "_Release Notes..."
 msgstr "Notas de la _publicación…"
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "_Recargar"
 
@@ -7668,6 +7706,9 @@ msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
 
 #~ msgid "Max Voixes"
 #~ msgstr "Máximas voces"
+
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "El mensaje ha sido repetido %u veces"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notación musical correspondiente a la frecuencia del oscilador"

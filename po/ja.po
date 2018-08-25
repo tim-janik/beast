@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -81,6 +81,12 @@ msgstr "  様々なイベントタイプ(コントロール、連続コントロ
 msgid "  selects one of 3 predefined colors"
 msgstr "  定義済みの三色の内一つを選択"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -98,6 +104,36 @@ msgstr "%s: MIDI コントロールからの自動化: %s"
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: MIDI コントロールからの自動化: %s (MIDI チャネル: %d)"
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "情報(_A)..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "ファイル(_F)"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "ヘルプ(_H)"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "開く(_O)..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "終了(_Q)"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "ビュー(_V)"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -945,7 +981,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "コントロール入力 2 のレベルを下げる"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "オーディオ"
 
@@ -1513,7 +1550,7 @@ msgid "Compressed audio output 2"
 msgstr "圧縮されたオーディオ出力"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "設定"
 
@@ -2512,7 +2549,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "ドキュメントかファイル位置を入力"
 
@@ -2834,7 +2871,7 @@ msgid "Filters/IIR Filter"
 msgstr "/フィルター/バスフィルター"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "現在のドキュメント内で検索"
 
@@ -3039,17 +3076,17 @@ msgid "Generic Keys"
 msgstr "一般キー"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "一ページ戻る"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "一ページ進む"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "ブラウザインデクスへ移動"
 
@@ -3749,7 +3786,7 @@ msgid "Loading..."
 msgstr "読み込み中..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "場所"
 
@@ -3774,7 +3811,7 @@ msgid "Lost Part"
 msgstr "パートがありません"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "下へ"
 
@@ -3927,14 +3964,11 @@ msgid "Message Type"
 msgstr "メッセージタイプ"
 
 #: beast-gtk/bstusermessage.cc:301
-#, c-format
+#, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "メッセージは %u 回繰り返されました"
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr "メッセージは %u 回繰り返されました"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "メッセージは %u 回繰り返されました"
+msgstr[1] "メッセージは %u 回繰り返されました"
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5061,7 +5095,7 @@ msgid "RC Files"
 msgstr "初期化ファイル"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "上へ"
 
@@ -5127,7 +5161,7 @@ msgid "Release counter"
 msgstr "リリースカウンタ"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "現在のページを再読み込み"
 
@@ -5168,13 +5202,13 @@ msgstr "名前の変更"
 msgid "Rename parts"
 msgstr "パートの名前を変更"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "繰り返し"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "ループ点なしに再生を繰り返し"
 
@@ -6382,6 +6416,10 @@ msgstr "時間エントリ"
 msgid "Timing"
 msgstr "タイミング"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "切り替えボタン"
@@ -6822,7 +6860,7 @@ msgid "_Add"
 msgstr "追加(_A)"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "適用(_A)"
 
@@ -6832,7 +6870,7 @@ msgid "_Audio Sources"
 msgstr "オーティオソース(_A)"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "戻る(_B)"
 
@@ -6842,7 +6880,7 @@ msgid "_Beast Website..."
 msgstr "BEAST ウェブ(_B)..."
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
@@ -6890,12 +6928,12 @@ msgid "_Filters"
 msgstr "フィルタ(_F)"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "検索(_F)"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "進む(_F)"
 
@@ -6909,7 +6947,7 @@ msgid "_Import MIDI..."
 msgstr "MIDI をインポート(_I)..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "インデクス(_I)"
 
@@ -6981,7 +7019,7 @@ msgid "_Release Notes..."
 msgstr "リリースノート(_R)..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "再読み込み(_R)"
 
@@ -7518,6 +7556,9 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
 #~ msgid "Max Voixes"
 #~ msgstr "最大音数"
+
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "メッセージは %u 回繰り返されました"
 
 #~ msgid "Miscellaneous Message"
 #~ msgstr "その他のメッセージ"

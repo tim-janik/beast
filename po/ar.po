@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -82,6 +82,12 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr ""
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, fuzzy, c-format
@@ -99,6 +105,36 @@ msgstr ""
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr ""
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "_حول..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_ملف"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "م_ساعدة"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_فتح..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "إ_نهي"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "_اعرض"
 
 #: beast-gtk/bstcanvassource.cc:969
 #, fuzzy
@@ -988,7 +1024,8 @@ msgid "Attenuate the level of control input 2"
 msgstr ""
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 #, fuzzy
 msgid "Audio"
 msgstr "الصوت"
@@ -1597,7 +1634,7 @@ msgid "Compressed audio output 2"
 msgstr "جهاز خرج الصوت"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 #, fuzzy
 msgid "Configure"
 msgstr "إ_عداد"
@@ -2683,7 +2720,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr ""
 
@@ -3027,7 +3064,7 @@ msgid "Filters/IIR Filter"
 msgstr "تسجيل إجراءات المصفاة"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 #, fuzzy
 msgid "Find in current document"
 msgstr "البحث عن كلمة أو جملة في المستند"
@@ -3254,19 +3291,19 @@ msgid "Generic Keys"
 msgstr "<b>مفاتيح التحول</b>"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 #, fuzzy
 msgid "Go back one page"
 msgstr "إذهب إلى الصفحة التالية"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 #, fuzzy
 msgid "Go forward one page"
 msgstr "إذهب إلى الصفحة التالية"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 #, fuzzy
 msgid "Go to browser index"
 msgstr "إذهب إلى موقع محدد"
@@ -4033,7 +4070,7 @@ msgid "Loading..."
 msgstr "تحميل..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 #, fuzzy
 msgid "Location"
 msgstr "الموقع"
@@ -4063,7 +4100,7 @@ msgid "Lost Part"
 msgstr "ليس جزءا من الشهادة"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 #, fuzzy
 msgid "Lower"
 msgstr "أدنى"
@@ -4229,12 +4266,13 @@ msgstr "نوع الرسالة"
 #: beast-gtk/bstusermessage.cc:301
 #, c-format
 msgid "Message has been repeated %u time"
-msgstr ""
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr ""
+msgid_plural "Message has been repeated %u times"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #: beast-gtk/bstpreferences.cc:66
 #, fuzzy
@@ -5470,7 +5508,7 @@ msgid "RC Files"
 msgstr "كل الملفّات"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr ""
 
@@ -5543,7 +5581,7 @@ msgid "Release counter"
 msgstr "إقتراح معاكس"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 #, fuzzy
 msgid "Reload current page"
 msgstr "طبع الصفحة الحالية"
@@ -5592,14 +5630,14 @@ msgstr "اعادة التسمية"
 msgid "Rename parts"
 msgstr "<b>الأجزاء الشفّافة</b>"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 #, fuzzy
 msgid "Repeat"
 msgstr "إعادة"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr ""
 
@@ -6889,6 +6927,10 @@ msgstr "إدخال مباشر"
 msgid "Timing"
 msgstr ""
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 #, fuzzy
 msgid "Toggle Button"
@@ -7383,7 +7425,7 @@ msgid "_Add"
 msgstr "إ_ضافة"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 #, fuzzy
 msgid "_Apply"
 msgstr "_طبّق"
@@ -7395,7 +7437,7 @@ msgid "_Audio Sources"
 msgstr "مُلحق الصوت"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 #, fuzzy
 msgid "_Back"
 msgstr "إلى ال_خلف"
@@ -7406,7 +7448,7 @@ msgid "_Beast Website..."
 msgstr "موقع عمود المكتب (Deskbar)"
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 #, fuzzy
 msgid "_Cancel"
 msgstr "إل_غاء"
@@ -7460,13 +7502,13 @@ msgid "_Filters"
 msgstr "مصفات"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 #, fuzzy
 msgid "_Find"
 msgstr "_إيجاد"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 #, fuzzy
 msgid "_Forward"
 msgstr "_حوّل"
@@ -7483,7 +7525,7 @@ msgid "_Import MIDI..."
 msgstr "استيراد مؤشّرات"
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 #, fuzzy
 msgid "_Index"
 msgstr "_فهرس"
@@ -7566,7 +7608,7 @@ msgid "_Release Notes..."
 msgstr "مذكرات لاصقة"
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 #, fuzzy
 msgid "_Reload"
 msgstr "إ_عادة التحميل"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -161,6 +161,12 @@ msgstr "Guhitamo Icyabaye Amagenzura Gikomeza"
 msgid "  selects one of 3 predefined colors"
 msgstr "Bya 3. Amabara"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, fuzzy, c-format
@@ -178,6 +184,43 @@ msgstr "%s:Bivuye Igenzura"
 #, fuzzy, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s:Bivuye Igenzura"
+
+# offmgr/source\offapp\intro\intro.hrc:TEXT_DEFAULTABOUT.text
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "Ibyerekeye"
+
+# sc/source\ui\src\globstr.src:RID_GLOBSTR.STR_HFCMD_FILE.text
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "IDOSIYE"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "Ifashayobora"
+
+# sfx2/source\appl\minbox.src:RID_MAIL_INBOX.BTN_MAILINBOX_OPEN.text
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "Gufungura..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "Kuvamo"
+
+# #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
+# basctl/source\basicide\basidesh.src:RID_BASICMENU.MN_VIEW.text
+# #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
+# basctl/source\basicide\basidesh.src:RID_BASICPLUGINMENU.MN_PLVIEW.text
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "Kureba"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -1135,7 +1178,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "i urwego Bya Igenzura Iyinjiza 2."
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr ""
 
@@ -1745,7 +1789,7 @@ msgstr "Ibisohoka 2."
 
 # sfx2/sdi\sfxslots.src:SID_CONFIG.text
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "Kugena Imiterere"
 
@@ -2855,7 +2899,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 #, fuzzy
 msgid "Enter document or file location"
 msgstr "Inyandiko Cyangwa IDOSIYE Ahantu"
@@ -3197,7 +3241,7 @@ msgid "Filters/IIR Filter"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 #, fuzzy
 msgid "Find in current document"
 msgstr "in KIGEZWEHO Inyandiko"
@@ -3483,17 +3527,17 @@ msgid "Generic Keys"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Subira ipaji imwe nyuma "
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Gya ipaji imwe imbere"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 #, fuzzy
 msgid "Go to browser index"
 msgstr "Kuri Mucukumbuzi Umubarendanga"
@@ -4265,7 +4309,7 @@ msgstr "Itangira..."
 # #-#-#-#-#  officecfg.pot (PACKAGE VERSION)  #-#-#-#-#
 # officecfg/registry\schema\org\openoffice\Office\Writer.xcs:....Wizard.Memo.Save.AutoDocName.text
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Ahantu"
 
@@ -4296,7 +4340,7 @@ msgstr ""
 # #-#-#-#-#  officecfg.pot (PACKAGE VERSION)  #-#-#-#-#
 # officecfg/registry\schema\org\openoffice\Inet.xcs:....SearchEngine.Exact.ooInetCaseMatch..2.text
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Ntoya"
 
@@ -4461,12 +4505,9 @@ msgstr ""
 #: beast-gtk/bstusermessage.cc:301
 #, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "byasubiyemo Igihe"
-
-#: beast-gtk/bstusermessage.cc:301
-#, fuzzy, c-format
-msgid "Message has been repeated %u times"
-msgstr "byasubiyemo Times"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "byasubiyemo Igihe"
+msgstr[1] "byasubiyemo Igihe"
 
 # 3825
 #: beast-gtk/bstpreferences.cc:66
@@ -5731,7 +5772,7 @@ msgid "RC Files"
 msgstr ""
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr ""
 
@@ -5807,7 +5848,7 @@ msgid "Release counter"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Ongera ufungure iyi paji"
 
@@ -5854,13 +5895,13 @@ msgid "Rename parts"
 msgstr ""
 
 # sfx2/sdi\sfxslots.src:SID_REPEAT.text
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Gusubiramo"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 #, fuzzy
 msgid "Repeat playback within loop points"
 msgstr "muri Utudomo"
@@ -7155,6 +7196,10 @@ msgstr ""
 msgid "Timing"
 msgstr "Kugena igihe"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr ""
@@ -7653,7 +7698,7 @@ msgstr "Kongeramo"
 
 # offmgr/source\offapp\dialog\fontsubs.src:RID_SVX_FONT_SUBSTITUTION.TBX_SUBSTNEWDEL.BT_SUBSTAPPLY.text
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 #, fuzzy
 msgid "_Apply"
 msgstr "Gukurikiza"
@@ -7664,7 +7709,7 @@ msgid "_Audio Sources"
 msgstr ""
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 #, fuzzy
 msgid "_Back"
 msgstr "Inyuma"
@@ -7675,7 +7720,7 @@ msgstr ""
 
 # crashrep/source\all\crashrep.lng:%CANCEL_BUTTON%.text
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 #, fuzzy
 msgid "_Cancel"
 msgstr "Kureka"
@@ -7749,14 +7794,14 @@ msgstr "Muyunguruzi"
 
 # offmgr/source\offapp\dialog\hyprlink.src:RID_SVXDLG_HYPERLINK.BTN_INET_SEARCH.text
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 #, fuzzy
 msgid "_Find"
 msgstr "Gushaka"
 
 # sch/sdi\schslots.src:SID_ROW_MOREFRONT.text
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 #, fuzzy
 msgid "_Forward"
 msgstr "Imbere"
@@ -7772,7 +7817,7 @@ msgid "_Import MIDI..."
 msgstr ""
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 #, fuzzy
 msgid "_Index"
 msgstr "Umubarendanga"
@@ -7864,7 +7909,7 @@ msgstr "Ibisobanuro by'ikiciro"
 
 # sfx2/sdi\sfxslots.src:SID_RELOAD.text
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 #, fuzzy
 msgid "_Reload"
 msgstr "Kongera Gutangiza"
@@ -8400,6 +8445,10 @@ msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
 #, fuzzy
 #~ msgid "Loop to Selection"
 #~ msgstr "Kuri"
+
+#, fuzzy
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "byasubiyemo Times"
 
 #, fuzzy
 #~ msgid "Musical notation corresponding to the oscillator frequency"

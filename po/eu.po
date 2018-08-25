@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2006-08-08 17:07+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
@@ -93,6 +93,12 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr "  haurrez definitutako 3 koloreetako bat hautatzen du"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -110,6 +116,36 @@ msgstr ""
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr ""
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "Honi _buruz..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_Fitxategia"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "_Laguntza"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_Ireki..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "Irte_n"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "I_kusi"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -951,7 +987,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "Ahuldu 2. kontrol-sarreraren maila"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "Audioa"
 
@@ -1523,7 +1560,7 @@ msgid "Compressed audio output 2"
 msgstr "Konprimitutako audio-irteera"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "Konfiguratu"
 
@@ -2529,7 +2566,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "Sartu dokumentuaren edo fitxategiaren kokalekua"
 
@@ -2854,7 +2891,7 @@ msgid "Filters/IIR Filter"
 msgstr "/Iragazkiak/Baxuen iragazkia"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "Bilatu uneko dokumentuan"
 
@@ -3061,17 +3098,17 @@ msgid "Generic Keys"
 msgstr "Tekla generikoak"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Joan orri bat atzera"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Joan orri bat aurrera"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "Joan arakatzailearen indizera"
 
@@ -3762,7 +3799,7 @@ msgid "Loading..."
 msgstr "Kargatzen..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Kokalekua"
 
@@ -3787,7 +3824,7 @@ msgid "Lost Part"
 msgstr "Galdutako zatia"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Beheratu"
 
@@ -3943,12 +3980,9 @@ msgstr "Mezu mota"
 #: beast-gtk/bstusermessage.cc:301
 #, c-format
 msgid "Message has been repeated %u time"
-msgstr ""
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr ""
+msgid_plural "Message has been repeated %u times"
+msgstr[0] ""
+msgstr[1] ""
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5079,7 +5113,7 @@ msgid "RC Files"
 msgstr "RC fitxategiak"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "Goratu"
 
@@ -5145,7 +5179,7 @@ msgid "Release counter"
 msgstr "Bertsio-kontagailua"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Birkargatu uneko orria"
 
@@ -5186,13 +5220,13 @@ msgstr "Izena aldatu"
 msgid "Rename parts"
 msgstr "Izena aldatu zatiei"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Errepikatu"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "Errepikatu erreprodukzioa begizta-puntuen artean"
 
@@ -6397,6 +6431,10 @@ msgstr "Denbora-sarrera"
 msgid "Timing"
 msgstr ""
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "Txandakatze-botoia"
@@ -6837,7 +6875,7 @@ msgid "_Add"
 msgstr "_Gehitu"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "_Aplikatu"
 
@@ -6847,7 +6885,7 @@ msgid "_Audio Sources"
 msgstr "_Audio-iturriak"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "At_zera"
 
@@ -6856,7 +6894,7 @@ msgid "_Beast Website..."
 msgstr "_Beast web gunea..."
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "_Utzi"
 
@@ -6904,12 +6942,12 @@ msgid "_Filters"
 msgstr "_Iragazkiak"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "Bila_tu"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "Au_rrera"
 
@@ -6923,7 +6961,7 @@ msgid "_Import MIDI..."
 msgstr "_Inportatu MIDI..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "_Indizea"
 
@@ -6994,7 +7032,7 @@ msgid "_Release Notes..."
 msgstr "_Bertsioaren oharrak..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "_Birkargatu"
 

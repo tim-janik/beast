@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2006-10-04 12:02+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -98,6 +98,12 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr "  selecteert een van 3 voorgedefinieerde kleuren"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -115,6 +121,36 @@ msgstr "%s: automatisering vanaf MIDI-bediening: %s"
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: automatisering vanaf MIDI-bediening: %s (MIDI-kanaal: %d)"
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "_Info..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_Bestand"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "_Hulp"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_Openen..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "A_fsluiten"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "Beel_d"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -1069,7 +1105,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "Het niveau van controle-ingang 2 verzwakken"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "Audio"
 
@@ -1649,7 +1686,7 @@ msgid "Compressed audio output 2"
 msgstr "Uitgang2 gecomprimeerde audio"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "Configureren"
 
@@ -2661,7 +2698,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "Document- of bestandslocatie invoeren"
 
@@ -2990,7 +3027,7 @@ msgid "Filters/IIR Filter"
 msgstr "/Filters/Bas-filter"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "In huidige document zoeken"
 
@@ -3203,17 +3240,17 @@ msgid "Generic Keys"
 msgstr "Generieke toetsen"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Een pagina terug"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Een pagina vooruit"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "Naar browser-index"
 
@@ -3929,7 +3966,7 @@ msgid "Loading..."
 msgstr "Bezig met laden..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Locatie"
 
@@ -3958,7 +3995,7 @@ msgstr "Deel verloren"
 # verlagen
 # neerwaarts
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Naar beneden"
 
@@ -4113,14 +4150,11 @@ msgid "Message Type"
 msgstr "Berichtsoort"
 
 #: beast-gtk/bstusermessage.cc:301
-#, c-format
+#, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "Bericht werd %u keer herhaald"
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr "Bericht werd %u keer herhaald"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "Bericht werd %u keer herhaald"
+msgstr[1] "Bericht werd %u keer herhaald"
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5297,7 +5331,7 @@ msgstr "RC bestanden"
 # verhogen
 # opwaarts
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "Naar boven"
 
@@ -5364,7 +5398,7 @@ msgid "Release counter"
 msgstr "Uitgave teller"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Huidige pagina herladen"
 
@@ -5406,13 +5440,13 @@ msgstr "Hernoemen"
 msgid "Rename parts"
 msgstr "Delen hernoemen"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Herhalen"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "Afspelen herhalen tussen de 'loop-points'"
 
@@ -6643,6 +6677,10 @@ msgstr "Tijd invoer"
 msgid "Timing"
 msgstr "Timing"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "Schakelknop"
@@ -7090,7 +7128,7 @@ msgid "_Add"
 msgstr "_Toevoegen"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "_Toepassen"
 
@@ -7100,7 +7138,7 @@ msgid "_Audio Sources"
 msgstr "_Geluidsbronnen"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "_Terug"
 
@@ -7111,7 +7149,7 @@ msgstr "_Beast website..."
 
 # verhelderen
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "_Annuleren"
 
@@ -7162,12 +7200,12 @@ msgid "_Filters"
 msgstr "_Filters"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "_Zoeken"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "_Vooruit"
 
@@ -7181,7 +7219,7 @@ msgid "_Import MIDI..."
 msgstr "_MIDI importeren..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "_Index"
 
@@ -7254,7 +7292,7 @@ msgid "_Release Notes..."
 msgstr "_Aankondiging..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "He_rladen"
 
@@ -7913,6 +7951,9 @@ msgstr "Toevoegen van stukje wave-bestand uit ‘%s’ is mislukt: %s"
 
 #~ msgid "Max Voixes"
 #~ msgstr "Max stemmen"
+
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "Bericht werd %u keer herhaald"
 
 #~ msgid "Miscellaneous Message"
 #~ msgstr "Zomaar een bericht"

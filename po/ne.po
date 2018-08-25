@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-25 03:42+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -90,6 +90,12 @@ msgstr "  विभिन्न घटना प्रकार चयन गर
 msgid "  selects one of 3 predefined colors"
 msgstr "  ३ पूर्वपरिभाषित रङ मध्ये एउटा चयन गर्नुहोस्"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -107,6 +113,36 @@ msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s:"
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s: (MIDI च्यानल: %d)"
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "बारेमा..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "फाइल"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "मद्दत"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "खोल्नुहोस्....."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "अन्त्य गर्नुहोस्"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "दृश्य"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -991,7 +1027,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "नियन्त्रण आगत २ को तह एटेनुयट गर्नुहोस्"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "अडियो"
 
@@ -1553,7 +1590,7 @@ msgid "Compressed audio output 2"
 msgstr "कम्प्रेस्ड अडियो आगत २"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "कन्फिगर गर्नुहोस्"
 
@@ -2555,7 +2592,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "कागजात वा फाइल स्थान प्रविष्ट गर्नुहोस्"
 
@@ -2877,7 +2914,7 @@ msgid "Filters/IIR Filter"
 msgstr "/फिल्टर/ब्यास फिल्टर"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "हालको कागजातमा फेला पर्यो"
 
@@ -3082,17 +3119,17 @@ msgid "Generic Keys"
 msgstr "जेनेरिक कुञ्जी"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "एक पृष्ठ पछाडि जानुहोस्"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "एक पृष्ठ अगाडि जानुहोस्"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "ब्राउजर अनुक्रमणिकामा जानुहोस्"
 
@@ -3781,7 +3818,7 @@ msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "स्थान"
 
@@ -3806,7 +3843,7 @@ msgid "Lost Part"
 msgstr "अंश हरायो"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "घटाउनुहोस्"
 
@@ -3955,14 +3992,11 @@ msgid "Message Type"
 msgstr "सन्देश प्रकार"
 
 #: beast-gtk/bstusermessage.cc:301
-#, c-format
+#, fuzzy, c-format
 msgid "Message has been repeated %u time"
-msgstr "सन्देश %u पटक दोहोरियो"
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr "सन्देश %u पटक दोहोरियो"
+msgid_plural "Message has been repeated %u times"
+msgstr[0] "सन्देश %u पटक दोहोरियो"
+msgstr[1] "सन्देश %u पटक दोहोरियो"
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -5092,7 +5126,7 @@ msgid "RC Files"
 msgstr "आर सी फाइल"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "बढाउनुहोस्"
 
@@ -5157,7 +5191,7 @@ msgid "Release counter"
 msgstr "जारी गणक"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "हालको पृष्ठ पुन: लोड गर्नुहोस्"
 
@@ -5198,13 +5232,13 @@ msgstr "पुन: नामकरण गर्नुहोस्"
 msgid "Rename parts"
 msgstr "अंश पुन: नामकरण गर्नुहोस्"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "दोहोर्याउनुस्"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "लूप बिन्दु बीचमा प्लेब्याक दोहोर्याउनुहोस्"
 
@@ -6403,6 +6437,10 @@ msgstr "समय प्रविष्टि"
 msgid "Timing"
 msgstr "समय"
 
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
 msgid "Toggle Button"
 msgstr "टगल बटन"
@@ -6839,7 +6877,7 @@ msgid "_Add"
 msgstr "थप्नुहोस्"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "लागू गर्नुहोस्"
 
@@ -6849,7 +6887,7 @@ msgid "_Audio Sources"
 msgstr "अडियो स्रोत"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "पछाडि"
 
@@ -6859,7 +6897,7 @@ msgid "_Beast Website..."
 msgstr "BEAST वेबसाइट..."
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "रद्द गर्नुहोस्"
 
@@ -6907,12 +6945,12 @@ msgid "_Filters"
 msgstr "फिल्टर"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "खोजी गर्नुहोस्"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "अगाडि"
 
@@ -6926,7 +6964,7 @@ msgid "_Import MIDI..."
 msgstr "MIDI आयात गर्नुहोस्..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "अनुक्रमणिका"
 
@@ -6997,7 +7035,7 @@ msgid "_Release Notes..."
 msgstr "टिप्पणी निष्काशन गर्नुहोस्..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "पुन: लोड गर्नुहोस्"
 
@@ -7527,6 +7565,9 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 
 #~ msgid "Max Voixes"
 #~ msgstr "म्याक्स स्वर"
+
+#~ msgid "Message has been repeated %u times"
+#~ msgstr "सन्देश %u पटक दोहोरियो"
 
 #~ msgid "Miscellaneous Message"
 #~ msgstr "मिश्रित सूचनाहरु"
