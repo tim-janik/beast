@@ -18,7 +18,6 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # POTSKIP     : list of translatable project sources to skip
 # POTIGNORE   : ERE patterns of project sources to ignore
 # LINGUAS     : list of supported languages
-# unlisted    : (Makefile target) files missing from POTSCAN
 
 # Translatable file types
 #
@@ -90,14 +89,6 @@ uninstall:
 	  printf "%-10s" "$$lang" ; \
 	  rm -f "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ; \
 	done ; test "$$c" = 0 || echo
-
-# check for translatable files missing from poscan.list
-check-local: check-unlisted
-check-unlisted:
-	@echo "Check top source directory for missing translations..."
-	@$(MAKE) unlisted
-	@! test -e unlisted
-.PHONY: check-unlisted
 
 # check SCM i18n string extraction
 check-local: check-scm-strings
@@ -230,52 +221,6 @@ $(srcdir)/messages.po check-messages.po: poscan.list
 	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o messages.po -j
 	$(Q) # cleanup
 	$(Q) rm -rf $(TMPDIR)/ && rm -f potscan.all
-
-unlisted:
-	@echo "Creating source file list..."
-	@rm -f unlisted
-	@ # list possible POT sources...
-	$(Q) (cd $(top_srcdir) && set -o pipefail \
-	&& find . $(FIND_NOHIDDEN) -type f $(patsubst %, ! -path \*/%, $(IGNORE_UNLISTED)) -print) \
-	| sed 's,^\./,,' \
-	| grep -vxF -f $(srcdir)/poscan.list -f $(srcdir)/POTSKIP \
-	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
-	@ # scanning file types...
-	$(foreach TYPE, $(POSRC_TYPES), \
-	  $(Q) $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
-	@rm -f "xgen-$(@F)"
-	@ # report...
-	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
-	@if test -e unlisted ; then \
-	  echo "Missing `wc -l <unlisted` untranslated file(s) from poscan.list, see:"; head -n7 -v "`pwd`/unlisted" ; \
-	else echo "Done, all files listed." ; fi
-DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
-FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
-IGNORE_UNLISTED = $(strip		\
-	docs/doxy/*			\
-	tmp*				\
-)
-# (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
-# use 'readlink -ve' to catch missing files
-define test_unlisted
-	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " && \
-	set -o pipefail && \
-	readlink -ve $(2) > /dev/null && \
-	{ grep $(POSRC_$(strip $(1))_PATTERN) $(2) || :; } | \
-	while read file ; do \
-	  readlink -ve "$(top_srcdir)/$$file" > /dev/null || exit $? ; \
-	  $(if $(POSRC_$(strip $(1))_FILTER), \
-	    $(POSRC_$(strip $(1))_FILTER) "$(top_srcdir)/$$file" | \
-	    { grep -q $(INLTFIXPATTERN) && echo "$$file" || :; } \
-	    , \
-	    { grep -q $(I18NPATTERN) "$(top_srcdir)/$$file" && echo "$$file" || :; } \
-	  ); \
-	done \
-	| tee -a $(3) | wc -l
-	$(NEWLINE)
-endef # GNU Make needs an explicit last newline
-.PHONY: unlisted
-CLEANFILES += unlisted
 
 # clean INTLMERGE leftovers
 CLEANFILES += intlmerge.tmpcache
