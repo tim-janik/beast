@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "../../bse/bse.hh"
+#include <math.h>
 #include <node.h>
 #include <uv.h>
 #include <v8pp/class.hpp>
@@ -252,6 +253,18 @@ bse_server_create_shared_memory_array_buffer (uint64 shm_id)
   return ab;
 }
 
+static std::string
+bse_server_gettext (const std::string &msg)
+{
+  return (Bse::_) (msg);
+}
+
+static std::string
+bse_server_ngettext (const std::string &msg, const std::string &plural, double n)
+{
+  return (Bse::_) (msg, plural, int64_t (round (n)));
+}
+
 // v8pp binding for Bse
 static V8stub *bse_v8stub = NULL;
 
@@ -339,6 +352,8 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
   // manual binding extensions
   V8ppType_BseServer &server_class = bse_v8stub->BseServer_class_;
   server_class.set ("create_shared_memory_array_buffer", bse_server_create_shared_memory_array_buffer);
+  server_class.set ("gettext", bse_server_gettext);
+  server_class.set ("ngettext", bse_server_ngettext);
 
   // export server handle
   v8::Local<v8::Object> v8_server = server_class.import_external (isolate, new Bse::ServerH (bse_server));

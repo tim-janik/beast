@@ -362,9 +362,10 @@ void        installpath_override (const std::string &topdir);
 std::string version ();
 
 // == Translate i18n strings ==
-const char* bse_gettext_domain ();
-const char* (_)                (const char        *string) __attribute__ ((__format_arg__ (1)));
-std::string (_)                (const std::string &string);
+const char* (_) (const char *string) __attribute__ ((__format_arg__ (1)));
+std::string (_) (const std::string &string);
+const char* (_) (const char *string, const char *plural, int64_t n) __attribute__ ((__format_arg__ (1), __format_arg__ (2)));
+std::string (_) (const std::string &string, const std::string &plural, int64_t n);
 
 } // Bse
 

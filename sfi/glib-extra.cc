@@ -1087,28 +1087,24 @@ version ()
   return PACKAGE_VERSION;
 }
 
-static bool
-initialize_textdomain()
+/// Initialize gettext domain used by libbse.
+static const char*
+initialized_bse_gettext_domain()
 {
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
-  bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
-  return true;
-}
-
-/// The gettext domain used by libbse.
-const char*
-bse_gettext_domain ()
-{
-  static BSE_UNUSED bool init = initialize_textdomain();
-  // Atm, Beast and libbse share a gettext domain.
-  return BST_GETTEXT_DOMAIN;
+  static const char *const gettexttextdomain = [] () {
+    const char *const gtdomain = BST_GETTEXT_DOMAIN;
+    bindtextdomain (gtdomain, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+    bind_textdomain_codeset (gtdomain, "UTF-8");
+    return gtdomain;
+  } ();
+  return gettexttextdomain;
 }
 
 /// Translate message strings in the BEAST/BSE text domain.
 const char*
 _ (const char *string)
 {
-  return dgettext (bse_gettext_domain(), string);
+  return dgettext (initialized_bse_gettext_domain(), string);
 }
 
 /// Translate message strings in the BEAST/BSE text domain.
@@ -1116,6 +1112,22 @@ std::string
 _ (const std::string &string)
 {
   return _ (string.c_str());
+}
+
+/// Translate message strings in the BEAST/BSE text domain, use @plural forms if @n != 1.
+const char*
+(_) (const char *string, const char *plural, int64_t n)
+{
+  const uint64_t u = n < 0 ? -n : n;
+  const ulong l = u >= 2147483647 ? 2147483647 : u;
+  return dcngettext (initialized_bse_gettext_domain(), string, plural, l, LC_MESSAGES);
+}
+
+/// Translate message strings in the BEAST/BSE text domain, use @plural forms if @n != 1.
+std::string
+(_) (const std::string &string, const std::string &plural, int64_t n)
+{
+  return _ (string.c_str(), plural.c_str(), n);
 }
 
 } // Bse

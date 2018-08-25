@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 16:20+0200\n"
+"POT-Creation-Date: 2018-08-25 04:18+0200\n"
 "PO-Revision-Date: 2006-08-08 17:07+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
@@ -93,6 +93,12 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr "  haurrez definitutako 3 koloreetako bat hautatzen du"
 
+#. scrollbars/scales
+#. value=
+#: res/gxk/radgets-standard.xml:190 res/gxk/radgets-standard.xml:191
+msgid "$(first-occupied,$draw-value,0)"
+msgstr ""
+
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.cc:205
 #, c-format
@@ -110,6 +116,36 @@ msgstr ""
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr ""
+
+#: ebeast/menus.js:12
+#, fuzzy
+msgid "&About..."
+msgstr "Honi _buruz..."
+
+#: ebeast/menus.js:15
+#, fuzzy
+msgid "&File"
+msgstr "_Fitxategia"
+
+#: ebeast/menus.js:17
+#, fuzzy
+msgid "&Help"
+msgstr "_Laguntza"
+
+#: ebeast/menus.js:5
+#, fuzzy
+msgid "&Open..."
+msgstr "_Ireki..."
+
+#: ebeast/menus.js:6
+#, fuzzy
+msgid "&Quit"
+msgstr "Irte_n"
+
+#: ebeast/menus.js:16
+#, fuzzy
+msgid "&View"
+msgstr "I_kusi"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -951,7 +987,8 @@ msgid "Attenuate the level of control input 2"
 msgstr "Ahuldu 2. kontrol-sarreraren maila"
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23
+#. i18n example
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
 msgid "Audio"
 msgstr "Audioa"
 
@@ -1153,7 +1190,7 @@ msgstr ""
 msgid "Available Outputs"
 msgstr "Irteera erabilgarriak"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:120 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
 msgid "Available Postprocessors"
 msgstr ""
 
@@ -1162,7 +1199,7 @@ msgstr ""
 msgid "Available Presets"
 msgstr "Sarrera erabilgarriak"
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:329
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "Sarrera erabilgarriak"
@@ -1172,7 +1209,7 @@ msgstr "Sarrera erabilgarriak"
 msgid "Available Synthesizers"
 msgstr "_Sintetizadoreak"
 
-#: beast-gtk/bsttrackview.cc:324 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
 msgid "Available Waves"
 msgstr ""
 
@@ -1507,8 +1544,8 @@ msgstr ""
 msgid "Color Entry"
 msgstr "Kolore-sarrera"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:948
+#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "Iruzkina"
 
@@ -1523,7 +1560,7 @@ msgid "Compressed audio output 2"
 msgstr "Konprimitutako audio-irteera"
 
 #. label=
-#: res/gxk/radgets-beast.xml:543
+#: res/gxk/radgets-beast.xml:542
 msgid "Configure"
 msgstr "Konfiguratu"
 
@@ -2203,7 +2240,7 @@ msgstr "Ezabatu une honetan hautatutako pista"
 msgid "Delete the currently selected wave"
 msgstr "Ezabatu une honetan hautatutako uhina"
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Denominator"
 msgstr ""
 
@@ -2529,7 +2566,7 @@ msgid "Enhance/CanyonDelay"
 msgstr ""
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:475
 msgid "Enter document or file location"
 msgstr "Sartu dokumentuaren edo fitxategiaren kokalekua"
 
@@ -2854,7 +2891,7 @@ msgid "Filters/IIR Filter"
 msgstr "/Iragazkiak/Baxuen iragazkia"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:470
 msgid "Find in current document"
 msgstr "Bilatu uneko dokumentuan"
 
@@ -2908,7 +2945,7 @@ msgstr "Oineko kontroladorea"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:948
+#: bse/bseobject.cc:953
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3061,17 +3098,17 @@ msgid "Generic Keys"
 msgstr "Tekla generikoak"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:454
 msgid "Go back one page"
 msgstr "Joan orri bat atzera"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:458
 msgid "Go forward one page"
 msgstr "Joan orri bat aurrera"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:466
 msgid "Go to browser index"
 msgstr "Joan arakatzailearen indizera"
 
@@ -3635,7 +3672,7 @@ msgstr ""
 msgid "List of available sound font presets to choose as track instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:328
+#: beast-gtk/bsttrackview.cc:330
 msgid "List of available sound fonts to choose track instrument from"
 msgstr ""
 
@@ -3643,7 +3680,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:121 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3659,7 +3696,7 @@ msgstr ""
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:325
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
@@ -3762,11 +3799,15 @@ msgid "Loading..."
 msgstr "Kargatzen..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:476
+#: res/gxk/radgets-standard.xml:474
 msgid "Location"
 msgstr "Kokalekua"
 
-#: bse/bsesong.cc:722 bse/bsesong.cc:726 bse/bsesong.cc:731 bse/bsesong.cc:736
+#: bse/bseapi.idl:1035
+msgid "Loop Enabled"
+msgstr ""
+
+#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
 msgid "Looping"
 msgstr ""
 
@@ -3783,7 +3824,7 @@ msgid "Lost Part"
 msgstr "Galdutako zatia"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:304
+#: beast-gtk/bstkeybindings.cc:39 res/gxk/radgets-beast.xml:303
 msgid "Lower"
 msgstr "Beheratu"
 
@@ -3814,7 +3855,7 @@ msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:718 bse/bsetrack.cc:1137
+#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
 #: bse/bsetrack.cc:1143
 #, fuzzy
 msgid "MIDI Instrument"
@@ -3864,7 +3905,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:585
+#: bse/bsesong.cc:570
 #, fuzzy
 msgid "Master"
 msgstr "Itsatsi"
@@ -3896,15 +3937,15 @@ msgstr "Balioa [float]"
 msgid "Max Voices"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: bse/bsesong.cc:716
+#: bse/bsesong.cc:701
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Measure numerator"
 msgstr ""
 
@@ -3939,12 +3980,9 @@ msgstr "Mezu mota"
 #: beast-gtk/bstusermessage.cc:301
 #, c-format
 msgid "Message has been repeated %u time"
-msgstr ""
-
-#: beast-gtk/bstusermessage.cc:301
-#, c-format
-msgid "Message has been repeated %u times"
-msgstr ""
+msgid_plural "Message has been repeated %u times"
+msgstr[0] ""
+msgstr[1] ""
 
 #: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
@@ -3966,7 +4004,7 @@ msgstr "Erdiko bakarraren kolorea"
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:651
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
@@ -3991,7 +4029,7 @@ msgstr "Audio-irteera nahasia"
 msgid "Mixer"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:654
 msgid "Mixer busses connected to track output"
 msgstr ""
 
@@ -3999,7 +4037,7 @@ msgstr ""
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4159,7 +4197,7 @@ msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:938
+#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
 msgid "Name"
 msgstr "Izena"
 
@@ -4382,7 +4420,7 @@ msgstr ""
 msgid "Notes and informations about this release cycle"
 msgstr "Argitaratze zikloei buruzko oharrak eta informazioa eskaintzen du"
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:642
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4404,12 +4442,12 @@ msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Maiztasun esponentzialaren modulazioak eragingo dien zortzidunen kopurua"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Beltz-hirukotxoa"
 
-#: bse/bsesong.cc:712
+#: bse/bsesong.cc:697
 msgid "Numerator"
 msgstr ""
 
@@ -4524,7 +4562,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1034
+#: bse/bsesong.cc:1041
 msgid "Orphan Parts"
 msgstr ""
 
@@ -4596,7 +4634,7 @@ msgstr "%u irteera-ataka"
 msgid "Output Signal Monitor"
 msgstr "Irteera-seinalearen monitorea"
 
-#: beast-gtk/bsttrackview.cc:416 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
 msgid "Output Signals"
 msgstr "Irteeraren seinaleak"
 
@@ -4840,7 +4878,7 @@ msgstr "Hartutako kokalekua"
 msgid "Positive Value Color"
 msgstr "Balio positiboaren kolorea"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:720 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
 #, fuzzy
 msgid "Postprocessor"
 msgstr "prozesatzen"
@@ -5075,7 +5113,7 @@ msgid "RC Files"
 msgstr "RC fitxategiak"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:302
+#: beast-gtk/bstkeybindings.cc:37 res/gxk/radgets-beast.xml:301
 msgid "Raise"
 msgstr "Goratu"
 
@@ -5141,7 +5179,7 @@ msgid "Release counter"
 msgstr "Bertsio-kontagailua"
 
 #. tooltip=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:462
 msgid "Reload current page"
 msgstr "Birkargatu uneko orria"
 
@@ -5182,13 +5220,13 @@ msgstr "Izena aldatu"
 msgid "Rename parts"
 msgstr "Izena aldatu zatiei"
 
-#. action-name=
-#: res/gxk/radgets-beast.xml:50
+#. action_name=
+#: res/gxk/radgets-beast.xml:45
 msgid "Repeat"
 msgstr "Errepikatu"
 
-#. action-tooltip=
-#: res/gxk/radgets-beast.xml:50
+#. action_tooltip=
+#: res/gxk/radgets-beast.xml:46
 msgid "Repeat playback within loop points"
 msgstr "Errepikatu erreprodukzioa begizta-puntuen artean"
 
@@ -5775,7 +5813,7 @@ msgstr ""
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: bse/bsesong.cc:552
+#: bse/bsesong.cc:537
 #, fuzzy
 msgid "Song"
 msgstr "Ka_nta"
@@ -6039,7 +6077,7 @@ msgstr "Sintesi-moduluak"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Sintesi-moduluak"
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
@@ -6053,7 +6091,7 @@ msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 msgid "Synthesis network to be used as instrument"
 msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:366 bse/bsesong.cc:720
+#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
 #: bse/bsetrack.cc:1145
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Sintesi-sarea ondorengo prozesatze gisa erabiltzeko"
@@ -6362,7 +6400,7 @@ msgstr ""
 msgid "Threshold [dB]"
 msgstr "Atalasea"
 
-#: bse/bsesong.cc:708
+#: bse/bsesong.cc:693
 #, fuzzy
 msgid "Ticks"
 msgstr "Pistak"
@@ -6389,8 +6427,12 @@ msgstr "Denbora-sarrera"
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:706 bse/bsesong.cc:710 bse/bsesong.cc:714
+#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
 msgid "Timing"
+msgstr ""
+
+#: ebeast/menus.js:9
+msgid "Toggle &Fullscreen"
 msgstr ""
 
 #: beast-gtk/gxk/gxkparam-toggle.cc:72
@@ -6554,7 +6596,7 @@ msgstr "Iragazi gabeko audio-seinalea"
 msgid "Unfiltered Input"
 msgstr "Iragazi gabeko sarrera"
 
-#: bse/bseobject.cc:938
+#: bse/bseobject.cc:943
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6833,7 +6875,7 @@ msgid "_Add"
 msgstr "_Gehitu"
 
 #. label=
-#: res/gxk/radgets-beast.xml:576
+#: res/gxk/radgets-beast.xml:575
 msgid "_Apply"
 msgstr "_Aplikatu"
 
@@ -6843,7 +6885,7 @@ msgid "_Audio Sources"
 msgstr "_Audio-iturriak"
 
 #. label=
-#: res/gxk/radgets-standard.xml:455
+#: res/gxk/radgets-standard.xml:453
 msgid "_Back"
 msgstr "At_zera"
 
@@ -6852,7 +6894,7 @@ msgid "_Beast Website..."
 msgstr "_Beast web gunea..."
 
 #. label=
-#: res/gxk/radgets-beast.xml:578
+#: res/gxk/radgets-beast.xml:577
 msgid "_Cancel"
 msgstr "_Utzi"
 
@@ -6900,12 +6942,12 @@ msgid "_Filters"
 msgstr "_Iragazkiak"
 
 #. label=
-#: res/gxk/radgets-standard.xml:472
+#: res/gxk/radgets-standard.xml:469
 msgid "_Find"
 msgstr "Bila_tu"
 
 #. label=
-#: res/gxk/radgets-standard.xml:459
+#: res/gxk/radgets-standard.xml:457
 msgid "_Forward"
 msgstr "Au_rrera"
 
@@ -6919,7 +6961,7 @@ msgid "_Import MIDI..."
 msgstr "_Inportatu MIDI..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:467
+#: res/gxk/radgets-standard.xml:465
 msgid "_Index"
 msgstr "_Indizea"
 
@@ -6990,7 +7032,7 @@ msgid "_Release Notes..."
 msgstr "_Bertsioaren oharrak..."
 
 #. label=
-#: res/gxk/radgets-standard.xml:463
+#: res/gxk/radgets-standard.xml:461
 msgid "_Reload"
 msgstr "_Birkargatu"
 

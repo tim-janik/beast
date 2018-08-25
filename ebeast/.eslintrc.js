@@ -12,7 +12,7 @@ module.exports = {
     "Vue": false,
     "Bse": false,
     "Shell": false,
-    "T": false,
+    "_": false,
     "MAXINT": false,
     "MAXUINT": false,
     "module": true /* allow mods */

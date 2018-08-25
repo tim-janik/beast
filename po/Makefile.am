@@ -3,6 +3,8 @@ include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
 POSRC_TYPES =
+INGIT_CLEANFILES =
+CLEANFILES += $(INGIT_CLEANFILES)
 
 # Verbosity macros
 Qignore = $(if $(findstring 1, $(V)) ,, : )
@@ -13,62 +15,20 @@ Vignore = $(if $(findstring 1, $(V)) , : ,)
 # PO_LINGUAS  : command line override for ALL_LINGUAS (subset)
 # GMOFILES    : .gmo files for all TRANSLATIONS (GNU .mo)
 # POFILES     : .po files for all TRANSLATIONS
+#
 # Files:
-# POTSCAN     : list of project sources with translations
-# POTSKIP     : list of translatable project sources to skip
-# POTIGNORE   : ERE patterns of project sources to ignore
 # LINGUAS     : list of supported languages
-# unlisted    : (Makefile target) files missing from POTSCAN
-
-# Translatable file types
-#
-POSRC_TYPES          += XML
-POSRC_XML_PATTERN     = '\.xml\(.in\)\?$$'
-POSRC_XML_FILTER      = gawk -f $(INTLFIXDIR)/intlfix-xml.awk
-#
-POSRC_TYPES          += SCM
-POSRC_SCM_PATTERN     = '\.scm\(.in\)\?$$'
-POSRC_SCM_FILTER      = sed -f $(INTLFIXDIR)/intlfix-scm.sed
-#
-POSRC_TYPES          += KEYS
-POSRC_KEYS_PATTERN    = '\.keys\(.in\)\?$$'
-POSRC_KEYS_FILTER     = gawk -f $(INTLFIXDIR)/intlfix-las.awk
-#
-POSRC_TYPES          += DESKTOP
-POSRC_DESKTOP_PATTERN = '\.desktop\(.in\)\?$$'
-POSRC_DESKTOP_FILTER  = gawk -f $(INTLFIXDIR)/intlfix-las.awk
-#
-POSRC_TYPES          += IDL
-POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
-POSRC_IDL_FILTER      =
-#
-POSRC_TYPES          += PROC
-POSRC_PROC_NAME	      = Procedure Files
-POSRC_PROC_PATTERN    = '\.proc\(.in\)\?$$'
-POSRC_PROC_FILTER     =
-#
-POSRC_TYPES          += CCH
-POSRC_CCH_NAME	      = C/C++ Files
-POSRC_CCH_PATTERN     = '\.[hcHC][hcHC]\?\(.in\)\?$$'
-POSRC_CCH_FILTER      =
+# poscan.list : list of translatable files tracked in git
 
 TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
-INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
-#EXTRA_DIST += LINGUAS POTIGNORE POTSCAN POTSKIP $(POFILES) messages.pot
-#EXTRA_DIST += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
-#EXTRA_DIST += $(INTLFIXDIR)/intlfix-xml.awk $(INTLFIXDIR)/intlfix-las.awk
+#EXTRA_DIST += LINGUAS $(POFILES) messages.po
 CLEANFILES  += $(GMOFILES)
-KEYWORDS     = _ N_ U_ Q_
+KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
-POTLIST      = $(abs_builddir)/POTLIST
-TMPLIST      = $(abs_builddir)/POTLIST.tmp
 TMPDIR       = tmp-cpots
-I18NPATTERN  = '\b[NUQ]\?_[[:space:]]*([[:space:]]*"'
-INLTFIXPATTERN = '\b__INTLFIX__\b.*'$(I18NPATTERN)
 LOCALEDIR    = $(beastlocaledir)
-NEWLINE	    := $(shell echo)
 
 all: $(GMOFILES)
 
@@ -99,34 +59,9 @@ uninstall:
 	  rm -f "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/$(BST_GETTEXT_DOMAIN).mo" ; \
 	done ; test "$$c" = 0 || echo
 
-# check for translatable files missing from POTSCAN
-check-local: check-unlisted
-check-unlisted:
-	@echo "Check top source directory for missing translations..."
-	@$(MAKE) unlisted
-	@! test -e unlisted
-.PHONY: check-unlisted
-
-# check SCM i18n string extraction
-check-local: check-scm-strings
-.PHONY: check-scm-strings
-check-scm-strings:
-	@echo "Check po files missing translation strings..."
-	@for lang in $(TRANSLATIONS); do	\
-	  file=$(srcdir)/$$lang.po ;		\
-	  echo $(ECHO_N) "  $$lang.po: " ;	\
-	  for pattern in $(CHECK_SCM_PATS) ; do	\
-	    grep -Fq $$pattern $$file || {	\
-	      echo "$$file: misses strings from: $$pattern" ; exit 1 ; } \
-	  done ;				\
-	  echo "OK" ;				\
-	done
-CHECK_SCM_PATS=$(strip					\
-)
-
 shdie = { echo "ERROR:" $(1) >&2 ; exit $(or $(2), 127) ; }
 
-merge-po: $(srcdir)/messages.pot # FILE=...
+merge-po: $(srcdir)/messages.po # FILE=...
 	@test -r "$(FILE)" || $(call shdie, "$@: source argument required: make $@ FILE=...")
 	@echo "Merging external po file: $(FILE)..."
 	@r=`realpath "$(FILE)"` ; for f in $(POFILES) ; do \
@@ -152,126 +87,94 @@ merge-po: $(srcdir)/messages.pot # FILE=...
 	  $(call shdie, "$@: failed to find po merging candidate; try renaming FILE") ; \
 	else \
 	  echo "Target for merging: $$c $$r" ; \
-	  $(MSGMERGE) -s -C "$$c" -o "$$c" "$(FILE)" $(srcdir)/messages.pot || exit $? ; \
+	  $(MSGMERGE) -F -C "$$c" -o "$$c" "$(FILE)" $(srcdir)/messages.po || exit $? ; \
 	  $(GMSGFMT) -o /dev/null --verbose "$$c" ; \
 	fi
 
 # force regeneration of all po files
 update-po: Makefile
-	@rm -f $(srcdir)/messages.pot # force rebuild
-	@$(MAKE) --no-print-directory $(srcdir)/messages.pot
-	@echo "Merging messages.pot into po files..."
+	@rm -f $(srcdir)/messages.po # force rebuild
+	@$(MAKE) --no-print-directory $(srcdir)/messages.po
+	@echo "  MERGE   " "messages.po into po files..."
 	@for i in $(POFILES) ; do \
-	  printf "%12s: " "$$i" ; \
-	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.pot || exit ; \
+	  printf "    %12s: " "$$i" ; \
+	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.po || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
-check-update-po: Makefile $(srcdir)/messages.pot
-	$(Q) rm -f check-messages.pot # force rebuild
-	$(Q) $(MAKE) --no-print-directory check-messages.pot
+check-update-po: Makefile $(srcdir)/messages.po
+	$(Q) rm -f check-messages.po # force rebuild
+	$(Q) $(MAKE) --no-print-directory check-messages.po
 	@echo -n "Checking for updated po files: "
 	$(Q) for i in $(POFILES) ; do \
 	  echo -n '.' ; \
-	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.pot || exit ; \
+	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.po || exit ; \
 	  cmp -s $(srcdir)/$$i xtmp-$$i || \
 	  { echo ; echo "$$i: error: message updates missing, run 'update-po' first" >&2 ; exit 1 ; } ; \
 	  rm -f xtmp-$$i ; \
 	done ; echo
-	$(Q) rm -f check-messages.pot
+	$(Q) rm -f check-messages.po
 .PHONY: check-update-po
-CLEANFILES += check-messages.pot
+CLEANFILES += check-messages.po
 
-CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
+POTSCAN_MATCH = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
+POTSCAN_SKIP  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 
-$(srcdir)/messages.pot check-messages.pot: POTSCAN
-	@echo "Building $(@F)..."
-	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
-	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < POTSCAN > $(POTLIST) \
-	&& cp $(POTLIST) $(TMPLIST) && mkdir -p $(TMPDIR)/
-	@$(foreach TYPE, $(POSRC_TYPES), \
-	  $(call prepare_pot_source, $(TYPE), $(TMPLIST)))
-	@test `wc -l < $(TMPLIST)` -eq 0 || { \
-	  echo "WARNING: unknown POTSCAN entries:" ; \
-	  sed 's/^/  /' $(TMPLIST) ; \
-	} >&2
-	@echo "  Extracting translatable strings with xgettext..."
-	@$(XGETTEXT) -F -c -n -o $(abs_srcdir)/$(@F) --foreign-user \
-	  --language=C++ --from-code=UTF-8 \
-	  --files-from=$(POTLIST) \
-	  -D $(TMPDIR)/ -D $(abs_top_srcdir) \
-	  $(patsubst %, --keyword=%, $(KEYWORDS)) \
-	  $(patsubst %, --flag=%,    $(TEXTFLAGS)) \
-	  "--package-name=$(PACKAGE)" "--package-version=$(VERSION)"
-	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
-# (split_lines, INPUT, OUTPUT, pattern)
+noinst_DATA += poscan.list
+EXTRA_DIST  += poscan.list	# needed for tarball builds
+poscan.list: $(GITSTAMP)
+	$(AM_V_GEN)
+	$(Q) git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
+	$(Q) grep -E $(POTSCAN_MATCH) $@.tmp1 > $@.tmp2
+	$(Q) grep -vE $(POTSCAN_SKIP) $@.tmp2 > $@.tmp3
+	$(Q) mv $@.tmp3 $@ && rm -f $@.tmp1 $@.tmp2
+INGIT_CLEANFILES += @INGIT@ poscan.list
+
+# (split_lines, INPUTFILE, OUTPUTFILE, pattern)
 split_lines = test -e $(1) -a -w . && { \
-	grep  -e $(3) < $(1) > $(2) ; \
-	grep -ve $(3) < $(1) > $(1)-$$$$ ; \
+	grep  -Ee $(3) < $(1) > $(2) ; \
+	grep -vEe $(3) < $(1) > $(1)-$$$$ ; \
 	mv $(1)-$$$$ $(1) ; \
 }
-# (prepare_pot_source, POSRC_TYPE, INFILE)
-define prepare_pot_source
-	DOING=$(if $(POSRC_$(strip $(1))_FILTER),"Preparing","Listing") ; \
-	printf "  %-32s" "$$DOING $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
-	$(call split_lines, $(2), "potlist$$$$.tmp", $(POSRC_$(strip $(1))_PATTERN)) && \
-	wc -l < "potlist$$$$.tmp" || exit ; \
-	$(if $(POSRC_$(strip $(1))_FILTER), \
-	  while read file ; do \
-	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
-	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
-	  done < "potlist$$$$.tmp" \
-	, \
-	  : \
-	) ; rm -f "potlist$$$$.tmp"
-	$(NEWLINE)
-endef # GNU Make needs an explicit last newline
 
-unlisted:
-	@echo "Creating source file list..."
-	@rm -f unlisted
-	@ # list possible POT sources...
-	$(Q) (cd $(top_srcdir) && set -o pipefail \
-	&& find . $(FIND_NOHIDDEN) -type f $(patsubst %, ! -path \*/%, $(IGNORE_UNLISTED)) -print) \
-	| sed 's,^\./,,' \
-	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
-	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
-	@ # scanning file types...
-	$(foreach TYPE, $(POSRC_TYPES), \
-	  $(Q) $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
-	@rm -f "xgen-$(@F)"
-	@ # report...
-	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
-	@if test -e unlisted ; then \
-	  echo "Missing `wc -l <unlisted` untranslated file(s) from POTSCAN, see:"; head -n7 -v "`pwd`/unlisted" ; \
-	else echo "Done, all files listed." ; fi
-DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
-FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
-IGNORE_UNLISTED = $(strip		\
-	docs/doxy/*			\
-	tmp*				\
-)
-# (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
-# use 'readlink -ve' to catch missing files
-define test_unlisted
-	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " && \
-	set -o pipefail && \
-	readlink -ve $(2) > /dev/null && \
-	{ grep $(POSRC_$(strip $(1))_PATTERN) $(2) || :; } | \
-	while read file ; do \
-	  readlink -ve "$(top_srcdir)/$$file" > /dev/null || exit $? ; \
-	  $(if $(POSRC_$(strip $(1))_FILTER), \
-	    $(POSRC_$(strip $(1))_FILTER) "$(top_srcdir)/$$file" | \
-	    { grep -q $(INLTFIXPATTERN) && echo "$$file" || :; } \
-	    , \
-	    { grep -q $(I18NPATTERN) "$(top_srcdir)/$$file" && echo "$$file" || :; } \
-	  ); \
-	done \
-	| tee -a $(3) | wc -l
-	$(NEWLINE)
-endef # GNU Make needs an explicit last newline
-.PHONY: unlisted
-CLEANFILES += unlisted
+XGETTEXT_TMPDIR = $(XGETTEXT) "--package-name=$(PACKAGE)" "--package-version=$(VERSION)" -F -c -n \
+		  --foreign-user --from-code=UTF-8 -D $(TMPDIR)/ -D $(abs_top_srcdir) \
+		  $(patsubst %, --keyword=%, $(KEYWORDS)) $(patsubst %, --flag=%,    $(TEXTFLAGS))
+
+$(srcdir)/messages.po check-messages.po: poscan.list
+	$(AM_V_GEN)
+	$(Q) rm -f potscan.all potscan.tmp && rm -rf $(TMPDIR)/
+	$(Q) cp poscan.list potscan.all && mkdir -p $(TMPDIR)/
+	$(Q) # process .idl files as C++
+	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.idl$$')
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po --force-po -L C++
+	$(Q) sed -r '1,20 s/^("Content-Type:.*)CHARSET/\1UTF-8/' -i messages.po
+	$(Q) # extract .xml and .html files and parse as JS
+	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(xml|html)(.in)?$$')
+	$(Q)  while read file ; do \
+	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
+	    ./xt9n-xml.py $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	  done < potscan.tmp
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) # extract .keys and .desktop files and parse as C
+	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(keys|desktop)(\.in)?$$')
+	$(Q)  while read file ; do \
+	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
+	    gawk -f ./xt9n-las.awk $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	  done < potscan.tmp
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L C
+	$(Q) # extract .vue files and parse as JS
+	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.vue$$')
+	$(Q)  while read file ; do \
+	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
+	    sed '1,/^<script\b/ s/.*// ; /^<\/script>/ s/.*//' $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	  done < potscan.tmp
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) # process remaining files with language detection
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o messages.po -j
+	$(Q) # cleanup
+	$(Q) rm -rf $(TMPDIR)/ && rm -f potscan.all
+CLEANFILES += $(TMPDIR)/
 
 # clean INTLMERGE leftovers
 CLEANFILES += intlmerge.tmpcache
