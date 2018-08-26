@@ -577,7 +577,8 @@ tick_left_move (BstTrackRollController *self,
   if (self->song)
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      bse_proxy_set (self->song, "loop-left", tick, NULL);
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      song.loop_left (tick);
       drag->state = GXK_DRAG_CONTINUE;
     }
 }
