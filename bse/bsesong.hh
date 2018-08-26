@@ -78,6 +78,8 @@ public:
   virtual void              musical_tuning          (MusicalTuning tuning) override;
   virtual bool              loop_enabled            () const override;
   virtual void              loop_enabled            (bool enabled) override;
+  virtual int               loop_left               () const override;
+  virtual void              loop_left               (int tick) override;
   virtual SongTiming        get_timing              (int tick);
   virtual TrackIfaceP       find_any_track_for_part (PartIface &part) override;
   virtual BusIfaceP         create_bus              () override;
