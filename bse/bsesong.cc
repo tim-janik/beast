@@ -24,7 +24,6 @@ enum
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_PNET,
-  PROP_TICK_POINTER,
 };
 
 
@@ -142,7 +141,6 @@ bse_song_set_property (GObject      *object,
   switch (param_id)
     {
       SfiInt vint;
-      SfiRing *ring;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -177,20 +175,6 @@ bse_song_set_property (GObject      *object,
       self->tpqn = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PROP_TICK_POINTER:
-      vint = sfi_value_get_int (value);
-      if (uint (vint) != self->tick_SL)
-	{
-	  BSE_SEQUENCER_LOCK ();
-	  self->tick_SL = vint;
-	  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
-	    {
-	      BseTrack *track = (BseTrack*) ring->data;
-	      track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
-	    }
-	  BSE_SEQUENCER_UNLOCK ();
-	}
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -217,9 +201,6 @@ bse_song_get_property (GObject     *object,
       break;
     case PROP_TPQN:
       sfi_value_set_int (value, self->tpqn);
-      break;
-    case PROP_TICK_POINTER:
-      sfi_value_set_int (value, self->tick_SL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -451,7 +432,7 @@ bse_song_reset (BseSource *source)
       self->position_handler = 0;
     }
   bse_object_unlock (BSE_OBJECT (self));
-  g_object_notify ((GObject*) self, "tick-pointer");
+  self->as<Bse::SongImpl*>()->notify ("tick_pointer");
 }
 BseSource*
 bse_song_create_summation (BseSong *self)
@@ -666,11 +647,6 @@ bse_song_class_init (BseSongClass *klass)
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Looping"),
-			      PROP_TICK_POINTER,
-			      sfi_pspec_int ("tick_pointer", NULL, NULL,
-					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE ":skip-undo"));
 
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);
@@ -988,6 +964,36 @@ SongImpl::loop_right (int tick)
       notify ("loop_right");
       if (loop_enabled != self->loop_enabled_SL)
         notify ("loop_enabled");
+    }
+}
+
+int
+SongImpl::tick_pointer() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+
+  return self->tick_SL;
+}
+
+void
+SongImpl::tick_pointer (int tick)
+{
+  BseSong *self = as<BseSong*>();
+
+  if (uint (tick) != self->tick_SL)
+    {
+      // this property has no undo
+
+      BSE_SEQUENCER_LOCK ();
+      self->tick_SL = tick;
+      for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+        {
+          BseTrack *track = (BseTrack*) ring->data;
+          track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
+        }
+      BSE_SEQUENCER_UNLOCK ();
+
+      notify ("tick_pointer");
     }
 }
 
