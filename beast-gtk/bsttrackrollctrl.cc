@@ -565,7 +565,8 @@ pointer_move (BstTrackRollController *self,
       drag->type != GXK_DRAG_DONE) /* skip release events */
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      bse_proxy_set (self->song, "tick-pointer", tick, NULL);
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      song.tick_pointer (tick);
       drag->state = GXK_DRAG_CONTINUE;
     }
 }
