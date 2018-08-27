@@ -24,7 +24,6 @@ enum
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_PNET,
-  PROP_LOOP_RIGHT,
   PROP_TICK_POINTER,
 };
 
@@ -178,21 +177,6 @@ bse_song_set_property (GObject      *object,
       self->tpqn = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PROP_LOOP_RIGHT:
-      vint = sfi_value_get_int (value);
-      if (vint != self->loop_right_SL)
-	{
-          gboolean loop_enabled = self->loop_enabled_SL;
-	  BSE_SEQUENCER_LOCK ();
-	  self->loop_right_SL = vint;
-	  self->loop_enabled_SL = (self->loop_enabled_SL &&
-				   self->loop_left_SL >= 0 &&
-				   self->loop_right_SL > self->loop_left_SL);
-	  BSE_SEQUENCER_UNLOCK ();
-          if (loop_enabled != self->loop_enabled_SL)
-	    g_object_notify ((GObject*) self, "loop_enabled");
-	}
-      break;
     case PROP_TICK_POINTER:
       vint = sfi_value_get_int (value);
       if (uint (vint) != self->tick_SL)
@@ -233,9 +217,6 @@ bse_song_get_property (GObject     *object,
       break;
     case PROP_TPQN:
       sfi_value_set_int (value, self->tpqn);
-      break;
-    case PROP_LOOP_RIGHT:
-      sfi_value_set_int (value, self->loop_right_SL);
       break;
     case PROP_TICK_POINTER:
       sfi_value_set_int (value, self->tick_SL);
@@ -686,11 +667,6 @@ bse_song_class_init (BseSongClass *klass)
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Looping"),
-			      PROP_LOOP_RIGHT,
-			      sfi_pspec_int ("loop_right", NULL, NULL,
-					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_STORAGE ":skip-default:skip-undo"));
-  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_TICK_POINTER,
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
@@ -954,7 +930,7 @@ SongImpl::loop_enabled (bool enabled)
 int
 SongImpl::loop_left() const
 {
-  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong *>();
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
 
   return self->loop_left_SL;
 }
@@ -968,7 +944,7 @@ SongImpl::loop_left (int tick)
     {
       // this property has no undo
 
-      bool loop_enabled = self->loop_enabled_SL;
+      const bool loop_enabled = self->loop_enabled_SL;
 
       BSE_SEQUENCER_LOCK ();
       self->loop_left_SL = tick;
@@ -978,6 +954,38 @@ SongImpl::loop_left (int tick)
       BSE_SEQUENCER_UNLOCK ();
 
       notify ("loop_left");
+      if (loop_enabled != self->loop_enabled_SL)
+        notify ("loop_enabled");
+    }
+}
+
+int
+SongImpl::loop_right() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+
+  return self->loop_right_SL;
+}
+
+void
+SongImpl::loop_right (int tick)
+{
+  BseSong *self = as<BseSong*>();
+
+  if (tick != self->loop_right_SL)
+    {
+      // this property has no undo
+
+      const bool loop_enabled = self->loop_enabled_SL;
+
+      BSE_SEQUENCER_LOCK ();
+      self->loop_right_SL = tick;
+      self->loop_enabled_SL = (self->loop_enabled_SL &&
+                               self->loop_left_SL >= 0 &&
+                               self->loop_right_SL > self->loop_left_SL);
+      BSE_SEQUENCER_UNLOCK ();
+
+      notify ("loop_right");
       if (loop_enabled != self->loop_enabled_SL)
         notify ("loop_enabled");
     }
