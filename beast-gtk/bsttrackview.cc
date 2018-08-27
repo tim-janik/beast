@@ -498,9 +498,10 @@ track_view_marks_changed (BstTrackView *self)
 {
   if (self->troll && self->song)
     {
-      SfiInt lleft = self->song.loop_left();
-      SfiInt lright, pointer;
-      bse_proxy_get (self->song.proxy_id(), "loop_right", &lright, "tick_pointer", &pointer, NULL);
+      const int lleft = self->song.loop_left();
+      const int lright = self->song.loop_right();
+      SfiInt pointer;
+      bse_proxy_get (self->song.proxy_id(), "tick_pointer", &pointer, NULL);
       bst_track_roll_set_marker (self->troll, 1, lleft, lleft >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 2, lright, lright >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : BST_TRACK_ROLL_MARKER_NONE);
       bst_track_roll_set_marker (self->troll, 3, pointer, pointer >= 0 ? BST_TRACK_ROLL_MARKER_POS : BST_TRACK_ROLL_MARKER_NONE);
@@ -708,9 +709,9 @@ track_view_set_container (BstItemView *iview,
       bst_track_roll_controller_set_song (self->tctrl, self->song.proxy_id());
       self->song.on ("notify:loop_enabled", [self]() { track_view_repeat_changed (self); });
       self->song.on ("notify:loop_left", [self]() { track_view_marks_changed (self); });
+      self->song.on ("notify:loop_right", [self]() { track_view_marks_changed (self); });
       bse_proxy_connect (self->song.proxy_id(),
 			 "swapped_signal::pointer-changed", track_view_pointer_changed, self,
-			 "swapped_signal::property-notify::loop-right", track_view_marks_changed, self,
 			 "swapped_signal::property-notify::tick-pointer", track_view_marks_changed, self,
 			 NULL);
       track_view_marks_changed (self);
