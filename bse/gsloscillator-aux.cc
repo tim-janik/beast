@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-
 #define	OSC_FLAGS		(GSL_INCLUDER_CASE | OSC_INCLUDER_FLAGS)
 #define ISYNC1_OSYNC0		((OSC_FLAGS & OSC_FLAG_ISYNC) && !(OSC_FLAGS & OSC_FLAG_OSYNC))
 #define ISYNC1_OSYNC1		((OSC_FLAGS & OSC_FLAG_ISYNC) && (OSC_FLAGS & OSC_FLAG_OSYNC))
@@ -13,7 +11,7 @@
 #define WITH_EMOD		(OSC_FLAGS & OSC_FLAG_EXP_MOD)
 #define WITH_PWM_MOD		(OSC_FLAGS & OSC_FLAG_PWM_MOD)
 #define PULSE_OSC		(OSC_FLAGS & OSC_FLAG_PULSE_OSC)
-
+#define __unused                __attribute__ ((__unused__))
 
 static void
 GSL_INCLUDER_FUNC (GslOscData   *osc,
@@ -25,16 +23,16 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 		   gfloat       *mono_out,
 		   gfloat       *sync_out)
 {
-  gfloat last_sync_level = osc->last_sync_level;
-  gfloat last_pwm_level = osc->last_pwm_level;
-  gdouble last_freq_level = osc->last_freq_level;
-  const gdouble transpose = osc->config.transpose_factor;
-  const gdouble fine_tune = bse_cent_tune_fast (osc->config.fine_tune);
-  guint32 cur_pos = osc->cur_pos;
-  guint32 last_pos = osc->last_pos;
-  guint32 sync_pos, pos_inc;
-  gfloat posm_strength, self_posm_strength;
-  gfloat *boundary = mono_out + n_values;
+  float last_sync_level = osc->last_sync_level;
+  float last_pwm_level = osc->last_pwm_level;
+  double last_freq_level = osc->last_freq_level;
+  const double transpose = osc->config.transpose_factor;
+  const double fine_tune = bse_cent_tune_fast (osc->config.fine_tune);
+  uint32 cur_pos = osc->cur_pos;
+  uint32 last_pos = osc->last_pos;
+  uint32 __unused sync_pos, pos_inc;
+  float __unused posm_strength, self_posm_strength;
+  float *boundary = mono_out + n_values;
   GslOscWave *wave = &osc->wave;
 
   pos_inc = bse_dtoi (osc->last_freq_level * transpose * fine_tune * wave->freq_to_step);
