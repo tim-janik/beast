@@ -56,9 +56,9 @@
 
 #define BSE_SIGNAL_CLIP(v)      bse_signal_value_clip (v)
 
-static inline double   bse_signal_value_clip (register double x)  G_GNUC_CONST;
+static inline double   bse_signal_value_clip (double x)  G_GNUC_CONST;
 static inline double G_GNUC_CONST
-bse_signal_value_clip (register double x)
+bse_signal_value_clip (double x)
 {
   if (G_UNLIKELY (x > 1.0))
     return 1.0;
@@ -105,7 +105,7 @@ double	bse_window_rect		(double x);	/* widest */
  * d2 = 1.0091272542790025586079663559158;
  * positive_atan1(x) = 1 + (n1 * x + n2) / ((1 + d1 * x) * x + d2);
  */
-static inline double	bse_approx_atan1 	  (register double x)  G_GNUC_CONST;
+static inline double	bse_approx_atan1 	  (double x)  G_GNUC_CONST;
 
 /**
  * @param boost_amount	boost amount between [0..1]
@@ -126,7 +126,7 @@ double			bse_approx_atan1_prescale (double	   boost_amount);
  * wasn't minimized, but distributed to best fit the curverture of a
  * quarter circle. The maximum error is below 0.092.
  */
-static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
+static inline double	bse_approx_qcircle1	  (double x)  G_GNUC_CONST;
 
 /**
  * @param x	x within [0..1]
@@ -137,7 +137,7 @@ static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
  * wasn't minimized, but distributed to best fit the curverture of a
  * quarter circle. The maximum error is below 0.092.
  */
-static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
+static inline double	bse_approx_qcircle2	  (double x)  G_GNUC_CONST;
 
 /**
  * @param x	x within [0..1]
@@ -148,7 +148,7 @@ static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
  * wasn't minimized, but distributed to best fit the curverture of a
  * quarter circle. The maximum error is below 0.092.
  */
-static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
+static inline double	bse_approx_qcircle3	  (double x)  G_GNUC_CONST;
 
 /**
  * @param x	x within [0..1]
@@ -159,7 +159,7 @@ static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
  * wasn't minimized, but distributed to best fit the curverture of a
  * quarter circle. The maximum error is below 0.092.
  */
-static inline double	bse_approx_qcircle4	  (register double x)  G_GNUC_CONST;
+static inline double	bse_approx_qcircle4	  (double x)  G_GNUC_CONST;
 
 /**
  * @param ex	exponent within [-127..+127]
@@ -397,7 +397,7 @@ static inline double	bse_cent_tune_fast (int fine_tune /* -100..+100 */)   G_GNU
 
 /* --- implementation details --- */
 static inline double  G_GNUC_CONST
-bse_approx_atan1 (register double x)
+bse_approx_atan1 (double x)
 {
   if (x < 0)	/* make use of -atan(-x)==atan(x) */
     {
@@ -429,7 +429,7 @@ bse_approx_atan1 (register double x)
 }
 
 static inline double	G_GNUC_CONST
-bse_approx_qcircle1 (register double x)
+bse_approx_qcircle1 (double x)
 {
   double numerator = 1.20460124790369468987715633298929 * x - 1.20460124790369468987715633298929;
   double denominator = x - 1.20460124790369468987715633298929;
@@ -438,7 +438,7 @@ bse_approx_qcircle1 (register double x)
 }
 
 static inline double	G_GNUC_CONST
-bse_approx_qcircle2 (register double x)
+bse_approx_qcircle2 (double x)
 {
   double numerator = 1.20460124790369468987715633298929*x;
   double denominator = x + 0.20460124790369468987715633298929;
@@ -447,7 +447,7 @@ bse_approx_qcircle2 (register double x)
 }
 
 static inline double	G_GNUC_CONST
-bse_approx_qcircle3 (register double x)
+bse_approx_qcircle3 (double x)
 {
   double numerator = 0.20460124790369468987715633298929 - 0.20460124790369468987715633298929 * x;
   double denominator = x + 0.20460124790369468987715633298929;
@@ -456,7 +456,7 @@ bse_approx_qcircle3 (register double x)
 }
 
 static inline double	G_GNUC_CONST
-bse_approx_qcircle4 (register double x)
+bse_approx_qcircle4 (double x)
 {
   double numerator = -0.20460124790369468987715633298929 * x;
   double denominator = x - 1.20460124790369468987715633298929;
