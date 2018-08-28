@@ -680,8 +680,8 @@ static inline double G_GNUC_CONST
 bse_saturate_hard (double value,
                    double limit)
 {
-  double v1 = fabsf (value + limit);
-  double v2 = fabsf (value - limit);
+  double v1 = fabs (value + limit);
+  double v2 = fabs (value - limit);
   return 0.5 * (v1 - v2); /* CLAMP() without branching */
 }
 
