@@ -42,20 +42,6 @@ static void	   bse_biquad_filter_update_modules	(BseBiquadFilter	*self);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
-static const GTypeInfo type_info_biquad_filter = {
-  sizeof (BseBiquadFilterClass),
-
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_biquad_filter_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-
-  sizeof (BseBiquadFilter),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_biquad_filter_init,
-};
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseBiquadFilter)
