@@ -250,14 +250,14 @@ fatal_error (const char *format, const Args &...args)
 }
 
 /// Issue a printf-like warning message.
-template<class ...Args> void BSE_NORETURN
+template<class ...Args> void
 warning (const char *format, const Args &...args)
 {
   diag_warning (string_format (format, args...));
 }
 
 /// Issue an informative printf-like message.
-template<class ...Args> void BSE_NORETURN
+template<class ...Args> void
 info (const char *format, const Args &...args)
 {
   diag_info (string_format (format, args...));
