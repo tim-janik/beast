@@ -78,14 +78,14 @@ namespace Aida {
   constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
   constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
   constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); } \
-  constexpr Enum&   operator^= (Enum &e, auto n)   { e = Enum (e ^ int64_t (n)); return e; } \
-  constexpr Enum&   operator|= (Enum &e, auto n)   { e = Enum (e | int64_t (n)); return e; } \
-  constexpr Enum&   operator&= (Enum &e, auto n)   { e = Enum (e & int64_t (n)); return e; } \
-  constexpr Enum&   operator+= (Enum &e, auto n)   { e = Enum (e + int64_t (n)); return e; } \
-  constexpr Enum&   operator-= (Enum &e, auto n)   { e = Enum (e - int64_t (n)); return e; } \
-  constexpr Enum&   operator*= (Enum &e, auto n)   { e = Enum (e * int64_t (n)); return e; } \
-  constexpr Enum&   operator/= (Enum &e, auto n)   { e = Enum (e / int64_t (n)); return e; } \
-  constexpr Enum&   operator%= (Enum &e, auto n)   { e = Enum (e % int64_t (n)); return e; } \
+  constexpr Enum&   operator^= (Enum &e, int64_t n) { e = Enum (e ^ n); return e; } \
+  constexpr Enum&   operator|= (Enum &e, int64_t n) { e = Enum (e | n); return e; } \
+  constexpr Enum&   operator&= (Enum &e, int64_t n) { e = Enum (e & n); return e; } \
+  constexpr Enum&   operator+= (Enum &e, int64_t n) { e = Enum (e + n); return e; } \
+  constexpr Enum&   operator-= (Enum &e, int64_t n) { e = Enum (e - n); return e; } \
+  constexpr Enum&   operator*= (Enum &e, int64_t n) { e = Enum (e * n); return e; } \
+  constexpr Enum&   operator/= (Enum &e, int64_t n) { e = Enum (e / n); return e; } \
+  constexpr Enum&   operator%= (Enum &e, int64_t n) { e = Enum (e % n); return e; } \
   AIDA_DEFINE_ENUM_EQUALITY (Enum)
 
 // == Type Imports ==
