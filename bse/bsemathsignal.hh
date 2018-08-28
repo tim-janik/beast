@@ -401,7 +401,7 @@ bse_approx_atan1 (register double x)
 {
   if (x < 0)	/* make use of -atan(-x)==atan(x) */
     {
-      register double numerator, denominator = -1.0;
+      double numerator, denominator = -1.0;
 
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * 0.41156875521951602506487246309908; /* -n1 */
@@ -413,7 +413,7 @@ bse_approx_atan1 (register double x)
     }
   else
     {
-      register double numerator, denominator = 1.0;
+      double numerator, denominator = 1.0;
 
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * -0.41156875521951602506487246309908; /* n1 */
@@ -467,10 +467,10 @@ bse_approx_qcircle4 (register double x)
 static inline double G_GNUC_CONST
 bse_approx2_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333)));
 }
@@ -478,10 +478,10 @@ bse_approx2_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx3_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622))));
@@ -493,10 +493,10 @@ bse_approx3_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx4_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -510,10 +510,10 @@ bse_approx4_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx5_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -524,10 +524,10 @@ bse_approx5_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx6_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -539,10 +539,10 @@ bse_approx6_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx7_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -555,10 +555,10 @@ bse_approx7_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx8_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -572,10 +572,10 @@ bse_approx8_exp2 (float ex)
 static inline double G_GNUC_CONST
 bse_approx9_exp2 (float ex)
 {
-  register BseFloatIEEE754 fp = { 0, };
-  register int i = bse_ftoi (ex);
+  BseFloatIEEE754 fp = { 0, };
+  int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  register double x = ex - i;
+  double x = ex - i;
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
@@ -594,7 +594,7 @@ bse_approx2_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx2_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx2_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -605,7 +605,7 @@ bse_approx3_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx3_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx3_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -616,7 +616,7 @@ bse_approx4_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx4_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx4_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
   /* tanha4(x)=x<-20 ? -1 : x>20 ? 1 : (exp2a4(x*2.885390081777926814719849362)-1) / (exp2a4(x*2.885390081777926814719849362)+1) */
 }
@@ -628,7 +628,7 @@ bse_approx5_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx5_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx5_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -639,7 +639,7 @@ bse_approx6_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx6_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx6_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -650,7 +650,7 @@ bse_approx7_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx7_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx7_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -661,7 +661,7 @@ bse_approx8_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx8_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx8_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -672,7 +672,7 @@ bse_approx9_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  register double bpot = bse_approx9_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = bse_approx9_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -680,8 +680,8 @@ static inline double G_GNUC_CONST
 bse_saturate_hard (double value,
                    double limit)
 {
-  register double v1 = fabsf (value + limit);
-  register double v2 = fabsf (value - limit);
+  double v1 = fabsf (value + limit);
+  double v2 = fabsf (value - limit);
   return 0.5 * (v1 - v2); /* CLAMP() without branching */
 }
 
