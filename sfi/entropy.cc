@@ -92,7 +92,7 @@ hash_macs (KeccakRng &pool)
   int ret = 0;
   for (size_t j = 0; j <= 1 || ret >= 0; j++)           // try [0] and [1]
     {
-      struct ifreq iftmp = { 0, };
+      struct ifreq iftmp = { { { 0 }, }, };
       iftmp.ifr_ifindex = j;
       ret = ioctl (sockfd, SIOCGIFNAME, &iftmp);
       if (ret < 0)
@@ -142,7 +142,7 @@ hash_stat (KeccakRng &pool, const char *filename)
   struct {
     struct stat stat;
     uint64_t padding;
-  } s = { 0, };
+  } s = { { 0 }, };
   if (stat (filename, &s.stat) == 0)
     {
       pool.xor_seed ((const uint64_t*) &s.stat, sizeof (s.stat) / sizeof (uint64_t));
@@ -220,7 +220,7 @@ hash_cpu_usage (KeccakRng &pool)
       struct tms    tms;        //  32 bytes
       clock_t       clk;        //   8 bytes
     };
-  } u = { 0, };
+  } u = { { 0 }, };
   getrusage (RUSAGE_SELF, &u.rusage);
   u.clk = times (&u.tms);
   pool.xor_seed (u.ui64, sizeof (u.ui64) / sizeof (u.ui64[0]));
@@ -275,7 +275,7 @@ get_arc4random (uint64 *u, uint count)
 static void
 runtime_entropy (KeccakRng &pool)
 {
-  HashStamp hash_stamps[64] = { 0, };
+  HashStamp hash_stamps[64] = { { 0 }, };
   HashStamp *stamp = &hash_stamps[0];
   hash_time (stamp++);
   uint64_t uint_array[64] = { 0, };
@@ -330,7 +330,7 @@ runtime_entropy (KeccakRng &pool)
 static void
 system_entropy (KeccakRng &pool)
 {
-  HashStamp hash_stamps[64] = { 0, };
+  HashStamp hash_stamps[64] = { { 0 }, };
   HashStamp *stamp = &hash_stamps[0];
   hash_time (stamp++);
   uint64_t uint_array[64] = { 0, };
