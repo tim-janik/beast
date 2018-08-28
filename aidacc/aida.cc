@@ -601,8 +601,7 @@ struct IntrospectionEntry {
 
 using IntrospectionEntryMap = std::unordered_map<String, IntrospectionEntry>;
 
-inline __attribute__ ((const))
-static IntrospectionEntryMap&
+static inline IntrospectionEntryMap&
 aux_data_map()
 {
   static IntrospectionEntryMap aux_data_map;
