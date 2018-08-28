@@ -78,6 +78,8 @@ public:
   virtual void              denominator             (int val) override;
   virtual double            bpm                     () const override;
   virtual void              bpm                     (double val) override;
+  virtual int               tpqn                    () const override;
+  virtual void              tpqn                    (int val) override;
   virtual MusicalTuning     musical_tuning          () const override;
   virtual void              musical_tuning          (MusicalTuning tuning) override;
   virtual bool              loop_enabled            () const override;
