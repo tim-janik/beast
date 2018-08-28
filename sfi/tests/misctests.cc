@@ -948,8 +948,3 @@ main (int   argc,
 
   return 0;
 }
-
-/* distcc preprocessing test */
-const char *test_distcc_strings = "ÿÿÿÿ";
-
-/* vim:set ts=8 sts=2 sw=2: */
