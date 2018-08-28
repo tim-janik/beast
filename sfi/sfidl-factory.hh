@@ -6,7 +6,7 @@
 
 namespace Sfidl {
 
-class Options;
+struct Options;
 class Parser;
 class CodeGenerator;
 

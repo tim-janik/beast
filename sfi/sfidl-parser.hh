@@ -230,7 +230,7 @@ public:
 
 class Parser {
 protected:
-  const class Options&      options;
+  const struct Options&      options;
 
   GScanner                 *scanner;
   std::vector<char>         scannerInputData;
