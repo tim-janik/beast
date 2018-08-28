@@ -589,7 +589,7 @@ sub fft_loop_macros {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     print "
 #define WMULTIPLY(Wre,Wim,Dre,Dim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = Wre * Dre;  \\
   T1im = Wim * Dre;  \\
   T2re = Wim * Dim;  \\
@@ -605,7 +605,7 @@ sub butterfly_macros {
     # add_result = gsl_complex (c1.re + c2.re, c1.im + c2.im);
     print "
 #define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = X2im * Wim;  \\
@@ -620,7 +620,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_Yx(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wim;  \\
   T1im = X2im * Wim;  \\
   T2re = X2im * Wre;  \\
@@ -635,7 +635,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_yX(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wim;  \\
   T1im = X2im * Wim;  \\
   T2re = X2im * Wre;  \\
@@ -650,7 +650,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_10(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2re; \\
   T2im = X1im - X2im; \\
   Y1re = X1re + X2re; \\
@@ -659,7 +659,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_01(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re + X2im; \\
   T2im = X1im - X2re; \\
   Y1re = X1re - X2im; \\
@@ -668,7 +668,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_0m(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2im; \\
   T2im = X1im + X2re; \\
   Y1re = X1re + X2im; \\
@@ -677,7 +677,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_XX(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,_2) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = T1im; \\
@@ -692,7 +692,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_yY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,_2) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = T1im;  \\
@@ -707,7 +707,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_10scale(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,S) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2re; \\
   T2im = X1im - X2im; \\
   Y1re = X1re + X2re; \\
@@ -830,8 +830,8 @@ print " */\n";
 	   $fft_size, $func_name,
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
-    printf "%sregister uint butterfly, block, offset;\n", $indent;
-    printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
+    printf "%suint butterfly, block, offset;\n", $indent;
+    printf "%s%s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
 
     my $seen_rule = 0;
