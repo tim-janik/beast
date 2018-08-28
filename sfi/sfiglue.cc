@@ -170,12 +170,6 @@ sfi_glue_context_destroy (SfiGlueContext *context)
 
 
 /* --- VTable API --- */
-static inline gulong
-upper_power2 (gulong number)
-{
-  return number ? 1 << g_bit_storage (number - 1) : 0;
-}
-
 const gchar**
 sfi_glue_list_proc_names (void)
 {
