@@ -532,30 +532,31 @@ enum MonitorField {
 };
 
 // == Bse Constants ==
-Const MIN_NOTE      = 0;
-Const MAX_NOTE      = 131;          // 123
-Const NOTE_VOID     = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
-Const KAMMER_NOTE   = 69;           /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
-Const KAMMER_FREQ   = 440.0;        /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
-Const KAMMER_OCTAVE = +1;           /// Octave number for MIDI A'
-Const MIN_OCTAVE    = -4;           /// Octave of MIN_NOTE
-Const MAX_OCTAVE    = +6;           /// Octave of MAX_NOTE
-Const MIN_FINE_TUNE = -100;
-Const MAX_FINE_TUNE = 100;
-Const MIN_BPM       = 1;
-Const MAX_BPM       = 1024;
-Const MIN_TRANSPOSE = -72;
-Const MAX_TRANSPOSE = +72;
-Const READWRITE     = "r:w:";
-Const GUI           = "r:w:G";
-Const STORAGE       = "r:w:S";
-Const STANDARD      = STORAGE ":G";
-Const NOTEHINTS     = STANDARD ":note";
-Const FINETUNEHINTS = STANDARD ":finetune";
-Const VELOCITYHINTS = STANDARD ":velocity";
+Const MIN_NOTE        = 0;
+Const MAX_NOTE        = 131;          // 123
+Const NOTE_VOID       = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
+Const KAMMER_NOTE     = 69;           /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
+Const KAMMER_FREQ     = 440.0;        /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
+Const KAMMER_OCTAVE   = +1;           /// Octave number for MIDI A'
+Const MIN_OCTAVE      = -4;           /// Octave of MIN_NOTE
+Const MAX_OCTAVE      = +6;           /// Octave of MAX_NOTE
+Const MIN_FINE_TUNE   = -100;
+Const MAX_FINE_TUNE   = 100;
+Const MIN_BPM         = 1;
+Const MAX_BPM         = 1024;
+Const MIN_TRANSPOSE   = -72;
+Const MAX_TRANSPOSE   = +72;
+Const READWRITE       = "r:w:";
+Const GUI             = "r:w:G";
+Const STORAGE         = "r:w:S";
+Const STANDARD        = STORAGE ":G";
+Const STANDARD_RDONLY = STANDARD ":ro:";
+Const NOTEHINTS       = STANDARD ":note";
+Const FINETUNEHINTS   = STANDARD ":finetune";
+Const VELOCITYHINTS   = STANDARD ":velocity";
 /* extra options */
-Const SKIP_DEFAULT  = ":skip-default:";
-Const SKIP_UNDO     = ":skip-undo:";
+Const SKIP_DEFAULT    = ":skip-default:";
+Const SKIP_UNDO       = ":skip-undo:";
 
 /// Stringeq - a variable length list of test strings.
 sequence StringSeq {
@@ -1011,15 +1012,11 @@ interface Song : SNet {
   /// Synthesize a note on a song of an active project.
   void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
   // signal void   pointer_changed (int32 a);
-  // group _("Timing") {
-  // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
-  // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
-  // float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
-  // };
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
   group _("Timing") {
+    int32   tpqn          = Range (_("TPQN"), _("Number of ticks per quarter note"), STANDARD_RDONLY, 384, 384, 0, 384);
     int32   numerator     = Range (_("Numerator"), _("Measure numerator"), STANDARD, 1, 256, 1, 4);
     int32   denominator   = Range (_("Denominator"), _("Measure denominator, must be a power of 2"), STANDARD, 1, 256, 0, 4);
     float64 bpm           = Range (_("BPM"), _("Beats per minute"), STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
