@@ -186,6 +186,7 @@ FAST_MATH_FLAGS="-ffast-math"
 gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fno-delete-null-pointer-checks"
 gcc_fast_math="-fivopts"
 clang_fix_flags="-Qunused-arguments"		# avoid bogus -pthread warning (llvm#7798)
+clang_fix_flags="$clang_fix_flags -Wno-tautological-compare"
 x86_flags="-minline-all-stringops"
 x86_flags="$x86_flags -mmmx -msse -msse2"	# Intel since 2001, AMD since 2003
 x86_flags="$x86_flags -msse3"			# Intel since 2004, AMD since 2007
