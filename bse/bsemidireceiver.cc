@@ -83,22 +83,26 @@ struct ControlKey {
     return type < k.type;
   }
 };
-struct ControlHandler {
-  BseMidiControlHandler           handler_func;
-  gpointer                        handler_data;
-  gpointer                        user_data;
-  BseFreeFunc                     user_free;
+class ControlHandler final {
+  ControlHandler (const ControlHandler&) = delete;
+  ControlHandler& operator= (const ControlHandler&) = delete;
+public:
+  BseMidiControlHandler           handler_func = NULL;
+  gpointer                        handler_data = NULL;
+  gpointer                        user_data = NULL;
+  BseFreeFunc                     user_free = NULL;
   std::vector<BseModule*>         modules;
   explicit
-  ControlHandler (BseMidiControlHandler hfunc,
-                  gpointer              hdata,
-                  gfloat                vmin = 0,
-                  gfloat                vmax = 0) :
-    handler_func (hfunc),
-    handler_data (hdata),
-    user_data (NULL),
-    user_free (NULL)
+  ControlHandler (BseMidiControlHandler hfunc, void *hdata, float vmin = 0, float vmax = 0) :
+    handler_func (hfunc), handler_data (hdata)
+  {}
+  ControlHandler (ControlHandler &&other)
   {
+    std::swap (handler_func, other.handler_func);
+    std::swap (handler_data, other.handler_data);
+    std::swap (user_data, other.user_data);
+    std::swap (user_free, other.user_free);
+    std::swap (modules, other.modules);
   }
   void modify() {}
   bool
@@ -144,16 +148,34 @@ struct ControlHandler {
     user_free = NULL;
   }
 };
-struct ControlValue {
-  gfloat                           value;
-  GSList                          *cmodules;
+class ControlValue final {
+  ControlValue (const ControlValue&) = delete;
+  ControlValue& operator= (const ControlValue&) = delete;
+public:
+  float                            value = 0;
+  GSList                          *cmodules = NULL;
   typedef std::set<ControlHandler> HandlerList;
   HandlerList                      handlers;
   explicit
   ControlValue (gfloat v) :
-    value (v),
-    cmodules (NULL)
+    value (v)
+  {}
+  ControlValue (ControlValue &&other) :
+    value (other.value), cmodules (NULL)
   {
+    std::swap (cmodules, other.cmodules);
+    std::swap (handlers, other.handlers);
+  }
+  ControlValue&
+  operator= (ControlValue &&other)
+  {
+    if (this != &other)
+      {
+        std::swap (value, other.value);
+        std::swap (cmodules, other.cmodules);
+        std::swap (handlers, other.handlers);
+      }
+    return *this;
   }
   bool
   add_handler (BseMidiControlHandler handler_func,
@@ -162,7 +184,10 @@ struct ControlValue {
   {
     HandlerList::iterator it = handlers.find (ControlHandler (handler_func, handler_data));
     if (it == handlers.end())
-      it = handlers.insert (ControlHandler (handler_func, handler_data)).first;
+      {
+        ControlHandler chandler (handler_func, handler_data);
+        it = handlers.insert (std::move (chandler)).first;
+      }
     ControlHandler *ch = const_cast<ControlHandler*> (&(*it));
     ch->add_module (module);
     return ch->user_data != NULL;
@@ -328,12 +353,12 @@ struct MidiReceiver
 {
   typedef std::map<ControlKey,ControlValue>     Controls;
   typedef std::vector<MidiChannel*>             Channels;
-  Controls      controls;
-  guint		n_cmodules;
-  BseModule   **cmodules;                       /* control signals */
-  Channels      midi_channels;
-  SfiRing      *events;                         /* contains BseMidiEvent* */
-  guint		ref_count;
+  Controls         controls;
+  uint	           n_cmodules;
+  BseModule      **cmodules;            // control signals
+  Channels         midi_channels;
+  SfiRing         *events;              // contains BseMidiEvent*
+  uint		   ref_count;
   BseMidiNotifier *notifier;
   SfiRing	  *notifier_events;
 public:
@@ -389,11 +414,13 @@ private:
                      Bse::MidiSignal type)
   {
     Controls::iterator it = controls.find (ControlKey (midi_channel, type));
-    if (it != controls.end())
-      return &it->second;
-    else
-      return &controls.insert (std::make_pair (ControlKey (midi_channel, type),
-                                               ControlValue (bse_midi_signal_default (type)))).first->second;
+    if (it == controls.end())
+      {
+        ControlKey ckey (midi_channel, type);
+        ControlValue cvalue (bse_midi_signal_default (type));
+        it = controls.emplace (ckey, std::move (cvalue)).first;
+      }
+    return &it->second;
   }
 public:
   gfloat
