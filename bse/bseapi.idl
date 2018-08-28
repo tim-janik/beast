@@ -1013,7 +1013,6 @@ interface Song : SNet {
   // signal void   pointer_changed (int32 a);
   // group _("Timing") {
   // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
-  // int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
   // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
   // float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
   // };
@@ -1021,7 +1020,8 @@ interface Song : SNet {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
   group _("Timing") {
-    float64 bpm           = Range  (_("BPM"), _("Beats per minute"), STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
+    int32   numerator     = Range (_("Numerator"), _("Measure numerator"), STANDARD, 1, 256, 1, 4);
+    float64 bpm           = Range (_("BPM"), _("Beats per minute"), STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
   };
   group _("Tuning") {
     MusicalTuning musical_tuning = Enum (_("Musical Tuning"),

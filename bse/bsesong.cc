@@ -21,7 +21,6 @@ enum
 {
   PROP_0,
   PROP_TPQN,
-  PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_PNET,
 };
@@ -162,10 +161,6 @@ bse_song_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_NUMERATOR:
-      self->numerator = sfi_value_get_int (value);
-      bse_song_update_tpsi_SL (self);
-      break;
     case PROP_DENOMINATOR:
       vint = sfi_value_get_int (value);
       self->denominator = vint <= 2 ? vint : 1 << g_bit_storage (vint - 1);
@@ -192,9 +187,6 @@ bse_song_get_property (GObject     *object,
     {
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_NUMERATOR:
-      sfi_value_set_int (value, self->numerator);
       break;
     case PROP_DENOMINATOR:
       sfi_value_set_int (value, self->denominator);
@@ -636,10 +628,6 @@ bse_song_class_init (BseSongClass *klass)
 			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),
 					     timing.tpqn, 384, 384, 0, SFI_PARAM_STANDARD_RDONLY));
   bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_NUMERATOR,
-			      sfi_pspec_int ("numerator", _("Numerator"), _("Measure numerator"),
-					     timing.numerator, 1, 256, 1, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", _("Denominator"), _("Measure denominator, must be a power of 2"),
 					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
@@ -828,6 +816,30 @@ SongImpl::get_timing (int tick)
   SongTiming timing;
   bse_song_get_timing (self, tick, &timing);
   return timing;
+}
+
+int
+SongImpl::numerator() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+
+  return self->numerator;
+}
+
+void
+SongImpl::numerator (int val)
+{
+  BseSong *self = as<BseSong*>();
+  if (int (self->numerator) != val)
+    {
+      const char *prop = "numerator";
+      push_property_undo (prop);
+
+      self->numerator = val;
+      bse_song_update_tpsi_SL (self);
+
+      notify (prop);
+    }
 }
 
 double
