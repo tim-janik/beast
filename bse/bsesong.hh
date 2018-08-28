@@ -74,6 +74,8 @@ public:
   explicit                  SongImpl                (BseObject*);
   virtual int               numerator               () const override;
   virtual void              numerator               (int val) override;
+  virtual int               denominator             () const override;
+  virtual void              denominator             (int val) override;
   virtual double            bpm                     () const override;
   virtual void              bpm                     (double val) override;
   virtual MusicalTuning     musical_tuning          () const override;

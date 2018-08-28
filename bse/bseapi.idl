@@ -1021,6 +1021,7 @@ interface Song : SNet {
   // };
   group _("Timing") {
     int32   numerator     = Range (_("Numerator"), _("Measure numerator"), STANDARD, 1, 256, 1, 4);
+    int32   denominator   = Range (_("Denominator"), _("Measure denominator, must be a power of 2"), STANDARD, 1, 256, 0, 4);
     float64 bpm           = Range (_("BPM"), _("Beats per minute"), STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
   };
   group _("Tuning") {
