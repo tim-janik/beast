@@ -758,8 +758,8 @@ bse_wave_index_lookup_best (BseWaveIndex *windex,
       nodes -= 1;
       do
 	{
-	  register gfloat cmp;
-	  register guint i;
+          float cmp;
+	  uint i;
 
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
