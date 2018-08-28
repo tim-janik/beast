@@ -6,7 +6,7 @@
 
 namespace Bse {
 
-struct MonitorModule;
+class MonitorModule;
 
 SignalMonitorImpl::SignalMonitorImpl (SourceImplP source, uint ochannel) :
   source_ (source), ochannel_ (ochannel)
