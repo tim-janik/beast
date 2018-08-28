@@ -546,6 +546,7 @@ Const MIN_BPM       = 1;
 Const MAX_BPM       = 1024;
 Const MIN_TRANSPOSE = -72;
 Const MAX_TRANSPOSE = +72;
+Const READWRITE     = "r:w:";
 Const GUI           = "r:w:G";
 Const STORAGE       = "r:w:S";
 Const STANDARD      = STORAGE ":G";
@@ -1019,8 +1020,6 @@ interface Song : SNet {
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
-  // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
-  // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
   group _("Timing") {
     float64 bpm           = Range  (_("BPM"), _("Beats per minute"), STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
   };
@@ -1035,6 +1034,8 @@ interface Song : SNet {
   group _("Looping") {
     bool  loop_enabled = Bool (_("Loop Enabled"), "", STORAGE SKIP_DEFAULT SKIP_UNDO, false);
     int32 loop_left    = Range (_("Loop Left"), "", STORAGE SKIP_DEFAULT SKIP_UNDO, -1, MAXINT31, 384, -1);
+    int32 loop_right   = Range (_("Loop Right"), "", STORAGE SKIP_DEFAULT SKIP_UNDO, -1, MAXINT31, 384, -1);
+    int32 tick_pointer = Range (_("Tick Pointer"), "", READWRITE SKIP_UNDO, -1, MAXINT31, 384, -1);
   };
 };
 
