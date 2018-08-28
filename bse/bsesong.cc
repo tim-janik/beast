@@ -989,7 +989,7 @@ SongImpl::tick_pointer (int tick)
       for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
         {
           BseTrack *track = (BseTrack*) ring->data;
-          track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
+          track->track_done_SL = false;	/* let sequencer recheck if playing */
         }
       BSE_SEQUENCER_UNLOCK ();
 
