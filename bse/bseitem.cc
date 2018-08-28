@@ -1029,15 +1029,17 @@ ItemImpl&
 ItemImpl::resolve_undo_descriptor_data (const UndoDescriptorData &udd)
 {
   // sync with bse_undo_pointer_unpack
-  ItemImpl &nullitem = *(ItemImpl*) NULL;
-  assert_return (udd.projectid != 0, nullitem);
+  if (udd.projectid == 0)
+    fatal_error ("UndoDescriptorData.projectid must be > 0");
   BseProject *bproject = bse_item_get_project (this->as<BseItem*>());
   ProjectImpl *project = bproject ? bproject->as<ProjectImpl*>() : NULL;
-  assert_return (udd.projectid == ptrdiff_t (project), nullitem); // undo cannot work on orphans
+  if (udd.projectid != ptrdiff_t (project)) // undo cannot work on orphans
+    fatal_error ("item must belong to UndoDescriptorData.projectid");
   if (udd.upath == "\002project\003")
     return *project;
   BseItem *bitem = bse_container_resolve_upath (bproject, udd.upath.c_str());
-  assert_return (bitem != NULL, nullitem); // undo descriptor for NULL objects is not currently supported
+  if (bitem != NULL)    // undo descriptor for NULL objects is not currently supported
+    fatal_error ("item undo path failed to resolve");
   return *bitem->as<ItemImpl*>();
 }
 
