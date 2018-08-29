@@ -27,20 +27,17 @@ typedef enum    /*< skip >*/
   BST_TRACK_ROLL_MARKER_LOOP,
   BST_TRACK_ROLL_MARKER_SELECT
 } BstTrackRollMarkerType;
-struct BstTrackRollDrag {
-  GXK_SCROLL_CANVAS_DRAG_FIELDS;
-  uint          start_row;
+struct BstTrackRollDrag : GxkScrollCanvasDrag {
+  uint          start_row = ~0;
   Bse::TrackH   start_track;
-  uint          start_tick;
-  bool          start_valid;
-  uint          current_row;
+  uint          start_tick = 0;
+  bool          start_valid = false;
+  uint          current_row = ~0;
   Bse::TrackH   current_track;
-  uint          current_tick;
-  bool          current_valid;
+  uint          current_tick = 0;
+  bool          current_valid = 0;
   // convenience:
-  BstTrackRoll *troll;
-  BstTrackRollDrag() : start_row (~uint (0)), start_tick (0), start_valid (0),
-                       current_row (~uint (0)), current_tick (0), current_valid (0), troll (NULL) {}
+  BstTrackRoll *troll = NULL;
 };
 struct _BstTrackRoll
 {

@@ -916,7 +916,10 @@ track_roll_handle_drag (GxkScrollCanvas     *scc,
   gint hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
   gint vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
   /* copy over drag setup */
-  memcpy (drag, scc_drag, sizeof (*scc_drag));  /* sizeof (*scc_drag) < sizeof (*drag) */
+  {
+    GxkScrollCanvasDrag *scdrag = drag;
+    *scdrag = *scc_drag;
+  }
   drag->troll = self;
   /* calculate widget specific drag data */
   if (hdrag)
