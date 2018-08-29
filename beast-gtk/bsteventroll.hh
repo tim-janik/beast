@@ -19,19 +19,18 @@ typedef struct _BstEventRollClass   BstEventRollClass;
 
 
 /* --- structures & typedefs --- */
-typedef struct {
-  GXK_SCROLL_CANVAS_DRAG_FIELDS;
-  gint          tick_width;
-  guint	        start_tick;
-  gfloat        start_value;
-  guint		start_valid : 1;
-  guint         current_tick;
-  gfloat        current_value;          /* between -1 and +1 if valid */
-  gfloat        current_value_raw;
-  guint		current_valid : 1;	/* value out of range */
-  /* convenience: */
-  BstEventRoll *eroll;
-} BstEventRollDrag;
+struct BstEventRollDrag : GxkScrollCanvasDrag {
+  int           tick_width = 0;
+  uint	        start_tick = 0;
+  float         start_value = 0;
+  bool		start_valid = false;
+  bool          current_valid = false;          // value out of range
+  uint          current_tick = 0;
+  float         current_value = 0;              // between -1 and +1 if valid
+  float         current_value_raw = 0;
+  // convenience:
+  BstEventRoll *eroll = NULL;
+};
 struct _BstEventRoll
 {
   GxkScrollCanvas parent_instance;

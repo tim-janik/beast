@@ -37,10 +37,10 @@ static void     bst_event_roll_hsetup                 (BstEventRoll      *self,
                                                        gfloat             hzoom);
 
 /* --- static variables --- */
-static guint	signal_canvas_drag = 0;
-static guint	signal_canvas_clicked = 0;
-static guint	signal_vpanel_drag = 0;
-static guint	signal_vpanel_clicked = 0;
+static uint	signal_canvas_drag = 0;
+static uint	signal_canvas_clicked = 0;
+static uint	signal_vpanel_drag = 0;
+static uint	signal_vpanel_clicked = 0;
 
 
 /* --- functions --- */
@@ -512,9 +512,12 @@ event_roll_handle_drag (GxkScrollCanvas     *scc,
                         GdkEvent            *event)
 {
   BstEventRoll *self = BST_EVENT_ROLL (scc);
-  BstEventRollDrag drag_mem = { 0 }, *drag = &drag_mem;
+  BstEventRollDrag drag_mem, *drag = &drag_mem;
   /* copy over drag setup */
-  memcpy (drag, scc_drag, sizeof (*scc_drag));  /* sizeof (*scc_drag) < sizeof (*drag) */
+  {
+    GxkScrollCanvasDrag *scdrag = drag;
+    *scdrag = *scc_drag;
+  }
   drag->eroll = self;
   drag->tick_width = TICK_WIDTH (self);
   if (drag->canvas_drag)
