@@ -126,7 +126,7 @@ sub butterfly {
     my $Wre = shift;
     my $Wim = shift;
     my $var = shift;
-    
+
     # define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im)
     printf($indent."BUTTERFLY_%s (%s[%s], %s[%s + 1],\n".
 	   $indent."              %s[%s], %s[%s + 1],\n".
@@ -181,7 +181,7 @@ sub butterfly_auto {
       die("optimization error for fft$fft_size: 10=". $optimize_10 .", 0x=". $optimize_0x .
 	  ", Wre=". $rfact ." Wim=". $ifact .", wk=". $wk);
   }
-  
+
   # BUTTERFLY_XY (X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im);
   printf($indent."BUTTERFLY_%s (%s[%s%u],               /* W%u */\n".
 	 $indent."              %s[%s%u + 1],\n".
@@ -202,7 +202,7 @@ sub unroll_stage {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $unroll_outer = shift;
-    
+
     if ($unroll_outer && $n_points == 2) {
 	for (my $i = 0; $i < $n_points >> 1; $i++) {
 	    for (my $j = 0; $j < $n_rep; $j++) {
@@ -236,7 +236,7 @@ sub unroll_stage {
 	}
     } else {
 	die "cannot skip outer loop unrolling for fft2" if $n_points == 2;
-	
+
 	printf "%sfor (block = 0; block < %u; block += %u) {\n", $indent, $n_points * 2 * $n_rep, $n_points * 2;
 	$indent .= "  ";
 	for (my $i = 0; $i < $n_points >> 1; $i++) {
@@ -254,7 +254,7 @@ sub table_stage {
     my $fft_size = shift;
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
-    
+
     die "cannot loop over coefficient table for fft2" if $n_points == 2;
 
     printf "%s{\n", $indent;
@@ -310,7 +310,7 @@ sub table_stage {
 	printf "%s  }\n", $indent;
 	printf "%s}\n", $indent;
     }
-    
+
     $indent =~ s/\ \ $//;
     printf "%s}\n", $indent;
 }
@@ -324,7 +324,6 @@ bitreverse_fft2synthesis (const unsigned int n,
 {
   const uint n2 = n >> 1, n1 = n + n2, max = n >> 2;
   uint i, r;
-  
   BUTTERFLY_10 (X[0], X[1],
 		X[n], X[n + 1],
 		Y[0], Y[1],
@@ -476,7 +475,7 @@ sub gen_fft_loop_unoptimized {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $ofs2;
-    
+
     die "invalid fft size: " . $n_points if ($n_points < 4);
 
     # incremental coefficient W for this fft
@@ -485,7 +484,7 @@ sub gen_fft_loop_unoptimized {
     my $re = sin (0.5 * $theta);
     my $im = sin ($theta);
     $re = $re * $re * -2.;
-    
+
     # init variables, start loops
     printf "%sWre = 1.0; Wim = 0.0;\n", $indent;
     printf "%sfor (butterfly = 0; butterfly < %u; butterfly += 2) {\n", $indent, $n_points;
@@ -513,7 +512,7 @@ sub gen_fft_loop_o10o0x {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $ofs2;
-    
+
     die "invalid fft size: " . $n_points if ($n_points < 4);
 
     # coefficient {1,0} loop
@@ -530,7 +529,7 @@ sub gen_fft_loop_o10o0x {
     my $re = sin (0.5 * $theta);
     my $im = sin ($theta);
     $re = $re * $re * -2.;
-    
+
     # loop first half
     if (2 < $n_points >> 1) {
 	printf "%sWre = %+.15f; Wim = %+.15f;\n", $indent, $re + 1.0, $im;
@@ -551,7 +550,7 @@ sub gen_fft_loop_o10o0x {
 	$indent =~ s/\ \ $//;
 	printf "%s}\n", $indent;
     }
-    
+
     # coefficient {0,1} loop
     printf "%sfor (offset = %u; offset < %u; offset += %u) {\n", $indent, $n_points >> 1, $n_rep * $n_points << 1, $n_points << 1;
     $indent .= "  ";
@@ -729,7 +728,7 @@ sub gen_stage {
     my $n_points = shift;
     my $kind = shift;
     my $times = $fft_size / $n_points;
-    
+
     if ($kind eq 'S') {
 	printf "\n%s/* skipping %u times fft%u */\n", $indent, $times, $n_points;
 	return;
@@ -779,7 +778,7 @@ sub gen_stage {
 #
 if ($Wtest) {
     my $fft_size = $max_fft_size;
-    
+
     for (my $i = 0; $i < $fft_size >> 1; $i++) {
 	my $wk = Wexponent ($fft_size, $fft_size, $i);
 	printf "$fft_size: %4u:  %+.15f, %+.15f,\n", $i, Wreal ($fft_size, $wk), Wimag ($fft_size, $wk);
