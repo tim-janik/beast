@@ -1076,11 +1076,14 @@ piano_roll_handle_drag (GxkScrollCanvas     *scc,
                         GdkEvent            *event)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
-  BstPianoRollDrag drag_mem = { 0 }, *drag = &drag_mem;
-  gint hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
-  gint vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
+  BstPianoRollDrag drag_mem, *drag = &drag_mem;
+  int hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
+  int vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
   /* copy over drag setup */
-  memcpy (drag, scc_drag, sizeof (*scc_drag));  /* sizeof (*scc_drag) < sizeof (*drag) */
+  {
+    GxkScrollCanvasDrag *scdrag = drag;
+    *scdrag = *scc_drag;
+  }
   drag->proll = self;
   /* calculate widget specific drag data */
   if (hdrag)
