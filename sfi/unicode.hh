@@ -27,7 +27,7 @@ constexpr inline bool
 unicode_is_assigned (uint32_t u)
 {
   const bool assigned =
-    (u >=   0x0000 && u <=   0xD7FF) ||   // BMP - Basic Multilingual Plane (below surrogates at 0xD800)
+    (/*u >= 0x00 &&*/ u <=   0xD7FF) ||   // BMP - Basic Multilingual Plane (below surrogates at 0xD800)
     (u >=   0xE000 && u <=   0xFFFF) ||   // BMP - Basic Multilingual Plane (above surrogates at 0xDFFF)
     (u >=  0x10000 && u <=  0x14FFF) ||   // SMP - Supplementary Multilingual Plane
     (u >=  0x16000 && u <=  0x18FFF) ||   // SMP - Supplementary Multilingual Plane
@@ -67,7 +67,7 @@ unicode_is_character (uint32_t u)
 constexpr inline bool
 unicode_is_control_code (uint32_t u)
 {
-  const bool control = (u >= 0x00 && u <= 0x1F) || (u >= 0x7F && u <= 0x9f);
+  const bool control = (/*u >= 0x00 &&*/ u <= 0x1F) || (u >= 0x7F && u <= 0x9f);
   return __builtin_expect (control, false);
 }
 
