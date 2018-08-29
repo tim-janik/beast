@@ -57,7 +57,7 @@ static inline constexpr uint64_t
 bit_rotate64 (uint64_t bits, unsigned int offset)
 {
   // bitwise rotate-left pattern recognized by gcc & clang iff 64==sizeof (bits)
-  return (bits << offset) | (bits >> (64 - offset));
+  return UNLIKELY (offset == 0) ? bits : (bits << offset) | (bits >> (64 - offset));
 }
 
 /// The Keccak-f[1600] permutation for up to 254 rounds, see Keccak11 @cite Keccak11 .
