@@ -541,7 +541,7 @@ event_roll_handle_drag (GxkScrollCanvas     *scc,
     {
       drag->start_tick = self->start_tick = drag->current_tick;
       drag->start_value = self->start_value = drag->current_value;
-      drag->start_valid = self->start_valid = drag->current_valid;
+      drag->start_valid = (self->start_valid = drag->current_valid);
     }
   else
     {

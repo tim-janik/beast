@@ -884,7 +884,7 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
       drag->start_row = self->start_row = drag->current_row;
       drag->start_tick = self->start_tick = drag->current_tick;
       drag->start_duration = self->start_duration = drag->current_duration;
-      drag->start_valid = self->start_valid = drag->current_valid;
+      drag->start_valid = (self->start_valid = drag->current_valid);
     }
   else
     {

@@ -1100,7 +1100,7 @@ piano_roll_handle_drag (GxkScrollCanvas     *scc,
     {
       drag->start_tick = self->start_tick = drag->current_tick;
       drag->start_note = self->start_note = drag->current_note;
-      drag->start_valid = self->start_valid = drag->current_valid;
+      drag->start_valid = (self->start_valid = drag->current_valid);
     }
   else
     {
