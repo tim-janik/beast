@@ -319,7 +319,7 @@ class I_FirstInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_FirstInterfaceIface ();
-  virtual  /*Des*/                     ~I_FirstInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_FirstInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace::FirstInterface"; }
@@ -760,7 +760,7 @@ class I_UIWidgetAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_UIWidgetAreaIface ();
-  virtual  /*Des*/                     ~I_UIWidgetAreaIface () override = 0;
+  virtual  /*dtor*/                    ~I_UIWidgetAreaIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::UIWidgetArea"; }
@@ -808,7 +808,7 @@ class I_ParentIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_ParentIface ();
-  virtual  /*Des*/                     ~I_ParentIface () override = 0;
+  virtual  /*dtor*/                    ~I_ParentIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Parent"; }
@@ -831,7 +831,7 @@ class I_ChildIface : public virtual I_ParentIface
 {
 protected:
   explicit                              I_ChildIface ();
-  virtual  /*Des*/                     ~I_ChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_ChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Child"; }
@@ -856,7 +856,7 @@ class I_DescendantIface : public virtual I_ChildIface
 {
 protected:
   explicit                              I_DescendantIface ();
-  virtual  /*Des*/                     ~I_DescendantIface () override = 0;
+  virtual  /*dtor*/                    ~I_DescendantIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Descendant"; }
@@ -881,7 +881,7 @@ class I_GrandChildIface : public virtual I_DescendantIface
 {
 protected:
   explicit                              I_GrandChildIface ();
-  virtual  /*Des*/                     ~I_GrandChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_GrandChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::GrandChild"; }
@@ -949,7 +949,7 @@ class I_QuickIfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_QuickIfaceIface ();
-  virtual  /*Des*/                     ~I_QuickIfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_QuickIfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::QuickIface"; }
@@ -973,7 +973,7 @@ class I_MethodTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_MethodTestInterfaceIface ();
-  virtual  /*Des*/                     ~I_MethodTestInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_MethodTestInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::MethodTestInterface"; }
@@ -1019,7 +1019,7 @@ class I_SignalTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_SignalTestInterfaceIface ();
-  virtual  /*Des*/                     ~I_SignalTestInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_SignalTestInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::SignalTestInterface"; }
@@ -1042,7 +1042,7 @@ class I_ChildInheritingSignalsIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
   explicit                              I_ChildInheritingSignalsIface ();
-  virtual  /*Des*/                     ~I_ChildInheritingSignalsIface () override = 0;
+  virtual  /*dtor*/                    ~I_ChildInheritingSignalsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
@@ -1067,7 +1067,7 @@ class I_AnotherChildIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
   explicit                              I_AnotherChildIface ();
-  virtual  /*Des*/                     ~I_AnotherChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_AnotherChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::AnotherChild"; }
@@ -1092,7 +1092,7 @@ class I_PropertyTesterIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_PropertyTesterIface ();
-  virtual  /*Des*/                     ~I_PropertyTesterIface () override = 0;
+  virtual  /*dtor*/                    ~I_PropertyTesterIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::PropertyTester"; }
@@ -1152,7 +1152,7 @@ class I_UseIncludesIface : public virtual IncludeCheck::I_SomeInterfaceIface
 {
 protected:
   explicit                              I_UseIncludesIface ();
-  virtual  /*Des*/                     ~I_UseIncludesIface () override = 0;
+  virtual  /*dtor*/                    ~I_UseIncludesIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::UseIncludes"; }
@@ -1177,7 +1177,7 @@ class I_ButtonAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_ButtonAreaIface ();
-  virtual  /*Des*/                     ~I_ButtonAreaIface () override = 0;
+  virtual  /*dtor*/                    ~I_ButtonAreaIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::ButtonArea"; }
@@ -1214,7 +1214,7 @@ class I_PureMethodsIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_PureMethodsIface ();
-  virtual  /*Des*/                     ~I_PureMethodsIface () override = 0;
+  virtual  /*dtor*/                    ~I_PureMethodsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::PureMethods"; }
@@ -1241,7 +1241,7 @@ class I_NameTestsIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_NameTestsIface ();
-  virtual  /*Des*/                     ~I_NameTestsIface () override = 0;
+  virtual  /*dtor*/                    ~I_NameTestsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "Other::NameTests"; }
@@ -1270,7 +1270,7 @@ class I_CompressorIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_CompressorIface ();
-  virtual  /*Des*/                     ~I_CompressorIface () override = 0;
+  virtual  /*dtor*/                    ~I_CompressorIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::Compressor"; }
@@ -1331,7 +1331,7 @@ class I_SoundModuleIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_SoundModuleIface ();
-  virtual  /*Des*/                     ~I_SoundModuleIface () override = 0;
+  virtual  /*dtor*/                    ~I_SoundModuleIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::SoundModule"; }

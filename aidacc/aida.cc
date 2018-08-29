@@ -1731,35 +1731,8 @@ RemoteHandle::RemoteHandle (OrbObjectP orbo) :
   orbop_ (orbo ? orbo : __aida_null_orb_object__())
 {}
 
-RemoteHandle::RemoteHandle (const RemoteHandle &y) :
-  orbop_ (y.orbop_)
-{}
-
-RemoteHandle::RemoteHandle (RemoteHandle &&other) noexcept :
-  orbop_ (other.orbop_)
-{
-  other.orbop_ = __aida_null_orb_object__();
-}
-
 RemoteHandle::~RemoteHandle()
 {}
-
-RemoteHandle&
-RemoteHandle::operator= (const RemoteHandle& other)
-{
-  return_unless (this != &other, *this);
-  orbop_ = other.orbop_;
-  return *this;
-}
-
-RemoteHandle&
-RemoteHandle::operator= (RemoteHandle &&other)
-{
-  return_unless (this != &other, *this);
-  orbop_ = other.orbop_;
-  other.orbop_ = __aida_null_orb_object__();
-  return *this;
-}
 
 /// Upgrade a @a Null RemoteHandle into a handle for an existing object.
 void

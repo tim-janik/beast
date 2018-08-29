@@ -540,8 +540,7 @@ protected:
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
-  /*copy*/                RemoteHandle         (const RemoteHandle &y);         ///< Copy ctor
-  /*move*/                RemoteHandle         (RemoteHandle &&other) noexcept; ///< Move ctor
+  /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
@@ -555,8 +554,7 @@ public:
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
-  RemoteHandle&           operator=            (const RemoteHandle &other); ///< Copy assignment
-  RemoteHandle&           operator=            (RemoteHandle &&other);      ///< Move assignment
+  RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
   bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }

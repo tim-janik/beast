@@ -603,10 +603,12 @@ class Generator:
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:
       s += '  explicit' + self.F (' ') + '%s ();\n' % self.C (type_info) # ctor
-      s += '  virtual ' + self.F (' /*Des*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info) # dtor
+      s += '  virtual ' + self.F (' /*dtor*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info)
     s += 'public:\n'
     if self.gen_mode == G4STUB:
-      s += '  ' + self.F ('virtual /*Des*/ ', -1) + '~%s () override;\n' % self.C (type_info) # dtor
+      s += '  ' + self.F ('virtual /*dtor*/ ', -1) + '~%s () override;\n' % classC
+      s += '  ' + self.F ('/*copy*/') + '%s (const %s&) = default;\n' % (classC, classC)
+      s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
       s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull
