@@ -603,6 +603,7 @@ sub butterfly_macros {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     # add_result = gsl_complex (c1.re + c2.re, c1.im + c2.im);
     print "
+#define _unused __attribute__ ((__unused__))
 #define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
   $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
@@ -829,8 +830,8 @@ print " */\n";
 	   $fft_size, $func_name,
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
-    printf "%suint butterfly, block, offset;\n", $indent;
-    printf "%s%s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
+    printf "%s_unused uint butterfly, block, offset;\n", $indent;
+    printf "%s_unused %s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
 
     my $seen_rule = 0;
