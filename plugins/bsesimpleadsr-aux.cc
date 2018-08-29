@@ -10,14 +10,14 @@ typedef enum
 } BseMixRampState;
 typedef struct
 {
-  gfloat       *wave_out;
-  gfloat       *bound;
-  const gfloat *gate_in;
-  const gfloat *trig_in;
-  gfloat	last_trigger;
-  gfloat	level;
-  gfloat	level_step;
-  gfloat	level_border;
+  float       *wave_out;
+  float       *bound;
+  const float *gate_in;
+  const float *trig_in;
+  float        last_trigger;
+  float        level;
+  float        level_step;
+  float        level_border;
 } BseMixRampLinear;
 #define	BSE_MIX_RAMP_WITH_GATE	(1)
 #define	BSE_MIX_RAMP_WITH_IGATE	(2)
@@ -43,11 +43,11 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
     if (STEP_UP || STEP_DOWN) ramp->level = value; \
     return (cause); \
   }
-  register gfloat *wave_out = ramp->wave_out;
-  const gfloat *bound = ramp->bound;
-  register gfloat value = ramp->level;
-  gfloat level_step = ramp->level_step;
-  gfloat eps = STEP_DOWN ? ramp->level_border + BSE_MIX_EPSILON : ramp->level_border - BSE_MIX_EPSILON;
+  float *wave_out = ramp->wave_out;
+  const float *bound = ramp->bound;
+  float value = ramp->level;
+  float level_step = ramp->level_step;
+  float eps = STEP_DOWN ? ramp->level_border + BSE_MIX_EPSILON : ramp->level_border - BSE_MIX_EPSILON;
 
   if (wave_out >= bound)
     return BSE_MIX_RAMP_REACHED_BOUND;
@@ -57,7 +57,7 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
 	RETURN (BSE_MIX_RAMP_GATE_CHANGE);
       if (CHECK_TRIG)
 	{
-	  gfloat trig_val = *ramp->trig_in;
+	  float trig_val = *ramp->trig_in;
 
 	  if (RAISING_EDGE (ramp->last_trigger, trig_val))
 	    {
