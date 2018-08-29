@@ -3336,7 +3336,6 @@ enum_info<MandatoryNamespace::Enum1> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
@@ -3351,7 +3350,6 @@ enum_info<MandatoryNamespace::Enum1c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
@@ -3368,7 +3366,6 @@ enum_info<MandatoryNamespace::Enum2> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
@@ -3385,7 +3382,6 @@ enum_info<MandatoryNamespace::Enum2c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
@@ -3404,7 +3400,6 @@ enum_info<MandatoryNamespace::Enum3> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
@@ -3423,7 +3418,6 @@ enum_info<MandatoryNamespace::Enum3c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
@@ -3444,7 +3438,6 @@ enum_info<MandatoryNamespace::Enum4a> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
@@ -3465,7 +3458,6 @@ enum_info<MandatoryNamespace::Enum4b> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
@@ -3486,7 +3478,6 @@ enum_info<MandatoryNamespace::Enum4c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
@@ -3507,7 +3498,6 @@ enum_info<MandatoryNamespace::Enum4d> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
@@ -3619,7 +3609,6 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
@@ -3634,7 +3623,6 @@ enum_info<InterfaceTests::QuickEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
 } // specialization
-template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
@@ -3657,7 +3645,6 @@ enum_info<RapicornAidaTest::ClickType> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
@@ -3694,7 +3681,6 @@ enum_info<RapicornAidaTest::MathExpressions> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::MathExpressions", 0, _aida_enumvalues_1014);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::MathExpressions> (); // instantiation
 } // Aida
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__

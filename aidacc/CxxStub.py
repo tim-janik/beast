@@ -511,7 +511,8 @@ class Generator:
     s += '  };\n'
     s += '  return ::Aida::EnumInfo::cached_enum_info ("%s", %s, %s);\n' % (c_typename, int (type_info.combinable), varray)
     s += '} // specialization\n'
-    s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
+    # explicit instantiation occuring after an explicit specialization has no effect
+    # s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
     return s
   def digest2cbytes (self, digest):
     return '0x%02x%02x%02x%02x%02x%02x%02x%02xULL, 0x%02x%02x%02x%02x%02x%02x%02x%02xULL' % digest
