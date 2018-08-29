@@ -53,11 +53,20 @@ static constexpr const uint64_t KECCAK_ROUND_CONSTANTS[255] = {
 };
 
 /// Rotate left for uint64_t.
-static inline constexpr uint64_t
+static inline uint64_t
 bit_rotate64 (uint64_t bits, unsigned int offset)
 {
   // bitwise rotate-left pattern recognized by gcc & clang iff 64==sizeof (bits)
-  return UNLIKELY (offset == 0) ? bits : (bits << offset) | (bits >> (64 - offset));
+#if defined (__x86_64__)
+  __asm__ ("rolq %%cl, %0"
+           : "=r" (bits)                // out
+           : "0" (bits), "c" (offset)   // in
+           :                            // clobber
+           );
+#else
+  bits = UNLIKELY (offset == 0) ? bits : (bits << offset) | (bits >> (64 - offset));
+#endif
+  return bits;
 }
 
 /// The Keccak-f[1600] permutation for up to 254 rounds, see Keccak11 @cite Keccak11 .
