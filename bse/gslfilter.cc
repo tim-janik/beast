@@ -971,6 +971,7 @@ gsl_iir_filter_change (GslIIRFilter  *f,
   assert_return (fabs (b[0] - 1.0) < 1e-14);
 }
 
+#if 0
 static inline gdouble /* Y */
 filter_step_direct_canon_2 (GslIIRFilter *f,
 			    gdouble       X)
@@ -1002,6 +1003,7 @@ filter_step_direct_canon_2 (GslIIRFilter *f,
 
   return y;
 }
+#endif
 
 static inline gdouble /* Y */
 filter_step_direct_canon_1 (GslIIRFilter *f,
