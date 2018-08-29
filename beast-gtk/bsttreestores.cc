@@ -525,12 +525,6 @@ bst_item_seq_store_new (gboolean sorted)
   return GTK_TREE_MODEL (self);
 }
 
-static inline SfiProxy
-get_proxy (const SfiRing *ring)
-{
-  return (SfiProxy) (ring ? ring->data : NULL);
-}
-
 static gint
 item_seq_store_row_from_proxy (ProxyStore *ps, SfiProxy proxy)
 {
