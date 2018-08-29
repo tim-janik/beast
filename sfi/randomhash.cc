@@ -57,7 +57,7 @@ static inline uint64_t
 bit_rotate64 (uint64_t bits, unsigned int offset)
 {
   // bitwise rotate-left pattern recognized by gcc & clang iff 64==sizeof (bits)
-#if defined (__x86_64__)
+#if defined (__x86_64__) && 0           // rolq tends to be slower than C++ with g++ and clang++
   __asm__ ("rolq %%cl, %0"
            : "=r" (bits)                // out
            : "0" (bits), "c" (offset)   // in
