@@ -229,7 +229,7 @@ class Generator:
     s += '    V8ppCopyablePersistentObject __v8pthis (__v8isolate, __v8args.This()->ToObject());\n'
     s += '    std::string __event = v8pp::from_v8<std::string> (__v8isolate, __v8args[0]);\n'
     s += '    V8ppCopyablePersistentFunction __v8pfunc (__v8isolate, v8::Local<v8::Function>::Cast (__v8args[1]));\n'
-    s += '    auto event_handler = [__v8isolate, __remotehandle, __v8pthis, __v8pfunc] (const Aida::Event &const_event) -> void {\n'
+    s += '    auto event_handler = [__v8isolate, __v8pthis, __v8pfunc] (const Aida::Event &const_event) -> void {\n'
     s += '      v8::HandleScope __v8scope (__v8isolate);\n'
     s += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
     s += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'

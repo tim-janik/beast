@@ -11,7 +11,7 @@ namespace Bse {
 class Sequencer {
   static Sequencer *singleton_;
   static std::mutex sequencer_mutex_;
-  struct PollPool;
+  class  PollPool;
   uint64     stamp_;            // sequencer time (ahead of real time)
   SfiRing   *songs_;
   std::condition_variable watch_cond_;

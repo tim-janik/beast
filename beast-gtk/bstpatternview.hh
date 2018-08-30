@@ -24,21 +24,20 @@ typedef enum /*< skip >*/
   BST_PATTERN_VIEW_MARKER_NONE,
   BST_PATTERN_VIEW_MARKER_FOCUS,
 } BstPatternViewMarkerType;
-typedef struct {
-  GXK_SCROLL_CANVAS_DRAG_FIELDS;
-  guint         start_col;
-  guint         start_row;
-  guint         start_tick;
-  guint         start_duration;
-  gboolean      start_valid;
-  guint         current_col;
-  guint         current_row;
-  int           current_tick;
-  int           current_duration;
-  bool          current_valid;
-  /* convenience: */
-  BstPatternView *pview;
-} BstPatternViewDrag;
+struct BstPatternViewDrag : GxkScrollCanvasDrag {
+  uint          start_col = 0;
+  uint          start_row = 0;
+  uint          start_tick = 0;
+  uint          start_duration = 0;
+  bool          start_valid = false;
+  bool          current_valid = false;
+  uint          current_col = 0;
+  uint          current_row = 0;
+  int           current_tick = 0;
+  int           current_duration = 0;
+  // convenience:
+  BstPatternView *pview = NULL;
+};
 struct _BstPatternView
 {
   GxkScrollCanvas    parent_instance;

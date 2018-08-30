@@ -511,7 +511,8 @@ class Generator:
     s += '  };\n'
     s += '  return ::Aida::EnumInfo::cached_enum_info ("%s", %s, %s);\n' % (c_typename, int (type_info.combinable), varray)
     s += '} // specialization\n'
-    s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
+    # explicit instantiation occuring after an explicit specialization has no effect
+    # s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
     return s
   def digest2cbytes (self, digest):
     return '0x%02x%02x%02x%02x%02x%02x%02x%02xULL, 0x%02x%02x%02x%02x%02x%02x%02x%02xULL' % digest
@@ -603,10 +604,12 @@ class Generator:
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:
       s += '  explicit' + self.F (' ') + '%s ();\n' % self.C (type_info) # ctor
-      s += '  virtual ' + self.F (' /*Des*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info) # dtor
+      s += '  virtual ' + self.F (' /*dtor*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info)
     s += 'public:\n'
     if self.gen_mode == G4STUB:
-      s += '  ' + self.F ('virtual /*Des*/ ', -1) + '~%s () override;\n' % self.C (type_info) # dtor
+      s += '  ' + self.F ('virtual /*dtor*/ ', -1) + '~%s () override;\n' % classC
+      s += '  ' + self.F ('/*copy*/') + '%s (const %s&) = default;\n' % (classC, classC)
+      s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
       s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull

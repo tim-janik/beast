@@ -25,17 +25,16 @@ typedef enum    /*< skip >*/
 
 
 /* --- structures & typedefs --- */
-typedef struct {
-  GXK_SCROLL_CANVAS_DRAG_FIELDS;
-  guint	        start_tick;
-  gint          start_note;
-  guint		start_valid : 1;        /* note out of range or non-existant black key */
-  guint         current_tick;
-  gint          current_note;
-  guint		current_valid : 1;	/* note out of range or non-existant black key */
+struct BstPianoRollDrag : GxkScrollCanvasDrag {
+  uint	        start_tick = 0;
+  int           start_note = 0;
+  bool		start_valid = false;    // note out of range or non-existant black key
+  bool		current_valid = false;  // note out of range or non-existant black key
+  uint          current_tick = 0;
+  int           current_note = 0;
   /* convenience: */
-  BstPianoRoll *proll;
-} BstPianoRollDrag;
+  BstPianoRoll *proll = NULL;
+};
 struct _BstPianoRoll
 {
   GxkScrollCanvas parent_instance;

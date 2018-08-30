@@ -126,7 +126,7 @@ sub butterfly {
     my $Wre = shift;
     my $Wim = shift;
     my $var = shift;
-    
+
     # define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im)
     printf($indent."BUTTERFLY_%s (%s[%s], %s[%s + 1],\n".
 	   $indent."              %s[%s], %s[%s + 1],\n".
@@ -181,7 +181,7 @@ sub butterfly_auto {
       die("optimization error for fft$fft_size: 10=". $optimize_10 .", 0x=". $optimize_0x .
 	  ", Wre=". $rfact ." Wim=". $ifact .", wk=". $wk);
   }
-  
+
   # BUTTERFLY_XY (X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im);
   printf($indent."BUTTERFLY_%s (%s[%s%u],               /* W%u */\n".
 	 $indent."              %s[%s%u + 1],\n".
@@ -202,7 +202,7 @@ sub unroll_stage {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $unroll_outer = shift;
-    
+
     if ($unroll_outer && $n_points == 2) {
 	for (my $i = 0; $i < $n_points >> 1; $i++) {
 	    for (my $j = 0; $j < $n_rep; $j++) {
@@ -236,7 +236,7 @@ sub unroll_stage {
 	}
     } else {
 	die "cannot skip outer loop unrolling for fft2" if $n_points == 2;
-	
+
 	printf "%sfor (block = 0; block < %u; block += %u) {\n", $indent, $n_points * 2 * $n_rep, $n_points * 2;
 	$indent .= "  ";
 	for (my $i = 0; $i < $n_points >> 1; $i++) {
@@ -254,7 +254,7 @@ sub table_stage {
     my $fft_size = shift;
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
-    
+
     die "cannot loop over coefficient table for fft2" if $n_points == 2;
 
     printf "%s{\n", $indent;
@@ -310,7 +310,7 @@ sub table_stage {
 	printf "%s  }\n", $indent;
 	printf "%s}\n", $indent;
     }
-    
+
     $indent =~ s/\ \ $//;
     printf "%s}\n", $indent;
 }
@@ -324,7 +324,6 @@ bitreverse_fft2synthesis (const unsigned int n,
 {
   const uint n2 = n >> 1, n1 = n + n2, max = n >> 2;
   uint i, r;
-  
   BUTTERFLY_10 (X[0], X[1],
 		X[n], X[n + 1],
 		Y[0], Y[1],
@@ -476,7 +475,7 @@ sub gen_fft_loop_unoptimized {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $ofs2;
-    
+
     die "invalid fft size: " . $n_points if ($n_points < 4);
 
     # incremental coefficient W for this fft
@@ -485,7 +484,7 @@ sub gen_fft_loop_unoptimized {
     my $re = sin (0.5 * $theta);
     my $im = sin ($theta);
     $re = $re * $re * -2.;
-    
+
     # init variables, start loops
     printf "%sWre = 1.0; Wim = 0.0;\n", $indent;
     printf "%sfor (butterfly = 0; butterfly < %u; butterfly += 2) {\n", $indent, $n_points;
@@ -513,7 +512,7 @@ sub gen_fft_loop_o10o0x {
     my $n_points = shift;
     my $n_rep = shift;     # repetitions
     my $ofs2;
-    
+
     die "invalid fft size: " . $n_points if ($n_points < 4);
 
     # coefficient {1,0} loop
@@ -530,7 +529,7 @@ sub gen_fft_loop_o10o0x {
     my $re = sin (0.5 * $theta);
     my $im = sin ($theta);
     $re = $re * $re * -2.;
-    
+
     # loop first half
     if (2 < $n_points >> 1) {
 	printf "%sWre = %+.15f; Wim = %+.15f;\n", $indent, $re + 1.0, $im;
@@ -551,7 +550,7 @@ sub gen_fft_loop_o10o0x {
 	$indent =~ s/\ \ $//;
 	printf "%s}\n", $indent;
     }
-    
+
     # coefficient {0,1} loop
     printf "%sfor (offset = %u; offset < %u; offset += %u) {\n", $indent, $n_points >> 1, $n_rep * $n_points << 1, $n_points << 1;
     $indent .= "  ";
@@ -589,7 +588,7 @@ sub fft_loop_macros {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     print "
 #define WMULTIPLY(Wre,Wim,Dre,Dim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = Wre * Dre;  \\
   T1im = Wim * Dre;  \\
   T2re = Wim * Dim;  \\
@@ -604,8 +603,9 @@ sub butterfly_macros {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     # add_result = gsl_complex (c1.re + c2.re, c1.im + c2.im);
     print "
+#define _unused __attribute__ ((__unused__))
 #define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = X2im * Wim;  \\
@@ -620,7 +620,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_Yx(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wim;  \\
   T1im = X2im * Wim;  \\
   T2re = X2im * Wre;  \\
@@ -635,7 +635,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_yX(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wim;  \\
   T1im = X2im * Wim;  \\
   T2re = X2im * Wre;  \\
@@ -650,7 +650,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_10(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2re; \\
   T2im = X1im - X2im; \\
   Y1re = X1re + X2re; \\
@@ -659,7 +659,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_01(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re + X2im; \\
   T2im = X1im - X2re; \\
   Y1re = X1re - X2im; \\
@@ -668,7 +668,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_0m(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,_1,_2) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2im; \\
   T2im = X1im + X2re; \\
   Y1re = X1re + X2im; \\
@@ -677,7 +677,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_XX(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,_2) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = T1im; \\
@@ -692,7 +692,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_yY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,_2) { \\
-  register $tmp_ieee_type T1re, T1im, T2re, T2im; \\
+  $tmp_ieee_type T1re, T1im, T2re, T2im; \\
   T1re = X2re * Wre;  \\
   T1im = X2im * Wre;  \\
   T2re = T1im;  \\
@@ -707,7 +707,7 @@ sub butterfly_macros {
   Y2im = T2im;        \\
 }
 #define BUTTERFLY_10scale(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,S) { \\
-  register $tmp_ieee_type T2re, T2im; \\
+  $tmp_ieee_type T2re, T2im; \\
   T2re = X1re - X2re; \\
   T2im = X1im - X2im; \\
   Y1re = X1re + X2re; \\
@@ -729,7 +729,7 @@ sub gen_stage {
     my $n_points = shift;
     my $kind = shift;
     my $times = $fft_size / $n_points;
-    
+
     if ($kind eq 'S') {
 	printf "\n%s/* skipping %u times fft%u */\n", $indent, $times, $n_points;
 	return;
@@ -779,7 +779,7 @@ sub gen_stage {
 #
 if ($Wtest) {
     my $fft_size = $max_fft_size;
-    
+
     for (my $i = 0; $i < $fft_size >> 1; $i++) {
 	my $wk = Wexponent ($fft_size, $fft_size, $i);
 	printf "$fft_size: %4u:  %+.15f, %+.15f,\n", $i, Wreal ($fft_size, $wk), Wimag ($fft_size, $wk);
@@ -830,8 +830,8 @@ print " */\n";
 	   $fft_size, $func_name,
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
-    printf "%sregister uint butterfly, block, offset;\n", $indent;
-    printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
+    printf "%s_unused uint butterfly, block, offset;\n", $indent;
+    printf "%s_unused %s Wre, Wim;\n\n", $indent, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
 
     my $seen_rule = 0;

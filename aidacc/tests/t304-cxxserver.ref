@@ -319,7 +319,7 @@ class I_FirstInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_FirstInterfaceIface ();
-  virtual  /*Des*/                     ~I_FirstInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_FirstInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace::FirstInterface"; }
@@ -760,7 +760,7 @@ class I_UIWidgetAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_UIWidgetAreaIface ();
-  virtual  /*Des*/                     ~I_UIWidgetAreaIface () override = 0;
+  virtual  /*dtor*/                    ~I_UIWidgetAreaIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::UIWidgetArea"; }
@@ -808,7 +808,7 @@ class I_ParentIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_ParentIface ();
-  virtual  /*Des*/                     ~I_ParentIface () override = 0;
+  virtual  /*dtor*/                    ~I_ParentIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Parent"; }
@@ -831,7 +831,7 @@ class I_ChildIface : public virtual I_ParentIface
 {
 protected:
   explicit                              I_ChildIface ();
-  virtual  /*Des*/                     ~I_ChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_ChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Child"; }
@@ -856,7 +856,7 @@ class I_DescendantIface : public virtual I_ChildIface
 {
 protected:
   explicit                              I_DescendantIface ();
-  virtual  /*Des*/                     ~I_DescendantIface () override = 0;
+  virtual  /*dtor*/                    ~I_DescendantIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Descendant"; }
@@ -881,7 +881,7 @@ class I_GrandChildIface : public virtual I_DescendantIface
 {
 protected:
   explicit                              I_GrandChildIface ();
-  virtual  /*Des*/                     ~I_GrandChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_GrandChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::GrandChild"; }
@@ -949,7 +949,7 @@ class I_QuickIfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_QuickIfaceIface ();
-  virtual  /*Des*/                     ~I_QuickIfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_QuickIfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::QuickIface"; }
@@ -973,7 +973,7 @@ class I_MethodTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_MethodTestInterfaceIface ();
-  virtual  /*Des*/                     ~I_MethodTestInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_MethodTestInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::MethodTestInterface"; }
@@ -999,11 +999,11 @@ public:
   virtual SrvT_QuickSequence            method_with_sequence       (const SrvT_QuickSequence &input,
                                                                     const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0;
   virtual I_GrandChildIfaceP            method_with_interface      (I_GrandChildIface &input,
-                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0;
+                                                                    I_GrandChildIface &optval) = 0;
   virtual Aida::Any                     method_with_anys           (const Aida::Any &input,
                                                                     const Aida::Any &optval) = 0;
   virtual I_QuickIfaceIfaceP            method_with_quickiface     (I_QuickIfaceIface &input,
-                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0;
+                                                                    I_QuickIfaceIface &iface0) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1019,7 +1019,7 @@ class I_SignalTestInterfaceIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_SignalTestInterfaceIface ();
-  virtual  /*Des*/                     ~I_SignalTestInterfaceIface () override = 0;
+  virtual  /*dtor*/                    ~I_SignalTestInterfaceIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::SignalTestInterface"; }
@@ -1042,7 +1042,7 @@ class I_ChildInheritingSignalsIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
   explicit                              I_ChildInheritingSignalsIface ();
-  virtual  /*Des*/                     ~I_ChildInheritingSignalsIface () override = 0;
+  virtual  /*dtor*/                    ~I_ChildInheritingSignalsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
@@ -1067,7 +1067,7 @@ class I_AnotherChildIface : public virtual I_SignalTestInterfaceIface
 {
 protected:
   explicit                              I_AnotherChildIface ();
-  virtual  /*Des*/                     ~I_AnotherChildIface () override = 0;
+  virtual  /*dtor*/                    ~I_AnotherChildIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::AnotherChild"; }
@@ -1092,7 +1092,7 @@ class I_PropertyTesterIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_PropertyTesterIface ();
-  virtual  /*Des*/                     ~I_PropertyTesterIface () override = 0;
+  virtual  /*dtor*/                    ~I_PropertyTesterIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::PropertyTester"; }
@@ -1152,7 +1152,7 @@ class I_UseIncludesIface : public virtual IncludeCheck::I_SomeInterfaceIface
 {
 protected:
   explicit                              I_UseIncludesIface ();
-  virtual  /*Des*/                     ~I_UseIncludesIface () override = 0;
+  virtual  /*dtor*/                    ~I_UseIncludesIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::UseIncludes"; }
@@ -1177,7 +1177,7 @@ class I_ButtonAreaIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_ButtonAreaIface ();
-  virtual  /*Des*/                     ~I_ButtonAreaIface () override = 0;
+  virtual  /*dtor*/                    ~I_ButtonAreaIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::ButtonArea"; }
@@ -1214,7 +1214,7 @@ class I_PureMethodsIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_PureMethodsIface ();
-  virtual  /*Des*/                     ~I_PureMethodsIface () override = 0;
+  virtual  /*dtor*/                    ~I_PureMethodsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::PureMethods"; }
@@ -1241,7 +1241,7 @@ class I_NameTestsIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_NameTestsIface ();
-  virtual  /*Des*/                     ~I_NameTestsIface () override = 0;
+  virtual  /*dtor*/                    ~I_NameTestsIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "Other::NameTests"; }
@@ -1270,7 +1270,7 @@ class I_CompressorIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_CompressorIface ();
-  virtual  /*Des*/                     ~I_CompressorIface () override = 0;
+  virtual  /*dtor*/                    ~I_CompressorIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::Compressor"; }
@@ -1331,7 +1331,7 @@ class I_SoundModuleIface : public virtual Aida::ImplicitBase
 {
 protected:
   explicit                              I_SoundModuleIface ();
-  virtual  /*Des*/                     ~I_SoundModuleIface () override = 0;
+  virtual  /*dtor*/                    ~I_SoundModuleIface () override = 0;
 public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::SoundModule"; }
@@ -3411,7 +3411,6 @@ enum_info<MandatoryNamespace::Enum1> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
@@ -3426,7 +3425,6 @@ enum_info<MandatoryNamespace::Enum1c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
@@ -3443,7 +3441,6 @@ enum_info<MandatoryNamespace::Enum2> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
@@ -3460,7 +3457,6 @@ enum_info<MandatoryNamespace::Enum2c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
@@ -3479,7 +3475,6 @@ enum_info<MandatoryNamespace::Enum3> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
@@ -3498,7 +3493,6 @@ enum_info<MandatoryNamespace::Enum3c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
@@ -3519,7 +3513,6 @@ enum_info<MandatoryNamespace::Enum4a> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
@@ -3540,7 +3533,6 @@ enum_info<MandatoryNamespace::Enum4b> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
@@ -3561,7 +3553,6 @@ enum_info<MandatoryNamespace::Enum4c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
@@ -3582,7 +3573,6 @@ enum_info<MandatoryNamespace::Enum4d> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
@@ -3694,7 +3684,6 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
@@ -3709,7 +3698,6 @@ enum_info<InterfaceTests::QuickEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
 } // specialization
-template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
@@ -3732,7 +3720,6 @@ enum_info<RapicornAidaTest::ClickType> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
@@ -3769,7 +3756,6 @@ enum_info<RapicornAidaTest::MathExpressions> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::MathExpressions", 0, _aida_enumvalues_1014);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::MathExpressions> (); // instantiation
 } // Aida
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__

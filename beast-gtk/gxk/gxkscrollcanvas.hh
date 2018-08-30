@@ -40,38 +40,36 @@ typedef enum    /*< skip >*/
   GXK_DRAG_ERROR        = GXK_DRAG_ABORT        /* request abortion */
 } GxkDragStatus;
 typedef struct _GxkScrollCanvas GxkScrollCanvas;
-typedef struct {
-#define GXK_SCROLL_CANVAS_DRAG_FIELDS                   \
-  GtkWidget       *widget;                              \
-  GdkWindow       *drawable;                            \
-  /* modifier & config determined mode */               \
-  GxkDragMode      mode : 16;                           \
-  /* mouse button */                                    \
-  guint            button : 16;                         \
-  /* emission type: start/motion/done/abort */          \
-  GxkDragStatus    type : 16;                           \
-  guint            window_drag : 1;                     \
-  guint            canvas_drag : 1;                     \
-  guint            top_panel_drag : 1;                  \
-  guint            left_panel_drag : 1;                 \
-  guint            right_panel_drag : 1;                \
-  guint            bottom_panel_drag : 1;               \
-  guint            ___dummy1 : 2;                       \
-  /* whether start_x/start_y are in window */           \
-  guint            start_confined : 1;                  \
-  /* whether current_x/current_y are in window */       \
-  guint            current_confined : 1;                \
-  gint             start_x, start_y;                    \
-  gint             current_x, current_y;                \
-  /* user data: unhandled/continue/handled/error */     \
-  GxkDragStatus    state : 16;                          \
-  guint            ___dummy2 : 16;
-  /* the fields are expanded here via a macro, to allow
-   * "derived" structures with exactly the same field
-   * layout without field prefixes.
-   */
-  GXK_SCROLL_CANVAS_DRAG_FIELDS;
-} GxkScrollCanvasDrag;
+struct GxkScrollCanvasDrag {
+  GtkWidget       *widget = NULL;
+  GdkWindow       *drawable = NULL;
+  /* modifier & config determined mode */
+  union {
+    uint64_t bit_field = 0;
+    struct {
+      GxkDragMode      mode : 16;
+      /* mouse button */
+      uint            button : 16;
+      /* emission type: start/motion/done/abort */
+      GxkDragStatus    type : 16;
+      uint            window_drag : 1;
+      uint            canvas_drag : 1;
+      uint            top_panel_drag : 1;
+      uint            left_panel_drag : 1;
+      uint            right_panel_drag : 1;
+      uint            bottom_panel_drag : 1;
+      uint            ___dummy1 : 2;
+      /* whether start_x/start_y are in window */
+      uint            start_confined : 1;
+      /* whether current_x/current_y are in window */
+      uint             current_confined : 1;
+    };
+  };
+  int              start_x = -1, start_y = -1;
+  int              current_x = -1, current_y = -1;
+  /* user data: unhandled/continue/handled/error */
+  GxkDragStatus        state = GXK_DRAG_ABORT;
+};
 typedef struct {
   guint        index;
   guint        mtype;

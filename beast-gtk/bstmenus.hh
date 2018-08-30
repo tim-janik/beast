@@ -47,7 +47,7 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 							    (name), NULL, BST_STOCK_NONE, Bse::Icon()))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
 							    "", NULL, BST_STOCK_NONE, Bse::Icon()))
-#define BST_CHOICE_END                   (NULL)
+#define BST_CHOICE_END                   (nullptr)
 
 
 /* --- private implementation stubs --- */

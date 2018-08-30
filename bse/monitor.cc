@@ -6,7 +6,7 @@
 
 namespace Bse {
 
-struct MonitorModule;
+class MonitorModule;
 
 SignalMonitorImpl::SignalMonitorImpl (SourceImplP source, uint ochannel) :
   source_ (source), ochannel_ (ochannel)
@@ -95,7 +95,8 @@ struct SourceImpl::ChannelMonitor {
 SourceImpl::ChannelMonitor&
 SourceImpl::cmon_get (uint ochannel)
 {
-  assert_return (ochannel < size_t (n_ochannels()), *(ChannelMonitor*) NULL);
+  if (ochannel >= size_t (n_ochannels()))
+    fatal_error ("Bse::SourceImpl::cmon_get: ochannel must be valid");
   if (!cmons_)
     cmons_ = new ChannelMonitor[n_ochannels()];
   return cmons_[ochannel];

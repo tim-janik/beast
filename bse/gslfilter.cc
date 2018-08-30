@@ -971,13 +971,14 @@ gsl_iir_filter_change (GslIIRFilter  *f,
   assert_return (fabs (b[0] - 1.0) < 1e-14);
 }
 
+#if 0
 static inline gdouble /* Y */
 filter_step_direct_canon_2 (GslIIRFilter *f,
 			    gdouble       X)
 {
-  register guint n = f->order;
-  gdouble *a = f->a, *b = f->b, *w = f->w;
-  gdouble x, y, v;
+  uint n = f->order;
+  double *a = f->a, *b = f->b, *w = f->w;
+  double x, y, v;
 
   v = w[n];
   x = b[n] * v;
@@ -1002,14 +1003,15 @@ filter_step_direct_canon_2 (GslIIRFilter *f,
 
   return y;
 }
+#endif
 
 static inline gdouble /* Y */
 filter_step_direct_canon_1 (GslIIRFilter *f,
 			    gdouble       X)
 {
-  register guint n = f->order;
-  gdouble *a = f->a, *b = f->b, *w = f->w;
-  gdouble y, v;
+  uint n = f->order;
+  double *a = f->a, *b = f->b, *w = f->w;
+  double y, v;
 
   /* w[n] unused */
   y = X * a[0] + w[0];

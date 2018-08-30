@@ -94,7 +94,7 @@ struct BseStorage : BseObject {
 struct BseStorageClass : BseObjectClass
 {};
 
-typedef struct BseStorage::Blob BseStorageBlob;
+typedef class BseStorage::Blob BseStorageBlob;
 
 /* --- compatibility file parsing --- */
 void         bse_storage_compat_dhreset         (BseStorage             *self);

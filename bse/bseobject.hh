@@ -19,8 +19,8 @@ public:
   virtual BseObject*  as_bse_object () override { return gobject_; }
   virtual std::string    debug_name () override;
   virtual int32_t        unique_id  () override;
-  virtual std::string    uname      () const;
-  virtual void           uname      (const std::string &newname);
+  virtual std::string    uname      () const override;
+  virtual void           uname      (const std::string &newname) override;
   virtual void           notify     (const String &detail) override;
   virtual int64_t        proxy_id   () override;
   typedef Aida::KeyValue KV;

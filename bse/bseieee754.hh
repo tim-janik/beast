@@ -89,8 +89,8 @@
 #endif
 
 /* --- denormal float handling --- */
-static inline float	bse_float_zap_denormal	(register float  fval);	/* slow */
-static inline double	bse_double_zap_denormal	(register double dval);	/* slow */
+static inline float	bse_float_zap_denormal	(float  fval);	/* slow */
+static inline double	bse_double_zap_denormal	(double dval);	/* slow */
 
 /* --- coarse but fast variants to eliminate denormalized floats --- */
 /* pure arithmetic flushing, fastest with -ffast-math */
@@ -115,8 +115,8 @@ typedef	unsigned short int	BseFpuState;
 static inline void	bse_fpu_setround	(BseFpuState		*cw);
 static inline int	bse_fpu_okround		(void);
 static inline void	bse_fpu_restore		(BseFpuState		 cv);
-static inline int	bse_ftoi /* nearest */	(register float		 f)  G_GNUC_CONST;
-static inline int	bse_dtoi /* nearest */	(register double	 f)  G_GNUC_CONST;
+static inline int	bse_ftoi /* nearest */	(float		 f)  G_GNUC_CONST;
+static inline int	bse_dtoi /* nearest */	(double	 f)  G_GNUC_CONST;
 /* fallbacks for the !386 case are below */
 #endif
 static inline guint64   bse_dtoull              (const double            v);
@@ -182,8 +182,8 @@ static const union { unsigned char c[4]; float f; }  _bse_finf_union = { _BSE_FL
 
 /* get structured parts of floating point numbers */
 #if __cplusplus
-extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (register float  fvalue) { BseFloatIEEE754  fret = { fvalue }; return fret; }
-extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { BseDoubleIEEE754 dret = { dvalue }; return dret; }
+extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (float  fvalue) { BseFloatIEEE754  fret = { fvalue }; return fret; }
+extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (double dvalue) { BseDoubleIEEE754 dret = { dvalue }; return dret; }
 #else
 #define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
 #define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d)))
@@ -191,7 +191,7 @@ extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { BseDo
 
 /* --- implementation details --- */
 static inline float
-bse_float_zap_denormal (register float  fval)
+bse_float_zap_denormal (float  fval)
 {
   if (G_UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (fval)))
     return 0;
@@ -200,7 +200,7 @@ bse_float_zap_denormal (register float  fval)
 }
 
 static inline double
-bse_double_zap_denormal	(register double dval)
+bse_double_zap_denormal	(double dval)
 {
   if (G_UNLIKELY (BSE_DOUBLE_IS_SUBNORMAL (dval)))
     return 0;
@@ -265,7 +265,7 @@ bse_fpu_restore (BseFpuState cv)
 	   : "m" (*&cv));
 }
 static inline int G_GNUC_CONST
-bse_ftoi (register float f)
+bse_ftoi (float f)
 {
   int r;
 
@@ -275,7 +275,7 @@ bse_ftoi (register float f)
   return r;
 }
 static inline int G_GNUC_CONST
-bse_dtoi (register double f)
+bse_dtoi (double f)
 {
   int r;
 
@@ -289,12 +289,12 @@ bse_dtoi (register double f)
 #  define bse_fpu_okround()     (1)
 #  define bse_fpu_restore(x)    /* nop */
 static inline int G_GNUC_CONST
-bse_ftoi (register float v)
+bse_ftoi (float v)
 {
   return (int) (v < -0.0 ? v - 0.5 : v + 0.5);
 }
 static inline int G_GNUC_CONST
-bse_dtoi (register double v)
+bse_dtoi (double v)
 {
   return (int) (v < -0.0 ? v - 0.5 : v + 0.5);
 }

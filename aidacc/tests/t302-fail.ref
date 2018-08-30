@@ -1,171 +1,171 @@
-.../t302-fail.idl:5:26: NameError: redefining identifier: a
+.../t302-fail.idl:5:26: error: NameError: redefining identifier: a
 >  Const a = 5; Const a = 6; // redefining existing identifier
 >                           ^
-.../t302-fail.idl:7:18: NameError: redefining keyword: record
+.../t302-fail.idl:7:18: error: NameError: redefining keyword: record
 >  Const record = 5; // keyword assignment
 >                   ^
-.../t302-fail.idl:11:22: NameError: invalid characters in namespace: broken$name
+.../t302-fail.idl:11:22: error: NameError: invalid characters in namespace: broken$name
 >  namespace broken$name { Const a = 5; } // invalid namespace name (without --system-typedefs)
 >                       ^
-.../t302-fail.idl:13:31: NameError: redefining identifier: E
+.../t302-fail.idl:13:31: error: NameError: redefining identifier: E
 >  enum E { VALUE }; Const E = 0; // typename assignment
 >                                ^
-.../t302-fail.idl:15:35: NameError: redefining identifier: VALUE
+.../t302-fail.idl:15:35: error: NameError: redefining identifier: VALUE
 >  enum E { VALUE }; Const VALUE = 0; // enum value assignment
 >                                    ^
-.../t302-fail.idl:17:17: NameError: redefining keyword: TRUE
+.../t302-fail.idl:17:17: error: NameError: redefining keyword: TRUE
 >  Const TRUE = 17; // invalid constant name
 >                  ^
-.../t302-fail.idl:19:24: NameError: undeclared constant: _
+.../t302-fail.idl:19:24: error: NameError: undeclared constant: _
 >  Const tmp = "invalid" _("i18n string") "concatenation";
 >                         ^
-.../t302-fail.idl:21:1: Trying to find one of ...
+.../t302-fail.idl:21:1: error: Trying to find one of '}', ';', 'namespace', 'using', 'Const', 'flags', 'enumeration', 'enum', 'sequence', 'record', 'interface', EOF, 'include'
 >  FrobCheck tmp = 1; // FrobCheck is no type
 >  ^
-.../t302-fail.idl:23:16: Trying to find one of ...
+.../t302-fail.idl:23:16: error: Trying to find one of '}', ';', 'namespace', 'using', 'Const', 'flags', 'enumeration', 'enum', 'sequence', 'record', 'interface', EOF, 'include'
 >  Const zzz = 1; zzz tmp = 1; // zzz is no type
 >                 ^
-.../t302-fail.idl:25:27: Trying to find one of ...
+.../t302-fail.idl:25:27: error: Trying to find one of '=', ';'
 >  record DupRecord { int32 a, b, c; }; // fail on multiple fields per type
 >                            ^
-.../t302-fail.idl:27:40: NameError: duplicate field name: b
+.../t302-fail.idl:27:40: error: NameError: duplicate field name: b
 >  record DupRecord { int32 b; int32 b; }; // duplicate: b
 >                                         ^
-.../t302-fail.idl:29:22: Trying to find one of ...
+.../t302-fail.idl:29:22: error: Trying to find one of '::', IDENT, 'group', 'Info'
 >  record EmptyRecord { }; // record is empty
 >                       ^
-.../t302-fail.idl:31:28: NameError: expected identifier, not keyword: record
+.../t302-fail.idl:31:28: error: NameError: expected identifier, not keyword: record
 >  enum ExtensiveEnum { record, }; // keyword as enum value
 >                             ^
-.../t302-fail.idl:33:25: Trying to find one of ...
+.../t302-fail.idl:33:25: error: Trying to find one of '=', ',', '}'
 >  enum ExtensiveEnum { Foo; }; // semicolon in enum
 >                          ^
-.../t302-fail.idl:35:37: NameError: redefining enum member: EV1
+.../t302-fail.idl:35:37: error: NameError: redefining enum member: EV1
 >  enum ExtensiveEnum { EV1, EV2, EV1 }; // duplicate enum value
 >                                      ^
-.../t302-fail.idl:37:21: NameError: redefining enum member: AA
+.../t302-fail.idl:37:21: error: NameError: redefining enum member: AA
 >  enum Enu1 { AA, AA }; // duplicate enum value
 >                      ^
-.../t302-fail.idl:39:35: NameError: redefining identifier: Enu1
+.../t302-fail.idl:39:35: error: NameError: redefining identifier: Enu1
 >  enum Enu1 { AA }; enum Enu1 { BB }; // duplicate enum name
 >                                    ^
-.../t302-fail.idl:41:27: NameError: expected identifier, not keyword: Const
+.../t302-fail.idl:41:27: error: NameError: expected identifier, not keyword: Const
 >  enum ExtensiveEnum { Const }; // Const keyword in enum
 >                            ^
-.../t302-fail.idl:43:26: Trying to find one of ...
+.../t302-fail.idl:43:26: error: Trying to find one of '::', IDENT, 'Info'
 >  sequence EmptySequence { }; // sequence needs 1 field
 >                           ^
-.../t302-fail.idl:45:41: Trying to find one of ...
+.../t302-fail.idl:45:41: error: Trying to find one of '}', 'Info'
 >  sequence MultiFieldSequence { bool one; int32 toomany; }; // sequence needs 1 field
 >                                          ^
-.../t302-fail.idl:47:22: TypeError: unknown type: 'enum'
+.../t302-fail.idl:47:22: error: TypeError: unknown type: 'enum'
 >  sequence Seq { enum b; }; // keyword is not typename
 >                       ^
-.../t302-fail.idl:49:45: TypeError: unknown type: '_S1'
+.../t302-fail.idl:49:45: error: TypeError: unknown type: '_S1'
 >  sequence S1 { bool b; }; sequence S2 { _S1 s; }; // need existing typenames
 >                                              ^
-.../t302-fail.idl:51:52: NameError: redefining identifier: Dup
+.../t302-fail.idl:51:52: error: NameError: redefining identifier: Dup
 >  sequence Dup { bool b; }; sequence Dup { bool b; }; // duplicate definition
 >                                                     ^
-.../t302-fail.idl:57:17: NameError: redefining keyword: class
+.../t302-fail.idl:57:17: error: NameError: redefining keyword: class
 >  Const class = 5; // keyword redefinition
 >                  ^
-.../t302-fail.idl:59:35: NameError: redefining identifier: Enu1
+.../t302-fail.idl:59:35: error: NameError: redefining identifier: Enu1
 >  enum Enu1 { AA }; enum Enu1 { AA }; // type redefinition
 >                                    ^
-.../t302-fail.idl:67: invalid type definition: = Num ("x", "X coord", 0, 0, 100.0, 0.5, "ro")
-.../t302-fail.idl:69:29: Trying to find one of ...
+.../t302-fail.idl:67: error: invalid type definition: = Num ("x", "X coord", 0, 0, 100.0, 0.5, "ro")
+.../t302-fail.idl:69:29: error: Trying to find one of '::', IDENT, '\)'
 >  interface I { int32 method (,); }; // invalid method arg separator
 >                              ^
-.../t302-fail.idl:70:51: NameError: duplicate member name: method
+.../t302-fail.idl:70:51: error: NameError: duplicate member name: method
 >  interface I { int32 method (); int32 method (); }; // multiple method definitions
 >                                                    ^
-.../t302-fail.idl:71:42: NameError: duplicate member name: xxx
+.../t302-fail.idl:71:42: error: NameError: duplicate member name: xxx
 >  interface I { int32 xxx; int32 xxx (); }; // multiple member definitions
 >                                           ^
-.../t302-fail.idl:72:50: NameError: duplicate method arg name: method (...n...)
+.../t302-fail.idl:72:50: error: NameError: duplicate method arg name: method (...n...)
 >  interface I { int32 method (int32 n, int32 n); }; // duplicate method argument
 >                                                   ^
-.../t302-fail.idl:73:24: TypeError: unknown type: 'Unknown'
+.../t302-fail.idl:73:24: error: TypeError: unknown type: 'Unknown'
 >  interface I : Unknown {}; // invalid parent interface
 >                         ^
-.../t302-fail.idl:74:42: TypeError: no such interface type: R
+.../t302-fail.idl:74:42: error: TypeError: no such interface type: R
 >  record R { String s; }; interface I : R {}; // invalid interface inheritance
 >                                           ^
-.../t302-fail.idl:75:21: TypeError: invalid keyword 'signal', use Events instead
+.../t302-fail.idl:75:21: error: TypeError: invalid keyword 'signal', use Events instead
 >  interface I { signal int32 xxx; }; // invalidly declared as signal
 >                      ^
-.../t302-fail.idl:76:17: NameError: redefining keyword: void
+.../t302-fail.idl:76:17: error: NameError: redefining keyword: void
 >  Const void = 17; // invalid constant name
 >                  ^
-.../t302-fail.idl:77:1: Trying to find one of ...
+.../t302-fail.idl:77:1: error: Trying to find one of '}', ';', 'namespace', 'using', 'Const', 'flags', 'enumeration', 'enum', 'sequence', 'record', 'interface', EOF, 'include'
 >  void xy = 17; // invalid property type
 >  ^
-.../t302-fail.idl:78:33: Trying to find one of ...
+.../t302-fail.idl:78:33: error: Trying to find one of '::', IDENT, ',', '{'
 >  interface I { int32 method (void); }; // invalid argument type
 >                                  ^
-.../t302-fail.idl:79:44: TypeError: unknown type: 'void'
+.../t302-fail.idl:79:44: error: TypeError: unknown type: 'void'
 >  interface I { int32 method (int32 n, void v); }; // invalid argument type
 >                                             ^
-.../t302-inc2.idl:2:3: Trying to find one of ...
+.../t302-inc2.idl:2:3: error: Trying to find one of '}', ';', 'namespace', 'using', 'Const', 'flags', 'enumeration', 'enum', 'sequence', 'record', 'interface', EOF, 'include'
 >    unexisting_var var;
 >    ^
 .../t302-inc1.idl:1: note: included "t302-inc2.idl" from here
 .../t302-fail.idl:81: note: included "t302-inc1.idl" from here
-.../t302-fail.idl:83:59: NameError: redefining identifier: E
+.../t302-fail.idl:83:59: error: NameError: redefining identifier: E
 >  namespace B { enum E { E1 }; } namespace B { enum E { E1 }; } // namespaced type redefinition
 >                                                            ^
-.../t302-fail.idl:85:73: NameError: redefining identifier: E
+.../t302-fail.idl:85:73: error: NameError: redefining identifier: E
 >  ...espace B { enum E { E1 }; } namespace B { enum E { E1 }; } } // namespaced type redefinition
 >                                                            ^
-.../t302-fail.idl:87:35: NameError: expected identifier, not keyword: self
+.../t302-fail.idl:87:35: error: NameError: expected identifier, not keyword: self
 >  interface I { int32 method (I self); }; // invalid method arg name
 >                                    ^
-.../t302-fail.idl:89:25: NameError: expected identifier, not keyword: self
+.../t302-fail.idl:89:25: error: NameError: expected identifier, not keyword: self
 >  interface I { int32 self; }; // invalid property name
 >                          ^
-.../t302-fail.idl:90:63: AttributeError: missing subsequent default initializer: method (...c...)
+.../t302-fail.idl:90:63: error: AttributeError: missing subsequent default initializer: method (...c...)
 >  ...I { int32 method (int32 a, int32 b = 2, int32 c); }; // missing subsequent default initializer
 >                                                         ^
-.../t302-fail.idl:93:30: TypeError: unknown type: 'void'
+.../t302-fail.idl:93:30: error: TypeError: unknown type: 'void'
 >  interface P { void void_prop; }; // invalid property type
 >                               ^
-.../t302-fail.idl:95:56: NameError: redefining identifier: I
+.../t302-fail.idl:95:56: error: NameError: redefining identifier: I
 >  interface I; interface I {}; interface I; interface I {}; // interface redefinition
 >                                                         ^
-.../t302-fail.idl:97:15: AttributeError: invalid empty enumeration: Empty
+.../t302-fail.idl:97:15: error: AttributeError: invalid empty enumeration: Empty
 >  enum Empty { }; // invalid empty enumeration
 >                ^
-.../t302-fail.idl:99:39: NameError: not a namespace-name: Unknown
+.../t302-fail.idl:99:39: error: NameError: not a namespace-name: Unknown
 >  namespace U { using namespace Unknown; } // not a namespace-name
 >                                        ^
-.../t302-fail.idl:101:38: TypeError: stream type used in wrong context: IStream stream_func1
+.../t302-fail.idl:101:38: error: TypeError: stream type used in wrong context: IStream stream_func1
 >  interface I { IStream stream_func1(); }; // stream type used in wrong context
 >                                       ^
-.../t302-fail.idl:102:44: TypeError: stream type used in wrong context: JStream js
+.../t302-fail.idl:102:44: error: TypeError: stream type used in wrong context: JStream js
 >  interface I { void stream_func2 (JStream js); }; // stream type used in wrong context
 >                                             ^
-.../t302-fail.idl:103:55: TypeError: stream type used in wrong context: OStream os
+.../t302-fail.idl:103:55: error: TypeError: stream type used in wrong context: OStream os
 >  interface I { void stream_func3 (int32 i32, OStream os); }; // stream type used in wrong context
 >                                                        ^
-.../t302-fail.idl:104:21: TypeError: invalid keyword 'signal', use Events instead
+.../t302-fail.idl:104:21: error: TypeError: invalid keyword 'signal', use Events instead
 >  interface I { signal JStream stream_signal1(); }; // stream type used in wrong context
 >                      ^
-.../t302-fail.idl:105:21: TypeError: invalid keyword 'signal', use Events instead
+.../t302-fail.idl:105:21: error: TypeError: invalid keyword 'signal', use Events instead
 >  interface I { signal void stream_signal2 (float64 f, OStream os); }; // stream type used in wrong co
 >                      ^
-.../t302-fail.idl:106:27: TypeError: stream type used in wrong context: OStream istream
+.../t302-fail.idl:106:27: error: TypeError: stream type used in wrong context: OStream istream
 >  record I { OStream istream; }; // stream type used in wrong context
 >                            ^
-.../t302-fail.idl:107:29: TypeError: stream type used in wrong context: IStream istream
+.../t302-fail.idl:107:29: error: TypeError: stream type used in wrong context: IStream istream
 >  sequence S { IStream istream; }; // stream type used in wrong context
 >                              ^
-.../t302-fail.idl:109:45: Exception: Enum value out of range: -9223372036854775809
+.../t302-fail.idl:109:45: error: Exception: Enum value out of range: -9223372036854775809
 >  enum TooBig { VALUE = -9223372036854775809 }; // number too large
 >                                              ^
-.../t302-fail.idl:110:45: Exception: Enum value out of range: 9223372036854775808
+.../t302-fail.idl:110:45: error: Exception: Enum value out of range: 9223372036854775808
 >  enum TooBig { VALUE = +9223372036854775808 }; // number too large
 >                                              ^
-.../t302-fail.idl:112:22: NameError: expected identifier, not keyword: type
+.../t302-fail.idl:112:22: error: NameError: expected identifier, not keyword: type
 >  record R { int32 type; }; // invalid field name
 >                       ^

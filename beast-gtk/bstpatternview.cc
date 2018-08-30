@@ -859,11 +859,14 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
                           GdkEvent            *event)
 {
   BstPatternView *self = BST_PATTERN_VIEW (scc);
-  BstPatternViewDrag drag_mem = { 0 }, *drag = &drag_mem;
-  gint hvalid = 1, hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
-  gint vvalid = 1, vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
+  BstPatternViewDrag drag_mem, *drag = &drag_mem;
+  int hvalid = 1, hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
+  int vvalid = 1, vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
   /* copy over drag setup */
-  memcpy (drag, scc_drag, sizeof (*scc_drag));  /* sizeof (*scc_drag) < sizeof (*drag) */
+  {
+    GxkScrollCanvasDrag *scdrag = drag;
+    *scdrag = *scc_drag;
+  }
   drag->pview = self;
   /* calculate widget specific drag data */
   if (hdrag)
@@ -881,7 +884,7 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
       drag->start_row = self->start_row = drag->current_row;
       drag->start_tick = self->start_tick = drag->current_tick;
       drag->start_duration = self->start_duration = drag->current_duration;
-      drag->start_valid = self->start_valid = drag->current_valid;
+      drag->start_valid = (self->start_valid = drag->current_valid);
     }
   else
     {

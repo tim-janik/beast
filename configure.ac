@@ -185,7 +185,7 @@ optimization_flags="-O3 -funroll-loops -ftree-vectorize $no_invalid_flags"
 FAST_MATH_FLAGS="-ffast-math"
 gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fno-delete-null-pointer-checks"
 gcc_fast_math="-fivopts"
-clang_fix_flags="-Qunused-arguments"		# avoid bogus -pthread warning (llvm#7798)
+clang_fix_flags="-Wno-tautological-compare -Wno-constant-logical-operand"
 x86_flags="-minline-all-stringops"
 x86_flags="$x86_flags -mmmx -msse -msse2"	# Intel since 2001, AMD since 2003
 x86_flags="$x86_flags -msse3"			# Intel since 2004, AMD since 2007
@@ -200,7 +200,11 @@ if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
     AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
-    MC_ASSERT_VERSION($CXX --version, 3.5.0)
+    # reduce clang's bogus -pthread warning (llvm#7798, llvm#38772)
+    AM_LDFLAGS="$AM_LDFLAGS -Wno-unused-command-line-argument"
+    AM_CFLAGS="$AM_CFLAGS -Wno-unused-command-line-argument"
+    AM_CXXFLAGS="$AM_CXXFLAGS -Wno-unused-command-line-argument"
+    MC_ASSERT_VERSION($CXX --version, 4.0.1)
 elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then # gcc
     AC_MSG_RESULT([g++])
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
@@ -427,8 +431,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
     dnl # PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
-    # librapicorn uses pthread functions in header files, forcing us to link against libpthread
-    dnl # RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)

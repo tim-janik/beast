@@ -17,7 +17,7 @@
 #define BORDER_WIDTH(self)        (GTK_CONTAINER (self)->border_width)
 #define LAYOUT(self)              (&(self)->layout)
 #define DRAG(self)                ((GxkScrollCanvasDrag*) g_object_get_data ((GObject*) self, "GxkScrollCanvas-drag"))
-#define SET_DRAG(self, drag)       g_object_set_data_full ((GObject*) self, "GxkScrollCanvas-drag", drag, g_free)
+#define SET_DRAG(self, drag)       g_object_set_data_full ((GObject*) self, "GxkScrollCanvas-drag", drag, [] (void *p) { delete (GxkScrollCanvasDrag*) p; })
 /* switches */
 #define WITH_TOP_PANEL(self)      (LAYOUT (self)->top_panel_height ? 1 : 0)
 #define WITH_LEFT_PANEL(self)     (LAYOUT (self)->left_panel_width ? 1 : 0)
@@ -1417,7 +1417,7 @@ scroll_canvas_button_press (GtkWidget      *widget,
     gtk_widget_grab_focus (widget);
 
   /* start new drag */
-  drag = g_new0 (GxkScrollCanvasDrag, 1);
+  drag = new GxkScrollCanvasDrag();
   drag->widget = widget;
   drag->type = GXK_DRAG_START;
   drag->mode = gxk_drag_modifier_start (GdkModifierType (event->state));

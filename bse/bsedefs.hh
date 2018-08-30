@@ -85,7 +85,7 @@ struct BseWaveRepoClass;
 // == Bse Engine Module Types ==
 struct BseModuleClass;
 namespace Bse {
-struct Module;
+class Module;
 struct IStream;
 struct JStream;
 struct OStream;

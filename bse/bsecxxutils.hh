@@ -124,7 +124,7 @@ struct ClassInfo
 
 
 /* --- type registration internals --- */
-struct CxxBaseClass;
+class CxxBaseClass;
 class TypeRegistry
 {
   GType gtype_id;

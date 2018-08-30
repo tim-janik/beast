@@ -315,7 +315,9 @@ class FirstInterfaceHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~FirstInterfaceHandle () override;
+  virtual /*dtor*/             ~FirstInterfaceHandle () override;
+  /*copy*/                      FirstInterfaceHandle (const FirstInterfaceHandle&) = default;
+  FirstInterfaceHandle&         operator= (const FirstInterfaceHandle&) = default;
   template<class RemoteHandle>
   static FirstInterfaceHandle   down_cast (const RemoteHandle &smh) { return smh == NULL ? FirstInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      FirstInterfaceHandle ();
@@ -749,7 +751,9 @@ class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~UIWidgetAreaHandle () override;
+  virtual /*dtor*/             ~UIWidgetAreaHandle () override;
+  /*copy*/                      UIWidgetAreaHandle (const UIWidgetAreaHandle&) = default;
+  UIWidgetAreaHandle&           operator= (const UIWidgetAreaHandle&) = default;
   template<class RemoteHandle>
   static UIWidgetAreaHandle     down_cast (const RemoteHandle &smh) { return smh == NULL ? UIWidgetAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UIWidgetAreaHandle ();
@@ -790,7 +794,9 @@ class ParentHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~ParentHandle () override;
+  virtual /*dtor*/             ~ParentHandle () override;
+  /*copy*/                      ParentHandle (const ParentHandle&) = default;
+  ParentHandle&                 operator= (const ParentHandle&) = default;
   template<class RemoteHandle>
   static ParentHandle           down_cast (const RemoteHandle &smh) { return smh == NULL ? ParentHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ParentHandle ();
@@ -806,7 +812,9 @@ class ChildHandle : public virtual ParentHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~ChildHandle () override;
+  virtual /*dtor*/             ~ChildHandle () override;
+  /*copy*/                      ChildHandle (const ChildHandle&) = default;
+  ChildHandle&                  operator= (const ChildHandle&) = default;
   template<class RemoteHandle>
   static ChildHandle            down_cast (const RemoteHandle &smh) { return smh == NULL ? ChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildHandle ();
@@ -824,7 +832,9 @@ class DescendantHandle : public virtual ChildHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~DescendantHandle () override;
+  virtual /*dtor*/             ~DescendantHandle () override;
+  /*copy*/                      DescendantHandle (const DescendantHandle&) = default;
+  DescendantHandle&             operator= (const DescendantHandle&) = default;
   template<class RemoteHandle>
   static DescendantHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? DescendantHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      DescendantHandle ();
@@ -842,7 +852,9 @@ class GrandChildHandle : public virtual DescendantHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~GrandChildHandle () override;
+  virtual /*dtor*/             ~GrandChildHandle () override;
+  /*copy*/                      GrandChildHandle (const GrandChildHandle&) = default;
+  GrandChildHandle&             operator= (const GrandChildHandle&) = default;
   template<class RemoteHandle>
   static GrandChildHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? GrandChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      GrandChildHandle ();
@@ -903,7 +915,9 @@ class QuickIfaceHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~QuickIfaceHandle () override;
+  virtual /*dtor*/             ~QuickIfaceHandle () override;
+  /*copy*/                      QuickIfaceHandle (const QuickIfaceHandle&) = default;
+  QuickIfaceHandle&             operator= (const QuickIfaceHandle&) = default;
   template<class RemoteHandle>
   static QuickIfaceHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? QuickIfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      QuickIfaceHandle ();
@@ -920,7 +934,9 @@ class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~MethodTestInterfaceHandle () override;
+  virtual /*dtor*/             ~MethodTestInterfaceHandle () override;
+  /*copy*/                      MethodTestInterfaceHandle (const MethodTestInterfaceHandle&) = default;
+  MethodTestInterfaceHandle&    operator= (const MethodTestInterfaceHandle&) = default;
   template<class RemoteHandle>
   static MethodTestInterfaceHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? MethodTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      MethodTestInterfaceHandle ();
@@ -942,11 +958,11 @@ public:
   ClnT_QuickSequence            method_with_sequence      (const ClnT_QuickSequence &input,
                                                            const ClnT_QuickSequence &optval = ClnT_QuickSequence());
   GrandChildHandle              method_with_interface     (GrandChildHandle &input,
-                                                           GrandChildHandle &optval = *(GrandChildHandle*) NULL);
+                                                           GrandChildHandle &optval);
   Aida::Any                     method_with_anys          (const Aida::Any &input,
                                                            const Aida::Any &optval);
   QuickIfaceHandle              method_with_quickiface    (QuickIfaceHandle &input,
-                                                           QuickIfaceHandle &iface0 = *(QuickIfaceHandle*) NULL);
+                                                           QuickIfaceHandle &iface0);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -959,7 +975,9 @@ class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~SignalTestInterfaceHandle () override;
+  virtual /*dtor*/             ~SignalTestInterfaceHandle () override;
+  /*copy*/                      SignalTestInterfaceHandle (const SignalTestInterfaceHandle&) = default;
+  SignalTestInterfaceHandle&    operator= (const SignalTestInterfaceHandle&) = default;
   template<class RemoteHandle>
   static SignalTestInterfaceHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? SignalTestInterfaceHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SignalTestInterfaceHandle ();
@@ -975,7 +993,9 @@ class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~ChildInheritingSignalsHandle () override;
+  virtual /*dtor*/             ~ChildInheritingSignalsHandle () override;
+  /*copy*/                      ChildInheritingSignalsHandle (const ChildInheritingSignalsHandle&) = default;
+  ChildInheritingSignalsHandle& operator= (const ChildInheritingSignalsHandle&) = default;
   template<class RemoteHandle>
   static ChildInheritingSignalsHandle down_cast (const RemoteHandle &smh) { return smh == NULL ? ChildInheritingSignalsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ChildInheritingSignalsHandle ();
@@ -993,7 +1013,9 @@ class AnotherChildHandle : public virtual SignalTestInterfaceHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~AnotherChildHandle () override;
+  virtual /*dtor*/             ~AnotherChildHandle () override;
+  /*copy*/                      AnotherChildHandle (const AnotherChildHandle&) = default;
+  AnotherChildHandle&           operator= (const AnotherChildHandle&) = default;
   template<class RemoteHandle>
   static AnotherChildHandle     down_cast (const RemoteHandle &smh) { return smh == NULL ? AnotherChildHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      AnotherChildHandle ();
@@ -1011,7 +1033,9 @@ class PropertyTesterHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~PropertyTesterHandle () override;
+  virtual /*dtor*/             ~PropertyTesterHandle () override;
+  /*copy*/                      PropertyTesterHandle (const PropertyTesterHandle&) = default;
+  PropertyTesterHandle&         operator= (const PropertyTesterHandle&) = default;
   template<class RemoteHandle>
   static PropertyTesterHandle   down_cast (const RemoteHandle &smh) { return smh == NULL ? PropertyTesterHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PropertyTesterHandle ();
@@ -1064,7 +1088,9 @@ class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~UseIncludesHandle () override;
+  virtual /*dtor*/             ~UseIncludesHandle () override;
+  /*copy*/                      UseIncludesHandle (const UseIncludesHandle&) = default;
+  UseIncludesHandle&            operator= (const UseIncludesHandle&) = default;
   template<class RemoteHandle>
   static UseIncludesHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? UseIncludesHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      UseIncludesHandle ();
@@ -1082,7 +1108,9 @@ class ButtonAreaHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~ButtonAreaHandle () override;
+  virtual /*dtor*/             ~ButtonAreaHandle () override;
+  /*copy*/                      ButtonAreaHandle (const ButtonAreaHandle&) = default;
+  ButtonAreaHandle&             operator= (const ButtonAreaHandle&) = default;
   template<class RemoteHandle>
   static ButtonAreaHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? ButtonAreaHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      ButtonAreaHandle ();
@@ -1113,7 +1141,9 @@ class PureMethodsHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~PureMethodsHandle () override;
+  virtual /*dtor*/             ~PureMethodsHandle () override;
+  /*copy*/                      PureMethodsHandle (const PureMethodsHandle&) = default;
+  PureMethodsHandle&            operator= (const PureMethodsHandle&) = default;
   template<class RemoteHandle>
   static PureMethodsHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? PureMethodsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      PureMethodsHandle ();
@@ -1133,7 +1163,9 @@ class NameTestsHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~NameTestsHandle () override;
+  virtual /*dtor*/             ~NameTestsHandle () override;
+  /*copy*/                      NameTestsHandle (const NameTestsHandle&) = default;
+  NameTestsHandle&              operator= (const NameTestsHandle&) = default;
   template<class RemoteHandle>
   static NameTestsHandle        down_cast (const RemoteHandle &smh) { return smh == NULL ? NameTestsHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      NameTestsHandle ();
@@ -1155,7 +1187,9 @@ class CompressorHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~CompressorHandle () override;
+  virtual /*dtor*/             ~CompressorHandle () override;
+  /*copy*/                      CompressorHandle (const CompressorHandle&) = default;
+  CompressorHandle&             operator= (const CompressorHandle&) = default;
   template<class RemoteHandle>
   static CompressorHandle       down_cast (const RemoteHandle &smh) { return smh == NULL ? CompressorHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      CompressorHandle ();
@@ -1209,7 +1243,9 @@ class SoundModuleHandle : public virtual Aida::RemoteHandle
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
-  virtual /*Des*/              ~SoundModuleHandle () override;
+  virtual /*dtor*/             ~SoundModuleHandle () override;
+  /*copy*/                      SoundModuleHandle (const SoundModuleHandle&) = default;
+  SoundModuleHandle&            operator= (const SoundModuleHandle&) = default;
   template<class RemoteHandle>
   static SoundModuleHandle      down_cast (const RemoteHandle &smh) { return smh == NULL ? SoundModuleHandle() : __aida_cast__ (smh, smh.__aida_typelist__()); }
   explicit                      SoundModuleHandle ();
@@ -3300,7 +3336,6 @@ enum_info<MandatoryNamespace::Enum1> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
@@ -3315,7 +3350,6 @@ enum_info<MandatoryNamespace::Enum1c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum1c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
@@ -3332,7 +3366,6 @@ enum_info<MandatoryNamespace::Enum2> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
@@ -3349,7 +3382,6 @@ enum_info<MandatoryNamespace::Enum2c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum2c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
@@ -3368,7 +3400,6 @@ enum_info<MandatoryNamespace::Enum3> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
@@ -3387,7 +3418,6 @@ enum_info<MandatoryNamespace::Enum3c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum3c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
@@ -3408,7 +3438,6 @@ enum_info<MandatoryNamespace::Enum4a> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4a> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
@@ -3429,7 +3458,6 @@ enum_info<MandatoryNamespace::Enum4b> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4b> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
@@ -3450,7 +3478,6 @@ enum_info<MandatoryNamespace::Enum4c> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4c> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
@@ -3471,7 +3498,6 @@ enum_info<MandatoryNamespace::Enum4d> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::Enum4d> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
@@ -3583,7 +3609,6 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
 } // specialization
-template const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
@@ -3598,7 +3623,6 @@ enum_info<InterfaceTests::QuickEnum> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
 } // specialization
-template const EnumInfo& enum_info<InterfaceTests::QuickEnum> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
@@ -3621,7 +3645,6 @@ enum_info<RapicornAidaTest::ClickType> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::ClickType> (); // instantiation
 
 static const IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
@@ -3658,7 +3681,6 @@ enum_info<RapicornAidaTest::MathExpressions> ()
   };
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::MathExpressions", 0, _aida_enumvalues_1014);
 } // specialization
-template const EnumInfo& enum_info<RapicornAidaTest::MathExpressions> (); // instantiation
 } // Aida
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__

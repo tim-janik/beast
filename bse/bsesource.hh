@@ -267,7 +267,7 @@ namespace Bse {
 
 class SourceImpl : public ItemImpl, public virtual SourceIface {
   // == Channel Monitors
-  class ChannelMonitor;
+  struct ChannelMonitor;
   ChannelMonitor      *cmons_ = NULL;
   SharedBlock          cmon_block_;
   void                 cmon_activate           ();

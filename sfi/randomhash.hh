@@ -45,7 +45,7 @@ struct SHA3_224 {
   void      digest      (uint8_t hashvalue[28]);                ///< Retrieve the resulting hash value.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate 224 bit SHA3 digest from @a data, see also class SHA3_224.
@@ -62,7 +62,7 @@ struct SHA3_256 {
   void      digest      (uint8_t hashvalue[32]);                ///< Retrieve the resulting hash value.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate 256 bit SHA3 digest from @a data, see also class SHA3_256.
@@ -79,7 +79,7 @@ struct SHA3_384 {
   void      digest      (uint8_t hashvalue[48]);                ///< Retrieve the resulting hash value.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate 384 bit SHA3 digest from @a data, see also class SHA3_384.
@@ -96,7 +96,7 @@ struct SHA3_512 {
   void      digest      (uint8_t hashvalue[64]);                ///< Retrieve the resulting hash value.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate 512 bit SHA3 digest from @a data, see also class SHA3_512.
@@ -113,7 +113,7 @@ struct SHAKE128 {
   void      squeeze_digest  (uint8_t *hashvalues, size_t n);        ///< Retrieve an arbitrary number of hash value bytes.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate SHA3 extendable output digest for 128 bit security strength, see also class SHAKE128.
@@ -130,7 +130,7 @@ struct SHAKE256 {
   void      squeeze_digest  (uint8_t *hashvalues, size_t n);        ///< Retrieve an arbitrary number of hash value bytes.
 private:
   AlignedPOD<232> mem_;
-  class     State;
+  struct    State;
   State    *state_;
 };
 /// Calculate SHA3 extendable output digest for 256 bit security strength, see also class SHAKE256.
@@ -201,6 +201,7 @@ class KeccakRng {
   Lib::KeccakF1600    state_;
   void                permute1600();
 public:
+  /*copy*/            KeccakRng  (const KeccakRng&) = default;
   /// Integral type of the KeccakRng generator results.
   typedef uint64_t    result_type;
   /// Amount of 64 bit random numbers per generated block.

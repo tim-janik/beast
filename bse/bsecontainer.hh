@@ -107,7 +107,7 @@ public:
   explicit           ContainerImpl  (BseObject*);
   virtual ItemIfaceP lookup_item    (const String &uname) override;
   virtual ItemIfaceP get_item       (const String &item_type, int seq_id) override;
-  virtual ItemSeq    list_children  ();
+  virtual ItemSeq    list_children  () override;
 };
 typedef std::shared_ptr<ContainerImpl> ContainerImplP;
 

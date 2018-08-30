@@ -597,7 +597,7 @@ gsl_osc_wave_normalize (guint   n_values,
   max = min;
   for (i = 1; i < n_values; i++)
     {
-      register gfloat v = values[i];
+      float v = values[i];
 
       max = MAX (max, v);
       min = MIN (min, v);

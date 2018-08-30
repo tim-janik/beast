@@ -262,15 +262,6 @@ node_peek_flow_job_stamp (Bse::Module *node)
   return Bse::TickStamp::max_stamp();
 }
 
-static inline guint64
-node_peek_boundary_job_stamp (Bse::Module *node)
-{
-  Bse::EngineTimedJob *tjob = node->boundary_jobs;
-  if (UNLIKELY (tjob != NULL))
-    return tjob->tick_stamp;
-  return Bse::TickStamp::max_stamp();
-}
-
 
 /* --- job processing --- */
 static void

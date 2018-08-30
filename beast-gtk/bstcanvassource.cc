@@ -522,7 +522,7 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
 				gdouble         *x_p,
 				gdouble         *y_p)
 {
-  gdouble x, y;
+  double x, y = 0;
 
   assert_return (BST_IS_CANVAS_SOURCE (csource));
 

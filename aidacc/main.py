@@ -125,7 +125,7 @@ def print_help (with_help = True):
 
 def parse_files_and_args():
   import re, getopt
-  config = { 'files' : [], 'backend' : 'PrettyDump', 'backend-options' : [], 'includedirs' : [],
+  config = { 'files' : [], 'backend' : 'PrettyDump', 'backend-options' : [], 'includedirs' : [], 'color': True,
              'insertions' : [], 'inclusions' : [], 'skip-skels' : [], 'system-typedefs' : False, 'bse-extensions' : False }
   sop = 'vhG:g:o:I:x:'
   lop = ['help', 'version', 'list-formats',
@@ -181,6 +181,7 @@ if len (sys.argv) > 2 and failtestoption in sys.argv:
   sys.argv.remove (failtestoption) # remove --aida-fail-file-test
   config = parse_files_and_args()
   config['anonymize-filepaths'] = true # anonymize paths for varying builddirs (../a/b/c.idl -> .../c.idl)
+  config['color'] = false
   files = config['files']
   if len (files) != 1:
     raise Exception (failtestoption + ': single input file required')

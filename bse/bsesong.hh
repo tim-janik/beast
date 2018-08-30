@@ -84,7 +84,7 @@ public:
   virtual void              loop_right              (int tick) override;
   virtual int               tick_pointer            () const override;
   virtual void              tick_pointer            (int tick) override;
-  virtual SongTiming        get_timing              (int tick);
+  virtual SongTiming        get_timing              (int tick) override;
   virtual TrackIfaceP       find_any_track_for_part (PartIface &part) override;
   virtual BusIfaceP         create_bus              () override;
   virtual void              remove_bus              (BusIface &bus) override;

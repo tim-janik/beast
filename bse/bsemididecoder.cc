@@ -65,21 +65,6 @@ bse_midi_decoder_pop_event_list (BseMidiDecoder *self)
   return events;
 }
 
-static inline const char*
-decoder_state_to_string (BseMidiDecoderState state)
-{
-  switch (state)
-    {
-    case BSE_MIDI_DECODER_ZERO:         return "zero";
-    case BSE_MIDI_DECODER_DELTA_TIME:   return "delta-time";
-    case BSE_MIDI_DECODER_EVENT:        return "event";
-    case BSE_MIDI_DECODER_VLENGTH:      return "vlength";
-    case BSE_MIDI_DECODER_DATA:         return "data";
-    case BSE_MIDI_DECODER_DONE:         return "done";
-    }
-  return "unknown";
-}
-
 static void
 midi_decoder_advance_state (BseMidiDecoder *self)
 {

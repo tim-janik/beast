@@ -647,7 +647,7 @@ gxk_rack_table_expand_rect (GxkRackTable *self,
   *vspan = j;
 
   /* expand vertically */
-  for (j = j; row + j < table->nrows; j++)
+  for (/*j = j*/; row + j < table->nrows; j++)
     if (g_bit_matrix_peek (self->child_map, col, row + j))
       break;
   if (j == *vspan)
