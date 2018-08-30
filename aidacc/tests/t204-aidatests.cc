@@ -296,7 +296,8 @@ test_any_storage()
   {
     Any ax1 = any5();
     TASSERT (ax1 == any5());
-    Any ax2 = std::move (any5());
+    Any a5 = any5();
+    Any ax2 = std::move (a5);
     TASSERT (ax2 == any5());
   }
   String s;
