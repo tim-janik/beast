@@ -378,6 +378,10 @@ def AIi (identifier):   # assert interface identifier
   if ti and ti.storage == Decls.INTERFACE:
     return True
   raise TypeError ('no such interface type: %s' % identifier)
+def AId (ifacetype, identifier):   # assert interface without default initialization
+  ti = yy.namespace_lookup (ifacetype, astype = True)
+  if ti and ti.storage == Decls.INTERFACE:
+    raise TypeError ('invalid default initialization for interface type: %s %s' % (ifacetype, identifier))
 def ATN (typename):     # assert a typename
   yy.resolve_type (typename) # raises exception
 def ANOTSIG (issignal): # assert no signal declarations
@@ -574,10 +578,10 @@ rule field_decl:
 
 rule method_args:
         typename IDENT                          {{ aident = IDENT; adef = None; atype = yy.link_type (typename, IDENT); AIc (IDENT) }}
-        [ '=' expression                        {{ adef = expression }}
+        [ '=' expression                        {{ adef = expression; AId (typename, IDENT) }}
         ]                                       {{ a = yy.argcheck (aident, atype, adef); args = [ a ] }}
         ( ',' typename IDENT                    {{ aident = IDENT; adef = None; atype = yy.link_type (typename, IDENT); AIc (IDENT) }}
-          [ '=' expression                      {{ adef = expression }}
+          [ '=' expression                      {{ adef = expression; AId (typename, IDENT) }}
           ]                                     {{ a = yy.argcheck (aident, atype, adef); args += [ a ] }}
         ) *                                     {{ return args }}
 

@@ -958,11 +958,11 @@ public:
   ClnT_QuickSequence            method_with_sequence      (const ClnT_QuickSequence &input,
                                                            const ClnT_QuickSequence &optval = ClnT_QuickSequence());
   GrandChildHandle              method_with_interface     (GrandChildHandle &input,
-                                                           GrandChildHandle &optval = *(GrandChildHandle*) NULL);
+                                                           GrandChildHandle &optval);
   Aida::Any                     method_with_anys          (const Aida::Any &input,
                                                            const Aida::Any &optval);
   QuickIfaceHandle              method_with_quickiface    (QuickIfaceHandle &input,
-                                                           QuickIfaceHandle &iface0 = *(QuickIfaceHandle*) NULL);
+                                                           QuickIfaceHandle &iface0);
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };

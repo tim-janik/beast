@@ -999,11 +999,11 @@ public:
   virtual SrvT_QuickSequence            method_with_sequence       (const SrvT_QuickSequence &input,
                                                                     const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0;
   virtual I_GrandChildIfaceP            method_with_interface      (I_GrandChildIface &input,
-                                                                    I_GrandChildIface &optval = *(I_GrandChildIface*) NULL) = 0;
+                                                                    I_GrandChildIface &optval) = 0;
   virtual Aida::Any                     method_with_anys           (const Aida::Any &input,
                                                                     const Aida::Any &optval) = 0;
   virtual I_QuickIfaceIfaceP            method_with_quickiface     (I_QuickIfaceIface &input,
-                                                                    I_QuickIfaceIface &iface0 = *(I_QuickIfaceIface*) NULL) = 0;
+                                                                    I_QuickIfaceIface &iface0) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };

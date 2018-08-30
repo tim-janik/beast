@@ -292,9 +292,9 @@ interface MethodTestInterface {
   QuickEnum      method_with_enum       (QuickEnum      input, QuickEnum     optval = ZERO);
   QuickRecord    method_with_record     (QuickRecord    input, QuickRecord   optval = 0);
   QuickSequence  method_with_sequence   (QuickSequence  input, QuickSequence optval = 0);
-  GrandChild     method_with_interface  (GrandChild     input, GrandChild    optval = 0);
+  GrandChild     method_with_interface  (GrandChild     input, GrandChild    optval);
   Any            method_with_anys       (Any            input, Any           optval);
-  QuickIface     method_with_quickiface (QuickIface     input, QuickIface    iface0 = 0);
+  QuickIface     method_with_quickiface (QuickIface     input, QuickIface    iface0);
 };
 
 interface SignalTestInterface {
