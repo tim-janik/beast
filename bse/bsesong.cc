@@ -20,9 +20,6 @@
 enum
 {
   PROP_0,
-  PROP_TPQN,
-  PROP_NUMERATOR,
-  PROP_DENOMINATOR,
   PROP_PNET,
 };
 
@@ -140,7 +137,6 @@ bse_song_set_property (GObject      *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-      SfiInt vint;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -162,19 +158,6 @@ bse_song_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_NUMERATOR:
-      self->numerator = sfi_value_get_int (value);
-      bse_song_update_tpsi_SL (self);
-      break;
-    case PROP_DENOMINATOR:
-      vint = sfi_value_get_int (value);
-      self->denominator = vint <= 2 ? vint : 1 << g_bit_storage (vint - 1);
-      bse_song_update_tpsi_SL (self);
-      break;
-    case PROP_TPQN:
-      self->tpqn = sfi_value_get_int (value);
-      bse_song_update_tpsi_SL (self);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -192,15 +175,6 @@ bse_song_get_property (GObject     *object,
     {
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_NUMERATOR:
-      sfi_value_set_int (value, self->numerator);
-      break;
-    case PROP_DENOMINATOR:
-      sfi_value_set_int (value, self->denominator);
-      break;
-    case PROP_TPQN:
-      sfi_value_set_int (value, self->tpqn);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -631,18 +605,6 @@ bse_song_class_init (BseSongClass *klass)
 
   bse_song_timing_get_default (&timing);
 
-  bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_TPQN,
-			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),
-					     timing.tpqn, 384, 384, 0, SFI_PARAM_STANDARD_RDONLY));
-  bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_NUMERATOR,
-			      sfi_pspec_int ("numerator", _("Numerator"), _("Measure numerator"),
-					     timing.numerator, 1, 256, 1, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_DENOMINATOR,
-			      sfi_pspec_int ("denominator", _("Denominator"), _("Measure denominator, must be a power of 2"),
-					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
@@ -830,6 +792,54 @@ SongImpl::get_timing (int tick)
   return timing;
 }
 
+int
+SongImpl::numerator() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+
+  return self->numerator;
+}
+
+void
+SongImpl::numerator (int val)
+{
+  BseSong *self = as<BseSong*>();
+  if (int (self->numerator) != val)
+    {
+      const char *prop = "numerator";
+      push_property_undo (prop);
+
+      self->numerator = val;
+      bse_song_update_tpsi_SL (self);
+
+      notify (prop);
+    }
+}
+
+int
+SongImpl::denominator() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+
+  return self->denominator;
+}
+
+void
+SongImpl::denominator (int val)
+{
+  BseSong *self = as<BseSong*>();
+  if (int (self->denominator) != val)
+    {
+      const char *prop = "denominator";
+      push_property_undo (prop);
+
+      self->denominator = val <= 2 ? val : 1 << g_bit_storage (val - 1);
+      bse_song_update_tpsi_SL (self);
+
+      notify (prop);
+    }
+}
+
 double
 SongImpl::bpm () const
 {
@@ -847,6 +857,30 @@ SongImpl::bpm (double val)
       push_property_undo (prop);
       self->bpm = val;
       bse_song_update_tpsi_SL (self);
+      notify (prop);
+    }
+}
+
+
+int
+SongImpl::tpqn() const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+  return self->tpqn;
+}
+
+void
+SongImpl::tpqn (int val)
+{
+  BseSong *self = as<BseSong*>();
+  if (int (self->tpqn) != val)
+    {
+      const char *prop = "tpqn";
+      push_property_undo (prop);
+
+      self->tpqn = val;
+      bse_song_update_tpsi_SL (self);
+
       notify (prop);
     }
 }
@@ -989,7 +1023,7 @@ SongImpl::tick_pointer (int tick)
       for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
         {
           BseTrack *track = (BseTrack*) ring->data;
-          track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
+          track->track_done_SL = false;	/* let sequencer recheck if playing */
         }
       BSE_SEQUENCER_UNLOCK ();
 
