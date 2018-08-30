@@ -1,5 +1,5 @@
-# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 # Aida IDL Parser                                       -*-mode:python-*-
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 import sys, os, Decls
 true, false, length = (True, False, len)
 
@@ -182,7 +182,7 @@ class YYGlobals (object):
       try:
         adict = AuxData.parse2dict (typeinfo, auxident, auxargs, field_group)
       except AuxData.AuxError, ex:
-        raise IdlError ('%s:%d: %s' % (ex.location[0], ex.location[1], str (ex)), '')
+        raise IdlError ('%s:%d: error: %s' % (ex.location[0], ex.location[1], str (ex)), '')
       typeinfo.update_auxdata (adict)
   def argcheck (self, aident, atype, adef):
     if adef == None:
@@ -433,7 +433,7 @@ def parse_try (filename, input_string, implinc):
     file_name, line_number, column_number = pos
     if yy.config.get ('anonymize-filepaths', 0):        # FIXME: global yy reference
         file_name = re.sub (r'.*/([^/]+)$', r'.../\1', '/' + file_name)
-    errstr = '%s:%d:%d: %s' % (file_name, line_number, column_number, exmsg)
+    errstr = '%s:%d:%d: error: %s' % (file_name, line_number, column_number, exmsg)
     class WritableObject:
       def __init__ (self): self.content = []
       def write (self, string): self.content.append (string)
@@ -443,6 +443,24 @@ def parse_try (filename, input_string, implinc):
     raise IdlError (errstr, ecaret)
   yy.scanner = saved_yy_scanner
   return result
+
+def colorize_diag (estr):
+  if not yy.config['color'] or not os.isatty (2) or os.environ['TERM'] == 'dumb':
+    return estr
+  B1 = '\033[1m'  # bold
+  B0 = '\033[22m' # reset bold
+  FR = '\033[31m' # red
+  FM = '\033[35m' # magenta
+  F0 = '\033[39m' # reset fg
+  m = re.match (r'([^:\s]+:\d+[0-9:]*:) (\w*[Ee]rror:)(.*)', estr)
+  if m:
+    p = m.groups()
+    return B1 + p[0] + ' ' + FR + p[1] + F0 + B0 + p[2]
+  m = re.match (r'([^:\s]+:\d+[0-9:]*:) (\w+:)(.*)', estr)
+  if m:
+    p = m.groups()
+    return B1 + p[0] + ' ' + FM + p[1] + B0 + F0 + p[2]
+  return estr
 
 def parse_files (config, filepairs):
   implfiles = []
@@ -462,7 +480,7 @@ def parse_files (config, filepairs):
     while cx:
       el = [ str (cx) ] + el
       cx = cx.exception
-    return (None, str (ex), ex.ecaret, el)
+    return (None, colorize_diag (str (ex)), ex.ecaret, el)
 
 %%
 parser IdlSyntaxParser:
