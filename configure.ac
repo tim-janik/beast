@@ -431,8 +431,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
     dnl # PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
-    # librapicorn uses pthread functions in header files, forcing us to link against libpthread
-    dnl # RAPICORN_LIBS="$RAPICORN_LIBS -lpthread"
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
