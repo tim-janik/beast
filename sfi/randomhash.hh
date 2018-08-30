@@ -201,6 +201,7 @@ class KeccakRng {
   Lib::KeccakF1600    state_;
   void                permute1600();
 public:
+  /*copy*/            KeccakRng  (const KeccakRng&) = default;
   /// Integral type of the KeccakRng generator results.
   typedef uint64_t    result_type;
   /// Amount of 64 bit random numbers per generated block.
