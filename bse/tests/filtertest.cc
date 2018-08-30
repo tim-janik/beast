@@ -19,7 +19,7 @@ using std::min;
 typedef std::complex<double> Complex;
 
 static inline double
-sqr (register double a)
+sqr (double a)
 {
   return a * a;
 }
