@@ -65,17 +65,6 @@ $(TAPRUNS): %.taprun: % # static pattern rule - also works for phony targets
 	$(Q) TST="$(@:%.taprun=%)"; $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
 check: taptests
 
-# == X11TESTS ==
-X11TESTS =
-X11RUNS  = $(addsuffix .x11run, $(basename $(X11TESTS)))
-.PHONY: x11tests $(X11RUNS)
-x11tests: $(top_srcdir)/taptool.sh
-	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(X11RUNS)
-$(X11RUNS): %.x11run: % # static pattern rule - also works for phony targets
-	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
-	$(Q) TST="$(@:%.x11run=%)"; $(X11_ENV) $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
-check: x11tests
-
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
 .PHONY: slowcheck slowcheck-recursive slowcheck-SLOWTESTS
@@ -117,7 +106,7 @@ perf-PERFTESTS:
 PERFTESTS=
 
 # === ALLTESTS ===
-ALLTESTS = $(TESTS) $(TAPTESTS) $(X11TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+ALLTESTS = $(TESTS) $(TAPTESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
 
 # === report ===
 .PHONY: report
