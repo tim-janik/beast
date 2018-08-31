@@ -126,34 +126,28 @@ msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: Automatisierung aus MIDI-Steuerung: %s (MIDI-Kanal: %d)"
 
 #: ebeast/menus.js:12
-#, fuzzy
 msgid "&About..."
 msgstr "_Info …"
 
 #: ebeast/menus.js:15
-#, fuzzy
 msgid "&File"
-msgstr "_Datei"
+msgstr "&Datei"
 
 #: ebeast/menus.js:17
-#, fuzzy
 msgid "&Help"
-msgstr "_Hilfe"
+msgstr "&Hilfe"
 
 #: ebeast/menus.js:5
-#, fuzzy
 msgid "&Open..."
-msgstr "Ö_ffnen …"
+msgstr "Ö&ffnen …"
 
 #: ebeast/menus.js:6
-#, fuzzy
 msgid "&Quit"
-msgstr "_Beenden"
+msgstr "&Beenden"
 
 #: ebeast/menus.js:16
-#, fuzzy
 msgid "&View"
-msgstr "_Ansicht"
+msgstr "&Ansicht"
 
 #: beast-gtk/bstcanvassource.cc:969
 msgid "(Hint)"
@@ -171,9 +165,8 @@ msgid "/Audio Sources/Noise"
 msgstr "/Audio-Quellen/Rauschen"
 
 #: plugins/davorgan.idl:9
-#, fuzzy
 msgid "/Audio Sources/Organ"
-msgstr "_Audio-Quellen"
+msgstr "/Audio-Quellen/Orgel"
 
 #: bse/bsestandardosc.cc:95
 msgid "/Audio Sources/Standard Oscillator"
@@ -204,9 +197,8 @@ msgid "/Input & Output/Instrument Output"
 msgstr "/Ein- und Ausgabe/Instrumentenausgabe"
 
 #: bse/bseinstrumentinput.cc:149
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/Eingabekanal für Instrumentenstimme"
 
 #: bse/bsemidicontroller.cc:71
 msgid "/Input & Output/MIDI Control Input"
@@ -234,21 +226,19 @@ msgstr ""
 
 #: bse/bseconstant.cc:68
 msgid "/Other Sources/Constant"
-msgstr "/Andere Quellen/Konstant"
+msgstr "/Weitere Quellen/Konstant"
 
 #: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr "/Routing/Verstärker"
 
 #: plugins/bsecontribsampleandhold.idl:11
-#, fuzzy
 msgid "/Routing/Sample and Hold"
-msgstr "/Routing/Verstärker"
+msgstr ""
 
 #: plugins/bsesummation.idl:8
-#, fuzzy
 msgid "/Routing/Summation"
-msgstr "/Routing/Verstärker"
+msgstr "/Routing/Summierung"
 
 #: plugins/bsebalance.idl:8
 msgid "/Spatial/Balance"
@@ -710,14 +700,12 @@ msgid "Abortion"
 msgstr "Abbruch"
 
 #: plugins/bsesummation.idl:16
-#, fuzzy
 msgid "Accumulated audio output 1"
-msgstr "Verstärkte Audio-Ausgabe"
+msgstr "Summierter Ausgang 1"
 
 #: plugins/bsesummation.idl:18
-#, fuzzy
 msgid "Accumulated audio output 2"
-msgstr "Verstärkte Audio-Ausgabe"
+msgstr "Summierter Ausgang 2"
 
 #: beast-gtk/bstbuseditor.cc:23 beast-gtk/bstbusmixer.cc:20
 #: beast-gtk/bstbusview.cc:19 beast-gtk/bstpartview.cc:24
@@ -1019,31 +1007,28 @@ msgid "Audio"
 msgstr "Audio"
 
 #: plugins/bsesummation.idl:17
-#, fuzzy
 msgid "Audio Diff"
-msgstr "Audio"
+msgstr "Audio Differenz"
 
 #: plugins/standardguspatchenvelope.idl:27
-#, fuzzy
 msgid "Audio Gate"
-msgstr "Audio-Aus"
+msgstr ""
 
 #: bse/bseserver.cc:475
-#, fuzzy
 msgid "Audio I/O Failed"
-msgstr "Audio-Aus"
+msgstr ""
 
 #: bse/bsebiquadfilter.cc:171 plugins/bseatandistort.cc:69
 #: plugins/bsecontribsampleandhold.idl:13 plugins/bseiirfilter.cc:116
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 #: plugins/standardguspatchenvelope.idl:26
 msgid "Audio In"
-msgstr "Audio-Ein"
+msgstr "Audio-Eingang"
 
 #: plugins/bsemixer.cc:131
 #, c-format
 msgid "Audio In%u"
-msgstr "Audio-Ein%u"
+msgstr "Audio-Eingang%u"
 
 #: bse/bsebusmodule.idl:9 plugins/artscompressor.idl:30 plugins/bseadder.cc:77
 #: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17 plugins/bsemult.cc:37
@@ -1068,27 +1053,27 @@ msgstr "Audio-Ein4"
 #: plugins/bseamplifier.idl:33 plugins/bsebalance.idl:24
 #: plugins/bsecontribsampleandhold.idl:13
 msgid "Audio Input"
-msgstr "Audio-Eingabe"
+msgstr "Audio-Eingang"
 
 #: plugins/bseadder.cc:77 plugins/bsemult.cc:37
 msgid "Audio Input 1"
-msgstr "Audio-Eingabe 1"
+msgstr "Audio-Eingang 1"
 
 #: plugins/bseadder.cc:79 plugins/bsemult.cc:39
 msgid "Audio Input 2"
-msgstr "Audio-Eingabe 2"
+msgstr "Audio-Eingang 2"
 
 #: plugins/bsemult.cc:41
 msgid "Audio Input 3"
-msgstr "Audio-Eingabe 3"
+msgstr "Audio-Eingang 3"
 
 #: plugins/bsemult.cc:43
 msgid "Audio Input 4"
-msgstr "Audio-Eingabe 4"
+msgstr "Audio-Eingang 4"
 
 #: plugins/bseatandistort.cc:69
 msgid "Audio Input Signal"
-msgstr "Audio-Eingabesignal"
+msgstr "Audio-Eingangsignal"
 
 #: plugins/standardguspatchenvelope.idl:26
 msgid "Audio Input of the WaveOsc playing the patch"
@@ -1125,24 +1110,20 @@ msgid "Audio Recording Failed"
 msgstr ""
 
 #: plugins/davsyndrum.cc:40
-#, fuzzy
 msgid "Audio Sources/Synthetic Drum"
-msgstr "/Audio-Quellen/Rauschen"
+msgstr "/Audio-Quellen/Synthetisches Schlagzeug"
 
 #: plugins/davxtalstrings.cc:54
-#, fuzzy
 msgid "Audio Sources/XtalStrings"
-msgstr "/Audio-Quellen/Rauschen"
+msgstr "/Audio-Quellen/XtalStrings"
 
 #: plugins/bsesummation.idl:16
-#, fuzzy
 msgid "Audio Sum1"
-msgstr "Audio-Aus1"
+msgstr "Ausgang Summe1"
 
 #: plugins/bsesummation.idl:18
-#, fuzzy
 msgid "Audio Sum2"
-msgstr "Audio-Aus2"
+msgstr "Ausgang Summe2"
 
 #: bse/bseserver.cc:428
 #, c-format
@@ -1151,24 +1132,23 @@ msgstr "Audiogerät »%s ist nicht für Eingabe verfügbar, Audiogerät: %s=%s"
 
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 msgid "Audio input"
-msgstr "Auto-Eingabe"
+msgstr "Auto-Eingang"
 
 #: plugins/artscompressor.idl:30 plugins/bsesummation.idl:14
 msgid "Audio input 1"
-msgstr "Audio-Eingabe 1"
+msgstr "Audio-Eingang 1"
 
 #: plugins/artscompressor.idl:31 plugins/bsesummation.idl:15
 msgid "Audio input 2"
-msgstr "Audio-Eingabe 2"
+msgstr "Audio-Eingang 2"
 
 #: bse/bsesuper.cc:182
 msgid "Author"
 msgstr "Autor"
 
 #: bse/bseapi.idl:892
-#, fuzzy
 msgid "Auto Activate"
-msgstr "Auto-Kürzen"
+msgstr "Automatische Aktivierung"
 
 #: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:42
 msgid "Auto Output"
@@ -1217,14 +1197,12 @@ msgid "Available Postprocessors"
 msgstr "Verfügbare Postprozessoren"
 
 #: bse/bsesoundfontosc.cc:308
-#, fuzzy
 msgid "Available Presets"
-msgstr "Verfügbare Waves"
+msgstr "Verfügbare Presets"
 
 #: beast-gtk/bsttrackview.cc:329
-#, fuzzy
 msgid "Available Sound Fonts"
-msgstr "Verfügbare Eingänge"
+msgstr "Verfügbare Soundfonts"
 
 #: bse/bsemidisynth.cc:135 bse/bsesubsynth.cc:138 bse/bsetrack.cc:287
 msgid "Available Synthesizers"
@@ -1324,7 +1302,7 @@ msgstr "Abgleich"
 
 #: plugins/bseamplifier.idl:36 plugins/bsebalance.idl:27
 msgid "Balance audio input levels"
-msgstr "Audio-Eingabepegel abgleichen"
+msgstr "Audio-Eingangspegel abgleichen"
 
 #: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:32
 msgid "Balance control input levels"
@@ -1332,9 +1310,8 @@ msgstr "Pegel Steuereingabe abgleichen"
 
 #. 14bit, continuous controls
 #: bse/bseapi.idl:104 bse/bseapi.idl:281
-#, fuzzy
 msgid "Bank Select"
-msgstr "Auswahl"
+msgstr "Bank Auswahl"
 
 #: bse/bsestandardosc.cc:127 bse/bsestandardosc.cc:132
 #: bse/bsestandardosc.cc:137 bse/bsestandardosc.cc:142 plugins/davorgan.idl:13
@@ -1507,9 +1484,9 @@ msgid "Channel%u [dB]"
 msgstr "Kanel%u [dB]"
 
 #: plugins/bsemixer.cc:99
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u [float]"
-msgstr "Kanalbeschriftungen"
+msgstr "Kanal%u [float]"
 
 #: beast-gtk/gxk/gxkparam-toggle.cc:65
 msgid "Check/ToggleRadio Button"
@@ -1552,7 +1529,6 @@ msgid "Close the project"
 msgstr "Projekt schließen"
 
 #: bse/bseapi.idl:51
-#, fuzzy
 msgid "Codec failure"
 msgstr "Codec-Fehler"
 
@@ -1975,9 +1951,8 @@ msgid "Control 93 Chorus Depth"
 msgstr ""
 
 #: bse/bseapi.idl:241 bse/bseapi.idl:410
-#, fuzzy
 msgid "Control 93 Detune Depth"
-msgstr "Steuereingang"
+msgstr ""
 
 #: bse/bseapi.idl:242 bse/bseapi.idl:411
 msgid "Control 95 Phase Depth"
@@ -2018,7 +1993,6 @@ msgid "Control Strength"
 msgstr ""
 
 #: beast-gtk/bstparam-automation.cc:19
-#, fuzzy
 msgid "Control Type"
 msgstr "Steuerungstyp:"
 
@@ -2239,9 +2213,8 @@ msgid "Delete the currently selected key binding"
 msgstr "Die momentan gewählte Tastenkombination löschen"
 
 #: beast-gtk/bstsoundfontview.cc:28
-#, fuzzy
 msgid "Delete the currently selected sound font from project"
-msgstr "Die momentan gewählte Spur löschen"
+msgstr ""
 
 #: beast-gtk/bsttrackview.cc:51
 msgid "Delete the currently selected track"
@@ -2372,9 +2345,8 @@ msgid "Disconnect Outputs"
 msgstr "Ausgang trennen"
 
 #: bse/bseserver.cc:560
-#, fuzzy
 msgid "Disk Recording Failed"
-msgstr "Festplattenaufnahme starten"
+msgstr "Festplattenaufnahme fehlgeschlagen"
 
 #: beast-gtk/bstapp.cc:86
 msgid "Display developer and contributor credits"
@@ -2402,14 +2374,12 @@ msgstr "_Inhaltsverzeichnis"
 
 #: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:583
 #: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
-#, fuzzy
 msgid "Done Out"
-msgstr "Aus, links"
+msgstr "Ausgang 'Done'"
 
 #: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:583
-#, fuzzy
 msgid "Done Output"
-msgstr "Aus, links"
+msgstr "Ausgang 'Done'"
 
 #: beast-gtk/bstapi.idl:51
 msgid "Dotted eighths note"
@@ -2572,9 +2542,8 @@ msgstr ""
 
 # CHECK
 #: bse/bseapi.idl:26
-#, fuzzy
 msgid "End of file"
-msgstr "Filter-Ordnung"
+msgstr "Datei-Ende"
 
 # CHECK
 #: beast-gtk/bstsampleeditor.cc:419
@@ -2713,7 +2682,6 @@ msgstr "Anzahl der Gerätekanäle konnte nicht konfiguriert werden"
 
 #. content errors
 #: bse/bseapi.idl:40
-#, fuzzy
 msgid "Failed to detect header"
 msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
 
@@ -2723,9 +2691,9 @@ msgid "Failed to load project \"%s\": %s"
 msgstr "Das Laden des Projekts »%s« ist fehlgeschlagen: %s"
 
 #: beast-gtk/bstfiledialog.cc:776
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load sound font \"%s\": %s"
-msgstr "Das Laden des Projekts »%s« ist fehlgeschlagen: %s"
+msgstr "Das Laden des Soundfonts »%s« ist fehlgeschlagen: %s"
 
 #: beast-gtk/bstfiledialog.cc:746 beast-gtk/bstmain.cc:346
 #: beast-gtk/bstmain.cc:362
@@ -2749,9 +2717,9 @@ msgid "Failed to open PCM devices: %s"
 msgstr "Öffnen der PCM-Geräte fehlgeschlagen: %s"
 
 #: bse/bseserver.cc:564
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
-msgstr "Öffnen der Ausgabedatei »%s« fehlgeschlagen: %s"
+msgstr "Öffnen der Aufnahmedatei »%s« fehlgeschlagen: %s"
 
 #: beast-gtk/bstfiledialog.cc:539
 #, c-format
@@ -2800,9 +2768,8 @@ msgid "Failed to spawn child process"
 msgstr "Kindprozess konnte nicht erstellt werden"
 
 #: bse/bseserver.cc:561
-#, fuzzy
 msgid "Failed to start PCM recording to disk."
-msgstr "Die Aufzeichnung auf Festplatte konnte nicht gestartet werden."
+msgstr "Die PCM-Aufzeichnung auf Festplatte konnte nicht gestartet werden."
 
 #: bse/bseserver.cc:422
 msgid "Failed to start recording from audio device."
@@ -2890,7 +2857,7 @@ msgstr "Gefiltertes Audio-Signal"
 
 #: plugins/bseiirfilter.cc:118
 msgid "Filtered Output"
-msgstr "Gefilterte Eingabe"
+msgstr "Gefilterte Ausgabe"
 
 #: plugins/davbassfilter.idl:16
 msgid "Filtered audio output"
@@ -2901,9 +2868,8 @@ msgid "Filters/Free Verb"
 msgstr ""
 
 #: plugins/bseiirfilter.cc:46
-#, fuzzy
 msgid "Filters/IIR Filter"
-msgstr "/Filter/Bass-Filter"
+msgstr "/Filter/IIR-Filter"
 
 #. tooltip=
 #: res/gxk/radgets-standard.xml:470
@@ -2917,12 +2883,11 @@ msgstr "Feineinstellung"
 
 #: bse/bsebusmodule.idl:9 plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17
 msgid "First audio input"
-msgstr "Erste Audio-Eingabe"
+msgstr "Erster Audio-Eingang"
 
 #: bse/bsebusmodule.idl:11
-#, fuzzy
 msgid "First audio output"
-msgstr "Erste Audio-Eingabe"
+msgstr "Erste Audio-Ausgabe"
 
 #: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "First control input"
@@ -3050,13 +3015,12 @@ msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public-Lizenz"
 
 #: bse/bsebiquadfilter.cc:177
-#, fuzzy
 msgid "Gain Mod In"
 msgstr "Modulationszuwachseingabe"
 
 #: bse/bsebiquadfilter.cc:177
 msgid "Gain Modulation Input"
-msgstr "Modulationszuwachseingabe"
+msgstr "Modulationanstiegseingabe"
 
 # CHECK
 #: bse/bsebiquadfilter.cc:166
@@ -3070,23 +3034,20 @@ msgid "Gain [dB]"
 msgstr "Zuwachs [dB]"
 
 #: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
-#, fuzzy
 msgid "Gate"
-msgstr "Einfügen"
+msgstr ""
 
 #: plugins/bsesimpleadsr.cc:96 plugins/standardguspatchenvelope.idl:24
 msgid "Gate In"
 msgstr ""
 
 #: bse/bsemidivoice.cc:96 bse/bsewaveosc.cc:581
-#, fuzzy
 msgid "Gate Out"
-msgstr "Aus, links"
+msgstr "Ausgang 'Gate'"
 
 #: bse/bsewaveosc.cc:581
-#, fuzzy
 msgid "Gate Output"
-msgstr "Ausgabe löschen"
+msgstr "Ausgang 'Gate'"
 
 #: plugins/standardguspatchenvelope.idl:27
 msgid "Gate Output of the WaveOsc playing the patch"
@@ -3286,9 +3247,8 @@ msgstr ""
 
 #. Werckmeister I
 #: bse/bseapi.idl:465
-#, fuzzy
 msgid "Indian Scale"
-msgstr "Vertikale Skala"
+msgstr ""
 
 #: bse/bsestandardosc.cc:124
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
@@ -3300,26 +3260,26 @@ msgstr "Initialisierung"
 
 #: beast-gtk/bstcanvassource.cc:956 beast-gtk/bstsnetrouter.cc:1014
 msgid "Input"
-msgstr "Eingabe"
+msgstr "Eingang"
 
 #: plugins/bseamplifier.idl:34 plugins/bseamplifier.idl:39
 #: plugins/bsebalance.idl:25 plugins/bsebalance.idl:30
 msgid "Input 1 [%]"
-msgstr "Eingabe 1 [%]"
+msgstr "Eingang 1 [%]"
 
 #: plugins/bseamplifier.idl:35 plugins/bseamplifier.idl:40
 #: plugins/bsebalance.idl:26 plugins/bsebalance.idl:31
 msgid "Input 2 [%]"
-msgstr "Eingabe 2 [%]"
+msgstr "Eingang 2 [%]"
 
 #: bse/bsesubsynth.cc:502
 msgid "Input Assignments"
-msgstr "Eingabe-Zuordnungen"
+msgstr "Eingangszuordnungen"
 
 #: plugins/bsemixer.cc:132
 #, c-format
 msgid "Input Channel %u"
-msgstr "Eingabekanal %u"
+msgstr "Eingangskanal %u"
 
 #: bse/bsestandardosc.cc:149 bse/bsewaveosc.cc:551
 msgid "Input Modulation [%]"
@@ -3328,7 +3288,7 @@ msgstr "Eingangsmodulation [%]"
 #: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:500
 #, c-format
 msgid "Input Port %u"
-msgstr "Eingabeport %u"
+msgstr "Eingangsport %u"
 
 #. SYNC: type partitions determine the order of displayed objects
 #: bse/bsebus.cc:948
@@ -3337,15 +3297,15 @@ msgstr "Eingangssignale"
 
 #: bse/bseapi.idl:73
 msgid "Input channel already in use"
-msgstr "Der Eingabekanal wird bereits verwendet"
+msgstr "Der Eingangskanal wird bereits verwendet"
 
 #: beast-gtk/bstsnetrouter.cc:560
 msgid "Input channel in use"
-msgstr "Zu verwendender Eingabekanal"
+msgstr "Zu verwendender Eingangskanal"
 
 #: bse/bseapi.idl:72
 msgid "Input channel is private"
-msgstr "Der Eingabekanal ist privat"
+msgstr "Eingangskanal für interne Verwendung"
 
 #: bse/bsesubsynth.cc:513
 msgid "Input port name to interface to"
@@ -3356,9 +3316,8 @@ msgid "Input/Output channels not connected"
 msgstr "Ein-/Ausgabekanäle sind nicht verbunden"
 
 #: bse/bseapi.idl:74
-#, fuzzy
 msgid "Input/output channels already connected"
-msgstr "Die Ein-/Ausgabekanäle werden bereits verwendet"
+msgstr "Ein-/Ausgabekanäle sind bereits verbunden"
 
 #: bse/bseapi.idl:21
 msgid "Input/output error"
@@ -3368,7 +3327,7 @@ msgstr "Ein-/Ausgabefehler"
 #. label=
 #: res/gxk/radgets-beast.xml:320
 msgid "Inputs"
-msgstr "Eingabe"
+msgstr "Eingänge"
 
 #: beast-gtk/bstpianorollctrl.cc:62 beast-gtk/bsttrackrollctrl.cc:29
 msgid "Insert"
@@ -3445,14 +3404,12 @@ msgid "Instrument Path"
 msgstr "Instrumentenpfad"
 
 #: plugins/davorgan.idl:31
-#, fuzzy
 msgid "Instrument flavour"
-msgstr "Instrumentenpfad"
+msgstr ""
 
 #: bse/bseapi.idl:22
-#, fuzzy
 msgid "Insufficient permissions"
-msgstr "Ungenügende Zugriffsrechte"
+msgstr "Unzureichende Zugriffsrechte"
 
 #: bse/bseapi.idl:19
 msgid "Internal error (please report)"
@@ -3652,9 +3609,8 @@ msgid "Left to Right"
 msgstr "Links nach rechts"
 
 #: plugins/standardsaturator.idl:38
-#, fuzzy
 msgid "Level"
-msgstr "Beschriftung"
+msgstr ""
 
 #: beast-gtk/bstsoundfontview.cc:26 beast-gtk/bstwaveview.cc:27
 msgid "Lib..."
@@ -3694,21 +3650,16 @@ msgstr ""
 "können"
 
 #: bse/bsesoundfontosc.cc:309
-#, fuzzy
 msgid "List of available sound font presets to choose as fluid synth preset"
-msgstr "Liste der verfügbaren virtuellen Netzwerke, um ein Sub-Netz zu wählen"
+msgstr "Liste der verfügbaren Soundfont Voreinstellungen, die als Fluidsynth-Preset gewählt werden können"
 
 #: bse/bsetrack.cc:281
-#, fuzzy
 msgid "List of available sound font presets to choose as track instrument"
-msgstr ""
-"Liste der verfügbaren Wellenformen, aus denen Spur-Instrumente gewählt "
-"werden können"
+msgstr "Liste der verfügbaren Soundfont Voreinstellungen, die als Spur-Instrument gewählt werden können"
 
 #: beast-gtk/bsttrackview.cc:330
-#, fuzzy
 msgid "List of available sound fonts to choose track instrument from"
-msgstr "Liste der verfügbaren Waves, um ein Spurinstrument daraus zu wählen"
+msgstr "Liste der verfügbaren Soundfont Voreinstellungen für die Auswahl als Spur-Instrument"
 
 #: bse/bsemidisynth.cc:136
 msgid "List of available synthesis networks to choose a MIDI instrument from"
@@ -3735,7 +3686,7 @@ msgstr ""
 #: bse/bsebus.cc:119
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
-"Liste der verfügbaren Synthesesignale, die als Bus-Eingabe verwendet werden "
+"Liste der verfügbaren Synthesesignale, die als Bus-Eingänge verwendet werden "
 "können."
 
 #: beast-gtk/bsttrackview.cc:327
@@ -3789,9 +3740,8 @@ msgid "Load a key binding set"
 msgstr "Laden einer Tastenkombinationskonfiguration"
 
 #: beast-gtk/bstsoundfontview.cc:24
-#, fuzzy
 msgid "Load a new sound font file from disk"
-msgstr "Eine Wave-Datei von Platte laden"
+msgstr "Eine Soundfont-Datei von Platte laden"
 
 #: beast-gtk/bstwaveview.cc:25
 msgid "Load a new wave file from disk"
@@ -3802,9 +3752,8 @@ msgid "Load a new wave file from library paths"
 msgstr "Eine Wave-Datei aus einem der Bibliothekspfade laden"
 
 #: beast-gtk/bstsoundfontview.cc:26
-#, fuzzy
 msgid "Load a sound font file from library paths"
-msgstr "Eine Wave-Datei aus einem der Bibliothekspfade laden"
+msgstr "Eine Soundfont-Datei aus einem der Bibliothekspfade laden"
 
 #: beast-gtk/bstapp.cc:124
 msgid "Load synthesizer mesh from effects folder"
@@ -3829,9 +3778,9 @@ msgid "Loading skin `%s'"
 msgstr "Oberfläche »%s« wird geladen"
 
 #: beast-gtk/bstfiledialog.cc:771 beast-gtk/bstfiledialog.cc:774
-#, fuzzy, c-format
+#, c-format
 msgid "Loading sound font `%s'"
-msgstr "Oberfläche »%s« wird geladen"
+msgstr "Soundfont »%s« wird geladen"
 
 #: beast-gtk/bstfiledialog.cc:741 beast-gtk/bstfiledialog.cc:744
 #, c-format
@@ -3930,12 +3879,10 @@ msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr ""
 
 #: bse/bseserver.cc:507
-#, fuzzy
 msgid "MIDI device selections problems"
-msgstr "Meldungen über Probleme mit der MIDI-Geräteauswahl anzeigen"
+msgstr "Probleme mit der MIDI-Geräteauswahl"
 
 #: bse/bseserver.cc:503
-#, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "MIDI-Eingabe oder -Ausgabe ist nicht verfügbar."
 
@@ -3973,9 +3920,8 @@ msgid "Master [dB]"
 msgstr "Master [dB]"
 
 #: bse/bsemidisynth.cc:371
-#, fuzzy
 msgid "Master [float]"
-msgstr "Kanalbeschriftungen"
+msgstr ""
 
 #: bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
 msgid "Max Voices"
@@ -4022,7 +3968,7 @@ msgid "Message Type"
 msgstr "Nachrichtentyp"
 
 #: beast-gtk/bstusermessage.cc:301
-#, fuzzy, c-format
+#, c-format
 msgid "Message has been repeated %u time"
 msgid_plural "Message has been repeated %u times"
 msgstr[0] "Meldung wurde %u mal wiederholt"
@@ -4057,9 +4003,8 @@ msgstr ""
 "Kanal"
 
 #: bse/bsemidisynth.cc:86
-#, fuzzy
 msgid "Midi-Synth"
-msgstr "_Synth"
+msgstr "Midi-Synthesizer"
 
 #: plugins/bsebalance.idl:22
 msgid "Mix Out"
@@ -4098,9 +4043,8 @@ msgid "Mnemonic widget"
 msgstr "Kürzel-Widget"
 
 #: bse/bsewaveosc.cc:577
-#, fuzzy
 msgid "Mod In"
-msgstr "Modulinfos"
+msgstr ""
 
 #: bse/bsebiquadfilter.cc:145 bse/bsebiquadfilter.cc:151
 #: bse/bsebiquadfilter.cc:157 bse/bsebiquadfilter.cc:163
@@ -4127,9 +4071,9 @@ msgid "Module Info"
 msgstr "Modulinfos"
 
 #: beast-gtk/bstcanvaslink.cc:129
-#, fuzzy, c-format
+#, c-format
 msgid "Module Link: %s <=> %s"
-msgstr "Modulverknüpfung: "
+msgstr "Modulverknüpfung: %s <=> %s"
 
 #: beast-gtk/bstcanvaslink.cc:184 beast-gtk/bstsnetrouter.cc:701
 msgid "Module link"
@@ -4351,7 +4295,7 @@ msgstr "Keine solche Datei, Gerät oder Ordner"
 
 #: bse/bseapi.idl:69
 msgid "No such input channel"
-msgstr "Kein solcher Eingabekanal:"
+msgstr "Kein solcher Eingangskanal:"
 
 #: bse/bseapi.idl:70
 msgid "No such output channel"
@@ -4380,14 +4324,12 @@ msgid "No target"
 msgstr "Kein Ziel"
 
 #: plugins/bsenoise.idl:10
-#, fuzzy
 msgid "Noise Out"
-msgstr "Misch-Ausgabe"
+msgstr "Ausgabekanal Rauschen"
 
 #: plugins/bsenoise.idl:10
-#, fuzzy
 msgid "Noise Output"
-msgstr "Gefilterte Eingabe"
+msgstr "Ausgabekanal Rauschen"
 
 #: plugins/bsenoise.idl:9
 msgid "Noise is a generator of (supposedly) white noise"
@@ -4422,9 +4364,8 @@ msgid "Note"
 msgstr "Note"
 
 #: plugins/davxtalstrings.cc:111
-#, fuzzy
 msgid "Note Decay"
-msgstr "Notengeschwindigkeit"
+msgstr "Notenhöhenabfall"
 
 #: beast-gtk/bstparam-note-spinner.cc:59 beast-gtk/bstparam-note-spinner.cc:66
 msgid "Note Entry"
@@ -4443,9 +4384,8 @@ msgid "Note Sequence Grid Editor"
 msgstr ""
 
 #: plugins/bsesequencer.cc:88
-#, fuzzy
 msgid "Note Sync"
-msgstr "Noteneintrag"
+msgstr "Noten-Synchronisation"
 
 #: plugins/bsesequencer.cc:88
 msgid "Note Sync Signal"
@@ -4466,12 +4406,9 @@ msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
 #: bse/bseladspamodule.cc:180
-#, fuzzy
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
-"Konstanter Signalwert als Note, entsprechend der aktuellen musikalischen "
-"Stimmung in Hertz umgewandelt"
 
 #: beast-gtk/bstapp.cc:134
 msgid "Notes and informations about this release cycle"
@@ -4610,9 +4547,8 @@ msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr ""
 
 #: plugins/davorgan.idl:12
-#, fuzzy
 msgid "Organ output"
-msgstr "Ausgabe"
+msgstr "Ausgang Orgel"
 
 #: beast-gtk/bstdbmeter.cc:750 beast-gtk/bstdbmeter.cc:1045
 #: beast-gtk/bstdbmeter.cc:1545
@@ -4664,14 +4600,12 @@ msgid "Oscillator wave form"
 msgstr "Oszillatorwellenform"
 
 #: plugins/bsesequencer.cc:38
-#, fuzzy
 msgid "Other Sources/Sequencer"
-msgstr "_Weitere Quellen"
+msgstr ""
 
 #: plugins/bsesimpleadsr.cc:39
-#, fuzzy
 msgid "Other Sources/Simple ADSR"
-msgstr "_Weitere Quellen"
+msgstr ""
 
 #: bse/bseapi.idl:38
 msgid "Out of memory"
@@ -4708,9 +4642,8 @@ msgid "Output Signals"
 msgstr "Ausgabesignale"
 
 #: plugins/standardsaturator.idl:45
-#, fuzzy
 msgid "Output Volume"
-msgstr "Linke Lautstärke"
+msgstr ""
 
 #: plugins/artscompressor.idl:39
 msgid "Output [dB]"
@@ -4740,21 +4673,19 @@ msgstr "Eigentumsverhältnisse stimmen nicht überein"
 
 #: beast-gtk/bstsnetrouter.cc:1014
 msgid "PCM Input module"
-msgstr "PCM-Eingabemodul"
+msgstr "PCM-Eingangsmodul"
 
 #: beast-gtk/bstsnetrouter.cc:1018
 msgid "PCM Output module"
 msgstr "PCM-Ausgabemodul"
 
 #: bse/bseserver.cc:480
-#, fuzzy
 msgid "PCM device selections problems"
-msgstr "Meldungen über Probleme mit der PCM-Geräteauswahl anzeigen"
+msgstr "Probleme mit der PCM-Geräteauswahl"
 
 #: bse/bseserver.cc:565
-#, fuzzy
 msgid "PCM recording errors"
-msgstr "Fehler der aufgezeichneten Datei anzeigen"
+msgstr "PCM Aufnahmefehler"
 
 #: beast-gtk/bstusermessage.cc:198
 #, c-format
@@ -4907,18 +4838,16 @@ msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Bitte drücken Sie die Tastenkombination, die installiert werden soll …"
 
 #: plugins/davxtalstrings.cc:131
-#, fuzzy
 msgid "Pluck frequency input"
-msgstr "Frequenzeingabe zentrieren"
+msgstr ""
 
 #: plugins/davxtalstrings.cc:133
 msgid "Pluck strings on raising edge"
 msgstr ""
 
 #: plugins/davxtalstrings.cc:108
-#, fuzzy
 msgid "Pluck the string"
-msgstr "Wiedergabeeinstellungen"
+msgstr ""
 
 #: bse/bsebasics.idl:145
 msgid "Plugin Path"
@@ -4933,9 +4862,8 @@ msgid "Popup Options"
 msgstr "Auswahlfeld"
 
 #: bse/bseapi.idl:109 bse/bseapi.idl:286
-#, fuzzy
 msgid "Portamento Time"
-msgstr "Erstellungsdatum"
+msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.cc:50
 msgid "Position"
@@ -4995,14 +4923,12 @@ msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
-"Verarbeitungszeit zwischen Eingabe und Ausgabe eines einzelnen Samples. "
+"Verarbeitungszeit zwischen Eingang und Ausgang eines einzelnen Samples. "
 "Verringerung dieses Wertes erhöht die Prozessorlast."
 
-# CHECK
 #: beast-gtk/bstapp.cc:100 beast-gtk/bstprofiler.cc:114
-#, fuzzy
 msgid "Profiler"
-msgstr "Filter-Ordnung"
+msgstr ""
 
 #. special case signals
 #: bse/bseapi.idl:98
@@ -5121,14 +5047,12 @@ msgid "Quadratic"
 msgstr ""
 
 #: plugins/bsequantizer.idl:10
-#, fuzzy
 msgid "Quantization"
-msgstr "_Quantisierung"
+msgstr "Quantisierung"
 
 #: plugins/bsequantizer.idl:11
-#, fuzzy
 msgid "Quantization Steps"
-msgstr "_Quantisierung"
+msgstr "Quantisierungsschritte"
 
 #: beast-gtk/bstpianorollctrl.cc:120 beast-gtk/bsttrackrollctrl.cc:75
 msgid "Quantize to eighths note boundaries"
@@ -5172,9 +5096,8 @@ msgstr "Viertelnote"
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
 #: bse/bseapi.idl:482
-#, fuzzy
 msgid "Quarter-Comma Meantone"
-msgstr "Viertelnote"
+msgstr ""
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
 #: bse/bseapi.idl:483
@@ -5197,7 +5120,6 @@ msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Aktuelle Position der Tastenkombination nach oben verschieben"
 
 #: plugins/davsyndrum.cc:101
-#, fuzzy
 msgid "Ratio In"
 msgstr "Kompressionsverhältnis Eingang"
 
@@ -5234,9 +5156,8 @@ msgid "Reed Sounds"
 msgstr ""
 
 #: plugins/davcanyondelay.cc:90
-#, fuzzy
 msgid "Reflection cutoff frequency"
-msgstr "Grenzfrequenz in Prozent vorgeben"
+msgstr ""
 
 #: bse/bseapi.idl:142
 msgid "Registered Parameter"
@@ -5424,19 +5345,16 @@ msgid "Routing"
 msgstr "Routing"
 
 #: plugins/bseadder.cc:39
-#, fuzzy
 msgid "Routing/Adder"
-msgstr "/Routing/Verstärker"
+msgstr "/Routing/Addierer"
 
 #: plugins/bsemixer.cc:45
-#, fuzzy
 msgid "Routing/Mixer"
-msgstr "/Routing/Verstärker"
+msgstr ""
 
 #: plugins/bsemult.cc:18
-#, fuzzy
 msgid "Routing/Multiply"
-msgstr "/Routing/Verstärker"
+msgstr ""
 
 #: beast-gtk/bstpatternctrl.cc:131
 msgid "Row Shading"
@@ -5461,9 +5379,8 @@ msgid ""
 msgstr ""
 
 #: plugins/standardsaturator.idl:37
-#, fuzzy
 msgid "Saturation Type"
-msgstr "Erstellungsdatum"
+msgstr ""
 
 #: plugins/standardsaturator.idl:10
 msgid ""
@@ -5564,61 +5481,53 @@ msgid "Search Paths"
 msgstr "Suchpfade"
 
 #: bse/bsebasics.idl:137
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
 "files."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-Effektdateien."
+"Suchpfad für Ordner, durch »;« getrennt, zur Suche nach BSE-Effektdateien."
 
 #: bse/bsebasics.idl:140
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
 "files."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-"
-"Instrumentdateien."
+"Suchpfad für Ordner, durch »;« getrennt, zur Suche nach BSE-Instrumentdateien."
 
 #: bse/bsebasics.idl:146
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-Plugins. In "
+"Suchpfad für Ordner, durch »;« getrennt, zur Suche nach BSE-Plugins. In "
 "diesem Pfad wird zusätzlich zum Vorgabeort der BSE-Plugins auf diesem System "
 "gesucht."
 
 #: bse/bsebasics.idl:143
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE scheme "
 "scripts."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-Schemaskripten."
 
 #: bse/bsebasics.idl:150
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find LADSPA plugins. "
 "This path is searched for in addition to the standard LADSPA location on "
 "this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more "
 "informations about LADSPA plugins can be found at http://www.ladspa.org/."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach LADSPA-Plugins. In "
+"Suchpfad für Ordner, durch »;« getrennt, zur Suche nach LADSPA-Plugins. In "
 "diesem Pfad wird zusätzlich zum Vorgabeort der LADSPA-Plugins auf diesem "
 "System gesucht. LADSPA ist die »Linux Audio Developer's Simple Plugin API«. "
-"Weitere Informationen über LADSPA-Plugins finden Sie auf http://www.ladspa."
-"org/."
+"Weitere Informationen über LADSPA-Plugins sind hier zu finden: "
+"http://www.ladspa.org/."
 
 #: bse/bsebasics.idl:134
-#, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach Audio-Samples."
+"Suchpfad für Ordner, durch »;« getrennt, zur Suche nach Audio-Samples."
 
 #: beast-gtk/bstparam-searchpath.cc:131
 msgid "Searchpath Text Entry"
@@ -5627,12 +5536,11 @@ msgstr "Suchpfad-Texteintrag"
 #: bse/bsebusmodule.idl:10 plugins/bseamplifier.idl:29
 #: plugins/bsebalance.idl:18
 msgid "Second audio input"
-msgstr "Zweite Audio-Eingabe"
+msgstr "Zweiter Audio-Eingang"
 
 #: bse/bsebusmodule.idl:12
-#, fuzzy
 msgid "Second audio output"
-msgstr "Zweite Audio-Eingabe"
+msgstr "Zweiter Audio-Ausgang"
 
 #: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:20
 msgid "Second control input"
@@ -5677,7 +5585,7 @@ msgstr "Alle Noten markieren"
 
 #: beast-gtk/bstsnetrouter.cc:588
 msgid "Select input module"
-msgstr "Eingabemodul wählen"
+msgstr "Eingangsmodul wählen"
 
 #: beast-gtk/bstsnetrouter.cc:586
 msgid "Select output module"
@@ -5697,7 +5605,6 @@ msgid "Set the amount of modified data to mix"
 msgstr ""
 
 #: plugins/davbassfilter.idl:19
-#, fuzzy
 msgid "Set the amount of resonance in percent"
 msgstr "Betrag der Resonanz in Prozent vorgeben"
 
@@ -5723,9 +5630,8 @@ msgid "Set the decay length in percent"
 msgstr "Den Abfall in Prozent festlegen"
 
 #: plugins/davbassfilter.idl:20
-#, fuzzy
 msgid "Set the envelope magnitude in percent"
-msgstr "Setze die einhüllende Größe in Prozent"
+msgstr "Setzen der Hüllkurvengröße in Prozent"
 
 #: plugins/davcanyondelay.cc:84
 msgid "Set the feedback amount; a negative feedback inverts the signal"
@@ -5802,9 +5708,9 @@ msgid "Show Info"
 msgstr "Infos anzeigen"
 
 #: beast-gtk/bstusermessage.cc:541
-#, fuzzy, c-format
+#, c-format
 msgid "Show messages about %s"
-msgstr "Meldungen über Startprobleme des Webbrowsers anzeigen"
+msgstr ""
 
 #: beast-gtk/bstgrowbar.cc:76
 msgid "Shrink the scrollable area"
@@ -5823,9 +5729,8 @@ msgid "Signal Outputs"
 msgstr "Signalausgänge"
 
 #: bse/bsesnooper.cc:244
-#, fuzzy
 msgid "Signal to snoop"
-msgstr "Eingangssignal"
+msgstr ""
 
 #. Werckmeister II
 #: bse/bseapi.idl:485
@@ -5887,9 +5792,8 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstapi.idl:127
-#, fuzzy
 msgid "Slow scopes"
-msgstr "Bereich aktivieren"
+msgstr ""
 
 #: plugins/davxtalstrings.cc:126
 msgid "Snap Factor [%]"
@@ -5904,9 +5808,8 @@ msgid "Soft Knee"
 msgstr ""
 
 #: plugins/bsemixer.cc:91
-#, fuzzy
 msgid "Sole Output"
-msgstr "Ausgabe löschen"
+msgstr "Solo Ausgabe"
 
 #: bse/bsebus.cc:934
 msgid "Solo"
@@ -5938,9 +5841,8 @@ msgid "Sound Fonts"
 msgstr ""
 
 #: bse/bsetrack.cc:1129
-#, fuzzy
 msgid "Sound font preset to be used as instrument"
-msgstr "Synthesenetzwerk, welches als Instrument verwendet werden soll"
+msgstr "Soundfont-Voreinstellung für die Verwendung als Instrument"
 
 #: beast-gtk/bstscrollgraph.cc:549 beast-gtk/bstscrollgraph.cc:552
 #: beast-gtk/bstscrollgraph.cc:556 beast-gtk/bstscrollgraph.cc:559
@@ -6076,9 +5978,8 @@ msgstr ""
 "aktuellen musikalischen Stimmung in Hertz umgewandelt"
 
 #: plugins/davxtalstrings.cc:84
-#, fuzzy
 msgid "String oscillation frequency in Hertz"
-msgstr "Oszillationsfrequenzeingang"
+msgstr "Oszillationsfrequenz der Saite in Hertz"
 
 # CHECK
 #: beast-gtk/bstapi.idl:117
@@ -6102,9 +6003,8 @@ msgid "Switches"
 msgstr "Schalter"
 
 #: plugins/davsyndrum.cc:105
-#, fuzzy
 msgid "SynDrum Output"
-msgstr "Synchronisierungsausgabe"
+msgstr ""
 
 #: bse/bsebus.cc:936
 msgid "Sync"
@@ -6131,19 +6031,16 @@ msgid "Syncronize left and right volume"
 msgstr "Synchronisiere linke und rechte Lautstärke"
 
 #: bse/bsecsynth.cc:62
-#, fuzzy
 msgid "Synth"
-msgstr "_Synth"
+msgstr "Synth"
 
 #: bse/bsebasics.idl:116
-#, fuzzy
 msgid "Synth Control Frequency"
-msgstr "Frequenz zentrieren"
+msgstr ""
 
 #: bse/bseinstrumentoutput.cc:123
-#, fuzzy
 msgid "Synth Done"
-msgstr "_Synth"
+msgstr ""
 
 #: bse/bsetrack.cc:1116 bse/bsetrack.cc:1121 bse/bsetrack.cc:1126
 #: bse/bsetrack.cc:1132
@@ -6172,9 +6069,8 @@ msgid "Synthesis module currently busy"
 msgstr "Das Synthesemodule ist zurzeit beschäftigt"
 
 #: bse/bsebusmodule.idl:8
-#, fuzzy
 msgid "Synthesis module used internally by BseBus"
-msgstr "Das Synthesemodule ist zurzeit beschäftigt"
+msgstr ""
 
 #: beast-gtk/bsttrackview.cc:648
 msgid "Synthesis network or wave to be used as instrument by this track"
@@ -6205,7 +6101,7 @@ msgstr ""
 #: bse/bsebus.cc:952
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
-"Synthesesignale (aus Spuren und Bussen), die als Bus-Eingabe verwendet werden"
+"Synthesesignale (aus Spuren und Bussen), die als Bus-Eingang verwendet werden"
 
 #: bse/bsemidisynth.cc:362 bse/bsesubsynth.cc:492 bse/bsetrack.cc:1118
 msgid "Synthesizer"
@@ -6393,9 +6289,8 @@ msgid ""
 msgstr ""
 
 #: plugins/davsyndrum.cc:90
-#, fuzzy
 msgid "The resonance half life in number of milli seconds"
-msgstr "Die Ausschwingzeit in Millisekunden festlegen"
+msgstr "Die Ausschwingzeit in Millisekunden"
 
 #: beast-gtk/gxk/gxksimplelabel.cc:106
 msgid "The text of the label"
@@ -6430,9 +6325,8 @@ msgid "The type of filter to use"
 msgstr "Der Typ des zu verwendenden Filters"
 
 #: plugins/standardsaturator.idl:37
-#, fuzzy
 msgid "The type of saturation to be used"
-msgstr "Der Typ des zu verwendenden Filters"
+msgstr "Der Typ der zu verwendenden Sättigung"
 
 #: plugins/davsyndrum.cc:82
 msgid "The velocity of the drum hit"
@@ -6600,40 +6494,33 @@ msgstr "Transponierung der Oszillatorfrequenz in Halbtonschritten"
 
 #: plugins/davsyndrum.cc:85 plugins/davxtalstrings.cc:102
 #: plugins/davxtalstrings.cc:107
-#, fuzzy
 msgid "Trigger"
-msgstr "Takt Eingang"
+msgstr ""
 
 #: plugins/davsyndrum.cc:86 plugins/davxtalstrings.cc:108
-#, fuzzy
 msgid "Trigger Hit"
-msgstr "Takt Eingang"
+msgstr ""
 
 #: plugins/bsecontribsampleandhold.idl:14 plugins/davbassfilter.idl:15
 #: plugins/davsyndrum.cc:103 plugins/davxtalstrings.cc:133
-#, fuzzy
 msgid "Trigger In"
-msgstr "Takt Eingang"
+msgstr ""
 
 #: plugins/bsecontribsampleandhold.idl:14
-#, fuzzy
 msgid "Trigger Input"
-msgstr "Takt Eingang"
+msgstr ""
 
 #: plugins/davsyndrum.cc:81 plugins/davxtalstrings.cc:103
-#, fuzzy
 msgid "Trigger Velocity [%]"
-msgstr "Notengeschwindigkeit"
+msgstr ""
 
 #: plugins/davbassfilter.idl:22
-#, fuzzy
 msgid "Trigger filter"
-msgstr "Takt Filter"
+msgstr ""
 
 #: plugins/davbassfilter.idl:15
-#, fuzzy
 msgid "Trigger input"
-msgstr "Takt Eingang"
+msgstr ""
 
 #: beast-gtk/bstapi.idl:59
 msgid "Triplet eighths note"
@@ -6701,7 +6588,7 @@ msgstr "Ungefiltertes Audio-Signal"
 
 #: plugins/bseiirfilter.cc:116
 msgid "Unfiltered Input"
-msgstr "Ungefilterte Eingabe"
+msgstr "Ungefilterter Eingang"
 
 #: bse/bseobject.cc:943
 msgid "Unique name of this object"
@@ -6717,9 +6604,8 @@ msgstr "Unbekanntes Format"
 
 #. default to 'Unnamed-###' unames
 #: bse/bsesuper.cc:36
-#, fuzzy
 msgid "Unnamed"
-msgstr "Umbenennen"
+msgstr "Unbenannt"
 
 #: beast-gtk/bsteventrollctrl.cc:44
 msgid "Unselect all events"
@@ -7034,7 +6920,6 @@ msgstr "_Verzerren"
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
-# CHECK
 #. label=
 #: res/gxk/radgets-beast.xml:110
 msgid "_Enhance"
@@ -7227,9 +7112,8 @@ msgid "_Virtualization"
 msgstr "_Virtualisierung"
 
 #: bse/bseserver.cc:432
-#, fuzzy
 msgid "audio input problems"
-msgstr "Meldungen über Probleme mit der Audio-Eingabe anzeigen"
+msgstr "Probleme mit dem Audio-Eingang"
 
 #: bse/bseapi.idl:249 bse/bseapi.idl:418
 msgid "control-102"
@@ -7468,29 +7352,14 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid " Object Reference"
 #~ msgstr "Objekt-Referenz"
 
-#~ msgid "#CPU"
-#~ msgstr "#CPU"
-
-#~ msgid "%s (core dumped)"
-#~ msgstr "%s (Speicherauszug erstellt)"
-
-#, fuzzy
 #~ msgid "(Joint Input)"
-#~ msgstr "Steuereingang"
-
-#~ msgid "/Enhance/ArtsStereoCompressor"
-#~ msgstr "/Aufbessern/ArtsStereoCompressor"
-
-#, fuzzy
-#~ msgid "/Song/Duplicate parts (loop range)"
-#~ msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
+#~ msgstr "Merhfacheingang"
 
 #~ msgid "A unique number identifying this thread"
 #~ msgstr "Eine eindeutige Zahl, die diesen Thread identifiziert"
 
-#, fuzzy
 #~ msgid "Add a track to the input list of a bus."
-#~ msgstr "Eine neue Spur zu diesem Titel hinzufügen"
+#~ msgstr "Eine neue Spur als Buseingangskanal hinzufügen"
 
 #~ msgid "Always"
 #~ msgstr "Immer"
@@ -7502,11 +7371,6 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Apply Loop"
 #~ msgstr "Loop anwenden"
 
-# CHECK
-#~ msgid "ArtsCompressor compresses the sound."
-#~ msgstr "ArtsCompressor komprimiert den Klang."
-
-# CHECK
 #~ msgid "ArtsStereoCompressor compresses the sound."
 #~ msgstr "ArtsStereoCompressor komprimiert den Klang."
 
@@ -7549,10 +7413,6 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Compressed right audio output"
 #~ msgstr "Komprimierte, rechte Audio-Ausgabe"
 
-# CHECK
-#~ msgid "Controller"
-#~ msgstr "Controller"
-
 #~ msgid "Create a new Part in a Song."
 #~ msgstr "Einen neuen Part in einem Song erstellen."
 
@@ -7562,14 +7422,11 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Create a new mixer bus for a Song."
 #~ msgstr "Einen neuen Mixerbus für ein Lied erzeugen."
 
-#~ msgid "Debug"
-#~ msgstr "Debug"
-
 #~ msgid "Delete Inputs"
-#~ msgstr "Eingabe löschen"
+#~ msgstr "Eingaben löschen"
 
 #~ msgid "Delete Outputs"
-#~ msgstr "Ausgabe löschen"
+#~ msgstr "Ausgaben löschen"
 
 #~ msgid "Delete a Part from a Song."
 #~ msgstr "Einen Part aus einem Song löschen."
@@ -7607,10 +7464,6 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Edit Rack Item"
 #~ msgstr "Ablageobjekt bearbeiten"
 
-#, fuzzy
-#~ msgid "Enable meters"
-#~ msgstr "Parameter"
-
 #~ msgid "Ensure that each part in a song is inserted into at least one track."
 #~ msgstr ""
 #~ "Stellen Sie sicher, dass jeder Part eines Liedes mindestens einer Spur "
@@ -7628,32 +7481,19 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Executing procedure '%s' from script '%s'."
 #~ msgstr "Prozedur »%s« aus dem Skript »%s« wird ausgeführt."
 
-#, fuzzy
-#~ msgid "Failed to crop part range."
-#~ msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
-
-#, fuzzy
-#~ msgid "Failed to duplicate part range."
-#~ msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
-
 #~ msgid "Failed to execute script procedure '%s': %s"
 #~ msgstr "Ausführen der Skriptprozedur »%s« fehlgeschlagen: %s"
 
 #~ msgid "Failed to launch a web browser executable"
 #~ msgstr "Ausführbarer Webbrowser konnte nicht gestartet werden"
 
-#, fuzzy
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr ""
 #~ "Öffnen des MIDI-Gerätes %s fehlgeschlagen (greife stattdessen auf Null-"
 #~ "Gerät zurück): %s"
 
-#, fuzzy
-#~ msgid "Failed to parse harmony list"
-#~ msgstr "Die Aufzeichnung auf Festplatte konnte nicht gestartet werden."
-
 #~ msgid "Find"
-#~ msgstr "Suche"
+#~ msgstr "Suchen"
 
 #~ msgid "Find a track suitable for playing notes of a given part."
 #~ msgstr ""
@@ -7676,16 +7516,8 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Grow Vertically"
 #~ msgstr "Vertikal ausdehnen"
 
-#, fuzzy
-#~ msgid "Guitar Output"
-#~ msgstr "Gefilterte Eingabe"
-
 #~ msgid "Identifier:"
 #~ msgstr "Bezeichnung:"
-
-#, fuzzy
-#~ msgid "Info"
-#~ msgstr "Infos anzeigen"
 
 #~ msgid "Information"
 #~ msgstr "Informationen"
@@ -7711,13 +7543,11 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Loop to Selection"
 #~ msgstr "Auswahl aus Loop"
 
-# CHECK
 #~ msgid "Mark Signal (Head)"
-#~ msgstr "Signal markieren (Kopf)"
+#~ msgstr "Signal markieren (Start)"
 
-# CHECK
 #~ msgid "Mark Signal (Tail)"
-#~ msgstr "Signal markieren (Schweif)"
+#~ msgstr "Signal markieren (Ende)"
 
 #~ msgid "Max Voixes"
 #~ msgstr "Maximale Stimmen"
@@ -7728,35 +7558,11 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Miscellaneous Message"
 #~ msgstr "Sonstige Meldung"
 
-#, fuzzy
-#~ msgid "Mono Filtered Output"
-#~ msgstr "Gefilterte Eingabe"
-
-#, fuzzy
-#~ msgid "Mono In"
-#~ msgstr "Steuereingang"
-
-#, fuzzy
-#~ msgid "Mono Out"
-#~ msgstr "Misch-Ausgabe"
-
-#, fuzzy
-#~ msgid "Mono Signal Input"
-#~ msgstr "Steuereingang"
-
-#, fuzzy
-#~ msgid "N Iterations"
-#~ msgstr "Informationen"
-
 #~ msgid "No Audio"
 #~ msgstr "Kein Audio"
 
 #~ msgid "No MIDI"
 #~ msgstr "Kein MIDI"
-
-#, fuzzy
-#~ msgid "No notes selected"
-#~ msgstr "Keine Quantisierung gewählt"
 
 #~ msgid ""
 #~ "No suitable web browser executable could be found to be executed and to "
@@ -7764,22 +7570,6 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgstr ""
 #~ "Kein geeigneter Webbrowser konnte für die Anzeige der Adresse %s gefunden "
 #~ "werden"
-
-#, fuzzy
-#~ msgid "No valid part object supplied"
-#~ msgstr "Synthesemodule"
-
-#, fuzzy
-#~ msgid "No valid part supplied"
-#~ msgstr "Synthesemodule"
-
-#, fuzzy
-#~ msgid "No valid song supplied"
-#~ msgstr "Synthesemodule"
-
-#, fuzzy
-#~ msgid "No valid synthesis network supplied"
-#~ msgstr "Synthesemodule"
 
 #~ msgid "Notice"
 #~ msgstr "Hinweis"
@@ -7793,45 +7583,14 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Output Channels:"
 #~ msgstr "Ausgabekanäle:"
 
-#, fuzzy
-#~ msgid "Parasite"
-#~ msgstr "Einfügen"
-
-#~ msgid "Parasite Paths"
-#~ msgstr "Parasitäre Pfade"
-
-#, fuzzy
-#~ msgid "Part"
-#~ msgstr "Parts"
-
 #~ msgid "Path"
 #~ msgstr "Pfad"
-
-#, fuzzy
-#~ msgid "Perform exponential frequency modulationinstead of linear"
-#~ msgstr "Exponenzielle Frequenzmodulation statt linearer durchführen"
 
 #~ msgid "Premature EOF"
 #~ msgstr "Vorzeitiges EOF"
 
 #~ msgid "Priority"
 #~ msgstr "Priorität"
-
-#~ msgid "Procedure Browser"
-#~ msgstr "Prozedur-Browser"
-
-#~ msgid "Procedure _Browser"
-#~ msgstr "Prozedur_browser"
-
-#~ msgid ""
-#~ "Procedure: %s\n"
-#~ "Script: %s\n"
-#~ msgstr ""
-#~ "Prozedur: %s\n"
-#~ "Skript: %s\n"
-
-#~ msgid "Processor"
-#~ msgstr "Prozessor"
 
 #~ msgid "Properties:"
 #~ msgstr "Eigenschaften:"
@@ -7840,13 +7599,7 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgstr "Auf ganze Noten quantifzieren"
 
 #~ msgid "Rack"
-#~ msgstr "Ablage"
-
-#~ msgid "Rack Editor"
-#~ msgstr "Baugruppeneditor"
-
-#~ msgid "Rack editor"
-#~ msgstr "Ablageeditor"
+#~ msgstr "Baugruppe"
 
 #~ msgid "Range:"
 #~ msgstr "Bereich:"
@@ -7855,7 +7608,7 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgstr "Kompressionsverhältnis"
 
 #~ msgid "Recording Audio Input"
-#~ msgstr "Audio-Ausgabe zur Aufzeichnung"
+#~ msgstr "Audio-Eingang wird aufgezeichnet"
 
 #~ msgid "Reset Loop"
 #~ msgstr "Loop zurücksetzen"
@@ -7870,7 +7623,10 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ "er nicht existiert. "
 
 #~ msgid "Right audio input"
-#~ msgstr "Rechte Audio-Eingabe"
+#~ msgstr "Rechter Audio-Eingang"
+
+#~ msgid "Left audio input"
+#~ msgstr "Linker Audio-Eingang"
 
 #~ msgid ""
 #~ "Round module positions to their nearest grid position, so to align all "
@@ -7880,9 +7636,8 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ "so dass alle Module in einem Synthesenetzwerk an einem Gitter "
 #~ "ausgerichtet werden."
 
-# CHECK
 #~ msgid "Score"
-#~ msgstr "Punkte"
+#~ msgstr "Bewertung"
 
 #~ msgid "Script"
 #~ msgstr "Skript"
@@ -7903,10 +7658,10 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgstr "Meldungen über Startprobleme des Webbrowsers anzeigen"
 
 #~ msgid "Shrink Horizontally"
-#~ msgstr "Horizontal schrumpfen"
+#~ msgstr "Horizontales Verkleinern"
 
 #~ msgid "Shrink Vertically"
-#~ msgstr "Vertikal schrumpfen"
+#~ msgstr "Vertikales Verkleinern"
 
 #~ msgid "Signal debugging module"
 #~ msgstr "Signal-Fehlerdiagnosemodul"
@@ -7923,33 +7678,14 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "Source code"
 #~ msgstr "Quelltext"
 
-#, fuzzy
-#~ msgid "Specify project tab width in pixels"
-#~ msgstr "Breite des Projekt-Keiteireiters in Pixeln angeben"
-
-#, fuzzy
-#~ msgid "Start Now"
-#~ msgstr "Editor starten"
-
-#~ msgid "Start Procedure"
-#~ msgstr "Startprozedur"
-
 #~ msgid "State"
-#~ msgstr "Status"
+#~ msgstr "Zustand"
 
 #~ msgid "Status"
 #~ msgstr "Status"
 
 #~ msgid "Status used to output error messages"
 #~ msgstr "Zur Ausgabe von Fehlermeldungen verwendeter Status"
-
-#, fuzzy
-#~ msgid "Synth Net"
-#~ msgstr "_Synth"
-
-#, fuzzy
-#~ msgid "Synthesis Network"
-#~ msgstr "_Synthesizer"
 
 #~ msgid "Synthesize a note on a song of an active project."
 #~ msgstr "Eine Note eines Liedes eines aktiven Projekts synthetisieren."
@@ -8007,68 +7743,17 @@ msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
 #~ msgid "The source code"
 #~ msgstr "Der Quelltext"
 
-#~ msgid "This procedure has multiple return values."
-#~ msgstr "Diese Prozedur hat mehrere Rückgabewerte."
-
-#~ msgid "Thread ID"
-#~ msgstr "Thread ID"
-
 #~ msgid "User Time"
 #~ msgstr "Benutzerzeit"
 
 #~ msgid "Warning"
 #~ msgstr "Warnung"
 
-# CHECK
 #~ msgid "Zoom Selection"
-#~ msgstr "Ansichtsgröße auf Auswahl"
-
-#~ msgid "bar, |"
-#~ msgstr "bar, |"
-
-#~ msgid "col1, col2, col3"
-#~ msgstr "col1, col2, col3"
+#~ msgstr "Ansichtsgrößenauswahl"
 
 #~ msgid "connection terminated"
 #~ msgstr "Verbindung wurde beendet"
 
-#~ msgid "control-0, ..., control-63, cc-0, cc-31"
-#~ msgstr "control-0, ..., control-63, cc-0, cc-31"
-
-#~ msgid "dbar, :"
-#~ msgstr "dbar, :"
-
-#~ msgid "dec2, dec3"
-#~ msgstr "dec2, dec3"
-
-#, fuzzy
-#~ msgid "empty part range"
-#~ msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
-
-#~ msgid "hex2, hex4"
-#~ msgstr "hex2, hex4"
-
-#~ msgid "lfold, rfold"
-#~ msgstr "lfold, rfold"
-
-#~ msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-#~ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-
-#~ msgid "note-1, note-2, ..."
-#~ msgstr "note-1, note-2, ..."
-
-#~ msgid "offset-1, length-2, velocity-3, ..."
-#~ msgstr "offset-1, length-2, velocity-3, ..."
-
-# CHECK
 #~ msgid "processing"
 #~ msgstr "Verarbeitung läuft"
-
-#~ msgid "sdec2, sdec3"
-#~ msgstr "sdec2, sdec3"
-
-#~ msgid "shex2, shex4"
-#~ msgstr "shex2, shex4"
-
-#~ msgid "space, _"
-#~ msgstr "space, _"
