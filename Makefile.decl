@@ -54,16 +54,15 @@ check-local: check-after
 check-local: ; @:
 
 # == TAPTESTS ==
-# tests run through taptool.sh
+# avoid running tests through taptool.sh which tends to e.g. hide segfaults
 TAPTESTS =
-TAPRUNS  = $(addsuffix .taprun, $(basename $(TAPTESTS)))
-.PHONY: taptests $(TAPRUNS)
-taptests: $(top_srcdir)/taptool.sh
-	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(TAPRUNS)
-$(TAPRUNS): %.taprun: % # static pattern rule - also works for phony targets
-	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
-	$(Q) TST="$(@:%.taprun=%)"; $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
-check: taptests
+TAPRUNS  = $(addsuffix --testrun, $(TAPTESTS))
+.PHONY: check-taptests $(TAPRUNS)
+check-taptests: $(TAPRUNS)
+$(TAPRUNS): %--testrun: %	# static pattern rule - also works for phony targets
+	@echo "  RUN     " $(@:%--testrun=%)
+	$(Q) $(abspath $(@:%--testrun=%))
+check: check-taptests
 
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
