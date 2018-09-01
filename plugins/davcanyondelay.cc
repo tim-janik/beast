@@ -1,11 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "davcanyondelay.hh"
-
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
 #include <bse/bsemathsignal.hh>
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- parameters --- */
 enum

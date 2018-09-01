@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsefreeverb.hh"
-
+#include "sfi/private.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-
 
 /* --- properties --- */
 enum
@@ -15,7 +14,6 @@ enum
   PROP_DRY_LEVEL,
   PROP_WIDTH
 };
-
 
 /* --- prototypes --- */
 static void	bse_free_verb_init		(BseFreeVerb		*self);
@@ -42,7 +40,6 @@ BSE_RESIDENT_SOURCE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
 
 /* --- variables --- */
 static gpointer        parent_class = NULL;
-
 
 /* --- functions --- */
 static void

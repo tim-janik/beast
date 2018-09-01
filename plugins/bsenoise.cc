@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsenoise.genidl.hh"
 #include <bse/bsemain.hh>
+#include "sfi/private.hh"
 #include <vector>
 
 using namespace std;

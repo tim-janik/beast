@@ -3,6 +3,7 @@
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh>
+#include "sfi/private.hh"
 
 /* --- parameters --- */
 enum

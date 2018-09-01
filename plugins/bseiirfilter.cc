@@ -3,7 +3,7 @@
 #include <bse/bseengine.hh>
 #include <bse/gslfilter.hh>
 #include <bse/bsecxxplugin.hh>
-
+#include "sfi/private.hh"
 #include <string.h>
 
 #define	FREQ_DELTA	0.1
