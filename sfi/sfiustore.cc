@@ -4,12 +4,12 @@
 
 /* --- strcutures --- */
 static inline SfiUStore*
-scast (register GTree *tree)
+scast (GTree *tree)
 {
   return (SfiUStore*) tree;
 }
 static inline GTree*
-tcast (register SfiUStore *store)
+tcast (SfiUStore *store)
 {
   return (GTree*) store;
 }
@@ -105,13 +105,13 @@ sfi_ustore_destroy (SfiUStore *store)
 #define UPOOL_TAG ((gpointer) sfi_upool_new)
 
 static inline SfiUPool*
-upool_cast (register SfiUStore *ustore)
+upool_cast (SfiUStore *ustore)
 {
   return (SfiUPool*) ustore;
 }
 
 static inline SfiUStore*
-ustore_cast (register SfiUPool *upool)
+ustore_cast (SfiUPool *upool)
 {
   return (SfiUStore*) upool;
 }
@@ -194,13 +194,13 @@ sfi_upool_destroy (SfiUPool *pool)
 #define PPOOL_TAG ((gpointer) sfi_ppool_new)
 
 static inline SfiPPool*
-ppool_cast (register GTree *tree)
+ppool_cast (GTree *tree)
 {
   return (SfiPPool*) tree;
 }
 
 static inline GTree*
-ppool_tree (register SfiPPool *pool)
+ppool_tree (SfiPPool *pool)
 {
   return (GTree*) pool;
 }
