@@ -36,7 +36,7 @@ EBEAST_V8BSE_CLEANFILES += ebeast/v8bse/v8bse.node ebeast/v8bse/v8bse.node.tmpev
 ebeast_v8bse_sources     = nodemodule.cc
 ebeast_v8bse_incdirs     =  ../../ ../../external/v8pp/ $(patsubst -%, , $(patsubst -I%, %, $(LIBBSE_CFLAGS)))
 ebeast_v8bse_libs        = $(LIBBSE_LIBS) -L$(abs_top_builddir)/bse/.libs -lbse-@MAJOR@
-ebeast_v8bse_cxxflags    = $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS $(CXXFLAGS)
+ebeast_v8bse_cxxflags    = $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS $(CXXFLAGS)
 ebeast_v8bse_rmflags     = -fno-exceptions -fno-rtti -std=gnu++0x
 ebeast_v8bse_ccflags     = -Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-fallthrough
 
