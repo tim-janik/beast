@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bstsampleeditor.hh"
-
-#include	"bstmenus.hh"
-#include	<gdk/gdkkeysyms.h>
-
+#include "bstsampleeditor.hh"
+#include "bstmenus.hh"
+#include "sfi/private.hh"
+#include <gdk/gdkkeysyms.h>
 
 /* --- prototypes --- */
 static void	bst_sample_editor_class_init	(BstSampleEditorClass	*klass);
@@ -11,10 +10,8 @@ static void	bst_sample_editor_init		(BstSampleEditor	*sample_editor);
 static void	bst_sample_editor_destroy	(GtkObject		*object);
 static void	bst_sample_editor_finalize	(GObject		*object);
 
-
 /* --- static variables --- */
 static gpointer		   parent_class = NULL;
-
 
 /* --- functions --- */
 GtkType

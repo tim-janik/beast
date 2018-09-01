@@ -1,15 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstasciipixbuf.hh"
 #include "gxk/gxkcompat.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static GdkPixbuf*	ascii_pixbuf_create	(void);
 
-
 /* --- variables --- */
 static GdkPixbuf *ascii_pixbuf = NULL;
-
 
 /* --- functions --- */
 void

@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttrackroll.hh"
 #include "bstsnifferscope.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- defines --- */
 /* accessors */
@@ -29,7 +29,6 @@
 #define	PMARK_WIDTH(self)       (CMARK_WIDTH (self) + 3 * XTHICKNESS (self))
 /* appearance */
 #define TACT_HPIXELS		(50)	/* guideline */
-
 
 /* --- prototypes --- */
 static void	bst_track_roll_hsetup			(BstTrackRoll		*self,

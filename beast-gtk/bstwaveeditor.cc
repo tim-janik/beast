@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bstwaveeditor.hh"
-
-#include	"bstplayback.hh"
-#include	"bstmenus.hh"
-#include	<gdk/gdkkeysyms.h>
+#include "bstwaveeditor.hh"
+#include "bstplayback.hh"
+#include "bstmenus.hh"
+#include "sfi/private.hh"
+#include <gdk/gdkkeysyms.h>
 
 enum {
   SCROLL_NONE  = 0,
@@ -21,7 +21,6 @@ enum {
   COL_FILE_NAME,
   N_COLS
 };
-
 
 /* --- prototypes --- */
 static void	bst_wave_editor_class_init	(BstWaveEditorClass	*klass);

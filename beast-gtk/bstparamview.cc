@@ -1,17 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstparamview.hh"
-
+#include "sfi/private.hh"
 #include "bstparam.hh"
-
 
 /* --- prototypes --- */
 static void	bst_param_view_destroy		(GtkObject		*object);
 static void	bst_param_view_finalize		(GObject		*object);
 
-
 /* --- static variables --- */
 static BstParamViewClass *bst_param_view_class = NULL;
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstParamView, bst_param_view, GTK_TYPE_VBOX);

@@ -1,16 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstservermonitor.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void	bst_server_monitor_class_init	(BstServerMonitorClass	*klass);
 static void	bst_server_monitor_init		(BstServerMonitor	*smon);
 static void	bst_server_monitor_finalize	(GObject		*object);
 
-
 /* --- static variables --- */
 static gpointer		      parent_class = NULL;
-
 
 /* --- functions --- */
 GtkType

@@ -3,6 +3,7 @@
 #include "bstauxdialogs.hh"
 #include "bstpatternctrl.hh"
 #include "bstfiledialog.hh"
+#include "sfi/private.hh"
 #include <string.h>
 
 enum {
@@ -26,7 +27,6 @@ enum {
   FCOL_BLURB,
   N_FCOLS
 };
-
 
 /* --- variables --- */
 static const GxkStockAction key_bindings_actions[] = {

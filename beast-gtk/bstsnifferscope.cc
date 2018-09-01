@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsnifferscope.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 #define WIDGET(self)    (GTK_WIDGET (self))
 #define STATE(self)     (WIDGET (self)->state)

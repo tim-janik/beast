@@ -2,9 +2,9 @@
 #include "bstsoundfontview.hh"
 #include "bstsoundfontpresetview.hh"
 #include "bstfiledialog.hh"
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
-
 static void     sound_font_view_action_exec           (gpointer                data,
                                                        gulong                  action);
 static gboolean sound_font_view_action_check          (gpointer                data,
@@ -13,7 +13,6 @@ static gboolean sound_font_view_action_check          (gpointer                d
 
 
 /* --- sound font actions --- */
-
 enum {
   ACTION_LOAD_SOUND_FONT,
   ACTION_LOAD_SOUND_FONT_LIB,
@@ -29,9 +28,7 @@ static const GxkStockAction sound_font_view_actions[] = {
     ACTION_DELETE_SOUND_FONT,   BST_STOCK_TRASHCAN, },
 };
 
-
 /* --- functions --- */
-
 G_DEFINE_TYPE (BstSoundFontView, bst_sound_font_view, BST_TYPE_ITEM_VIEW);
 
 static void

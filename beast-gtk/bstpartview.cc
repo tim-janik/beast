@@ -1,10 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpartview.hh"
-
 #include "bstpartdialog.hh"
 #include "bstpianoroll.hh"
-
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     part_view_action_exec           (gpointer                data,
@@ -12,7 +10,6 @@ static void     part_view_action_exec           (gpointer                data,
 static gboolean part_view_action_check          (gpointer                data,
                                                  size_t                  action,
                                                  guint64                 action_stamp);
-
 
 /* --- part actions --- */
 enum {

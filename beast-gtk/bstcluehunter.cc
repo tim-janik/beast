@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcluehunter.hh"
 #include "bstmarshal.h"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
-
 
 /* --- signals --- */
 enum {
@@ -15,7 +15,6 @@ enum {
   SIGNAL_LAST
 };
 
-
 /* --- arguments --- */
 enum {
   PROP_0,
@@ -24,7 +23,6 @@ enum {
   PROP_KEEP_HISTORY,
   PROP_ENTRY
 };
-
 
 /* --- prototypes --- */
 static void	bst_clue_hunter_class_init	(BstClueHunterClass	*klass);

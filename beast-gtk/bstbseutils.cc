@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbseutils.hh"
 #include "bstutils.hh"
+#include "sfi/private.hh"
 
 /* --- BEAST utilities --- */
 Bse::Error

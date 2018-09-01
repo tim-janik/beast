@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpatternview.hh"
 #include "bstskinconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- defines --- */
 /* accessors */
@@ -35,7 +35,6 @@
 #define	PMARK_HEIGHT(self)      (CMARK_HEIGHT (self) + 3 * YTHICKNESS (self))
 
 #define CUSTOM_MARKER_OFFSET    (128)
-
 
 /* --- prototypes --- */
 static void     pattern_view_queue_expose       (BstPatternView *self,

@@ -2,8 +2,8 @@
 #include "bstcanvassource.hh"
 #include "bstparamview.hh"
 #include "bstgconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- defines --- */
 #define	ICON_WIDTH(cs)		((gdouble) 64)

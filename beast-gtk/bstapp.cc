@@ -11,9 +11,9 @@
 #include "bstprojectctrl.hh"
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <algorithm>
-
 
 /* --- prototypes --- */
 static GxkActionList* demo_entries_create         (BstApp      *app);
@@ -24,7 +24,6 @@ static gboolean       app_action_check            (gpointer     data,
                                                    size_t       action,
                                                    guint64      action_stamp);
 static void           bst_app_reload_pages        (BstApp      *self);
-
 
 /* --- menus --- */
 enum {

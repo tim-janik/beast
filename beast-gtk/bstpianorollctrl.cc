@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpianorollctrl.hh"
 #include "bsteventrollctrl.hh"
-
+#include "sfi/private.hh"
 
 #define NOTE_LENGTH(self)       ((self)->note_rtools->action_id)
 #define QUANTIZATION(self)      ((self)->quant_rtools->action_id)
 #define HAVE_OBJECT             (unsigned (1) << 31)
-
 
 /* --- prototypes --- */
 static gboolean bst_piano_roll_controller_check_action  (BstPianoRollController *self,
@@ -20,7 +19,6 @@ static void	controller_piano_drag		        (BstPianoRollController	*self,
                                                          BstPianoRollDrag	*drag);
 static void	controller_update_canvas_cursor	        (BstPianoRollController *self,
                                                          BstCommonRollTool	 tool);
-
 
 /* --- variables --- */
 static Bse::PartNoteSeq *clipboard_pseq = NULL;

@@ -2,8 +2,8 @@
 #include "bsteventroll.hh"
 #include "bstasciipixbuf.hh"
 #include "bstskinconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- defines --- */
 /* accessors */
@@ -27,7 +27,6 @@
 #define VPANEL_BG_COLOR(self)   (&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE])
 #define CANVAS_BG_COLOR(self)   (&STYLE (self)->base[GTK_WIDGET_STATE (self)])
 #define	QNOTE_HPIXELS		(30)	/* guideline */
-
 
 /* --- prototypes --- */
 static void     bst_event_roll_hsetup                 (BstEventRoll      *self,

@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstskinconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- variables --- */
 static Bst::SkinConfig *global_skin_config = NULL;
 static GParamSpec      *pspec_skin_config = NULL;
-
 
 /* --- functions --- */
 void

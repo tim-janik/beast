@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbusmixer.hh"
 #include "bstbuseditor.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     bus_mixer_action_exec           (gpointer                data,
@@ -9,7 +9,6 @@ static void     bus_mixer_action_exec           (gpointer                data,
 static gboolean bus_mixer_action_check          (gpointer                data,
                                                  size_t                  action,
                                                  guint64                 action_stamp);
-
 
 /* --- bus actions --- */
 enum {
