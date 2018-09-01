@@ -81,7 +81,8 @@ sfi_all_sources = $(strip	\
 	unicode.cc		\
 	weaksym.cc		\
 )
-sfi_extra_sources = $(strip \
+sfi_extra_sources = $(strip	\
+	private.hh		\
 )
 
 # == doc_sources.lst ==
