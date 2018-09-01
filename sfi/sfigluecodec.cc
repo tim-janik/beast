@@ -3,6 +3,7 @@
 #define	G_LOG_DOMAIN	"SFI-GLUE"
 #include "sfigluecodec.hh"
 #include "sfiglueproxy.hh"
+#include "private.hh"
 
 
 /* --- prototypes --- */

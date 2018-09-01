@@ -885,6 +885,7 @@ test_sfidl_seq (void)
 }
 TEST_ADD (test_sfidl_seq);
 
+#include "../private.hh"
 #include "testidl.c"
 int
 main (int   argc,

@@ -1,11 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <string.h>
-#include <stdio.h>      /* sscanf() */
 #include "sfiserial.hh"
 #include "sfiparams.hh"
 #include "sfitime.hh"
 #include "sfinote.hh"
+#include "private.hh"
+#include <string.h>
 #include <stdlib.h>     // FIXME: remove "free"
+#include <stdio.h>      /* sscanf() */
 
 typedef std::string String; // FIXME
 

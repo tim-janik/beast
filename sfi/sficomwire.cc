@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sficomwire.hh"
 #include "sfiprimitives.hh"
+#include "private.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

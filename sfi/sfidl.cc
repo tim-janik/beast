@@ -2,6 +2,7 @@
 #include "sfidl-generator.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
+#include "private.hh"
 
 #define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
 

@@ -2,6 +2,7 @@
 // Author: 2014, Tim Janik, see http://testbit.org/keccak
 #include "randomhash.hh"
 #include "entropy.hh"
+#include "private.hh"
 
 namespace Bse {
 

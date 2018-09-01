@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bcore.hh"
 #include "platform.hh"
+#include "private.hh"
 #include <cstring>
 #include <unistd.h>     // _exit
 #include <sys/time.h>   // gettimeofday
