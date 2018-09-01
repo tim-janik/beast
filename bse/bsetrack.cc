@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsetrack.hh"
-
 #include "bseglobals.hh"
 #include "bsestorage.hh"
 #include "bsecsynth.hh"
@@ -19,7 +18,7 @@
 #include "bsesoundfontpreset.hh"
 #include "bsesoundfont.hh"
 #include "bsecxxplugin.hh"
-
+#include "private.hh"
 #include <string.h>
 
 #define XREF_DEBUG(...) Bse::debug ("xref", __VA_ARGS__)

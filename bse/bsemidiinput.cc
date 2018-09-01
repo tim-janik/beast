@@ -1,12 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidiinput.hh"
-
 #include "bsecategories.hh"
 #include "bsemidireceiver.hh"
 #include "bsesnet.hh"
 #include "bseengine.hh"
-
-
+#include "private.hh"
 
 /* --- properties --- */
 enum

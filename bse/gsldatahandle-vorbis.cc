@@ -1,11 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsldatahandle-vorbis.hh"
-
+#include "../config/config.h"
 #include "gslfilehash.hh"
+#include "private.hh"
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
-#include "../config/config.h"
 
 
 /* --- defines --- */

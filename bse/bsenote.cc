@@ -3,9 +3,9 @@
 #include "bseutils.hh"
 #include "bseieee754.hh"
 #include "bsemathsignal.hh"
+#include "private.hh"
 #include <string.h>
 #include <sfi/sfi.hh>
-
 
 /* --- functions --- */
 int

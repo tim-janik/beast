@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsebiquadfilter.hh"
+#include "private.hh"
 #include <bse/bsecategories.hh>
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>

@@ -2,6 +2,7 @@
 #include "bsegconfig.hh"
 #include "bseserver.hh"
 #include "bsepcmdevice.hh"	/* for frequency alignment */
+#include "private.hh"
 #include <sys/types.h>
 #include <regex.h>
 

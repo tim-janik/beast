@@ -2,7 +2,7 @@
 #include "bseutils.hh"
 #include "gsldatautils.hh"
 #include "bseitem.hh"
-
+#include "private.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>

@@ -1,10 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseeditablesample.hh"
-
 #include "bsemain.hh"
 #include "bsestorage.hh"
 #include "gsldatahandle.hh"
-
+#include "private.hh"
 
 /* --- structures --- */
 typedef struct _Notify Notify;

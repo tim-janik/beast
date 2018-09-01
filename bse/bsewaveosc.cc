@@ -1,15 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewaveosc.hh"
-#include <bse/bsemain.hh>
-#include <bse/bsecategories.hh>
-#include <bse/bseeditablesample.hh>
-#include <bse/bsewaverepo.hh>
-#include <bse/bseproject.hh>
-#include <bse/bseengine.hh>
-#include <bse/gslwavechunk.hh>
-#include <bse/gslfilter.hh>
-
-
+#include "bsemain.hh"
+#include "bsecategories.hh"
+#include "bseeditablesample.hh"
+#include "bsewaverepo.hh"
+#include "bseproject.hh"
+#include "bseengine.hh"
+#include "gslwavechunk.hh"
+#include "gslfilter.hh"
+#include "private.hh"
 
 /* --- parameters --- */
 enum

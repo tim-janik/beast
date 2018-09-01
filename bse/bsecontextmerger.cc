@@ -4,7 +4,7 @@
 #include "bsesnet.hh"
 #include "bseserver.hh"
 #include "bseengine.hh"
-
+#include "private.hh"
 #include <string.h>
 
 

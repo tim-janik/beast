@@ -14,8 +14,8 @@
 #include "bsesubsynth.hh"
 #include "bseengine.hh"	// FIXME: for bse_engine_sample_freq()
 #include "bsecxxplugin.hh"
+#include "private.hh"
 #include <string.h>
-
 
 enum
 {

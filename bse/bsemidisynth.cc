@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidisynth.hh"
-
 #include "bsemidievent.hh"	/* BSE_MIDI_MAX_CHANNELS */
 #include "bsemidivoice.hh"
 #include "bsemidireceiver.hh"
@@ -9,11 +8,11 @@
 #include "bsepcmoutput.hh"
 #include "bseproject.hh"
 #include "bsecsynth.hh"
+#include "private.hh"
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 
 /* --- parameters --- */
 enum
@@ -27,7 +26,6 @@ enum
   PROP_VOLUME_dB,
   PROP_VOLUME_PERC,
 };
-
 
 /* --- prototypes --- */
 static void         bse_midi_synth_class_init          (BseMidiSynthClass *klass);
@@ -47,10 +45,8 @@ static void         bse_midi_synth_context_create      (BseSource         *sourc
 static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
 
 
-
 /* --- variables --- */
 static GTypeClass     *parent_class = NULL;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseMidiSynth)

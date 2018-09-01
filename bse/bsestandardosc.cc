@@ -3,12 +3,11 @@
 #include "bsecategories.hh"
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
-
+#include "private.hh"
 
 #define	FRAC_N_BITS	(19)
 #define	FRAC_BIT_MASK	((1 << FRAC_N_BITS) - 1)
 #define	TABLE_SIZE	(1 << (32 - FRAC_N_BITS))
-
 
 /* --- parameters --- */
 enum

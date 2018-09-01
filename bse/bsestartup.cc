@@ -1,9 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsestartup.hh"
+#include "../config/config.h"   // BST_VERSION
 #include "bsemain.hh"
+#include "private.hh"
 #include <bse/bseapi_handles.hh>
 #include <bse/bse.hh>           // init_server_connection
-#include "../config/config.h"   // BST_VERSION
 
 namespace Bse {
 

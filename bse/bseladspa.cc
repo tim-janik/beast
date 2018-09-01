@@ -2,6 +2,7 @@
 #include "bseladspa.hh"
 #include "bseladspamodule.hh"
 #include "bsecategories.hh"
+#include "private.hh"
 #include <sfi/sfi.hh>
 #include <string.h>
 #include "ladspa.hh"

@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesnooper.hh"
-
+#include "private.hh"
 #include <bse/bseengine.hh>
 #include <bse/bseieee754.hh>
 #include <bse/bsecategories.hh>

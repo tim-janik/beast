@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseconstant.hh"
-
+#include "private.hh"
 #include <bse/bsecategories.hh>
 #include <bse/bseengine.hh>
-
 #include <string.h>
 
 #define	BSE_DFL_CONSTANT_VOLUME_dB	(BSE_DFL_MASTER_VOLUME_dB)

@@ -1,10 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include        "bsesoundfontrepo.hh"
-#include        "bsesoundfont.hh"
-#include        "bsesoundfontpreset.hh"
-#include        "bsedefs.hh"
-#include        "bseblockutils.hh"
-
+#include "bsesoundfontrepo.hh"
+#include "bsesoundfont.hh"
+#include "bsesoundfontpreset.hh"
+#include "bsedefs.hh"
+#include "bseblockutils.hh"
+#include "private.hh"
 
 /* --- parameters --- */
 enum

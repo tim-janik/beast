@@ -1,7 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bsesuper.hh"
-#include	"bseproject.hh"
-#include	<string.h>
+#include "bsesuper.hh"
+#include "bseproject.hh"
+#include "private.hh"
+#include <string.h>
 
 enum
 {

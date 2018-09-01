@@ -86,8 +86,8 @@ struct BseSource : BseItem {
   GBSearchArray        *contexts; /* bsearch array of type BseSourceContext */
   SfiReal		pos_x, pos_y;
   BseSourceProbes      *probes;
-  void           set_flag    (BseSourceFlags f)   { change_flags (uint16 (f), true); }
-  void           unset_flag  (BseSourceFlags f)   { change_flags (uint16 (f), false); }
+  void           set_flag    (BseSourceFlags f)   { change_flags (uint16_t (f), true); }
+  void           unset_flag  (BseSourceFlags f)   { change_flags (uint16_t (f), false); }
   using BseItem::set_flag;
   using BseItem::unset_flag;
 };

@@ -3,6 +3,7 @@
 #include "bsemain.hh"
 #include "gsldatahandle.hh"
 #include "bsemath.hh"
+#include "private.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

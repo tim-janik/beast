@@ -1,12 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidireceiver.hh"
-
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
 #include "bsecxxutils.hh"
 #include "bsemidinotifier.hh"
+#include "private.hh"
 #include <string.h>
 #include <sfi/gbsearcharray.hh>
 #include <map>

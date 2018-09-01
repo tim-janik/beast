@@ -5,6 +5,7 @@
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
+#include "sfi/private.hh"
 #include <math.h>
 #include <stdlib.h>
 #include <complex>

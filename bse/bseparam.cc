@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseparam.hh"
 #include "bseobject.hh"
-
+#include "private.hh"
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 

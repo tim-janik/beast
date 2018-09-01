@@ -1,13 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <string.h>
 #include "bsesource.hh"
-
 #include "bsecontainer.hh"
 #include "bsestorage.hh"
 #include "gslcommon.hh"
 #include "bseserver.hh"
 #include "bseengine.hh"
-
+#include "private.hh"
+#include <string.h>
 
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return

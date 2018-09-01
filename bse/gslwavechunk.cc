@@ -4,8 +4,8 @@
 #include "gslcommon.hh"
 #include "gsldatahandle.hh"
 #include "bsemathsignal.hh"
+#include "private.hh"
 #include <string.h>
-
 
 /* --- macros --- */
 #define	PRINT_DEBUG_INFO		(0)

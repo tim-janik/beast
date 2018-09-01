@@ -7,7 +7,7 @@
 #include "gsldatahandle.hh"
 #include "bseserver.hh"
 #include "bseloader.hh"
-
+#include "private.hh"
 #include <string.h>
 
 #define parse_or_return         bse_storage_scanner_parse_or_return

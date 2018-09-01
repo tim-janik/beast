@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesubiport.hh"
-
 #include "bsecategories.hh"
 #include "bsesnet.hh"
-
+#include "private.hh"
 #include <string.h>
 
 /* --- parameters --- */

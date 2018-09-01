@@ -2,6 +2,7 @@
 #include "bsemididecoder.hh"
 #include "bsemidireceiver.hh"
 #include "bseengine.hh"
+#include "private.hh"
 #include <string.h>
 
 #define MDEBUG(...)     BSE_DEBUG ("midi-decoder", __VA_ARGS__)

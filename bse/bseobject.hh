@@ -65,15 +65,15 @@ struct BseObject : GObject {
   Bse::ObjectImpl       *cxxobject_;
   Bse::ObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
 private:
-  uint16	         flags_;
+  uint16_t	         flags_;
 protected:
-  void                   change_flags (uint16 f, bool ason);
+  void                   change_flags (uint16_t f, bool ason);
 public:
-  void                   set_flag    (BseObjectFlags f) { change_flags (uint16 (f), true); }
-  void                   unset_flag  (BseObjectFlags f) { change_flags (uint16 (f), false); }
-  inline uint16          get_flags() const      { return flags_; }
-  guint16	         lock_count;
-  guint		         unique_id;
+  void                   set_flag    (BseObjectFlags f) { change_flags (uint16_t (f), true); }
+  void                   unset_flag  (BseObjectFlags f) { change_flags (uint16_t (f), false); }
+  inline uint16_t        get_flags() const      { return flags_; }
+  uint16_t	         lock_count;
+  uint		         unique_id;
   operator               Bse::ObjectImpl* ()          { return cxxobject_; }
   // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
   template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
