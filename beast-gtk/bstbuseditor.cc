@@ -90,8 +90,25 @@ bus_build_param (BstBusEditor *self,
                  const gchar  *editor,
                  const gchar  *label)
 {
-  GParamSpec *pspec = bse_proxy_get_pspec (self->item, property);
-  self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
+  GxkParam *gxk_param = nullptr;
+
+  /* aida property? */
+  Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (self->item));
+  for (auto cxxpspec : Bse::introspection_fields_to_param_list (bus.__aida_aux_data__()))
+    if (strcmp (property, cxxpspec->name) == 0)
+      {
+        gxk_param = bst_param_new_property (cxxpspec, bus);
+        break;
+      }
+
+  if (!gxk_param)
+    {
+      /* proxy property */
+      auto pspec = bse_proxy_get_pspec (self->item, property);
+      gxk_param = bst_param_new_proxy (pspec, self->item);
+    }
+
+  self->params = sfi_ring_prepend (self->params, gxk_param);
   GtkWidget *ewidget = gxk_param_create_editor ((GxkParam*) self->params->data, editor);
   gxk_radget_add (self, area, ewidget);
   if (label)
