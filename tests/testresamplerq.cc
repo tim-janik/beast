@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #include <bse/bseresampler.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
@@ -7,6 +6,7 @@
 #include <bse/gslfft.hh>
 #include <sfi/testing.hh>
 #include <sfi/sfi.hh>
+#include "sfi/private.hh"
 #include <stdlib.h>
 #include <stdio.h>
 

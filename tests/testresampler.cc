@@ -7,12 +7,11 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfft.hh>
-
+#include "sfi/private.hh"
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
 #include <time.h>
-
 #include <string>
 #include <vector>
 
