@@ -244,7 +244,6 @@ static bool
 any_test_get (const Any &a, int what)
 {
   std::string s;
-  EnumValue e;
   // printerr ("GET: %d) Any=%p %i %s: %u\n", what, &a, a.kind(), type_kind_name(a.kind()), a.get<int64>());
   OneHandle thandle (0);
   switch (what)
