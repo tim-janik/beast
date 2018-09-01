@@ -423,25 +423,25 @@ chebychev1_tests ()
   TOK();
   TDONE();
 }
-typedef struct {
-  const BseIIRFilterRequest *filter_request;
-  double                     gain;
-  uint                       n_zeros;
-  const double              *zeros;
-  uint                       n_poles;
-  const double              *poles;
-  const double              *filter_coefficients;
-  uint                       n_filter_coefficients;
-} FilterSetup;
+struct FilterSetup  {
+  const BseIIRFilterRequest *filter_request = NULL;
+  double                     gain = 0;
+  uint                       n_zeros = 0;
+  const double              *zeros = NULL;
+  uint                       n_poles = 0;
+  const double              *poles = NULL;
+  const double              *filter_coefficients = NULL;
+  uint                       n_filter_coefficients = 0;
+};
 static void generic_filter_tests   (const char                *test_name,
                                     const uint                 n_filters,
-                                    const FilterSetup         *filters,
+                                    const std::vector<FilterSetup> &filters,
                                     uint                       tick_count = 1,
                                     uint                       skip_count = 0);
 static void
 test_problem_candidates ()
 {
-  FilterSetup filters[1000] = { { 0, } };
+  std::vector<FilterSetup> filters (1000);
   uint index = 0;
   { // ellf gain is too high
     static const BseIIRFilterRequest filter_request = {
@@ -530,7 +530,7 @@ random_filter_tests ()
     max_order_index = filter_orders[oix] ? oix : max_order_index;
   int rand_order_width = 64 - filter_orders[max_order_index] + 1;
   double pbe1;
-  FilterSetup filters[100000] = { { 0, }, };
+  std::vector<FilterSetup> filters (100000);
   uint filter_index, skip_count = 6;
   if (!slow())
     n_orders = 9;
@@ -669,7 +669,7 @@ random_filter_tests ()
 static void
 test_filter_catalog ()
 {
-  FilterSetup filters[100000] = { { 0, } };
+  std::vector<FilterSetup> filters (100000);
   uint index = 0;
   /* include predesigned filters */
 #include "filtercatalog.cc"
@@ -685,7 +685,7 @@ test_filter_catalog ()
 static void
 generic_filter_tests (const char        *test_name,
                       const uint         n_filters,
-                      const FilterSetup *filters,
+                      const std::vector<FilterSetup> &filters,
                       const uint         tick_count,
                       uint               skip_count)
 {

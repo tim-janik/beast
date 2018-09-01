@@ -12,18 +12,17 @@ language: generic
 env:
   # INTENT: gccbuild clangbuild package bintrayup
   matrix:
-    - DIST="ubuntu:xenial"      INTENT="gccbuild,distcheck"
-    - DIST="ubuntu:artful"      INTENT="gccbuild"
+    - DIST="ubuntu:bionic"      INTENT="clangbuild,distcheck"
     - DIST="ubuntu:bionic"      INTENT="gccbuild"
+    - DIST="ubuntu:artful"      INTENT="gccbuild"
+    - DIST="ubuntu:xenial"      INTENT="gccbuild"
     # test upcoming releases and get new compiler warnings
     - DIST="ubuntu:cosmic"      INTENT="gccbuild"
-    - DIST="ubuntu:bionic"      INTENT="clangbuild"
     - DIST="debian:unstable"    INTENT="gccbuild"
     - DIST="debian:unstable"    INTENT="clangbuild"
 matrix:
   allow_failures:
     - env: DIST="ubuntu:cosmic"      INTENT="gccbuild"
-    - env: DIST="ubuntu:bionic"      INTENT="clangbuild"
     - env: DIST="debian:unstable"    INTENT="gccbuild"
     - env: DIST="debian:unstable"    INTENT="clangbuild"
   fast_finish: true

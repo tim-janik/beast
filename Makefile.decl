@@ -54,27 +54,15 @@ check-local: check-after
 check-local: ; @:
 
 # == TAPTESTS ==
-# tests run through taptool.sh
+# avoid running tests through taptool.sh which tends to e.g. hide segfaults
 TAPTESTS =
-TAPRUNS  = $(addsuffix .taprun, $(basename $(TAPTESTS)))
-.PHONY: taptests $(TAPRUNS)
-taptests: $(top_srcdir)/taptool.sh
-	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(TAPRUNS)
-$(TAPRUNS): %.taprun: % # static pattern rule - also works for phony targets
-	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
-	$(Q) TST="$(@:%.taprun=%)"; $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
-check: taptests
-
-# == X11TESTS ==
-X11TESTS =
-X11RUNS  = $(addsuffix .x11run, $(basename $(X11TESTS)))
-.PHONY: x11tests $(X11RUNS)
-x11tests: $(top_srcdir)/taptool.sh
-	@$(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(X11RUNS)
-$(X11RUNS): %.x11run: % # static pattern rule - also works for phony targets
-	$(Q) test "$@" = "$(@F)" || { echo "$@: test program outside CWD" >&2; exit 1; }
-	$(Q) TST="$(@:%.x11run=%)"; $(X11_ENV) $(top_srcdir)/taptool.sh --test-name "$$TST" -- ./"$$TST"
-check: x11tests
+TAPRUNS  = $(addsuffix --testrun, $(TAPTESTS))
+.PHONY: check-taptests $(TAPRUNS)
+check-taptests: $(TAPRUNS)
+$(TAPRUNS): %--testrun: %	# static pattern rule - also works for phony targets
+	@echo "  RUN     " $(@:%--testrun=%)
+	$(Q) $(abspath $(@:%--testrun=%))
+check: check-taptests
 
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
@@ -117,7 +105,7 @@ perf-PERFTESTS:
 PERFTESTS=
 
 # === ALLTESTS ===
-ALLTESTS = $(TESTS) $(TAPTESTS) $(X11TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+ALLTESTS = $(TESTS) $(TAPTESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
 
 # === report ===
 .PHONY: report

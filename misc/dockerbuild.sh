@@ -19,6 +19,9 @@ test $# -lt 1 || { DIST="$1"; shift; }
 test $# -lt 1 || { INTENT="$1"; shift; }
 DISTRELEASE="${DIST#*:}"
 
+echo "DIST=$DIST"
+echo "INTENT=$INTENT"
+
 # determine bintray repo for packaging
 case `$SCRIPTDIR/../git-version.sh` in			# similar to 'git describe'
   *-g*)         BINTRAY_REPO=beast-team/devel ;;        # work in progress
