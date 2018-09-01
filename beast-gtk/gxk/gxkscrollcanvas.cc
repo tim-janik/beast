@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkscrollcanvas.hh"
 #include "gxkimagecache.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 

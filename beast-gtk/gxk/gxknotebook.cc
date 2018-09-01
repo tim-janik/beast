@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxknotebook.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- properties --- */
 enum {

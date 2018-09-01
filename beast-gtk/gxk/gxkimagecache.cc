@@ -1,15 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkimagecache.hh"
 #include "gxkcompat.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 #define MAX_CACHE_FILL  0
 
-
 /* --- variables --- */
 static GSList *image_cache = NULL;
-
 
 /* --- functions --- */
 static inline void

@@ -3,6 +3,7 @@
 #include "gxkstock.hh"
 #include "gxkradget.hh"
 #include "sfi/sfiwrapper.hh" /* for sfi_url_show() */
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,7 +11,6 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
-
 
 #define GXK_IS_SCROLL_TEXT      GTK_IS_VBOX
 

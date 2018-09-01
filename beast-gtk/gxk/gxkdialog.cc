@@ -3,11 +3,11 @@
 #include "gxkradget.hh"
 #include "gxkstock.hh"
 #include "gxkstatusbar.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 
 #define	DEFAULT_TITLE	"Auxillary Dialog"
-
 
 /* --- properties --- */
 enum {

@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkpolygon.hh"
-
+#include "sfi/private.hh"
 #include <math.h>
 
 #define	SQR(x)		((x) * (x))

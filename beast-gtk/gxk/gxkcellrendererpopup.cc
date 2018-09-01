@@ -1,12 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkcellrendererpopup.hh"
 #include "gxkmarshal.h"
+#include "sfi/private.hh"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkarrow.h>
 #include <gtk/gtkframe.h>
 #include <gtk/gtklabel.h>
-
 
 #define	ARROW_WIDTH	20
 

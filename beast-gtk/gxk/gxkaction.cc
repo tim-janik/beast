@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkaction.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <libintl.h>
-
 
 #define intern_null_string(s,sconst)      (s ? (sconst ? g_intern_static_string : g_intern_string) (s) : NULL)
 #define intern_i18n_string(idom,s,sconst) (intern_null_string (idom && s ? dgettext (idom, s) : s, sconst))

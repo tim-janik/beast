@@ -1,10 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkglobals.hh"
-
+#include "sfi/private.hh"
 
 /* --- variables --- */
 const GxkGlobals* gxk_globals = NULL;
-
 
 /* --- functions --- */
 void

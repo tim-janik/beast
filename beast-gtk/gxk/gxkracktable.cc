@@ -2,6 +2,7 @@
 #include "gxkracktable.hh"
 #include "gxkrackeditor.hh"
 #include "gxkrackitem.hh"
+#include "sfi/private.hh"
 
 typedef enum
 {
@@ -11,10 +12,8 @@ typedef enum
   DRAW_INACTIVE,
 } AreaAction;
 
-
 #define CR_WINDOW_THICKNESS     (2)
 #define CR_WINDOW_SPAN          (8)
-
 
 /* --- prototypes --- */
 static void             gxk_rack_table_class_init       (GxkRackTableClass      *klass);

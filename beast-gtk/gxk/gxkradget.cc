@@ -8,6 +8,7 @@
 #include "gxksimplelabel.hh"
 #include "gxkracktable.hh"
 #include "gxkrackitem.hh"
+#include "sfi/private.hh"
 #include <libintl.h>
 #include <unistd.h>
 #include <sys/types.h>
