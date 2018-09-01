@@ -307,20 +307,6 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 #define BSE_ASSERT_RETURN(cond, ...)     AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
 /// Return from the current function and issue an assertion warning.
 #define BSE_ASSERT_RETURN_UNREACHED(...) AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
-#ifdef BSE_CONVENIENCE
-/// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)
-/// Return from the current function and issue an assertion warning.
-#define assert_return_unreached(...)    BSE_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
-/// Hint to the compiler to optimize for @a cond == TRUE.
-#define ISLIKELY(cond)  BSE_ISLIKELY (cond)
-/// Hint to the compiler to optimize for @a cond == FALSE.
-#define UNLIKELY(cond)  BSE_UNLIKELY (cond)
-/// Return silently if @a cond does not evaluate to true with return value @a ...
-#define return_unless(cond, ...)        BSE_RETURN_UNLESS (cond, __VA_ARGS__)
-/// Yield the number of C @a array elements.
-#define ARRAY_SIZE(array)               BSE_ARRAY_SIZE (array)
-#endif // BSE_CONVENIENCE
 
 // == Memory Utilities ==
 int     fmsb          (uint64  word) BSE_CONST; ///< Find most significant bit set in a word.

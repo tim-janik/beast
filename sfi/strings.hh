@@ -9,14 +9,6 @@
 namespace Bse {
 typedef std::string String;
 
-// == Macros ==
-#ifdef BSE_CONVENIENCE
-/// Produce a const char* string, wrapping @a str into C-style double quotes.
-#define CQUOTE(str)                                     BSE_CQUOTE(str)
-/// Create a Bse::StringVector, from a const char* C-style array.
-#define STRING_VECTOR_FROM_ARRAY(ConstCharArray)        BSE_STRING_VECTOR_FROM_ARRAY(ConstCharArray)
-#endif // BSE_CONVENIENCE
-
 // == C-String ==
 bool    		       cstring_to_bool       (const char *string, bool fallback = false);
 

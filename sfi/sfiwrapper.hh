@@ -6,18 +6,6 @@
 #include <sfi/path.hh>
 #include <mutex>
 
-#ifdef  BSE_CONVENIENCE
-using Bse::uint8;
-using Bse::uint16;
-using Bse::uint32;
-using Bse::uint64;
-using Bse::int8;
-using Bse::int16;
-using Bse::int32;
-using Bse::int64;
-using Bse::unichar;
-#endif // BSE_CONVENIENCE
-
 /* --- initialization --- */
 typedef struct
 {
