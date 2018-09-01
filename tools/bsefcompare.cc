@@ -1,17 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
-
 #include <bse/gsldatautils.hh>
 #include <bse/gslfft.hh>
+#include "sfi/private.hh"
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
-
 #include <map>
 #include <string>
 #include <vector>
