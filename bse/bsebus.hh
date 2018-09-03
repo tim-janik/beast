@@ -86,6 +86,8 @@ public:
   virtual void      solo             (bool val) override;
   virtual bool      sync             () const override;
   virtual void      sync             (bool val) override;
+  virtual double    left_volume      () const override;
+  virtual void      left_volume      (double val) override;
   virtual Error     ensure_output    () override;
   virtual Error     connect_bus      (BusIface &bus) override;
   virtual Error     connect_track    (TrackIface &track) override;

@@ -23,7 +23,6 @@ enum
   PROP_INPUTS,
   PROP_OUTPUTS,
   PROP_SNET,
-  PROP_LEFT_VOLUME,
   PROP_RIGHT_VOLUME,
   PROP_MASTER_OUTPUT,
 };
@@ -387,21 +386,12 @@ bse_bus_set_property (GObject      *object,
     case PROP_SNET:
       g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_LEFT_VOLUME:
-      self->left_volume = sfi_value_get_real (value);
-      if (self->synced)
-        {
-          self->right_volume = self->left_volume;
-          g_object_notify (G_OBJECT (self), "right-volume");
-        }
-      bus_volume_changed (self);
-      break;
     case PROP_RIGHT_VOLUME:
       self->right_volume = sfi_value_get_real (value);
       if (self->synced)
         {
           self->left_volume = self->right_volume;
-          g_object_notify (G_OBJECT (self), "left-volume");
+          self->as<Bse::BusImpl*>()->notify ("left_volume");
         }
       bus_volume_changed (self);
       break;
@@ -464,9 +454,6 @@ bse_bus_get_property (GObject    *object,
       break;
     case PROP_SNET:
       g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
-      break;
-    case PROP_LEFT_VOLUME:
-      sfi_value_set_real (value, self->synced ? center_volume (self->left_volume, self->right_volume) : self->left_volume);
       break;
     case PROP_RIGHT_VOLUME:
       sfi_value_set_real (value, self->synced ? center_volume (self->left_volume, self->right_volume) : self->right_volume);
@@ -880,10 +867,6 @@ bse_bus_class_init (BseBusClass *klass)
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
 
-  bse_object_class_add_param (object_class, _("Adjustments"), PROP_LEFT_VOLUME,
-			      sfi_pspec_real ("left-volume", _("Left Volume"), _("Volume adjustment in decibel of left bus channel"),
-                                              bse_db_to_factor (0), bse_db_to_factor (BSE_MINDB), bse_db_to_factor (+24),
-                                              bse_db_to_factor (0.1), SFI_PARAM_STANDARD ":scale:db-volume"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_RIGHT_VOLUME,
 			      sfi_pspec_real ("right-volume", _("Right Volume"), _("Volume adjustment in decibel of right bus channel"),
                                               bse_db_to_factor (0), bse_db_to_factor (BSE_MINDB), bse_db_to_factor (+24),
@@ -1035,11 +1018,51 @@ BusImpl::sync (bool val)
         self->right_volume = self->left_volume = center_volume (self->right_volume, self->left_volume);
       bus_volume_changed (self);
 
-      g_object_notify (G_OBJECT (self), "left-volume");
+      notify ("left_volume");
       g_object_notify (G_OBJECT (self), "right-volume");
       notify (prop);
     }
   self->saved_sync = self->synced;
+}
+
+static double
+volume_clamp (double val)
+{
+  /* keep in sync with bseapi.idl */
+  const double BUS_VOLUME_MIN = 1.58489319246111e-05; /* -96dB */
+  const double BUS_VOLUME_MAX = 15.8489319246111;     /* +24dB */
+
+  return CLAMP (val, BUS_VOLUME_MIN, BUS_VOLUME_MAX);
+}
+
+double
+BusImpl::left_volume() const
+{
+  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+
+  return self->synced ? center_volume (self->left_volume, self->right_volume) : self->left_volume;
+}
+
+void
+BusImpl::left_volume (double val)
+{
+  BseBus *self = as<BseBus*>();
+
+  if (val != self->left_volume)
+    {
+      auto prop = "left_volume";
+      push_property_undo (prop);
+
+      self->left_volume = volume_clamp (val);
+      if (self->synced)
+        {
+          self->right_volume = self->left_volume;
+          g_object_notify (G_OBJECT (self), "right-volume");
+        }
+      bus_volume_changed (self);
+
+      notify (prop);
+    }
 }
 
 Error
