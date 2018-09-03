@@ -1,7 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxplugin.hh>
+#include "bse/bsecxxplugin.hh"
 #include "bsepcmdevice-alsa.hh"
-#include <bse/gsldatautils.hh>
+#include "bse/gsldatautils.hh"
+#include "sfi/private.hh"
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
