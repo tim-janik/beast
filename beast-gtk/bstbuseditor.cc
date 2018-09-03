@@ -83,6 +83,25 @@ bus_editor_release_item (SfiProxy      item,
   bst_bus_editor_set_bus (self, 0);
 }
 
+static GxkParam *
+get_property_param (BstBusEditor *self,
+                    const gchar  *property)
+{
+  Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (self->item));
+  for (auto cxxpspec : Bse::introspection_fields_to_param_list (bus.__aida_aux_data__()))
+    {
+      std::string pname = cxxpspec->name;
+      for (auto& c : pname)
+        if (c == '-')
+          c = '_';
+
+      if (property == pname)
+        return bst_param_new_property (cxxpspec, bus);
+    }
+
+  return nullptr;
+}
+
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
                  const gchar  *property,
@@ -90,17 +109,7 @@ bus_build_param (BstBusEditor *self,
                  const gchar  *editor,
                  const gchar  *label)
 {
-  GxkParam *gxk_param = nullptr;
-
-  /* aida property? */
-  Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (self->item));
-  for (auto cxxpspec : Bse::introspection_fields_to_param_list (bus.__aida_aux_data__()))
-    if (strcmp (property, cxxpspec->name) == 0)
-      {
-        gxk_param = bst_param_new_property (cxxpspec, bus);
-        break;
-      }
-
+  GxkParam *gxk_param = get_property_param (self, property); /* aida property? */
   if (!gxk_param)
     {
       /* proxy property */
@@ -152,8 +161,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
       /* create and hook up volume params & scopes */
-      pspec = bse_proxy_get_pspec (self->item, "left-volume");
-      GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
+      GxkParam *lvolume = get_property_param (self, "left_volume");
       GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
       pspec = bse_proxy_get_pspec (self->item, "right-volume");
       GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
