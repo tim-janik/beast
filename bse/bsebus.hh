@@ -84,6 +84,8 @@ public:
   virtual void      mute             (bool val) override;
   virtual bool      solo             () const override;
   virtual void      solo             (bool val) override;
+  virtual bool      sync             () const override;
+  virtual void      sync             (bool val) override;
   virtual Error     ensure_output    () override;
   virtual Error     connect_bus      (BusIface &bus) override;
   virtual Error     connect_track    (TrackIface &track) override;
