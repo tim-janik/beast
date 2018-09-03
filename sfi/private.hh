@@ -14,6 +14,11 @@ using Bse::int64;
 using Bse::unichar;
 using Bse::String;
 
+/// Retrieve the translation of a C or C++ string.
+#define _(...)          ::Bse::_ (__VA_ARGS__)
+/// Mark a string for translation, passed through verbatim by the preprocessor.
+#define N_(str)         (str)
+
 /// Produce a const char* string, wrapping @a str into C-style double quotes.
 #define CQUOTE(str)                                     BSE_CQUOTE(str)
 
