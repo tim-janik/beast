@@ -1102,14 +1102,14 @@ initialized_bse_gettext_domain()
 
 /// Translate message strings in the BEAST/BSE text domain.
 const char*
-_ (const char *string)
+(_) (const char *string)
 {
   return dgettext (initialized_bse_gettext_domain(), string);
 }
 
 /// Translate message strings in the BEAST/BSE text domain.
 std::string
-_ (const std::string &string)
+(_) (const std::string &string)
 {
   return _ (string.c_str());
 }
