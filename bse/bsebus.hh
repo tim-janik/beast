@@ -90,6 +90,8 @@ public:
   virtual void      left_volume      (double val) override;
   virtual double    right_volume     () const override;
   virtual void      right_volume     (double val) override;
+  virtual bool      master_output    () const override;
+  virtual void      master_output    (bool val) override;
   virtual Error     ensure_output    () override;
   virtual Error     connect_bus      (BusIface &bus) override;
   virtual Error     connect_track    (TrackIface &track) override;

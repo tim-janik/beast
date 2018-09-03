@@ -23,7 +23,6 @@ enum
   PROP_INPUTS,
   PROP_OUTPUTS,
   PROP_SNET,
-  PROP_MASTER_OUTPUT,
 };
 
 
@@ -178,8 +177,9 @@ bus_disconnect_outputs (BseBus *self)
         Bse::warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
-  g_object_notify (G_OBJECT (self), "master-output");   /* master may have changed */
-  self->as<Bse::BusImpl*>()->notify ("solo");           /* master may have changed */
+  auto impl = self->as<Bse::BusImpl*>();
+  impl->notify ("master_output");  /* master may have changed */
+  impl->notify ("solo");           /* master may have changed */
 }
 
 static void
@@ -192,8 +192,9 @@ song_connect_master (BseSong        *song,
       BseSource *osource = BSE_SOURCE (bus);
       bse_source_must_set_input (song->postprocess, 0, osource, 0);
       bse_source_must_set_input (song->postprocess, 1, osource, 1);
-      g_object_notify (G_OBJECT (bus), "master-output");
-      bus->as<Bse::BusImpl*>()->notify ("solo");
+      auto impl = bus->as<Bse::BusImpl*>();
+      impl->notify ("master_output");
+      impl->notify ("solo");
     }
 }
 
@@ -367,7 +368,6 @@ bse_bus_set_property (GObject      *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
-      BseItem *parent;
     case PROP_INPUTS:
       {
         BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
@@ -385,29 +385,6 @@ bse_bus_set_property (GObject      *object,
     case PROP_SNET:
       g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_MASTER_OUTPUT:
-      parent = BSE_ITEM (self)->parent;
-      if (BSE_IS_SONG (parent))
-        {
-          BseSong *song = BSE_SONG (parent);
-          BseBus *master = bse_song_find_master (song);
-          if (sfi_value_get_bool (value))
-            {
-              if (master != self)
-                {
-                  if (master)
-                    bus_disconnect_outputs (master);
-                  bus_disconnect_outputs (self);
-                  song_connect_master (song, self);
-                }
-            }
-          else
-            {
-              if (master == self)
-                bus_disconnect_outputs (self);
-            }
-        }
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -423,7 +400,6 @@ bse_bus_get_property (GObject    *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
-      BseItem *parent;
       BseIt3mSeq *iseq;
       SfiRing *ring;
     case PROP_INPUTS:
@@ -444,17 +420,6 @@ bse_bus_get_property (GObject    *object,
       break;
     case PROP_SNET:
       g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
-      break;
-    case PROP_MASTER_OUTPUT:
-      parent = BSE_ITEM (self)->parent;
-      if (BSE_IS_SONG (parent))
-        {
-          BseSong *song = BSE_SONG (parent);
-          BseBus *master = bse_song_find_master (song);
-          sfi_value_set_bool (value, self == master);
-        }
-      else
-        sfi_value_set_bool (value, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -869,10 +834,6 @@ bse_bus_class_init (BseBusClass *klass)
                                                     _("Mixer busses used as output for synthesis signals"),
                                                     BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
   bse_object_class_add_param (object_class, NULL, PROP_SNET, bse_param_spec_object ("snet", NULL, NULL, BSE_TYPE_CSYNTH, SFI_PARAM_READWRITE ":skip-undo"));
-  bse_object_class_add_param (object_class, _("Internals"),
-			      PROP_MASTER_OUTPUT,
-			      sfi_pspec_bool ("master-output", _("Master Output"), NULL,
-                                              FALSE, SFI_PARAM_STORAGE ":skip-default"));
 
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
   assert_return (channel_id == BSE_BUS_ICHANNEL_LEFT);
@@ -1043,6 +1004,55 @@ BusImpl::right_volume (double val)
           notify ("left_volume");
         }
       bus_volume_changed (self);
+    }
+}
+
+bool
+BusImpl::master_output() const
+{
+  BseBus  *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    {
+      BseSong *song = BSE_SONG (parent);
+      BseBus *master = bse_song_find_master (song);
+      return self == master;
+    }
+  return false;
+}
+
+void
+BusImpl::master_output (bool val)
+{
+  BseBus *self = as<BseBus*>();
+
+  if (val != master_output())
+    {
+      const auto prop = "master_output";
+      push_property_undo (prop);
+
+      BseItem *parent = BSE_ITEM (self)->parent;
+      if (BSE_IS_SONG (parent))
+        {
+          BseSong *song = BSE_SONG (parent);
+          BseBus *master = bse_song_find_master (song);
+          if (val)
+            {
+              if (master != self)
+                {
+                  if (master)
+                    bus_disconnect_outputs (master);
+                  bus_disconnect_outputs (self);
+                  song_connect_master (song, self);
+                }
+            }
+          else
+            {
+              if (master == self)
+                bus_disconnect_outputs (self);
+            }
+        }
+      notify (prop);
     }
 }
 
