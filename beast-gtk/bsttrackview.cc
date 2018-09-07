@@ -777,7 +777,9 @@ track_view_action_exec (gpointer data,
 	  track.set_name (string);
 	  g_free (string);
 	  bst_item_view_select (item_view, track.proxy_id());
-          track.ensure_output();
+          Bse::BusH bus = self->song.create_bus();
+          bus.ensure_output();
+          bus.connect_track (track);
 	}
       self->song.ungroup_undo();
       break;
