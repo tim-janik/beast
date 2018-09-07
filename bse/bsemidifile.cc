@@ -332,11 +332,13 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         uses_voice = BSE_MIDI_CHANNEL_VOICE_MESSAGE (track->events[j]->status);
       if (uses_voice)
         {
-          Bse::TrackIfaceP track = song.create_track();
-          BseTrack *btrack = track->as<BseTrack*>();
-          Bse::Error error = track->ensure_output();
+          Bse::BusIfaceP bus = song.create_bus();
+          Bse::Error error = bus->ensure_output();
           if (error != 0)
             Bse::warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
+          Bse::TrackIfaceP track = song.create_track();
+          BseTrack *btrack = track->as<BseTrack*>();
+          bus->connect_track (*track);
           bse_item_set_undoable (btrack, "n-voices", 24, NULL);
           Bse::PartIfaceP part_iface = song.create_part();
           BsePart *bpart = part_iface->as<BsePart*>();
