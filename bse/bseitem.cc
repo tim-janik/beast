@@ -1039,7 +1039,7 @@ ItemImpl::resolve_undo_descriptor_data (const UndoDescriptorData &udd)
   if (udd.upath == "\002project\003")
     return *project;
   BseItem *bitem = bse_container_resolve_upath (bproject, udd.upath.c_str());
-  if (bitem != NULL)    // undo descriptor for NULL objects is not currently supported
+  if (!bitem)    // undo descriptor for NULL objects is not currently supported
     fatal_error ("item undo path failed to resolve");
   return *bitem->as<ItemImpl*>();
 }
