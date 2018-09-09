@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstitemseqdialog.hh"
 #include "bsttreestores.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     bst_item_seq_dialog_activate          (BstItemSeqDialog *self);
@@ -11,7 +11,6 @@ static void     bst_item_seq_dialog_setup             (BstItemSeqDialog *self,
                                                        gpointer          parent_widget,
                                                        const gchar      *title,
                                                        SfiProxy          proxy);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstItemSeqDialog, bst_item_seq_dialog, GXK_TYPE_DIALOG);

@@ -2,6 +2,7 @@
 #include "bstscrollgraph.hh"
 #include "bstsnifferscope.hh" // FIXME: remove include
 #include "bstparam.hh"
+#include "sfi/private.hh"
 #include <math.h>
 
 #define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)

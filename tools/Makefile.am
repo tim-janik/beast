@@ -5,7 +5,7 @@ SUBDIRS = . scripts
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
 DEFS        += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
+AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
 
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../bse/libbse-@MAJOR@.la $(BSE_LIBS)

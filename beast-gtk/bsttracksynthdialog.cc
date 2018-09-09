@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttracksynthdialog.hh"
 #include "bsttreestores.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     bst_track_synth_dialog_finalize     (GObject                    *object);
@@ -12,7 +12,6 @@ static void     bst_track_synth_dialog_setup        (BstTrackSynthDialog *self,
                                                      gpointer             parent_widget,
                                                      const gchar         *title,
                                                      SfiProxy             proxy);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstTrackSynthDialog, bst_track_synth_dialog, GXK_TYPE_DIALOG);

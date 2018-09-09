@@ -125,6 +125,7 @@ main (int   argc,
     }
 }
 
+#include "../private.hh"
 #include "../sfidl-generator.cc"
 #include "../sfidl-namespace.cc"
 #include "../sfidl-options.cc"

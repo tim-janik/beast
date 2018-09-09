@@ -2,7 +2,7 @@
 #include "bstitemview.hh"
 #include "bstparamview.hh"
 #include "bsttreestores.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void	bst_item_view_destroy		(GtkObject		*object);
@@ -13,7 +13,6 @@ static void	item_view_unlisten_on		(BstItemView		*self,
 						 SfiProxy		 item);
 static void	item_view_set_container		(BstItemView		*self,
 						 SfiProxy		 new_container);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstItemView, bst_item_view, GTK_TYPE_ALIGNMENT);

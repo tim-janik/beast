@@ -1,21 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"gslmagic.hh"
-
-#include	"gslcommon.hh"
-
-#include	<string.h>
-#include	<unistd.h>
-#include	<errno.h>
-#include	<sys/types.h>
-#include	<stdlib.h>
-#include	<sys/stat.h>
-#include	<fcntl.h>
-
+#include "gslmagic.hh"
+#include "gslcommon.hh"
+#include "private.hh"
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 /* --- defines --- */
 #define	BFILE_BSIZE		(768)	/* amount of buffering */
 #define MAX_MAGIC_STRING 	(256)	/* must be < BFILE_BSIZE / 2 */
-
 
 /* --- typedefs & structures  --- */
 typedef struct _BFile BFile;

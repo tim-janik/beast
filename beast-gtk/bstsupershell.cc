@@ -9,13 +9,13 @@
 #include "bstsoundfontview.hh"
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
 
 enum {
   PROP_0,
   PROP_SUPER
 };
-
 
 /* --- prototypes --- */
 static void	bst_super_shell_destroy		(GtkObject		*object);

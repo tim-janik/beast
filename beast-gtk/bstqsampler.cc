@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstqsampler.hh"
-
 #include "bstutils.hh"
+#include "sfi/private.hh"
 #include <string.h>
-
 
 /* --- properties --- */
 enum {
@@ -12,7 +11,6 @@ enum {
   PROP_VSCALE,
   PROP_DRAW_MODE
 };
-
 
 /* --- prototypes --- */
 static void	bst_qsampler_destroy		(GtkObject		*object);

@@ -13,6 +13,7 @@
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
+#include "private.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>

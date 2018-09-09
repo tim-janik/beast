@@ -1,12 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseobject.hh"
-
 #include "bseexports.hh"
 #include "bsestorage.hh"
 #include "bsecategories.hh"
 #include "bsegconfig.hh"
 #include "bsesource.hh"		/* debug hack */
 #include "bsestartup.hh"
+#include "private.hh"
 #include <string.h>
 
 #define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)

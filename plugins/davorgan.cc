@@ -2,6 +2,7 @@
 #include "davorgan.genidl.hh"
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
+#include "sfi/private.hh"
 #include <vector>
 
 namespace Bse {

@@ -5,9 +5,9 @@
 #include "gxkstock.hh"
 #include "gxkcellrendererpopup.hh"
 #include "gxkauxwidgets.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <stdlib.h>
-
 
 /* --- generated type IDs and enums --- */
 #include "gxkgentypes.cc"

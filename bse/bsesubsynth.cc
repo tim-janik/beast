@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesubsynth.hh"
-
 #include "bsecategories.hh"
 #include "bsecsynth.hh"
 #include "bseproject.hh"
 #include "bsemidireceiver.hh"
 #include "bseengine.hh"
-
+#include "private.hh"
 #include <string.h>
 
 

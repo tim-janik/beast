@@ -2,6 +2,7 @@
 #include "bsestandardsynths.hh"
 #include "bsesnet.hh"
 #include "bsestandardosc.hh"
+#include "private.hh"
 #include <string.h>
 
 /* --- functions --- */

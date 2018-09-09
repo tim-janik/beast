@@ -1,4 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bseproject.hh"
+#include "bsecategories.hh"
+#include "bsestorage.hh"
+#include "bsemain.hh"
+#include "bsecontextmerger.hh"
+#include "bsemidireceiver.hh"
+#include "private.hh"
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
@@ -7,14 +14,6 @@
 #include <bse/bseengine.hh>
 #include <bse/gslcommon.hh>
 #include "bsesnet.hh"
-
-#include "bseproject.hh"
-#include "bsecategories.hh"
-#include "bsestorage.hh"
-#include "bsemain.hh"
-#include "bsecontextmerger.hh"
-#include "bsemidireceiver.hh"
-
 
 typedef struct
 {

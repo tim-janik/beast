@@ -128,12 +128,6 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
 typedef void          (*BseEngineAccessFunc) (BseModule         *module,
                                               gpointer           data);
 
-// == i18n Helpers ==
-#if     defined BSE_COMPILATION or defined BSE_PLUGIN_COMPILATION
-#define _(str)  ::Bse::_ (str)
-#define N_(str) (str)
-#endif /* BSE_COMPILATION */
-
 namespace Bse {
 
 class ObjectImpl;

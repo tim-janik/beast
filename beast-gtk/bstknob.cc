@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"	/* for the knob pixbuf */
 #include "bstknob.hh"
-
+#include "sfi/private.hh"
 #include <gtk/gtkmain.h>
 #include <gtk/gtksignal.h>
 #include <math.h>
 #include <stdio.h>
-
 
 #define SCROLL_DELAY_LENGTH	300
 #define SQR(x)  ((x) * (x))
@@ -16,7 +15,6 @@ enum {
   MOUSE_MOVE,
   MOUSE_JUMP
 };
-
 
 /* --- prototypes --- */
 static void	bst_knob_paint			    (BstKnob	    *knob);

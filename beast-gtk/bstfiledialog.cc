@@ -2,16 +2,15 @@
 #include "bstfiledialog.hh"
 #include "bstmenus.hh"
 #include "bsttreestores.hh"
+#include "sfi/private.hh"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
-
 /* --- prototypes --- */
 static void	bst_file_dialog_finalize	(GObject		*object);
 static void	bst_file_dialog_activate	(BstFileDialog		*self);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstFileDialog, bst_file_dialog, GXK_TYPE_DIALOG);

@@ -6,7 +6,7 @@ topdir = $(abs_top_srcdir)
 SUBDIRS		= po sfi bse plugins drivers beast-gtk launchers tools docs data .
 
 # == make setup ==
-DEFS                    += -DBSE_CONVENIENCE
+DEFS                    +=
 QWAVCHECK                = @echo '  WAVCHECK' $@;
 AM_CPPFLAGS             += -I$(top_srcdir) -I$(top_builddir)
 lib_LTLIBRARIES          =

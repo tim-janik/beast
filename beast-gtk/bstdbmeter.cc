@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstdbmeter.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <math.h>
-
 
 #define WIDGET(self)            (GTK_WIDGET (self))
 /* accessors */
@@ -14,7 +14,6 @@
 
 #define DEFAULT_BORDER          (20)
 #define NUMBER_HPADDING         (8)     /* extra spacing to seperate numbers horizontally */
-
 
 /* --- DB Setup --- */
 static BstDBSetup*

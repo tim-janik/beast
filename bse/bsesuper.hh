@@ -25,8 +25,8 @@ struct BseSuper : BseContainer {
   SfiTime	 mod_time;
   /* for BseProject */
   guint          context_handle;
-  void           set_flag    (BseSuperFlags f)   { change_flags (uint16 (f), true); }
-  void           unset_flag  (BseSuperFlags f)   { change_flags (uint16 (f), false); }
+  void           set_flag    (BseSuperFlags f)   { change_flags (uint16_t (f), true); }
+  void           unset_flag  (BseSuperFlags f)   { change_flags (uint16_t (f), false); }
   using BseContainer::set_flag;
   using BseContainer::unset_flag;
 };

@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkassortment.hh"
 #include "gxkstock.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <libintl.h>
-
 
 /* --- assortment --- */
 static gpointer

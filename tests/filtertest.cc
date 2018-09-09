@@ -1,16 +1,17 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <string>
-#include <vector>
-#include <set>
-#include <complex>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfilter.hh>
 #include <sfi/testing.hh>
+#include "sfi/private.hh"
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
+#include <vector>
+#include <set>
+#include <complex>
 
 using namespace Bse;
 

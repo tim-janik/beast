@@ -1,13 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewavetool.hh"
 #include "bwtwave.hh"
-#include "../topbuildid.hh"
 #include <bse/bsemain.hh>	/* for bse_init_intern() */
 #include <bse/bseloader.hh>
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <sfi/testing.hh>
+#include "../topbuildid.hh"
+#include "sfi/private.hh"
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>

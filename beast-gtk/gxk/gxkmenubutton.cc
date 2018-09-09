@@ -2,6 +2,7 @@
 #include "gxkmenubutton.hh"
 #include "gxkstock.hh"
 #include "gxkauxwidgets.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 

@@ -2,6 +2,7 @@
 #include <bse/bseblockutils.hh>
 #include <sfi/testing.hh>
 #include <bse/bsemain.hh>
+#include "sfi/private.hh"
 
 using namespace Bse;
 

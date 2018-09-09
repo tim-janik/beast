@@ -8,6 +8,7 @@
 #include "gslcommon.hh"
 #include "bseproject.hh"
 #include "bsecxxplugin.hh"
+#include "private.hh"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>

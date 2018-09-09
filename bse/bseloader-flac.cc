@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseloader.hh"
 #include "bsedatahandle-flac.hh"
+#include "private.hh"
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>

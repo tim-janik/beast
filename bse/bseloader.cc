@@ -5,6 +5,7 @@
 #include "gsldatahandle.hh"
 #include "gslmagic.hh"
 #include "gslfilehash.hh"
+#include "private.hh"
 #include <string.h>
 
 

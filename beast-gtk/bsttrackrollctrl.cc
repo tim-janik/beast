@@ -1,12 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttrackrollctrl.hh"
-
 #include "bstpartdialog.hh"
-
+#include "sfi/private.hh"
 
 #define QUANTIZATION(self)	((self)->quant_rtools->action_id)
 #define	HAVE_OBJECT		(unsigned (1) << 31)
-
 
 /* --- prototypes --- */
 static void	controller_drag			(BstTrackRollController	*self,
@@ -18,7 +16,6 @@ static void	controller_update_hpanel_cursor	(BstTrackRollController *self,
 static void	controller_stop_edit		(BstTrackRollController *self,
 						 gboolean                canceled,
 						 GtkCellEditable        *ecell);
-
 
 /* --- functions --- */
 GxkActionList*

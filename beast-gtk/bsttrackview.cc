@@ -4,6 +4,7 @@
 #include "bstgrowbar.hh"
 #include "bsttracksynthdialog.hh"
 #include "bstitemseqdialog.hh"
+#include "sfi/private.hh"
 #include <stdlib.h> /* strtol */
 #include <string.h>
 
@@ -22,7 +23,6 @@ static void	track_view_listen_on		(BstItemView		*iview,
 						 SfiProxy		 item);
 static void	track_view_unlisten_on		(BstItemView		*iview,
 						 SfiProxy		 item);
-
 
 /* --- columns --- */
 enum {

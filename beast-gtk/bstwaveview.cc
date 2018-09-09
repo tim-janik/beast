@@ -3,7 +3,7 @@
 #include "bstwaveeditor.hh"
 #include "bstfiledialog.hh"
 #include "bstsampleeditor.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     wave_view_action_exec           (gpointer                data,
@@ -11,7 +11,6 @@ static void     wave_view_action_exec           (gpointer                data,
 static gboolean wave_view_action_check          (gpointer                data,
                                                  size_t                  action,
                                                  guint64                 action_stamp);
-
 
 /* --- wave actions --- */
 enum {
@@ -31,7 +30,6 @@ static const GxkStockAction wave_view_actions[] = {
   { N_("Editor"),   NULL,       N_("Edit the currently selected wave"),
     ACTION_EDIT_WAVE,	        BST_STOCK_EDIT_TOOL, },
 };
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstWaveView, bst_wave_view, BST_TYPE_ITEM_VIEW);

@@ -13,7 +13,7 @@ using Bse::String;
 
 String string_tolower   (const String &str);
 String string_from_int  (int64 value);
-String string_from_uint (uint64 value);
+String string_from_uint (uint64_t value);
 String string_format    (const char *format, ...) __attribute__ ((__format__ (printf, 1, 2)));
 void   printerr         (const char *format, ...) __attribute__ ((__format__ (printf, 1, 2)));
 

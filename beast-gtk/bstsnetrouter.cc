@@ -1,14 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsnetrouter.hh"
-
-#include <math.h>
-#include <string.h>
 #include "bstcanvaslink.hh"
 #include "bstmenus.hh"
 #include "bstgconfig.hh"
 #include "bstscrollgraph.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
-
+#include <math.h>
+#include <string.h>
 
 #define EPSILON 1e-6
 #define ROUTER_TOOL(router)             (router->canvas_tool->action_id)

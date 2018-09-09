@@ -4,6 +4,7 @@
 #include "standardguspatchenvelope.genidl.hh"
 #include <bse/gslwavechunk.hh>
 #include <bse/bsemathsignal.hh>
+#include "sfi/private.hh"
 
 using namespace std;
 using namespace Sfi;

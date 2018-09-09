@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbusview.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     bus_view_action_exec           (gpointer                data,
@@ -8,7 +8,6 @@ static void     bus_view_action_exec           (gpointer                data,
 static gboolean bus_view_action_check          (gpointer                data,
                                                 size_t                  action,
                                                 guint64                 action_stamp);
-
 
 /* --- bus actions --- */
 enum {
@@ -19,7 +18,6 @@ static const GxkStockAction bus_view_actions[] = {
   { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_NO_ICON },
   { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
 };
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstBusView, bst_bus_view, BST_TYPE_ITEM_VIEW);

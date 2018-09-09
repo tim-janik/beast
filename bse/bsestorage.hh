@@ -64,8 +64,8 @@ struct BseStorage : BseObject {
   gfloat                 osc_freq;
   guint                  n_channels;
 
-  void           set_flag    (BseStorageMode f)   { change_flags (uint16 (f), true); }
-  void           unset_flag  (BseStorageMode f)   { change_flags (uint16 (f), false); }
+  void           set_flag    (BseStorageMode f)   { change_flags (uint16_t (f), true); }
+  void           unset_flag  (BseStorageMode f)   { change_flags (uint16_t (f), false); }
   using BseObject::set_flag;
   using BseObject::unset_flag;
 

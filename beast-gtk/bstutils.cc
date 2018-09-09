@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstmarshal.h"
 #include "bstmarshal.cc"
-
 #include "bstutils.hh"
-
 #include "bstgconfig.hh"
 #include "bstmenus.hh"
 #include "bsttrackview.hh"
@@ -19,12 +17,11 @@
 #include "bstgrowbar.hh"
 #include "bstdbmeter.hh"
 #include "bstscrollgraph.hh"
-
+#include "sfi/private.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
-
 
 namespace Bst {
 

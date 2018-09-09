@@ -2,7 +2,7 @@
 #include "../config/config.h"
 #include "bse/bseloader.hh"
 #include "gsldatahandle-mad.hh"
-
+#include "private.hh"
 #include <unistd.h>
 #include <string.h>
 

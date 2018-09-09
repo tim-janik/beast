@@ -2,9 +2,9 @@
 #include "bstpianoroll.hh"
 #include "bstasciipixbuf.hh"
 #include "bstskinconfig.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <math.h>
-
 
 /* --- defines --- */
 /* accessors */

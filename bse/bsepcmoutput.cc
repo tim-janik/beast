@@ -1,11 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsepcmoutput.hh"
-
 #include "bsecategories.hh"
 #include "bseserver.hh"
 #include "bseengine.hh"
-
-
+#include "private.hh"
 
 /* --- parameters --- */
 enum

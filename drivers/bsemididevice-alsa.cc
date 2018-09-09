@@ -1,8 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxplugin.hh>
+#include "bse/bsecxxplugin.hh"
 #include "bsemididevice-alsa.hh"
-#include <bse/bsesequencer.hh>
-#include <bse/bsemididecoder.hh>
+#include "bse/bsesequencer.hh"
+#include "bse/bsemididecoder.hh"
+#include "sfi/private.hh"
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>

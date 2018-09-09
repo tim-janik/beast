@@ -1,8 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstlogadjustment.hh"
-
+#include "sfi/private.hh"
 #include <math.h>
-
 
 /* --- prototypes --- */
 static void	bst_log_adjustment_destroy		(GtkObject		*object);
@@ -10,7 +9,6 @@ static void	bst_log_adjustment_changed		(GtkAdjustment		*adj);
 static void	bst_log_adjustment_value_changed	(GtkAdjustment		*adj);
 static void	ladj_adjust_ranges			(BstLogAdjustment	*ladj);
 static void	ladj_client_value_changed		(BstLogAdjustment	*ladj);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstLogAdjustment, bst_log_adjustment, GTK_TYPE_ADJUSTMENT);

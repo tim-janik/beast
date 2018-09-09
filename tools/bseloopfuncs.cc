@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseloopfuncs.hh"
 #include <bse/gsldatacache.hh>
+#include "sfi/private.hh"
 #include <string.h>
 #include <signal.h>    /* G_BREAKPOINT() */
 #include <stdio.h>

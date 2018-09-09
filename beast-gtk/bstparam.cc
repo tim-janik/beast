@@ -2,18 +2,15 @@
 #include "bstparam.hh"
 #include "bstxframe.hh"
 #include "bstbseutils.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
-static gboolean bst_param_xframe_check_button (GxkParam *param,
-                                               guint     button);
-
+static gboolean bst_param_xframe_check_button (GxkParam *param, uint button);
 
 /* --- variable --- */
 static GQuark quark_null_group = 0;
 static GQuark quark_param_choice_values = 0;
 static guint  param_size_group = 0;
-
 
 /* --- gmask parameters --- */
 static GtkWidget*

@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemult.hh"
-
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-
+#include "sfi/private.hh"
 #include <string.h>
 
 /* --- prototypes --- */

@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+import sys, re, os, subprocess
+
+cache = {}
+b_log = False
+
+first = 1
+if len (sys.argv) > first and sys.argv[first] == '-b':
+  b_log = True
+  first += 1
+
+last = ('', -1)
+for inputfile in sys.argv[first:]:
+  fout = sys.stdout
+  if b_log:
+    outputfile = os.path.splitext (inputfile)[0] + '.blame'
+    fout = open (outputfile, 'w')
+    print ("%s: creating blame file: %s..." % (inputfile, outputfile))
+  for line in open (inputfile, 'r'):
+    m = re.match (r'([^:]+):([0-9]+):([0-9]+:)?\s', line)
+    if m:
+      g = m.groups()
+      f, l = g[0], int (g[1])
+      if last != (f, l):
+        last = (f, l)
+        blame = cache.get (last)
+        if not blame:
+          result = subprocess.run (['git', '--no-pager', 'blame', '-e', '-l', '-L%d,%d' % (l, l), '--', f], stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+          blame = result.stdout.decode().rstrip()
+          blame = re.sub (r'^([a-f0-9]+)[^(]*\(([^)]+)\).*', r'\1 \2', blame)
+          p = blame.find (')')
+          if p > 0:
+            blame = blame[:p+1]
+          cache[last] = blame
+        fout.write ('%s:%d: %s\n' % (f, l, blame))
+    fout.write (line.rstrip() + '\n')

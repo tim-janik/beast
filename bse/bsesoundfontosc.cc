@@ -1,15 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesoundfontosc.hh"
-
-#include <bse/bsecategories.hh>
-#include <bse/bseengine.hh>
-#include <bse/bseproject.hh>
-#include <bse/bsesoundfontrepo.hh>
-#include <bse/bsesoundfont.hh>
-#include <bse/bsesnet.hh>
-#include <bse/bsemidireceiver.hh>
+#include "bsecategories.hh"
+#include "bseengine.hh"
+#include "bseproject.hh"
+#include "bsesoundfontrepo.hh"
+#include "bsesoundfont.hh"
+#include "bsesnet.hh"
+#include "bsemidireceiver.hh"
 #include "gslcommon.hh"
-
+#include "private.hh"
 #include <string.h>
 
 /*------------------------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkspline.hh"
+#include "sfi/private.hh"
 #include <stdlib.h>
 #include <string.h>
 #include <cmath>

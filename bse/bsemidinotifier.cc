@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bsecxxplugin.hh"
-
+#include "private.hh"
 
 /* --- prototypes --- */
 static void	   bse_midi_notifier_class_init		(BseMidiNotifierClass *klass);

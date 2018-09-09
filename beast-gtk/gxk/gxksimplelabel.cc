@@ -1,8 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxksimplelabel.hh"
-#include <string.h>
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <pango/pango.h>
+#include <string.h>
 #include <libintl.h>
 
 enum {

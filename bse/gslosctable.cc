@@ -3,6 +3,7 @@
 #include "gslcommon.hh"
 #include "bsemath.hh"
 #include "gslfft.hh"
+#include "private.hh"
 #include <string.h>
 
 #define ODEBUG(...)     Bse::debug ("osc", __VA_ARGS__)

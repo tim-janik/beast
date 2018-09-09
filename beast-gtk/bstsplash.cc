@@ -1,11 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsplash.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 
-
 #define SPLASH_REFRESH_TIMEOUT          (0 * 1000 * 250)        // just for debugging
-
 
 /* --- prototypes --- */
 static void	bst_splash_class_init		(BstSplashClass	  *klass);
@@ -21,10 +20,8 @@ static void	bst_splash_unrealize		(GtkWidget	  *widget);
 static gboolean bst_splash_delete_event		(GtkWidget	  *widget,
 						 GdkEventAny	  *event);
 
-
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
-
 
 /* --- functions --- */
 GtkType

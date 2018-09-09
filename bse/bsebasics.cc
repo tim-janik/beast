@@ -2,6 +2,8 @@
 #include "bsetype.hh"        /* import all required types first */
 #include "bsemain.hh"
 #include "bsecxxplugin.hh" /* includes bsebasics.genidl.hh for us */
+#include "private.hh"
+
 namespace Bse {
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();

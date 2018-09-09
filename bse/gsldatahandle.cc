@@ -1,14 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsldatahandle.hh"
-
 #include "gslcommon.hh"
 #include "gsldatacache.hh"
 #include "gsldatautils.hh"
 #include "gslfilehash.hh"
-
+#include "private.hh"
 #include <string.h>
 #include <errno.h>
-
 
 /* --- typedefs --- */
 typedef struct {

@@ -3,7 +3,7 @@
 #include "bstparam.hh"
 #include "bstitemseqdialog.hh" // FIXME
 #include "bstsnifferscope.hh" // FIXME
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void     bus_editor_action_exec           (gpointer                data,
@@ -11,7 +11,6 @@ static void     bus_editor_action_exec           (gpointer                data,
 static gboolean bus_editor_action_check          (gpointer                data,
                                                   size_t                  action,
                                                   guint64                 action_stamp);
-
 
 /* --- bus actions --- */
 enum {

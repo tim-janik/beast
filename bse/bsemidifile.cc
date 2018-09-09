@@ -6,6 +6,7 @@
 #include "bsepart.hh"
 #include "bsetrack.hh"
 #include "gslcommon.hh"
+#include "private.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -1,11 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidievent.hh"
-
 #include "bseglue.hh"
 #include "gslcommon.hh"
 #include "bseieee754.hh"
 #include "bsecxxplugin.hh"
-
+#include "private.hh"
 #include <errno.h>
 
 

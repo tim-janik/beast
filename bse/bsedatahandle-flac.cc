@@ -4,6 +4,7 @@
 #include "gsldatautils.hh"
 #include "gslfilter.hh"
 #include "bseblockutils.hh"
+#include "private.hh"
 #include <complex>
 #include <vector>
 #include <string.h>

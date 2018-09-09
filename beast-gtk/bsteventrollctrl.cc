@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsteventrollctrl.hh"
 #include "bstpianorollctrl.hh"
-
+#include "sfi/private.hh"
 
 #define CONTROL_TYPE(erctrl)    ((erctrl)->eroll->control_type)
 #define QUANTIZATION(self)      ((self)->quant_rtools->action_id)
 #define HAVE_OBJECT             (unsigned (1) << 31)
-
 
 /* --- prototypes --- */
 static gboolean bst_event_roll_controller_check_action  (BstEventRollController *self,

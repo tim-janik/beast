@@ -1,10 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsloscillator.hh"
-
 #include "bsemathsignal.hh"
+#include "private.hh"
 
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
-
 
 /* --- functions --- */
 static inline void

@@ -26,7 +26,7 @@ typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*
 #    define G_STRFUNC     ((const char*) (__PRETTY_FUNCTION__))
 #  elif defined (G_HAVE_ISO_VARARGS)
 #    define G_STRFUNC     ((const char*) (__func__))
-#  elif
+#  else
 #    define G_STRFUNC     ((const char*) ("???"))
 #  endif
 #endif

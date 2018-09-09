@@ -5,6 +5,7 @@
 #include "gsldatahandle-vorbis.hh"
 #include "bsedatahandle-flac.hh"
 #include "bsemath.hh"
+#include "private.hh"
 #include <sfi/sfistore.hh>
 #include <fcntl.h>
 #include <unistd.h>

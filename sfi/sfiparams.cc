@@ -1,9 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <string.h>
 #include "sfiparams.hh"
 #include "sfiprimitives.hh"
 #include "sfinote.hh"
 #include "sfitime.hh"
+#include "private.hh"
+#include <string.h>
 #include <algorithm>
 #include <unordered_map>
 

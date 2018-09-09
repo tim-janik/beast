@@ -10,16 +10,19 @@
 #include "bsepcmwriter.hh"
 #include "bsemididevice-null.hh"
 #include "bsecxxplugin.hh"
-#include "bsepcmmodule.cc"
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"
 #include "bseladspa.hh"
+#include "private.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+
+#include "bsepcmmodule.cc"
+
 using namespace Bse;
 
 /* --- parameters --- */

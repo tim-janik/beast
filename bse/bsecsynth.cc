@@ -1,13 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecsynth.hh"
-
+#include "private.hh"
 
 /* --- parameters --- */
 enum
 {
   PARAM_0,
 };
-
 
 /* --- prototypes --- */
 static void      bse_csynth_class_init             (BseCSynthClass *klass);
@@ -22,10 +21,8 @@ static void      bse_csynth_get_property           (GObject        *object,
                                                     GValue         *value,
                                                     GParamSpec     *pspec);
 
-
 /* --- variables --- */
 static GTypeClass          *parent_class = NULL;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseCSynth)

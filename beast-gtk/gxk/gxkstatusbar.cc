@@ -1,10 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkstatusbar.hh"
-
+#include "gxkdialog.hh"
+#include "sfi/private.hh"
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
 #include <string.h>
-#include "gxkdialog.hh"
 
 
 #define LONGEST_TIMEOUT         (2147483647 /* 2^31-1 */)

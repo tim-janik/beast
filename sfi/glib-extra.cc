@@ -9,8 +9,8 @@ g_object_disconnect_any (gpointer object,
                          gpointer function,
                          gpointer data)
 {
-  assert_return (G_IS_OBJECT (object));
-  assert_return (function != NULL);
+  BSE_ASSERT_RETURN (G_IS_OBJECT (object));
+  BSE_ASSERT_RETURN (function != NULL);
   /* FIXME: the only reason we have this function is that
    * g_object_disconnect() throws a warning for an any-signal::
    * disconnection that does not exist (it may do so for all-signals
@@ -213,7 +213,7 @@ g_option_find_value (const gchar *option_string,
   const gchar *p, *match = NULL;
   gint l = strlen (option);
 
-  assert_return (l > 0, NULL);
+  BSE_ASSERT_RETURN (l > 0, NULL);
 
   if (!option_string)
     return NULL;        /* option not found */
@@ -327,7 +327,7 @@ g_param_spec_set_options (GParamSpec  *pspec,
 {
   if (!quark_pspec_options)
     quark_pspec_options = g_quark_from_static_string ("GParamSpec-options");
-  assert_return (G_IS_PARAM_SPEC (pspec));
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec));
   if (options)
     g_param_spec_set_qdata (pspec, quark_pspec_options, (gchar*) g_intern_string (options));
   /* pspec->flags &= ~G_PARAM_MASK; */
@@ -339,7 +339,7 @@ g_param_spec_check_option (GParamSpec  *pspec,
                            const gchar *option)
 {
   const gchar *poptions;
-  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), FALSE);
   poptions = g_param_spec_get_options (pspec);
   return g_option_check (poptions, option);
 }
@@ -351,9 +351,9 @@ g_param_spec_add_option (GParamSpec  *pspec,
 {
   const gchar *options;
   guint append = 0;
-  assert_return (G_IS_PARAM_SPEC (pspec));
-  assert_return (option != NULL && !strchr (option, ':'));
-  assert_return (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec));
+  BSE_ASSERT_RETURN (option != NULL && !strchr (option, ':'));
+  BSE_ASSERT_RETURN (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
   options = g_param_spec_get_options (pspec);
   if (!options)
     options = "";
@@ -381,8 +381,8 @@ g_param_spec_provides_options (GParamSpec  *pspec,
                                const gchar *options)
 {
   const gchar *p;
-  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
-  assert_return (options != NULL, FALSE);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), FALSE);
+  BSE_ASSERT_RETURN (options != NULL, FALSE);
  recurse:
   while (options[0] == ':')
     options++;
@@ -407,7 +407,7 @@ const gchar*
 g_param_spec_get_options (GParamSpec *pspec)
 {
   const char *options;
-  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), NULL);
   options = (const char*) g_param_spec_get_qdata (pspec, quark_pspec_options);
   return options ? options : "";
 }
@@ -424,7 +424,7 @@ g_param_spec_set_istepping (GParamSpec  *pspec,
       quark_pspec_istepping = g_quark_from_static_string ("GParamSpec-istepping");
       quark_pspec_istepping64 = g_quark_from_static_string ("GParamSpec-istepping64");
     }
-  assert_return (G_IS_PARAM_SPEC (pspec));
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec));
   if (stepping >> 32)
     {
       guint64 *istepping64 = g_new (guint64, 1);
@@ -443,7 +443,7 @@ guint64
 g_param_spec_get_istepping (GParamSpec *pspec)
 {
   guint64 stepping;
-  assert_return (G_IS_PARAM_SPEC (pspec), 0);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), 0);
   stepping = size_t (g_param_spec_get_qdata (pspec, quark_pspec_istepping));
   if (!stepping)
     {
@@ -461,7 +461,7 @@ g_param_spec_set_fstepping (GParamSpec  *pspec,
 {
   if (!quark_pspec_fstepping)
     quark_pspec_fstepping = g_quark_from_static_string ("GParamSpec-fstepping");
-  assert_return (G_IS_PARAM_SPEC (pspec));
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec));
   if (stepping)
     {
       gdouble *fstepping = g_new (gdouble, 1);
@@ -476,7 +476,7 @@ gdouble
 g_param_spec_get_fstepping (GParamSpec *pspec)
 {
   double *fstepping;
-  assert_return (G_IS_PARAM_SPEC (pspec), 0);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), 0);
   fstepping = (double*) g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
   return fstepping ? *fstepping : 0;
 }
@@ -497,7 +497,7 @@ g_param_spec_set_log_scale (GParamSpec  *pspec,
 {
   if (!quark_pspec_log_scale)
     quark_pspec_log_scale = g_quark_from_static_string ("GParamSpec-log-scale");
-  assert_return (G_IS_PARAM_SPEC (pspec));
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec));
   if (n_steps > 0 && base > 0)
     {
       LogScale *lscale = g_new0 (LogScale, 1);
@@ -518,7 +518,7 @@ g_param_spec_get_log_scale (GParamSpec  *pspec,
                             gdouble     *n_steps)
 {
   LogScale *lscale;
-  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
+  BSE_ASSERT_RETURN (G_IS_PARAM_SPEC (pspec), FALSE);
   lscale = (LogScale*) g_param_spec_get_qdata (pspec, quark_pspec_log_scale);
   if (lscale)
     {
@@ -540,7 +540,7 @@ g_slist_pop_head (GSList **slist_p)
 {
   gpointer data;
 
-  assert_return (slist_p != NULL, NULL);
+  BSE_ASSERT_RETURN (slist_p != NULL, NULL);
 
   if (!*slist_p)
     return NULL;
@@ -568,7 +568,7 @@ g_list_pop_head (GList **list_p)
 {
   gpointer data;
 
-  assert_return (list_p != NULL, NULL);
+  BSE_ASSERT_RETURN (list_p != NULL, NULL);
 
   if (!*list_p)
     return NULL;
@@ -713,7 +713,7 @@ type_name_to_cname (const gchar *type_name,
 gchar*
 g_type_name_to_cname (const gchar *type_name)
 {
-  assert_return (type_name != NULL, NULL);
+  BSE_ASSERT_RETURN (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '_', FALSE);
 }
@@ -721,7 +721,7 @@ g_type_name_to_cname (const gchar *type_name)
 gchar*
 g_type_name_to_sname (const gchar *type_name)
 {
-  assert_return (type_name != NULL, NULL);
+  BSE_ASSERT_RETURN (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '-', FALSE);
 }
@@ -729,7 +729,7 @@ g_type_name_to_sname (const gchar *type_name)
 gchar*
 g_type_name_to_cupper (const gchar *type_name)
 {
-  assert_return (type_name != NULL, NULL);
+  BSE_ASSERT_RETURN (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "", '_', TRUE);
 }
@@ -737,7 +737,7 @@ g_type_name_to_cupper (const gchar *type_name)
 gchar*
 g_type_name_to_type_macro (const gchar *type_name)
 {
-  assert_return (type_name != NULL, NULL);
+  BSE_ASSERT_RETURN (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
 }
@@ -830,8 +830,8 @@ g_source_simple (gint            priority,
   va_list var_args;
   GPollFD *pfd;
 
-  assert_return (pending != NULL, NULL);
-  assert_return (dispatch != NULL, NULL);
+  BSE_ASSERT_RETURN (pending != NULL, NULL);
+  BSE_ASSERT_RETURN (dispatch != NULL, NULL);
 
   source = g_source_new (&simple_source_funcs, sizeof (SimpleSource));
   g_source_set_priority (source, priority);
@@ -898,7 +898,7 @@ g_predicate_idle_add_full (gint            priority,
                            GDestroyNotify  notify)
 {
   static GSourceFuncs predicate_idle_funcs = { predicate_idle_prepare, predicate_idle_check, predicate_idle_dispatch, };
-  assert_return (predicate && function, 0);
+  BSE_ASSERT_RETURN (predicate && function, 0);
   GSource *source = g_source_new (&predicate_idle_funcs, sizeof (PredicateIdle));
   g_source_set_priority (source, priority);
   ((PredicateIdle*) source)->predicate = predicate;
@@ -996,7 +996,7 @@ g_usignal_add_full (gint           priority,
   GUSignalData *usignal_data;
   guint s = 128 + usignal;
 
-  assert_return (function != NULL, 0);
+  BSE_ASSERT_RETURN (function != NULL, 0);
 
   usignal_data = g_new (GUSignalData, 1);
   usignal_data->index = s / 32;
@@ -1023,7 +1023,7 @@ GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {
   const bool gscanner_64bit_has_store_int64 = config_templ->store_int64 != false;
-  assert_return (gscanner_64bit_has_store_int64 == true, NULL);
+  BSE_ASSERT_RETURN (gscanner_64bit_has_store_int64 == true, NULL);
   return g_scanner_new (config_templ);
 }
 
@@ -1102,14 +1102,14 @@ initialized_bse_gettext_domain()
 
 /// Translate message strings in the BEAST/BSE text domain.
 const char*
-_ (const char *string)
+(_) (const char *string)
 {
   return dgettext (initialized_bse_gettext_domain(), string);
 }
 
 /// Translate message strings in the BEAST/BSE text domain.
 std::string
-_ (const std::string &string)
+(_) (const std::string &string)
 {
   return _ (string.c_str());
 }

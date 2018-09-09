@@ -2,6 +2,7 @@
 #include <sfi/testing.hh>
 #include <sfi/randomhash.hh>
 #include <sfi/entropy.hh>
+#include "sfi/private.hh"
 #include <random>
 #include <array>
 

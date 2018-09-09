@@ -6,6 +6,7 @@
 #include "bseenginemaster.hh"
 #include "bseengineprivate.hh"
 #include "bsestartup.hh"        // for TaskRegistry
+#include "private.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>

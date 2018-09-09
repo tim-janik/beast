@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstmenus.hh"
 #include <string.h>
-
+#include "sfi/private.hh"
 
 /* --- structures --- */
 struct BstChoice {
@@ -13,12 +13,10 @@ struct BstChoice {
   BstChoice() : type_and_flags (BST_CHOICE_TYPE_SEPARATOR), p_id (NULL) {}
 };
 
-
 /* --- variables --- */
 static gboolean   modal_loop_running = FALSE;
 static gboolean   modal_loop_quit_on_menu_item_activate = FALSE;
 static GtkWidget *current_popup_menu = NULL;
-
 
 /* --- functions --- */
 BstChoice*

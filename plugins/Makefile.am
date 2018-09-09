@@ -5,7 +5,7 @@ SUBDIRS = icons . freeverb # evaluator
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_PLUGIN_COMPILATION
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
+AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
 
 # == IDL C++ Plugins ==
 idl_files = $(strip			\

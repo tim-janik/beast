@@ -1,11 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkrackeditor.hh"
 #include "gxkrackitem.hh"
-
+#include "sfi/private.hh"
 
 #define CR_WINDOW_THICKNESS(self)     (2)
 #define CR_WINDOW_SPAN(self)          (MAX (self->cell_request_width, self->cell_request_height) * 3/4)
-
 
 /* --- prototypes --- */
 static void rack_table_abort_drag    (GxkRackTable *self,

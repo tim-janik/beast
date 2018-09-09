@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bstgconfig.hh"
-
-#include	<string.h>
+#include "bstgconfig.hh"
+#include "sfi/private.hh"
+#include <string.h>
 
 /* --- variables --- */
 static Bst::GConfig *bst_global_config = NULL;
 static GParamSpec *pspec_global_config = NULL;
-
 
 /* --- functions --- */
 void

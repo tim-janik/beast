@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidivoice.hh"
-
 #include "bseserver.hh"
 #include "bsemidireceiver.hh"
 #include "bseengine.hh"
 #include "gslcommon.hh"
 #include "bsesnet.hh"
-
+#include "private.hh"
 
 /* --- prototypes --- */
 static void bse_midi_voice_input_init             (BseMidiVoiceInput        *self);

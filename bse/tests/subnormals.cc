@@ -3,6 +3,7 @@
 #include <bse/bseieee754.hh>
 #include <bse/bsemain.hh>
 #include <sfi/testing.hh>
+#include "sfi/private.hh"
 #include <stdio.h>
 #ifdef __SSE__
 #include <xmmintrin.h>

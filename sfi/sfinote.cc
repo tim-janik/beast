@@ -1,7 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "sfinote.hh"
+#include "private.hh"
 #include <stdlib.h>
 #include <string.h>
-#include "sfinote.hh"
 
 #define to_lower(c)             ( \
         (guchar) (                                                      \

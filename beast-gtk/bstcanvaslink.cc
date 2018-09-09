@@ -1,12 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcanvaslink.hh"
-
+#include "sfi/private.hh"
 #include <math.h>
 
 #define ARROW_LENGTH    (12.0)
 #define ARROW_WIDTH     (6.0)
 #define TAG_DIAMETER    (2.0)
-
 
 /* --- prototypes --- */
 static void	bst_canvas_link_adjust_arrow	(BstCanvasLink		*clink);
@@ -15,7 +14,6 @@ static gboolean	bst_canvas_link_child_event	(GnomeCanvasItem        *item,
 						 GdkEvent               *event);
 static void     bst_canvas_link_update          (BstCanvasLink          *clink);
 static gboolean bst_canvas_link_build_async     (gpointer                data);
-
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstCanvasLink, bst_canvas_link, GNOME_TYPE_CANVAS_GROUP);

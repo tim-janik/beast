@@ -2,7 +2,7 @@
 #define BSE_IDL_SURROGATES 1 // dummy values to satisfy the old code generator
 #include "bseenums.hh"
 #include "gslcommon.hh"
-#include <errno.h>
+#include "private.hh"
 
 /* include generated enum value arrays and *.h files the enums steam from */
 #include "bseenum_arrays.cc"

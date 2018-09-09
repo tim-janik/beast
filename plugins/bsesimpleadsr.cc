@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesimpleadsr.hh"
-
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
+#include "sfi/private.hh"
 
 #define	TIME_EPSILON	(0.00001)
 

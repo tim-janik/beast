@@ -11,7 +11,7 @@
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
-
+#include "sfi/private.hh"
 #include <string.h>
 
 /* --- parameters --- */

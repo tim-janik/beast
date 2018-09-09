@@ -6,6 +6,7 @@
 #include "bsestorage.hh"
 #include "bsemain.hh"
 #include "bseengine.hh"
+#include "private.hh"
 #include <stdlib.h>
 #include <string.h>
 

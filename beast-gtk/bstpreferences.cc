@@ -6,7 +6,7 @@
 #include "bstmsgabsorb.hh"
 #include "bstpatternctrl.hh"
 #include "bstparam.hh"
-
+#include "sfi/private.hh"
 
 /* --- prototypes --- */
 static void	  bst_preferences_destroy		(GtkObject		*object);

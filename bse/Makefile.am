@@ -5,6 +5,7 @@ topdir = $(abs_top_srcdir)
 
 SUBDIRS = icons . tests
 
+AM_CPPFLAGS += -I../sfi/
 DEFS        += -DG_LOG_DOMAIN=\"BSE\" -DG_DISABLE_CONST_RETURNS -DBSE_COMPILATION
 AM_CPPFLAGS += -I$(top_srcdir)
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
@@ -295,7 +296,7 @@ libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_s
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
-libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
+libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(BSE_CFLAGS)
 libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(BSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	$(AM_LDFLAGS)					\
@@ -475,13 +476,13 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = libbse-@MAJOR@.la $(BSE_LIBS)
 
 noinst_PROGRAMS    += bseprocidl
-bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
+bseprocidl_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS)
 bseprocidl_LDADD    = $(progs_LDADD)
 bseprocidl_SOURCES  = bseprocidl.cc
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
-bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS) -DBSE_CONVENIENCE
+bsetool_CXXFLAGS = $(AM_CXXFLAGS) $(BSE_CFLAGS)
 bsetool_LDADD    = $(progs_LDADD)
 bsetool_SOURCES  = bsetool.cc
 

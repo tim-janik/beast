@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpatterncolumns.hh"
 #include "bstpatternview.hh"
+#include "sfi/private.hh"
 #include <string.h>
 #include <math.h>
-
 
 /* --- defines --- */
 /* checks */
@@ -20,7 +20,6 @@
 #define FOCUS_WIDTH(self)       (bst_pattern_view_get_focus_width (self))
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
-
 
 /* --- functions --- */
 static void

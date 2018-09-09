@@ -2,6 +2,7 @@
 #include "sfitime.hh"
 #include "sfiring.hh"
 #include "sfiprimitives.hh"
+#include "private.hh"
 #include <sys/time.h>
 #include <string.h>
 #include <time.h>

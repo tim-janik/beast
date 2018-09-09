@@ -3,9 +3,9 @@
 #include "bstmenus.hh"
 #include "bstparam.hh"
 #include "bstgrowbar.hh"
+#include "sfi/private.hh"
 
 #define SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
-
 
 /* --- prototypes --- */
 static void	bst_part_dialog_finalize	(GObject		*object);
@@ -26,7 +26,6 @@ static gboolean part_dialog_action_check        (gpointer                data,
                                                  guint64                 action_stamp);
 static void     part_dialog_action_exec         (gpointer                data,
                                                  size_t                  action);
-
 
 /* --- track actions --- */
 enum {

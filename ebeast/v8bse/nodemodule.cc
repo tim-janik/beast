@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "../../bse/bse.hh"
+#include "bse/bse.hh"
+#include "sfi/private.hh"
 #include <math.h>
 #include <node.h>
 #include <uv.h>

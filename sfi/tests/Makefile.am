@@ -4,34 +4,34 @@ include $(top_srcdir)/Makefile.decl
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
 DEFS	    += -D__TOPDIR__="\"$(abs_top_srcdir)/\""
 DEFS	    += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DBSE_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 
 noinst_PROGRAMS   = $(ALLTESTS)
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
 TAPTESTS     += ring
-ring_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+ring_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 ring_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 ring_SOURCES  = ring.cc
 
 # misctests
 TAPTESTS          += misctests
-misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBZ_LIBS)
 misctests_SOURCES  = misctests.cc utf8tests.cc
 $(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
 TAPTESTS	+= testcxx
-testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 testcxx_LDADD	 = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testcxx_SOURCES  = testcxx.cc
 $(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
 TAPTESTS          += testsfidl
-testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DBSE_CONVENIENCE
+testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 testsfidl_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testsfidl_SOURCES  = testsfidl.cc
 $(srcdir)/testsfidl.cc: testidl.h testidl.c

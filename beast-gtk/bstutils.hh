@@ -19,7 +19,7 @@ namespace Bst {
 
 // == event loop ==
 int  event_loop_run    ();
-void event_loop_quit   (uint8 exit_code = 0);
+void event_loop_quit   (uint8_t exit_code = 0);
 uint add_frame_handler (const std::function<void()> &func);
 uint add_frame_handler (const std::function<bool()> &func);
 void remove_handler    (uint *handler_id);
@@ -37,7 +37,7 @@ public:
   inline double& f64           (Bse::MonitorField mf) const   { return f64_[size_t (mf) / 8]; }
 };
 
-MonitorFieldU monitor_fields_from_shm (int64 shm_id, uint32 shm_offset);
+MonitorFieldU monitor_fields_from_shm (int64 shm_id, uint32_t shm_offset);
 
 } // Bst
 
@@ -83,7 +83,7 @@ void           bst_background_handler2_add    (gboolean       (*handler) (gpoint
 GtkWidget* bst_stock_button             (const gchar  *stock_id);
 GtkWidget* bst_stock_dbutton            (const gchar  *stock_id);
 GtkWidget* bst_stock_icon_button        (const gchar  *stock_id);
-void       bst_stock_register_icon      (const String &stock_id, uint bytes_per_pixel, uint width, uint height, uint rowstride, const uint8 *pixels);
+void       bst_stock_register_icon      (const String &stock_id, uint bytes_per_pixel, uint width, uint height, uint rowstride, const uint8_t *pixels);
 
 /* --- pixbuf shortcuts --- */
 #define bst_pixbuf_no_icon()    gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)

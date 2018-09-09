@@ -4,6 +4,7 @@
 #include "sfiglue.hh"
 #include "sfiustore.hh"
 #include "sfivmarshal.hh"
+#include "private.hh"
 #include <gobject/gvaluecollector.h>
 #include <sfi/gbsearcharray.hh>
 

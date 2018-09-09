@@ -3,7 +3,8 @@
 
 # include files
 echo "#include $2"
-echo "#include \"bsemath.hh\""
+echo '#include "bsemath.hh"'
+echo '#include "private.hh"'
 
 MKFFT="$1"
 IEEE_TYPE="double"

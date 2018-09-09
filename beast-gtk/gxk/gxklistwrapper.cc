@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxklistwrapper.hh"
 #include "gxkmarshal.h"
+#include "sfi/private.hh"
 #include <gtk/gtkmain.h>
-
 
 #define	I2P(x)		GINT_TO_POINTER (x)
 #define	P2I(x)		GPOINTER_TO_INT (x)

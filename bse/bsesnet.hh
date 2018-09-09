@@ -39,8 +39,8 @@ struct BseSNet : BseSuper {
   GBSearchArray *port_array;	/* of type BseSNetPort* */
   GSList	*tmp_context_children;
   guint		 port_unregistered_id;
-  void           set_flag    (BseSNetFlags f)   { change_flags (uint16 (f), true); }
-  void           unset_flag  (BseSNetFlags f)   { change_flags (uint16 (f), false); }
+  void           set_flag    (BseSNetFlags f)   { change_flags (uint16_t (f), true); }
+  void           unset_flag  (BseSNetFlags f)   { change_flags (uint16_t (f), false); }
   using BseSuper::set_flag;
   using BseSuper::unset_flag;
 };

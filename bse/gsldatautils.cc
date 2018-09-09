@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsldatautils.hh"
 #include "gsldatacache.hh"
+#include "private.hh"
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
@@ -8,9 +9,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
 #define	BSIZE		GSL_DATA_HANDLE_PEEK_BUFFER	/* FIXME: global buffer size setting */
-
 
 /* --- functions --- */
 gfloat

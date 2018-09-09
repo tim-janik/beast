@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bsemididevice-null.hh"
-#include	"bseserver.hh"
+#include "bsemididevice-null.hh"
+#include "bseserver.hh"
+#include "private.hh"
 
 #define MDEBUG(...)     Bse::debug ("midi-null", __VA_ARGS__)
 

@@ -1,9 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"   /* for GScanner */
 #include "bstsequence.hh"
-
+#include "sfi/private.hh"
 #include <gtk/gtkdrawingarea.h>
-
 
 /* --- prototypes --- */
 static void     bst_sequence_finalize	(GObject		*object);
@@ -18,10 +17,8 @@ static gint	darea_button_event	(BstSequence		*seq,
 static gint	darea_motion_event	(BstSequence		*seq,
 					 GdkEventMotion		*event);
 
-
 /* --- varibales --- */
 static guint           seq_changed_signal = 0;
-
 
 /* --- fucntions --- */
 G_DEFINE_TYPE (BstSequence, bst_sequence, GTK_TYPE_HBOX);

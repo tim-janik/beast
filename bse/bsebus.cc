@@ -10,6 +10,7 @@
 #include "bseproject.hh"
 #include "bsestorage.hh"
 #include "bsecxxplugin.hh"
+#include "private.hh"
 
 
 #define parse_or_return         bse_storage_scanner_parse_or_return

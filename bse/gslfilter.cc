@@ -2,9 +2,8 @@
 #include "gslfilter.hh"
 #include "gslfft.hh"
 #include "bsemathsignal.hh"
-
+#include "private.hh"
 #include <string.h>
-
 
 /* --- common utilities --- */
 static inline double
