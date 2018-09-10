@@ -19,6 +19,9 @@ void		sfi_value_store_param	        (const GValue	*value,
 						 guint		 indent);
 void            sfi_value_store_stderr          (const GValue   *value);
 
+GTokenType      sfi_scanner_parse_real_num      (GScanner       *scanner,
+                                                 SfiReal        *real_p,
+                                                 SfiNum         *num_p);
 
 /* --- NULL (nil) token handling --- */
 #define  SFI_SERIAL_NULL_TOKEN	"#f"

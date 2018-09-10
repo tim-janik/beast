@@ -130,7 +130,7 @@ gstring_check_break (GString  *gstring,
 
 
 /* --- functions --- */
-static GTokenType
+GTokenType
 sfi_scanner_parse_real_num (GScanner *scanner,
 			    SfiReal  *real_p,
 			    SfiNum   *num_p)
