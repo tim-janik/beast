@@ -739,6 +739,16 @@ storage_parse_property_value (BseStorage *self, const std::string &name, Bse::An
 {
   assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
   GScanner *scanner = bse_storage_get_scanner (self);
+  if (any.kind() == Aida::FLOAT64) /* float format cannot be handled by scanner_parse_paren_rest */
+    {
+      double value;
+      GTokenType expected_token = sfi_scanner_parse_real_num (scanner, &value, nullptr);
+      if (expected_token != G_TOKEN_NONE)
+        return expected_token;
+      any.set (value);
+      parse_or_return (scanner, ')');
+      return G_TOKEN_NONE;
+    }
   std::string rest;
   GTokenType expected_token = scanner_parse_paren_rest (scanner, &rest);
   if (expected_token != G_TOKEN_NONE)
