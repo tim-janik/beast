@@ -959,7 +959,10 @@ BusImpl::sync (bool val)
 
       self->synced = val;
       if (self->synced)
-        self->right_volume = self->left_volume = center_volume (self->right_volume, self->left_volume);
+        {
+          self->left_volume = center_volume (self->right_volume, self->left_volume);
+          self->right_volume = self->left_volume;
+        }
       bus_volume_changed (self);
 
       notify ("left_volume");
