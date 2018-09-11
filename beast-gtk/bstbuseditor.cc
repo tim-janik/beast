@@ -90,10 +90,7 @@ get_property_param (BstBusEditor *self,
   Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (self->item));
   for (auto cxxpspec : Bse::introspection_fields_to_param_list (bus.__aida_aux_data__()))
     {
-      std::string pname = cxxpspec->name;
-      for (auto& c : pname)
-        if (c == '-')
-          c = '_';
+      std::string pname = Bst::name_to_identifier (cxxpspec->name);
 
       if (property == pname)
         return bst_param_new_property (cxxpspec, bus);

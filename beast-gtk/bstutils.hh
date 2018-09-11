@@ -39,6 +39,8 @@ public:
 
 MonitorFieldU monitor_fields_from_shm (int64 shm_id, uint32 shm_offset);
 
+std::string name_to_identifier (const std::string &name);
+
 } // Bst
 
 // == Bse Server (BSE remote origin) ==

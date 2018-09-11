@@ -159,6 +159,21 @@ monitor_fields_from_shm (int64 shm_id, uint32 shm_offset)
   return MonitorFieldU { (char*) (shm_start + shm_offset) };
 }
 
+// param spec helper: name -> identifier
+std::string
+name_to_identifier (const std::string &name)
+{
+  if (strchr (name.c_str(), '-'))
+    {
+      std::string identifier (name);
+      for (size_t i = 0; i < identifier.size(); i++)
+        if (identifier[i] == '-')
+          identifier[i] = '_';
+      return identifier;
+    }
+  return name;
+}
+
 } // Bst
 
 /* --- variables --- */
@@ -424,6 +439,7 @@ bst_background_handler2_add (gboolean       (*handler) (gpointer data),
 {
   bst_background_handler_add (handler, data, free_func, 2);
 }
+
 
 /* --- packing utilities --- */
 #define SPACING 3
