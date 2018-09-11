@@ -1045,13 +1045,13 @@ BusImpl::right_volume (double val)
 bool
 BusImpl::master_output() const
 {
-  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
-  auto parent = BSE_ITEM (self)->parent;
+  BseBus  *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+  BseItem *parent = BSE_ITEM (self)->parent;
   if (BSE_IS_SONG (parent))
     {
       BseSong *song = BSE_SONG (parent);
       BseBus *master = bse_song_find_master (song);
-      return (self == master);
+      return self == master;
     }
   return false;
 }
@@ -1066,7 +1066,7 @@ BusImpl::master_output (bool val)
       auto prop = "master_output";
       push_property_undo (prop);
 
-      auto parent = BSE_ITEM (self)->parent;
+      BseItem *parent = BSE_ITEM (self)->parent;
       if (BSE_IS_SONG (parent))
         {
           BseSong *song = BSE_SONG (parent);
