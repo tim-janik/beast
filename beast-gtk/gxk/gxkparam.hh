@@ -169,6 +169,7 @@ GtkAdjustment* gxk_param_get_adjustment_with_stepping (GxkParam  *param,
                                                        gdouble    pstepping);
 GtkAdjustment* gxk_param_get_log_adjustment           (GxkParam  *param);
 GtkAdjustment* gxk_param_get_decibel_adjustment       (GxkParam  *param);
+GtkAdjustment* gxk_param_get_poly_adjustment          (GxkParam  *param);
 
 #endif /* __GXK_PARAM_H__ */
 

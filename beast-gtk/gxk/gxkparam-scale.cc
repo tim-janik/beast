@@ -4,8 +4,10 @@
 enum {
   PARAM_SCALE_HORIZONTAL,
   PARAM_LSCALE_HORIZONTAL,
+  PARAM_PSCALE_HORIZONTAL,
   PARAM_SCALE_VERTICAL,
   PARAM_LSCALE_VERTICAL,
+  PARAM_PSCALE_VERTICAL,
 };
 
 static void
@@ -41,6 +43,8 @@ param_scale_create (GxkParam    *param,
   GtkAdjustment *adjustment = NULL;
   if (variant == PARAM_LSCALE_HORIZONTAL || variant == PARAM_LSCALE_VERTICAL)
     adjustment = gxk_param_get_log_adjustment (param);
+  if (variant == PARAM_PSCALE_HORIZONTAL || variant == PARAM_PSCALE_VERTICAL)
+    adjustment = gxk_param_get_poly_adjustment (param);
   if ((variant == PARAM_SCALE_HORIZONTAL || variant == PARAM_SCALE_VERTICAL) &&
       (g_param_spec_check_option (param->pspec, "db-volume") ||
        g_param_spec_check_option (param->pspec, "db-range")) &&
@@ -91,13 +95,25 @@ static GxkParamEditor param_scale4 = {
   { "log-scale",  +5,   TRUE, },        /* options, rating, editing */
   param_scale_create,   NULL,   PARAM_LSCALE_VERTICAL,
 };
+static GxkParamEditor param_scale5 = {
+  { "hscale-poly",       N_("Horizontal Scale (Poly)"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { "poly-scale",  +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_PSCALE_HORIZONTAL,
+};
+static GxkParamEditor param_scale6 = {
+  { "vscale-poly",       N_("Vertical Scale (Poly)"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { "poly-scale",  +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_PSCALE_VERTICAL,
+};
 static const gchar *param_scale_aliases1[] = {
   "hscale",
-  "hscale-lin", "hscale-log",
+  "hscale-lin", "hscale-log", "hscale-poly",
   NULL,
 };
 static const gchar *param_scale_aliases2[] = {
   "vscale",
-  "vscale-lin", "vscale-log",
+  "vscale-lin", "vscale-log", "vscale-poly",
   NULL,
 };
