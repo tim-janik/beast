@@ -19,8 +19,6 @@ struct BseBus : BseSubSynth {
   double        left_volume;
   double        right_volume;
   guint         muted : 1;
-  guint         synced : 1;
-  guint         saved_sync : 1;
   guint         solo_muted : 1;
   BseSource    *summation;
   BseSource    *vin;

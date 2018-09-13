@@ -40,8 +40,6 @@ bse_bus_init (BseBus *self)
   self->set_flag (BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->left_volume = 1.0;
   self->right_volume = 1.0;
-  self->synced = TRUE;
-  self->saved_sync = self->synced;
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE);
 }
 
@@ -198,21 +196,6 @@ song_connect_master (BseSong        *song,
     }
 }
 
-static gdouble
-center_volume (gdouble volume1,
-               gdouble volume2)
-{
-  if (volume1 > 0 && volume2 > 0)
-    {
-      /* center volumes in decibel */
-      volume1 = bse_db_from_factor (volume1, -200);
-      volume2 = bse_db_from_factor (volume2, -200);
-      return bse_db_to_factor ((volume1 + volume2) * 0.5);
-    }
-  else
-    return (volume1 + volume2) * 0.5;
-}
-
 static void
 bus_volume_changed (BseBus *self)
 {
@@ -226,12 +209,8 @@ bus_volume_changed (BseBus *self)
         }
       else
         {
-          double lvolume = self->left_volume;
-          double rvolume = self->right_volume;
-          if (self->synced)
-            lvolume = rvolume = center_volume (lvolume, rvolume);
-          v1 = lvolume;
-          v2 = rvolume;
+          v1 = self->left_volume;
+          v2 = self->right_volume;
         }
       g_object_set (self->bmodule, "volume1", v1, "volume2", v2, NULL);
     }
@@ -721,17 +700,6 @@ bus_restore_add_input (gpointer     data,
     }
 }
 
-static void
-bus_restore_start (BseObject  *object,
-                   BseStorage *storage)
-{
-  BseBus *self = BSE_BUS (object);
-  self->saved_sync = self->synced;
-  /* support seperate left & right volumes */
-  self->synced = FALSE;
-  BSE_OBJECT_CLASS (bus_parent_class)->restore_start (object, storage);
-}
-
 static GTokenType
 bus_restore_private (BseObject  *object,
                      BseStorage *storage,
@@ -753,19 +721,6 @@ bus_restore_private (BseObject  *object,
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);
-}
-
-static void
-bus_restore_finish (BseObject *object,
-                    guint      vmajor,
-                    guint      vminor,
-                    guint      vmicro)
-{
-  BseBus *self = BSE_BUS (object);
-  /* restore real sync setting */
-  auto impl = self->as<Bse::BusImpl*>();
-  impl->sync (self->saved_sync);
-  BSE_OBJECT_CLASS (bus_parent_class)->restore_finish (object, vmajor, vminor, vmicro);
 }
 
 static void
@@ -807,9 +762,7 @@ bse_bus_class_init (BseBusClass *klass)
 
   object_class->editable_property = bse_bus_editable_property;
   object_class->store_private = bus_store_private;
-  object_class->restore_start = bus_restore_start;
   object_class->restore_private = bus_restore_private;
-  object_class->restore_finish = bus_restore_finish;
 
   item_class->set_parent = bse_bus_set_parent;
   item_class->get_candidates = bse_bus_get_candidates;
@@ -942,36 +895,16 @@ BusImpl::solo (bool is_solo)
 bool
 BusImpl::sync() const
 {
-  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
-
-  return self->synced;
+  // sync property is no longer used, this is just compat code
+  return false;
 }
 
 void
 BusImpl::sync (bool val)
 {
-  BseBus *self = as<BseBus*>();
-
-  if (val != self->synced)
-    {
-      auto prop = "sync";
-      push_property_undo (prop);
-
-      self->synced = val;
-      if (self->synced)
-        {
-          self->left_volume = center_volume (self->right_volume, self->left_volume);
-          self->right_volume = self->left_volume;
-        }
-      bus_volume_changed (self);
-
-      notify ("left_volume");
-      notify ("right_volume");
-      notify ("volume_db");
-      notify ("pan");
-      notify (prop);
-    }
-  self->saved_sync = self->synced;
+  // sync property is no longer used, this is just compat code
+  if (val)
+    notify ("sync");
 }
 
 double
@@ -979,7 +912,7 @@ BusImpl::left_volume() const
 {
   BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
 
-  return self->synced ? center_volume (self->left_volume, self->right_volume) : self->left_volume;
+  return self->left_volume;
 }
 
 void
@@ -993,11 +926,6 @@ BusImpl::left_volume (double val)
       push_property_undo (prop);
 
       self->left_volume = CLAMP (val, 0, 1000);
-      if (self->synced)
-        {
-          self->right_volume = self->left_volume;
-          notify ("right_volume");
-        }
       bus_volume_changed (self);
 
       notify ("volume_db");
@@ -1011,7 +939,7 @@ BusImpl::right_volume() const
 {
   BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
 
-  return self->synced ? center_volume (self->left_volume, self->right_volume) : self->right_volume;
+  return self->right_volume;
 }
 
 void
@@ -1025,11 +953,6 @@ BusImpl::right_volume (double val)
       push_property_undo (prop);
 
       self->right_volume = CLAMP (val, 0, 1000);
-      if (self->synced)
-        {
-          self->left_volume = self->right_volume;
-          notify ("left_volume");
-        }
       bus_volume_changed (self);
 
       notify ("volume_db");
