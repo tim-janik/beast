@@ -497,8 +497,8 @@ bse_song_ensure_master (BseSong *self)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "Create Master");
       child = (BseSource*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
-      g_object_set (child, "master-output", TRUE, NULL); // not-undoable
       Bse::BusImpl *bus = child->as<Bse::BusImpl*>();
+      bus->master_output_no_undo (true); // not undoable
       Bse::ItemImpl::UndoDescriptor<Bse::BusImpl> bus_descriptor = this_->undo_descriptor (*bus);
       auto remove_bus_lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::Error {
         Bse::BusImpl &bus = self.undo_resolve (bus_descriptor);
@@ -681,7 +681,7 @@ SongImpl::remove_bus (BusIface &bus_iface)
   BseItem *child = bus.as<BseItem*>();
   BseUndoStack *ustack = bse_item_undo_open (self, __func__);
   // reset ::master-output property undoable
-  bse_item_set (child, "master-output", FALSE, NULL);
+  bus.master_output (false);
   // backup object references to undo stack
   bse_container_uncross_undoable (BSE_CONTAINER (self), child);
   // implement "undo" of bse_container_remove_backedup, i.e. redo
