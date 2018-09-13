@@ -1073,14 +1073,15 @@ BusImpl::master_output() const
 }
 
 void
-BusImpl::master_output (bool val)
+BusImpl::set_master_output (bool val, bool undo)
 {
   BseBus *self = as<BseBus*>();
 
   if (val != master_output())
     {
       auto prop = "master_output";
-      push_property_undo (prop);
+      if (undo)
+        push_property_undo (prop);
 
       BseItem *parent = BSE_ITEM (self)->parent;
       if (BSE_IS_SONG (parent))
@@ -1105,6 +1106,18 @@ BusImpl::master_output (bool val)
         }
       notify (prop);
     }
+}
+
+void
+BusImpl::master_output (bool val)
+{
+  return set_master_output (val, true);
+}
+
+void
+BusImpl::master_output_no_undo (bool val)
+{
+  return set_master_output (val, false);
 }
 
 Error

@@ -79,8 +79,11 @@ protected:
 
   void lr_to_volume_pan (double &volume_out, double &pan_out) const;
   void volume_pan_to_lr (double volume_in, double pan_in);
+  void set_master_output (bool val, bool undo);
 
 public:
+  void master_output_no_undo (bool val);
+
   explicit          BusImpl          (BseObject*);
   virtual bool      mute             () const override;
   virtual void      mute             (bool val) override;
