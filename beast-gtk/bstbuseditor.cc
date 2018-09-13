@@ -157,19 +157,18 @@ bst_bus_editor_set_bus (BstBusEditor *self,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
       /* create and hook up volume params & scopes */
-      GxkParam *lvolume = get_property_param (self, "left_volume");
-      GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
-      GxkParam *rvolume = get_property_param (self, "right_volume");
-      GtkWidget *rspinner = gxk_param_create_editor (rvolume, "spinner");
+      GxkParam *volume_db = get_property_param (self, "volume_db");
+      GtkWidget *vspinner = gxk_param_create_editor (volume_db, "spinner");
+      GxkParam *pan = get_property_param (self, "pan");
+      GtkWidget *pspinner = gxk_param_create_editor (pan, "spinner");
+      GtkWidget *panscale = gxk_param_create_editor (pan, "hscale-lin");
+      g_signal_connect_object (panscale, "button-press-event", G_CALLBACK (grab_focus_and_false), pspinner, G_CONNECT_SWAPPED);
       BstDBMeter *dbmeter = (BstDBMeter*) gxk_radget_find (self, "db-meter");
       if (dbmeter)
         {
           GtkRange *range = bst_db_meter_get_scale (dbmeter, 0);
-          bst_db_scale_hook_up_param (range, lvolume);
-          g_signal_connect_object (range, "button-press-event", G_CALLBACK (grab_focus_and_false), lspinner, G_CONNECT_SWAPPED);
-          range = bst_db_meter_get_scale (dbmeter, 1);
-          bst_db_scale_hook_up_param (range, rvolume);
-          g_signal_connect_object (range, "button-press-event", G_CALLBACK (grab_focus_and_false), rspinner, G_CONNECT_SWAPPED);
+          bst_db_scale_hook_up_param (range, volume_db);
+          g_signal_connect_object (range, "button-press-event", G_CALLBACK (grab_focus_and_false), vspinner, G_CONNECT_SWAPPED);
           self->lbeam = bst_db_meter_get_beam (dbmeter, 0);
           if (self->lbeam)
             bst_db_beam_set_value (self->lbeam, -G_MAXDOUBLE);
@@ -177,15 +176,15 @@ bst_bus_editor_set_bus (BstBusEditor *self,
           if (self->rbeam)
             bst_db_beam_set_value (self->rbeam, -G_MAXDOUBLE);
         }
-      gxk_radget_add (self, "spinner-box", lspinner);
-      gxk_radget_add (self, "spinner-box", rspinner);
-      self->params = sfi_ring_prepend (self->params, lvolume);
-      self->params = sfi_ring_prepend (self->params, rvolume);
+      gxk_radget_add (self, "pan-box", panscale);
+      gxk_radget_add (self, "spinner-box", vspinner);
+      gxk_radget_add (self, "spinner-box", pspinner);
+      self->params = sfi_ring_prepend (self->params, volume_db);
+      self->params = sfi_ring_prepend (self->params, pan);
       /* create remaining params */
       bus_build_param (self, "uname", "name-box", NULL, NULL);
       bus_build_param (self, "inputs", "inputs-box", NULL, NULL);
       bus_build_param (self, "mute", "toggle-box", "toggle+label", "M");
-      bus_build_param (self, "sync", "toggle-box", "toggle+label", "Y");
       bus_build_param (self, "solo", "toggle-box", "toggle+label", "S");
       bus_build_param (self, "outputs", "outputs-box", NULL, NULL);
       /* update params */

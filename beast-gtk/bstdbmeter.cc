@@ -1511,18 +1511,16 @@ db_meter_build_channels (BstDBMeter *self,
     }
   else if (n_channels == 2)
     {
-      /* scale + dash + beam */
-      bst_db_meter_create_scale (self, padding);
-      bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, padding);
-      bst_db_meter_create_beam (self, padding);
-      /* dash + number + dash */
-      bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, padding);
+      /* number + dash + scale */
       bst_db_meter_create_numbers (self, MAX (padding - 1, 0));
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, padding);
-      /* beam + dash + scale */
+      bst_db_meter_create_scale (self, padding);
+
+      /* dash + beam + beam + dash */
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, padding);
+      bst_db_meter_create_beam (self, padding);
       bst_db_meter_create_beam (self, padding);
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, padding);
-      bst_db_meter_create_scale (self, padding);
     }
 }
 
