@@ -968,11 +968,14 @@ BusImpl::lr_to_volume_pan (double &volume_out, double &pan_out) const
 
   // this implements constant power panning
 
-  const double total_volume = sqrt (self->left_volume * self->left_volume + self->right_volume * self->right_volume);
+  double total_volume = sqrt (self->left_volume * self->left_volume + self->right_volume * self->right_volume);
+  total_volume = std::max (total_volume, 1e-8); // avoid potential division by zero later on
 
   volume_out = bse_db_from_factor (total_volume / BSE_SQRT2, -96);
-
   pan_out = acos (std::min (self->left_volume / total_volume, 1.0)) / M_PI * 400 - 100;
+
+  volume_out = CLAMP (volume_out, -96, 12);
+  pan_out = CLAMP (pan_out, -100, 100);
 }
 
 void
@@ -988,8 +991,11 @@ BusImpl::volume_pan_to_lr (double volume_in, double pan_in)
 
   pan_in = (pan_in + 100) / 400 * M_PI; /* -> [0,pi/2] */
 
-  self->left_volume = cos (pan_in) * vfactor;
-  self->right_volume = sin (pan_in) * vfactor;
+  const double cos_pan = cos (pan_in);
+  const double sin_pan = sin (pan_in);
+
+  self->left_volume = CLAMP (cos_pan, 0, 1) * vfactor;
+  self->right_volume = CLAMP (sin_pan, 0, 1) * vfactor;
 }
 
 double
