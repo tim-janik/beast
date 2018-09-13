@@ -967,19 +967,11 @@ BusImpl::sync (bool val)
 
       notify ("left_volume");
       notify ("right_volume");
+      notify ("volume_db");
+      notify ("pan");
       notify (prop);
     }
   self->saved_sync = self->synced;
-}
-
-static double
-volume_clamp (double val)
-{
-  /* keep in sync with bseapi.idl */
-  const double BUS_VOLUME_MIN = 1.58489319246111e-05; /* -96dB */
-  const double BUS_VOLUME_MAX = 15.8489319246111;     /* +24dB */
-
-  return CLAMP (val, BUS_VOLUME_MIN, BUS_VOLUME_MAX);
 }
 
 double
@@ -1000,7 +992,7 @@ BusImpl::left_volume (double val)
       auto prop = "left_volume";
       push_property_undo (prop);
 
-      self->left_volume = volume_clamp (val);
+      self->left_volume = CLAMP (val, 0, 1000);
       if (self->synced)
         {
           self->right_volume = self->left_volume;
@@ -1008,6 +1000,8 @@ BusImpl::left_volume (double val)
         }
       bus_volume_changed (self);
 
+      notify ("volume_db");
+      notify ("pan");
       notify (prop);
     }
 }
@@ -1030,7 +1024,7 @@ BusImpl::right_volume (double val)
       auto prop = "right_volume";
       push_property_undo (prop);
 
-      self->right_volume = volume_clamp (val);
+      self->right_volume = CLAMP (val, 0, 1000);
       if (self->synced)
         {
           self->left_volume = self->right_volume;
@@ -1038,6 +1032,105 @@ BusImpl::right_volume (double val)
         }
       bus_volume_changed (self);
 
+      notify ("volume_db");
+      notify ("pan");
+      notify (prop);
+    }
+}
+
+void
+BusImpl::lr_to_volume_pan (double &volume_out, double &pan_out) const
+{
+  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+
+  // this implements constant power panning
+
+  const double total_volume = sqrt (self->left_volume * self->left_volume + self->right_volume * self->right_volume);
+
+  volume_out = bse_db_from_factor (total_volume / BSE_SQRT2, -96);
+
+  pan_out = acos (std::min (self->left_volume / total_volume, 1.0)) / M_PI * 400 - 100;
+}
+
+void
+BusImpl::volume_pan_to_lr (double volume_in, double pan_in)
+{
+  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+
+  volume_in = CLAMP (volume_in, -96, 12);
+  pan_in = CLAMP (pan_in, -100, 100);
+
+  // this implements constant power panning
+  const double vfactor = bse_db_to_factor (volume_in) * BSE_SQRT2;
+
+  pan_in = (pan_in + 100) / 400 * M_PI; /* -> [0,pi/2] */
+
+  self->left_volume = cos (pan_in) * vfactor;
+  self->right_volume = sin (pan_in) * vfactor;
+}
+
+double
+BusImpl::volume_db() const
+{
+  double volume, pan;
+  lr_to_volume_pan (volume, pan);
+  return volume;
+}
+
+void
+BusImpl::volume_db (double val)
+{
+  BseBus *self = as<BseBus*>();
+
+  if (val != volume_db())
+    {
+      auto prop = "volume_db";
+      push_property_undo (prop);
+
+      double volume, pan;
+
+      lr_to_volume_pan (volume, pan);
+      volume = val;
+      volume_pan_to_lr (volume, pan);
+
+      bus_volume_changed (self);
+
+      notify ("left_volume");
+      notify ("right_volume");
+      notify ("pan");
+      notify (prop);
+    }
+}
+
+double
+BusImpl::pan() const
+{
+  double volume, pan;
+  lr_to_volume_pan (volume, pan);
+  return pan;
+}
+
+void
+BusImpl::pan (double val)
+{
+  BseBus *self = as<BseBus*>();
+
+  if (val != pan())
+    {
+      auto prop = "pan";
+      push_property_undo (prop);
+
+      double volume, pan;
+
+      lr_to_volume_pan (volume, pan);
+      pan = val;
+      volume_pan_to_lr (volume, pan);
+
+      bus_volume_changed (self);
+
+      notify ("left_volume");
+      notify ("right_volume");
+      notify ("volume_db");
       notify (prop);
     }
 }

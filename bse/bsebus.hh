@@ -78,6 +78,10 @@ namespace Bse {
 class BusImpl : public SubSynthImpl, public virtual BusIface {
 protected:
   virtual          ~BusImpl          ();
+
+  void lr_to_volume_pan (double &volume_out, double &pan_out) const;
+  void volume_pan_to_lr (double volume_in, double pan_in);
+
 public:
   explicit          BusImpl          (BseObject*);
   virtual bool      mute             () const override;
@@ -90,6 +94,10 @@ public:
   virtual void      left_volume      (double val) override;
   virtual double    right_volume     () const override;
   virtual void      right_volume     (double val) override;
+  virtual double    volume_db        () const override;
+  virtual void      volume_db        (double val) override;
+  virtual double    pan              () const override;
+  virtual void      pan              (double val) override;
   virtual bool      master_output    () const override;
   virtual void      master_output    (bool val) override;
   virtual Error     ensure_output    () override;
