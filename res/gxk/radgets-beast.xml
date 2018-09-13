@@ -335,6 +335,10 @@
 	  <frame shadow-type="etched-in" expand="1" >
 	    <label label="Volume" />
 	  </frame>
+	  <!-- Pan -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-pan-box" >
+	    <label label="Pan" />
+	  </frame>
 	  <!-- VolumeSpinners -->
 	  <arrow arrow-type="down" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
@@ -380,6 +384,8 @@
 	  <alignment expand="1">
 	    <db-meter id="db-meter" n-channels="2" />
 	  </alignment>
+	  <!-- Panning -->
+	  <hbox id="pan-box" homogeneous="1" width="1" spacing="3" size:window-vgroup="bus-pan-box"/>
 	  <!-- VolumeSpinners -->
 	  <hbox id="spinner-box" homogeneous="1" width="1" spacing="3" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
