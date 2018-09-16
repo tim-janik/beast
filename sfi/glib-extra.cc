@@ -1076,7 +1076,6 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
     case INSTALLPATH_BEASTDIR:                          return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTDIR;
     case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTDIR) + "/pybeast";
-    case INSTALLPATH_OBJDIR:                            return CONFIGURE_INSTALLPATH_OBJDIR;
     }
   return "";
 }

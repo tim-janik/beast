@@ -352,7 +352,6 @@ enum InstallpathType {
   INSTALLPATH_DATADIR_SKINS,
   INSTALLPATH_BEASTDIR,
   INSTALLPATH_PYBEASTDIR,
-  INSTALLPATH_OBJDIR,
 };
 /// Provide installation directories and searchpaths for various types of data.
 std::string installpath          (InstallpathType installpath_type);
