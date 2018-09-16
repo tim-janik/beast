@@ -1071,7 +1071,12 @@ BusImpl::disconnect_bus (BusIface &busi)
   BseBus *self = as<BseBus*>();
   BusImpl &bus = dynamic_cast<BusImpl&> (busi);
   Error error = bse_bus_disconnect (self, busi.as<BseItem*>());
-  if (error == 0)
+  /* if a bus object is removed, all connections of the bus are already
+   * disconnected before we reach this point - however, we need to record an
+   * undo step in this case, so we ignore the error code that
+   * bse_bus_disconnect returns in this situation
+   */
+  if (error == 0 || error == Error::SOURCE_NO_SUCH_CONNECTION)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
