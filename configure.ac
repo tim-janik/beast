@@ -159,7 +159,7 @@ CFLAGS="$saved_CFLAGS" ; CXXFLAGS="$saved_CXXFLAGS"
 AM_PROG_LIBTOOL
 # AM_PROG_LIBTOOL sets up lt_cv_objdir and objdir
 AC_SUBST(objdir)
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_OBJDIR, [".libs"], [Directory used for libtool objects])
+AC_DEFINE_UNQUOTED(CONFIGURE_RELPATH_OBJDIR, [".libs"], [Directory used for libtool objects])
 AC_LIBTOOL_DLOPEN
 
 # == C++ Dialect ==

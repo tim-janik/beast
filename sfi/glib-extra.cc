@@ -1043,7 +1043,7 @@ installpath_override (const String &topdir)
 static std::string
 append_objdir (const std::string &path) // return path/.libs if it exists
 {
-  const std::string path_libs = path + "/" + CONFIGURE_INSTALLPATH_OBJDIR;
+  const std::string path_libs = path + "/" + CONFIGURE_RELPATH_OBJDIR;
   struct stat sbuf = { 0, };
   if (stat (path_libs.c_str(), &sbuf) == 0)
     return path_libs;
