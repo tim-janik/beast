@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SFIDL_VERSION        BST_VERSION
 #define SFIDL_PRG_NAME	     "sfidl"
 
 using namespace Sfidl;
@@ -31,7 +30,6 @@ Options::Options ()
 bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 {
   bool printIncludePath = false;
-  bool printVersion = false;
   bool noStdInc = false;
 
   OptionVector codeGeneratorOptions;
@@ -78,12 +76,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
       else if (strcmp ("--print-include-path", argv[i]) == 0)
 	{
 	  printIncludePath = true;
-	  doExit = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--version", argv[i]) == 0)
-	{
-	  printVersion = true;
 	  doExit = true;
 	  argv[i] = NULL;
 	}
@@ -197,12 +189,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
       return true;
     }
 
-  if (printVersion)
-    {
-      printf ("%s %s\n", SFIDL_PRG_NAME, Bse::version().c_str());
-      return true;
-    }
-
   return true;
 }
 
@@ -219,7 +205,6 @@ void Options::printUsage ()
   fprintf (stderr, "\n");
   fprintf (stderr, " --help                      help for %s\n", sfidlName.c_str());
   fprintf (stderr, " --help <binding>            help for a specific binding\n");
-  fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, "\n");
 
   if (!codeGenerator)
