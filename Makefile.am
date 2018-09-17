@@ -21,7 +21,7 @@ noinst_LTLIBRARIES	 =
 YAPPS                    = $(PYTHON) $(topdir)/yapps2_deb/yapps2.py
 AIDACC                   = $(topdir)/aidacc/aidacc
 SFIDL                    = $(top_builddir)/sfi/sfidl
-SFIDL_INC                = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+SFIDL_INC                = -I$(top_srcdir) -I$(top_builddir)
 BSEFEXTRACT		 = $(top_builddir)/tools/bsefextract
 BSEFCOMPARE		 = $(top_builddir)/tools/bsefcompare
 

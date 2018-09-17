@@ -177,7 +177,7 @@ CLEANFILES += doc_sources.lst
 
 
 SFIDL = ../sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+SFIDL_INC = -I$(top_srcdir) -I$(top_builddir)
 
 #
 # rules to generate built sources
