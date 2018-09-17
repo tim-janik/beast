@@ -332,7 +332,6 @@ namespace Bse {
 // == INSTALLPATH ==
 // See also configure.ac, this function is here because beast and all libs include this file.
 enum InstallpathType {
-  INSTALLPATH_BSEINCLUDEDIR = 1,
   INSTALLPATH_BINDIR,
   INSTALLPATH_LOCALEBASE,
   INSTALLPATH_LADSPA,

@@ -1056,7 +1056,6 @@ installpath (InstallpathType installpath_type)
   const bool ovr = !installpath_topdir.empty();
   switch (installpath_type)
     {
-    case INSTALLPATH_BSEINCLUDEDIR:                     return CONFIGURE_INSTALLPATH_BSEINCLUDEDIR;
     case INSTALLPATH_BINDIR:                            return CONFIGURE_INSTALLPATH_BINDIR;
     case INSTALLPATH_LOCALEBASE:                        return CONFIGURE_INSTALLPATH_LOCALEBASE;
     case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
