@@ -49,6 +49,7 @@ String      program_cwd           ();                   ///< The current working
 std::string executable_name       () BSE_PURE;          ///< Retrieve the name part of executable_path().
 std::string executable_path       () BSE_PURE;          ///< Retrieve the path to the currently running executable.
 std::string cpu_info              ();                   ///< Retrieve string identifying the runtime CPU type.
+std::string version               ();                   ///< Provide a string containing the BSE library version number.
 
 // == Thread Status ==
 /// Acquire information about a task (process or thread) at runtime.

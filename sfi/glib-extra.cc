@@ -1075,12 +1075,6 @@ installpath (InstallpathType installpath_type)
   return "";
 }
 
-std::string
-version ()
-{
-  return PACKAGE_VERSION;
-}
-
 /// Initialize gettext domain used by libbse.
 static const char*
 initialized_bse_gettext_domain()

@@ -352,9 +352,6 @@ enum InstallpathType {
 std::string installpath          (InstallpathType installpath_type);
 void        installpath_override (const std::string &topdir);
 
-/// Provide a string containing the BSE library version number.
-std::string version ();
-
 // == Translate i18n strings ==
 const char* (_) (const char *string) __attribute__ ((__format_arg__ (1)));
 std::string (_) (const std::string &string);

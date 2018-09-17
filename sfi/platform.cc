@@ -2,6 +2,7 @@
 #include "platform.hh"
 #include "path.hh"
 #include "private.hh"
+#include "../config/config.h"
 #include <unistd.h>
 #include <cstring>
 #include <setjmp.h>
@@ -567,6 +568,12 @@ executable_name()
     return slash ? slash + 1 : path;
   } ();
   return cached_executable_name;
+}
+
+std::string
+version ()
+{
+  return PACKAGE_VERSION;
 }
 
 static String cached_program_alias;
