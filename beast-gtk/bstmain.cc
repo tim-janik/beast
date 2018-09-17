@@ -797,7 +797,6 @@ bst_exit_print_version (void)
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Bse::cpu_info().c_str());
   printout ("\n");
-  printout ("Binaries:        %s\n", Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
   printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
   printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());

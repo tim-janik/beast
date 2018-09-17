@@ -116,7 +116,6 @@ libdir=`eval echo "${libdir}"`
 includerootdir=`eval echo "${includerootdir}"`; bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_INCLUDEROOTDIR, ["`eval echo "${includerootdir}"`"], [Directory for libbse header files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
