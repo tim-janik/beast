@@ -105,7 +105,7 @@ $(sfi_public_headers):		sysconfig.h
 #
 # source files
 
-beastbin_PROGRAMS = sfidl
+noinst_PROGRAMS = sfidl
 sfidl_SOURCES  = sfidl.cc
 sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DSFIDL_INTERNALS
 sfidl_LDADD    = $(SFI_LIBS)
