@@ -5,6 +5,7 @@
 #include "../config/config.h"
 #include <unistd.h>
 #include <cstring>
+#include <fstream>
 #include <setjmp.h>
 #include <sys/wait.h>
 #include <sys/time.h>
@@ -568,6 +569,75 @@ executable_name()
     return slash ? slash + 1 : path;
   } ();
   return cached_executable_name;
+}
+
+void fatal_system_error (const char *file, uint line, const char *format, ...) __attribute__ ((__format__ (printf, 3, 4), __noreturn__));
+
+void
+fatal_system_error (const char *file, uint line, const char *format, ...)
+{
+  const int maxbuffer = 8 * 1024;
+  char buffer[maxbuffer + 2] = { 0, }, *b = buffer, *e = b + maxbuffer;
+  if (file && line)
+    snprintf (b, e - b, "%s:%u: fatal: ", file, line);
+  else if (file)
+    snprintf (b, e - b, "%s: fatal: ", file);
+  else
+    snprintf (b, e - b, "fatal: ");
+  b += strlen (b);
+  va_list argv;
+  va_start (argv, format);
+  const int plen = vsnprintf (b, e - b, format, argv);
+  (void) plen;
+  va_end (argv);
+  b += strlen (b);
+  if (b > buffer && b[-1] != '\n')
+    *b++ = '\n';
+  fflush (stdout);
+  fputs (buffer, stderr);
+  fflush (stderr);
+  kill (getpid(), SIGTERM);      // try to avoid apport, which is triggered by SIGABRT
+  abort();
+}
+
+// finding the right path is a *fundamental* requirement for libbse
+static std::string
+determine_libbse_dirname()
+{
+  const char *self_maps = "/proc/self/maps";
+  std::ifstream maps;
+  maps.open (self_maps);
+  if (maps.fail())
+    fatal_system_error ("libbse", 0, "failed to open \"%s\": %s", self_maps, strerror (errno));
+  char extlibname[256] = { 0, };
+  snprintf (extlibname, sizeof (extlibname), "/lib/libbse-%u.so", BSE_MAJOR_VERSION);
+  char intlibname[256] = { 0, };
+  snprintf (intlibname, sizeof (intlibname), "/bse/%s/libbse-%u.so", CONFIGURE_RELPATH_OBJDIR, BSE_MAJOR_VERSION);
+  std::string cxxline;
+  while (std::getline (maps, cxxline))
+    {
+      const char *const line = cxxline.c_str();
+      const char *const path = strchr (line, '/');                              // find absolute pathname
+      const char *const rxp = strstr (line, "r-xp");                            // of executable (lib)
+      if (rxp && path && rxp < path)
+        {
+          const char *const extlibso = strstr (path, extlibname);               // by external name
+          if (extlibso && !strchr (extlibso + strlen (extlibname), '/'))        // not dirname
+            return std::string (path, extlibso - path);                         // path fragment before /lib/lib*.so
+          const char *const intlibso = strstr (path, intlibname);               // by internal name
+          if (intlibso && !strchr (intlibso + strlen (intlibname), '/'))        // not dirname
+            return std::string (path, intlibso - path);                         // path fragment before /bse/.libs/lib*.so
+        }
+    }
+  const char *const libname = strrchr (extlibname, '/');
+  fatal_system_error ("libbse", 0, "failed to find library mapping for: .../%s", libname ? libname + 1 : extlibname);
+}
+
+std::string
+runpath_bsedatadir ()
+{
+  static const std::string libbse_dirname = determine_libbse_dirname();
+  return libbse_dirname;
 }
 
 std::string

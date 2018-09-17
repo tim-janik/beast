@@ -3,6 +3,10 @@
 #ifndef __BSE_SYSCONFIG_H__
 #define __BSE_SYSCONFIG_H__
 
+// BSE specific
+#define BSE_MAJOR_VERSION               (@MAJOR@)
+#define BSE_MINOR_VERSION               (@MINOR@)
+
 // system specifics
 #define BSE_SIZEOF_SYS_TYPESH_UINT      @BSE_SIZEOF_SYS_TYPESH_UINT@
 #define BSE_SPINLOCK_INITIALIZER        @BSE_SPINLOCK_INITIALIZER@

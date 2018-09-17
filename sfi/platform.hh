@@ -48,6 +48,7 @@ void        application_name_init (String desktopname); ///< Set the application
 String      program_cwd           ();                   ///< The current working directory during startup.
 std::string executable_name       () BSE_PURE;          ///< Retrieve the name part of executable_path().
 std::string executable_path       () BSE_PURE;          ///< Retrieve the path to the currently running executable.
+std::string runpath_bsedatadir    ();                   ///< Retrieve the path to the libbse installation hierarchy.
 std::string cpu_info              ();                   ///< Retrieve string identifying the runtime CPU type.
 std::string version               ();                   ///< Provide a string containing the BSE library version number.
 
