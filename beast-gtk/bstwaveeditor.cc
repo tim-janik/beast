@@ -2,7 +2,7 @@
 #include "bstwaveeditor.hh"
 #include "bstplayback.hh"
 #include "bstmenus.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <gdk/gdkkeysyms.h>
 
 enum {

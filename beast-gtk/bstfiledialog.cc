@@ -2,7 +2,7 @@
 #include "bstfiledialog.hh"
 #include "bstmenus.hh"
 #include "bsttreestores.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>

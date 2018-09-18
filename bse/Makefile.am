@@ -19,6 +19,9 @@ AIDACC        = $(topdir)/aidacc/aidacc
 #
 # BSE public header files
 bse_public_headers = $(strip \
+	backtrace.hh			\
+	bcore.hh			\
+	blob.hh				\
 	bse.hh				\
 	bsebiquadfilter.hh		\
 	bseblockutils.hh		\
@@ -117,7 +120,13 @@ bse_public_headers = $(strip \
 	bsewave.hh			\
 	bsewaveosc.hh			\
 	bsewaverepo.hh			\
+	cxxaux.hh			\
+	datalist.hh			\
 	effectbase.hh			\
+	entropy.hh			\
+	formatter.hh			\
+	gbsearcharray.hh		\
+	glib-extra.hh			\
 	gslcommon.hh			\
 	gsldatacache.hh			\
 	gsldatahandle-mad.hh		\
@@ -135,13 +144,45 @@ bse_public_headers = $(strip \
 	gslvorbis-enc.hh		\
 	gslwavechunk.hh			\
 	gslwaveosc.hh			\
+	internal.hh			\
 	ladspa.hh			\
 	memory.hh			\
 	monitor.hh			\
+	path.hh				\
+	platform.hh			\
+	randomhash.hh			\
+	sfi.hh				\
+	sficomport.hh			\
+	sficomwire.hh			\
+	sficxx.hh			\
+	sfifilecrawler.hh		\
+	sfiglue.hh			\
+	sfigluecodec.hh			\
+	sfiglueproxy.hh			\
+	sfimemory.hh			\
+	sfinote.hh			\
+	sfiparams.hh			\
+	sfiprimitives.hh		\
+	sfiring.hh			\
+	sfiserial.hh			\
+	sfistore.hh			\
+	sfitime.hh			\
+	sfitypes.hh			\
+	sfiustore.hh			\
+	sfivalues.hh			\
+	sfivisitors.hh			\
+	sfivmarshal.hh			\
+	sfiwrapper.hh			\
+	strings.hh			\
+	testing.hh			\
 	testobject.hh			\
+	unicode.hh			\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
+	backtrace.cc			\
+	bcore.cc			\
+	blob.cc				\
 	bsebasics.cc			\
 	bsebiquadfilter.cc		\
 	bseblockutils.cc		\
@@ -242,6 +283,9 @@ bse_sources = $(strip \
 	bsewave.cc			\
 	bsewaveosc.cc			\
 	bsewaverepo.cc			\
+	datalist.cc			\
+	entropy.cc			\
+	formatter.cc			\
 	gslcommon.cc			\
 	gsldatacache.cc			\
 	gsldatahandle-mad.cc		\
@@ -259,8 +303,36 @@ bse_sources = $(strip \
 	gslwaveosc.cc			\
 	memory.cc			\
 	monitor.cc			\
+	path.cc				\
+	platform.cc			\
+	randomhash.cc			\
+	sficomport.cc			\
+	sficomwire.cc			\
+	sfifilecrawler.cc		\
+	sfiglue.cc			\
+	sfigluecodec.cc			\
+	sfiglueproxy.cc			\
+	sfimemory.cc			\
+	sfinote.cc			\
+	sfiparams.cc			\
+	sfiprimitives.cc		\
+	sfiring.cc			\
+	sfiserial.cc			\
+	sfistore.cc			\
+	sfitime.cc			\
+	sfitypes.cc			\
+	sfiustore.cc			\
+	sfivalues.cc			\
+	sfivisitors.cc			\
+	sfivmarshal.cc			\
+	sfiwrapper.cc			\
+	strings.cc			\
+	testing.cc			\
 	testobject.cc			\
+	unicode.cc			\
+	weaksym.cc			\
 )
+# glib-extra.cc gets compiled as part of bseconstvalues.cc
 # BSE Synthesis Modules
 bse_idl_sources =
 bse_idl_sources += bsebusmodule.idl
@@ -274,11 +346,11 @@ $(srcdir)/bsebus.cc: bsebasics.genidl.hh
 ../bse/bsebasics.genidl.hh: ;
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
-	bsecxxmodule.idl	\
 	bsecxxbase.idl		\
+	bsecxxmodule.idl	\
 )
 
-doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
+doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) sysconfig.h bseapi.idl
 
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
@@ -292,12 +364,12 @@ CLEANFILES += doc_sources.lst
 bselibexecdir			     = $(bselibdir)
 bselibexec_LTLIBRARIES               = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
-libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
+libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) sysconfig.h bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(BSE_CFLAGS)
-libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(BSE_LIBS)
+libbse_@MAJOR@_la_LIBADD             = $(BSE_LIBS)
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	$(AM_LDFLAGS)					\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\
@@ -324,16 +396,28 @@ install-exec-hook: install-exec-debug
 pre_uninstall_bselibexec_hook := $(strip uninstall-bselibexecLTLIBRARIES) # hook to run before and keep automake uninstall-bselibexecLTLIBRARIES
 $(pre_uninstall_bselibexec_hook): uninstall-split-debug # run uninstall-split-debug *before* make 'uninstall'
 # setup sources, their dependancies and commands
+$(bse_public_headers): sysconfig.h
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative
 SFIDL = $(top_builddir)/sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
+SFIDL_INC = -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
 	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibexecdir)
 install-exec-hook: install-exec-ldconfig
+
+# == zres.cc ==
+include ../res/Makefile.sub
+# ^^^^^ FIXME: the above should only be included by the toplevel Makefile.am
+MISC_PACKRES = $(top_srcdir)/misc/packres.py
+zres.cc: $(top_srcdir)/res/resfiles.list $(MISC_PACKRES) # res_resfiles_list contains res/resfiles.list
+	$(AM_V_GEN)
+	$(Q) $(MISC_PACKRES) -s '.*/res/' $(res_resfiles_list:%=$(top_srcdir)/res/%) > $@.tmp
+	$(Q) mv $@.tmp $@
+CLEANFILES += zres.cc
+bcore.cc: zres.cc
 
 # == gslfft.cc ==
 GENERATED_CLEANFILES += gslfft.cc
@@ -377,7 +461,7 @@ bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 # bseenum_arrays.cc
 GENERATED_CLEANFILES += bseenum_arrays.cc
 $(libbse_@MAJOR@_la_OBJECTS): bseenum_arrays.cc
-bseenum_arrays.cc: bsegentypes.h
+bseenum_arrays.cc: bsegentypes.h $(bse_public_headers)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \
@@ -393,7 +477,7 @@ bseenum_arrays.cc: bsegentypes.h
 # bseenum_list.cc
 GENERATED_CLEANFILES += bseenum_list.cc
 $(libbse_@MAJOR@_la_OBJECTS): bseenum_list.cc
-bseenum_list.cc: bsegentypes.h
+bseenum_list.cc: bsegentypes.h $(bse_public_headers)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \

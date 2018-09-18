@@ -3,7 +3,7 @@
 #define __GXK_H__
 
 #include <gtk/gtk.h>
-#include <sfi/bcore.hh>
+#include <bse/bcore.hh>
 
 #include <gxk/glewidgets.h>
 #include <gxk/gxkaction.hh>

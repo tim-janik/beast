@@ -3,8 +3,8 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfilter.hh>
-#include <sfi/testing.hh>
-#include "sfi/private.hh"
+#include <bse/testing.hh>
+#include "bse/internal.hh"
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>

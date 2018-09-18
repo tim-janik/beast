@@ -4,7 +4,7 @@
 #include "bseitem.hh"
 #include "bsecategories.hh"
 #include "bsemain.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- structures --- */

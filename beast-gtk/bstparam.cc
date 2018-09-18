@@ -2,7 +2,7 @@
 #include "bstparam.hh"
 #include "bstxframe.hh"
 #include "bstbseutils.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static gboolean bst_param_xframe_check_button (GxkParam *param, uint button);

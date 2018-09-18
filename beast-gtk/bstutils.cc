@@ -17,7 +17,8 @@
 #include "bstgrowbar.hh"
 #include "bstdbmeter.hh"
 #include "bstscrollgraph.hh"
-#include "sfi/private.hh"
+#include <bse/sfistore.hh>
+#include "bse/internal.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -1329,8 +1330,6 @@ bst_xpm_view_create (const gchar **xpm,
                   NULL);
   return pix;
 }
-
-#include <sfi/sfistore.hh>
 
 gchar*
 bst_file_scan_find_key (const gchar *file,

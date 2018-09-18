@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
-#include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
+#include <bse/sfi.hh> /* needed by bstoldbseapi.h */
 #include "bstdefs.hh"
 #define SFIDL_SKIPDEF__BseErrorType             // replaced by Bse::Error
 #define BseErrorType Bse::Error

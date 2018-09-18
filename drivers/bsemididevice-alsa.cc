@@ -3,7 +3,7 @@
 #include "bsemididevice-alsa.hh"
 #include "bse/bsesequencer.hh"
 #include "bse/bsemididecoder.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>

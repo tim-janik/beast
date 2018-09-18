@@ -1,11 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <math.h>
 #include <stdlib.h>
 #include <complex>

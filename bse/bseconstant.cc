@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseconstant.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <bse/bsecategories.hh>
 #include <bse/bseengine.hh>
 #include <string.h>

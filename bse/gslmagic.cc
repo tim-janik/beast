@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gslmagic.hh"
 #include "gslcommon.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>

@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-factory.hh"
-#include "glib-extra.hh"
 #include <algorithm>
 
 using namespace Sfidl;

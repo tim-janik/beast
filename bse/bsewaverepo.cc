@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewaverepo.hh"
 #include "bsewave.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- parameters --- */
 enum

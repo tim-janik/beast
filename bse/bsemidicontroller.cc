@@ -5,7 +5,7 @@
 #include "bsesnet.hh"
 #include "bseengine.hh"
 #include "bsecxxplugin.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- properties --- */
 enum

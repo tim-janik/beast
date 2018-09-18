@@ -116,8 +116,6 @@ libdir=`eval echo "${libdir}"`
 includerootdir=`eval echo "${includerootdir}"`; bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_INCLUDEROOTDIR, ["`eval echo "${includerootdir}"`"], [Directory for libbse header files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Directory for libbse header files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${beastbindir}"`"], [Directory to install and execute Beast])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
@@ -159,7 +157,7 @@ CFLAGS="$saved_CFLAGS" ; CXXFLAGS="$saved_CXXFLAGS"
 AM_PROG_LIBTOOL
 # AM_PROG_LIBTOOL sets up lt_cv_objdir and objdir
 AC_SUBST(objdir)
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_OBJDIR, [".libs"], [Directory used for libtool objects])
+AC_DEFINE_UNQUOTED(CONFIGURE_RELPATH_OBJDIR, [".libs"], [Directory used for libtool objects])
 AC_LIBTOOL_DLOPEN
 
 # == C++ Dialect ==
@@ -293,7 +291,6 @@ SFI_REQUIRES="
         glib-2.0        	>= 2.32.3
 	gobject-2.0		>= 2.32.3
 	gthread-2.0		>= 2.32.3
-	gmodule-no-export-2.0	>= 2.32.3
 "
 # defines SFI_CFLAGS and SFI_LIBS
 PKG_CHECK_MODULES(SFI, [ $SFI_REQUIRES ])
@@ -308,6 +305,7 @@ LIBBSE_REQUIRES="
 	fluidsynth		>= 1.0.6
 	alsa			>= 1.0.5
         pangoft2        	>= 1.30.0
+	gmodule-no-export-2.0	>= 2.32.3
 	gtk+-2.0		>= 2.12.12
 	libart-2.0		>= 2.3.8
 	libgnomecanvas-2.0	>= 2.4.0
@@ -724,8 +722,7 @@ Makefile
 data/Makefile
 data/beast.applications
 sfi/Makefile
-sfi/sysconfig.h
-sfi/tests/Makefile
+bse/sysconfig.h
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile

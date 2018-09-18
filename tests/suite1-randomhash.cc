@@ -1,8 +1,8 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-#include <sfi/testing.hh>
-#include <sfi/randomhash.hh>
-#include <sfi/entropy.hh>
-#include "sfi/private.hh"
+#include <bse/testing.hh>
+#include <bse/randomhash.hh>
+#include <bse/entropy.hh>
+#include "bse/internal.hh"
 #include <random>
 #include <array>
 

@@ -2,8 +2,8 @@
 #ifndef __BSE_PARAM_H__
 #define __BSE_PARAM_H__
 
-#include        <bse/bsetype.hh>
-#include        <bse/bseutils.hh>
+#include <bse/bsetype.hh>
+#include <bse/bseutils.hh>
 
 
 

@@ -3,7 +3,7 @@
 #include "gsldatahandle-mad.hh"
 #include "gslfilehash.hh"
 #include "gsldatautils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/mman.h>

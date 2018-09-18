@@ -2,7 +2,7 @@
 #include "gsldatahandle-vorbis.hh"
 #include "../config/config.h"
 #include "gslfilehash.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>

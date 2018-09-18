@@ -9,7 +9,6 @@
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
 
 namespace Sfidl {
 

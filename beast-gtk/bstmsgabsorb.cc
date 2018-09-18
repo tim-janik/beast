@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstmsgabsorb.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 enum {
@@ -229,7 +229,7 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sfi/sfistore.hh>       /* we rely on internal API here */
+#include <bse/sfistore.hh>       /* we rely on internal API here */
 
 static Bse::Error
 bst_msg_absorb_config_dump (const gchar *file_name)

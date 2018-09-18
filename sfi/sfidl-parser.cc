@@ -1,14 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <sfi/glib-extra.hh>
+#include "sfidl-parser.hh"
+#include "sfidl-namespace.hh"
+#include "sfidl-options.hh"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include "sfidl-parser.hh"
-#include "sfidl-namespace.hh"
-#include "sfidl-options.hh"
 #include <iostream>
 #include <set>
 #include <stack>

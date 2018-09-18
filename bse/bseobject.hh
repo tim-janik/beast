@@ -3,7 +3,7 @@
 #define __BSE_OBJECT_H__
 
 #include <bse/bseparam.hh>
-#include <sfi/datalist.hh>
+#include <bse/datalist.hh>
 
 namespace Bse {
 

@@ -2,7 +2,7 @@
 #include "bsesequencer.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 enum {
   PARAM_0,

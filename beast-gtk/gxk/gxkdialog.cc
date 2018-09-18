@@ -3,7 +3,7 @@
 #include "gxkradget.hh"
 #include "gxkstock.hh"
 #include "gxkstatusbar.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 

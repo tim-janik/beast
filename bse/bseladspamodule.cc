@@ -4,7 +4,7 @@
 #include "bsecategories.hh"
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 

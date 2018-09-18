@@ -5,7 +5,7 @@
 #include "gxkstock.hh"
 #include "gxkcellrendererpopup.hh"
 #include "gxkauxwidgets.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
 

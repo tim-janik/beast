@@ -3,7 +3,7 @@
 #define __GSL_OSC_TABLE_H__
 
 #include <bse/gsldefs.hh>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 
 
 /* --- structures & enums --- */

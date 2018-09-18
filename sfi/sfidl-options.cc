@@ -2,11 +2,9 @@
 #include "sfidl-options.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
-#include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
 
-#define SFIDL_VERSION        BST_VERSION
 #define SFIDL_PRG_NAME	     "sfidl"
 
 using namespace Sfidl;
@@ -31,8 +29,6 @@ Options::Options ()
 bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 {
   bool printIncludePath = false;
-  bool printVersion = false;
-  bool noStdInc = false;
 
   OptionVector codeGeneratorOptions;
 
@@ -79,17 +75,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 	{
 	  printIncludePath = true;
 	  doExit = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--version", argv[i]) == 0)
-	{
-	  printVersion = true;
-	  doExit = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--nostdinc", argv[i]) == 0)
-	{
-	  noStdInc = true;
 	  argv[i] = NULL;
 	}
       else if (!codeGenerator) /* only one code generator allowed */
@@ -165,18 +150,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   if (e)
     *argc_p = e;
 
-  /* add std include path */
-  if (!noStdInc)
-    {
-      const std::string stdinc_path = Bse::installpath (Bse::INSTALLPATH_BSEINCLUDEDIR);
-      char *dir = strtok (const_cast<char*> (stdinc_path.c_str()), G_SEARCHPATH_SEPARATOR_S);
-      while (dir && dir[0])
-	{
-	  includePath.push_back (dir);
-	  dir = strtok (NULL, G_SEARCHPATH_SEPARATOR_S);
-	}
-    }
-
   /* option validation */
 
   if (doHelp)
@@ -197,12 +170,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
       return true;
     }
 
-  if (printVersion)
-    {
-      printf ("%s %s\n", SFIDL_PRG_NAME, Bse::version().c_str());
-      return true;
-    }
-
   return true;
 }
 
@@ -215,11 +182,9 @@ void Options::printUsage ()
   fprintf (stderr, "general options:\n");
   fprintf (stderr, " -I <directory>              add this directory to the include path\n");
   fprintf (stderr, " --print-include-path        print include path\n");
-  fprintf (stderr, " --nostdinc                  don't use standard include path\n");
   fprintf (stderr, "\n");
   fprintf (stderr, " --help                      help for %s\n", sfidlName.c_str());
   fprintf (stderr, " --help <binding>            help for a specific binding\n");
-  fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, "\n");
 
   if (!codeGenerator)

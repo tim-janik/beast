@@ -1,7 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/bsemain.hh>
-#include <sfi/testing.hh>
-#include "sfi/private.hh"
+#include <bse/testing.hh>
+#include "bse/internal.hh"
 
 using Bse::printerr;
 typedef Bse::IntegrityCheck::TestFunc TestFunc;
@@ -32,11 +32,58 @@ IntegrityCheck::Test::register_test (const char *file, int line, const char *fun
 }
 } // Bse
 
-// == Run integrity tests ==
+static int      // for backtrace tests
+my_compare_func (const void*, const void*)
+{
+  BSE_BACKTRACE();
+  exit (0);
+}
+
+
+// == Main test program ==
 int
 main (int argc, char *argv[])
 {
   bse_init_test (&argc, argv);
+  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
+
+  if (argc >= 2 && String ("--backtrace") == argv[1])
+    {
+      char dummy_array[3] = { 1, 2, 3 };
+      qsort (dummy_array, 3, 1, my_compare_func);
+    }
+  else if (argc >= 2 && String ("--assert_return1") == argv[1])
+    {
+      assert_return (1, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return0") == argv[1])
+    {
+      assert_return (0, 0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
+    {
+      assert_return_unreached (0);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--fatal_error") == argv[1])
+    {
+      Bse::fatal_error ("got argument --fatal_error");
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless0") == argv[1])
+    {
+      return_unless (0, 7);
+      return 0;
+    }
+  else if (argc >= 2 && String ("--return_unless1") == argv[1])
+    {
+      return_unless (1, 8);
+      return 0;
+    }
+
+  // integrity tests
   assert_return (Bse::IntegrityCheck::checks_enabled() == true, -1);
 
   if (tests)

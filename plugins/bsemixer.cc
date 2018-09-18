@@ -2,7 +2,7 @@
 #include "bsemixer.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 #define	DEFAULT_DB_VOLUME	(0)

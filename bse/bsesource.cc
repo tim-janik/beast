@@ -5,7 +5,7 @@
 #include "gslcommon.hh"
 #include "bseserver.hh"
 #include "bseengine.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- macros --- */

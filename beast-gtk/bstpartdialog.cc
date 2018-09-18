@@ -3,7 +3,7 @@
 #include "bstmenus.hh"
 #include "bstparam.hh"
 #include "bstgrowbar.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #define SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 

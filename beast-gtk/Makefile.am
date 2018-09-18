@@ -88,7 +88,7 @@ beast_headers = $(strip \
 	bstzoomedwindow.hh		\
 )
 # BEAST sources to build the program from
-bst_cc_sources = $(strip \
+bst_cc_sources = $(strip		\
 	bstapp.cc			\
 	bstasciipixbuf.cc		\
 	bstauxdialogs.cc		\
@@ -155,6 +155,7 @@ bst_cc_sources = $(strip \
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 		\
 	bstmarshal.list			\
+	bstparam-automation.cc		\
 	bstparam-choice.cc		\
 	bstparam-color-spinner.cc	\
 	bstparam-item-seq.cc		\
@@ -164,7 +165,6 @@ beast_extra_files = $(strip 		\
 	bstparam-scale.cc		\
 	bstparam-searchpath.cc		\
 	bstparam-time.cc		\
-	bstparam-automation.cc		\
 )
 
 doc_sources = $(beast_headers) $(bst_cc_sources) $(beast_extra_files)
@@ -177,7 +177,7 @@ CLEANFILES += doc_sources.lst
 
 
 SFIDL = ../sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+SFIDL_INC = -I$(top_srcdir) -I$(top_builddir)
 
 #
 # rules to generate built sources

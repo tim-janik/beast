@@ -2,7 +2,7 @@
 #include "bstsoundfontview.hh"
 #include "bstsoundfontpresetview.hh"
 #include "bstfiledialog.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     sound_font_view_action_exec           (gpointer                data,

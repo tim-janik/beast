@@ -3,7 +3,7 @@
 #include "bseengine.hh"
 #include "bsemidireceiver.hh"
 #include "bsesnet.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 namespace Bse {
 

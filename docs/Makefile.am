@@ -19,7 +19,6 @@ topbuildid ::= $(shell $(topdir)/git-version.sh)
 # The following variable definitions create files as a side effect, which should be
 # avoided e.g. upon 'make clean'. So we confine the assignments to a rule execution.
 collect_docs_doxy_sources:
-	$(eval sfi_doc_sources	 ::= $(shell make doc_sources.lst -C ../sfi >&2 && cat ../sfi/doc_sources.lst) )
 	$(eval bse_doc_sources	 ::= $(shell make doc_sources.lst -C ../bse >&2 && cat ../bse/doc_sources.lst) )
 	$(eval plugs_doc_sources ::= $(shell make doc_sources.lst -C ../plugins >&2 && cat ../plugins/doc_sources.lst) )
 	$(eval gxk_doc_sources	 ::= $(shell make doc_sources.lst -C ../beast-gtk/gxk >&2 && cat ../beast-gtk/gxk/doc_sources.lst) )
@@ -29,8 +28,8 @@ collect_docs_doxy_sources:
 # == Configure docs ==
 docs_project_link   = https://beast.testbit.org/docs/${docs_upload_name}
 docs_doxy_extra     = docs/main.dox
-docs_doxy_sources   = $(sfi_doc_sources) $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
-docs_doxy_src_dirs  = sfi bse plugins beast-gtk beast-gtk/gxk tools
+docs_doxy_sources   = $(bse_doc_sources) $(plugs_doc_sources) $(gxk_doc_sources) $(bst_doc_sources) $(tools_doc_sources)
+docs_doxy_src_dirs  = bse plugins beast-gtk beast-gtk/gxk tools
 docs_doxy_headers   = $(filter     %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_impls     = $(filter-out %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_tagsrcs   = $(strip \
@@ -215,9 +214,3 @@ revisioned_files	+= bse.5.md
 man5_MANS		+= bse.5
 man5_HTMLS		+= bse.5.html
 MOSTLYCLEANFILES	+= bse.5 bse.5.html
-
-# == sfidl.1 ==
-revisioned_files	+= sfidl.1.md
-man1_MANS		+= sfidl.1
-man1_HTMLS		+= sfidl.1.html
-MOSTLYCLEANFILES	+= sfidl.1 sfidl.1.html

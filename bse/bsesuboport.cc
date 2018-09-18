@@ -2,7 +2,7 @@
 #include "bsesuboport.hh"
 #include "bsecategories.hh"
 #include "bsesnet.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- parameters --- */

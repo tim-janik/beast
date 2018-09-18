@@ -13,12 +13,12 @@
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 
 using namespace Bse;
 
@@ -39,7 +39,6 @@ static BseMainArgs       default_main_args = {
   10 * 1024 * 1024,     // dcache_cache_memory
   BSE_KAMMER_NOTE,      // midi_kammer_note (69)
   BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  NULL,                 // path_binaries
   NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
   NULL,			// override_sample_path
@@ -181,8 +180,6 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
     g_set_prgname (*argv);
 
   // argument handling
-  if (!default_main_args.path_binaries)
-    default_main_args.path_binaries = g_strdup (Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
   bse_main_args = &default_main_args;
   if (argc && argv)
     init_parse_args (argc, argv, bse_main_args, args);
@@ -458,14 +455,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
           margs->bse_rcfile = g_strdup (argv[i]);
 	  argv[i] = NULL;
 	}
-#if 0
-      else if (strcmp ("--bse-override-binaries-path", argv[i]) == 0 && i + 1 < argc)
-	{
-          argv[i++] = NULL;
-          margs->path_binaries = argv[i];
-	  argv[i] = NULL;
-	}
-#endif
       else if (strcmp ("--bse-force-fpu", argv[i]) == 0)
 	{
           margs->force_fpu = TRUE;

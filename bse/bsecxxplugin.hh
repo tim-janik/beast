@@ -7,7 +7,7 @@
 #include <bse/bseparam.hh>
 #include <bse/bsecategories.hh>
 #include <bse/bseplugin.hh>
-#include <sfi/sficxx.hh>
+#include <bse/sficxx.hh>
 
 namespace Bse {
 

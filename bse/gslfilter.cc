@@ -2,7 +2,7 @@
 #include "gslfilter.hh"
 #include "gslfft.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- common utilities --- */

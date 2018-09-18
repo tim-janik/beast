@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsteventrollctrl.hh"
 #include "bstpianorollctrl.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #define CONTROL_TYPE(erctrl)    ((erctrl)->eroll->control_type)
 #define QUANTIZATION(self)      ((self)->quant_rtools->action_id)

@@ -8,7 +8,7 @@
 #include "bseengine.hh"
 #include "gslwavechunk.hh"
 #include "gslfilter.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- parameters --- */
 enum

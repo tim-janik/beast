@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 
 /* --- frequency modulation --- */

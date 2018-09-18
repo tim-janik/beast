@@ -2,7 +2,7 @@
 #include "bsemain.hh"
 #include "bsecategories.hh"
 #include "bseglue.hh"
-#include <sfi/sfiglue.hh>
+#include <bse/sfiglue.hh>
 #include <stdio.h>
 #include <string.h>
 #include <string>

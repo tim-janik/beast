@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseresampler.hh"
 #include "gsldatahandle.hh"
-#include "private.hh"
-#include <sfi/sficxx.hh>
+#include "bse/internal.hh"
+#include <bse/sficxx.hh>
 #include <vector>
 
 namespace Bse {

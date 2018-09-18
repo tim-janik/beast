@@ -3,20 +3,20 @@ include $(top_srcdir)/Makefile.decl
 
 # extra images to ship with tarballs
 EXTRA_IMAGES = $(strip		\
-	const.xcf		\
-	instrument.xcf		\
-	mic.xcf			\
-	osc.xcf			\
-	snet.xcf		\
-	song.xcf		\
-	virtual.xcf		\
 	ball.xcf		\
+	const.xcf		\
 	disconnect.xcf		\
+	instrument.xcf		\
 	keyboard.xcf		\
+	mic.xcf			\
 	midi.xcf		\
+	osc.xcf			\
 	sheet.xcf		\
+	snet.xcf		\
 	snooper.xcf		\
+	song.xcf		\
 	speaker.xcf		\
+	virtual.xcf		\
 	waveosc.xcf		\
 )
 
@@ -28,14 +28,14 @@ SHIP_IMAGES = $(strip		\
 SRC_IMAGES = $(strip		\
 	biquad.png		\
 	const.png		\
-	midi-ctrl-input.png	\
 	instrument.png		\
-	mono-synth.png		\
-	mic.png			\
-	speaker.png		\
-	snooper.png		\
-	osc.png			\
 	keyboard.png		\
+	mic.png			\
+	midi-ctrl-input.png	\
+	mono-synth.png		\
+	osc.png			\
+	snooper.png		\
+	speaker.png		\
 	virtual-input.png	\
 	virtual-output.png	\
 	virtual-synth.png	\

@@ -4,7 +4,7 @@
 #include "bsesoundfontpreset.hh"
 #include "bsedefs.hh"
 #include "bseblockutils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- parameters --- */
 enum

@@ -2,12 +2,12 @@
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfft.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>

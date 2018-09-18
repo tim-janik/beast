@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "memory.hh"
-#include "private.hh"
-#include <sfi/testing.hh>
+#include "bse/internal.hh"
+#include <bse/testing.hh>
 #include <sys/mman.h>
 
 #define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))
@@ -272,7 +272,12 @@ release_aligned_block (const AlignedBlock &am)
   sa.release_ext (ext);
 }
 
+} // Bse
+
 // == Allocator Tests ==
+namespace { // Anon
+using namespace Bse;
+
 BSE_INTEGRITY_TEST (bse_aligned_allocator_tests);
 static void
 bse_aligned_allocator_tests()
@@ -436,7 +441,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   const double bench_aa = timer.benchmark (loop_aa);
   const size_t n_allocations = RUNS * N_ALLOCS * (1 + 3.0 / 2);
   const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
-  Bse::printerr ("%s benchmark # timing: %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
+  Bse::printerr ("  BENCH    %s:   %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
                  TestAllocator<C>::name(), n_allocations, bench_aa, ns_p_a);
 }
 
@@ -463,4 +468,4 @@ bse_aligned_allocator_benchmark()
   bse_aligned_allocator_benchloop<1> (2654435769);
 }
 
-} // Bse
+} // Anon

@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsefreeverb.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
 

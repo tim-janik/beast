@@ -18,7 +18,7 @@
 #include "bsesoundfontpreset.hh"
 #include "bsesoundfont.hh"
 #include "bsecxxplugin.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 #define XREF_DEBUG(...) Bse::debug ("xref", __VA_ARGS__)

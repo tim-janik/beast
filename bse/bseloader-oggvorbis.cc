@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bse/bseloader.hh"
 #include "gsldatahandle-vorbis.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <bse/gsldatahandle.hh>
 #include <vorbis/vorbisfile.h>
 #include <unistd.h>

@@ -2,7 +2,6 @@
 #include "sfidl-generator.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "private.hh"
 
 #define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
 
@@ -16,6 +15,7 @@ program_alias ()
 }
 } // Bse
 
+#ifdef  SFIDL_INTERNALS
 int main (int argc, char **argv)
 {
   Options options;
@@ -65,6 +65,7 @@ int main (int argc, char **argv)
   delete options.codeGenerator;
   return 0;
 }
+#endif
 
 #include "sfidl-generator.cc"
 #include "sfidl-namespace.cc"
@@ -80,6 +81,5 @@ int main (int argc, char **argv)
 #include "sfidl-cxxbase.cc"
 #include "sfidl-hostc.cc"
 #include "sfidl-utils.cc"
-#include "formatter.cc"
 
 /* vim:set ts=8 sts=2 sw=2: */

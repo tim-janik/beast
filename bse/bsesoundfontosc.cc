@@ -8,7 +8,7 @@
 #include "bsesnet.hh"
 #include "bsemidireceiver.hh"
 #include "gslcommon.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /*------------------------------------------------------------------------------------------------

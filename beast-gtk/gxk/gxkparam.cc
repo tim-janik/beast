@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkparam.hh"
 #include "gxklogadjustment.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <math.h>
 #include <libintl.h>

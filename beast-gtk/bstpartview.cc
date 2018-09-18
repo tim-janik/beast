@@ -2,7 +2,7 @@
 #include "bstpartview.hh"
 #include "bstpartdialog.hh"
 #include "bstpianoroll.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     part_view_action_exec           (gpointer                data,

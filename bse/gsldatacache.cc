@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "gsldatahandle.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

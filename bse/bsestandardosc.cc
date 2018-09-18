@@ -3,7 +3,7 @@
 #include "bsecategories.hh"
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 #define	FRAC_N_BITS	(19)
 #define	FRAC_BIT_MASK	((1 << FRAC_N_BITS) - 1)

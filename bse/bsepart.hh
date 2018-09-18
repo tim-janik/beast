@@ -3,7 +3,7 @@
 #define __BSE_PART_H__
 
 #include <bse/bseitem.hh>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 
 /* --- object type macros --- */
 #define BSE_TYPE_PART                   (BSE_TYPE_ID (BsePart))

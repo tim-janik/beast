@@ -2,7 +2,7 @@
 #ifndef __GXK_UTILS_H__
 #define __GXK_UTILS_H__
 
-#include        <gxk/gxkglobals.hh>
+#include <gxk/gxkglobals.hh>
 
 /* --- generated includes --- */
 /* type IDs */

@@ -5,7 +5,7 @@
 #include "bsemain.hh"
 #include "bsecontextmerger.hh"
 #include "bsemidireceiver.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>

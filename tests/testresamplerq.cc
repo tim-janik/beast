@@ -4,9 +4,9 @@
 #include <bse/bsemain.hh>
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.hh>
-#include <sfi/testing.hh>
-#include <sfi/sfi.hh>
-#include "sfi/private.hh"
+#include <bse/testing.hh>
+#include <bse/sfi.hh>
+#include "bse/internal.hh"
 #include <stdlib.h>
 #include <stdio.h>
 

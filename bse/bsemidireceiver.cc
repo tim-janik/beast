@@ -6,9 +6,9 @@
 #include "bsemathsignal.hh"
 #include "bsecxxutils.hh"
 #include "bsemidinotifier.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 #include <map>
 #include <set>
 

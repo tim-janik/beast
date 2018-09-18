@@ -2,7 +2,7 @@
 #include "bsestartup.hh"
 #include "../config/config.h"   // BST_VERSION
 #include "bsemain.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <bse/bseapi_handles.hh>
 #include <bse/bse.hh>           // init_server_connection
 

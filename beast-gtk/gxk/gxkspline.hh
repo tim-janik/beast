@@ -2,7 +2,7 @@
 #ifndef __GXK_SPLINE_H__
 #define __GXK_SPLINE_H__
 
-#include        <gxk/gxkglobals.hh>
+#include <gxk/gxkglobals.hh>
 
 typedef struct _GxkSpline GxkSpline;
 typedef struct {
