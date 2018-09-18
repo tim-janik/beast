@@ -2,7 +2,7 @@
 #include "bsesimpleadsr.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #define	TIME_EPSILON	(0.00001)
 

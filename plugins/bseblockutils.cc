@@ -3,7 +3,7 @@
 #include <bse/bseblockutils.hh>
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #ifndef __SSE__
 #error  "SSE support is required for this plugin."
