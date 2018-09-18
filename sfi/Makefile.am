@@ -6,12 +6,6 @@ SUBDIRS      = . tests
 DEFS        += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 AM_CPPFLAGS += -I$(top_srcdir)
 
-# == doc_sources.lst ==
-doc_sources.lst: Makefile
-	$(AM_V_GEN)
-	$(Q) echo > $@
-CLEANFILES += doc_sources.lst
-
 # programs to build
 #
 # source files
