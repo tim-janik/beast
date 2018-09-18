@@ -455,6 +455,35 @@ static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
 } // Bse
 
+// == Testing ==
+#include "testing.hh"
+namespace { // Anon
+using namespace Bse;
+
+BSE_INTEGRITY_TEST (test_feature_toggles);
+static void
+test_feature_toggles()
+{
+  String r;
+  r = feature_toggle_find ("a:b", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "b"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("a:b", "c"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("a:b", "c", "7"); TCMP (r, ==, "7");
+  r = feature_toggle_find ("a:no-b", "b"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b", "a"); TCMP (r, ==, "0");
+  r = feature_toggle_find ("no-a:b:a", "a"); TCMP (r, ==, "1");
+  r = feature_toggle_find ("no-a:b:a=5", "a"); TCMP (r, ==, "5");
+  r = feature_toggle_find ("no-a:b:a=5:c", "a"); TCMP (r, ==, "5");
+  bool b;
+  b = feature_toggle_bool ("", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("a:b:c", "a"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("no-a:b:c", "a"); TCMP (b, ==, false);
+  b = feature_toggle_bool ("no-a:b:a=5:c", "b"); TCMP (b, ==, true);
+  b = feature_toggle_bool ("x", ""); TCMP (b, ==, true); // *any* feature?
+}
+
+} // Anon
+
 // == aidacc/aida.cc ==
 static void
 aida_diagnostic_impl (const char *file, int line, const char *func, char kind, const char *msg, bool will_abort)
