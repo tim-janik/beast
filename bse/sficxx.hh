@@ -159,7 +159,8 @@ struct GNewable {
   }
 };
 
-typedef enum {
+typedef enum      /*< skip >*/
+{
   INIT_NULL,
   INIT_EMPTY,
   INIT_DEFAULT,

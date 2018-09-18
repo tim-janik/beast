@@ -458,7 +458,7 @@ bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 # bseenum_arrays.cc
 GENERATED_CLEANFILES += bseenum_arrays.cc
 $(libbse_@MAJOR@_la_OBJECTS): bseenum_arrays.cc
-bseenum_arrays.cc: bsegentypes.h
+bseenum_arrays.cc: bsegentypes.h $(bse_public_headers)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \
@@ -474,7 +474,7 @@ bseenum_arrays.cc: bsegentypes.h
 # bseenum_list.cc
 GENERATED_CLEANFILES += bseenum_list.cc
 $(libbse_@MAJOR@_la_OBJECTS): bseenum_list.cc
-bseenum_list.cc: bsegentypes.h
+bseenum_list.cc: bsegentypes.h $(bse_public_headers)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \

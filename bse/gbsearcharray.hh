@@ -20,7 +20,7 @@ G_BEGIN_DECLS   /* c++ guards */
 /* --- typedefs --- */
 typedef gint  (*GBSearchCompareFunc) (gconstpointer bsearch_node1, /* key */
                                       gconstpointer bsearch_node2);
-typedef enum
+typedef enum      /*< skip >*/
 {
   G_BSEARCH_ARRAY_ALIGN_POWER2  = 1 << 0, /* align memory to power2 sizes */
   G_BSEARCH_ARRAY_AUTO_SHRINK  = 1 << 1   /* shrink array upon removal */
