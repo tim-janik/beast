@@ -214,9 +214,3 @@ revisioned_files	+= bse.5.md
 man5_MANS		+= bse.5
 man5_HTMLS		+= bse.5.html
 MOSTLYCLEANFILES	+= bse.5 bse.5.html
-
-# == sfidl.1 ==
-revisioned_files	+= sfidl.1.md
-man1_MANS		+= sfidl.1
-man1_HTMLS		+= sfidl.1.html
-MOSTLYCLEANFILES	+= sfidl.1 sfidl.1.html
