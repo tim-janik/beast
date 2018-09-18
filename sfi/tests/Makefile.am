@@ -21,18 +21,3 @@ testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -O0
 testsfidl_LDADD    = $(BSE_LIBS)
 testsfidl_SOURCES  = testsfidl.cc
 
-# == t279-assertions-test ==
-t279-assertions-test: misctests
-	@echo "  RUN…    " $@
-	$(Q) ./misctests --return_unless1 || $(QDIE) --return_unless1 failed
-	$(Q) ./misctests --assert_return1 || $(QDIE) --assert_return1 failed
-	$(Q) (trap ':' SIGTRAP && ./misctests --return_unless0) $(QSTDERR) ; test "$$?" -eq 7 || $(QDIE) --return_unless0 failed
-	$(Q) (trap ':' SIGTRAP && ./misctests --assert_return0) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return0 failed
-	$(Q) (trap ':' SIGTRAP && ./misctests --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
-	$(Q) (trap ':' SIGTRAP && ./misctests --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
-	$(Q) ./misctests --backtrace          2>t279-assertions-test.tmp && \
-		grep -qi 'Backtrace'		t279-assertions-test.tmp && \
-		grep -qi 'in.*my_compare_func'	t279-assertions-test.tmp || $(QDIE) --backtrace failed
-	$(Q) rm -f t279-assertions-test.tmp
-	@echo "  PASS    " $@
-check-local: t279-assertions-test
