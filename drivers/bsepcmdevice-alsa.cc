@@ -2,7 +2,7 @@
 #include "bse/bsecxxplugin.hh"
 #include "bsepcmdevice-alsa.hh"
 #include "bse/gsldatautils.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
