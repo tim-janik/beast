@@ -13,7 +13,7 @@ SFIDL 		  = $(top_builddir)/sfi/sfidl
 #TAPTESTS          += misctests
 misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBZ_LIBS)
-misctests_SOURCES  = misctests.cc utf8tests.cc
+misctests_SOURCES  = misctests.cc
 
 # testcxx
 #TAPTESTS	+= testcxx
