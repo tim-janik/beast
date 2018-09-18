@@ -291,7 +291,6 @@ SFI_REQUIRES="
         glib-2.0        	>= 2.32.3
 	gobject-2.0		>= 2.32.3
 	gthread-2.0		>= 2.32.3
-	gmodule-no-export-2.0	>= 2.32.3
 "
 # defines SFI_CFLAGS and SFI_LIBS
 PKG_CHECK_MODULES(SFI, [ $SFI_REQUIRES ])
@@ -306,6 +305,7 @@ LIBBSE_REQUIRES="
 	fluidsynth		>= 1.0.6
 	alsa			>= 1.0.5
         pangoft2        	>= 1.30.0
+	gmodule-no-export-2.0	>= 2.32.3
 	gtk+-2.0		>= 2.12.12
 	libart-2.0		>= 2.3.8
 	libgnomecanvas-2.0	>= 2.4.0
