@@ -272,7 +272,12 @@ release_aligned_block (const AlignedBlock &am)
   sa.release_ext (ext);
 }
 
+} // Bse
+
 // == Allocator Tests ==
+namespace { // Anon
+using namespace Bse;
+
 BSE_INTEGRITY_TEST (bse_aligned_allocator_tests);
 static void
 bse_aligned_allocator_tests()
@@ -463,4 +468,4 @@ bse_aligned_allocator_benchmark()
   bse_aligned_allocator_benchloop<1> (2654435769);
 }
 
-} // Bse
+} // Anon
