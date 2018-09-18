@@ -1,17 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-#include <sfi/testing.hh>
 #include "../sfidl-generator.hh"
 #include "../sfidl-factory.hh"
 #include <stdio.h>
+#include <assert.h>
 
-#define app_error(...)  do { g_printerr ("%s: ", g_get_prgname()); g_printerr (__VA_ARGS__); exit (-1); } while (0)
+// #include <sfi/testing.hh>
+#define TESTING(m)      fprintf (stdout, "  TESTING  %s\n", m)
+#define TASSERT(a)      assert (a)
+#define ASSERT_EQ(a,b)  assert (a == b)
 
 using namespace Sfidl;
 using namespace std;
-
-#define ASSERT_EQ(got,expectedcstr)     TCMP (got, ==, expectedcstr)
 
 class TestCG : public CodeGenerator
 {
@@ -38,12 +39,11 @@ public:
   }
   bool run()
   {
-    TSTART ("Testing Option parser");
+    TESTING ("Testing Option parser");
     ASSERT_EQ (one, "1");
     ASSERT_EQ (two, "2");
     ASSERT_EQ (done, "1");
-    TDONE ();
-    TSTART ("Testing CodeGenerator::rename()");
+    TESTING ("Testing CodeGenerator::rename()");
     vector<string> procedures;
     vector<string> empty;
     vector<string> type;
@@ -79,7 +79,6 @@ public:
     ASSERT_EQ (rename (ABSOLUTE, "Bse::MidiSignal::PROGRAM", UPPER, "_",
                        empty, UPPER, "_"),
               "BSE_MIDI_SIGNAL_PROGRAM");
-    TDONE();
     return true;
   }
 };
@@ -109,9 +108,8 @@ main (int   argc,
   fake_argv[5] = (char*) "--done";
   options.parse (&fake_argc, &fake_argv, parser);
 
-  TSTART ("Testing factory");
+  TESTING ("Sfidl factory");
   TASSERT (options.codeGenerator != 0);
-  TDONE();
 
   if (options.codeGenerator->run())
     {
@@ -125,20 +123,6 @@ main (int   argc,
     }
 }
 
-#include "../private.hh"
-#include "../sfidl-generator.cc"
-#include "../sfidl-namespace.cc"
-#include "../sfidl-options.cc"
-#include "../sfidl-parser.cc"
-#include "../sfidl-factory.cc"
-#include "../sfidl-typelist.cc"
-#include "../sfidl-cbase.cc"
-#include "../sfidl-clientc.cc"
-#include "../sfidl-clientcxx.cc"
-#include "../sfidl-corec.cc"
-#include "../sfidl-corecxx.cc"
-#include "../sfidl-cxxbase.cc"
-#include "../sfidl-hostc.cc"
-#include "../sfidl-utils.cc"
+#include "../sfidl.cc"
 
 /* vim:set ts=8 sts=2 sw=2: */

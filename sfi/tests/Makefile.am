@@ -22,9 +22,9 @@ testcxx_LDADD	 = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testcxx_SOURCES  = testcxx.cc
 
 # testsfidl
-#TAPTESTS          += testsfidl
-testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
-testsfidl_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
+TAPTESTS          += testsfidl
+testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -O0
+testsfidl_LDADD    = $(BSE_LIBS)
 testsfidl_SOURCES  = testsfidl.cc
 
 # == t279-assertions-test ==
