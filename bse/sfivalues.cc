@@ -931,12 +931,6 @@ test_typed_serialization (SerialTest test_type)
   gchar str256[257];
   guint i;
   serial_test_type = test_type;
-  switch (serial_test_type)
-    {
-    case SERIAL_TEST_TYPED:	TSTART ("Typed Serialization"); break;
-    case SERIAL_TEST_PARAM:	TSTART ("Param Serialization"); break;
-    case SERIAL_TEST_PSPEC:	TSTART ("Pspec Serialization"); break;
-    }
   serialize_cmp (sfi_value_bool (FALSE),
 		 sfi_pspec_bool ("bool-false", NULL, NULL, FALSE, SFI_PARAM_STANDARD));
   serialize_cmp (sfi_value_bool (TRUE),
@@ -1090,15 +1084,26 @@ test_typed_serialization (SerialTest test_type)
   sfi_seq_unref (seq);
   sfi_pspec_unref (pspec_homo_seq);
   sfi_rec_unref (rec);
-  TDONE ();
 }
 
-BSE_INTEGRITY_TEST (test_pspec_value_serialization);
+BSE_INTEGRITY_TEST (test_param_serialization);
 static void
-test_pspec_value_serialization (void)
+test_param_serialization()
 {
   test_typed_serialization (SERIAL_TEST_PARAM);
+}
+
+BSE_INTEGRITY_TEST (test_typed_serialization);
+static void
+test_typed_serialization ()
+{
   test_typed_serialization (SERIAL_TEST_TYPED);
+}
+
+BSE_INTEGRITY_TEST (test_pspec_serialization);
+static void
+test_pspec_serialization ()
+{
   test_typed_serialization (SERIAL_TEST_PSPEC);
 }
 
