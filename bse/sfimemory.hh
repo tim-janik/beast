@@ -2,7 +2,7 @@
 #ifndef __SFI_MEMORY_H__
 #define __SFI_MEMORY_H__
 
-#include <sfi/sfitypes.hh>
+#include <bse/sfitypes.hh>
 
 
 /* --- macros --- */

@@ -2,7 +2,7 @@
 #include "bseresampler.hh"
 #include "gsldatahandle.hh"
 #include "private.hh"
-#include <sfi/sficxx.hh>
+#include <bse/sficxx.hh>
 #include <vector>
 
 namespace Bse {

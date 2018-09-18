@@ -2,7 +2,7 @@
 #ifndef __BSE_ENTROPY_HH__
 #define __BSE_ENTROPY_HH__
 
-#include <sfi/bcore.hh>
+#include <bse/bcore.hh>
 
 namespace Bse {
 

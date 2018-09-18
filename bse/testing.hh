@@ -2,7 +2,7 @@
 #ifndef __BSE_TESTING_HH__
 #define __BSE_TESTING_HH__
 
-#include <sfi/sfi.hh>
+#include <bse/sfi.hh>
 
 namespace Bse {
 namespace Test {

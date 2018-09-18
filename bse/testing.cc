@@ -8,15 +8,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <sfi/randomhash.hh>
+#include <bse/randomhash.hh>
 
 #define TDEBUG(...)     Bse::debug ("Test", __VA_ARGS__)
 
 namespace Bse {
 
 /** The Test namespace offers utilities for unit tests.
- * The Test namespace is made available by <code> \#include <sfi/testing.hh> </code> <br/>
- * See also sfi/testing.hh.
+ * The Test namespace is made available by <code> \#include <bse/testing.hh> </code> <br/>
+ * See also bse/testing.hh.
  */
 namespace Test {
 

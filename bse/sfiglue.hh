@@ -2,9 +2,9 @@
 #ifndef __SFI_GLUE_H__
 #define __SFI_GLUE_H__
 
-#include <sfi/sfiprimitives.hh>
-#include <sfi/sfiring.hh>
-#include <sfi/sfiparams.hh>
+#include <bse/sfiprimitives.hh>
+#include <bse/sfiring.hh>
+#include <bse/sfiparams.hh>
 
 /* Glue proxy (object handle) description in terms of
  * supported interfaces and property names

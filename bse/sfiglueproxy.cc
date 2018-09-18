@@ -6,7 +6,7 @@
 #include "sfivmarshal.hh"
 #include "private.hh"
 #include <gobject/gvaluecollector.h>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 
 #define SDEBUG(...)             Bse::debug ("signals", __VA_ARGS__)
 #define	invalid_proxy(proxy)    Bse::warning ("invalid proxy id: %u", proxy)

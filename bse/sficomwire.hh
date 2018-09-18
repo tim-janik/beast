@@ -2,8 +2,8 @@
 #ifndef __SFI_COM_WIRE_H__
 #define __SFI_COM_WIRE_H__
 
-#include <sfi/sfitypes.hh>
-#include <sfi/sfiring.hh>
+#include <bse/sfitypes.hh>
+#include <bse/sfiring.hh>
 
 
 typedef struct _SfiComWire SfiComWire;

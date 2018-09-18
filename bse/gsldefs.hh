@@ -2,8 +2,8 @@
 #ifndef __GSL_DEFS_H__
 #define __GSL_DEFS_H__
 
-#include <sfi/sfi.hh>
-#include <sfi/sfistore.hh>
+#include <bse/sfi.hh>
+#include <bse/sfistore.hh>
 
 
 /* --- forward decls --- */

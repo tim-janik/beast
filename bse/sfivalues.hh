@@ -2,7 +2,7 @@
 #ifndef __SFI_VALUES_H__
 #define __SFI_VALUES_H__
 
-#include <sfi/sfitypes.hh>
+#include <bse/sfitypes.hh>
 
 
 /* --- Sfi value type aliases --- */

@@ -2,8 +2,8 @@
 #ifndef __SFI_STORE_H__
 #define __SFI_STORE_H__
 
-#include <sfi/sfivalues.hh>
-#include <sfi/sfiring.hh>
+#include <bse/sfivalues.hh>
+#include <bse/sfiring.hh>
 
 /* --- typedefs and structures --- */
 typedef gint /* -errno || length */ (*SfiStoreReadBin)  (gpointer        data,

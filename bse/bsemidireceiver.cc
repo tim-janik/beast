@@ -8,7 +8,7 @@
 #include "bsemidinotifier.hh"
 #include "private.hh"
 #include <string.h>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 #include <map>
 #include <set>
 

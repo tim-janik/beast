@@ -2,7 +2,7 @@
 #ifndef __SFI_GLUE_PROXY_H__
 #define __SFI_GLUE_PROXY_H__
 
-#include <sfi/sfiglue.hh>
+#include <bse/sfiglue.hh>
 
 
 /* --- typedefs --- */

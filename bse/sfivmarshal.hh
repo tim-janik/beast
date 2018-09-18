@@ -2,7 +2,7 @@
 #ifndef __SFI_VMARSHAL_H__
 #define __SFI_VMARSHAL_H__
 
-#include <sfi/sfitypes.hh>
+#include <bse/sfitypes.hh>
 
 /* --- hard limit --- */
 #define	SFI_VMARSHAL_MAX_ARGS	5

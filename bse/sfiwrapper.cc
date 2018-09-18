@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfiwrapper.hh"
 #include "sficxx.hh"
-#include <sfi/sfi.hh>
-#include <sfi/testing.hh>
+#include <bse/sfi.hh>
+#include <bse/testing.hh>
 #include <errno.h>
 
 /* --- initialization --- */

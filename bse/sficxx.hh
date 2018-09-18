@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_CXX_H__
 #define __SFI_CXX_H__
-#include <sfi/sfi.hh>
+#include <bse/sfi.hh>
 #include <string>
 #include <string.h>
 #include <new>

@@ -2,8 +2,8 @@
 #ifndef __SFI_GLUE_CODEC_H__
 #define __SFI_GLUE_CODEC_H__
 
-#include <sfi/sfiglue.hh>
-#include <sfi/sficomport.hh>
+#include <bse/sfiglue.hh>
+#include <bse/sficomport.hh>
 
 
 /* --- encoder API --- */

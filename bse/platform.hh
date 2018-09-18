@@ -2,7 +2,7 @@
 #ifndef __BSE_PLATFORM_HH__
 #define __BSE_PLATFORM_HH__
 
-#include <sfi/cxxaux.hh>
+#include <bse/cxxaux.hh>
 #include <thread>
 
 namespace Bse {

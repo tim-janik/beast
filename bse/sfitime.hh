@@ -2,7 +2,7 @@
 #ifndef __SFI_TIME_H__
 #define __SFI_TIME_H__
 
-#include <sfi/sfivalues.hh>
+#include <bse/sfivalues.hh>
 
 /* --- time (unix micro seconds) --- */
 #define	SFI_USEC_FACTOR		((SfiTime) 1000000)		/* 64bit wide */

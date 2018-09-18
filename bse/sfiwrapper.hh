@@ -2,8 +2,8 @@
 #ifndef __SFI_WRAPPER_H__
 #define __SFI_WRAPPER_H__
 
-#include <sfi/bcore.hh>
-#include <sfi/path.hh>
+#include <bse/bcore.hh>
+#include <bse/path.hh>
 #include <mutex>
 
 /* --- initialization --- */

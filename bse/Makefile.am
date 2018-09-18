@@ -347,7 +347,7 @@ idl_dummy_files = $(strip	\
 	bsecxxbase.idl		\
 )
 
-doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) bseapi.idl
+doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) sysconfig.h bseapi.idl
 
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
@@ -361,7 +361,7 @@ CLEANFILES += doc_sources.lst
 bselibexecdir			     = $(bselibdir)
 bselibexec_LTLIBRARIES               = libbse-@MAJOR@.la
 libbse_@MAJOR@includedir             = $(bseincludedir)/bse
-libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) $(idl_dummy_files)
+libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) sysconfig.h bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc

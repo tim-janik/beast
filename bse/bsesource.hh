@@ -3,7 +3,7 @@
 #define __BSE_SOURCE_H__
 #include <bse/bseitem.hh>
 #include <bse/gsldefs.hh>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 
 /* --- BseSource type macros --- */
 #define BSE_TYPE_SOURCE              (BSE_TYPE_ID (BseSource))

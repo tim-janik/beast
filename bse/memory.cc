@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "memory.hh"
 #include "private.hh"
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include <sys/mman.h>
 
 #define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))

@@ -6,7 +6,7 @@
 #include "bsedatahandle-flac.hh"
 #include "bsemath.hh"
 #include "private.hh"
-#include <sfi/sfistore.hh>
+#include <bse/sfistore.hh>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>

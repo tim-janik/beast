@@ -3,7 +3,7 @@
 #ifndef __BSE_RANDOMHASH_HH__
 #define __BSE_RANDOMHASH_HH__
 
-#include <sfi/bcore.hh>
+#include <bse/bcore.hh>
 
 namespace Bse {
 

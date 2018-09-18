@@ -5,7 +5,7 @@
 #include "bsemathsignal.hh"
 #include "private.hh"
 #include <string.h>
-#include <sfi/sfi.hh>
+#include <bse/sfi.hh>
 
 /* --- functions --- */
 int

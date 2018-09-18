@@ -2,8 +2,8 @@
 #ifndef __BSE_STRINGS_HH__
 #define __BSE_STRINGS_HH__
 
-#include <sfi/cxxaux.hh>
-#include <sfi/formatter.hh>
+#include <bse/cxxaux.hh>
+#include <bse/formatter.hh>
 #include <cstring>              // strerror
 
 namespace Bse {

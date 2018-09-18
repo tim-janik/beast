@@ -4,9 +4,9 @@
 
 #undef   G_DISABLE_ASSERT
 #undef   G_DISABLE_CHECKS
-#include <sfi/sfi.hh>
-#include <sfi/sfistore.hh>	// FIXME
-#include <sfi/sficomwire.hh>	// FIXME
+#include <bse/sfi.hh>
+#include <bse/sfistore.hh>	// FIXME
+#include <bse/sficomwire.hh>	// FIXME
 #include <bse/bseconfig.h>
 
 

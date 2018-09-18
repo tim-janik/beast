@@ -2,7 +2,7 @@
 #ifndef __BSE_PATH_HH__
 #define __BSE_PATH_HH__
 
-#include <sfi/bcore.hh>
+#include <bse/bcore.hh>
 
 #ifdef  _WIN32 // includes _WIN64
 #undef  BSE_UNIX_PATHS                          ///< Undefined on _WIN32 and _WIN64, defined on Unix.

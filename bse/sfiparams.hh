@@ -2,8 +2,8 @@
 #ifndef __SFI_PARAMS_H__
 #define __SFI_PARAMS_H__
 
-#include <sfi/sfivalues.hh>
-#include <sfi/sfiprimitives.hh>
+#include <bse/sfivalues.hh>
+#include <bse/sfiprimitives.hh>
 
 
 /* --- Sfi param spec macros --- */

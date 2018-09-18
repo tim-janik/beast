@@ -2,7 +2,7 @@
 #ifndef __BSE_UNICODE_HH__
 #define __BSE_UNICODE_HH__
 
-#include <sfi/cxxaux.hh>
+#include <bse/cxxaux.hh>
 
 namespace Bse {
 

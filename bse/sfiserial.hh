@@ -2,7 +2,7 @@
 #ifndef __SFI_SERIAL_H__
 #define __SFI_SERIAL_H__
 
-#include <sfi/sfivalues.hh>
+#include <bse/sfivalues.hh>
 
 
 /* --- functions --- */

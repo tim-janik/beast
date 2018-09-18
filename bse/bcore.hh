@@ -2,11 +2,11 @@
 #ifndef __BSE_BCORE_HH__
 #define __BSE_BCORE_HH__
 
-#include <sfi/blob.hh>
-#include <sfi/backtrace.hh>
-#include <sfi/platform.hh>
-#include <sfi/strings.hh>
-#include <sfi/unicode.hh>
+#include <bse/blob.hh>
+#include <bse/backtrace.hh>
+#include <bse/platform.hh>
+#include <bse/strings.hh>
+#include <bse/unicode.hh>
 #include <sfi/glib-extra.hh>
 #include <numeric>
 #include <algorithm>

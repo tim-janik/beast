@@ -2,8 +2,8 @@
 #ifndef __SFI_COM_PORT_H__
 #define __SFI_COM_PORT_H__
 
-#include <sfi/sfitypes.hh>
-#include <sfi/sfiring.hh>
+#include <bse/sfitypes.hh>
+#include <bse/sfiring.hh>
 #include <condition_variable>
 
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)

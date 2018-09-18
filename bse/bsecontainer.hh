@@ -3,7 +3,7 @@
 #define __BSE_CONTAINER_H__
 
 #include <bse/bsesource.hh>
-#include <sfi/gbsearcharray.hh>
+#include <bse/gbsearcharray.hh>
 
 /* --- object type macros --- */
 #define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))

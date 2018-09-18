@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseblockutils.hh>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include "sfi/private.hh"
 

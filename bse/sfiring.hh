@@ -2,7 +2,7 @@
 #ifndef __SFI_RING_H__
 #define __SFI_RING_H__
 
-#include <sfi/sfitypes.hh>
+#include <bse/sfitypes.hh>
 
 
 /* --- basic comparisons --- */

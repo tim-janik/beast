@@ -2,8 +2,8 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <sfi/bcore.hh>
-#include <sfi/sfiwrapper.hh>
+#include <bse/bcore.hh>
+#include <bse/sfiwrapper.hh>
 
 /* --- Sfi typedefs --- */
 typedef bool			SfiBool;

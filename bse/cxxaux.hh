@@ -2,7 +2,7 @@
 #ifndef __BSE_CXXAUX_HH__
 #define __BSE_CXXAUX_HH__
 
-#include <sfi/sysconfig.h>
+#include <bse/sysconfig.h>
 #include <sys/types.h>                  // uint, ssize
 #include <cstdint>                      // uint64_t
 #include <memory>

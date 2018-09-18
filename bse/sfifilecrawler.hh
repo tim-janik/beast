@@ -2,8 +2,8 @@
 #ifndef __SFI_FILE_CRAWLER_H__
 #define __SFI_FILE_CRAWLER_H__
 
-#include <sfi/sfitypes.hh>
-#include <sfi/sfiring.hh>
+#include <bse/sfitypes.hh>
+#include <bse/sfiring.hh>
 
 typedef struct {
   SfiRing      *results;        /* end user results */

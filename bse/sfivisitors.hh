@@ -2,7 +2,7 @@
 #ifndef __SFI_VISITORS_HH__
 #define __SFI_VISITORS_HH__
 
-#include <sfi/sfiparams.hh>
+#include <bse/sfiparams.hh>
 
 namespace Bse { // BseCore
 

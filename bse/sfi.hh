@@ -4,28 +4,28 @@
 
 
 // == Rapicorn Imports ==
-#include <sfi/sfiwrapper.hh>    // Introduces bcore.hh and Rapicorn
+#include <bse/sfiwrapper.hh>    // Introduces bcore.hh and Rapicorn
 
-/* no bin-compat: #include <sfi/sficomwire.hh> */
-#include <sfi/sficomport.hh>
-#include <sfi/sfifilecrawler.hh>
-#include <sfi/sfiglue.hh>
-#include <sfi/sfigluecodec.hh>
-#include <sfi/sfiglueproxy.hh>
-#include <sfi/sfimemory.hh>
-#include <sfi/sfinote.hh>
-#include <sfi/sfiparams.hh>
-#include <sfi/sfiprimitives.hh>
-#include <sfi/sfiring.hh>
-/* #include <sfi/sfisclock.hh> */
-#include <sfi/sfiserial.hh>
-/* no bin-compat: #include <sfi/sfistore.hh> */
-#include <sfi/sfitime.hh>
-#include <sfi/sfitypes.hh>
-#include <sfi/sfiustore.hh>
-#include <sfi/sfivalues.hh>
-#include <sfi/sfivisitors.hh>
-#include <sfi/sfivmarshal.hh>
+/* no bin-compat: #include <bse/sficomwire.hh> */
+#include <bse/sficomport.hh>
+#include <bse/sfifilecrawler.hh>
+#include <bse/sfiglue.hh>
+#include <bse/sfigluecodec.hh>
+#include <bse/sfiglueproxy.hh>
+#include <bse/sfimemory.hh>
+#include <bse/sfinote.hh>
+#include <bse/sfiparams.hh>
+#include <bse/sfiprimitives.hh>
+#include <bse/sfiring.hh>
+/* #include <bse/sfisclock.hh> */
+#include <bse/sfiserial.hh>
+/* no bin-compat: #include <bse/sfistore.hh> */
+#include <bse/sfitime.hh>
+#include <bse/sfitypes.hh>
+#include <bse/sfiustore.hh>
+#include <bse/sfivalues.hh>
+#include <bse/sfivisitors.hh>
+#include <bse/sfivmarshal.hh>
 
 #endif /* __SFI_H__ */
 

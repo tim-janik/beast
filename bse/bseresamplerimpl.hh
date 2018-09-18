@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <bse/bseresampler.hh>
-#include <sfi/sfi.hh>
+#include <bse/sfi.hh>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>

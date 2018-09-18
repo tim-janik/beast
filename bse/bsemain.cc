@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 
 using namespace Bse;
 

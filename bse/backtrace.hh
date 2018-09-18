@@ -2,7 +2,7 @@
 #ifndef __BSE_BACKTRACE_HH__
 #define __BSE_BACKTRACE_HH__
 
-#include <sfi/cxxaux.hh>
+#include <bse/cxxaux.hh>
 
 namespace Bse {
 
