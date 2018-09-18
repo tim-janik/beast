@@ -2091,3 +2091,143 @@ sfi_vmarshal_switch (guint sig)
     default: assert_return_unreached (NULL); return NULL;
     }
 }
+
+// == Testing ==
+#include "testing.hh"
+namespace { // Anon
+using namespace Bse;
+
+static gboolean vmarshal_switch = TRUE;
+static guint    vmarshal_count = 0;
+static void
+generate_vmarshal (guint sig)
+{
+  gchar *s, signame[32 * 4 + 1];
+  guint i;
+  vmarshal_count++;
+  s = signame + sizeof (signame);
+  *--s = 0;
+  for (i = sig; i; i >>= 2)
+    *--s = '0' + (i & 3);
+  if (!vmarshal_switch)
+    {
+      printout ("static void /* %u */\nsfi_vmarshal_%s (gpointer func, gpointer arg0, Arg *alist)\n{\n",
+	       vmarshal_count, s);
+      printout ("  void (*f) (gpointer");
+      for (i = 0; s[i]; i++)
+	switch (s[i] - '0')
+	  {
+	  case 1:	printout (", guint32");		break;
+	  case 2:	printout (", guint64");		break;
+	  case 3:	printout (", double");		break;
+	  }
+      printout (", gpointer) = func;\n");
+      printout ("  f (arg0");
+      for (i = 0; s[i]; i++)
+	switch (s[i] - '0')
+	  {
+	  case 1:	printout (", alist[%u].v32", i);		break;
+	  case 2:	printout (", alist[%u].v64", i);		break;
+	  case 3:	printout (", alist[%u].vdbl", i);	break;
+	  }
+      printout (", alist[%u].vpt);\n}\n", i);
+    }
+  else
+    printout ("    case 0x%03x: return sfi_vmarshal_%s; /* %u */\n", sig, s, vmarshal_count);
+}
+
+static void
+generate_vmarshal_loop (void)
+{
+  guint sig, i, ki[SFI_VMARSHAL_MAX_ARGS + 1];
+  vmarshal_count = 0;
+  /* initialize digits */
+  for (i = 0; i < SFI_VMARSHAL_MAX_ARGS; i++)
+    ki[i] = 1;
+  /* initialize overflow */
+  ki[SFI_VMARSHAL_MAX_ARGS] = 0;
+  while (ki[SFI_VMARSHAL_MAX_ARGS] == 0)	/* abort on overflow */
+    {
+      /* construct signature */
+      sig = 0;
+      for (i = SFI_VMARSHAL_MAX_ARGS; i > 0; i--)
+	{
+	  sig <<= 2;
+	  sig |= ki[i - 1];
+	}
+      /* generate */
+      generate_vmarshal (sig);
+      /* increase digit wise: 1, 2, 3, 11, 12, 13, 21, 22, 23, 31, ... */
+      for (i = 0; ; i++)
+	{
+	  if (++ki[i] <= 3)
+	    break;
+	  ki[i] = 1;
+	}
+    }
+}
+
+static void
+generate_vmarshal_code (void)
+{
+  vmarshal_switch = FALSE;
+  generate_vmarshal_loop ();
+  vmarshal_switch = TRUE;
+  printout ("static VMarshal\nsfi_vmarshal_switch (guint sig)\n{\n");
+  printout ("  switch (sig)\n    {\n");
+  generate_vmarshal_loop ();
+  printout ("    default: assert_unreached (); return NULL;\n");
+  printout ("    }\n}\n");
+}
+static const char *pointer1 = "huhu";
+static const char *pointer2 = "haha";
+static const char *pointer3 = "zoot";
+static void
+test_vmarshal_func4 (gpointer o,
+		     SfiReal  r,
+		     SfiNum   n,
+		     gpointer data)
+{
+  TASSERT (o == pointer1);
+  TASSERT (r == -426.9112e-267);
+  TASSERT (n == -2598768763298128732LL);
+  TASSERT (data == pointer3);
+}
+static void
+test_vmarshal_func7 (gpointer o,
+		     SfiReal  r,
+		     SfiNum   n,
+		     SfiProxy p,
+		     SfiInt   i,
+		     SfiNum   self,
+		     gpointer data)
+{
+  TASSERT (o == pointer1);
+  TASSERT (r == -426.9112e-267);
+  TASSERT (n == -2598768763298128732LL);
+  TASSERT (p == (SfiProxy) pointer2);
+  TASSERT (i == -2134567);
+  TASSERT (self == (long) test_vmarshal_func7);
+  TASSERT (data == pointer3);
+}
+
+BSE_INTEGRITY_TEST (test_vmarshals);
+static void
+test_vmarshals (void)
+{
+  SfiSeq *seq = sfi_seq_new ();
+  TSTART ("Vmarshals");
+  sfi_seq_append_real (seq, -426.9112e-267);
+  sfi_seq_append_num (seq, -2598768763298128732LL);
+  sfi_vmarshal_void ((void*) test_vmarshal_func4, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
+  sfi_seq_append_proxy (seq, (SfiProxy) pointer2);
+  sfi_seq_append_int (seq, -2134567);
+  sfi_seq_append_num (seq, (long) test_vmarshal_func7);
+  sfi_vmarshal_void ((void*) test_vmarshal_func7, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
+  TDONE ();
+  sfi_seq_unref (seq);
+  if (0)
+    generate_vmarshal_code ();
+}
+
+} // Anon
