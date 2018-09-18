@@ -8,7 +8,7 @@
 #include <bse/bseresamplerimpl.hh>
 #include <bse/testing.hh>
 #include "../topbuildid.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>

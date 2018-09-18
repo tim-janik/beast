@@ -6,7 +6,7 @@
 #include <bse/bsedatahandle-flac.hh>
 #include <bse/bseloader.hh>
 #include <bse/bsecxxutils.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>

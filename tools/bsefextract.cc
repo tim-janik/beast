@@ -6,7 +6,7 @@
 #include <bse/bseloader.hh>
 #include <bse/gslfft.hh>
 #include <bse/gslfilter.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

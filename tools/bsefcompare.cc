@@ -3,7 +3,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/gslfft.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
