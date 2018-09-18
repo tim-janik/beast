@@ -311,30 +311,6 @@ test_typed_serialization (SerialTest test_type)
 }
 
 
-static void
-test_renames (void)
-{
-  gchar *str;
-  str = g_type_name_to_cname ("PrefixTypeName");
-  TASSERT (strcmp (str, "prefix_type_name") == 0);
-  g_free (str);
-  str = g_type_name_to_sname ("PrefixTypeName");
-  TASSERT (strcmp (str, "prefix-type-name") == 0);
-  g_free (str);
-  str = g_type_name_to_cupper ("PrefixTypeName");
-  TASSERT (strcmp (str, "PREFIX_TYPE_NAME") == 0);
-  g_free (str);
-  str = g_type_name_to_type_macro ("PrefixTypeName");
-  TASSERT (strcmp (str, "PREFIX_TYPE_TYPE_NAME") == 0);
-  g_free (str);
-  str = g_type_name_to_sname ("prefix_type_name");
-  TASSERT (strcmp (str, "prefix-type-name") == 0);
-  g_free (str);
-  str = g_type_name_to_cname ("prefix-type-name");
-  TASSERT (strcmp (str, "prefix_type_name") == 0);
-  g_free (str);
-}
-TEST_ADD (test_renames);
 
 static gboolean vmarshal_switch = TRUE;
 static guint    vmarshal_count = 0;
