@@ -38,7 +38,7 @@ CLEANFILES += doc_sources.lst
 
 noinst_PROGRAMS = sfidl
 sfidl_SOURCES  = sfidl.cc
-sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DSFIDL_INTERNALS
+sfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -DSFIDL_INTERNALS -O0
 sfidl_LDADD    = $(SFI_LIBS)
 # included files
 sfidl_includes  = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc
