@@ -5,7 +5,7 @@ SUBDIRS =
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk -I$(top_builddir)/beast-gtk -I$(srcdir) # -I.. for <gxk/*.h> includes
 DEFS        += -DGTK_DISABLE_COMPAT_H -DGXK_COMPILATION -DG_LOG_DOMAIN=\"GXK\" # -DGTK_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
-AM_CXXFLAGS += $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
+AM_CXXFLAGS += $(GXK_CFLAGS) $(BSE_CFLAGS)
 AM_CFLAGS   += $(GXK_CFLAGS)
 
 noinst_LIBRARIES = libgxk.a
@@ -128,8 +128,8 @@ libgxk_a_SOURCES = $(gxk_c_sources)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
-	$(top_builddir)/sfi/libsfi-@MAJOR@.la $(SFI_LIBS) 	\
-	$(RAPICORN_LIBS) $(SFI_LIBS) $(LIBZ_LIBS)		\
+	$(top_builddir)/bse/libbse-@MAJOR@.la $(BSE_LIBS)	\
+	$(LIBZ_LIBS)						\
 )
 
 
