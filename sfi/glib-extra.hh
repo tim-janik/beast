@@ -324,6 +324,26 @@ inline    GConnectFlags& operator|= (GConnectFlags &s1, GConnectFlags s2) { s1 =
 constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return GConnectFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 
+// == Bse bits needed by Sfidl ==
+typedef enum	/*< skip >*/
+{
+  SFI_SCAT_INVAL	= 0,
+  SFI_SCAT_BOOL		= 'b',
+  SFI_SCAT_INT		= 'i',
+  SFI_SCAT_NUM		= 'n',
+  SFI_SCAT_REAL		= 'r',
+  SFI_SCAT_STRING	= 's',
+  SFI_SCAT_CHOICE	= 'C',
+  SFI_SCAT_BBLOCK	= 'B',
+  SFI_SCAT_FBLOCK	= 'F',
+  SFI_SCAT_PSPEC	= 'P',
+  SFI_SCAT_SEQ		= 'Q',
+  SFI_SCAT_REC		= 'R',
+  SFI_SCAT_PROXY	= 'p',
+  SFI_SCAT_TYPE_MASK	= 0x00ff,
+  SFI_SCAT_NOTE		= 0x0100 | SFI_SCAT_INT,
+  SFI_SCAT_TIME		= 0x0200 | SFI_SCAT_NUM,
+} SfiSCategory;
 
 // == Deprecate tempting GLib functions ==
 #if 0   // DEPRECATE_GLIB_UTILS
