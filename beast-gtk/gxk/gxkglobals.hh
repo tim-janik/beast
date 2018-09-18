@@ -3,12 +3,12 @@
 #define __GXK_GLOBALS_H__
 
 #include <gtk/gtk.h>
-#include <sfi/bcore.hh>
+#include <bse/bcore.hh>
 
 /* --- i18n and gettext helpers --- */
 #ifdef GXK_COMPILATION
 #  define GXK_I18N_DOMAIN NULL
-#  define _(str)        dgettext (GXK_I18N_DOMAIN, str)
+// #  define _(str)        dgettext (GXK_I18N_DOMAIN, str)
 #  define T_(str)       dgettext (GXK_I18N_DOMAIN, str)
 #  define N_(str)       (str)
 #endif
@@ -16,9 +16,9 @@
 
 /* --- macros --- */
 #define	GXK_TOOLTIPS	        (gxk_globals->tooltips)
-#define gxk_printout(...)       Bse::printerr (__VA_ARGS__)
-#define gxk_printerr(...)       Bse::printerr (__VA_ARGS__)
-#define gxk_warning(...)        Bse::printerr ("Gxk: warning: %s\n", Bse::string_format (__VA_ARGS__))
+#define gxk_printout(...)       g_print    ("%s", Bse::Lib::StringFormatter::format (NULL, __VA_ARGS__).c_str())
+#define gxk_printerr(...)       g_printerr ("%s", Bse::Lib::StringFormatter::format (NULL, __VA_ARGS__).c_str())
+#define gxk_warning(...)        g_warning ("Gxk: %s\n", Bse::Lib::StringFormatter::format (NULL, __VA_ARGS__).c_str())
 
 /* --- typedefs & structures --- */
 typedef void (*GxkFreeFunc) (gpointer data);
