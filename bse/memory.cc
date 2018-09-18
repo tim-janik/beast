@@ -441,7 +441,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   const double bench_aa = timer.benchmark (loop_aa);
   const size_t n_allocations = RUNS * N_ALLOCS * (1 + 3.0 / 2);
   const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
-  Bse::printerr ("%s benchmark # timing: %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
+  Bse::printerr ("  BENCH    %s:   %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
                  TestAllocator<C>::name(), n_allocations, bench_aa, ns_p_a);
 }
 
