@@ -723,7 +723,6 @@ data/Makefile
 data/beast.applications
 sfi/Makefile
 bse/sysconfig.h
-sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
