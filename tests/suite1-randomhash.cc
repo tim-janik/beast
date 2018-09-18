@@ -2,7 +2,7 @@
 #include <bse/testing.hh>
 #include <bse/randomhash.hh>
 #include <bse/entropy.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <random>
 #include <array>
 

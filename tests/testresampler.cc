@@ -7,7 +7,7 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfft.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>

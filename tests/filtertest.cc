@@ -4,7 +4,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfilter.hh>
 #include <bse/testing.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
