@@ -45,6 +45,7 @@ int
 main (int argc, char *argv[])
 {
   bse_init_test (&argc, argv);
+  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
 
   if (argc >= 2 && String ("--backtrace") == argv[1])
     {
@@ -58,19 +59,16 @@ main (int argc, char *argv[])
     }
   else if (argc >= 2 && String ("--assert_return0") == argv[1])
     {
-      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       assert_return (0, 0);
       return 0;
     }
   else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
     {
-      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       assert_return_unreached (0);
       return 0;
     }
   else if (argc >= 2 && String ("--fatal_error") == argv[1])
     {
-      Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
       Bse::fatal_error ("got argument --fatal_error");
       return 0;
     }
