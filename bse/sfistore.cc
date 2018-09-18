@@ -802,3 +802,54 @@ sfi_rstore_parse_all (SfiRStore     *rstore,
 
   return rstore->scanner->parse_errors;
 }
+
+// == Testing ==
+#include "testing.hh"
+namespace { // Anon
+using namespace Bse;
+
+#define SCANNER_ASSERT64(scanner, needprint, token, text, svalue) { \
+  g_scanner_input_text (scanner, text, strlen (text)); \
+  TASSERT (g_scanner_get_next_token (scanner) == token); \
+  if (needprint) printout ("{scanner.v_int64:%llu}", (long long unsigned int) (scanner->value.v_int64)); \
+  TASSERT (scanner->value.v_int64 == svalue); \
+  TASSERT (g_scanner_get_next_token (scanner) == '#'); \
+}
+#define SCANNER_ASSERTf(scanner, needprint, vtoken, text, svalue) { \
+  g_scanner_input_text (scanner, text, strlen (text)); \
+  if (g_scanner_get_next_token (scanner) != vtoken) \
+    g_scanner_unexp_token (scanner, vtoken, NULL, NULL, NULL, NULL, TRUE); \
+  TASSERT (scanner->token == vtoken); \
+  if (needprint) printout ("{scanner.v_float:%17g}", scanner->value.v_float); \
+  TASSERT (scanner->value.v_float == svalue); \
+  TASSERT (g_scanner_get_next_token (scanner) == '#'); \
+}
+
+BSE_INTEGRITY_TEST (test_scanner64);
+static void
+test_scanner64 (void)
+{
+  GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
+  scanner->config->numbers_2_int = FALSE;
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b11111111111111111111111111111111 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b1111111111111111111111111111111111111111111111111111111111111111 #", 18446744073709551615ULL);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 0200000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 037777777777 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 01777777777777777777777 #", 18446744073709551615ULL);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0x0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0x10000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0xffffffff #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0xffffffffffffffff #", 18446744073709551615ULL);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 65536 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 4294967295 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 18446744073709551615 #", 18446744073709551615ULL);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 0.0 #", 0);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 2.2250738585072014e-308 #", 2.2250738585072014e-308);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 1.7976931348623157e+308 #", 1.7976931348623157e+308);
+  g_scanner_destroy (scanner);
+}
+
+} // Anon
