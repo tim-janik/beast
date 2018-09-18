@@ -325,42 +325,6 @@ constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return
 #endif // __cplusplus
 
 
-// == Fundamental BSE Utilities ==
-// these definitions need to move into bse/utils or similar
-namespace Bse {
-
-// == INSTALLPATH ==
-// See also configure.ac, this function is here because beast and all libs include this file.
-enum InstallpathType {
-  INSTALLPATH_LOCALEBASE,
-  INSTALLPATH_LADSPA,
-  INSTALLPATH_DOCDIR,
-  INSTALLPATH_USER_DATA,
-  INSTALLPATH_BSELIBDIR,
-  INSTALLPATH_BSELIBDIR_PLUGINS,
-  INSTALLPATH_BSELIBDIR_DRIVERS,
-  INSTALLPATH_DATADIR,
-  INSTALLPATH_DATADIR_DEMO,
-  INSTALLPATH_DATADIR_SAMPLES,
-  INSTALLPATH_DATADIR_EFFECTS,
-  INSTALLPATH_DATADIR_INSTRUMENTS,
-  INSTALLPATH_DATADIR_IMAGES,
-  INSTALLPATH_DATADIR_KEYS,
-  INSTALLPATH_DATADIR_SKINS,
-};
-/// Provide installation directories and searchpaths for various types of data.
-std::string installpath          (InstallpathType installpath_type);
-void        installpath_override (const std::string &topdir);
-
-// == Translate i18n strings ==
-const char* (_) (const char *string) __attribute__ ((__format_arg__ (1)));
-std::string (_) (const std::string &string);
-const char* (_) (const char *string, const char *plural, int64_t n) __attribute__ ((__format_arg__ (1), __format_arg__ (2)));
-std::string (_) (const std::string &string, const std::string &plural, int64_t n);
-
-} // Bse
-
-
 // == Deprecate tempting GLib functions ==
 #if 0   // DEPRECATE_GLIB_UTILS
 #undef  g_warning

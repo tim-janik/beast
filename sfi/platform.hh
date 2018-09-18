@@ -7,6 +7,34 @@
 
 namespace Bse {
 
+// == Translate i18n strings ==
+const char* (_) (const char *string) __attribute__ ((__format_arg__ (1)));
+std::string (_) (const std::string &string);
+const char* (_) (const char *string, const char *plural, int64_t n) __attribute__ ((__format_arg__ (1), __format_arg__ (2)));
+std::string (_) (const std::string &string, const std::string &plural, int64_t n);
+
+// == INSTALLPATH ==
+enum InstallpathType {
+  INSTALLPATH_LOCALEBASE,
+  INSTALLPATH_LADSPA,
+  INSTALLPATH_DOCDIR,
+  INSTALLPATH_USER_DATA,
+  INSTALLPATH_BSELIBDIR,
+  INSTALLPATH_BSELIBDIR_PLUGINS,
+  INSTALLPATH_BSELIBDIR_DRIVERS,
+  INSTALLPATH_DATADIR,
+  INSTALLPATH_DATADIR_DEMO,
+  INSTALLPATH_DATADIR_SAMPLES,
+  INSTALLPATH_DATADIR_EFFECTS,
+  INSTALLPATH_DATADIR_INSTRUMENTS,
+  INSTALLPATH_DATADIR_IMAGES,
+  INSTALLPATH_DATADIR_KEYS,
+  INSTALLPATH_DATADIR_SKINS,
+};
+/// Provide installation directories and searchpaths for various types of data.
+std::string installpath          (InstallpathType installpath_type);
+void        installpath_override (const std::string &topdir);
+
 // == AnsiColors ==
 /// The AnsiColors namespace contains utility functions for colored terminal output
 namespace AnsiColors {

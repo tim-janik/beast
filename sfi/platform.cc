@@ -7,6 +7,8 @@
 #include <cstring>
 #include <fstream>
 #include <setjmp.h>
+#include <libintl.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/syscall.h>        // SYS_gettid
@@ -18,6 +20,93 @@
 #endif  // _WIN32
 
 namespace Bse {
+
+// == BSE_INSTALLPATH ==
+static String installpath_topdir;
+
+void
+installpath_override (const String &topdir)
+{
+  installpath_topdir = topdir;
+}
+
+static std::string
+append_objdir (const std::string &path) // return path/.libs if it exists
+{
+  const std::string path_libs = path + "/" + CONFIGURE_RELPATH_OBJDIR;
+  struct stat sbuf = { 0, };
+  if (stat (path_libs.c_str(), &sbuf) == 0)
+    return path_libs;
+  return path;
+}
+
+std::string
+installpath (InstallpathType installpath_type)
+{
+  const bool ovr = !installpath_topdir.empty();
+  switch (installpath_type)
+    {
+    case INSTALLPATH_LOCALEBASE:                        return CONFIGURE_INSTALLPATH_LOCALEBASE;
+    case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
+    case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
+    case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
+    case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
+    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/plugins");
+    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/drivers");
+    case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
+    case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
+    case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
+    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/Effects";
+    case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/Instruments";
+    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
+    case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
+    case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
+    }
+  return "";
+}
+
+/// Initialize gettext domain used by libbse.
+static const char*
+initialized_bse_gettext_domain()
+{
+  static const char *const gettexttextdomain = [] () {
+    const char *const gtdomain = BST_GETTEXT_DOMAIN;
+    bindtextdomain (gtdomain, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+    bind_textdomain_codeset (gtdomain, "UTF-8");
+    return gtdomain;
+  } ();
+  return gettexttextdomain;
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+const char*
+(_) (const char *string)
+{
+  return dgettext (initialized_bse_gettext_domain(), string);
+}
+
+/// Translate message strings in the BEAST/BSE text domain.
+std::string
+(_) (const std::string &string)
+{
+  return _ (string.c_str());
+}
+
+/// Translate message strings in the BEAST/BSE text domain, use @plural forms if @n != 1.
+const char*
+(_) (const char *string, const char *plural, int64_t n)
+{
+  const uint64_t u = n < 0 ? -n : n;
+  const ulong l = u >= 2147483647 ? 2147483647 : u;
+  return dcngettext (initialized_bse_gettext_domain(), string, plural, l, LC_MESSAGES);
+}
+
+/// Translate message strings in the BEAST/BSE text domain, use @plural forms if @n != 1.
+std::string
+(_) (const std::string &string, const std::string &plural, int64_t n)
+{
+  return _ (string.c_str(), plural.c_str(), n);
+}
 
 // == AnsiColors ==
 namespace AnsiColors {
