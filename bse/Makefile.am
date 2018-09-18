@@ -31,6 +31,7 @@ bse_public_headers = $(strip \
 	path.hh				\
 	platform.hh			\
 	randomhash.hh			\
+	glib-extra.hh			\
 	sfi.hh				\
 	sficomport.hh			\
 	sficomwire.hh			\
@@ -331,6 +332,7 @@ bse_sources = $(strip \
 	monitor.cc			\
 	testobject.cc			\
 )
+# glib-extra.cc gets compiled as part of bseconstvalues.cc
 # BSE Synthesis Modules
 bse_idl_sources =
 bse_idl_sources += bsebusmodule.idl

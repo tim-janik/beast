@@ -2,7 +2,7 @@
 #ifndef __G_BSEARCH_ARRAY_H__
 #define __G_BSEARCH_ARRAY_H__
 
-#include <sfi/glib-extra.hh>
+#include <bse/glib-extra.hh>
 #include <string.h>
 
 

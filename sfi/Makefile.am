@@ -6,29 +6,12 @@ SUBDIRS      = . tests
 DEFS        += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 AM_CPPFLAGS += -I$(top_srcdir)
 
-sfi_public_headers = $(strip	\
-	glib-extra.hh		\
-)
-sfi_all_sources = $(strip	\
-	glib-extra.cc		\
-)
-
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
 	$(AM_V_GEN)
-	$(Q) echo $(patsubst %, sfi/%, $(sfi_public_headers) $(sfi_all_sources)) > $@
+	$(Q) echo > $@
 CLEANFILES += doc_sources.lst
 
-# == libsfi-@MAJOR@.so ==
-#noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
-#libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
-#libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers) sysconfig.h
-#libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
-#libsfi_@MAJOR@_la_CXXFLAGS    = $(AM_CXXFLAGS) $(SFI_CFLAGS)
-#libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS)
-#$(sfi_public_headers):		sysconfig.h
-
-#
 # programs to build
 #
 # source files

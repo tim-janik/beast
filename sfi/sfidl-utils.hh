@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef _SFIDL_UTILS_HH_
 #define _SFIDL_UTILS_HH_
-#include <sfi/glib-extra.hh>
+#include <bse/glib-extra.hh>
 #include <list>
 #include <vector>
 

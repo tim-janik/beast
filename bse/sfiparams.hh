@@ -232,7 +232,7 @@ GParamSpec*  sfi_boxed_type_get_seq_element         (GType                 boxed
 
 
 /* --- serializable categories --- */
-// Note, enum SfiSCategory is defined in sfi/glib-extra.hh to be shared with sfidl
+// Note, enum SfiSCategory is defined in bse/glib-extra.hh to be shared with sfidl
 // typedef enum	{ ... } SfiSCategory;
 
 SfiSCategory	sfi_categorize_type	(GType		 value_type);

@@ -7,7 +7,7 @@
 #include <bse/platform.hh>
 #include <bse/strings.hh>
 #include <bse/unicode.hh>
-#include <sfi/glib-extra.hh>
+#include <bse/glib-extra.hh>
 #include <numeric>
 #include <algorithm>
 #include <list>

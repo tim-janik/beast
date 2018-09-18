@@ -2,7 +2,6 @@
 #include "sfidl-options.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
-#include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
 

@@ -3,4 +3,4 @@
 
 #include "bse/internal.hh"
 
-#include "sfi/glib-extra.cc"
+#include "bse/glib-extra.cc"
