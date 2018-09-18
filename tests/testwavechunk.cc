@@ -2,7 +2,7 @@
 #include <bse/gslwavechunk.hh>
 #include <bse/gsldatahandle.hh>
 #include <bse/bsemain.hh>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

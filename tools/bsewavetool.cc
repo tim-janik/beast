@@ -6,7 +6,7 @@
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <sfi/testing.hh>
+#include <bse/testing.hh>
 #include "../topbuildid.hh"
 #include "sfi/private.hh"
 #include <stdlib.h>
