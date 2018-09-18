@@ -9,12 +9,6 @@ AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS)
 noinst_PROGRAMS   = $(ALLTESTS)
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
-# ring
-#TAPTESTS     += ring
-ring_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
-ring_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
-ring_SOURCES  = ring.cc
-
 # misctests
 #TAPTESTS          += misctests
 misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
