@@ -27,6 +27,7 @@ bse_public_headers = $(strip \
 	entropy.hh			\
 	formatter.hh			\
 	gbsearcharray.hh		\
+	internal.hh			\
 	path.hh				\
 	platform.hh			\
 	randomhash.hh			\

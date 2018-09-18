@@ -12,9 +12,6 @@ sfi_public_headers = $(strip	\
 sfi_all_sources = $(strip	\
 	glib-extra.cc		\
 )
-sfi_extra_sources = $(strip		\
-	private.hh			\
-)
 
 # == doc_sources.lst ==
 doc_sources.lst: Makefile
