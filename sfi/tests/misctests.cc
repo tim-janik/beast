@@ -25,54 +25,6 @@ using namespace Bse;
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
-static void
-test_com_ports (void)
-{
-  gint afds[2], pipe_error;
-  SfiComPort *port1, *port2;
-  GValue *value, *rvalue;
-  TSTART ("Communication Ports");
-  pipe_error = pipe (afds);
-  TASSERT (pipe_error == 0);
-  port1 = sfi_com_port_from_pipe ("portA", -1, afds[1]);
-  TASSERT (port1->connected == TRUE);
-  port2 = sfi_com_port_from_pipe ("portB", afds[0], -1);
-  TASSERT (port2->connected == TRUE);
-  /* transport a value */
-  {	/* create complex value */
-    GParamSpec *pspec = sfi_pspec_log_scale ("name", "Nick", "The Blurb", 440, 110, 1760, 0.03, 440, 2, 2, SFI_PARAM_GUI);
-    SfiRec *rec = sfi_pspec_to_rec (pspec);
-    g_param_spec_ref (pspec);
-    g_param_spec_sink (pspec);
-    g_param_spec_unref (pspec);
-    value = sfi_value_rec (rec);
-    sfi_rec_unref (rec);
-  }
-  sfi_com_port_send (port1, value);
-  rvalue = sfi_com_port_recv (port2);
-  TASSERT (rvalue != NULL);
-  {	/* assert equality of values */
-    GString *s1 = g_string_new (NULL), *s2 = g_string_new (NULL);
-    sfi_value_store_typed (value, s1);
-    sfi_value_store_typed (rvalue, s2);
-    TASSERT (strcmp (s1->str, s2->str) == 0);
-    g_string_free (s1, TRUE);
-    g_string_free (s2, TRUE);
-  }
-  sfi_value_free (value);
-  sfi_value_free (rvalue);
-  sfi_com_port_close_remote (port1, TRUE);
-  pipe_error = close (afds[1]);
-  TASSERT (pipe_error == -1);
-  sfi_com_port_close_remote (port2, TRUE);
-  pipe_error = close (afds[0]);
-  TASSERT (pipe_error == -1);
-  sfi_com_port_unref (port1);
-  sfi_com_port_unref (port2);
-  TDONE ();
-}
-TEST_ADD (test_com_ports);
-
 #define SCANNER_ASSERT64(scanner, needprint, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
