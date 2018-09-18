@@ -936,3 +936,30 @@ static EarlyStartup _early_startup __attribute__ ((init_priority (101)));
 } // Anon
 
 } // Bse
+
+// == Testing ==
+#include "testing.hh"
+namespace { // Anon
+using namespace Bse;
+
+BSE_INTEGRITY_TEST (test_timestamps);
+static void
+test_timestamps()
+{
+  const uint64 b1 = timestamp_benchmark();
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_startup() < timestamp_realtime());
+  TASSERT (timestamp_resolution() > 0);
+  uint64 c = monotonic_counter();
+  for (size_t i = 0; i < 999999; i++)
+    {
+      const uint64 last = c;
+      c = monotonic_counter();
+      TASSERT (c > last);
+    }
+  const uint64 b2 = timestamp_benchmark();
+  TASSERT (b1 < b2);
+}
+
+} // Anon

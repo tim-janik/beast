@@ -12,26 +12,6 @@
 using namespace Bse;
 
 static void
-test_timestamps()
-{
-  const uint64 b1 = timestamp_benchmark();
-  TASSERT (timestamp_startup() < timestamp_realtime());
-  TASSERT (timestamp_startup() < timestamp_realtime());
-  TASSERT (timestamp_startup() < timestamp_realtime());
-  TASSERT (timestamp_resolution() > 0);
-  uint64 c = monotonic_counter();
-  for (size_t i = 0; i < 999999; i++)
-    {
-      const uint64 last = c;
-      c = monotonic_counter();
-      TASSERT (c > last);
-    }
-  const uint64 b2 = timestamp_benchmark();
-  TASSERT (b1 < b2);
-}
-TEST_ADD (test_timestamps);
-
-static void
 test_feature_toggles()
 {
   String r;
