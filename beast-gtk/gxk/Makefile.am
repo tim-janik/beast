@@ -10,33 +10,77 @@ AM_CFLAGS   += $(GXK_CFLAGS)
 
 noinst_LIBRARIES = libgxk.a
 
-gxk_headers = $(strip \
-	gxkcompat.hh	\
-	gxkled.hh	gxkcanvas.hh		gxkdialog.hh	gxkauxwidgets.hh \
-	gxkstatusbar.hh	gxkstock.hh		gxktexttools.hh	gxklistwrapper.hh \
-	gxkrackeditor.hh	gxkutils.hh		gxkpolygon.hh	gxkcellrendererpopup.hh \
-	gxkradget.hh	gxkaction.hh		gxkglobals.hh	gxkradgetfactory.hh \
-	glewidgets.h	gxkracktable.hh		gxkrackitem.hh	gxksimplelabel.hh \
-	gxkparam.hh	gxkscrollcanvas.hh	gxkimagecache.hh	gxklogadjustment.hh \
-	gxkmenubutton.hh	gxkspline.hh		gxkassortment.hh gxknotebook.hh \
-	gxk.hh \
+gxk_headers = $(strip		\
+	glewidgets.h		\
+	gxk.hh			\
+	gxkaction.hh		\
+	gxkassortment.hh	\
+	gxkauxwidgets.hh	\
+	gxkcanvas.hh		\
+	gxkcellrendererpopup.hh	\
+	gxkcompat.hh		\
+	gxkdialog.hh		\
+	gxkglobals.hh		\
+	gxkimagecache.hh	\
+	gxkled.hh		\
+	gxklistwrapper.hh	\
+	gxklogadjustment.hh	\
+	gxkmenubutton.hh	\
+	gxknotebook.hh		\
+	gxkparam.hh		\
+	gxkpolygon.hh		\
+	gxkrackeditor.hh	\
+	gxkrackitem.hh		\
+	gxkracktable.hh		\
+	gxkradget.hh		\
+	gxkradgetfactory.hh	\
+	gxkscrollcanvas.hh	\
+	gxksimplelabel.hh	\
+	gxkspline.hh		\
+	gxkstatusbar.hh		\
+	gxkstock.hh		\
+	gxktexttools.hh		\
+	gxkutils.hh		\
 )
-gxk_c_sources = $(strip \
-	gxkcompat.cc	\
-	gxkled.cc	gxkcanvas.cc		gxkdialog.cc	gxkauxwidgets.cc \
-	gxkstatusbar.cc	gxkstock.cc		gxktexttools.cc	gxklistwrapper.cc \
-	gxkrackeditor.cc	gxkutils.cc		gxkpolygon.cc	gxkcellrendererpopup.cc \
-	gxkradget.cc	gxkaction.cc		gxkglobals.cc	gxkradgetfactory.cc \
-	glewidgets.c	gxkracktable.cc		gxkrackitem.cc	gxksimplelabel.cc \
-	gxkparam.cc	gxkscrollcanvas.cc	gxkimagecache.cc	gxklogadjustment.cc \
-	gxkmenubutton.cc	gxkspline.cc		gxkassortment.cc gxknotebook.cc \
+gxk_c_sources = $(strip		\
+	glewidgets.c		\
+	gxkaction.cc		\
+	gxkassortment.cc	\
+	gxkauxwidgets.cc	\
+	gxkcanvas.cc		\
+	gxkcellrendererpopup.cc \
+	gxkcompat.cc		\
+	gxkdialog.cc		\
+	gxkglobals.cc		\
+	gxkimagecache.cc	\
+	gxkled.cc		\
+	gxklistwrapper.cc	\
+	gxklogadjustment.cc	\
+	gxkmenubutton.cc	\
+	gxknotebook.cc		\
+	gxkparam.cc		\
+	gxkpolygon.cc		\
+	gxkrackeditor.cc	\
+	gxkrackitem.cc		\
+	gxkracktable.cc		\
+	gxkradget.cc		\
+	gxkradgetfactory.cc	\
+	gxkscrollcanvas.cc	\
+	gxksimplelabel.cc 	\
+	gxkspline.cc		\
+	gxkstatusbar.cc		\
+	gxkstock.cc		\
+	gxktexttools.cc		\
+	gxkutils.cc		\
 )
-gxk_extra_sources = $(strip \
-	gxkparam-entry.cc	gxkparam-label.cc	\
-	gxkparam-scale.cc	gxkparam-spinner.cc	\
+gxk_extra_sources = $(strip	\
+	gxkmarshal.list		\
+	gxkparam-entry.cc	\
+	gxkparam-label.cc	\
+	gxkparam-scale.cc	\
+	gxkparam-spinner.cc	\
 	gxkparam-toggle.cc	\
 	gxkrackcovers.cc	\
-	gxkmarshal.list		\
 )
 
 doc_sources = $(gxk_headers) $(gxk_c_sources) $(gxk_extra_sources)
@@ -140,7 +184,6 @@ gxktest_LDADD    = $(progs_LDADD)
 noinst_PROGRAMS   += splinetest
 splinetest_SOURCES = splinetest.cc
 splinetest_LDADD   = $(progs_LDADD)
-
 
 #
 # convenience targets for generated source files
