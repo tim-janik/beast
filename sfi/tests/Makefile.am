@@ -15,12 +15,6 @@ misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBZ_LIBS)
 misctests_SOURCES  = misctests.cc
 
-# testcxx
-#TAPTESTS	+= testcxx
-testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
-testcxx_LDADD	 = $(top_builddir)/sfi/libsfi-@MAJOR@.la
-testcxx_SOURCES  = testcxx.cc
-
 # testsfidl
 TAPTESTS          += testsfidl
 testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS) -O0
