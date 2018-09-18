@@ -8,12 +8,11 @@ private_images = $(strip	\
 )
 public_images = $(strip         \
 	beast-mime.png		\
-	bse-mime.png		\
 	beast-splash.png	\
+	bse-mime.png		\
 )
 images_DATA = ${public_images}
 imagesdir = $(beastdatadir)/images
-
 
 # install pkg-config files
 pkgconfigdir = $(bselibdir)/pkgconfig
