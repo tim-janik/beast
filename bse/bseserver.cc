@@ -1470,7 +1470,12 @@ ServerImpl::release_shared_block (const SharedBlock &sb)
   release_aligned_block (ab);
 }
 
+} // Bse
+
 // == Allocator Tests ==
+namespace { // Anon
+using namespace Bse;
+
 BSE_INTEGRITY_TEST (bse_server_test_allocator);
 static void
 bse_server_test_allocator()
@@ -1498,4 +1503,4 @@ bse_server_test_allocator()
   BSE_SERVER.release_shared_block (sb1);
 }
 
-} // Bse
+} // Anon
