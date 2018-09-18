@@ -32,10 +32,10 @@ aidacc_tests_t303_explore_SOURCES =	\
 	aidacc/aida.cc			\
 	aidacc/tests/t303-explore.cc
 tests_t303_generated                 =      	\
-	aidacc/tests/t303-explore_interfaces.hh	\
 	aidacc/tests/t303-explore_interfaces.cc	\
-        aidacc/tests/t303-explore_handles.hh	\
-        aidacc/tests/t303-explore_handles.cc
+	aidacc/tests/t303-explore_interfaces.hh	\
+        aidacc/tests/t303-explore_handles.cc	\
+        aidacc/tests/t303-explore_handles.hh
 # MAKE(1) supports parallel execution of a multiple-targets-rule *only* for implicit rules (with '%')
 aidacc/tests/t303-%_interfaces.hh aidacc/tests/t303-%_interfaces.cc aidacc/tests/t303-%_handles.hh aidacc/tests/t303-%_handles.cc: aidacc/tests/t303-%.idl $(AIDACC_CXXSTUB_PY) $(AIDACC)
 	$(QGEN)
@@ -80,18 +80,18 @@ aidacc/tests/t305-testpass-compile: aidacc/tests/t301-pass.idl aidacc/tests/t301
 	$(Q) cd aidacc/tests/ && $(CXXCOMPILE) $(CXXFLAGS) -I../.. t305-pass_interfaces.cc -c
 	$(Q) cd aidacc/tests/ && $(CXXCOMPILE) $(CXXFLAGS) -I../.. t305-pass_handles.cc -c
 AIDACC_TESTS_CLEANFILES += \
-	aidacc/tests/t305-inc1_interfaces.hh	\
-	aidacc/tests/t305-inc1_interfaces.cc	\
-	aidacc/tests/t305-inc1_handles.hh	\
 	aidacc/tests/t305-inc1_handles.cc	\
-	aidacc/tests/t305-inc2_interfaces.hh	\
-	aidacc/tests/t305-inc2_interfaces.cc	\
-	aidacc/tests/t305-inc2_handles.hh	\
+	aidacc/tests/t305-inc1_handles.hh	\
+	aidacc/tests/t305-inc1_interfaces.cc	\
+	aidacc/tests/t305-inc1_interfaces.hh	\
 	aidacc/tests/t305-inc2_handles.cc	\
-	aidacc/tests/t305-pass_interfaces.hh	\
-	aidacc/tests/t305-pass_interfaces.cc	\
+	aidacc/tests/t305-inc2_handles.hh	\
+	aidacc/tests/t305-inc2_interfaces.cc	\
+	aidacc/tests/t305-inc2_interfaces.hh	\
+	aidacc/tests/t305-pass_handles.cc	\
 	aidacc/tests/t305-pass_handles.hh	\
-	aidacc/tests/t305-pass_handles.cc
+	aidacc/tests/t305-pass_interfaces.cc	\
+	aidacc/tests/t305-pass_interfaces.hh
 t305-testpass-compile-test: aidacc/tests/t305-testpass-compile
 aidacc_tests_checkrules += t305-testpass-compile-test
 

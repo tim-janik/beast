@@ -16,17 +16,17 @@ aidacc_imports = $(strip		\
 	aidacc/yapps2runtime.py		\
 )
 aidacc_generated = $(strip		\
+	aidacc/IdStrings.py		\
 	aidacc/Parser.py		\
 	aidacc/TmplFiles.py		\
-	aidacc/IdStrings.py		\
 )
 aidacc_templ_files = $(strip		\
 	aidacc/CxxStub-client.cc	\
 	aidacc/CxxStub-server.cc	\
 )
 aidacc_private_files = $(strip		\
-	aidacc/main.py 			\
 	aidacc/Parser.g			\
+	aidacc/main.py 			\
 )
 
 # == aidacc dirs ==
