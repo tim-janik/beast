@@ -170,3 +170,44 @@ sfi_note_examine (gint      note,
   if (letter_p)
     *letter_p = sfi_note_name_table[semitone][0];
 }
+
+// == Testing ==
+#include "testing.hh"
+namespace { // Anon
+using namespace Bse;
+
+BSE_INTEGRITY_TEST (test_notes);
+static void
+test_notes (void)
+{
+  gchar *str, *error = NULL;
+  guint i;
+  str = sfi_note_to_string (SFI_MIN_NOTE);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
+  TASSERT (error == NULL);
+  g_free (str);
+  str = sfi_note_to_string (SFI_KAMMER_NOTE);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_KAMMER_NOTE);
+  TASSERT (error == NULL);
+  g_free (str);
+  str = sfi_note_to_string (SFI_MAX_NOTE);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_MAX_NOTE);
+  TASSERT (error == NULL);
+  g_free (str);
+  for (i = SFI_MIN_NOTE; i <= SFI_MAX_NOTE; i++)
+    {
+      int octave, semitone;
+      gboolean black_semitone;
+      gchar letter;
+      sfi_note_examine (i, &octave, &semitone, &black_semitone, &letter);
+      TASSERT (octave == SFI_NOTE_OCTAVE (i));
+      TASSERT (semitone == SFI_NOTE_SEMITONE (i));
+      TASSERT (SFI_NOTE_GENERIC (octave, semitone) == int (i));
+    }
+  sfi_note_from_string_err ("NeverNote", &error);
+  TASSERT (error != NULL);
+  // printout ("{%s}", error);
+  g_free (error);
+}
+
+} // Anon
