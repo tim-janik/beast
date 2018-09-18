@@ -324,6 +324,7 @@ install-exec-hook: install-exec-debug
 pre_uninstall_bselibexec_hook := $(strip uninstall-bselibexecLTLIBRARIES) # hook to run before and keep automake uninstall-bselibexecLTLIBRARIES
 $(pre_uninstall_bselibexec_hook): uninstall-split-debug # run uninstall-split-debug *before* make 'uninstall'
 # setup sources, their dependancies and commands
+$(bse_public_headers): sysconfig.h
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
 GLIB_MKENUMS = glib-mkenums

@@ -722,7 +722,7 @@ Makefile
 data/Makefile
 data/beast.applications
 sfi/Makefile
-sfi/sysconfig.h
+bse/sysconfig.h
 sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
