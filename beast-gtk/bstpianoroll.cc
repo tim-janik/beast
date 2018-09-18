@@ -2,7 +2,7 @@
 #include "bstpianoroll.hh"
 #include "bstasciipixbuf.hh"
 #include "bstskinconfig.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <math.h>
 

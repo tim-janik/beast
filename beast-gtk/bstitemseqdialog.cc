@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstitemseqdialog.hh"
 #include "bsttreestores.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     bst_item_seq_dialog_activate          (BstItemSeqDialog *self);

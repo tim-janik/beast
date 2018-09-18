@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstplayback.hh"
 #include "bstapp.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void wave_oscillator_pcm_notify (BstPlayBackHandle *handle,

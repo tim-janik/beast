@@ -2,7 +2,7 @@
 #include "gxkracktable.hh"
 #include "gxkrackeditor.hh"
 #include "gxkrackitem.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 typedef enum
 {

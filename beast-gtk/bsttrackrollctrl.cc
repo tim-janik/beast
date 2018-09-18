@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttrackrollctrl.hh"
 #include "bstpartdialog.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #define QUANTIZATION(self)	((self)->quant_rtools->action_id)
 #define	HAVE_OBJECT		(unsigned (1) << 31)

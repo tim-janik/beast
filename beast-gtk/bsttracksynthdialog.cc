@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttracksynthdialog.hh"
 #include "bsttreestores.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     bst_track_synth_dialog_finalize     (GObject                    *object);

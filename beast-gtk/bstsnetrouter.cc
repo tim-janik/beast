@@ -4,7 +4,7 @@
 #include "bstmenus.hh"
 #include "bstgconfig.hh"
 #include "bstscrollgraph.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
 #include <string.h>

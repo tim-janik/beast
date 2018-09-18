@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"   /* for GScanner */
 #include "bstsequence.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <gtk/gtkdrawingarea.h>
 
 /* --- prototypes --- */

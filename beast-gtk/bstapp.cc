@@ -11,7 +11,7 @@
 #include "bstprojectctrl.hh"
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <algorithm>
 

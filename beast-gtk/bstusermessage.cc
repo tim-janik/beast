@@ -2,7 +2,7 @@
 #include "bstusermessage.hh"
 #include "bstgconfig.hh"
 #include "bstmsgabsorb.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <errno.h>
 

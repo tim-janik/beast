@@ -3,7 +3,7 @@
 #include "bstparam.hh"
 #include "bstitemseqdialog.hh" // FIXME
 #include "bstsnifferscope.hh" // FIXME
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     bus_editor_action_exec           (gpointer                data,

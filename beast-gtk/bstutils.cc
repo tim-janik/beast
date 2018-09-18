@@ -18,7 +18,7 @@
 #include "bstdbmeter.hh"
 #include "bstscrollgraph.hh"
 #include <bse/sfistore.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>

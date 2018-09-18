@@ -3,7 +3,7 @@
 #include "bstauxdialogs.hh"
 #include "bstpatternctrl.hh"
 #include "bstfiledialog.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 enum {

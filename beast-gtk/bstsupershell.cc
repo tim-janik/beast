@@ -9,7 +9,7 @@
 #include "bstsoundfontview.hh"
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 enum {

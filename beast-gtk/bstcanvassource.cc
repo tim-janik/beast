@@ -2,7 +2,7 @@
 #include "bstcanvassource.hh"
 #include "bstparamview.hh"
 #include "bstgconfig.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- defines --- */

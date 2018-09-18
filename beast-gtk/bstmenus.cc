@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstmenus.hh"
 #include <string.h>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- structures --- */
 struct BstChoice {

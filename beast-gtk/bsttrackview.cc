@@ -4,7 +4,7 @@
 #include "bstgrowbar.hh"
 #include "bsttracksynthdialog.hh"
 #include "bstitemseqdialog.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h> /* strtol */
 #include <string.h>
 

@@ -3,7 +3,7 @@
 #include "gxkstock.hh"
 #include "gxkradget.hh"
 #include "bse/sfiwrapper.hh" /* for sfi_url_show() */
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>

@@ -2,7 +2,7 @@
 #include "bstitemview.hh"
 #include "bstparamview.hh"
 #include "bsttreestores.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void	bst_item_view_destroy		(GtkObject		*object);

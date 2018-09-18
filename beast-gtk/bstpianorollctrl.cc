@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpianorollctrl.hh"
 #include "bsteventrollctrl.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 #define NOTE_LENGTH(self)       ((self)->note_rtools->action_id)
 #define QUANTIZATION(self)      ((self)->quant_rtools->action_id)

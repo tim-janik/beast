@@ -2,7 +2,7 @@
 #include "bsteventroll.hh"
 #include "bstasciipixbuf.hh"
 #include "bstskinconfig.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- defines --- */

@@ -3,7 +3,7 @@
 #include "bstwaveeditor.hh"
 #include "bstfiledialog.hh"
 #include "bstsampleeditor.hh"
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void     wave_view_action_exec           (gpointer                data,
