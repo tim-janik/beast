@@ -19,6 +19,42 @@ AIDACC        = $(topdir)/aidacc/aidacc
 #
 # BSE public header files
 bse_public_headers = $(strip \
+	backtrace.hh			\
+	bcore.hh			\
+	blob.hh				\
+	cxxaux.hh			\
+	datalist.hh			\
+	entropy.hh			\
+	formatter.hh			\
+	gbsearcharray.hh		\
+	path.hh				\
+	platform.hh			\
+	randomhash.hh			\
+	sfi.hh				\
+	sficomport.hh			\
+	sficomwire.hh			\
+	sficxx.hh			\
+	sfifilecrawler.hh		\
+	sfiglue.hh			\
+	sfigluecodec.hh			\
+	sfiglueproxy.hh			\
+	sfimemory.hh			\
+	sfinote.hh			\
+	sfiparams.hh			\
+	sfiprimitives.hh		\
+	sfiring.hh			\
+	sfiserial.hh			\
+	sfistore.hh			\
+	sfitime.hh			\
+	sfitypes.hh			\
+	sfiustore.hh			\
+	sfivalues.hh			\
+	sfivisitors.hh			\
+	sfivmarshal.hh			\
+	sfiwrapper.hh			\
+	strings.hh			\
+	testing.hh			\
+	unicode.hh			\
 	bse.hh				\
 	bsebiquadfilter.hh		\
 	bseblockutils.hh		\
@@ -142,6 +178,39 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
+	backtrace.cc			\
+	bcore.cc			\
+	blob.cc				\
+	datalist.cc			\
+	entropy.cc			\
+	formatter.cc			\
+	path.cc				\
+	platform.cc			\
+	randomhash.cc			\
+	sficomport.cc			\
+	sficomwire.cc			\
+	sfifilecrawler.cc		\
+	sfiglue.cc			\
+	sfigluecodec.cc			\
+	sfiglueproxy.cc			\
+	sfimemory.cc			\
+	sfinote.cc			\
+	sfiparams.cc			\
+	sfiprimitives.cc		\
+	sfiring.cc			\
+	sfiserial.cc			\
+	sfistore.cc			\
+	sfitime.cc			\
+	sfitypes.cc			\
+	sfiustore.cc			\
+	sfivalues.cc			\
+	sfivisitors.cc			\
+	sfivmarshal.cc			\
+	sfiwrapper.cc			\
+	strings.cc			\
+	testing.cc			\
+	unicode.cc			\
+	weaksym.cc			\
 	bsebasics.cc			\
 	bsebiquadfilter.cc		\
 	bseblockutils.cc		\
@@ -335,6 +404,17 @@ SFIDL_INC = -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
 	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(bselibexecdir)
 install-exec-hook: install-exec-ldconfig
+
+# == zres.cc ==
+include ../res/Makefile.sub
+# ^^^^^ FIXME: the above should only be included by the toplevel Makefile.am
+MISC_PACKRES = $(top_srcdir)/misc/packres.py
+zres.cc: $(top_srcdir)/res/resfiles.list $(MISC_PACKRES) # res_resfiles_list contains res/resfiles.list
+	$(AM_V_GEN)
+	$(Q) $(MISC_PACKRES) -s '.*/res/' $(res_resfiles_list:%=$(top_srcdir)/res/%) > $@.tmp
+	$(Q) mv $@.tmp $@
+CLEANFILES += zres.cc
+bcore.cc: zres.cc
 
 # == gslfft.cc ==
 GENERATED_CLEANFILES += gslfft.cc
