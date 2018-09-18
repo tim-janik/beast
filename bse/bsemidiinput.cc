@@ -4,7 +4,7 @@
 #include "bsemidireceiver.hh"
 #include "bsesnet.hh"
 #include "bseengine.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- properties --- */
 enum

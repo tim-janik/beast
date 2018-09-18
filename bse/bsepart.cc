@@ -8,7 +8,7 @@
 #include "gslcommon.hh"
 #include "bsemathsignal.hh" // bse_semitone_table
 #include "bseieee754.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h>
 #include <string.h>
 

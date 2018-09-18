@@ -2,7 +2,7 @@
 #include "bsecategories.hh"
 #include "bseutils.hh"
 #include "bseserver.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <algorithm>
 #include <string.h>
 

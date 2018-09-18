@@ -3,7 +3,7 @@
 #include "bseutils.hh"
 #include "bseieee754.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <bse/sfi.hh>
 

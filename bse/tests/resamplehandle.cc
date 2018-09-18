@@ -4,7 +4,7 @@
 #include <bse/testing.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h>
 #include <vector>
 #include <string>

@@ -3,7 +3,7 @@
 #include "sfiparams.hh"
 #include "sfitime.hh"
 #include "sfinote.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>     // FIXME: remove "free"
 #include <stdio.h>      /* sscanf() */

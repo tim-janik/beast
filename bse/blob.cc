@@ -1,7 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "blob.hh"
 #include "bcore.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>

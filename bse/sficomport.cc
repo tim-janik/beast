@@ -3,7 +3,7 @@
 #include "sfiprimitives.hh"
 #include "sfiserial.hh"
 #include "sfistore.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

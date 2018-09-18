@@ -5,7 +5,7 @@
 #include "bseengine.hh"
 #include "gslcommon.hh"
 #include "bsesnet.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- prototypes --- */
 static void bse_midi_voice_input_init             (BseMidiVoiceInput        *self);

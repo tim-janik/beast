@@ -2,7 +2,7 @@
 #include "sfiprimitives.hh"
 #include "sfimemory.hh"
 #include "sfiparams.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h>
 #include <string.h>
 

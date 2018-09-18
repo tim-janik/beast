@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include "bsestorage.hh"
 #include "gsldatahandle.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 /* --- structures --- */
 typedef struct _Notify Notify;

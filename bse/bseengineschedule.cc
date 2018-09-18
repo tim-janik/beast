@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengineschedule.hh"
 #include "bseengineutils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 #define SCHED_DEBUG(...) Bse::debug ("sched", __VA_ARGS__)
 #define CHECK_DEBUG()    Bse::debug_key_enabled ("sched")

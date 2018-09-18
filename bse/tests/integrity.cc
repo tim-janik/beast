@@ -1,7 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/bsemain.hh>
 #include <bse/testing.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 
 using Bse::printerr;
 typedef Bse::IntegrityCheck::TestFunc TestFunc;

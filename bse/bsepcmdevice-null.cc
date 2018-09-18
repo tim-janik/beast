@@ -2,7 +2,7 @@
 #include "bsepcmdevice-null.hh"
 #include "bsesequencer.hh"
 #include "bseengine.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 #define PDEBUG(...)     Bse::debug ("pcm", __VA_ARGS__)

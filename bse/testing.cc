@@ -1,6 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "testing.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <algorithm>
 #include <unistd.h>
 #include <stdio.h>

@@ -5,7 +5,7 @@
 #include "bseobject.hh"
 #include "bseenums.hh"
 #include "bsemain.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <gmodule.h>
 #include <string.h>
 #include <fcntl.h>

@@ -4,7 +4,7 @@
 #include "gsldatacache.hh"
 #include "gsldatautils.hh"
 #include "gslfilehash.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <errno.h>
 

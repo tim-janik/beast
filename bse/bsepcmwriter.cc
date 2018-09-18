@@ -2,7 +2,7 @@
 #include "bsepcmwriter.hh"
 #include "bseserver.hh"
 #include "gsldatautils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>

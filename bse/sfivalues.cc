@@ -3,7 +3,7 @@
 #include "sfiprimitives.hh"
 #include "sfiparams.hh"
 #include "sfimemory.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 
 /* --- variables --- */

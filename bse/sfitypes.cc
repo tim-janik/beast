@@ -6,7 +6,7 @@
 #include "sfitime.hh"
 #include "sfiglue.hh"
 #include "sfifilecrawler.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 

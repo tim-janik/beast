@@ -5,7 +5,7 @@
 #include "bseengineprivate.hh"
 #include "bseengineschedule.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <unordered_map>
 #include <string.h>
 #include <unistd.h>

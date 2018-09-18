@@ -4,7 +4,7 @@
 #include "gslcommon.hh"
 #include "gsldatahandle.hh"
 #include "bsemathsignal.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 /* --- macros --- */

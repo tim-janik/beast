@@ -2,7 +2,7 @@
 #include "bseundostack.hh"
 #include "bseproject.hh"
 #include "bsecontainer.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 #define UDEBUG(...)     Bse::debug ("undo", __VA_ARGS__)

@@ -4,7 +4,7 @@
 #include "bsemathsignal.hh"
 #include "bseengine.hh"	/* for bse_engine_sample_freq() */
 #include "bsemain.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 
 #define WDEBUG(...)     Bse::debug ("waveosc", __VA_ARGS__)

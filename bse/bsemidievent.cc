@@ -4,7 +4,7 @@
 #include "gslcommon.hh"
 #include "bseieee754.hh"
 #include "bsecxxplugin.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <errno.h>
 
 

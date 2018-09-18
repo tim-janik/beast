@@ -2,7 +2,7 @@
 #include "sfifilecrawler.hh"
 #include "sfiprimitives.hh"
 #include "sfiwrapper.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <sys/types.h>
 #include <dirent.h>

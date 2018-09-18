@@ -11,7 +11,7 @@
 #include "bsepcmwriter.hh"
 #include "bseieee754.hh"
 #include "bsestartup.hh"        // for TaskRegistry
-#include "private.hh"
+#include "bse/internal.hh"
 #include <sys/poll.h>
 #include <errno.h>
 #include <string.h>

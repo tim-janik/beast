@@ -4,7 +4,7 @@
 #include <bse/gsldatautils.hh>
 #include <bse/bse.hh>
 #include <bse/bsemain.hh>
-#include "sfi/private.hh"
+#include "bse/internal.hh"
 #include <stdlib.h>
 
 /* --- loop handle: reference code --- */

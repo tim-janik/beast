@@ -3,7 +3,7 @@
 #include "sfiparams.hh"
 #include "sfiglueproxy.hh"
 #include "sfiustore.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 

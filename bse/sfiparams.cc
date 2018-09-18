@@ -3,7 +3,7 @@
 #include "sfiprimitives.hh"
 #include "sfinote.hh"
 #include "sfitime.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <string.h>
 #include <algorithm>
 #include <unordered_map>

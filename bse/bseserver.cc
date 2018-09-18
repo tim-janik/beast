@@ -13,7 +13,7 @@
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"
 #include "bseladspa.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>

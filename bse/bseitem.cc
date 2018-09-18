@@ -7,7 +7,7 @@
 #include "bseproject.hh"
 #include "bsesong.hh" // for song->musical_tuning
 #include "bseundostack.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 

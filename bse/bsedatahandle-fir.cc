@@ -3,7 +3,7 @@
 #include "gsldatautils.hh"
 #include "gslfilter.hh"
 #include "bseblockutils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 #include <complex>
 #include <vector>
 #include <string.h>

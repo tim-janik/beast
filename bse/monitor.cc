@@ -3,7 +3,7 @@
 #include "bseengine.hh"
 #include "bseserver.hh"
 #include "bseblockutils.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 namespace Bse {
 

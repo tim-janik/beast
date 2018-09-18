@@ -2,7 +2,7 @@
 #include "bseblockutils.hh"
 #include "bseresampler.hh"
 #include "bseresamplerimpl.hh"
-#include "private.hh"
+#include "bse/internal.hh"
 
 namespace {
 class BlockImpl : virtual public Bse::Block::Impl {
