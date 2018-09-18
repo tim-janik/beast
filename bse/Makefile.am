@@ -22,41 +22,6 @@ bse_public_headers = $(strip \
 	backtrace.hh			\
 	bcore.hh			\
 	blob.hh				\
-	cxxaux.hh			\
-	datalist.hh			\
-	entropy.hh			\
-	formatter.hh			\
-	gbsearcharray.hh		\
-	internal.hh			\
-	path.hh				\
-	platform.hh			\
-	randomhash.hh			\
-	glib-extra.hh			\
-	sfi.hh				\
-	sficomport.hh			\
-	sficomwire.hh			\
-	sficxx.hh			\
-	sfifilecrawler.hh		\
-	sfiglue.hh			\
-	sfigluecodec.hh			\
-	sfiglueproxy.hh			\
-	sfimemory.hh			\
-	sfinote.hh			\
-	sfiparams.hh			\
-	sfiprimitives.hh		\
-	sfiring.hh			\
-	sfiserial.hh			\
-	sfistore.hh			\
-	sfitime.hh			\
-	sfitypes.hh			\
-	sfiustore.hh			\
-	sfivalues.hh			\
-	sfivisitors.hh			\
-	sfivmarshal.hh			\
-	sfiwrapper.hh			\
-	strings.hh			\
-	testing.hh			\
-	unicode.hh			\
 	bse.hh				\
 	bsebiquadfilter.hh		\
 	bseblockutils.hh		\
@@ -155,7 +120,13 @@ bse_public_headers = $(strip \
 	bsewave.hh			\
 	bsewaveosc.hh			\
 	bsewaverepo.hh			\
+	cxxaux.hh			\
+	datalist.hh			\
 	effectbase.hh			\
+	entropy.hh			\
+	formatter.hh			\
+	gbsearcharray.hh		\
+	glib-extra.hh			\
 	gslcommon.hh			\
 	gsldatacache.hh			\
 	gsldatahandle-mad.hh		\
@@ -173,46 +144,45 @@ bse_public_headers = $(strip \
 	gslvorbis-enc.hh		\
 	gslwavechunk.hh			\
 	gslwaveosc.hh			\
+	internal.hh			\
 	ladspa.hh			\
 	memory.hh			\
 	monitor.hh			\
+	path.hh				\
+	platform.hh			\
+	randomhash.hh			\
+	sfi.hh				\
+	sficomport.hh			\
+	sficomwire.hh			\
+	sficxx.hh			\
+	sfifilecrawler.hh		\
+	sfiglue.hh			\
+	sfigluecodec.hh			\
+	sfiglueproxy.hh			\
+	sfimemory.hh			\
+	sfinote.hh			\
+	sfiparams.hh			\
+	sfiprimitives.hh		\
+	sfiring.hh			\
+	sfiserial.hh			\
+	sfistore.hh			\
+	sfitime.hh			\
+	sfitypes.hh			\
+	sfiustore.hh			\
+	sfivalues.hh			\
+	sfivisitors.hh			\
+	sfivmarshal.hh			\
+	sfiwrapper.hh			\
+	strings.hh			\
+	testing.hh			\
 	testobject.hh			\
+	unicode.hh			\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
 	backtrace.cc			\
 	bcore.cc			\
 	blob.cc				\
-	datalist.cc			\
-	entropy.cc			\
-	formatter.cc			\
-	path.cc				\
-	platform.cc			\
-	randomhash.cc			\
-	sficomport.cc			\
-	sficomwire.cc			\
-	sfifilecrawler.cc		\
-	sfiglue.cc			\
-	sfigluecodec.cc			\
-	sfiglueproxy.cc			\
-	sfimemory.cc			\
-	sfinote.cc			\
-	sfiparams.cc			\
-	sfiprimitives.cc		\
-	sfiring.cc			\
-	sfiserial.cc			\
-	sfistore.cc			\
-	sfitime.cc			\
-	sfitypes.cc			\
-	sfiustore.cc			\
-	sfivalues.cc			\
-	sfivisitors.cc			\
-	sfivmarshal.cc			\
-	sfiwrapper.cc			\
-	strings.cc			\
-	testing.cc			\
-	unicode.cc			\
-	weaksym.cc			\
 	bsebasics.cc			\
 	bsebiquadfilter.cc		\
 	bseblockutils.cc		\
@@ -313,6 +283,9 @@ bse_sources = $(strip \
 	bsewave.cc			\
 	bsewaveosc.cc			\
 	bsewaverepo.cc			\
+	datalist.cc			\
+	entropy.cc			\
+	formatter.cc			\
 	gslcommon.cc			\
 	gsldatacache.cc			\
 	gsldatahandle-mad.cc		\
@@ -330,7 +303,34 @@ bse_sources = $(strip \
 	gslwaveosc.cc			\
 	memory.cc			\
 	monitor.cc			\
+	path.cc				\
+	platform.cc			\
+	randomhash.cc			\
+	sficomport.cc			\
+	sficomwire.cc			\
+	sfifilecrawler.cc		\
+	sfiglue.cc			\
+	sfigluecodec.cc			\
+	sfiglueproxy.cc			\
+	sfimemory.cc			\
+	sfinote.cc			\
+	sfiparams.cc			\
+	sfiprimitives.cc		\
+	sfiring.cc			\
+	sfiserial.cc			\
+	sfistore.cc			\
+	sfitime.cc			\
+	sfitypes.cc			\
+	sfiustore.cc			\
+	sfivalues.cc			\
+	sfivisitors.cc			\
+	sfivmarshal.cc			\
+	sfiwrapper.cc			\
+	strings.cc			\
+	testing.cc			\
 	testobject.cc			\
+	unicode.cc			\
+	weaksym.cc			\
 )
 # glib-extra.cc gets compiled as part of bseconstvalues.cc
 # BSE Synthesis Modules
@@ -346,8 +346,8 @@ $(srcdir)/bsebus.cc: bsebasics.genidl.hh
 ../bse/bsebasics.genidl.hh: ;
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
-	bsecxxmodule.idl	\
 	bsecxxbase.idl		\
+	bsecxxmodule.idl	\
 )
 
 doc_sources = $(bse_idl_sources) $(bse_sources) $(bse_public_headers) sysconfig.h bseapi.idl
