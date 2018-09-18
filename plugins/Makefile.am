@@ -12,15 +12,15 @@ idl_files = $(strip			\
 	artscompressor.idl		\
 	bseamplifier.idl		\
 	bsebalance.idl			\
+	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
 	bsequantizer.idl		\
 	bsesummation.idl		\
-	standardsaturator.idl		\
-	standardguspatchenvelope.idl	\
-	bsecontribsampleandhold.idl	\
 	davbassfilter.idl		\
 	davchorus.idl			\
 	davorgan.idl			\
+	standardguspatchenvelope.idl	\
+	standardsaturator.idl		\
 )
 
 doc_sources = $(idl_files) $(SOURCES) $(cxx_plugin_headers) $(cxx_plugin_sources) $(cxx_plugin_extra)
@@ -39,10 +39,30 @@ SFIDL_INC = -I$(top_srcdir) -I$(top_builddir)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 # == C++ Plugins ==
-cxx_plugin_headers = bseadder.hh bseatandistort.hh bsesimpleadsr.hh bsemixer.hh bsemult.hh bsesequencer.hh bseiirfilter.hh	\
-		     davcanyondelay.hh davsyndrum.hh davxtalstrings.hh
-cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc bsemult.cc bsesequencer.cc bseiirfilter.cc	\
-		     davcanyondelay.cc davsyndrum.cc davxtalstrings.cc
+cxx_plugin_headers = $(strip	\
+	bseadder.hh		\
+	bseatandistort.hh	\
+	bseiirfilter.hh		\
+	bsemixer.hh		\
+	bsemult.hh		\
+	bsesequencer.hh		\
+	bsesimpleadsr.hh	\
+	davcanyondelay.hh	\
+	davsyndrum.hh		\
+	davxtalstrings.hh	\
+)
+cxx_plugin_sources = $(strip	\
+	bseadder.cc		\
+	bseatandistort.cc	\
+	bseiirfilter.cc		\
+	bsemixer.cc		\
+	bsemult.cc		\
+	bsesequencer.cc		\
+	bsesimpleadsr.cc	\
+	davcanyondelay.cc	\
+	davsyndrum.cc		\
+	davxtalstrings.cc	\
+)
 cxx_plugin_extra   = bsesimpleadsr-aux.cc
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
 cxxplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
