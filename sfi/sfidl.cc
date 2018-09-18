@@ -15,6 +15,7 @@ program_alias ()
 }
 } // Bse
 
+#ifdef  SFIDL_INTERNALS
 int main (int argc, char **argv)
 {
   Options options;
@@ -64,6 +65,7 @@ int main (int argc, char **argv)
   delete options.codeGenerator;
   return 0;
 }
+#endif
 
 #include "sfidl-generator.cc"
 #include "sfidl-namespace.cc"
