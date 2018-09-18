@@ -238,13 +238,9 @@ MOSTLYCLEANFILES +=		\
 # is cleared before recursing into subdirs, while the former is cleared later.
 am__CONFIG_DISTCLEAN_FILES = 	\
 	Makefile\.in		\
-	config/compile		\
 	aclocal\.m4		\
 	autogen\.log		\
-	config\.log		\
-	configure		\
-	configure\.h\.in	\
-	configure\.h\.in~	\
+	config/compile		\
 	config/config\.guess	\
 	config/config\.sub	\
 	config/depcomp		\
@@ -258,10 +254,14 @@ am__CONFIG_DISTCLEAN_FILES = 	\
 	config/lt~obsolete\.m4	\
 	config/missing		\
 	config/py-compile	\
-	config\.status		\
 	config\.cache		\
-	configure\.lineno	\
-	config\.status\.lineno
+	config\.log		\
+	config\.status		\
+	config\.status\.lineno	\
+	configure		\
+	configure\.h\.in	\
+	configure\.h\.in~	\
+	configure\.lineno
 
 # == tests/ ==
 include tests/Makefile.sub
