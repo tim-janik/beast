@@ -725,7 +725,6 @@ test_com_ports (void)
   gint afds[2], pipe_error;
   SfiComPort *port1, *port2;
   GValue *value, *rvalue;
-  TSTART ("Communication Ports");
   pipe_error = pipe (afds);
   TASSERT (pipe_error == 0);
   port1 = sfi_com_port_from_pipe ("portA", -1, afds[1]);
@@ -763,7 +762,6 @@ test_com_ports (void)
   TASSERT (pipe_error == -1);
   sfi_com_port_unref (port1);
   sfi_com_port_unref (port2);
-  TDONE ();
 }
 
 } // Anon
