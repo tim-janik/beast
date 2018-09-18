@@ -2216,7 +2216,6 @@ static void
 test_vmarshals (void)
 {
   SfiSeq *seq = sfi_seq_new ();
-  TSTART ("Vmarshals");
   sfi_seq_append_real (seq, -426.9112e-267);
   sfi_seq_append_num (seq, -2598768763298128732LL);
   sfi_vmarshal_void ((void*) test_vmarshal_func4, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
@@ -2224,7 +2223,6 @@ test_vmarshals (void)
   sfi_seq_append_int (seq, -2134567);
   sfi_seq_append_num (seq, (long) test_vmarshal_func7);
   sfi_vmarshal_void ((void*) test_vmarshal_func7, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
-  TDONE ();
   sfi_seq_unref (seq);
   if (0)
     generate_vmarshal_code ();
