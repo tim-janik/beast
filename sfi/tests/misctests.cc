@@ -26,58 +26,6 @@ using namespace Bse;
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
 static void
-test_time (void)
-{
-  SfiTime t;
-  gchar *error = NULL;
-  gchar *str;
-  const gchar *time_strings[] = {
-    "1990-01-01 00:00:00",
-    "1999-03-12 23:41:00",
-    "2037-12-31 23:59:59",
-  };
-  gint i;
-  TASSERT (SFI_USEC_FACTOR == 1000000);
-  TASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
-  t = sfi_time_system ();
-  if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
-    {
-      TOK ();
-      t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
-    }
-  else
-    TOK ();
-  t /= SFI_USEC_FACTOR;
-  t *= SFI_USEC_FACTOR;
-  str = sfi_time_to_string (t);
-  TASSERT (sfi_time_from_string_err (str, &error) == t);
-  TASSERT (error == NULL);
-  g_free (str);
-  /* test hard boundaries */
-  TASSERT (sfi_time_from_string ("1990-01-01 00:00:00") == SFI_MIN_TIME);
-  TASSERT (sfi_time_from_string ("2038-01-19 03:14:07") == SFI_MAX_TIME);
-  /* test error returns */
-  TASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
-  TASSERT (error != NULL);
-  // printout ("{%s}", error);
-  g_free (error);
-  for (i = 0; size_t (i) < G_N_ELEMENTS (time_strings); i++)
-    {
-      t = sfi_time_from_string_err (time_strings[i], &error);
-      if (!error)
-	TOK ();
-      else
-	printout ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
-      g_free (error);
-      str = sfi_time_to_string (t);
-      TASSERT (sfi_time_from_string_err (str, &error) == t);
-      TASSERT (error == NULL);
-      g_free (str);
-    }
-}
-TEST_ADD (test_time);
-
-static void
 test_com_ports (void)
 {
   gint afds[2], pipe_error;
