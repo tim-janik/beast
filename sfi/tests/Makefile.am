@@ -20,30 +20,18 @@ TAPTESTS          += misctests
 misctests_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 misctests_LDADD	   = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(LIBZ_LIBS)
 misctests_SOURCES  = misctests.cc utf8tests.cc
-$(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
 TAPTESTS	+= testcxx
 testcxx_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 testcxx_LDADD	 = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testcxx_SOURCES  = testcxx.cc
-$(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
 TAPTESTS          += testsfidl
 testsfidl_CXXFLAGS = $(AM_CXXFLAGS) $(SFI_CFLAGS)
 testsfidl_LDADD    = $(top_builddir)/sfi/libsfi-@MAJOR@.la
 testsfidl_SOURCES  = testsfidl.cc
-$(srcdir)/testsfidl.cc: testidl.h testidl.c
-
-# testidl (generation test)
-CLEANFILES += testidl.h testidl.c
-testidl.h: $(srcdir)/testidl.idl $(SFIDL)
-	$(SFIDL) --host-c --header $(srcdir)/testidl.idl > xgen-$(@F) \
-	&& mv xgen-$(@F) $@
-testidl.c: $(srcdir)/testidl.idl $(SFIDL)
-	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-$(@F) \
-	&& mv xgen-$(@F) $@
 
 # == t279-assertions-test ==
 t279-assertions-test: misctests

@@ -178,8 +178,6 @@ TEST_ADD (test_feature_toggles);
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
-#include "testidl.h"
-
 static void
 test_time (void)
 {
@@ -805,88 +803,8 @@ my_compare_func (const void*, const void*)
   exit (0);
 }
 
-static void
-test_sfidl_seq (void)
-{
-  TestPositionSeq* pseq;
-  TestPosition* pos;
-  TestPosition* pos2;
-  SfiRec* rec;
-  GValue* value;
-  TSTART ("Sfidl generated code");
-  /* test that types are registered properly */
-  // TASSERT (TEST_TYPE_POSITION != 0);
-  // TASSERT (TEST_TYPE_POSITION_SEQ != 0);
-  // TASSERT (TEST_TYPE_YES_NO_UNDECIDED != 0);
-  /* test sequences and structs generated for Position record */
-  pseq = test_position_seq_new ();
-  TASSERT (pseq != NULL);
-  TASSERT (pseq->n_positions == 0);
-  pos = test_position_new ();
-  TASSERT (pos != NULL);
-  pos->x = 1.0;
-  pos->y = -1.0;
-  pos->relevant = TEST_NO;
-  test_position_seq_append (pseq, pos);
-  TASSERT (pseq->n_positions == 1);
-  test_position_seq_resize (pseq, 4);
-  TASSERT (pseq->n_positions == 4);
-  test_position_seq_resize (pseq, 1);
-  TASSERT (pseq->n_positions == 1);
-  rec = test_position_to_rec (pos);
-  value = sfi_rec_get (rec, "relevant");
-  TASSERT (SFI_VALUE_HOLDS_CHOICE (value));
-  TASSERT (strcmp (sfi_value_get_choice (value), "test-no") == 0);
-  pos2 = test_position_from_rec (rec);
-  TASSERT (pos->x == pos2->x);
-  TASSERT (pos->y == pos2->y);
-  TASSERT (pos->relevant == pos2->relevant);
-  sfi_rec_unref (rec);
-  test_position_seq_free (pseq);
-  test_position_free (pos);
-  test_position_free (pos2);
-  /* test validation and defaulting */
-  {
-    GParamSpec *pspec;
-    GValue rec_value = { 0, };
-    /* create empty record */
-    g_value_init (&rec_value, SFI_TYPE_REC);
-    sfi_value_take_rec (&rec_value, sfi_rec_new ());
-    /* validate record against pspec */
-    pspec = sfi_pspec_rec ("foo", "bar", "bazz", test_position_fields, SFI_PARAM_STANDARD);
-    g_param_value_validate (pspec, &rec_value);
-    g_param_spec_unref (pspec);
-#if 0
-    GValue pos_value = { 0, };
-    /* transform record to boxed type */
-    g_value_init (&pos_value, TEST_TYPE_POSITION);
-    TASSERT (sfi_value_type_transformable (SFI_TYPE_REC, TEST_TYPE_POSITION));
-    sfi_value_transform (&rec_value, &pos_value);
-    /* get boxed type */
-    TASSERT (G_VALUE_HOLDS (&pos_value, TEST_TYPE_POSITION));
-    pos = g_value_get_boxed (&pos_value);
-    /* check that values match defaults */
-    TASSERT (pos->x == 2.0);
-    TASSERT (pos->y == 3.0);
-    TASSERT (pos->relevant == TEST_YES);
-    /* cleanup */
-    g_value_unset (&rec_value);
-    g_value_unset (&pos_value);
-#endif
-  }
-  /* test that correct code is generated for double constants */
-  TASSERT (test_real_division_fields.n_fields == 1);
-  SfiReal pi = sfi_pspec_get_real_default (test_real_division_fields.fields[0]);
-  TASSERT (fabs (3.14 - pi) < 0.01);
-  /* test constants */
-  // TASSERT (TEST_ANSWER_B == 42);
-  // TASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
-  TDONE ();
-}
-TEST_ADD (test_sfidl_seq);
-
 #include "../private.hh"
-#include "testidl.c"
+
 int
 main (int   argc,
       char *argv[])
@@ -931,8 +849,6 @@ main (int   argc,
       return_unless (1, 8);
       return 0;
     }
-
-  test_types_init ();
 
   if (0)
     {
