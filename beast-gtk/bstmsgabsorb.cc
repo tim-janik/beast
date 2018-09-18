@@ -229,7 +229,7 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sfi/sfistore.hh>       /* we rely on internal API here */
+#include <bse/sfistore.hh>       /* we rely on internal API here */
 
 static Bse::Error
 bst_msg_absorb_config_dump (const gchar *file_name)

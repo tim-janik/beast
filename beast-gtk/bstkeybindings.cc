@@ -583,7 +583,7 @@ bst_key_binding_item_pspec (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sfi/sfistore.hh>       /* we rely on internal API here */
+#include <bse/sfistore.hh>       /* we rely on internal API here */
 const gchar*
 bst_key_binding_rcfile (void)
 {

@@ -184,7 +184,7 @@ bst_skin_config_notify (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sfi/sfistore.hh>       /* we rely on internal API here */
+#include <bse/sfistore.hh>       /* we rely on internal API here */
 Bse::Error
 bst_skin_dump (const gchar *file_name)
 {
