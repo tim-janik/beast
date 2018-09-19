@@ -363,7 +363,7 @@ CLEANFILES += doc_sources.lst
 #
 bselibexecdir			     = $(bselibdir)
 bselibexec_LTLIBRARIES               = libbse-@MAJOR@.la
-libbse_@MAJOR@includedir             = $(bseincludedir)/bse
+libbse_@MAJOR@includedir             = $(pkginstalldir)/include/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) sysconfig.h bse.idl $(bse_idl_sources) $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh bseapi_handles.hh bsehack.idl bsegentypes.h
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)

@@ -28,7 +28,7 @@ CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_ _:1,2,3t
 TEXTFLAGS    = _:1:pass-c-format
 TMPDIR       = tmp-cpots
-LOCALEDIR    = $(beastlocaledir)
+LOCALEDIR    = $(pkginstalldir)/locale
 
 all: $(GMOFILES)
 
