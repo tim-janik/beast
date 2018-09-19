@@ -75,7 +75,7 @@ main (int   argc,
       char *argv[])
 {
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");

@@ -86,7 +86,7 @@ main (int argc, char *argv[])
   main_init_argv0_installpaths (argv[0]);
 
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -715,19 +715,19 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR));
 	  else if (strcmp (arg, "images") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
 	  else if (strcmp (arg, "locale") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+	    printout ("%s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
 	  else if (strcmp (arg, "skins") == 0)
 	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));
 	  else if (strcmp (arg, "ladspa") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA));
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS));
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -795,12 +795,12 @@ bst_exit_print_version (void)
   printout ("\n");
   printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
-  printout ("%s", Bse::cpu_info().c_str());
+  printout ("%s", Bse::cpu_info());
   printout ("\n");
-  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
-  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
-  printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
-  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR));
+  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
+  printout ("Locale Path:     %s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
+  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Effect Path:     %s\n", bse_server.get_effect_path());

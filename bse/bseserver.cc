@@ -1079,25 +1079,25 @@ ServerImpl::get_plugin_path ()
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), BSE_GCONFIG (instrument_path));
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), BSE_GCONFIG (sample_path));
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), BSE_GCONFIG (effect_path));
 }
 
 String
 ServerImpl::get_demo_path ()
 {
-  return Bse::installpath (Bse::INSTALLPATH_DATADIR_DEMO);
+  return Bse::runpath (Bse::RPath::DEMODIR);
 }
 
 String

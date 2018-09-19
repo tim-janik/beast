@@ -15,7 +15,6 @@ std::string (_) (const std::string &string, const std::string &plural, int64_t n
 
 // == INSTALLPATH ==
 enum InstallpathType {
-  INSTALLPATH_LOCALEBASE,
   INSTALLPATH_LADSPA,
   INSTALLPATH_DOCDIR,
   INSTALLPATH_USER_DATA,
@@ -23,10 +22,6 @@ enum InstallpathType {
   INSTALLPATH_BSELIBDIR_PLUGINS,
   INSTALLPATH_BSELIBDIR_DRIVERS,
   INSTALLPATH_DATADIR,
-  INSTALLPATH_DATADIR_DEMO,
-  INSTALLPATH_DATADIR_SAMPLES,
-  INSTALLPATH_DATADIR_EFFECTS,
-  INSTALLPATH_DATADIR_INSTRUMENTS,
   INSTALLPATH_DATADIR_IMAGES,
   INSTALLPATH_DATADIR_KEYS,
   INSTALLPATH_DATADIR_SKINS,
@@ -34,6 +29,16 @@ enum InstallpathType {
 /// Provide installation directories and searchpaths for various types of data.
 std::string installpath          (InstallpathType installpath_type);
 void        installpath_override (const std::string &topdir);
+
+enum class RPath {
+  INSTALLDIR = 1,
+  LOCALEDIR,
+  DEMODIR,
+  EFFECTDIR,
+  INSTRUMENTDIR,
+  SAMPLEDIR,
+};
+std::string runpath (RPath rpath);      ///< Retrieve various resource paths at runtime.
 
 // == AnsiColors ==
 /// The AnsiColors namespace contains utility functions for colored terminal output
@@ -76,7 +81,6 @@ void        application_name_init (String desktopname); ///< Set the application
 String      program_cwd           ();                   ///< The current working directory during startup.
 std::string executable_name       () BSE_PURE;          ///< Retrieve the name part of executable_path().
 std::string executable_path       () BSE_PURE;          ///< Retrieve the path to the currently running executable.
-std::string runpath_bsedatadir    ();                   ///< Retrieve the path to the libbse installation hierarchy.
 std::string cpu_info              ();                   ///< Retrieve string identifying the runtime CPU type.
 std::string version               ();                   ///< Provide a string containing the BSE library version number.
 
