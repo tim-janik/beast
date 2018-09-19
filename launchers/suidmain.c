@@ -124,5 +124,5 @@ main (int    argc,
   execv (executable, argv);
   /* handle execution errors */
   perror (executable);
-  return -1;
+  return 127;
 }
