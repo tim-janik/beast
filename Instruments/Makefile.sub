@@ -1,10 +1,10 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-Instruments-install:	install-Instruments_installDATA
-Instruments-uninstall:	uninstall-Instruments_installDATA
+Instruments-install:     install-Instruments_instrumentDATA
+Instruments-uninstall: uninstall-Instruments_instrumentDATA
 
 
-Instruments_install_DATA = $(strip            	\
+Instruments_instrument_DATA = $(strip          	\
 	Instruments/bqs-bass-drum-e8012.bse	\
 	Instruments/bqs-fretless-bass.bse	\
 	Instruments/bqs-merp-pad.bse		\
@@ -19,4 +19,4 @@ Instruments_install_DATA = $(strip            	\
 	Instruments/illus-vtremolo.bse		\
 	Instruments/stw-iron-string.bse		\
 )
-Instruments_installdir = $(beastdatadir)/Instruments
+Instruments_instrumentdir = $(pkginstalldir)/Instruments

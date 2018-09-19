@@ -10,7 +10,7 @@ EBEAST_MOSTLYCLEANFILES =
 #   electron finds the ebeast app/ files.
 # - DevTools can be activated with Shft+Ctrl+I when run from the devleopment tree.
 #   To use DevTools on the installed ebeast bundle, install electron-devtools-installer
-#   as npm package in $(beastdir)/bundle/app/.
+#   as npm package in $(pkginstalldir)/bundle/app/.
 # - WHen DevTools are enabled, Shift+Ctrl+R can initiate an ebeast page reload.
 #
 # Considerations for building the ebeast bundle:
@@ -163,14 +163,14 @@ EBEAST_MOSTLYCLEANFILES += ebeast/bundlecache/ ebeast/bundletemp/
 
 # == ebeast/ installations ==
 ebeast-install: ebeast/bundlecache/ebeast
-	$(MKDIR_P) "$(DESTDIR)$(beastdir)" "$(DESTDIR)$(beastbindir)"
-	rm -rf "$(DESTDIR)$(beastdir)/bundle" "$(DESTDIR)$(beastdir)/app"
-	cp -RP ebeast/bundlecache "$(DESTDIR)$(beastdir)/bundle"
-	mv "$(DESTDIR)$(beastdir)/bundle/resources/app" "$(DESTDIR)$(beastdir)/bundle/"
-	ln -s ../app "$(DESTDIR)$(beastdir)/bundle/resources/app"
+	$(MKDIR_P) "$(DESTDIR)$(pkginstalldir)" "$(DESTDIR)$(beastbindir)"
+	rm -rf "$(DESTDIR)$(pkginstalldir)/bundle" "$(DESTDIR)$(pkginstalldir)/app"
+	cp -RP ebeast/bundlecache "$(DESTDIR)$(pkginstalldir)/bundle"
+	mv "$(DESTDIR)$(pkginstalldir)/bundle/resources/app" "$(DESTDIR)$(pkginstalldir)/bundle/"
+	ln -s ../app "$(DESTDIR)$(pkginstalldir)/bundle/resources/app"
 	ln -sf ../bundle/ebeast "$(DESTDIR)$(beastbindir)/ebeast"
 ebeast-uninstall:
-	rm -rf "$(DESTDIR)$(beastdir)/bundle/" "$(DESTDIR)$(beastdir)/app/" "$(DESTDIR)$(beastbindir)/ebeast"
+	rm -rf "$(DESTDIR)$(pkginstalldir)/bundle/" "$(DESTDIR)$(pkginstalldir)/app/" "$(DESTDIR)$(beastbindir)/ebeast"
 
 # == ebeast-run ==
 ebeast-run: ebeast/.appstamp ebeast/vue-components.html
