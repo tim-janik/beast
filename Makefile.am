@@ -69,7 +69,7 @@ include skins/Makefile.sub
 include skins/images/Makefile.sub
 
 # == doc/ install ==
-projectdocsdir   = $(beastdocdir)/
+projectdocsdir   = $(pkginstalldir)/doc
 projectdocs_DATA = HACKING README NEWS COPYING
 .SECONDARY: HACKING.md README.md		# pacify make(1) when shipping files generated from markdown
 MAINTAINERCLEANFILES += HACKING

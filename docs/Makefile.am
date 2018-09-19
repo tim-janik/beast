@@ -112,7 +112,7 @@ docs: doxy/richdocs
 .PHONY: docs
 
 # == install docs/doxy/html ==
-docs_html_installbase	 = $(beastdocdir)
+docs_html_installbase	 = $(pkginstalldir)/doc
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
 docs-html-install: $(docs_html_install_DATA)
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/

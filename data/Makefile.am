@@ -82,7 +82,7 @@ install-data-hook: export PS4 = $(empty) # we're using @ and set -x to hide unim
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
 # TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
 install-data-hook:
-	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(beastdocdir)/copyright'
+	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(pkginstalldir)/doc/copyright'
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
 	@$(call INSTALL_SYMLINK, '$(beastmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
@@ -97,7 +97,7 @@ install-data-hook:
 beastmandir = ${beastsharedir}/man
 
 uninstall-local: uninstall-sharedmimepackageDATA
-	rm -f '$(DESTDIR)$(beastdocdir)/copyright'
+	rm -f '$(DESTDIR)$(pkginstalldir)/doc/copyright'
 	rm -f '$(DESTDIR)$(mandir)/man1/beast.1'
 	rm -f '$(DESTDIR)$(mandir)/man1/bsewavetool.1'
 	rm -f '$(DESTDIR)$(mandir)/man5/bse.5'

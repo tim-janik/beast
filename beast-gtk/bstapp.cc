@@ -914,7 +914,7 @@ app_action_exec (gpointer data,
     BROWSE_LOCAL_URL:
       if (docs_url)
         {
-          gchar *local_url = g_strconcat ("file://", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str(), "/", docs_url, NULL);
+          gchar *local_url = g_strconcat ("file://", Bse::runpath (Bse::RPath::DOCDIR).c_str(), "/", docs_url, NULL);
           sfi_url_show (local_url);
           g_free (local_url);
         }

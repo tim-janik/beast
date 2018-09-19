@@ -195,7 +195,7 @@ main_init_gxk()
   // initialize Gtk+ Extensions
   gxk_init ();
   // documentation search paths
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
   gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   // now, we can popup the splash screen
@@ -715,7 +715,7 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR));
+	    printout ("%s\n", Bse::runpath (Bse::RPath::DOCDIR));
 	  else if (strcmp (arg, "images") == 0)
 	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
 	  else if (strcmp (arg, "locale") == 0)
@@ -797,7 +797,7 @@ bst_exit_print_version (void)
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Bse::cpu_info());
   printout ("\n");
-  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR));
+  printout ("Doc Path:        %s\n", Bse::runpath (Bse::RPath::DOCDIR));
   printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
   printout ("Locale Path:     %s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
   printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));

@@ -32,6 +32,7 @@ runpath (RPath rpath)
     {
     case RPath::INSTALLDIR:     return libbse_installdir;
     case RPath::LOCALEDIR:      return libbse_installdir + "/locale";
+    case RPath::DOCDIR:         return libbse_installdir + "/doc";
     case RPath::DEMODIR:        return libbse_installdir + "/Demos";
     case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
     case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
@@ -64,7 +65,6 @@ installpath (InstallpathType installpath_type)
   switch (installpath_type)
     {
     case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
-    case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
     case INSTALLPATH_BSELIBDIR_PLUGINS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/plugins");
     case INSTALLPATH_BSELIBDIR_DRIVERS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/drivers");
