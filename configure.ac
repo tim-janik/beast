@@ -94,7 +94,6 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-beastbindir="\${pkginstalldir}/bin"
 beastsharedir="\${pkginstalldir}/share"
 beastdatadir="\${pkginstalldir}"
 beastdocdir="\${pkginstalldir}/doc"
@@ -118,7 +117,6 @@ pkginstalldir="$bak_pkginstalldir"
 libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
-AC_SUBST(beastbindir)
 AC_SUBST(beastsharedir)
 AC_SUBST(beastdatadir)
 AC_SUBST(beastdocdir)

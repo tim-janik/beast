@@ -238,6 +238,7 @@ generated: clean-generated $(GENERATED)
 # build rules for programs
 #
 beastbin_PROGRAMS = beast-@MAJOR@.@MINOR@.@MICRO@
+beastbindir	  = $(pkginstalldir)/bin
 beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = $(bst_cc_sources) bstmain.cc
 nodist_beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = ../topbuildid.cc
 beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)

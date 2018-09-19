@@ -88,7 +88,7 @@ install-data-hook:
 	@$(call INSTALL_SYMLINK, '$(dotdesktopdir)/beast.desktop', '$(DESTDIR)$(datarootdir)/applications/beast.desktop')
 	@$(call INSTALL_SYMLINK, '$(dotapplicationsdir)/beast.applications', '$(DESTDIR)$(datarootdir)/application-registry/beast.applications')
 	@$(call INSTALL_SYMLINK, '$(sharedmimepackagedir)/beast.xml', '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml')
-	@$(call INSTALL_SYMLINK, '$(beastbindir)/beast', '$(DESTDIR)$(bindir)/beast')
+	@$(call INSTALL_SYMLINK, '$(pkginstalldir)/bin/beast', '$(DESTDIR)$(bindir)/beast')
 	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
 	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';
 beastmandir = ${beastsharedir}/man

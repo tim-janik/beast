@@ -23,6 +23,7 @@ CLEANFILES += doc_sources.lst
 #
 
 beastbin_PROGRAMS   = bsewavetool
+beastbindir         = $(pkginstalldir)/bin
 bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 nodist_bsewavetool_SOURCES = ../topbuildid.cc
 bsewavetool_LDADD   = $(progs_ldadd)
