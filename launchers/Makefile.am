@@ -2,7 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
-DEFS        += -DBINDIR=\"$(pkginstalldir)/bin\"
+DEFS        += -DMAJOR=$(MAJOR) -DMINOR=$(MINOR) -DMICRO=$(MICRO)
 AM_CXXFLAGS += $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 #
