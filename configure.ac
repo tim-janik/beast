@@ -94,47 +94,38 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-beastlocaledir="\${beastdir}/locale"
-beastbindir="\${beastdir}/bin"
-bselibdir="\${beastdir}/lib"
-beastsharedir="\${beastdir}/share"
-beastdatadir="\${beastdir}"
-beastdocdir="\${beastdir}/doc"
-bseincludedir="\${beastdir}/include"
-includerootdir="\${beastdir}/include"
+beastbindir="\${pkginstalldir}/bin"
+bselibdir="\${pkginstalldir}/lib"
+beastsharedir="\${pkginstalldir}/share"
+beastdatadir="\${pkginstalldir}"
+beastdocdir="\${pkginstalldir}/doc"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
 test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
 case "$with_pkgroot" in
-  no)			beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
-  */*)			beastdir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
+  no)			pkginstalldir="$libdir/beast-$MAJOR-$MINOR" ;;
+  */*)			pkginstalldir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
   *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
 esac
 bak_libdir="$libdir"
-bak_includerootdir="$includerootdir"; bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
+bak_pkginstalldir="$pkginstalldir"
 libdir=`eval echo "${libdir}"`
-includerootdir=`eval echo "${includerootdir}"`; bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_INCLUDEROOTDIR, ["`eval echo "${includerootdir}"`"], [Directory for libbse header files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
+pkginstalldir=`eval echo "${pkginstalldir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-includerootdir="$bak_includerootdir"; bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
+pkginstalldir="$bak_pkginstalldir"
 libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
-AC_SUBST(beastlocaledir)
-AC_SUBST(includerootdir)
-AC_SUBST(bseincludedir)
 AC_SUBST(beastbindir)
 AC_SUBST(bselibdir)
 AC_SUBST(beastsharedir)
 AC_SUBST(beastdatadir)
 AC_SUBST(beastdocdir)
-AC_SUBST(beastdir)
+AC_SUBST(pkginstalldir)
 
 # == Check for git ==
 AC_MSG_CHECKING([for git repository])
@@ -768,9 +759,9 @@ Autoconfiguration complete.
 
 	Building package:		$PACKAGE-$VERSION
 
-	Install Prefix:			`printexpandvar ${prefix}`
 	Binaries:			`printexpandvar ${bindir}`
-	Beast Program Directory:	`printexpandvar ${beastdir}`
+	Install Prefix:			`printexpandvar ${prefix}`
+	Installation Directory:		`printexpandvar ${pkginstalldir}`
 
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}
