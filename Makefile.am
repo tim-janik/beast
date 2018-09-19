@@ -96,11 +96,11 @@ installcheck-buildtest:
 	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> $@.cc \
 	&& echo '  return 0; }'						>> $@.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror $@.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+	$(Q) $(CXX) -Werror $@.cc -c `PKG_CONFIG_PATH="$(DESTDIR)$(pkginstalldir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror $@.o -o $@ `PKG_CONFIG_PATH="$(DESTDIR)$(bselibdir)/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
+	$(Q) $(CXX) -Werror $@.o -o $@ `PKG_CONFIG_PATH="$(DESTDIR)$(pkginstalldir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(bselibdir):$$LD_LIBRARY_PATH" ./$@ \
+	$(Q) LD_LIBRARY_PATH="$(DESTDIR)$(pkginstalldir)/lib:$$LD_LIBRARY_PATH" ./$@ \
 		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$(Q) rm -f $@.o $@.cc $@
 .PHONY: installcheck-buildtest

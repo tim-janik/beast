@@ -15,7 +15,7 @@ images_DATA = ${public_images}
 imagesdir = $(beastdatadir)/images
 
 # install pkg-config files
-pkgconfigdir = $(bselibdir)/pkgconfig
+pkgconfigdir = $(pkginstalldir)/lib/pkgconfig
 pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
 bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)

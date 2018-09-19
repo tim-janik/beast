@@ -95,7 +95,6 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 
 # Define package directories per major/minor version
 beastbindir="\${pkginstalldir}/bin"
-bselibdir="\${pkginstalldir}/lib"
 beastsharedir="\${pkginstalldir}/share"
 beastdatadir="\${pkginstalldir}"
 beastdocdir="\${pkginstalldir}/doc"
@@ -112,7 +111,6 @@ bak_pkginstalldir="$pkginstalldir"
 libdir=`eval echo "${libdir}"`
 pkginstalldir=`eval echo "${pkginstalldir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
@@ -121,7 +119,6 @@ libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
 AC_SUBST(beastbindir)
-AC_SUBST(bselibdir)
 AC_SUBST(beastsharedir)
 AC_SUBST(beastdatadir)
 AC_SUBST(beastdocdir)
