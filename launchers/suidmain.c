@@ -12,7 +12,7 @@
 static int original_priority = 0;
 
 static int      /* returns 0 for success */
-adjust_priority (void)
+adjust_priority (const char *argv0)
 {
   /* figure current priority */
   errno = 0;
@@ -31,21 +31,27 @@ adjust_priority (void)
     }
   else
     {
-      setpriority (PRIO_PROCESS, getpid(), PRIO_MIN);
+      if (setpriority (PRIO_PROCESS, getpid(), PRIO_MIN) < 0)
+        {
+          const int prio_errno = errno;
+          char *exe = realpath (argv0, NULL);
+          fprintf (stderr, "%s: unable to acquire soft realtime priority: %s\n", exe ? exe : argv0, strerror (prio_errno));
+          if (exe)
+            free (exe);
+        }
     }
   return errno;
 }
 
 int
-main (int    argc,
-      char **argv)
+main (int argc, char **argv)
 {
   const char *executable = NULL;
   int euid = geteuid ();
   int uid = getuid ();
 
   /* call privileged code */
-  const int priority_errno = adjust_priority (); /* sets original_priority */
+  const int priority_errno = adjust_priority (argv[0]); /* sets original_priority */
 
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
