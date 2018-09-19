@@ -118,6 +118,11 @@ main (int    argc,
 
   /* find executable */
   executable = custom_find_executable (&argc, &argv);
+  if (!executable)
+    {
+      perror ("getexepath");
+      _exit (127);
+    }
 
   /* exec */
   argv[0] = (char*) executable;
