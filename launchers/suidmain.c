@@ -24,19 +24,16 @@ adjust_priority (void)
     }
 
   /* improve priority */
-  if (original_priority > -10)
-    {
-      errno = 0;
-      setpriority (PRIO_PROCESS, getpid(), PRIO_MIN);
-    }
-  else
+  errno = 0;
+  if (original_priority <= -1)
     {
       /* assume somebody already adjusted our priority to a desired value */
     }
-  if (errno != 0)
-    return errno;       /* failed */
-
-  return 0;
+  else
+    {
+      setpriority (PRIO_PROCESS, getpid(), PRIO_MIN);
+    }
+  return errno;
 }
 
 int
@@ -48,7 +45,7 @@ main (int    argc,
   int uid = getuid ();
 
   /* call privileged code */
-  int priority_error = adjust_priority (); /* sets original_priority */
+  const int priority_errno = adjust_priority (); /* sets original_priority */
 
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
@@ -83,8 +80,8 @@ main (int    argc,
     return -1;
 
   /* give notice about errors */
-  if (euid == 0 && priority_error)
-    fprintf (stderr, "%s: failed to renice process: %s\n", argv[0], strerror (priority_error));
+  if (euid == 0 && priority_errno)
+    fprintf (stderr, "%s: failed to renice process: %s\n", argv[0], strerror (priority_errno));
 
   /* parse -N and -n options */
   int i, dropped_priority = -2147483647;
