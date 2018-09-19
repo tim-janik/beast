@@ -74,6 +74,9 @@ dotapplications_DATA = beast.applications
 # $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
 INSTALL_SYMLINK = ( d=$$(dirname $(2)) && set -x && rm -f $(2) && $(MKDIR_P) "$$d" && ln -s $(1) $(2) )
 
+empty :=
+install-data-hook: export PS4 = $(empty) # we're using @ and set -x to hide unimportant details
+
 # Create links into standard filesystem hierarchy (FHS) and update system databases
 # * https://www.freedesktop.org/wiki/Howto_desktop_files/
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
