@@ -117,10 +117,10 @@ main (int    argc,
     setpriority (PRIO_PROCESS, getpid(), dropped_priority);
 
   /* find executable */
-  executable = custom_find_executable (&argc, &argv);
+  executable = getbeastexepath (&argc, &argv);
   if (!executable)
     {
-      perror ("getexepath");
+      perror ("getbeastexepath()");
       _exit (127);
     }
 

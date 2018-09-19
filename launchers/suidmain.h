@@ -7,8 +7,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* custom program name finder */
-const char* custom_find_executable   (int        *argc,
-                                      char     ***argv);
+const char* getbeastexepath          (int *argc, char ***argv);
 /* check for "--" and similar arguments */
 int         custom_check_arg_stopper (const char *argument);
 
