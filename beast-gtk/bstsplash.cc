@@ -242,7 +242,7 @@ bst_splash_show_grab (GtkWidget *widget)
 
   if (!GTK_WIDGET_VISIBLE (widget))
     {
-      gtk_widget_show (widget);
+      gtk_widget_show_now (widget);
       if (!self->has_grab)
         {
           self->has_grab = TRUE;
@@ -250,8 +250,9 @@ bst_splash_show_grab (GtkWidget *widget)
         }
 
       GDK_THREADS_LEAVE ();
-      while (!GTK_WIDGET_MAPPED (widget))
-	g_main_iteration (TRUE);
+#if 1 // force splash screen despite compositing delays
+      usleep (50 * 1000);
+#endif
       while (g_main_pending ())
 	g_main_iteration (FALSE);
       GDK_THREADS_ENTER ();
