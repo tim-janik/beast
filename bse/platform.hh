@@ -17,8 +17,6 @@ std::string (_) (const std::string &string, const std::string &plural, int64_t n
 enum InstallpathType {
   INSTALLPATH_LADSPA,
   INSTALLPATH_USER_DATA,
-  INSTALLPATH_DATADIR,
-  INSTALLPATH_DATADIR_IMAGES,
 };
 /// Provide installation directories and searchpaths for various types of data.
 std::string installpath          (InstallpathType installpath_type);
@@ -29,6 +27,7 @@ enum class RPath {
   LOCALEDIR,
   DRIVERDIR,
   PLUGINDIR,
+  IMAGEDIR,
   DOCDIR,
   KEYBDIR,
   SKINDIR,

@@ -36,6 +36,7 @@ runpath (RPath rpath)
     case RPath::LOCALEDIR:      return libbse_installdir + "/locale";
     case RPath::DRIVERDIR:      return libbse_installdir + "/drivers" + objdir;
     case RPath::PLUGINDIR:      return libbse_installdir + "/plugins" + objdir;
+    case RPath::IMAGEDIR:       return libbse_installdir + "/images";
     case RPath::DOCDIR:         return libbse_installdir + "/doc";
     case RPath::KEYBDIR:        return libbse_installdir + "/keys";
     case RPath::SKINDIR:        return libbse_installdir + "/skins";
@@ -57,13 +58,10 @@ installpath_override (const String &topdir)
 std::string
 installpath (InstallpathType installpath_type)
 {
-  const bool ovr = !installpath_topdir.empty();
   switch (installpath_type)
     {
     case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
-    case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
-    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
     }
   return "";
 }

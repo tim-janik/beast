@@ -196,7 +196,7 @@ main_init_gxk()
   gxk_init ();
   // documentation search paths
   gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::IMAGEDIR).c_str());
   gxk_text_add_tsm_path (".");
   // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
@@ -234,7 +234,7 @@ main_show_splash_image()
 {
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  gchar *string = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  gchar *string = g_strconcat (Bse::runpath (Bse::RPath::IMAGEDIR).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
@@ -717,7 +717,7 @@ bst_args_process (int *argc_p, char **argv)
           if (strcmp (arg, "docs") == 0)
 	    printout ("%s\n", Bse::runpath (Bse::RPath::DOCDIR));
 	  else if (strcmp (arg, "images") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
+	    printout ("%s\n", Bse::runpath (Bse::RPath::IMAGEDIR));
 	  else if (strcmp (arg, "locale") == 0)
 	    printout ("%s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
 	  else if (strcmp (arg, "skins") == 0)
@@ -801,7 +801,7 @@ bst_exit_print_version (void)
   printout ("Driver Path:     %s\n", Bse::runpath (Bse::RPath::DRIVERDIR));
   printout ("Plugin Path:     %s\n", Bse::runpath (Bse::RPath::PLUGINDIR));
   printout ("Doc Path:        %s\n", Bse::runpath (Bse::RPath::DOCDIR));
-  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
+  printout ("Image Path:      %s\n", Bse::runpath (Bse::RPath::IMAGEDIR));
   printout ("Keyrc Path:      %s\n", Bse::runpath (Bse::RPath::KEYBDIR));
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());

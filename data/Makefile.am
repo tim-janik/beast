@@ -11,8 +11,8 @@ public_images = $(strip         \
 	beast-splash.png	\
 	bse-mime.png		\
 )
-images_DATA = ${public_images}
-imagesdir = $(beastdatadir)/images
+image_DATA = ${public_images}
+imagedir = $(pkginstalldir)/images
 
 # install pkg-config files
 pkgconfigdir = $(pkginstalldir)/lib/pkgconfig

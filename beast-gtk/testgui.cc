@@ -91,7 +91,7 @@ main (int   argc,
   gxk_init ();
   /* add documentation search paths */
   gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::IMAGEDIR).c_str());
   gxk_text_add_tsm_path (".");
   /* initialize BEAST GUI components */
   _bst_init_utils ();
