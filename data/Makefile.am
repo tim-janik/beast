@@ -2,18 +2,6 @@
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
-private_images = $(strip	\
-	beast-logo.png		\
-	beast.png		\
-)
-public_images = $(strip         \
-	beast-mime.png		\
-	beast-splash.png	\
-	bse-mime.png		\
-)
-image_DATA = ${public_images}
-imagedir = $(pkginstalldir)/images
-
 # install pkg-config files
 pkgconfigdir = $(pkginstalldir)/lib/pkgconfig
 pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
@@ -21,13 +9,6 @@ bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)
 	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
 CLEANFILES += bse.pc
-
-# install related pixmaps
-sharedpixmapsdir = $(pkginstalldir)/share/pixmaps
-sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
-beast-audio-x-bse.png: $(srcdir)/bse-mime.png
-	cp $< $@
-CLEANFILES += beast-audio-x-bse.png
 
 # intltool-merge translation rules
 	LC_ALL=C $(INTLMERGE) -d -u $(top_srcdir)/po /dev/null /dev/null
@@ -83,18 +64,23 @@ install-data-hook: export PS4 = $(empty) # we're using @ and set -x to hide unim
 # TODO: ../debian/copyright *should* be moved into ../docs/ and installed from there
 install-data-hook:
 	@set -x && $(INSTALL_DATA) ../debian/copyright '$(DESTDIR)$(pkginstalldir)/doc/copyright'
-	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
-	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
-	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
+	@$(call INSTALL_SYMLINK, '$(relativeimagedir)/beast.png', '$(DESTDIR)$(sharedpixmapsdir)/beast.png')
+	@$(call INSTALL_SYMLINK, '$(relativeimagedir)/bse-mime.png', '$(DESTDIR)$(sharedpixmapsdir)/beast-audio-x-bse.png')
 	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast.png')
 	@$(call INSTALL_SYMLINK, '$(sharedpixmapsdir)/beast-audio-x-bse.png', '$(DESTDIR)$(datarootdir)/pixmaps/beast-audio-x-bse.png')
 	@$(call INSTALL_SYMLINK, '$(dotdesktopdir)/beast.desktop', '$(DESTDIR)$(datarootdir)/applications/beast.desktop')
 	@$(call INSTALL_SYMLINK, '$(dotapplicationsdir)/beast.applications', '$(DESTDIR)$(datarootdir)/application-registry/beast.applications')
 	@$(call INSTALL_SYMLINK, '$(sharedmimepackagedir)/beast.xml', '$(DESTDIR)$(datarootdir)/mime/packages/beast.xml')
+	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man1/beast.1', '$(DESTDIR)$(mandir)/man1/beast.1')
+	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man1/bsewavetool.1', '$(DESTDIR)$(mandir)/man1/bsewavetool.1')
+	@$(call INSTALL_SYMLINK, '$(pkginstallmandir)/man5/bse.5', '$(DESTDIR)$(mandir)/man5/bse.5')
 	@$(call INSTALL_SYMLINK, '$(pkginstalldir)/bin/beast', '$(DESTDIR)$(bindir)/beast')
 	@set -x && test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)${dotdesktopdir}';
 	@set -x && test -z '$(UPDATE_MIME_DATABASE)' || $(UPDATE_MIME_DATABASE) '$(DESTDIR)${sharedmimedir}';
 pkginstallmandir = $(pkginstalldir)/share/man
+sharedpixmapsdir = $(pkginstalldir)/share/pixmaps
+# relativeimagedir: $(pkginstalldir)/share/pixmaps -> $(pkginstalldir)/images
+relativeimagedir = ../../images
 
 uninstall-local: uninstall-sharedmimepackageDATA
 	rm -f '$(DESTDIR)$(pkginstalldir)/doc/copyright'

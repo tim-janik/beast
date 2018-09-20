@@ -695,6 +695,7 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 data/beast.applications
+images/Makefile
 sfi/Makefile
 bse/sysconfig.h
 bse/bseconfig.h

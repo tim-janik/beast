@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.decl
 topdir = $(abs_top_srcdir)
 
-SUBDIRS		= po sfi bse plugins drivers beast-gtk launchers tools docs data .
+SUBDIRS		= po sfi bse plugins drivers beast-gtk launchers tools images docs data .
 
 # == make setup ==
 DEFS                    +=
