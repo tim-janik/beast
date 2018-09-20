@@ -537,6 +537,13 @@ searchpath_join (const String &frag0, const String &frag1, const String &frag2, 
 }
 
 String
+searchpath_join (const StringVector &string_vector)
+{
+  const char searchsep[2] = { BSE_SEARCHPATH_SEPARATOR, 0 };
+  return string_join (searchsep, string_vector);
+}
+
+String
 vpath_find (const String &file, const String &mode)
 {
   String result = searchpath_find (".", file, mode);

@@ -63,6 +63,7 @@ String       searchpath_find     (const String &searchpath, const String &file, 
 StringVector searchpath_list     (const String &searchpath, const String &mode = "e");
 String       searchpath_multiply (const String &searchpath, const String &postfixes);
 StringVector searchpath_split    (const String &searchpath);
+String       searchpath_join     (const StringVector &string_vector);
 String       searchpath_join     (const String &frag0, const String &frag1, const String &frag2 = "", const String &frag3 = "",
                                   const String &frag4 = "", const String &frag5 = "", const String &frag6 = "", const String &frag7 = "",
                                   const String &frag8 = "", const String &frag9 = "", const String &frag10 = "",
