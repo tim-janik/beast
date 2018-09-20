@@ -723,7 +723,7 @@ bst_args_process (int *argc_p, char **argv)
 	  else if (strcmp (arg, "skins") == 0)
 	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));
+	    printout ("%s\n", Bse::runpath (Bse::RPath::KEYBDIR));
 	  else if (strcmp (arg, "ladspa") == 0)
 	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA));
 	  else if (strcmp (arg, "plugins") == 0)
@@ -802,7 +802,7 @@ bst_exit_print_version (void)
   printout ("Plugin Path:     %s\n", Bse::runpath (Bse::RPath::PLUGINDIR));
   printout ("Doc Path:        %s\n", Bse::runpath (Bse::RPath::DOCDIR));
   printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
-  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));
+  printout ("Keyrc Path:      %s\n", Bse::runpath (Bse::RPath::KEYBDIR));
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Effect Path:     %s\n", bse_server.get_effect_path());

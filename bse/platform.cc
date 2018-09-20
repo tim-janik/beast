@@ -37,6 +37,8 @@ runpath (RPath rpath)
     case RPath::DRIVERDIR:      return libbse_installdir + "/drivers" + objdir;
     case RPath::PLUGINDIR:      return libbse_installdir + "/plugins" + objdir;
     case RPath::DOCDIR:         return libbse_installdir + "/doc";
+    case RPath::KEYBDIR:        return libbse_installdir + "/keys";
+    case RPath::SKINDIR:        return libbse_installdir + "/skins";
     case RPath::DEMODIR:        return libbse_installdir + "/Demos";
     case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
     case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
@@ -62,8 +64,6 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
     case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
-    case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
-    case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
     }
   return "";
 }

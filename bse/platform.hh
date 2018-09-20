@@ -19,8 +19,6 @@ enum InstallpathType {
   INSTALLPATH_USER_DATA,
   INSTALLPATH_DATADIR,
   INSTALLPATH_DATADIR_IMAGES,
-  INSTALLPATH_DATADIR_KEYS,
-  INSTALLPATH_DATADIR_SKINS,
 };
 /// Provide installation directories and searchpaths for various types of data.
 std::string installpath          (InstallpathType installpath_type);
@@ -32,6 +30,8 @@ enum class RPath {
   DRIVERDIR,
   PLUGINDIR,
   DOCDIR,
+  KEYBDIR,
+  SKINDIR,
   DEMODIR,
   EFFECTDIR,
   INSTRUMENTDIR,

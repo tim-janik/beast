@@ -1,10 +1,10 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-keys-install:   install-keys_installDATA
-keys-uninstall: uninstall-keys_installDATA
+keys-install:   install-keys_keybDATA
+keys-uninstall: uninstall-keys_keybDATA
 
-keys_install_DATA = $(strip	\
+keys_keyb_DATA = $(strip	\
 	keys/keyrc.de		\
 	keys/keyrc.us		\
 )
-keys_installdir = $(beastdatadir)/keys
+keys_keybdir = $(pkginstalldir)/keys
