@@ -17,8 +17,6 @@ std::string (_) (const std::string &string, const std::string &plural, int64_t n
 enum InstallpathType {
   INSTALLPATH_LADSPA,
   INSTALLPATH_USER_DATA,
-  INSTALLPATH_BSELIBDIR_PLUGINS,
-  INSTALLPATH_BSELIBDIR_DRIVERS,
   INSTALLPATH_DATADIR,
   INSTALLPATH_DATADIR_IMAGES,
   INSTALLPATH_DATADIR_KEYS,
@@ -31,6 +29,8 @@ void        installpath_override (const std::string &topdir);
 enum class RPath {
   INSTALLDIR = 1,
   LOCALEDIR,
+  DRIVERDIR,
+  PLUGINDIR,
   DOCDIR,
   DEMODIR,
   EFFECTDIR,

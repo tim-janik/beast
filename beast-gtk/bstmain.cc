@@ -727,7 +727,7 @@ bst_args_process (int *argc_p, char **argv)
 	  else if (strcmp (arg, "ladspa") == 0)
 	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA));
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS));
+	    printout ("%s\n", bse_server.get_plugin_path());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -797,9 +797,11 @@ bst_exit_print_version (void)
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Bse::cpu_info());
   printout ("\n");
+  printout ("Locale Path:     %s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
+  printout ("Driver Path:     %s\n", Bse::runpath (Bse::RPath::DRIVERDIR));
+  printout ("Plugin Path:     %s\n", Bse::runpath (Bse::RPath::PLUGINDIR));
   printout ("Doc Path:        %s\n", Bse::runpath (Bse::RPath::DOCDIR));
   printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES));
-  printout ("Locale Path:     %s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
   printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS));
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());

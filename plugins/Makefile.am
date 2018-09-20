@@ -83,7 +83,7 @@ plugins_built_sources 	  =
 CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
 plugin_FPU_LTLIBRARIES	  = cxxplugins.FPU.la
-plugin_FPUdir 	  	  = $(beastdatadir)/plugins
+plugin_FPUdir 	  	  = $(pkginstalldir)/plugins
 FPU_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 

@@ -22,16 +22,20 @@
 namespace Bse {
 
 // == Runtime Path Handling ==
-static std::string      determine_libbse_installdir ();
+static std::string      determine_libbse_installdir (bool *using_objdir);
 
 std::string
 runpath (RPath rpath)
 {
-  static const std::string libbse_installdir = determine_libbse_installdir();
+  static bool using_objdir = false;
+  static const std::string libbse_installdir = determine_libbse_installdir (&using_objdir);
+  const char *objdir = using_objdir ? "/" CONFIGURE_RELPATH_OBJDIR : "";
   switch (rpath)
     {
     case RPath::INSTALLDIR:     return libbse_installdir;
     case RPath::LOCALEDIR:      return libbse_installdir + "/locale";
+    case RPath::DRIVERDIR:      return libbse_installdir + "/drivers" + objdir;
+    case RPath::PLUGINDIR:      return libbse_installdir + "/plugins" + objdir;
     case RPath::DOCDIR:         return libbse_installdir + "/doc";
     case RPath::DEMODIR:        return libbse_installdir + "/Demos";
     case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
@@ -48,16 +52,6 @@ installpath_override (const String &topdir)
   installpath_topdir = topdir;
 }
 
-static std::string
-append_objdir (const std::string &path) // return path/.libs if it exists
-{
-  const std::string path_libs = path + "/" + CONFIGURE_RELPATH_OBJDIR;
-  struct stat sbuf = { 0, };
-  if (stat (path_libs.c_str(), &sbuf) == 0)
-    return path_libs;
-  return path;
-}
-
 std::string
 installpath (InstallpathType installpath_type)
 {
@@ -66,8 +60,6 @@ installpath (InstallpathType installpath_type)
     {
     case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
-    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/plugins");
-    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/drivers");
     case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
     case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
@@ -702,7 +694,7 @@ fatal_system_error (const char *file, uint line, const char *format, ...)
 
 // finding the right path is a *fundamental* requirement for libbse
 static std::string
-determine_libbse_installdir()
+determine_libbse_installdir (bool *using_objdir)
 {
   const char *self_maps = "/proc/self/maps";
   std::ifstream maps;
@@ -723,10 +715,16 @@ determine_libbse_installdir()
         {
           const char *const extlibso = strstr (path, extlibname);               // by external name
           if (extlibso && !strchr (extlibso + strlen (extlibname), '/'))        // not dirname
-            return std::string (path, extlibso - path);                         // path fragment before /lib/lib*.so
+            {
+              *using_objdir = false;
+              return std::string (path, extlibso - path);                       // path fragment before /lib/lib*.so
+            }
           const char *const intlibso = strstr (path, intlibname);               // by internal name
           if (intlibso && !strchr (intlibso + strlen (intlibname), '/'))        // not dirname
-            return std::string (path, intlibso - path);                         // path fragment before /bse/.libs/lib*.so
+            {
+              *using_objdir = true;
+              return std::string (path, intlibso - path);                       // path fragment before /bse/.libs/lib*.so
+            }
         }
     }
   const char *const libname = strrchr (extlibname, '/');

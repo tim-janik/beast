@@ -706,12 +706,12 @@ bse_plugin_path_list_files (gboolean include_drivers, gboolean include_plugins)
     {
       if (include_drivers)
         {
-          SfiRing *ring = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          SfiRing *ring = sfi_file_crawler_list_files (Bse::runpath (Bse::RPath::DRIVERDIR).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          SfiRing *ring = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          SfiRing *ring = sfi_file_crawler_list_files (Bse::runpath (Bse::RPath::PLUGINDIR).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])

@@ -6,17 +6,17 @@ DEFS        += $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\") -DBSE_PLUGIN_COMPILATION
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
 
 # Plugin bsedevice-alsa
-driversdir          = $(beastdatadir)/drivers
-drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
-drivers_ldflags     = -avoid-version
-drivers_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
+driverdir          = $(pkginstalldir)/drivers
+driver_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
+driver_ldflags     = -avoid-version
+driver_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
 # Plugin bsepcmdevice-alsa
 bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.cc
-bsepcmdevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(drivers_ldflags)
-bsepcmdevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
+bsepcmdevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(driver_ldflags)
+bsepcmdevice_alsa_la_LIBADD  = $(driver_libs) $(ALSA_LIBS)
 
 # Plugin bsemididevice-alsa
 bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.cc
-bsemididevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(drivers_ldflags)
-bsemididevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
+bsemididevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(driver_ldflags)
+bsemididevice_alsa_la_LIBADD  = $(driver_libs) $(ALSA_LIBS)
