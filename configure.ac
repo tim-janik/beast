@@ -93,7 +93,6 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-beastsharedir="\${pkginstalldir}/share"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
 test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
@@ -103,16 +102,12 @@ case "$with_pkgroot" in
   *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
 esac
 bak_libdir="$libdir"
-bak_pkginstalldir="$pkginstalldir"
 libdir=`eval echo "${libdir}"`
-pkginstalldir=`eval echo "${pkginstalldir}"`
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-pkginstalldir="$bak_pkginstalldir"
 libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
-AC_SUBST(beastsharedir)
 AC_SUBST(pkginstalldir)
 
 # == Check for git ==
