@@ -103,7 +103,6 @@ case "$with_pkgroot" in
 esac
 bak_libdir="$libdir"
 libdir=`eval echo "${libdir}"`
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
 libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"

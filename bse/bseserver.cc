@@ -1067,7 +1067,7 @@ ServerImpl::get_vorbis_version ()
 String
 ServerImpl::get_ladspa_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
+  return Bse::runpath (Bse::RPath::LADSPADIRS);
 }
 
 String
@@ -1179,14 +1179,11 @@ ServerImpl::load_assets ()
       g_free (name);
     }
   // load LADSPA plugins
-  ring = bse_ladspa_plugin_path_list_files ();
-  while (ring)
+  for (const std::string &ladspa_so : bse_ladspa_plugin_path_list_files ())
     {
-      char *name = (char*) sfi_ring_pop_head (&ring);
-      const char *error = bse_ladspa_plugin_check_load (name);
+      const char *error = bse_ladspa_plugin_check_load (ladspa_so.c_str());
       if (error)
-        printerr ("%s: Bse LADSPA plugin registration failed: %s\n", name, error);
-      g_free (name);
+        printerr ("%s: Bse LADSPA plugin registration failed: %s\n", ladspa_so, error);
     }
 }
 

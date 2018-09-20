@@ -725,7 +725,7 @@ bst_args_process (int *argc_p, char **argv)
 	  else if (strcmp (arg, "keys") == 0)
 	    printout ("%s\n", Bse::runpath (Bse::RPath::KEYBDIR));
 	  else if (strcmp (arg, "ladspa") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA));
+	    printout ("%s\n", bse_server.get_ladspa_path());
 	  else if (strcmp (arg, "plugins") == 0)
 	    printout ("%s\n", bse_server.get_plugin_path());
 	  else if (strcmp (arg, "samples") == 0)
@@ -809,7 +809,8 @@ bst_exit_print_version (void)
   printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
   printout ("Demo Path:       %s\n", bse_server.get_demo_path());
   printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
-  printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
+  const std::string ladspa_path = bse_server.get_ladspa_path();
+  printout ("LADSPA Path:     %s\n", ladspa_path.empty() ? "$LADSPA_PATH" : ladspa_path);
   printout ("\n");
   printout ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
   printout ("You may redistribute copies of BEAST under the terms of\n");

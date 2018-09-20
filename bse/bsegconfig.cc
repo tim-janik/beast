@@ -130,7 +130,6 @@ gconfig_from_rec (SfiRec *rec)
   cnf->instrument_path = expand_sub14 (cnf->instrument_path);
   cnf->script_path     = expand_sub14 (cnf->script_path);
   cnf->plugin_path     = expand_sub14 (cnf->plugin_path);
-  cnf->ladspa_path     = expand_sub14 (cnf->ladspa_path);
   return cnf;
 }
 

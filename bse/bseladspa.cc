@@ -634,28 +634,20 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   return error;
 }
 
-SfiRing*
+Bse::StringVector
 bse_ladspa_plugin_path_list_files (void)
 {
-  SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
-  const gchar *paths;
+  SfiRing *ring = sfi_file_crawler_list_files (Bse::runpath (Bse::RPath::LADSPADIRS).c_str(), "*.so", GFileTest (0));
+  ring = sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL);
 
-  ring1 = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str(), "*.so", GFileTest (0));
-  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
-
-  paths = g_getenv ("LADSPA_PATH");
-  if (paths && paths[0])
-    ring2 = sfi_file_crawler_list_files (paths, "*.so", GFileTest (0));
-  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
-
-  paths = BSE_GCONFIG (ladspa_path);
-  if (paths && paths[0])
-    ring3 = sfi_file_crawler_list_files (paths, "*.so", GFileTest (0));
-  ring3 = sfi_ring_sort (ring3, (SfiCompareFunc) strcmp, NULL);
-
-  ring2 = sfi_ring_concat (ring2, ring3);
-
-  return sfi_ring_concat (ring1, ring2);
+  Bse::StringVector sv;
+  while (ring)
+    {
+      char *name = (char*) sfi_ring_pop_head (&ring);
+      sv.push_back (name);
+      g_free (name);
+    }
+  return sv;
 }
 
 #if 0

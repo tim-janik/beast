@@ -23,15 +23,18 @@ namespace Bse {
 
 // == Runtime Path Handling ==
 static std::string      determine_libbse_installdir (bool *using_objdir);
+static std::string      construct_ladspa_path       ();
 
 std::string
 runpath (RPath rpath)
 {
   static bool using_objdir = false;
   static const std::string libbse_installdir = determine_libbse_installdir (&using_objdir);
+  static const std::string libbse_prefixdir = Path::dirname (libbse_installdir);
   const char *objdir = using_objdir ? "/" CONFIGURE_RELPATH_OBJDIR : "";
   switch (rpath)
     {
+    case RPath::PREFIXDIR:      return libbse_prefixdir;
     case RPath::INSTALLDIR:     return libbse_installdir;
     case RPath::LOCALEDIR:      return libbse_installdir + "/locale";
     case RPath::DRIVERDIR:      return libbse_installdir + "/drivers" + objdir;
@@ -44,7 +47,35 @@ runpath (RPath rpath)
     case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
     case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
     case RPath::SAMPLEDIR:      return libbse_installdir + "/Samples";
+    case RPath::LADSPADIRS:     return construct_ladspa_path();
     }
+}
+
+static std::string
+construct_ladspa_path()
+{
+  StringVector sp;
+  // gather search path candidates from $LADSPA_PATH
+  const char *ladspa_path = getenv ("LADSPA_PATH");
+  if (ladspa_path)
+    sp = Path::searchpath_split (ladspa_path);
+  // add $prefix/ladspa
+  sp.push_back (runpath (RPath::INSTALLDIR) + "/ladspa");
+  sp.push_back (runpath (RPath::PREFIXDIR) + "/ladspa");
+  // add standard locations
+  sp.push_back ("/usr/lib/ladspa");
+  sp.push_back ("/usr/local/lib/ladspa");
+  sp.push_back ("/opt/lib/ladspa");
+  // convert candidates to realpath and deduplicate
+  StringVector sv;
+  for (const std::string &candidate : sp)
+    {
+      const std::string dir = Path::realpath (candidate);
+      if (std::find (sv.begin(), sv.end(), dir) == sv.end() &&
+          Path::check (dir, "d"))
+        sv.push_back (dir);
+    }
+  return Path::searchpath_join (sv);
 }
 
 static String installpath_topdir;
@@ -60,7 +91,6 @@ installpath (InstallpathType installpath_type)
 {
   switch (installpath_type)
     {
-    case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
     }
   return "";

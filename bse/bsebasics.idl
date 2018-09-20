@@ -146,12 +146,6 @@ record GConfig {
 					_("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
 					  "is searched for in addition to the standard BSE plugin location on this system."),
 					DEFAULT_PLUGINS_PATH, STANDARD ":searchpath");
-    SfiString ladspa_path     = SfiString (_("LADSPA Path"),
-					_("Search path of directories, seperated by \";\", used to find LADSPA plugins. This "
-					  "path is searched for in addition to the standard LADSPA location on this system. "
-					  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
-					  "LADSPA plugins can be found at http://www.ladspa.org/."),
-					"", STANDARD ":searchpath");
   };
 };
 

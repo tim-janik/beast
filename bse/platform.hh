@@ -15,7 +15,6 @@ std::string (_) (const std::string &string, const std::string &plural, int64_t n
 
 // == INSTALLPATH ==
 enum InstallpathType {
-  INSTALLPATH_LADSPA,
   INSTALLPATH_USER_DATA,
 };
 /// Provide installation directories and searchpaths for various types of data.
@@ -23,7 +22,8 @@ std::string installpath          (InstallpathType installpath_type);
 void        installpath_override (const std::string &topdir);
 
 enum class RPath {
-  INSTALLDIR = 1,
+  PREFIXDIR = 1,
+  INSTALLDIR,
   LOCALEDIR,
   DRIVERDIR,
   PLUGINDIR,
@@ -35,6 +35,7 @@ enum class RPath {
   EFFECTDIR,
   INSTRUMENTDIR,
   SAMPLEDIR,
+  LADSPADIRS,
 };
 std::string runpath (RPath rpath);      ///< Retrieve various resource paths at runtime.
 
