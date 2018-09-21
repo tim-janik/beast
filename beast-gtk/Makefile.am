@@ -7,7 +7,7 @@ SUBDIRS = gxk icons
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += -DG_LOG_DOMAIN="\"BEAST\""
-AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) \
+AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) \
 			-DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 AM_CPPFLAGS += $(PYTHON_CPPFLAGS)
 AM_LDFLAGS  += $(PYTHON_LDFLAGS)
@@ -244,7 +244,7 @@ nodist_beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = ../topbuildid.cc
 beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)
 beast_build_objects = $(beast_@MAJOR@_@MINOR@_@MICRO@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) $(PYTHON_LIBS) $(LIBZ_LIBS)
+progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(BSE_LIBS) $(PYTHON_LIBS) $(LIBZ_LIBS)
 
 noinst_PROGRAMS += tsmview
 tsmview_SOURCES  = tsmview.cc

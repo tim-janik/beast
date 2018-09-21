@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_COMPILATION
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
+AM_CXXFLAGS += $(BSE_CFLAGS)
 
 # install plugins under:
 plugindir = $(pkginstalldir)/plugins

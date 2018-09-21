@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\") -DBSE_PLUGIN_COMPILATION
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
+AM_CXXFLAGS += $(BSE_CFLAGS)
 
 # Plugin bsedevice-alsa
 driverdir          = $(pkginstalldir)/drivers

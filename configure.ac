@@ -394,9 +394,6 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
 ])
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
-    dnl # require Rapicorn
-    dnl # PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
-
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
     AC_MSG_CHECKING([for Vorbisfile versions with buggy pcm_seek])
