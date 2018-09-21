@@ -34,7 +34,6 @@ docs_doxy_impls     = $(filter-out %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_tagsrcs   = $(strip \
 	tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/	\
 	tagfile-cppreference-15.xml=http://en.cppreference.com/w/		\
-	tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/		\
 )
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
