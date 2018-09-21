@@ -93,15 +93,6 @@ interface Track;
 interface Janitor;
 
 // == BSE Global Config ==
-Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";
-Const DEFAULT_LICENSE = "\357\277\271\357\277\272{{bse.idl/default-license}}\357\277\273";
-Const USER_DATA_PATH  = "\357\277\271\357\277\272{{bse.idl/user-data-path}}\357\277\273";
-Const DEFAULT_SAMPLE_PATH      = USER_DATA_PATH "samples";
-Const DEFAULT_EFFECTS_PATH     = USER_DATA_PATH "effects";
-Const DEFAULT_INSTRUMENTS_PATH = USER_DATA_PATH "instruments";
-Const DEFAULT_SCRIPTS_PATH     = USER_DATA_PATH "scripts";
-Const DEFAULT_PLUGINS_PATH     = USER_DATA_PATH "plugins";
-
 record GConfig {
   group _("Synthesis Settings") {
     Int synth_latency =
@@ -124,28 +115,23 @@ record GConfig {
                            FALSE, STANDARD);
   };
   group _("Default Values") {
-    SfiString author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
-					DEFAULT_AUTHOR, STANDARD);
-    SfiString license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
-					DEFAULT_LICENSE, STANDARD);
+    SfiString author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"), "$(defaultauthor)", STANDARD);
+    SfiString license_default = SfiString (_("Default License"), _("Default value for 'License' fields"), "$(defaultlicense)", STANDARD);
   };
   group _("Search Paths") {
     SfiString sample_path     = SfiString (_("Sample Path"),
-					_("Search path of directories, seperated by \";\", used to find audio samples."),
-					DEFAULT_SAMPLE_PATH, STANDARD ":searchpath");
+					   _("Search path of directories, seperated by \";\", used to find audio samples."),
+					   "$(defaultsamplepath)", STANDARD ":searchpath");
     SfiString effect_path     = SfiString (_("Effect Path"),
-					_("Search path of directories, seperated by \";\", used to find BSE effect files."),
-					DEFAULT_EFFECTS_PATH, STANDARD ":searchpath");
+					   _("Search path of directories, seperated by \";\", used to find BSE effect files."),
+					   "$(defaulteffectpath)", STANDARD ":searchpath");
     SfiString instrument_path = SfiString (_("Instrument Path"),
-					_("Search path of directories, seperated by \";\", used to find BSE instrument files."),
-					DEFAULT_INSTRUMENTS_PATH, STANDARD ":searchpath");
-    SfiString script_path     = SfiString (_("Script Path"),
-					_("Search path of directories, seperated by \";\", used to find BSE scheme scripts."),
-					DEFAULT_SCRIPTS_PATH, STANDARD ":searchpath");
+					   _("Search path of directories, seperated by \";\", used to find BSE instrument files."),
+					   "$(defaultinstrumentpath)", STANDARD ":searchpath");
     SfiString plugin_path     = SfiString (_("Plugin Path"),
-					_("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
-					  "is searched for in addition to the standard BSE plugin location on this system."),
-					DEFAULT_PLUGINS_PATH, STANDARD ":searchpath");
+					   _("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
+					     "is searched for in addition to the standard BSE plugin location on this system."),
+					   "$(defaultpluginpath)", STANDARD ":searchpath");
   };
 };
 

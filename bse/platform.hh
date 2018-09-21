@@ -14,11 +14,6 @@ const char* (_) (const char *string, const char *plural, int64_t n) __attribute_
 std::string (_) (const std::string &string, const std::string &plural, int64_t n);
 
 // == INSTALLPATH ==
-enum InstallpathType {
-  INSTALLPATH_USER_DATA,
-};
-/// Provide installation directories and searchpaths for various types of data.
-std::string installpath          (InstallpathType installpath_type);
 void        installpath_override (const std::string &topdir);
 
 enum class RPath {

@@ -86,16 +86,6 @@ installpath_override (const String &topdir)
   installpath_topdir = topdir;
 }
 
-std::string
-installpath (InstallpathType installpath_type)
-{
-  switch (installpath_type)
-    {
-    case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
-    }
-  return "";
-}
-
 /// Initialize gettext domain used by libbse.
 static const char*
 initialized_bse_gettext_domain()
