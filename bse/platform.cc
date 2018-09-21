@@ -78,14 +78,6 @@ construct_ladspa_path()
   return Path::searchpath_join (sv);
 }
 
-static String installpath_topdir;
-
-void
-installpath_override (const String &topdir)
-{
-  installpath_topdir = topdir;
-}
-
 /// Initialize gettext domain used by libbse.
 static const char*
 initialized_bse_gettext_domain()

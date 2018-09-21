@@ -14,8 +14,6 @@ const char* (_) (const char *string, const char *plural, int64_t n) __attribute_
 std::string (_) (const std::string &string, const std::string &plural, int64_t n);
 
 // == INSTALLPATH ==
-void        installpath_override (const std::string &topdir);
-
 enum class RPath {
   PREFIXDIR = 1,
   INSTALLDIR,
