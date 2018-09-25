@@ -3,8 +3,13 @@ set -Ee -o pipefail
 
 # Usage: git-version.sh [-s]		# print project version
 
-FORMAT="--abbrev=7 --dirty"
-test " $1" != " -s" || FORMAT="--abbrev=0"
+if   test " $1" = " -s" ; then	# short
+  FORMAT="--abbrev=0"
+elif test " $1" = " -l" ; then	# long, clean
+  FORMAT="--abbrev=7 --long"
+else				# default
+  FORMAT="--abbrev=7 --dirty"
+fi
 
 # Find version in toplevel project directory
 cd "$(dirname "$0")"
