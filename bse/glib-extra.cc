@@ -2,6 +2,10 @@
 #include "glib-extra.hh"
 #include <string.h>
 
+#ifndef assert_return
+#define assert_return(cond, ...)        do { if (cond) break; g_warning ("assertion failed: %s", #cond); return __VA_ARGS__; } while (0)
+#endif
+
 void
 g_object_disconnect_any (gpointer object,
                          gpointer function,
