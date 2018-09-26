@@ -4,7 +4,6 @@
 # http://lint.travis-ci.org/
 
 os: linux
-dist: trusty
 sudo: required
 services: docker
 language: generic
