@@ -44,17 +44,17 @@ WORKDIR /usr/src/beast
 ARG INTENT
 # A regular cppcheck run can be carried out before the sources are built
 RUN `intent checks` && \
-  mkdir /usr/src/beast/codechecks/ && \
-  misc/run-cppcheck.sh && \
+  mkdir -p /usr/src/beast/codechecks/ && \
+  time misc/run-cppcheck.sh && \
   mv -v cppcheck.err ./codechecks/cppcheck.log
 
 # == Configure build ==
 # Configure source tree, possibly using compiler wrapper
 RUN TZ=GMT date && \
   case $INTENT in \
-    *checks*)	nice ./autogen.sh --prefix=/usr CC=wrapclang CXX=wrapclang++ ;; \
-    *clang*)	nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
-    *)		nice ./autogen.sh --prefix=/usr ;; \
+    *checks*)		nice ./autogen.sh --prefix=/usr CC=wrapclang CXX=wrapclang++ ;; \
+    *clang*|*tidy*)	nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
+    *gcc*|*)		nice ./autogen.sh --prefix=/usr ;; \
   esac
 
 # == Run build ==
@@ -63,7 +63,7 @@ RUN : && \
   if [[ $INTENT =~ checks ]] ; then \
     export WRAPPER='scan-build -o /usr/src/beast/codechecks/html/ -disable-checker deadcode.DeadStores' ; \
   fi && \
-  nice make -j`nproc`
+  time nice make -j`nproc`
 
 # == AppImage AppDir creation ==
 # Create directory for AppImage from fresh build
@@ -71,16 +71,23 @@ RUN `intent appimage` && \
   make install DESTDIR=/appdir/
 
 # == Validate Build ==
-RUN nice make check
-RUN nice make install
-RUN nice make installcheck
-RUN nice make dist
-RUN nice make uninstall
-RUN `intent distcheck` && \
-  nice make distcheck DISTCHECK_PO=0
+# Run check, installcheck, etc, unless we're running clang-tidy which takes ages
+RUN [[ $INTENT =~ tidy ]] || \
+  make check
+RUN [[ $INTENT =~ tidy ]] || \
+  make install
+RUN [[ $INTENT =~ tidy ]] || \
+  make installcheck
+RUN [[ $INTENT =~ tidy ]] || \
+  make dist
+RUN [[ $INTENT =~ tidy ]] || \
+  make uninstall
+RUN `intent checks` && \
+  time make distcheck DISTCHECK_PO=0 XZ_OPT=--fast
 RUN TZ=GMT date
 
 # == Codechecks post-build ==
+ENV SCANDIRS "aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers"
 # With all generated sources in place, run various source code checks
 # Build index of scan-build reports, strip top_srcdir
 RUN test -e ./codechecks/html/ || exit 0 ; \
@@ -91,33 +98,36 @@ RUN test -e ./codechecks/html/ || exit 0 ; \
       echo "$F:$L: $D" | sed 's,^/usr/src/beast/,,' ; \
   done > ./codechecks/scan-build.log
 # Gather reports from clang-tidy, strip top_srcdir
-RUN `intent checks` && \
+RUN `intent tidy` && \
+  mkdir -p /usr/src/beast/codechecks/ && \
   git ls-tree -r --name-only HEAD >.ls.all && \
-  egrep '^(beast-gtk|bse|drivers|ebeast|plugins|sfi)/.*\.(cc|hh)$'  <.ls.all >.ls.cchh && \
-  egrep '^(beast-gtk|bse|drivers|ebeast|plugins|sfi)/.*\.(js|vue)$' <.ls.all >.ls.jsvue && \
+  egrep "^($SCANDIRS)/.*\.(cc|hh)$"  <.ls.all >.ls.cchh && \
   egrep -vf misc/clang-tidy.ignore .ls.cchh >.ls.clangtidy && \
-  clang-tidy `cat .ls.clangtidy` -- \
-	     -std=gnu++14 \
-	     -I. \
-	     -Isfi \
-	     -Ibeast-gtk \
-	     -DBSE_COMPILATION \
-	     -DGXK_COMPILATION \
-	     -D__TOPDIR__=\"`pwd`\" \
-	     `pkg-config --cflags libgnomecanvas-2.0` \
-	     > ./codechecks/clang-tidy.raw && \
+  time clang-tidy `cat .ls.clangtidy` -- \
+       -std=gnu++14 \
+       -I. \
+       -Isfi \
+       -Ibeast-gtk \
+       -DBSE_COMPILATION \
+       -DGXK_COMPILATION \
+       -D__TOPDIR__=\"`pwd`\" \
+       `pkg-config --cflags libgnomecanvas-2.0` \
+       > ./codechecks/clang-tidy.raw && \
   sed 's,^/usr/src/beast/,,' ./codechecks/clang-tidy.raw > ./codechecks/clang-tidy.log && \
   rm -f ./codechecks/clang-tidy.raw
 # Create report about keywords relevant for code quality
 RUN `intent checks` && \
-  misc/keywords.sh -g $(cat .ls.cchh .ls.jsvue) > ./codechecks/fi\xmes.log
+  git ls-tree -r --name-only HEAD >.ls.all && \
+  egrep "^(sfi|$SCANDIRS)/.*\.(cc|hh)$"  <.ls.all >.ls.cchh && \
+  egrep "^(sfi|$SCANDIRS)/.*\.(js|vue)$" <.ls.all >.ls.jsvue && \
+  time misc/keywords.sh -g $(cat .ls.cchh .ls.jsvue) > ./codechecks/fi\xmes.log
 # Use cppcheck to find unused functions
 RUN `intent checks` && \
-  misc/run-cppcheck.sh -u && \
+  time misc/run-cppcheck.sh -u && \
   mv -v cppcheck.err ./codechecks/unused.log
 # Blame error origins
 RUN test -e ./codechecks/ || exit 0 ; \
-  misc/blame-lines -b codechecks/*.log
+  time misc/blame-lines -b codechecks/*.log
 
 # == AppImage creation ==
 # Prepare AppImage tools
@@ -149,10 +159,11 @@ ENV BINTRAY_KEEPS 99
 RUN if test -x BEAST-x86_64.AppImage && `intent up` ; then \
   V=$(./git-version.sh -l) && \
     mv -v BEAST-x86_64.AppImage beast-$V.x64 && \
-    misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V -d beast-$V.x64 ; \
+    time misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V -d beast-$V.x64 ; \
   fi
 RUN if test -x ./codechecks/ && `intent up` ; then \
+  { test -e "./codechecks/clang-tidy.log" && CODELOGS=clangtidy || CODELOGS=codechecks ; } && \
   V=$(./git-version.sh -l) && \
-    tar cf codechecks-$V.tgz codechecks/ && \
-    misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V codechecks-$V.tgz ; \
+    tar cf $CODELOGS-$V.tgz codechecks/ && \
+    time misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V $CODELOGS-$V.tgz ; \
   fi
