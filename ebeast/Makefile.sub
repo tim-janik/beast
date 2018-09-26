@@ -1,6 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 ebeast-all: with_npm ebeast/vue-components.html
+$(strip all-am): ebeast-all
 
 EBEAST_MOSTLYCLEANFILES =
 
