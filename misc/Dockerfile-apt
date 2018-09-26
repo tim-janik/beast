@@ -22,7 +22,8 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
   retry apt-get install -y \
 	build-essential devscripts automake autoconf autoconf-archive libtool intltool \
 	doxygen graphviz texlive-binaries pandoc git libxml2-utils \
-	clang clang-tidy clang-tools cppcheck \
+	cppcheck clang clang-tidy \
+	$(apt-cache search clang-tools | fgrep -om1 -e 'clang-tools ') \
 	\
 	gawk libxml-parser-perl \
 	libpango1.0-dev python2.7-dev libxml2-dev \
