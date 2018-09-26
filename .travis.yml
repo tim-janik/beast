@@ -47,7 +47,6 @@ script:
   # Build inside docker container
   - TZ=GMT date
   - docker build -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
-  - docker ps -a
 
 after_success:
   - echo "OK, all done."

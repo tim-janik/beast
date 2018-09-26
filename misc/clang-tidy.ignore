@@ -10,6 +10,7 @@ bse/bsepcmmodule\.cc
 bse/gslincluder\.hh
 bse/gsloscillator-aux\.cc
 bse/gslwaveosc-aux\.cc
+bse/internal\.hh
 bse/tests/filtercatalog\.cc
 drivers/bse-portaudio/bsepcmdevice-portaudio\.cc
 plugins/bsefirfilter\.hh

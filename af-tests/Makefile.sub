@@ -90,7 +90,7 @@ af-tests/freak-noise: af-tests/freak-noise.bse af-tests/freak-noise.ref
 	$(QWAVCHECK)	# simple loop
 	$(Q) $(AF_TESTS_BSE2WAV) $@.bse $@.wav --seconds 5
 	$(Q) $(BSEFEXTRACT) $@.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $@.tmp
-	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.99
+	$(Q) $(BSEFCOMPARE) $@.ref $@.tmp --threshold 99.7
 	$(Q) rm -f $@.wav $@.tmp
 af-tests-check: af-tests/freak-noise
 
