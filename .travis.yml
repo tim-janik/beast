@@ -15,9 +15,9 @@ env:
     - xenial="ubuntu:xenial"
     - cosmic="ubuntu:cosmic"
   matrix:
-    - D=bionic I=checks,up
     - D=bionic I=appimage,up            # gcc
-    - D=bionic I=clang,distcheck
+    - D=bionic I=checks,up
+    - D=bionic I=tidy,up
     - D=artful I=gcc
     - D=xenial I=gcc
     # upcoming releases
