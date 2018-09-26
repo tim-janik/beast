@@ -10,40 +10,43 @@ services: docker
 language: generic
 
 env:
-  # INTENT: gccbuild clangbuild package bintrayup
+  global:
+    - bionic="ubuntu:bionic"
+    - artful="ubuntu:artful"
+    - xenial="ubuntu:xenial"
+    - cosmic="ubuntu:cosmic"
   matrix:
-    - DIST="ubuntu:bionic"      INTENT="clangbuild,distcheck"
-    - DIST="ubuntu:bionic"      INTENT="gccbuild"
-    - DIST="ubuntu:artful"      INTENT="gccbuild"
-    - DIST="ubuntu:xenial"      INTENT="gccbuild"
-    # test upcoming releases and get new compiler warnings
-    - DIST="ubuntu:cosmic"      INTENT="gccbuild"
-    - DIST="debian:unstable"    INTENT="gccbuild"
-    - DIST="debian:unstable"    INTENT="clangbuild"
+    - D=bionic I=checks,up
+    - D=bionic I=appimage,up            # gcc
+    - D=bionic I=clang,distcheck
+    - D=artful I=gcc
+    - D=xenial I=gcc
+    # upcoming releases
+    - D=cosmic I=gcc
+    #- D=debian:unstable    I=gcc
+    #- D=debian:unstable    I=clang
 matrix:
   allow_failures:
-    - env: DIST="ubuntu:cosmic"      INTENT="gccbuild"
-    - env: DIST="debian:unstable"    INTENT="gccbuild"
-    - env: DIST="debian:unstable"    INTENT="clangbuild"
+    - env: D=cosmic I=gcc
+    #- env: D=debian:unstable    I=gcc
+    #- env: D=debian:unstable    I=clang
   fast_finish: true
 
 before_install:
   # Show build setup
-  - echo "INTENT=$INTENT DIST=$DIST"
+  - echo "D=$D I=$I"
   - uname -a
   - cat /etc/os-release
-  - pwd
-  - free -tm
-  - python --version
 
 install:
+  - env | grep '^AUTHSECRET_\w\+=' >.secrets && unset `sed 's/=.*//' .secrets` || true
   # git describe requires complete history
   - travis_retry git fetch --unshallow
 
 script:
   # Build inside docker container
   - TZ=GMT date
-  - misc/dockerbuild.sh "$DIST" "$INTENT"
+  - docker build -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
   - docker ps -a
 
 after_success:
