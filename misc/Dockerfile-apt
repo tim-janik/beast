@@ -108,6 +108,9 @@ RUN `intent tidy` && \
        -I. \
        -Isfi \
        -Ibeast-gtk \
+       -I external/v8pp/ \
+       -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/src/ \
+       -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/deps/v8/include/ \
        -DBSE_COMPILATION \
        -DGXK_COMPILATION \
        -D__TOPDIR__=\"`pwd`\" \
