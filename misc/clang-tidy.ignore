@@ -1,4 +1,5 @@
 aidacc/CxxStub-.*\.cc
+aidacc/visitor\.hh
 beast-gtk/bstparam-.*\.cc
 beast-gtk/gxk/gxkparam-.*\.cc
 beast-gtk/gxk/gxkrackcovers\.cc
