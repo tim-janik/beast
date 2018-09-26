@@ -537,6 +537,13 @@ searchpath_join (const String &frag0, const String &frag1, const String &frag2, 
 }
 
 String
+searchpath_join (const StringVector &string_vector)
+{
+  const char searchsep[2] = { BSE_SEARCHPATH_SEPARATOR, 0 };
+  return string_join (searchsep, string_vector);
+}
+
+String
 vpath_find (const String &file, const String &mode)
 {
   String result = searchpath_find (".", file, mode);
@@ -760,7 +767,7 @@ test_paths()
   if (env_home && env_logname)
     TCMP (Path::expand_tilde ("~" + String (env_logname)), ==, env_home);
   TCMP (Path::searchpath_multiply ("/:/tmp", "foo:bar"), ==, "/foo:/bar:/tmp/foo:/tmp/bar");
-  const String abs_idir = Path::abspath (runpath_bsedatadir() + "/Instruments");
+  const String abs_idir = Path::abspath (Bse::runpath (Bse::RPath::INSTRUMENTDIR));
   TCMP (Path::searchpath_list ("/:" + abs_idir, "e"), ==, StringVector ({ "/", abs_idir }));
   TCMP (Path::searchpath_contains ("/foo/:/bar", "/"), ==, false);
   TCMP (Path::searchpath_contains ("/foo/:/bar", "/foo"), ==, false); // false because "/foo" is file search

@@ -1,9 +1,9 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-skins-install:   install-skins_installDATA   skins-images-install
-skins-uninstall: uninstall-skins_installDATA skins-images-uninstall
+skins-install:   install-skins_skinDATA   skins-images-install
+skins-uninstall: uninstall-skins_skinDATA skins-images-uninstall
 
-skins_install_DATA = $(strip		\
+skins_skin_DATA = $(strip		\
 	skins/biogreen.skin		\
 	skins/blueimpress.skin		\
 	skins/brownforms.skin		\
@@ -11,4 +11,4 @@ skins_install_DATA = $(strip		\
 	skins/silvervein.skin		\
 	skins/white.skin		\
 )
-skins_installdir = $(beastdatadir)/skins
+skins_skindir = $(pkginstalldir)/skins

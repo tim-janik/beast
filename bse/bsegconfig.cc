@@ -42,95 +42,68 @@ _bse_gconfig_init (void)
   sfi_rec_unref (rec);
 }
 
-static const char*
-intern_path_user_data ()
-{
-  return g_intern_strconcat (Bse::installpath (Bse::INSTALLPATH_USER_DATA).c_str(), "", NULL);
-}
-
-static const char*
-intern_default_author ()
+static std::string
+default_author ()
 {
   const char *user = g_get_user_name();
   const char *name = g_get_real_name();
   if (name && user && name[0] && strcmp (user, name) != 0)
-    return g_intern_string (name);
-  return g_intern_static_string ("");
+    return name;
+  return "";
 }
 
-static const char*
-intern_default_license ()
+static std::string
+default_license ()
 {
-  return g_intern_static_string ("Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)");
+  return "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
 }
 
-struct Substitutions {
-  typedef const char* (*SubstituteFunc) ();
-  const char *key;
-  SubstituteFunc sfunc;
-};
-
-static const Substitutions subs[] = {
-  { "bse.idl/default-author",   intern_default_author },
-  { "bse.idl/default-license",  intern_default_license },
-  { "bse.idl/user-data-path",   intern_path_user_data },
-  { NULL, NULL, },
-};
-
-static char*
-expand_sub14 (char *gstr)
+static std::string
+default_user_path()
 {
-  assert_return (gstr, gstr);
-  static regex_t preg = { 0, };
-  int rc;
-  if (UNLIKELY (!preg.re_nsub))
-    {
-      // MATCH: "\uFFF9\u001A\uFFFA{{...}}\uFFFB" - annotated SUB with contents: {{...}}
-      // UTF-8: "\xef\xbf\xb9\x1a\xef\xbf\xba{{...}}\xef\xbf\xbb";
-      const char *pattern = "\357\277\271\357\277\272\\{\\{([^{}]*)\\}\\}\357\277\273";
-      rc = regcomp (&preg, pattern, REG_EXTENDED); // FIXME: should be atomic
-      assert_return (rc == 0 && preg.re_nsub, NULL);
-      // if non-static: regfree (&preg);
-    }
-  regmatch_t pm[2] = { { 0, }, };
-  int so = 0;
-  rc = regexec (&preg, gstr + so, 2, pm, 0);
-  if (rc != 0)
-    return gstr; // no match
-  String result;
-  for ( ; rc == 0; so = pm[0].rm_eo, rc = regexec (&preg, gstr + so, 2, pm, REG_NOTBOL))
-    {
-      if (pm[0].rm_so > so)
-        result += String (gstr + so, pm[0].rm_so - so);
-      int i, l = pm[1].rm_eo - pm[1].rm_so;
-      for (i = 0; subs[i].key; i++)
-        if (strncmp (subs[i].key, gstr + pm[1].rm_so, l) == 0 && 0 == subs[i].key[l])
-          {
-            result += subs[i].sfunc();
-            i = -1;
-            break;
-          }
-      if (i != -1)
-        result += "{{" + String (gstr + pm[1].rm_so, l) + "}}";
-    }
-  if (gstr[so] != 0)
-    result += gstr + so;
-  g_free (gstr);
-  return g_strdup (result.c_str());
+  return Path::join (Path::user_home(), "Beast");
+}
+
+struct Substitution {
+  typedef std::string (*SubstituteFunc) ();
+  const char    *key = NULL;
+  SubstituteFunc sfunc = NULL;
+};
+
+static const Substitution substitutions[] = {
+  { "$(defaultauthor)",         default_author },
+  { "$(defaultlicense)",        default_license },
+  { "$(defaultsamplepath)",     [] () { return default_user_path() + "/Samples"; } },
+  { "$(defaulteffectpath)",     [] () { return default_user_path() + "/Effects"; } },
+  { "$(defaultinstrumentpath)", [] () { return default_user_path() + "/Instruments"; } },
+  { "$(defaultpluginpath)",     [] () { return default_user_path() + "/Plugins"; } },
+};
+
+static gchar*
+substitute_defaults (gchar *input)
+{
+  assert_return (input, input);
+  std::vector<Substitution> subs;
+  // simpistic token replacement
+  for (uint i = 0; i < ARRAY_SIZE (substitutions); i++)
+    if (strcmp (input, substitutions[i].key) == 0)
+      {
+        g_free (input);
+        return g_strdup (substitutions[i].sfunc().c_str());
+      }
+  return input;
 }
 
 static BseGConfig*
 gconfig_from_rec (SfiRec *rec)
 {
   BseGConfig *cnf = bse_gconfig_from_rec (rec);
-  cnf->author_default  = expand_sub14 (cnf->author_default);
-  cnf->license_default = expand_sub14 (cnf->license_default);
-  cnf->sample_path     = expand_sub14 (cnf->sample_path);
-  cnf->effect_path     = expand_sub14 (cnf->effect_path);
-  cnf->instrument_path = expand_sub14 (cnf->instrument_path);
-  cnf->script_path     = expand_sub14 (cnf->script_path);
-  cnf->plugin_path     = expand_sub14 (cnf->plugin_path);
-  cnf->ladspa_path     = expand_sub14 (cnf->ladspa_path);
+  cnf->author_default  = substitute_defaults (cnf->author_default);
+  cnf->license_default = substitute_defaults (cnf->license_default);
+  cnf->sample_path     = substitute_defaults (cnf->sample_path);
+  cnf->effect_path     = substitute_defaults (cnf->effect_path);
+  cnf->instrument_path = substitute_defaults (cnf->instrument_path);
+  cnf->plugin_path     = substitute_defaults (cnf->plugin_path);
   return cnf;
 }
 

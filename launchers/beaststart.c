@@ -1,30 +1,41 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "suidmain.h"
-#include "../config/config.h"   // BEAST_EXEC_POSTFIX
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <errno.h>
 
 const char*
-custom_find_executable (int    *argc_p,
-                        char ***argv_p)
+getbeastexepath (int *argc, char ***argv)
 {
-  const char *bindir = BINDIR;
-  const char *name = "beast";
-  const char *postfix = BEAST_EXEC_POSTFIX;
-  int l = 1 + strlen (bindir) + 1 + strlen (name) + strlen (postfix);
-  char *string = malloc (l);
-  if (!string)
+  const char *procexe = NULL;
+#if     defined __linux__
+  procexe = "/proc/self/exe";           // Linux
+#elif   defined __NetBSD__
+  procexe = "/proc/curproc/exe";        // NetBSD
+#elif   defined __FreeBSD__ || defined __DragonFly__
+  procexe = "/proc/curproc/file";       // FreeBSD
+#elif   defined __sun
+  procexe = "/proc/self/path/a.out";    // Solaris
+#endif
+  errno = ENOSYS;
+  char *exe = procexe ? realpath (procexe, NULL) : NULL;
+  if (exe)
     {
-      perror ((*argv_p)[0]);
-      exit (-1);
+      if (0 == access (exe, X_OK))
+        {
+          const size_t l = strlen (exe);
+          const size_t j = l + 64;
+          char *result = malloc (j);
+          snprintf (result, j, "%s-%u.%u.%u", exe, MAJOR, MINOR, MICRO);
+          result[j - 1] = 0;
+          free (exe);
+          return result;
+        }
+      free (exe);
     }
-  string[0] = 0;
-  strcat (string, bindir);
-  strcat (string, "/");
-  strcat (string, name);
-  strcat (string, postfix);
-  return string;
+  return NULL; // reading link failed
 }
 
 int

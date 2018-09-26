@@ -5,7 +5,7 @@ SUBDIRS = . scripts
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
 DEFS        += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
+AM_CXXFLAGS += $(BSE_CFLAGS)
 
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = ../bse/libbse-@MAJOR@.la $(BSE_LIBS)
@@ -23,6 +23,7 @@ CLEANFILES += doc_sources.lst
 #
 
 beastbin_PROGRAMS   = bsewavetool
+beastbindir         = $(pkginstalldir)/bin
 bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 nodist_bsewavetool_SOURCES = ../topbuildid.cc
 bsewavetool_LDADD   = $(progs_ldadd)

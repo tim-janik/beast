@@ -287,13 +287,9 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
   // prepare Bse environment
   v8::Local<v8::String> v8_modulefile = module->Get (v8pp::to_v8 (isolate, "filename")).As<v8::String>();
   // get from $beastroot/ebeast-bundle/app/assets/v8bse.node -> $beastroot/Demo/...
-  const std::string modulefile = Bse::Path::abspath (v8pp::from_v8<std::string> (isolate, v8_modulefile));
-  const std::string beastroot = Bse::Path::join (Bse::Path::dirname (modulefile), "..", "..", "..");
-  const std::string installpath = Bse::Path::realpath (beastroot);
-  const char *canary = "Demos/partymonster.bse";
-  if (!Bse::Path::check (Bse::Path::join (installpath, canary), "r"))
-    Bse::fatal_error ("%s: BSE: failed to locate library containing '%s'", installpath, canary);
-  Bse::installpath_override (installpath);
+  const char *canary = "partymonster.bse";
+  if (!Bse::Path::check (Bse::Path::join (Bse::runpath (Bse::RPath::DEMODIR), canary), "r"))
+    Bse::fatal_error ("failed to locate BSE library containing '%s'", canary);
 
   // start Bse
   Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", 0);

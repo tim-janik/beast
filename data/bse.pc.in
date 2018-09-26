@@ -1,23 +1,19 @@
-destdir=
-beastdestdir=
-prefix=${destdir}@prefix@
+prefix=@prefix@
 exec_prefix=@exec_prefix@
-beastdir=${beastdestdir}@beastdir@
-beastdatadir=@beastdatadir@
-bselibdir=@bselibdir@
-bseincludedir=@bseincludedir@
-
-demodir=@beastdatadir@/demo
-sampledir=@beastdatadir@/samples
-effectdir=@beastdatadir@/effects
-instrumentdir=@beastdatadir@/instruments
-scriptdir=@beastdatadir@/scripts
-plugindir=${bselibdir}/plugins
-driverdir=${bselibdir}/drivers
+pkginstalldir=@pkginstalldir@
+includedir=${pkginstalldir}/include
+# sharedlibdir=@sharedlibdir@
+libdir=${pkginstalldir}/lib
+plugindir=${pkginstalldir}/lib/plugins
+driverdir=${pkginstalldir}/lib/drivers
+demodir=${pkginstalldir}/Demos
+effectdir=${pkginstalldir}/Effects
+sampledir=${pkginstalldir}/Samples
+instrumentdir=${pkginstalldir}/Instruments
 
 Name: Beast & Bse
 Description: Beast - Music Synthesizer and Composer
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0
 Version: @PACKAGE_VERSION@
-Libs: -L${bselibdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
-Cflags: -I${bseincludedir} @BSE_PC_CFLAGS@
+Libs: -L${libdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
+Cflags: -I${includedir} @BSE_PC_CFLAGS@

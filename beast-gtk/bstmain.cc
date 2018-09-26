@@ -60,7 +60,6 @@ server_registration (SfiProxy     server,
     }
 }
 
-static void     main_init_argv0_installpaths (const char *argv0);
 static void     main_init_bse (int *argc, char *argv[]);
 static void     main_init_sfi_glue();
 static void     main_init_gxk();
@@ -83,10 +82,8 @@ static void     main_cleanup ();
 int
 main (int argc, char *argv[])
 {
-  main_init_argv0_installpaths (argv[0]);
-
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -150,22 +147,6 @@ main (int argc, char *argv[])
 }
 
 static void
-main_init_argv0_installpaths (const char *argv0)
-{
-  // check for a libtool-linked, uninstalled executable (name)
-  const char *const exe = argv0;
-  const char *const slash = strrchr (exe, '/');
-  if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
-    {
-      namespace Path = Bse::Path;
-      // use source dir relative installpaths for uninstalled executables
-      const String program_abspath = Path::abspath (argv0);
-      const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
-      Bse::installpath_override (Path::realpath (dirpath));
-    }
-}
-
-static void
 main_init_bse (int *argc, char *argv[])
 {
   // startup BSE, allow remote calls
@@ -195,8 +176,8 @@ main_init_gxk()
   // initialize Gtk+ Extensions
   gxk_init ();
   // documentation search paths
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::IMAGEDIR).c_str());
   gxk_text_add_tsm_path (".");
   // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
@@ -234,7 +215,7 @@ main_show_splash_image()
 {
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  gchar *string = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  gchar *string = g_strconcat (Bse::runpath (Bse::RPath::IMAGEDIR).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
@@ -715,19 +696,19 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+	    printout ("%s\n", Bse::runpath (Bse::RPath::DOCDIR));
 	  else if (strcmp (arg, "images") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+	    printout ("%s\n", Bse::runpath (Bse::RPath::IMAGEDIR));
 	  else if (strcmp (arg, "locale") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+	    printout ("%s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
 	  else if (strcmp (arg, "skins") == 0)
 	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+	    printout ("%s\n", Bse::runpath (Bse::RPath::KEYBDIR));
 	  else if (strcmp (arg, "ladspa") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str());
+	    printout ("%s\n", bse_server.get_ladspa_path());
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", bse_server.get_plugin_path());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -795,19 +776,22 @@ bst_exit_print_version (void)
   printout ("\n");
   printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
-  printout ("%s", Bse::cpu_info().c_str());
+  printout ("%s", Bse::cpu_info());
   printout ("\n");
-  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
-  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
-  printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
-  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+  printout ("Locale Path:     %s\n", Bse::runpath (Bse::RPath::LOCALEDIR));
+  printout ("Driver Path:     %s\n", Bse::runpath (Bse::RPath::DRIVERDIR));
+  printout ("Plugin Path:     %s\n", Bse::runpath (Bse::RPath::PLUGINDIR));
+  printout ("Doc Path:        %s\n", Bse::runpath (Bse::RPath::DOCDIR));
+  printout ("Image Path:      %s\n", Bse::runpath (Bse::RPath::IMAGEDIR));
+  printout ("Keyrc Path:      %s\n", Bse::runpath (Bse::RPath::KEYBDIR));
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Effect Path:     %s\n", bse_server.get_effect_path());
   printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
   printout ("Demo Path:       %s\n", bse_server.get_demo_path());
   printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
-  printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
+  const std::string ladspa_path = bse_server.get_ladspa_path();
+  printout ("LADSPA Path:     %s\n", ladspa_path.empty() ? "$LADSPA_PATH" : ladspa_path);
   printout ("\n");
   printout ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
   printout ("You may redistribute copies of BEAST under the terms of\n");

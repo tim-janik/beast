@@ -15,7 +15,7 @@ include $(top_srcdir)/Makefile.decl
 #AM_CPPFLAGS += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 #
 ## install plugins under:
-#plugindir = $(beastdatadir)/plugins
+#plugindir = $(pkginstalldir)/plugins
 #
 ## setup generation of C++ plugins from idl files
 #SFIDL = ../../sfi/sfidl

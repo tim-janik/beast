@@ -50,8 +50,8 @@ main (int   argc,
   if (!title)
     title = g_strdup (".");
   gxk_text_add_tsm_path (".");
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::IMAGEDIR).c_str());
   sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE | flags, NULL);
   gxk_scroll_text_enter (sctext, title);
   for (i = 1; i < uint (argc); i++)

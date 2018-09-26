@@ -21,48 +21,61 @@
 
 namespace Bse {
 
-// == BSE_INSTALLPATH ==
-static String installpath_topdir;
+// == Runtime Path Handling ==
+static std::string      determine_libbse_installdir (bool *using_objdir);
+static std::string      construct_ladspa_path       ();
 
-void
-installpath_override (const String &topdir)
+std::string
+runpath (RPath rpath)
 {
-  installpath_topdir = topdir;
+  static bool using_objdir = false;
+  static const std::string libbse_installdir = determine_libbse_installdir (&using_objdir);
+  static const std::string libbse_prefixdir = Path::dirname (libbse_installdir);
+  const char *objdir = using_objdir ? "/" CONFIGURE_RELPATH_OBJDIR : "";
+  switch (rpath)
+    {
+    case RPath::PREFIXDIR:      return libbse_prefixdir;
+    case RPath::INSTALLDIR:     return libbse_installdir;
+    case RPath::LOCALEDIR:      return libbse_installdir + "/locale";
+    case RPath::DRIVERDIR:      return libbse_installdir + "/drivers" + objdir;
+    case RPath::PLUGINDIR:      return libbse_installdir + "/plugins" + objdir;
+    case RPath::IMAGEDIR:       return libbse_installdir + "/images";
+    case RPath::DOCDIR:         return libbse_installdir + "/doc";
+    case RPath::KEYBDIR:        return libbse_installdir + "/keys";
+    case RPath::SKINDIR:        return libbse_installdir + "/skins";
+    case RPath::DEMODIR:        return libbse_installdir + "/Demos";
+    case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
+    case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
+    case RPath::SAMPLEDIR:      return libbse_installdir + "/Samples";
+    case RPath::LADSPADIRS:     return construct_ladspa_path();
+    }
 }
 
 static std::string
-append_objdir (const std::string &path) // return path/.libs if it exists
+construct_ladspa_path()
 {
-  const std::string path_libs = path + "/" + CONFIGURE_RELPATH_OBJDIR;
-  struct stat sbuf = { 0, };
-  if (stat (path_libs.c_str(), &sbuf) == 0)
-    return path_libs;
-  return path;
-}
-
-std::string
-installpath (InstallpathType installpath_type)
-{
-  const bool ovr = !installpath_topdir.empty();
-  switch (installpath_type)
+  StringVector sp;
+  // gather search path candidates from $LADSPA_PATH
+  const char *ladspa_path = getenv ("LADSPA_PATH");
+  if (ladspa_path)
+    sp = Path::searchpath_split (ladspa_path);
+  // add $prefix/ladspa
+  sp.push_back (runpath (RPath::INSTALLDIR) + "/ladspa");
+  sp.push_back (runpath (RPath::PREFIXDIR) + "/ladspa");
+  // add standard locations
+  sp.push_back ("/usr/lib/ladspa");
+  sp.push_back ("/usr/local/lib/ladspa");
+  sp.push_back ("/opt/lib/ladspa");
+  // convert candidates to realpath and deduplicate
+  StringVector sv;
+  for (const std::string &candidate : sp)
     {
-    case INSTALLPATH_LOCALEBASE:                        return CONFIGURE_INSTALLPATH_LOCALEBASE;
-    case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
-    case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
-    case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
-    case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
-    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/plugins");
-    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return append_objdir (installpath (INSTALLPATH_DATADIR) + "/drivers");
-    case INSTALLPATH_DATADIR:                           return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_DATADIR;
-    case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/Demos";
-    case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/Samples";
-    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/Effects";
-    case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/Instruments";
-    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";  // unused
-    case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
-    case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
+      const std::string dir = Path::realpath (candidate);
+      if (std::find (sv.begin(), sv.end(), dir) == sv.end() &&
+          Path::check (dir, "d"))
+        sv.push_back (dir);
     }
-  return "";
+  return Path::searchpath_join (sv);
 }
 
 /// Initialize gettext domain used by libbse.
@@ -71,7 +84,7 @@ initialized_bse_gettext_domain()
 {
   static const char *const gettexttextdomain = [] () {
     const char *const gtdomain = BST_GETTEXT_DOMAIN;
-    bindtextdomain (gtdomain, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+    bindtextdomain (gtdomain, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
     bind_textdomain_codeset (gtdomain, "UTF-8");
     return gtdomain;
   } ();
@@ -691,7 +704,7 @@ fatal_system_error (const char *file, uint line, const char *format, ...)
 
 // finding the right path is a *fundamental* requirement for libbse
 static std::string
-determine_libbse_dirname()
+determine_libbse_installdir (bool *using_objdir)
 {
   const char *self_maps = "/proc/self/maps";
   std::ifstream maps;
@@ -712,21 +725,20 @@ determine_libbse_dirname()
         {
           const char *const extlibso = strstr (path, extlibname);               // by external name
           if (extlibso && !strchr (extlibso + strlen (extlibname), '/'))        // not dirname
-            return std::string (path, extlibso - path);                         // path fragment before /lib/lib*.so
+            {
+              *using_objdir = false;
+              return std::string (path, extlibso - path);                       // path fragment before /lib/lib*.so
+            }
           const char *const intlibso = strstr (path, intlibname);               // by internal name
           if (intlibso && !strchr (intlibso + strlen (intlibname), '/'))        // not dirname
-            return std::string (path, intlibso - path);                         // path fragment before /bse/.libs/lib*.so
+            {
+              *using_objdir = true;
+              return std::string (path, intlibso - path);                       // path fragment before /bse/.libs/lib*.so
+            }
         }
     }
   const char *const libname = strrchr (extlibname, '/');
   fatal_system_error ("libbse", 0, "failed to find library mapping for: .../%s", libname ? libname + 1 : extlibname);
-}
-
-std::string
-runpath_bsedatadir ()
-{
-  static const std::string libbse_dirname = determine_libbse_dirname();
-  return libbse_dirname;
 }
 
 std::string

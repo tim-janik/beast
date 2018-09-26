@@ -75,7 +75,7 @@ main (int   argc,
       char *argv[])
 {
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -90,8 +90,8 @@ main (int   argc,
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* add documentation search paths */
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::runpath (Bse::RPath::IMAGEDIR).c_str());
   gxk_text_add_tsm_path (".");
   /* initialize BEAST GUI components */
   _bst_init_utils ();

@@ -1067,37 +1067,37 @@ ServerImpl::get_vorbis_version ()
 String
 ServerImpl::get_ladspa_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
+  return Bse::runpath (Bse::RPath::LADSPADIRS);
 }
 
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::PLUGINDIR), BSE_GCONFIG (plugin_path));
 }
 
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), BSE_GCONFIG (instrument_path));
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), BSE_GCONFIG (sample_path));
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), BSE_GCONFIG (effect_path));
 }
 
 String
 ServerImpl::get_demo_path ()
 {
-  return Bse::installpath (Bse::INSTALLPATH_DATADIR_DEMO);
+  return Bse::runpath (Bse::RPath::DEMODIR);
 }
 
 String
@@ -1179,14 +1179,11 @@ ServerImpl::load_assets ()
       g_free (name);
     }
   // load LADSPA plugins
-  ring = bse_ladspa_plugin_path_list_files ();
-  while (ring)
+  for (const std::string &ladspa_so : bse_ladspa_plugin_path_list_files ())
     {
-      char *name = (char*) sfi_ring_pop_head (&ring);
-      const char *error = bse_ladspa_plugin_check_load (name);
+      const char *error = bse_ladspa_plugin_check_load (ladspa_so.c_str());
       if (error)
-        printerr ("%s: Bse LADSPA plugin registration failed: %s\n", name, error);
-      g_free (name);
+        printerr ("%s: Bse LADSPA plugin registration failed: %s\n", ladspa_so, error);
     }
 }
 

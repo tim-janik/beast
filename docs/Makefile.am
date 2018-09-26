@@ -3,11 +3,10 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = images
 
-beastmandir = ${beastsharedir}/man
-man1dir     = $(beastmandir)/man1
+man1dir     = $(pkginstalldir)/share/man/man1
 man1_MANS   =
 man1_HTMLS  =
-man5dir     = $(beastmandir)/man5
+man5dir     = $(pkginstalldir)/share/man/man5
 man5_MANS   =
 man5_HTMLS  =
 
@@ -35,7 +34,6 @@ docs_doxy_impls     = $(filter-out %.h %.H %.hh, $(docs_doxy_sources))
 docs_doxy_tagsrcs   = $(strip \
 	tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/	\
 	tagfile-cppreference-15.xml=http://en.cppreference.com/w/		\
-	tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/		\
 )
 docs_doxy_tagstems  = $(filter-out =JUNK%, $(subst =, =JUNK, $(docs_doxy_tagsrcs))) # uses 'subst' for word splitting
 docs_doxygen_tagbzs = $(docs_doxy_tagstems:%=docs/%.bz2)
@@ -112,7 +110,7 @@ docs: doxy/richdocs
 .PHONY: docs
 
 # == install docs/doxy/html ==
-docs_html_installbase	 = $(beastdocdir)
+docs_html_installbase	 = $(pkginstalldir)/doc
 noinst_DATA		+= doxy/html/doc-version	# AM target to trigger docs/doxy/html builds
 docs-html-install: $(docs_html_install_DATA)
 	rm -Rf "$(DESTDIR)$(docs_html_installbase)"/html/

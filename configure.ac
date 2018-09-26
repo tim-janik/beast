@@ -28,7 +28,6 @@ BST_VERSION="$PACKAGE_VERSION"
 [MICRO=`echo $PACKAGE_VERSION | sed 's/^\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [Beast Version])
-AC_DEFINE_UNQUOTED(BEAST_EXEC_POSTFIX, "-$MAJOR.$MINOR.$MICRO", [Beast executable postfix])
 # For automake, we need to easily provide MAJOR.MINOR.MICRO and MAJOR_MINOR_MICRO:
 AC_SUBST(MAJOR)
 AC_SUBST(MINOR)
@@ -94,47 +93,17 @@ test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
 }
 
 # Define package directories per major/minor version
-beastlocaledir="\${beastdir}/locale"
-beastbindir="\${beastdir}/bin"
-bselibdir="\${beastdir}/lib"
-beastsharedir="\${beastdir}/share"
-beastdatadir="\${beastdir}"
-beastdocdir="\${beastdir}/doc"
-bseincludedir="\${beastdir}/include"
-includerootdir="\${beastdir}/include"
 # Provide directories for C++ and move Beast packagedir into libdir if under /usr
 bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"
 test "x$prefix" != xNONE || prefix="$ac_default_prefix" ; test "x$exec_prefix" != xNONE || exec_prefix="$prefix"
 case "$with_pkgroot" in
-  no)			beastdir="$libdir/beast-$MAJOR-$MINOR" ;;
-  */*)			beastdir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
+  no)			pkginstalldir="$libdir/beast-$MAJOR-$MINOR" ;;
+  */*)			pkginstalldir="$with_pkgroot/beast-$MAJOR-$MINOR" ;;
   *)			AC_MSG_ERROR([invalid pkgroot path: $with_pkgroot]) ;;
 esac
-bak_libdir="$libdir"
-bak_includerootdir="$includerootdir"; bak_bseincludedir="$bseincludedir"; bak_beastdir="$beastdir"
-libdir=`eval echo "${libdir}"`
-includerootdir=`eval echo "${includerootdir}"`; bseincludedir=`eval echo "${bseincludedir}"`; beastdir=`eval echo "${beastdir}"`
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTDIR, ["`eval echo "${beastdir}"`"], [Beast program directory])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_INCLUDEROOTDIR, ["`eval echo "${includerootdir}"`"], [Directory for libbse header files])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${beastlocaledir}`"], [Directory for locale specific message catalogs])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${beastdatadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${beastdocdir}`"], [Directory to install documentation])
-AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-includerootdir="$bak_includerootdir"; bseincludedir="$bak_bseincludedir"; beastdir="$bak_beastdir"
-libdir="$bak_libdir"
 prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"
 # Substitute directories in Makefiles
-AC_SUBST(beastlocaledir)
-AC_SUBST(includerootdir)
-AC_SUBST(bseincludedir)
-AC_SUBST(beastbindir)
-AC_SUBST(bselibdir)
-AC_SUBST(beastsharedir)
-AC_SUBST(beastdatadir)
-AC_SUBST(beastdocdir)
-AC_SUBST(beastdir)
+AC_SUBST(pkginstalldir)
 
 # == Check for git ==
 AC_MSG_CHECKING([for git repository])
@@ -425,9 +394,6 @@ AC_DEFUN([MC_I18N_REQUIREMENTS],
 ])
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
-    dnl # require Rapicorn
-    dnl # PKG_CHECK_MODULES(RAPICORN, rapicorn >= 17.0.0)
-
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
     AC_MSG_CHECKING([for Vorbisfile versions with buggy pcm_seek])
@@ -721,6 +687,7 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 data/beast.applications
+images/Makefile
 sfi/Makefile
 bse/sysconfig.h
 bse/bseconfig.h
@@ -768,9 +735,9 @@ Autoconfiguration complete.
 
 	Building package:		$PACKAGE-$VERSION
 
-	Install Prefix:			`printexpandvar ${prefix}`
 	Binaries:			`printexpandvar ${bindir}`
-	Beast Program Directory:	`printexpandvar ${beastdir}`
+	Install Prefix:			`printexpandvar ${prefix}`
+	Installation Directory:		`printexpandvar ${pkginstalldir}`
 
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}

@@ -5,7 +5,7 @@ SUBDIRS = icons . freeverb # evaluator
 
 AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\"" -DBSE_PLUGIN_COMPILATION
-AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS)
+AM_CXXFLAGS += $(BSE_CFLAGS)
 
 # == IDL C++ Plugins ==
 idl_files = $(strip			\
@@ -83,7 +83,7 @@ plugins_built_sources 	  =
 CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
 plugin_FPU_LTLIBRARIES	  = cxxplugins.FPU.la
-plugin_FPUdir 	  	  = $(beastdatadir)/plugins
+plugin_FPUdir 	  	  = $(pkginstalldir)/plugins
 FPU_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 

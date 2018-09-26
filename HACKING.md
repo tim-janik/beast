@@ -10,7 +10,7 @@ The code base is currently undergoing several migrations and new developments:
 
 IDL-Migration
 -------------
-**[ONGOING]** (For BSE) Move from sfidl (and the old PROC files) to AIDA IDL (aidacc, distributed with Rapicorn). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all sfidl files need to be ported to AIDA IDL.
+**[ONGOING]** (For BSE) Move from sfidl (and the old PROC files) to AIDA IDL (aidacc, distributed with Beast). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all sfidl files need to be ported to AIDA IDL.
 
 C++-Migration
 -------------
@@ -21,7 +21,7 @@ C++-Migration
 * **[ONGOING]** Move procedures from PROC files into interface methods in IDL files. Initially procedures were moved into sfidl files, but now procedures are being moved to AIDA IDL. Note that during build time, bsehack.idl is generated, that already contains IDL formatting for all procedures.
 * Next, signals should be migrated, as signals are the the main tie to libgobject.so.
 * Once all signals are converted, all g_signal_ related code is eliminated from BSE and SFI, bse_proxy_connect can be removed.
-* Also, migrate all properties from GObject based to AIDA IDL, this might mean more Rapicorn AIDA support for records, sequences and Any than currently available.
+* Also, migrate all properties from GObject based to AIDA IDL, this might mean more AIDA support for records, sequences and Any than currently available.
 * Develop a suitable replacement for the `sfidl --plugin` mode, which generates very customized code to implement BSE objects and related synthesis engine modules.
 * Last, all g_object_ and g_type_ calls can be replaced.
 

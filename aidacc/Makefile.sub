@@ -30,7 +30,7 @@ aidacc_private_files = $(strip		\
 )
 
 # == aidacc dirs ==
-aidacc_includedir		= $(includerootdir)/aidacc
+aidacc_includedir		= $(pkginstalldir)/include/aidacc
 aidacc_include_HEADERS		=	\
 	aidacc/aida.hh			\
 	aidacc/visitor.hh

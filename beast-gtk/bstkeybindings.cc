@@ -216,7 +216,7 @@ key_bindings_exec_action (gpointer data,
         static GtkWidget *load_dialog = NULL;
         if (!load_dialog)
           load_dialog = bst_file_dialog_create();
-        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
+        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), Bse::runpath (Bse::RPath::KEYBDIR).c_str());
         gxk_widget_showraise (load_dialog);
         bst_file_dialog_set_handler (BST_FILE_DIALOG (load_dialog), key_bindings_load_file, self, NULL);
       }
