@@ -1,0 +1,169 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+# == Distribution preparation ==
+ARG DIST
+FROM $DIST
+RUN TZ=GMT date
+# use BASH(1) as shell
+RUN ln -sf bash /bin/sh && ls -al /bin/sh
+ENV DEBIAN_FRONTEND noninteractive
+# provide 'retry', 'intent' and 'wrapclang'
+RUN echo -e '#!/bin/bash\n"$@" || { sleep 10 ; "$@" ; } || { sleep 90 ; "$@" ; }' > /bin/retry && \
+  echo -e '#!/bin/sh\ncase "$INTENT" in *$1*) echo true ;; *) echo "exit 0" ;; esac' > /bin/intent && \
+  echo -e '#!/bin/bash\nexec $WRAPPER ${0##*/wrap} "$@"' > /bin/wrapclang && ln -s wrapclang /bin/wrapclang++ && \
+  chmod +x /bin/retry /bin/intent /bin/wrapclang /bin/wrapclang++
+# Make use of apt-cacher proxy if configured
+ARG APT_CACHER
+RUN test -z "$APT_CACHER" || echo "Acquire::http::Proxy \"$APT_CACHER\";" | tee /etc/apt/apt.conf.d/00aptproxy
+
+# == Dependency installaiton ==
+# Upgrade, install build dependencies, add libXss.so.1 for electron
+RUN retry apt-get update && retry apt-get -y upgrade && \
+  retry apt-get install -y \
+	build-essential devscripts automake autoconf autoconf-archive libtool intltool \
+	doxygen graphviz texlive-binaries pandoc git libxml2-utils \
+	cppcheck clang clang-tidy \
+	$(apt-cache search clang-tools | fgrep -om1 -e 'clang-tools ') \
+	\
+	gawk libxml-parser-perl \
+	libpango1.0-dev python2.7-dev libxml2-dev \
+	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
+	imagemagick npm libgconf-2-4 \
+	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
+	\
+	python3 wget libxss1 curl
+
+# == Git sources ==
+# Setup build environment and provide the git repositories
+COPY ./.git/ /tmp/beast.git
+RUN cd /usr/src/ && git clone /tmp/beast.git
+WORKDIR /usr/src/beast
+
+# == Codechecks pre-build ==
+# Configure conditional builds
+ARG INTENT
+# A regular cppcheck run can be carried out before the sources are built
+RUN `intent checks` && \
+  mkdir -p /usr/src/beast/codechecks/ && \
+  time misc/run-cppcheck.sh && \
+  mv -v cppcheck.err ./codechecks/cppcheck.log
+
+# == Configure build ==
+# Configure source tree, possibly using compiler wrapper
+RUN TZ=GMT date && \
+  case $INTENT in \
+    *checks*)		nice ./autogen.sh --prefix=/usr CC=wrapclang CXX=wrapclang++ ;; \
+    *clang*|*tidy*)	nice ./autogen.sh --prefix=/usr CC=clang CXX=clang++ ;; \
+    *gcc*|*)		nice ./autogen.sh --prefix=/usr ;; \
+  esac
+
+# == Run build ==
+# Build sources in parallel, possibly integrate scan-build
+RUN : && \
+  if [[ $INTENT =~ checks ]] ; then \
+    export WRAPPER='scan-build -o /usr/src/beast/codechecks/html/ -disable-checker deadcode.DeadStores' ; \
+  fi && \
+  time nice make -j`nproc`
+
+# == AppImage AppDir creation ==
+# Create directory for AppImage from fresh build
+RUN `intent appimage` && \
+  make install DESTDIR=/appdir/
+
+# == Validate Build ==
+# Run check, installcheck, etc, unless we're running clang-tidy which takes ages
+RUN [[ $INTENT =~ tidy ]] || \
+  make check
+RUN [[ $INTENT =~ tidy ]] || \
+  make install
+RUN [[ $INTENT =~ tidy ]] || \
+  make installcheck
+RUN [[ $INTENT =~ tidy ]] || \
+  make dist
+RUN [[ $INTENT =~ tidy ]] || \
+  make uninstall
+RUN `intent distcheck` && \
+  time make distcheck DISTCHECK_PO=0 XZ_OPT=--fast
+RUN TZ=GMT date
+
+# == Codechecks post-build ==
+ENV SCANDIRS "aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers"
+# With all generated sources in place, run various source code checks
+# Build index of scan-build reports, strip top_srcdir
+RUN test -e ./codechecks/html/ || exit 0 ; \
+  for r in ./codechecks/html/*/report-*.html ; do \
+    D=$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/ ; p }' $r) && \
+      F=$(sed -nr '/<!-- BUGFILE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $r) && \
+      L=$(sed -nr '/<!-- BUGLINE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $r) && \
+      echo "$F:$L: $D" | sed 's,^/usr/src/beast/,,' ; \
+  done > ./codechecks/scan-build.log
+# Gather reports from clang-tidy, strip top_srcdir
+RUN `intent tidy` && \
+  mkdir -p /usr/src/beast/codechecks/ && \
+  git ls-tree -r --name-only HEAD >.ls.all && \
+  egrep "^($SCANDIRS)/.*\.(cc|hh)$"  <.ls.all >.ls.cchh && \
+  egrep -vf misc/clang-tidy.ignore .ls.cchh >.ls.clangtidy && \
+  time clang-tidy `cat .ls.clangtidy` -- \
+       -std=gnu++14 \
+       -I. \
+       -Isfi \
+       -Ibeast-gtk \
+       -DBSE_COMPILATION \
+       -DGXK_COMPILATION \
+       -D__TOPDIR__=\"`pwd`\" \
+       `pkg-config --cflags libgnomecanvas-2.0` \
+       > ./codechecks/clang-tidy.raw && \
+  sed 's,^/usr/src/beast/,,' ./codechecks/clang-tidy.raw > ./codechecks/clang-tidy.log && \
+  rm -f ./codechecks/clang-tidy.raw
+# Create report about keywords relevant for code quality
+RUN `intent checks` && \
+  git ls-tree -r --name-only HEAD >.ls.all && \
+  egrep "^(sfi|$SCANDIRS)/.*\.(cc|hh)$"  <.ls.all >.ls.cchh && \
+  egrep "^(sfi|$SCANDIRS)/.*\.(js|vue)$" <.ls.all >.ls.jsvue && \
+  time misc/keywords.sh -g $(cat .ls.cchh .ls.jsvue) > ./codechecks/fi\xmes.log
+# Use cppcheck to find unused functions
+RUN `intent checks` && \
+  time misc/run-cppcheck.sh -u && \
+  mv -v cppcheck.err ./codechecks/unused.log
+# Blame error origins
+RUN test -e ./codechecks/ || exit 0 ; \
+  time misc/blame-lines -b codechecks/*.log
+
+# == AppImage creation ==
+# Prepare AppImage tools
+RUN `intent appimage` && \
+  cd /tmp && \
+  retry wget -nv https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
+  retry wget -nv https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage && \
+  chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage && \
+  ./linuxdeploy-x86_64.AppImage  --appimage-extract && mv -v squashfs-root/ ./linuxdeploy && \
+  ./appimagetool-x86_64.AppImage --appimage-extract && mv -v squashfs-root/ ./appimagetool && \
+  rm linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
+# Populate AppDir, linuxdeploy expects libraries under usr/lib, binaries under usr/bin, etc
+# We achieve that by treating the beast-$MAJOR-$MINOR installation prefix as /usr/.
+RUN `intent appimage` && \
+  mkdir /appdir2/ && \
+  mv /appdir/usr/lib/beast-* /appdir2/usr/ && \
+  cd /appdir2/usr/bin/ && BEASTEXE=`echo beast-*.*` && cd / && \
+  sed "/^Exec=/s|.*|Exec=$BEASTEXE %F|" -i /appdir2/usr/share/applications/beast.desktop && \
+  sed '/^Categories=/s/$/;/' -i /appdir2/usr/share/applications/beast.desktop && \
+  export LD_LIBRARY_PATH=/appdir2/usr/lib/ && \
+  /tmp/linuxdeploy/AppRun -v1 --appdir=/appdir2/
+# Create AppImage executable
+RUN `intent appimage` && \
+  /tmp/appimagetool/AppRun --comp=xz -n -v /appdir2/
+
+# == Bintray uploads ==
+COPY .secrets /root/.secrets
+ENV BINTRAY_KEEPS 99
+RUN if test -x BEAST-x86_64.AppImage && `intent up` ; then \
+  V=$(./git-version.sh -l) && \
+    mv -v BEAST-x86_64.AppImage beast-$V.x64 && \
+    time misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V -d beast-$V.x64 ; \
+  fi
+RUN if test -x ./codechecks/ && `intent up` ; then \
+  { test -e "./codechecks/clang-tidy.log" && CODELOGS=clangtidy || CODELOGS=codechecks ; } && \
+  V=$(./git-version.sh -l) && \
+    tar cf $CODELOGS-$V.tgz codechecks/ && \
+    time misc/bintray.sh beast-team/nightly/beast -k $BINTRAY_KEEPS -g -v $V $CODELOGS-$V.tgz ; \
+  fi
