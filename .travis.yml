@@ -18,6 +18,7 @@ env:
     - D=bionic I=appimage,up            # gcc
     - D=bionic I=checks,up
     - D=bionic I=tidy,up
+    - D=bionic I=clang,distcheck
     - D=artful I=gcc
     - D=xenial I=gcc
     # upcoming releases

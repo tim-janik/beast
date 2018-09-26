@@ -82,7 +82,7 @@ RUN [[ $INTENT =~ tidy ]] || \
   make dist
 RUN [[ $INTENT =~ tidy ]] || \
   make uninstall
-RUN `intent checks` && \
+RUN `intent distcheck` && \
   time make distcheck DISTCHECK_PO=0 XZ_OPT=--fast
 RUN TZ=GMT date
 
