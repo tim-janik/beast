@@ -16,8 +16,13 @@ cd "$(dirname "$0")"
 
 # If present, git knows the canonical version
 if test -d ${GIT_DIR:-.git} -o -f .git ; then
-  VERSION=$(git describe --match '[0-9]*.[0-9]*.*[0-9a]' --first-parent $FORMAT)
-  rm -f git-version.cache	# Cache file is stale if git works
+  # Find most recent annotated version tag, excluding tags merged
+  # through branches, i.e. find tag through --first-parent
+  TRUNKTAG=$(git describe --match '[0-9]*.[0-9]*.*[0-9a]' --abbrev=0 --first-parent)
+  # Append comit hash and *full* commit count to the tag, to generate
+  # monotonically increasing versions, i.e. *avoid* using --first-parent
+  VERSION=$(git describe --match "$TRUNKTAG" $FORMAT)
+  rm -f git-version.cache	# the cache file maybe stale if git works
   echo "$VERSION"
   exit 0
 fi
