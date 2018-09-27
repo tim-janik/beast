@@ -28,6 +28,7 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 	gawk libxml-parser-perl \
 	libpango1.0-dev python2.7-dev libxml2-dev \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
+	libjack-jackd2-dev \
 	imagemagick npm libgconf-2-4 \
 	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
 	\
