@@ -7,7 +7,7 @@ AM_CXXFLAGS += $(BSE_CFLAGS)
 
 # Plugin bsedevice-alsa
 driverdir          = $(pkginstalldir)/drivers
-driver_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la bsepcmdevice-jack.la
+driver_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 driver_ldflags     = -avoid-version
 driver_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
