@@ -37,6 +37,8 @@ before_install:
   - echo "D=$D I=$I"
   - uname -a
   - cat /etc/os-release
+  # avoid executable uploads for branches and PRs
+  - test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" = "master^false" || I=$(sed '/\bappimage\b/s/,\?\bup\b//' <<<$I)
 
 install:
   - env | grep '^AUTHSECRET_\w\+=' >.secrets && unset `sed 's/=.*//' .secrets` || true
