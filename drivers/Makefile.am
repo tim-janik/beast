@@ -25,7 +25,8 @@ if WITH_JACK
 # Plugin bsepcmdevice-jack (built conditionally)
 driver_LTLIBRARIES += bsepcmdevice-jack.la
 
-bsepcmdevice_jack_la_SOURCES = bsepcmdevice-jack.cc
-bsepcmdevice_jack_la_LDFLAGS = $(AM_LDFLAGS) -module $(driver_ldflags)
-bsepcmdevice_jack_la_LIBADD  = $(driver_libs)
+bsepcmdevice_jack_la_SOURCES  = bsepcmdevice-jack.cc
+bsepcmdevice_jack_la_CXXFLAGS = $(AM_CXXFLAGS) $(JACK_CFLAGS)
+bsepcmdevice_jack_la_LDFLAGS  = $(AM_LDFLAGS) -module $(driver_ldflags)
+bsepcmdevice_jack_la_LIBADD   = $(driver_libs) $(JACK_LIBS)
 endif
