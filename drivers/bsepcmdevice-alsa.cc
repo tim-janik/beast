@@ -48,7 +48,9 @@ static void             alsa_device_write               (BsePcmHandle           
                                                          const gfloat           *values);
 static gboolean         alsa_device_check_io            (BsePcmHandle           *handle,
                                                          glong                  *tiumeoutp);
-static guint            alsa_device_latency             (BsePcmHandle           *handle);
+static void             alsa_device_latency             (BsePcmHandle           *handle,
+                                                         guint                  *rlatency,
+                                                         guint                  *wlatency);
 // == Type Registration ==
 BSE_RESIDENT_TYPE_DEF (BsePcmDeviceALSA, bse_pcm_device_alsa, BSE_TYPE_PCM_DEVICE, NULL,
                        "PCM driver implementation for the Advanced Linux Sound Architecture "
@@ -470,8 +472,10 @@ alsa_device_check_io (BsePcmHandle *handle,
   return FALSE;
 }
 
-static guint
-alsa_device_latency (BsePcmHandle *handle)
+static void
+alsa_device_latency (BsePcmHandle *handle,
+                     guint        *rlatency,
+                     guint        *wlatency)
 {
   AlsaPcmHandle *alsa = (AlsaPcmHandle*) handle;
   snd_pcm_sframes_t rdelay, wdelay;
@@ -480,8 +484,9 @@ alsa_device_latency (BsePcmHandle *handle)
   if (!alsa->write_handle || snd_pcm_delay (alsa->write_handle, &wdelay) < 0)
     wdelay = 0;
   gint buffer_length = alsa->n_periods * alsa->period_size; /* buffer size chosen by ALSA based on latency request */
-  /* return total latency in frames */
-  return CLAMP (rdelay, 0, buffer_length) + CLAMP (wdelay, 0, buffer_length);
+  /* return latency in frames */
+  *rlatency = CLAMP (rdelay, 0, buffer_length);
+  *wlatency = CLAMP (wdelay, 0, buffer_length);
 }
 
 static gsize

@@ -20,7 +20,9 @@ static void         null_device_write     (BsePcmHandle *handle,
                                            const gfloat *values);
 static gboolean     null_device_check_io  (BsePcmHandle *handle,
                                            glong        *timeoutp);
-static guint        null_device_latency   (BsePcmHandle *handle);
+static void         null_device_latency   (BsePcmHandle *handle,
+                                           guint        *rlatency,
+                                           guint        *wlatency);
 
 
 /* --- functions --- */
@@ -86,11 +88,14 @@ null_device_check_io (BsePcmHandle *handle,
   return !Bse::Sequencer::instance().thread_lagging (2);
 }
 
-static guint
-null_device_latency (BsePcmHandle *handle)
+static void
+null_device_latency (BsePcmHandle *handle,
+                     guint        *rlatency,
+                     guint        *wlatency)
 {
-  /* total latency in frames */
-  return handle->mix_freq / 10;
+  /* latency in frames */
+  *rlatency = handle->mix_freq / 10;
+  *wlatency = handle->mix_freq / 10;
 }
 static gsize
 null_device_read (BsePcmHandle *handle,

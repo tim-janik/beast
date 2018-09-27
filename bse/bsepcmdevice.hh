@@ -35,7 +35,9 @@ struct BsePcmHandle {
 			 const gfloat		*values);       /* n_channels * block_length values */
   gboolean (*check_io)	(BsePcmHandle		*handle,
                          glong                  *timeoutp);
-  guint    (*latency)   (BsePcmHandle           *handle);
+  void     (*latency)   (BsePcmHandle           *handle,
+                         guint                  *rlatencyp,     /* input latency in frames */
+                         guint                  *wlatencyp);    /* output latency in frames */
 };
 struct BsePcmDevice : BseDevice {
   /* requested caps */
@@ -65,7 +67,9 @@ void		bse_pcm_handle_write		(BsePcmHandle		*handle,
 						 const gfloat		*values);
 gboolean        bse_pcm_handle_check_io		(BsePcmHandle		*handle,
                                                  glong                  *timeoutp);
-guint           bse_pcm_handle_latency          (BsePcmHandle           *handle);
+void            bse_pcm_handle_latency          (BsePcmHandle           *handle,
+                                                 guint                  *rlatency,
+                                                 guint                  *wlatency);
 
 
 /* --- misc utils --- */

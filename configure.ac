@@ -529,6 +529,18 @@ AC_DEFUN([MC_ASOUND_CHECK],
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
 ])
+AC_DEFUN([MC_JACK_REQUIREMENTS],
+[
+    AC_ARG_WITH([jack], AS_HELP_STRING([--without-jack], [Build Beast without JACK support]))
+
+    dnl check for jack unless --without-jack was used
+    if test "x$with_jack" != "xno"; then
+        PKG_CHECK_MODULES(JACK, jack >= 0.100.0, [with_jack="yes"], [with_jack="no"])
+    fi
+    AM_CONDITIONAL(WITH_JACK, [test "x$with_jack" != "xno"])
+    AC_SUBST(JACK_CFLAGS)
+    AC_SUBST(JACK_LIBS)
+])
 AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
@@ -675,6 +687,7 @@ AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 MC_I18N_REQUIREMENTS
 MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
+MC_JACK_REQUIREMENTS
 MC_BSE_SNDDEV_CHECK
 MC_PYTHON_REQUIREMENTS
 MC_GXK_REQUIREMENTS
@@ -742,5 +755,6 @@ Autoconfiguration complete.
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}
 	MP3 support using libmad:	${summary_libmad}
+	JACK support:			${with_jack}
 
 EOF

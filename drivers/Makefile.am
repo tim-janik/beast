@@ -7,7 +7,7 @@ AM_CXXFLAGS += $(BSE_CFLAGS)
 
 # Plugin bsedevice-alsa
 driverdir          = $(pkginstalldir)/drivers
-driver_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
+driver_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la bsepcmdevice-jack.la
 driver_ldflags     = -avoid-version
 driver_libs        = ../bse/libbse-@MAJOR@.la $(SFI_LIBS)
 
@@ -20,3 +20,12 @@ bsepcmdevice_alsa_la_LIBADD  = $(driver_libs) $(ALSA_LIBS)
 bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.cc
 bsemididevice_alsa_la_LDFLAGS = $(AM_LDFLAGS) -module $(driver_ldflags)
 bsemididevice_alsa_la_LIBADD  = $(driver_libs) $(ALSA_LIBS)
+
+if WITH_JACK
+# Plugin bsepcmdevice-jack (built conditionally)
+driver_LTLIBRARIES += bsepcmdevice-jack.la
+
+bsepcmdevice_jack_la_SOURCES = bsepcmdevice-jack.cc
+bsepcmdevice_jack_la_LDFLAGS = $(AM_LDFLAGS) -module $(driver_ldflags)
+bsepcmdevice_jack_la_LIBADD  = $(driver_libs)
+endif
