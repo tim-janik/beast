@@ -1,8 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxplugin.hh>
 #include "bsepcmdevice-jack.hh"
-#include <bse/bseblockutils.hh>
-#include <bse/gsldatautils.hh>
+#include "bse/internal.hh"
+#include "bse/bsecxxplugin.hh"
+#include "bse/bseblockutils.hh"
+#include "bse/gsldatautils.hh"
 #include <jack/jack.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,11 +24,11 @@ using std::string;
 using std::min;
 using std::max;
 using std::copy;
-using Bse::Block;
 
 #define JDEBUG(...)     Bse::debug ("pcm-jack", __VA_ARGS__)
 
-namespace {
+namespace { // Anon
+using namespace Bse;
 
 /**
  * This function uses std::copy to copy the n_values of data from ivalues
@@ -284,8 +285,6 @@ struct JackPcmHandle
   }
 };
 
-}
-
 /* --- prototypes --- */
 static void             bse_pcm_device_jack_class_init  (BsePcmDeviceJACKClass  *klass);
 static void             bse_pcm_device_jack_init        (BsePcmDeviceJACK       *self);
@@ -329,8 +328,6 @@ bse_pcm_device_jack_init (BsePcmDeviceJACK *self)
 
   jack_set_error_function (error_callback_show);
 }
-
-namespace {
 
 bool
 connect_jack (BsePcmDeviceJACK *self, jack_status_t &status)
@@ -397,8 +394,6 @@ struct DeviceDetails {
   vector<string> input_port_names;
   vector<string> output_port_names;
 };
-
-}
 
 static map<string, DeviceDetails>
 query_jack_devices (BsePcmDeviceJACK *self)
@@ -984,3 +979,5 @@ bse_pcm_device_jack_class_init (BsePcmDeviceJACKClass *klass)
   device_class->open = bse_pcm_device_jack_open;
   device_class->close = bse_pcm_device_jack_close;
 }
+
+} // Anon
