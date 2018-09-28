@@ -162,7 +162,7 @@ ENV BINTRAY_KEEPS 99
 RUN if test -x BEAST-x86_64.AppImage && `intent up` ; then \
   V=$(./git-version.sh -l) && \
     mv -v BEAST-x86_64.AppImage beast-$V.x64.AppImage && \
-    time misc/bintray.sh beast-team/testing/AppImage -k $BINTRAY_KEEPS -g -v $V -d beast-$V.x64.AppImage ; \
+    time misc/bintray.sh beast-team/testing/Beast-AppImage -k $BINTRAY_KEEPS -g -v $V -d beast-$V.x64.AppImage ; \
   fi
 RUN if test -x ./codechecks/ && `intent up` ; then \
   { test -e "./codechecks/clang-tidy.log" && CODELOGS=clangtidy || CODELOGS=codechecks ; } && \
