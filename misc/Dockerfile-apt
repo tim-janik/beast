@@ -29,7 +29,13 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
 	\
 	python3 libxss1 curl cmake
-# stripped down fluidsynth version
+
+# Pre-fetch electron download
+RUN mkdir -p /root/.electron/ && \
+  cd /root/.electron/ && \
+  curl -sfSOL 'https://github.com/electron/electron/releases/download/v1.8.8/electron-v1.8.8-linux-x64.zip'
+
+# Build stripped down fluidsynth version without driver
 RUN mkdir -p /tmp/fluid/build && \
   cd /tmp/fluid/ && \
   curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v1.1.11.tar.gz && \
