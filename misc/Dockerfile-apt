@@ -2,7 +2,7 @@
 
 # == Distribution preparation ==
 ARG DIST
-FROM $DIST
+FROM $DIST as Stage0
 RUN TZ=GMT date
 # use BASH(1) as shell
 RUN ln -sf bash /bin/sh && ls -al /bin/sh
@@ -32,6 +32,14 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
 	\
 	python3 wget libxss1 curl
+
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Some variants of the above commands are cached on docker hub and can be pulled
+# for 'docker build --cache-from', see: https://hub.docker.com/r/timjanik/ci-cache/tags/
+
+
+# == Uncachable Part ==
+FROM Stage0
 
 # == Git sources ==
 # Setup build environment and provide the git repositories
