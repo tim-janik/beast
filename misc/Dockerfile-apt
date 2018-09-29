@@ -24,11 +24,32 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 	\
 	gawk libxml-parser-perl \
 	libpango1.0-dev python2.7-dev libxml2-dev \
-	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libfluidsynth-dev \
+	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
 	imagemagick npm libgconf-2-4 \
 	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
 	\
-	python3 libxss1 curl
+	python3 libxss1 curl cmake
+# stripped down fluidsynth version
+RUN mkdir -p /tmp/fluid/build && \
+  cd /tmp/fluid/ && \
+  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v1.1.11.tar.gz && \
+  tar xf v1.1.11.tar.gz && \
+  cd build && \
+  cmake ../fluidsynth-1.1.11 \
+	-DCMAKE_INSTALL_PREFIX=/usr/ \
+	-DLIB_SUFFIX="/`dpkg-architecture -qDEB_HOST_MULTIARCH`" \
+	-Denable-dbus=0 \
+	-Denable-ipv6=0 \
+	-Denable-jack=0 \
+	-Denable-midishare=0 \
+	-Denable-network=0 \
+	-Denable-oss=0 \
+	-Denable-pulseaudio=0 \
+	-Denable-readline=0 \
+	-Denable-alsa=0 \
+	-Denable-lash=0 && \
+  make && \
+  make install
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Some variants of the above commands are cached on docker hub and can be pulled
