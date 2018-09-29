@@ -28,7 +28,7 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 	imagemagick npm libgconf-2-4 \
 	nodejs"$(apt-cache -qn search ^nodejs-legacy | grep -oe -legacy)" \
 	\
-	python3 wget libxss1 curl
+	python3 libxss1 curl
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Some variants of the above commands are cached on docker hub and can be pulled
@@ -141,8 +141,8 @@ RUN test -e ./codechecks/ || exit 0 ; \
 # Prepare AppImage tools
 RUN `intent appimage` && \
   cd /tmp && \
-  retry wget -nv https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
-  retry wget -nv https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage && \
+  retry curl -sfSOL https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
+  retry curl -sfSOL https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage && \
   chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage && \
   ./linuxdeploy-x86_64.AppImage  --appimage-extract && mv -v squashfs-root/ ./linuxdeploy && \
   ./appimagetool-x86_64.AppImage --appimage-extract && mv -v squashfs-root/ ./appimagetool && \
