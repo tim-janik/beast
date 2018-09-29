@@ -12,9 +12,6 @@ RUN echo -e '#!/bin/bash\n"$@" || { sleep 10 ; "$@" ; } || { sleep 90 ; "$@" ; }
   echo -e '#!/bin/sh\ncase "$INTENT" in *$1*) echo true ;; *) echo "exit 0" ;; esac' > /bin/intent && \
   echo -e '#!/bin/bash\nexec $WRAPPER ${0##*/wrap} "$@"' > /bin/wrapclang && ln -s wrapclang /bin/wrapclang++ && \
   chmod +x /bin/retry /bin/intent /bin/wrapclang /bin/wrapclang++
-# Make use of apt-cacher proxy if configured
-ARG APT_CACHER
-RUN test -z "$APT_CACHER" || echo "Acquire::http::Proxy \"$APT_CACHER\";" | tee /etc/apt/apt.conf.d/00aptproxy
 
 # == Dependency installaiton ==
 # Upgrade, install build dependencies, add libXss.so.1 for electron
