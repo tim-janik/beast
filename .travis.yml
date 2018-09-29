@@ -45,7 +45,7 @@ install:
   - travis_retry git fetch --unshallow
 
 before_script:
-  - CICACHE_BIONIC='timjanik/ci-cache:bionic-s180929'
+  - CICACHE_BIONIC='timjanik/ci-cache:bionic-180930'
   # Fetch initial bionic docker build stages from docker hub
   - bash -c "! [[ $D =~ bionic ]]" || docker pull "$CICACHE_BIONIC" || true
 
