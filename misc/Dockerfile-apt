@@ -2,7 +2,7 @@
 
 # == Distribution preparation ==
 ARG DIST
-FROM $DIST as Stage0
+FROM $DIST as stage0
 RUN TZ=GMT date
 # use BASH(1) as shell
 RUN ln -sf bash /bin/sh && ls -al /bin/sh
@@ -39,7 +39,7 @@ RUN retry apt-get update && retry apt-get -y upgrade && \
 
 
 # == Uncachable Part ==
-FROM Stage0
+FROM stage0
 
 # == Git sources ==
 # Setup build environment and provide the git repositories
