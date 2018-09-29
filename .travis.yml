@@ -44,10 +44,14 @@ install:
   # git describe requires complete history
   - travis_retry git fetch --unshallow
 
+before_script:
+  - CICACHE_BIONIC='timjanik/ci-cache:bionic-s180929'
+  # Fetch initial bionic docker build stages from docker hub
+  - bash -c "! [[ $D =~ bionic ]]" || docker pull "$CICACHE_BIONIC" || true
+
 script:
   # Build inside docker container
-  - TZ=GMT date
-  - docker build -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
+  - time docker build --cache-from "$CICACHE_BIONIC" -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
 
 after_success:
   - echo "OK, all done."
