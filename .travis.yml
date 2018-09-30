@@ -4,7 +4,6 @@
 # http://lint.travis-ci.org/
 
 os: linux
-sudo: required
 services: docker
 language: generic
 
@@ -37,16 +36,22 @@ before_install:
   - echo "D=$D I=$I"
   - uname -a
   - cat /etc/os-release
+  # avoid executable uploads for branches and PRs
+  - test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" = "master^false" || I=$(sed '/\bappimage\b/s/,\?\bup\b//' <<<$I)
 
 install:
   - env | grep '^AUTHSECRET_\w\+=' >.secrets && unset `sed 's/=.*//' .secrets` || true
   # git describe requires complete history
   - travis_retry git fetch --unshallow
 
+before_script:
+  - CICACHE_BIONIC='timjanik/ci-cache:bionic-180930'
+  # Fetch initial bionic docker build stages from docker hub
+  - bash -c "! [[ $D =~ bionic ]]" || docker pull "$CICACHE_BIONIC" || true
+
 script:
   # Build inside docker container
-  - TZ=GMT date
-  - docker build -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
+  - time docker build --cache-from "$CICACHE_BIONIC" -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
 
 after_success:
   - echo "OK, all done."
