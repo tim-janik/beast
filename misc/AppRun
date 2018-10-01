@@ -1,0 +1,16 @@
+#!/bin/sh
+
+SCRIPTNAME="$(readlink -f "$0")"
+APPROOT="${SCRIPTNAME%/*}"
+
+export PATH="$APPROOT/usr/bin/:$PATH"
+export LD_LIBRARY_PATH="$APPROOT/usr/lib/:$LD_LIBRARY_PATH"
+export XDG_DATA_DIRS="$APPROOT/usr/share/:$XDG_DATA_DIRS"
+
+BEAST=beast
+if test "$1" = "--ebeast" ; then
+  shift
+  BEAST=ebeast
+fi
+
+exec "$APPROOT/usr/bin/$BEAST" "$@"
