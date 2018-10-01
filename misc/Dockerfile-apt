@@ -178,6 +178,7 @@ RUN `intent appimage` && \
 # We achieve that by treating the beast-$MAJOR-$MINOR installation prefix as /usr/.
 RUN `intent appimage` && \
   mkdir /appdir2/ && \
+  cp -av misc/AppRun /appdir2/ && \
   mv /appdir/usr/lib/beast-* /appdir2/usr/ && \
   cd /appdir2/usr/bin/ && BEASTEXE=`echo beast-*.*` && cd / && \
   sed "/^Exec=/s|.*|Exec=$BEASTEXE %F|" -i /appdir2/usr/share/applications/beast.desktop && \
