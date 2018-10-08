@@ -45,7 +45,7 @@ function about_pairs() {
     [ 'Executable:',	elap.getPath ('exe') ],
     [ 'jQuery:',	jQuery.fn.jquery ],
     [ 'Vuejs:',		Vue.version ],
-    [ 'Working Dir:',	elap.getAppPath() ],
+    [ 'Working Dir:',	process.cwd() ],
     [ 'Desktop Dir:',	elap.getPath ('desktop') ],
     [ 'Config Path:',	elap.getPath ('userData') ],
     [ 'Music Path:',	elap.getPath ('music') ],
