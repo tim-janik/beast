@@ -176,15 +176,18 @@ RUN `intent appimage` && \
   rm linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
 # Populate AppDir, linuxdeploy expects libraries under usr/lib, binaries under usr/bin, etc
 # We achieve that by treating the beast-$MAJOR-$MINOR installation prefix as /usr/.
+# Also, we hand-pick extra libs for ebeast to keep the AppImage small.
 RUN `intent appimage` && \
   mkdir /appdir2/ && \
-  cp -av misc/AppRun /appdir2/ && \
-  mv /appdir/usr/lib/beast-* /appdir2/usr/ && \
-  cd /appdir2/usr/bin/ && BEASTEXE=`echo beast-*.*` && cd / && \
-  sed "/^Exec=/s|.*|Exec=$BEASTEXE %F|" -i /appdir2/usr/share/applications/beast.desktop && \
+  cp -a /appdir/usr/lib/beast-* /appdir2/usr && \
   sed '/^Categories=/s/$/;/' -i /appdir2/usr/share/applications/beast.desktop && \
-  export LD_LIBRARY_PATH=/appdir2/usr/lib/ && \
-  /tmp/linuxdeploy/AppRun -v1 --appdir=/appdir2/
+  LD_LIBRARY_PATH=/appdir2/usr/lib/:/appdir2/usr/bundle/ /tmp/linuxdeploy/AppRun \
+		 -v1 --appdir=/appdir2/ \
+		 -l /usr/lib/x86_64-linux-gnu/libXss.so.1 \
+		 -l /usr/lib/x86_64-linux-gnu/libgconf-2.so.4 \
+		 -l /usr/lib/x86_64-linux-gnu/libXtst.so.6 \
+		 -e /appdir2/usr/bin/beast-*.* \
+		 --custom-apprun=misc/AppRun
 # Create AppImage executable
 RUN `intent appimage` && \
   /tmp/appimagetool/AppRun --comp=xz -n -v /appdir2/
@@ -203,3 +206,6 @@ RUN if test -x ./codechecks/ && `intent up` ; then \
     tar cf $CODELOGS-$V.tgz codechecks/ && \
     time misc/bintray.sh beast-team/testing/reports -k $BINTRAY_KEEPS -g -v $V $CODELOGS-$V.tgz ; \
   fi
+
+
+# docker run -v `pwd`:/mnt/ -ti --rm beast-ci cp -v BEAST-x86_64.AppImage /mnt/
