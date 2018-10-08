@@ -10,14 +10,20 @@
 
 <template>
   <div class="b-projectshell">
-    <div class="b-projectshell-track-area">
-      Project Shell:
-      <b-playcontrols :project="project"> </b-playcontrols>
-      <b-track-list :song="song"></b-track-list>
-    </div>
-    <div class="b-projectshell-part-area" style="display: flex; overflow: hidden;" >
-      <b-piano-roll :part="piano_roll_part" ></b-piano-roll>
-    </div>
+    <b-playcontrols :project="project"> </b-playcontrols>
+    <b-hflex>
+      <b-vflex style="flex-grow: 1">
+	<div class="b-projectshell-track-area">
+	  <b-track-list :song="song"></b-track-list>
+	</div>
+	<b-hflex class="b-projectshell-part-area" style="overflow: hidden;" >
+	  <b-piano-roll :part="piano_roll_part" ></b-piano-roll>
+	</b-hflex>
+      </b-vflex>
+      <b-vflex style="justify-content: flex-start" >
+	<b-treeselector @close="show_tree_selector = false"></b-treeselector>
+      </b-vflex>
+    </b-hflex>
     <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
     <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
   </div>
