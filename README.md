@@ -31,10 +31,11 @@ For Linux kernels of the 2.6.x series and later, this enables the
 low-latency scheduling behavior needed to avoid audio artefacts.
 
 In order to build release tarballs, `GnomeCanvas`, `Ogg/Vorbis`,
-`libflac` and `npm` are required.  Support for MP3 files is optional
-and requires `libmad` (MPEG audio decoder library) when compiling
-Beast.  Compilation requires `g++-5.2.1` or later and a recent Linux
-distribution like Ubuntu-14.04.
+`libflac` and `npm` and `libfluidsynth` are required.
+Support for MP3 files is optional and requires `libmad` (MPEG audio
+decoder library) when compiling Beast.
+Compilation requires `g++-5.2.1` or later and a recent Linux
+distribution like Ubuntu-18.04.
 
 
 # INSTALLATION
