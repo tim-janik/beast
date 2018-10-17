@@ -43,41 +43,19 @@
  * tracks, the only thing that needs to be done is getting the sample data into
  * the bse engine. To do that, we create standard engine modules. These do not
  * compute any sample data.  Instead, they just access memory that is shared
- * between all osc modules. The first sound font osc module that is scheduled
- * by the engine calls process_fluid_L, to update the shared memory containing
- * the fluidsynth output. All other sound font osc engine modules that are
- * called after that simply read the samples that was already computed when the
- * first engine module's process function was called.
+ * between all osc modules.
  *
- * The check:
+ * To ensure that fluidsynth gets called exactly once before the first osc
+ * module is called, all osc modules have a depend_in input channel. This
+ * depend_in input channel is connected to a shared module: the
+ * SoundFontCommonModule. In this module the process_fluid_L function is
+ * called, and the buffers for all fluidsynth tracks are generated.
  *
- *   gint64 now_tick_stamp = Bse::TickStamp::current();
- *   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
- *        ...
- *
- * ensures this. Here the shared state is managed by the sound font repo, and
- * only updated once for all sound font engine modules. Locking is used to
- * ensure that there are no races,
- *
- *   bse_sound_font_repo_lock_fluid_synth (sfrepo); 
- *
- * ensures that there is always at most one sound font engine module that has access
- * to the shared state, and so the actual fluidsynth code to process the events and
- * update the shared sample data is also executed exactly once.
- *
- * Note that IF the bse engine WOULD use multiple CPUs (it currently doesn't),
- * the locking forces the sound font osc engine modules to wait for the
- * computation of the first module that got the lock. This may be undesirable
- * since it could block the computations on all CPUs, although other engine
- * modules that are unrelated to fluidsynth could be processed. One possibility
- * to solve this problem would be to enhance the engine and allow the sound
- * font osc modules to use some "CPU affinity" setting which lets the engine
- * know that all these modules should be processed on the same CPU.
- *
- * CPU affinity will also enhance performance (with a muli core bse engine)
- * since then the actual fluid synth rendering code will always run on the same
- * CPU (instead of the CPU that the first engine module runs on, which will can
- * change from engine block to engine block).
+ * The actual SoundFontOscModule just copies the precomputed data from the
+ * shared output buffers that was filled by process_fluid_L; due to the
+ * connection between the SoundFontOscModule and the shared
+ * SoundFontCommonModule, we ensure that the data is definitely ready when it
+ * is needed.
  *------------------------------------------------------------------------------------------------
  */
 
@@ -153,7 +131,7 @@ bse_sound_font_osc_class_init (BseSoundFontOscClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
-  guint ochannel;
+  guint ichannel, ochannel;
 
   parent_class = g_type_class_peek_parent (klass);
 
@@ -172,6 +150,8 @@ bse_sound_font_osc_class_init (BseSoundFontOscClass *klass)
                               bse_param_spec_object ("preset", _("Preset"), _("Sound Font Preset to be used during replay"),
                                                      BSE_TYPE_SOUND_FONT_PRESET, SFI_PARAM_STANDARD));
 
+  ichannel = bse_source_class_add_ichannel (source_class, "depend-in", _("Depend In"), _("This input is there merely for synchronization"));
+  assert_return (ichannel == BSE_SOUND_FONT_OSC_ICHANNEL_DEPEND_IN);
   ochannel = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), _("Output of the fluid synth soundfont synthesizer"));
   assert_return (ochannel == BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
   ochannel = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), _("Output of the fluid synth soundfont synthesizer"));
@@ -428,6 +408,22 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
     }
 }
 
+struct SoundFontCommonModule
+{
+  BseSoundFontRepo *sfrepo;
+};
+
+static void
+sound_font_common_process (BseModule *module,
+		           uint       n_values)
+{
+  SoundFontCommonModule *mod = (SoundFontCommonModule *) module->user_data;
+
+  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (mod->sfrepo));
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (mod->sfrepo);
+  process_fluid_L (mod->sfrepo, fluid_synth, Bse::TickStamp::current());
+}
+
 static void
 sound_font_osc_process (BseModule *module,
 		        guint      n_values)
@@ -444,14 +440,12 @@ sound_font_osc_process (BseModule *module,
 						flmod->config.sfont_id, flmod->config.bank, flmod->config.program);
       flmod->last_update_preset = flmod->config.update_preset;
     }
-  guint64 now_tick_stamp = Bse::TickStamp::current();
-  if (sfrepo_impl->channel_values_tick_stamp != now_tick_stamp)
-    process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 
   auto& cstate = sfrepo_impl->channel_state[sfrepo_impl->oscs[flmod->config.osc_id].channel];
   float *left_output = &cstate.values_left[0];
   float *right_output = &cstate.values_right[0];
 
+  const uint64 now_tick_stamp = Bse::TickStamp::current();
   int delta = bse_module_tick_stamp (module) - now_tick_stamp;
   if (delta + n_values <= bse_engine_block_size())    /* paranoid check, should always pass */
     {
@@ -594,7 +588,7 @@ bse_sound_font_osc_context_create (BseSource *source,
 				   BseTrans  *trans)
 {
   static const BseModuleClass sound_font_osc_class = {
-    0,				    /* n_istreams */
+    BSE_SOUND_FONT_OSC_N_ICHANNELS, /* n_istreams */
     0,				    /* n_jstreams */
     BSE_SOUND_FONT_OSC_N_OCHANNELS, /* n_ostreams */
     sound_font_osc_process,	    /* process */
@@ -628,11 +622,36 @@ bse_sound_font_osc_context_create (BseSource *source,
   ehs->module = module;
   bse_trans_add (trans, bse_job_access (module, event_handler_setup_func, ehs, g_free));
 
-  /* reset fluid synth if necessary */
+  /*--- lock repo ---*/
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
   std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
   Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
+
+  /*--- shared osc module ---*/
+  BseModule *common_module = static_cast<BseModule *> (sfrepo_impl->common_module);
+  if (!common_module)
+    {
+      static const BseModuleClass sound_font_common_class = {
+        0,                          /* n_istreams */
+        0,			    /* n_jstreams */
+        1,                          /* n_ostreams */
+        sound_font_common_process,  /* process */
+        NULL,	                    /* process_defer */
+        NULL,	                    /* reset */
+        (BseModuleFreeFunc) g_free, /* free */
+        Bse::ModuleFlag::CHEAP,	    /* flags */
+      };
+
+      SoundFontCommonModule *sound_font_common_module = g_new0 (SoundFontCommonModule, 1);
+      sound_font_common_module->sfrepo = self->config.sfrepo;
+      common_module = bse_module_new (&sound_font_common_class, sound_font_common_module);
+      bse_trans_add (trans, bse_job_integrate (common_module));
+      sfrepo_impl->common_module = common_module;
+    }
+  bse_trans_add (trans, bse_job_connect (common_module, 0, module, 0));
+
+  /* reset fluid synth if necessary */
+  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
   if (sfrepo_impl->n_channel_oscs_active == 0)
     fluid_synth_system_reset (fluid_synth);
   sfrepo_impl->n_channel_oscs_active++;
@@ -669,6 +688,15 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
     }
   sfrepo_impl->n_channel_oscs_active--;
   sfrepo_impl->fluid_events = fluid_events;
+
+  /*--- discard common module (once) ---*/
+  BseModule *common_module = sfrepo_impl->common_module;
+  if (common_module)
+    {
+      bse_trans_add (trans, bse_job_discard (common_module));
+      sfrepo_impl->common_module = nullptr;
+    }
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }

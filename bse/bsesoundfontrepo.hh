@@ -71,6 +71,7 @@ public:
   guint64	              channel_values_tick_stamp;
 
   int		              n_channel_oscs_active;	  /* SoundFontOscs with an active module in the engine thread */
+  BseModule                  *common_module = NULL;
 
 protected:
 

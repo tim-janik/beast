@@ -20,6 +20,12 @@ enum
   BSE_SOUND_FONT_OSC_N_OCHANNELS
 };
 
+enum
+{
+  BSE_SOUND_FONT_OSC_ICHANNEL_DEPEND_IN,
+  BSE_SOUND_FONT_OSC_N_ICHANNELS
+};
+
 struct BseSoundFontOscConfig {
   int			osc_id;
   int			sfont_id;
