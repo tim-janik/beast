@@ -42,7 +42,7 @@ $(AIDACC): aidacc/aidacc
 aidacc/aidacc: aidacc/main.py $(aidacc_imports) $(aidacc_generated)
 	$(QGEN)
 	$(Q) sed < $< > $@.tmp				\
-	  -e '1,1s|#!/usr/bin/env python\([0-9]\+\(\.[0-9]\+\)\?\)\?|#!${PYTHON}|' \
+	  -e '1,1s|#!/usr/bin/env python\([0-9]\+\(\.[0-9]\+\)\?\)\?|#!${PYTHON2}|' \
 	  -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${AIDACC_CONFIG}|'
 	$(Q) chmod +x $@.tmp
 	$(Q) mv $@.tmp $@
@@ -52,7 +52,7 @@ AIDACC_CLEANFILES   += aidacc/aidacc
 # == IdStrings.py ==
 aidacc/IdStrings.py: aidacc/aida.hh aidacc/ExtractIdStrings.py
 	$(QGEN)
-	$(Q) ${PYTHON} aidacc/ExtractIdStrings.py aidacc/aida.hh > $@.tmp
+	$(Q) ${PYTHON2} aidacc/ExtractIdStrings.py aidacc/aida.hh > $@.tmp
 	$(Q) mv $@.tmp $@
 AIDACC_CLEANFILES += aidacc/IdStrings.py
 

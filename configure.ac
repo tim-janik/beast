@@ -248,7 +248,7 @@ MC_ASSERT_PROG(PANDOC, pandoc)
 MC_ASSERT_PROG(DOXYGEN, doxygen)
 MC_ASSERT_PROG(DOT, dot)
 MC_ASSERT_PROG(PYTHON2, python-2.7 python2.7 python2)
-MC_ASSERT_VERSION($PYTHON --version, 2.7)
+MC_ASSERT_VERSION($PYTHON2 --version, 2.7)
 MC_ASSERT_PROG(XMLLINT, xmllint)
 MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
@@ -649,18 +649,6 @@ AC_DEFUN([MC_DOC_REQUIREMENTS],
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database)
 
-dnl # MC_PYTHON_REQUIREMENTS() - python checks
-AC_DEFUN([MC_PYTHON_REQUIREMENTS],
-[
-  PYTHON_REQUIRED=2.7
-  AM_PATH_PYTHON($PYTHON_REQUIRED)
-  dnl # AC_REQUIRE([AC_PYTHON_DEVEL]) # AC_PYTHON_DEVEL is usually provided by autoconf-archive
-  AC_PYTHON_DEVEL([>= $PYTHON_REQUIRED])
-  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-    AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
-  fi
-])
-
 AC_CHECK_PROGS(PERL, perl5 perl)
 if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
     AC_MSG_WARN([failed to detect perl (version >= 5.002), disabling dependent build rules])
@@ -676,7 +664,6 @@ MC_I18N_REQUIREMENTS
 MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
 MC_BSE_SNDDEV_CHECK
-MC_PYTHON_REQUIREMENTS
 MC_GXK_REQUIREMENTS
 MC_BEAST_REQUIREMENTS
 MC_SUIDMAIN_REQUIREMENTS
