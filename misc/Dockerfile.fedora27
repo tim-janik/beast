@@ -1,0 +1,69 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+# == Distribution preparation ==
+FROM fedora:27
+
+RUN TZ=GMT date
+
+
+
+# provide 'retry', 'intent' and 'wrapclang'
+RUN echo -e '#!/bin/bash\n"$@" || { sleep 10 ; "$@" ; } || { sleep 90 ; "$@" ; }' > /bin/retry && \
+  echo -e '#!/bin/sh\ncase "$INTENT" in *$1*) echo true ;; *) echo "exit 0" ;; esac' > /bin/intent && \
+  echo -e '#!/bin/bash\nexec $WRAPPER ${0##*/wrap} "$@"' > /bin/wrapclang && ln -s wrapclang /bin/wrapclang++ && \
+  chmod +x /bin/retry /bin/intent /bin/wrapclang /bin/wrapclang++
+
+# == Dependency installaiton ==
+# Upgrade, install build dependencies
+RUN retry yum -y upgrade
+
+RUN retry yum -y install findutils file bzip2
+
+RUN retry yum -y install gcc-c++ git libtool
+
+RUN retry yum -y install gettext-devel alsa-lib-devel flac-devel libgnomecanvas-devel libvorbis-devel fluidsynth-devel libmad-devel
+
+RUN retry yum -y install npm pandoc doxygen graphviz
+
+RUN retry yum -y install perl-XML-Parser ImageMagick
+
+# add libXss.so.1 and libgconf-2.so.4 for electron
+RUN retry yum -y install libXScrnSaver GConf2
+
+# Pre-fetch electron download
+RUN mkdir -p /root/.electron/ && \
+  cd /root/.electron/ && \
+  curl -sfSOL 'https://github.com/electron/electron/releases/download/v1.8.8/electron-v1.8.8-linux-x64.zip'
+
+
+
+
+# == Git sources ==
+# Setup build environment and provide the git repositories
+COPY ./.git/ /tmp/beast.git
+RUN : && \
+  mkdir -p /opt/src/ && \
+  cd /opt/src/ && \
+  git clone /tmp/beast.git
+WORKDIR /opt/src/beast
+
+# == Configure build ==
+# Configure source tree, possibly using compiler wrapper
+RUN : && \
+  time ./autogen.sh --prefix=/opt
+
+# == Run build ==
+# Build sources in parallel, possibly integrate scan-build
+RUN : && \
+  time nice make -j`nproc`
+
+# == Validate Build ==
+# Run check, installcheck, etc, unless we're running clang-tidy which takes ages
+RUN make check
+RUN make install
+RUN make installcheck
+RUN make dist
+RUN make uninstall
+RUN TZ=GMT date
+
+# nice -n19 docker build -f misc/Dockerfile.f27 -t beast.f27 .

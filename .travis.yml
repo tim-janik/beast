@@ -20,6 +20,7 @@ env:
     - D=bionic I=clang,distcheck
     - D=artful I=gcc
     - D=xenial I=gcc
+    - D=fedora27 I=gcc
     # upcoming releases
     - D=cosmic I=gcc
     #- D=debian:unstable    I=gcc
@@ -51,7 +52,8 @@ before_script:
 
 script:
   # Build inside docker container
-  - time docker build --cache-from "$CICACHE_BIONIC" -f misc/Dockerfile-apt --build-arg DIST="${!D}" --build-arg INTENT="$I" -t beast-ci .
+  - DOCKERFILE=misc/Dockerfile.$D && test -e misc/Dockerfile.$D || DOCKERFILE=misc/Dockerfile-apt
+  - time docker build --cache-from "$CICACHE_BIONIC" -f $DOCKERFILE --build-arg DIST="${!D:-$D}" --build-arg INTENT="$I" -t beast-ci .
 
 after_success:
   - echo "OK, all done."
