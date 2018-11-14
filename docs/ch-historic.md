@@ -237,6 +237,8 @@ Category      | Automatic arguments as (name:type) pairs
 /WaveRepo/    | wave_repo:BseWaveRepo
 /Wave/        | wave:BseWave
 
+Table: Set of toplevel categories used by libbse.
+
 The set of automatic arguments provided upon invocation is not restricted
 by te above lists, so caution should be taken when naming multiple arguments
 to a procedure `auto_*`.
@@ -250,8 +252,12 @@ refer (alias) to the same type (functionality).
 
 #### Examples
 
+&nbsp;
+
 Category                        | TypeName             | Comment
 --------------------------------+----------------------+----------------------
 /Methods/BseProject/File/Store  | BseProject+store-bse | BseProject procedure
 /Modules/Spatial/Balance        | BseBalance           | synthesis module
 /SNet Utility/Utils/Grid Align  | modules2grid         | scheme script
+
+Table: Category examples from the Beast source code.
