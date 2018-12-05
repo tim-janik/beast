@@ -148,31 +148,31 @@ $(srcdir)/messages.po: poscan.list
 	$(Q) cp poscan.list potscan.all && mkdir -p $(TMPDIR)/
 	$(Q) # process .idl files as C++
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.idl$$')
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po --force-po -L C++
-	$(Q) sed -r '1,20 s/^("Content-Type:.*)CHARSET/\1UTF-8/' -i messages.po
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ --force-po -L C++
+	$(Q) sed -r '1,20 s/^("Content-Type:.*)CHARSET/\1UTF-8/' -i $@
 	$(Q) # extract .xml and .html files and parse as JS
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(xml|html)(.in)?$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    ./xt9n-xml.py $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L Javascript
 	$(Q) # extract .keys and .desktop files and parse as C
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(keys|desktop)(\.in)?$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    gawk -f ./xt9n-las.awk $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L C
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L C
 	$(Q) # extract .vue files and parse as JS
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.vue$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    sed '1,/^<script\b/ s/.*// ; /^<\/script>/ s/.*//' $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L Javascript
 	$(Q) # process remaining files with language detection
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o messages.po -j
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o $@ -j
 	$(Q) # cleanup
 	$(Q) rm -rf $(TMPDIR)/ && rm -f potscan.all
 CLEANFILES += $(TMPDIR)/
