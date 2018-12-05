@@ -3803,14 +3803,12 @@ msgid "Loop Enabled"
 msgstr ""
 
 #: bse/bseapi.idl:1034
-#, fuzzy
 msgid "Loop Left"
-msgstr "Links"
+msgstr "Schleife Links"
 
 #: bse/bseapi.idl:1035
-#, fuzzy
 msgid "Loop Right"
-msgstr "Links nach rechts"
+msgstr "Schleife Rechts"
 
 #: bse/bseapi.idl:1032
 msgid "Looping"
