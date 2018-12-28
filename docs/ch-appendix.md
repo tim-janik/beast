@@ -91,12 +91,12 @@ $$
 
 sorted for $\V0,…,\V4$, we have:
 
-(@l) $\begin{aligned}
+(@l) $$\begin{aligned}
  f(x) \  = \  & \V3 \  (0.5 x^3 - 0.5 x^2) \  +		& \\
 	          & \V2 \  (-1.5 x^3 + 2 x^2 + 0.5 x) \  +	& \\
 			  & \V1 \  (1.5 x^3 - 2.5 x^2 + 1) \  +	& \\
 			  & \V0 \  (-0.5 x^3 + x^2 - 0.5 x)		&
-\end{aligned}$
+\end{aligned}$$
 
 With (@l) we can solve $f(x)$ for all $x = \frac i n$, where $i = [0, 1, 2, …, n]$ by
 substituting $g(i) = f(\frac i n)$ with
