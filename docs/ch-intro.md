@@ -10,5 +10,13 @@ keywords:   Beast, Synthesis, Linux, ALSA
 
 # The BEAST Manual
 
-The Beast manual is structured into several sections, covering tutorial material, Howto descriptions,
-background discussions concerning development considerations and an API reference.
+This is the Beast manual, Beast is a music synthesis and composition program.
+
+The manual is structured into sections covering tutorial material,
+Howto descriptions, Man pages, file formats and conventions,
+background discussions concerning development considerations
+and an API reference.
+
+It is written in Markdown and contributions are welcome, e.g. as pull requests
+or via the [Beast issue tracker](https://github.com/tim-janik/beast/issues/).
+
