@@ -1,0 +1,78 @@
+
+
+/// Enable hyphenation for MS, FF and Chrome based browsers.
+@mixin hyphenate() {
+  // based on https://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
+  -ms-word-break: break-all; word-break: break-all;	// old IE: break everywhere
+  @media (min--moz-device-pixel-ratio:0) {		// Firefox selector
+    word-break: normal;					// FF: use hyphenation, not breaks
+  }
+  word-break: break-word;				// Webkit extension: refine break positions
+  -webkit-hyphens: auto; -moz-hyphens: auto;
+  -o-hyphens: auto; -ms-hyphens: auto;			// enable CSS3 hyphenation
+  hyphens: auto;					// suggest breaks with soft hyphen, U+00AD: &shy;
+  overflow-wrap: break-word;				// CSS3: prevent overflow by breaking
+}
+
+/// Enable justified text with hyphenation.
+@mixin justify() {
+  text-align: justify;
+  @include hyphenate;
+}
+
+/// Print: avoid otp margin, but force page break
+@mixin pagebreak() {
+  @media print { margin-top: 0; page-break-before: always; }
+}
+
+
+$_monospace_block_elements: pre, listing, xmp, plaintext;
+$_monospace_inline_elements: tt, code, kbd, samp;
+$_monospace_elements: #{$_monospace_block_elements}, #{$_monospace_inline_elements};
+
+@mixin widthem-from-minwidth($font-size: 16px, $max-em: 99) {
+  @for $i from 1 through ceil($max-em - 1) {
+    @media only screen and (min-width: floor($font-size * ($i + 0.5))) { width: #{$i}em; }
+  }
+  @media only screen and (min-width: floor($font-size * ($max-em + 0.5))) { width: #{$max-em}em; }
+}
+
+$media-width-pxlist: (
+  2048,
+  1600,
+  1536,
+  1366,
+  1280,
+  1200,
+  1112,
+  1024,
+  906,
+  834,
+  812,
+  800,
+  768,
+  736,
+  667,
+  640,
+  601,
+  592,
+  568,
+  480,
+  414,
+  384,
+  375,
+  360,
+  320,
+  281,
+  218,
+);
+
+@mixin media-width-max-em($font-size: 16px, $max-em: 99) {
+  width: $max-em * 1em;
+  @each $i in $media-width-pxlist {
+    $target-em: $i * 1px / $font-size * 1em - 1em;
+    @if $target-em < $max-em {
+      @media only screen and (max-width: #{$i}px) { width: $target-em; }
+    }
+  }
+}
