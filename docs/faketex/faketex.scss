@@ -1,0 +1,166 @@
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+/* CSS theme to produce a TeX look alike layout */
+
+// == Import Webfonts ==
+
+// Serif font selection, CharisSILW also works for LaTeX
+@mixin CharisSILW($size: 1) {
+  font-family: 'CharisSILW', 'Bitstream Charter', 'Calisto MT', Georgia, Times, 'Times New Roman', serif;
+  $ffl: ();
+  $ffl: join($ffl, ("ss01" 0, "litr" 0) );	// double-storey a (hanging arm) and g (looptail)
+  // $ffl: join($ffl, ("ss01" 1, "litr" 1) );	// single-storey a (closed bowl with stem) and g (opentail)
+  // $ffl: join($ffl, ("cv98" 1, "empt" 1) );	// 0-style empty set symbol
+  font-feature-settings: $ffl;
+  line-height: 1.35;
+  font-size: $size * 1rem * 0.500 / 0.5; // 0.482;
+}
+// FIXME @import url(https://cdn.rawgit.com/tim-janik/cdn/a8a12dd652e48532faa39657bc5cc268525a89ca/CharisSIL5/CharisSIL-webfont.css);
+@import url(fonts/CharisSIL-webfont.css);
+
+// Monospace font selection, Inconsolata also works for LaTeX
+@mixin Inconsolata($size: 1) {
+  font-family: 'Inconsolata', SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  line-height: 1.35;
+  font-size: $size * 1rem * 0.500 / 0.5; // 0.457;
+}
+// @import url(https://fonts.googleapis.com/css?family=Inconsolata);
+@import url(fonts/Inconsolata-Regular.css);
+
+
+// == Feature Modules ==
+@import "features.scss";
+
+// $bg: #fffefc; $fg: #04080c; $linkfg: #000080;
+$bg: #ffffff; $fg: #000000; $linkfg: #000080;
+//$bg: black; $fg: white; $linkfg: #8080f0;
+
+$html-font-size: 17px; // 12pt;
+
+
+// == Font and Text Width Setup ==
+html {
+  // ca font-size: max-width / 208 + 10.75;
+  font-size: $html-font-size;
+  @media only screen and (max-width: 1024px) { font-size: 16px; }
+  @media only screen and (max-width:  900px) { font-size: 15px; }
+  //@media only screen and (max-width:  640px) { font-size: 14px; }
+  //@media only screen and (max-width:  400px) { font-size: 13px; }
+}
+body {
+  @include CharisSILW;
+  // @include widthem-from-minwidth($html-font-size, 47.5);
+  @include media-width-max-em($html-font-size, 47.5);
+  margin: 1em auto; padding: 0 0.5em; height: unset;
+  color: $fg; background-color: $bg;
+  @include justify;	// includes hyphenate
+}
+#{$_monospace_elements}	{		/// Assign monospace to: pre, listing, xmp, plaintext, tt, code, kbd, samp
+  @include Inconsolata;
+  text-align: unset;
+}
+pre { code { white-space: inherit; } }	/// Preserve whitespace for <code/> inside <pre/>
+
+// FIXME: facility word break for <pre/> (test on mobile)
+
+/* Table style to prevent overflow
+ * This needs <td/> contents wrapped into a div, so 'inline-block' can be applied to
+ * constrain overflows.
+ */
+.shrinkable-table {
+  width: 100%;
+  > thead > tr, > tbody > tr {
+    > th, > td {
+      overflow: hidden;
+      @include hyphenate;
+      > * { display: inline-block; overflow: hidden; width: 100%; }
+      // text-align: center; vertical-align: middle;
+    }
+  }
+}
+
+
+
+// == Link Decorations ==
+a	{ color: $linkfg; text-decoration: none; }
+a:hover	{ text-decoration: underline; }
+
+// == List Bullets ==
+ul	{ list-style-type: disc; // using unicode bullets increases li spacing
+	  list-style-type: none; }
+ul li	{ padding: 0; }
+ul li:before {
+  position: absolute;
+  margin-left: -1em * 1.0 / 1.3;
+  font-size: 100% * 1.3;
+  content: "•";
+  vertical-align: middle;
+  line-height: 1;
+}
+
+// == Table Rules ==
+table {
+  border-collapse: collapse;
+  caption:before { content: "Table: "; font-weight: bold; }
+  border-top: 2px solid $fg;
+  border-bottom: 2px solid $fg;
+  tr.header th { border-bottom: 1px solid $fg; padding-top: 0.3em; padding-bottom: 0.3em; font-weight: inherit; }
+  margin: 2em auto;
+  th ~ th,
+  td ~ td	{ padding-left: 1em; }
+}
+
+
+// == Spacings ==
+h1, h2, h3, h4, h5, h6 {
+  .header-section-number	{ padding-right: 0.8em; }
+}
+h1		{ margin: 5em 0 1.2em; @include pagebreak;
+		  padding-top: 1.5em; border-top: 1px solid $fg; font-size: 146.5%;
+		} // FIXME: put border into seperate section
+h2		{ margin: 1.9em 0 1.1em; font-size: 121%; }
+h3		{ margin: 2.1em 0 1.2em; font-size: 1.025em; }
+h4, h5, h6	{ margin: 1.4em 0 0;
+		  & ~ p, & ~ dl, & ~ pre { margin-top: 0; }
+		}
+p, dl, pre, ul, ol	{ margin: 1.3ex 0; }
+ol > li { padding-left: 0.3em; }
+
+// == Definition Lists ==
+dt	{ font-weight: bold; }
+dd	{ margin-inline-start: 3em; }
+
+// == Title & Abstract ==
+header	{
+  text-align: center;
+  h1		 { font-weight: bold; font-size: 2.2em; letter-spacing: 2px; }
+  .author,
+  .date		 { font-weight: bold; font-size: 1.2em; letter-spacing: 1px; }
+  .abstracttitle { font-weight: bold; margin-top: 5em; }
+  .abstract      { width: 30em; margin: 1em auto 7em auto;
+		   -moz-hyphens: auto; -ms-hyphens: auto; -o-hyphens: auto;
+		   -webkit-hyphenate-limit-after: 1; -webkit-hyphenate-limit-before: 3;
+		   -webkit-hyphens: auto; -webkit-hyphenate-character: "\2010";
+		   hyphens: auto; text-align: justify; }
+}
+
+// == Table Of Contents ==
+nav#TOC	{
+  margin: 3em 0;
+  border-top: 1px solid $fg;
+  @include pagebreak;
+  .contentstitle	{ -x-margin-top: 5em;
+			  font-weight: bold; font-size: 1.4em; margin-bottom: 1.4em;
+			  padding-top: 1.3em; }
+  .toc-section-number	{ padding-right: 1em; }
+  ul	{ padding-left: 0; list-style-type: none;
+	  font-weight: bold;
+	  li:before { display: none; }
+	  li ~ li { margin-top: 1em; }
+	  ul { font-weight: normal;
+	       li ~ li { margin-top: unset; }
+	     }
+	  ul { padding-left: 2em; margin-top: 0;
+	       ul { padding-left: 3em; }
+	     }
+	}
+}
