@@ -38,7 +38,7 @@ $ALLFILES && {
     egrep '^(aidacc|sfi|bse|plugins|drivers|beast-gtk)/.*\.(cc|hh)$' >$FILELIST
 }
 
-# check cppchec is present since the stderr redirection below may swallow error messages
+# check that cppcheck is present since the stderr redirection below may swallow error messages
 ${CPPCHECK:-cppcheck} --version >/dev/null || die "failed to execute: ${CPPCHECK:-cppcheck}"
 
 # run cppcheck, post-process stderr
