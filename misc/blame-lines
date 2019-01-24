@@ -15,7 +15,7 @@ for inputfile in sys.argv[first:]:
   if b_log:
     outputfile = os.path.splitext (inputfile)[0] + '.blame'
     fout = open (outputfile, 'w')
-    print ("%s: creating blame file: %s..." % (inputfile, outputfile))
+    print ("%s: creating blame file: %s" % (inputfile, outputfile))
   for line in open (inputfile, 'r'):
     m = re.match (r'([^:]+):([0-9]+):([0-9]+:)?\s', line)
     if m:
