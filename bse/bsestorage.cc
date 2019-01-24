@@ -1836,7 +1836,7 @@ bse_storage_blob_clean_files()
   GDir *dir = g_dir_open (tmp_dir.c_str(), 0, &error);
   if (dir)
     {
-      char *pattern = g_strdup_format ("bse-storage-blob-%s-", g_get_user_name());
+      char *pattern = g_strdup_format ("bse-storage-blob-%zu-", size_t (getuid()));
       const char *file_name;
       while ((file_name = g_dir_read_name (dir)))
 	{
@@ -1940,7 +1940,7 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%s-%u", bse_storage_blob_tmp_dir(), g_get_user_name(), getpid());
+  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%zu-%u", bse_storage_blob_tmp_dir(), size_t (getuid()), getpid());
 
   // add enough randomness to ensure that collisions will not happen
   for (int i = 0; i < 5; i++)
