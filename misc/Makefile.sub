@@ -11,7 +11,7 @@ scan-build:
 	$(Q) mkdir -p $(CURDIR)/out/logs/
 	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
 	$(Q) $(CXX) --version | grep '\bclang\b'
-	time scan-build -o $(CURDIR)/out/ $(MAKE) -j8
+	time scan-build -o $(CURDIR)/out/ $(MAKE) -j`nproc`
 	$(Q) shopt -s nullglob ; \
 	      for r in $(CURDIR)/out/20??-??-??-*/report-*.html ; do \
 		D=$$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/    ; p }' $$r) && \
