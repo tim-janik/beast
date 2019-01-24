@@ -130,11 +130,11 @@ AC_DEFINE_UNQUOTED(CONFIGURE_RELPATH_OBJDIR, [".libs"], [Directory used for libt
 AC_LIBTOOL_DLOPEN
 
 # == C++ Dialect ==
-CXX="$CXX -std=gnu++14"
-test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 AC_MSG_CHECKING([compiler version])
 cc_version_line1=`${CXX} --version | head -n1`
 AC_MSG_RESULT([$cc_version_line1])
+CXXSTD="-std=gnu++14"
+AC_SUBST(CXXSTD)
 
 # == Compiler flags ==
 # disable invalid "can't wrap" optimizations for signed / pointers
@@ -166,7 +166,7 @@ AC_MSG_CHECKING([compiler flavour])
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
-    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
+    AM_CXXFLAGS="$CXXSTD $c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
     # reduce clang's bogus -pthread warning (llvm#7798, llvm#38772)
     AM_LDFLAGS="$AM_LDFLAGS -Wno-unused-command-line-argument"
     AM_CFLAGS="$AM_CFLAGS -Wno-unused-command-line-argument"
@@ -175,7 +175,7 @@ if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
 elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then # gcc
     AC_MSG_RESULT([g++])
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
-    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
+    AM_CXXFLAGS="$CXXSTD $c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
     FAST_MATH_FLAGS="$FAST_MATH_FLAGS $gcc_fast_math"
     MC_ASSERT_VERSION($CXX --version, 5.2.1)
 else
