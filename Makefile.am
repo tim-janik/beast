@@ -268,3 +268,6 @@ include tests/Makefile.sub
 
 # == af-tests/ ==
 include af-tests/Makefile.sub
+
+# == misc/ ==
+include misc/Makefile.sub

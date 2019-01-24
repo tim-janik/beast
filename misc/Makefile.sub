@@ -1,0 +1,19 @@
+# BEAST misc/ - CI/CD rules
+
+# Aoid defining the conventional misc-clean, misc-check, etc rules which
+# are likely to be mistaken for something else than misc/ specific rules.
+#
+# Instead, misc/Makefile.sub serves as an extension to the toplevel make
+# rules and provides continuous integration/development rules.
+
+# == scan-build ==
+scan-build:
+	$(Q) mkdir -p $(CURDIR)/out/
+	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
+	$(Q) $(CXX) --version | grep '\bclang\b'
+	time scan-build -o $(CURDIR)/out/ $(MAKE) -j8
+# This should be: 'scan-build --use-cc "$(CC)" --use-c++ "$(CXX)" make', because
+# scan-build defaults to g++ on linux, but its --use-c++ option is unreliable.
+# However, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate
+# any reports.
+.PHONY: scan-build
