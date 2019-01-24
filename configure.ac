@@ -66,6 +66,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # == Argument parsing ==
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+AC_ARG_ENABLE(quick, [  --enable-quick          disable optimizations and compile as quick as possible],enable_quick=yes)
 AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation directory inside DIR],,with_pkgroot=no)
 # package library defaults
 enable_static=no ; enable_shared=yes
@@ -149,6 +150,7 @@ c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
 gcc_c_only_flags="-fno-cond-mismatch -fdevirtualize-speculatively"
 compiler_flags="-pipe"
 optimization_flags="-O3 -funroll-loops -ftree-vectorize $no_invalid_flags"
+test "x$enable_quick" = xyes && optimization_flags="-O0"
 FAST_MATH_FLAGS="-ffast-math"
 gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fno-delete-null-pointer-checks"
 gcc_fast_math="-fivopts"
