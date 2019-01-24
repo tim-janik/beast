@@ -8,12 +8,20 @@
 
 # == scan-build ==
 scan-build:
-	$(Q) mkdir -p $(CURDIR)/out/
+	$(Q) mkdir -p $(CURDIR)/out/logs/
 	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
 	$(Q) $(CXX) --version | grep '\bclang\b'
 	time scan-build -o $(CURDIR)/out/ $(MAKE) -j8
-# This should be: 'scan-build --use-cc "$(CC)" --use-c++ "$(CXX)" make', because
+	$(Q) shopt -s nullglob ; \
+	      for r in $(CURDIR)/out/20??-??-??-*/report-*.html ; do \
+		D=$$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/    ; p }' $$r) && \
+		F=$$(sed -nr '/<!-- BUGFILE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
+		L=$$(sed -nr '/<!-- BUGLINE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
+		echo "$$F:$$L: $$D" | sed 's,^/usr/src/beast/,,' ; \
+	      done > $(CURDIR)/out/logs/scan-build.log
+	time misc/blame-lines -b $(CURDIR)/out/logs/scan-build.log
+.PHONY: scan-build
+# This should use: 'scan-build --use-cc "$(CC)" --use-c++ "$(CXX)" make', because
 # scan-build defaults to g++ on linux, but its --use-c++ option is unreliable.
 # However, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate
 # any reports.
-.PHONY: scan-build
