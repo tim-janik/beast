@@ -12,7 +12,7 @@ scan-build:
 	$(Q) mkdir -p out/logs/ out/scan-build/
 	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
 	$(Q) $(CXX) --version | grep '\bclang\b'
-	time scan-build -o out/scan-build/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
+	scan-build -o out/scan-build/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
 	$(Q) shopt -s nullglob ; \
 	      for r in out/scan-build/20??-??-??-*/report-*.html ; do \
 		D=$$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/    ; p }' $$r) && \
@@ -27,6 +27,6 @@ scan-build:
 		break ; \
 	      done
 	$(Q) rm -rf out/scan-build/
-	time misc/blame-lines -b out/logs/scan-build.log
+	misc/blame-lines -b out/logs/scan-build.log
 .PHONY: scan-build
 # Note, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate any reports.
