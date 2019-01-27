@@ -196,16 +196,16 @@ fi
 # == Debug flags ==
 case "_$enable_debug" in
   _ubsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=undefined"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=undefined"
     AM_LDFLAGS="$AM_LDFLAGS -lubsan" ;;
   _asan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=address"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=address"
     AM_LDFLAGS="$AM_LDFLAGS -lasan" ;;
   _tsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=thread"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=thread"
     AM_LDFLAGS="$AM_LDFLAGS -ltsan" ;;
   _lsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=leak"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=leak"
     AM_LDFLAGS="$AM_LDFLAGS -llsan" ;;
   _yes)
     debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer" ;;
