@@ -9,10 +9,10 @@
 # == cppcheck ==
 cppcheck:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/logs/
+	$(Q) mkdir -p out/cppcheck/
 	misc/run-cppcheck.sh
-	$(Q) mv cppcheck.err out/logs/cppcheck.log
-	misc/blame-lines -b out/logs/cppcheck.log
+	$(Q) mv cppcheck.err out/cppcheck/cppcheck.log
+	misc/blame-lines -b out/cppcheck/cppcheck.log
 .PHONY: cppcheck
 # A regular cppcheck run can be carried out before the sources are built
 
