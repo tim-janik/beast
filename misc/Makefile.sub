@@ -45,7 +45,7 @@ scan-build:
 # == clang-tidy ==
 clang-tidy:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/logs/
+	$(Q) mkdir -p out/clang-tidy/
 	$(Q) git ls-tree -r --name-only HEAD >tmpls.all
 	$(Q) egrep $(CLANG_TIDY_GLOB) <tmpls.all >tmpls.cchh
 	$(Q) egrep -vf misc/clang-tidy.ignore tmpls.cchh >tmpls.clangtidy
@@ -61,10 +61,10 @@ clang-tidy:
 	  -DGXK_COMPILATION \
 	  -D__TOPDIR__=\"`pwd`\" \
 	  `pkg-config --cflags libgnomecanvas-2.0` \
-	  > out/logs/clang-tidy.raw
-	$(Q) sed "s,^`pwd`/,," out/logs/clang-tidy.raw >out/logs/clang-tidy.log
-	$(Q) rm -f out/logs/clang-tidy.raw tmpls.all tmpls.cchh tmpls.clangtidy
-	misc/blame-lines -b out/logs/clang-tidy.log
+	  > out/clang-tidy/clang-tidy.raw
+	$(Q) sed "s,^`pwd`/,," out/clang-tidy/clang-tidy.raw >out/clang-tidy/clang-tidy.log
+	$(Q) rm -f out/clang-tidy/clang-tidy.raw tmpls.all tmpls.cchh tmpls.clangtidy
+	misc/blame-lines -b out/clang-tidy/clang-tidy.log
 CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers)/.*\.(cc|hh)$$"
 .PHONY: clang-tidy
 # Note, 'make clang-tidy' requires a successfuly built source tree.
