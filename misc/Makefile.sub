@@ -126,7 +126,16 @@ BINTRAY_KEEPS            = 99
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
 bintray:		# upload out/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
+	@: # upload beast-*.x64.AppImage if it exists
 	$(Q) test -x "out/bin/beast-$(clean_version).x64.AppImage" || exit 0 ; \
 		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
 		  -d out/bin/beast-$(clean_version).x64.AppImage
+	@: # upload tarballs of existing log directories
+	$(Q) for d in cppcheck scan-build clang-tidy ; do \
+		(set -- out/$$d/*.* ; test -r "$$1") || continue ; \
+		tar cJf out/$$d-$(clean_version).tar.xz -C out/ $$d/ && \
+		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
+		  out/$$d-$(clean_version).tar.xz || exit 1 ; \
+	done
 .PHONY: bintray
+# Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
