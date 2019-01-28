@@ -85,7 +85,7 @@ ebeast/app/assets/stylesheets.css: $(ebeast_scss_deps) ebeast/app/window.html
 	$(Q) cp -P ebeast/app.scss ebeast/app/
 	$(Q) cp -P ebeast/vc/*.scss ebeast/app/vc/
 	$(Q) cd ebeast/app/ && ./node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
-ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css Makefile
+ebeast/app/assets/gradient-01.png: ebeast/app/assets/stylesheets.css ebeast/Makefile.sub
 	$(AM_V_GEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$(Q)        # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
 	$(Q) tr '\n' ' ' < ebeast/app/assets/stylesheets.css | \
@@ -136,7 +136,7 @@ ebeast/.lintstamp: $(ebeast_lint_js_files) $(ebeast_lint_html_files) $(ebeast_vc
 EBEAST_MOSTLYCLEANFILES += ebeast/.lintstamp
 
 # == Docs for .vue files ==
-ebeast/vue-components.html: $(ebeast_vc_vue_files) Makefile
+ebeast/vue-components.html: $(ebeast_vc_vue_files) ebeast/Makefile.sub
 	$(AM_V_GEN)
 	$(Q) rm -f $(@:.html=.tmp1)
 	$(Q) echo -e "# Vue Components \n\n" > $(@:.html=.tmp1)
