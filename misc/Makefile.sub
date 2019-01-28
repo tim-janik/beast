@@ -19,26 +19,26 @@ cppcheck:
 # == scan-build ==
 scan-build:
 	$(AM_V_GEN)
-	$(Q) rm -rf out/scan-build/
-	$(Q) mkdir -p out/logs/ out/scan-build/
+	$(Q) rm -rf out/scan-tmp/
+	$(Q) mkdir -p out/scan-build/ out/scan-tmp/
 	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
 	$(Q) $(CXX) --version | grep '\bclang\b'
-	scan-build -o out/scan-build/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
+	scan-build -o out/scan-tmp/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
 	$(Q) shopt -s nullglob ; \
-	      for r in out/scan-build/20??-??-??-*/report-*.html ; do \
+	      for r in out/scan-tmp/20??-??-??-*/report-*.html ; do \
 		D=$$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/    ; p }' $$r) && \
 		F=$$(sed -nr '/<!-- BUGFILE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
 		L=$$(sed -nr '/<!-- BUGLINE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
 		echo "$$F:$$L: $$D" | sed 's,^/usr/src/beast/,,' ; \
-	      done > out/logs/scan-build.log
+	      done > out/scan-build/scan-build.log
 	$(Q) shopt -s nullglob ; \
-	      for d in out/scan-build/20??-??-??-*/ ; do \
-		rm -rf out/logs/html/ ; \
-		mv -v "$$d" out/logs/html/ || exit 1 ; \
+	      for d in out/scan-tmp/20??-??-??-*/ ; do \
+		rm -rf out/scan-build/html/ ; \
+		mv -v "$$d" out/scan-build/html/ || exit 1 ; \
 		break ; \
 	      done
-	$(Q) rm -rf out/scan-build/
-	misc/blame-lines -b out/logs/scan-build.log
+	$(Q) rm -rf out/scan-tmp/
+	misc/blame-lines -b out/scan-build/scan-build.log
 .PHONY: scan-build
 # Note, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate any reports.
 
