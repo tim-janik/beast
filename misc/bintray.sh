@@ -25,10 +25,10 @@ while test $# -ne 0 ; do
 			echo "upload DISTFILE and publish VERSION at bintray.com."
 			echo "  -b <api-key-file>     read $BINTRAY_API_KEY from a file"
 			echo "  -d                    add file to download list"
-			echo "  -g                    query Git for TAG and VERSION"
+			echo "  -g                    publish Git TAG and VERSION"
 			echo "  -h                    help message"
 			echo "  -k <N>                keep the highest N versions and prune the rest"
-			echo "  -v <VERSION>          upload version for owner/repo/package"
+			echo "  -v <VERSION>          publish version for owner/repo/package"
 			echo '  $BINTRAY_API_KEY      authentication token for the bintray REST API'
 			echo '  $BINTRAY_TAG          VCS tag (unless -g is given)'
 			echo '  $BINTRAY_VERSION      upload version (unless -g/-v is given)'
