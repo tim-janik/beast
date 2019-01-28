@@ -34,6 +34,13 @@ BSEFCOMPARE		 = $(top_builddir)/tools/bsefcompare
 # of files required before we recurse into subdirs with Makefile.am.
 BUILT_SOURCES            =
 
+# == CLEANDIRS ==
+CLEANDIRS		= # directories to be deleted on 'make clean'
+cleandirs:
+	rm -rf $(CLEANDIRS)
+.PHONY: cleandirs
+clean-local: cleandirs
+
 # == res/ ==
 # define res_resfiles_list via immediate assignment
 include res/Makefile.sub
