@@ -114,6 +114,7 @@ installcheck-buildtest:
 installcheck-local: installcheck-buildtest
 
 # == topbuildid.c ==
+clean_version ::= $(shell ./git-version.sh -l)
 topbuildid ::= $(shell ./git-version.sh)
 topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
 topbuildidcc_gen ::= $(shell \
