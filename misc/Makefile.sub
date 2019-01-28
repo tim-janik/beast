@@ -120,3 +120,13 @@ appimage: all cached/appimagetool/AppRun
 	$(Q) ls -l -h --color=auto out/bin/beast-*.x64.AppImage
 .PHONY: appimage
 CLEANDIRS += $(APPDIR) $(APPDIR2)
+
+# == bintray ==
+BINTRAY_KEEPS            = 99
+USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
+bintray:		# upload out/ contents to bintray
+	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
+	$(Q) test -x "out/bin/beast-$(clean_version).x64.AppImage" || exit 0 ; \
+		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
+		  -d out/bin/beast-$(clean_version).x64.AppImage
+.PHONY: bintray
