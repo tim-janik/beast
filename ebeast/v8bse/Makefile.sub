@@ -42,7 +42,7 @@ ebeast_v8bse_ccflags     = -Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-f
 
 # == ebeast/v8bse/binding.gyp ==
 ebeast_v8bse_comma = ,
-ebeast/v8bse/binding.gyp: Makefile # binding.gyp needs Makefile variables
+ebeast/v8bse/binding.gyp: ebeast/v8bse/Makefile.sub # binding.gyp needs Makefile variables
 	$(AM_V_GEN)
 	@echo "{                                             # -*- mode: javascript -*-"			 >$@
 	@echo "  'targets': ["											>>$@
