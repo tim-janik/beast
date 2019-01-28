@@ -68,3 +68,55 @@ clang-tidy:
 CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers)/.*\.(cc|hh)$$"
 .PHONY: clang-tidy
 # Note, 'make clang-tidy' requires a successfuly built source tree.
+
+# == appimage tools ==
+cached/appimagetool/AppRun:
+	@: # Fetch and extract AppImage tools
+	$(Q) mkdir -p cached/
+	$(Q) cd cached/ && \
+		curl -sfSOL https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
+		curl -sfSOL https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage && \
+		chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage && \
+		rm -rf squashfs-root linuxdeploy appimagetool && \
+		./linuxdeploy-x86_64.AppImage  --appimage-extract && mv -v squashfs-root/ ./linuxdeploy && \
+		./appimagetool-x86_64.AppImage --appimage-extract && mv -v squashfs-root/ ./appimagetool && \
+		rm linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
+CLEANDIRS += cached
+
+# == appimage ==
+APPDIR  = $(abs_top_srcdir)/appdir/
+APPDIR2 = $(abs_top_srcdir)/appdir2/
+appimage: all cached/appimagetool/AppRun
+	$(AM_V_GEN)
+	$(Q) mkdir -p out/bin/
+	$(Q) echo "  CHECK   " "for AppImage build with --prefix=/usr"
+	$(Q) grep '^prefix = /usr\b' Makefile
+	@: # AppDir installation
+	@echo '  INSTALL ' AppImage files
+	$(Q) rm -fr $(APPDIR) $(APPDIR2) && \
+		make install DESTDIR=$(APPDIR) $(if $(findstring 1, $(V)), , >/dev/null)
+	@: # Evil workaround for: linuxdeploy::desktopfile::ParseError: what(): Key Name[en_CA] contains invalid character _
+	sed 's/^\(\w\+\[..[_@]\w\+]=\)/# \1/' -i appdir/usr/lib/beast-0-13/share/applications/beast.desktop
+	@: # Populate AppDir, linuxdeploy expects libraries under usr/lib, binaries under usr/bin, etc
+	@: # We achieve that by treating the beast-$MAJOR-$MINOR installation prefix as /usr/.
+	@: # Also, we hand-pick extra libs for ebeast to keep the AppImage small.
+	$(Q) mkdir $(APPDIR2)
+	$(Q) cp -a $(APPDIR)/usr/lib/beast-* $(APPDIR2)/usr
+	$(Q) rm -f BEAST-x86_64.AppImage
+	@echo '  RUN     ' linuxdeploy ...
+	$(Q) LD_LIBRARY_PATH=$(APPDIR2)/usr/lib/:$(APPDIR2)/usr/bundle/ cached/linuxdeploy/AppRun \
+		$(if $(findstring 1, $(V)), -v1, -v2) \
+		--appdir=$(APPDIR2) \
+		-l /usr/lib/x86_64-linux-gnu/libXss.so.1 \
+		-l /usr/lib/x86_64-linux-gnu/libgconf-2.so.4 \
+		-l /usr/lib/x86_64-linux-gnu/libXtst.so.6 \
+		-e $(APPDIR2)/usr/bin/beast-*.* \
+		--custom-apprun=misc/AppRun
+	@: # Create AppImage executable
+	@echo '  RUN     ' appimagetool ...
+	$(Q) ARCH=x86_64 cached/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
+	$(Q) rm -fr $(APPDIR) $(APPDIR2)
+	$(Q) mv BEAST-x86_64.AppImage out/bin/
+	$(Q) ls -l -h --color=auto out/bin/BEAST-x86_64.AppImage
+.PHONY: appimage
+CLEANDIRS += $(APPDIR) $(APPDIR2)
