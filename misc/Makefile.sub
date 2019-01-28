@@ -95,8 +95,6 @@ appimage: all cached/appimagetool/AppRun
 	@echo '  INSTALL ' AppImage files
 	$(Q) rm -fr $(APPDIR) $(APPDIR2) && \
 		make install DESTDIR=$(APPDIR) $(if $(findstring 1, $(V)), , >/dev/null)
-	@: # Evil workaround for: linuxdeploy::desktopfile::ParseError: what(): Key Name[en_CA] contains invalid character _
-	sed 's/^\(\w\+\[..[_@]\w\+]=\)/# \1/' -i appdir/usr/lib/beast-0-13/share/applications/beast.desktop
 	@: # Populate AppDir, linuxdeploy expects libraries under usr/lib, binaries under usr/bin, etc
 	@: # We achieve that by treating the beast-$MAJOR-$MINOR installation prefix as /usr/.
 	@: # Also, we hand-pick extra libs for ebeast to keep the AppImage small.
