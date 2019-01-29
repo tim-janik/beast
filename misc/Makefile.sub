@@ -6,6 +6,9 @@
 # Instead, misc/Makefile.sub serves as an extension to the toplevel make
 # rules and provides continuous integration/development rules.
 
+# == clean out/ ==
+CLEANDIRS += out/
+
 # == cppcheck ==
 cppcheck:
 	$(AM_V_GEN)
