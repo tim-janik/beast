@@ -103,8 +103,8 @@ update-po: Makefile
 	done
 .PHONY: update-po
 check-update-po: Makefile $(srcdir)/messages.po
-	$(Q) rm -f check-messages.po # force rebuild
-	$(Q) $(MAKE) --no-print-directory check-messages.po
+	$(Q) rm -f messages.po # force rebuild
+	$(Q) $(MAKE) --no-print-directory messages.po && mv messages.po check-messages.po
 	@echo -n "Checking for updated po files: "
 	$(Q) for i in $(POFILES) ; do \
 	  echo -n '.' ; \
@@ -141,7 +141,7 @@ XGETTEXT_TMPDIR = $(XGETTEXT) "--package-name=$(PACKAGE)" "--package-version=$(V
 		  --foreign-user --from-code=UTF-8 -D $(TMPDIR)/ -D $(abs_top_srcdir) \
 		  $(patsubst %, --keyword=%, $(KEYWORDS)) $(patsubst %, --flag=%,    $(TEXTFLAGS))
 
-$(srcdir)/messages.po check-messages.po: poscan.list
+$(srcdir)/messages.po: poscan.list
 	$(AM_V_GEN)
 	$(Q) rm -f potscan.all potscan.tmp && rm -rf $(TMPDIR)/
 	$(Q) cp poscan.list potscan.all && mkdir -p $(TMPDIR)/
