@@ -98,7 +98,8 @@ update-po: Makefile
 	@echo "  MERGE   " "messages.po into po files..."
 	@for i in $(POFILES) ; do \
 	  printf "    %12s: " "$$i" ; \
-	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.po || exit ; \
+	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.po && \
+	  sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/' -i $(srcdir)/$$i || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
