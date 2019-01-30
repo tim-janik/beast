@@ -19,6 +19,17 @@ cppcheck:
 .PHONY: cppcheck
 # A regular cppcheck run can be carried out before the sources are built
 
+# == unused ==
+listunused:
+	$(AM_V_GEN)
+	$(Q) mkdir -p out/unused/
+	misc/run-cppcheck.sh -u
+	$(Q) grep -E '\b(un)?use' cppcheck.err >out/unused/unused.log
+	$(Q) rm -f cppcheck.err
+	misc/blame-lines -b out/unused/unused.log
+.PHONY: listunused
+# Note, 'listunused' requires a successfuly built source tree.
+
 # == scan-build ==
 scan-build:
 	$(AM_V_GEN)
@@ -132,7 +143,7 @@ bintray:		# upload out/ contents to bintray
 		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
 		  -d out/bin/beast-$(clean_version).x64.AppImage
 	@: # upload tarballs of existing log directories
-	$(Q) for d in cppcheck scan-build clang-tidy ; do \
+	$(Q) for d in cppcheck scan-build clang-tidy unused ; do \
 		(set -- out/$$d/*.* ; test -r "$$1") || continue ; \
 		tar cJf out/$$d-$(clean_version).tar.xz -C out/ $$d/ && \
 		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
