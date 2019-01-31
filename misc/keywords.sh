@@ -6,8 +6,8 @@ SCRIPTNAME=${0#*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 128
 
 # == Defaults ==
 ERRORS='ALERT|ATTENTION|BUG|DANGER|ERR|FIX'
-WARNINGS='CAUTION|DEPRECAT|HACK|NOTE|NOTICE|PERF|TBD|TODO|WARN'
-EXTENSIONS='cc|hh|md|js|vue'
+WARNINGS='CAUTION|DEPRECAT|HACK|\bNOTE\b|NOTICE|PERF|TBD|TODO|WARN'
+EXTENSIONS='ac|am|awk|bat|bib|c|cc|cpp|css|decl|dox|h|hh|hpp|html|idl|js|m4|md|po|py|scm|scss|sh|sub|vue|xml|yml'
 GITLS=false
 GREP_ERRWARN=false
 SED_COLOR=false
@@ -40,7 +40,8 @@ $GITLS && {
 
 # == Error/warning comments ==
 $GREP_ERRWARN && {
-  egrep -n "(/\*.*|//.*|^\s\*+\s*)\b($ERRORS|$WARNINGS)" "$@" || :
+  # two double quotes are used to avoid keywords.sh finding itself
+  egrep -n "(/\*.*|/""/.*|^\s\*+\s*)\b($ERRORS|$WARNINGS)" "$@" || :
 }
 
 # == Colorize keywords and line numbers ==
