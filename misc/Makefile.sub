@@ -34,7 +34,7 @@ listunused:
 	$(AM_V_GEN)
 	$(Q) mkdir -p out/unused/
 	misc/run-cppcheck.sh -u
-	$(Q) grep -E '\b(un)?use' cppcheck.err >out/unused/unused.log
+	$(Q) grep -E '\b(un)?(use|reach)' cppcheck.err >out/unused/unused.log
 	$(Q) rm -f cppcheck.err
 	misc/blame-lines -b out/unused/unused.log
 .PHONY: listunused
