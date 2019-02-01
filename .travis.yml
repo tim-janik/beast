@@ -67,14 +67,10 @@ jobs:
       script: |
         misc/cibuild.sh cppcheck scan-build
     - stage: Stage3
-      name: "Linting-3 (clang-tidy)"
+      name: "Linting-3 (clang-tidy + listunused + listhacks + bintray)"
       env: PIPELINE=clang
       script: |
-        misc/cibuild.sh clang-tidy
-    - stage: Stage4
-      name: "Linting-4 (listunused + listhacks + bintray)"
-      env: PIPELINE=clang
-      script: |
+        misc/cibuild.sh clang-tidy &&
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
 
