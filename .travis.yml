@@ -29,8 +29,7 @@ jobs:
       name: "GCC-1 (autogen.sh)"
       env: PIPELINE=Gcc
       before_install: |
-        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
-        travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
       script: |
         misc/cibuild.sh gcc
     - stage: Stage2
@@ -49,8 +48,7 @@ jobs:
       name: "Linting-1 (autogen.sh)"
       env: PIPELINE=clang
       before_install: |
-        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
-        travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
       script: |
         misc/cibuild.sh quick
     - stage: Stage2
