@@ -3,60 +3,81 @@
 # http://docs.travis-ci.com/user/customizing-the-build/
 # http://lint.travis-ci.org/
 
-os: linux
-services: docker
+os:       linux
+dist:     xenial
 language: generic
+services: docker
 
-env:
-  global:
-    - bionic="ubuntu:bionic"
-    - artful="ubuntu:artful"
-    - xenial="ubuntu:xenial"
-    - cosmic="ubuntu:cosmic"
-  matrix:
-    - D=bionic I=appimage,up            # gcc
-    - D=bionic I=checks,up
-    - D=bionic I=tidy,up
-    - D=bionic I=clang,distcheck
-    - D=artful I=gcc
-    - D=xenial I=gcc
-    - D=fedora27 I=gcc
-    # upcoming releases
-    - D=cosmic I=gcc
-    #- D=debian:unstable    I=gcc
-    #- D=debian:unstable    I=clang
-matrix:
-  allow_failures:
-    - env: D=cosmic I=gcc
-    #- env: D=debian:unstable    I=gcc
-    #- env: D=debian:unstable    I=clang
-  fast_finish: true
+cache:
+  directories:
+    - ~/cache/
+    - ~/beast/
+    # We use $PIPE to carry cache context along job pipelines (workflows)
+    # https://docs.travis-ci.com/user/caching/
 
-before_install:
-  # Show build setup
-  - echo "D=$D I=$I"
-  - uname -a
-  - cat /etc/os-release
-  # avoid executable uploads for branches and PRs
-  - test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" = "master^false" || I=$(sed 's/,up\b//' <<<$I)
+# Common scripts
+install: |
+  touch ~/cache/"$PIPELINE-$TRAVIS_BUILD_STAGE_NAME" && ls -l ~/cache/ && cd ~/beast/
 
-install:
-  - env | grep '^AUTHSECRET_\w\+=' >.secrets && unset `sed 's/=.*//' .secrets` || true
-  # git describe requires complete history
-  - travis_retry git fetch --unshallow
+# Job pipelines
+jobs:
+  include:
 
-before_script:
-  - CICACHE_BIONIC='timjanik/ci-cache:bionic-180930'
-  # Fetch initial bionic docker build stages from docker hub
-  - bash -c "! [[ $D =~ bionic ]]" || docker pull "$CICACHE_BIONIC" || true
+    # == 'Quick' Pipeline ==
+    # Generate all possible source code linting reports,
+    # sort slow jobs into separate stages to avoid timeouts.
+    - stage: Stage1
+      name: "Quick-1 (autogen.sh + non-binary tests)"
+      env: PIPELINE=clang
+      before_install: |
+        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
+        travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        misc/cibuild.sh quick cppcheck listhacks
+    - stage: Stage2
+      name: "Quick-2 (scan-build listunused)"
+      env: PIPELINE=clang
+      script: |
+        misc/cibuild.sh scan-build
+    - stage: Stage3
+      name: "Quick-3 (clang-tidy)"
+      env: PIPELINE=clang
+      script: |
+        misc/cibuild.sh clang-tidy
+    - stage: Stage4
+      name: "Quick-4 (bintray)"
+      env: PIPELINE=clang
+      script: |
+        echo "$BINTRAY_API_KEY" > .bintray_api_key
+        misc/cibuild.sh listunused bintray
 
-script:
-  # Build inside docker container
-  - DOCKERFILE=misc/Dockerfile.$D && test -e misc/Dockerfile.$D || DOCKERFILE=misc/Dockerfile-apt
-  - time docker build --cache-from "$CICACHE_BIONIC" -f $DOCKERFILE --build-arg DIST="${!D:-$D}" --build-arg INTENT="$I" -t beast-ci .
-
-after_success:
-  - echo "OK, all done."
+    # == 'AppImage' Pipeline ==
+    # Build a highly optimized AppImage and upload it.
+    - stage: Stage1
+      name: "AppImage-1 (autogen.sh)"
+      env: PIPELINE=AppImage
+      before_install: |
+        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
+        travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        misc/cibuild.sh gcc
+    - stage: Stage2
+      name: "AppImage-2 (build)"
+      env: PIPELINE=AppImage
+      script: |
+        misc/cibuild.sh appimage
+    - stage: Stage3
+      name: "AppImage-3 (check)"
+      env: PIPELINE=AppImage
+      script: |
+        misc/cibuild.sh check
+    - stage: Stage4
+      name: "AppImage-4 (bintray)"
+      env: PIPELINE=AppImage
+      script: |
+        echo "$BINTRAY_API_KEY" > .bintray_api_key
+        test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
+        misc/cibuild.sh bintray
 
 notifications:
   irc:
