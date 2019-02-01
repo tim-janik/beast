@@ -51,24 +51,24 @@ jobs:
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
 
-    # == 'AppImage' Pipeline ==
-    # Build a highly optimized AppImage and upload it.
+    # == 'Gcc' Pipeline ==
+    # Build a highly optimized Gcc and upload it.
     - stage: Stage1
-      name: "AppImage-1 (autogen.sh)"
-      env: PIPELINE=AppImage
+      name: "Gcc-1 (autogen.sh)"
+      env: PIPELINE=Gcc
       before_install: |
         uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
         travis_retry git fetch --unshallow && cd .. && mv beast ~/
       script: |
         misc/cibuild.sh gcc
     - stage: Stage2
-      name: "AppImage-2 (appimage)"
-      env: PIPELINE=AppImage
+      name: "Gcc-2 (appimage)"
+      env: PIPELINE=Gcc
       script: |
         misc/cibuild.sh appimage
     - stage: Stage3
-      name: "AppImage-3 (check + bintray)"
-      env: PIPELINE=AppImage
+      name: "Gcc-3 (check + bintray)"
+      env: PIPELINE=Gcc
       script: |
         misc/cibuild.sh check && {
           echo "$BINTRAY_API_KEY" > .bintray_api_key &&
