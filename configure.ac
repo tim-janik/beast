@@ -66,6 +66,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # == Argument parsing ==
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/asan/tsan/lsan/ubsan] turn on debugging, default=minimum],,enable_debug=min)
+AC_ARG_ENABLE(quick, [  --enable-quick          disable optimizations and compile as quick as possible],enable_quick=yes)
 AC_ARG_WITH(pkgroot, [  --with-pkgroot[[=DIR]]    create package installation directory inside DIR],,with_pkgroot=no)
 # package library defaults
 enable_static=no ; enable_shared=yes
@@ -130,11 +131,11 @@ AC_DEFINE_UNQUOTED(CONFIGURE_RELPATH_OBJDIR, [".libs"], [Directory used for libt
 AC_LIBTOOL_DLOPEN
 
 # == C++ Dialect ==
-CXX="$CXX -std=gnu++14"
-test -z "$CXXCPP" || CXXCPP="$CXXCPP -std=gnu++14"
 AC_MSG_CHECKING([compiler version])
 cc_version_line1=`${CXX} --version | head -n1`
 AC_MSG_RESULT([$cc_version_line1])
+CXXSTD="-std=gnu++14"
+AC_SUBST(CXXSTD)
 
 # == Compiler flags ==
 # disable invalid "can't wrap" optimizations for signed / pointers
@@ -149,6 +150,7 @@ c_only_flags="-Wmissing-prototypes -Wnested-externs -Wno-pointer-sign"
 gcc_c_only_flags="-fno-cond-mismatch -fdevirtualize-speculatively"
 compiler_flags="-pipe"
 optimization_flags="-O3 -funroll-loops -ftree-vectorize $no_invalid_flags"
+test "x$enable_quick" = xyes && optimization_flags="-O0"
 FAST_MATH_FLAGS="-ffast-math"
 gcc_flags="-rdynamic -finline-functions -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fno-delete-null-pointer-checks"
 gcc_fast_math="-fivopts"
@@ -166,7 +168,7 @@ AC_MSG_CHECKING([compiler flavour])
 if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
     AC_MSG_RESULT([clang++])
     AM_CFLAGS="$c_warnings $c_only_flags $compiler_flags $optimization_flags $clang_fix_flags"
-    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
+    AM_CXXFLAGS="$CXXSTD $c_warnings $cxx_warnings $compiler_flags $optimization_flags $clang_fix_flags"
     # reduce clang's bogus -pthread warning (llvm#7798, llvm#38772)
     AM_LDFLAGS="$AM_LDFLAGS -Wno-unused-command-line-argument"
     AM_CFLAGS="$AM_CFLAGS -Wno-unused-command-line-argument"
@@ -175,7 +177,7 @@ if   ${CXX} --version 2>&1 | grep -q -F 'clang' ; then # clang
 elif ${CXX} --version 2>&1 | grep -q -E 'Free Software Foundation' ; then # gcc
     AC_MSG_RESULT([g++])
     AM_CFLAGS="$c_warnings $c_only_flags $gcc_c_only_flags $compiler_flags $optimization_flags $gcc_flags"
-    AM_CXXFLAGS="$c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
+    AM_CXXFLAGS="$CXXSTD $c_warnings $cxx_warnings $compiler_flags $optimization_flags $gcc_flags"
     FAST_MATH_FLAGS="$FAST_MATH_FLAGS $gcc_fast_math"
     MC_ASSERT_VERSION($CXX --version, 5.2.1)
 else
@@ -194,16 +196,16 @@ fi
 # == Debug flags ==
 case "_$enable_debug" in
   _ubsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=undefined"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=undefined"
     AM_LDFLAGS="$AM_LDFLAGS -lubsan" ;;
   _asan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=address"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=address"
     AM_LDFLAGS="$AM_LDFLAGS -lasan" ;;
   _tsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=thread"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=thread"
     AM_LDFLAGS="$AM_LDFLAGS -ltsan" ;;
   _lsan)
-    debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=leak"
+    debug_flags="-DG_ENABLE_DEBUG -O1 -g -fverbose-asm -fno-omit-frame-pointer -fno-inline -fsanitize=leak"
     AM_LDFLAGS="$AM_LDFLAGS -llsan" ;;
   _yes)
     debug_flags="-DG_ENABLE_DEBUG -ggdb3 -fverbose-asm -fno-omit-frame-pointer" ;;

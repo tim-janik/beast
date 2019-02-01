@@ -34,6 +34,13 @@ BSEFCOMPARE		 = $(top_builddir)/tools/bsefcompare
 # of files required before we recurse into subdirs with Makefile.am.
 BUILT_SOURCES            =
 
+# == CLEANDIRS ==
+CLEANDIRS		= # directories to be deleted on 'make clean'
+cleandirs:
+	rm -rf $(CLEANDIRS)
+.PHONY: cleandirs
+clean-local: cleandirs
+
 # == res/ ==
 # define res_resfiles_list via immediate assignment
 include res/Makefile.sub
@@ -107,6 +114,7 @@ installcheck-buildtest:
 installcheck-local: installcheck-buildtest
 
 # == topbuildid.c ==
+clean_version ::= $(shell ./git-version.sh -l)
 topbuildid ::= $(shell ./git-version.sh)
 topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
 topbuildidcc_gen ::= $(shell \
@@ -268,3 +276,6 @@ include tests/Makefile.sub
 
 # == af-tests/ ==
 include af-tests/Makefile.sub
+
+# == misc/ ==
+include misc/Makefile.sub

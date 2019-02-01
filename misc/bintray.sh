@@ -2,13 +2,17 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 set -Eeuo pipefail
 
-SCRIPTNAME=${0#*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 9 ; }
+SCRIPTNAME=${0##*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 9 ; }
 # https://bintray.com/docs/api/
 
 # Options and usage
-DNLADD= KEEP= BINTRAY_PATH= DISTFILE= PUBLISH_VERSION= BINTRAY_VERSION="${BINTRAY_VERSION:-$(date -I)}"
+DNLADD= KEEP= BINTRAY_PATH= DISTFILE= PUBLISH_VERSION=
+BINTRAY_API_KEY_FILE=
+BINTRAY_API_KEY="${BINTRAY_API_KEY:-}"
+BINTRAY_VERSION="${BINTRAY_VERSION:-$(date -I)}"
 while test $# -ne 0 ; do
   case "$1" in
+    -b)			shift ; BINTRAY_API_KEY_FILE="$1" ;;
     -d)			DNLADD=1 ;;
     -g)			BINTRAY_TAG=$(git rev-parse HEAD) || die "failed to find HEAD commit" ;
 			BINTRAY_VERSION=$(git describe) || die "git failed to describe version" ;
@@ -19,10 +23,13 @@ while test $# -ne 0 ; do
     -h)                 echo "Usage: $SCRIPTNAME [-d] [-g] [-v VERSION] [-k N] owner/repo/package [DISTFILE]"
 			echo "Prune old versions if -k is given, create VERSION for owner/repo/package,"
 			echo "upload DISTFILE and publish VERSION at bintray.com."
+			echo "  -b <api-key-file>     read $BINTRAY_API_KEY from a file"
+			echo "  -d                    add file to download list"
+			echo "  -g                    publish Git TAG and VERSION"
 			echo "  -h                    help message"
-			echo "  -k N                  keep the highest N versions and prune the rest"
-			echo "  -v VERSION            upload version for owner/repo/package"
-			echo '  $AUTHSECRET_BINTRAY   authentication token for the bintray REST API'
+			echo "  -k <N>                keep the highest N versions and prune the rest"
+			echo "  -v <VERSION>          publish version for owner/repo/package"
+			echo '  $BINTRAY_API_KEY      authentication token for the bintray REST API'
 			echo '  $BINTRAY_TAG          VCS tag (unless -g is given)'
 			echo '  $BINTRAY_VERSION      upload version (unless -g/-v is given)'
 			exit 0 ;;
@@ -45,13 +52,12 @@ test -z "$DISTFILE" || PUBLISH_VERSION=true
 
 test -z "$DISTFILE" || echo "  INFO    " "$BINTRAY_USER / $BINTRAY_REPO / $BINTRAY_PACKAGE @ $BINTRAY_VERSION <- $DISTFILE"
 
-# read AUTHSECRET_BINTRAY from ~/.secrets
-test -n "${AUTHSECRET_BINTRAY:-}" || {
-  AUTHSECRET_BINTRAY=$(sed -n '/^AUTHSECRET_BINTRAY=/{ s/^[^=]*=// ; p }' ~/.secrets) &&
-    test -n "$AUTHSECRET_BINTRAY" ||
-      die "missing Bintray authorization token"
-}
-CURL="curl -f -HAccept:application/json -u$BINTRAY_USER:$AUTHSECRET_BINTRAY"
+# == BINTRAY_API_KEY ==
+test -z "$BINTRAY_API_KEY_FILE" ||
+  BINTRAY_API_KEY="$(cat "$BINTRAY_API_KEY_FILE")"
+test -n "$BINTRAY_API_KEY" ||
+  die "missing Bintray authorization token"
+CURL="curl -f -HAccept:application/json -u$BINTRAY_USER:$BINTRAY_API_KEY"
 
 # Prune old versions to keep quota
 if test -n "$KEEP" ; then
@@ -104,7 +110,7 @@ fi
 
 # Upload file
 if test -n "$DISTFILE" ; then
-  URL="https://api.bintray.com/content/$BINTRAY_USER/$BINTRAY_REPO/$BINTRAY_PACKAGE/$BINTRAY_VERSION/${DISTFILE#*/}"
+  URL="https://api.bintray.com/content/$BINTRAY_USER/$BINTRAY_REPO/$BINTRAY_PACKAGE/$BINTRAY_VERSION/${DISTFILE##*/}"
   echo "  UPLOAD  " "$BINTRAY_REPO $BINTRAY_PACKAGE $BINTRAY_VERSION: $DISTFILE"
   #CTYPE="-HContent-Type:application/octet-stream"
   $CURL -T "$DISTFILE" "$URL?publish=0&override=1" -o /dev/null # --progress-bar
@@ -120,8 +126,8 @@ fi
 
 # Add file to download list
 if test -n "$DISTFILE" -a "$DNLADD" = 1 ; then
-  URL="https://api.bintray.com/file_metadata/$BINTRAY_USER/$BINTRAY_REPO/${DISTFILE#*/}"
-  echo "  DWNLD++ " "$BINTRAY_REPO: ${DISTFILE#*/}"
+  URL="https://api.bintray.com/file_metadata/$BINTRAY_USER/$BINTRAY_REPO/${DISTFILE##*/}"
+  echo "  DWNLD++ " "$BINTRAY_REPO: ${DISTFILE##*/}"
   sleep 10
   DATA='{ "list_in_downloads": "true" }'
   $CURL -sS -X PUT -HContent-Type:application/json -d "$DATA" "$URL" -o /dev/null

@@ -1,19 +1,57 @@
 #!/bin/bash
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+set -Eeuo pipefail
 
+SCRIPTNAME=${0#*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 128 ; }
+
+# == Defaults ==
 ERRORS='ALERT|ATTENTION|BUG|DANGER|ERR|FIX'
-WARNINGS='CAUTION|DEPRECAT|HACK|NOTE|NOTICE|PERF|TBD|TODO|WARN'
+WARNINGS='CAUTION|DEPRECAT|HACK|\bNOTE\b|NOTICE|PERF|TBD|TODO|WARN'
+EXTENSIONS='ac|am|awk|bat|bib|c|cc|cpp|css|decl|dox|h|hh|hpp|html|idl|js|m4|md|po|py|scm|scss|sh|sub|vue|xml|yml'
+GITLS=false
+GREP_ERRWARN=false
+SED_COLOR=false
 
-# grep input files for C/C++ comments with known keywords
-[ "$1" == -g ] && {
-  shift
-  egrep -n "(/\*.*|//.*|^\s\*+\s*)\b($ERRORS|$WARNINGS)" "$@"
+# == Usage ==
+usage() {
+  echo "Usage: $0 [FLAGS] [FILES...]"
+  echo "Extract keywords from source code"
+  echo "  -c            colorize messages with keywords and line numbers"
+  echo "  -g            grep input files for C/C++ comments with known keywords"
+  echo "  -l            automatically create file list with 'git ls-tree'"
 }
 
-# colorize messages with keywords and line numbers
-[ "$1" == -c ] && {
+# == parse args ==
+test $# -ne 0 || { usage ; exit 0 ; }
+while test $# -ne 0 ; do
+  case "$1" in \
+    -c)		SED_COLOR=true ;;
+    -g)		GREP_ERRWARN=true ;;
+    -l)		GITLS=true ;;
+    -h)		usage ; exit 0 ;;
+    --)		shift ; break ;;	# keep file arguments
+    *)		break ;;		# keep file arguments
+  esac
   shift
-  sed -r "/^[^:]+:[0-9]+:/ { s/^([^:]+:[0-9]+): ?/\x1b[1m\1:\x1b[22m / ; s/\b($ERRORS)(\w*)/\x1b[31;1m\1\2\x1b[39;22m/gI ; s/\b($WARNINGS)(\w*)/\x1b[35;1m\1\2\x1b[39;22m/gI }" "$@"
+done
+$GITLS && {
+  set -- $( git ls-tree -r --name-only HEAD | grep -v '^external/' | grep -E "\.($EXTENSIONS)$" )
 }
 
-true
+# == Error/warning comments ==
+$GREP_ERRWARN && {
+  # two double quotes are used to avoid keywords.sh finding itself
+  egrep -n "(/\*.*|/""/.*|^\s\*+\s*)\b($ERRORS|$WARNINGS)" "$@" || :
+}
+
+# == Colorize keywords and line numbers ==
+$SED_COLOR && {
+  sed -r \
+      -e "/^[^:]+:[0-9]+:/ { s/^([^:]+:[0-9]+): ?/\x1b[1m\1:\x1b[22m /" \
+      -e "s/<([^()<>@]+@[^()<>@]+\.[^()<>@]+)>/<\x1b[32;1m\1\x1b[39;22m>/gI" \
+      -e "s/\b($ERRORS)(\w*)/\x1b[31;1m\1\2\x1b[39;22m/gI" \
+      -e "s/\b($WARNINGS)(\w*)/\x1b[35;1m\1\2\x1b[39;22m/gI }" \
+      "$@" || :
+}
+
+exit 0

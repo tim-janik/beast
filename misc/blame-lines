@@ -15,7 +15,7 @@ for inputfile in sys.argv[first:]:
   if b_log:
     outputfile = os.path.splitext (inputfile)[0] + '.blame'
     fout = open (outputfile, 'w')
-    print ("%s: creating blame file: %s..." % (inputfile, outputfile))
+    print ("%s: creating blame file: %s" % (inputfile, outputfile))
   for line in open (inputfile, 'r'):
     m = re.match (r'([^:]+):([0-9]+):([0-9]+:)?\s', line)
     if m:
@@ -27,7 +27,7 @@ for inputfile in sys.argv[first:]:
         if not blame:
           result = subprocess.run (['git', '--no-pager', 'blame', '-e', '-l', '-L%d,%d' % (l, l), '--', f], stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
           blame = result.stdout.decode().rstrip()
-          blame = re.sub (r'^([a-f0-9]+)[^(]*\(([^)]+)\).*', r'\1 \2', blame)
+          blame = re.sub (r'^\^?([a-f0-9]+)[^(]*\(([^)]+)\).*', r'\1 \2', blame)
           p = blame.find (')')
           if p > 0:
             blame = blame[:p+1]
