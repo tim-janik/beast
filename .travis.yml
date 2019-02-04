@@ -86,11 +86,15 @@ jobs:
     - stage: Stage2
       name: "Asan-2 (check)"
       env: PIPELINE=clang
+      before_script: |
+        echo "$BINTRAY_API_KEY" > .bintray_api_key
       script: |
-        mkdir -p out/asan/ &&
-        misc/cibuild.sh all check |& tee out/asan/build.log || :
-        echo "$BINTRAY_API_KEY" > .bintray_api_key &&
-        misc/cibuild.sh bintray
+        misc/ciwitness.sh out/asan/build.log all check bintray
+
+  # == allow_failures ==
+  allow_failures:
+    - script: |
+        misc/ciwitness.sh out/asan/build.log all check bintray
 
 notifications:
   irc:
