@@ -1442,7 +1442,7 @@ scroll_canvas_button_press (GtkWidget      *widget,
       handled = scroll_canvas_drag (self, event->x, event->y, (GdkEvent*) event);
     }
   else  /* very unlikely */
-    g_free (drag);
+    delete drag;
 
   return handled;
 }
