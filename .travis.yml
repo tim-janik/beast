@@ -23,57 +23,56 @@ install: |
 jobs:
   include:
 
-    # == 'Quick' Pipeline ==
+    # == 'Gcc' Pipeline ==
+    # Build a highly optimized Gcc and upload it.
+    - stage: Stage1
+      name: "GCC-1 (autogen.sh)"
+      env: PIPELINE=Gcc
+      before_install: |
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        misc/cibuild.sh gcc
+    - stage: Stage2
+      name: "GCC-2 (appimage + check + bintray)"
+      env: PIPELINE=Gcc
+      script: |
+        misc/cibuild.sh appimage check && {
+          echo "$BINTRAY_API_KEY" > .bintray_api_key &&
+          test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
+          misc/cibuild.sh bintray ; }
+
+    # == Stage3 Fedora ==
+    # Fedora build tests, runs *after* the 'appimage' succeeded
+    - stage: Stage3
+      name: "Fedora-27 (build + check)"
+      env: PIPELINE=Fedora-27
+      before_install: |
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
+
+    # == 'Linting' Pipeline ==
     # Generate all possible source code linting reports,
     # sort slow jobs into separate stages to avoid timeouts.
     - stage: Stage1
-      name: "Quick-1 (autogen.sh)"
+      name: "Linting-1 (autogen.sh)"
       env: PIPELINE=clang
       before_install: |
-        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
-        travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
       script: |
         misc/cibuild.sh quick
     - stage: Stage2
-      name: "Quick-2 (cppcheck + scan-build)"
+      name: "Linting-2 (cppcheck + scan-build)"
       env: PIPELINE=clang
       script: |
         misc/cibuild.sh cppcheck scan-build
     - stage: Stage3
-      name: "Quick-3 (clang-tidy)"
+      name: "Linting-3 (clang-tidy + listunused + listhacks + bintray)"
       env: PIPELINE=clang
       script: |
-        misc/cibuild.sh clang-tidy
-    - stage: Stage4
-      name: "Quick-4 (listunused + listhacks + bintray)"
-      env: PIPELINE=clang
-      script: |
+        misc/cibuild.sh clang-tidy &&
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
-
-    # == 'AppImage' Pipeline ==
-    # Build a highly optimized AppImage and upload it.
-    - stage: Stage1
-      name: "AppImage-1 (autogen.sh)"
-      env: PIPELINE=AppImage
-      before_install: |
-        uname -a && pwd && echo nproc=`nproc` && rm -v -rf ~/cache/* ~/beast &&
-        travis_retry git fetch --unshallow && cd .. && mv beast ~/
-      script: |
-        misc/cibuild.sh gcc
-    - stage: Stage2
-      name: "AppImage-2 (appimage)"
-      env: PIPELINE=AppImage
-      script: |
-        misc/cibuild.sh appimage
-    - stage: Stage3
-      name: "AppImage-3 (check + bintray)"
-      env: PIPELINE=AppImage
-      script: |
-        misc/cibuild.sh check && {
-          echo "$BINTRAY_API_KEY" > .bintray_api_key &&
-          test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
-          misc/cibuild.sh bintray ; }
 
 notifications:
   irc:
