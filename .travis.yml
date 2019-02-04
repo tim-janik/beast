@@ -74,6 +74,24 @@ jobs:
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
 
+    # == 'Asan' Pipeline ==
+    # Run checks with asan turned on.
+    - stage: Stage1
+      name: "Asan-1 (autogen.sh)"
+      env: PIPELINE=clang
+      before_install: |
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        misc/cibuild.sh asan
+    - stage: Stage2
+      name: "Asan-2 (check)"
+      env: PIPELINE=clang
+      script: |
+        mkdir -p out/asan/ &&
+        misc/cibuild.sh all check |& tee out/asan/build.log || :
+        echo "$BINTRAY_API_KEY" > .bintray_api_key &&
+        misc/cibuild.sh bintray
+
 notifications:
   irc:
     channels:
