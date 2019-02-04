@@ -245,16 +245,12 @@ wavetool_print_blurb (bool bshort)
 }
 
 static bool
-parse_str_option (char        **argv,
-                  guint        &i,
-                  const gchar  *arg,
-                  const gchar **strp,
-                  guint         argc)
+parse_str_option (char **argv, uint &i, const char *arg, const char **strp, uint argc)
 {
-  guint length = strlen (arg);
+  const size_t length = strlen (arg);
   if (strncmp (argv[i], arg, length) == 0)
     {
-      const gchar *equal = argv[i] + length;
+      const char *equal = argv[i] + length;
       if (*equal == '=')              /* -x=Arg */
         *strp = equal + 1;
       else if (*equal)                /* -xArg */
@@ -265,18 +261,15 @@ parse_str_option (char        **argv,
           *strp = argv[i];
         }
       argv[i] = NULL;
-      if (*strp)
-        return true;
+      return true;
     }
   return false;
 }
 
 static bool
-parse_bool_option (char        **argv,
-                   guint        &i,
-                   const gchar  *arg)
+parse_bool_option (char **argv, uint &i, const char *arg)
 {
-  guint length = strlen (arg);
+  const size_t length = strlen (arg);
   if (strncmp (argv[i], arg, length) == 0)
     {
       argv[i] = NULL;
