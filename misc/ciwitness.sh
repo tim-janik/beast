@@ -23,7 +23,8 @@ touch $WITNESSLOG
 # == cibuild.sh ==
 EXITSTATUS=
 for cmd in "$@" ; do
-  (set -x ; misc/cibuild.sh "$cmd" ) >>$WITNESSLOG 2>&1 ||
+  (set -x ; misc/cibuild.sh "$cmd" ) 2>&1 |
+    tee -a $WITNESSLOG ||
     EXITSTATUS="${EXITSTATUS:-$?}"
 done
 
