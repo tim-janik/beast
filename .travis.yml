@@ -86,10 +86,24 @@ jobs:
       script: |
         misc/ciwitness.sh asan out/asan/build.log all check bintray
 
+    # == 'Ubsan' Pipeline ==
+    # Run checks with ubsan turned on.
+    - stage: Stage3
+      name: "Ubsan-3 (autogen + check)"
+      env: PIPELINE=ubsan
+      before_install: |
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      before_script: |
+        echo "$BINTRAY_API_KEY" > .bintray_api_key
+      script: |
+        misc/ciwitness.sh ubsan out/ubsan/build.log all check bintray
+
   # == allow_failures ==
   allow_failures:
     - script: |
         misc/ciwitness.sh asan out/asan/build.log all check bintray
+    - script: |
+        misc/ciwitness.sh ubsan out/ubsan/build.log all check bintray
 
 notifications:
   irc:
