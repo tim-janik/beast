@@ -11,7 +11,6 @@ services: docker
 cache:
   directories:
     - ~/cache/
-    - ~/beast/
     # We use $PIPELINE to carry cache context along job pipelines (workflows)
     # https://docs.travis-ci.com/user/caching/
 
@@ -37,20 +36,29 @@ jobs:
     # sort slow jobs into separate stages to avoid timeouts.
     - stage: Stage1
       name: "Linting-2 (autogen + cppcheck + scan-build)"
-      env: PIPELINE=clang
+      env: PIPELINE=linting
       before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
-      install: |
-        touch ~/cache/"$PIPELINE-$TRAVIS_BUILD_STAGE_NAME" && ls -l ~/cache/ && cd ~/beast/
+        rm -v -rf ~/cache/$TRAVIS_BUILD_NUMBER/ ~/beast &&
+        travis_retry git fetch --unshallow &&
+        cd .. && mv beast ~/ && cd ~/beast/ &&
+        (cd ~/cache/ && pwd && ls -al )
       script: |
         misc/cibuild.sh quick cppcheck scan-build
+      before_cache: |
+        mkdir -p ~/cache/$TRAVIS_BUILD_NUMBER/ &&
+        cd ~ && mv ~/beast/ ~/cache/$TRAVIS_BUILD_NUMBER/ &&
+        (cd ~/cache/ && pwd && ls -al )
     - stage: Stage2
       name: "Linting-3 (clang-tidy + listunused + listhacks + bintray)"
-      env: PIPELINE=clang
+      env: PIPELINE=linting
+      before_install: |
+        mv ~/cache/$TRAVIS_BUILD_NUMBER/beast ~/ && cd ~/beast/
       script: |
         misc/cibuild.sh clang-tidy &&
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
+      before_cache: |
+        rm -v -rf ~/cache/
 
     # == Stage2 Fedora ==
     # Fedora build tests, runs *after* the 'appimage' succeeded
