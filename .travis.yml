@@ -77,7 +77,7 @@ jobs:
     # == 'Asan' Pipeline ==
     # Run checks with asan turned on.
     - stage: Stage3
-      name: "Asan-3 (autogen + check)"
+      name: "Asan (autogen + check)"
       env: PIPELINE=asan
       before_install: |
         rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
@@ -89,7 +89,7 @@ jobs:
     # == 'Ubsan' Pipeline ==
     # Run checks with ubsan turned on.
     - stage: Stage3
-      name: "Ubsan-3 (autogen + check)"
+      name: "Ubsan (autogen + check)"
       env: PIPELINE=ubsan
       before_install: |
         rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
