@@ -41,16 +41,6 @@ jobs:
           test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
           misc/cibuild.sh bintray ; }
 
-    # == Stage3 Fedora ==
-    # Fedora build tests, runs *after* the 'appimage' succeeded
-    - stage: Stage3
-      name: "Fedora-27 (build + check)"
-      env: PIPELINE=Fedora-27
-      before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
-      script: |
-        docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
-
     # == 'Linting' Pipeline ==
     # Generate all possible source code linting reports,
     # sort slow jobs into separate stages to avoid timeouts.
@@ -73,6 +63,16 @@ jobs:
         misc/cibuild.sh clang-tidy &&
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
+
+    # == Stage3 Fedora ==
+    # Fedora build tests, runs *after* the 'appimage' succeeded
+    - stage: Stage3
+      name: "Fedora-27 (build + check)"
+      env: PIPELINE=Fedora-27
+      before_install: |
+        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      script: |
+        docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
 
     # == 'Asan' Pipeline ==
     # Run checks with asan turned on.
