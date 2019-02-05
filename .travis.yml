@@ -21,7 +21,7 @@ jobs:
     # == 'Gcc' Pipeline ==
     # Build a highly optimized Gcc and upload it.
     - stage: Stage1
-      name: "GCC-2 (autogen + appimage + check + bintray)"
+      name: "GCC (autogen + appimage + check + bintray)"
       env: PIPELINE=Gcc
       before_install: |
         travis_retry git fetch --unshallow
@@ -35,7 +35,7 @@ jobs:
     # Generate all possible source code linting reports,
     # sort slow jobs into separate stages to avoid timeouts.
     - stage: Stage1
-      name: "Linting-2 (autogen + cppcheck + scan-build)"
+      name: "Linting-1 (autogen + cppcheck + scan-build)"
       env: PIPELINE=linting
       before_install: |
         rm -v -rf ~/cache/$TRAVIS_BUILD_NUMBER/ ~/beast &&
@@ -49,7 +49,7 @@ jobs:
         cd ~ && mv ~/beast/ ~/cache/$TRAVIS_BUILD_NUMBER/ &&
         (cd ~/cache/ && pwd && ls -al )
     - stage: Stage2
-      name: "Linting-3 (clang-tidy + listunused + listhacks + bintray)"
+      name: "Linting-2 (clang-tidy + listunused + listhacks + bintray)"
       env: PIPELINE=linting
       before_install: |
         mv ~/cache/$TRAVIS_BUILD_NUMBER/beast ~/ && cd ~/beast/
