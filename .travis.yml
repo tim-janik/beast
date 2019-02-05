@@ -101,6 +101,8 @@ jobs:
   # == allow_failures ==
   allow_failures:
     - script: |
+        docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
+    - script: |
         misc/ciwitness.sh asan out/asan/build.log all check bintray
     - script: |
         misc/ciwitness.sh ubsan out/ubsan/build.log all check bintray
