@@ -15,10 +15,6 @@ cache:
     # We use $PIPELINE to carry cache context along job pipelines (workflows)
     # https://docs.travis-ci.com/user/caching/
 
-# Common scripts
-install: |
-  touch ~/cache/"$PIPELINE-$TRAVIS_BUILD_STAGE_NAME" && ls -l ~/cache/ && cd ~/beast/
-
 # Job pipelines
 jobs:
   include:
@@ -26,17 +22,12 @@ jobs:
     # == 'Gcc' Pipeline ==
     # Build a highly optimized Gcc and upload it.
     - stage: Stage1
-      name: "GCC-1 (autogen)"
+      name: "GCC-2 (autogen + appimage + check + bintray)"
       env: PIPELINE=Gcc
       before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        travis_retry git fetch --unshallow
       script: |
-        misc/cibuild.sh gcc
-    - stage: Stage2
-      name: "GCC-2 (appimage + check + bintray)"
-      env: PIPELINE=Gcc
-      script: |
-        misc/cibuild.sh appimage check && {
+        misc/cibuild.sh gcc appimage check && {
           echo "$BINTRAY_API_KEY" > .bintray_api_key &&
           test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
           misc/cibuild.sh bintray ; }
@@ -49,6 +40,8 @@ jobs:
       env: PIPELINE=clang
       before_install: |
         rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+      install: |
+        touch ~/cache/"$PIPELINE-$TRAVIS_BUILD_STAGE_NAME" && ls -l ~/cache/ && cd ~/beast/
       script: |
         misc/cibuild.sh quick
     - stage: Stage2
@@ -70,7 +63,7 @@ jobs:
       name: "Fedora-27 (build + check)"
       env: PIPELINE=Fedora-27
       before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        travis_retry git fetch --unshallow
       script: |
         docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
 
@@ -80,7 +73,7 @@ jobs:
       name: "Asan (autogen + check)"
       env: PIPELINE=asan
       before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        travis_retry git fetch --unshallow
       before_script: |
         echo "$BINTRAY_API_KEY" > .bintray_api_key
       script: |
@@ -92,7 +85,7 @@ jobs:
       name: "Ubsan (autogen + check)"
       env: PIPELINE=ubsan
       before_install: |
-        rm -v -rf ~/cache/* ~/beast && travis_retry git fetch --unshallow && cd .. && mv beast ~/
+        travis_retry git fetch --unshallow
       before_script: |
         echo "$BINTRAY_API_KEY" > .bintray_api_key
       script: |
