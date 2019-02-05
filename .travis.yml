@@ -40,8 +40,7 @@ jobs:
       before_install: |
         rm -v -rf ~/cache/$TRAVIS_BUILD_NUMBER/ ~/beast &&
         travis_retry git fetch --unshallow --tags &&
-        cd .. && mv beast ~/ && cd ~/beast/ &&
-        (cd ~/cache/ && pwd && ls -al )
+        cd .. && mv beast ~/ && cd ~/beast/
       script: |
         misc/cibuild.sh quick cppcheck scan-build
       before_cache: |
