@@ -91,6 +91,8 @@ merge-po: $(srcdir)/messages.po # FILE=...
 	  $(GMSGFMT) -o /dev/null --verbose "$$c" ; \
 	fi
 
+SED_RM_CREATIONDATE = sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/'
+
 # force regeneration of all po files
 update-po: Makefile
 	@rm -f $(srcdir)/messages.po # force rebuild
@@ -99,7 +101,7 @@ update-po: Makefile
 	@for i in $(POFILES) ; do \
 	  printf "    %12s: " "$$i" ; \
 	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.po && \
-	  sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/' -i $(srcdir)/$$i || exit ; \
+	  $(SED_RM_CREATIONDATE) -i $(srcdir)/$$i || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
@@ -109,7 +111,9 @@ check-update-po: Makefile $(srcdir)/messages.po
 	@echo -n "Checking for updated po files: "
 	$(Q) for i in $(POFILES) ; do \
 	  echo -n '.' ; \
-	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.po || exit ; \
+	  cp $(srcdir)/$$i xtmp-$$i && \
+	  $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.po || exit ; \
+	  $(SED_RM_CREATIONDATE) -i xtmp-$$i || exit ; \
 	  cmp -s $(srcdir)/$$i xtmp-$$i || \
 	  { echo ; echo "$$i: error: message updates missing, run 'update-po' first" >&2 ; exit 1 ; } ; \
 	  rm -f xtmp-$$i ; \
