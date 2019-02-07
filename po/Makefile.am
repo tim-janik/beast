@@ -91,6 +91,8 @@ merge-po: $(srcdir)/messages.po # FILE=...
 	  $(GMSGFMT) -o /dev/null --verbose "$$c" ; \
 	fi
 
+SED_RM_CREATIONDATE = sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/'
+
 # force regeneration of all po files
 update-po: Makefile
 	@rm -f $(srcdir)/messages.po # force rebuild
@@ -99,7 +101,7 @@ update-po: Makefile
 	@for i in $(POFILES) ; do \
 	  printf "    %12s: " "$$i" ; \
 	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.po && \
-	  sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/' -i $(srcdir)/$$i || exit ; \
+	  $(SED_RM_CREATIONDATE) -i $(srcdir)/$$i || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
@@ -109,7 +111,9 @@ check-update-po: Makefile $(srcdir)/messages.po
 	@echo -n "Checking for updated po files: "
 	$(Q) for i in $(POFILES) ; do \
 	  echo -n '.' ; \
-	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.po || exit ; \
+	  cp $(srcdir)/$$i xtmp-$$i && \
+	  $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.po || exit ; \
+	  $(SED_RM_CREATIONDATE) -i xtmp-$$i || exit ; \
 	  cmp -s $(srcdir)/$$i xtmp-$$i || \
 	  { echo ; echo "$$i: error: message updates missing, run 'update-po' first" >&2 ; exit 1 ; } ; \
 	  rm -f xtmp-$$i ; \
@@ -148,31 +152,31 @@ $(srcdir)/messages.po: poscan.list
 	$(Q) cp poscan.list potscan.all && mkdir -p $(TMPDIR)/
 	$(Q) # process .idl files as C++
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.idl$$')
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po --force-po -L C++
-	$(Q) sed -r '1,20 s/^("Content-Type:.*)CHARSET/\1UTF-8/' -i messages.po
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ --force-po -L C++
+	$(Q) sed -r '1,20 s/^("Content-Type:.*)CHARSET/\1UTF-8/' -i $@
 	$(Q) # extract .xml and .html files and parse as JS
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(xml|html)(.in)?$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    ./xt9n-xml.py $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L Javascript
 	$(Q) # extract .keys and .desktop files and parse as C
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.(keys|desktop)(\.in)?$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    gawk -f ./xt9n-las.awk $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L C
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L C
 	$(Q) # extract .vue files and parse as JS
 	$(Q) $(call split_lines, potscan.all, potscan.tmp, '\.vue$$')
 	$(Q)  while read file ; do \
 	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
 	    sed '1,/^<script\b/ s/.*// ; /^<\/script>/ s/.*//' $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
 	  done < potscan.tmp
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o messages.po -j -L Javascript
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.tmp -o $@ -j -L Javascript
 	$(Q) # process remaining files with language detection
-	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o messages.po -j
+	$(Q) $(XGETTEXT_TMPDIR) -f potscan.all -o $@ -j
 	$(Q) # cleanup
 	$(Q) rm -rf $(TMPDIR)/ && rm -f potscan.all
 CLEANFILES += $(TMPDIR)/
