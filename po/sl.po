@@ -38,56 +38,56 @@ msgstr ""
 "\n"
 "PCM gonilniki na voljo:\n"
 
-#: beast-gtk/bstpatterncolumns.cc:702
+#: beast-gtk/bstpatterncolumns.cc:701
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  dovoli zlaganje stolpca v levega/desnega soseda"
 
-#: beast-gtk/bstpatterncolumns.cc:698
+#: beast-gtk/bstpatterncolumns.cc:697
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "   prikaz predznačenih števil z 2 (-99..+99) ali 3 (-999..+999) števkami"
 
-#: beast-gtk/bstpatterncolumns.cc:694
+#: beast-gtk/bstpatterncolumns.cc:693
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  prikaz 2 (-FF..+FF) ali 4 (-FFFF..+FFFF) mestnih števil hex s predznaki"
 
-#: beast-gtk/bstpatterncolumns.cc:696
+#: beast-gtk/bstpatterncolumns.cc:695
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  prikaz števil z 2 (00..99) ali 3 (000.999) števkami "
 
-#: beast-gtk/bstpatterncolumns.cc:692
+#: beast-gtk/bstpatterncolumns.cc:691
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  prikaz 2 (00..FF) ali 4 (0000..FFFF) mestnih števil hex"
 
-#: beast-gtk/bstpatterncolumns.cc:685
+#: beast-gtk/bstpatterncolumns.cc:684
 msgid "  display dotted vertical bar"
 msgstr "  prikaži pikčasto navpično vrstico"
 
-#: beast-gtk/bstpatterncolumns.cc:677
+#: beast-gtk/bstpatterncolumns.cc:676
 msgid "  display notes of the first, second, ... channel"
 msgstr "  prikaži note prvega, drugega, ... kanala"
 
-#: beast-gtk/bstpatterncolumns.cc:679
+#: beast-gtk/bstpatterncolumns.cc:678
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
 msgstr "  prikaži zamik, dolžino ali hitrost not v prvem, drugem, ... kanalu"
 
-#: beast-gtk/bstpatterncolumns.cc:683
+#: beast-gtk/bstpatterncolumns.cc:682
 msgid "  display solid vertical bar"
 msgstr "  prikaži trdno navpično vrstico"
 
-#: beast-gtk/bstpatterncolumns.cc:687
+#: beast-gtk/bstpatterncolumns.cc:686
 msgid "  insert vertical space"
 msgstr "  vstavi navpični prostor"
 
-#: beast-gtk/bstpatterncolumns.cc:681
+#: beast-gtk/bstpatterncolumns.cc:680
 #, fuzzy
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  izbor različnih vrst dogodkov (nadzori, "
 
-#: beast-gtk/bstpatterncolumns.cc:700
+#: beast-gtk/bstpatterncolumns.cc:699
 msgid "  selects one of 3 predefined colors"
 msgstr "  izbere eno od 3 preddoločenih barv"
 
@@ -152,7 +152,7 @@ msgstr "(Namig)"
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
-#: beast-gtk/bstparam-item-seq.cc:58 beast-gtk/gxk/gxksimplelabel.cc:571
+#: beast-gtk/bstparam-item-seq.cc:58 beast-gtk/gxk/gxksimplelabel.cc:572
 msgid "..."
 msgstr "..."
 
@@ -165,11 +165,11 @@ msgstr "/Viri zvoka/šum"
 msgid "/Audio Sources/Organ"
 msgstr "_Zvočni viri"
 
-#: bse/bsestandardosc.cc:95
+#: bse/bsestandardosc.cc:94
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Zvočni viri/običajni oscilator"
 
-#: bse/bsewaveosc.cc:80
+#: bse/bsewaveosc.cc:79
 msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Zvočni viri/Valovni oscilator"
 
@@ -185,32 +185,32 @@ msgstr "/Izboljšaj/zbor"
 msgid "/Filters/Bass Filter"
 msgstr "/Filtri/filter basov"
 
-#: bse/bsebiquadfilter.cc:89
+#: bse/bsebiquadfilter.cc:76
 #, fuzzy
 msgid "/Filters/Biquad Types"
 msgstr "/Filtri/"
 
-#: bse/bseinstrumentoutput.cc:149
+#: bse/bseinstrumentoutput.cc:148
 msgid "/Input & Output/Instrument Output"
 msgstr "/Vhod in izhod/Izhod instrumenta"
 
-#: bse/bseinstrumentinput.cc:149
+#: bse/bseinstrumentinput.cc:148
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "/Vhod in izhod/vhod glasu inštrumenta"
 
-#: bse/bsemidicontroller.cc:71
+#: bse/bsemidicontroller.cc:69
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/Vhod in izhod/Vhod nadzora MIDI"
 
-#: bse/bsemidiinput.cc:66
+#: bse/bsemidiinput.cc:64
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Vhod in izhod/Vhod glasu MIDI"
 
-#: bse/bsepcminput.cc:69
+#: bse/bsepcminput.cc:67
 msgid "/Input & Output/PCM Input"
 msgstr "/Vhod in izhod/vhod PCM"
 
-#: bse/bsepcmoutput.cc:69
+#: bse/bsepcmoutput.cc:67
 msgid "/Input & Output/PCM Output"
 msgstr "/Vhod in izhod/izhod PCM"
 
@@ -223,7 +223,7 @@ msgstr "Razne možnosti"
 msgid "/Misc/StandardGusPatchEnvelope"
 msgstr ""
 
-#: bse/bseconstant.cc:68
+#: bse/bseconstant.cc:67
 msgid "/Other Sources/Constant"
 msgstr "/Drugi viri/stalno"
 
@@ -245,17 +245,17 @@ msgstr "/Usmerjanje/ojačevalnik"
 msgid "/Spatial/Balance"
 msgstr "/Prostorno/ravnotežje"
 
-#: bse/bsesubiport.cc:321
+#: bse/bsesubiport.cc:320
 #, fuzzy
 msgid "/Virtualization/Virtual Input"
 msgstr "Zvočni CD dovod"
 
-#: bse/bsesuboport.cc:322
+#: bse/bsesuboport.cc:321
 #, fuzzy
 msgid "/Virtualization/Virtual Output"
 msgstr "ALSA odvod zvoka"
 
-#: bse/bsesubsynth.cc:80
+#: bse/bsesubsynth.cc:79
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr ""
 
@@ -392,35 +392,35 @@ msgstr ""
 msgid "16th Harmonic"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.cc:83
+#: beast-gtk/bstpianorollctrl.cc:81
 msgid "1\\/1"
 msgstr "1\\/1"
 
-#: beast-gtk/bstpianorollctrl.cc:97
+#: beast-gtk/bstpianorollctrl.cc:95
 msgid "1\\/128"
 msgstr "1\\/128"
 
-#: beast-gtk/bstpianorollctrl.cc:91
+#: beast-gtk/bstpianorollctrl.cc:89
 msgid "1\\/16"
 msgstr "1\\/16"
 
-#: beast-gtk/bstpianorollctrl.cc:85
+#: beast-gtk/bstpianorollctrl.cc:83
 msgid "1\\/2"
 msgstr "1\\/2"
 
-#: beast-gtk/bstpianorollctrl.cc:93
+#: beast-gtk/bstpianorollctrl.cc:91
 msgid "1\\/32"
 msgstr "1\\/32"
 
-#: beast-gtk/bstpianorollctrl.cc:87
+#: beast-gtk/bstpianorollctrl.cc:85
 msgid "1\\/4"
 msgstr "1\\/4"
 
-#: beast-gtk/bstpianorollctrl.cc:95
+#: beast-gtk/bstpianorollctrl.cc:93
 msgid "1\\/64"
 msgstr "1\\/64"
 
-#: beast-gtk/bstpianorollctrl.cc:89
+#: beast-gtk/bstpianorollctrl.cc:87
 msgid "1\\/8"
 msgstr "1\\/8"
 
@@ -662,21 +662,21 @@ msgid ""
 "171 cent steps."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:146
 msgid "A guide to synthesis plugin development"
 msgstr "Vodič po razvoju vstavkov sinteze"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:126
+#: beast-gtk/gxk/gxksimplelabel.cc:127
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
 msgstr "Niz z znaki _ v položajih ustrezajo znakom v besedilu za podčrtanje"
 
-#: beast-gtk/bstsnetrouter.cc:1016
+#: beast-gtk/bstsnetrouter.cc:1015
 msgid "ADSR"
 msgstr "ADSR"
 
-#: beast-gtk/bstsnetrouter.cc:1016
+#: beast-gtk/bstsnetrouter.cc:1015
 msgid "ADSR Envelope Generator"
 msgstr "Ustvarjalnik ovojnice ADSR"
 
@@ -684,12 +684,12 @@ msgstr "Ustvarjalnik ovojnice ADSR"
 msgid "ATAN"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.cc:523 beast-gtk/bsteventrollctrl.cc:647
-#: beast-gtk/bstpianorollctrl.cc:758 beast-gtk/bstpianorollctrl.cc:794
+#: beast-gtk/bsteventrollctrl.cc:522 beast-gtk/bsteventrollctrl.cc:646
+#: beast-gtk/bstpianorollctrl.cc:756 beast-gtk/bstpianorollctrl.cc:792
 msgid "Aborted"
 msgstr "Prekinjeno"
 
-#: beast-gtk/bsteventrollctrl.cc:656 beast-gtk/bstpianorollctrl.cc:803
+#: beast-gtk/bsteventrollctrl.cc:655 beast-gtk/bstpianorollctrl.cc:801
 msgid "Abortion"
 msgstr "Preklic"
 
@@ -703,31 +703,31 @@ msgstr "Ojačan zvočni izhod"
 msgid "Accumulated audio output 2"
 msgstr "Ojačan zvočni izhod"
 
-#: beast-gtk/bstbuseditor.cc:23 beast-gtk/bstbusmixer.cc:20
-#: beast-gtk/bstbusview.cc:19 beast-gtk/bstpartview.cc:24
+#: beast-gtk/bstbuseditor.cc:22 beast-gtk/bstbusmixer.cc:19
+#: beast-gtk/bstbusview.cc:18 beast-gtk/bstpartview.cc:21
 #: beast-gtk/bsttrackview.cc:48
 msgid "Add"
 msgstr "Dodaj"
 
-#: beast-gtk/bstapp.cc:114
+#: beast-gtk/bstapp.cc:113
 msgid "Add Custom Synthesizer"
 msgstr "Dodaj sintetizator po meri"
 
-#: beast-gtk/bstapp.cc:116
+#: beast-gtk/bstapp.cc:115
 msgid "Add MIDI Synthesizer"
 msgstr "Dodaj sintetizator MIDI"
 
-#: beast-gtk/bstapp.cc:116
+#: beast-gtk/bstapp.cc:115
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 "Doda nov sintetizator MIDI za nadzor inštrumenta iz zunanjih dogodkov MIDI"
 
-#: beast-gtk/bstbusmixer.cc:20
+#: beast-gtk/bstbusmixer.cc:19
 msgid "Add a new bus to the mixer"
 msgstr "Dodajanje novega vodila v mešalnik"
 
-#: beast-gtk/bstapp.cc:114
+#: beast-gtk/bstapp.cc:113
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 
@@ -755,16 +755,16 @@ msgstr ""
 msgid "Add..."
 msgstr "Dodaj ..."
 
-#: beast-gtk/bstitemseqdialog.cc:143
+#: beast-gtk/bstitemseqdialog.cc:142
 #, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
 msgstr "Dodajanje izbire iz seznama \"%s\" na seznam \"%s\""
 
-#: beast-gtk/bstscrollgraph.cc:560
+#: beast-gtk/bstscrollgraph.cc:561
 msgid "Adjust FFT window size"
 msgstr "Prilagodi velikost okna FFT"
 
-#: beast-gtk/bstscrollgraph.cc:557
+#: beast-gtk/bstscrollgraph.cc:558
 msgid "Adjust frequency level threshold"
 msgstr "Prilagoditev praga ravni frekvence"
 
@@ -780,7 +780,7 @@ msgstr "Prilagajanje kako izhodni signali vplivajo na izhodno glasnost"
 msgid "Adjust output balance between left and right"
 msgstr "Prilagajanje izhodnega ravnotežja med levo in desno"
 
-#: beast-gtk/bstapp.cc:79
+#: beast-gtk/bstapp.cc:78
 msgid "Adjust overall program behaviour"
 msgstr "Prilagajanje splošnega obnašanja programa"
 
@@ -792,11 +792,11 @@ msgstr "Prilagodi skupno obnašanje skladbe"
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Prilagoditev skupnega obnašanja sintetizatorja"
 
-#: beast-gtk/bstdbmeter.cc:753
+#: beast-gtk/bstdbmeter.cc:752
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Prilagodi relativno poravnavo vrednosti stolpcev za izris"
 
-#: beast-gtk/bstpatternctrl.cc:132
+#: beast-gtk/bstpatternctrl.cc:131
 msgid "Adjust the number of rows between each shaded row"
 msgstr "Prilagoditev števila vrstic med vsako osenčeno vrstico"
 
@@ -811,18 +811,18 @@ msgstr "Samodejno prilagajanje ojačitve izhoda glede na prag in razmerje"
 msgid "Adjust the zoom factor of the router display"
 msgstr ""
 
-#: beast-gtk/bstdbmeter.cc:747
+#: beast-gtk/bstdbmeter.cc:746
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Prilagodit ali naj bodo narisane vrednosti v dB namesto vrstic"
 
-#: bse/bsebus.cc:931 bse/bsebus.cc:933 bse/bsebus.cc:935 bse/bsebus.cc:937
-#: bse/bsebus.cc:941 bse/bsemidisynth.cc:369 bse/bsemidisynth.cc:375
-#: bse/bsemidisynth.cc:382 bse/bsetrack.cc:1112
+#: bse/bsebus.cc:932 bse/bsebus.cc:934 bse/bsebus.cc:936 bse/bsebus.cc:938
+#: bse/bsebus.cc:942 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
+#: bse/bsemidisynth.cc:378 bse/bsetrack.cc:1111
 msgid "Adjustments"
 msgstr "Prilagoditve"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsemididevice-alsa.cc:329
+#: drivers/bsemididevice-alsa.cc:330
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -853,7 +853,7 @@ msgstr ""
 "  SUBDEV - številka naprave za vstavke kot 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsepcmdevice-alsa.cc:581
+#: drivers/bsepcmdevice-alsa.cc:582
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -883,28 +883,28 @@ msgstr ""
 "  DEV     - številka naprave za vstavke kot 'hw'\n"
 "  SUBDEV - številka podnaprave za vstavke kot 'hw'\n"
 
-#: bse/bseinstrumentinput.cc:123 bse/bsemidiinput.cc:99
+#: bse/bseinstrumentinput.cc:122 bse/bsemidiinput.cc:97
 msgid "Aftertouch"
 msgstr ""
 
-#: bse/bsemidivoice.cc:100
+#: bse/bsemidivoice.cc:99
 #, fuzzy
 msgid "Aftertouch Out"
 msgstr "Ni več prostora"
 
-#: beast-gtk/bsteventrollctrl.cc:491 beast-gtk/bsteventrollctrl.cc:523
+#: beast-gtk/bsteventrollctrl.cc:490 beast-gtk/bsteventrollctrl.cc:522
 msgid "Align Control Events"
 msgstr "Poravnaj nadzorne dogodke"
 
-#: beast-gtk/bstpianorollctrl.cc:66
+#: beast-gtk/bstpianorollctrl.cc:64
 msgid "Align Events"
 msgstr "Poravnaj dogodke"
 
-#: beast-gtk/bsteventrollctrl.cc:42 beast-gtk/bstpianorollctrl.cc:42
+#: beast-gtk/bsteventrollctrl.cc:41 beast-gtk/bstpianorollctrl.cc:40
 msgid "All"
 msgstr "Vse"
 
-#: bse/bsestandardosc.cc:144 plugins/davorgan.idl:20
+#: bse/bsestandardosc.cc:143 plugins/davorgan.idl:20
 #: plugins/davxtalstrings.cc:99
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Vrednost razglašenosti v centih (stotinka poltona)"
@@ -913,7 +913,7 @@ msgstr "Vrednost razglašenosti v centih (stotinka poltona)"
 msgid "Amplified audio output"
 msgstr "Ojačan zvočni izhod"
 
-#: bse/bseserver.cc:423
+#: bse/bseserver.cc:426
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -925,7 +925,7 @@ msgstr ""
 "uporabljen signal tišine, zato lahko predvajanje povzroči nepričakovane "
 "rezultate (kot na primer tih izhodni signal)."
 
-#: bse/bseserver.cc:562
+#: bse/bseserver.cc:565
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -933,7 +933,7 @@ msgstr ""
 "Med odpiranjem posnete datoteke je prišlo do napake, izbira druge datoteke "
 "lahko popravi to stanje."
 
-#: beast-gtk/bstapp.cc:138
+#: beast-gtk/bstapp.cc:137
 msgid "Answers to frequently asked questions"
 msgstr "Odgovori na pogosto zastavljena vprašanja"
 
@@ -987,7 +987,7 @@ msgid ""
 "never exceeded 0 dB."
 msgstr ""
 
-#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:490
+#: bse/bsesubiport.cc:287 bse/bsesuboport.cc:288 bse/bsesubsynth.cc:489
 msgid "Assignments"
 msgstr "Dodelitve"
 
@@ -1031,40 +1031,40 @@ msgstr "Zvok"
 msgid "Audio Gate"
 msgstr "Zvočni izhod"
 
-#: bse/bseserver.cc:475
+#: bse/bseserver.cc:478
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "Zvočni izhod"
 
-#: bse/bsebiquadfilter.cc:171 plugins/bseatandistort.cc:69
+#: bse/bsebiquadfilter.cc:158 plugins/bseatandistort.cc:69
 #: plugins/bsecontribsampleandhold.idl:13 plugins/bseiirfilter.cc:116
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 #: plugins/standardguspatchenvelope.idl:26
 msgid "Audio In"
 msgstr "Zvočni Vh"
 
-#: plugins/bsemixer.cc:131
+#: plugins/bsemixer.cc:130
 #, c-format
 msgid "Audio In%u"
 msgstr "Zvočni vhod %u"
 
-#: bse/bsebusmodule.idl:9 plugins/artscompressor.idl:30 plugins/bseadder.cc:77
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17 plugins/bsemult.cc:37
+#: bse/bsebusmodule.idl:9 plugins/artscompressor.idl:30 plugins/bseadder.cc:76
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17 plugins/bsemult.cc:36
 #: plugins/bsesummation.idl:14
 msgid "Audio In1"
 msgstr "Zvočni Vh1"
 
-#: bse/bsebusmodule.idl:10 plugins/artscompressor.idl:31 plugins/bseadder.cc:79
-#: plugins/bseamplifier.idl:29 plugins/bsebalance.idl:18 plugins/bsemult.cc:39
+#: bse/bsebusmodule.idl:10 plugins/artscompressor.idl:31 plugins/bseadder.cc:78
+#: plugins/bseamplifier.idl:29 plugins/bsebalance.idl:18 plugins/bsemult.cc:38
 #: plugins/bsesummation.idl:15
 msgid "Audio In2"
 msgstr "Zvočni Vh2"
 
-#: plugins/bsemult.cc:41
+#: plugins/bsemult.cc:40
 msgid "Audio In3"
 msgstr "Zvočni Vh3"
 
-#: plugins/bsemult.cc:43
+#: plugins/bsemult.cc:42
 msgid "Audio In4"
 msgstr "Zvočni Vh4"
 
@@ -1073,19 +1073,19 @@ msgstr "Zvočni Vh4"
 msgid "Audio Input"
 msgstr "Zvočni vhod"
 
-#: plugins/bseadder.cc:77 plugins/bsemult.cc:37
+#: plugins/bseadder.cc:76 plugins/bsemult.cc:36
 msgid "Audio Input 1"
 msgstr "Zvočni vhod 1"
 
-#: plugins/bseadder.cc:79 plugins/bsemult.cc:39
+#: plugins/bseadder.cc:78 plugins/bsemult.cc:38
 msgid "Audio Input 2"
 msgstr "Zvočni vhod 2"
 
-#: plugins/bsemult.cc:41
+#: plugins/bsemult.cc:40
 msgid "Audio Input 3"
 msgstr "Zvočni vhod 3"
 
-#: plugins/bsemult.cc:43
+#: plugins/bsemult.cc:42
 msgid "Audio Input 4"
 msgstr "Zvočni vhod 4"
 
@@ -1097,12 +1097,12 @@ msgstr "Vhodni zvočni signal"
 msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
-#: bse/bsebiquadfilter.cc:179 bse/bsestandardosc.cc:190 bse/bsewaveosc.cc:579
-#: plugins/bseadder.cc:81 plugins/bseamplifier.idl:32
+#: bse/bsebiquadfilter.cc:166 bse/bsestandardosc.cc:189 bse/bsewaveosc.cc:578
+#: plugins/bseadder.cc:80 plugins/bseamplifier.idl:32
 #: plugins/bseatandistort.cc:71 plugins/bsecontribsampleandhold.idl:15
-#: plugins/bseiirfilter.cc:118 plugins/bsemixer.cc:91 plugins/bsemult.cc:45
+#: plugins/bseiirfilter.cc:118 plugins/bsemixer.cc:90 plugins/bsemult.cc:44
 #: plugins/davbassfilter.idl:16 plugins/davchorus.idl:12
-#: plugins/davorgan.idl:12 plugins/davsyndrum.cc:105
+#: plugins/davorgan.idl:12 plugins/davsyndrum.cc:106
 #: plugins/davxtalstrings.cc:135
 msgid "Audio Out"
 msgstr "Zvočni izhod"
@@ -1118,16 +1118,16 @@ msgstr "Zvočni Iz1"
 msgid "Audio Out2"
 msgstr "Zvočni Iz2"
 
-#: plugins/bseadder.cc:81 plugins/bsecontribsampleandhold.idl:15
-#: plugins/bsemult.cc:45
+#: plugins/bseadder.cc:80 plugins/bsecontribsampleandhold.idl:15
+#: plugins/bsemult.cc:44
 msgid "Audio Output"
 msgstr "Zvočni izhod"
 
-#: bse/bseserver.cc:421
+#: bse/bseserver.cc:424
 msgid "Audio Recording Failed"
 msgstr ""
 
-#: plugins/davsyndrum.cc:40
+#: plugins/davsyndrum.cc:41
 #, fuzzy
 msgid "Audio Sources/Synthetic Drum"
 msgstr "/Viri zvoka/šum"
@@ -1147,7 +1147,7 @@ msgstr "Zvočni Iz1"
 msgid "Audio Sum2"
 msgstr "Zvočni Iz2"
 
-#: bse/bseserver.cc:428
+#: bse/bseserver.cc:431
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr "Zvočna naprava \"%s\" ni odprta za vhod, zvočni gonilnik: %s=%s"
@@ -1164,11 +1164,11 @@ msgstr "Zvočni vhod 1"
 msgid "Audio input 2"
 msgstr "Zvočni vhod 2"
 
-#: bse/bsesuper.cc:182
+#: bse/bsesuper.cc:183
 msgid "Author"
 msgstr "Avtor"
 
-#: bse/bseapi.idl:892
+#: bse/bseapi.idl:897
 #, fuzzy
 msgid "Auto Activate"
 msgstr "Samodejen izrez"
@@ -1177,12 +1177,12 @@ msgstr "Samodejen izrez"
 msgid "Auto Output"
 msgstr "Zvočni izhod"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:115
+#: beast-gtk/gxk/gxksimplelabel.cc:116
 msgid "Auto cut"
 msgstr "Samodejen izrez"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.cc:324
+#: bse/bsedevice.cc:325
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -1190,7 +1190,7 @@ msgstr ""
 "Auto je posebni gonilnik, deluje kot držalo za\n"
 "samodejni izbor gonilnika."
 
-#: bse/bseapi.idl:893
+#: bse/bseapi.idl:898
 msgid ""
 "Automatic activation only needs to be enabled for synthesis networks that "
 "don't use virtual ports for their input and output"
@@ -1202,7 +1202,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.cc:118
+#: bse/bsebus.cc:119
 msgid "Available Inputs"
 msgstr "Dostopni vhodi"
 
@@ -1211,16 +1211,16 @@ msgstr "Dostopni vhodi"
 msgid "Available Items:"
 msgstr "Predmeti na voljo:"
 
-#: bse/bsebus.cc:133 bse/bsetrack.cc:297
+#: bse/bsebus.cc:134 bse/bsetrack.cc:296
 msgid "Available Outputs"
 msgstr "Dostopni izhodi"
 
-#: bse/bsemidisynth.cc:140 bse/bsesong.cc:119 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:136 bse/bsesong.cc:113 bse/bsetrack.cc:291
 #, fuzzy
 msgid "Available Postprocessors"
 msgstr "Ukazi, ki so na voljo:\n"
 
-#: bse/bsesoundfontosc.cc:308
+#: bse/bsesoundfontosc.cc:307
 #, fuzzy
 msgid "Available Presets"
 msgstr "Razpoložljivi valovi"
@@ -1230,21 +1230,21 @@ msgstr "Razpoložljivi valovi"
 msgid "Available Sound Fonts"
 msgstr "Dostopni vhodi"
 
-#: bse/bsemidisynth.cc:135 bse/bsesubsynth.cc:138 bse/bsetrack.cc:287
+#: bse/bsemidisynth.cc:131 bse/bsesubsynth.cc:137 bse/bsetrack.cc:286
 msgid "Available Synthesizers"
 msgstr "Razpoložljivi sintetizatorji"
 
-#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:270 bse/bsewaveosc.cc:109
+#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:269 bse/bsewaveosc.cc:108
 msgid "Available Waves"
 msgstr "Razpoložljivi valovi"
 
-#: beast-gtk/bstprofiler.cc:140
+#: beast-gtk/bstprofiler.cc:141
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 "Povprečno število milisekund na sekundo sistemskega CPE, ki ga porabi nit"
 
-#: beast-gtk/bstprofiler.cc:139
+#: beast-gtk/bstprofiler.cc:140
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
@@ -1255,24 +1255,24 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:963
+#: beast-gtk/bstmain.cc:946
 msgid "BEAST About"
 msgstr "BEAST o programu"
 
-#: beast-gtk/bstmain.cc:203
+#: beast-gtk/bstmain.cc:184
 msgid "BEAST Startup"
 msgstr "Zagon BEAST"
 
-#: beast-gtk/bstmain.cc:964
+#: beast-gtk/bstmain.cc:947
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST različica %s"
 
-#: bse/bseapi.idl:1024
+#: bse/bseapi.idl:1022
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:251
+#: beast-gtk/bstmain.cc:232
 msgid "BSE Core"
 msgstr "Jedro BSE"
 
@@ -1338,12 +1338,12 @@ msgstr "Vhodne ravni nadzora ravnotežja"
 msgid "Bank Select"
 msgstr "Izbor banke"
 
-#: bse/bsestandardosc.cc:127 bse/bsestandardosc.cc:132
-#: bse/bsestandardosc.cc:137 bse/bsestandardosc.cc:142 plugins/davorgan.idl:13
+#: bse/bsestandardosc.cc:126 bse/bsestandardosc.cc:131
+#: bse/bsestandardosc.cc:136 bse/bsestandardosc.cc:141 plugins/davorgan.idl:13
 msgid "Base Frequency"
 msgstr "Osnovna frekvenca"
 
-#: beast-gtk/bstpatternctrl.cc:127
+#: beast-gtk/bstpatternctrl.cc:126
 msgid "Base Octave"
 msgstr "Oktava basa"
 
@@ -1355,7 +1355,7 @@ msgstr "Glasnost basa"
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "Ojačitev basa (nadzorni signal temu doda vrednost)"
 
-#: bse/bseapi.idl:1024
+#: bse/bseapi.idl:1022
 msgid "Beats per minute"
 msgstr "Udarci na minuto"
 
@@ -1367,7 +1367,7 @@ msgstr "Povezava nove kombinacije tipk z zmožnostjo programa"
 msgid "Bit Depth"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:557
+#: beast-gtk/bstscrollgraph.cc:558
 msgid "Boost"
 msgstr ""
 
@@ -1408,7 +1408,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "Ime vodila"
 
-#: bse/bsebus.cc:990
+#: bse/bsebus.cc:991
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1418,35 +1418,35 @@ msgstr ""
 msgid "Busses"
 msgstr "Vodila"
 
-#: beast-gtk/bstpatterncolumns.cc:675
+#: beast-gtk/bstpatterncolumns.cc:674
 msgid "COLUMN TYPES:"
 msgstr "VRSTE STOLPCEV:"
 
-#: beast-gtk/bstprofiler.cc:155
+#: beast-gtk/bstprofiler.cc:156
 msgid "CPU the thread is currently running on"
 msgstr "CPE na kateremu trenutno teče nit"
 
-#: beast-gtk/bstprofiler.cc:155
+#: beast-gtk/bstprofiler.cc:156
 msgid "CPU#"
 msgstr "CPE št."
 
-#: beast-gtk/bstprofiler.cc:138
+#: beast-gtk/bstprofiler.cc:139
 msgid "CPU%"
 msgstr "CPE%"
 
-#: beast-gtk/bstapp.cc:592
+#: beast-gtk/bstapp.cc:591
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: bse/bsebiquadfilter.cc:114 bse/bsebiquadfilter.cc:122
+#: bse/bsebiquadfilter.cc:101 bse/bsebiquadfilter.cc:109
 msgid "Center Frequency"
 msgstr "Sredniščenje frekvence"
 
-#: bse/bsebiquadfilter.cc:173
+#: bse/bsebiquadfilter.cc:160
 msgid "Center Frequency Input"
 msgstr "Središčenje vhoda frekvence"
 
-#: beast-gtk/bstpatternctrl.cc:331
+#: beast-gtk/bstpatternctrl.cc:330
 msgid "Change the base octave by a given amount"
 msgstr "Sprememba oktave basa za dano količino"
 
@@ -1454,7 +1454,7 @@ msgstr "Sprememba oktave basa za dano količino"
 msgid "Change the currently selected key binding"
 msgstr "Sprememba trenutno izbrane tipkovne bližnjice"
 
-#: beast-gtk/bstpatternctrl.cc:335
+#: beast-gtk/bstpatternctrl.cc:334
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Spremeni vsebino številčne izbrane celice (to je oktavo) za dano količino"
@@ -1467,17 +1467,17 @@ msgstr ""
 msgid "Change..."
 msgstr "Spremeni ..."
 
-#: beast-gtk/bstapp.cc:587
+#: beast-gtk/bstapp.cc:586
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr "Projekt \"%s\" je bil od zadnjega shranjevanja na disk spremenjen."
 
-#: bse/bsewaveosc.cc:547
+#: bse/bsewaveosc.cc:546
 msgid "Channel"
 msgstr "Kanal"
 
-#: beast-gtk/bstsnetrouter.cc:1080
+#: beast-gtk/bstsnetrouter.cc:1079
 msgid "Channel Hints"
 msgstr "Namigi kanala"
 
@@ -1486,22 +1486,22 @@ msgstr "Namigi kanala"
 msgid "Channel Pressure"
 msgstr "Pritisk kanala"
 
-#: plugins/bsemixer.cc:97
+#: plugins/bsemixer.cc:96
 #, c-format
 msgid "Channel%u"
 msgstr "Kanal%u"
 
-#: plugins/bsemixer.cc:120
+#: plugins/bsemixer.cc:119
 #, c-format
 msgid "Channel%u [%%]"
 msgstr "Kanal%u [%%]"
 
-#: plugins/bsemixer.cc:109
+#: plugins/bsemixer.cc:108
 #, c-format
 msgid "Channel%u [dB]"
 msgstr "Kanal%u [dB]"
 
-#: plugins/bsemixer.cc:99
+#: plugins/bsemixer.cc:98
 #, c-format
 msgid "Channel%u [float]"
 msgstr "Kanal%u [plavajoč]"
@@ -1510,12 +1510,12 @@ msgstr "Kanal%u [plavajoč]"
 msgid "Check/ToggleRadio Button"
 msgstr "Izbira/preklop radijskega gumba"
 
-#: beast-gtk/bstscrollgraph.cc:553
+#: beast-gtk/bstscrollgraph.cc:554
 msgid "Choose display scrolling direction"
 msgstr "Izbor smeri drsanja prikaza"
 
-#: beast-gtk/bstdbmeter.cc:750 beast-gtk/bstdbmeter.cc:1045
-#: beast-gtk/bstdbmeter.cc:1545
+#: beast-gtk/bstdbmeter.cc:749 beast-gtk/bstdbmeter.cc:1044
+#: beast-gtk/bstdbmeter.cc:1544
 msgid "Choose horizontal or vertical orientation"
 msgstr "Izbor vodoravne ali navpične usmeritve"
 
@@ -1523,24 +1523,24 @@ msgstr "Izbor vodoravne ali navpične usmeritve"
 msgid "Chorus audio output"
 msgstr "Zvočni izhod zbora"
 
-#: beast-gtk/bstpartdialog.cc:43
+#: beast-gtk/bstpartdialog.cc:42
 msgid "Clear"
 msgstr "Počisti"
 
-#: beast-gtk/bstpartdialog.cc:43
+#: beast-gtk/bstpartdialog.cc:42
 msgid "Clear the current selection"
 msgstr "Počisti trenutni izbor"
 
-#: beast-gtk/bstapp.cc:585
+#: beast-gtk/bstapp.cc:584
 #, c-format
 msgid "Close %s"
 msgstr "Zapri %s"
 
-#: beast-gtk/bstapp.cc:75
+#: beast-gtk/bstapp.cc:74
 msgid "Close all windows and quit"
 msgstr "Zapri vsa okna in končaj"
 
-#: beast-gtk/bstapp.cc:65
+#: beast-gtk/bstapp.cc:64
 msgid "Close the project"
 msgstr "Zapri projekt"
 
@@ -1554,7 +1554,7 @@ msgstr "Napaka KODEKA"
 msgid "Color Entry"
 msgstr "Barvni vnos"
 
-#: beast-gtk/bstitemview.cc:198 beast-gtk/bsttrackview.cc:660
+#: beast-gtk/bstitemview.cc:197 beast-gtk/bsttrackview.cc:661
 #: bse/bseobject.cc:953
 msgid "Comment"
 msgstr "Opomba"
@@ -1577,7 +1577,7 @@ msgstr "Nastavi"
 msgid "Configure the column layout of the pattern editor"
 msgstr "Nastavi razporeditev stolpca urejevalnika vzorcev"
 
-#: bse/bseconstant.cc:120
+#: bse/bseconstant.cc:119
 #, c-format
 msgid "Const Out%u"
 msgstr "Stalen Iz%u"
@@ -1603,16 +1603,16 @@ msgstr "Stalno SREDNJE negativno"
 msgid "Constant Negative HIGH"
 msgstr "Stalno VISOKO negativno"
 
-#: bse/bseconstant.cc:90 bse/bseconstant.cc:121
+#: bse/bseconstant.cc:89 bse/bseconstant.cc:120
 #, c-format
 msgid "Constant Output %u"
 msgstr "Stalen izhod %u"
 
-#: bse/bseconstant.cc:95
+#: bse/bseconstant.cc:94
 msgid "Constant signal value"
 msgstr "Stalna vrednost signala"
 
-#: bse/bseconstant.cc:114
+#: bse/bseconstant.cc:113
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
@@ -1620,11 +1620,11 @@ msgstr ""
 "Stalna vrednost signala kot nota, pretvorjena v hertze glede na trenutno "
 "uglaševanje"
 
-#: bse/bseconstant.cc:103
+#: bse/bseconstant.cc:102
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr "Vrednost stalnega signala, obravnava kot vrednost frekvence v hertzih"
 
-#: beast-gtk/bstfiledialog.cc:163
+#: beast-gtk/bstfiledialog.cc:162
 msgid "Contents"
 msgstr "Vsebina"
 
@@ -1696,7 +1696,7 @@ msgstr "Stalno 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Stalni MIDI nadzor št 1 - Izbor banke"
 
-#: beast-gtk/bstmain.cc:965
+#: beast-gtk/bstmain.cc:948
 msgid "Contributions made by:"
 msgstr "Prispevali so:"
 
@@ -2023,40 +2023,40 @@ msgstr "Vrsta nadzora:"
 msgid "Control Type:"
 msgstr "Vrsta nadzora:"
 
-#: beast-gtk/bstpatternctrl.cc:128
+#: beast-gtk/bstpatternctrl.cc:127
 msgid "Controls the octave relative to which notes are entered"
 msgstr "Nadzor oktave relativno na vnesene note"
 
-#: beast-gtk/bstpartdialog.cc:45
+#: beast-gtk/bstpartdialog.cc:44
 msgid "Copy"
 msgstr "Kopiraj"
 
-#: beast-gtk/bstpartdialog.cc:45
+#: beast-gtk/bstpartdialog.cc:44
 msgid "Copy the current selection into clipboard"
 msgstr "Kopiranje trenutnega izbora v odložišče"
 
-#: bse/bsesuper.cc:187
+#: bse/bsesuper.cc:188
 msgid "Copyright license applying to this object"
 msgstr "Licenca avtorskih pravic, ki velja za ta predmet"
 
-#: beast-gtk/bstsnetrouter.cc:586 beast-gtk/bstsnetrouter.cc:588
-#: beast-gtk/bstsnetrouter.cc:621
+#: beast-gtk/bstsnetrouter.cc:585 beast-gtk/bstsnetrouter.cc:587
+#: beast-gtk/bstsnetrouter.cc:620
 msgid "Create Link"
 msgstr "Ustvari povezavo"
 
-#: beast-gtk/bstapp.cc:112
+#: beast-gtk/bstapp.cc:111
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Ustvari novo skladbo, sestavljeno iz mešalnika, sledi, delov in not"
 
-#: beast-gtk/bstapp.cc:102
+#: beast-gtk/bstapp.cc:101
 msgid "Create an extra view of the project"
 msgstr "Ustvarjanje dodatnega pogleda projekta"
 
-#: beast-gtk/bstapp.cc:57
+#: beast-gtk/bstapp.cc:56
 msgid "Create new project"
 msgstr "Ustvari nov projekt"
 
-#: bse/bsesuper.cc:195
+#: bse/bsesuper.cc:196
 msgid "Creation Time"
 msgstr "Čas nastanka"
 
@@ -2072,19 +2072,19 @@ msgstr "Nadzorni Vh2"
 msgid "Ctrl Out"
 msgstr "Nadzorni izhod"
 
-#: bse/bsemidicontroller.cc:122
+#: bse/bsemidicontroller.cc:120
 msgid "Ctrl Out1"
 msgstr "Nadzorni Iz1"
 
-#: bse/bsemidicontroller.cc:124
+#: bse/bsemidicontroller.cc:122
 msgid "Ctrl Out2"
 msgstr "Nadzorni Iz2"
 
-#: bse/bsemidicontroller.cc:126
+#: bse/bsemidicontroller.cc:124
 msgid "Ctrl Out3"
 msgstr "Nadzorni Iz3"
 
-#: bse/bsemidicontroller.cc:128
+#: bse/bsemidicontroller.cc:126
 msgid "Ctrl Out4"
 msgstr "Nadzorni Iz4"
 
@@ -2093,7 +2093,7 @@ msgstr "Nadzorni Iz4"
 msgid "Current Items:"
 msgstr "Trenutni predmeti:"
 
-#: beast-gtk/bstpartdialog.cc:44
+#: beast-gtk/bstpartdialog.cc:43
 msgid "Cut"
 msgstr "Izreži"
 
@@ -2110,12 +2110,12 @@ msgstr "Obrezna frekvenca 2 "
 msgid "Cutoff [%]"
 msgstr "Obrez [%]"
 
-#: bse/bsebiquadfilter.cc:116 plugins/bseiirfilter.cc:95
+#: bse/bsebiquadfilter.cc:103 plugins/bseiirfilter.cc:95
 #: plugins/bseiirfilter.cc:106
 msgid "Cutoff [Hz]"
 msgstr "Obrez [Hz]"
 
-#: beast-gtk/bstsnetrouter.cc:1017
+#: beast-gtk/bstsnetrouter.cc:1016
 msgid "DCA"
 msgstr "DCA"
 
@@ -2123,7 +2123,7 @@ msgstr "DCA"
 msgid "DEVICE,MODE"
 msgstr "NAPRAVA,NAČIN"
 
-#: beast-gtk/bstapp.cc:149
+#: beast-gtk/bstapp.cc:148
 msgid "DSP Engine..."
 msgstr "Pogon DSP ..."
 
@@ -2162,68 +2162,68 @@ msgstr "Dušenje"
 msgid "Decay [%]"
 msgstr "Dušenje [%]"
 
-#: bse/bsebasics.idl:127
+#: bse/bsebasics.idl:118
 msgid "Default Author"
 msgstr "Privzeti avtor"
 
-#: bse/bsebasics.idl:129
+#: bse/bsebasics.idl:119
 msgid "Default License"
 msgstr "Privzeta licenca"
 
-#: bse/bsebasics.idl:126
+#: bse/bsebasics.idl:117
 msgid "Default Values"
 msgstr "Privzete vrednosti"
 
-#: bse/bsebasics.idl:127
+#: bse/bsebasics.idl:118
 msgid "Default value for 'Author' fields"
 msgstr "Privzeta vrednost za polja 'Avtor'"
 
-#: bse/bsebasics.idl:129
+#: bse/bsebasics.idl:119
 msgid "Default value for 'License' fields"
 msgstr "Privzeta vrednost za polja 'Licenca'"
 
-#: plugins/davcanyondelay.cc:68 plugins/davcanyondelay.cc:78
+#: plugins/davcanyondelay.cc:67 plugins/davcanyondelay.cc:77
 msgid "Delay (seconds)"
 msgstr "Zamik (sekunde)"
 
-#: beast-gtk/bstbuseditor.cc:24 beast-gtk/bstbusmixer.cc:21
-#: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
-#: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
-#: beast-gtk/bstsnetrouter.cc:657 beast-gtk/bstsnetrouter.cc:705
-#: beast-gtk/bstsoundfontview.cc:28 beast-gtk/bsttrackrollctrl.cc:35
-#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:29
+#: beast-gtk/bstbuseditor.cc:23 beast-gtk/bstbusmixer.cc:20
+#: beast-gtk/bstbusview.cc:19 beast-gtk/bstkeybindings.cc:41
+#: beast-gtk/bstpartview.cc:22 beast-gtk/bstpianorollctrl.cc:62
+#: beast-gtk/bstsnetrouter.cc:656 beast-gtk/bstsnetrouter.cc:704
+#: beast-gtk/bstsoundfontview.cc:27 beast-gtk/bsttrackrollctrl.cc:32
+#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:28
 msgid "Delete"
 msgstr "Izbriši"
 
-#: beast-gtk/bsteventrollctrl.cc:610 beast-gtk/bsteventrollctrl.cc:613
+#: beast-gtk/bsteventrollctrl.cc:609 beast-gtk/bsteventrollctrl.cc:612
 msgid "Delete Control Event"
 msgstr "Izbriši nadzorni dogodek"
 
-#: beast-gtk/bstsnetrouter.cc:714
+#: beast-gtk/bstsnetrouter.cc:713
 msgid "Delete Link"
 msgstr "Izbriši povezavo"
 
-#: beast-gtk/bstpianorollctrl.cc:697 beast-gtk/bstpianorollctrl.cc:700
+#: beast-gtk/bstpianorollctrl.cc:695 beast-gtk/bstpianorollctrl.cc:698
 msgid "Delete Note"
 msgstr "Izbriši noto"
 
-#: beast-gtk/bsttrackrollctrl.cc:462 beast-gtk/bsttrackrollctrl.cc:465
+#: beast-gtk/bsttrackrollctrl.cc:459 beast-gtk/bsttrackrollctrl.cc:462
 msgid "Delete Part"
 msgstr "Izbriši del"
 
-#: beast-gtk/bstpianorollctrl.cc:64
+#: beast-gtk/bstpianorollctrl.cc:62
 msgid "Delete note (mouse button 1)"
 msgstr "Izbriši noto (miškin gumb 1)"
 
-#: beast-gtk/bsttrackrollctrl.cc:35
+#: beast-gtk/bsttrackrollctrl.cc:32
 msgid "Delete parts"
 msgstr "Izbriši dele"
 
-#: beast-gtk/bstapp.cc:96
+#: beast-gtk/bstapp.cc:95
 msgid "Delete the complete undo history"
 msgstr "Izbris celotne zgodovine razveljav"
 
-#: beast-gtk/bstbusmixer.cc:21
+#: beast-gtk/bstbusmixer.cc:20
 msgid "Delete the currently selected bus"
 msgstr "Izbris trenutno izbranega vodila"
 
@@ -2231,7 +2231,7 @@ msgstr "Izbris trenutno izbranega vodila"
 msgid "Delete the currently selected key binding"
 msgstr "Izbriši trenutno izbrano tipkovno bližnjico"
 
-#: beast-gtk/bstsoundfontview.cc:28
+#: beast-gtk/bstsoundfontview.cc:27
 #, fuzzy
 msgid "Delete the currently selected sound font from project"
 msgstr "Izbris trenutno izbrane sledi"
@@ -2240,11 +2240,11 @@ msgstr "Izbris trenutno izbrane sledi"
 msgid "Delete the currently selected track"
 msgstr "Izbris trenutno izbrane sledi"
 
-#: beast-gtk/bstwaveview.cc:29
+#: beast-gtk/bstwaveview.cc:28
 msgid "Delete the currently selected wave"
 msgstr "Izbris trenutno izbranega vala"
 
-#: bse/bsesong.cc:701
+#: bse/bseapi.idl:1021
 msgid "Denominator"
 msgstr "Imenovalec"
 
@@ -2252,19 +2252,19 @@ msgstr "Imenovalec"
 msgid "Description"
 msgstr "Opis"
 
-#: beast-gtk/bstusermessage.cc:183
+#: beast-gtk/bstusermessage.cc:184
 msgid "Details:"
 msgstr "Podrobnosti:"
 
-#: beast-gtk/bstfiledialog.cc:127
+#: beast-gtk/bstfiledialog.cc:126
 msgid "Detected file format"
 msgstr "Zaznana vrsta datoteke"
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:146
 msgid "Developing Plugins..."
 msgstr "Razvoj vstavkov ..."
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:150
 msgid "Development..."
 msgstr "Razvoj ..."
 
@@ -2295,7 +2295,7 @@ msgstr "Klic"
 msgid "Dial (Logarithmic)"
 msgstr "_Predpona klicanja:"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:293
 msgid "Dialogs"
 msgstr "Pogovorna okna"
 
@@ -2314,17 +2314,17 @@ msgstr ""
 msgid "Difference between audio outputs 1 and 2"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:118 beast-gtk/bstscrollgraph.cc:553
+#: beast-gtk/bstpatternctrl.cc:117 beast-gtk/bstscrollgraph.cc:554
 msgid "Direction"
 msgstr "Smer"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:590
 msgid "Discard Changes"
 msgstr "Zavrzi spremembe"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.cc:129
+#: bse/bsepcmdevice-null.cc:130
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list.\n"
@@ -2339,7 +2339,7 @@ msgid "Discard changes and close dialog"
 msgstr "Zavrni spremembe in zapri pogovorno okno"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.cc:62
+#: bse/bsemididevice-null.cc:63
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
@@ -2347,40 +2347,40 @@ msgstr ""
 "Zavrže vse izhodne dogodke in ne ustvari vhodnih dogodkov. Ta gonilnik\n"
 "ni del seznama samodejne izbire naprave za naprave MIDI."
 
-#: bse/bsemidivoice.cc:122
+#: bse/bsemidivoice.cc:121
 msgid "Disconnect In"
 msgstr "Prekinitveni Vh"
 
-#: beast-gtk/bstsnetrouter.cc:651
+#: beast-gtk/bstsnetrouter.cc:650
 msgid "Disconnect Inputs"
 msgstr "Prekini vhode"
 
-#: bse/bsemidivoice.cc:128
+#: bse/bsemidivoice.cc:127
 msgid "Disconnect Out"
 msgstr "Prekinitveni Iz"
 
-#: beast-gtk/bstsnetrouter.cc:652
+#: beast-gtk/bstsnetrouter.cc:651
 msgid "Disconnect Outputs"
 msgstr "Prekini izhode"
 
-#: bse/bseserver.cc:560
+#: bse/bseserver.cc:563
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "Začni snemanje na disk"
 
-#: beast-gtk/bstapp.cc:86
+#: beast-gtk/bstapp.cc:85
 msgid "Display developer and contributor credits"
 msgstr "Prikaz zahval razvijalcem in sodelavcem"
 
-#: beast-gtk/bstusermessage.cc:360
+#: beast-gtk/bstusermessage.cc:361
 msgid "Display dialogs with debugging messages"
 msgstr "Prikaz pogovornih oken s sporočili razhroščevanja"
 
-#: beast-gtk/bstusermessage.cc:358
+#: beast-gtk/bstusermessage.cc:359
 msgid "Display dialogs with information messages"
 msgstr "Prikaz pogovornih oken s sporočili podrobnosti"
 
-#: beast-gtk/bstapp.cc:100
+#: beast-gtk/bstapp.cc:99
 msgid "Display statistics and timing information"
 msgstr ""
 
@@ -2388,16 +2388,16 @@ msgstr ""
 msgid "Distorted Audio Output"
 msgstr "Popačen zvočni izhod"
 
-#: beast-gtk/bstapp.cc:132
+#: beast-gtk/bstapp.cc:131
 msgid "Document _Index..."
 msgstr "_Kazalo dokumenta ..."
 
-#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:583
+#: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
 #: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
 msgid "Done Out"
 msgstr "Končan Iz"
 
-#: bse/bsesoundfontosc.cc:180 bse/bsewaveosc.cc:583
+#: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
 msgid "Done Output"
 msgstr "Končan izhod"
 
@@ -2437,11 +2437,11 @@ msgstr "Celinka s piko"
 msgid "Down"
 msgstr "Navzdol"
 
-#: beast-gtk/bstdbmeter.cc:747
+#: beast-gtk/bstdbmeter.cc:746
 msgid "Draw Values"
 msgstr "Nariši vrednosti"
 
-#: beast-gtk/bstpianorollctrl.cc:66
+#: beast-gtk/bstpianorollctrl.cc:64
 msgid "Draw a line to align events to"
 msgstr "Narišite črto za poravnavo dogodkov"
 
@@ -2457,26 +2457,26 @@ msgstr "Spustni gumb"
 msgid "Drop Down Combo"
 msgstr "Spustno polje"
 
-#: plugins/davsyndrum.cc:99
+#: plugins/davsyndrum.cc:100
 msgid "Drum Frequency Input"
 msgstr "Vhodna frekvenca bobna"
 
-#: plugins/davsyndrum.cc:77
+#: plugins/davsyndrum.cc:78
 msgid ""
 "Drum frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
 "Frekvenca bobna kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
 
-#: plugins/davsyndrum.cc:71
+#: plugins/davsyndrum.cc:72
 msgid "Drum frequency in Hertz"
 msgstr "Frekvenca bobna v hertzih"
 
-#: beast-gtk/bstpatterncolumns.cc:688
+#: beast-gtk/bstpatterncolumns.cc:687
 msgid "EVENTS:"
 msgstr "DOGODKI:"
 
-#: beast-gtk/bstpatterncolumns.cc:703
+#: beast-gtk/bstpatterncolumns.cc:702
 msgid "EXAMPLE:"
 msgstr "PRIMER:"
 
@@ -2485,19 +2485,19 @@ msgstr "PRIMER:"
 msgid "E_xamples"
 msgstr "P_rimeri"
 
-#: beast-gtk/bstsnetrouter.cc:31
+#: beast-gtk/bstsnetrouter.cc:30
 msgid "Edit"
 msgstr "Uredi"
 
-#: beast-gtk/bsttrackrollctrl.cc:398 beast-gtk/bsttrackrollctrl.cc:410
+#: beast-gtk/bsttrackrollctrl.cc:395 beast-gtk/bsttrackrollctrl.cc:407
 msgid "Edit Part"
 msgstr "Uredi del"
 
-#: beast-gtk/bstwaveview.cc:31
+#: beast-gtk/bstwaveview.cc:30
 msgid "Edit the currently selected wave"
 msgstr "Urejanje trenutno izbranega vala"
 
-#: beast-gtk/bstsnetrouter.cc:26
+#: beast-gtk/bstsnetrouter.cc:25
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
@@ -2506,12 +2506,12 @@ msgstr ""
 "Orodje urejanje (miškini gumbi 1-3)\n"
 "Gumb 1 ustvari povezave, gumb 2 omogoča premika, gumb3 spremeni lastnosti"
 
-#: beast-gtk/bstsnetrouter.cc:31
+#: beast-gtk/bstsnetrouter.cc:30
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Uredi/premakni/meni (miškini gumbi 1-3)"
 
-#: beast-gtk/bstbuseditor.cc:25 beast-gtk/bstpartview.cc:26
-#: beast-gtk/bstwaveview.cc:31
+#: beast-gtk/bstbuseditor.cc:24 beast-gtk/bstpartview.cc:23
+#: beast-gtk/bstwaveview.cc:30
 msgid "Editor"
 msgstr "Urejevalnik"
 
@@ -2523,7 +2523,7 @@ msgstr "Nadzor učinkov 1"
 msgid "Effect Control 2"
 msgstr "Nadzor učinkov 2"
 
-#: bse/bsebasics.idl:136
+#: bse/bsebasics.idl:125
 msgid "Effect Path"
 msgstr "Pot učinka"
 
@@ -2531,7 +2531,7 @@ msgstr "Pot učinka"
 msgid "Eighths note"
 msgstr "Osminka"
 
-#: bse/bsebiquadfilter.cc:130 bse/bsebiquadfilter.cc:136
+#: bse/bsebiquadfilter.cc:117 bse/bsebiquadfilter.cc:123
 msgid "Emphasis"
 msgstr "Poudarki"
 
@@ -2551,7 +2551,7 @@ msgstr ""
 "Omogoči homogene velikosti za večno (besedilnih in številčnih) vnosnih "
 "polij. Za nekatera polja bo to imelo učinek po ponovnem zagonu."
 
-#: beast-gtk/bstmsgabsorb.cc:196
+#: beast-gtk/bstmsgabsorb.cc:197
 msgid "Enable or disable message display of a specific message type"
 msgstr "Omogoči ali onemogoči prikaz sporočila o določeni vrsti sporočila"
 
@@ -2560,11 +2560,11 @@ msgstr "Omogoči ali onemogoči prikaz sporočila o določeni vrsti sporočila"
 msgid "End of file"
 msgstr "Red filtra"
 
-#: beast-gtk/bstsampleeditor.cc:419
+#: beast-gtk/bstsampleeditor.cc:416
 msgid "End:"
 msgstr "Konec:"
 
-#: plugins/davcanyondelay.cc:42
+#: plugins/davcanyondelay.cc:41
 msgid "Enhance/CanyonDelay"
 msgstr ""
 
@@ -2589,7 +2589,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: beast-gtk/bstusermessage.cc:51
+#: beast-gtk/bstusermessage.cc:52
 msgid "Error: "
 msgstr "Napaka:"
 
@@ -2662,11 +2662,11 @@ msgstr "Vsaka dvanajsta vrstica"
 msgid "Exponential Control"
 msgstr "Eksponentni nadzor"
 
-#: bse/bsestandardosc.cc:154 bse/bsewaveosc.cc:557
+#: bse/bsestandardosc.cc:153 bse/bsewaveosc.cc:556
 msgid "Exponential FM"
 msgstr "Eksponentni FM"
 
-#: beast-gtk/bstapp.cc:269
+#: beast-gtk/bstapp.cc:268
 msgid "Export Audio"
 msgstr "Izvozi zvok"
 
@@ -2700,43 +2700,43 @@ msgstr "Nastavitev števila kanalov naprave je spodletela"
 msgid "Failed to detect header"
 msgstr "Zaznavanje začetka glave je spodletelo"
 
-#: beast-gtk/bstmain.cc:399
+#: beast-gtk/bstmain.cc:380
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Nalaganje projekta \"%s\" je spodletelo: %s"
 
-#: beast-gtk/bstfiledialog.cc:776
+#: beast-gtk/bstfiledialog.cc:775
 #, fuzzy, c-format
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "Nalaganje projekta \"%s\" je spodletelo: %s"
 
-#: beast-gtk/bstfiledialog.cc:746 beast-gtk/bstmain.cc:346
-#: beast-gtk/bstmain.cc:362
+#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:327
+#: beast-gtk/bstmain.cc:343
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Nalaganje datoteke vala \"%s\" je spodletelo: %s"
 
-#: beast-gtk/bstmain.cc:405
+#: beast-gtk/bstmain.cc:386
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Združevanje projekta \"%s\" je spodletelo: %s"
 
-#: bse/bseserver.cc:506
+#: bse/bseserver.cc:509
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "Odpiranje naprav MIDI je spodletelo: %s"
 
-#: bse/bseserver.cc:479
+#: bse/bseserver.cc:482
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "Odpiranje naprav PCM je spodletelo: %s"
 
-#: bse/bseserver.cc:564
+#: bse/bseserver.cc:567
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "Odpiranje datoteke \"%s\" za izhod je spodletelo: %s"
 
-#: beast-gtk/bstfiledialog.cc:539
+#: beast-gtk/bstfiledialog.cc:538
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -2753,7 +2753,7 @@ msgstr ""
 msgid "Failed to retrieve seek information"
 msgstr "Pridobivanje podatkov iskanja je spodletelo"
 
-#: beast-gtk/bstfiledialog.cc:510
+#: beast-gtk/bstfiledialog.cc:509
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -2769,7 +2769,7 @@ msgstr ""
 "%s"
 
 #. error != Bse::Error::FILE_EXISTS
-#: beast-gtk/bstfiledialog.cc:534 beast-gtk/bstfiledialog.cc:548
+#: beast-gtk/bstfiledialog.cc:533 beast-gtk/bstfiledialog.cc:547
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -2786,12 +2786,12 @@ msgstr ""
 msgid "Failed to spawn child process"
 msgstr "Napaka med ustvarjanjem podrejenega opravila"
 
-#: bse/bseserver.cc:561
+#: bse/bseserver.cc:564
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "Začetek snemanja na disk je spodletel."
 
-#: bse/bseserver.cc:422
+#: bse/bseserver.cc:425
 msgid "Failed to start recording from audio device."
 msgstr "Začetek snemanja iz zvočne naprave je spodletel."
 
@@ -2799,12 +2799,12 @@ msgstr "Začetek snemanja iz zvočne naprave je spodletel."
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
 
-#: plugins/davcanyondelay.cc:73 plugins/davcanyondelay.cc:83
+#: plugins/davcanyondelay.cc:72 plugins/davcanyondelay.cc:82
 msgid "Feedback [%]"
 msgstr "Odziv [%]"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.cc:195
+#: beast-gtk/bstfiledialog.cc:194
 msgid "File Selection"
 msgstr "Izbor datoteke"
 
@@ -2816,15 +2816,15 @@ msgstr "Prazna datoteka"
 msgid "File exists already"
 msgstr "Datoteka že obstaja"
 
-#: beast-gtk/bstfiledialog.cc:143
+#: beast-gtk/bstfiledialog.cc:142
 msgid "File modification time"
 msgstr "Čas spremembe datoteke"
 
-#: beast-gtk/bstfiledialog.cc:125
+#: beast-gtk/bstfiledialog.cc:124
 msgid "File size in bytes"
 msgstr "Velikost datoteke v bajtih"
 
-#: beast-gtk/bstfiledialog.cc:150
+#: beast-gtk/bstfiledialog.cc:149
 msgid "Filename"
 msgstr "Ime datoteke"
 
@@ -2832,7 +2832,7 @@ msgstr "Ime datoteke"
 msgid "Filename Text Entry"
 msgstr "Vnos besedila datoteke"
 
-#: bse/bsebiquadfilter.cc:108
+#: bse/bsebiquadfilter.cc:95
 msgid "Filter"
 msgstr "Filter"
 
@@ -2848,7 +2848,7 @@ msgstr "Izbira filtra"
 msgid "Filter Specification"
 msgstr "Določitev filtra"
 
-#: bse/bsebiquadfilter.cc:110 plugins/bseiirfilter.cc:79
+#: bse/bsebiquadfilter.cc:97 plugins/bseiirfilter.cc:79
 msgid "Filter Type"
 msgstr "Vrsta filtra"
 
@@ -2856,8 +2856,8 @@ msgstr "Vrsta filtra"
 msgid "Filter cutoff frequency"
 msgstr "Obrezna frekvenca filtra"
 
-#: bse/bsebiquadfilter.cc:124 plugins/bseiirfilter.cc:101
-#: plugins/bseiirfilter.cc:112 plugins/davcanyondelay.cc:96
+#: bse/bsebiquadfilter.cc:111 plugins/bseiirfilter.cc:101
+#: plugins/bseiirfilter.cc:112 plugins/davcanyondelay.cc:95
 msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
@@ -2865,11 +2865,11 @@ msgstr ""
 "Obrezna frekvenca filtra v hertzih kot nota, pretvorjena v hertze glede na "
 "trenutno uglaševanje"
 
-#: bse/bsebiquadfilter.cc:116
+#: bse/bsebiquadfilter.cc:103
 msgid "Filter cutoff frequency in Hertz"
 msgstr "Obrezna frekvenca filtra v hertzih"
 
-#: bse/bsebiquadfilter.cc:179
+#: bse/bsebiquadfilter.cc:166
 msgid "Filtered Audio Signal"
 msgstr "Filtriran zvočni signal"
 
@@ -2881,7 +2881,7 @@ msgstr "Filtriran izhod"
 msgid "Filtered audio output"
 msgstr "Filtriran zvočni izhod"
 
-#: plugins/freeverb/bsefreeverb.cc:38
+#: plugins/freeverb/bsefreeverb.cc:36
 msgid "Filters/Free Verb"
 msgstr ""
 
@@ -2895,7 +2895,7 @@ msgstr "/Filtri/filter basov"
 msgid "Find in current document"
 msgstr "Najdi v trenutnem dokumentu"
 
-#: bse/bsestandardosc.cc:144 plugins/davorgan.idl:20
+#: bse/bsestandardosc.cc:143 plugins/davorgan.idl:20
 #: plugins/davxtalstrings.cc:99
 msgid "Fine Tune"
 msgstr "Fino uglaševanje"
@@ -2917,11 +2917,11 @@ msgstr "Prvi nadzorni vhod"
 msgid "Flavour"
 msgstr "Okus"
 
-#: beast-gtk/bstscrollgraph.cc:550
+#: beast-gtk/bstscrollgraph.cc:551
 msgid "Flip Spectrum"
 msgstr "Zrcali spekter"
 
-#: beast-gtk/bstscrollgraph.cc:550
+#: beast-gtk/bstscrollgraph.cc:551
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "Obrne prikaz spektra, zamenja nizke in visoke frekvence"
 
@@ -2941,7 +2941,7 @@ msgstr "Velikost pisave v točkah za oznake prikazane v omrežjih sinteze"
 msgid "Foot Controller"
 msgstr "Nadzornik nog"
 
-#: beast-gtk/bstfiledialog.cc:127
+#: beast-gtk/bstfiledialog.cc:126
 msgid "Format"
 msgstr "Vrsta"
 
@@ -2949,49 +2949,49 @@ msgstr "Vrsta"
 msgid "Free form comment or description"
 msgstr "Opomba ali opis proste oblike"
 
-#: bse/bsebiquadfilter.cc:173 bse/bsestandardosc.cc:182 bse/bsewaveosc.cc:573
-#: plugins/davorgan.idl:11 plugins/davsyndrum.cc:99
+#: bse/bsebiquadfilter.cc:160 bse/bsestandardosc.cc:181 bse/bsewaveosc.cc:572
+#: plugins/davorgan.idl:11 plugins/davsyndrum.cc:100
 #: plugins/davxtalstrings.cc:131
 msgid "Freq In"
 msgstr "Frek Vh"
 
-#: bse/bsebiquadfilter.cc:175 bse/bsestandardosc.cc:184
+#: bse/bsebiquadfilter.cc:162 bse/bsestandardosc.cc:183
 msgid "Freq Mod In"
 msgstr "Frek Mod Vh"
 
-#: bse/bsemidivoice.cc:94 plugins/bsesequencer.cc:86
+#: bse/bsemidivoice.cc:93 plugins/bsesequencer.cc:85
 msgid "Freq Out"
 msgstr "Frekv Iz"
 
 #. inputs
-#: bse/bseconstant.cc:101 bse/bseinstrumentinput.cc:117 bse/bsemidiinput.cc:93
-#: bse/bsestandardosc.cc:129 plugins/davcanyondelay.cc:89
-#: plugins/davorgan.idl:14 plugins/davsyndrum.cc:69 plugins/davsyndrum.cc:70
-#: plugins/davsyndrum.cc:75 plugins/davxtalstrings.cc:81
+#: bse/bseconstant.cc:100 bse/bseinstrumentinput.cc:116 bse/bsemidiinput.cc:91
+#: bse/bsestandardosc.cc:128 plugins/davcanyondelay.cc:88
+#: plugins/davorgan.idl:14 plugins/davsyndrum.cc:70 plugins/davsyndrum.cc:71
+#: plugins/davsyndrum.cc:76 plugins/davxtalstrings.cc:81
 #: plugins/davxtalstrings.cc:83 plugins/davxtalstrings.cc:87
 #: plugins/davxtalstrings.cc:92 plugins/davxtalstrings.cc:97
 #: plugins/standardguspatchenvelope.idl:23
 msgid "Frequency"
 msgstr "Frekvenca"
 
-#: bse/bsewaveosc.cc:573 plugins/davorgan.idl:11
+#: bse/bsewaveosc.cc:572 plugins/davorgan.idl:11
 #: plugins/standardguspatchenvelope.idl:23
 msgid "Frequency Input"
 msgstr "Frekvenčni vhod"
 
-#: bse/bsebiquadfilter.cc:175 bse/bsestandardosc.cc:184
+#: bse/bsebiquadfilter.cc:162 bse/bsestandardosc.cc:183
 msgid "Frequency Modulation Input"
 msgstr "Vhod frekvenčne modulacije "
 
-#: plugins/davsyndrum.cc:94
+#: plugins/davsyndrum.cc:95
 msgid "Frequency Ratio"
 msgstr "Razmerje frekvenc"
 
-#: plugins/bsesequencer.cc:86
+#: plugins/bsesequencer.cc:85
 msgid "Frequency Signal"
 msgstr "Frekvenčni signal"
 
-#: bse/bsebasics.idl:117
+#: bse/bsebasics.idl:108
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -2999,13 +2999,13 @@ msgstr ""
 "Frekvenca na kateri so nadzorne vrednosti ocenjene, naj bo precej manjša od "
 "mešalne frekvence sintetizatorja za zmanjšanje bremena CPE"
 
-#: plugins/davsyndrum.cc:101
+#: plugins/davsyndrum.cc:102
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
 msgstr ""
 "Razmerje zamika frekvence (brez povezave je predpostavljena vrednost 1.0)"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.cc:609
+#: beast-gtk/bstfiledialog.cc:608
 msgid "Fully include wave files"
 msgstr "Polno vključi datoteke valov"
 
@@ -3035,24 +3035,24 @@ msgid "GNU Lesser General Public License"
 msgstr "Manj splošno dovoljenje GNU"
 
 # To naj bi bila kratica za modulacija okrepitve glasnosti. Ne zdi se mi najlepše, vendar mora biti nekaj kratkega ...
-#: bse/bsebiquadfilter.cc:177
+#: bse/bsebiquadfilter.cc:164
 msgid "Gain Mod In"
 msgstr "Mod okr glas Vh"
 
-#: bse/bsebiquadfilter.cc:177
+#: bse/bsebiquadfilter.cc:164
 msgid "Gain Modulation Input"
 msgstr "Vhod modulacije "
 
-#: bse/bsebiquadfilter.cc:166
+#: bse/bsebiquadfilter.cc:153
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "Modulacija okrepitve glasnosti [%]"
 
-#: bse/bsebiquadfilter.cc:132
+#: bse/bsebiquadfilter.cc:119
 msgid "Gain [dB]"
 msgstr "Okrepitev glasnosti [dB]"
 
-#: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
+#: bse/bseinstrumentinput.cc:118 bse/bsemidiinput.cc:93
 msgid "Gate"
 msgstr "Vrata"
 
@@ -3060,11 +3060,11 @@ msgstr "Vrata"
 msgid "Gate In"
 msgstr "Vrata vhoda"
 
-#: bse/bsemidivoice.cc:96 bse/bsewaveosc.cc:581
+#: bse/bsemidivoice.cc:95 bse/bsewaveosc.cc:580
 msgid "Gate Out"
 msgstr "Izhod vrat"
 
-#: bse/bsewaveosc.cc:581
+#: bse/bsewaveosc.cc:580
 msgid "Gate Output"
 msgstr "Izhod vrat"
 
@@ -3115,7 +3115,7 @@ msgstr "Pojdi na kazalo brskalnika"
 msgid "Grow the scrollable area"
 msgstr "Povečaj drsno področje"
 
-#: beast-gtk/bstpatternctrl.cc:123
+#: beast-gtk/bstpatternctrl.cc:122
 msgid "HWrap"
 msgstr "VOblij"
 
@@ -3140,15 +3140,15 @@ msgstr ""
 msgid "Harmonics"
 msgstr ""
 
-#: bse/bseinstrumentinput.cc:119 bse/bsemidiinput.cc:95
+#: bse/bseinstrumentinput.cc:118 bse/bsemidiinput.cc:93
 msgid "High if the note is currently being pressed"
 msgstr "Visoko, če je nota trenutno pritisnjena"
 
-#: bse/bseinstrumentoutput.cc:123
+#: bse/bseinstrumentoutput.cc:122
 msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
-#: plugins/davsyndrum.cc:103
+#: plugins/davsyndrum.cc:104
 msgid "Hit the drum on raising edges"
 msgstr "Udarjanje bobna po dvignjenih robovih"
 
@@ -3186,15 +3186,15 @@ msgstr "Vodoravna povečava sledi"
 msgid "Hundred twenty-eighth note"
 msgstr "Stoosemindvajsetinka"
 
-#: beast-gtk/bstitemview.cc:192
+#: beast-gtk/bstitemview.cc:191
 msgid "ID"
 msgstr "ID"
 
-#: plugins/davcanyondelay.cc:88 plugins/davcanyondelay.cc:94
+#: plugins/davcanyondelay.cc:87 plugins/davcanyondelay.cc:93
 msgid "IIR Low-Pass Filter"
 msgstr "IIR filter nizkih frekvenc"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:111
+#: beast-gtk/gxk/gxksimplelabel.cc:112
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
@@ -3202,7 +3202,7 @@ msgstr ""
 "Izbrana možnost omogoča, da podčrtaj v besedilu označuje črko, ki je "
 "uporabljena kot mnemonična tipkovna bližnjica"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:116
+#: beast-gtk/gxk/gxksimplelabel.cc:117
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
@@ -3211,16 +3211,16 @@ msgstr ""
 msgid "Image shade"
 msgstr "Senca slike"
 
-#: beast-gtk/bstfiledialog.cc:481
+#: beast-gtk/bstfiledialog.cc:480
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Uvozi MIDI: %s"
 
-#: beast-gtk/bstapp.cc:63
+#: beast-gtk/bstapp.cc:62
 msgid "Import a standard MIDI file into the current project"
 msgstr "Uvoz običajne datoteke MIDI v trenutni projekt"
 
-#: beast-gtk/bstfiledialog.cc:492
+#: beast-gtk/bstfiledialog.cc:491
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Uvažanje datoteke MIDI `%s'"
@@ -3267,15 +3267,15 @@ msgstr ""
 msgid "Indian Scale"
 msgstr "Lestvica deljenja"
 
-#: bse/bsestandardosc.cc:124
+#: bse/bsestandardosc.cc:123
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Začetna faza valovne oblike oscilatorja (zamik cikla v stopinjah)"
 
-#: beast-gtk/bstmain.cc:217
+#: beast-gtk/bstmain.cc:198
 msgid "Initializers"
 msgstr "Začetniki"
 
-#: beast-gtk/bstcanvassource.cc:956 beast-gtk/bstsnetrouter.cc:1014
+#: beast-gtk/bstcanvassource.cc:956 beast-gtk/bstsnetrouter.cc:1013
 msgid "Input"
 msgstr "Vhod"
 
@@ -3289,26 +3289,26 @@ msgstr "Vhod 1 [%]"
 msgid "Input 2 [%]"
 msgstr "Vhod 2 [%]"
 
-#: bse/bsesubsynth.cc:502
+#: bse/bsesubsynth.cc:501
 msgid "Input Assignments"
 msgstr "Vhdne dodelitve"
 
-#: plugins/bsemixer.cc:132
+#: plugins/bsemixer.cc:131
 #, c-format
 msgid "Input Channel %u"
 msgstr "Vhodni kanal %u"
 
-#: bse/bsestandardosc.cc:149 bse/bsewaveosc.cc:551
+#: bse/bsestandardosc.cc:148 bse/bsewaveosc.cc:550
 msgid "Input Modulation [%]"
 msgstr "Modulacija vhoda [%]"
 
-#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:500
+#: bse/bsesubiport.cc:285 bse/bsesubsynth.cc:499
 #, c-format
 msgid "Input Port %u"
 msgstr "Vhoda vrata %u"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.cc:948
+#: bse/bsebus.cc:949
 msgid "Input Signals"
 msgstr "Vhodni signali"
 
@@ -3316,7 +3316,7 @@ msgstr "Vhodni signali"
 msgid "Input channel already in use"
 msgstr "Vhodni kanal je že v uporabi"
 
-#: beast-gtk/bstsnetrouter.cc:560
+#: beast-gtk/bstsnetrouter.cc:559
 msgid "Input channel in use"
 msgstr "Vhodni kanal v uporabi"
 
@@ -3324,7 +3324,7 @@ msgstr "Vhodni kanal v uporabi"
 msgid "Input channel is private"
 msgstr "Vhodni kanal je zaseben"
 
-#: bse/bsesubsynth.cc:513
+#: bse/bsesubsynth.cc:512
 msgid "Input port name to interface to"
 msgstr ""
 
@@ -3347,76 +3347,76 @@ msgstr "Napaka Vhoda/izhoda"
 msgid "Inputs"
 msgstr "Vhodi"
 
-#: beast-gtk/bstpianorollctrl.cc:62 beast-gtk/bsttrackrollctrl.cc:29
+#: beast-gtk/bstpianorollctrl.cc:60 beast-gtk/bsttrackrollctrl.cc:26
 msgid "Insert"
 msgstr "Vstavi"
 
-#: beast-gtk/bsteventrollctrl.cc:549
+#: beast-gtk/bsteventrollctrl.cc:548
 msgid "Insert Control Event"
 msgstr "Vstavi nadzorni dogodek"
 
-#: beast-gtk/bstsnetrouter.cc:766
+#: beast-gtk/bstsnetrouter.cc:765
 msgid "Insert Module"
 msgstr "Vstavi modul"
 
-#: beast-gtk/bstpianorollctrl.cc:722
+#: beast-gtk/bstpianorollctrl.cc:720
 msgid "Insert Note"
 msgstr "Vstavi noto"
 
-#: beast-gtk/bsttrackrollctrl.cc:430 beast-gtk/bsttrackrollctrl.cc:432
-#: beast-gtk/bsttrackrollctrl.cc:437 beast-gtk/bsttrackrollctrl.cc:442
+#: beast-gtk/bsttrackrollctrl.cc:427 beast-gtk/bsttrackrollctrl.cc:429
+#: beast-gtk/bsttrackrollctrl.cc:434 beast-gtk/bsttrackrollctrl.cc:439
 msgid "Insert Part"
 msgstr "Vstavi del"
 
-#: beast-gtk/bstpartdialog.cc:46
+#: beast-gtk/bstpartdialog.cc:45
 msgid "Insert clipboard contents as current selection"
 msgstr "Vstavi vsebino odložišča kot trenutni izbor"
 
-#: beast-gtk/bstpianorollctrl.cc:89
+#: beast-gtk/bstpianorollctrl.cc:87
 msgid "Insert eighths note"
 msgstr "Vstavi osminko"
 
-#: beast-gtk/bstpianorollctrl.cc:85
+#: beast-gtk/bstpianorollctrl.cc:83
 msgid "Insert half notes"
 msgstr "Vstavi polovinko"
 
-#: beast-gtk/bstpianorollctrl.cc:97
+#: beast-gtk/bstpianorollctrl.cc:95
 msgid "Insert hundred twenty-eighth note"
 msgstr "Vstavi stoosemindvajsetinko"
 
-#: beast-gtk/bsttrackrollctrl.cc:444
+#: beast-gtk/bsttrackrollctrl.cc:441
 msgid "Insert part"
 msgstr "Vstavi del"
 
-#: beast-gtk/bstpianorollctrl.cc:87
+#: beast-gtk/bstpianorollctrl.cc:85
 msgid "Insert quarter notes"
 msgstr "Vstavi četrtinko"
 
-#: beast-gtk/bstpianorollctrl.cc:91
+#: beast-gtk/bstpianorollctrl.cc:89
 msgid "Insert sixteenth note"
 msgstr "Vstavi šestnajstinko"
 
-#: beast-gtk/bstpianorollctrl.cc:95
+#: beast-gtk/bstpianorollctrl.cc:93
 msgid "Insert sixty-fourth note"
 msgstr "Vstavi štiriinšestdesetinko"
 
-#: beast-gtk/bstpianorollctrl.cc:93
+#: beast-gtk/bstpianorollctrl.cc:91
 msgid "Insert thirty-second note"
 msgstr "Vstavi dvaintridesetinko"
 
-#: beast-gtk/bstpianorollctrl.cc:83
+#: beast-gtk/bstpianorollctrl.cc:81
 msgid "Insert whole notes"
 msgstr "Vstavi celinko"
 
-#: beast-gtk/bsttrackrollctrl.cc:29
+#: beast-gtk/bsttrackrollctrl.cc:26
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
 msgstr "Vstavi/uredi/premakni dele (miškin gumb 1 in 2)"
 
-#: beast-gtk/bstpianorollctrl.cc:62
+#: beast-gtk/bstpianorollctrl.cc:60
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "Vstavi/spremeni velikost/premakni noto (miškina gumba 1 in 2)"
 
-#: bse/bsebasics.idl:139
+#: bse/bsebasics.idl:128
 msgid "Instrument Path"
 msgstr "Pot inštrumenta"
 
@@ -3434,7 +3434,7 @@ msgstr "Nezadostna dovoljenja"
 msgid "Internal error (please report)"
 msgstr "Notranja napaka (prosimo, poročajte)"
 
-#: bse/bsebus.cc:960
+#: bse/bsebus.cc:961
 msgid "Internals"
 msgstr ""
 
@@ -3470,20 +3470,20 @@ msgstr "Neveljavna povezava sinteznega modula"
 msgid "Invalid synthsis module type"
 msgstr "Neveljavna vrsta modula sinteze"
 
-#: beast-gtk/bsteventrollctrl.cc:46 beast-gtk/bstpianorollctrl.cc:46
+#: beast-gtk/bsteventrollctrl.cc:45 beast-gtk/bstpianorollctrl.cc:44
 msgid "Invert"
 msgstr "Obrni"
 
-#: bse/bsebasics.idl:122
+#: bse/bsebasics.idl:113
 #, fuzzy
 msgid "Invert Sustain Pedal"
 msgstr "Filter obračanja slike"
 
-#: beast-gtk/bsteventrollctrl.cc:46 beast-gtk/bstpianorollctrl.cc:46
+#: beast-gtk/bsteventrollctrl.cc:45 beast-gtk/bstpianorollctrl.cc:44
 msgid "Invert the current selection"
 msgstr "Obrni trenutno izbiro"
 
-#: bse/bsebasics.idl:123
+#: bse/bsebasics.idl:114
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
@@ -3496,11 +3496,11 @@ msgstr "Je mapa"
 msgid "Item List"
 msgstr "Predmet seznama"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:120
+#: beast-gtk/gxk/gxksimplelabel.cc:121
 msgid "Justification"
 msgstr "Poravnava"
 
-#: beast-gtk/bstdbmeter.cc:753
+#: beast-gtk/bstdbmeter.cc:752
 msgid "Justify"
 msgstr "Poravnava"
 
@@ -3537,23 +3537,19 @@ msgstr "Knob Hill"
 msgid "Knob (Logarithmic)"
 msgstr "Knob Hill"
 
-#: bse/bsebasics.idl:149
-msgid "LADSPA Path"
-msgstr "Pot LADSPA"
-
-#: beast-gtk/bstmain.cc:280
+#: beast-gtk/bstmain.cc:261
 msgid "LADSPA Plugins"
 msgstr "Vstavki LADSPA"
 
-#: beast-gtk/gxk/gxkparam-label.cc:61 beast-gtk/gxk/gxksimplelabel.cc:106
+#: beast-gtk/gxk/gxkparam-label.cc:61 beast-gtk/gxk/gxksimplelabel.cc:107
 msgid "Label"
 msgstr "Oznaka"
 
-#: bse/bsesuper.cc:199
+#: bse/bsesuper.cc:200
 msgid "Last modification time"
 msgstr "Čas zadnje spremembe"
 
-#: bse/bsebasics.idl:108
+#: bse/bsebasics.idl:99
 msgid "Latency [ms]"
 msgstr "Latenca [ms]"
 
@@ -3562,53 +3558,53 @@ msgstr "Latenca [ms]"
 msgid "Layout:"
 msgstr "Razporeditev:"
 
-#: beast-gtk/bstapi.idl:12 beast-gtk/bsttrackrollctrl.cc:48
+#: beast-gtk/bstapi.idl:12 beast-gtk/bsttrackrollctrl.cc:45
 msgid "Left"
 msgstr "Levo"
 
-#: bse/bseinstrumentoutput.cc:117
+#: bse/bseinstrumentoutput.cc:116
 msgid "Left Audio"
 msgstr "Levi zvok"
 
-#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:112
-#: plugins/freeverb/bsefreeverb.cc:103
+#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
+#: plugins/freeverb/bsefreeverb.cc:100
 msgid "Left Audio In"
 msgstr "Levi zvočni Vh"
 
-#: plugins/davcanyondelay.cc:99
+#: plugins/davcanyondelay.cc:98
 msgid "Left Audio Input"
 msgstr "Levi zvočni vhod"
 
-#: bse/bsebus.cc:969 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:105
+#: bse/bsebus.cc:970 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
 msgid "Left Audio Out"
 msgstr "Levi zvočni izhod"
 
-#: plugins/davcanyondelay.cc:103
+#: plugins/davcanyondelay.cc:102
 msgid "Left Audio Output"
 msgstr "Levi zvočni izhod"
 
-#: bse/bseinstrumentoutput.cc:117
+#: bse/bseinstrumentoutput.cc:116
 msgid "Left Channel Output"
 msgstr "Izhod levega kanala"
 
-#: bse/bsemidivoice.cc:118 plugins/davcanyondelay.cc:99
+#: bse/bsemidivoice.cc:117 plugins/davcanyondelay.cc:98
 msgid "Left In"
 msgstr "Levi Vh"
 
-#: plugins/freeverb/bsefreeverb.cc:103
+#: plugins/freeverb/bsefreeverb.cc:100
 msgid "Left Input"
 msgstr "Levi vhod"
 
-#: bse/bsemidivoice.cc:124 bse/bsesoundfontosc.cc:176 plugins/bsebalance.idl:21
-#: plugins/davcanyondelay.cc:103
+#: bse/bsemidivoice.cc:123 bse/bsesoundfontosc.cc:175 plugins/bsebalance.idl:21
+#: plugins/davcanyondelay.cc:102
 msgid "Left Out"
 msgstr "Levi Iz"
 
-#: plugins/freeverb/bsefreeverb.cc:105
+#: plugins/freeverb/bsefreeverb.cc:102
 msgid "Left Output"
 msgstr "Levi izhod"
 
-#: bse/bsebus.cc:938
+#: bse/bsebus.cc:939
 msgid "Left Volume"
 msgstr "Leva glasnost"
 
@@ -3616,15 +3612,15 @@ msgstr "Leva glasnost"
 msgid "Left audio output"
 msgstr "Levi zvočni izhod"
 
-#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
 msgid "Left channel input"
 msgstr "Vhod levega kanala"
 
-#: bse/bsebus.cc:969 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:970 bse/bsepcminput.cc:110
 msgid "Left channel output"
 msgstr "Izhod levega kanala"
 
-#: plugins/davcanyondelay.cc:67 plugins/davcanyondelay.cc:72
+#: plugins/davcanyondelay.cc:66 plugins/davcanyondelay.cc:71
 msgid "Left to Right"
 msgstr "Od leve proti desni"
 
@@ -3633,11 +3629,11 @@ msgstr "Od leve proti desni"
 msgid "Level"
 msgstr "Oznaka"
 
-#: beast-gtk/bstsoundfontview.cc:26 beast-gtk/bstwaveview.cc:27
+#: beast-gtk/bstsoundfontview.cc:25 beast-gtk/bstwaveview.cc:26
 msgid "Lib..."
 msgstr "Knjiž..."
 
-#: bse/bsesuper.cc:187
+#: bse/bsesuper.cc:188
 msgid "License"
 msgstr "Licenca"
 
@@ -3647,32 +3643,32 @@ msgid ""
 "hard clipping at 100%) which approaches quadratic curvature for small levels"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.cc:31
+#: beast-gtk/bsttrackrollctrl.cc:28
 msgid "Link"
 msgstr "Poveži"
 
-#: beast-gtk/bsttrackrollctrl.cc:474 beast-gtk/bsttrackrollctrl.cc:507
+#: beast-gtk/bsttrackrollctrl.cc:471 beast-gtk/bsttrackrollctrl.cc:504
 msgid "Link Part"
 msgstr "Poveži del"
 
-#: beast-gtk/bsttrackrollctrl.cc:31
+#: beast-gtk/bsttrackrollctrl.cc:28
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "Povezava ali premik delov (miškina gumba 1 in 2)"
 
-#: bse/bsebus.cc:134
+#: bse/bsebus.cc:135
 msgid "List of available mixer busses to be used as bus output"
 msgstr "Seznam razpoložljivih mešalnih vodil za uporabo kot izhod vodila"
 
-#: bse/bsetrack.cc:298
+#: bse/bsetrack.cc:297
 msgid "List of available mixer busses to be used as track output"
 msgstr "Seznam razpoložljivih mešalnih vodil za uporabo kot izhodi sledi"
 
-#: bse/bsesoundfontosc.cc:309
+#: bse/bsesoundfontosc.cc:308
 #, fuzzy
 msgid "List of available sound font presets to choose as fluid synth preset"
 msgstr "Seznam dostopnih sinteznih omrežij za izbiro podomrežja"
 
-#: bse/bsetrack.cc:281
+#: bse/bsetrack.cc:280
 #, fuzzy
 msgid "List of available sound font presets to choose as track instrument"
 msgstr "Seznam razpoložljivih valov za izbiro kot inštrument sledi"
@@ -3682,23 +3678,23 @@ msgstr "Seznam razpoložljivih valov za izbiro kot inštrument sledi"
 msgid "List of available sound fonts to choose track instrument from"
 msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
 
-#: bse/bsemidisynth.cc:136
+#: bse/bsemidisynth.cc:132
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "Seznam razpoložljivih sinteznih omrežij za izbiro inštrumenta MIDI"
 
-#: bse/bsemidisynth.cc:141 bse/bsesong.cc:120 bse/bsetrack.cc:293
+#: bse/bsemidisynth.cc:137 bse/bsesong.cc:114 bse/bsetrack.cc:292
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
-#: bse/bsesubsynth.cc:139
+#: bse/bsesubsynth.cc:138
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr "Seznam dostopnih sinteznih omrežij za izbiro podomrežja"
 
-#: bse/bsetrack.cc:288
+#: bse/bsetrack.cc:287
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "Seznam dostopnih sinteznih omrežij za izbiro inštrumenta sledi"
 
-#: bse/bsebus.cc:119
+#: bse/bsebus.cc:120
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Seznam razpoložljivih sinteznih signalov za uporabo kot vhod vodila"
 
@@ -3706,11 +3702,11 @@ msgstr "Seznam razpoložljivih sinteznih signalov za uporabo kot vhod vodila"
 msgid "List of available waves to choose a track instrument from"
 msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
 
-#: bse/bsewaveosc.cc:110
+#: bse/bsewaveosc.cc:109
 msgid "List of available waves to choose as oscillator source"
 msgstr "Seznam razpoložljivih valov za izbor kot vir oscilatorja"
 
-#: bse/bsetrack.cc:271
+#: bse/bsetrack.cc:270
 msgid "List of available waves to choose as track instrument"
 msgstr "Seznam razpoložljivih valov za izbiro kot inštrument sledi"
 
@@ -3718,11 +3714,11 @@ msgstr "Seznam razpoložljivih valov za izbiro kot inštrument sledi"
 msgid "Load"
 msgstr "Naloži"
 
-#: beast-gtk/bstfiledialog.cc:628
+#: beast-gtk/bstfiledialog.cc:627
 msgid "Load Effect"
 msgstr "Naloži učinek"
 
-#: beast-gtk/bstfiledialog.cc:679
+#: beast-gtk/bstfiledialog.cc:678
 msgid "Load Instrument"
 msgstr "Naloži inštrument"
 
@@ -3730,19 +3726,19 @@ msgstr "Naloži inštrument"
 msgid "Load Key Binding"
 msgstr "Nalaganje tipkovne bližnjice"
 
-#: beast-gtk/bstfiledialog.cc:761
+#: beast-gtk/bstfiledialog.cc:760
 msgid "Load Sound Font"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:731
+#: beast-gtk/bstfiledialog.cc:730
 msgid "Load Wave"
 msgstr "Naloži val"
 
-#: beast-gtk/bstapp.cc:124
+#: beast-gtk/bstapp.cc:123
 msgid "Load _Effect..."
 msgstr "Naloži _učinek ..."
 
-#: beast-gtk/bstapp.cc:122
+#: beast-gtk/bstapp.cc:121
 msgid "Load _Instrument..."
 msgstr "Naloži _inštrument ..."
 
@@ -3750,57 +3746,57 @@ msgstr "Naloži _inštrument ..."
 msgid "Load a key binding set"
 msgstr "Nalaganje niza tipkovnih bližnjic"
 
-#: beast-gtk/bstsoundfontview.cc:24
+#: beast-gtk/bstsoundfontview.cc:23
 #, fuzzy
 msgid "Load a new sound font file from disk"
 msgstr "Naloži novo datoteko vala iz diska"
 
-#: beast-gtk/bstwaveview.cc:25
+#: beast-gtk/bstwaveview.cc:24
 msgid "Load a new wave file from disk"
 msgstr "Naloži novo datoteko vala iz diska"
 
-#: beast-gtk/bstwaveview.cc:27
+#: beast-gtk/bstwaveview.cc:26
 msgid "Load a new wave file from library paths"
 msgstr "Nalaganje nove datoteke vala iz poti knjižnice"
 
-#: beast-gtk/bstsoundfontview.cc:26
+#: beast-gtk/bstsoundfontview.cc:25
 #, fuzzy
 msgid "Load a sound font file from library paths"
 msgstr "Nalaganje nove datoteke vala iz poti knjižnice"
 
-#: beast-gtk/bstapp.cc:124
+#: beast-gtk/bstapp.cc:123
 msgid "Load synthesizer mesh from effects folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:122
+#: beast-gtk/bstapp.cc:121
 msgid "Load synthesizer mesh from instruments folder"
 msgstr ""
 
-#: beast-gtk/bstsoundfontview.cc:24 beast-gtk/bstwaveview.cc:25
+#: beast-gtk/bstsoundfontview.cc:23 beast-gtk/bstwaveview.cc:24
 msgid "Load..."
 msgstr "Naloži ..."
 
-#: beast-gtk/bstmain.cc:342 beast-gtk/bstmain.cc:344
+#: beast-gtk/bstmain.cc:323 beast-gtk/bstmain.cc:325
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Nalaganje \"%s\""
 
-#: beast-gtk/bstapp.cc:741
+#: beast-gtk/bstapp.cc:740
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Nalaganje preobleke `%s'"
 
-#: beast-gtk/bstfiledialog.cc:771 beast-gtk/bstfiledialog.cc:774
+#: beast-gtk/bstfiledialog.cc:770 beast-gtk/bstfiledialog.cc:773
 #, fuzzy, c-format
 msgid "Loading sound font `%s'"
 msgstr "Nalaganje preobleke `%s'"
 
-#: beast-gtk/bstfiledialog.cc:741 beast-gtk/bstfiledialog.cc:744
+#: beast-gtk/bstfiledialog.cc:740 beast-gtk/bstfiledialog.cc:743
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Nalaganje valu `%s'"
 
-#: beast-gtk/bstmain.cc:322
+#: beast-gtk/bstmain.cc:303
 msgid "Loading..."
 msgstr "Nalaganje ..."
 
@@ -3809,23 +3805,33 @@ msgstr "Nalaganje ..."
 msgid "Location"
 msgstr "Mesto"
 
-#: bse/bseapi.idl:1035
+#: bse/bseapi.idl:1033
 msgid "Loop Enabled"
 msgstr ""
 
-#: bse/bseapi.idl:1034 bse/bsesong.cc:707 bse/bsesong.cc:712 bse/bsesong.cc:717
+#: bse/bseapi.idl:1034
+#, fuzzy
+msgid "Loop Left"
+msgstr "Levo"
+
+#: bse/bseapi.idl:1035
+#, fuzzy
+msgid "Loop Right"
+msgstr "Zankanje"
+
+#: bse/bseapi.idl:1032
 msgid "Looping"
 msgstr "Zankanje"
 
-#: beast-gtk/bsteventrollctrl.cc:481 beast-gtk/bsteventrollctrl.cc:599
+#: beast-gtk/bsteventrollctrl.cc:480 beast-gtk/bsteventrollctrl.cc:598
 msgid "Lost Event"
 msgstr "Izgubljeni dogodek"
 
-#: beast-gtk/bstpianorollctrl.cc:615 beast-gtk/bstpianorollctrl.cc:686
+#: beast-gtk/bstpianorollctrl.cc:613 beast-gtk/bstpianorollctrl.cc:684
 msgid "Lost Note"
 msgstr "Izgubljena nota"
 
-#: beast-gtk/bsttrackrollctrl.cc:432 beast-gtk/bsttrackrollctrl.cc:539
+#: beast-gtk/bsttrackrollctrl.cc:429 beast-gtk/bsttrackrollctrl.cc:536
 msgid "Lost Part"
 msgstr "Izgubljen del"
 
@@ -3846,42 +3852,42 @@ msgstr "Filter nizkih frekvenc [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "Frekvenca filtra nizkih frekvenc za nadzorni signal"
 
-#: bse/bsebasics.idl:121
+#: bse/bsebasics.idl:112
 msgid "MIDI"
 msgstr "MIDI"
 
-#: beast-gtk/bstparam-automation.cc:9 bse/bsemidisynth.cc:352
-#: bse/bsetrack.cc:1139
+#: beast-gtk/bstparam-automation.cc:9 bse/bsemidisynth.cc:348
+#: bse/bsetrack.cc:1138
 msgid "MIDI Channel"
 msgstr "Kanal MIDI"
 
-#: bse/bseserver.cc:502
+#: bse/bseserver.cc:505
 msgid "MIDI I/O Failed"
 msgstr ""
 
-#: bse/bsemidisynth.cc:350 bse/bsemidisynth.cc:355 bse/bsemidisynth.cc:360
-#: bse/bsemidisynth.cc:364 bse/bsesong.cc:703 bse/bsetrack.cc:1137
-#: bse/bsetrack.cc:1143
+#: bse/bsemidisynth.cc:346 bse/bsemidisynth.cc:351 bse/bsemidisynth.cc:356
+#: bse/bsemidisynth.cc:360 bse/bsesong.cc:608 bse/bsetrack.cc:1136
+#: bse/bsetrack.cc:1142
 msgid "MIDI Instrument"
 msgstr "Instrumenti MIDI"
 
-#: bse/bsemidicontroller.cc:122
+#: bse/bsemidicontroller.cc:120
 msgid "MIDI Signal 1"
 msgstr "MIDI signal 1"
 
-#: bse/bsemidicontroller.cc:124
+#: bse/bsemidicontroller.cc:122
 msgid "MIDI Signal 2"
 msgstr "MIDI signal 2"
 
-#: bse/bsemidicontroller.cc:126
+#: bse/bsemidicontroller.cc:124
 msgid "MIDI Signal 3"
 msgstr "MIDI signal 3"
 
-#: bse/bsemidicontroller.cc:128
+#: bse/bsemidicontroller.cc:126
 msgid "MIDI Signal 4"
 msgstr "MIDI signal 4"
 
-#: beast-gtk/bstapp.cc:452
+#: beast-gtk/bstapp.cc:451
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Sintetizator MIDI: %s"
@@ -3891,30 +3897,30 @@ msgstr "Sintetizator MIDI: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "Program sledilnika MIDI, skladanje glasbe in modularne izgradnje"
 
-#: bse/bseserver.cc:507
+#: bse/bseserver.cc:510
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "Pokaži sporočila o težavah izbire naprav MIDI"
 
-#: bse/bseserver.cc:503
+#: bse/bseserver.cc:506
 #, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "MIDI vhod ali izhod ni na voljo."
 
-#: beast-gtk/bstpatterncolumns.cc:690
+#: beast-gtk/bstpatterncolumns.cc:689
 msgid "MODIFIERS:"
 msgstr "SPREMENILNIKI:"
 
-#: plugins/davsyndrum.cc:86
+#: plugins/davsyndrum.cc:87
 msgid "Manual trigger for the drum"
 msgstr "Ročni sprožilec za boben"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:570
+#: bse/bsesong.cc:487
 msgid "Master"
 msgstr "Glavni predmet"
 
-#: bse/bsebus.cc:962
+#: bse/bsebus.cc:963
 msgid "Master Output"
 msgstr "Glavi izhod"
 
@@ -3922,63 +3928,63 @@ msgstr "Glavi izhod"
 msgid "Master Volume"
 msgstr "Glavna glasnost"
 
-#: bse/bsemidisynth.cc:384
+#: bse/bsemidisynth.cc:380
 msgid "Master [%]"
 msgstr "Glavno [%s]"
 
-#: bse/bsemidisynth.cc:377
+#: bse/bsemidisynth.cc:373
 msgid "Master [dB]"
 msgstr "Glavno [dB]"
 
-#: bse/bsemidisynth.cc:371
+#: bse/bsemidisynth.cc:367
 msgid "Master [float]"
 msgstr "Glavno [plavajoč]"
 
-#: bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: bse/bsemidisynth.cc:353 bse/bsetrack.cc:1133
 msgid "Max Voices"
 msgstr "Največ glasov"
 
-#: beast-gtk/bsttrackview.cc:645 bse/bsemidisynth.cc:357 bse/bsetrack.cc:1134
+#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:353 bse/bsetrack.cc:1133
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Največje število glasov za hkratno predvajanje"
 
-#: bse/bsesong.cc:701
+#: bse/bseapi.idl:1021
 msgid "Measure denominator, must be a power of 2"
 msgstr "Izmeri imenovalec, mora biti potenca števila 2"
 
-#: bse/bsesong.cc:697
+#: bse/bseapi.idl:1020
 msgid "Measure numerator"
 msgstr "Izberi števec"
 
-#: beast-gtk/bstapp.cc:61
+#: beast-gtk/bstapp.cc:60
 msgid "Merge an existing project into the current project"
 msgstr "Združi obstoječi projekt v trenutni projekt"
 
-#: beast-gtk/bstfiledialog.cc:456
+#: beast-gtk/bstfiledialog.cc:455
 #, c-format
 msgid "Merge: %s"
 msgstr "Združi: %s"
 
-#: beast-gtk/bstfiledialog.cc:640
+#: beast-gtk/bstfiledialog.cc:639
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Združevanje učinka `%s'"
 
-#: beast-gtk/bstfiledialog.cc:690
+#: beast-gtk/bstfiledialog.cc:689
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Združevanje inštrumenta `%s'"
 
-#: beast-gtk/bstfiledialog.cc:468
+#: beast-gtk/bstfiledialog.cc:467
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Združevanje projekta `%s'"
 
-#: beast-gtk/bstmsgabsorb.cc:198
+#: beast-gtk/bstmsgabsorb.cc:199
 msgid "Message Type"
 msgstr "Vrsta sporočila"
 
-#: beast-gtk/bstusermessage.cc:301
+#: beast-gtk/bstusermessage.cc:302
 #, fuzzy, c-format
 msgid "Message has been repeated %u time"
 msgid_plural "Message has been repeated %u times"
@@ -4003,15 +4009,15 @@ msgstr "Kovinskost strune"
 msgid "Middle Bar Color"
 msgstr "Barva srednje vrstice"
 
-#: bse/bsetrack.cc:1140
+#: bse/bsetrack.cc:1139
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr "Midi kanal, dodeljen tej sledi, 0 uporablja notranji kanal za sled"
 
-#: beast-gtk/bsttrackview.cc:651
+#: beast-gtk/bsttrackview.cc:652
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi kanal dodeljen tej sledi, 0 uporablja zasebni kanal na sled"
 
-#: bse/bsemidisynth.cc:86
+#: bse/bsemidisynth.cc:82
 #, fuzzy
 msgid "Midi-Synth"
 msgstr "_Sint"
@@ -4032,37 +4038,37 @@ msgstr "Mešani zvočni izhod"
 msgid "Mixer"
 msgstr "Mešalnik"
 
-#: beast-gtk/bsttrackview.cc:654
+#: beast-gtk/bsttrackview.cc:655
 msgid "Mixer busses connected to track output"
 msgstr "Vodila mešalnika povezana z izhodom sledi"
 
-#: bse/bsebus.cc:957
+#: bse/bsebus.cc:958
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Vodila mešalnika uporabljena kot izhod za signale sinteze"
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1150
+#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1149
 msgid "Mixer busses used as output for this track"
 msgstr "Mešalna vodila uporabljena kot izhod za to sled"
 
 # http://en.wikipedia.org/wiki/Mnemonic
-#: beast-gtk/gxk/gxksimplelabel.cc:130
+#: beast-gtk/gxk/gxksimplelabel.cc:131
 msgid "Mnemonic key"
 msgstr "Pospeševalna tipka"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:135
+#: beast-gtk/gxk/gxksimplelabel.cc:136
 #, fuzzy
 msgid "Mnemonic widget"
 msgstr "Pospeševalni gradnik"
 
-#: bse/bsewaveosc.cc:577
+#: bse/bsewaveosc.cc:576
 msgid "Mod In"
 msgstr "Mod Vh"
 
-#: bse/bsebiquadfilter.cc:145 bse/bsebiquadfilter.cc:151
-#: bse/bsebiquadfilter.cc:157 bse/bsebiquadfilter.cc:163
-#: bse/bsestandardosc.cc:147 bse/bsestandardosc.cc:152
-#: bse/bsestandardosc.cc:157 bse/bsestandardosc.cc:162 bse/bsewaveosc.cc:549
-#: bse/bsewaveosc.cc:555 bse/bsewaveosc.cc:561
+#: bse/bsebiquadfilter.cc:132 bse/bsebiquadfilter.cc:138
+#: bse/bsebiquadfilter.cc:144 bse/bsebiquadfilter.cc:150
+#: bse/bsestandardosc.cc:146 bse/bsestandardosc.cc:151
+#: bse/bsestandardosc.cc:156 bse/bsestandardosc.cc:161 bse/bsewaveosc.cc:548
+#: bse/bsewaveosc.cc:554 bse/bsewaveosc.cc:560
 msgid "Modulation"
 msgstr "Modulacija"
 
@@ -4070,11 +4076,11 @@ msgstr "Modulacija"
 msgid "Modulation Depth"
 msgstr "Globina modulacije"
 
-#: bse/bsewaveosc.cc:577
+#: bse/bsewaveosc.cc:576
 msgid "Modulation Input"
 msgstr "Vhod modulacije"
 
-#: bse/bsewaveosc.cc:552
+#: bse/bsewaveosc.cc:551
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Moč modulacije za linearno frekvenčno modulacijo"
 
@@ -4082,27 +4088,27 @@ msgstr "Moč modulacije za linearno frekvenčno modulacijo"
 msgid "Module Info"
 msgstr "Pordobnosti modula"
 
-#: beast-gtk/bstcanvaslink.cc:129
+#: beast-gtk/bstcanvaslink.cc:127
 #, fuzzy, c-format
 msgid "Module Link: %s <=> %s"
 msgstr "Povezava modula:"
 
-#: beast-gtk/bstcanvaslink.cc:184 beast-gtk/bstsnetrouter.cc:701
+#: beast-gtk/bstcanvaslink.cc:182 beast-gtk/bstsnetrouter.cc:700
 msgid "Module link"
 msgstr "Povezava modula"
 
-#: beast-gtk/bsteventrollctrl.cc:416 beast-gtk/bsteventrollctrl.cc:423
-#: beast-gtk/bsteventrollctrl.cc:481
+#: beast-gtk/bsteventrollctrl.cc:415 beast-gtk/bsteventrollctrl.cc:422
+#: beast-gtk/bsteventrollctrl.cc:480
 msgid "Move Control Event"
 msgstr "Premakni nadzorni dogodek"
 
-#: beast-gtk/bstpianorollctrl.cc:533 beast-gtk/bstpianorollctrl.cc:540
-#: beast-gtk/bstpianorollctrl.cc:615
+#: beast-gtk/bstpianorollctrl.cc:531 beast-gtk/bstpianorollctrl.cc:538
+#: beast-gtk/bstpianorollctrl.cc:613
 msgid "Move Note"
 msgstr "Premakni noto"
 
-#: beast-gtk/bsttrackrollctrl.cc:474 beast-gtk/bsttrackrollctrl.cc:507
-#: beast-gtk/bsttrackrollctrl.cc:539
+#: beast-gtk/bsttrackrollctrl.cc:471 beast-gtk/bsttrackrollctrl.cc:504
+#: beast-gtk/bsttrackrollctrl.cc:536
 msgid "Move Part"
 msgstr "Premakni del"
 
@@ -4110,47 +4116,47 @@ msgstr "Premakni del"
 msgid "Move downwards"
 msgstr "Premik navzdol"
 
-#: beast-gtk/bstpatternctrl.cc:313
+#: beast-gtk/bstpatternctrl.cc:312
 msgid "Move focus cell downwards"
 msgstr "Premakni izbrano celico navzdol"
 
-#: beast-gtk/bstpatternctrl.cc:317
+#: beast-gtk/bstpatternctrl.cc:316
 msgid "Move focus cell downwards page-wise"
 msgstr "Premakne izbrano celico navzdol glede na stran"
 
-#: beast-gtk/bstpatternctrl.cc:311
+#: beast-gtk/bstpatternctrl.cc:310
 msgid "Move focus cell to the left"
 msgstr "Premakne žariščno celico levo"
 
-#: beast-gtk/bstpatternctrl.cc:315
+#: beast-gtk/bstpatternctrl.cc:314
 msgid "Move focus cell to the left page-wise"
 msgstr "Premakne izbrano celico levo glede na stran"
 
-#: beast-gtk/bstpatternctrl.cc:312
+#: beast-gtk/bstpatternctrl.cc:311
 msgid "Move focus cell to the right"
 msgstr "Premakni izbrano celico desno"
 
-#: beast-gtk/bstpatternctrl.cc:316
+#: beast-gtk/bstpatternctrl.cc:315
 msgid "Move focus cell to the right page-wise"
 msgstr "Premakne izbrano celico desno glede na stran"
 
-#: beast-gtk/bstpatternctrl.cc:310
+#: beast-gtk/bstpatternctrl.cc:309
 msgid "Move focus cell upwards"
 msgstr "Premakne žariščno celico navzgor"
 
-#: beast-gtk/bstpatternctrl.cc:314
+#: beast-gtk/bstpatternctrl.cc:313
 msgid "Move focus cell upwards page-wise"
 msgstr "Premakne izbrano celico navzgor glede na stran"
 
 #. movement
-#: beast-gtk/bstpatternctrl.cc:309
+#: beast-gtk/bstpatternctrl.cc:308
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Premakne izbrano na naslednjo celico (navzgor/levo/desno/navzdol glede na "
 "nastavitev)"
 
-#: beast-gtk/bstpartdialog.cc:44
+#: beast-gtk/bstpartdialog.cc:43
 msgid "Move the current selection into clipboard"
 msgstr "Premik trenutnega izbora v odložišče"
 
@@ -4186,24 +4192,24 @@ msgstr "Oddaljeno upravljanje"
 msgid "Music Composer"
 msgstr "Skladatelj glasbe"
 
-#: bse/bseapi.idl:1027
+#: bse/bseapi.idl:1025
 msgid "Musical Tuning"
 msgstr "Glasbeno uglaševanje"
 
-#: bse/bsebus.cc:932
+#: bse/bsebus.cc:933
 msgid "Mute"
 msgstr "Nemo"
 
-#: bse/bsebus.cc:932
+#: bse/bsebus.cc:933
 msgid "Mute: turn off the bus volume"
 msgstr "Nemo: izklop glasnosti vodila"
 
-#: bse/bsetrack.cc:1114
+#: bse/bsetrack.cc:1113
 msgid "Muted"
 msgstr "Nemo"
 
-#: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:195
-#: beast-gtk/bsttrackview.cc:639 bse/bseobject.cc:943
+#: beast-gtk/bstfiledialog.cc:121 beast-gtk/bstitemview.cc:194
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:943
 msgid "Name"
 msgstr "Ime"
 
@@ -4211,7 +4217,7 @@ msgstr "Ime"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Ime trenutne nastavitve preobleke (uporabljeno za izbire preoblek)."
 
-#: bse/bseserver.cc:119
+#: bse/bseserver.cc:122
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Ime datoteke WAVE uporabljene za snemanje zvočnega izhoda BSE"
 
@@ -4219,11 +4225,11 @@ msgstr "Ime datoteke WAVE uporabljene za snemanje zvočnega izhoda BSE"
 msgid "Negative Value Color"
 msgstr "Barva negativnih vrednosti"
 
-#: beast-gtk/bstapp.cc:112
+#: beast-gtk/bstapp.cc:111
 msgid "New Song"
 msgstr "Nova skladba"
 
-#: beast-gtk/bstapp.cc:102
+#: beast-gtk/bstapp.cc:101
 msgid "New View"
 msgstr "Nov pogled"
 
@@ -4240,19 +4246,19 @@ msgstr "Nov pogled"
 #. "'X' - thread exited"),
 #. NULL, NULL, 0);
 #.
-#: beast-gtk/bstprofiler.cc:154
+#: beast-gtk/bstprofiler.cc:155
 msgid "Nice"
 msgstr "Lepo"
 
-#: beast-gtk/bsttrackrollctrl.cc:398
+#: beast-gtk/bsttrackrollctrl.cc:395
 msgid "No Part"
 msgstr "Ni dela"
 
-#: beast-gtk/bsttrackrollctrl.cc:444
+#: beast-gtk/bsttrackrollctrl.cc:441
 msgid "No Track"
 msgstr "Ni sledi"
 
-#: bse/bseserver.cc:504
+#: bse/bseserver.cc:507
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -4260,7 +4266,7 @@ msgstr ""
 "Ni mogoče najti in uspešno odpreti MIDI naprave. Povrnitev na napravo null, "
 "noben dogodek MIDI ne bo sprejet ali poslan."
 
-#: bse/bseserver.cc:477
+#: bse/bseserver.cc:480
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -4268,7 +4274,7 @@ msgstr ""
 "Ni mogoče najti in odpreti razpoložljive zvočne naprave. Žal ni zasilne "
 "izbire za zvočne naprave, program se bo zaprl."
 
-#: bse/bseserver.cc:476
+#: bse/bseserver.cc:479
 msgid "No available audio device was found."
 msgstr "Ni mogoče najti razpoložljive zvočne naprave."
 
@@ -4281,7 +4287,7 @@ msgstr "Podatki niso na voljo"
 msgid "No device (driver) available"
 msgstr "Ni dostopne naprave (gonilnika)"
 
-#: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:67
+#: beast-gtk/bstpianorollctrl.cc:110 beast-gtk/bsttrackrollctrl.cc:64
 msgid "No quantization selected"
 msgstr "Kvantizacija ni izbrana"
 
@@ -4324,11 +4330,11 @@ msgstr "Ni takšnega sinteznega modula"
 msgid "No such wave"
 msgstr "Ni takega vala"
 
-#: beast-gtk/bsteventrollctrl.cc:423 beast-gtk/bsteventrollctrl.cc:565
-#: beast-gtk/bsteventrollctrl.cc:613 beast-gtk/bstpianorollctrl.cc:540
-#: beast-gtk/bstpianorollctrl.cc:637 beast-gtk/bstpianorollctrl.cc:700
-#: beast-gtk/bsttrackrollctrl.cc:465 beast-gtk/bsttrackrollctrl.cc:485
-#: beast-gtk/bsttrackrollctrl.cc:556 bse/bseapi.idl:89
+#: beast-gtk/bsteventrollctrl.cc:422 beast-gtk/bsteventrollctrl.cc:564
+#: beast-gtk/bsteventrollctrl.cc:612 beast-gtk/bstpianorollctrl.cc:538
+#: beast-gtk/bstpianorollctrl.cc:635 beast-gtk/bstpianorollctrl.cc:698
+#: beast-gtk/bsttrackrollctrl.cc:462 beast-gtk/bsttrackrollctrl.cc:482
+#: beast-gtk/bsttrackrollctrl.cc:553 bse/bseapi.idl:89
 msgid "No target"
 msgstr "Ni cilja"
 
@@ -4350,12 +4356,12 @@ msgstr "Nevpisan parameter"
 
 #. special cased signals
 #: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:78
-#: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
+#: beast-gtk/bsteventrollctrl.cc:43 beast-gtk/bstpianorollctrl.cc:42
 #: bse/bseapi.idl:279
 msgid "None"
 msgstr "Brez"
 
-#: bse/bsebiquadfilter.cc:138
+#: bse/bsebiquadfilter.cc:125
 #, fuzzy
 msgid "Norm Type"
 msgstr "Vrsta datoteke"
@@ -4366,10 +4372,10 @@ msgid ""
 "types still allow overdrive signals beyond this level"
 msgstr ""
 
-#: bse/bsebiquadfilter.cc:124 bse/bseconstant.cc:112 bse/bsestandardosc.cc:134
+#: bse/bsebiquadfilter.cc:111 bse/bseconstant.cc:111 bse/bsestandardosc.cc:133
 #: plugins/bseiirfilter.cc:100 plugins/bseiirfilter.cc:111
-#: plugins/davcanyondelay.cc:95 plugins/davorgan.idl:16
-#: plugins/davsyndrum.cc:76 plugins/davxtalstrings.cc:89
+#: plugins/davcanyondelay.cc:94 plugins/davorgan.idl:16
+#: plugins/davsyndrum.cc:77 plugins/davxtalstrings.cc:89
 msgid "Note"
 msgstr "Nota"
 
@@ -4385,7 +4391,7 @@ msgstr "Vnos note"
 msgid "Note Fine Tune"
 msgstr "Fino uglaševanje note"
 
-#: bse/bseinstrumentinput.cc:117 bse/bsemidiinput.cc:93
+#: bse/bseinstrumentinput.cc:116 bse/bsemidiinput.cc:91
 msgid "Note Frequency"
 msgstr "Frekvenca note"
 
@@ -4393,11 +4399,11 @@ msgstr "Frekvenca note"
 msgid "Note Sequence Grid Editor"
 msgstr "Urejevalnik mreže zaporedja not"
 
-#: plugins/bsesequencer.cc:88
+#: plugins/bsesequencer.cc:87
 msgid "Note Sync"
 msgstr "Uskladi note"
 
-#: plugins/bsesequencer.cc:88
+#: plugins/bsesequencer.cc:87
 msgid "Note Sync Signal"
 msgstr "Uskladitev signala not"
 
@@ -4415,7 +4421,7 @@ msgstr "_Dolžina note"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr "Dušenje note je čas razpolovitve glasnosti note v sekundah "
 
-#: bse/bseladspamodule.cc:180
+#: bse/bseladspamodule.cc:181
 #, fuzzy
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
@@ -4423,11 +4429,11 @@ msgstr ""
 "Stalna vrednost signala kot nota, pretvorjena v hertze glede na trenutno "
 "uglaševanje"
 
-#: beast-gtk/bstapp.cc:134
+#: beast-gtk/bstapp.cc:133
 msgid "Notes and informations about this release cycle"
 msgstr "Opombe in podrobnosti o tem ciklu izdaje"
 
-#: beast-gtk/bsttrackview.cc:642
+#: beast-gtk/bsttrackview.cc:643
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4445,15 +4451,15 @@ msgstr "Število stolpcev"
 msgid "Number of Rows"
 msgstr "Število vrstic"
 
-#: bse/bsebiquadfilter.cc:160 bse/bsestandardosc.cc:159 bse/bsewaveosc.cc:564
+#: bse/bsebiquadfilter.cc:147 bse/bsestandardosc.cc:158 bse/bsewaveosc.cc:563
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Število oktav na katere vpliva eksponentna modulacija frekvence"
 
-#: bse/bsesong.cc:693
+#: bse/bseapi.idl:1019
 msgid "Number of ticks per quarter note"
 msgstr ""
 
-#: bse/bsesong.cc:697
+#: bse/bseapi.idl:1020
 msgid "Numerator"
 msgstr "Števec"
 
@@ -4466,24 +4472,24 @@ msgid "Object Drop Down Box"
 msgstr "Spustno polje predmeta"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bstitemseqdialog.cc:153
+#: beast-gtk/bstitemseqdialog.cc:152
 #, c-format
 msgid "Object Selection: %s"
 msgstr "Izbor predmeta: %s"
 
-#: bse/bsestandardosc.cc:159 bse/bsewaveosc.cc:563
+#: bse/bsestandardosc.cc:158 bse/bsewaveosc.cc:562
 msgid "Octaves"
 msgstr "Oktave"
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:159
 msgid "Online Demos..."
 msgstr "Spletni demoti ..."
 
-#: beast-gtk/bstapp.cc:156
+#: beast-gtk/bstapp.cc:155
 msgid "Online Sound Archive..."
 msgstr "Spletni zvočni arhiv ..."
 
-#: beast-gtk/bstapp.cc:142
+#: beast-gtk/bstapp.cc:141
 msgid "Online _Help Desk..."
 msgstr "Pomoč na _spletu ..."
 
@@ -4491,7 +4497,7 @@ msgstr "Pomoč na _spletu ..."
 msgid "Only parts louder than threshold are compressed"
 msgstr "Stisnjeni so le deli glasnejši kot prag"
 
-#: beast-gtk/bstfiledialog.cc:389
+#: beast-gtk/bstfiledialog.cc:388
 msgid "Open Project"
 msgstr "Odpri projekt"
 
@@ -4524,7 +4530,7 @@ msgstr ""
 "          dodajanje \"hs\" prisili trdo usklajevanje ob praznjenju "
 "medpomnilnika\n"
 
-#: beast-gtk/bstapp.cc:59
+#: beast-gtk/bstapp.cc:58
 msgid "Open existing project"
 msgstr "Odpri obstoječ projekt"
 
@@ -4536,8 +4542,8 @@ msgstr "Napaka med odpiranjem"
 msgid "Open file browser"
 msgstr "Odpri brskalnik datotek"
 
-#: beast-gtk/bstapp.cc:674 beast-gtk/bstapp.cc:682
-#: beast-gtk/bstfiledialog.cc:432 beast-gtk/bstfiledialog.cc:440
+#: beast-gtk/bstapp.cc:673 beast-gtk/bstapp.cc:681
+#: beast-gtk/bstfiledialog.cc:431 beast-gtk/bstfiledialog.cc:439
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Odpiranje projekta `%s'"
@@ -4566,12 +4572,12 @@ msgstr "Frekvenca orgel v hertzih, višina osnovnega tona"
 msgid "Organ output"
 msgstr "Izhod orgel"
 
-#: beast-gtk/bstdbmeter.cc:750 beast-gtk/bstdbmeter.cc:1045
-#: beast-gtk/bstdbmeter.cc:1545
+#: beast-gtk/bstdbmeter.cc:749 beast-gtk/bstdbmeter.cc:1044
+#: beast-gtk/bstdbmeter.cc:1544
 msgid "Orientation"
 msgstr "Usmeritev"
 
-#: beast-gtk/bstusermessage.cc:196
+#: beast-gtk/bstusermessage.cc:197
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Izvor:   %s\n"
@@ -4579,23 +4585,23 @@ msgstr "Izvor:   %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1041
+#: bse/bsesong.cc:1097
 msgid "Orphan Parts"
 msgstr "Osiroteli deli"
 
-#: bse/bsestandardosc.cc:190
+#: bse/bsestandardosc.cc:189
 msgid "Oscillated Output"
 msgstr "Oscilirajoči izhod"
 
-#: bse/bsestandardosc.cc:182
+#: bse/bsestandardosc.cc:181
 msgid "Oscillating Frequency Input"
 msgstr "Vhod oscilirajoče frekvence"
 
-#: beast-gtk/bstsnetrouter.cc:1015
+#: beast-gtk/bstsnetrouter.cc:1014
 msgid "Oscillator"
 msgstr "Oscilator"
 
-#: bse/bsestandardosc.cc:135
+#: bse/bsestandardosc.cc:134
 msgid ""
 "Oscillator frequency as note, converted to Hertz according to the current "
 "musical tuning"
@@ -4603,18 +4609,18 @@ msgstr ""
 "Frekvenca oscilatorja kot nota, pretvorjena v hertze glede na trenutno "
 "uglaševanje"
 
-#: bse/bsestandardosc.cc:130
+#: bse/bsestandardosc.cc:129
 msgid ""
 "Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
 "second"
 msgstr ""
 "Frekvenca oscilatorja v hertzih, število oscilatorskih ciklov na sekundo"
 
-#: bse/bsestandardosc.cc:118
+#: bse/bsestandardosc.cc:117
 msgid "Oscillator wave form"
 msgstr "Valovna oblika oscilatorja"
 
-#: plugins/bsesequencer.cc:38
+#: plugins/bsesequencer.cc:37
 #, fuzzy
 msgid "Other Sources/Sequencer"
 msgstr "_Drugi viri"
@@ -4628,12 +4634,12 @@ msgstr "_Drugi viri"
 msgid "Out of memory"
 msgstr "Pomnilnika je zmanjkalo"
 
-#: beast-gtk/bstcanvassource.cc:965 beast-gtk/bstsnetrouter.cc:1018
+#: beast-gtk/bstcanvassource.cc:965 beast-gtk/bstsnetrouter.cc:1017
 #: plugins/bseamplifier.idl:48
 msgid "Output"
 msgstr "Izhod"
 
-#: bse/bsesubsynth.cc:512
+#: bse/bsesubsynth.cc:511
 msgid "Output Assignments"
 msgstr "Izhodne dodelitve"
 
@@ -4645,16 +4651,16 @@ msgstr "Ravnotežje izhoda"
 msgid "Output Panning"
 msgstr ""
 
-#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:510
+#: bse/bsesuboport.cc:286 bse/bsesubsynth.cc:509
 #, c-format
 msgid "Output Port %u"
 msgstr "Izhodna vrata %u"
 
-#: beast-gtk/bstsnetrouter.cc:655
+#: beast-gtk/bstsnetrouter.cc:654
 msgid "Output Signal Monitor"
 msgstr "Nadzor izhodnih signalov"
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:957 bse/bsetrack.cc:1148
 msgid "Output Signals"
 msgstr "Izhodni signali"
 
@@ -4667,11 +4673,11 @@ msgstr "Leva glasnost"
 msgid "Output [dB]"
 msgstr "Izhod[dB]"
 
-#: bse/bsesoundfontosc.cc:176 bse/bsesoundfontosc.cc:178
+#: bse/bsesoundfontosc.cc:175 bse/bsesoundfontosc.cc:177
 msgid "Output of the fluid synth soundfont synthesizer"
 msgstr ""
 
-#: bse/bsesubsynth.cc:503
+#: bse/bsesubsynth.cc:502
 msgid "Output port name to interface from"
 msgstr ""
 
@@ -4689,38 +4695,38 @@ msgstr "Izhodi"
 msgid "Ownership mismatch"
 msgstr "Neujemanje lastništva"
 
-#: beast-gtk/bstsnetrouter.cc:1014
+#: beast-gtk/bstsnetrouter.cc:1013
 msgid "PCM Input module"
 msgstr "Modul vhoda PCM"
 
-#: beast-gtk/bstsnetrouter.cc:1018
+#: beast-gtk/bstsnetrouter.cc:1017
 msgid "PCM Output module"
 msgstr "Modul izhoda PCM"
 
-#: bse/bseserver.cc:480
+#: bse/bseserver.cc:483
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "Pokaži sporočila o težavah izbire naprav PCM"
 
-#: bse/bseserver.cc:565
+#: bse/bseserver.cc:568
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "Pokaži posnetek datoteke napak"
 
-#: beast-gtk/bstusermessage.cc:198
+#: beast-gtk/bstusermessage.cc:199
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bsemididevice-alsa.cc:327 drivers/bsepcmdevice-alsa.cc:579
+#: drivers/bsemididevice-alsa.cc:328 drivers/bsepcmdevice-alsa.cc:580
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "VSTAVEK:KARTICA,NAPRAVA,PODNAPRAVA"
 
-#: bse/bsestandardosc.cc:186
+#: bse/bsestandardosc.cc:185
 msgid "PWM In"
 msgstr "PWM Vh"
 
-#: beast-gtk/bstsnetrouter.cc:35 beast-gtk/bstsnetrouter.cc:870
+#: beast-gtk/bstsnetrouter.cc:34 beast-gtk/bstsnetrouter.cc:869
 msgid "Palette"
 msgstr "Paleta"
 
@@ -4737,7 +4743,7 @@ msgid "Parameter to pass to functions upon activation"
 msgstr ""
 
 #: plugins/artscompressor.idl:34 plugins/davbassfilter.idl:17
-#: plugins/davchorus.idl:13 plugins/davsyndrum.cc:88 plugins/davsyndrum.cc:93
+#: plugins/davchorus.idl:13 plugins/davsyndrum.cc:89 plugins/davsyndrum.cc:94
 msgid "Parameters"
 msgstr "Parametri"
 
@@ -4757,16 +4763,16 @@ msgstr "Deli"
 msgid "Passband falloff at cutoff frequency"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.cc:46
+#: beast-gtk/bstpartdialog.cc:45
 msgid "Paste"
 msgstr "Prilepi"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:125
+#: beast-gtk/gxk/gxksimplelabel.cc:126
 msgid "Pattern"
 msgstr "Vzorec"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.cc:714
+#: beast-gtk/bstpatterncolumns.cc:713
 msgid "Pattern Editor Layout"
 msgstr "Razporeditev urejevalnika vzorcev"
 
@@ -4790,7 +4796,7 @@ msgid ""
 "better than the parent scale."
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:138
+#: beast-gtk/bstprofiler.cc:139
 msgid "Percentage of CPU usage"
 msgstr "Odstotek uporabe CPE"
 
@@ -4798,15 +4804,15 @@ msgstr "Odstotek uporabe CPE"
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#: bse/bsebiquadfilter.cc:154 bse/bsestandardosc.cc:154 bse/bsewaveosc.cc:558
+#: bse/bsebiquadfilter.cc:141 bse/bsestandardosc.cc:153 bse/bsewaveosc.cc:557
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Izvedba eksponentne modulacije frekvence namesto linearne"
 
-#: bse/bsesuper.cc:182
+#: bse/bsesuper.cc:183
 msgid "Person changing or creating this object"
 msgstr "Oseba, ki je spremenila ali ustvarila ta predmet"
 
-#: bse/bsestandardosc.cc:124
+#: bse/bsestandardosc.cc:123
 msgid "Phase"
 msgstr "Korak"
 
@@ -4825,15 +4831,15 @@ msgstr "Note klavirja"
 msgid "Pitch Bend"
 msgstr "Višina nagiba"
 
-#: beast-gtk/bstpianorollctrl.cc:918
+#: beast-gtk/bstpianorollctrl.cc:916
 msgid "Play note"
 msgstr "Predvajaj noto"
 
-#: beast-gtk/bstapp.cc:106
+#: beast-gtk/bstapp.cc:105
 msgid "Play or restart playback of the project"
 msgstr "Predvajanj ali ponovno začni predvajanje projekta"
 
-#: beast-gtk/bstplayback.cc:64
+#: beast-gtk/bstplayback.cc:61
 msgid "Playback"
 msgstr "Predvajanje"
 
@@ -4842,7 +4848,7 @@ msgstr "Predvajanje"
 #. /< Insert a new module into a synthesis network.
 #. /< Remove an existing module from its synthesis network.
 #. signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
-#: bse/bseapi.idl:891
+#: bse/bseapi.idl:896
 msgid "Playback Settings"
 msgstr "Nastavitve predvajanja"
 
@@ -4867,11 +4873,11 @@ msgstr "Trzanje strune na privzdignjenem robu"
 msgid "Pluck the string"
 msgstr "Trzanje strune"
 
-#: bse/bsebasics.idl:145
+#: bse/bsebasics.idl:131
 msgid "Plugin Path"
 msgstr "Pot vstavka"
 
-#: beast-gtk/bstmain.cc:258
+#: beast-gtk/bstmain.cc:239
 msgid "Plugins"
 msgstr "Vstavki"
 
@@ -4884,11 +4890,11 @@ msgstr "Možnosti pojavnih oken"
 msgid "Portamento Time"
 msgstr "Preostaja še"
 
-#: beast-gtk/bsttrackrollctrl.cc:50
+#: beast-gtk/bsttrackrollctrl.cc:47
 msgid "Position"
 msgstr "Položaj"
 
-#: beast-gtk/bsttrackrollctrl.cc:437 beast-gtk/bsttrackrollctrl.cc:442
+#: beast-gtk/bsttrackrollctrl.cc:434 beast-gtk/bsttrackrollctrl.cc:439
 msgid "Position taken"
 msgstr "Vzet položaj"
 
@@ -4896,22 +4902,22 @@ msgstr "Vzet položaj"
 msgid "Positive Value Color"
 msgstr "Barva pozitivne vrednosti"
 
-#: bse/bsemidisynth.cc:366 bse/bsesong.cc:705 bse/bsetrack.cc:1145
+#: bse/bsemidisynth.cc:362 bse/bsesong.cc:610 bse/bsetrack.cc:1144
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:881
+#: beast-gtk/bstapp.cc:880
 msgid "Preferences"
 msgstr "Možnosti"
 
-#: bse/bsesoundfontosc.cc:173
+#: bse/bsesoundfontosc.cc:172
 msgid "Preset"
 msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
 #.
-#: beast-gtk/bstsampleeditor.cc:450
+#: beast-gtk/bstsampleeditor.cc:447
 msgid "Preview"
 msgstr "Predogled"
 
@@ -4931,12 +4937,12 @@ msgstr "Izvedba postopka je spodletela"
 msgid "Procedure parameter invalid"
 msgstr "Parameter postopka ni veljaven"
 
-#: beast-gtk/bstusermessage.cc:194
+#: beast-gtk/bstusermessage.cc:195
 #, c-format
 msgid "Process: %s\n"
 msgstr "Opravilo: %s\n"
 
-#: bse/bsebasics.idl:109
+#: bse/bsebasics.idl:100
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -4944,7 +4950,7 @@ msgstr ""
 "Trajanje obdelovanja med vhodom in izhodom za en vzorec, manjše vrednosti "
 "povečajo obremenitev CPE"
 
-#: beast-gtk/bstapp.cc:100 beast-gtk/bstprofiler.cc:114
+#: beast-gtk/bstapp.cc:99 beast-gtk/bstprofiler.cc:115
 msgid "Profiler"
 msgstr "Profilirnik"
 
@@ -4953,7 +4959,7 @@ msgstr "Profilirnik"
 msgid "Program Change"
 msgstr "Sprememba programa"
 
-#: beast-gtk/bstsnetrouter.cc:649 beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsnetrouter.cc:648 beast-gtk/bstsupershell.cc:169
 #: beast-gtk/bstsupershell.cc:198 beast-gtk/bstsupershell.cc:213
 #: beast-gtk/bstsupershell.cc:227 plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
@@ -4967,7 +4973,7 @@ msgstr "Določilnik lastnosti"
 msgid "Property Name"
 msgstr "Ime lastnosti"
 
-#: bse/bsestandardosc.cc:170
+#: bse/bsestandardosc.cc:169
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -4975,32 +4981,32 @@ msgstr ""
 "Delež trajanja pozitivnega dela oblike valu pulza (za učinek te možnosti je "
 "potrebno pulz izbrati kot val)"
 
-#: beast-gtk/bstapp.cc:132
+#: beast-gtk/bstapp.cc:131
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Zagotovi pregled celotne vsebine dokumentacije BEAST"
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:150
 msgid "Provide an overview of development related topics and documents"
 msgstr "Zagotovi pregled razvoja povezanih tem in dokumentov"
 
-#: beast-gtk/bstapp.cc:140
+#: beast-gtk/bstapp.cc:139
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Zagotovi uvod o izvajanju najbolj pogostih nalog"
 
 #. disabled
-#: bse/bsestandardosc.cc:167 bse/bsestandardosc.cc:174
+#: bse/bsestandardosc.cc:166 bse/bsestandardosc.cc:173
 msgid "Pulse Modulation"
 msgstr "Modulacija pulza"
 
-#: bse/bsestandardosc.cc:176
+#: bse/bsestandardosc.cc:175
 msgid "Pulse Modulation [%]"
 msgstr "Modulacija pulza [%]"
 
-#: bse/bsestandardosc.cc:169
+#: bse/bsestandardosc.cc:168
 msgid "Pulse Width"
 msgstr "Širina pulza"
 
-#: bse/bsestandardosc.cc:186
+#: bse/bsestandardosc.cc:185
 msgid "Pulse Width Modulation Input"
 msgstr "Vhod modulacije širine pulza"
 
@@ -5016,43 +5022,43 @@ msgid ""
 "3:2. Its discovery is generally credited to Pythagoras."
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.cc:114 beast-gtk/bsttrackrollctrl.cc:69
+#: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:66
 msgid "Q: 1\\/1"
 msgstr "K: 1\\/1"
 
-#: beast-gtk/bstpianorollctrl.cc:128 beast-gtk/bsttrackrollctrl.cc:83
+#: beast-gtk/bstpianorollctrl.cc:126 beast-gtk/bsttrackrollctrl.cc:80
 msgid "Q: 1\\/128"
 msgstr "K: 1\\/128"
 
-#: beast-gtk/bstpianorollctrl.cc:122 beast-gtk/bsttrackrollctrl.cc:77
+#: beast-gtk/bstpianorollctrl.cc:120 beast-gtk/bsttrackrollctrl.cc:74
 msgid "Q: 1\\/16"
 msgstr "K: 1\\/16"
 
-#: beast-gtk/bstpianorollctrl.cc:116 beast-gtk/bsttrackrollctrl.cc:71
+#: beast-gtk/bstpianorollctrl.cc:114 beast-gtk/bsttrackrollctrl.cc:68
 msgid "Q: 1\\/2"
 msgstr "K: 1\\/2"
 
-#: beast-gtk/bstpianorollctrl.cc:124 beast-gtk/bsttrackrollctrl.cc:79
+#: beast-gtk/bstpianorollctrl.cc:122 beast-gtk/bsttrackrollctrl.cc:76
 msgid "Q: 1\\/32"
 msgstr "K: 1\\/32"
 
-#: beast-gtk/bstpianorollctrl.cc:118 beast-gtk/bsttrackrollctrl.cc:73
+#: beast-gtk/bstpianorollctrl.cc:116 beast-gtk/bsttrackrollctrl.cc:70
 msgid "Q: 1\\/4"
 msgstr "K: 1\\/4"
 
-#: beast-gtk/bstpianorollctrl.cc:126 beast-gtk/bsttrackrollctrl.cc:81
+#: beast-gtk/bstpianorollctrl.cc:124 beast-gtk/bsttrackrollctrl.cc:78
 msgid "Q: 1\\/64"
 msgstr "K: 1\\/64"
 
-#: beast-gtk/bstpianorollctrl.cc:120 beast-gtk/bsttrackrollctrl.cc:75
+#: beast-gtk/bstpianorollctrl.cc:118 beast-gtk/bsttrackrollctrl.cc:72
 msgid "Q: 1\\/8"
 msgstr "K: 1\\/8"
 
-#: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:67
+#: beast-gtk/bstpianorollctrl.cc:110 beast-gtk/bsttrackrollctrl.cc:64
 msgid "Q: None"
 msgstr "K: Brez"
 
-#: beast-gtk/bstpianorollctrl.cc:110 beast-gtk/bsttrackrollctrl.cc:65
+#: beast-gtk/bstpianorollctrl.cc:108 beast-gtk/bsttrackrollctrl.cc:62
 msgid "Q: Tact"
 msgstr "Q: Takt"
 
@@ -5070,39 +5076,39 @@ msgstr "_Kvantizacija"
 msgid "Quantization Steps"
 msgstr "_Kvantizacija"
 
-#: beast-gtk/bstpianorollctrl.cc:120 beast-gtk/bsttrackrollctrl.cc:75
+#: beast-gtk/bstpianorollctrl.cc:118 beast-gtk/bsttrackrollctrl.cc:72
 msgid "Quantize to eighths note boundaries"
 msgstr "Kvantiziraj na meje osminke"
 
-#: beast-gtk/bstpianorollctrl.cc:116 beast-gtk/bsttrackrollctrl.cc:71
+#: beast-gtk/bstpianorollctrl.cc:114 beast-gtk/bsttrackrollctrl.cc:68
 msgid "Quantize to half note boundaries"
 msgstr "Kvantiziraj na meje polovinke"
 
-#: beast-gtk/bstpianorollctrl.cc:128 beast-gtk/bsttrackrollctrl.cc:83
+#: beast-gtk/bstpianorollctrl.cc:126 beast-gtk/bsttrackrollctrl.cc:80
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr "Kvantiziraj na meje stoosemindvajsetinke"
 
-#: beast-gtk/bstpianorollctrl.cc:118 beast-gtk/bsttrackrollctrl.cc:73
+#: beast-gtk/bstpianorollctrl.cc:116 beast-gtk/bsttrackrollctrl.cc:70
 msgid "Quantize to quarter note boundaries"
 msgstr "Kvantiziraj na meje četrtinke"
 
-#: beast-gtk/bstpianorollctrl.cc:122 beast-gtk/bsttrackrollctrl.cc:77
+#: beast-gtk/bstpianorollctrl.cc:120 beast-gtk/bsttrackrollctrl.cc:74
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Kvantiziraj na meje šestnajstinke"
 
-#: beast-gtk/bstpianorollctrl.cc:126 beast-gtk/bsttrackrollctrl.cc:81
+#: beast-gtk/bstpianorollctrl.cc:124 beast-gtk/bsttrackrollctrl.cc:78
 msgid "Quantize to sixty-fourth note boundaries"
 msgstr "Kvantiziraj na meje štiriinšestdesetnike"
 
-#: beast-gtk/bstpianorollctrl.cc:110 beast-gtk/bsttrackrollctrl.cc:65
+#: beast-gtk/bstpianorollctrl.cc:108 beast-gtk/bsttrackrollctrl.cc:62
 msgid "Quantize to tact boundaries"
 msgstr "Kvantiziraj ne meje takta"
 
-#: beast-gtk/bstpianorollctrl.cc:124 beast-gtk/bsttrackrollctrl.cc:79
+#: beast-gtk/bstpianorollctrl.cc:122 beast-gtk/bsttrackrollctrl.cc:76
 msgid "Quantize to thirty-second note boundaries"
 msgstr "Kvantiziraj na meje dvaintridesetinke"
 
-#: beast-gtk/bstpianorollctrl.cc:114 beast-gtk/bsttrackrollctrl.cc:69
+#: beast-gtk/bstpianorollctrl.cc:112 beast-gtk/bsttrackrollctrl.cc:66
 msgid "Quantize to whole note boundaries"
 msgstr "Kvantiziraj na meje celinke"
 
@@ -5123,7 +5129,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:228
+#: beast-gtk/bstmain.cc:209
 msgid "RC Files"
 msgstr "Datoteke RC"
 
@@ -5136,7 +5142,7 @@ msgstr "Dvigni"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Poviša trenutno izbrano tipkovno bližnjico, relativno na njene sosede"
 
-#: plugins/davsyndrum.cc:101
+#: plugins/davsyndrum.cc:102
 msgid "Ratio In"
 msgstr "Razmerje vhodov"
 
@@ -5148,23 +5154,23 @@ msgstr "Razmerje [x:1]"
 msgid "Read failed"
 msgstr "Napaka med branjem"
 
-#: beast-gtk/bstapp.cc:83
+#: beast-gtk/bstapp.cc:82
 msgid "Rebuild"
 msgstr "Ponovno izgradi"
 
-#: beast-gtk/bstpianorollctrl.cc:68
+#: beast-gtk/bstpianorollctrl.cc:66
 msgid "Rectangle select notes"
 msgstr "Pravokotna izbira not"
 
-#: beast-gtk/bstpartdialog.cc:50
+#: beast-gtk/bstpartdialog.cc:49
 msgid "Redo"
 msgstr "Uveljavi"
 
-#: beast-gtk/bstapp.cc:92
+#: beast-gtk/bstapp.cc:91
 msgid "Redo the last undone action"
 msgstr "Uveljavi zadnje dejanje razveljave"
 
-#: beast-gtk/bstpartdialog.cc:50
+#: beast-gtk/bstpartdialog.cc:49
 msgid "Redo the last undone editing step"
 msgstr "Uveljavitev zadnjega razveljavljenega korak urejanja"
 
@@ -5172,7 +5178,7 @@ msgstr "Uveljavitev zadnjega razveljavljenega korak urejanja"
 msgid "Reed Sounds"
 msgstr ""
 
-#: plugins/davcanyondelay.cc:90
+#: plugins/davcanyondelay.cc:89
 msgid "Reflection cutoff frequency"
 msgstr "Frekvenca obreza odboja"
 
@@ -5196,7 +5202,7 @@ msgstr "Števec izpustov"
 msgid "Reload current page"
 msgstr "Ponovno naloži trenutno stran"
 
-#: beast-gtk/bstsnetrouter.cc:682
+#: beast-gtk/bstsnetrouter.cc:681
 msgid "Remove Module"
 msgstr "Odstrani modul"
 
@@ -5204,11 +5210,11 @@ msgstr "Odstrani modul"
 msgid "Remove Paths"
 msgstr "Odstrani poti"
 
-#: beast-gtk/bstapp.cc:118
+#: beast-gtk/bstapp.cc:117
 msgid "Remove Song or Synthesizer"
 msgstr "Odstrani skladbo ali sintetizator"
 
-#: beast-gtk/bstpatternctrl.cc:343 beast-gtk/bstpatternctrl.cc:357
+#: beast-gtk/bstpatternctrl.cc:342 beast-gtk/bstpatternctrl.cc:356
 msgid "Remove any events in the focus cell"
 msgstr "Odstrani morebitne dogodke v izbrani celici"
 
@@ -5216,20 +5222,20 @@ msgstr "Odstrani morebitne dogodke v izbrani celici"
 msgid "Remove directory from searchpath"
 msgstr "Odstrani mapo iz iskalne poti"
 
-#: beast-gtk/bstapp.cc:118
+#: beast-gtk/bstapp.cc:117
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Odstranitev trenutno izbranega sintetizatorja (skladbe)"
 
-#: beast-gtk/bstitemseqdialog.cc:146
+#: beast-gtk/bstitemseqdialog.cc:145
 #, c-format
 msgid "Removes the selection from the \"%s\" list"
 msgstr "Odstrani izbiro s seznama \"%s\""
 
-#: beast-gtk/bsttrackrollctrl.cc:33
+#: beast-gtk/bsttrackrollctrl.cc:30
 msgid "Rename"
 msgstr "Preimenuj"
 
-#: beast-gtk/bsttrackrollctrl.cc:33
+#: beast-gtk/bsttrackrollctrl.cc:30
 msgid "Rename parts"
 msgstr "Preimenuj dele"
 
@@ -5243,7 +5249,7 @@ msgstr "Ponovi"
 msgid "Repeat playback within loop points"
 msgstr "Ponovitev predvajanja znotraj točk zanke"
 
-#: beast-gtk/bstapp.cc:144
+#: beast-gtk/bstapp.cc:143
 msgid "Report a Beast Bug..."
 msgstr "Pošlji poročilo o hrošču ..."
 
@@ -5251,21 +5257,21 @@ msgstr "Pošlji poročilo o hrošču ..."
 msgid "Requested data values unmatched"
 msgstr "Zahtevane vrednosti podatkov se ne ujemajo"
 
-#: beast-gtk/bstsnetrouter.cc:650
+#: beast-gtk/bstsnetrouter.cc:649
 msgid "Reset Properties"
 msgstr "Ponastavi lastnosti"
 
-#: beast-gtk/bsteventrollctrl.cc:560 beast-gtk/bsteventrollctrl.cc:565
-#: beast-gtk/bsteventrollctrl.cc:599
+#: beast-gtk/bsteventrollctrl.cc:559 beast-gtk/bsteventrollctrl.cc:564
+#: beast-gtk/bsteventrollctrl.cc:598
 msgid "Resize Control Event"
 msgstr "Spremeni velikost nadzornega dogodka"
 
-#: beast-gtk/bstpianorollctrl.cc:632 beast-gtk/bstpianorollctrl.cc:637
-#: beast-gtk/bstpianorollctrl.cc:686
+#: beast-gtk/bstpianorollctrl.cc:630 beast-gtk/bstpianorollctrl.cc:635
+#: beast-gtk/bstpianorollctrl.cc:684
 msgid "Resize Note"
 msgstr "Spremeni velikost note"
 
-#: plugins/davsyndrum.cc:89
+#: plugins/davsyndrum.cc:90
 msgid "Resonance"
 msgstr "Resonanca"
 
@@ -5273,7 +5279,7 @@ msgstr "Resonanca"
 msgid "Resonance [%]"
 msgstr "Resonanca [%]"
 
-#: beast-gtk/bstprojectctrl.cc:19
+#: beast-gtk/bstprojectctrl.cc:18
 msgid "Restarting Playback"
 msgstr "Ponovno začenjanje predvajanja"
 
@@ -5285,53 +5291,53 @@ msgstr "Vhod ponovnega sprožilca"
 msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr ""
 
-#: beast-gtk/bstapi.idl:13 beast-gtk/bsttrackrollctrl.cc:52
+#: beast-gtk/bstapi.idl:13 beast-gtk/bsttrackrollctrl.cc:49
 msgid "Right"
 msgstr "Desno"
 
-#: bse/bseinstrumentoutput.cc:119
+#: bse/bseinstrumentoutput.cc:118
 msgid "Right Audio"
 msgstr "Desni zvok"
 
-#: bse/bsebus.cc:967 bse/bsepcmoutput.cc:114
-#: plugins/freeverb/bsefreeverb.cc:104
+#: bse/bsebus.cc:968 bse/bsepcmoutput.cc:112
+#: plugins/freeverb/bsefreeverb.cc:101
 msgid "Right Audio In"
 msgstr "Desni zvočni Vh"
 
-#: plugins/davcanyondelay.cc:101
+#: plugins/davcanyondelay.cc:100
 msgid "Right Audio Input"
 msgstr "Desni zvočni vhod"
 
-#: bse/bsebus.cc:971 bse/bsepcminput.cc:114 plugins/freeverb/bsefreeverb.cc:106
+#: bse/bsebus.cc:972 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
 msgid "Right Audio Out"
 msgstr "Desni zvočni izhod"
 
-#: plugins/davcanyondelay.cc:105
+#: plugins/davcanyondelay.cc:104
 msgid "Right Audio Output"
 msgstr "Desni zvočni izhod"
 
-#: bse/bseinstrumentoutput.cc:119
+#: bse/bseinstrumentoutput.cc:118
 msgid "Right Channel Output"
 msgstr "Izhod desnega kanala"
 
-#: bse/bsemidivoice.cc:120 plugins/davcanyondelay.cc:101
+#: bse/bsemidivoice.cc:119 plugins/davcanyondelay.cc:100
 msgid "Right In"
 msgstr "Desni Vh"
 
-#: plugins/freeverb/bsefreeverb.cc:104
+#: plugins/freeverb/bsefreeverb.cc:101
 msgid "Right Input"
 msgstr "Desni vhod"
 
-#: bse/bsemidivoice.cc:126 bse/bsesoundfontosc.cc:178 plugins/bsebalance.idl:23
-#: plugins/davcanyondelay.cc:105
+#: bse/bsemidivoice.cc:125 bse/bsesoundfontosc.cc:177 plugins/bsebalance.idl:23
+#: plugins/davcanyondelay.cc:104
 msgid "Right Out"
 msgstr "Desni Iz"
 
-#: plugins/freeverb/bsefreeverb.cc:106
+#: plugins/freeverb/bsefreeverb.cc:103
 msgid "Right Output"
 msgstr "Desni izhod"
 
-#: bse/bsebus.cc:942
+#: bse/bsebus.cc:943
 msgid "Right Volume"
 msgstr "Desna glasnost"
 
@@ -5339,19 +5345,19 @@ msgstr "Desna glasnost"
 msgid "Right audio output"
 msgstr "Desni izhod zvoka"
 
-#: bse/bsepcmoutput.cc:114
+#: bse/bsepcmoutput.cc:112
 msgid "Right channel Input"
 msgstr "Vhod desnega kanala"
 
-#: bse/bsebus.cc:967
+#: bse/bsebus.cc:968
 msgid "Right channel input"
 msgstr "Vhod desnega kanala"
 
-#: bse/bsebus.cc:971 bse/bsepcminput.cc:114
+#: bse/bsebus.cc:972 bse/bsepcminput.cc:112
 msgid "Right channel output"
 msgstr "Izhod desnega kanala"
 
-#: plugins/davcanyondelay.cc:77 plugins/davcanyondelay.cc:82
+#: plugins/davcanyondelay.cc:76 plugins/davcanyondelay.cc:81
 msgid "Right to Left"
 msgstr "Od desne proti levi"
 
@@ -5359,34 +5365,34 @@ msgstr "Od desne proti levi"
 msgid "Routing"
 msgstr "Usmerjanje"
 
-#: plugins/bseadder.cc:39
+#: plugins/bseadder.cc:38
 #, fuzzy
 msgid "Routing/Adder"
 msgstr "/Usmerjanje/ojačevalnik"
 
-#: plugins/bsemixer.cc:45
+#: plugins/bsemixer.cc:44
 #, fuzzy
 msgid "Routing/Mixer"
 msgstr "/Usmerjanje/ojačevalnik"
 
-#: plugins/bsemult.cc:18
+#: plugins/bsemult.cc:17
 #, fuzzy
 msgid "Routing/Multiply"
 msgstr "/Usmerjanje/ojačevalnik"
 
-#: beast-gtk/bstpatternctrl.cc:131
+#: beast-gtk/bstpatternctrl.cc:130
 msgid "Row Shading"
 msgstr "Senčenje vrstice"
 
-#: beast-gtk/bstprofiler.cc:140
+#: beast-gtk/bstprofiler.cc:141
 msgid "STime"
 msgstr ""
 
-#: bse/bsebasics.idl:133
+#: bse/bsebasics.idl:122
 msgid "Sample Path"
 msgstr "Pot vzorca"
 
-#: beast-gtk/bstfiledialog.cc:122
+#: beast-gtk/bstfiledialog.cc:121
 msgid "Sample or instrument name"
 msgstr "Ime vzorca ali inštrumenta"
 
@@ -5419,87 +5425,83 @@ msgid ""
 "curvature across all levels"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:128
+#: beast-gtk/bstapp.cc:127
 msgid "Save As Effect..."
 msgstr "Shrani kot učinek ..."
 
-#: beast-gtk/bstapp.cc:126
+#: beast-gtk/bstapp.cc:125
 msgid "Save As Instrument..."
 msgstr "Shrani kot inštrument ..."
 
-#: beast-gtk/bstapp.cc:590
+#: beast-gtk/bstapp.cc:589
 msgid "Save Changes"
 msgstr "Shrani spremembe"
 
-#: beast-gtk/bstfiledialog.cc:653
+#: beast-gtk/bstfiledialog.cc:652
 msgid "Save Effect"
 msgstr "Shrani učinek"
 
-#: beast-gtk/bstfiledialog.cc:703
+#: beast-gtk/bstfiledialog.cc:702
 msgid "Save Instrument"
 msgstr "Shrani inštrument"
 
-#: beast-gtk/bstapp.cc:71
+#: beast-gtk/bstapp.cc:70
 msgid "Save _As..."
 msgstr "Shrani _kot ..."
 
-#: beast-gtk/bstapp.cc:128
+#: beast-gtk/bstapp.cc:127
 msgid "Save synthesizer mesh to effects folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:126
+#: beast-gtk/bstapp.cc:125
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:589
+#: beast-gtk/bstapp.cc:588
 msgid "Save the project before closing its window?"
 msgstr "Ali želite shraniti spremembe projekta pred zapiranjem?"
 
-#: beast-gtk/bstfiledialog.cc:605
+#: beast-gtk/bstfiledialog.cc:604
 #, c-format
 msgid "Save: %s"
 msgstr "Shrani: %s"
 
-#: beast-gtk/bstfiledialog.cc:666
+#: beast-gtk/bstfiledialog.cc:665
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Shranjevanje učinka `%s'"
 
-#: beast-gtk/bstfiledialog.cc:716
+#: beast-gtk/bstfiledialog.cc:715
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Shranjevanje inštrumenta `%s'"
 
-#: beast-gtk/bstfiledialog.cc:571
+#: beast-gtk/bstfiledialog.cc:570
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Shranjevanje projekta `%s'"
 
-#: bse/bsebasics.idl:142
-msgid "Script Path"
-msgstr "Pot skripta"
-
-#: beast-gtk/bstwaveeditor.cc:222
+#: beast-gtk/bstwaveeditor.cc:221
 msgid "Scroll Both"
 msgstr "Drsaj oboje"
 
-#: beast-gtk/bstwaveeditor.cc:223
+#: beast-gtk/bstwaveeditor.cc:222
 msgid "Scroll Left"
 msgstr "Drsaj levo"
 
-#: beast-gtk/bstwaveeditor.cc:221
+#: beast-gtk/bstwaveeditor.cc:220
 msgid "Scroll None"
 msgstr "Drsaj brez"
 
-#: beast-gtk/bstwaveeditor.cc:224
+#: beast-gtk/bstwaveeditor.cc:223
 msgid "Scroll Right"
 msgstr "Drsaj desno"
 
-#: bse/bsebasics.idl:132
+#: bse/bsebasics.idl:121
 msgid "Search Paths"
 msgstr "Iskalne poti"
 
-#: bse/bsebasics.idl:137
+#: bse/bsebasics.idl:126
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5508,7 +5510,7 @@ msgstr ""
 "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek učinkov "
 "BSE."
 
-#: bse/bsebasics.idl:140
+#: bse/bsebasics.idl:129
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5517,7 +5519,7 @@ msgstr ""
 "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek "
 "inštrumentov BSE."
 
-#: bse/bsebasics.idl:146
+#: bse/bsebasics.idl:132
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -5527,28 +5529,7 @@ msgstr ""
 "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov BSE. Ta "
 "pot je preiskana poleg običajnih mest vstavka BSE na tem sistemu."
 
-#: bse/bsebasics.idl:143
-#, fuzzy
-msgid ""
-"Search path of directories, seperated by \";\", used to find BSE scheme "
-"scripts."
-msgstr ""
-"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje skript BSE sheme."
-
-#: bse/bsebasics.idl:150
-#, fuzzy
-msgid ""
-"Search path of directories, seperated by \";\", used to find LADSPA plugins. "
-"This path is searched for in addition to the standard LADSPA location on "
-"this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more "
-"informations about LADSPA plugins can be found at http://www.ladspa.org/."
-msgstr ""
-"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov LADSPA. "
-"Ta pot je preiskana poleg običajnih mest LADSPA na tem sistemu. LADSPA je "
-"API preprostega vstavka linux zvočnega razvijalca, več podrobnosti o "
-"vstavkih LADSPA je mogoče najti na http://www.ladspa.org/."
-
-#: bse/bsebasics.idl:134
+#: bse/bsebasics.idl:123
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -5581,7 +5562,7 @@ msgstr "Obrezna frekvenca drugega filtra"
 msgid "Seek failed"
 msgstr "Napaka med iskanjem"
 
-#: beast-gtk/bstpianorollctrl.cc:68
+#: beast-gtk/bstpianorollctrl.cc:66
 msgid "Select"
 msgstr "Izberi"
 
@@ -5589,41 +5570,41 @@ msgstr "Izberi"
 msgid "Select Color"
 msgstr "Izbor barve"
 
-#: beast-gtk/bstfiledialog.cc:417
+#: beast-gtk/bstfiledialog.cc:416
 msgid "Select Directory"
 msgstr "Izbor mape"
 
-#: beast-gtk/bstfiledialog.cc:403
+#: beast-gtk/bstfiledialog.cc:402
 msgid "Select File"
 msgstr "Izbor datoteke"
 
-#: beast-gtk/bsteventrollctrl.cc:623 beast-gtk/bsteventrollctrl.cc:647
-#: beast-gtk/bstpianorollctrl.cc:732 beast-gtk/bstpianorollctrl.cc:758
+#: beast-gtk/bsteventrollctrl.cc:622 beast-gtk/bsteventrollctrl.cc:646
+#: beast-gtk/bstpianorollctrl.cc:730 beast-gtk/bstpianorollctrl.cc:756
 msgid "Select Region"
 msgstr "Izbor področja"
 
-#: beast-gtk/bsteventrollctrl.cc:42
+#: beast-gtk/bsteventrollctrl.cc:41
 msgid "Select all events"
 msgstr "Izbor vseh dogodkov"
 
-#: beast-gtk/bstpianorollctrl.cc:42
+#: beast-gtk/bstpianorollctrl.cc:40
 msgid "Select all notes"
 msgstr "Izbor vseh not"
 
-#: beast-gtk/bstsnetrouter.cc:588
+#: beast-gtk/bstsnetrouter.cc:587
 msgid "Select input module"
 msgstr "Izbor vhodnega modula"
 
-#: beast-gtk/bstsnetrouter.cc:586
+#: beast-gtk/bstsnetrouter.cc:585
 msgid "Select output module"
 msgstr "Izbor izhodnega modula"
 
-#: beast-gtk/bstpianorollctrl.cc:70
+#: beast-gtk/bstpianorollctrl.cc:68
 #, fuzzy
 msgid "Select tick range vertically"
 msgstr "Navpičen izbor obsega "
 
-#: bse/bsestandardosc.cc:164
+#: bse/bsestandardosc.cc:163
 msgid "Self Modulation [%]"
 msgstr "Samo modulacija [%]"
 
@@ -5639,7 +5620,7 @@ msgstr "Nastavitev količine resonance v odstotkih"
 msgid "Set the attack time in milliseconds"
 msgstr "Nastavitev časa napada v milisekundah"
 
-#: beast-gtk/bstpatternctrl.cc:328
+#: beast-gtk/bstpatternctrl.cc:327
 msgid "Set the base octave"
 msgstr "Nastavi oktavo basa"
 
@@ -5659,35 +5640,35 @@ msgstr "Nastavitev dolžine dušenja v odstotkih"
 msgid "Set the envelope magnitude in percent"
 msgstr "Nastavitev velikosti ovojnice v odstotkih"
 
-#: plugins/davcanyondelay.cc:84
+#: plugins/davcanyondelay.cc:83
 msgid "Set the feedback amount; a negative feedback inverts the signal"
 msgstr "Nastavitev količine odziva, negativen odziv obrne signal"
 
-#: beast-gtk/bstpatternctrl.cc:347 beast-gtk/bstpatternctrl.cc:361
+#: beast-gtk/bstpatternctrl.cc:346 beast-gtk/bstpatternctrl.cc:360
 msgid "Set the focus cell note"
 msgstr "Nastavi noto  izbrane celice"
 
-#: beast-gtk/bstpatternctrl.cc:339
+#: beast-gtk/bstpatternctrl.cc:338
 msgid "Set the focus cell octave"
 msgstr "Nastavi oktavo izbrane celice"
 
-#: beast-gtk/bstpatternctrl.cc:321
+#: beast-gtk/bstpatternctrl.cc:320
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Nastavi žariščno celico na najnižji mogoči položaj"
 
-#: beast-gtk/bstpatternctrl.cc:319
+#: beast-gtk/bstpatternctrl.cc:318
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Nastavi žariščno celico na najbolj levi mogoči položaj"
 
-#: beast-gtk/bstpatternctrl.cc:320
+#: beast-gtk/bstpatternctrl.cc:319
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Nastavi žariščno celico na najbolj desni mogoči položaj"
 
-#: beast-gtk/bstpatternctrl.cc:318
+#: beast-gtk/bstpatternctrl.cc:317
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Nastavi žariščno celico na najvišji mogoči položaj"
 
-#: beast-gtk/bstpatternctrl.cc:324
+#: beast-gtk/bstpatternctrl.cc:323
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Nastavitev števila korakov med premikom na naslednjo celico"
 
@@ -5699,35 +5680,35 @@ msgstr "Nastavitev ojačanja izhoda"
 msgid "Set the release time in milliseconds"
 msgstr "Nastavitev časa izpusta v milisekundah"
 
-#: beast-gtk/bstpatternctrl.cc:351 beast-gtk/bstpatternctrl.cc:365
+#: beast-gtk/bstpatternctrl.cc:350 beast-gtk/bstpatternctrl.cc:364
 msgid "Sets the value of the focus digit"
 msgstr "Nastavi vrednost žariščnega števila"
 
-#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:429
-#: beast-gtk/bstwaveeditor.cc:200
+#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:426
+#: beast-gtk/bstwaveeditor.cc:199
 msgid "Shape Average"
 msgstr "Povprečje oblike"
 
-#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:431
-#: beast-gtk/bstwaveeditor.cc:202
+#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:428
+#: beast-gtk/bstwaveeditor.cc:201
 msgid "Shape Maximum"
 msgstr "Največja vrednost oblike"
 
-#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:430
-#: beast-gtk/bstwaveeditor.cc:201
+#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:427
+#: beast-gtk/bstwaveeditor.cc:200
 msgid "Shape Minimum"
 msgstr "Najmanjša vrednost oblike"
 
-#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:428
-#: beast-gtk/bstwaveeditor.cc:199
+#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:425
+#: beast-gtk/bstwaveeditor.cc:198
 msgid "Shape Range"
 msgstr "Obseg oblike"
 
-#: beast-gtk/bstsnetrouter.cc:654 beast-gtk/bstsnetrouter.cc:703
+#: beast-gtk/bstsnetrouter.cc:653 beast-gtk/bstsnetrouter.cc:702
 msgid "Show Info"
 msgstr "Pokaži podrobnosti"
 
-#: beast-gtk/bstusermessage.cc:541
+#: beast-gtk/bstusermessage.cc:542
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Pokaži sporočila o težavah zvočnega vhoda"
@@ -5740,11 +5721,11 @@ msgstr "Skrči drsno področje"
 msgid "Signal In"
 msgstr "Signal Vh"
 
-#: bse/bsebus.cc:945
+#: bse/bsebus.cc:946
 msgid "Signal Inputs"
 msgstr "Vhodi signala"
 
-#: bse/bsebus.cc:954 bse/bsetrack.cc:1147
+#: bse/bsebus.cc:955 bse/bsetrack.cc:1146
 msgid "Signal Outputs"
 msgstr "Izhodi signala"
 
@@ -5770,27 +5751,27 @@ msgstr "Šestnajstinka"
 msgid "Sixty-fourth note"
 msgstr "Štiriinsestdesetinka"
 
-#: beast-gtk/bstfiledialog.cc:125
+#: beast-gtk/bstfiledialog.cc:124
 msgid "Size"
 msgstr "Velikost"
 
-#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:433
-#: beast-gtk/bstwaveeditor.cc:204
+#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:430
+#: beast-gtk/bstwaveeditor.cc:203
 msgid "Sketch Average"
 msgstr "Povprečje skice"
 
-#: beast-gtk/bstapi.idl:74 beast-gtk/bstsampleeditor.cc:435
-#: beast-gtk/bstwaveeditor.cc:206
+#: beast-gtk/bstapi.idl:74 beast-gtk/bstsampleeditor.cc:432
+#: beast-gtk/bstwaveeditor.cc:205
 msgid "Sketch Maximum"
 msgstr "Največja vrednost skice"
 
-#: beast-gtk/bstapi.idl:73 beast-gtk/bstsampleeditor.cc:434
-#: beast-gtk/bstwaveeditor.cc:205
+#: beast-gtk/bstapi.idl:73 beast-gtk/bstsampleeditor.cc:431
+#: beast-gtk/bstwaveeditor.cc:204
 msgid "Sketch Minimum"
 msgstr "Najmanjša vrednost skice"
 
-#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:432
-#: beast-gtk/bstwaveeditor.cc:203
+#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:429
+#: beast-gtk/bstwaveeditor.cc:202
 msgid "Sketch Range"
 msgstr "Obseg skice"
 
@@ -5825,47 +5806,47 @@ msgstr "Tleskanje strune"
 msgid "Soft Knee"
 msgstr ""
 
-#: plugins/bsemixer.cc:91
+#: plugins/bsemixer.cc:90
 msgid "Sole Output"
 msgstr ""
 
-#: bse/bsebus.cc:934
+#: bse/bsebus.cc:935
 msgid "Solo"
 msgstr "Solo"
 
-#: bse/bsebus.cc:934
+#: bse/bsebus.cc:935
 msgid "Solo: mute all other busses"
 msgstr "Solo: Utišanje vseh ostalih vodil"
 
-#: bse/bsesong.cc:537
+#: bse/bsesong.cc:454
 #, fuzzy
 msgid "Song"
 msgstr "_Skladba"
 
-#: beast-gtk/bstapp.cc:447
+#: beast-gtk/bstapp.cc:446
 #, c-format
 msgid "Song: %s"
 msgstr "Skladba: %s"
 
-#: bse/bsesoundfontosc.cc:171 bse/bsetrack.cc:1128
+#: bse/bsesoundfontosc.cc:170 bse/bsetrack.cc:1127
 msgid "Sound Font Preset"
 msgstr ""
 
-#: bse/bsesoundfontosc.cc:173
+#: bse/bsesoundfontosc.cc:172
 msgid "Sound Font Preset to be used during replay"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:280
+#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:279
 msgid "Sound Fonts"
 msgstr ""
 
-#: bse/bsetrack.cc:1129
+#: bse/bsetrack.cc:1128
 #, fuzzy
 msgid "Sound font preset to be used as instrument"
 msgstr "Omrežje sinteze za uporabo kot inštrument"
 
-#: beast-gtk/bstscrollgraph.cc:549 beast-gtk/bstscrollgraph.cc:552
-#: beast-gtk/bstscrollgraph.cc:556 beast-gtk/bstscrollgraph.cc:559
+#: beast-gtk/bstscrollgraph.cc:550 beast-gtk/bstscrollgraph.cc:553
+#: beast-gtk/bstscrollgraph.cc:557 beast-gtk/bstscrollgraph.cc:560
 msgid "Spectrograph"
 msgstr "Spektrograf"
 
@@ -5878,7 +5859,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Vrtljiv gumb (logaritemski)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:236
+#: beast-gtk/bstmain.cc:217
 msgid "Splash Image"
 msgstr "Predstavitvena slika"
 
@@ -5886,11 +5867,11 @@ msgstr "Predstavitvena slika"
 msgid "Standard Option Menu"
 msgstr "Meni običajnih možnosti"
 
-#: beast-gtk/bstsnetrouter.cc:1017
+#: beast-gtk/bstsnetrouter.cc:1016
 msgid "Standard amplifier module"
 msgstr "Modul običajnega ojačevalnika"
 
-#: beast-gtk/bstsnetrouter.cc:1015
+#: beast-gtk/bstsnetrouter.cc:1014
 msgid "Standard oscillator module"
 msgstr "Modul običajnega oscilatorja"
 
@@ -5905,7 +5886,7 @@ msgid ""
 "BseWaveOsc(s) and their Gate Output Signal to this module."
 msgstr ""
 
-#: bse/bsestandardosc.cc:91
+#: bse/bsestandardosc.cc:90
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
@@ -5913,69 +5894,69 @@ msgstr ""
 "StandardOsc je na BSE osnovan oscilator, ki podpira različne vrste oblik "
 "valov in modulacijskih vhodov."
 
-#: beast-gtk/bsttrackrollctrl.cc:551 beast-gtk/bsttrackrollctrl.cc:556
+#: beast-gtk/bsttrackrollctrl.cc:548 beast-gtk/bsttrackrollctrl.cc:553
 msgid "Start Editor"
 msgstr "Zaženi urejevalnik"
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:159
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Zaženi spletni brskalnik in pojdi na spletne demo skladbe"
 
-#: beast-gtk/bstapp.cc:136
+#: beast-gtk/bstapp.cc:135
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Zaženi spletni brskalnik in pojdi na spletno stran BEAST"
 
-#: beast-gtk/bstapp.cc:142
+#: beast-gtk/bstapp.cc:141
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Zaženi spletni brskalnik in pojdi na spletno pomoč na spletišču BEAST"
 
-#: beast-gtk/bstapp.cc:156
+#: beast-gtk/bstapp.cc:155
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Zaženi spletni brskalnik in pojdi na spletni zvočni arhiv"
 
-#: beast-gtk/bstapp.cc:144
+#: beast-gtk/bstapp.cc:143
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
 msgstr "Zaženi spletni brskalnik z poročilom o hrošču za bugzillo BEAST"
 
-#: beast-gtk/bstsampleeditor.cc:412
+#: beast-gtk/bstsampleeditor.cc:409
 msgid "Start:"
 msgstr "Začetek:"
 
-#: beast-gtk/bstprojectctrl.cc:21
+#: beast-gtk/bstprojectctrl.cc:20
 msgid "Starting Playback"
 msgstr "Začenjanje predvajanja"
 
-#: beast-gtk/bstmain.cc:210
+#: beast-gtk/bstmain.cc:191
 msgid "Startup"
 msgstr "Zagon"
 
-#: beast-gtk/bstpatternctrl.cc:113
+#: beast-gtk/bstpatternctrl.cc:112
 msgid "Steps"
 msgstr "Koraki"
 
-#: beast-gtk/bstapp.cc:108
+#: beast-gtk/bstapp.cc:107
 msgid "Stop playback of the project"
 msgstr "Zaustavitev predvajanja projekta"
 
-#: beast-gtk/bstprojectctrl.cc:34
+#: beast-gtk/bstprojectctrl.cc:33
 msgid "Stopping Playback"
 msgstr "Zaustavljanje predvajanja"
 
-#: beast-gtk/bstfiledialog.cc:610
+#: beast-gtk/bstfiledialog.cc:609
 msgid "Store references to wave files"
 msgstr "Shranjevanje sklicev v datoteke valov"
 
-#: bse/bsebiquadfilter.cc:167
+#: bse/bsebiquadfilter.cc:154
 msgid "Strength of gain modulation"
 msgstr "Moč modulacije okrepitve glasnosti"
 
-#: bse/bsebiquadfilter.cc:148 bse/bsestandardosc.cc:149
+#: bse/bsebiquadfilter.cc:135 bse/bsestandardosc.cc:148
 msgid "Strength of linear frequency modulation"
 msgstr "Moč linearne modulacije frekvence"
 
-#: bse/bsestandardosc.cc:177
+#: bse/bsestandardosc.cc:176
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5983,7 +5964,7 @@ msgstr ""
 "Moč vhoda modulacije širine pulza (za učinek te možnosti je potrebno pulz "
 "izbrati kot val)"
 
-#: bse/bsestandardosc.cc:164
+#: bse/bsestandardosc.cc:163
 msgid "Strength of self modulation"
 msgstr "Moč samo modulacije"
 
@@ -6020,53 +6001,53 @@ msgstr ""
 msgid "Switches"
 msgstr "Preklopi"
 
-#: plugins/davsyndrum.cc:105
+#: plugins/davsyndrum.cc:106
 msgid "SynDrum Output"
 msgstr "Izhod SynDrum"
 
-#: bse/bsebus.cc:936
+#: bse/bsebus.cc:937
 msgid "Sync"
 msgstr "Uskladi"
 
-#: bse/bsestandardosc.cc:188 bse/bsewaveosc.cc:575
+#: bse/bsestandardosc.cc:187 bse/bsewaveosc.cc:574
 msgid "Sync In"
 msgstr "Uskl Vh"
 
-#: bse/bsestandardosc.cc:192
+#: bse/bsestandardosc.cc:191
 msgid "Sync Out"
 msgstr "Uskl Iz"
 
-#: bse/bsestandardosc.cc:188 bse/bsewaveosc.cc:575
+#: bse/bsestandardosc.cc:187 bse/bsewaveosc.cc:574
 msgid "Syncronization Input"
 msgstr "Uskladitveni vhod"
 
-#: bse/bsestandardosc.cc:192
+#: bse/bsestandardosc.cc:191
 msgid "Syncronization Output"
 msgstr "Izhod usklajevanja"
 
-#: bse/bsebus.cc:936
+#: bse/bsebus.cc:937
 msgid "Syncronize left and right volume"
 msgstr "Uskladi desno in levo glasnost"
 
-#: bse/bsecsynth.cc:62
+#: bse/bsecsynth.cc:59
 #, fuzzy
 msgid "Synth"
 msgstr "_Sint"
 
-#: bse/bsebasics.idl:116
+#: bse/bsebasics.idl:107
 msgid "Synth Control Frequency"
 msgstr "Nadzorna frekvenca sintetizatorja"
 
-#: bse/bseinstrumentoutput.cc:123
+#: bse/bseinstrumentoutput.cc:122
 msgid "Synth Done"
 msgstr "Sintetizator je narejen"
 
-#: bse/bsetrack.cc:1116 bse/bsetrack.cc:1121 bse/bsetrack.cc:1126
-#: bse/bsetrack.cc:1132
+#: bse/bsetrack.cc:1115 bse/bsetrack.cc:1120 bse/bsetrack.cc:1125
+#: bse/bsetrack.cc:1131
 msgid "Synth Input"
 msgstr "Sestavljen Vhod"
 
-#: bse/bsebasics.idl:112
+#: bse/bsebasics.idl:103
 msgid "Synth Mixing Frequency"
 msgstr "Mešalna frekvenca sintetizatorja"
 
@@ -6075,11 +6056,11 @@ msgstr "Mešalna frekvenca sintetizatorja"
 msgid "Synthesis Modules"
 msgstr "Sintezni moduli"
 
-#: bse/bsebasics.idl:106
+#: bse/bsebasics.idl:97
 msgid "Synthesis Settings"
 msgstr "Nastavitve sinteze"
 
-#: bse/bsebasics.idl:113
+#: bse/bsebasics.idl:104
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Mešalna frekvenca sinteze, pogoste vrednosti so: 22050, 44100, 48000"
 
@@ -6092,45 +6073,45 @@ msgstr "Modul sinteze je trenutno zaposlen"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Modul sinteze je trenutno zaposlen"
 
-#: beast-gtk/bsttrackview.cc:648
+#: beast-gtk/bsttrackview.cc:649
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Sintezno omrežje ali val za uporabo kot inštrument na tej sledi"
 
-#: bse/bsemidisynth.cc:362
+#: bse/bsemidisynth.cc:358
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Sintezno omrežje za uporabo kot inštrument MIDI"
 
-#: bse/bsetrack.cc:1118
+#: bse/bsetrack.cc:1117
 msgid "Synthesis network to be used as instrument"
 msgstr "Omrežje sinteze za uporabo kot inštrument"
 
-#: beast-gtk/bsttrackview.cc:657 bse/bsemidisynth.cc:366 bse/bsesong.cc:705
-#: bse/bsetrack.cc:1145
+#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:362 bse/bsesong.cc:610
+#: bse/bsetrack.cc:1144
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
-#: bse/bsesubsynth.cc:493
+#: bse/bsesubsynth.cc:492
 msgid "Synthesis network to use as embedded sub network"
 msgstr "Sintezno omrežje za uporabo kot vključeno podomrežje"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.cc:952
+#: bse/bsebus.cc:953
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Sintezni signali (iz sledi in vodil) uporabljeni kot vhod vodil"
 
-#: bse/bsemidisynth.cc:362 bse/bsesubsynth.cc:492 bse/bsetrack.cc:1118
+#: bse/bsemidisynth.cc:358 bse/bsesubsynth.cc:491 bse/bsetrack.cc:1117
 msgid "Synthesizer"
 msgstr "Sintetizator"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.cc:255
+#: beast-gtk/bsttracksynthdialog.cc:254
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Izbira sintetizatorja: %s"
 
-#: beast-gtk/bstapp.cc:457
+#: beast-gtk/bstapp.cc:456
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizator: %s"
@@ -6140,11 +6121,15 @@ msgid "TANH"
 msgstr ""
 
 # Id niti = IDN
-#: beast-gtk/bstprofiler.cc:137
+#: beast-gtk/bstprofiler.cc:138
 msgid "TID"
 msgstr "IDN"
 
-#: beast-gtk/bstapp.cc:149
+#: bse/bseapi.idl:1019
+msgid "TPQN"
+msgstr ""
+
+#: beast-gtk/bstapp.cc:148
 #, fuzzy
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Tehnični opis več nitnega sinteznega pogona"
@@ -6209,7 +6194,7 @@ msgid ""
 "and 'Audio Sum2' is also generated and is available at 'Audio Diff'."
 msgstr ""
 
-#: beast-gtk/gxk/gxksimplelabel.cc:121
+#: beast-gtk/gxk/gxksimplelabel.cc:122
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
@@ -6217,7 +6202,7 @@ msgstr ""
 "Poravnava vrstic v besedilu oznake relativno ena na drugo. To NE vpliva na "
 "poravnavo oznake znotraj dodelitve."
 
-#: bse/bsewaveosc.cc:547
+#: bse/bsewaveosc.cc:546
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "Zvočni kanal za predvajanje, ponavadi je 1 levo, 2 je desno"
 
@@ -6228,29 +6213,29 @@ msgid ""
 "which is referred to as the \"blues note\"."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:119
+#: beast-gtk/bstpatternctrl.cc:118
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "Smer premika celice ob vsakem urejanju dogodka ali note"
 
-#: plugins/davcanyondelay.cc:74
+#: plugins/davcanyondelay.cc:73
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr "Količina odziva, negativen odziv obrne signal"
 
-#: bse/bsebiquadfilter.cc:110 plugins/bseiirfilter.cc:73
+#: bse/bsebiquadfilter.cc:97 plugins/bseiirfilter.cc:73
 msgid "The filter design type"
 msgstr "Vrsta oblike filtra"
 
-#: bse/bsebiquadfilter.cc:139
+#: bse/bsebiquadfilter.cc:126
 #, fuzzy
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "Vrsta normalizacije okrepitve glasnosti filtra (popirata "
 
-#: beast-gtk/bstmsgabsorb.cc:202
+#: beast-gtk/bstmsgabsorb.cc:203
 msgid "The last program version that displayed this message type"
 msgstr "Zadnja različica programa, ki je prikazala to vrsto sporočila"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:131
+#: beast-gtk/gxk/gxksimplelabel.cc:132
 msgid "The mnemonic accelerator key for this label"
 msgstr "Mnemonska pospeševalna tipka za to oznako"
 
@@ -6266,7 +6251,7 @@ msgstr ""
 msgid "The number of bits the quantization steps correspond to."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:114
+#: beast-gtk/bstpatternctrl.cc:113
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Število celic za premik ob vsakem urejanju dogodka ali note"
@@ -6275,7 +6260,7 @@ msgstr "Število celic za premik ob vsakem urejanju dogodka ali note"
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.cc:673
+#: beast-gtk/bstpatterncolumns.cc:672
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6283,44 +6268,44 @@ msgstr ""
 "Razporeditev stolpcev urejevalnika vzorcev je določena z razvrstitvijo vrst "
 "stolpcev z možnimi spremenilniki v red prikaza."
 
-#: bse/bsesubiport.cc:290 bse/bsesuboport.cc:291
+#: bse/bsesubiport.cc:289 bse/bsesuboport.cc:290
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 "Ime vrat je edinstveno ime za vzpostavljanje razmerij vhodna<->izhodna vrata"
 
-#: beast-gtk/bstapp.cc:586
+#: beast-gtk/bstapp.cc:585
 msgid "The project has been modified."
 msgstr "Projekt je bil spremenjen."
 
-#: plugins/davsyndrum.cc:95
+#: plugins/davsyndrum.cc:96
 msgid ""
 "The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base "
 "frequency)"
 msgstr ""
 "Razmerje zamika frekvence. (1.0 pomeni zamik enak osnovni frekvenci bobna)"
 
-#: plugins/davsyndrum.cc:90
+#: plugins/davsyndrum.cc:91
 msgid "The resonance half life in number of milli seconds"
 msgstr "Razpolovni čas resonance v mili sekundah"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:106
+#: beast-gtk/gxk/gxksimplelabel.cc:107
 msgid "The text of the label"
 msgstr "Besedilo oznake"
 
-#: beast-gtk/bstpatternctrl.cc:108
+#: beast-gtk/bstpatternctrl.cc:107
 msgid "The tick/note length per line"
 msgstr ""
 
-#: plugins/davcanyondelay.cc:69
+#: plugins/davcanyondelay.cc:68
 msgid "The time for the left to right delay"
 msgstr "Čas zamika od leve proti desni"
 
-#: plugins/davcanyondelay.cc:79
+#: plugins/davcanyondelay.cc:78
 msgid "The time for the right to left delay"
 msgstr "Čas zamika od desne proti levi"
 
-#: bse/bseapi.idl:1028
+#: bse/bseapi.idl:1026
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6345,11 +6330,11 @@ msgstr "Vrsta filtra za uporabo"
 msgid "The type of saturation to be used"
 msgstr "Vrsta filtra za uporabo"
 
-#: plugins/davsyndrum.cc:82
+#: plugins/davsyndrum.cc:83
 msgid "The velocity of the drum hit"
 msgstr "Hitrost udarca po bobnu"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:136
+#: beast-gtk/gxk/gxksimplelabel.cc:137
 #, fuzzy
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
@@ -6359,7 +6344,7 @@ msgstr ""
 msgid "Thirty-secondth note"
 msgstr "Dvaintridesetinka"
 
-#: beast-gtk/bstusermessage.cc:230
+#: beast-gtk/bstusermessage.cc:231
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -6401,15 +6386,15 @@ msgid ""
 "as six equally imperfect fifths."
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:137
+#: beast-gtk/bstprofiler.cc:138
 msgid "Thread ID (on some systems the process ID)"
 msgstr "ID niti (na nekaterih sistemih ID procesa)"
 
-#: beast-gtk/bstprofiler.cc:135
+#: beast-gtk/bstprofiler.cc:136
 msgid "Thread Name"
 msgstr "Ime niti"
 
-#: beast-gtk/bstprofiler.cc:154
+#: beast-gtk/bstprofiler.cc:155
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Prednost niti od -20 (visoka) do +19 (nizka)"
 
@@ -6417,12 +6402,11 @@ msgstr "Prednost niti od -20 (visoka) do +19 (nizka)"
 msgid "Threshold [dB]"
 msgstr "Prag [dB]"
 
-#: bse/bsesong.cc:693
-#, fuzzy
-msgid "Ticks"
-msgstr "Preskoči na vrednosti"
+#: bse/bseapi.idl:1036
+msgid "Tick Pointer"
+msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:143
+#: beast-gtk/bstfiledialog.cc:142
 msgid "Time"
 msgstr "Čas"
 
@@ -6431,20 +6415,10 @@ msgid "Time Entry"
 msgstr "Vnos časa"
 
 #. signal void   pointer_changed (int32 a);
-#. group _("Timing") {
-#. int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
-#. int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
-#. int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
-#. float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
-#. };
 #. group _("MIDI Instrument") {
 #. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
 #. };
-#. bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
-#. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
-#. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
-#. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:1023 bse/bsesong.cc:691 bse/bsesong.cc:695 bse/bsesong.cc:699
+#: bse/bseapi.idl:1018
 #, fuzzy
 msgid "Timing"
 msgstr "<b>Način časa:</b>"
@@ -6457,7 +6431,7 @@ msgstr ""
 msgid "Toggle Button"
 msgstr "Preklopni gumb"
 
-#: beast-gtk/bstsnetrouter.cc:1080
+#: beast-gtk/bstsnetrouter.cc:1079
 msgid "Toggle channel name hints"
 msgstr "Preklop namigov imen kanala"
 
@@ -6465,11 +6439,11 @@ msgstr "Preklop namigov imen kanala"
 msgid "Toggle exponential and linear control response"
 msgstr "Preklop eksponentnega in linearnega odziva nadzora"
 
-#: beast-gtk/bstsnetrouter.cc:35
+#: beast-gtk/bstsnetrouter.cc:34
 msgid "Toggle visibility of the tool palette"
 msgstr "Preklop vidnosti orodne palete"
 
-#: beast-gtk/bstpatternctrl.cc:124
+#: beast-gtk/bstpatternctrl.cc:123
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
@@ -6484,7 +6458,7 @@ msgstr "Preveč odprtih datotek"
 msgid "Too many open files in system"
 msgstr "Preveč odprtih datotek v sistemu"
 
-#: beast-gtk/bstprofiler.cc:77
+#: beast-gtk/bstprofiler.cc:78
 msgid "Totals"
 msgstr "Skupno"
 
@@ -6496,7 +6470,7 @@ msgstr "Sledi"
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Sledi vsebujejo definicije inštrumentov in dele z notami"
 
-#: bse/bsestandardosc.cc:139 plugins/davorgan.idl:18
+#: bse/bsestandardosc.cc:138 plugins/davorgan.idl:18
 #: plugins/davxtalstrings.cc:94
 msgid "Transpose"
 msgstr "Premakni"
@@ -6505,21 +6479,21 @@ msgstr "Premakni"
 msgid "Transposition of the frequency in semitones"
 msgstr "Premik frekvence v poltonih"
 
-#: bse/bsestandardosc.cc:139
+#: bse/bsestandardosc.cc:138
 msgid "Transposition of the oscillator frequency in semitones"
 msgstr "Premik frekvence oscilatorja v poltonih"
 
-#: plugins/davsyndrum.cc:85 plugins/davxtalstrings.cc:102
+#: plugins/davsyndrum.cc:86 plugins/davxtalstrings.cc:102
 #: plugins/davxtalstrings.cc:107
 msgid "Trigger"
 msgstr "Sprožilec"
 
-#: plugins/davsyndrum.cc:86 plugins/davxtalstrings.cc:108
+#: plugins/davsyndrum.cc:87 plugins/davxtalstrings.cc:108
 msgid "Trigger Hit"
 msgstr "Sproži udarec"
 
 #: plugins/bsecontribsampleandhold.idl:14 plugins/davbassfilter.idl:15
-#: plugins/davsyndrum.cc:103 plugins/davxtalstrings.cc:133
+#: plugins/davsyndrum.cc:104 plugins/davxtalstrings.cc:133
 msgid "Trigger In"
 msgstr "Vhod sprožilca"
 
@@ -6528,7 +6502,7 @@ msgstr "Vhod sprožilca"
 msgid "Trigger Input"
 msgstr "Vhod sprožilca"
 
-#: plugins/davsyndrum.cc:81 plugins/davxtalstrings.cc:103
+#: plugins/davsyndrum.cc:82 plugins/davxtalstrings.cc:103
 msgid "Trigger Velocity [%]"
 msgstr "Hitrost sprožilca [%s]"
 
@@ -6573,36 +6547,36 @@ msgstr "Triola dvaintridesetink"
 msgid "Triplet whole note"
 msgstr "Triola celink"
 
-#: bse/bseapi.idl:1026
+#: bse/bseapi.idl:1024
 msgid "Tuning"
 msgstr "Uglaševanje"
 
-#: beast-gtk/bstitemview.cc:202
+#: beast-gtk/bstitemview.cc:201
 msgid "Type"
 msgstr "Vrsta"
 
-#: beast-gtk/bstprofiler.cc:139
+#: beast-gtk/bstprofiler.cc:140
 #, fuzzy
 msgid "UTime"
 msgstr "%d: Utime %s %d\n"
 
-#: beast-gtk/bstscrollgraph.cc:644
+#: beast-gtk/bstscrollgraph.cc:645
 msgid "Unconnected Output Channel"
 msgstr "Nepovezan izhodni kanal"
 
-#: beast-gtk/bstpartdialog.cc:49
+#: beast-gtk/bstpartdialog.cc:48
 msgid "Undo"
 msgstr "Razveljavi"
 
-#: beast-gtk/bstpartdialog.cc:49
+#: beast-gtk/bstpartdialog.cc:48
 msgid "Undo last editing step"
 msgstr "Razveljavitev zadnjega koraka urejanja"
 
-#: beast-gtk/bstapp.cc:90
+#: beast-gtk/bstapp.cc:89
 msgid "Undo the effect of the last action"
 msgstr "Razveljavi učinek zadnjega dejanja"
 
-#: bse/bsebiquadfilter.cc:171
+#: bse/bsebiquadfilter.cc:158
 msgid "Unfiltered Audio Signal"
 msgstr "Nefiltriran zvočni signal"
 
@@ -6623,16 +6597,16 @@ msgid "Unknown format"
 msgstr "Neznana vrsta zapisa"
 
 #. default to 'Unnamed-###' unames
-#: bse/bsesuper.cc:36
+#: bse/bsesuper.cc:37
 #, fuzzy
 msgid "Unnamed"
 msgstr "Preimenuj"
 
-#: beast-gtk/bsteventrollctrl.cc:44
+#: beast-gtk/bsteventrollctrl.cc:43
 msgid "Unselect all events"
 msgstr "Počisti izbor vseh dogodkov"
 
-#: beast-gtk/bstpianorollctrl.cc:44
+#: beast-gtk/bstpianorollctrl.cc:42
 msgid "Unselect all notes"
 msgstr "Počisti izbor vseh not"
 
@@ -6640,7 +6614,7 @@ msgstr "Počisti izbor vseh not"
 msgid "Unspecified length"
 msgstr "Nedoločena dolžina"
 
-#: bse/bseinstrumentoutput.cc:121
+#: bse/bseinstrumentoutput.cc:120
 msgid "Unused"
 msgstr "Neporabljeno"
 
@@ -6648,50 +6622,50 @@ msgstr "Neporabljeno"
 msgid "Up"
 msgstr "Navzgor"
 
-#: beast-gtk/bstutils.cc:356 beast-gtk/bstutils.cc:378
-#: beast-gtk/bstutils.cc:381
+#: beast-gtk/bstutils.cc:354 beast-gtk/bstutils.cc:376
+#: beast-gtk/bstutils.cc:379
 msgid "Updating View"
 msgstr "Posodabljanje pogleda"
 
-#: beast-gtk/bsttrackrollctrl.cc:48
+#: beast-gtk/bsttrackrollctrl.cc:45
 msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr "Uporabna vodoravnega ravnila za prilagoditev levega kazalnika zanke"
 
-#: beast-gtk/bsttrackrollctrl.cc:50
+#: beast-gtk/bsttrackrollctrl.cc:47
 msgid "Use the horizontal ruler to adjust the play position pointer"
 msgstr ""
 "Uporaba vodoravnega ravnila za prilagoditev kazalnika položaja predvajanja"
 
-#: beast-gtk/bsttrackrollctrl.cc:52
+#: beast-gtk/bsttrackrollctrl.cc:49
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Uporabna vodoravnega ravnila za prilagoditev desnega kazalnika zanke"
 
-#: beast-gtk/gxk/gxksimplelabel.cc:110
+#: beast-gtk/gxk/gxksimplelabel.cc:111
 msgid "Use underline"
 msgstr "Uporabi podčrtaj"
 
-#: beast-gtk/bstsampleeditor.cc:402 beast-gtk/bstwaveeditor.cc:193
+#: beast-gtk/bstsampleeditor.cc:399 beast-gtk/bstwaveeditor.cc:192
 msgid "VScale:"
 msgstr "NMerilo:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:107 res/gxk/radgets-beast.xml:455
+#: beast-gtk/bstpatternctrl.cc:106 res/gxk/radgets-beast.xml:455
 msgid "VZoom"
 msgstr "NPovečava"
 
-#: bse/bseconstant.cc:93
+#: bse/bseconstant.cc:92
 msgid "Value [float]"
 msgstr "Vrednost [plavajoče]"
 
-#: bse/bseinstrumentinput.cc:121 bse/bsemidiinput.cc:97
+#: bse/bseinstrumentinput.cc:120 bse/bsemidiinput.cc:95
 msgid "Velocity"
 msgstr "Hitrost"
 
-#: bse/bsemidivoice.cc:98
+#: bse/bsemidivoice.cc:97
 msgid "Velocity Out"
 msgstr "Hitrost Iz"
 
-#: bse/bseinstrumentinput.cc:121 bse/bsemidiinput.cc:97
+#: bse/bseinstrumentinput.cc:120 bse/bsemidiinput.cc:95
 msgid "Velocity of the note press"
 msgstr "Hitrost pritiska note"
 
@@ -6700,11 +6674,11 @@ msgstr "Hitrost pritiska note"
 msgid "Velocity of the string pluck"
 msgstr "Hitrost trzanja strune"
 
-#: bse/bseinstrumentinput.cc:123 bse/bsemidiinput.cc:99
+#: bse/bseinstrumentinput.cc:122 bse/bsemidiinput.cc:97
 msgid "Velocity while the note is pressed"
 msgstr "Hitrost med pritiskom note"
 
-#: beast-gtk/bstmsgabsorb.cc:201
+#: beast-gtk/bstmsgabsorb.cc:202
 msgid "Version"
 msgstr "Različica"
 
@@ -6716,7 +6690,7 @@ msgstr "Barva navpične vrstice"
 msgid "Vertical Grid Color"
 msgstr "Barva navpične mreže"
 
-#: beast-gtk/bstpianorollctrl.cc:794
+#: beast-gtk/bstpianorollctrl.cc:792
 msgid "Vertical Region"
 msgstr "Navpično območje"
 
@@ -6728,7 +6702,7 @@ msgstr "Navpično merilo"
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Navpično merilo (logaritemsko)"
 
-#: beast-gtk/bstpianorollctrl.cc:70 beast-gtk/bstpianorollctrl.cc:768
+#: beast-gtk/bstpianorollctrl.cc:68 beast-gtk/bstpianorollctrl.cc:766
 msgid "Vertical Select"
 msgstr "Navpična izbira"
 
@@ -6742,12 +6716,12 @@ msgstr "Navpična povečava klavirja"
 msgid "Virtual Rack"
 msgstr "Navidezna polica"
 
-#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:520
+#: bse/bsesubiport.cc:278 bse/bsesubsynth.cc:519
 #, c-format
 msgid "Virtual input %u"
 msgstr "Navidezni vhod %u"
 
-#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:527
+#: bse/bsesuboport.cc:279 bse/bsesubsynth.cc:526
 #, c-format
 msgid "Virtual output %u"
 msgstr "Navidezni izhod %u"
@@ -6756,20 +6730,20 @@ msgstr "Navidezni izhod %u"
 msgid "Volume"
 msgstr "Glasnost"
 
-#: bse/bsebus.cc:938
+#: bse/bsebus.cc:939
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Prilagoditev glasnosti v decibelih za kanal levega vodila"
 
-#: bse/bsebus.cc:942
+#: bse/bsebus.cc:943
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Prilagoditev glasnosti v decibelih za kanal desnega vodila"
 
-#: bse/bseserver.cc:118
+#: bse/bseserver.cc:121
 msgid "WAVE File"
 msgstr "Datoteka WAVE"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1123 bse/bsewaveosc.cc:541
-#: bse/bsewaveosc.cc:543 bse/bsewaveosc.cc:545
+#: bse/bsestandardosc.cc:117 bse/bsetrack.cc:1122 bse/bsewaveosc.cc:540
+#: bse/bsewaveosc.cc:542 bse/bsewaveosc.cc:544
 msgid "Wave"
 msgstr "Val"
 
@@ -6778,23 +6752,23 @@ msgstr "Val"
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Nalaganje valu \"%s\" za frekvenco %f je spodletelo: %s"
 
-#: bse/bsestandardosc.cc:116 bse/bsestandardosc.cc:122
+#: bse/bsestandardosc.cc:115 bse/bsestandardosc.cc:121
 msgid "Wave Form"
 msgstr "Valovna oblika"
 
-#: bse/bsewaveosc.cc:579
+#: bse/bsewaveosc.cc:578
 msgid "Wave Output"
 msgstr "Valovni izhod"
 
-#: beast-gtk/bstapp.cc:442
+#: beast-gtk/bstapp.cc:441
 msgid "Wave Repository"
 msgstr "Skladišče valov"
 
-#: bse/bsetrack.cc:1123
+#: bse/bsetrack.cc:1122
 msgid "Wave to be used as instrument"
 msgstr "Val za uporabo kot instrument"
 
-#: bse/bsewaveosc.cc:543
+#: bse/bsewaveosc.cc:542
 msgid "Wave used as oscillator source"
 msgstr "Val uporabljen kot vir oscilatorja"
 
@@ -6803,7 +6777,7 @@ msgstr "Val uporabljen kot vir oscilatorja"
 msgid "Wave_s"
 msgstr "Val_ovi"
 
-#: beast-gtk/bstapp.cc:440 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:439 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Valovi"
 
@@ -6833,7 +6807,7 @@ msgstr ""
 msgid "Whole note"
 msgstr "Celinka"
 
-#: beast-gtk/bstscrollgraph.cc:560
+#: beast-gtk/bstscrollgraph.cc:561
 msgid "Window Size"
 msgstr "Velikost okna"
 
@@ -6841,11 +6815,11 @@ msgstr "Velikost okna"
 msgid "Write failed"
 msgstr "Napaka med pisanjem"
 
-#: beast-gtk/bstapp.cc:71
+#: beast-gtk/bstapp.cc:70
 msgid "Write project to a specific file"
 msgstr "Zapis projekta v določeno datoteko"
 
-#: beast-gtk/bstapp.cc:69
+#: beast-gtk/bstapp.cc:68
 msgid "Write project to disk"
 msgstr "Zapis projekta na disk"
 
@@ -6870,15 +6844,15 @@ msgstr "Barva vrednosti nič"
 msgid "Zoom"
 msgstr "Povečava"
 
-#: beast-gtk/bstsampleeditor.cc:391 beast-gtk/bstwaveeditor.cc:182
+#: beast-gtk/bstsampleeditor.cc:388 beast-gtk/bstwaveeditor.cc:181
 msgid "Zoom:"
 msgstr "Povečava:"
 
-#: bse/bsepcmdevice-null.cc:127
+#: bse/bsepcmdevice-null.cc:128
 msgid "[nosleep]"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:86
+#: beast-gtk/bstapp.cc:85
 msgid "_About..."
 msgstr "_O Programu ..."
 
@@ -6902,7 +6876,7 @@ msgstr "_Zvočni viri"
 msgid "_Back"
 msgstr "Na_zaj"
 
-#: beast-gtk/bstapp.cc:136
+#: beast-gtk/bstapp.cc:135
 msgid "_Beast Website..."
 msgstr "Spletišče _Beast ..."
 
@@ -6911,11 +6885,11 @@ msgstr "Spletišče _Beast ..."
 msgid "_Cancel"
 msgstr "_Prekliči"
 
-#: beast-gtk/bstapp.cc:96 beast-gtk/bstpartdialog.cc:53
+#: beast-gtk/bstapp.cc:95 beast-gtk/bstpartdialog.cc:52
 msgid "_Clear Undo"
 msgstr "_Počisti razveljave"
 
-#: beast-gtk/bstapp.cc:65
+#: beast-gtk/bstapp.cc:64
 msgid "_Close"
 msgstr "_Zapri"
 
@@ -6940,7 +6914,7 @@ msgstr "_Uredi"
 msgid "_Enhance"
 msgstr "_Izboljšaj"
 
-#: beast-gtk/bstapp.cc:138
+#: beast-gtk/bstapp.cc:137
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
@@ -6969,7 +6943,7 @@ msgstr "Po_sreduj"
 msgid "_Help"
 msgstr "Pomo_č"
 
-#: beast-gtk/bstapp.cc:63
+#: beast-gtk/bstapp.cc:62
 msgid "_Import MIDI..."
 msgstr "_Uvozi MIDI ..."
 
@@ -6988,7 +6962,7 @@ msgstr "_Vhod in izhod"
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/bstapp.cc:61
+#: beast-gtk/bstapp.cc:60
 msgid "_Merge..."
 msgstr "_Združi ..."
 
@@ -6997,11 +6971,11 @@ msgstr "_Združi ..."
 msgid "_Misc"
 msgstr "_Razno"
 
-#: beast-gtk/bstapp.cc:57
+#: beast-gtk/bstapp.cc:56
 msgid "_New"
 msgstr "_Novo"
 
-#: beast-gtk/bstapp.cc:59
+#: beast-gtk/bstapp.cc:58
 msgid "_Open..."
 msgstr "_Odpri ..."
 
@@ -7010,11 +6984,11 @@ msgstr "_Odpri ..."
 msgid "_Other Sources"
 msgstr "_Drugi viri"
 
-#: beast-gtk/bstapp.cc:106
+#: beast-gtk/bstapp.cc:105
 msgid "_Play"
 msgstr "_Predvajaj"
 
-#: beast-gtk/bstapp.cc:79
+#: beast-gtk/bstapp.cc:78
 msgid "_Preferences..."
 msgstr "_Možnosti ..."
 
@@ -7028,19 +7002,19 @@ msgstr "_Projekt"
 msgid "_Quantization"
 msgstr "_Kvantizacija"
 
-#: beast-gtk/bstapp.cc:140
+#: beast-gtk/bstapp.cc:139
 msgid "_Quick Start..."
 msgstr "_Hiter začetek ..."
 
-#: beast-gtk/bstapp.cc:75
+#: beast-gtk/bstapp.cc:74
 msgid "_Quit"
 msgstr "_Končaj"
 
-#: beast-gtk/bstapp.cc:92
+#: beast-gtk/bstapp.cc:91
 msgid "_Redo"
 msgstr "_Uveljavi"
 
-#: beast-gtk/bstapp.cc:134
+#: beast-gtk/bstapp.cc:133
 msgid "_Release Notes..."
 msgstr "_Opombe ob izdaji ..."
 
@@ -7059,7 +7033,7 @@ msgstr "_Odstrani"
 msgid "_Routing"
 msgstr "_Usmerjanje"
 
-#: beast-gtk/bstapp.cc:69
+#: beast-gtk/bstapp.cc:68
 msgid "_Save"
 msgstr "_Shrani"
 
@@ -7083,7 +7057,7 @@ msgstr "_Skladba"
 msgid "_Spatial"
 msgstr "Pro_storsko"
 
-#: beast-gtk/bstapp.cc:108
+#: beast-gtk/bstapp.cc:107
 msgid "_Stop"
 msgstr "Zau_stavi"
 
@@ -7103,7 +7077,7 @@ msgstr "_Sintetizatorji"
 msgid "_Tools"
 msgstr "_Orodja"
 
-#: beast-gtk/bstapp.cc:90
+#: beast-gtk/bstapp.cc:89
 msgid "_Undo"
 msgstr "_Razveljavi"
 
@@ -7122,7 +7096,7 @@ msgstr "_Pogled"
 msgid "_Virtualization"
 msgstr "P_redočenje"
 
-#: bse/bseserver.cc:432
+#: bse/bseserver.cc:435
 #, fuzzy
 msgid "audio input problems"
 msgstr "Pokaži sporočila o težavah zvočnega vhoda"
@@ -7351,7 +7325,7 @@ msgstr "Nadzor-9"
 msgid "control-90"
 msgstr "Nadzor-90"
 
-#: tools/bsewavetool.cc:1165
+#: tools/bsewavetool.cc:1159
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
@@ -7484,6 +7458,9 @@ msgstr ""
 #~ msgid "Item"
 #~ msgstr "Predmet"
 
+#~ msgid "LADSPA Path"
+#~ msgstr "Pot LADSPA"
+
 #~ msgid "Launch Web Browser"
 #~ msgstr "Zaženi spletni brskalnik"
 
@@ -7604,11 +7581,35 @@ msgstr ""
 #~ msgid "Script"
 #~ msgstr "Skripta"
 
+#~ msgid "Script Path"
+#~ msgstr "Pot skripta"
+
 #~ msgid "Script execution error."
 #~ msgstr "Napaka izvajanja skripta."
 
 #~ msgid "Scripts"
 #~ msgstr "Skripte"
+
+#, fuzzy
+#~ msgid ""
+#~ "Search path of directories, seperated by \";\", used to find BSE scheme "
+#~ "scripts."
+#~ msgstr ""
+#~ "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje skript BSE "
+#~ "sheme."
+
+#, fuzzy
+#~ msgid ""
+#~ "Search path of directories, seperated by \";\", used to find LADSPA "
+#~ "plugins. This path is searched for in addition to the standard LADSPA "
+#~ "location on this system. LADSPA is the Linux Audio Developer's Simple "
+#~ "Plugin API, more informations about LADSPA plugins can be found at http://"
+#~ "www.ladspa.org/."
+#~ msgstr ""
+#~ "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov "
+#~ "LADSPA. Ta pot je preiskana poleg običajnih mest LADSPA na tem sistemu. "
+#~ "LADSPA je API preprostega vstavka linux zvočnega razvijalca, več "
+#~ "podrobnosti o vstavkih LADSPA je mogoče najti na http://www.ladspa.org/."
 
 #~ msgid "Show messages about web browser launch problems"
 #~ msgstr "Pokaži sporočila o težavah zagona spletnega brskalnika"
@@ -7673,6 +7674,10 @@ msgstr ""
 
 #~ msgid "Thread ID"
 #~ msgstr "ID niti"
+
+#, fuzzy
+#~ msgid "Ticks"
+#~ msgstr "Preskoči na vrednosti"
 
 #~ msgid "User Time"
 #~ msgstr "Uporabniški čas"
