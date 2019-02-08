@@ -1,11 +1,12 @@
-== Beast 0.13.0-alpha:
+## Beast 0.13.0-alpha:
 
 [.caution]
 _Note: This is the master branch of Beast, which contains alpha version software.
 Beware of file format instabilities and report any bugs you find in it._
 
 
-== Beast 0.12.0:					(2018-08-20)
+
+## Beast 0.12.0:					(2018-08-20)
 
 .System Requirements
 * Linux - Ubuntu 16.10 is needed to install the `.deb` package
@@ -62,7 +63,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Handle UTF-8 mixed with Latin-1 gracefully.
 
 
-== Beast 0.11.0:					(2017-06-27)
+## Beast 0.11.0:					(2017-06-27)
 
 * Added Soundfont support so Beast can play .sf2 files. [stw]
 * Execute the DSP engine multi threaded with `nproc` many threads.
@@ -89,7 +90,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * The Beast project now provides Debian binary packages at:
   https://testbit.eu/pub/dists/beast/debs
 
-== Beast 0.10.0:					(2016-04-07)
+## Beast 0.10.0:					(2016-04-07)
 
 * Memory leak and stability fixes.
 * Removal of deprecated Glib/Gtk+ functions.
@@ -113,7 +114,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Split up Beast main() methods to run event loop from Python.
 * Port libbse to use C++11 scoped enums.
 
-== Beast 0.9.2:					(2015-09-16)
+## Beast 0.9.2:					(2015-09-16)
 
 * Workarounds were added for broken GLib compatibility.
 * Files for the BSE runtime are now compressed and stored via rapidres(1).
@@ -126,7 +127,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * All files are now installed under versioned directories, e.g. /usr/share/beast-0.9/
 * Execute audio tests with 'make check' for development versions.
 
-== Beast 0.9.0:					(2014-10-28)
+## Beast 0.9.0:					(2014-10-28)
 
 * Fixed missing includes. [stw]
 * Updates to build with Rapicorn1410.
@@ -140,7 +141,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Updates to the manual pages.
 * Improved utilization of compiler vectorizations.
 
-== Beast 0.8.2:					(2013-07-06)
+## Beast 0.8.2:					(2013-07-06)
 
 * Introduced Rapicorn1307 dependency.
 * Establish Aida remote interfacing between Beast and BSE.
@@ -152,7 +153,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Beast now ships complete documentation builds in tarballs.
 
 
-== Beast 0.8.0:					(2013-03-25)
+## Beast 0.8.0:					(2013-03-25)
 
 * Added use of the Rapicorn library, require version 13.0.0.
 * Adapted IDL types to other projects.
@@ -163,7 +164,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Lots of code cleanups, licensing cleanups.
 
 
-== Overview of Changes in BEAST/BSE 0.7.8:
+## Overview of Changes in BEAST/BSE 0.7.8:
 
 * Wave oscillator fixes for 96k samples (GB#612281). [stw]
 * Performance improvements of the scheme shell. [stw]
@@ -177,7 +178,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Improved Beast startup time.
 
 
-== Overview of Changes in BEAST/BSE 0.7.6:
+## Overview of Changes in BEAST/BSE 0.7.6:
 
 * Packaging fixups, download and integrate documentation from beast wiki.
 * Work around regressions introduced in recent GLib and GTK+ versions.
@@ -188,7 +189,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Improved DavOrgan frequency handling.
 
 
-== Overview of Changes in BEAST/BSE 0.7.4:
+## Overview of Changes in BEAST/BSE 0.7.4:
 
 * Renamed the project to Better Audio System / Better Sound Engine
 * Moved project website to: http://beast.testbit.eu/
@@ -207,7 +208,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added e-Telugu translation [Veeven]
 
 
-== Overview of Changes in BEAST/BSE 0.7.2:
+## Overview of Changes in BEAST/BSE 0.7.2:
 
 * Moved Beast/BSE to GNU LGPL, use AS-IS license for examples
 * Module changes and additions:
@@ -247,7 +248,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added Ukrainian translation [Maxim V. Dziumanenko]
 
 
-== Overview of Changes in BEAST/BSE 0.7.1:
+## Overview of Changes in BEAST/BSE 0.7.1:
 
 * Fixed SUID security vulnerability by validating success of seteuid/setreuid,
   related security advisories, describing the vulnerability:
@@ -284,7 +285,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Updated Italian translation [Petrecca Michele]
 
 
-== Overview of Changes in BEAST/BSE 0.7.0:
+## Overview of Changes in BEAST/BSE 0.7.0:
 
 * Renamed scheme shell to bsescm
 * Optimized core functions for MMX/SSE with runtime CPU detection
@@ -326,7 +327,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added Nepali translation [Pawan Chitrakar]
 
 
-== Overview of Changes in BEAST/BSE 0.6.6:
+## Overview of Changes in BEAST/BSE 0.6.6:
 
 * Improved error messages
 * Improved script handling
@@ -345,7 +346,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added Basque translation [Hizkuntza Politikarako Sailburuordetza]
 
 
-== Overview of Changes in BEAST/BSE 0.6.5:
+## Overview of Changes in BEAST/BSE 0.6.5:
 
 * New supported file formats:
   - GUS Patches - Load patchfiles as ordinary samples [Stefan Westerfeld]
@@ -374,7 +375,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added Kinyarwanda translation [Steve Murphy]
 
 
-== Overview of Changes in BEAST/BSE 0.6.4:
+## Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
 * Added -N and -n=<nicelevel> options to drop nice level priorities
@@ -390,7 +391,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Updated Spanish translation [Jorge Gonzalez]
 
 
-== Overview of Changes in BEAST/BSE 0.6.3:
+## Overview of Changes in BEAST/BSE 0.6.3:
 
 * The package now depends on GLib-2.4 and Gtk+-2.4
 * New/ported/improved Effects:
@@ -434,7 +435,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added Italian translation [Petrecca Michele]
 
 
-== Overview of Changes in BEAST/BSE 0.6.2:
+## Overview of Changes in BEAST/BSE 0.6.2:
 
 * Rewrote scrollbar sizing, so tracks and parts are easily resizable
 * Lots of small GUI enhancements and fixes
@@ -462,7 +463,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Lots of adaptions to GLib/Gtk+-2.4
 
 
-== Overview of Changes in BEAST/BSE 0.6.1:
+## Overview of Changes in BEAST/BSE 0.6.1:
 
 * Added suid wrapper which acquires nice level -20, then drops privileges
 * Improved latency/block-size handling of the synthesis engine
@@ -486,7 +487,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Lots of GUI fixes
 
 
-== Overview of Changes in BEAST/BSE 0.6.0:
+## Overview of Changes in BEAST/BSE 0.6.0:
 
 * Moved RC file from ~/.beastrc to ~/.beast/beastrc
 * Lots of major and minor GUI improvements
@@ -514,7 +515,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Miscellaneous bug fixes and cleanups
 
 
-== Overview of Changes in BEAST/BSE 0.5.6:
+## Overview of Changes in BEAST/BSE 0.5.6:
 
 * New (or ported) modules:
   - BseEvaluator  - highly experimental (available with --devel) expression
@@ -554,7 +555,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Miscellaneous bug fixes, lots of code cleanups
 
 
-== Overview of Changes in BEAST/BSE 0.5.5:
+## Overview of Changes in BEAST/BSE 0.5.5:
 
 * New (or ported) modules:
   - DavCanyonDelay - Canyon Echo by David A. Bartold
@@ -588,7 +589,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Lots of bug fixes
 
 
-== Overview of Changes in BEAST/BSE 0.5.4:
+## Overview of Changes in BEAST/BSE 0.5.4:
 
 * Ported and improved synthesis module from David A. Bartold:
   - DavSynDrum - Synthetic drum generator
@@ -600,7 +601,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Miscellaneous bug fixes
 
 
-== Overview of Changes in BEAST/BSE 0.5.3:
+## Overview of Changes in BEAST/BSE 0.5.3:
 
 * Seperated core plugin loading from LADSPA plugin loading
 * Fixed memory leaks in various places
@@ -608,7 +609,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Fixed bsesh (script) communication for systems with short writes
 
 
-== Overview of Changes in BEAST/BSE 0.5.2:
+## Overview of Changes in BEAST/BSE 0.5.2:
 
 * Implemented unlimited Undo/Redo facilities
 * Tracks now support waves directly as Synth input
@@ -628,7 +629,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Miscellaneous major and minor code fixes
 
 
-== Overview of Changes in BEAST/BSE 0.5.1:
+## Overview of Changes in BEAST/BSE 0.5.1:
 
 * Added support for LADSPA plugins
 * Improved synthesis network router display
@@ -637,7 +638,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Fixed memory leaks during playback
 
 
-== Overview of Changes in BEAST/BSE 0.5.0:
+## Overview of Changes in BEAST/BSE 0.5.0:
 
 * Moved BSE into its own thread
 * Added IDL based code generator [Stefan Westerfeld]
@@ -654,7 +655,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Bug fixes and major cleanups
 
 
-== Overview of Changes in BEAST/BSE 0.4.1:
+## Overview of Changes in BEAST/BSE 0.4.1:
 
 * Added cool startup splash-screen from Jimmac
 * Added GSL - a common sound routine library for BSE and aRts
@@ -695,7 +696,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * A huge amount of bug fixes
 
 
-== Overview of Changes in BEAST/BSE 0.4.0:
+## Overview of Changes in BEAST/BSE 0.4.0:
 
 * Various effects are supported for sequencer notes now
 * Sequencer and mixer cleanups and speedups
@@ -708,7 +709,7 @@ Beware of file format instabilities and report any bugs you find in it._
   - DavChorus     - chorusing filter
 
 
-== Overview of Changes in BEAST/BSE 0.3.3:
+## Overview of Changes in BEAST/BSE 0.3.3:
 
 * Fixed font specification in pattern editor
 * GNOME Canvas redrawing workarounds
@@ -716,7 +717,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Libtool update
 
 
-== Overview of Changes in BEAST/BSE 0.3.2:
+## Overview of Changes in BEAST/BSE 0.3.2:
 
 * Songs have a pattern play list now that can be altered
 * Major overhaul of the mixing engine which is now agressively
@@ -738,7 +739,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Vast amounts of code cleanups and bug fixes ;)
 
 
-== Overview of Changes in BEAST/BSE 0.3.1:
+## Overview of Changes in BEAST/BSE 0.3.1:
 
 * Fixed a dumb major bug in the ALSA backend that could prevent
   it from playing at all
@@ -755,7 +756,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Miscellaneous minor bugfixes
 
 
-== What's new in BEAST/BSE 0.3.0:
+## What's new in BEAST/BSE 0.3.0:
 
 * Synthesis networks implemented, plugins currently imlemented:
   - noise generator
