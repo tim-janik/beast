@@ -58,17 +58,4 @@ New source code pushed to the Beast repository is automatically built
 and tested via Travis-CI. Ever so often we create release candidate
 packages and later release packages after a stabilization phase.
 Some of the release candidates and the stable versions are provided
-as binary packages which can be installed via apt:
-
-    # Enable HTTPS transports for apt
-    apt-get -y install apt-transport-https ca-certificates wget
-	# Recognize signatures from the Beast-Team
-	wget -qO- https://beast.testbit.org/apt/archive.key | sudo apt-key add -
-    # Add Beast release packages to the repository list
-    echo "deb https://beast.testbit.org/apt xenial/stable/" |
-      sudo tee -a /etc/apt/sources.list.d/beast-team.list
-    # Update package list and install Beast
-    apt-get update && apt-get -y install beast
-
-The directory `xenial/stable/` holds end user release packages, and
-the directory `xenial/rc/` holds temporary release candidates.
+as binary packages. Refer to the website for download links.
