@@ -5,6 +5,36 @@ _Note: This is the master branch of Beast, which contains alpha version software
 Beware of file format instabilities and report any bugs you find in it._
 
 
+## Beast 0.13.0:
+
+.System Requirements
+* Linux - Ubuntu 18.04 or Fedora-27 are needed to run the Beast AppImage.
+
+.New Features
+* We now build AppImage binaries for beast and ebeast.
+* Added relocation support, resources are found relative to libbse.so now.
+
+.Upgrades
+* Updated the electron-packager to 12.2.0. #87
+
+.Improvements
+* Support translation of the new electron based UI.
+* Ported song propeties to new IDL system. #64 #65 #68 #69 #81
+* Completed the clang++ porting so everything now builds with clang.
+* Merged libsfi and libbse, reduces compilation time and installed size.
+* We now test Fedora builds automatically.
+* Updated German translation.
+
+.Bug Fixes
+* Fixed crash during undo. #77
+* Fixed IDL string parsing.
+* Fixed the playback state indicator.
+* Fixed several translation generation bugs.
+* Fixed missing UI updates for some properties.
+* Fixed memory allocation/release in several places.
+* Fixed several issues pointed out by newly automated linters.
+* Lots of build system and CI/CD fixes.
+
 
 ## Beast 0.12.0:					(2018-08-20)
 
