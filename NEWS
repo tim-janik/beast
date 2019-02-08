@@ -5,7 +5,7 @@ _Note: This is the master branch of Beast, which contains alpha version software
 Beware of file format instabilities and report any bugs you find in it._
 
 
-## Beast 0.13.0:
+## Beast 0.13.0:					(2019-02-08)
 
 .System Requirements
 * Linux - Ubuntu 18.04 or Fedora-27 are needed to run the Beast AppImage.
