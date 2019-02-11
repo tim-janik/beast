@@ -12,7 +12,7 @@ man5_HTMLS  =
 
 topdir = $(abs_top_srcdir)
 V_gen = @printf '  %-9s%s\n'
-topbuildid ::= $(shell $(topdir)/git-version.sh)
+topbuildid ::= $(shell $(topdir)/version.sh -l)
 
 # == Collect Doxygen Sources ==
 # The following variable definitions create files as a side effect, which should be
