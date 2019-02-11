@@ -152,7 +152,6 @@ dist: all
 	  mkdir .tmpdist/ &&						\
 	  tar -C .tmpdist/ -xf $(distname).tar &&			\
 	  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&		\
-	  ./version.sh > "$$EXTRA_GITDIST_DIR/git-version.cache" &&	\
 	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
 		  EXTRA_GITDIST_DIR="$$EXTRA_GITDIST_DIR" &&		\
 	  cd .tmpdist/$(distname)/ &&					\
