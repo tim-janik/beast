@@ -114,8 +114,8 @@ installcheck-buildtest:
 installcheck-local: installcheck-buildtest
 
 # == topbuildid.c ==
-clean_version ::= $(shell ./git-version.sh -l)
-topbuildid ::= $(shell ./git-version.sh)
+clean_version ::= $(shell ./version.sh -s)
+topbuildid ::= $(shell ./version.sh -l)
 topbuildid.cc: # avoid explicit deps, silently *always* rebuild via 'topbuildidcc_gen::='
 topbuildidcc_gen ::= $(shell \
 	( echo '\#include "topbuildid.hh"' && \
@@ -152,7 +152,7 @@ dist: all
 	  mkdir .tmpdist/ &&						\
 	  tar -C .tmpdist/ -xf $(distname).tar &&			\
 	  EXTRA_GITDIST_DIR=`pwd`"/.tmpdist/$(distname)/" &&		\
-	  ./git-version.sh > "$$EXTRA_GITDIST_DIR/git-version.cache" &&	\
+	  ./version.sh > "$$EXTRA_GITDIST_DIR/git-version.cache" &&	\
 	  $(MAKE) $(AM_MAKEFLAGS) extra-gitdist				\
 		  EXTRA_GITDIST_DIR="$$EXTRA_GITDIST_DIR" &&		\
 	  cd .tmpdist/$(distname)/ &&					\

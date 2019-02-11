@@ -10,7 +10,7 @@ AC_PREREQ(2.57)
 # * MINOR:       Increment for significant changes or ABI breaks, resets MICRO
 # * MICRO:       Increment with every release, increments must *not* break ABI
 # * -RC:         Pre-release suffix, may be empty or contain -beta.[0-9]+
-AC_INIT([beast], [m4_esyscmd_s([./git-version.sh -s])])
+AC_INIT([beast], [m4_esyscmd_s([./version.sh -s])])
 die() { AC_MSG_ERROR([$1]) ; exit -1 ; }
 # * ABI_VERSION: Record the latest version since ABI compatibility has been kept
 # * ABI changes: Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION

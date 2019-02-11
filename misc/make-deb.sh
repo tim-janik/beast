@@ -55,7 +55,7 @@ test -e ./acbeast.m4 || die "failed to detect ./acbeast.m4"
 # TODO: add /usr/share/icons/hicolor/scalable/mimetypes/application-bse.svg
 
 # build in ./tmpdeb/
-BEASTDIR=/opt/$(./git-version.sh | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
+BEASTDIR=/opt/$(./version.sh -s | sed -r 's/^([0-9]+)\.([0-9]+).*/beast-\1-\2/')
 DESTDIR=`pwd`/tmpdeb/destdir
 BEASTPREFIXDIR=$DESTDIR$BEASTDIR
 DEBDOCDIR=$DESTDIR$BEASTDIR/doc
@@ -93,7 +93,7 @@ fi
 test -x $DESTDIR/$BEASTEXE || die "failed to build Beast executable: $BEASTEXE"
 
 NAME="beast"
-VERSION=$(./tmpdeb/beast/git-version.sh | sed -r 's/^([^-]+)-([abcefh-z])/\1~\2/g') # Use prerelease '~', but preserve -g123 -dirty
+VERSION=$(./tmpdeb/beast/version.sh -l | sed -r 's/^([^-]+)-([abcefh-z])/\1~\2/g') # Use prerelease '~', but preserve -g123 -dirty
 GITCOMMIT=`git rev-parse --verify HEAD`
 ARCH=$(dpkg --print-architecture)
 DUSIZE=$(cd $DESTDIR && du -k -s .)

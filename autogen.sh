@@ -4,7 +4,7 @@ set -xe # be verbose and abort on errors
 
 rm -rf autom4te.cache/ ./config.cache ./config.status
 
-./git-version.sh || {
+./version.sh || {
   echo "$0: error: a functional git checkout is required for non-tarball builds" >&2
   exit 7
 }
