@@ -255,7 +255,7 @@ MC_ASSERT_PROG(XMLLINT, xmllint)
 MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
 # == Headers ==
-AC_CHECK_HEADERS_ONCE( zlib.h mad.h execinfo.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
+AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
 
 # == pkg-config Libraries ==
 SFI_REQUIRES="
