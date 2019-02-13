@@ -302,7 +302,6 @@ fi
 AC_SUBST(LIBZ_LIBS)
 
 # == functions ==
-AC_CHECK_FUNCS(getpwnam_r getpwnam)
 AC_CHECK_FUNCS(timegm)
 
 # == NPM ==

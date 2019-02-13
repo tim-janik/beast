@@ -593,7 +593,6 @@ static gchar*
 get_user_home (const gchar *user,
                gboolean     use_fallbacks)
 {
-#if HAVE_GETPWNAM_R
   if (user)
     {
       struct passwd *p = NULL;
@@ -602,15 +601,6 @@ get_user_home (const gchar *user,
       if (getpwnam_r (user, &spwd, buffer, 8192, &p) == 0 && p)
         return g_strdup (p->pw_dir);
     }
-#endif
-#if HAVE_GETPWNAM
-  if (user)
-    {
-      struct passwd *p = getpwnam (user);
-      if (p)
-        return g_strdup (p->pw_dir);
-    }
-#endif
   if (!user)
     return g_strdup (g_get_home_dir ());
   return use_fallbacks ? g_strdup (g_get_home_dir ()) : NULL;
