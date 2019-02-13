@@ -98,7 +98,7 @@ typedef struct {
   BseExportNode *export_chain;
 } BseExportIdentity;
 #define BSE_EXPORT_IDENTITY(HEAD)                               \
-  { BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,    \
+  { BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,    \
     0, 0, 0, 0, 0,                                              \
     BSE_EXPORT_CONFIG, &HEAD }
 
