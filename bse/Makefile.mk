@@ -348,9 +348,9 @@ $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 # BIN linking
 $(bse/bsetool): $(bse/bsetool.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
 	$(QECHO) LD $@
-	$Q $(CXX) -fPIC -o $@ $(bse/bsetool.objects) -Wl,--no-undefined \
+	$Q $(CXX) $(CXXSTD) -fPIC -o $@ $(bse/bsetool.objects) -Wl,--no-undefined \
 	-Wl,-rpath='$$ORIGIN/../bse:$$ORIGIN/' -Wl,-L$>/bse/ -lbse-$(VERSION_MAJOR) \
-	$(GLIB_LIBS) `pkg-config --libs gobject-2.0 vorbisfile vorbisenc vorbis ogg mad fluidsynth gmodule-no-export-2.0 flac` -lz
+	$(GLIB_LIBS) `pkg-config --libs vorbisfile vorbisenc vorbis ogg mad fluidsynth flac` -lz
 # CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
 
 

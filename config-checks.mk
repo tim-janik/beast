@@ -33,9 +33,9 @@ conftest_require_lib = { $(call conftest_lib,$1,$2,$3) && $$CONFTEST \
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/.
 	$(QGEN)
 	$(Q) echo '# make $@'					> $@.tmp
-	$(Q) GLIB_CFLAGS=$$(pkg-config --cflags glib-2.0) \
+	$(Q) GLIB_CFLAGS=$$(pkg-config --cflags glib-2.0 gobject-2.0 gmodule-no-export-2.0) \
 	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
-	$(Q) GLIB_LIBS=$$(pkg-config --libs glib-2.0) \
+	$(Q) GLIB_LIBS=$$(pkg-config --libs glib-2.0 gobject-2.0 gmodule-no-export-2.0) \
 	  && echo "GLIB_LIBS ::= $$GLIB_LIBS"			>>$@.tmp
 	$(Q) LIBMAD_LIBS='-lmad -lm' \
 	  && echo "LIBMAD_LIBS ::= $$LIBMAD_LIBS"		>>$@.tmp \
