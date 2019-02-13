@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseplugin.hh"
-#include "../config/config.h"
 #include "bsecategories.hh"
 #include "bseobject.hh"
 #include "bseenums.hh"
@@ -686,7 +685,7 @@ plugin_extension_filter (const char *fname, uint n, const char **exts)
   return false;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 #define PLUGIN_EXTENSION ".dll"
 #else
 #define PLUGIN_EXTENSION ".so"
