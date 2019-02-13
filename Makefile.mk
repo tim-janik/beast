@@ -35,6 +35,8 @@ install: .PHONY
 uninstall: .PHONY
 clean: .PHONY
 
+include config-checks.mk
+
 # == implicit rules ==
 $>/%/: ; $(Q) mkdir -p $@
 $>/%.o: %.c
