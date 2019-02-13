@@ -3,7 +3,7 @@
 
 # include files
 echo "#include $2"
-echo '#include "bsemath.hh"'
+echo '#include "bse/bsemath.hh"'
 echo '#include "bse/internal.hh"'
 
 MKFFT="$1"

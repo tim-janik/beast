@@ -317,7 +317,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/unicode.cc			\
 	bse/weaksym.cc			\
 )
-bse/libbse.generated::= bse/gslfft.cc
 bse/libbse.deps     ::= $(strip		\
 	$(bse/icons/c.csources)		\
 	$>/bse/bseapi_interfaces.hh	\
@@ -329,6 +328,7 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/bsegentype_array.cc	\
 	$>/bse/bsegentypes.cc		\
 	$>/bse/bsegentypes.h		\
+	$>/bse/gslfft.cc		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
 )
@@ -337,7 +337,7 @@ libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)
 bse/libbse.sofile   ::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
 bse/libbse.solinks  ::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
 ALL_TARGETS	     += $(bse/libbse.sofile) $(bse/libbse.solinks)
-bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o) $(bse/libbse.generated:%.cc=$>/%.o))
+bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 $(bse/libbse.objects): $(bse/libbse.deps)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
@@ -424,8 +424,16 @@ $>/bse/bsebusmodule.genidl.hh: bse/bsebusmodule.idl	$(sfi/sfidl) | $>/bse/
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-cxx --macro $(<F) $<	> $@.tmp
 	$Q mv $@.tmp $@
 
+# == gslfft.cc ==
+$>/bse/gslfft.cc: bse/gsl-fftconf.sh bse/gsl-fftgen.pl	| $>/bse/
+	$(QGEN)
+	$Q bse/gsl-fftconf.sh \
+		'$(PERL) bse/gsl-fftgen.pl $(if $(findstring 1, $V),, --no-verbose)' \
+		'"bse/gslfft.hh"'						> $@.tmp
+	$Q mv $@.tmp $@
+
 # == zres.cc ==
-$>/bse/zres.cc: res/resfiles.list misc/packres.py # $(res_resfiles_list) is set to the contents of res/resfiles.list
+$>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_list) is set to the contents of res/resfiles.list
 	$(QGEN)
 	$Q misc/packres.py -s '.*/res/' $(res_resfiles_list:%=res/%) > $@.tmp
 	$Q mv $@.tmp $@
