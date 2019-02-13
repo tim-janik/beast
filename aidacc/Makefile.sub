@@ -62,7 +62,7 @@ aidacc/TmplFiles.py: $(aidacc_templ_files)
 	$(Q) ( echo "# $@: generated from: $(aidacc_templ_files)" \
 	&& for file in $(aidacc_templ_files) ; \
 	    do echo -n "$$(basename $$file)" | sed 's/[^a-zA-Z0-9_]/_/g' && echo ' = """' \
-	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $? ; \
+	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $$? ; \
 	done ) > $@.tmp
 	$(Q) mv $@.tmp $@
 AIDACC_CLEANFILES += aidacc/TmplFiles.py
