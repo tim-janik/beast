@@ -15,6 +15,11 @@ OUTDIR      ::= out
 include config-utils.mk
 include config-uname.mk
 
+# == System Checks ==
+PERL         ?= perl
+GLIB_MKENUMS ?= glib-mkenums
+include config-checks.mk
+
 # == Defaults ==
 INCLUDES	::= -I.
 DEFS		::=
@@ -36,7 +41,6 @@ uninstall: .PHONY
 clean: .PHONY
 
 # == subdirs ==
-include config-checks.mk
 include res/Makefile.mk
 include bse/Makefile.mk
 
