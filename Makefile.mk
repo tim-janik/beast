@@ -42,6 +42,7 @@ clean: .PHONY
 
 # == subdirs ==
 include res/Makefile.mk
+include sfi/Makefile.mk
 include bse/Makefile.mk
 
 # == implicit rules ==

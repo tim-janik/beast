@@ -1,5 +1,6 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/bse/*.d)
+CLEANDIRS += $(wildcard $>/bse/)
 
 
 # == libbse.so ==
@@ -334,7 +335,6 @@ $(bse/libbse.sofile): $(bse/libbse.objects) $(MAKEFILE_LIST)
 $(bse/libbse.solinks): $(bse/libbse.sofile)
 	$(QECHO) LN $@
 	$Q rm -f $@ ; ln -s $(notdir $(bse/libbse.sofile)) $@
-CLEANDIRS += $(wildcard $>/bse/)
 
 
 # == bsetool ==
