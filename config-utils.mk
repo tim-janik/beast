@@ -2,7 +2,7 @@
 
 # == $Q $V ==
 Q       ::= $(if $(findstring 1, $(V)),, @)
-QSKIP   ::= $(if $(findstring 1, $(V))$(findstring s,$(MAKEFLAGS)),: )
+QSKIP   ::= $(if $(findstring s,$(MAKEFLAGS)),: )
 QSTDOUT ::= $(if $(findstring 1, $(V)),, 1>/dev/null)
 QSTDERR ::= $(if $(findstring 1, $(V)),, 2>/dev/null)
 QGEN      = @$(QSKIP)echo '  GEN     ' $@
