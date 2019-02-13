@@ -17,6 +17,8 @@ include config-uname.mk
 
 # == System Checks ==
 PERL         ?= perl
+PYTHON2	     ?= python2.7
+YAPPS	     ?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
 GLIB_MKENUMS ?= glib-mkenums
 include config-checks.mk
 
@@ -43,6 +45,7 @@ clean: .PHONY
 # == subdirs ==
 include res/Makefile.mk
 include sfi/Makefile.mk
+include aidacc/Makefile.mk
 include bse/Makefile.mk
 
 # == implicit rules ==
