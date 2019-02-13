@@ -19,6 +19,7 @@ include config-uname.mk
 PERL			?= perl
 PYTHON2			?= python2.7
 YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
+PKG_CONFIG		?= pkg-config
 GLIB_MKENUMS		?= glib-mkenums
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 include config-checks.mk
