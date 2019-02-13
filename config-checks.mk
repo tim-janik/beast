@@ -69,13 +69,15 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "BUILDID ::= $$V"				>>$@.tmp
 	$Q V=$$(./version.sh -d) \
 	  && echo "VERSION_DATE ::= $$V"			>>$@.tmp
-	$Q set -Eeuo pipefail \
-	  && ./version.sh -s | sed 's/[^0-9]/ /g'		> $@.tmpv \
+	$Q VERSION_SHORT=$$(./version.sh -s) \
+	  && echo "VERSION_SHORT ::= $$VERSION_SHORT"		>>$@.tmp \
+	  && echo "$$VERSION_SHORT" | sed 's/[^0-9]/ /g'	> $@.tmpv \
 	  && read MAJOR MINOR MICRO REST			< $@.tmpv \
-	  && rm -f $@.tmpv \
+	  && rm -f						  $@.tmpv \
 	  && echo "VERSION_MAJOR ::= $$MAJOR"			>>$@.tmp \
 	  && echo "VERSION_MINOR ::= $$MINOR"			>>$@.tmp \
-	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp \
-	  && echo "VERSION_REST  ::= $$REST"			>>$@.tmp
+	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp
+	$Q echo "BSE_GETTEXT_DOMAIN ::=" \
+		"beast-$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)" >>$@.tmp
 	$Q mv $@.tmp $@
 CLEANFILES += $>/config-cache.mk

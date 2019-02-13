@@ -87,7 +87,7 @@ static const char*
 initialized_bse_gettext_domain()
 {
   static const char *const gettexttextdomain = [] () {
-    const char *const gtdomain = BST_GETTEXT_DOMAIN;
+    const char *const gtdomain = BSE_GETTEXT_DOMAIN;
     bindtextdomain (gtdomain, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
     bind_textdomain_codeset (gtdomain, "UTF-8");
     return gtdomain;
@@ -756,7 +756,7 @@ determine_libbse_installdir (bool *using_objdir)
 std::string
 version ()
 {
-  return PACKAGE_VERSION;
+  return BSE_VERSION_STRING;
 }
 
 static String cached_program_alias;

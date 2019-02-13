@@ -435,11 +435,13 @@ $>/bse/zres.cc: res/resfiles.list misc/packres.py # $(res_resfiles_list) is set 
 $>/bse/sysconfig.h: config-checks.mk $>/config-cache.mk bse/Makefile.mk | $>/bse/
 	$(QGEN)
 	$Q echo '// make $@'							> $@.tmp
-	$Q echo "#define BSE_MAJOR_VERSION		($(VERSION_MAJOR))"	>>$@.tmp
-	$Q echo "#define BSE_MINOR_VERSION		($(VERSION_MINOR))"	>>$@.tmp
-	$Q echo "#define BSE_MICRO_VERSION		($(VERSION_MICRO))"	>>$@.tmp
+	$Q echo '#define BSE_MAJOR_VERSION		($(VERSION_MAJOR))'	>>$@.tmp
+	$Q echo '#define BSE_MINOR_VERSION		($(VERSION_MINOR))'	>>$@.tmp
+	$Q echo '#define BSE_MICRO_VERSION		($(VERSION_MICRO))'	>>$@.tmp
+	$Q echo '#define BSE_VERSION_STRING		"$(VERSION_SHORT)"'	>>$@.tmp
 	$Q echo '#define BSE_VERSION_DATE		"$(VERSION_DATE)"'	>>$@.tmp
 	$Q echo '#define BSE_VERSION_BUILDID		"$(BUILDID)"'		>>$@.tmp
+	$Q echo '#define BSE_GETTEXT_DOMAIN		"$(BSE_GETTEXT_DOMAIN)"'>>$@.tmp
 	$Q echo '#define BSE_VORBISFILE_BAD_SEEK 	$(VORBISFILE_BAD_SEEK)'	>>$@.tmp
 	$Q : $(file > $>/conftest_spinlock_initializer.c, $(conftest_spinlock_initializer.c)) \
 	&& $(CC) -Wall $>/conftest_spinlock_initializer.c -pthread -o $>/conftest_spinlock_initializer \
