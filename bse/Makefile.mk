@@ -5,7 +5,7 @@ CLEANDIRS += $(wildcard $>/bse/)
 include bse/icons/Makefile.mk
 
 # == libbse.so ==
-bse/libbse.headers  ::= $(strip		\
+bse/libbse.headers ::= $(strip		\
 	bse/backtrace.hh		\
 	bse/bcore.hh			\
 	bse/blob.hh			\
@@ -164,7 +164,7 @@ bse/libbse.headers  ::= $(strip		\
 	bse/testobject.hh		\
 	bse/unicode.hh			\
 )
-bse/libbse.sources  ::= $(strip		\
+bse/libbse.sources ::= $(strip		\
 	bse/backtrace.cc		\
 	bse/bcore.cc			\
 	bse/blob.cc			\
@@ -326,6 +326,8 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/bseenum_arrays.cc	\
 	$>/bse/bseenum_list.cc		\
 	$>/bse/bsegenbasics.cc		\
+	$>/bse/bsegentype_array.cc	\
+	$>/bse/bsegentypes.cc		\
 	$>/bse/bsegentypes.h		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
@@ -398,6 +400,16 @@ $>/bse/bsegentypes.h: bse/bsebasics.idl		$(bse/libbse.headers) bse/mktypes.pl $(
 				$(bse/libbse.headers)			> $@.tmp
 	$Q $(PERL) bse/mktypes.pl --externs $(bse/libbse.sources)	>>$@.tmp
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --header $<	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsegentypes.cc: $(bse/libbse.headers) bse/mktypes.pl | $>/bse/	# $(bse/libbse.sources)
+	$(QGEN)
+	$Q $(GLIB_MKENUMS)	--eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
+				$(bse/libbse.headers)					> $@.tmp
+	$Q $(PERL) bse/mktypes.pl --interns --export-proto $(bse/libbse.sources)	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsegentype_array.cc: $(bse/libbse.headers) bse/mktypes.pl | $>/bse/	# $(bse/libbse.sources)
+	$(QGEN)
+	$Q $(PERL) bse/mktypes.pl --array $(bse/libbse.sources)	> $@.tmp
 	$Q mv $@.tmp $@
 $>/bse/bsegenbasics.cc: bse/bsebasics.idl		$(sfi/sfidl) | $>/bse/
 	$(QGEN)
