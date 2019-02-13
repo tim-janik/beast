@@ -28,6 +28,7 @@ sfi/testsfidl.cc.FLAGS	  = -O0
 $(sfi/testsfidl): $(sfi/testsfidl.objects) $(MAKEFILE_LIST)
 	$(QECHO) LD $@
 	$Q $(CXX) $(CXXSTD) -fPIC -o $@ $(sfi/testsfidl.objects) -Wl,--no-undefined $(GLIB_LIBS)
-sfi-check: .PHONY
-	$(sfi/testsfidl)
+sfi-check: .PHONY	| $(sfi/testsfidl)
+	$(QECHO) RUN $@
+	$Q $(sfi/testsfidl)
 check: sfi-check
