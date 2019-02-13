@@ -47,6 +47,7 @@ config-checks.require.pkgconfig ::= $(strip	\
 	libgnomecanvas-2.0	>= 2.4.0	\
 )
 # mad.pc exists in Debian only:	mad >= 0.14.2
+# VORBISFILE_BAD_SEEK indicates pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
 
 # == config-cache.mk ==
 -include $>/config-cache.mk
@@ -59,6 +60,8 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
 	$Q GLIB_LIBS=$$(pkg-config --libs glib-2.0 gobject-2.0 gmodule-no-export-2.0) \
 	  && echo "GLIB_LIBS ::= $$GLIB_LIBS"			>>$@.tmp
+	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
+	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
 	$Q LIBMAD_LIBS='-lmad -lm' \
 	  && echo "LIBMAD_LIBS ::= $$LIBMAD_LIBS"		>>$@.tmp \
 	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$LIBMAD_LIBS)

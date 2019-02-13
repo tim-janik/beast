@@ -440,6 +440,7 @@ $>/bse/sysconfig.h: config-checks.mk $>/config-cache.mk bse/Makefile.mk | $>/bse
 	$Q echo "#define BSE_MICRO_VERSION		($(VERSION_MICRO))"	>>$@.tmp
 	$Q echo '#define BSE_VERSION_DATE		"$(VERSION_DATE)"'	>>$@.tmp
 	$Q echo '#define BSE_VERSION_BUILDID		"$(BUILDID)"'		>>$@.tmp
+	$Q echo '#define BSE_VORBISFILE_BAD_SEEK 	$(VORBISFILE_BAD_SEEK)'	>>$@.tmp
 	$Q : $(file > $>/conftest_spinlock_initializer.c, $(conftest_spinlock_initializer.c)) \
 	&& $(CC) -Wall $>/conftest_spinlock_initializer.c -pthread -o $>/conftest_spinlock_initializer \
 	&& (cd $> && ./conftest_spinlock_initializer) \
