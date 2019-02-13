@@ -50,8 +50,11 @@ include sfi/Makefile.mk
 include aidacc/Makefile.mk
 include bse/Makefile.mk
 
-# == implicit rules ==
+# == output directories ==
 $>/%/: ; $(Q) mkdir -p $@
+.PRECIOUS: $>/%/ # prevent MAKE's 'rm ...' for automatically created dirs
+
+# == implicit rules ==
 $>/%.o: %.c
 	$(QECHO) CC $@
 	$(Q) $(CCACHE) $(CC) $(CSTD) -fPIC $(COMPILEDEFS) $(CFLAGS) $(COMPILEFLAGS) -o $@ -c $<
