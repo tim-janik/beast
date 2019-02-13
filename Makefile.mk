@@ -35,7 +35,9 @@ install: .PHONY
 uninstall: .PHONY
 clean: .PHONY
 
+# == subdirs ==
 include config-checks.mk
+include bse/Makefile.mk
 
 # == implicit rules ==
 $>/%/: ; $(Q) mkdir -p $@
