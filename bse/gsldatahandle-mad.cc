@@ -16,8 +16,7 @@
 
 #define MDEBUG(...)     Bse::debug ("mad", __VA_ARGS__)
 
-static_assert (BSE_HAVE_LIBMAD > 0, ""); // ensure we can use libmad
-#if     BSE_HAVE_LIBMAD
+#if __has_include(<mad.h>)
 #include <mad.h>
 
 /* --- defines --- */
@@ -742,7 +741,7 @@ gsl_data_handle_mad_version (void)
   return MAD_VERSION;
 }
 
-#else	/* !BSE_HAVE_LIBMAD */
+#else	// !__has_include(<mad.h>)
 
 GslDataHandle*
 gsl_data_handle_new_mad_err (const gchar  *file_name,
@@ -766,7 +765,7 @@ gsl_data_handle_mad_version (void)
 {
   return NULL;
 }
-#endif	/* !BSE_HAVE_LIBMAD */
+#endif	// !__has_include(<mad.h>)
 
 GslDataHandle*
 gsl_data_handle_new_mad (const gchar  *file_name,
@@ -774,4 +773,3 @@ gsl_data_handle_new_mad (const gchar  *file_name,
 {
   return gsl_data_handle_new_mad_err (file_name, osc_freq, NULL);
 }
-/* vim:set ts=8 sts=2 sw=2: */

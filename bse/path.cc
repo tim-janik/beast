@@ -674,12 +674,7 @@ CxxPasswd::CxxPasswd (std::string username) :
       int ret = 0;
       errno = 0;
       do
-        {
-          if (1) // HAVE_GETPWNAM_R
-            ret = getpwnam_r (username.c_str(), &pwnambuf, strbuf, strbuf_size, &p);
-          else   // HAVE_GETPWNAM
-            p = getpwnam (username.c_str());
-        }
+        ret = getpwnam_r (username.c_str(), &pwnambuf, strbuf, strbuf_size, &p);
       while ((ret != 0 || p == NULL) && errno == EINTR);
       if (ret != 0)
         p = NULL;

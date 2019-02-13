@@ -14,15 +14,6 @@ extern "C" {
 #define BST_MINOR_VERSION                               (@MINOR@)
 #define BST_MICRO_VERSION                               (@MICRO@)
 
-/* check for header versions
- */
-#define BSE_CHECK_VERSION(major,minor,micro)    \
-    (BST_MAJOR_VERSION > (major) || \
-     (BST_MAJOR_VERSION == (major) && BST_MINOR_VERSION > (minor)) || \
-     (BST_MAJOR_VERSION == (major) && BST_MINOR_VERSION == (minor) && \
-      BST_MICRO_VERSION >= (micro)))
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

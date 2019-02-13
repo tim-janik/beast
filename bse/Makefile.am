@@ -369,7 +369,7 @@ nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh bseapi_interfaces.hh 
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources)
 nodist_libbse_@MAJOR@_la_SOURCES     = gslfft.cc
 libbse_@MAJOR@_la_CXXFLAGS	     = $(AM_CXXFLAGS) $(BSE_CFLAGS)
-libbse_@MAJOR@_la_LIBADD             = $(BSE_LIBS)
+libbse_@MAJOR@_la_LIBADD             = $(BSE_LIBS) -lmad
 libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
 	$(AM_LDFLAGS)					\
 	-Wl,--version-script=$(srcdir)/ldscript.map	\

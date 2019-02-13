@@ -11,12 +11,7 @@
 
 namespace Bse {
 
-// == uint ==
-#if     BSE_SIZEOF_SYS_TYPESH_UINT == 0
-typedef unsigned int            uint;   ///< Provide 'uint' if sys/types.h fails to do so.
-#else
-static_assert (BSE_SIZEOF_SYS_TYPESH_UINT == 4, "");
-#endif
+typedef uint32_t uint;          ///< Provide 'uint' as convenience type.
 static_assert (sizeof (uint) == 4, "");
 
 // == type aliases ==

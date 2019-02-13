@@ -6,10 +6,10 @@
 #include <setjmp.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include "../config/config.h"   // HAVE_EXECINFO_H
-#ifdef  HAVE_EXECINFO_H
+
+#if __has_include(<execinfo.h>)
 #include <execinfo.h>           // _EXECINFO_H
-#endif // HAVE_EXECINFO_H
+#endif
 
 namespace Bse {
 

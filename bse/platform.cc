@@ -714,7 +714,9 @@ determine_libbse_installdir (bool *using_objdir)
   char extlibname[256] = { 0, };
   snprintf (extlibname, sizeof (extlibname), "/lib/libbse-%u.so", BSE_MAJOR_VERSION);
   char intlibname[256] = { 0, };
-  snprintf (intlibname, sizeof (intlibname), "/bse/%s/libbse-%u.so", CONFIGURE_RELPATH_OBJDIR, BSE_MAJOR_VERSION);
+  snprintf (intlibname, sizeof (intlibname), "/bse/libbse-%u.so", BSE_MAJOR_VERSION);
+  char lbtlibname[256] = { 0, };
+  snprintf (lbtlibname, sizeof (lbtlibname), "/bse/%s/libbse-%u.so", CONFIGURE_RELPATH_OBJDIR, BSE_MAJOR_VERSION);
   std::string cxxline;
   while (std::getline (maps, cxxline))
     {
@@ -734,6 +736,12 @@ determine_libbse_installdir (bool *using_objdir)
             {
               *using_objdir = true;
               return std::string (path, intlibso - path);                       // path fragment before /bse/.libs/lib*.so
+            }
+          const char *const lbtlibso = strstr (path, lbtlibname);               // by libtool internal name
+          if (lbtlibso && !strchr (lbtlibso + strlen (lbtlibname), '/'))        // not dirname
+            {
+              *using_objdir = false;
+              return std::string (path, lbtlibso - path);                       // path fragment before /bse/.libs/lib*.so
             }
         }
     }
