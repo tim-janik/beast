@@ -28,7 +28,6 @@ bse_public_headers = $(strip \
 	bsebus.hh			\
 	bsecategories.hh		\
 	bsecompat.hh			\
-	bseconfig.h			\
 	bseconstant.hh			\
 	bseconstvalues.hh		\
 	bsecontainer.hh			\

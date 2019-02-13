@@ -7,7 +7,6 @@
 #include <bse/sfi.hh>
 #include <bse/sfistore.hh>	// FIXME
 #include <bse/sficomwire.hh>	// FIXME
-#include <bse/bseconfig.h>
 
 
 /* --- some globally used macros --- */
