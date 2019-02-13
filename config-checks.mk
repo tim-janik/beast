@@ -30,7 +30,7 @@ conftest_require_lib = { $(call conftest_lib,$1,$2,$3) && $$CONFTEST \
 
 # == config-cache.mk ==
 -include $>/config-cache.mk
-$>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS)
+$>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/.
 	$(QGEN)
 	$(Q) echo '# make $@'					> $@.tmp
 	$(Q) GLIB_CFLAGS=$$(pkg-config --cflags glib-2.0) \
