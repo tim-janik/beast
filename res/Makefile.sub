@@ -1,3 +1,0 @@
-# BEAST                         - non-recursive Makefile
-
-res_resfiles_list   ::= $(shell $(topdir)/misc/reslist.sh)

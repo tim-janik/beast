@@ -162,7 +162,7 @@ libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)
 bse/libbse.sofile   ::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
 bse/libbse.solinks  ::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
 ALL_TARGETS	     += $(bse/libbse.sofile) $(bse/libbse.solinks)
-bse/libbse.deps     ::= $>/bse/sysconfig.h
+bse/libbse.deps     ::= $>/bse/sysconfig.h $>/bse/zres.cc
 bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 $(bse/libbse.objects): $(bse/libbse.deps) | $>/bse/
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
@@ -193,6 +193,13 @@ $(bse/bsetool): $(bse/bsetool.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
 	-Wl,-rpath='$$ORIGIN/../bse:$$ORIGIN/' -Wl,-L$>/bse/ -lbse-$(VERSION_MAJOR) \
 	$(GLIB_LIBS) `pkg-config --libs gobject-2.0 vorbisfile vorbisenc vorbis ogg mad fluidsynth gmodule-no-export-2.0 flac` -lz
 # CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
+
+
+# == zres.cc ==
+$>/bse/zres.cc: res/resfiles.list misc/packres.py # $(res_resfiles_list) is set to the contents of res/resfiles.list
+	$(QGEN)
+	$Q misc/packres.py -s '.*/res/' $(res_resfiles_list:%=res/%) > $@.tmp
+	$Q mv $@.tmp $@
 
 
 # == bse/sysconfig.h ==

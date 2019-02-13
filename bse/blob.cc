@@ -354,4 +354,4 @@ Blob::from_res (const char *resource)
 
 // == zres.cc ==
 using Bse::LocalResourceEntry;
-#include "zres.cc"
+#include "bse/zres.cc"
