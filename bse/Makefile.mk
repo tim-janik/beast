@@ -2,6 +2,7 @@
 include $(wildcard $>/bse/*.d)
 CLEANDIRS += $(wildcard $>/bse/)
 
+include bse/icons/Makefile.mk
 
 # == libbse.so ==
 bse/libbse.headers  ::= $(strip		\
@@ -325,6 +326,7 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/bsegentypes.h		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
+	$(bse/icons/c.csources)		\
 )
 bse.so              ::= bse-$(VERSION_MAJOR).so
 libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)

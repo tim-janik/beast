@@ -59,7 +59,7 @@ BSE_BUILTIN_TYPE (BseMidiController)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_controller_init,
   };
-#include "./icons/midi-ctrl-input.c"
+#include "bse/icons/midi-ctrl-input.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseMidiController",
                                          "MIDI controller input module. With this module, "

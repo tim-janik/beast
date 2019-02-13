@@ -57,7 +57,7 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_output_init,
   };
-#include "./icons/speaker.c"
+#include "bse/icons/speaker.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BsePcmOutput",
                                          "Stereo PCM sound output module, per default, signals routed into "

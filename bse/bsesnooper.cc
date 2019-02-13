@@ -37,7 +37,7 @@ BSE_BUILTIN_TYPE (BseSnooper)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snooper_init,
   };
-#include "./icons/snooper.c"
+#include "bse/icons/snooper.c"
   GType type_id;
 
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,

@@ -16,10 +16,11 @@ include config-utils.mk
 include config-uname.mk
 
 # == System Checks ==
-PERL         ?= perl
-PYTHON2	     ?= python2.7
-YAPPS	     ?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
-GLIB_MKENUMS ?= glib-mkenums
+PERL			?= perl
+PYTHON2			?= python2.7
+YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
+GLIB_MKENUMS		?= glib-mkenums
+GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 include config-checks.mk
 
 # == Defaults ==

@@ -138,7 +138,7 @@ BSE_BUILTIN_TYPE (BseInstrumentOutput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_output_init,
   };
-#include "./icons/instrument.c"
+#include "bse/icons/instrument.c"
   GType type = bse_type_register_static (BSE_TYPE_SUB_OPORT,
                                          "BseInstrumentOutput",
                                          "Virtual output module for synthesis networks which "
