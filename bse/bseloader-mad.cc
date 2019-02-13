@@ -198,6 +198,7 @@ _gsl_init_loader_mad (void)
   assert_return (initialized == FALSE);
   initialized = TRUE;
 
-  if (BSE_HAVE_LIBMAD)
-    bse_loader_register (&loader);
+#if __has_include (<mad.h>)
+  bse_loader_register (&loader);
+#endif
 }
