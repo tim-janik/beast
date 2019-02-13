@@ -318,6 +318,7 @@ bse/libbse.sources  ::= $(strip		\
 )
 bse/libbse.generated::= bse/gslfft.cc
 bse/libbse.deps     ::= $(strip		\
+	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsegentypes.h		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
@@ -346,7 +347,7 @@ bse/bsetool         ::= $>/bse/bsetool
 ALL_TARGETS	     += $(bse/bsetool)
 bse/bsetool.sources ::= bse/bsetool.cc
 bse/bsetool.objects ::= $(sort $(bse/bsetool.sources:%.cc=$>/%.o))
-bse/bsetool.deps    ::= $>/bse/sysconfig.h
+bse/bsetool.deps    ::= $(bse/libbse.deps)
 $(bse/bsetool.objects): $(bse/bsetool.deps)
 $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 # BIN linking
@@ -358,6 +359,14 @@ $(bse/bsetool): $(bse/bsetool.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
 # CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
 
 
+# == bseapi.idl ==
+$>/bse/bseapi_interfaces.hh: bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
+	$(QGEN) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl and MAKE(1) supports multiple-outputs *only* for pattern rules
+	$Q cp bse/bseapi-inserts.hh $< bse/AuxTypes.py $>/bse/
+	$Q cd $>/bse/ && $(abspath $(aidacc/aidacc)) -x CxxStub -x AuxTypes.py -G strip-path=$(abspath $>)/ --insertions bseapi-inserts.hh $(<F)
+	$Q cd $>/bse/ && sed '1i#define _(x) x' -i bseapi_interfaces.cc && sed '1i#undef _' -i bseapi_interfaces.cc
+$>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc $>/bse/bseapi_interfaces.cc: $>/bse/bseapi_interfaces.hh
+
 # == bsegentypes.h ==
 $>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 	$(QGEN)
@@ -368,7 +377,6 @@ $>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 	$Q $(PERL) bse/mktypes.pl --externs $(bse/libbse.sources)	>>$@.tmp
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --header $<	>>$@.tmp
 	$Q mv $@.tmp $@
-
 
 # == zres.cc ==
 $>/bse/zres.cc: res/resfiles.list misc/packres.py # $(res_resfiles_list) is set to the contents of res/resfiles.list
