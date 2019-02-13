@@ -255,7 +255,7 @@ MC_ASSERT_PROG(XMLLINT, xmllint)
 MC_ASSERT_VERSION($XMLLINT --version, 20901)
 
 # == Headers ==
-AC_CHECK_HEADERS_ONCE( zlib.h mad.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
+AC_CHECK_HEADERS_ONCE( zlib.h alsa/asoundlib.h sys/soundcard.h soundcard.h X11/XKBlib.h X11/extensions/XKBgeom.h )
 
 # == pkg-config Libraries ==
 SFI_REQUIRES="
@@ -271,7 +271,6 @@ LIBBSE_REQUIRES="
 	vorbis			>= 1.3.2
 	vorbisfile		>= 1.3.2
 	vorbisenc		>= 1.3.2
-	mad			>= 0.14.2
 	flac			>= 1.2.1
 	fluidsynth		>= 1.0.6
 	alsa			>= 1.0.5
@@ -404,29 +403,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
     AC_MSG_RESULT([$(test $vorbisfile_badseek = 1 && echo yes || echo no)])
     AC_DEFINE_UNQUOTED(VORBISFILE_BADSEEK, [$vorbisfile_badseek], [buggy Vorbisfile pcm_seek])
 
-    dnl # --- libmad MPEG decoder check ---
-    dnl # libmad doesn't come with a mad.pc file (just its debian package)
-    dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
-    dnl #     BSE_HAVE_LIBMAD=1
-    dnl #     ,
-    dnl #     BSE_HAVE_LIBMAD=0
-    dnl #     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-    dnl # )
-    MAD_LIBS=
-    mad_tests=0
-    AC_CHECK_LIB(mad, mad_stream_errorstr,
-        [AC_CHECK_HEADER(mad.h, mad_tests=`expr $mad_tests + 1`)]
-        ,
-        mad_tests=0, -lm)
-    if test $mad_tests = 1 ; then
-	BSE_HAVE_LIBMAD=1
-        MAD_LIBS="-lmad -lm"
-    else
-        AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-	BSE_HAVE_LIBMAD=0
-    fi
-    AC_DEFINE_UNQUOTED(BSE_HAVE_LIBMAD, $BSE_HAVE_LIBMAD, [Whether bse links against libmad])
-
     dnl # --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
     if echo " $OGGVORBIS_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
@@ -438,10 +414,6 @@ AC_DEFUN([MC_BSE_REQUIREMENTS],
 
     dnl # --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
-    dnl # except for debian, libmad doesn't ship a mad.pc file
-    dnl #if test $BSE_HAVE_LIBMAD = 1 ; then
-    dnl #	BSE_PC_REQUIRE=mad
-    dnl #fi
     BSE_PC_CFLAGS=
     BSE_PC_LIBS="$OGGVORBIS_LIBS"
     AC_SUBST(BSE_PC_REQUIRE)
@@ -707,11 +679,6 @@ printexpandvar()
 
 AM_COND_IF(WITH_MMX_SSE, [summary_mmx_sse=yes], [summary_mmx_sse=no])
 AM_COND_IF(WITH_NPM, [summary_npm=yes], [summary_npm=no])
-if test x$BSE_HAVE_LIBMAD = x1; then
-  summary_libmad=yes
-else
-  summary_libmad=no
-fi
 
 cat <<EOF
 
@@ -725,6 +692,5 @@ Autoconfiguration complete.
 
 	MMX/SSE optimizations:		${summary_mmx_sse}
 	NPM available:			${summary_npm}
-	MP3 support using libmad:	${summary_libmad}
 
 EOF
