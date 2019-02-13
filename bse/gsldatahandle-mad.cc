@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "../config/config.h"
 #include "gsldatahandle-mad.hh"
 #include "gslfilehash.hh"
 #include "gsldatautils.hh"
