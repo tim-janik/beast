@@ -688,4 +688,4 @@ icon_sanitize (Icon *icon)
 } // Bse
 
 
-#include "bseapi_interfaces.cc" // build IDL server interface
+#include "bse/bseapi_interfaces.cc" // build IDL server interface

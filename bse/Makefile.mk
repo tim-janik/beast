@@ -319,14 +319,16 @@ bse/libbse.sources  ::= $(strip		\
 )
 bse/libbse.generated::= bse/gslfft.cc
 bse/libbse.deps     ::= $(strip		\
+	$(bse/icons/c.csources)		\
 	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsebasics.genidl.hh	\
 	$>/bse/bsebusmodule.genidl.hh	\
+	$>/bse/bseenum_arrays.cc	\
+	$>/bse/bseenum_list.cc		\
 	$>/bse/bsegenbasics.cc		\
 	$>/bse/bsegentypes.h		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
-	$(bse/icons/c.csources)		\
 )
 bse.so              ::= bse-$(VERSION_MAJOR).so
 libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)
@@ -373,7 +375,22 @@ $>/bse/bseapi_interfaces.hh: bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidac
 $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc $>/bse/bseapi_interfaces.cc: $>/bse/bseapi_interfaces.hh
 
 # == sfidl generated files ==
-$>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
+$>/bse/bseenum_arrays.cc: $(bse/libbse.headers)		| $>/bse/
+	$(QGEN)
+	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
+				--vhead "/* @EnumName@\n */\n" \
+				--vhead "static G@Type@Value @enum_name@_values[] = { // enum_values\n" \
+				--vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+				--vtail "  { 0, NULL, NULL }\n};\n" \
+				$(bse/libbse.headers)			> $@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bseenum_list.cc: $(bse/libbse.headers)		| $>/bse/
+	$(QGEN)
+	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
+				--eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
+				$(bse/libbse.headers)			> $@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsegentypes.h: bse/bsebasics.idl		$(bse/libbse.headers) bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
 				--eprod "#define BSE_TYPE_@ENUMSHORT@\t (BSE_TYPE_ID (@EnumName@)) // enum\n" \
