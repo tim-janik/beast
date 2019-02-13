@@ -319,6 +319,9 @@ bse/libbse.sources  ::= $(strip		\
 bse/libbse.generated::= bse/gslfft.cc
 bse/libbse.deps     ::= $(strip		\
 	$>/bse/bseapi_interfaces.hh	\
+	$>/bse/bsebasics.genidl.hh	\
+	$>/bse/bsebusmodule.genidl.hh	\
+	$>/bse/bsegenbasics.cc		\
 	$>/bse/bsegentypes.h		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
@@ -367,7 +370,7 @@ $>/bse/bseapi_interfaces.hh: bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidac
 	$Q cd $>/bse/ && sed '1i#define _(x) x' -i bseapi_interfaces.cc && sed '1i#undef _' -i bseapi_interfaces.cc
 $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc $>/bse/bseapi_interfaces.cc: $>/bse/bseapi_interfaces.hh
 
-# == bsegentypes.h ==
+# == sfidl generated files ==
 $>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
@@ -376,6 +379,18 @@ $>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 				$(bse/libbse.headers)			> $@.tmp
 	$Q $(PERL) bse/mktypes.pl --externs $(bse/libbse.sources)	>>$@.tmp
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --header $<	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsegenbasics.cc: bse/bsebasics.idl		$(sfi/sfidl) | $>/bse/
+	$(QGEN)
+	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --source --init sfidl_types_init $<	> $@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsebasics.genidl.hh: bse/bsebasics.idl		$(sfi/sfidl) | $>/bse/
+	$(QGEN)
+	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-cxx --macro $(<F) $<	> $@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bsebusmodule.genidl.hh: bse/bsebusmodule.idl	$(sfi/sfidl) | $>/bse/
+	$(QGEN)
+	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-cxx --macro $(<F) $<	> $@.tmp
 	$Q mv $@.tmp $@
 
 # == zres.cc ==
