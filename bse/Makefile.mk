@@ -316,15 +316,19 @@ bse/libbse.sources  ::= $(strip		\
 	bse/unicode.cc			\
 	bse/weaksym.cc			\
 )
-bse/libbse.sources += bse/gslfft.cc
+bse/libbse.generated::= bse/gslfft.cc
+bse/libbse.deps     ::= $(strip		\
+	$>/bse/bsegentypes.h		\
+	$>/bse/sysconfig.h		\
+	$>/bse/zres.cc			\
+)
 bse.so              ::= bse-$(VERSION_MAJOR).so
 libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)
 bse/libbse.sofile   ::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
 bse/libbse.solinks  ::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
 ALL_TARGETS	     += $(bse/libbse.sofile) $(bse/libbse.solinks)
-bse/libbse.deps     ::= $>/bse/sysconfig.h $>/bse/zres.cc
-bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
-$(bse/libbse.objects): $(bse/libbse.deps) | $>/bse/
+bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o) $(bse/libbse.generated:%.cc=$>/%.o))
+$(bse/libbse.objects): $(bse/libbse.deps)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
 # SO linking
@@ -352,6 +356,18 @@ $(bse/bsetool): $(bse/bsetool.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
 	-Wl,-rpath='$$ORIGIN/../bse:$$ORIGIN/' -Wl,-L$>/bse/ -lbse-$(VERSION_MAJOR) \
 	$(GLIB_LIBS) `pkg-config --libs vorbisfile vorbisenc vorbis ogg mad fluidsynth flac` -lz
 # CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
+
+
+# == bsegentypes.h ==
+$>/bse/bsegentypes.h: bse/bsebasics.idl		bse/mktypes.pl $(sfi/sfidl) | $>/bse/
+	$(QGEN)
+	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
+				--eprod "#define BSE_TYPE_@ENUMSHORT@\t (BSE_TYPE_ID (@EnumName@)) // enum\n" \
+				--eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
+				$(bse/libbse.headers)			> $@.tmp
+	$Q $(PERL) bse/mktypes.pl --externs $(bse/libbse.sources)	>>$@.tmp
+	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --header $<	>>$@.tmp
+	$Q mv $@.tmp $@
 
 
 # == zres.cc ==
