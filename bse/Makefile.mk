@@ -477,3 +477,5 @@ int main (int argc, char *argv[]) {
 }
 endef
 
+# == bse/tests/ - build *after* bse/ ==
+include bse/tests/Makefile.mk
