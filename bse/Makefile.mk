@@ -433,7 +433,7 @@ $>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_lis
 
 
 # == bse/sysconfig.h ==
-$>/bse/sysconfig.h: config-checks.mk $>/config-cache.mk bse/Makefile.mk | $>/bse/
+$>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
 	$(QGEN)
 	$Q echo '// make $@'							> $@.tmp
 	$Q echo '#define BSE_MAJOR_VERSION		($(VERSION_MAJOR))'	>>$@.tmp
