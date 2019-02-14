@@ -342,13 +342,11 @@ $(bse/libbse.objects): $(bse/libbse.deps)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
 # SO linking
-$(bse/libbse.sofile): $(bse/libbse.objects) $(MAKEFILE_LIST)
-	$(QECHO) LD $@
-	$Q $(CXX) $(CXXSTD) -shared -fPIC -o $@ $(bse/libbse.objects) -Wl,-soname,$(libbse.soname) $(LDFLAGS) $(EXTRA_FLAGS) $($@.FLAGS) \
-	$(GLIB_LIBS) `pkg-config --libs gobject-2.0 vorbisfile vorbisenc vorbis ogg mad fluidsynth gmodule-no-export-2.0 flac` -lz
 $(bse/libbse.solinks): $(bse/libbse.sofile)
 	$(QECHO) LN $@
 	$Q rm -f $@ ; ln -s $(notdir $(bse/libbse.sofile)) $@
+$(bse/libbse.sofile).LDFLAGS ::= -shared -Wl,-soname,$(libbse.soname)
+$(eval $(call LINKER, $(bse/libbse.sofile), $(bse/libbse.objects), | $>/bse/, $(BSEDEPS_LIBS)))
 
 
 # == bsetool ==
@@ -359,13 +357,8 @@ bse/bsetool.objects ::= $(sort $(bse/bsetool.sources:%.cc=$>/%.o))
 bse/bsetool.deps    ::= $(bse/libbse.deps)
 $(bse/bsetool.objects): $(bse/bsetool.deps)
 $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-# BIN linking
-$(bse/bsetool): $(bse/bsetool.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
-	$(QECHO) LD $@
-	$Q $(CXX) $(CXXSTD) -fPIC -o $@ $(bse/bsetool.objects) -Wl,--no-undefined \
-	-Wl,-rpath='$$ORIGIN/../bse:$$ORIGIN/' -Wl,-L$>/bse/ -lbse-$(VERSION_MAJOR) \
-	$(GLIB_LIBS) `pkg-config --libs vorbisfile vorbisenc vorbis ogg mad fluidsynth flac` -lz
 # CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
+$(eval $(call LINKER, $(bse/bsetool), $(bse/bsetool.objects), $(bse/libbse.solinks) | $>/bse/, -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
 
 
 # == bseapi.idl ==
