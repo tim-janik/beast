@@ -25,7 +25,7 @@ conftest_lib.makefile ::= $(lastword $(MAKEFILE_LIST))
 # $(call conftest_require_lib, header, symbol, lib) -> errors if $CONFTEST != true
 conftest_require_lib = { $(call conftest_lib,$1,$2,$3) && $$CONFTEST \
 	|| { echo "$$CONFTEST_LOG" | sed 's/^/> /'; \
-	     echo '$(conftest_lib.makefile):' "ERROR: Failed to link with '$$LIBMAD_LIBS' against symbol:" '$2'; \
+	     echo '$(conftest_lib.makefile):' "ERROR: Failed to link with '$3' against symbol:" '$2'; \
 	     exit 7; } >&2 ; }
 
 # == config-checks.requirements ==
