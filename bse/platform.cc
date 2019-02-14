@@ -738,13 +738,13 @@ determine_libbse_installdir (bool *using_objdir)
           const char *const intlibso = strstr (path, intlibname);               // by internal name
           if (intlibso && !strchr (intlibso + strlen (intlibname), '/'))        // not dirname
             {
-              *using_objdir = true;
-              return std::string (path, intlibso - path);                       // path fragment before /bse/.libs/lib*.so
+              *using_objdir = false;
+              return std::string (path, intlibso - path);                       // path fragment before /bse/lib*.so
             }
           const char *const lbtlibso = strstr (path, lbtlibname);               // by libtool internal name
           if (lbtlibso && !strchr (lbtlibso + strlen (lbtlibname), '/'))        // not dirname
             {
-              *using_objdir = false;
+              *using_objdir = true;
               return std::string (path, lbtlibso - path);                       // path fragment before /bse/.libs/lib*.so
             }
         }
