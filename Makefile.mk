@@ -9,7 +9,7 @@ SHELL    ::= /bin/bash -o pipefail
 ALL_TARGETS ::=
 CLEANFILES  ::=
 CLEANDIRS   ::=
-OUTDIR      ::= out
+OUTDIR       ?= out
 >	    ::= $(OUTDIR)
 .PHONY: ;
 include config-utils.mk
