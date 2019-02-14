@@ -60,10 +60,6 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
 	$(QGEN)
 	$Q echo '# make $@'					> $@.tmp
-	$Q V=$$(./version.sh -l) \
-	  && echo "BUILDID ::= $$V"				>>$@.tmp
-	$Q V=$$(./version.sh -d) \
-	  && echo "VERSION_DATE ::= $$V"			>>$@.tmp
 	$Q VERSION_SHORT=$$(./version.sh -s) \
 	  && echo "VERSION_SHORT ::= $$VERSION_SHORT"		>>$@.tmp \
 	  && echo "$$VERSION_SHORT" | sed 's/[^0-9]/ /g'	> $@.tmpv \
