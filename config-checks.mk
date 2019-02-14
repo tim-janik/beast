@@ -50,21 +50,17 @@ config-checks.require.pkgconfig ::= $(strip	\
 # VORBISFILE_BAD_SEEK indicates pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
 
 # == config-cache.mk ==
+GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
+# used for GLIB_CFLAGS and GLIB_LIBS
+BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
+# used for BSEDEPS_CFLAGS BSEDEPS_LIBS
+
 -include $>/config-cache.mk
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$(QECHO) CHECK package requirements
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
 	$(QGEN)
 	$Q echo '# make $@'					> $@.tmp
-	$Q GLIB_CFLAGS=$$(pkg-config --cflags glib-2.0 gobject-2.0 gmodule-no-export-2.0) \
-	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
-	$Q GLIB_LIBS=$$(pkg-config --libs glib-2.0 gobject-2.0 gmodule-no-export-2.0) \
-	  && echo "GLIB_LIBS ::= $$GLIB_LIBS"			>>$@.tmp
-	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
-	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
-	$Q LIBMAD_LIBS='-lmad -lm' \
-	  && echo "LIBMAD_LIBS ::= $$LIBMAD_LIBS"		>>$@.tmp \
-	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$LIBMAD_LIBS)
 	$Q V=$$(./version.sh -l) \
 	  && echo "BUILDID ::= $$V"				>>$@.tmp
 	$Q V=$$(./version.sh -d) \
@@ -79,5 +75,19 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp
 	$Q echo "BSE_GETTEXT_DOMAIN ::=" \
 		"beast-$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)" >>$@.tmp
+	$Q GLIB_CFLAGS=$$(pkg-config --cflags $(GLIB_PACKAGES)) \
+	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
+	$Q GLIB_LIBS=$$(pkg-config --libs $(GLIB_PACKAGES)) \
+	  && echo "GLIB_LIBS ::= $$GLIB_LIBS"			>>$@.tmp
+	$Q BSEDEPS_CFLAGS=$$(pkg-config --cflags $(BSEDEPS_PACKAGES)) \
+	  && echo "BSEDEPS_CFLAGS ::= $$BSEDEPS_CFLAGS"		>>$@.tmp
+	$Q BSEDEPS_LIBS=$$(pkg-config --libs $(BSEDEPS_PACKAGES)) \
+	  && echo "BSEDEPS_LIBS ::= $$BSEDEPS_LIBS"		>>$@.tmp
+	$Q MAD_LIBS='-lmad' \
+	  && echo "MAD_LIBS ::= $$MAD_LIBS"			>>$@.tmp \
+	  && echo 'BSEDEPS_LIBS += $$(MAD_LIBS)'		>>$@.tmp \
+	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$MAD_LIBS)
+	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
+	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
 	$Q mv $@.tmp $@
 CLEANFILES += $>/config-cache.mk
