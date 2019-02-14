@@ -94,6 +94,8 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && (test "$$OLDSUM" = "$$CFGSUM" \
 	      &&   echo '  KEEP     $>/config-stamps.sha256' \
 	      || { echo '  UPDATE   $>/config-stamps.sha256' \
+		   && echo -e 'MAKECMDGOALS ?= all\n$${MAKECMDGOALS}: ;' \
+			'@$$(MAKE) -C '\''${PWD}'\'' $${MAKECMDGOALS}' > $>/GNUmakefile \
 		   && echo "$$CFGSUM" > $>/config-stamps.sha256 \
 		   ; } )
 	$Q mv $>/config-cache.mk $>/config-cache.old 2>/dev/null || true
