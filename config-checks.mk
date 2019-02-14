@@ -54,10 +54,9 @@ GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
 # used for GLIB_CFLAGS and GLIB_LIBS
 BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
-
 -include $>/config-cache.mk
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
-	$(QECHO) CHECK package requirements
+	$(QECHO) CHECK    Configuration dependencies...
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
 	$(QGEN)
 	$Q echo '# make $@'					> $@.tmp
@@ -72,9 +71,9 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && rm -f						  $@.tmpv \
 	  && echo "VERSION_MAJOR ::= $$MAJOR"			>>$@.tmp \
 	  && echo "VERSION_MINOR ::= $$MINOR"			>>$@.tmp \
-	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp
-	$Q echo "BSE_GETTEXT_DOMAIN ::=" \
-		"beast-$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)" >>$@.tmp
+	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp \
+	  && echo "BSE_GETTEXT_DOMAIN ::=" \
+		"beast-$$MAJOR.$$MINOR.$$MICRO" >>$@.tmp
 	$Q GLIB_CFLAGS=$$(pkg-config --cflags $(GLIB_PACKAGES)) \
 	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
 	$Q GLIB_LIBS=$$(pkg-config --libs $(GLIB_PACKAGES)) \
@@ -89,5 +88,21 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$MAD_LIBS)
 	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
 	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
+	$Q echo 'config-stamps ::= $$>/config-stamps.sha256'	>>$@.tmp \
+	  && OLDSUM=$$(cat "$>/config-stamps.sha256" 2>/dev/null || :) \
+	  && TMPSUM=$$(sha256sum < $@.tmp) && CFGSUM="$${TMPSUM%-}$(@F)" \
+	  && (test "$$OLDSUM" = "$$CFGSUM" \
+	      &&   echo '  KEEP     $>/config-stamps.sha256' \
+	      || { echo '  UPDATE   $>/config-stamps.sha256' \
+		   && echo "$$CFGSUM" > $>/config-stamps.sha256 \
+		   ; } )
+	$Q mv $>/config-cache.mk $>/config-cache.old 2>/dev/null || true
 	$Q mv $@.tmp $@
-CLEANFILES += $>/config-cache.mk
+$>/config-stamps.sha256: $>/config-cache.mk
+CLEANFILES += $>/config-stamps.sha256 $>/config-cache.mk $>/config-cache.old
+# About config-stamps.sha256: For a variety of reasons, config-cache.mk may be
+# often regenerated. To efficiently detect changes in the build configuration,
+# use $(config-stamps) as dependency.
+# Note, consider variables defined in config-cache.mk as stale within the recipe
+# for config-cache.mk. I.e. use "$$MAJOR" instead of "$(VERSION_MINOR)" to avoid
+# 2-phase regeneration of config-cache.mk that trips up config-stamps.sha256.
