@@ -1,5 +1,8 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
+# == Escapes ==
+,::=,
+
 # == $Q $V ==
 Q       ::= $(if $(findstring 1, $(V)),, @)
 QSKIP   ::= $(if $(findstring s,$(MAKEFLAGS)),: )
@@ -14,3 +17,11 @@ QDIE	  = bash -c 'echo "  ERROR    $@: $$@" >&2 ; exit 127' _
 DOTGIT ::= $(abspath $(shell git rev-parse --git-dir 2>/dev/null))
 # Dependencies that are updated with each Git commit
 GITCOMMITDEPS ::= $(DOTGIT:%=%/logs/HEAD)
+
+# == LINKER ==
+# $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)
+define LINKER
+$1: $2	$3
+	$$(QECHO) LD $$@
+	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P')
+endef
