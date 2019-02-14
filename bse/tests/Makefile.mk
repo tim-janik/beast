@@ -8,15 +8,10 @@ bse/tests/integrity		::= $>/bse/tests/integrity
 ALL_TARGETS			 += $(bse/tests/integrity)
 bse/tests/integrity.sources	::= bse/tests/integrity.cc
 bse/tests/integrity.objects	::= $(sort $(bse/tests/integrity.sources:%.cc=$>/%.o))
-$(bse/tests/integrity.objects):	| $>/bse/tests/
+$(bse/tests/integrity.objects):	$(bse/libbse.deps) | $>/bse/tests/
 $(bse/tests/integrity.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 bse/tests/integrity.objects.FLAGS = -O0
-# BIN linking
-$(bse/tests/integrity): $(bse/tests/integrity.objects) $(bse/libbse.solinks) $(MAKEFILE_LIST)
-	$(QECHO) LD $@
-	$Q $(CXX) $(CXXSTD) -fPIC -o $@ $(bse/tests/integrity.objects) -Wl,--no-undefined \
-	-Wl,-rpath='$$ORIGIN/../../bse:$$ORIGIN/' -Wl,-L$>/bse/ -lbse-$(VERSION_MAJOR) \
-	$(GLIB_LIBS)
+$(eval $(call LINKER, $(bse/tests/integrity), $(bse/tests/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../../bse) )
 
 # == check ==
 bse-tests-check: .PHONY
