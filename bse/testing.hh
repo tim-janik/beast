@@ -61,6 +61,7 @@ public:
 
 // === test maintenance ===
 int     run             ();     ///< Run all registered tests.
+int     run             (const StringVector &test_names);     ///< Run named tests.
 bool    verbose         ();     ///< Indicates whether tests should run verbosely.
 bool    slow            ();     ///< Indicates whether slow tests should be run.
 void    test_output     (int kind, const String &string);
@@ -130,7 +131,7 @@ class TestChain {
 public:
   enum        Kind      { PLAIN = 0, SLOW = 1, BENCH = 3, BROKEN = 99 };
   explicit    TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind);
-  static void run       (ptrdiff_t internal_token);
+  static void run       (ptrdiff_t internal_token, const StringVector *test_names);
 private:
   std::string           name_;
   std::function<void()> func_;
