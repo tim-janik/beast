@@ -13,5 +13,18 @@ main (int   argc,
 
   bse_init_test (&argc, argv, args);
 
-  return Bse::Test::run();
+  Bse::StringVector test_names;
+
+  for (ssize_t i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        if (argv[i][0] == '-')
+          {
+            Bse::printerr ("%s: unknown option: %s\n", argv[0], argv[i]);
+            exit (7);
+          }
+        test_names.push_back (argv[i]);
+      }
+
+  return test_names.size() ? Bse::Test::run (test_names) : Bse::Test::run();
 }
