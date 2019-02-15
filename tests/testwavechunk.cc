@@ -217,16 +217,9 @@ simple_loop_tests (void)
 TEST_ADD (simple_loop_tests);
 
 static void
-brute_force_loop_tests (void)
+full_loop_tests (int jinc, int kinc, const char *kind)
 {
-  int jinc = 5, kinc = 3;
-  if (Bse::Test::slow())
-    {
-      jinc = 1;
-      kinc = 1;
-    }
-
-  gint i, count = 6;
+  int i, count = 6;
   for (i = 1; i <= count; i++)
     {
       for (uint j = 0; j < my_data_length - 1; j += jinc)
@@ -240,10 +233,23 @@ brute_force_loop_tests (void)
             }
           TOK();
         }
-      printout ("  OK       Brute force loop test %d/%d\n", i, 6);
+      printout ("  OK       %s loop test %d/%d\n", kind, i, 6);
     }
 }
-TEST_ADD (brute_force_loop_tests);
+
+static void
+fast_loop_tests (void)
+{
+  full_loop_tests (5, 7, "Fast");
+}
+TEST_ADD (fast_loop_tests);
+
+static void
+brute_force_loop_tests (void)
+{
+  full_loop_tests (1, 1, "Brute force");
+}
+TEST_SLOW (brute_force_loop_tests);
 
 static float *
 gen_expect (float *out,
