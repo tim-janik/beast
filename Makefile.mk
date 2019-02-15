@@ -6,11 +6,12 @@ MAKEFLAGS += -r
 SHELL    ::= /bin/bash -o pipefail
 
 # == Basics ==
-ALL_TARGETS ::=
-CLEANFILES  ::=
-CLEANDIRS   ::=
-OUTDIR       ?= out
->	    ::= $(OUTDIR)
+ALL_TARGETS	::=
+CHECK_TARGETS	::=
+CLEANFILES	::=
+CLEANDIRS	::=
+OUTDIR		 ?= out
+>		::= $(OUTDIR)
 .PHONY: ;
 include config-utils.mk
 include config-uname.mk
@@ -69,3 +70,5 @@ clean:
 	@test -z "$(strip $(CLEANFILES))" || (set -x; rm -f $(CLEANFILES) )
 	@test -z "$(strip $(CLEANDIRS))" || (set -x; rm -fr $(CLEANDIRS) )
 all: $(ALL_TARGETS)
+check: $(CHECK_TARGETS)
+$(CHECK_TARGETS): .PHONY
