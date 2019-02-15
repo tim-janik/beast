@@ -15,6 +15,7 @@ tests/suite1.sources		::= $(strip	\
 	tests/testresampler.cc			\
 	tests/testresamplerq.cc			\
 	tests/testwavechunk.cc			\
+	tests/misctests.cc			\
 )
 tests/suite1			::= $>/tests/suite1
 ALL_TARGETS			 += $(tests/suite1)

@@ -12,7 +12,7 @@ using namespace Bse;
 static void
 check_cent_tune_fast (void)
 {
-  TSTART ("Cent Tune Function (fast Table based implementation)");
+  // Cent Tune Function (fast Table based implementation)
   const double epsilon = 1e-15;
   for (int i = -100; i <= +100; i++)
     {
@@ -21,13 +21,13 @@ check_cent_tune_fast (void)
       if (i % 13 == 0)
         TOK();
     }
-  TDONE();
 }
+TEST_ADD (check_cent_tune_fast);
 
 static void
 check_cent_tune (void)
 {
-  TSTART ("Cent Tune Function");
+  // Cent Tune Function
   const double epsilon = 1e-14;
   int i = 0;
   for (double fine_tune = -3600; fine_tune < 3600; fine_tune += g_random_double())  /* 3 octaves */
@@ -37,13 +37,12 @@ check_cent_tune (void)
       if (i++ % 500 == 0)
         TOK();
     }
-  TDONE();
 }
+TEST_ADD (check_cent_tune);
 
 static void
 check_equal_tempered_tuning (void)
 {
-  TSTART ("Equal Temperament");
   const double *table = bse_semitone_table_from_tuning (Bse::MusicalTuning::OD_12_TET); /* returns [-132..+132] */
   const double epsilon = 1e-11;
   for (int i = -132; i <= +132; i++)
@@ -53,8 +52,8 @@ check_equal_tempered_tuning (void)
       if (i % 13 == 0)
         TOK();
     }
-  TDONE();
 }
+TEST_ADD (check_equal_tempered_tuning);
 
 static void
 check_tuning_monotony (Bse::MusicalTuning musical_tuning)
@@ -125,16 +124,11 @@ test_math_bits ()
   const std::string poly2 = bse_poly_str1 (BSE_ARRAY_SIZE (a) - 1, a, "y");
   TCMP (poly2, ==, "(-1.0*y + 2.0*y**2 + -3.0*y**3 + 7.75*y**4 + -1000000000000000.75*y**5)");
 }
+TEST_ADD (test_math_bits);
 
-int
-main (gint   argc,
-      gchar *argv[])
+static void
+check_monotonic_tuning()
 {
-  bse_init_test (&argc, argv);
-  test_math_bits();
-  check_cent_tune();
-  check_cent_tune_fast();
-  check_equal_tempered_tuning();
   const int64 last_tuning = int (Bse::MusicalTuning::YOUNG);
   /* check last tuning value by asserting defaulting behavior of succeding values */
   TCMP (bse_semitone_table_from_tuning (Bse::MusicalTuning (last_tuning + 1)),
@@ -148,6 +142,20 @@ main (gint   argc,
       check_freq_vs_notes (musical_tuning);
       TPASS ("Tuning System: %s\n", Aida::enum_info<Bse::MusicalTuning>().find_value (musical_tuning).ident);
     }
+}
+TEST_ADD (check_monotonic_tuning);
 
+#if 0
+int
+main (gint   argc,
+      gchar *argv[])
+{
+  bse_init_test (&argc, argv);
+  test_math_bits();
+  check_cent_tune();
+  check_cent_tune_fast();
+  check_equal_tempered_tuning();
+  check_monotonic_tuning();
   return 0;
 }
+#endif
