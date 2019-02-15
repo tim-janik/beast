@@ -49,6 +49,7 @@ include res/Makefile.mk
 include sfi/Makefile.mk
 include aidacc/Makefile.mk
 include bse/Makefile.mk
+include tests/Makefile.mk
 
 # == output directories ==
 $>/%/: ; $(Q) mkdir -p $@
