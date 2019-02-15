@@ -33,7 +33,7 @@ enum TestType
   TEST_ERROR_SPECTRUM,
   TEST_IMPULSE,
   TEST_FILTER_IMPL
-} test_type = TEST_NONE;
+};
 
 enum ResampleType
 {
@@ -41,7 +41,12 @@ enum ResampleType
   RES_UPSAMPLE,
   RES_SUBSAMPLE,
   RES_OVERSAMPLE
-} resample_type = RES_UPSAMPLE;
+};
+
+namespace { // Anon
+
+static ResampleType resample_type = RES_UPSAMPLE;
+static TestType test_type = TEST_NONE;
 
 struct Options {
   guint			  block_size;
@@ -73,7 +78,8 @@ struct Options {
   void parse (int *argc_p, char **argv_p[]);
 } options;
 
-string verbose_output;
+static string verbose_output;
+} // Anon
 
 static void
 usage ()
@@ -329,6 +335,7 @@ gettime ()
 template <int TEST, int RESAMPLE> int
 perform_test()
 {
+  const int REPETITIONS = 5000; // 500000;
   const guint	block_size = (TEST == TEST_IMPULSE) ? 150 /* enough space for all possible tests */
 						    : options.block_size;
   /* Initialize up- and downsampler via bse.
@@ -357,7 +364,7 @@ perform_test()
 
       double start_time = gettime();
       long long k = 0;
-      for (int i = 0; i < 500000; i++)
+      for (int i = 0; i < REPETITIONS; i++)
 	{
 	  if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	    {
@@ -679,8 +686,10 @@ test_title()
     }
 }
 
-int
-main (int argc, char **argv)
+static int standalone (int argc, char **argv) __attribute__((unused));
+
+static int
+standalone (int argc, char **argv)
 {
   /* preprocess args: allow using --fpu instead of --bse-force-fpu,
    * because its a really common use case for the resampler test
@@ -753,3 +762,119 @@ main (int argc, char **argv)
     }
   return result;
 }
+
+// == test collection ==
+static void
+run_testresampler (TestType tt)
+{
+  test_type = tt;
+  const int result = perform_test();
+  TASSERT (result == 0);
+}
+
+static void
+run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, double finc, double threshold)
+{
+  test_type = TEST_ACCURACY;
+  resample_type = rtype;
+  options.precision = static_cast<BseResampler2Precision> (precision);
+  options.freq_min = fmin;
+  options.freq_max = fmax;
+  options.freq_inc = finc;
+  options.max_threshold_db = threshold;
+  /* we allow both: specifying -96 or 96 to assert 96 dB precision */
+  if (options.max_threshold_db > 0)
+    options.max_threshold_db = -options.max_threshold_db;
+  //options.verbose = true;
+  const int result = perform_test();
+  if (options.verbose)
+    printf ("%s", verbose_output.c_str());
+  TASSERT (result == 0);
+}
+
+static void
+run_perf (ResampleType rtype, int precision)
+{
+  test_type = TEST_PERFORMANCE;
+  resample_type = rtype;
+  options.precision = static_cast<BseResampler2Precision> (precision);
+  options.verbose = true;
+  const int result = perform_test();
+  if (options.verbose)
+    printf ("%s", verbose_output.c_str());
+  TASSERT (result == 0);
+}
+
+static void testresampler_check_filter_impl()           { run_testresampler (TEST_FILTER_IMPL); }
+TEST_ADD (testresampler_check_filter_impl);
+
+static void testresampler_check_precision_up8()         { run_accuracy (RES_UPSAMPLE, 8, 180, 18000, 1979, 45); }
+TEST_ADD (testresampler_check_precision_up8);
+static void testresampler_check_precision_down12()      { run_accuracy (RES_DOWNSAMPLE, 12, 90, 9000, 997, 72); }
+TEST_ADD (testresampler_check_precision_down12);
+static void testresampler_check_precision_up16()        { run_accuracy (RES_UPSAMPLE, 16, 180, 18000, 1453, 89.5); }
+TEST_ADD (testresampler_check_precision_up16); // --bse-force-fpu
+static void testresampler_check_precision_over20()      { run_accuracy (RES_OVERSAMPLE, 20, 180, 18000, 1671, 113.5); }
+TEST_ADD (testresampler_check_precision_over20); // --bse-force-fpu
+static void testresampler_check_precision_sub24()       { run_accuracy (RES_SUBSAMPLE, 24, 90, 9000, 983, 126); }
+TEST_ADD (testresampler_check_precision_sub24);
+
+#if 0 // lengthy and verbose performance tests
+#define TEST_PERF(fun)  TEST_BENCH (fun)
+#else
+struct DummyFunc { explicit DummyFunc (std::function<void()>) {} };
+#define TEST_PERF(fun)  static const DummyFunc BSE_CPP_PASTE2 (__dummy, __LINE__) (fun);
+#endif
+
+static void testresampler_check_performance_up8()       { run_perf (RES_UPSAMPLE, 8); }
+TEST_PERF (testresampler_check_performance_up8);
+static void testresampler_check_performance_down8()     { run_perf (RES_DOWNSAMPLE, 8); }
+TEST_PERF (testresampler_check_performance_down8);
+static void testresampler_check_performance_sub8()      { run_perf (RES_SUBSAMPLE, 8); }
+TEST_PERF (testresampler_check_performance_sub8);
+static void testresampler_check_performance_over8()     { run_perf (RES_OVERSAMPLE, 8); }
+TEST_PERF (testresampler_check_performance_over8);
+
+static void testresampler_check_performance_up12()      { run_perf (RES_UPSAMPLE, 12); }
+TEST_PERF (testresampler_check_performance_up12);
+static void testresampler_check_performance_down12()    { run_perf (RES_DOWNSAMPLE, 12); }
+TEST_PERF (testresampler_check_performance_down12);
+static void testresampler_check_performance_sub12()     { run_perf (RES_SUBSAMPLE, 12); }
+TEST_PERF (testresampler_check_performance_sub12);
+static void testresampler_check_performance_over12()    { run_perf (RES_OVERSAMPLE, 12); }
+TEST_PERF (testresampler_check_performance_over12);
+
+static void testresampler_check_performance_up16()      { run_perf (RES_UPSAMPLE, 16); }
+TEST_PERF (testresampler_check_performance_up16);
+static void testresampler_check_performance_down16()    { run_perf (RES_DOWNSAMPLE, 16); }
+TEST_PERF (testresampler_check_performance_down16);
+static void testresampler_check_performance_sub16()     { run_perf (RES_SUBSAMPLE, 16); }
+TEST_PERF (testresampler_check_performance_sub16);
+static void testresampler_check_performance_over16()    { run_perf (RES_OVERSAMPLE, 16); }
+TEST_PERF (testresampler_check_performance_over16);
+
+static void testresampler_check_performance_up20()      { run_perf (RES_UPSAMPLE, 20); }
+TEST_PERF (testresampler_check_performance_up20);
+static void testresampler_check_performance_down20()    { run_perf (RES_DOWNSAMPLE, 20); }
+TEST_PERF (testresampler_check_performance_down20);
+static void testresampler_check_performance_sub20()     { run_perf (RES_SUBSAMPLE, 20); }
+TEST_PERF (testresampler_check_performance_sub20);
+static void testresampler_check_performance_over20()    { run_perf (RES_OVERSAMPLE, 20); }
+TEST_PERF (testresampler_check_performance_over20);
+
+static void testresampler_check_performance_up24()      { run_perf (RES_UPSAMPLE, 24); }
+TEST_PERF (testresampler_check_performance_up24);
+static void testresampler_check_performance_down24()    { run_perf (RES_DOWNSAMPLE, 24); }
+TEST_PERF (testresampler_check_performance_down24);
+static void testresampler_check_performance_sub24()     { run_perf (RES_SUBSAMPLE, 24); }
+TEST_PERF (testresampler_check_performance_sub24);
+static void testresampler_check_performance_over24()    { run_perf (RES_OVERSAMPLE, 24); }
+TEST_PERF (testresampler_check_performance_over24);
+
+#ifdef STANDALONE
+int
+main (int argc, char **argv)
+{
+  return standalone (argc, argv);
+}
+#endif
