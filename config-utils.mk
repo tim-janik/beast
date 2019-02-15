@@ -38,9 +38,10 @@ GITCOMMITDEPS ::= $(DOTGIT:%=%/logs/HEAD)
 # be .PHONY in case any output targets are missing.
 # Also, we use /.../*.INTERMEDIATE as pseudo target, to make conflicts with existing files
 # very unlikely.
-# Usage Example: $(call MULTIOUTPUT, a b c): prerequisites... ; touch a b c
+# Usage Example: $(call MULTIOUTPUT, a b c [, PseudoTargetName]): prerequisites... ; touch a b c
 MULTIOUTPUT = $(foreach PseudoTarget,			$(and, "Local variable 'PseudoTarget' is assigned") \
-  /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE,	$(and, "a sanitized /.../fake.INTERMEDIATE filename.") \
+  $(if $2, $2, 						$(and, "a sanitized /.../fake.INTERMEDIATE filename.") \
+    /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE), \
   $(eval .INTERMEDIATE: $(PseudoTarget))		$(and, "Avoid always running the recipe just because PseudoTarget does not exist.") \
   $(foreach OutputTarget, $1,				$(and, "For each side-effect OutputTarget; we introduce a dependency") \
     $(eval $(OutputTarget): $(PseudoTarget) ; )		$(and, "to serialize the generation of OutputTarget without MAKE missing a recipe.") \
