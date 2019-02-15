@@ -28,7 +28,7 @@ struct Options {
 
   Options() :
     dump_gnuplot_data (false),
-    program_name ("filtertest")
+    program_name ("filterdesign")
   {
   }
   void parse (int *argc_p, char **argv_p[]);
@@ -38,9 +38,9 @@ struct Options {
 static void
 usage ()
 {
-  printf ("usage: filtertest [ <options>... ]\n");
+  printf ("usage: filterdesign [ <options>... ]\n");
   printf ("\n");
-  printf ("When called without options, filtertest checks the compiled-in filters\n");
+  printf ("When called without options, filterdesign checks the compiled-in filters\n");
   printf ("against the compiled-in specifications.\n");
   printf ("\n");
   printf ("Options:\n");
@@ -49,11 +49,11 @@ usage ()
   printf ("\n");
   printf ("Examples:\n");
   printf ("  # check filters against specification\n");
-  printf ("  filtertest\n");
+  printf ("  filterdesign\n");
   printf ("  # generating and plotting gnuplot data\n");
-  printf ("  filtertest --dump-gnuplot-data\n");
-  printf ("  ls filtertest_*.gp\n");
-  printf ("  gnuplot filtertest_bw8.gp\n");
+  printf ("  filterdesign --dump-gnuplot-data\n");
+  printf ("  ls filterdesign_*.gp\n");
+  printf ("  gnuplot filterdesign_bw8.gp\n");
 }
 
 static bool
@@ -502,7 +502,7 @@ static void
 dump_gnuplot_data (vector<FilterTest>& filter_tests)
 {
   for (vector<FilterTest>::iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
-    fi->dump_gnuplot_data ("filtertest_");
+    fi->dump_gnuplot_data ("filterdesign_");
 }
 
 static void

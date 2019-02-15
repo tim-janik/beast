@@ -9,13 +9,13 @@ check: tests-check
 
 # == suite1 ==
 tests/suite1.sources		::= $(strip	\
-	tests/filtertest.cc			\
+	tests/filterdesign.cc			\
+	tests/misctests.cc			\
 	tests/suite1-main.cc			\
 	tests/suite1-randomhash.cc		\
 	tests/testresampler.cc			\
 	tests/testresamplerq.cc			\
 	tests/testwavechunk.cc			\
-	tests/misctests.cc			\
 )
 tests/suite1			::= $>/tests/suite1
 ALL_TARGETS			 += $(tests/suite1)
