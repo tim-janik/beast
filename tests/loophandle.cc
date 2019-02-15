@@ -189,19 +189,17 @@ check_loop (GslDataHandle *src_handle,
   gsl_data_handle_unref (loop_handle);
   gsl_data_handle_unref (loop_handle_reference);
 }
-int
-main (int argc, char **argv)
+
+static void
+test_loop_handles()
 {
-  gfloat      values[n_values * n_channels];
-  guint i;
-  for (i = 0; i < n_channels * n_values; i++)
+  float      values[n_values * n_channels];
+  for (uint i = 0; i < n_channels * n_values; i++)
     values[i] = 1.0 - rand() / (0.5 * RAND_MAX);
-  /* init bse */
-  bse_init_test (&argc, argv);
   /* test loophandle against the reference implementation */
-  GslDataHandle *mem_handle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, n_values, values, NULL /* don't free */);
+  GslDataHandle *mem_handle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, n_values, values, NULL /* no need to free */);
   check_loop (mem_handle, 0, n_values - 1);
   check_loop (mem_handle, 17, 379);
   check_loop (mem_handle, 59, 1930);
-  return 0;
 }
+TEST_ADD (test_loop_handles);
