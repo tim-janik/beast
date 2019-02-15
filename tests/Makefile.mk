@@ -5,8 +5,11 @@ tests-rpath.bse ::= ../bse
 
 # == suite1 ==
 tests/suite1.sources		::= $(strip	\
+	tests/filtertest.cc			\
 	tests/suite1-main.cc			\
 	tests/suite1-randomhash.cc		\
+	tests/testresamplerq.cc			\
+	tests/testwavechunk.cc			\
 )
 tests/suite1			::= $>/tests/suite1
 ALL_TARGETS			 += $(tests/suite1)

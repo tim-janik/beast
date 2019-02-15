@@ -21,6 +21,7 @@ using std::set;
 using std::min;
 using std::max;
 
+namespace { // Anon
 struct Options {
   bool                    dump_gnuplot_data;
   string		  program_name;
@@ -32,6 +33,7 @@ struct Options {
   }
   void parse (int *argc_p, char **argv_p[]);
 } options;
+} // Anon
 
 static void
 usage ()
@@ -102,6 +104,7 @@ check_arg (uint         argc,
   exit (1);
 }
 
+namespace { // Anon
 void
 Options::parse (int   *argc_p,
                 char **argv_p[])
@@ -144,6 +147,7 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
+} // Anon
 
 class FilterTest
 {
@@ -298,10 +302,9 @@ public:
   perform_checks (TestMode test_mode,
                   guint    scan_points) const
   {
-    TSTART("%s, Order %d", m_name.c_str(), m_order);
+    printout ("  DESIGN   %s, Order %d\n", m_name.c_str(), m_order);
     for (vector<Band>::const_iterator sbi = m_spec_bands.begin(); sbi != m_spec_bands.end(); sbi++)
       check_band (*sbi, test_mode, scan_points);
-    TDONE();
   }
   /**
    * creates two files, a datafile named filename_prefix m_gp_short_name
@@ -501,11 +504,13 @@ dump_gnuplot_data (vector<FilterTest>& filter_tests)
   for (vector<FilterTest>::iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->dump_gnuplot_data ("filtertest_");
 }
-int
-main (int     argc,
-      char  **argv)
+
+static void
+test_filter_design()
 {
-  bse_init_test (&argc, argv);
+  int argc = 0;
+  char **argv = NULL;
+  //bse_init_test (&argc, argv);
   options.parse (&argc, &argv);
   if (argc > 1)
     {
@@ -513,7 +518,7 @@ main (int     argc,
       for (a = 1; a < argc; a++)
 	printerr ("%s: unknown extra arg: %s\n", options.program_name.c_str(), argv[a]);
       printerr ("%s: use the --help option for help.\n", options.program_name.c_str());
-      return 1;
+      return;
     }
 
   vector<FilterTest> filter_tests;
@@ -529,3 +534,4 @@ main (int     argc,
       check_scanned_response (filter_tests);
     }
 }
+TEST_ADD (test_filter_design);
