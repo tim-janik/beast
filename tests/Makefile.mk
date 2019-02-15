@@ -14,6 +14,7 @@ tests/suite1.sources		::= $(strip	\
 	tests/misctests.cc			\
 	tests/suite1-main.cc			\
 	tests/suite1-randomhash.cc		\
+	tests/testfft.cc			\
 	tests/testresampler.cc			\
 	tests/testresamplerq.cc			\
 	tests/testwavechunk.cc			\

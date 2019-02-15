@@ -37,17 +37,12 @@ static void     extract_real            (guint              n,
                                          const double      *a,
                                          double            *b);
 
-
-
 /* --- functions --- */
-int
-main (int   argc,
-      char *argv[])
+static void
+test_fft_variants()
 {
   struct timeval tv;
   guint i;
-  /* initialize */
-  bse_init_test (&argc, argv);
   /* initialize random numbers */
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);
@@ -138,8 +133,9 @@ main (int   argc,
       d = diff (i << 1, 0, ref_fft_aout, dft_aout, "Reference FFT analysis against reference DFT analysis");
       TCHECK (fabs (d) < EPSILON, "Error sum in analysis FFT-%u below epsilon: %g < %g", i, d, EPSILON);
     }
-  return 0;
 }
+TEST_ADD (test_fft_variants);
+
 static void
 fill_rand (guint   n,
 	   double *a)
