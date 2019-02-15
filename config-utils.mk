@@ -18,6 +18,40 @@ DOTGIT ::= $(abspath $(shell git rev-parse --git-dir 2>/dev/null))
 # Dependencies that are updated with each Git commit
 GITCOMMITDEPS ::= $(DOTGIT:%=%/logs/HEAD)
 
+# == MULTIOUTPUT ==
+# Macro to call for the output targets of a recipe with multiple side-effect outputs.
+# I.e. it is used to define a recipe that yields multiple outputs, works with parallel
+# MAKE invocations and still works regardless of which output may be removed or added
+# later on.
+# Much of the problem space is described here in
+# [Automake - Many Outputs](https://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html).
+# A partial solution exists via [Pattern Rules](https://www.gnu.org/software/make/manual/make.html#Pattern-Examples).
+# A good solution can be implemented via an .INTERMEDIATE pseudo target
+# [SO - Correctly update multiple targets](https://stackoverflow.com/questions/19822435/multiple-targets-from-one-recipe-and-parallel-execution/47951465#47951465).
+# Except that parallel execution may skip regeneration every other time, as described here:
+# ["No recipe for 'a' and no prerequisites actually changed"](https://stackoverflow.com/questions/19822435/multiple-targets-from-one-recipe-and-parallel-execution/54025879#54025879).
+# To properly deal with the recipe side-effect that MAKE is not aware of, we need to be
+# [Using Empty Recipes](https://www.gnu.org/software/make/manual/make.html#Empty-Recipes).
+# And if one target is missing, the recipe will still run without MAKE being aware that
+# the other targets are also remade, which updates their timestamps. So a later MAKE
+# invocation might rebuild subsequent targets. To avoid this, the pseudo target must
+# be .PHONY in case any output targets are missing.
+# Also, we use /.../*.INTERMEDIATE as pseudo target, to make conflicts with existing files
+# very unlikely.
+# Usage Example: $(call MULTIOUTPUT, a b c): prerequisites... ; touch a b c
+MULTIOUTPUT = $(foreach PseudoTarget,			$(and, "Local variable 'PseudoTarget' is assigned") \
+  /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE,	$(and, "a sanitized /.../fake.INTERMEDIATE filename.") \
+  $(eval .INTERMEDIATE: $(PseudoTarget))		$(and, "Avoid always running the recipe just because PseudoTarget does not exist.") \
+  $(foreach OutputTarget, $1,				$(and, "For each side-effect OutputTarget; we introduce a dependency") \
+    $(eval $(OutputTarget): $(PseudoTarget) ; )		$(and, "to serialize the generation of OutputTarget without MAKE missing a recipe.") \
+    $(if $(wildcard $(OutputTarget)),, 			$(and, "Special case; if any OutputTarget is missing") \
+      $(eval .PHONY: $(PseudoTarget))) )		$(and, "make the PseudoTarget .PHONY; so MAKE knows *all* outputs are outdated.") \
+  $(PseudoTarget)					$(and, "This expands the actual (pseudo) target name used by the recipe.") \
+)	# We are ab-using 'and' for comments and 'foreach' as variable scope.
+BLANK ::=
+SPACE ::= $(BLANK) $(BLANK)
+MULTIOUTPUTSANITIZE = $(subst /,∕,$(subst $(SPACE),·,$(strip $1)))
+
 # == LINKER ==
 # $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)
 define LINKER
