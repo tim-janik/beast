@@ -9,6 +9,7 @@ check: tests-check
 
 # == suite1 ==
 tests/suite1.sources		::= $(strip	\
+	tests/blocktests.cc			\
 	tests/filterdesign.cc			\
 	tests/filtertest.cc			\
 	tests/firhandle.cc			\

@@ -55,10 +55,10 @@ build_ascending_random_block (guint  n_values,
   for (guint i = 1; i < n_values; i++)
     fblock[i] = fblock[i-1] + g_random_double_range (1e-10, 4.0 / n_values);
 }
+
 static void
 test_fill (void)
 {
-  TSTART ("BlockFill");
   float fblock1[1024];
   bse_block_fill_uint32 (1024, (uint32*) (void*) fblock1, 0);
   TASSERT (block_check (1024, fblock1, 0.f) == true);
@@ -68,12 +68,12 @@ test_fill (void)
   TASSERT (block_check (1024, fblock1, 17.786f) == true);
   Bse::Block::fill (1024, (uint32*) (void*) fblock1, 0);
   TASSERT (block_check (1024, fblock1, 0.f) == true);
-  TDONE();
+  TPASS ("BlockFill");
 }
+
 static void
 test_copy (void)
 {
-  TSTART ("BlockCopy");
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock2, -213e+3f);
   TASSERT (block_check (1024, fblock2, -213e+3f) == true);
@@ -89,12 +89,12 @@ test_copy (void)
   Bse::Block::fill (1024, fblock1, -8763e-4f);
   Bse::Block::copy (1024, (uint32*) (void*) fblock1, (uint32*) (void*) fblock2);
   TASSERT (block_check (1024, fblock1, -213e+3F) == true);
-  TDONE();
+  TPASS ("BlockCopy");
 }
+
 static void
 test_add (void)
 {
-  TSTART ("BlockAdd");
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 2.f);
   Bse::Block::fill (1024, fblock2, 3.f);
@@ -105,12 +105,12 @@ test_add (void)
   Bse::Block::add (1024, fblock1, fblock2);
   TASSERT (block_check (1024, fblock1, 5.f) == true);
   TASSERT (block_check (1024, fblock2, 3.f) == true);
-  TDONE();
+  TPASS ("BlockAdd");
 }
+
 static void
 test_sub (void)
 {
-  TSTART ("BlockSub");
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 2.f);
   Bse::Block::fill (1024, fblock2, 3.f);
@@ -121,12 +121,12 @@ test_sub (void)
   Bse::Block::sub (1024, fblock1, fblock2);
   TASSERT (block_check (1024, fblock1, -1.f) == true);
   TASSERT (block_check (1024, fblock2, 3.f) == true);
-  TDONE();
+  TPASS ("BlockSub");
 }
+
 static void
 test_mul (void)
 {
-  TSTART ("BlockMul");
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 2.f);
   Bse::Block::fill (1024, fblock2, 3.f);
@@ -137,12 +137,12 @@ test_mul (void)
   Bse::Block::mul (1024, fblock1, fblock2);
   TASSERT (block_check (1024, fblock1, 6.f) == true);
   TASSERT (block_check (1024, fblock2, 3.f) == true);
-  TDONE();
+  TPASS ("BlockMul");
 }
+
 static void
 test_square_sum (void)
 {
-  TSTART ("BlockSquareSum");
   float fblock[1024];
   float min_value, max_value;
   for (int i = 0; i < 10; i++)
@@ -167,12 +167,12 @@ test_square_sum (void)
       /* square sum (and energy) should not depend on ordering of the elements */
       block_shuffle (1024, fblock);
     }
-  TDONE();
+  TPASS ("BlockSquareSum");
 }
+
 static void
 test_range (void)
 {
-  TSTART ("BlockRange");
   float fblock[1024];
   build_ascending_random_block (1024, fblock);
   float correct_min_value = fblock[0];
@@ -190,12 +190,12 @@ test_range (void)
       TASSERT (min_value == correct_min_value);
       TASSERT (max_value == correct_max_value);
     }
-  TDONE();
+  TPASS ("BlockRange");
 }
+
 static void
 test_scale (void)
 {
-  TSTART ("BlockScale");
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 0.f);
   Bse::Block::fill (1024, fblock2, 3.f);
@@ -206,7 +206,7 @@ test_scale (void)
   Bse::Block::scale (1024, fblock1, fblock2, 2.f);
   TASSERT (block_check (1024, fblock1, 6.f) == true);
   TASSERT (block_check (1024, fblock2, 3.f) == true);
-  TDONE();
+  TPASS ("BlockScale");
 }
 
 #define RUNS        11
@@ -403,28 +403,23 @@ run_tests()
   bench_range_and_square_sum();
 }
 
-int
-main (int   argc,
-      char *argv[])
+static void
+test_blockutils()
 {
-  // usually we'd call bse_init_test() here, but we have tests to run before plugins are loaded
-  Bse::Test::init (&argc, argv);
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name());
 
-  TSTART ("Running Default Block Ops");
+  TNOTE ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
-  TDONE();
   run_tests(); /* run tests on FPU */
-  /* load plugins */
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
+
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-    return 0;   /* nothing changed */
-  TSTART ("Running Intrinsic Block Ops");
+    return;   /* nothing changed */
+
+  TNOTE ("Running Intrinsic Block Ops");
   TASSERT (Bse::Block::default_singleton() != Bse::Block::current_singleton());
-  TDONE();
   run_tests(); /* run tests with intrinsics */
-  return 0;
 }
+TEST_ADD (test_blockutils);
