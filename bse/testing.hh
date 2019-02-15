@@ -24,7 +24,10 @@ void init (int *argcp, char **argv, const StringVector &args = StringVector());
 #define TOK()                   do {} while (0)                 ///< Deprecated progress indicator, tests generally need to run fast.
 
 /// Register a function to run as part of the unit test suite.
-#define TEST_ADD(fun)           static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun))
+#define TEST_ADD(fun)           static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::PLAIN)
+#define TEST_SLOW(fun)          static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::SLOW)
+#define TEST_BENCH(fun)         static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::BENCH)
+#define TEST_BROKEN(fun)        static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::BROKEN)
 
 /** Class for profiling benchmark tests.
  * UseCase: Benchmarking function implementations, e.g. to compare sorting implementations.
@@ -124,12 +127,15 @@ Timer::benchmark (Callee callee)
 }
 
 class TestChain {
+public:
+  enum        Kind      { PLAIN = 0, SLOW = 1, BENCH = 3, BROKEN = 99 };
+  explicit    TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind);
+  static void run       (ptrdiff_t internal_token);
+private:
   std::string           name_;
   std::function<void()> func_;
-  const TestChain      *const next_;
-public:
-  explicit    TestChain (std::function<void()> tfunc, const std::string &tname);
-  static void run       (ptrdiff_t internal_token);
+  const TestChain      *const next_ = NULL;
+  Kind                  kind_ = PLAIN;
 };
 
 /// @endcond

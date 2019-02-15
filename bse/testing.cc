@@ -223,8 +223,8 @@ random_frange (double begin, double end)
 // == TestChain ==
 static const TestChain *global_test_chain = NULL;
 
-TestChain::TestChain (std::function<void()> tfunc, const std::string &tname) :
-  name_ (tname), func_ (tfunc), next_ (global_test_chain)
+TestChain::TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind) :
+  name_ (tname), func_ (tfunc), next_ (global_test_chain), kind_ (kind)
 {
   assert_return (next_ == global_test_chain);
   global_test_chain = this;
