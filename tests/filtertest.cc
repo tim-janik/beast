@@ -274,7 +274,6 @@ print_filter_on_abort (const BseIIRFilterRequest &req, const BseIIRFilterDesign 
 static void
 butterwoth_tests ()
 {
-  TSTART ("Butterworth");
   bool success;
   const double gaineps = 1e-7;
   BseIIRFilterDesign fdes;
@@ -345,14 +344,13 @@ butterwoth_tests ()
   }
   diag_abort_hook (NULL);
   TOK();
-  TDONE();
 }
+TEST_ADD (butterwoth_tests);
 
 static void
 chebychev1_tests ()
 {
   bool success;
-  TSTART ("Chebyshev1");
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;
@@ -421,8 +419,9 @@ chebychev1_tests ()
   }
   diag_abort_hook (NULL);
   TOK();
-  TDONE();
 }
+TEST_ADD (chebychev1_tests);
+
 struct FilterSetup  {
   const BseIIRFilterRequest *filter_request = NULL;
   double                     gain = 0;
@@ -510,6 +509,7 @@ test_problem_candidates ()
   /* and test them */
   generic_filter_tests ("Problem Filters", index, filters);
 }
+TEST_ADD (test_problem_candidates);
 
 static void
 random_filter_tests ()
@@ -666,6 +666,8 @@ random_filter_tests ()
   generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, skip_count);
 #undef MAKE_FILTER
 }
+TEST_ADD (random_filter_tests);
+
 static void
 test_filter_catalog ()
 {
@@ -682,6 +684,8 @@ test_filter_catalog ()
   /* test predesigned filters */
   generic_filter_tests ("Filter Catalog", index, filters, tick_count, skip_count);
 }
+TEST_ADD (test_filter_catalog);
+
 static void
 generic_filter_tests (const char        *test_name,
                       const uint         n_filters,
@@ -775,18 +779,4 @@ generic_filter_tests (const char        *test_name,
       diag_abort_hook (NULL);
     }
   TDONE();
-}
-
-int
-main (int    argc,
-      char **argv)
-{
-  bse_init_test (&argc, argv);
-  diag_abort_hook (NULL);
-  butterwoth_tests ();
-  chebychev1_tests ();
-  test_problem_candidates ();
-  test_filter_catalog();
-  random_filter_tests ();
-  return 0;
 }

@@ -10,6 +10,7 @@ check: tests-check
 # == suite1 ==
 tests/suite1.sources		::= $(strip	\
 	tests/filterdesign.cc			\
+	tests/filtertest.cc			\
 	tests/misctests.cc			\
 	tests/suite1-main.cc			\
 	tests/suite1-randomhash.cc		\
