@@ -362,12 +362,12 @@ $(eval $(call LINKER, $(bse/bsetool), $(bse/bsetool.objects), $(bse/libbse.solin
 
 
 # == bseapi.idl ==
-$>/bse/bseapi_interfaces.hh: bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
-	$(QGEN) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl and MAKE(1) supports multiple-outputs *only* for pattern rules
+bse/bseapi.idl.outputs ::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
+$(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
+	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q cp bse/bseapi-inserts.hh $< bse/AuxTypes.py $>/bse/
 	$Q cd $>/bse/ && $(abspath $(aidacc/aidacc)) -x CxxStub -x AuxTypes.py -G strip-path=$(abspath $>)/ --insertions bseapi-inserts.hh $(<F)
 	$Q cd $>/bse/ && sed '1i#define _(x) x' -i bseapi_interfaces.cc && sed '1i#undef _' -i bseapi_interfaces.cc
-$>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc $>/bse/bseapi_interfaces.cc: $>/bse/bseapi_interfaces.hh
 
 # == sfidl generated files ==
 $>/bse/bseenum_arrays.cc: $(bse/libbse.headers)		| $>/bse/
