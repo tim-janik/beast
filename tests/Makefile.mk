@@ -14,6 +14,7 @@ tests/suite1.sources		::= $(strip	\
 	tests/firhandle.cc			\
 	tests/loophandle.cc			\
 	tests/misctests.cc			\
+	tests/resamplehandle.cc			\
 	tests/subnormals-aux.cc			\
 	tests/subnormals.cc			\
 	tests/suite1-main.cc			\

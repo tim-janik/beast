@@ -247,7 +247,7 @@ run_tests (const char *run_type)
 static void
 test_c_api (const char *run_type)
 {
-  TSTART ("Resampler C API (%s)", run_type);
+  // TSTART ("Resampler C API (%s)", run_type);
   BseResampler2 *resampler = bse_resampler2_create (BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB);
   const int INPUT_SIZE = 1024, OUTPUT_SIZE = 2048;
   float in[INPUT_SIZE];
@@ -270,7 +270,7 @@ test_c_api (const char *run_type)
   double error_db = bse_db_from_factor (error, -200);
   bse_resampler2_destroy (resampler);
   TCHECK (error_db < -95, "C API delta below epsilon: %f < -95\n", error_db);
-  TDONE();
+  // TDONE();
 }
 static void
 test_delay_compensation (const char *run_type)
@@ -295,7 +295,7 @@ test_delay_compensation (const char *run_type)
   };
 
   using Bse::Resampler::Resampler2;
-  TSTART ("Resampler Delay Compensation (%s)", run_type);
+  // TSTART ("Resampler Delay Compensation (%s)", run_type);
 
   for (guint p = 0; params[p].error_db > 0; p++)
     {
@@ -345,13 +345,13 @@ test_delay_compensation (const char *run_type)
       double error_db = bse_db_from_factor (error, -250);
       TCHECK (error_db < -params[p].error_db, "Resampler Delay Compensation delta below epsilon: %f < %f\n", error_db, -params[p].error_db);
     }
-  TDONE();
+  // TDONE();
 }
 
 static void
 test_state_length (const char *run_type)
 {
-  TSTART ("Resampler State Length Info (%s)", run_type);
+  // TSTART ("Resampler State Length Info (%s)", run_type);
 
   //-----------------------------------------------------------------------------------
   // usampling
@@ -449,34 +449,28 @@ test_state_length (const char *run_type)
     double error_db = bse_db_from_factor (error, -200);
     TASSERT (error_db < -105);
   }
-  TDONE();
+  // TDONE();
 }
 
-
-int
-main (int   argc,
-      char *argv[])
+static void
+test_resample_handle()
 {
-  // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Bse::Test::init (&argc, argv);
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name());
 
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
   test_state_length ("FPU");
   run_tests ("FPU");
-  /* load plugins */
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
+
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-    return 0;   /* nothing changed */
+    return;     /* nothing changed */
 
   test_c_api ("SSE");
   test_delay_compensation ("SSE");
   test_state_length ("SSE");
   run_tests ("SSE");
-
-  return 0;
 }
+TEST_ADD (test_resample_handle);
