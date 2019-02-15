@@ -328,7 +328,6 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/bsegentype_array.cc	\
 	$>/bse/bsegentypes.cc		\
 	$>/bse/bsegentypes.h		\
-	$>/bse/buildid.cc		\
 	$>/bse/gslfft.cc		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
@@ -441,6 +440,9 @@ $>/bse/buildid.cc: $(config-stamps) $(GITCOMMITDEPS)	| $>/bse/
 	  && V=$$(./version.sh -d) \
 	  && echo "static const char *static_bse_version_date = \"$$V\";"	>>$@.tmp
 	$Q mv $@.tmp $@
+$>/bse/weaksym.o: $>/bse/buildid.cc
+# Avoid massive rebuilds when buildid.cc changes, so we avoid adding it to
+# bse/libbse.deps. Only bse/weaksym.cc actually includes buildid.cc.
 
 # == bse/sysconfig.h ==
 $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
