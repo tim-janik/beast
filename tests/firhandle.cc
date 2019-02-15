@@ -390,16 +390,21 @@ test_seek (FirHandleType type)
     }
   TDONE();
 }
-int
-main (int    argc,
-      char **argv)
-{
-  bse_init_test (&argc, argv);
-  test_with_sine_sweep (FIR_HIGHPASS);
-  test_multi_channel (FIR_HIGHPASS);
-  test_seek (FIR_HIGHPASS);
-  test_with_sine_sweep (FIR_LOWPASS);
-  test_multi_channel (FIR_LOWPASS);
-  test_seek (FIR_LOWPASS);
-  return 0;
-}
+
+static void     test_fir_highpass_sine_sweep()          { test_with_sine_sweep (FIR_HIGHPASS); }
+TEST_ADD (test_fir_highpass_sine_sweep);
+
+static void     test_fir_highpass_multi_channel()       { test_multi_channel (FIR_HIGHPASS); }
+TEST_ADD (test_fir_highpass_multi_channel);
+
+static void     test_fir_highpass_seek()                { test_seek (FIR_HIGHPASS); }
+TEST_ADD (test_fir_highpass_seek);
+
+static void     test_fir_lowpass_sine_sweep()           { test_with_sine_sweep (FIR_LOWPASS); }
+TEST_ADD (test_fir_lowpass_sine_sweep);
+
+static void     test_fir_lowpass_multi_channel()        { test_multi_channel (FIR_LOWPASS); }
+TEST_ADD (test_fir_lowpass_multi_channel);
+
+static void     test_fir_lowpass_seek()                 { test_seek (FIR_LOWPASS); }
+TEST_ADD (test_fir_lowpass_seek);

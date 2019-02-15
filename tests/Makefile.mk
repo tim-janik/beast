@@ -11,6 +11,7 @@ check: tests-check
 tests/suite1.sources		::= $(strip	\
 	tests/filterdesign.cc			\
 	tests/filtertest.cc			\
+	tests/firhandle.cc			\
 	tests/misctests.cc			\
 	tests/subnormals-aux.cc			\
 	tests/subnormals.cc			\
