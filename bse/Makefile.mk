@@ -1,6 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/bse/*.d)
-CLEANDIRS += $(wildcard $>/bse/)
+CLEANDIRS     += $(wildcard $>/bse/)
+CHECK_TARGETS += bse-check
 
 include bse/icons/Makefile.mk
 
@@ -480,5 +481,35 @@ int main (int argc, char *argv[]) {
 }
 endef
 
-# == bse/tests/ - build *after* bse/ ==
-include bse/tests/Makefile.mk
+
+# == integrity ==
+bse/integrity		   ::= $>/bse/integrity
+ALL_TARGETS		    += $(bse/integrity)
+bse/integrity.sources	   ::= bse/integrity.cc
+bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
+bse/integrity.objects.FLAGS  = -O0
+$(eval $(call LINKER, $(bse/integrity), $(bse/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../bse) )
+$(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
+$(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+
+# == $>/bse/t101-integrity ==
+$>/bse/t101-integrity: .PHONY	$(bse/integrity)
+	$(QECHO) RUN… $@
+	$Q $(bse/integrity)
+bse-check: $>/bse/t101-integrity
+
+# == bse-check-assertions ==
+$>/bse/t279-assertions-test: .PHONY	$(bse/integrity)
+	$(QECHO) RUN $@
+	$Q $(bse/integrity) --return_unless1 || $(QDIE) --return_unless1 failed
+	$Q $(bse/integrity) --assert_return1 || $(QDIE) --assert_return1 failed
+	$Q (trap ':' SIGTRAP && $(bse/integrity) --return_unless0) $(QSTDERR) ; test "$$?" -eq 7 || $(QDIE) --return_unless0 failed
+	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return0) $(QSTDERR) ; test "$$?"  != 0 || $(QDIE) --assert_return0 failed
+	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
+	$Q (trap ':' SIGTRAP && $(bse/integrity) --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
+	$Q $(bse/integrity) --backtrace	2> $@.tmp && \
+		grep -qi 'Backtrace'		   $@.tmp && \
+		grep -qi 'in.*my_compare_func'	   $@.tmp || $(QDIE) --backtrace failed
+	$Q rm $@.tmp
+	@echo "  PASS    " $@
+bse-check: $>/bse/t279-assertions-test
