@@ -196,6 +196,9 @@ dump_info (const ArgParser &ap)
               tune_name, tune,
               bse_cent_tune_fast (tune));
   };
+  printout ("Version: %s\n", Bse::version());
+  printout ("BuildID: %s\n", Bse::version_buildid());
+  printout ("Date:    %s\n", Bse::version_date());
   printout ("Rate relevant limits:\n");
   print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);
   print_int       ("BSE_MAX_OCTAVE   ", BSE_MAX_OCTAVE);
