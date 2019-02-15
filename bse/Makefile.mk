@@ -328,6 +328,7 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/bsegentype_array.cc	\
 	$>/bse/bsegentypes.cc		\
 	$>/bse/bsegentypes.h		\
+	$>/bse/buildid.cc		\
 	$>/bse/gslfft.cc		\
 	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
@@ -431,6 +432,15 @@ $>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_lis
 	$Q misc/packres.py -s '.*/res/' $(res_resfiles_list:%=res/%) > $@.tmp
 	$Q mv $@.tmp $@
 
+# == buildid.cc ==
+$>/bse/buildid.cc: $(config-stamps) $(GITCOMMITDEPS)	| $>/bse/
+	$(QGEN)
+	$Q echo '// make $@'							> $@.tmp \
+	  && V=$$(./version.sh -l) \
+	  && echo "static const char *static_bse_version_buildid = \"$$V\";"	>>$@.tmp \
+	  && V=$$(./version.sh -d) \
+	  && echo "static const char *static_bse_version_date = \"$$V\";"	>>$@.tmp
+	$Q mv $@.tmp $@
 
 # == bse/sysconfig.h ==
 $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
@@ -440,8 +450,6 @@ $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
 	$Q echo '#define BSE_MINOR_VERSION		($(VERSION_MINOR))'	>>$@.tmp
 	$Q echo '#define BSE_MICRO_VERSION		($(VERSION_MICRO))'	>>$@.tmp
 	$Q echo '#define BSE_VERSION_STRING		"$(VERSION_SHORT)"'	>>$@.tmp
-	$Q echo '#define BSE_VERSION_DATE		"$(VERSION_DATE)"'	>>$@.tmp
-	$Q echo '#define BSE_VERSION_BUILDID		"$(BUILDID)"'		>>$@.tmp
 	$Q echo '#define BSE_GETTEXT_DOMAIN		"$(BSE_GETTEXT_DOMAIN)"'>>$@.tmp
 	$Q echo '#define BSE_VORBISFILE_BAD_SEEK 	$(VORBISFILE_BAD_SEEK)'	>>$@.tmp
 	$Q : $(file > $>/conftest_spinlock_initializer.c, $(conftest_spinlock_initializer.c)) \
