@@ -67,11 +67,11 @@ test_correct_subnormal_elimination (const char* algo_name)
   TOK();
   TDONE();
 }
+
 static void
 benchmark_subnormal_eliminations ()
 {
   const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
-  TSTART ("Subnormal Cancellation Benchmark");
   float n = 10 * 1000000;
   float sum;
   GTimer *timer = g_timer_new();
@@ -167,7 +167,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test6_time = g_timer_elapsed (timer, NULL);
   TOK();
-  TDONE();
   if (0)
     printout ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
               test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
@@ -179,6 +178,8 @@ benchmark_subnormal_eliminations ()
   TPASS (format, "Subnormals-arithmetic",   test5_time * 1000);
   TPASS (format, "Subnormals-bse-flush",    test6_time * 1000);
 }
+TEST_BENCH (benchmark_subnormal_eliminations);
+
 bool
 check_denormals_are_zero()
 {
@@ -194,14 +195,15 @@ check_denormals_are_zero()
 #endif
   return false;
 }
-int
-main (int   argc,
-      char *argv[])
+
+static void
+subnormals_tests()
 {
-  bse_init_test (&argc, argv);
-  printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
+  printerr ("  CHECK    For processor in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
-  printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
+  printerr (daz_mode ?
+            "  CHECK      Note, 'denormals are zero' - skipping subnormal elimination tests\n" :
+            "  CHECK      Note, 'denormals are zero' mode is off\n");
   if (!daz_mode)
     {
       test_correct_subnormal_elimination<test2f> ("zap");
@@ -213,6 +215,5 @@ main (int   argc,
       test_correct_subnormal_elimination<test4d> ("if-cond-double");
       test_correct_subnormal_elimination<test5d> ("arithmetic-double");
     }
-  benchmark_subnormal_eliminations();
-  return 0;
 }
+TEST_ADD (subnormals_tests);

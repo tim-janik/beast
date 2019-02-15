@@ -12,6 +12,8 @@ tests/suite1.sources		::= $(strip	\
 	tests/filterdesign.cc			\
 	tests/filtertest.cc			\
 	tests/misctests.cc			\
+	tests/subnormals-aux.cc			\
+	tests/subnormals.cc			\
 	tests/suite1-main.cc			\
 	tests/suite1-randomhash.cc		\
 	tests/testfft.cc			\
