@@ -236,6 +236,10 @@ TestChain::run (ptrdiff_t internal_token)
   assert_return (internal_token == ptrdiff_t (global_test_chain));
   for (const TestChain *t = global_test_chain; t; t = t->next_)
     {
+      if (t->kind_ == SLOW ||
+          t->kind_ == BENCH ||
+          t->kind_ == BROKEN)
+        continue;
       fflush (stderr);
       printout ("  RUN…     %s\n", t->name_);
       fflush (stdout);
