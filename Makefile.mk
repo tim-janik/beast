@@ -35,7 +35,6 @@ CSTD		::= -std=gnu11 -pthread -pipe $(DEBUGFLAGS)
 EXTRA_DEFS	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_INCLUDES	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
-CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
 # == Rules ==
 all: .PHONY

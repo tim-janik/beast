@@ -11,6 +11,7 @@ HAVE_CLANG	::= $(if $(findstring $(CXXKIND), clang),1,)
 ifeq ($(HAVE_GCC)$(HAVE_CLANG),)		# do we HAVE_ *any* recognized compiler?
 $(error Compiler '$(CXX)' not recognized, version identifier: $(CXXKIND))
 endif
+CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
 # == C/CXX/LD Flags ==
 COMMONFLAGS	::= -fno-strict-overflow -fno-strict-aliasing # sane C / C++
@@ -29,6 +30,9 @@ endif
 ifdef HAVE_GCC    # g++
   COMMONFLAGS	 += -fno-delete-null-pointer-checks
   OPTIMIZE	 += -fdevirtualize-speculatively -ftracer -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im
+  ifdef CCACHE
+    COMMONFLAGS	 += -fdiagnostics-color=auto
+  endif
 endif
 ifeq ($(uname_S),x86_64)
   COMMONFLAGS	 += -mcx16			# for CMPXCHG16B, in AMD64 since 2005
