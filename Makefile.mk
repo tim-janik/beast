@@ -23,6 +23,7 @@ YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
 PKG_CONFIG		?= pkg-config
 GLIB_MKENUMS		?= glib-mkenums
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
+PANDOC			?= pandoc
 include config-checks.mk
 
 # == Defaults ==
@@ -50,6 +51,7 @@ include sfi/Makefile.mk
 include aidacc/Makefile.mk
 include bse/Makefile.mk
 include tests/Makefile.mk
+include ebeast/Makefile.mk
 
 # == output directories ==
 $>/%/: ; $(Q) mkdir -p $@
