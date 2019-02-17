@@ -41,6 +41,9 @@ ebeast/app/tree ::= $(strip 			\
 	$>/ebeast/app/assets/components.js	\
 )
 
+# == subdirs ==
+include ebeast/v8bse/Makefile.mk
+
 # == npm ==
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/app/
 	$(QGEN)
@@ -70,11 +73,11 @@ ebeast-lint: .PHONY
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(ebeast/app/tree) $>/ebeast/lint.rules $>/ebeast/vue-docs.html	# FIXME:  ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(ebeast/app/tree) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
 	$(QGEN)
 	$Q rm -rf $>/ebeast/bundlecache/				# avoid installing stale app/ files
 	$Q cp -P $>/ebeast/package.json $>/ebeast/app/
-	$Q # FIXME: cp -L ebeast/v8bse/v8bse.node ebeast/app/assets/
+	$Q cp -L $>/ebeast/v8bse/v8bse.node $>/ebeast/app/assets/
 	$Q echo >$@
 
 # == $>/ebeast/app/% ==
