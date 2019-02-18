@@ -319,18 +319,20 @@ bse/libbse.sources ::= $(strip		\
 	bse/weaksym.cc			\
 )
 bse/libbse.deps     ::= $(strip		\
-	$(bse/icons/c.csources)		\
 	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsebasics.genidl.hh	\
 	$>/bse/bsebusmodule.genidl.hh	\
+	$>/bse/bsegentypes.h		\
+	$>/bse/sysconfig.h		\
+)
+bse/libbse.cc.deps  ::= $(strip		\
+	$(bse/icons/c.csources)		\
 	$>/bse/bseenum_arrays.cc	\
 	$>/bse/bseenum_list.cc		\
 	$>/bse/bsegenbasics.cc		\
 	$>/bse/bsegentype_array.cc	\
 	$>/bse/bsegentypes.cc		\
-	$>/bse/bsegentypes.h		\
 	$>/bse/gslfft.cc		\
-	$>/bse/sysconfig.h		\
 	$>/bse/zres.cc			\
 )
 bse.so              ::= bse-$(VERSION_MAJOR).so
@@ -339,7 +341,7 @@ bse/libbse.sofile   ::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
 bse/libbse.solinks  ::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
 ALL_TARGETS	     += $(bse/libbse.sofile) $(bse/libbse.solinks)
 bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
-$(bse/libbse.objects): $(bse/libbse.deps)
+$(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
 # SO linking
