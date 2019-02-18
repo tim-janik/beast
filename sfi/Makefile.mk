@@ -22,7 +22,7 @@ sfi/testsfidl.objects	  = $(sort $(sfi/testsfidl.sources:%.cc=$>/%.o))
 $(sfi/testsfidl.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 sfi/testsfidl.cc.FLAGS	  = -O0
 $(eval $(call LINKER, $(sfi/testsfidl), $(sfi/testsfidl.objects), , $(GLIB_LIBS)))
-sfi-check: .PHONY	| $(sfi/testsfidl)
+sfi-check: FORCE	| $(sfi/testsfidl)
 	$(QECHO) RUN $@
 	$Q $(sfi/testsfidl)
 check: sfi-check

@@ -68,7 +68,7 @@ $>/ebeast/lint.rules: $(ebeast/lint.appfiles) $(ebeast/vc/vue.inputs) | $>/ebeas
 	  && { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; exit 9 ; } ; \
 	done ; :
 	$Q echo >$@
-ebeast-lint: .PHONY
+ebeast-lint: FORCE
 	@rm -f $>/ebeast/lint.rules
 	@$(MAKE) $>/ebeast/lint.rules
 
@@ -138,7 +138,7 @@ ebeast-run: $>/ebeast/app.rules
 # theme if it's present.
 
 # == ebeast-clean ==
-ebeast-clean: .PHONY
+ebeast-clean: FORCE
 	rm -f $>/ebeast/npm.rules $>/ebeast/* 2>/dev/null ; :
 	rm -rf $>/ebeast/bundlecache/ $>/ebeast/app/
 

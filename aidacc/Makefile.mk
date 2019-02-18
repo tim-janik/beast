@@ -62,7 +62,7 @@ $>/aidacc/TmplFiles.py: $(aidacc/aidacc.templates)	| $>/aidacc/
 
 
 # == aidacc-check ==
-aidacc-check-build-test: .PHONY		| $(aidacc/aidacc)
+aidacc-check-build-test: FORCE		| $(aidacc/aidacc)
 	$(QECHO) RUN $@
 	$Q $(aidacc/aidacc) -x TypeMap --list-formats | grep -q AidaTypeMap
 check: aidacc-check-build-test

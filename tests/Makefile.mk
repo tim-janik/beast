@@ -4,7 +4,7 @@ CLEANDIRS += $(wildcard $>/tests/)
 tests-rpath.bse ::= ../bse
 
 # == check ==
-tests-check: .PHONY
+tests-check: FORCE
 check: tests-check
 
 # == suite1 ==
@@ -33,7 +33,7 @@ $(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(eval $(call LINKER, $(tests/suite1), $(tests/suite1.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), $(tests-rpath.bse)) )
 
 # == check suite1 ==
-tests-check-suite1: .PHONY	| $(tests/suite1)
+tests-check-suite1: FORCE	| $(tests/suite1)
 	$(QECHO) RUN… $@
 	$Q $(tests/suite1)
 tests-check: tests-check-suite1

@@ -495,13 +495,13 @@ $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
 $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 
 # == $>/bse/t101-integrity ==
-$>/bse/t101-integrity: .PHONY	$(bse/integrity)
+$>/bse/t101-integrity: FORCE	$(bse/integrity)
 	$(QECHO) RUN… $@
 	$Q $(bse/integrity)
 bse-check: $>/bse/t101-integrity
 
 # == bse-check-assertions ==
-$>/bse/t279-assertions-test: .PHONY	$(bse/integrity)
+$>/bse/t279-assertions-test: FORCE	$(bse/integrity)
 	$(QECHO) RUN $@
 	$Q $(bse/integrity) --return_unless1 || $(QDIE) --return_unless1 failed
 	$Q $(bse/integrity) --assert_return1 || $(QDIE) --assert_return1 failed

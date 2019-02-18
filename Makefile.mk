@@ -5,6 +5,8 @@ all:		# Default Rule
 MAKEFLAGS      += -r
 SHELL         ::= /bin/bash -o pipefail
 PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
+.PHONY:	FORCE
+FORCE: ;
 
 # == Basics ==
 ALL_TARGETS	::=
@@ -40,11 +42,11 @@ EXTRA_INCLUDES	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
 
 # == Rules ==
-all: .PHONY
-check: .PHONY
-install: .PHONY
-uninstall: .PHONY
-clean: .PHONY
+all: FORCE
+check: FORCE
+install: FORCE
+uninstall: FORCE
+clean: FORCE
 
 # == subdirs ==
 include res/Makefile.mk
@@ -76,4 +78,4 @@ clean:
 	@test -z "$(strip $(CLEANDIRS))" || (set -x; rm -fr $(CLEANDIRS) )
 all: $(ALL_TARGETS)
 check: $(CHECK_TARGETS)
-$(CHECK_TARGETS): .PHONY
+$(CHECK_TARGETS): FORCE
