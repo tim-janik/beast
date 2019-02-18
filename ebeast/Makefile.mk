@@ -46,12 +46,12 @@ include ebeast/v8bse/Makefile.mk
 
 # == npm ==
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/app/
-	$(QGEN)
+	$(QECHO) MAKE $@
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
 		$< > $>/ebeast/package.json
-	$Q cd $>/ebeast/ && npm install
+	$Q cd $>/ebeast/ && npm install $(if $(PARALLEL_MAKE), --progress=false)
 	$Q rm -f $>/ebeast/app/node_modules && ln -s ../node_modules $>/ebeast/app/
 	$Q echo >$@
 
@@ -59,7 +59,7 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/app/
 ebeast/sed.uncommentjs ::= sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
 ebeast/lint.appfiles   ::= $(ebeast/app/files.js) $(ebeast/app/vc/files.js) $(ebeast/app/vc/files.vue)
 $>/ebeast/lint.rules: $(ebeast/lint.appfiles) $(ebeast/vc/vue.inputs) | $>/ebeast/npm.rules
-	$(QGEN)
+	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix $(ebeast/lint.appfiles)
 	@: # check for component pitfalls
 	$Q for f in $(ebeast/vc/vue.inputs) ; do \
@@ -74,7 +74,7 @@ ebeast-lint: .PHONY
 
 # == app ==
 $>/ebeast/app.rules: $(ebeast/app/tree) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
-	$(QGEN)
+	$(QECHO) MAKE $@
 	$Q rm -rf $>/ebeast/bundlecache/				# avoid installing stale app/ files
 	$Q cp -P $>/ebeast/package.json $>/ebeast/app/
 	$Q cp -L $>/ebeast/v8bse/v8bse.node $>/ebeast/app/assets/
@@ -94,7 +94,7 @@ $>/ebeast/app/assets/gradient-01.png: $>/ebeast/app/assets/stylesheets.css ebeas
 	$Q rm $@.cli && mv $@.tmp.png $@
 define ebeast/app/cp.EXT
 $>/ebeast/app/%.$1:	  ebeast/%.$1	| $>/ebeast/app/vc/
-	$$(QGEN)
+	$$(QECHO) COPY $$@
 	$Q cp -P $$< $$@
 endef
 $(eval $(call ebeast/app/cp.EXT ,scss))		# $>/ebeast/app/%.scss: ebeast/%.scss
@@ -125,9 +125,9 @@ $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
 	$Q rm $@.tmp
 
 # == ebeast-run ==
+# export ELECTRON_ENABLE_LOGGING=1
 ebeast-run: $>/ebeast/app.rules
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
-	export ELECTRON_ENABLE_LOGGING=1 ; \
 	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so" \
 	$>/ebeast/node_modules/electron/dist/electron $>/ebeast/app/
 
