@@ -17,7 +17,7 @@ ebeast/v8bse/gyp.ccflags  ::= $(strip	\
 	-Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-fallthrough \
 	-Wno-unused-but-set-variable -Wno-unused-variable \
 )
-ebeast/v8bse/gyp.cxxflags   = $(ebeast/v8bse/gyp.ccflags) $(CXXSTD) -fPIC $(DEFS) $(EXTRA_DEFS) $($@.DEFS) $(CXXFLAGS) $(EXTRA_FLAGS) $($@.FLAGS)
+ebeast/v8bse/gyp.cxxflags   = $(CXXSTD) -fPIC $(DEFS) $(EXTRA_DEFS) $($@.DEFS) $(pkgcxxflags) $(EXTRA_FLAGS) $($@.FLAGS) $(ebeast/v8bse/gyp.ccflags)
 ebeast_v8bse/gyp.incdirs    = $(abspath $(patsubst -%, , $(patsubst -I%, %, $(INCLUDES) $(EXTRA_INCLUDES) $($@.INCLUDES))))
 ebeast/v8bse/gyp.libs       = -L$(abspath $>/bse/) -lbse-$(VERSION_MAJOR)
 
@@ -62,7 +62,7 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	  && sed -n '/^ \ "version":/s/.*"\([0-9.]\+\)".*/\1/p'				\
 		    ../node_modules/electron/package.json > $(@F).tmpev			\
 	  && ELECTRON_VERSION=`grep '^[0-9.]\+$$' $(@F).tmpev` && rm $(@F).tmpev	\
-	  && CXX="$(CCACHE) $(CXX)" CXXFLAGS="$(ebeast/v8bse/gyp.cxxflags)"		\
+	  && CXX="$(CCACHE) $(CXX)"							\
 		HOME='../node_modules/node-gyp/cache/' MAKEFLAGS=''			\
 		../node_modules/.bin/node-gyp --target="$$ELECTRON_VERSION"		\
 		  rebuild --dist-url=https://atom.io/download/electron			\

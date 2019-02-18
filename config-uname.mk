@@ -45,9 +45,20 @@ ifeq ($(uname_S),x86_64)
   #OPTIMIZE	 += -mavx			# Intel since 2011, AMD since 2011
   #OPTIMIZE	 += -mavx2			# Intel since 2013, AMD since 2015
 endif
-CFLAGS		::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(OPTIMIZE)) $(CFLAGS)
-CXXFLAGS	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
+pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(OPTIMIZE)) $(CFLAGS)
+pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
 LDFLAGS		::= $(strip $(LDOPTIMIZE)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
+
+# == implicit rules ==
+compiledefs     = $(DEFS) $(EXTRA_DEFS) $($<.DEFS) $($@.DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $($<.INCLUDES) $($@.INCLUDES)
+compilecflags   = $(pkgcflags) $(EXTRA_FLAGS) $($<.FLAGS) $($@.FLAGS) -MQ '$@' -MMD -MF '$@'.d
+compilecxxflags = $(pkgcxxflags) $(EXTRA_FLAGS) $($<.FLAGS) $($@.FLAGS) -MQ '$@' -MMD -MF '$@'.d
+$>/%.o: %.c
+	$(QECHO) CC $@
+	$(Q) $(CCACHE) $(CC) $(CSTD) -fPIC $(compiledefs) $(compilecflags) -o $@ -c $<
+$>/%.o: %.cc
+	$(QECHO) CXX $@
+	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(compiledefs) $(compilecxxflags) -o $@ -c $<
 
 # == LINKER ==
 # $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)

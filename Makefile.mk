@@ -62,16 +62,6 @@ include ebeast/Makefile.mk
 $>/%/: ; $(Q) mkdir -p $@
 .PRECIOUS: $>/%/ # prevent MAKE's 'rm ...' for automatically created dirs
 
-# == implicit rules ==
-$>/%.o: %.c
-	$(QECHO) CC $@
-	$(Q) $(CCACHE) $(CC) $(CSTD) -fPIC $(COMPILEDEFS) $(CFLAGS) $(COMPILEFLAGS) -o $@ -c $<
-$>/%.o: %.cc
-	$(QECHO) CXX $@
-	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(COMPILEDEFS) $(CXXFLAGS) $(COMPILEFLAGS) -o $@ -c $<
-COMPILEDEFS  = $(DEFS) $(EXTRA_DEFS) $($<.DEFS) $($@.DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $($<.INCLUDES) $($@.INCLUDES)
-COMPILEFLAGS = $(EXTRA_FLAGS) $($<.FLAGS) $($@.FLAGS) -MQ '$@' -MMD -MF '$@'.d
-
 # == rules ==
 clean:
 	@test -z "$(strip $(CLEANFILES))" || (set -x; rm -f $(CLEANFILES) )
