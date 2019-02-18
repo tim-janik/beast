@@ -51,6 +51,7 @@ include res/Makefile.mk
 include sfi/Makefile.mk
 include aidacc/Makefile.mk
 include bse/Makefile.mk
+include plugins/Makefile.mk
 include tests/Makefile.mk
 include ebeast/Makefile.mk
 
