@@ -78,6 +78,9 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "BSEDEPS_CFLAGS ::= $$BSEDEPS_CFLAGS"		>>$@.tmp
 	$Q BSEDEPS_LIBS=$$(pkg-config --libs $(BSEDEPS_PACKAGES)) \
 	  && echo "BSEDEPS_LIBS ::= $$BSEDEPS_LIBS"		>>$@.tmp
+	$Q ALSA_LIBS='-lasound' \
+	  && echo "ALSA_LIBS ::= $$ALSA_LIBS"			>>$@.tmp \
+	  && $(call conftest_require_lib, alsa/asoundlib.h, snd_asoundlib_version, $$ALSA_LIBS)
 	$Q MAD_LIBS='-lmad' \
 	  && echo "MAD_LIBS ::= $$MAD_LIBS"			>>$@.tmp \
 	  && echo 'BSEDEPS_LIBS += $$(MAD_LIBS)'		>>$@.tmp \
