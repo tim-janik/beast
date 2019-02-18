@@ -48,3 +48,11 @@ endif
 CFLAGS		::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(OPTIMIZE)) $(CFLAGS)
 CXXFLAGS	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
 LDFLAGS		::= $(strip $(LDOPTIMIZE)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
+
+# == LINKER ==
+# $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)
+define LINKER
+$1: $2	$3
+	$$(QECHO) LD $$@
+	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P')
+endef

@@ -52,11 +52,3 @@ MULTIOUTPUT = $(foreach PseudoTarget,			$(and, "Local variable 'PseudoTarget' is
 BLANK ::=
 SPACE ::= $(BLANK) $(BLANK)
 MULTIOUTPUTSANITIZE = $(subst /,∕,$(subst $(SPACE),·,$(strip $1)))
-
-# == LINKER ==
-# $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)
-define LINKER
-$1: $2	$3
-	$$(QECHO) LD $$@
-	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P')
-endef
