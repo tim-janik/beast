@@ -2,8 +2,9 @@
 
 # == Make ==
 all:		# Default Rule
-MAKEFLAGS += -r
-SHELL    ::= /bin/bash -o pipefail
+MAKEFLAGS      += -r
+SHELL         ::= /bin/bash -o pipefail
+PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
 
 # == Basics ==
 ALL_TARGETS	::=
