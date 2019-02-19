@@ -8,26 +8,31 @@ PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
 .PHONY:	FORCE
 FORCE: ;
 
-# == Basics ==
+# == User Defaults ==
+# see also 'make defaults' rule
+-include config-defaults.mk
+
+# == Dirctories ==
+builddir	 ?= out
+prefix		 ?= /usr/local
+bindir		 ?= $(prefix)/bin
+datadir 	 ?= $(prefix)/share
+mandir		 ?= $(datadir)/man
+libdir		 ?= $(prefix)/lib
+pkgrootdir	 ?= $(libdir)
+pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
+.config.defaults += builddir prefix bindir datadir mandir libdir pkgrootdir pkglibdir
+>		 = $(builddir)
+
+# == Basic Setup & Checks ==
 ALL_TARGETS	::=
 CHECK_TARGETS	::=
 CLEANFILES	::=
 CLEANDIRS	::=
-OUTDIR		 ?= out
->		::= $(OUTDIR)
-.PHONY: ;
 include config-utils.mk
 include config-uname.mk
-
-# == System Checks ==
-PERL			?= perl
-PYTHON2			?= python2.7
-YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
-PKG_CONFIG		?= pkg-config
-GLIB_MKENUMS		?= glib-mkenums
-GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
-PANDOC			?= pandoc
 include config-checks.mk
+.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS
 
 # == Defaults ==
 INCLUDES	::= -I.
@@ -63,9 +68,30 @@ $>/%/: ; $(Q) mkdir -p $@
 .PRECIOUS: $>/%/ # prevent MAKE's 'rm ...' for automatically created dirs
 
 # == rules ==
+# Allow value defaults to be adjusted via: make config builddir=... CXX=...
+defaults: FORCE
+	$(QECHO) WRITE config-defaults.mk
+	$Q echo -e '# make $@\n'			> $@.tmp
+	$Q : $(foreach VAR, $(.config.defaults),		  \
+	       $(if $(filter command, $(origin $(VAR))),	  \
+	  && echo '$(VAR)  ?= $(value $(VAR))'		>>$@.tmp, \
+	  && echo '# $(VAR) = $(value $(VAR))'		>>$@.tmp  \
+	      ) )
+	$Q mv $@.tmp config-defaults.mk
 clean:
 	@test -z "$(strip $(CLEANFILES))" || (set -x; rm -f $(CLEANFILES) )
 	@test -z "$(strip $(CLEANDIRS))" || (set -x; rm -fr $(CLEANDIRS) )
+help: FORCE
+	@echo 'Make targets:'
+	@: #   12345678911234567892123456789312345678941234567895123456789612345678971234567898
+	@echo '  all             - Build all targets, uses config-defaults.mk'
+	@echo '  clean           - Remove build directory, but keeps config-defaults.mk'
+	@echo '  defaults        - Write variable defaults into config-defaults.mk, these can'
+	@echo '                    be overridden by MAKE command line variables; look at this'
+	@echo '                    file for a list of variables that can be customized'
+	@echo '  check           - Run selft tests and unit tests'
+	@echo 'Invocation:'
+	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 all: $(ALL_TARGETS)
 check: $(CHECK_TARGETS)
 $(CHECK_TARGETS): FORCE

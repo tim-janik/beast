@@ -1,5 +1,15 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
+# == System Utils ==
+PERL			?= perl
+PYTHON2 		?= python2.7
+YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
+PKG_CONFIG		?= pkg-config
+GLIB_MKENUMS		?= glib-mkenums
+GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
+PANDOC			?= pandoc
+.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GDK_PIXBUF_CSOURCE PANDOC
+
 # == conftest_header_symbol ==
 conftest_header_symbol =  { { : \
   && echo '\#include <$1>' \
