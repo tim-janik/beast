@@ -60,10 +60,22 @@ $>/%.o: %.cc
 	$(QECHO) CXX $@
 	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(compiledefs) $(compilecxxflags) -o $@ -c $<
 
+# == SUBST_O ==
+# $(call SUBST_O, sourcefiles...) - generate object file names from sources
+SUBST_O = $(sort $(foreach X, .c .C .cc .CC .y .l, $(subst $X,.o,$(filter %$X,$1))))
+
 # == LINKER ==
 # $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)
 define LINKER
 $1: $2	$3
 	$$(QECHO) LD $$@
 	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
+endef
+
+# == LINK_ARCHIVE ==
+# $(call LINK_ARCHIVE, ARCHIVE, OBJECTS, DEPS)
+define LINK_ARCHIVE
+$1: $2	$3
+	$$(QECHO) AR $$@
+	$$Q $$(AR) rcs $$@ $2
 endef
