@@ -6,9 +6,10 @@ PYTHON2 		?= python2.7
 YAPPS			?= $(PYTHON2) $(abspath yapps2_deb/yapps2.py)
 PKG_CONFIG		?= pkg-config
 GLIB_MKENUMS		?= glib-mkenums
+GLIB_GENMARSHAL 	?= glib-genmarshal
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 PANDOC			?= pandoc
-.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GDK_PIXBUF_CSOURCE PANDOC
+.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC
 
 # == conftest_header_symbol ==
 conftest_header_symbol =  { { : \
@@ -61,6 +62,7 @@ config-checks.require.pkgconfig ::= $(strip	\
 
 # == config-cache.mk ==
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
+GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
 # used for GLIB_CFLAGS and GLIB_LIBS
 BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
@@ -97,6 +99,10 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$MAD_LIBS)
 	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
 	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
+	$Q GTK_CFLAGS=$$(pkg-config --cflags $(GTK_PACKAGES)) \
+	  && echo "GTK_CFLAGS ::= $$GTK_CFLAGS"			>>$@.tmp
+	$Q GTK_LIBS=$$(pkg-config --libs $(GTK_PACKAGES)) \
+	  && echo "GTK_LIBS ::= $$GTK_LIBS"			>>$@.tmp
 	$Q echo 'config-stamps ::= $$>/config-stamps.sha256'	>>$@.tmp \
 	  && OLDSUM=$$(cat "$>/config-stamps.sha256" 2>/dev/null || :) \
 	  && TMPSUM=$$(sha256sum < $@.tmp) && CFGSUM="$${TMPSUM%-}$(@F)" \
