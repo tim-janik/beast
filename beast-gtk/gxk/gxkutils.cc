@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 /* --- generated type IDs and enums --- */
-#include "gxkgentypes.cc"
+#include "gxk/gxkgentypes.cc"
 
 
 /* --- prototypes --- */

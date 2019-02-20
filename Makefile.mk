@@ -62,6 +62,7 @@ include plugins/Makefile.mk
 include drivers/Makefile.mk
 include tests/Makefile.mk
 include ebeast/Makefile.mk
+include beast-gtk/Makefile.mk
 
 # == output directories ==
 $>/%/: ; $(Q) mkdir -p $@

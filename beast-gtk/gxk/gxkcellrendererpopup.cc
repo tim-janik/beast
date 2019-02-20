@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkcellrendererpopup.hh"
-#include "gxkmarshal.h"
+#include "gxk/gxkmarshal.h"
 #include "bse/internal.hh"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkbutton.h>
