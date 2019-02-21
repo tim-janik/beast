@@ -10,8 +10,7 @@
 #include "bstusermessage.hh"
 #include "bstparam.hh"
 #include "bstpreferences.hh"
-#include "../topbuildid.hh"
-#include "../config/config.h"
+#include "bse/sysconfig.h"      // BSE_GETTEXT_DOMAIN
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -83,9 +82,9 @@ int
 main (int argc, char *argv[])
 {
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
-  bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
-  textdomain (BST_GETTEXT_DOMAIN);
+  bindtextdomain (BSE_GETTEXT_DOMAIN, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
+  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
+  textdomain (BSE_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
   /* initialize random numbers */
   struct timeval tv;
@@ -187,7 +186,7 @@ main_init_gxk()
 		       Bse::string_format ("<b><big>BEAST</big></b>\n"
                                            "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
                                            "<b>Version %s</b>\n",
-                                           bse_topbuildid()));
+                                           Bse::version_buildid()));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 }
@@ -404,7 +403,7 @@ main_open_default_window ()
 static void
 main_show_release_notes ()
 {
-  if (BST_GCONFIG (rc_version) != bse_topbuildid())
+  if (BST_GCONFIG (rc_version) != Bse::version_buildid())
     {
       const char *release_notes_title =
         "BEAST/BSE Release Notes";
@@ -433,14 +432,14 @@ main_show_release_notes ()
         "<newline/>"
         "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/\">http://beast.testbit.eu</xlink></span>"
         "</tag-span-markup>";
-      const String release_notes_contents = Bse::string_replace (release_notes_contents_tmpl, "__BEAST_INTERNAL_BUILDID__", bse_topbuildid());
+      const String release_notes_contents = Bse::string_replace (release_notes_contents_tmpl, "__BEAST_INTERNAL_BUILDID__", Bse::version_buildid());
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_CENTER, NULL);
       gxk_scroll_text_set_tsm (sctext, release_notes_contents.c_str());
       GtkWidget *rndialog = (GtkWidget*) gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, release_notes_title, sctext);
       gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
       gxk_scroll_text_rewind (sctext);
       gxk_idle_show_widget (rndialog);
-      bst_gconfig_set_rc_version (bse_topbuildid());
+      bst_gconfig_set_rc_version (Bse::version_buildid().c_str());
       force_saving_rc_files = true;
     }
 }
@@ -559,7 +558,7 @@ bst_args_parse_early (int *argc_p, char **argv)
       else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
-	  printerr ("BEAST(%s): pid = %u\n", bse_topbuildid(), getpid ());
+	  printerr ("BEAST(%s): pid = %u\n", Bse::version_buildid(), getpid ());
 	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
@@ -756,9 +755,13 @@ static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
   assert (bse_server != NULL); // we need BSE
+  bool with_mmx_sse = false;
+#ifdef __SSE2__
+  with_mmx_sse = true;
+#endif
   String s;
   gchar *freeme = NULL;
-  printout ("BEAST version %s\n", bse_topbuildid());
+  printout ("BEAST version %s\n", Bse::version_buildid());
   printout ("Libraries: ");
   printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
   printout (", BSE %s", Bse::version());
@@ -769,12 +772,11 @@ bst_exit_print_version (void)
   if (!s.empty())
     printout (", %s", s);
   printout (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
-#ifdef BST_WITH_XKB
-  printout (", XKBlib");
-#endif
-  printout (", GXK %s", bse_topbuildid());
+  if (bst_have_xkb())
+    printout (", XKBlib");
+  printout (", GXK %s", Bse::version_buildid());
   printout ("\n");
-  printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
+  printout ("Compiled for %s %s SSE plugins.\n", Bse::cpu_arch(), with_mmx_sse ? "with" : "without");
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Bse::cpu_info());
   printout ("\n");
@@ -807,9 +809,8 @@ bst_print_blurb (void)
 {
   printout ("Usage: beast [options] [files...]\n");
   /*        12345678901234567890123456789012345678901234567890123456789012345678901234567890 */
-#ifdef BST_WITH_XKB
-  printout ("  --force-xkb             force XKB keytable queries\n");
-#endif
+  if (bst_have_xkb())
+    printout ("  --force-xkb             force XKB keytable queries\n");
   printout ("  --skinrc[=FILENAME]     Skin resource file name\n");
   printout ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
   printout ("  --merge                 Merge the following files into the previous project\n");
@@ -944,7 +945,7 @@ beast_show_about_box (void)
   if (!GTK_WIDGET_VISIBLE (beast_splash))
     {
       bst_splash_set_title (beast_splash, _("BEAST About"));
-      bst_splash_update_entity (beast_splash, Bse::string_format (_("BEAST Version %s"), bse_topbuildid()));
+      bst_splash_update_entity (beast_splash, Bse::string_format (_("BEAST Version %s"), Bse::version_buildid()));
       bst_splash_update_item (beast_splash, _("Contributions made by:"));
       bst_splash_animate_strings (beast_splash, contributors);
     }
