@@ -162,7 +162,7 @@ $(beast-gtk/beast.objects): $(bse/libbse.deps) | $>/beast-gtk/
 $(beast-gtk/beast.objects): $(beast-gtk/gxk/libgxk.deps)
 $(eval $(call LINKER, $(beast-gtk/beast), $(beast-gtk/beast.objects), \
 	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), \
-	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS), \
+	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
 	$(beast-gtk/rpath..bse)))
 
 # == bstmarshal ==
