@@ -2,9 +2,7 @@
 include $(wildcard $>/bse/*.d)
 CLEANDIRS     += $(wildcard $>/bse/)
 
-include bse/icons/Makefile.mk
-
-# == libbse.so ==
+# == bse/ files ==
 bse/libbse.headers ::= $(strip		\
 	bse/backtrace.hh		\
 	bse/bcore.hh			\
@@ -325,7 +323,6 @@ bse/libbse.deps     ::= $(strip		\
 	$>/bse/sysconfig.h		\
 )
 bse/libbse.cc.deps  ::= $(strip		\
-	$(bse/icons/c.csources)		\
 	$>/bse/bseenum_arrays.cc	\
 	$>/bse/bseenum_list.cc		\
 	$>/bse/bsegenbasics.cc		\
@@ -334,44 +331,67 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/gslfft.cc		\
 	$>/bse/zres.cc			\
 )
-bse.so              ::= bse-$(VERSION_MAJOR).so
-libbse.soname       ::= lib$(bse.so).$(VERSION_MINOR)
-bse/libbse.sofile   ::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
-bse/libbse.solinks  ::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
-ALL_TARGETS	     += $(bse/libbse.sofile) $(bse/libbse.solinks)
-bse/libbse.objects ::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
-$(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps)
-$(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
-# SO linking
-$(bse/libbse.solinks): $(bse/libbse.sofile)
-	$(QECHO) LN $@
-	$Q rm -f $@ ; ln -s $(notdir $(bse/libbse.sofile)) $@
-$(bse/libbse.sofile).LDFLAGS ::= -shared -Wl,-soname,$(libbse.soname)
-$(eval $(call LINKER, $(bse/libbse.sofile), $(bse/libbse.objects), | $>/bse/, $(BSEDEPS_LIBS)))
 
+# == libbse.so defs ==
+bse.so				::= bse-$(VERSION_MAJOR).so
+libbse.soname			::= lib$(bse.so).$(VERSION_MINOR)
+bse/libbse.sofile		::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
+bse/libbse.solinks		::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
+ALL_TARGETS			 += $(bse/libbse.sofile) $(bse/libbse.solinks)
+bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
+$(bse/libbse.sofile).LDFLAGS	::= -shared -Wl,-soname,$(libbse.soname)
 
-# == bsetool ==
+# == bseapi.idl defs ==
+bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
+
+# == bsetool defs ==
 bse/bsetool         ::= $>/bse/bsetool
 ALL_TARGETS	     += $(bse/bsetool)
 bse/bsetool.sources ::= bse/bsetool.cc
 bse/bsetool.objects ::= $(sort $(bse/bsetool.sources:%.cc=$>/%.o))
 bse/bsetool.deps    ::= $(bse/libbse.deps)
+# CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
+
+# == bseprocidl defs ==
+bse/bseprocidl			::= $>/bse/bseprocidl
+ALL_TARGETS			 += $(bse/bseprocidl)
+bse/bseprocidl.sources		::= bse/bseprocidl.cc
+bse/bseprocidl.objects		::= $(call SUBST_O, $(addprefix $>/, $(bse/bseprocidl.sources)))
+bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
+
+# == integrity defs ==
+bse/integrity		   ::= $>/bse/integrity
+ALL_TESTS		    += $(bse/integrity)
+bse/integrity.sources	   ::= bse/integrity.cc
+bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
+bse/integrity.objects.FLAGS  = -O0	# compile fast
+
+# == subdirs ==
+include bse/icons/Makefile.mk
+
+# == libbse.so rules ==
+$(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.csources)
+$(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
+# SO links
+$(bse/libbse.solinks): $(bse/libbse.sofile)
+	$(QECHO) LN $@
+	$Q rm -f $@ ; ln -s $(notdir $(bse/libbse.sofile)) $@
+$(eval $(call LINKER, $(bse/libbse.sofile), $(bse/libbse.objects), | $>/bse/, $(BSEDEPS_LIBS)))
+
+# == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
 $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-# CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
 $(eval $(call LINKER, $(bse/bsetool), $(bse/bsetool.objects), $(bse/libbse.solinks) | $>/bse/, -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
 
-
-# == bseapi.idl ==
-bse/bseapi.idl.outputs ::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
+# == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
 	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q cp bse/bseapi-inserts.hh $< bse/AuxTypes.py $>/bse/
 	$Q cd $>/bse/ && $(abspath $(aidacc/aidacc)) -x CxxStub -x AuxTypes.py -G strip-path=$(abspath $>)/ --insertions bseapi-inserts.hh $(<F)
 	$Q cd $>/bse/ && sed '1i#define _(x) x' -i bseapi_interfaces.cc && sed '1i#undef _' -i bseapi_interfaces.cc
 
-# == sfidl generated files ==
+# == sfidl rules ==
 $>/bse/bseenum_arrays.cc: $(bse/libbse.headers)		| $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -482,12 +502,7 @@ int main (int argc, char *argv[]) {
 }
 endef
 
-# == bseprocidl ==
-bse/bseprocidl		::= $>/bse/bseprocidl
-ALL_TARGETS		 += $(bse/bseprocidl)
-bse/bseprocidl.sources	::= bse/bseprocidl.cc
-bse/bseprocidl.objects	::= $(call SUBST_O, $(addprefix $>/, $(bse/bseprocidl.sources)))
-bse/bseprocidl.objects.FLAGS  = -O0	# compile fast
+# == bseprocidl rules ==
 $(eval $(call LINKER, $(bse/bseprocidl), $(bse/bseprocidl.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
 $(bse/bseprocidl.objects):	$(bse/libbse.deps)
 $(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
@@ -502,12 +517,7 @@ $>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxm
 	$Q $>/bse/bseprocidl $@.tmp2 --g-fatal-warnings				>>$@.tmp1
 	$Q mv $@.tmp1 $@ && rm -f $@.tmp2
 
-# == integrity ==
-bse/integrity		   ::= $>/bse/integrity
-ALL_TESTS		    += $(bse/integrity)
-bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
-bse/integrity.objects.FLAGS  = -O0	# compile fast
+# == integrity rules ==
 $(eval $(call LINKER, $(bse/integrity), $(bse/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../bse) )
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
 $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
