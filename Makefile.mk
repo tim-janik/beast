@@ -26,6 +26,7 @@ pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
 
 # == Basic Setup & Checks ==
 ALL_TARGETS	::=
+ALL_TESTS	::=
 CHECK_TARGETS	::=
 CLEANFILES	::=
 CLEANDIRS	::=
@@ -93,6 +94,15 @@ help: FORCE
 	@echo '  check           - Run selft tests and unit tests'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
-all: $(ALL_TARGETS)
+all: $(ALL_TARGETS) $(ALL_TESTS)
+
+# == check ALL_TESTS ==
+define CHECK_ALL_TESTS_TEST
+CHECK_TARGETS += $$(dir $1)check-$$(notdir $1)
+$$(dir $1)check-$$(notdir $1): $1
+	$$(QECHO) RUN… $$@
+	$$Q $1
+endef
+$(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
 check: $(CHECK_TARGETS)
 $(CHECK_TARGETS): FORCE
