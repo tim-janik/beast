@@ -152,6 +152,7 @@ beast-gtk/beast.objects		::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/beast.
 
 # == subdirs ==
 include beast-gtk/gxk/Makefile.mk
+include beast-gtk/icons/Makefile.mk
 
 # == beast rules ==
 $(beast-gtk/beast.objects): $(beast-gtk/icons/icon.deps) $(beast-gtk/icons/icon.cc.deps)
