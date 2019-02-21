@@ -16,10 +16,7 @@ void		bst_xkb_parse_symbol	(const gchar	*symbol,
 					 gchar         **model_p,
 					 gchar         **layout_p,
 					 gchar         **variant_p);
-
-
-
-
+bool            bst_have_xkb            ();
 
 
 #endif /* __BST_XKB_H__ */
