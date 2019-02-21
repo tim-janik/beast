@@ -483,13 +483,32 @@ int main (int argc, char *argv[]) {
 }
 endef
 
+# == bseprocidl ==
+bse/bseprocidl		::= $>/bse/bseprocidl
+ALL_TARGETS		 += $(bse/bseprocidl)
+bse/bseprocidl.sources	::= bse/bseprocidl.cc
+bse/bseprocidl.objects	::= $(call SUBST_O, $(addprefix $>/, $(bse/bseprocidl.sources)))
+bse/bseprocidl.objects.FLAGS  = -O0	# compile fast
+$(eval $(call LINKER, $(bse/bseprocidl), $(bse/bseprocidl.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
+$(bse/bseprocidl.objects):	$(bse/libbse.deps)
+$(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+
+# == bsehack.idl ==
+# currently generated from BSE introspection data, needed to build the old IDL bindings for beast-gtk
+$>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxmodule.idl | $>/bse/bseprocidl
+	$(QGEN)
+	$Q echo '// make $@'							> $@.tmp1
+	$Q grep -v 'include.*bsehack.idl' bse/bse.idl | \
+		$(sfi/sfidl) $(sfi/sfidl.includes) -Ibse --list-types -		> $@.tmp2
+	$Q $>/bse/bseprocidl $@.tmp2 --g-fatal-warnings				>>$@.tmp1
+	$Q mv $@.tmp1 $@ && rm -f $@.tmp2
 
 # == integrity ==
 bse/integrity		   ::= $>/bse/integrity
 ALL_TARGETS		    += $(bse/integrity)
 bse/integrity.sources	   ::= bse/integrity.cc
 bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
-bse/integrity.objects.FLAGS  = -O0
+bse/integrity.objects.FLAGS  = -O0	# compile fast
 $(eval $(call LINKER, $(bse/integrity), $(bse/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../bse) )
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
 $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
