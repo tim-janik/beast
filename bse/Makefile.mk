@@ -1,7 +1,6 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/bse/*.d)
 CLEANDIRS     += $(wildcard $>/bse/)
-CHECK_TARGETS += bse-check
 
 include bse/icons/Makefile.mk
 
@@ -505,19 +504,13 @@ $>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxm
 
 # == integrity ==
 bse/integrity		   ::= $>/bse/integrity
-ALL_TARGETS		    += $(bse/integrity)
+ALL_TESTS		    += $(bse/integrity)
 bse/integrity.sources	   ::= bse/integrity.cc
 bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
 bse/integrity.objects.FLAGS  = -O0	# compile fast
 $(eval $(call LINKER, $(bse/integrity), $(bse/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../bse) )
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
 $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-
-# == $>/bse/t101-integrity ==
-$>/bse/t101-integrity: FORCE	$(bse/integrity)
-	$(QECHO) RUN… $@
-	$Q $(bse/integrity)
-bse-check: $>/bse/t101-integrity
 
 # == bse-check-assertions ==
 $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
@@ -533,4 +526,4 @@ $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
 		grep -qi 'in.*my_compare_func'	   $@.tmp || $(QDIE) --backtrace failed
 	$Q rm $@.tmp
 	@echo "  PASS    " $@
-bse-check: $>/bse/t279-assertions-test
+CHECK_TARGETS += $>/bse/t279-assertions-test
