@@ -62,3 +62,7 @@ MULTIOUTPUT = $(foreach PseudoTarget,				\
 BLANK ::=
 SPACE ::= $(BLANK) $(BLANK)
 MULTIOUTPUTSANITIZE = $(subst /,∕,$(subst $(SPACE),·,$(strip $1)))
+
+# == MATCH ==
+# $(call MATCH, REGEX, wordlist)
+MATCH = $(shell set -o pipefail; echo ' $2 ' | tr ' ' '\n' | grep -E '$1' | tr '\n' ' ')
