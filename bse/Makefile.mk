@@ -431,7 +431,7 @@ $>/bse/gslfft.cc: bse/gsl-fftconf.sh bse/gsl-fftgen.pl	| $>/bse/
 # == zres.cc ==
 $>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_list) is set to the contents of res/resfiles.list
 	$(QGEN)
-	$Q misc/packres.py -s '.*/res/' $(res_resfiles_list:%=res/%) > $@.tmp
+	$Q misc/packres.py -s 'res/' $(res_resfiles_list:%=res/%) > $@.tmp
 	$Q mv $@.tmp $@
 
 # == buildid.cc ==
