@@ -444,6 +444,12 @@ get_x86_cpu_features (CPUInfo *ci)
   return true;
 }
 
+std::string
+cpu_arch ()
+{
+  return get_arch_name();
+}
+
 /** The returned string contains: number of online CPUs, a string
  * describing the CPU architecture, the vendor and finally
  * a number of flag words describing CPU features plus a trailing space.
