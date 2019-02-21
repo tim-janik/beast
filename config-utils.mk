@@ -39,16 +39,26 @@ GITCOMMITDEPS ::= $(DOTGIT:%=%/logs/HEAD)
 # Also, we use /.../*.INTERMEDIATE as pseudo target, to make conflicts with existing files
 # very unlikely.
 # Usage Example: $(call MULTIOUTPUT, a b c [, PseudoTargetName]): prerequisites... ; touch a b c
-MULTIOUTPUT = $(foreach PseudoTarget,			$(and, "Local variable 'PseudoTarget' is assigned") \
-  $(if $2, $2, 						$(and, "a sanitized /.../fake.INTERMEDIATE filename.") \
-    /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE), \
-  $(eval .INTERMEDIATE: $(PseudoTarget))		$(and, "Avoid always running the recipe just because PseudoTarget does not exist.") \
-  $(foreach OutputTarget, $1,				$(and, "For each side-effect OutputTarget; we introduce a dependency") \
-    $(eval $(OutputTarget): $(PseudoTarget) ; )		$(and, "to serialize the generation of OutputTarget without MAKE missing a recipe.") \
-    $(if $(wildcard $(OutputTarget)),, 			$(and, "Special case; if any OutputTarget is missing") \
-      $(eval .PHONY: $(PseudoTarget))) )		$(and, "make the PseudoTarget .PHONY; so MAKE knows *all* outputs are outdated.") \
-  $(PseudoTarget)					$(and, "This expands the actual (pseudo) target name used by the recipe.") \
-)	# We are ab-using 'and' for comments and 'foreach' as variable scope.
+MULTIOUTPUT = $(foreach PseudoTarget,				\
+  $(if $2, $2,							\
+    /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE),	\
+  $(eval .INTERMEDIATE: $(PseudoTarget))			\
+  $(foreach OutputTarget, $1,					\
+    $(eval $(OutputTarget): $(PseudoTarget) ; ) 		\
+    $(if $(wildcard $(OutputTarget)),,				\
+      $(eval .PHONY: $(PseudoTarget))) )			\
+  $(PseudoTarget)						\
+)
+#MULTIOUTPUT = $(foreach PseudoTarget,				# Local variable 'PseudoTarget' is assigned
+#  $(if $2, $2, 						#   a sanitized /.../fake.INTERMEDIATE filename.
+#    /.../·$(call MULTIOUTPUTSANITIZE, $1)·.INTERMEDIATE),	#
+#  $(eval .INTERMEDIATE: $(PseudoTarget))			# Avoid always running the recipe just because PseudoTarget does not exist.
+#  $(foreach OutputTarget, $1,					# For each side-effect OutputTarget; we introduce a dependency
+#    $(eval $(OutputTarget): $(PseudoTarget) ; )		#   to serialize the generation of OutputTarget without MAKE missing a recipe.
+#    $(if $(wildcard $(OutputTarget)),, 			# Special case; if any OutputTarget is missing
+#      $(eval .PHONY: $(PseudoTarget))) )			#   make the PseudoTarget .PHONY; so MAKE knows *all* outputs are outdated.
+#  $(PseudoTarget)						# This expands the actual (pseudo) target name used by the recipe.
+#)								# Use 'foreach' as variable scope.
 BLANK ::=
 SPACE ::= $(BLANK) $(BLANK)
 MULTIOUTPUTSANITIZE = $(subst /,∕,$(subst $(SPACE),·,$(strip $1)))
