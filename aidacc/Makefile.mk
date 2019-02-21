@@ -2,7 +2,7 @@
 include $(wildcard $>/aidacc/*.d)
 CLEANDIRS += $(wildcard $>/aidacc/)
 
-# == aidacc files ==
+# == aidacc/ files ==
 aidacc/aidacc.imports ::= $(strip	\
 	aidacc/AuxData.py		\
 	aidacc/CxxStub.py		\
@@ -23,11 +23,12 @@ aidacc/aidacc.templates ::= $(strip	\
 	aidacc/CxxStub-server.cc	\
 )
 
-
-# == aidacc ==
+# == aidacc defs ==
 aidacc/aidacc		::= $>/aidacc/aidacc
 ALL_TARGETS		 += $(aidacc/aidacc)
 aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${topbuildid}"
+
+# == aidacc rules ==
 $(aidacc/aidacc): aidacc/main.py	$(aidacc/aidacc.imports) $(aidacc/aidacc.generated)
 	$(QGEN)
 	$Q cp $(aidacc/aidacc.imports) $>/aidacc/
@@ -59,7 +60,6 @@ $>/aidacc/TmplFiles.py: $(aidacc/aidacc.templates)	| $>/aidacc/
 	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $$? ; \
 	  done ) > $@.tmp
 	$Q mv $@.tmp $@
-
 
 # == aidacc-check ==
 aidacc-check-build-test: FORCE		| $(aidacc/aidacc)
