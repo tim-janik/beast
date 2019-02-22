@@ -72,6 +72,14 @@ $1: $2	$3
 	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
 endef
 
+# == BUILD_PROGRAM ==
+# $(call BUILD_PROGRAM, executable, objects, deps, libs, rpath)
+BUILD_PROGRAM = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TARGETS += $1)
+
+# == BUILD_TEST ==
+# $(call BUILD_TEST, executable, objects, deps, libs, rpath)
+BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
+
 # == LINK_ARCHIVE ==
 # $(call LINK_ARCHIVE, ARCHIVE, OBJECTS, DEPS)
 define LINK_ARCHIVE
