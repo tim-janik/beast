@@ -77,10 +77,8 @@ beast-gtk/gxk/libgxk.cc.deps ::= $(strip	\
 )
 
 # == libgxk defs ==
-libgxk.a		     ::= libgxk-$(VERSION_MAJOR).$(VERSION_MINOR).a
-beast-gtk/gxk/libgxk.a	     ::= $>/beast-gtk/gxk/$(libgxk.a)
-ALL_TARGETS		      += $(beast-gtk/gxk/libgxk.a)
-beast-gtk/gxk/libgxk.objects ::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/gxk/libgxk.sources)))
+beast-gtk/gxk/libgxk.a	     ::= $>/beast-gtk/gxk/libgxk-$(VERSION_MAJOR).$(VERSION_MINOR).a
+beast-gtk/gxk/libgxk.objects ::= $(call SUBST_O, $(beast-gtk/gxk/libgxk.sources:%=$>/%))
 
 # == gxktest defs ==
 beast-gtk/gxk/gxktest		::= $>/beast-gtk/gxk/gxktest
@@ -96,7 +94,10 @@ beast-gtk/gxk/splinetest.objects  ::= $(sort $(beast-gtk/gxk/splinetest.sources:
 $(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_DEFS ::= -DGXK_COMPILATION
-$(eval $(call LINK_ARCHIVE, $(beast-gtk/gxk/libgxk.a), $(beast-gtk/gxk/libgxk.objects), | $>/beast-gtk/gxk/))
+$(call BUILD_STATIC_LIB, \
+	$(beast-gtk/gxk/libgxk.a), \
+	$(beast-gtk/gxk/libgxk.objects), \
+	| $>/beast-gtk/gxk/)
 
 # == gxktest rules ==
 $(beast-gtk/gxk/gxktest.objects):	$(beast-gtk/gxk/libgxk.a)
