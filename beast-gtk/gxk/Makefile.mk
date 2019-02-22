@@ -3,7 +3,7 @@ include $(wildcard $>/beast-gtk/gxk/*.d)
 CLEANDIRS += $(wildcard $>/beast-gtk/gxk/)
 beast-gtk/gxk/rpath..bse ::= ../../bse
 
-# == libgxk sources ==
+# == gxk/ files ==
 beast-gtk/gxk/libgxk.sources ::= $(strip	\
 	beast-gtk/gxk/glewidgets.c		\
 	beast-gtk/gxk/gxkaction.cc		\
@@ -76,37 +76,37 @@ beast-gtk/gxk/libgxk.cc.deps ::= $(strip	\
 	$>/beast-gtk/gxk/gxkmarshal.cc		\
 )
 
-# == libgxk variables ==
+# == libgxk defs ==
 libgxk.a		     ::= libgxk-$(VERSION_MAJOR).$(VERSION_MINOR).a
 beast-gtk/gxk/libgxk.a	     ::= $>/beast-gtk/gxk/$(libgxk.a)
 ALL_TARGETS		      += $(beast-gtk/gxk/libgxk.a)
 beast-gtk/gxk/libgxk.objects ::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/gxk/libgxk.sources)))
-$(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps)
-$(beast-gtk/gxk/libgxk.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
-$(beast-gtk/gxk/libgxk.objects): EXTRA_DEFS ::= -DGXK_COMPILATION
 
-# == gxktest ==
+# == gxktest defs ==
 beast-gtk/gxk/gxktest		::= $>/beast-gtk/gxk/gxktest
 ALL_TARGETS			 += $(beast-gtk/gxk/gxktest)
 beast-gtk/gxk/gxktest.sources	::= beast-gtk/gxk/gxktest.cc
 beast-gtk/gxk/gxktest.objects	::= $(sort $(beast-gtk/gxk/gxktest.sources:%.cc=$>/%.o))
-$(beast-gtk/gxk/gxktest.objects):	$(beast-gtk/gxk/libgxk.a)
-$(beast-gtk/gxk/gxktest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 
-# == splinetest ==
+# == splinetest defs ==
 beast-gtk/gxk/splinetest	  ::= $>/beast-gtk/gxk/splinetest
 ALL_TARGETS			   += $(beast-gtk/gxk/splinetest)
 beast-gtk/gxk/splinetest.sources  ::= beast-gtk/gxk/splinetest.cc
 beast-gtk/gxk/splinetest.objects  ::= $(sort $(beast-gtk/gxk/splinetest.sources:%.cc=$>/%.o))
-$(beast-gtk/gxk/splinetest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 
 # == libgxk rules ==
+$(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps)
+$(beast-gtk/gxk/libgxk.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
+$(beast-gtk/gxk/libgxk.objects): EXTRA_DEFS ::= -DGXK_COMPILATION
 $(eval $(call LINK_ARCHIVE, $(beast-gtk/gxk/libgxk.a), $(beast-gtk/gxk/libgxk.objects), | $>/beast-gtk/gxk/))
 
 # == gxktest rules ==
+$(beast-gtk/gxk/gxktest.objects):	$(beast-gtk/gxk/libgxk.a)
+$(beast-gtk/gxk/gxktest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(eval $(call LINKER, $(beast-gtk/gxk/gxktest), $(beast-gtk/gxk/gxktest.objects), $(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), $(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS), $(beast-gtk/gxk/rpath..bse)))
 
 # == splinetest rules ==
+$(beast-gtk/gxk/splinetest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(eval $(call LINKER, $(beast-gtk/gxk/splinetest), $(beast-gtk/gxk/splinetest.objects), $(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), $(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS), $(beast-gtk/gxk/rpath..bse)))
 
 # == code generation ==
