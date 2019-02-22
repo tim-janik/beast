@@ -2,7 +2,7 @@
 include $(wildcard $>/plugins/*.d)
 CLEANDIRS += $(wildcard $>/plugins/)
 
-# == files ==
+# == plugin files ==
 plugins/cxxplugins.sources = $(strip		\
 	plugins/bseadder.cc			\
 	plugins/bseatandistort.cc		\
@@ -44,26 +44,30 @@ plugins/bseplugins.idlfiles = $(strip		\
 	plugins/standardsaturator.idl		\
 )
 
-# == cxxplugins ==
+# == cxxplugins.so defs ==
 cxxplugins.so			::= cxxplugins.so
 cxxplugins.soname		::= $(cxxplugins.so)
 plugins/cxxplugins.sofile	::= $>/plugins/$(cxxplugins.so)
 ALL_TARGETS			 += $(plugins/cxxplugins.sofile)
 plugins/cxxplugins.objects	::= $(sort $(plugins/cxxplugins.sources:%.cc=$>/%.o))
-$(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
-$(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(plugins/cxxplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(cxxplugins.soname)
-$(eval $(call LINKER, $(plugins/cxxplugins.sofile), $(plugins/cxxplugins.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
 
-# == bseplugins.so ==
+# == bseplugins.so defs ==
 bseplugins.so			::= bseplugins.so
 bseplugins.soname		::= $(bseplugins.so)
 plugins/bseplugins.sofile	::= $>/plugins/$(bseplugins.so)
 ALL_TARGETS			 += $(plugins/bseplugins.sofile)
 plugins/bseplugins.objects	::= $(sort $(plugins/bseplugins.sources:%.cc=$>/%.o))
+$(plugins/bseplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(bseplugins.soname)
+
+# == cxxplugins.so rules ==
+$(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
+$(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(eval $(call LINKER, $(plugins/cxxplugins.sofile), $(plugins/cxxplugins.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
+
+# == bseplugins.so rules ==
 $(plugins/bseplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLAGS)
-$(plugins/bseplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(bseplugins.soname)
 $(eval $(call LINKER, $(plugins/bseplugins.sofile), $(plugins/bseplugins.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
 
 # == .genidl.hh ==
