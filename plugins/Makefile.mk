@@ -1,6 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/plugins/*.d)
 CLEANDIRS += $(wildcard $>/plugins/)
+plugins/rpath..bse ::= ../bse
 
 # == plugin files ==
 plugins/cxxplugins.sources = $(strip		\
@@ -45,30 +46,32 @@ plugins/bseplugins.idlfiles = $(strip		\
 )
 
 # == cxxplugins.so defs ==
-cxxplugins.so			::= cxxplugins.so
-cxxplugins.soname		::= $(cxxplugins.so)
-plugins/cxxplugins.sofile	::= $>/plugins/$(cxxplugins.so)
-ALL_TARGETS			 += $(plugins/cxxplugins.sofile)
+plugins/cxxplugins.so		::= $>/plugins/cxxplugins.so
 plugins/cxxplugins.objects	::= $(sort $(plugins/cxxplugins.sources:%.cc=$>/%.o))
-$(plugins/cxxplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(cxxplugins.soname)
 
 # == bseplugins.so defs ==
-bseplugins.so			::= bseplugins.so
-bseplugins.soname		::= $(bseplugins.so)
-plugins/bseplugins.sofile	::= $>/plugins/$(bseplugins.so)
-ALL_TARGETS			 += $(plugins/bseplugins.sofile)
+plugins/bseplugins.so		::= $>/plugins/bseplugins.so
 plugins/bseplugins.objects	::= $(sort $(plugins/bseplugins.sources:%.cc=$>/%.o))
-$(plugins/bseplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(bseplugins.soname)
 
 # == cxxplugins.so rules ==
 $(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(plugins/cxxplugins.sofile), $(plugins/cxxplugins.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
+$(call BUILD_SHARED_LIB, \
+	$(plugins/cxxplugins.so), \
+	$(plugins/cxxplugins.objects), \
+	$(bse/libbse.sofiles) | $>/plugins/, \
+	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
+	$(plugins/rpath..bse))
 
 # == bseplugins.so rules ==
 $(plugins/bseplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(plugins/bseplugins.sofile), $(plugins/bseplugins.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
+$(call BUILD_SHARED_LIB, \
+	$(plugins/bseplugins.so), \
+	$(plugins/bseplugins.objects), \
+	$(bse/libbse.sofiles) | $>/plugins/, \
+	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
+	$(plugins/rpath..bse))
 
 # == .genidl.hh ==
 $>/plugins/%.genidl.hh: plugins/%.idl		$(sfi/sfidl) | $>/plugins/
