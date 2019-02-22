@@ -3,7 +3,7 @@ include $(wildcard $>/beast-gtk/*.d)
 CLEANDIRS += $(wildcard $>/beast-gtk/)
 beast-gtk/rpath..bse ::= ../bse
 
-# == beast-gtk/ sources ==
+# == beast-gtk/ files ==
 beast-gtk/beast.sources ::= $(strip		\
 	beast-gtk/bstapp.cc			\
 	beast-gtk/bstasciipixbuf.cc		\
@@ -144,11 +144,10 @@ beast-gtk/beast.cc.deps ::= $(strip		\
 	$>/beast-gtk/bstoldbseapi.cc		\
 )
 
-# == beast variables ==
+# == beast defs ==
 beast-gtk/beast			::= $>/beast-gtk/beast
 ALL_TARGETS			 += $(beast-gtk/beast)
 beast-gtk/beast.objects		::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/beast.sources)))
-
 
 # == subdirs ==
 include beast-gtk/gxk/Makefile.mk
