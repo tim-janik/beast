@@ -63,12 +63,12 @@ $(plugins/bseplugins.sofile).LDFLAGS ::= -shared -Wl,-soname,$(bseplugins.soname
 # == cxxplugins.so rules ==
 $(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(plugins/cxxplugins.sofile), $(plugins/cxxplugins.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
+$(eval $(call LINKER, $(plugins/cxxplugins.sofile), $(plugins/cxxplugins.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
 
 # == bseplugins.so rules ==
 $(plugins/bseplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(plugins/bseplugins.sofile), $(plugins/bseplugins.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
+$(eval $(call LINKER, $(plugins/bseplugins.sofile), $(plugins/bseplugins.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../bse))
 
 # == .genidl.hh ==
 $>/plugins/%.genidl.hh: plugins/%.idl		$(sfi/sfidl) | $>/plugins/

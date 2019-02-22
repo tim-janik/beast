@@ -39,7 +39,7 @@ $>/ebeast/v8bse/%.cc: ebeast/v8bse/%.cc		| $>/ebeast/v8bse/
 # so we need to unset MAKEFLAGS, to unconfuse the node-gyp invocation of MAKE wrg jobserver setups.
 # See also: /usr/include/nodejs/common.gypi https://electronjs.org/docs/tutorial/using-native-node-modules
 $>/ebeast/v8bse/v8bse.node: EXTRA_INCLUDES ::= -I$> -Iexternal/v8pp/ $(GLIB_CFLAGS)
-$>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) $(bse/libbse.solinks) $>/ebeast/npm.rules
+$>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) $(bse/libbse.sofiles) $>/ebeast/npm.rules
 	$(QECHO) 'SETUP' $>/ebeast/v8bse/binding.gyp
 	@: # binding.gyp must be generated on the fly, because it captures Makefile values like CXXFLAGS
 	$Q echo "{ 'targets': [ {                           # -*- mode: javascript -*-"		 >$@.tmp

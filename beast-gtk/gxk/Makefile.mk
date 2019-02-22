@@ -104,7 +104,7 @@ $(beast-gtk/gxk/gxktest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast
 $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/gxktest), \
 	$(beast-gtk/gxk/gxktest.objects), \
-	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), \
+	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.sofiles), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS), \
 	$(beast-gtk/gxk/rpath..bse))
 
@@ -113,7 +113,7 @@ $(beast-gtk/gxk/splinetest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibe
 $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/splinetest), \
 	$(beast-gtk/gxk/splinetest.objects), \
-	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), \
+	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.sofiles), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS), \
 	$(beast-gtk/gxk/rpath..bse))
 

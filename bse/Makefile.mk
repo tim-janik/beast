@@ -333,13 +333,9 @@ bse/libbse.cc.deps  ::= $(strip		\
 )
 
 # == libbse.so defs ==
-bse.so				::= bse-$(VERSION_MAJOR).so
-libbse.soname			::= lib$(bse.so).$(VERSION_MINOR)
-bse/libbse.sofile		::= $>/bse/$(libbse.soname).$(VERSION_MICRO)
-bse/libbse.solinks		::= $>/bse/$(libbse.soname) $>/bse/lib$(bse.so)
-ALL_TARGETS			 += $(bse/libbse.sofile) $(bse/libbse.solinks)
+bse/libbse.so			::= $>/bse/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
+bse/libbse.sofiles		::= $(bse/libbse.so) $(call BUILD_SHARED_LIB_SOLINKS, $(bse/libbse.so))
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
-$(bse/libbse.sofile).LDFLAGS	::= -shared -Wl,-soname,$(libbse.soname)
 
 # == bseapi.idl defs ==
 bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
@@ -370,11 +366,11 @@ include bse/icons/Makefile.mk
 $(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.csources)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
-# SO links
-$(bse/libbse.solinks): $(bse/libbse.sofile)
-	$(QECHO) LN $@
-	$Q rm -f $@ ; ln -s $(notdir $(bse/libbse.sofile)) $@
-$(eval $(call LINKER, $(bse/libbse.sofile), $(bse/libbse.objects), | $>/bse/, $(BSEDEPS_LIBS)))
+$(call BUILD_SHARED_LIB, \
+	$(bse/libbse.so), \
+	$(bse/libbse.objects), \
+	| $>/bse/, \
+	$(BSEDEPS_LIBS))
 
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
@@ -382,7 +378,7 @@ $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bsetool), \
 	$(bse/bsetool.objects), \
-	$(bse/libbse.solinks) | $>/bse/, \
+	$(bse/libbse.sofiles) | $>/bse/, \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bseapi.idl rules ==
@@ -509,7 +505,7 @@ $(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bseprocidl), \
 	$(bse/bseprocidl.objects), \
-	$(bse/libbse.solinks), \
+	$(bse/libbse.sofiles), \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bsehack.idl ==
@@ -528,7 +524,7 @@ $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_TEST, \
 	$(bse/integrity), \
 	$(bse/integrity.objects), \
-	$(bse/libbse.solinks), \
+	$(bse/libbse.sofiles), \
 	-lbse-$(VERSION_MAJOR), \
 	../bse)
 

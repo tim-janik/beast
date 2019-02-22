@@ -22,11 +22,11 @@ drivers/alsamidi.objects	::= $(sort $(drivers/alsamidi.sources:%.cc=$>/%.o))
 # == alsapcm rules ==
 $(drivers/alsapcm.objects): $(bse/libbse.deps) | $>/drivers/
 $(drivers/alsapcm.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(drivers/alsapcm.sofile), $(drivers/alsapcm.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), ../bse))
+$(eval $(call LINKER, $(drivers/alsapcm.sofile), $(drivers/alsapcm.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), ../bse))
 
 # == alsamidi rules ==
 $(drivers/alsamidi.objects): $(bse/libbse.deps) | $>/drivers/
 $(drivers/alsamidi.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(drivers/alsamidi.sofile).LDFLAGS ::= -shared -Wl,-soname,$(alsamidi.soname)
-$(eval $(call LINKER, $(drivers/alsamidi.sofile), $(drivers/alsamidi.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), ../bse))
+$(eval $(call LINKER, $(drivers/alsamidi.sofile), $(drivers/alsamidi.objects), $(bse/libbse.sofiles), -lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), ../bse))
 

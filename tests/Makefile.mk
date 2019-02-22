@@ -32,6 +32,6 @@ $(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_TEST, \
 	$(tests/suite1), \
 	$(tests/suite1.objects), \
-	$(bse/libbse.solinks), \
+	$(bse/libbse.sofiles), \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
 	$(tests/rpath..bse))
