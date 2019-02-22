@@ -146,7 +146,6 @@ beast-gtk/beast.cc.deps ::= $(strip		\
 
 # == beast defs ==
 beast-gtk/beast			::= $>/beast-gtk/beast
-ALL_TARGETS			 += $(beast-gtk/beast)
 beast-gtk/beast.objects		::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/beast.sources)))
 
 # == subdirs ==
@@ -159,10 +158,12 @@ $(beast-gtk/beast.objects): $(beast-gtk/beast.deps) $(beast-gtk/beast.cc.deps)
 $(beast-gtk/beast.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(beast-gtk/beast.objects): $(bse/libbse.deps) | $>/beast-gtk/
 $(beast-gtk/beast.objects): $(beast-gtk/gxk/libgxk.deps)
-$(eval $(call LINKER, $(beast-gtk/beast), $(beast-gtk/beast.objects), \
+$(call BUILD_PROGRAM, \
+	$(beast-gtk/beast), \
+	$(beast-gtk/beast.objects), \
 	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.solinks), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
-	$(beast-gtk/rpath..bse)))
+	$(beast-gtk/rpath..bse))
 
 # == bstmarshal ==
 $>/beast-gtk/bstmarshal.h: beast-gtk/bstmarshal.list			| $>/beast-gtk/

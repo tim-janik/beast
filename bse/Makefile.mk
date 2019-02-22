@@ -346,7 +346,6 @@ bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces
 
 # == bsetool defs ==
 bse/bsetool         ::= $>/bse/bsetool
-ALL_TARGETS	     += $(bse/bsetool)
 bse/bsetool.sources ::= bse/bsetool.cc
 bse/bsetool.objects ::= $(sort $(bse/bsetool.sources:%.cc=$>/%.o))
 bse/bsetool.deps    ::= $(bse/libbse.deps)
@@ -354,14 +353,12 @@ bse/bsetool.deps    ::= $(bse/libbse.deps)
 
 # == bseprocidl defs ==
 bse/bseprocidl			::= $>/bse/bseprocidl
-ALL_TARGETS			 += $(bse/bseprocidl)
 bse/bseprocidl.sources		::= bse/bseprocidl.cc
 bse/bseprocidl.objects		::= $(call SUBST_O, $(addprefix $>/, $(bse/bseprocidl.sources)))
 bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
 
 # == integrity defs ==
 bse/integrity		   ::= $>/bse/integrity
-ALL_TESTS		    += $(bse/integrity)
 bse/integrity.sources	   ::= bse/integrity.cc
 bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
 bse/integrity.objects.FLAGS  = -O0	# compile fast
@@ -382,7 +379,11 @@ $(eval $(call LINKER, $(bse/libbse.sofile), $(bse/libbse.objects), | $>/bse/, $(
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
 $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(bse/bsetool), $(bse/bsetool.objects), $(bse/libbse.solinks) | $>/bse/, -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
+$(call BUILD_PROGRAM, \
+	$(bse/bsetool), \
+	$(bse/bsetool.objects), \
+	$(bse/libbse.solinks) | $>/bse/, \
+	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
@@ -503,9 +504,13 @@ int main (int argc, char *argv[]) {
 endef
 
 # == bseprocidl rules ==
-$(eval $(call LINKER, $(bse/bseprocidl), $(bse/bseprocidl.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse) )
 $(bse/bseprocidl.objects):	$(bse/libbse.deps)
 $(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(call BUILD_PROGRAM, \
+	$(bse/bseprocidl), \
+	$(bse/bseprocidl.objects), \
+	$(bse/libbse.solinks), \
+	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bsehack.idl ==
 # currently generated from BSE introspection data, needed to build the old IDL bindings for beast-gtk
@@ -518,9 +523,14 @@ $>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxm
 	$Q mv $@.tmp1 $@ && rm -f $@.tmp2
 
 # == integrity rules ==
-$(eval $(call LINKER, $(bse/integrity), $(bse/integrity.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR), ../bse) )
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
 $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(call BUILD_TEST, \
+	$(bse/integrity), \
+	$(bse/integrity.objects), \
+	$(bse/libbse.solinks), \
+	-lbse-$(VERSION_MAJOR), \
+	../bse)
 
 # == bse-check-assertions ==
 $>/bse/t279-assertions-test: FORCE	$(bse/integrity)

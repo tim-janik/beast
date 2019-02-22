@@ -24,10 +24,14 @@ tests/suite1.sources		::= $(strip	\
 
 # == suite1 defs ==
 tests/suite1			::= $>/tests/suite1
-ALL_TESTS			 += $(tests/suite1)
 tests/suite1.objects		::= $(sort $(tests/suite1.sources:%.cc=$>/%.o))
 
 # == suite1 rules ==
 $(tests/suite1.objects):	$(bse/libbse.deps) | $>/tests/
 $(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(eval $(call LINKER, $(tests/suite1), $(tests/suite1.objects), $(bse/libbse.solinks), -lbse-$(VERSION_MAJOR) $(GLIB_LIBS), $(tests/rpath..bse)) )
+$(call BUILD_TEST, \
+	$(tests/suite1), \
+	$(tests/suite1.objects), \
+	$(bse/libbse.solinks), \
+	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
+	$(tests/rpath..bse))
