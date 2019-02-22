@@ -2,7 +2,7 @@
 include $(wildcard $>/bse/icons/*.d)
 CLEANDIRS += $(wildcard $>/bse/icons/)
 
-# == icons ==
+# == icons/ files ==
 bse/icons/png.files ::= $(strip		\
 	bse/icons/biquad.png		\
 	bse/icons/const.png		\
@@ -21,12 +21,12 @@ bse/icons/png.files ::= $(strip		\
 )
 bse/icons/c.csources ::= $(sort $(bse/icons/png.files:%.png=$>/%.c))
 
-# == icon .c files ==
+# == mkident for icons ==
+# function to generate C name from a filename
+bse/icons/icons.mkident = $(subst .,_,$(subst -,_,$(notdir $(basename $(1)))))
+
+# == icons/*.c rules ==
 $>/bse/icons/%.c: bse/icons/%.png		| $>/bse/icons/
 	$(QGEN)
 	$Q $(GDK_PIXBUF_CSOURCE) --name=$(call bse/icons/icons.mkident,$(<F))_pixstream $<	> $@.tmp
 	$Q mv $@.tmp $@
-
-# == mkident ==
-# function to generate C name from a filename
-bse/icons/icons.mkident = $(subst .,_,$(subst -,_,$(notdir $(basename $(1)))))
