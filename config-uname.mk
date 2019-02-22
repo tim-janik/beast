@@ -89,6 +89,17 @@ endef
 # $(call BUILD_SHARED_LIB, sharedlibrary, objects, deps, libs, rpath)
 BUILD_SHARED_LIB = $(eval $(call BUILD_SHARED_LIB.impl, $1, $2, $3, $4, $5))
 
+# == BUILD_STATIC_LIB ==
+# BUILD_STATIC_LIB implementation
+define BUILD_STATIC_LIB.impl
+ALL_TARGETS += $1
+$1: $2	$3
+	$$(QECHO) AR $$@
+	$$Q $$(AR) rcs $$@ $2
+endef
+# $(call BUILD_STATIC_LIB, staticlibrary, objects, deps)
+BUILD_STATIC_LIB = $(eval $(call BUILD_STATIC_LIB.impl, $1, $2, $3))
+
 # == BUILD_PROGRAM ==
 # $(call BUILD_PROGRAM, executable, objects, deps, libs, rpath)
 BUILD_PROGRAM = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TARGETS += $1)
@@ -96,11 +107,3 @@ BUILD_PROGRAM = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TARGETS +=
 # == BUILD_TEST ==
 # $(call BUILD_TEST, executable, objects, deps, libs, rpath)
 BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
-
-# == LINK_ARCHIVE ==
-# $(call LINK_ARCHIVE, ARCHIVE, OBJECTS, DEPS)
-define LINK_ARCHIVE
-$1: $2	$3
-	$$(QECHO) AR $$@
-	$$Q $$(AR) rcs $$@ $2
-endef
