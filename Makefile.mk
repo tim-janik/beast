@@ -1,12 +1,10 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-# == Make ==
+# == MAKE setup ==
 all:		# Default Rule
 MAKEFLAGS      += -r
 SHELL         ::= /bin/bash -o pipefail
 PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
-.PHONY:	FORCE
-FORCE: ;
 
 # == User Defaults ==
 # see also 'make defaults' rule
@@ -22,18 +20,14 @@ libdir		 ?= $(prefix)/lib
 pkgrootdir	 ?= $(libdir)
 pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
 .config.defaults += builddir prefix bindir datadir mandir libdir pkgrootdir pkglibdir
->		 = $(builddir)
+>		  = $(builddir)
 
-# == Basic Setup & Checks ==
+# == Target Collections ==
 ALL_TARGETS	::=
 ALL_TESTS	::=
 CHECK_TARGETS	::=
 CLEANFILES	::=
 CLEANDIRS	::=
-include config-utils.mk
-include config-uname.mk
-include config-checks.mk
-.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS
 
 # == Defaults ==
 INCLUDES	::= -I.
@@ -47,12 +41,17 @@ EXTRA_DEFS	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_INCLUDES	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
 
-# == Rules ==
+# == Utilities & Checks ==
+include config-utils.mk
+include config-uname.mk
+include config-checks.mk
+.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS
+
+# == enduser targets ==
 all: FORCE
 check: FORCE
 install: FORCE
 uninstall: FORCE
-clean: FORCE
 
 # == subdirs ==
 include res/Makefile.mk
@@ -65,11 +64,17 @@ include tests/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
 
-# == output directories ==
-$>/%/: ; $(Q) mkdir -p $@
+# == FORCE rules ==
+# Use FORCE to mark phony targets via a dependency
+.PHONY:	FORCE
+
+# == output directory rules ==
+# rule to create output directories from order only dependencies, trailing slash required
+$>/%/:
+	$Q mkdir -p $@
 .PRECIOUS: $>/%/ # prevent MAKE's 'rm ...' for automatically created dirs
 
-# == rules ==
+# == defaults rules ==
 # Allow value defaults to be adjusted via: make config builddir=... CXX=...
 defaults: FORCE
 	$(QECHO) WRITE config-defaults.mk
@@ -80,9 +85,13 @@ defaults: FORCE
 	  && echo '# $(VAR) = $(value $(VAR))'		>>$@.tmp  \
 	      ) )
 	$Q mv $@.tmp config-defaults.mk
-clean:
+
+# == clean rules ==
+clean: FORCE
 	@test -z "$(strip $(CLEANFILES))" || (set -x; rm -f $(CLEANFILES) )
 	@test -z "$(strip $(CLEANDIRS))" || (set -x; rm -fr $(CLEANDIRS) )
+
+# == help rules ==
 help: FORCE
 	@echo 'Make targets:'
 	@: #   12345678911234567892123456789312345678941234567895123456789612345678971234567898
@@ -94,9 +103,13 @@ help: FORCE
 	@echo '  check           - Run selft tests and unit tests'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
+
+# == all rules ==
 all: $(ALL_TARGETS) $(ALL_TESTS)
 
-# == check ALL_TESTS ==
+# == check rules ==
+check: FORCE
+# Macro to generate test runs as 'check' dependencies
 define CHECK_ALL_TESTS_TEST
 CHECK_TARGETS += $$(dir $1)check-$$(notdir $1)
 $$(dir $1)check-$$(notdir $1): $1
