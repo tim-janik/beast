@@ -53,6 +53,11 @@ plugins/cxxplugins.objects	::= $(sort $(plugins/cxxplugins.sources:%.cc=$>/%.o))
 plugins/bseplugins.so		::= $>/plugins/bseplugins.so
 plugins/bseplugins.objects	::= $(sort $(plugins/bseplugins.sources:%.cc=$>/%.o))
 
+# == install rules ==
+$(call INSTALL_BIN_RULE, plugins/modules, \
+	$(DESTDIR)$(pkglibdir)/plugins, \
+	$(plugins/cxxplugins.so) $(plugins/bseplugins.so))
+
 # == cxxplugins.so rules ==
 $(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
 $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
