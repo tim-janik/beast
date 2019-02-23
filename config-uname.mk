@@ -112,3 +112,26 @@ BUILD_PROGRAM = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TARGETS +=
 # == BUILD_TEST ==
 # $(call BUILD_TEST, executable, objects, deps, libs, rpath)
 BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
+
+# == INSTALL_*_RULE ==
+define INSTALL_RULE.impl
+.PHONY: install--$(strip $1) uninstall--$(strip $1)
+install--$(strip $1): $3
+	$$(QECHO) INSTALL $1
+	$$Q $$(INSTALL) -d '$(strip $2)'
+	$$Q : $$(foreach L, \
+		$$(wildcard $$(foreach B,$3, $$(call BUILD_SHARED_LIB_SOLINKS, $$B))), \
+		&& cp -d $$L '$(strip $2)' )
+	$$Q $$(if $$^, $4 $$^ '$(strip $2)')
+install: install--$(strip $1)
+uninstall--$(strip $1): # delete target T and possible link aliases L
+	$$(QECHO) UNINSTALL $1
+	$$Q if cd '$(strip $2)' ; then \
+	      rm -f	$$(foreach T, $(notdir $3), $$T \
+			   $$(foreach L, $$(call BUILD_SHARED_LIB_SOLINKS, $$T), $$L) ) ; \
+	    fi
+uninstall: uninstall--$(strip $1)
+endef
+# $(call INSTALL_RULE, rulename, directory, files)
+INSTALL_DATA_RULE = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL) -m 644))
+INSTALL_BIN_RULE  = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
