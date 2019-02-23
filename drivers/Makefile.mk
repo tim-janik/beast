@@ -13,6 +13,11 @@ drivers/alsamidi.so		::= $>/drivers/alsamidi.so
 drivers/alsamidi.sources	::= drivers/bsemididevice-alsa.cc
 drivers/alsamidi.objects	::= $(sort $(drivers/alsamidi.sources:%.cc=$>/%.o))
 
+# == install rules ==
+$(call INSTALL_BIN_RULE, plugins/drivers, \
+	$(DESTDIR)$(pkglibdir)/plugins, \
+	$(drivers/alsapcm.so) $(drivers/alsamidi.so))
+
 # == alsapcm rules ==
 $(drivers/alsapcm.objects): $(bse/libbse.deps) | $>/drivers/
 $(drivers/alsapcm.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
