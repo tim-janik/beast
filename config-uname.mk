@@ -69,7 +69,9 @@ SUBST_O = $(sort $(foreach X, .c .C .cc .CC .y .l, $(subst $X,.o,$(filter %$X,$1
 define LINKER
 $1: $2	$3
 	$$(QECHO) LD $$@
+	$$(call LINKER.pre-hook,$@)
 	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
+	$$(call LINKER.post-hook,$@)
 endef
 
 # == BUILD_SHARED_LIB ==
@@ -81,12 +83,13 @@ BUILD_SHARED_LIB_SOLINKS  = $(shell X="$1" ; \
 BUILD_SHARED_LIB_SONAME = $(shell X="$(notdir $1)" ; while [[ $${X} =~ \.[0-9]+(\.[0-9]+)$$ ]] ; do X="$${X%$${BASH_REMATCH[1]}}"; done ; echo "$$X")
 # BUILD_SHARED_LIB implementation
 define BUILD_SHARED_LIB.impl
-ALL_TARGETS += $(call BUILD_SHARED_LIB_SOLINKS, $1) $1
+ALL_TARGETS += $1
 $1: SONAME_LDFLAGS ::= -shared -Wl,-soname,$(call BUILD_SHARED_LIB_SONAME, $1)
+$1: LINKER.pre-hook ::= \
+	$$Q rm -f $(call BUILD_SHARED_LIB_SOLINKS, $1) \
+	  $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
+	    && ln -s $(notdir $1) $$L)
 $(call LINKER, $1, $2, $3, $4 $$(SONAME_LDFLAGS), $5)
-$(call BUILD_SHARED_LIB_SOLINKS, $1): $1
-	$$(QECHO) LN $$@
-	$$Q rm -f $$@ && ln -s $$(notdir $$<) $$@
 endef
 # $(call BUILD_SHARED_LIB, sharedlibrary, objects, deps, libs, rpath)
 BUILD_SHARED_LIB = $(eval $(call BUILD_SHARED_LIB.impl, $1, $2, $3, $4, $5))
