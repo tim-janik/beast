@@ -335,6 +335,8 @@ bse/libbse.cc.deps  ::= $(strip		\
 # == libbse.so defs ==
 bse/libbse.so			::= $>/bse/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
+bse/include.headerdir		::= $(pkglibdir)/include/bse
+bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps)
 
 # == bseapi.idl defs ==
 bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
@@ -370,6 +372,8 @@ $(call BUILD_SHARED_LIB, \
 	$(bse/libbse.objects), \
 	| $>/bse/, \
 	$(BSEDEPS_LIBS))
+$(call INSTALL_DATA_RULE, include/bse, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
+$(call INSTALL_BIN_RULE, bse/libbse.so, $(DESTDIR)$(pkglibdir)/bse, $(bse/libbse.so))
 
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
