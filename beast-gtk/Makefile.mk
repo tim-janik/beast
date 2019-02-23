@@ -164,6 +164,7 @@ $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.so), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
 	$(beast-gtk/rpath..bse))
+$(call INSTALL_BIN_RULE, bin/beast, $(DESTDIR)$(pkglibdir)/bin, $(beast-gtk/beast))
 
 # == bstmarshal ==
 $>/beast-gtk/bstmarshal.h: beast-gtk/bstmarshal.list			| $>/beast-gtk/
