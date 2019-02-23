@@ -161,7 +161,7 @@ $(beast-gtk/beast.objects): $(beast-gtk/gxk/libgxk.deps)
 $(call BUILD_PROGRAM, \
 	$(beast-gtk/beast), \
 	$(beast-gtk/beast.objects), \
-	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.sofiles), \
+	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.so), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
 	$(beast-gtk/rpath..bse))
 

@@ -334,7 +334,6 @@ bse/libbse.cc.deps  ::= $(strip		\
 
 # == libbse.so defs ==
 bse/libbse.so			::= $>/bse/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
-bse/libbse.sofiles		::= $(bse/libbse.so) $(call BUILD_SHARED_LIB_SOLINKS, $(bse/libbse.so))
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 
 # == bseapi.idl defs ==
@@ -378,7 +377,7 @@ $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bsetool), \
 	$(bse/bsetool.objects), \
-	$(bse/libbse.sofiles) | $>/bse/, \
+	$(bse/libbse.so) | $>/bse/, \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bseapi.idl rules ==
@@ -505,7 +504,7 @@ $(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bseprocidl), \
 	$(bse/bseprocidl.objects), \
-	$(bse/libbse.sofiles), \
+	$(bse/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
 
 # == bsehack.idl ==
@@ -524,7 +523,7 @@ $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_TEST, \
 	$(bse/integrity), \
 	$(bse/integrity.objects), \
-	$(bse/libbse.sofiles), \
+	$(bse/libbse.so), \
 	-lbse-$(VERSION_MAJOR), \
 	../bse)
 

@@ -19,7 +19,7 @@ $(drivers/alsapcm.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(drivers/alsapcm.so), \
 	$(drivers/alsapcm.objects), \
-	$(bse/libbse.sofiles) | $>/drivers/, \
+	$(bse/libbse.so) | $>/drivers/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), \
 	$(drivers/rpath..bse))
 
@@ -29,6 +29,6 @@ $(drivers/alsamidi.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(drivers/alsamidi.so), \
 	$(drivers/alsamidi.objects), \
-	$(bse/libbse.sofiles) | $>/drivers/, \
+	$(bse/libbse.so) | $>/drivers/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), \
 	$(drivers/rpath..bse))

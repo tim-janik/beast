@@ -59,7 +59,7 @@ $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(plugins/cxxplugins.so), \
 	$(plugins/cxxplugins.objects), \
-	$(bse/libbse.sofiles) | $>/plugins/, \
+	$(bse/libbse.so) | $>/plugins/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
 	$(plugins/rpath..bse))
 
@@ -69,7 +69,7 @@ $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLA
 $(call BUILD_SHARED_LIB, \
 	$(plugins/bseplugins.so), \
 	$(plugins/bseplugins.objects), \
-	$(bse/libbse.sofiles) | $>/plugins/, \
+	$(bse/libbse.so) | $>/plugins/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
 	$(plugins/rpath..bse))
 
