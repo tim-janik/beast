@@ -10,6 +10,7 @@ GLIB_GENMARSHAL 	?= glib-genmarshal
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 PANDOC			?= pandoc
 .config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC
+INSTALL			:= /usr/bin/install -c
 
 # == conftest_header_symbol ==
 conftest_header_symbol =  { { : \
