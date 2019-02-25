@@ -5,10 +5,30 @@ all:		# Default Rule
 MAKEFLAGS      += -r
 SHELL         ::= /bin/bash -o pipefail
 PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
+S ::= # Variable containing 1 space
+S +=
 
 # == User Defaults ==
 # see also 'make default' rule
 -include config-defaults.mk
+
+# == Mode ==
+# determine build mode
+override MODE !=  case "$(MODE)" in \
+		    p*|pr*|pro*|prod*|produ*|produc*|product*)		MODE=release ;; \
+		    producti*|productio*|production)			MODE=release ;; \
+		    r*|re*|rel*|rele*|relea*|releas*|release)		MODE=release ;; \
+		    d*|de*|deb*|debu*|debug|dbg)			MODE=debug ;; \
+		    dev*|deve*|devel*|develo*|develop*|developm*)	MODE=debug ;; \
+		    developme*|developmen*|development)			MODE=debug ;; \
+		    u*|ub*|ubs*|ubsa*|ubsan)				MODE=ubsan ;; \
+		    a*|as*|asa*|asan)					MODE=asan ;; \
+		    t*|ts*|tsa*|tsan)					MODE=tsan ;; \
+		    l*|ls*|lsa*|lsan)					MODE=lsan ;; \
+		    *)							MODE=debug ;; \
+		  esac ; echo "$$MODE"
+.config.defaults += MODE
+$(info $S MODE     $(MODE))
 
 # == Dirctories ==
 builddir	 ?= out

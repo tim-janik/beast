@@ -21,8 +21,27 @@ COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-dec
 CONLYFLAGS	::= -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
 CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
 #CXXONLYFLAGS	 += -Wnon-virtual-dtor -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
-OPTIMIZE	::= -O3 -funroll-loops -ftree-vectorize
-LDOPTIMIZE	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
+OPTIMIZE	::= -funroll-loops -ftree-vectorize
+LDMODEFLAGS	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
+
+ifeq ($(MODE),release)
+MODEFLAGS	::= -O3 -DNDEBUG
+else ifeq ($(MODE),debug)
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -ggdb3 -DG_ENABLE_DEBUG -fverbose-asm
+else ifeq ($(MODE),ubsan)
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=undefined
+LDMODEFLAGS	 += -lubsan
+else ifeq ($(MODE),asan)
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=address
+LDMODEFLAGS	 += -lasan
+else ifeq ($(MODE),tsan)
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=thread
+LDMODEFLAGS	 += -ltsan
+else ifeq ($(MODE),lsan)
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=leak
+LDMODEFLAGS	 += -llsan
+endif
+
 ifdef HAVE_CLANG  # clang++
   COMMONFLAGS	 += -Wno-tautological-compare -Wno-constant-logical-operand
   #COMMONFLAGS	 += -Wno-unused-command-line-argument
@@ -34,6 +53,7 @@ ifdef HAVE_GCC    # g++
     COMMONFLAGS	 += -fdiagnostics-color=auto
   endif
 endif
+
 ifeq ($(uname_S),x86_64)
   COMMONFLAGS	 += -mcx16			# for CMPXCHG16B, in AMD64 since 2005
   OPTIMIZE	 += -minline-all-stringops
@@ -45,9 +65,9 @@ ifeq ($(uname_S),x86_64)
   #OPTIMIZE	 += -mavx			# Intel since 2011, AMD since 2011
   #OPTIMIZE	 += -mavx2			# Intel since 2013, AMD since 2015
 endif
-pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(OPTIMIZE)) $(CFLAGS)
-pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
-LDFLAGS		::= $(strip $(LDOPTIMIZE)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
+pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CFLAGS)
+pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
+LDFLAGS		::= $(strip $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
 
 # == implicit rules ==
 compiledefs     = $(DEFS) $(EXTRA_DEFS) $($<.DEFS) $($@.DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $($<.INCLUDES) $($@.INCLUDES)
