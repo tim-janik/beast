@@ -104,12 +104,19 @@ BUILD_SHARED_LIB_SONAME = $(shell X="$(notdir $1)" ; while [[ $${X} =~ \.[0-9]+(
 # BUILD_SHARED_LIB implementation
 define BUILD_SHARED_LIB.impl
 ALL_TARGETS += $1
+# always build shared libraries with SONAME
 $1: SONAME_LDFLAGS ::= -shared -Wl,-soname,$(call BUILD_SHARED_LIB_SONAME, $1)
+# create .so link aliases before linking the .so
 $1: LINKER.pre-hook ::= \
-	$$Q rm -f $(call BUILD_SHARED_LIB_SOLINKS, $1) \
+	$$Q cd . \
 	  $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
-	    && ln -s $(notdir $1) $$L)
+	    && rm -f $$L && ln -s $(notdir $1) $$L)
 $(call LINKER, $1, $2, $3, $4 $$(SONAME_LDFLAGS), $5)
+# force re-linking if a link alias is missing
+$$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
+  $$(eval $$L: $1 ;) \
+  $$(if $$(wildcard $$L),, \
+    $$(eval .PHONY: $1)) )
 endef
 # $(call BUILD_SHARED_LIB, sharedlibrary, objects, deps, libs, rpath)
 BUILD_SHARED_LIB = $(eval $(call BUILD_SHARED_LIB.impl, $1, $2, $3, $4, $5))
@@ -136,12 +143,14 @@ BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
 # == INSTALL_*_RULE ==
 define INSTALL_RULE.impl
 .PHONY: install--$(strip $1) uninstall--$(strip $1)
-install--$(strip $1): $3
+install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link aliases L, install target T
 	$$(QECHO) INSTALL $1
 	$$Q $$(INSTALL) -d '$(strip $2)'
-	$$Q : $$(foreach L, \
-		$$(wildcard $$(foreach B,$3, $$(call BUILD_SHARED_LIB_SOLINKS, $$B))), \
-		&& cp -d $$L '$(strip $2)' )
+	$$Q cd '$(strip $2)' \
+	  $$(foreach T, $(notdir $3), \
+	    && rm -f $$T \
+	    $$(foreach L, $$(call BUILD_SHARED_LIB_SOLINKS, $$T), \
+	      && rm -f $$L && ln -s $$T $$L) )
 	$$Q $$(if $$^, $4 $$^ '$(strip $2)')
 install: install--$(strip $1)
 uninstall--$(strip $1): # delete target T and possible link aliases L
