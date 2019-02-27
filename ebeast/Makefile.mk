@@ -133,6 +133,17 @@ $>/app/assets/components.js: $(app/vc/files.js) $(app/vc/files.vue)	| $>/ebeast/
 	  && rm -f node_modules
 	@: # Note, since vc/*.js and vc/*.vue are bundled, they do not need to be installed
 
+# == installation ==
+ebeast/install: $>/ebeast/app.rules FORCE
+	@$(QECHO) INSTALL '$(DESTDIR)$(pkglibdir)/{app|electron}'
+	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
+	$Q $(CP) -a $>/electron $>/app $(DESTDIR)$(pkglibdir)/
+install: ebeast/install
+ebeast/uninstall: FORCE
+	@$(QECHO) REMOVE '$(DESTDIR)$(pkglibdir)/{app|electron}'
+	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
+uninstall: ebeast/uninstall
+
 # == ebeast-run ==
 # export ELECTRON_ENABLE_LOGGING=1
 ebeast-run: $>/ebeast/app.rules
