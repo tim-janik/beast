@@ -40,7 +40,11 @@ libdir		 ?= $(prefix)/lib
 pkgrootdir	 ?= $(libdir)
 pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
 .config.defaults += builddir prefix bindir datadir mandir libdir pkgrootdir pkglibdir
+
+# == builddir variants ==
 >		  = $(builddir)
+# if 'realpath --relative-to' is missing, os.path.relpath could be used as fallback
+build2srcdir	 != realpath --relative-to $(builddir) .
 
 # == Target Collections ==
 ALL_TARGETS	::=
