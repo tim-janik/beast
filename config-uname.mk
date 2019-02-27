@@ -144,7 +144,7 @@ BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
 define INSTALL_RULE.impl
 .PHONY: install--$(strip $1) uninstall--$(strip $1)
 install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link aliases L, install target T
-	$$(QECHO) INSTALL $1
+	$$(QECHO) INSTALL '$(strip $2)/...'
 	$$Q $$(INSTALL) -d '$(strip $2)'
 	$$Q cd '$(strip $2)' \
 	  $$(foreach T, $(notdir $3), \
@@ -154,8 +154,8 @@ install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link ali
 	$$Q $$(if $$^, $4 $$^ '$(strip $2)')
 install: install--$(strip $1)
 uninstall--$(strip $1): # delete target T and possible link aliases L
-	$$(QECHO) UNINSTALL $1
-	$$Q if cd '$(strip $2)' ; then \
+	$$(QECHO) REMOVE '$(strip $2)/...'
+	$$Q if cd '$(strip $2)' 2>/dev/null ; then \
 	      rm -f	$$(foreach T, $(notdir $3), $$T \
 			   $$(foreach L, $$(call BUILD_SHARED_LIB_SOLINKS, $$T), $$L) ) ; \
 	    fi

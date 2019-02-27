@@ -372,8 +372,8 @@ $(call BUILD_SHARED_LIB, \
 	$(bse/libbse.objects), \
 	| $>/bse/, \
 	$(BSEDEPS_LIBS))
-$(call INSTALL_DATA_RULE, include/bse, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
-$(call INSTALL_BIN_RULE, bse/libbse.so, $(DESTDIR)$(pkglibdir)/bse, $(bse/libbse.so))
+$(call INSTALL_DATA_RULE, bse/headers, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
+$(call INSTALL_BIN_RULE, bse/libbse, $(DESTDIR)$(pkglibdir)/bse, $(bse/libbse.so))
 
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
