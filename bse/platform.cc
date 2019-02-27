@@ -49,7 +49,7 @@ runpath (RPath rpath)
     case RPath::SKINDIR:        return libbse_installdir + "/skins";
     case RPath::DEMODIR:        return libbse_installdir + "/media/Demos";
     case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
-    case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
+    case RPath::INSTRUMENTDIR:  return libbse_installdir + "/media/Instruments";
     case RPath::SAMPLEDIR:      return libbse_installdir + "/Samples";
     case RPath::LADSPADIRS:     return construct_ladspa_path();
     }

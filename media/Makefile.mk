@@ -2,7 +2,7 @@
 include $(wildcard $>/media/*.d)
 CLEANDIRS += $(wildcard $>/media/)
 
-media/subdir_names   = Demos
+media/subdir_names   = Demos Instruments
 media/subdir_links ::= $(addprefix $>/media/, $(media/subdir_names))
 
 # == building ==
