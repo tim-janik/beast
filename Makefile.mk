@@ -78,6 +78,7 @@ uninstall: FORCE
 
 # == subdirs ==
 include res/Makefile.mk
+include media/Makefile.mk
 include sfi/Makefile.mk
 include aidacc/Makefile.mk
 include bse/Makefile.mk
