@@ -50,7 +50,7 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	$Q echo "  'cflags_cc':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.cxxflags)) ],"	>>$@.tmp
 	$Q echo "  'include_dirs': [ $(patsubst %, '%'$(,), $(ebeast_v8bse/gyp.incdirs)) ],"	>>$@.tmp
 	$Q echo "  'libraries':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.libs))"		>>$@.tmp
-	$Q echo "                    \"'-Wl,-rpath,"'$$$$'"ORIGIN/../../../lib/'\" ],"		>>$@.tmp
+	$Q echo "                    \"'-Wl,-rpath,"'$$$$'"ORIGIN/../../bse/'\" ],"		>>$@.tmp
 	@: # Adding -rpath,'$ORIGIN' requires single-quotes for this Makefile's subshell, escaping '$' in the current
 	@: # Makefile, escaping '$' in the generated *.target.mk file and signle-quotes for the *.target.mk subshell.
 	$Q echo "  } ] }"									>>$@.tmp

@@ -8,6 +8,8 @@ INSTALL_TARGETS   += ebeast-install
 UNINSTALL_TARGETS += ebeast-uninstall
 ebeast-all: $>/ebeast/app.rules
 
+# This Makefile creates $>/electron/ebeast and builds the ebeast app in $>/app/.
+
 # Running ebeast:
 # - Use 'make run' to start ebeast from the development tree, this ensures that libbse
 #   is picked up from the development tree (instead of an installed version) and that
@@ -23,50 +25,49 @@ ebeast/js.inputs ::= $(strip 		\
 	ebeast/menus.js			\
 	ebeast/window.html		\
 )
-ebeast/vc/js.inputs      ::= $(wildcard ebeast/vc/*.js)
-ebeast/vc/vue.inputs     ::= $(wildcard ebeast/vc/*.vue)
-ebeast/vc/scss.inputs    ::= $(wildcard ebeast/vc/*.scss)
-ebeast/app/files.js	 ::= $(addprefix $>/ebeast/app/,    $(notdir $(ebeast/js.inputs)))
-ebeast/app/vc/files.js   ::= $(addprefix $>/ebeast/app/vc/, $(notdir $(ebeast/vc/js.inputs)))
-ebeast/app/vc/files.vue  ::= $(addprefix $>/ebeast/app/vc/, $(notdir $(ebeast/vc/vue.inputs)))
-ebeast/app/vc/files.scss ::= $(addprefix $>/ebeast/app/vc/, $(notdir $(ebeast/vc/scss.inputs)))
-ebeast/app/tree ::= $(strip 			\
-	$(ebeast/app/files.js)			\
-	$(ebeast/app/vc/files.js)		\
-	$(ebeast/app/vc/files.vue)		\
-	$(ebeast/app/vc/files.scss)		\
+ebeast/vc/js.inputs	::= $(wildcard ebeast/vc/*.js)
+ebeast/vc/vue.inputs	::= $(wildcard ebeast/vc/*.vue)
+ebeast/vc/scss.inputs	::= $(wildcard ebeast/vc/*.scss)
+app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
+app/vc/files.js		::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/js.inputs)))
+app/vc/files.vue	::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/vue.inputs)))
+app/vc/files.scss	::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/scss.inputs)))
+app/tree ::= $(strip 			\
+	$(app/files.js)			\
+	$(app/vc/files.js)		\
+	$(app/vc/files.vue)		\
+	$(app/vc/files.scss)		\
 )
-ebeast/app/generated ::= $(strip 		\
-	$>/ebeast/app/app.scss			\
-	$>/ebeast/app/assets/gradient-01.png	\
-	$>/ebeast/app/assets/stylesheets.css	\
-	$>/ebeast/app/assets/components.js	\
+app/generated ::= $(strip 		\
+	$>/app/app.scss			\
+	$>/app/assets/gradient-01.png	\
+	$>/app/assets/stylesheets.css	\
+	$>/app/assets/components.js	\
 )
 
 # == subdirs ==
 include ebeast/v8bse/Makefile.mk
 
 # == npm ==
-$>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/app/
+$>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$(QECHO) MAKE $@
-	$Q rm -f -r $>/ebeast/node_modules/ $>/ebeast/app/node_modules/
+	$Q rm -f -r $>/ebeast/node_modules/ $>/app/node_modules/
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
-		$< > $>/ebeast/app/package.json
-	$Q cd $>/ebeast/app/ \
+		$< > $>/app/package.json
+	$Q cd $>/app/ \
 	  && npm install --production $(NPM_PROGRESS) \
-	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
-	$Q cp --reflink -a $>/ebeast/app/node_modules $>/ebeast/app/node_modules.prod \
-	  && mv $>/ebeast/app/package.json $>/ebeast/app/node_modules $>/ebeast/ \
-	  && rm -f $>/ebeast/app/package-lock.json
+	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i \
+	  && rm -f package-lock.json
+	$Q $(CP) -a $>/app/node_modules $>/app/package.json $>/ebeast/
 	$Q cd $>/ebeast/ \
 	  && npm install $(NPM_PROGRESS)
 	$Q echo >$@
 
 # == linting ==
 ebeast/sed.uncommentjs ::= sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
-ebeast/lint.appfiles   ::= $(ebeast/app/files.js) $(ebeast/app/vc/files.js) $(ebeast/app/vc/files.vue)
+ebeast/lint.appfiles   ::= $(app/files.js) $(app/vc/files.js) $(app/vc/files.vue)
 $>/ebeast/lint.rules: $(ebeast/lint.appfiles) $(ebeast/vc/vue.inputs) | $>/ebeast/npm.rules
 	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix $(ebeast/lint.appfiles)
@@ -82,56 +83,55 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(ebeast/app/tree) $(ebeast/app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/tree) $(app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
-	$Q rm -f -r $>/app \
-	  && cp -R -L --reflink $>/ebeast/app/ $>/app \
-	  && cp --reflink $>/ebeast/package.json $>/app \
-	  && mv $>/app/node_modules.prod/ $>/app/node_modules/
-	$Q cp -L --reflink $>/ebeast/v8bse/v8bse.node $>/app/assets/
+	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
-	  && cp -a --reflink $>/ebeast/node_modules/electron/dist/ $>/electron/ \
+	  && $(CP) -a $>/ebeast/node_modules/electron/dist/ $>/electron/ \
 	  && rm -fr $>/electron/resources/default_app.asar \
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
 
-# == $>/ebeast/app/% ==
-$>/ebeast/app/assets/stylesheets.css: $>/ebeast/app/app.scss $(ebeast/app/vc/files.scss)	| $>/ebeast/npm.rules
+# == $>/app/% ==
+$>/app/assets/stylesheets.css: $>/app/app.scss $(app/vc/files.scss)	| $>/ebeast/npm.rules
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
-	$Q cd $>/ebeast/app/ && ../node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
-$>/ebeast/app/assets/gradient-01.png: $>/ebeast/app/assets/stylesheets.css ebeast/Makefile.mk
+	$Q cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
+$>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
-	$Q tr '\n' ' ' < $>/ebeast/app/assets/stylesheets.css | \
+	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
 	     sed -nr 's/.*\bgradient-01\s*\{[^}]*-im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q convert $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
-define ebeast/app/cp.EXT
-$>/ebeast/app/%.$1:	  ebeast/%.$1	| $>/ebeast/app/vc/
+define app/cp.EXT
+$>/app/%.$1:	  ebeast/%.$1	| $>/app/vc/
 	$$(QECHO) COPY $$@
-	$Q cp -P $$< $$@
+	$Q $(CP) -P $$< $$@
 endef
-$(eval $(call ebeast/app/cp.EXT ,scss))		# $>/ebeast/app/%.scss: ebeast/%.scss
-$(eval $(call ebeast/app/cp.EXT ,html))		# $>/ebeast/app/%.html: ebeast/%.html
-$(eval $(call ebeast/app/cp.EXT ,vue))		# $>/ebeast/app/%.vue: ebeast/%.vue
-$(eval $(call ebeast/app/cp.EXT ,js))		# $>/ebeast/app/%.js: ebeast/%.js
+$(eval $(call app/cp.EXT ,scss))	# $>/app/%.scss: ebeast/%.scss
+$(eval $(call app/cp.EXT ,html))	# $>/app/%.html: ebeast/%.html
+$(eval $(call app/cp.EXT ,vue))		# $>/app/%.vue: ebeast/%.vue
+$(eval $(call app/cp.EXT ,js))		# $>/app/%.js: ebeast/%.js
 
 # == assets/components.js ==
-$>/ebeast/app/assets/components.js: $(ebeast/app/vc/files.js) $(ebeast/app/vc/files.vue)	| $>/ebeast/lint.rules
+$>/app/assets/components.js: $(app/vc/files.js) $(app/vc/files.vue)	| $>/ebeast/lint.rules
 	$(QGEN)
-	@: # all files required by vc/bundle.js are present, generate assets/components.js
-	$Q cd $>/ebeast/app/ \
-	  && ../node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
+	@: # development node_modules are required to generate assets/components.js from vc/*
+	$Q cd $>/app/vc/ \
+	  && rm -f node_modules \
+	  && ln -s ../../ebeast/node_modules \
+	  && ./node_modules/.bin/browserify --node --debug -t vueify -e ./bundle.js -o ../assets/components.js \
+	  && rm -f node_modules
 	@: # Note, since vc/*.js and vc/*.vue are bundled, they do not need to be installed
 
 # == ebeast-run ==
 # export ELECTRON_ENABLE_LOGGING=1
 ebeast-run: $>/ebeast/app.rules
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
-	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so" \
 	$>/electron/ebeast
+#	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
 
 # == ebeast/vue-docs.html ==
 $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
@@ -156,5 +156,5 @@ $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
 # == ebeast-clean ==
 ebeast-clean: FORCE
 	rm -f $>/ebeast/npm.rules $>/ebeast/* 2>/dev/null ; :
-	rm -f -r $>/ebeast/bundlecache/ $>/ebeast/app/ $(ebeast/cleandirs)
+	rm -f -r $>/app/ $(ebeast/cleandirs)
 
