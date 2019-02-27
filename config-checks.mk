@@ -9,7 +9,8 @@ GLIB_MKENUMS		?= glib-mkenums
 GLIB_GENMARSHAL 	?= glib-genmarshal
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 PANDOC			?= pandoc
-.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC
+CP			?= cp --reflink=auto
+.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC CP
 INSTALL			:= /usr/bin/install -c
 
 # == conftest_header_symbol ==
