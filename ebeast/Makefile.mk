@@ -1,6 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/ebeast/*.d)
-CLEANDIRS         += $(wildcard $>/ebeast/)
+ebeast/cleandirs ::= $(wildcard $>/ebeast/ $>/electron/ $>/app/)
+CLEANDIRS         += $(ebeast/cleandirs)
 ALL_TARGETS       += ebeast-all
 CHECK_TARGETS     += ebeast-check
 INSTALL_TARGETS   += ebeast-install
@@ -34,7 +35,8 @@ ebeast/app/tree ::= $(strip 			\
 	$(ebeast/app/vc/files.js)		\
 	$(ebeast/app/vc/files.vue)		\
 	$(ebeast/app/vc/files.scss)		\
-	\
+)
+ebeast/app/generated ::= $(strip 		\
 	$>/ebeast/app/app.scss			\
 	$>/ebeast/app/assets/gradient-01.png	\
 	$>/ebeast/app/assets/stylesheets.css	\
@@ -47,12 +49,19 @@ include ebeast/v8bse/Makefile.mk
 # == npm ==
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/app/
 	$(QECHO) MAKE $@
+	$Q rm -f -r $>/ebeast/node_modules/ $>/ebeast/app/node_modules/
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
-		$< > $>/ebeast/package.json
-	$Q cd $>/ebeast/ && npm install $(if $(PARALLEL_MAKE), --progress=false)
-	$Q rm -f $>/ebeast/app/node_modules && ln -s ../node_modules $>/ebeast/app/
+		$< > $>/ebeast/app/package.json
+	$Q cd $>/ebeast/app/ \
+	  && npm install --production $(NPM_PROGRESS) \
+	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
+	$Q cp --reflink -a $>/ebeast/app/node_modules $>/ebeast/app/node_modules.prod \
+	  && mv $>/ebeast/app/package.json $>/ebeast/app/node_modules $>/ebeast/ \
+	  && rm -f $>/ebeast/app/package-lock.json
+	$Q cd $>/ebeast/ \
+	  && npm install $(NPM_PROGRESS)
 	$Q echo >$@
 
 # == linting ==
@@ -73,17 +82,24 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(ebeast/app/tree) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(ebeast/app/tree) $(ebeast/app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
-	$Q rm -rf $>/ebeast/bundlecache/				# avoid installing stale app/ files
-	$Q cp -P $>/ebeast/package.json $>/ebeast/app/
-	$Q cp -L $>/ebeast/v8bse/v8bse.node $>/ebeast/app/assets/
+	$Q rm -f -r $>/app \
+	  && cp -R -L --reflink $>/ebeast/app/ $>/app \
+	  && cp --reflink $>/ebeast/package.json $>/app \
+	  && mv $>/app/node_modules.prod/ $>/app/node_modules/
+	$Q cp -L --reflink $>/ebeast/v8bse/v8bse.node $>/app/assets/
+	$Q rm -f -r $>/electron/ \
+	  && cp -a --reflink $>/ebeast/node_modules/electron/dist/ $>/electron/ \
+	  && rm -fr $>/electron/resources/default_app.asar \
+	  && mv $>/electron/electron $>/electron/ebeast
+	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
 
 # == $>/ebeast/app/% ==
 $>/ebeast/app/assets/stylesheets.css: $>/ebeast/app/app.scss $(ebeast/app/vc/files.scss)	| $>/ebeast/npm.rules
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
-	$Q cd $>/ebeast/app/ && ./node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
+	$Q cd $>/ebeast/app/ && ../node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 $>/ebeast/app/assets/gradient-01.png: $>/ebeast/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
@@ -107,8 +123,15 @@ $>/ebeast/app/assets/components.js: $(ebeast/app/vc/files.js) $(ebeast/app/vc/fi
 	$(QGEN)
 	@: # all files required by vc/bundle.js are present, generate assets/components.js
 	$Q cd $>/ebeast/app/ \
-	  && node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
+	  && ../node_modules/.bin/browserify --node --debug -t vueify -e vc/bundle.js -o assets/components.js
 	@: # Note, since vc/*.js and vc/*.vue are bundled, they do not need to be installed
+
+# == ebeast-run ==
+# export ELECTRON_ENABLE_LOGGING=1
+ebeast-run: $>/ebeast/app.rules
+	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
+	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so" \
+	$>/electron/ebeast
 
 # == ebeast/vue-docs.html ==
 $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
@@ -124,13 +147,6 @@ $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
 	$Q $(PANDOC) --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $@.tmp
 	$Q rm $@.tmp
 
-# == ebeast-run ==
-# export ELECTRON_ENABLE_LOGGING=1
-ebeast-run: $>/ebeast/app.rules
-	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
-	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so" \
-	$>/ebeast/node_modules/electron/dist/electron $>/ebeast/app/
-
 # NOTE1, prefer LD_PRELOAD over LD_LIBRARY_PATH, to pick up $(builddir)/libbse *before* /usr/lib/libbse
 # NOTE2, add --js-flags="--expose-gc" to the command line to enable global.gc();
 # If libdbusmenu-glib.so is missing, electron 1.4.15 displays a Gtk+2 menu bar, ignoring
@@ -140,5 +156,5 @@ ebeast-run: $>/ebeast/app.rules
 # == ebeast-clean ==
 ebeast-clean: FORCE
 	rm -f $>/ebeast/npm.rules $>/ebeast/* 2>/dev/null ; :
-	rm -rf $>/ebeast/bundlecache/ $>/ebeast/app/
+	rm -f -r $>/ebeast/bundlecache/ $>/ebeast/app/ $(ebeast/cleandirs)
 
