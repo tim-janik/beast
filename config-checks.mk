@@ -11,7 +11,11 @@ GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
 PANDOC			?= pandoc
 CP			?= cp --reflink=auto
 .config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC CP
-INSTALL			:= /usr/bin/install -c
+
+INSTALL 		:= /usr/bin/install -c
+MSGFMT			:= /usr/bin/msgfmt
+MSGMERGE		:= /usr/bin/msgmerge
+XGETTEXT		:= /usr/bin/xgettext
 
 # == conftest_header_symbol ==
 conftest_header_symbol =  { { : \
