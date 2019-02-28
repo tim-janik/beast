@@ -67,7 +67,7 @@ ifeq ($(uname_S),x86_64)
 endif
 pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CFLAGS)
 pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
-LDFLAGS		::= $(strip $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
+pkgldflags	::= $(strip $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
 
 # == implicit rules ==
 compiledefs     = $(DEFS) $(EXTRA_DEFS) $($<.DEFS) $($@.DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $($<.INCLUDES) $($@.INCLUDES)
@@ -90,7 +90,7 @@ define LINKER
 $1: $2	$3
 	$$(QECHO) LD $$@
 	$$(call LINKER.pre-hook,$@)
-	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(LDFLAGS) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
+	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
 	$$(call LINKER.post-hook,$@)
 endef
 
