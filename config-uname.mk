@@ -164,3 +164,6 @@ endef
 # $(call INSTALL_RULE, rulename, directory, files)
 INSTALL_DATA_RULE = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL) -m 644))
 INSTALL_BIN_RULE  = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
+
+# $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
+INSTALL_SYMLINK = rm -f $2 && mkdir -p "$$(dirname $2)" && ln -s $1 $2
