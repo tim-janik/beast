@@ -56,7 +56,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsemidicontroller.hh	\
 	bse/bsemididecoder.hh		\
 	bse/bsemididevice-null.hh	\
-	bse/bsemididevice-oss.hh	\
 	bse/bsemididevice.hh		\
 	bse/bsemidievent.hh		\
 	bse/bsemidifile.hh		\
@@ -70,7 +69,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseparam.hh			\
 	bse/bsepart.hh			\
 	bse/bsepcmdevice-null.hh	\
-	bse/bsepcmdevice-oss.hh		\
 	bse/bsepcmdevice.hh		\
 	bse/bsepcminput.hh		\
 	bse/bsepcmoutput.hh		\
@@ -219,7 +217,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsemidicontroller.cc	\
 	bse/bsemididecoder.cc		\
 	bse/bsemididevice-null.cc	\
-	bse/bsemididevice-oss.cc	\
 	bse/bsemididevice.cc		\
 	bse/bsemidievent.cc		\
 	bse/bsemidifile.cc		\
@@ -233,7 +230,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bseparam.cc			\
 	bse/bsepart.cc			\
 	bse/bsepcmdevice-null.cc	\
-	bse/bsepcmdevice-oss.cc		\
 	bse/bsepcmdevice.cc		\
 	bse/bsepcminput.cc		\
 	bse/bsepcmoutput.cc		\
@@ -331,6 +327,7 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/gslfft.cc		\
 	$>/bse/zres.cc			\
 )
+# BROKEN ::= bse/bsemididevice-oss.hh bse/bsemididevice-oss.cc  bse/bsepcmdevice-oss.hh bse/bsepcmdevice-oss.cc
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)

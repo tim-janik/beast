@@ -5,14 +5,20 @@
 #include "gslcommon.hh" // FIXME: remove
 
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
-BSE_DUMMY_TYPE (BsePcmDeviceOSS);
-#else   /* BSE_PCM_DEVICE_CONF_OSS */
-
-#if HAVE_SYS_SOUNDCARD_H
-#include <sys/soundcard.h>
-#elif HAVE_SOUNDCARD_H
-#include <soundcard.h>
+#define BSE_PCM_DEVICE_CONF_OSS "/dev/dsp"
 #endif
+
+#if     __has_include(<sys/soundcard.h>)
+#include <sys/soundcard.h>
+#elif   __has_include(<soundcard.h>)
+#include <soundcard.h>
+#else
+#undef  BSE_PCM_DEVICE_CONF_OSS
+BSE_DUMMY_TYPE (BsePcmDeviceOSS);
+#endif
+
+#ifdef	BSE_PCM_DEVICE_CONF_OSS // have sys/soundcard.h or soundcard.h
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/time.h>
