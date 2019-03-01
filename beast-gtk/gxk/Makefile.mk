@@ -91,7 +91,7 @@ beast-gtk/gxk/splinetest.sources  ::= beast-gtk/gxk/splinetest.cc
 beast-gtk/gxk/splinetest.objects  ::= $(sort $(beast-gtk/gxk/splinetest.sources:%.cc=$>/%.o))
 
 # == libgxk rules ==
-$(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps)
+$(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps) $(bse/libbse.deps)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_DEFS ::= -DGXK_COMPILATION
 $(call BUILD_STATIC_LIB, \
@@ -110,6 +110,7 @@ $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/rpath..bse))
 
 # == splinetest rules ==
+$(beast-gtk/gxk/splinetest.objects):	$(beast-gtk/gxk/libgxk.a)
 $(beast-gtk/gxk/splinetest.objects):	EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/splinetest), \
