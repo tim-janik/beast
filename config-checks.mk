@@ -28,20 +28,20 @@ conftest_header_symbol =  { { : \
   && echo '\#ifndef $2' \
   && echo '($2);' \
   && echo '\#endif' \
-  && echo 'return 0; }' ; } > "conftest_header_symbol-$1.c" \
+  && echo 'return 0; }' ; } > "$>/conftest_header_symbol-$1.c" \
   && { V=$$(echo '$2' | sed -e 's/[^a-z0-9A-Z]/_/g' -e 's/\(.*\)/\U\1/') \
-       && $(CXX) -fpermissive "conftest_header_symbol-$1.c" -o "conftest_header_symbol-$1" 2>/dev/null \
+       && $(CXX) -fpermissive "$>/conftest_header_symbol-$1.c" -o "$>/conftest_header_symbol-$1" 2>/dev/null \
        && echo "\#define HAVE_$$V			1 // $1" \
        || echo "\#undef  HAVE_$$V" ; } \
-  && rm -f "conftest_header_symbol-$1.c" "conftest_header_symbol-$1" ; }
+  && rm -f "$>/conftest_header_symbol-$1.c" "$>/conftest_header_symbol-$1" ; }
 
 # == conftest_lib & conftest_require_lib ==
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST
 conftest_lib = { { echo '\#include <$(strip $1)>' \
-                && echo 'int main() { return 0 == (int) (long) (void*) &($2); }' ; } > "conftest_lib-$$$$.cc" \
-		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "conftest_lib-$$$$.cc" -o "conftest_lib-$$$$" $(LDFLAGS) $3 2>&1) \
+                && echo 'int main() { return 0 == (int) (long) (void*) &($2); }' ; } > "$>/conftest_lib-$$$$.cc" \
+		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "$>/conftest_lib-$$$$.cc" -o "$>/conftest_lib-$$$$" $(LDFLAGS) $3 2>&1) \
 		     && CONFTEST=true || CONFTEST=false ; } \
-		&& rm -f "conftest_lib-$$$$.cc" "conftest_lib-$$$$" ; }
+		&& rm -f "$>/conftest_lib-$$$$.cc" "$>/conftest_lib-$$$$" ; }
 conftest_lib.makefile ::= $(lastword $(MAKEFILE_LIST))
 # $(call conftest_require_lib, header, symbol, lib) -> errors if $CONFTEST != true
 conftest_require_lib = { $(call conftest_lib,$1,$2,$3) && $$CONFTEST \
