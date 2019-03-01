@@ -4,6 +4,8 @@ CLEANDIRS += $(wildcard $>/doc/)
 
 # == docs/ files ==
 docs/doc.files ::= $(strip		\
+	$>/doc/COPYING			\
+	$>/doc/HACKING			\
 	$>/doc/README			\
 	$>/doc/copyright		\
 )
@@ -15,11 +17,14 @@ docs/md_flags	  ::= $(strip	--html-q-tags -p -s --section-divs --email-obfuscati
 # --css /pandoc-html.css
 
 # == doc build rules ==
-$>/doc/copyright: docs/copyright		| $>/doc/
+$>/doc/%: %								| $>/doc/
 	$(QECHO) COPY $@
 	$Q cp -L $< $@
-$>/doc/%: %.md
-	$(QGEN)
+$>/doc/%: docs/%							| $>/doc/
+	$(QECHO) COPY $@
+	$Q cp -L $< $@
+$>/doc/%: %.md								| $>/doc/
+	$(QECHO) MD2TXT $@
 	$Q $(PANDOC) $(docs/md_flags) -t plain $< -o $@.tmp
 	$Q mv $@.tmp $@
 
