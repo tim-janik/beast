@@ -17,6 +17,14 @@ ALL_TARGETS	+= $(po/MOTARGETS)
 po/KEYWORDS	 = _ N_ U_ Q_ _:1,2,3t
 po/TEXTFLAGS	 = _:1:pass-c-format
 po/SED_FIXHEAD   = sed -E '1,30s/^"POT-Creation-Date: 2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9:+-]+\\n"/""/'
+# intltool-merge halper with cache generation
+INTLTOOL_MERGE       ::= po/intltool-merge
+INTLTOOL_MERGE_CACHE ::= $>/po/intltool-merge.cache
+
+# == intltool-merge.cache ==
+$(INTLTOOL_MERGE_CACHE): $(wildcard po/*.po)				| $>/po/
+	$(QGEN)
+	$Q LC_ALL=C $(INTLTOOL_MERGE) -u -d -q -c $@ po/ /dev/null /dev/null
 
 # == message catalogs ==
 # Compile message catalog to binary format, using installation path.
