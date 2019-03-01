@@ -152,7 +152,7 @@ ebeast-run: $>/ebeast/app.rules
 #	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
 
 # == ebeast/vue-docs.html ==
-$>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk
+$>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk	| $>/ebeast/
 	$(QGEN)
 	$Q echo -e "# Vue Components \n\n"		> $@.tmp
 	@: # extract <docs/> blocks from vue files and feed them into pandoc
