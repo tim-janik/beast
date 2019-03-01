@@ -73,31 +73,31 @@ uninstall: data/uninstall.dbupdates
 
 # == i18n merge rules ==
 # .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
-$>/data/%.desktop: data/%.desktop.in		$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)
+$>/data/%.desktop: data/%.desktop.in		$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)	| $>/data/
 	$(QGEN)
 	$Q LC_ALL=C $(INTLTOOL_MERGE) -u -d -q -c $(INTLTOOL_MERGE_CACHE) po/ $< $@
 # .xml mime info file, from shared-mime-info-spec-0.12.html (2003-10-09)
 # simple overview: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
 # gvfs-info testfile.bse                # yields: standard::content-type: audio/x-bse
 # gvfs-mime --query audio/x-bse	        # yields: Registered applications: beast.desktop
-$>/data/%.xml: data/%.xml.in			$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)
+$>/data/%.xml: data/%.xml.in			$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)	| $>/data/
 	$(QGEN)
 	$Q LC_ALL=C $(INTLTOOL_MERGE) -u -x -q -c $(INTLTOOL_MERGE_CACHE) po/ $< $@
 # ANCIENT, .keys files, from shared-mime-info-spec-0.11.html (2003-04-17)
-$>/data/%.keys: data/%.keys.in			$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)
+$>/data/%.keys: data/%.keys.in			$(INTLTOOL_MERGE) $(INTLTOOL_MERGE_CACHE)	| $>/data/
 	$(QGEN)
 	$Q LC_ALL=C $(INTLTOOL_MERGE) -u -k -q -c $(INTLTOOL_MERGE_CACHE) po/ $< $@
 # ANCIENT: .mime, from shared-mime-info-spec-0.11.html (2003-04-17)
-$>/data/%.mime: data/%.mime
+$>/data/%.mime: data/%.mime									| $>/data/
 	$(QGEN)
 	$Q cp -L $< $@
 # ANCIENT: install .applications files, from "GNOME 2.4 Desktop System Administration Guide"
-$>/data/%.applications: data/%.applications
+$>/data/%.applications: data/%.applications							| $>/data/
 	$(QGEN)
 	$Q cp -L $< $@
 
 # == bse.pc rule ==
-$>/data/bse.pc: $(config-stamps) data/Makefile.mk			| $>/data/
+$>/data/bse.pc: $(config-stamps) data/Makefile.mk						| $>/data/
 	$(QGEN)
 	$Q echo '# bse.pc'							> $@.tmp
 	$Q echo 'prefix=$(prefix)'						>>$@.tmp
