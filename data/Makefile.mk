@@ -31,6 +31,29 @@ $(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(data/mimeinfo.dir
 $(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(data/mimepkgs.dir),     $(data/mimepkgs.files))
 $(call INSTALL_DATA_RULE, data/applications.files, $(DESTDIR)$(data/applications.dir), $(data/applications.files))
 
+# == install symlinks ==
+# Create links from $(prefix) paths according to the FHS, into $(pkglibdir), see also:
+# * https://www.freedesktop.org/wiki/Howto_desktop_files/
+# * https://www.freedesktop.org/Standards/shared-mime-info-spec
+data/install-prefix-symlinks: $(images/img.files) FORCE
+	$(QECHO) INSTALL $@
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/beast.png',        '$(DESTDIR)$(datadir)/pixmaps/beast.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/bse-mime.png',     '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.desktop',      '$(DESTDIR)$(datadir)/applications/beast.desktop')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.applications', '$(DESTDIR)$(datadir)/application-registry/beast.applications')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.xml',          '$(DESTDIR)$(datadir)/mime/packages/beast.xml')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/bin/beast',               '$(DESTDIR)$(bindir)/beast')
+install: data/install-prefix-symlinks
+data/uninstall-prefix-symlinks: FORCE
+	$(QECHO) REMOVE $@
+	$Q rm -f '$(DESTDIR)$(datadir)/pixmaps/beast.png'
+	$Q rm -f '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png'
+	$Q rm -f '$(DESTDIR)$(datadir)/applications/beast.desktop'
+	$Q rm -f '$(DESTDIR)$(datadir)/application-registry/beast.applications'
+	$Q rm -f '$(DESTDIR)$(datadir)/mime/packages/beast.xml'
+	$Q rm -f '$(DESTDIR)$(bindir)/beast'
+uninstall: data/uninstall-prefix-symlinks
+
 # == update Desktop/Mime caches after installation ==
 data/install.dbupdates: install--data/desktop.files install--data/mimeinfo.files install--data/mimepkgs.files
 	$(QECHO) RUN $@
