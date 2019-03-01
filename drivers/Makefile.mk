@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/drivers/*.d)
 CLEANDIRS += $(wildcard $>/drivers/)
-drivers/rpath..bse ::= ../bse
+drivers/rpath..libbse ::= ../lib
 
 # == alsapcm defs ==
 drivers/alsapcm.so		::= $>/drivers/alsapcm.so
@@ -24,9 +24,9 @@ $(drivers/alsapcm.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(drivers/alsapcm.so), \
 	$(drivers/alsapcm.objects), \
-	$(bse/libbse.so) | $>/drivers/, \
+	$(lib/libbse.so) | $>/drivers/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), \
-	$(drivers/rpath..bse))
+	$(drivers/rpath..libbse))
 
 # == alsamidi rules ==
 $(drivers/alsamidi.objects): $(bse/libbse.deps) | $>/drivers/
@@ -34,6 +34,6 @@ $(drivers/alsamidi.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(drivers/alsamidi.so), \
 	$(drivers/alsamidi.objects), \
-	$(bse/libbse.so) | $>/drivers/, \
+	$(lib/libbse.so) | $>/drivers/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS) $(ALSA_LIBS), \
-	$(drivers/rpath..bse))
+	$(drivers/rpath..libbse))

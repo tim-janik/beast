@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/tests/*.d)
 CLEANDIRS += $(wildcard $>/tests/)
-tests/rpath..bse ::= ../bse
+tests/rpath..libbse ::= ../lib
 
 # == tests/ files ==
 tests/suite1.sources		::= $(strip	\
@@ -32,6 +32,6 @@ $(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_TEST, \
 	$(tests/suite1), \
 	$(tests/suite1.objects), \
-	$(bse/libbse.so), \
+	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
-	$(tests/rpath..bse))
+	$(tests/rpath..libbse))

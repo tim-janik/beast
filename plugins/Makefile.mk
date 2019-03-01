@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/plugins/*.d)
 CLEANDIRS += $(wildcard $>/plugins/)
-plugins/rpath..bse ::= ../bse
+plugins/rpath..libbse ::= ../lib
 
 # == plugin files ==
 plugins/cxxplugins.sources = $(strip		\
@@ -64,9 +64,9 @@ $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(plugins/cxxplugins.so), \
 	$(plugins/cxxplugins.objects), \
-	$(bse/libbse.so) | $>/plugins/, \
+	$(lib/libbse.so) | $>/plugins/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
-	$(plugins/rpath..bse))
+	$(plugins/rpath..libbse))
 
 # == bseplugins.so rules ==
 $(plugins/bseplugins.objects): $(bse/libbse.deps) | $>/plugins/
@@ -74,9 +74,9 @@ $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLA
 $(call BUILD_SHARED_LIB, \
 	$(plugins/bseplugins.so), \
 	$(plugins/bseplugins.objects), \
-	$(bse/libbse.so) | $>/plugins/, \
+	$(lib/libbse.so) | $>/plugins/, \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
-	$(plugins/rpath..bse))
+	$(plugins/rpath..libbse))
 
 # == .genidl.hh ==
 $>/plugins/%.genidl.hh: plugins/%.idl		$(sfi/sfidl) | $>/plugins/

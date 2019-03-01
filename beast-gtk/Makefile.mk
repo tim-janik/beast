@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/beast-gtk/*.d)
 CLEANDIRS += $(wildcard $>/beast-gtk/)
-beast-gtk/rpath..bse ::= ../bse
+beast-gtk/rpath..libbse ::= ../lib
 
 # == beast-gtk/ files ==
 beast-gtk/beast.sources ::= $(strip		\
@@ -161,9 +161,9 @@ $(beast-gtk/beast.objects): $(beast-gtk/gxk/libgxk.deps)
 $(call BUILD_PROGRAM, \
 	$(beast-gtk/beast), \
 	$(beast-gtk/beast.objects), \
-	$(beast-gtk/gxk/libgxk.a) $(bse/libbse.so), \
+	$(beast-gtk/gxk/libgxk.a) $(lib/libbse.so), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
-	$(beast-gtk/rpath..bse))
+	$(beast-gtk/rpath..libbse))
 $(call INSTALL_BIN_RULE, bin/beast, $(DESTDIR)$(pkglibdir)/bin, $(beast-gtk/beast))
 
 # == bstmarshal ==

@@ -1,6 +1,6 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/bse/*.d)
-CLEANDIRS     += $(wildcard $>/bse/)
+CLEANDIRS     += $(wildcard $>/bse/ $>/lib/)
 
 # == bse/ files ==
 bse/libbse.headers ::= $(strip		\
@@ -333,7 +333,7 @@ bse/libbse.cc.deps  ::= $(strip		\
 )
 
 # == libbse.so defs ==
-bse/libbse.so			::= $>/bse/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
+lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps)
@@ -367,14 +367,14 @@ include bse/icons/Makefile.mk
 $(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.csources)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
-$(bse/libbse.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
+$(lib/libbse.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
 $(call BUILD_SHARED_LIB, \
-	$(bse/libbse.so), \
+	$(lib/libbse.so), \
 	$(bse/libbse.objects), \
-	bse/ldscript.map | $>/bse/, \
+	bse/ldscript.map | $>/lib/, \
 	$(BSEDEPS_LIBS))
 $(call INSTALL_DATA_RULE, bse/headers, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
-$(call INSTALL_BIN_RULE, bse/libbse, $(DESTDIR)$(pkglibdir)/bse, $(bse/libbse.so))
+$(call INSTALL_BIN_RULE, lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
 
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
@@ -382,8 +382,8 @@ $(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bsetool), \
 	$(bse/bsetool.objects), \
-	$(bse/libbse.so) | $>/bse/, \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
+	$(lib/libbse.so) | $>/bse/, \
+	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
@@ -509,8 +509,8 @@ $(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(bse/bseprocidl), \
 	$(bse/bseprocidl.objects), \
-	$(bse/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../bse)
+	$(lib/libbse.so), \
+	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
 
 # == bsehack.idl ==
 # currently generated from BSE introspection data, needed to build the old IDL bindings for beast-gtk
@@ -528,9 +528,9 @@ $(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_TEST, \
 	$(bse/integrity), \
 	$(bse/integrity.objects), \
-	$(bse/libbse.so), \
+	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR), \
-	../bse)
+	../lib)
 
 # == bse-check-assertions ==
 $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
