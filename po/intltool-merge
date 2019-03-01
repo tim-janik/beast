@@ -1,6 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # -*- Mode: perl; indent-tabs-mode: nil; c-basic-offset: 4  -*-
-
+use warnings;
 #
 #  The Intltool Message Merger
 #
