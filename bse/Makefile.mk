@@ -367,10 +367,11 @@ include bse/icons/Makefile.mk
 $(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.csources)
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
+$(bse/libbse.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
 $(call BUILD_SHARED_LIB, \
 	$(bse/libbse.so), \
 	$(bse/libbse.objects), \
-	| $>/bse/, \
+	bse/ldscript.map | $>/bse/, \
 	$(BSEDEPS_LIBS))
 $(call INSTALL_DATA_RULE, bse/headers, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
 $(call INSTALL_BIN_RULE, bse/libbse, $(DESTDIR)$(pkglibdir)/bse, $(bse/libbse.so))

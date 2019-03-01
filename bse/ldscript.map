@@ -1,14 +1,7 @@
 {
   global:
     extern "C++" {
-      Bse::*;    vtable*Bse::*;    typeinfo*Bse::*;	virtual*Bse::*;	VTT*Bse::*;
-      Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;	virtual*Sfi::*; VTT*Sfi::*;
-      Aida::*;   vtable*Aida::*;   typeinfo*Aida::*;	virtual*Aida::*; VTT*Aida::*;
-      Aida::enum_info*;
-      bse_*;
-      gsl_*;
-      sfi_*;
-      g_*;
+      [^_]*;
     };
   local: *;
 };
