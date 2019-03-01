@@ -13,6 +13,7 @@ CP			?= cp --reflink=auto
 .config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC CP
 
 INSTALL 		:= /usr/bin/install -c
+INSTALL_DATA 		:= $(INSTALL) -m 644
 MSGFMT			:= /usr/bin/msgfmt
 MSGMERGE		:= /usr/bin/msgmerge
 XGETTEXT		:= /usr/bin/xgettext

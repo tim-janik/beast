@@ -162,7 +162,7 @@ uninstall--$(strip $1): # delete target T and possible link aliases L
 uninstall: uninstall--$(strip $1)
 endef
 # $(call INSTALL_RULE, rulename, directory, files)
-INSTALL_DATA_RULE = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL) -m 644))
+INSTALL_DATA_RULE = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL_DATA)))
 INSTALL_BIN_RULE  = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
 
 # $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file

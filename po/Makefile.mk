@@ -38,7 +38,7 @@ po/install: $(po/MOTARGETS) FORCE
 	$(QECHO) INSTALL '$(DESTDIR)$(pkglibdir)/locale/...'
 	$Q cd . \
 	  $(foreach P, $(po/MOPATHS), \
-	    && $(INSTALL) -m 644 '$>/$P' -D '$(DESTDIR)$(pkglibdir)/$P')
+	    && $(INSTALL_DATA) '$>/$P' -D '$(DESTDIR)$(pkglibdir)/$P')
 install: po/install
 po/uninstall: FORCE
 	$(QECHO) REMOVE '$(DESTDIR)$(pkglibdir)/locale/...'
