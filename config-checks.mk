@@ -16,6 +16,8 @@ INSTALL 		:= /usr/bin/install -c
 MSGFMT			:= /usr/bin/msgfmt
 MSGMERGE		:= /usr/bin/msgmerge
 XGETTEXT		:= /usr/bin/xgettext
+UPDATE_DESKTOP_DATABASE	:= /usr/bin/update-desktop-database
+UPDATE_MIME_DATABASE	:= /usr/bin/update-mime-database
 
 # == conftest_header_symbol ==
 conftest_header_symbol =  { { : \
