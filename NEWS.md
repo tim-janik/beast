@@ -1,23 +1,22 @@
 ## Beast 0.14.0-alpha:
 
-[.caution]
-_Note: This is the master branch of Beast, which contains alpha version software.
-Beware of file format instabilities and report any bugs you find in it._
+*Note: This is the master branch of Beast, which contains alpha version software.
+Beware of file format instabilities and report any bugs you find in it.*
 
 
 ## Beast 0.13.0:
 
-.System Requirements
+#### System Requirements
 * Linux - Ubuntu 18.04 or Fedora-27 are needed to run the Beast AppImage.
 
-.New Features
+#### New Features
 * We now build AppImage binaries for beast and ebeast.
 * Added relocation support, resources are found relative to libbse.so now.
 
-.Upgrades
+#### Upgrades
 * Updated the electron-packager to 12.2.0. #87
 
-.Improvements
+#### Improvements
 * Support translation of the new electron based UI.
 * Ported song propeties to new IDL system. #64 #65 #68 #69 #81
 * Completed the clang++ porting so everything now builds with clang.
@@ -25,7 +24,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * We now test Fedora builds automatically.
 * Updated German translation.
 
-.Bug Fixes
+#### Bug Fixes
 * Fixed crash during undo. #77
 * Fixed IDL string parsing.
 * Fixed the playback state indicator.
@@ -38,24 +37,24 @@ Beware of file format instabilities and report any bugs you find in it._
 
 ## Beast 0.12.0:					(2018-08-20)
 
-.System Requirements
+#### System Requirements
 * Linux - Ubuntu 16.10 is needed to install the `.deb` package
 
-.New Features
-* New user interface: *EBEAST*, an electron based DAW GUI
+#### New Features
+* New user interface: **EBEAST**, an electron based DAW GUI
 * Added ANSI colors to logging output for non-dumb terminals.
 * Added shared memory allocator with external bookkeeping (without
   boundary tags). Communicate dB meter levels and other values via
   shared memory between DSP engine and UI code.
 
-.User Interface EBEAST
+#### User Interface EBEAST
 * Development of a new user interface based on Electronjs has
   started and the first (pre-alpha) bits are shipped and installed
   with this release under $prefix/beast-0-12/bin/ebeast.
 * Added About, Tracks with dB meters, Parts with thumbnails.
 * Added Play Controls, Piano Roll, color picker palette.
 
-.Improvements
+#### Improvements
 * Merged and enhanced the new Beast IDL layer AIDA.
 * Introduced asynchronous Events to replace signals.
 * Removed all C procedures, migrated method calls to Aida IDL.
@@ -69,23 +68,23 @@ Beware of file format instabilities and report any bugs you find in it._
 * Display summary message at the end of configure. #33
 * Adjusted versioning and provide wip/latest-stable for rolling updates.
 
-.Size Reductions
+#### Size Reductions
 * Removed CPython runtime dependency.
 * Removed large chunks of old and outdated code.
 * Removed Rapicorn as build and runtime dependency.
 * Reduced libbse.so size down to 14% by splitting debug syms.
 
-.Upgrades
+#### Upgrades
 * Upgrade to Electron-1.8, Vue-2.5, Chrome-59.0, V8-5.9, Node-8.2.
 * Adapted code to depend on and make use of C++14.
 * Fixed code to compile cleanly with g++-7.2.
 
-.Regression Fixes
-* Fixed 'auto_activate' networks not working. #38
+#### Regression Fixes
+* Fixed `auto_activate` networks not working. #38
 * Unhardcode launcher icon file type. #57
 * Fixed activity led staying dark. #62
 
-.Bug Fixes
+#### Bug Fixes
 * Fixed memory corruption crash. #25 [stw]
 * Fixed fluid synth test on Bionic. #42 [stw]
 * Fixed crash when adding mixer bus during playback. [stw]
@@ -102,13 +101,13 @@ Beware of file format instabilities and report any bugs you find in it._
 * Started alternate HTML/JS GUI based on electron.
 * Improved IDL representation of old procedure types.
 * Removed guile dependency.
-* Removed 'extern "C"' left overs.
+* Removed `extern "C"` left overs.
 * Fixed NULL string crashes. [stw]
 * Fixed signedness bug in FFT windowing. [stw]
 * Fixed namespace issues in public BSE headers. [stw]
 * Fixed small translation issues (GB#626760). [stw]
 * Fixed Public Domain licensing of some demos. [stw]
-* Fixed uses of 'assert' in library code.
+* Fixed uses of `assert` in library code.
 * Improved generated documentation.
 * Sources were ported to Kubuntu-16-04. [stw]
 * Manual pages are updated and are converted to Markdown.
@@ -120,11 +119,12 @@ Beware of file format instabilities and report any bugs you find in it._
 * The Beast project now provides Debian binary packages at:
   https://testbit.eu/pub/dists/beast/debs
 
+
 ## Beast 0.10.0:					(2016-04-07)
 
 * Memory leak and stability fixes.
 * Removal of deprecated Glib/Gtk+ functions.
-* A new binary 'bsetool' subsumes several old utilities.
+* A new binary `bsetool` subsumes several old utilities.
 * Removal of unused utilities and several places with dead code.
 * Several classes are now (fully) ported to new AIDA IDL: SNet Track
   TrackPart Bus SampleFileInfo Project MusicalTuning NoteDescription Icon
@@ -139,12 +139,13 @@ Beware of file format instabilities and report any bugs you find in it._
 * Fix build issues with external libbse plugins.
 * Fix LADSPAv1 plugin registration failing to detect some plugins.
 * Provide C++11 API for undo/redo functions.
-* Add pybse API wrapper that allows Python to 'import Bse'.
+* Add pybse API wrapper that allows Python to `import Bse`.
 * Start a Python interpreter from Beast.
-* Split up Beast main() methods to run event loop from Python.
+* Split up Beast `main()` methods to run event loop from Python.
 * Port libbse to use C++11 scoped enums.
 
-## Beast 0.9.2:					(2015-09-16)
+
+## Beast 0.9.2:						(2015-09-16)
 
 * Workarounds were added for broken GLib compatibility.
 * Files for the BSE runtime are now compressed and stored via rapidres(1).
@@ -155,9 +156,10 @@ Beware of file format instabilities and report any bugs you find in it._
 * A new bse tool with commands check-load and render2wav replaces SCM scripts.
 * Lots of fixes and optimizations for parallel builds were applied.
 * All files are now installed under versioned directories, e.g. /usr/share/beast-0.9/
-* Execute audio tests with 'make check' for development versions.
+* Execute audio tests with `make check` for development versions.
 
-## Beast 0.9.0:					(2014-10-28)
+
+## Beast 0.9.0:						(2014-10-28)
 
 * Fixed missing includes. [stw]
 * Updates to build with Rapicorn1410.
@@ -171,7 +173,8 @@ Beware of file format instabilities and report any bugs you find in it._
 * Updates to the manual pages.
 * Improved utilization of compiler vectorizations.
 
-## Beast 0.8.2:					(2013-07-06)
+
+## Beast 0.8.2:						(2013-07-06)
 
 * Introduced Rapicorn1307 dependency.
 * Establish Aida remote interfacing between Beast and BSE.
@@ -183,7 +186,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Beast now ships complete documentation builds in tarballs.
 
 
-## Beast 0.8.0:					(2013-03-25)
+## Beast 0.8.0:						(2013-03-25)
 
 * Added use of the Rapicorn library, require version 13.0.0.
 * Adapted IDL types to other projects.
@@ -200,7 +203,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Performance improvements of the scheme shell. [stw]
 * Allow Alt+MouseButton1 to drag synthesis modules.
 * Merged plugin libraries, improved build times.
-* Use the ALSA 'default' PCM driver by default.
+* Use the ALSA `default` PCM driver by default.
 * Adapt code to allow fftw drop ins. [stw]
 * Migrated code base to compile as C++11.
 * Lots of simplifications and cleanups.
@@ -223,7 +226,7 @@ Beware of file format instabilities and report any bugs you find in it._
 
 * Renamed the project to Better Audio System / Better Sound Engine
 * Moved project website to: http://beast.testbit.eu/
-* Various build system fixes [stw,timj]
+* Various build system fixes [stw, timj]
 * License fixups for some scripts [stw]
 * Fixed subnormal tests on AMD64 if SSE unit is in DAZ mode [stw]
 * Replaced slow resampler checks with a much faster resampling test [stw]
@@ -282,17 +285,16 @@ Beware of file format instabilities and report any bugs you find in it._
 
 * Fixed SUID security vulnerability by validating success of seteuid/setreuid,
   related security advisories, describing the vulnerability:
-    http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-2916 # artswrapper
-    http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-4447 # X.Org
+  - http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-2916 # artswrapper
+  - http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-4447 # X.Org
 * Added factor 2 SSE-optimized up/down resampler [Stefan Westerfeld]
-* Added support for varying musical tuning systems:
+* Added support for varying musical tuning systems: [Hanno Behrens, Tim Janik]
   - 12-TET, 7-TET, 5-TET,
   - Diatonic-Scale, Indian-Scale, Pythagorean-Tuning,
   - Pentatonic-5-Limit, Pentatonic-Blues, Pentatonic-Gogo,
   - Quarter-Comma-Meantone, Silbermann-Sorge,
   - Werckmeister-3, Werckmeister-4, Werckmeister-5, Werckmeister-6,
     Kirnberger-3 and Young
-  [Hanno Behrens, Tim Janik]
 * Module changes and additions:
   - Quantizer      - Simulate 1-32 Bit quantization effects
   - DavXTalStrings - Added semitone transposition function [Stefan Westerfeld]
@@ -408,7 +410,7 @@ Beware of file format instabilities and report any bugs you find in it._
 ## Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
-* Added -N and -n=<nicelevel> options to drop nice level priorities
+* Added -N and `-n=<nicelevel>` options to drop nice level priorities
 * Removed libbsw from package, glue code is inlined now
 * GCC-3.4 build fixes
 * Fixed high CPU consumption on scope updates
@@ -696,7 +698,7 @@ Beware of file format instabilities and report any bugs you find in it._
 * Added sample/wave display and preview facilities
 * Added sample loaders for .wav, .ogg, .mp3 and .gslwave files
 * Added file descriptor caching layer to lessen the impact of
-  unix' MAX_OPEN_FD limitation
+  unix' `MAX_OPEN_FD` limitation
 * Added sophisticated sample caching layer to spare file I/O
   and mp3 or Vorbis decoding
 * New threaded sound engine which can process synthesis
@@ -717,7 +719,7 @@ Beware of file format instabilities and report any bugs you find in it._
   connections per channel on some modules
 * Major speed improvements to the threading layer by using pthreads
   directly where possible
-* New 19"-rack alike GUI front-end for customized GUI presentation
+* New 19\"-rack alike GUI front-end for customized GUI presentation
   of .bse projects
 * Major GUI cleanups and improvements
 * Major documentation improvements
@@ -804,4 +806,4 @@ Beware of file format instabilities and report any bugs you find in it._
 * New BseHeart object with new PCM device syncronization/mixing model
 * Procedure types
 * Improved .bse file format
-* Bunch of exciting things that i forgot about ;)
+* Bunch of exciting things that I forgot about ;)
