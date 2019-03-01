@@ -21,20 +21,6 @@ XGETTEXT		:= /usr/bin/xgettext
 UPDATE_DESKTOP_DATABASE	:= /usr/bin/update-desktop-database
 UPDATE_MIME_DATABASE	:= /usr/bin/update-mime-database
 
-# == conftest_header_symbol ==
-conftest_header_symbol =  { { : \
-  && echo '\#include <$1>' \
-  && echo 'int main() {' \
-  && echo '\#ifndef $2' \
-  && echo '($2);' \
-  && echo '\#endif' \
-  && echo 'return 0; }' ; } > "$>/conftest_header_symbol-$1.c" \
-  && { V=$$(echo '$2' | sed -e 's/[^a-z0-9A-Z]/_/g' -e 's/\(.*\)/\U\1/') \
-       && $(CXX) -fpermissive "$>/conftest_header_symbol-$1.c" -o "$>/conftest_header_symbol-$1" 2>/dev/null \
-       && echo "\#define HAVE_$$V			1 // $1" \
-       || echo "\#undef  HAVE_$$V" ; } \
-  && rm -f "$>/conftest_header_symbol-$1.c" "$>/conftest_header_symbol-$1" ; }
-
 # == conftest_lib & conftest_require_lib ==
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST
 conftest_lib = { { echo '\#include <$(strip $1)>' \
