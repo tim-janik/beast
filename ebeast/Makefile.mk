@@ -110,7 +110,7 @@ $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
 	     sed -nr 's/.*\bgradient-01\s*\{[^}]*-im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
-	$Q convert $$(cat $@.cli) $@.tmp.png
+	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
 define app/cp.EXT
 $>/app/%.$1:	  ebeast/%.$1	| $>/app/vc/

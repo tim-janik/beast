@@ -8,9 +8,10 @@ PKG_CONFIG		?= pkg-config
 GLIB_MKENUMS		?= glib-mkenums
 GLIB_GENMARSHAL 	?= glib-genmarshal
 GDK_PIXBUF_CSOURCE	?= gdk-pixbuf-csource
+IMAGEMAGICK_CONVERT	?= convert
 PANDOC			?= pandoc
 CP			?= cp --reflink=auto
-.config.defaults	+= PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC CP
+.config.defaults	+= CP PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC IMAGEMAGICK_CONVERT
 
 INSTALL 		:= /usr/bin/install -c
 INSTALL_DATA 		:= $(INSTALL) -m 644
@@ -79,6 +80,8 @@ BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$(QECHO) CHECK    Configuration dependencies...
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
+	$Q $(IMAGEMAGICK_CONVERT) --version 2>&1 | grep -q 'Version:.*\bImageMagick\b' \
+	  || { echo "$@: failed to detect ImageMagick convert: $(IMAGEMAGICK_CONVERT)" >&2 ; false ; }
 	$(QGEN)
 	$Q echo '# make $@'					> $@.tmp
 	$Q VERSION_SHORT=$$(./version.sh -s) \
