@@ -78,6 +78,7 @@ uninstall: FORCE
 
 # == subdirs ==
 include res/Makefile.mk
+include images/Makefile.mk
 include data/Makefile.mk
 include po/Makefile.mk
 include media/Makefile.mk
