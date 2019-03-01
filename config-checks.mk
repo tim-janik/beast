@@ -82,6 +82,8 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
 	$Q $(IMAGEMAGICK_CONVERT) --version 2>&1 | grep -q 'Version:.*\bImageMagick\b' \
 	  || { echo "$@: failed to detect ImageMagick convert: $(IMAGEMAGICK_CONVERT)" >&2 ; false ; }
+	$Q $(PANDOC) --version 2>&1 | grep -q '\bpandoc\b' \
+	  || { echo "$@: failed to detect pandoc: $(PANDOC)" >&2 ; false ; }
 	$(QGEN)
 	$Q echo '# make $@'					> $@.tmp
 	$Q VERSION_SHORT=$$(./version.sh -s) \
