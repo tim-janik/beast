@@ -29,8 +29,8 @@ $(INTLTOOL_MERGE_CACHE): $(wildcard po/*.po)				| $>/po/
 # == message catalogs ==
 # Compile message catalog to binary format, using installation path.
 $>/locale/%/LC_MESSAGES/$(BSE_GETTEXT_DOMAIN).mo: po/%.po		| $>/locale/%/LC_MESSAGES/
-	$Q printf '  %-9s' '$*:' \
-	  && $(MSGFMT) --statistics -o $@.tmp $<
+	$Q STATS=$$($(MSGFMT) --statistics -o $@.tmp $< 2>&1) \
+	  && printf '  %-9s %s\n' '$*:' "$$STATS" || { echo "$$STATS" ; false ; }
 	$Q mv $@.tmp $@
 
 # == installation ==
