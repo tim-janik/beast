@@ -371,7 +371,8 @@ $(call BUILD_SHARED_LIB_XDBG, \
 	bse/ldscript.map | $>/lib/, \
 	$(BSEDEPS_LIBS))
 $(call INSTALL_DATA_RULE, bse/headers, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
-$(call INSTALL_BIN_RULE, lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
+$(call $(if $(filter release, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
+	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
 
 # == bsetool rules ==
 $(bse/bsetool.objects): $(bse/bsetool.deps)
