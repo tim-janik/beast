@@ -3,6 +3,10 @@ include $(wildcard $>/aidacc/*.d)
 CLEANDIRS += $(wildcard $>/aidacc/)
 
 # == aidacc/ files ==
+aidacc/include.headers ::= $(strip	\
+	aidacc/aida.hh			\
+	aidacc/visitor.hh		\
+)
 aidacc/aidacc.imports ::= $(strip	\
 	aidacc/AuxData.py		\
 	aidacc/CxxStub.py		\
@@ -60,6 +64,12 @@ $>/aidacc/TmplFiles.py: $(aidacc/aidacc.templates)	| $>/aidacc/
 	    && sed 's/\\/\\\\/g; s/"""/\\"""/g' "$$file" && echo '"""' || exit $$? ; \
 	  done ) > $@.tmp
 	$Q mv $@.tmp $@
+
+# == installation ==
+$(call INSTALL_DATA_RULE,			\
+	aidacc/headers,				\
+	$(DESTDIR)$(pkglibdir)/include/aidacc,	\
+	$(aidacc/include.headers))
 
 # == aidacc-check ==
 aidacc-check-build-test: FORCE		| $(aidacc/aidacc)
