@@ -365,7 +365,7 @@ $(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.cs
 $(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
 $(lib/libbse.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
-$(call BUILD_SHARED_LIB, \
+$(call BUILD_SHARED_LIB_XDBG, \
 	$(lib/libbse.so), \
 	$(bse/libbse.objects), \
 	bse/ldscript.map | $>/lib/, \
