@@ -385,8 +385,7 @@ $(call BUILD_PROGRAM, \
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
 	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
-	$Q cp bse/bseapi-inserts.hh $< bse/AuxTypes.py $>/bse/
-	$Q cd $>/bse/ && $(abspath $(aidacc/aidacc)) -x CxxStub -x AuxTypes.py -G strip-path=$(abspath $>)/ --insertions bseapi-inserts.hh $(<F)
+	$Q $(aidacc/aidacc) -x CxxStub -x bse/AuxTypes.py -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
 	$Q cd $>/bse/ && sed '1i#define _(x) x' -i bseapi_interfaces.cc && sed '1i#undef _' -i bseapi_interfaces.cc
 
 # == sfidl rules ==
