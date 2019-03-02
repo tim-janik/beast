@@ -92,6 +92,7 @@ $1: $2	$3
 	$$(call LINKER.pre-hook,$@)
 	$$(call LINKER.solink-hook,$@)
 	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
+	$$(call LINKER.xdbg-hook,$@)
 	$$(call LINKER.post-hook,$@)
 endef
 
@@ -112,6 +113,16 @@ $1: LINKER.solink-hook ::= \
 	$$Q cd . \
 	  $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
 	    && rm -f $$L && ln -s $(notdir $1) $$L)
+# split debug info, using the --add-gnu-debuglink samedir logic
+$1: LINKER.xdbg-hook ::= \
+	$$Q $(if $(filter xdbg, $6), \
+		cd $(dir $1) \
+		&& objcopy --only-keep-debug $(notdir $1) $(notdir $1).debug \
+		&& objcopy --strip-debug --add-gnu-debuglink=$(notdir $1).debug $(notdir $1) \
+		&& mkdir -p .debug/ && mv $(notdir $1).debug .debug/ \
+		|| { echo "$$0: objcopy failed for:" $1 >&2; exit 2; } \
+)
+# apply generic linker rule
 $(call LINKER, $1, $2, $3, $4 $$(SONAME_LDFLAGS), $5)
 # force re-linking if a link alias is missing
 $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
@@ -121,6 +132,8 @@ $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
 endef
 # $(call BUILD_SHARED_LIB, sharedlibrary, objects, deps, libs, rpath)
 BUILD_SHARED_LIB = $(eval $(call BUILD_SHARED_LIB.impl, $1, $2, $3, $4, $5))
+# $(call BUILD_SHARED_LIB, sharedlibrary, objects, deps, libs, rpath)
+BUILD_SHARED_LIB_XDBG = $(eval $(call BUILD_SHARED_LIB.impl, $1, $2, $3, $4, $5, xdbg))
 
 # == BUILD_STATIC_LIB ==
 # BUILD_STATIC_LIB implementation
