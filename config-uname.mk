@@ -95,11 +95,11 @@ $1: $2	$3
 endef
 
 # == BUILD_SHARED_LIB ==
-# $(call BUILD_SHARED_LIB_SOLINKS, libfoo.so.1.2.3.4): libfoo.so.1 libfoo.so
+# $(call BUILD_SHARED_LIB_SOLINKS, libfoo.so.1.2.3.4); yields: libfoo.so.1 libfoo.so
 BUILD_SHARED_LIB_SOLINKS  = $(shell X="$1" ; \
 			      [[ $$X =~ (.*\.so\.[0-9]+)(\.[0-9]+)+$$ ]] && echo "$${BASH_REMATCH[1]}" ; \
 			      [[ $$X =~ (.*\.so)(\.[0-9]+)+$$ ]] && echo "$${BASH_REMATCH[1]}" )
-# $(call BUILD_SHARED_LIB_SONAME, libfoo.so.1.2.3): libfoo.so.1
+# $(call BUILD_SHARED_LIB_SONAME, libfoo.so.1.2.3); yields: libfoo.so.1
 BUILD_SHARED_LIB_SONAME = $(shell X="$(notdir $1)" ; while [[ $${X} =~ \.[0-9]+(\.[0-9]+)$$ ]] ; do X="$${X%$${BASH_REMATCH[1]}}"; done ; echo "$$X")
 # BUILD_SHARED_LIB implementation
 define BUILD_SHARED_LIB.impl
