@@ -474,14 +474,14 @@ $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
 	$Q echo '#define BSE_VERSION_STRING		"$(VERSION_SHORT)"'	>>$@.tmp
 	$Q echo '#define BSE_GETTEXT_DOMAIN		"$(BSE_GETTEXT_DOMAIN)"'>>$@.tmp
 	$Q echo '#define BSE_VORBISFILE_BAD_SEEK 	$(VORBISFILE_BAD_SEEK)'	>>$@.tmp
-	$Q : $(file > $>/conftest_spinlock_initializer.c, $(conftest_spinlock_initializer.c)) \
-	&& $(CC) -Wall $>/conftest_spinlock_initializer.c -pthread -o $>/conftest_spinlock_initializer \
-	&& (cd $> && ./conftest_spinlock_initializer) \
-	&& echo '#define BSE_SPINLOCK_INITIALIZER' "	$$(cat $>/conftest_spinlock_initializer.txt)"	>>$@.tmp \
-	&& rm $>/conftest_spinlock_initializer.c $>/conftest_spinlock_initializer $>/conftest_spinlock_initializer.txt
+	$Q : $(file > $>/bse/conftest_spinlock.c, $(bse/conftest_spinlock.c)) \
+	&& $(CC) -Wall $>/bse/conftest_spinlock.c -pthread -o $>/bse/conftest_spinlock \
+	&& (cd $> && ./bse/conftest_spinlock) \
+	&& echo '#define BSE_SPINLOCK_INITIALIZER' "	$$(cat $>/bse/conftest_spinlock.txt)"	>>$@.tmp \
+	&& rm $>/bse/conftest_spinlock.c $>/bse/conftest_spinlock $>/bse/conftest_spinlock.txt
 	$Q mv $@.tmp $@
-# conftest_spinlock_initializer.c
-define conftest_spinlock_initializer.c
+# bse/conftest_spinlock.c
+define bse/conftest_spinlock.c
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
@@ -492,7 +492,7 @@ int main (int argc, char *argv[]) {
   if (pthread_spin_init (&spin.s1, 0) == 0 && pthread_spin_init (&spin.s2, 0) == 0 &&
       sizeof (pthread_spinlock_t) == 4 && spin.s1 == spin.s2)
     { // # sizeof==4 and location-independence are current implementation assumption
-      FILE *f = fopen ("conftest_spinlock_initializer.txt", "w");
+      FILE *f = fopen ("bse/conftest_spinlock.txt", "w");
       fprintf (f, "/*{*/ 0x%04x, /*}*/\n", *(int*) &spin.s1);
       fclose (f);
     }
