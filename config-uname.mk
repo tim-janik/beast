@@ -90,6 +90,7 @@ define LINKER
 $1: $2	$3
 	$$(QECHO) LD $$@
 	$$(call LINKER.pre-hook,$@)
+	$$(call LINKER.solink-hook,$@)
 	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -Wl$(,)-L'$$(@D)/$P') -Wl$,--print-map >$$@.map
 	$$(call LINKER.post-hook,$@)
 endef
@@ -107,7 +108,7 @@ ALL_TARGETS += $1
 # always build shared libraries with SONAME
 $1: SONAME_LDFLAGS ::= -shared -Wl,-soname,$(call BUILD_SHARED_LIB_SONAME, $1)
 # create .so link aliases before linking the .so
-$1: LINKER.pre-hook ::= \
+$1: LINKER.solink-hook ::= \
 	$$Q cd . \
 	  $$(foreach L, $(call BUILD_SHARED_LIB_SOLINKS, $1), \
 	    && rm -f $$L && ln -s $(notdir $1) $$L)
