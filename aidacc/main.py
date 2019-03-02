@@ -114,7 +114,7 @@ def print_help (with_help = True):
   print "  --help, -h                print this help message"
   print "  --version, -v             print version info"
   print "  -I <directory>            add include directory"
-  print "  -o <outputfile>           output filename"
+  print "  -o <output>               output file or directory name"
   print "  -x <MODULE>               load extension MODULE"
   print "  -G <generator-option>     set generator backend option"
   print "  --insertions=<insfile>    file for insertion points"
