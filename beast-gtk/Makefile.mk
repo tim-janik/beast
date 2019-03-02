@@ -180,9 +180,7 @@ $>/beast-gtk/bstmarshal.cc: beast-gtk/bstmarshal.list			| $>/beast-gtk/
 beast-gtk/bstapi.idl.outputs ::= $>/beast-gtk/bstapi_interfaces.hh $>/beast-gtk/bstapi_interfaces.cc $>/beast-gtk/bstapi_handles.hh $>/beast-gtk/bstapi_handles.cc
 $(call MULTIOUTPUT, $(beast-gtk/bstapi.idl.outputs)): beast-gtk/bstapi.idl	$(aidacc/aidacc) bse/AuxTypes.py	| $>/beast-gtk/
 	$(QECHO) GEN $(beast-gtk/bstapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
-	$Q cp $< $>/beast-gtk/
-	$Q cd $>/beast-gtk/ && \
-	  $(abspath $(aidacc/aidacc)) -x CxxStub -x $(abspath bse/AuxTypes.py) -G strip-path=$(abspath $>)/ $(<F)
+	$Q $(aidacc/aidacc) -x CxxStub -x bse/AuxTypes.py -G strip-path=$(abspath .)/ -o $>/beast-gtk $<
 	$Q cd $>/beast-gtk/ && \
 	  sed '1i#define _(x) x' -i bstapi_interfaces.cc && sed '1i#undef _' -i bstapi_interfaces.cc
 
