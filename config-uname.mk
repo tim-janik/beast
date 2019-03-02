@@ -165,19 +165,26 @@ install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link ali
 	    && rm -f $$T \
 	    $$(foreach L, $$(call BUILD_SHARED_LIB_SOLINKS, $$T), \
 	      && rm -f $$L && ln -s $$T $$L) )
-	$$Q $$(if $$^, $4 $$^ '$(strip $2)')
+	$$Q $4 $$^ '$(strip $2)'
+	$$Q $$(foreach D, $$(if $$(filter xdbg, $5), \
+				$$(wildcard $$(addsuffix .debug, $$^))), \
+		$4 $$D '$(strip $2)')
+	$$Q $$(foreach D, $$(if $$(filter xdbg, $5), \
+				$$(wildcard $$(join $$(dir $$^), $$(patsubst %, .debug/%.debug, $$(notdir $$^))))), \
+		$4 $$D -D '$(strip $2)'/.debug/$$(notdir $$D))
 install: install--$(strip $1)
 uninstall--$(strip $1): # delete target T and possible link aliases L
 	$$(QECHO) REMOVE '$(strip $2)/...'
 	$$Q if cd '$(strip $2)' 2>/dev/null ; then \
-	      rm -f	$$(foreach T, $(notdir $3), $$T \
+	      rm -f	$$(foreach T, $(notdir $3), $$T $$T.debug .debug/$$T.debug \
 			   $$(foreach L, $$(call BUILD_SHARED_LIB_SOLINKS, $$T), $$L) ) ; \
 	    fi
 uninstall: uninstall--$(strip $1)
 endef
 # $(call INSTALL_RULE, rulename, directory, files)
-INSTALL_DATA_RULE = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL_DATA)))
-INSTALL_BIN_RULE  = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
+INSTALL_DATA_RULE     = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL_DATA)))
+INSTALL_BIN_RULE      = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
+INSTALL_BIN_RULE_XDBG = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL), xdbg))
 
 # $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
 INSTALL_SYMLINK = rm -f $2 && mkdir -p "$$(dirname $2)" && ln -s $1 $2
