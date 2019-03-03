@@ -312,6 +312,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/weaksym.cc			\
 )
 bse/libbse.deps     ::= $(strip		\
+	$>/bse/bseapi_handles.hh	\
 	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsebasics.genidl.hh	\
 	$>/bse/bsebusmodule.genidl.hh	\
@@ -327,6 +328,7 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/gslfft.cc		\
 	$>/bse/zres.cc			\
 )
+bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
 # BROKEN ::= bse/bsemididevice-oss.hh bse/bsemididevice-oss.cc  bse/bsepcmdevice-oss.hh bse/bsepcmdevice-oss.cc
 
 # == libbse.so defs ==
@@ -334,9 +336,6 @@ lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps)
-
-# == bseapi.idl defs ==
-bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
 
 # == bsetool defs ==
 bse/bsetool         ::= $>/bse/bsetool
@@ -370,7 +369,10 @@ $(call BUILD_SHARED_LIB_XDBG, \
 	$(bse/libbse.objects), \
 	bse/ldscript.map | $>/lib/, \
 	$(BSEDEPS_LIBS))
-$(call INSTALL_DATA_RULE, bse/headers, $(DESTDIR)$(bse/include.headerdir), $(bse/include.headers))
+$(call INSTALL_DATA_RULE,			\
+	bse/headers,				\
+	$(DESTDIR)$(bse/include.headerdir),	\
+	$(bse/include.headers) $(bse/libbse.deps))
 $(call $(if $(filter release, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
 
