@@ -75,6 +75,7 @@ all: FORCE
 check: FORCE
 install: FORCE
 uninstall: FORCE
+installcheck: FORCE
 
 # == subdirs ==
 include res/Makefile.mk
@@ -147,3 +148,35 @@ endef
 $(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
 check: $(CHECK_TARGETS)
 $(CHECK_TARGETS): FORCE
+
+# == installcheck ==
+installcheck-buildtest:
+	$(QGEN)
+	$Q cd $> $(file > $>/conftest_buildtest.cc, $(conftest_buildtest.c)) \
+	&& test -r conftest_buildtest.cc \
+		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$Q cd $> \
+	&& $(CXX) -Werror `PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+		-c conftest_buildtest.cc \
+		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$Q cd $> \
+	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest \
+		`PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
+		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$Q cd $> \
+	&& LD_LIBRARY_PATH="$(DESTDIR)$(pkglibdir)/lib:$$LD_LIBRARY_PATH" ./conftest_buildtest \
+		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$Q cd $> \
+	&& rm -f conftest_buildtest.cc conftest_buildtest.o conftest_buildtest
+.PHONY: installcheck-buildtest
+installcheck: installcheck-buildtest
+# conftest_buildtest.c
+define conftest_buildtest.c
+#include <bse/bse.hh>
+extern "C"
+int main (int argc, char *argv[])
+{
+  Bse::init_async (&argc, argv, "bse-app-test");
+  return 0;
+}
+endef
