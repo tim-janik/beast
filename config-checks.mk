@@ -21,6 +21,24 @@ XGETTEXT		:= /usr/bin/xgettext
 UPDATE_DESKTOP_DATABASE	:= /usr/bin/update-desktop-database
 UPDATE_MIME_DATABASE	:= /usr/bin/update-mime-database
 
+# Check for fast linker
+ifeq ($(MODE),release)
+useld_fast		::= # keep default linker
+useld_fast+vs		::= # keep default linker
+# Keep the default linker for release mode, as usually, bfd optimizes better than lld,
+# and lld optimizes better than gold in terms of resulting binary size.
+else
+# Generally, ld.gold is faster than ld.bfd, and ld.lld is often faster than ld.gold for linking
+# executables. But ld.lld 6.0.0 has a bug that causes deletion of [abi:cxx11] symbols in
+# combination with certain --version-script uses: https://bugs.llvm.org/show_bug.cgi?id=36777
+# So avoid ld.lld <= 6 if --version-script is used.
+useld_gold		!= ld.gold --version 2>&1 | grep -q '^GNU gold' && echo '-fuse-ld=gold'
+useld_lld		!= ld.lld --version 2>&1 | grep -q '^LLD ' && echo '-fuse-ld=lld'
+useld_fast		:= $(or $(useld_lld), $(useld_gold))
+useld_lld+vs		!= ld.lld --version 2>&1 | grep -v '^LLD [0123456]\.' | grep -q '^LLD ' && echo '-fuse-ld=lld'
+useld_fast+vs		:= $(or $(useld_lld+vs), $(useld_gold))
+endif
+
 # == conftest_lib & conftest_require_lib ==
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST
 conftest_lib = { { echo '\#include <$(strip $1)>' \
