@@ -1,7 +1,4 @@
 {
-  global:
-    extern "C++" {
-      [^_]*;
-    };
-  local: *;
+  global: *;
+  local: extern "C++" { _*; };
 };
