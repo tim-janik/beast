@@ -9,9 +9,8 @@ CLEANDIRS += $(wildcard $>/misc/)
 # rules to provides continuous integration/development rules.
 
 # == cppcheck ==
-cppcheck:
+cppcheck:								| $>/misc/cppcheck/
 	$(QGEN)
-	$Q mkdir -p $>/misc/cppcheck/
 	$Q export OUTDIR=$>/misc/ && set -x && misc/run-cppcheck.sh
 	$Q mv $>/misc/cppcheck.err $>/misc/cppcheck/cppcheck.log
 	misc/blame-lines -b $>/misc/cppcheck/cppcheck.log
@@ -19,9 +18,8 @@ cppcheck:
 # Note, 'cppcheck' can be carried out before the sources are built
 
 # == hacks ==
-listhacks:
+listhacks:								| $>/misc/hacks/
 	$(QGEN)
-	$Q mkdir -p $>/misc/hacks/
 	misc/keywords.sh -g -l >$>/misc/hacks/hacks.log
 	misc/blame-lines -b $>/misc/hacks/hacks.log
 	misc/keywords.sh -c $>/misc/hacks/hacks.blame > $>/misc/hacks/hacks.vt
@@ -29,9 +27,8 @@ listhacks:
 # Note, 'listhacks' can be carried out before the sources are built
 
 # == unused ==
-listunused:
+listunused:								| $>/misc/unused/
 	$(QGEN)
-	$Q mkdir -p $>/misc/unused/
 	$Q export OUTDIR=$>/misc/ && set -x && misc/run-cppcheck.sh -u
 	$Q grep -E '\b(un)?(use|reach)' $>/misc/cppcheck.err >$>/misc/unused/unused.log
 	$Q rm -f $>/misc/cppcheck.err
@@ -40,10 +37,9 @@ listunused:
 # Note, 'listunused' requires a successfuly built source tree.
 
 # == scan-build ==
-scan-build:
+scan-build:								| $>/misc/scan-build/
 	$(QGEN)
-	$Q rm -rf $>/misc/scan-tmp/
-	$Q mkdir -p $>/misc/scan-build/ $>/misc/scan-tmp/
+	$Q rm -rf $>/misc/scan-tmp/ && mkdir -p $>/misc/scan-tmp/
 	$Q echo "  CHECK   " "for CXX to resemble clang++"
 	$Q $(CXX) --version | grep '\bclang\b'
 	scan-build -o $>/misc/scan-tmp/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
@@ -66,9 +62,8 @@ scan-build:
 # Note, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate any reports.
 
 # == clang-tidy ==
-clang-tidy:
+clang-tidy:								| $>/misc/clang-tidy/
 	$(QGEN)
-	$Q mkdir -p $>/misc/clang-tidy/
 	$Q git ls-tree -r --name-only HEAD >tmpls.all
 	$Q egrep $(CLANG_TIDY_GLOB) <tmpls.all >tmpls.cchh
 	$Q egrep -vf misc/clang-tidy.ignore tmpls.cchh >tmpls.clangtidy
@@ -93,10 +88,9 @@ CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launcher
 # Note, 'make clang-tidy' requires a successfuly built source tree.
 
 # == appimage tools ==
-cached/appimagetool/AppRun:
-	@: # Fetch and extract AppImage tools
-	$Q mkdir -p cached/
-	$Q cd cached/ && \
+$>/misc/appaux/appimagetool/AppRun:					| $>/misc/appaux/
+	$(QGEN) # Fetch and extract AppImage tools
+	$Q cd $>/misc/appaux/ && \
 		curl -sfSOL https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
 		curl -sfSOL https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage && \
 		chmod +x linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage && \
@@ -104,16 +98,14 @@ cached/appimagetool/AppRun:
 		./linuxdeploy-x86_64.AppImage  --appimage-extract && mv -v squashfs-root/ ./linuxdeploy && \
 		./appimagetool-x86_64.AppImage --appimage-extract && mv -v squashfs-root/ ./appimagetool && \
 		rm linuxdeploy-x86_64.AppImage appimagetool-x86_64.AppImage
-CLEANDIRS += cached
 
 # == appimage ==
-APPDIR  = $(abs_top_srcdir)/appdir/
-APPDIR2 = $(abs_top_srcdir)/appdir2/
-appimage: all cached/appimagetool/AppRun
+APPDIR  = $>/appdir/
+APPDIR2 = $>/appdir2/
+appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$(QGEN)
-	$Q mkdir -p $>/misc/bin/
 	$Q echo "  CHECK   " "for AppImage build with --prefix=/usr"
-	$Q grep '^prefix = /usr\b' Makefile
+	$Q test '$(prefix)' = '/usr' || { echo "prefix=$(prefix)" >&2 ; false ; }
 	@: # AppDir installation
 	@echo '  INSTALL ' AppImage files
 	$Q rm -fr $(APPDIR) $(APPDIR2) && \
@@ -125,7 +117,7 @@ appimage: all cached/appimagetool/AppRun
 	$Q cp -a $(APPDIR)/usr/lib/beast-* $(APPDIR2)/usr
 	$Q rm -f BEAST-x86_64.AppImage
 	@echo '  RUN     ' linuxdeploy ...
-	$Q LD_LIBRARY_PATH=$(APPDIR2)/usr/lib/:$(APPDIR2)/usr/bundle/ cached/linuxdeploy/AppRun \
+	$Q LD_LIBRARY_PATH=$(APPDIR2)/usr/lib/:$(APPDIR2)/usr/bundle/ $>/misc/appaux/linuxdeploy/AppRun \
 		$(if $(findstring 1, $(V)), -v1, -v2) \
 		--appdir=$(APPDIR2) \
 		-l /usr/lib/x86_64-linux-gnu/libXss.so.1 \
@@ -135,12 +127,11 @@ appimage: all cached/appimagetool/AppRun
 		--custom-apprun=misc/AppRun
 	@: # Create AppImage executable
 	@echo '  RUN     ' appimagetool ...
-	$Q ARCH=x86_64 cached/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
+	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
 	$Q rm -fr $(APPDIR) $(APPDIR2)
 	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(clean_version).x64.AppImage
 	$Q ls -l -h --color=auto $>/misc/bin/beast-*.x64.AppImage
 .PHONY: appimage
-CLEANDIRS += $(APPDIR) $(APPDIR2)
 
 # == bintray ==
 BINTRAY_KEEPS            = 99
