@@ -97,7 +97,7 @@ po/move_lines = test -e $1 -a -w $(dir $2) && { \
 # Use xgettext for translatable string extraction, include pre-transformed
 # files from $(po/tmpdir) in source file search.
 po/tmpdir          = $>/po/alt-pofiles
-po/xgettext_tmpdir = $(XGETTEXT) --package-name="beast" --package-version="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)" \
+po/xgettext_tmpdir = $(XGETTEXT) --package-name="beast" --package-version="$(VERSION_M.M.M)" \
 			-F -c -n --foreign-user --from-code=UTF-8 -D $(po/tmpdir)/ -D . \
 			$(patsubst %, --keyword=%, $(po/KEYWORDS)) $(patsubst %, --flag=%, $(po/TEXTFLAGS))
 

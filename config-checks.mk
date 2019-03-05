@@ -146,3 +146,5 @@ CLEANFILES += $>/config-stamps.sha256 $>/config-cache.mk $>/config-cache.old
 # Note, consider variables defined in config-cache.mk as stale within the recipe
 # for config-cache.mk. I.e. use "$$MAJOR" instead of "$(VERSION_MINOR)" to avoid
 # 2-phase regeneration of config-cache.mk that trips up config-stamps.sha256.
+
+VERSION_M.M.M = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
