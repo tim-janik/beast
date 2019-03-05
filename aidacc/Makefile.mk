@@ -30,7 +30,7 @@ aidacc/aidacc.templates ::= $(strip	\
 # == aidacc defs ==
 aidacc/aidacc		::= $>/aidacc/aidacc
 ALL_TARGETS		 += $(aidacc/aidacc)
-aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${topbuildid}"
+aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${VERSION_SHORT}"
 
 # == aidacc rules ==
 $(aidacc/aidacc): aidacc/main.py	$(aidacc/aidacc.imports) $(aidacc/aidacc.generated)
