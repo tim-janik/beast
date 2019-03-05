@@ -7,7 +7,7 @@ SHELL         ::= /bin/bash -o pipefail
 PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
 
 # == User Defaults ==
-# see also 'make defaults' rule
+# see also 'make default' rule
 -include config-defaults.mk
 
 # == Dirctories ==
@@ -74,9 +74,9 @@ $>/%/:
 	$Q mkdir -p $@
 .PRECIOUS: $>/%/ # prevent MAKE's 'rm ...' for automatically created dirs
 
-# == defaults rules ==
-# Allow value defaults to be adjusted via: make config builddir=... CXX=...
-defaults: FORCE
+# == 'default' settings ==
+# Allow value defaults to be adjusted via: make default builddir=... CXX=...
+default: FORCE
 	$(QECHO) WRITE config-defaults.mk
 	$Q echo -e '# make $@\n'			> $@.tmp
 	$Q : $(foreach VAR, $(.config.defaults),		  \
@@ -97,7 +97,7 @@ help: FORCE
 	@: #   12345678911234567892123456789312345678941234567895123456789612345678971234567898
 	@echo '  all             - Build all targets, uses config-defaults.mk'
 	@echo '  clean           - Remove build directory, but keeps config-defaults.mk'
-	@echo '  defaults        - Write variable defaults into config-defaults.mk, these can'
+	@echo '  default         - Write variable defaults into config-defaults.mk, these can'
 	@echo '                    be overridden by MAKE command line variables; look at this'
 	@echo '                    file for a list of variables that can be customized'
 	@echo '  check           - Run selft tests and unit tests'
