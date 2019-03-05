@@ -14,7 +14,7 @@ S +=
 
 # == Mode ==
 # determine build mode
-MODE.origin ::= $(origin MODE)	# before overriding, remember if MODE came from command line
+MODE.origin ::= $(origin MODE) # before overriding, remember if MODE came from command line
 override MODE !=  case "$(MODE)" in \
 		    p*|pr*|pro*|prod*|produ*|produc*|product*)		MODE=release ;; \
 		    producti*|productio*|production)			MODE=release ;; \
@@ -31,8 +31,21 @@ override MODE !=  case "$(MODE)" in \
 .config.defaults += MODE
 $(info $S MODE     $(MODE))
 
+# == builddir ==
+# Allow O= and builddir= on the command line
+ifeq ("$(origin O)", "command line")
+builddir	::= $O
+builddir.origin ::= command line
+endif
+ifeq ('$(builddir)', '')
+builddir	::= out
+endif
+# Provide $> as builddir shorthand, used in almost every rule
+>		  = $(builddir)
+# if 'realpath --relative-to' is missing, os.path.relpath could be used as fallback
+build2srcdir	 != realpath --relative-to $(builddir) .
+
 # == Dirctories ==
-builddir	 ?= out
 prefix		 ?= /usr/local
 bindir		 ?= $(prefix)/bin
 datadir 	 ?= $(prefix)/share
@@ -41,11 +54,6 @@ libdir		 ?= $(prefix)/lib
 pkgrootdir	 ?= $(libdir)
 pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
 .config.defaults += builddir prefix bindir datadir mandir libdir pkgrootdir pkglibdir
-
-# == builddir variants ==
->		  = $(builddir)
-# if 'realpath --relative-to' is missing, os.path.relpath could be used as fallback
-build2srcdir	 != realpath --relative-to $(builddir) .
 
 # == Target Collections ==
 ALL_TARGETS	::=
@@ -112,7 +120,7 @@ default: FORCE
 	$Q : $(foreach VAR, $(.config.defaults), &&					\
 	  if $(if $(filter command, $(origin $(VAR)) $($(VAR).origin)),			\
 		true, false) ; then							\
-	    echo '$(VAR)  ?= $(value $(VAR))'				>>$@.tmp ;	\
+	    echo '$(VAR) = $(value $(VAR))'				>>$@.tmp ;	\
 	  elif ! grep -sEm1 '^$(VAR)\s*:?[:!?]?=' config-defaults.mk	>>$@.tmp ; then	\
 	    echo '# $(VAR) = $(value $(VAR))'				>>$@.tmp ;	\
 	  fi )
@@ -138,6 +146,7 @@ help: FORCE
 	@echo '  installcheck    - Run checks on the installed project files.'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
+	@echo '  make O=DIR      - Create all output files in DIR'
 	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
 
 # == all rules ==
