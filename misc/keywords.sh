@@ -7,7 +7,12 @@ SCRIPTNAME=${0#*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 128
 # == Defaults ==
 ERRORS='ALERT|ATTENTION|BUG|DANGER|ERR|FIX'
 WARNINGS='CAUTION|DEPRECAT|HACK|\bNOTE\b|NOTICE|PERF|TBD|TODO|WARN'
-EXTENSIONS='ac|am|awk|bat|bib|c|cc|cpp|css|decl|dox|h|hh|hpp|html|idl|js|m4|md|po|py|scm|scss|sh|sub|vue|xml|yml'
+CEXTENSIONS='c|cc|cpp|css|dox|h|hh|hpp|idl|js|md|scss|vue'
+HEXTENSIONS='ac|am|awk|bat|decl|m4|md|mk|po|py|sh|sub|vue|yml'
+PEXTENSIONS='bib'
+SEXTENSIONS='scm'
+XEXTENSIONS='html|md|xml'
+ALL_EXTENSIONS="$CEXTENSIONS|$HEXTENSIONS|$PEXTENSIONS|$SEXTENSIONS|$XEXTENSIONS"
 GITLS=false
 GREP_ERRWARN=false
 SED_COLOR=false
@@ -35,13 +40,22 @@ while test $# -ne 0 ; do
   shift
 done
 $GITLS && {
-  set -- $( git ls-tree -r --name-only HEAD | grep -v '^external/' | grep -E "\.($EXTENSIONS)$" )
+  ALLFILES=$( git ls-tree -r --name-only HEAD | grep -v '^external/' | grep -E "\.($ALL_EXTENSIONS)$" )
 }
 
 # == Error/warning comments ==
 $GREP_ERRWARN && {
-  # two double quotes are used to avoid keywords.sh finding itself
-  egrep -n "(/\*.*|/""/.*|^\s\*+\s*)\b($ERRORS|$WARNINGS)" "$@" || :
+  E="$ERRORS" W="$WARNINGS"
+  set -- $( echo " $ALLFILES" | grep -E "\.($CEXTENSIONS)$" )
+  egrep -n "(/\*.*|//.*|^\s\*+\s*)\b($E|$W)" "$@" || :
+  set -- $( echo " $ALLFILES" | grep -E "\.($HEXTENSIONS)$" )
+  egrep -n "(#.*)\b($E|$W)" "$@" || :
+  set -- $( echo " $ALLFILES" | grep -E "\.($PEXTENSIONS)$" )
+  egrep -n "(%.*)\b($E|$W)" "$@" || :
+  set -- $( echo " $ALLFILES" | grep -E "\.($SEXTENSIONS)$" )
+  egrep -n "(;.*)\b($E|$W)" "$@" || :
+  set -- $( echo " $ALLFILES" | grep -E "\.($XEXTENSIONS)$" )
+  egrep -n "(<!.*)\b($E|$W)" "$@" || :
 }
 
 # == Colorize keywords and line numbers ==
