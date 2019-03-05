@@ -12,8 +12,8 @@ CLEANDIRS += $(wildcard $>/misc/)
 cppcheck:
 	$(QGEN)
 	$Q mkdir -p $>/misc/cppcheck/
-	misc/run-cppcheck.sh
-	$Q mv cppcheck.err $>/misc/cppcheck/cppcheck.log
+	$Q export OUTDIR=$>/misc/ && set -x && misc/run-cppcheck.sh
+	$Q mv $>/misc/cppcheck.err $>/misc/cppcheck/cppcheck.log
 	misc/blame-lines -b $>/misc/cppcheck/cppcheck.log
 .PHONY: cppcheck
 # Note, 'cppcheck' can be carried out before the sources are built
@@ -32,9 +32,9 @@ listhacks:
 listunused:
 	$(QGEN)
 	$Q mkdir -p $>/misc/unused/
-	misc/run-cppcheck.sh -u
-	$Q grep -E '\b(un)?(use|reach)' cppcheck.err >$>/misc/unused/unused.log
-	$Q rm -f cppcheck.err
+	$Q export OUTDIR=$>/misc/ && set -x && misc/run-cppcheck.sh -u
+	$Q grep -E '\b(un)?(use|reach)' $>/misc/cppcheck.err >$>/misc/unused/unused.log
+	$Q rm -f $>/misc/cppcheck.err
 	misc/blame-lines -b $>/misc/unused/unused.log
 .PHONY: listunused
 # Note, 'listunused' requires a successfuly built source tree.
