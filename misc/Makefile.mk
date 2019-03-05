@@ -104,6 +104,7 @@ $>/misc/appaux/appimagetool/AppRun:					| $>/misc/appaux/
 # == appimage ==
 APPDIR  = $>/appdir/
 APPDIR2 = $>/appdir2/
+appimage: VERSION_LONG != ./version.sh -l
 appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$(QGEN)
 	$Q echo "  CHECK   " "for AppImage build with --prefix=/usr"
@@ -125,31 +126,33 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 		-l /usr/lib/x86_64-linux-gnu/libXss.so.1 \
 		-l /usr/lib/x86_64-linux-gnu/libgconf-2.so.4 \
 		-l /usr/lib/x86_64-linux-gnu/libXtst.so.6 \
-		-e $(APPDIR2)/usr/bin/beast-*.* \
+		-i $(APPDIR2)/usr/images/beast.png \
+		-e $(APPDIR2)/usr/bin/beast \
 		--custom-apprun=misc/AppRun
 	@: # Create AppImage executable
 	@echo '  RUN     ' appimagetool ...
 	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
 	$Q rm -fr $(APPDIR) $(APPDIR2)
-	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(clean_version).x64.AppImage
-	$Q ls -l -h --color=auto $>/misc/bin/beast-*.x64.AppImage
+	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage
+	$Q ls -l -h --color=auto $>/misc/bin/beast-*-x64.AppImage
 .PHONY: appimage
 
 # == bintray ==
 BINTRAY_KEEPS            = 99
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
+bintray: VERSION_LONG != ./version.sh -l
 bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
-	@: # upload beast-*.x64.AppImage if it exists
-	$Q test -x "$>/misc/bin/beast-$(clean_version).x64.AppImage" || exit 0 ; \
-		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
-		  -d $>/misc/bin/beast-$(clean_version).x64.AppImage
+	@: # upload beast-*-x64.AppImage if it exists
+	$Q test -x "$>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage" || exit 0 ; \
+		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(VERSION_LONG) $(USE_BINTRAY_API_KEY_FILE) \
+		  -d $>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage
 	@: # upload tarballs of existing log directories
 	$Q for d in cppcheck scan-build clang-tidy hacks unused asan ; do \
 		(set -- $>/misc/$$d/*.* ; test -r "$$1") || continue ; \
-		tar cJf $>/misc/$$d-$(clean_version).tar.xz -C $>/misc/ $$d/ && \
-		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
-		  $>/misc/$$d-$(clean_version).tar.xz || exit 1 ; \
+		tar cJf $>/misc/$$d-$(VERSION_LONG).tar.xz -C $>/misc/ $$d/ && \
+		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(VERSION_LONG) $(USE_BINTRAY_API_KEY_FILE) \
+		  $>/misc/$$d-$(VERSION_LONG).tar.xz || exit 1 ; \
 	done
 .PHONY: bintray
 # Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
