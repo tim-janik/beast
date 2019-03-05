@@ -14,6 +14,7 @@ S +=
 
 # == Mode ==
 # determine build mode
+MODE.origin ::= $(origin MODE)	# before overriding, remember if MODE came from command line
 override MODE !=  case "$(MODE)" in \
 		    p*|pr*|pro*|prod*|produ*|produc*|product*)		MODE=release ;; \
 		    producti*|productio*|production)			MODE=release ;; \
@@ -107,12 +108,14 @@ $>/%/:
 # Allow value defaults to be adjusted via: make default builddir=... CXX=...
 default: FORCE
 	$(QECHO) WRITE config-defaults.mk
-	$Q echo -e '# make $@\n'			> $@.tmp
-	$Q : $(foreach VAR, $(.config.defaults),		  \
-	       $(if $(filter command, $(origin $(VAR))),	  \
-	  && echo '$(VAR)  ?= $(value $(VAR))'		>>$@.tmp, \
-	  && echo '# $(VAR) = $(value $(VAR))'		>>$@.tmp  \
-	      ) )
+	$Q echo -e '# make $@\n'					> $@.tmp
+	$Q : $(foreach VAR, $(.config.defaults), &&					\
+	  if $(if $(filter command, $(origin $(VAR)) $($(VAR).origin)),			\
+		true, false) ; then							\
+	    echo '$(VAR)  ?= $(value $(VAR))'				>>$@.tmp ;	\
+	  elif ! grep -sEm1 '^$(VAR)\s*:?[:!?]?=' config-defaults.mk	>>$@.tmp ; then	\
+	    echo '# $(VAR) = $(value $(VAR))'				>>$@.tmp ;	\
+	  fi )
 	$Q mv $@.tmp config-defaults.mk
 
 # == clean rules ==
@@ -124,12 +127,12 @@ clean: FORCE
 help: FORCE
 	@echo 'Make targets:'
 	@: #   12345678911234567892123456789312345678941234567895123456789612345678971234567898
-	@echo '  all             - Build all targets, uses config-defaults.mk'
-	@echo '  clean           - Remove build directory, but keeps config-defaults.mk'
-	@echo '  default         - Write variable defaults into config-defaults.mk, these can'
-	@echo '                    be overridden by MAKE command line variables; look at this'
-	@echo '                    file for a list of variables that can be customized'
-	@echo '  check           - Run selft tests and unit tests'
+	@echo '  all             - Build all targets, uses config-defaults.mk if present.'
+	@echo '  clean           - Remove build directory, but keeps config-defaults.mk.'
+	@echo '  default         - Create config-defaults.mk with variables set via the MAKE'
+	@echo '                    command line. Inspect the file for a list of variables to'
+	@echo '                    be customized. Deleting it will undo any customizations.'
+	@echo '  check           - Run selfttests and unit tests'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 
