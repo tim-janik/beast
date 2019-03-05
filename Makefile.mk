@@ -54,9 +54,8 @@ INCLUDES	::= -I.
 DEFS		::=
 
 # == Compiler Setup ==
-DEBUGFLAGS       ?= -g
-CXXSTD		::= -std=gnu++14 -pthread -pipe $(DEBUGFLAGS)
-CSTD		::= -std=gnu11 -pthread -pipe $(DEBUGFLAGS)
+CXXSTD		::= -std=gnu++14 -pthread -pipe
+CSTD		::= -std=gnu11 -pthread -pipe
 EXTRA_DEFS	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_INCLUDES	::= # target private defs, lesser precedence than CXXFLAGS
 EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
