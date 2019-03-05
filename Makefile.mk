@@ -133,8 +133,12 @@ help: FORCE
 	@echo '                    command line. Inspect the file for a list of variables to'
 	@echo '                    be customized. Deleting it will undo any customizations.'
 	@echo '  check           - Run selfttests and unit tests'
+	@echo '  install         - Install binaries and data files under $$(prefix)'
+	@echo '  uninstall       - Uninstall binaries, aliases and data files'
+	@echo '  installcheck    - Run checks on the installed project files.'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
+	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
 
 # == all rules ==
 all: $(ALL_TARGETS) $(ALL_TESTS)
