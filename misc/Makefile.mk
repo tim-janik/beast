@@ -64,24 +64,26 @@ scan-build:								| $>/misc/scan-build/
 # == clang-tidy ==
 clang-tidy:								| $>/misc/clang-tidy/
 	$(QGEN)
-	$Q git ls-tree -r --name-only HEAD >tmpls.all
-	$Q egrep $(CLANG_TIDY_GLOB) <tmpls.all >tmpls.cchh
-	$Q egrep -vf misc/clang-tidy.ignore tmpls.cchh >tmpls.clangtidy
-	clang-tidy `cat tmpls.clangtidy` -- \
+	$Q git ls-tree -r --name-only HEAD				> $>/misc/tmpls.all
+	$Q egrep $(CLANG_TIDY_GLOB) < $>/misc/tmpls.all			> $>/misc/tmpls.cchh
+	$Q egrep -vf misc/clang-tidy.ignore  $>/misc/tmpls.cchh		> $>/misc/tmpls.clangtidy
+	clang-tidy `cat $>/misc/tmpls.clangtidy` -- \
 	  -std=gnu++14 \
 	  -I . \
+	  -I $> \
 	  -I sfi \
 	  -I beast-gtk \
+	  -I $>/beast-gtk \
+	  -I $>/plugins \
 	  -I external/v8pp/ \
 	  -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/src/ \
 	  -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/deps/v8/include/ \
 	  -DBSE_COMPILATION \
 	  -DGXK_COMPILATION \
 	  -D__TOPDIR__=\"`pwd`\" \
-	  `pkg-config --cflags libgnomecanvas-2.0` \
-	  > $>/misc/clang-tidy/clang-tidy.raw
-	$Q sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw >$>/misc/clang-tidy/clang-tidy.log
-	$Q rm -f $>/misc/clang-tidy/clang-tidy.raw tmpls.all tmpls.cchh tmpls.clangtidy
+	  `pkg-config --cflags libgnomecanvas-2.0`			> $>/misc/clang-tidy/clang-tidy.raw
+	$Q sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw		> $>/misc/clang-tidy/clang-tidy.log
+	$Q rm -f $>/misc/clang-tidy/clang-tidy.raw  $>/misc/tmpls.all  $>/misc/tmpls.cchh  $>/misc/tmpls.clangtidy
 	misc/blame-lines -b $>/misc/clang-tidy/clang-tidy.log
 CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers)/.*\.(cc|hh)$$"
 .PHONY: clang-tidy
