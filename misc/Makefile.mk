@@ -1,75 +1,74 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+include $(wildcard $>/misc/*.d)
+CLEANDIRS += $(wildcard $>/misc/)
+
 # BEAST misc/ - CI/CD rules
-
-# Aoid defining the conventional misc-clean, misc-check, etc rules which
-# are likely to be mistaken for something else than misc/ specific rules.
 #
-# Instead, misc/Makefile.sub serves as an extension to the toplevel make
-# rules and provides continuous integration/development rules.
-
-# == clean out/ ==
-CLEANDIRS += out/
+# This Makefile diverts from the conventional misc/ prefixing,
+# because it serves as an extension of the toplevel makefile
+# rules to provides continuous integration/development rules.
 
 # == cppcheck ==
 cppcheck:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/cppcheck/
+	$(Q) mkdir -p $>/misc/cppcheck/
 	misc/run-cppcheck.sh
-	$(Q) mv cppcheck.err out/cppcheck/cppcheck.log
-	misc/blame-lines -b out/cppcheck/cppcheck.log
+	$(Q) mv cppcheck.err $>/misc/cppcheck/cppcheck.log
+	misc/blame-lines -b $>/misc/cppcheck/cppcheck.log
 .PHONY: cppcheck
 # Note, 'cppcheck' can be carried out before the sources are built
 
 # == hacks ==
 listhacks:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/hacks/
-	misc/keywords.sh -g -l >out/hacks/hacks.log
-	misc/blame-lines -b out/hacks/hacks.log
-	misc/keywords.sh -c out/hacks/hacks.blame > out/hacks/hacks.vt
+	$(Q) mkdir -p $>/misc/hacks/
+	misc/keywords.sh -g -l >$>/misc/hacks/hacks.log
+	misc/blame-lines -b $>/misc/hacks/hacks.log
+	misc/keywords.sh -c $>/misc/hacks/hacks.blame > $>/misc/hacks/hacks.vt
 .PHONY: listhacks
 # Note, 'listhacks' can be carried out before the sources are built
 
 # == unused ==
 listunused:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/unused/
+	$(Q) mkdir -p $>/misc/unused/
 	misc/run-cppcheck.sh -u
-	$(Q) grep -E '\b(un)?(use|reach)' cppcheck.err >out/unused/unused.log
+	$(Q) grep -E '\b(un)?(use|reach)' cppcheck.err >$>/misc/unused/unused.log
 	$(Q) rm -f cppcheck.err
-	misc/blame-lines -b out/unused/unused.log
+	misc/blame-lines -b $>/misc/unused/unused.log
 .PHONY: listunused
 # Note, 'listunused' requires a successfuly built source tree.
 
 # == scan-build ==
 scan-build:
 	$(AM_V_GEN)
-	$(Q) rm -rf out/scan-tmp/
-	$(Q) mkdir -p out/scan-build/ out/scan-tmp/
+	$(Q) rm -rf $>/misc/scan-tmp/
+	$(Q) mkdir -p $>/misc/scan-build/ $>/misc/scan-tmp/
 	$(Q) echo "  CHECK   " "for CXX to resemble clang++"
 	$(Q) $(CXX) --version | grep '\bclang\b'
-	scan-build -o out/scan-tmp/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
+	scan-build -o $>/misc/scan-tmp/ --use-cc "$(CC)" --use-c++ "$(CXX)" $(MAKE) -j`nproc`
 	$(Q) shopt -s nullglob ; \
-	      for r in out/scan-tmp/20??-??-??-*/report-*.html ; do \
+	      for r in $>/misc/scan-tmp/20??-??-??-*/report-*.html ; do \
 		D=$$(sed -nr '/<!-- BUGDESC/ { s/^<!-- \w+ (.+) -->/\1/    ; p }' $$r) && \
 		F=$$(sed -nr '/<!-- BUGFILE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
 		L=$$(sed -nr '/<!-- BUGLINE/ { s/^<!-- \w+ ([^ ]+) -->/\1/ ; p }' $$r) && \
 		echo "$$F:$$L: $$D" | sed 's,^/usr/src/beast/,,' ; \
-	      done > out/scan-build/scan-build.log
+	      done > $>/misc/scan-build/scan-build.log
 	$(Q) shopt -s nullglob ; \
-	      for d in out/scan-tmp/20??-??-??-*/ ; do \
-		rm -rf out/scan-build/html/ ; \
-		mv -v "$$d" out/scan-build/html/ || exit 1 ; \
+	      for d in $>/misc/scan-tmp/20??-??-??-*/ ; do \
+		rm -rf $>/misc/scan-build/html/ ; \
+		mv -v "$$d" $>/misc/scan-build/html/ || exit 1 ; \
 		break ; \
 	      done
-	$(Q) rm -rf out/scan-tmp/
-	misc/blame-lines -b out/scan-build/scan-build.log
+	$(Q) rm -rf $>/misc/scan-tmp/
+	misc/blame-lines -b $>/misc/scan-build/scan-build.log
 .PHONY: scan-build
 # Note, 'make scan-build' requires 'configure CC=clang CXX=g++' to generate any reports.
 
 # == clang-tidy ==
 clang-tidy:
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/clang-tidy/
+	$(Q) mkdir -p $>/misc/clang-tidy/
 	$(Q) git ls-tree -r --name-only HEAD >tmpls.all
 	$(Q) egrep $(CLANG_TIDY_GLOB) <tmpls.all >tmpls.cchh
 	$(Q) egrep -vf misc/clang-tidy.ignore tmpls.cchh >tmpls.clangtidy
@@ -85,10 +84,10 @@ clang-tidy:
 	  -DGXK_COMPILATION \
 	  -D__TOPDIR__=\"`pwd`\" \
 	  `pkg-config --cflags libgnomecanvas-2.0` \
-	  > out/clang-tidy/clang-tidy.raw
-	$(Q) sed "s,^`pwd`/,," out/clang-tidy/clang-tidy.raw >out/clang-tidy/clang-tidy.log
-	$(Q) rm -f out/clang-tidy/clang-tidy.raw tmpls.all tmpls.cchh tmpls.clangtidy
-	misc/blame-lines -b out/clang-tidy/clang-tidy.log
+	  > $>/misc/clang-tidy/clang-tidy.raw
+	$(Q) sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw >$>/misc/clang-tidy/clang-tidy.log
+	$(Q) rm -f $>/misc/clang-tidy/clang-tidy.raw tmpls.all tmpls.cchh tmpls.clangtidy
+	misc/blame-lines -b $>/misc/clang-tidy/clang-tidy.log
 CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers)/.*\.(cc|hh)$$"
 .PHONY: clang-tidy
 # Note, 'make clang-tidy' requires a successfuly built source tree.
@@ -112,7 +111,7 @@ APPDIR  = $(abs_top_srcdir)/appdir/
 APPDIR2 = $(abs_top_srcdir)/appdir2/
 appimage: all cached/appimagetool/AppRun
 	$(AM_V_GEN)
-	$(Q) mkdir -p out/bin/
+	$(Q) mkdir -p $>/misc/bin/
 	$(Q) echo "  CHECK   " "for AppImage build with --prefix=/usr"
 	$(Q) grep '^prefix = /usr\b' Makefile
 	@: # AppDir installation
@@ -138,26 +137,26 @@ appimage: all cached/appimagetool/AppRun
 	@echo '  RUN     ' appimagetool ...
 	$(Q) ARCH=x86_64 cached/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
 	$(Q) rm -fr $(APPDIR) $(APPDIR2)
-	$(Q) mv BEAST-x86_64.AppImage out/bin/beast-$(clean_version).x64.AppImage
-	$(Q) ls -l -h --color=auto out/bin/beast-*.x64.AppImage
+	$(Q) mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(clean_version).x64.AppImage
+	$(Q) ls -l -h --color=auto $>/misc/bin/beast-*.x64.AppImage
 .PHONY: appimage
 CLEANDIRS += $(APPDIR) $(APPDIR2)
 
 # == bintray ==
 BINTRAY_KEEPS            = 99
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
-bintray:		# upload out/ contents to bintray
+bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
 	@: # upload beast-*.x64.AppImage if it exists
-	$(Q) test -x "out/bin/beast-$(clean_version).x64.AppImage" || exit 0 ; \
+	$(Q) test -x "$>/misc/bin/beast-$(clean_version).x64.AppImage" || exit 0 ; \
 		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
-		  -d out/bin/beast-$(clean_version).x64.AppImage
+		  -d $>/misc/bin/beast-$(clean_version).x64.AppImage
 	@: # upload tarballs of existing log directories
 	$(Q) for d in cppcheck scan-build clang-tidy hacks unused asan ; do \
-		(set -- out/$$d/*.* ; test -r "$$1") || continue ; \
-		tar cJf out/$$d-$(clean_version).tar.xz -C out/ $$d/ && \
+		(set -- $>/misc/$$d/*.* ; test -r "$$1") || continue ; \
+		tar cJf $>/misc/$$d-$(clean_version).tar.xz -C $>/misc/ $$d/ && \
 		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(clean_version) $(USE_BINTRAY_API_KEY_FILE) \
-		  out/$$d-$(clean_version).tar.xz || exit 1 ; \
+		  $>/misc/$$d-$(clean_version).tar.xz || exit 1 ; \
 	done
 .PHONY: bintray
 # Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
