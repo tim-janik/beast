@@ -101,6 +101,7 @@ include tests/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
 include docs/Makefile.mk
+include misc/Makefile.mk
 
 # == FORCE rules ==
 # Use FORCE to mark phony targets via a dependency
