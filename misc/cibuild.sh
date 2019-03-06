@@ -51,8 +51,8 @@ while test $# -ne 0 ; do
     gcc)       	COMPILERCONF=gcc ;;
     clang)     	COMPILERCONF=clang ;;
     asan|lsan|ubsan|tsan)
-      :;	COMPILERCONF="${COMPILERCONF:-gcc}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS --enable-debug=$1" ;;
-    quick)     	COMPILERCONF="${COMPILERCONF:-clang}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS --enable-quick" ;;
+      :;	COMPILERCONF="${COMPILERCONF:-gcc}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=$1" ;;
+    quick)     	COMPILERCONF="${COMPILERCONF:-clang}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=quick" ;;
     cppcheck|listhacks|listunused|scan-build|all|install|uninstall|installcheck|dist|distcheck|distcheck-po0|appimage|bintray|clean|clang-tidy)
       :;	RULES="$RULES $1" ;;
     check)   	RULES="$RULES root-check" ;;
@@ -113,7 +113,7 @@ test -z "$COMPILERCONF" || (
   esac
   set -x
   docker run $BEAST_USER_VOLUME -ti --rm $LSAN0 beast-cibuild \
-	 nice ./autogen.sh --prefix=/usr CC="$CC" CXX="$CXX" $CONFIGUREOPTIONS
+	 nice make default prefix=/usr CC="$CC" CXX="$CXX" $CONFIGUREOPTIONS
 )
 
 # == make rules ==
