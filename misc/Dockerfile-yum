@@ -33,7 +33,7 @@ RUN \
 WORKDIR /opt/src/beast
 
 # Configure source tree, possibly using compiler wrapper
-RUN ./autogen.sh --prefix=/opt
+RUN make default prefix=/opt
 
 # Build sources in parallel
 RUN nice make -j`nproc`
