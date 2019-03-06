@@ -26,7 +26,7 @@ jobs:
       before_install: |
         travis_retry git fetch --unshallow --tags
       script: |
-        misc/cibuild.sh gcc appimage check && {
+        misc/cibuild.sh gcc all appimage check && {
           echo "$BINTRAY_API_KEY" > .bintray_api_key &&
           test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
           misc/cibuild.sh bintray ; }
