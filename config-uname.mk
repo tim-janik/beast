@@ -24,7 +24,9 @@ CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
 OPTIMIZE	::= -funroll-loops -ftree-vectorize
 LDMODEFLAGS	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
 
-ifeq ($(MODE),release)
+ifeq ($(MODE),quick)
+MODEFLAGS	::= -O0
+else ifeq ($(MODE),release)
 MODEFLAGS	::= -O3 -DNDEBUG
 else ifeq ($(MODE),debug)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -ggdb3 -DG_ENABLE_DEBUG -fverbose-asm
