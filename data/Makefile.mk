@@ -57,16 +57,16 @@ uninstall: data/uninstall-prefix-symlinks
 # == update Desktop/Mime caches after installation ==
 data/install.dbupdates: install--data/desktop.files install--data/mimeinfo.files install--data/mimepkgs.files
 	$(QECHO) RUN $@
-	$Q test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)'
-	$Q test -z '$(UPDATE_MIME_DATABASE)' || \
+	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)'
+	$Q test ! -x '$(UPDATE_MIME_DATABASE)' || \
 	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(data/sharemime.dir)/.." \
 	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(data/sharemime.dir)'
 install: data/install.dbupdates
 # We need to temporarily set XDG_DATA_DIRS to shut up update-mime-database about custom search paths
 data/uninstall.dbupdates: uninstall--data/desktop.files uninstall--data/mimeinfo.files uninstall--data/mimepkgs.files
 	$(QECHO) RUN $@
-	$Q test -z '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)' || :
-	$Q test -z '$(UPDATE_MIME_DATABASE)' || \
+	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)' || :
+	$Q test ! -x '$(UPDATE_MIME_DATABASE)' || \
 	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(data/sharemime.dir)/.." \
 	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(data/sharemime.dir)' || :
 uninstall: data/uninstall.dbupdates
