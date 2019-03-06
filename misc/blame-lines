@@ -11,12 +11,13 @@ if len (sys.argv) > first and sys.argv[first] == '-b':
 
 last = ('', -1)
 for inputfile in sys.argv[first:]:
-  fout = sys.stdout
+  fout = sys.stdout.buffer
   if b_log:
     outputfile = os.path.splitext (inputfile)[0] + '.blame'
-    fout = open (outputfile, 'w')
+    fout = open (outputfile, 'wb')
     print ("%s: creating blame file: %s" % (inputfile, outputfile))
-  for line in open (inputfile, 'r'):
+  for bline in open (inputfile, 'rb'):
+    line = bline.decode ('utf8')
     m = re.match (r'([^:]+):([0-9]+):([0-9]+:)?\s', line)
     if m:
       g = m.groups()
@@ -32,5 +33,5 @@ for inputfile in sys.argv[first:]:
           if p > 0:
             blame = blame[:p+1]
           cache[last] = blame
-        fout.write ('%s:%d: %s\n' % (f, l, blame))
-    fout.write (line.rstrip() + '\n')
+        line = '%s:%d: %s' % (f, l, blame)
+    fout.write ((line.rstrip() + '\n').encode ('utf8'))
