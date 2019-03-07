@@ -200,7 +200,7 @@ int main (int argc, char *argv[])
 endef
 
 # == dist ==
-distname    ::= beast-$(VERSION_SHORT)
+distname    ::= beast-$(VERSION_LONG)
 disttarball ::= $>/$(distname).tar.xz
 dist_xz_opt  ?= -9e
 dist: all $>/ChangeLog FORCE
