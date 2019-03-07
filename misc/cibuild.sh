@@ -18,14 +18,17 @@ EXEC_SHELL=
 
 # == usage ==
 usage() {
+  #     12345678911234567892123456789312345678941234567895123456789612345678971234567898
   echo "Usage: $0 [cppcheck] [COMPILER] [RULE...]"
-  echo "  gcc           COMPILER: use gcc/g++"
   echo "  clang         COMPILER: use clang/clang++"
-  echo "  quick         COMPILER: enable clang quick compilation, disable optimizations"
+  echo "  quick         COMPILER: use clang, disable debugging and optimizations"
+  echo "  gcc           COMPILER: use gcc/g++"
   echo "  asan          COMPILER: enable gcc address sanitizer"
-  echo "  ubsan         COMPILER: enable gcc undefined behaviour sanitizer"
-  echo "  tsan          COMPILER: enable gcc thread sanitizer"
   echo "  lsan          COMPILER: enable gcc leak sanitizer"
+  echo "  tsan          COMPILER: enable gcc thread sanitizer"
+  echo "  ubsan         COMPILER: enable gcc undefined behaviour sanitizer"
+  echo "  debug         COMPILER: use moderate optimizations, enable debugging"
+  echo "  release       COMPILER: use optimized release compilation, disable debugging"
   echo "  all           RULE: build all sources"
   echo "  cppcheck      RULE: run cppcheck (recommended prior to compiling)"
   echo "  listhacks     RULE: find hack/bug notes in source code"
@@ -53,6 +56,8 @@ while test $# -ne 0 ; do
     asan|lsan|ubsan|tsan)
       :;	COMPILERCONF="${COMPILERCONF:-gcc}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=$1" ;;
     quick)     	COMPILERCONF="${COMPILERCONF:-clang}" CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=quick" ;;
+    debug)   	CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=debug" ;;
+    release)   	CONFIGUREOPTIONS="$CONFIGUREOPTIONS MODE=release" ;;
     cppcheck|listhacks|listunused|scan-build|all|install|uninstall|installcheck|dist|distcheck|distcheck-po0|appimage|bintray|clean|clang-tidy)
       :;	RULES="$RULES $1" ;;
     check)   	RULES="$RULES root-check" ;;
