@@ -104,7 +104,6 @@ $>/misc/appaux/appimagetool/AppRun:					| $>/misc/appaux/
 # == appimage ==
 APPDIR  = $>/appdir/
 APPDIR2 = $>/appdir2/
-appimage: VERSION_LONG != ./version.sh -l
 appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$(QGEN)
 	$Q echo "  CHECK   " "for AppImage build with --prefix=/usr"
@@ -140,7 +139,6 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 # == bintray ==
 BINTRAY_KEEPS            = 99
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
-bintray: VERSION_LONG != ./version.sh -l
 bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
 	@: # upload beast-*-x64.AppImage if it exists
