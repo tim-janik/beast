@@ -198,3 +198,15 @@ int main (int argc, char *argv[])
   return 0;
 }
 endef
+
+# == ChangeLog ==
+CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
+		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
+$>/ChangeLog: $(GITCOMMITDEPS)					| $>/
+	$(QGEN)
+	$Q git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --first-parent \
+		--abbrev=11 --date=short $(CHANGELOG_RANGE)	 > $@.tmp	# Generate ChangeLog with ^^-prefixed records
+	$Q sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i $@.tmp	# Tab-indent commit bodies, kill trailing whitespaces
+	$Q sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'			-i $@.tmp	# Compress multiple newlines
+	$Q mv $@.tmp $@
+	$Q test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
