@@ -199,6 +199,23 @@ int main (int argc, char *argv[])
 }
 endef
 
+# == dist ==
+distname    ::= beast-$(VERSION_SHORT)
+disttarball ::= $>/$(distname).tar.xz
+dist_xz_opt  ?= -9e
+dist: all $>/ChangeLog FORCE
+	$(QGEN)
+	$Q DIFFLINES=`git diff HEAD | wc -l` \
+	  && { test 0 = $$DIFFLINES || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2 ; }
+	$Q git archive --format=tar --prefix=$(distname)/ HEAD		> $>/$(distname).tar
+	$Q rm -rf $>/.extradist/ && mkdir -p $>/.extradist/$(distname)/	\
+	  && : tar -C $>/.extradist/ -xf $>/$(distname).tar
+	$Q cp -a $>/doc/README $>/ChangeLog $>/.extradist/$(distname)/
+	$Q cd $>/.extradist/ && tar uhf $(abspath $>/$(distname).tar) $(distname)
+	$Q rm -f -r $>/.extradist/
+	$Q rm -f $>/$(distname).tar.xz && xz $(dist_xz_opt) $>/$(distname).tar && test -e $(disttarball)
+	$Q echo "Archive ready: $(disttarball)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+
 # == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
