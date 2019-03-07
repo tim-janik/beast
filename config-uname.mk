@@ -14,14 +14,14 @@ endif
 CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
 # == C/CXX/LD Flags ==
-COMMONFLAGS	::= -fno-strict-overflow -fno-strict-aliasing # sane C / C++
-COMMONFLAGS	 += -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations
+COMMONFLAGS	::= -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations
 COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-declaration
 #COMMONFLAGS	 += -Wdate-time -Wconversion -Wshadow
 CONLYFLAGS	::= -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
 CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
 #CXXONLYFLAGS	 += -Wnon-virtual-dtor -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 OPTIMIZE	::= -funroll-loops -ftree-vectorize
+SANITIZECC	::= -fno-strict-overflow -fno-strict-aliasing # sane C / C++
 LDMODEFLAGS	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
 
 ifeq ($(MODE),quick)
@@ -67,8 +67,8 @@ ifeq ($(uname_S),x86_64)
   #OPTIMIZE	 += -mavx			# Intel since 2011, AMD since 2011
   #OPTIMIZE	 += -mavx2			# Intel since 2013, AMD since 2015
 endif
-pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CFLAGS)
-pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE)) $(CXXFLAGS)
+pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE) $(SANITIZECC)) $(CFLAGS)
+pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE) $(SANITIZECC)) $(CXXFLAGS)
 pkgldflags	::= $(strip $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
 
 # == implicit rules ==
