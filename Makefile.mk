@@ -216,6 +216,69 @@ dist: all $>/ChangeLog FORCE
 	$Q rm -f $>/$(distname).tar.xz && xz $(dist_xz_opt) $>/$(distname).tar && test -e $(disttarball)
 	$Q echo "Archive ready: $(disttarball)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
 
+# == distcheck ==
+# Distcheck aims:
+# - build *outside* the original source tree to catch missing files or dirs, and without picking up parent directory contents;
+# - support parallel builds;
+# - verify that no CLEANFILES are shipped in dist tarball;
+# - check that $(DESTDIR) is properly honored in installation rules.
+# distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
+# distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
+#distcheck: distcheck_uniqdir ::= distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
+distcheck: distcheck_uniqdir ::= distcheck-beast-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:5]))")
+distcheck: $(disttarball)
+	$(QGEN)
+	$Q TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
+	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
+	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distname)" \
+	&& { test ! -e "$$DCDIR/" || { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } ; } \
+	&& mkdir -p "$$DCDIR" \
+	&& set -x \
+	&& cd "$$DCDIR" \
+	&& tar xf $(abspath $(disttarball)) \
+	&& cd "$(distname)" \
+	&& $(MAKE) default prefix="$$DCDIR/inst" \
+	&& touch dc-buildtree-cleaned \
+	&& find . ! -path './out/*' -print >dc-buildtree-files \
+	&& $(MAKE) clean \
+	&& find . ! -path './out/*' -print >dc-buildtree-cleaned \
+	&& diff -u dc-buildtree-files dc-buildtree-cleaned \
+	&& $(MAKE) $(AM_MAKEFLAGS) -j`nproc` \
+	&& $(MAKE) $(AM_MAKEFLAGS) check \
+	&& $(MAKE) $(AM_MAKEFLAGS) install \
+	&& $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	&& $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	&& $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck distuninstallcheck_dir="$$DCDIR/inst" \
+	&& chmod a-w -R "$$DCDIR/inst" \
+	&& mkdir -m 0700 "$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" install \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" uninstall \
+	&& $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$DCDIR/destdir" distuninstallcheck distuninstallcheck_dir="$$DCDIR/destdir" \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean \
+	&& set +x \
+	&& cd "$(abs_top_builddir)" \
+	&& { chmod u+w -R "$$DCDIR/" && rm -r "$$DCDIR/" ; } \
+	&& echo "OK: archive ready for distribution: $(disttarball)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+distuninstallcheck:
+	$Q test -n '$(distuninstallcheck_dir)' || { echo '$@: missing distuninstallcheck_dir' >&2; false; }
+	$Q cd '$(distuninstallcheck_dir)' \
+	  && test `$(distuninstallcheck_listfiles) | sed 's|^\./|$(prefix)/|' | wc -l` -eq 0 \
+	  || { echo "$@: ERROR: files left after uninstall:" ; \
+	       $(distuninstallcheck_listfiles) ; \
+	       false; } >&2
+
+# == distuninstallcheck ignores ==
+# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
+distuninstallcheck_listfiles  = find . -type f $(patsubst .../%, ! -path \*/%, $(distuninstallcheck_ignores)) -print
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
+distuninstallcheck_ignores = $(strip	\
+	.../share/mime/subclasses	.../share/mime/XMLnamespaces	.../share/mime/globs2	\
+	.../share/mime/version		.../share/mime/icons		.../share/mime/types	\
+	.../share/mime/treemagic	.../share/mime/aliases		.../share/mime/magic	\
+	.../share/mime/mime.cache	.../share/mime/generic-icons	.../share/mime/globs	\
+	.../share/applications/mimeinfo.cache	\
+)
+
 # == ChangeLog ==
 CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
 		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
