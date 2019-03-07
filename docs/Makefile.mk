@@ -36,22 +36,22 @@ $>/doc/%: %.md								| $>/doc/
 	$(QECHO) MD2TXT $@
 	$Q $(PANDOC) $(docs/md_flags) -t plain --columns=80 $< -o $@.tmp
 	$Q mv $@.tmp $@
-$>/doc/%.html: %.md								| $>/doc/
+$>/doc/%.html: %.md							| $>/doc/
 	$(QECHO) MD2TXT $@
 	$Q $(PANDOC) $(docs/md_flags) $(docs/html_flags) -t html5 $< -o $@.tmp
 	$Q mv $@.tmp $@
 
 # == .revd.md (INTERMEDIATE) ==
-$>/doc/%.revd.md: docs/%.md
-	$Q V=$$(./version.sh -s) && D=$$(./version.sh -d) \
+$>/doc/%.revd.md: docs/%.md						| $>/doc/
+	$Q V="$(VERSION_SHORT)" && D="$(VERSION_DATE)" \
 	  && sed "s/[@]BUILDID[@]/$$V/g ; s/[@]FILE_REVISION[@]/$${D%% *}/g" < $< > $@
 
 # == man build rules ==
-%.1: %.1.revd.md
+%.1: %.1.revd.md							| $>/doc/
 	$(QECHO) MD2MAN $@
 	$Q $(PANDOC) $(docs/md_flags) -s -t man $< -o $@.tmp
 	$Q mv $@.tmp $@
-%.5: %.5.revd.md
+%.5: %.5.revd.md							| $>/doc/
 	$(QECHO) MD2MAN $@
 	$Q $(PANDOC) $(docs/md_flags) -s -t man $< -o $@.tmp
 	$Q mv $@.tmp $@
