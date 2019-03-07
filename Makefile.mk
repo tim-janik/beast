@@ -178,7 +178,7 @@ installcheck-buildtest:
 		-c conftest_buildtest.cc \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
-	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest \
+	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest $(LDMODEFLAGS) \
 		`PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
