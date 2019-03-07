@@ -106,7 +106,7 @@ APPDIR  = $>/appdir/
 APPDIR2 = $>/appdir2/
 appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$(QGEN)
-	$Q echo "  CHECK   " "for AppImage build with --prefix=/usr"
+	$Q echo "  CHECK   " "for AppImage build with prefix=/usr"
 	$Q test '$(prefix)' = '/usr' || { echo "prefix=$(prefix)" >&2 ; false ; }
 	@: # AppDir installation
 	@echo '  INSTALL ' AppImage files
