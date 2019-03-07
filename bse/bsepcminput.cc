@@ -57,7 +57,7 @@ BSE_BUILTIN_TYPE (BsePcmInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_input_init,
   };
-#include "./icons/mic.c"
+#include "bse/icons/mic.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BsePcmInput",
                                          "Stereo PCM sound input module, per default, signals from this "

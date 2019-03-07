@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxklistwrapper.hh"
-#include "gxkmarshal.h"
+#include "gxk/gxkmarshal.h"
 #include "bse/internal.hh"
 #include <gtk/gtkmain.h>
 

@@ -10,7 +10,7 @@ BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEBASICS_IDL();
 } // Bse
 /* compile and initialize generated C stubs */
-#include "bsegenbasics.cc"
+#include "bse/bsegenbasics.cc"
 void
 _bse_init_c_wrappers (void)
 {

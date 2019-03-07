@@ -2,7 +2,6 @@
 #include "platform.hh"
 #include "path.hh"
 #include "bse/internal.hh"
-#include "../config/config.h"
 #include <unistd.h>
 #include <cstring>
 #include <fstream>
@@ -12,12 +11,17 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/syscall.h>        // SYS_gettid
+
 #if defined __APPLE__
 #include <mach-o/dyld.h>        // _NSGetExecutablePath
 #endif // __APPLE__
+
 #ifdef  _WIN32                  // includes _WIN64
 #include <windows.h>
-#endif  // _WIN32
+#define LIBTOOL_OBJDIR          "_libs"
+#else   // !_WIN32
+#define LIBTOOL_OBJDIR          ".libs"
+#endif  // !_WIN32
 
 namespace Bse {
 
@@ -31,7 +35,7 @@ runpath (RPath rpath)
   static bool using_objdir = false;
   static const std::string libbse_installdir = determine_libbse_installdir (&using_objdir);
   static const std::string libbse_prefixdir = Path::dirname (libbse_installdir);
-  const char *objdir = using_objdir ? "/" CONFIGURE_RELPATH_OBJDIR : "";
+  const char *objdir = using_objdir ? "/" LIBTOOL_OBJDIR : "";
   switch (rpath)
     {
     case RPath::PREFIXDIR:      return libbse_prefixdir;
@@ -43,10 +47,10 @@ runpath (RPath rpath)
     case RPath::DOCDIR:         return libbse_installdir + "/doc";
     case RPath::KEYBDIR:        return libbse_installdir + "/keys";
     case RPath::SKINDIR:        return libbse_installdir + "/skins";
-    case RPath::DEMODIR:        return libbse_installdir + "/Demos";
-    case RPath::EFFECTDIR:      return libbse_installdir + "/Effects";
-    case RPath::INSTRUMENTDIR:  return libbse_installdir + "/Instruments";
-    case RPath::SAMPLEDIR:      return libbse_installdir + "/Samples";
+    case RPath::DEMODIR:        return libbse_installdir + "/media/Demos";
+    case RPath::EFFECTDIR:      return libbse_installdir + "/media/Effects";
+    case RPath::INSTRUMENTDIR:  return libbse_installdir + "/media/Instruments";
+    case RPath::SAMPLEDIR:      return libbse_installdir + "/media/Samples";
     case RPath::LADSPADIRS:     return construct_ladspa_path();
     }
 }
@@ -83,7 +87,7 @@ static const char*
 initialized_bse_gettext_domain()
 {
   static const char *const gettexttextdomain = [] () {
-    const char *const gtdomain = BST_GETTEXT_DOMAIN;
+    const char *const gtdomain = BSE_GETTEXT_DOMAIN;
     bindtextdomain (gtdomain, Bse::runpath (Bse::RPath::LOCALEDIR).c_str());
     bind_textdomain_codeset (gtdomain, "UTF-8");
     return gtdomain;
@@ -440,6 +444,12 @@ get_x86_cpu_features (CPUInfo *ci)
   return true;
 }
 
+std::string
+cpu_arch ()
+{
+  return get_arch_name();
+}
+
 /** The returned string contains: number of online CPUs, a string
  * describing the CPU architecture, the vendor and finally
  * a number of flag words describing CPU features plus a trailing space.
@@ -519,7 +529,7 @@ timestamp_init_ ()
     if (clock_getres (CLOCK_REALTIME, &tp) >= 0)
       monotonic_resolution = tp.tv_sec * 1000000000ULL + tp.tv_nsec;
     uint64 mstart = realtime_start;
-#ifdef CLOCK_MONOTONIC
+#ifdef CLOCK_MONOTONIC          // time.h
     // CLOCK_MONOTONIC_RAW cannot slew, but doesn't measure SI seconds accurately
     // CLOCK_MONOTONIC may slew, but attempts to accurately measure SI seconds
     if (monotonic_clockid == CLOCK_REALTIME && clock_getres (CLOCK_MONOTONIC, &tp) >= 0)
@@ -716,7 +726,7 @@ determine_libbse_installdir (bool *using_objdir)
   char intlibname[256] = { 0, };
   snprintf (intlibname, sizeof (intlibname), "/bse/libbse-%u.so", BSE_MAJOR_VERSION);
   char lbtlibname[256] = { 0, };
-  snprintf (lbtlibname, sizeof (lbtlibname), "/bse/%s/libbse-%u.so", CONFIGURE_RELPATH_OBJDIR, BSE_MAJOR_VERSION);
+  snprintf (lbtlibname, sizeof (lbtlibname), "/bse/%s/libbse-%u.so", LIBTOOL_OBJDIR, BSE_MAJOR_VERSION);
   std::string cxxline;
   while (std::getline (maps, cxxline))
     {
@@ -734,13 +744,13 @@ determine_libbse_installdir (bool *using_objdir)
           const char *const intlibso = strstr (path, intlibname);               // by internal name
           if (intlibso && !strchr (intlibso + strlen (intlibname), '/'))        // not dirname
             {
-              *using_objdir = true;
-              return std::string (path, intlibso - path);                       // path fragment before /bse/.libs/lib*.so
+              *using_objdir = false;
+              return std::string (path, intlibso - path);                       // path fragment before /bse/lib*.so
             }
           const char *const lbtlibso = strstr (path, lbtlibname);               // by libtool internal name
           if (lbtlibso && !strchr (lbtlibso + strlen (lbtlibname), '/'))        // not dirname
             {
-              *using_objdir = false;
+              *using_objdir = true;
               return std::string (path, lbtlibso - path);                       // path fragment before /bse/.libs/lib*.so
             }
         }
@@ -752,7 +762,7 @@ determine_libbse_installdir (bool *using_objdir)
 std::string
 version ()
 {
-  return PACKAGE_VERSION;
+  return BSE_VERSION_STRING;
 }
 
 static String cached_program_alias;

@@ -311,7 +311,7 @@ BSE_BUILTIN_TYPE (BseSubOPort)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_oport_init,
   };
-#include "./icons/virtual-output.c"
+#include "bse/icons/virtual-output.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubOPort",
                                          "Virtual output port connector, used to provide a synthesis network "

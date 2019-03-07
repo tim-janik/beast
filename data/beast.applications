@@ -1,0 +1,8 @@
+beast
+	command=beast
+	name=Beast
+	can_open_multiple_files=true
+	expects_uris=false
+	uses_gnomevfs=false
+	requires_terminal=false
+	mime_types=audio/x-bse,audio/x-bsewave,audio/wav,audio/x-wav,application/ogg,application/x-ogg,audio/x-vorbis,audio/x-ogg,audio/mp3,audio/x-mp3

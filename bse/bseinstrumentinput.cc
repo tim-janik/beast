@@ -138,7 +138,7 @@ BSE_BUILTIN_TYPE (BseInstrumentInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_input_init,
   };
-#include "./icons/keyboard.c"
+#include "bse/icons/keyboard.c"
   GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
                                          "BseInstrumentInput",
                                          "Virtual input module for synthesis networks which "

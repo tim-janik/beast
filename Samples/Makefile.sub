@@ -1,9 +1,0 @@
-# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-
-Samples-install:     install-Samples_sampleDATA
-Samples-uninstall: uninstall-Samples_sampleDATA
-
-Samples_sample_DATA = $(strip		\
-	Samples/retrokit.bsewave	\
-)
-Samples_sampledir = $(pkginstalldir)/Samples

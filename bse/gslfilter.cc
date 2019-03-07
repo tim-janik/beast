@@ -1391,8 +1391,6 @@ gsl_filter_sine_scan (guint	     order,
   return volume;
 }
 
-
-
-
-
-/* vim:set ts=8 sts=2 sw=2: */
+// == gslfft implementation ==
+// compile generated fft code
+#include "bse/gslfft.cc"

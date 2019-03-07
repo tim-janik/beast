@@ -3,7 +3,6 @@
 #define __BSE_CORE_HH__
 
 #include <bse/sfi.hh>
-#include <bse/bseconfig.h>
 
 /// The Bse namespace contains all functions of the synthesis engine.
 namespace Bse {

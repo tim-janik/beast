@@ -157,6 +157,7 @@ print_block (GslWaveChunk      *wchunk,
   if (verbosity >= VERBOSITY_BLOCKS)
     printout ("\n");
 }
+
 static void
 reversed_datahandle_test (void)
 {
@@ -164,7 +165,6 @@ reversed_datahandle_test (void)
   GslDataHandle *rhandle1, *rhandle2;
   GslLong o, l, i, e;
   Bse::Error error;
-  TSTART ("reversed datahandle");
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   rhandle1 = gsl_data_handle_new_reverse (myhandle);
   gsl_data_handle_unref (myhandle);
@@ -193,12 +193,12 @@ reversed_datahandle_test (void)
       TOK();
     }
   gsl_data_handle_close (rhandle2);
-  TDONE();
 }
+TEST_ADD (reversed_datahandle_test);
+
 static void
 simple_loop_tests (void)
 {
-  TSTART ("simple loop");
   run_loop_test (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
   TOK();
   run_loop_test (GSL_WAVE_LOOP_NONE, 1, 0, 0, 0);
@@ -213,18 +213,18 @@ simple_loop_tests (void)
   TOK();
   run_loop_test (GSL_WAVE_LOOP_PINGPONG, -1, 0, 0, 0);
   TOK();
-  TDONE();
 }
+TEST_ADD (simple_loop_tests);
+
 static void
-brute_force_loop_tests (void)
+full_loop_tests (int jinc, int kinc, const char *kind)
 {
-  gint i, count = 6;
+  int i, count = 6;
   for (i = 1; i <= count; i++)
     {
-      TSTART ("brute force loop test %d/%d", i, 6);
-      for (uint j = 0; j < my_data_length - 1; j++)
+      for (uint j = 0; j < my_data_length - 1; j += jinc)
         {
-          for (uint k = j + 1; k < my_data_length; k++)
+          for (uint k = j + 1; k < my_data_length; k += kinc)
             {
               run_loop_test (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
               run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
@@ -233,9 +233,24 @@ brute_force_loop_tests (void)
             }
           TOK();
         }
-      TDONE();
+      printout ("  OK       %s loop test %d/%d\n", kind, i, 6);
     }
 }
+
+static void
+fast_loop_tests (void)
+{
+  full_loop_tests (5, 7, "Fast");
+}
+TEST_ADD (fast_loop_tests);
+
+static void
+brute_force_loop_tests (void)
+{
+  full_loop_tests (1, 1, "Brute force");
+}
+TEST_SLOW (brute_force_loop_tests);
+
 static float *
 gen_expect (float *out,
             int    begin,
@@ -322,10 +337,10 @@ multi_channel_test_one (int pingpong,
   free (expect);
   free (my_data);
 }
+
 static void
 multi_channel_tests()
 {
-  TSTART ("multi channel loop");
   int pingpong;
   for (pingpong = 0; pingpong != 2; pingpong++)
     {
@@ -354,19 +369,5 @@ multi_channel_tests()
             TOK();
         }
     }
-  TDONE();
 }
-int
-main (gint   argc,
-      gchar *argv[])
-{
-  /* init */
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL));
-  // "wave-chunk-big-pad=2", "dcache-block-size=16"
-  reversed_datahandle_test();
-  simple_loop_tests();
-  multi_channel_tests();
-  if (Bse::Test::slow())
-    brute_force_loop_tests();
-  return 0;
-}
+TEST_ADD (multi_channel_tests);

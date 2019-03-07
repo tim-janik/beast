@@ -63,7 +63,7 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_wave_osc_init,
   };
-#include "./icons/waveosc.c"
+#include "bse/icons/waveosc.c"
   GType type;
 
   type = bse_type_register_static (BSE_TYPE_SOURCE,

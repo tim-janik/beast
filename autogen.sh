@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -xe # be verbose and abort on errors
+# set -xe # be verbose and abort on errors
+
+echo "Use 'make help', autoconf, autogen.sh, configure.ac are not supported" >&2
+exit 7
+
 
 rm -rf autom4te.cache/ ./config.cache ./config.status
 

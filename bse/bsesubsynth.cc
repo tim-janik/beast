@@ -69,7 +69,7 @@ BSE_BUILTIN_TYPE (BseSubSynth)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_synth_init,
   };
-#include "./icons/virtual-synth.c"
+#include "bse/icons/virtual-synth.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubSynth",
                                          "This module encapsulates whole synthesizer networks, by "

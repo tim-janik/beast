@@ -56,7 +56,7 @@ BSE_BUILTIN_TYPE (BseConstant)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_constant_init,
   };
-#include "./icons/const.c"
+#include "bse/icons/const.c"
   GType type_id;
 
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,

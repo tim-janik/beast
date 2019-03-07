@@ -54,7 +54,7 @@ BSE_BUILTIN_TYPE (BseMidiInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_input_init,
   };
-#include "./icons/mono-synth.c"
+#include "bse/icons/mono-synth.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseMidiInput",
                                          "Monophonic MIDI input module. With this module, monophonic "

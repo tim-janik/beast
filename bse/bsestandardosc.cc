@@ -82,7 +82,7 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_standard_osc_init,
   };
-#include "./icons/osc.c"
+#include "bse/icons/osc.c"
   GType type;
 
   type = bse_type_register_static (BSE_TYPE_SOURCE,

@@ -60,7 +60,7 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_biquad_filter_init,
   };
-#include "./icons/biquad.c"
+#include "bse/icons/biquad.c"
   GType type;
 
   type = bse_type_register_static (BSE_TYPE_SOURCE,

@@ -2,7 +2,7 @@
 #ifndef __BSE_PLUGIN_H__
 #define __BSE_PLUGIN_H__
 
-#include	<bse/bseexports.hh>
+#include <bse/bseexports.hh>
 
 
 /* --- BSE type macros --- */

@@ -179,3 +179,13 @@ bst_xkb_parse_symbol (const gchar *const_symbol,
   if (variant_p)
     *variant_p = s ? g_strndup (symbol, s - symbol) : NULL;
 }
+
+bool
+bst_have_xkb ()
+{
+#if __has_include(<X11/XKBlib.h>)
+  return 1;
+#else
+  return 0;
+#endif
+}

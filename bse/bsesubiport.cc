@@ -310,7 +310,7 @@ BSE_BUILTIN_TYPE (BseSubIPort)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_iport_init,
   };
-#include "./icons/virtual-input.c"
+#include "bse/icons/virtual-input.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubIPort",
                                          "Virtual input port connector, used to provide a synthesis network "

@@ -18,6 +18,7 @@ using std::vector;
 using std::max;
 using std::min;
 
+namespace { // Anon
 struct Options
 {
   size_t test_size;
@@ -29,6 +30,7 @@ struct Options
   {
   }
 } options;
+} // Anon
 
 class ResamplerTest
 {
@@ -190,8 +192,6 @@ run_tests (const char *label)
         {
           p = new_p;
 
-          TSTART ("Resampler %s Precision %d", label, p);
-
           ResamplerTest rt_up;
           rt_up.check_resampler_up (p);
 
@@ -212,20 +212,21 @@ run_tests (const char *label)
           //printf ("## DOWN %d %.17g %.17g %.17g\n", p, bse_db_from_factor (rt_down.max_error, -200),
                                                     //bse_db_from_factor (rt_down.passband_err, -200),
                                                     //bse_db_from_factor (rt_down.stopband_err, -200));
-          TDONE();
+          printout ("  OK       Resampler %s Precision %d\n", label, p);
         }
     }
 }
 
-int
-main (int argc, char **argv)
+static void
+test_resampler_variants()
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
-  Bse::Test::init (&argc, argv);
+  //Bse::Test::init (&argc, argv);
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
+#if 0
   if (argc > 1)
     {
       options.test_size = atoi (argv[1]);
@@ -234,11 +235,14 @@ main (int argc, char **argv)
     {
       options.rand_samples = atoi (argv[2]);
     }
-  assert_return (options.rand_samples <= options.test_size / 2, -1);
-  assert_return (options.test_size >= 128, -1);
+#endif
+
+  assert_return (options.rand_samples <= options.test_size / 2);
+  assert_return (options.test_size >= 128);
   TNOTE ("Resampler test parameters: test_size=%zd rand_samples=%zd", options.test_size, options.rand_samples);
   run_tests ("FPU");
 
+#if 0
   /* load plugins */
   diag_abort_hook (NULL); // hack to allow test reinitialization
   bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
@@ -246,5 +250,6 @@ main (int argc, char **argv)
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */
   run_tests ("SSE");
-  return 0;
+#endif
 }
+TEST_ADD (test_resampler_variants);

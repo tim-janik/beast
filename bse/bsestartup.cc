@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsestartup.hh"
-#include "../config/config.h"   // BST_VERSION
 #include "bsemain.hh"
 #include "bse/internal.hh"
 #include <bse/bseapi_handles.hh>
@@ -151,7 +150,7 @@ init_server_connection () // bse.hh
 {
   if (!client_connection)
     {
-      Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+      Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" + Bse::version());
       ServerH bseconnection_server_handle;
       if (connection)
         bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
@@ -167,4 +166,4 @@ init_server_connection () // bse.hh
 
 } // Bse
 
-#include "bseapi_handles.cc"      // build IDL client interface
+#include "bse/bseapi_handles.cc"        // build IDL client interface

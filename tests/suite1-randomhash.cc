@@ -292,7 +292,7 @@ random_hash_benchmarks()
   bench_time = timer.benchmark (mix_shake256);
   TPASS ("Shake256        # size=%-4zd timing: fastest=%fs throughput=%.1fMB/s\n", sizeof (SHAKE256), bench_time, N_BYTES / bench_time / 1048576.);
 }
-TEST_ADD (random_hash_benchmarks);
+TEST_BENCH (random_hash_benchmarks);
 
 static void
 test_pcg32()

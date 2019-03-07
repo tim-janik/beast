@@ -48,7 +48,7 @@ module.exports = {
 	}
 	if (this.project_) {
 	  // __dirname is invalid inside vue components
-	  let example = window.BEASTDIR + '/Demos/partymonster.bse';
+	  let example = window.BEASTDIR + '/media/Demos/partymonster.bse';
 	  this.project_.restore_from_file (example);
 	  const path = require ('path');
 	  this.project_.set_name (path.basename (example));

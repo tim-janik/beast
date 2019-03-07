@@ -5,7 +5,8 @@ SCRIPTNAME=${0#*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 127
 test -e bse/bsemain.cc || die "script needs to run in beast/ root"
 
 # prepare input file list
-FILELIST=.ls.cppcheck
+OUTDIR="${OUTDIR:-.}"
+FILELIST=$OUTDIR/.ls.cppcheck
 echo >$FILELIST
 trap "rm -f $FILELIST" ERR EXIT
 
@@ -51,12 +52,12 @@ ${CPPCHECK:-cppcheck} $PARALLEL --enable=$CHECKLIST \
     `cat $FILELIST` \
     2> >(
   sed -r 's/^\[([^: ]+:[0-9]+)\]:? /\1: /' | # fix extraneous []-brakets so editors can match locations
-    tee cppcheck.err
+    tee $OUTDIR/cppcheck.err
 )
 
 # display error log
-test -e cppcheck.err && {
-  MSG="Logfile: "`wc ./cppcheck.err`
+test -e $OUTDIR/cppcheck.err && {
+  MSG="Logfile: "`wc $OUTDIR/cppcheck.err`
   echo "$MSG" | sed 's/./=/g'
   echo "$MSG"
 }

@@ -7,6 +7,7 @@
 
   <script> /* Load Electron, Bse, Vue, setup DevTools and Util */
   'use strict';
+
   // stderr logging of console messages
   if (console !== undefined) {
     const duplog = function (ofun) {
@@ -20,14 +21,31 @@
     console.warn = duplog (console.warn);
     console.error = duplog (console.error);
   }
+  // log all errors
+  window.addEventListener ('error', event => {
+    const errmsg = event.filename + ':' + event.lineno + ': Error: ' + event.message;
+    console.log (errmsg);
+  });
   const assert = console.assert;
+
   // load Electronjs utilities
   const Electron = require ('electron').remote;
   // provide global constants
   const MAXINT = 2147483647, MAXUINT = 4294967295;
   { MAXINT; MAXUINT; } // linter: not unused
   const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
-  window.BEASTDIR = __dirname + '/../../'; // $prefix/beast-$VESION/bundle/app/../../
+  // show DevTools on hotkey
+  if (HAVE_DEVELOPMENT_TOOLS)
+    document.addEventListener ("keydown", (event) => {
+      const code = event.which || event.keyCode;
+      if (event.shiftKey && event.ctrlKey && code == 73) // Shift+Ctrl+I
+	Electron.getCurrentWindow().toggleDevTools();
+      if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
+	window.location.reload();
+      // Electron.getCurrentWindow().webContents.setZoomFactor (1);
+    });
+
+  window.BEASTDIR = __dirname + '/../'; // $prefix/beast-$VESION/app/../
   // pull in jQuery
   console.assert (window.jQuery === undefined);
   const $ = require ('jquery');
@@ -45,16 +63,6 @@
   Vue.prototype._ = _;
   // load Vue components, bundled via vc/bundle.js
   require ('./assets/components.js'); // adding './' avoids node_modules/-relative lookup
-  // show DevTools on hotkey
-  if (HAVE_DEVELOPMENT_TOOLS)
-    document.addEventListener ("keydown", (event) => {
-      const code = event.which || event.keyCode;
-      if (event.shiftKey && event.ctrlKey && code == 73) // Shift+Ctrl+I
-	Electron.getCurrentWindow().toggleDevTools();
-      if (event.shiftKey && event.ctrlKey && code == 82) // Shift+Ctrl+R
-	window.location.reload();
-      // Electron.getCurrentWindow().webContents.setZoomFactor (1);
-    });
   </script>
 
 </head>

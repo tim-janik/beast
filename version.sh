@@ -16,13 +16,13 @@ UNOFFICIAL=snapshot
 
 # Notes on scenario variants.
 # 1) The Beast tree may be created as a checkout with temporary GIT_DIR. Then, the only way
-#    to guess a version number is peeking at the top NEWS entry. This is never a release build.
+#    to guess a version number is peeking at the top NEWS.md entry. This is never a release build.
 # 2) The Beast tree may be the result of extracting a 'git archive', in which case $Format...$
 #    extraction has occoured. The extracted refs may or may not contain a release tag. A tag
 #    will be present if the archive was a release tarball, or downloaded from release-tag
-#    version as Github archive. A release tag matching the top NEWS entry is a release build.
+#    version as Github archive. A release tag matching the top NEWS.md entry is a release build.
 # 3) We are operating on a normal Git repository, the current checkout may be referenced
-#    by a release tag. A release tag matching the top NEWS entry is a release build.
+#    by a release tag. A release tag matching the top NEWS.md entry is a release build.
 
 # Output for release versions may look like:
 #    1.2.3 v1.2.3-tarball 2001-01-01 01:01:01 +0000
@@ -48,10 +48,10 @@ exit_with_version() { # exit_with_version <version> <buildid> <releasedate>
   exit 0
 }
 
-# Determine version from NEWS file
+# Determine version from NEWS.md file
 peek_news_version() {
-  test -r NEWS &&
-    sed -nr '/^##\s.*[0-9]+\.[0-9]+\.[0-9]/ { s/.*\s([0-9]+\.[0-9]+\.[0-9]+[a-z0-9A-Z-]+)\b.*/\1/; p; q }' NEWS
+  test -r NEWS.md &&
+    sed -nr '/^##\s.*[0-9]+\.[0-9]+\.[0-9]/ { s/.*\s([0-9]+\.[0-9]+\.[0-9]+[a-z0-9A-Z-]+)\b.*/\1/; p; q }' NEWS.md
 }
 
 # Determine version from ./.git if present
@@ -89,7 +89,7 @@ test -n "$LAST_TAG" && {
 
 # Use NEWS_VERSION as last resort
 NEWS_VERSION="$(peek_news_version)" &&
-  NEWS_DATE="$(stat -c %y NEWS | sed 's/\.[0-9]\+//')" ||
+  NEWS_DATE="$(stat -c %y NEWS.md | sed 's/\.[0-9]\+//')" ||
     NEWS_VERSION=
 test -n "$NEWS_VERSION" &&
   exit_with_version "$NEWS_VERSION-$UNOFFICIAL" "$NEWS_VERSION-$UNOFFICIAL$(date +-%y%m%d)" "$NEWS_DATE"

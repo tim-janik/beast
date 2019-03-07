@@ -1,19 +1,24 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemididevice-oss.hh"
+
+#ifndef	BSE_MIDI_DEVICE_CONF_OSS
+#define BSE_MIDI_DEVICE_CONF_OSS "/dev/midi"
+#endif
+
+#if     __has_include(<sys/soundcard.h>)
+#include <sys/soundcard.h>
+#elif   __has_include(<soundcard.h>)
+#include <soundcard.h>
+#else
+#undef  BSE_MIDI_DEVICE_CONF_OSS
+BSE_DUMMY_TYPE (BseMidiDeviceOSS);
+#endif
+
+#ifdef	BSE_MIDI_DEVICE_CONF_OSS // have sys/soundcard.h or soundcard.h
 #include "bseserver.hh"
 #include "bsemididecoder.hh"
 #include "gslcommon.hh" // FIXME: remove
 #include "bsesequencer.hh"
-
-#ifndef	BSE_MIDI_DEVICE_CONF_OSS
-BSE_DUMMY_TYPE (BseMidiDeviceOSS);
-#else   /* BSE_MIDI_DEVICE_CONF_OSS */
-#if HAVE_SYS_SOUNDCARD_H
-#include <sys/soundcard.h>
-#elif HAVE_SOUNDCARD_H
-#include <soundcard.h>
-#endif
-
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/time.h>

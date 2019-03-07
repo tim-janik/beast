@@ -1286,9 +1286,9 @@ class Generator:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
     # inclusions
     if self.gen_clientcc and not self.gen_clienthh:
-      s += '#include "%s"\n' % self.filename_clienthh
+      s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
     if self.gen_servercc and not self.gen_serverhh:
-      s += '#include "%s"\n' % self.filename_serverhh
+      s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_inclusions:
       s += '\n// --- Custom Includes ---\n'
     if self.gen_inclusions and (self.gen_clientcc or self.gen_servercc):
@@ -1480,7 +1480,7 @@ def generate (namespace_list, **args):
   idlfiles = config['files']
   if len (idlfiles) != 1:
     raise RuntimeError ("CxxStub: exactly one IDL input file is required")
-  outname = config.get ('output', '-')
+  outdir = config.get ('output', '')
   gg = Generator (idlfiles[0])
   gg.gen_aidaids = True
   gg.gen_inclusions = config['inclusions']
@@ -1501,6 +1501,8 @@ def generate (namespace_list, **args):
     gg.insertion_file (ifile)
   gg.ns_aida = ( Decls.Namespace ('Aida', None, []), )  # Aida namespace tuple for open_namespace()
   base_filename = gg.idl_file[:gg.idl_file.rfind ('.')] # strip extension
+  if outdir:
+    base_filename = os.path.join (outdir, os.path.basename (base_filename))
   gg.filename_serverhh = base_filename + '_interfaces.hh'
   gg.filename_servercc = base_filename + '_interfaces.cc'
   gg.filename_clienthh = base_filename + '_handles.hh'

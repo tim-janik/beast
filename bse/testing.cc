@@ -223,19 +223,34 @@ random_frange (double begin, double end)
 // == TestChain ==
 static const TestChain *global_test_chain = NULL;
 
-TestChain::TestChain (std::function<void()> tfunc, const std::string &tname) :
-  name_ (tname), func_ (tfunc), next_ (global_test_chain)
+TestChain::TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind) :
+  name_ (tname), func_ (tfunc), next_ (global_test_chain), kind_ (kind)
 {
   assert_return (next_ == global_test_chain);
   global_test_chain = this;
 }
 
+static bool
+match_testname (const std::string &name, const StringVector &test_names)
+{
+  for (const auto &tname : test_names)
+    if (name == tname)
+      return true;
+  return false;
+}
+
 void
-TestChain::run (ptrdiff_t internal_token)
+TestChain::run (ptrdiff_t internal_token, const StringVector *test_names)
 {
   assert_return (internal_token == ptrdiff_t (global_test_chain));
   for (const TestChain *t = global_test_chain; t; t = t->next_)
     {
+      if (test_names && !match_testname (t->name_, *test_names))
+        continue;
+      if (!test_names && (t->kind_ == SLOW ||
+                          t->kind_ == BENCH ||
+                          t->kind_ == BROKEN))
+        continue;
       fflush (stderr);
       printout ("  RUN…     %s\n", t->name_);
       fflush (stdout);
@@ -247,9 +262,16 @@ TestChain::run (ptrdiff_t internal_token)
 }
 
 int
+run (const StringVector &test_names)
+{
+  TestChain::run (ptrdiff_t (global_test_chain), &test_names);
+  return 0;
+}
+
+int
 run (void)
 {
-  TestChain::run (ptrdiff_t (global_test_chain));
+  TestChain::run (ptrdiff_t (global_test_chain), NULL);
   return 0;
 }
 

@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsldatahandle-vorbis.hh"
-#include "../config/config.h"
 #include "gslfilehash.hh"
 #include "bse/internal.hh"
 #include <ogg/ogg.h>
@@ -140,7 +139,7 @@ static int
 dh_vorbis_page_seek (VorbisHandle *vhandle, int64 pos)
 {
   int err;
-#if VORBISFILE_BADSEEK == 1
+#if BSE_VORBISFILE_BAD_SEEK == 1
   // libvorbisfile-1.3.4 and earlier like to segfault while seeking around EOF on small files
   // so ov_pcm_seek and ov_pcm_seek_page cannot be used reliably, this is a crude workaround
   err = ov_raw_seek (&vhandle->ofile, 0);

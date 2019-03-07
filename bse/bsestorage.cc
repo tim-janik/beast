@@ -220,9 +220,9 @@ bse_storage_reset (BseStorage *self)
     sfi_ppool_destroy (self->referenced_items);
   self->referenced_items = NULL;
 
-  self->major_version = BST_MAJOR_VERSION;
-  self->minor_version = BST_MINOR_VERSION;
-  self->micro_version = BST_MICRO_VERSION;
+  self->major_version = BSE_MAJOR_VERSION;
+  self->minor_version = BSE_MINOR_VERSION;
+  self->micro_version = BSE_MICRO_VERSION;
 
   for (i = 0; i < self->n_dblocks; i++)
     {
@@ -299,7 +299,7 @@ bse_storage_prepare_write (BseStorage    *self,
     mode = BseStorageMode (mode | BSE_STORAGE_SELF_CONTAINED);
   self->set_flag (mode);
   bse_storage_break (self);
-  bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION);
+  bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
 }
 
 void
