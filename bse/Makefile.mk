@@ -311,6 +311,14 @@ bse/libbse.sources ::= $(strip		\
 	bse/unicode.cc			\
 	bse/weaksym.cc			\
 )
+bse/include.idls ::= $(strip		\
+	bse/bse.idl			\
+	bse/bsebasics.idl		\
+	bse/bsebusmodule.idl		\
+	bse/bsecxxbase.idl		\
+	bse/bsecxxmodule.idl		\
+	$>/bse/bsehack.idl		\
+)
 bse/libbse.deps     ::= $(strip		\
 	$>/bse/bseapi_handles.hh	\
 	$>/bse/bseapi_interfaces.hh	\
@@ -335,7 +343,7 @@ bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
 bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
-bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps)
+bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 
 # == bsetool defs ==
 bse/bsetool         ::= $>/bse/bsetool
