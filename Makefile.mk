@@ -203,7 +203,7 @@ endef
 distname    ::= beast-$(VERSION_LONG)
 disttarball ::= $>/$(distname).tar.xz
 dist_xz_opt  ?= -9e
-dist: all $>/ChangeLog FORCE
+dist: $>/doc/README $>/ChangeLog FORCE
 	$(QGEN)
 	$Q DIFFLINES=`git diff HEAD | wc -l` \
 	  && { test 0 = $$DIFFLINES || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2 ; }
@@ -215,6 +215,7 @@ dist: all $>/ChangeLog FORCE
 	$Q rm -f -r $>/.extradist/
 	$Q rm -f $>/$(distname).tar.xz && xz $(dist_xz_opt) $>/$(distname).tar && test -e $(disttarball)
 	$Q echo "Archive ready: $(disttarball)" | sed '1h; 1s/./=/g; 1p; 1x; $$p; $$x'
+CLEANFILES += $(wildcard $>/beast-*.tar $>/beast-*.tar.xz)
 
 # == distcheck ==
 # Distcheck aims:
@@ -290,3 +291,4 @@ $>/ChangeLog: $(GITCOMMITDEPS)					| $>/
 	$Q sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'			-i $@.tmp	# Compress multiple newlines
 	$Q mv $@.tmp $@
 	$Q test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
+CLEANFILES += $>/ChangeLog
