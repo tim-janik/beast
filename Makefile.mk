@@ -150,6 +150,8 @@ help: FORCE
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 	@echo '  make O=DIR      - Create all output files in DIR'
 	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
+	@echo "  make MODE=...   - Optimize build to be 'quick' or for 'release' mode binaries."
+	@echo '                    Posible debug modes: debug, asan, lsan, tsan, ubsan'
 
 # == all rules ==
 all: $(ALL_TARGETS) $(ALL_TESTS)
