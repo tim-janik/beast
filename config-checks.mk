@@ -148,3 +148,8 @@ CLEANFILES += $>/config-stamps.sha256 $>/config-cache.mk $>/config-cache.old
 # 2-phase regeneration of config-cache.mk that trips up config-stamps.sha256.
 
 VERSION_M.M.M = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
+VERSION_LONG != ./version.sh -l
+VERSION_DATE != ./version.sh -d
+ifeq ('','$(VERSION_LONG)')
+$(error Failed to determine version through ./version.sh)
+endif
