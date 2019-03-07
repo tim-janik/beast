@@ -78,7 +78,7 @@ EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
 include config-utils.mk
 include config-uname.mk
 include config-checks.mk
-.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS
+.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS LDLIBS
 
 # == enduser targets ==
 all: FORCE

@@ -43,7 +43,7 @@ endif
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST
 conftest_lib = { { echo '\#include <$(strip $1)>' \
                 && echo 'int main() { return 0 == (int) (long) (void*) &($2); }' ; } > "$>/conftest_lib-$$$$.cc" \
-		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "$>/conftest_lib-$$$$.cc" -o "$>/conftest_lib-$$$$" $(LDFLAGS) $3 2>&1) \
+		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "$>/conftest_lib-$$$$.cc" -o "$>/conftest_lib-$$$$" $(LDFLAGS) $3 $(LDLIBS) 2>&1) \
 		     && CONFTEST=true || CONFTEST=false ; } \
 		&& rm -f "$>/conftest_lib-$$$$.cc" "$>/conftest_lib-$$$$" ; }
 conftest_lib.makefile ::= $(lastword $(MAKEFILE_LIST))

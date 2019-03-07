@@ -94,8 +94,8 @@ $1: $2	$3
 	$$(QECHO) LD $$@
 	$$(call LINKER.pre-hook,$@)
 	$$(call LINKER.solink-hook,$@)
-	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 \
-		$$(if $$(findstring --version-script, $$(pkgldflags) $$($$@.LDFLAGS) $2 $4), $$(useld_fast+vs), $$(useld_fast)) \
+	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(LDLIBS) \
+		$$(if $$(findstring --version-script, $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(LDLIBS)), $$(useld_fast+vs), $$(useld_fast)) \
 		$(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -L'$$(@D)/$P') -Wl$,--print-map >$$@.map
 	$$(call LINKER.xdbg-hook,$@)
 	$$(call LINKER.post-hook,$@)
