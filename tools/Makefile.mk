@@ -7,6 +7,7 @@ tools/rpath..libbse ::= ../lib
 tools/bsetool.sources ::= $(strip	\
 	tools/bsetool.cc		\
 	tools/magictest.cc		\
+	tools/bsefextract.cc		\
 )
 tools/bsetool         ::= $>/tools/bsetool
 tools/bsetool.objects ::= $(sort $(tools/bsetool.sources:%.cc=$>/%.o))

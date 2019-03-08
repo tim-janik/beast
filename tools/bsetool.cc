@@ -38,6 +38,8 @@ ArgParser::parse_args (const uint argc, char *const argv[])
   // fill names_ from args_
   for (size_t i = 0; i < n_args_; i++)
     {
+      if (!args_[i].arg_name)
+        continue;
       StringVector names = string_split (args_[i].arg_name, ",");
       for (size_t j = 0; j < names.size(); j++)
         {
