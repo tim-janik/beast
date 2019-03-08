@@ -18,6 +18,16 @@ ArgParser::operator[] (const String &arg_name) const
   return adesc->value;
 }
 
+ArgDescriptions
+ArgParser::list_args () const
+{
+  ArgDescriptions args;
+  for (size_t i = 0; i < n_args_; i++)
+    if (args_[i].arg_name && args_[i].arg_name[0])
+      args.push_back (args_[i]);
+  return args;
+}
+
 String
 ArgParser::parse_args (const uint argc, char *const argv[])
 {
@@ -425,6 +435,45 @@ type_tree (const ArgParser &ap)
 
 static CommandRegistry type_tree_cmd (type_tree_options, type_tree, "type-tree", "Printout the BSE type tree");
 
+// == help ==
+static ArgDescription help_options[] = {
+  { "",         "",     "",     "" },
+};
+
+static String
+print_help (const ArgParser &ap)
+{
+  printout ("bsetool version %s\n", Bse::version());
+  printout ("Usage: bsetool <command> [args...]\n");
+  printout ("Commands:\n");
+  std::vector<CommandRegistry*> cmds;
+  for (CommandRegistry *cmd = CommandRegistry::chain_start(); cmd; cmd = cmd->next())
+    cmds.push_back (cmd);
+  auto cmp_cmd = [] (const CommandRegistry *a, const CommandRegistry *b) -> bool {
+    return a->name() < b->name();
+  };
+  std::stable_sort (cmds.begin(), cmds.end(), cmp_cmd);
+  for (const auto *cmd : cmds)
+    {
+      printout ("  %-16s %s\n", cmd->name(), cmd->blurb());
+      for (const auto &arg : cmd->list_args())
+        {
+          String aname = String (arg.arg_name);
+          if (arg.value_name && arg.value_name[0])
+            {
+              aname += " ";
+              aname += arg.value_name;
+            }
+          if (aname.size() <= 14)
+            printout ("    %-14s %s\n", aname, arg.arg_blurb);
+          else
+            printout ("    %s\n%18s %s\n", aname, "", arg.arg_blurb);
+        }
+    }
+  return ""; // success
+}
+
+static CommandRegistry help_cmd (help_options, print_help, "help", "Print commands and options");
 
 // == bse tool ==
 static ArgDescription bsetool_options[] = {

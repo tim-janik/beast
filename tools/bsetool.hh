@@ -17,18 +17,20 @@ struct ArgDescription {
   const char *arg_name, *value_name, *arg_blurb;
   String value;
 };
+using ArgDescriptions = std::vector<ArgDescription>;
 
 class ArgParser {
   const size_t                                n_args_;
   ArgDescription                             *const args_;
   std::unordered_map<String, ArgDescription*> names_;
   StringVector                                dynamics_;
-  void          parse_args (const size_t N, const ArgDescription *adescs);
+  void                parse_args (const size_t N, const ArgDescription *adescs);
 public:
   template<size_t N>
-  explicit      ArgParser  (ArgDescription (&adescs) [N]) : n_args_ (N), args_ (adescs) {}
-  String        parse_args (const uint argc, char *const argv[]); // returns error message
-  String        operator[] (const String &arg_name) const;
+  explicit            ArgParser  (ArgDescription (&adescs) [N]) : n_args_ (N), args_ (adescs) {}
+  String              parse_args (const uint argc, char *const argv[]); // returns error message
+  ArgDescriptions     list_args  () const;
+  String              operator[] (const String &arg_name) const;
   const StringVector& dynamics () const { return dynamics_; }
 };
 
@@ -48,7 +50,9 @@ public:
   }
   virtual              ~CommandRegistry ();
   CommandRegistry*      next            ()                                    { return next_; }
-  String                name            ()                                    { return name_; }
+  String                name            () const                              { return name_; }
+  String                blurb           () const                              { return blurb_; }
+  ArgDescriptions       list_args       () const                              { return arg_parser_.list_args(); }
   String                run             ()                                    { return cmd_ (arg_parser_); }
   String                parse_args      (const uint argc, char *const argv[]) { return arg_parser_.parse_args (argc, argv); }
   static CommandRegistry* chain_start   ()                                    { return command_registry_chain_; }
