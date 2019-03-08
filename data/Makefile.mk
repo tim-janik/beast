@@ -114,4 +114,5 @@ $>/data/bse.pc: $(config-stamps) data/Makefile.mk						| $>/data/
 	$Q echo 'Version: $(VERSION_M.M.M)'					>>$@.tmp
 	$Q echo 'Libs: -L$${pkglibdir}/lib -lbse-$(VERSION_MAJOR)'		>>$@.tmp
 	$Q echo 'Cflags: -I$${includedir}'					>>$@.tmp
+	$Q echo '$@ : $(config-calc-hash.dep)'					> $@.d
 	$Q mv $@.tmp $@

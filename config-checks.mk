@@ -43,7 +43,7 @@ endif
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST
 conftest_lib = { { echo '\#include <$(strip $1)>' \
                 && echo 'int main() { return 0 == (int) (long) (void*) &($2); }' ; } > "$>/conftest_lib-$$$$.cc" \
-		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "$>/conftest_lib-$$$$.cc" -o "$>/conftest_lib-$$$$" $(LDFLAGS) $3 2>&1) \
+		&& { CONFTEST_LOG=$$($(CXX) -fpermissive "$>/conftest_lib-$$$$.cc" -o "$>/conftest_lib-$$$$" $(LDFLAGS) $3 $(LDLIBS) 2>&1) \
 		     && CONFTEST=true || CONFTEST=false ; } \
 		&& rm -f "$>/conftest_lib-$$$$.cc" "$>/conftest_lib-$$$$" ; }
 conftest_lib.makefile ::= $(lastword $(MAKEFILE_LIST))
@@ -146,6 +146,13 @@ CLEANFILES += $>/config-stamps.sha256 $>/config-cache.mk $>/config-cache.old
 # Note, consider variables defined in config-cache.mk as stale within the recipe
 # for config-cache.mk. I.e. use "$$MAJOR" instead of "$(VERSION_MINOR)" to avoid
 # 2-phase regeneration of config-cache.mk that trips up config-stamps.sha256.
+config-calc-hash = $(firstword $(shell echo ' $(foreach V, $(.config.defaults) $(config-hash-vars), $($V)) ' | sha256sum))
+# About config-calc-hash: though a bit costly, comparing the config-calc-hash
+# result to previous runs is a simple test to check if the configuration between
+# 'make' invocations has been changed through command line variables.
+config-calc-hash.dep = $$(if $$(filter $$(config-calc-hash), $(config-calc-hash)), , FORCE)
+# About config-calc-hash.dep: storing $(config-calc-hash.dep) in a .d file will
+# evaluate to 'FORCE' whenever $(config-calc-hash) changes.
 
 VERSION_M.M.M = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
 VERSION_LONG != ./version.sh -l

@@ -22,7 +22,8 @@ CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
 #CXXONLYFLAGS	 += -Wnon-virtual-dtor -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 OPTIMIZE	::= -funroll-loops -ftree-vectorize
 SANITIZECC	::= -fno-strict-overflow -fno-strict-aliasing # sane C / C++
-LDMODEFLAGS	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
+LDOPTIMIZE	::= -O1 -Wl,--hash-style=both -Wl,--compress-debug-sections=zlib
+LDMODEFLAGS	  =
 
 ifeq ($(MODE),quick)
 MODEFLAGS	::= -O0
@@ -69,7 +70,7 @@ ifeq ($(uname_S),x86_64)
 endif
 pkgcflags	::= $(strip $(COMMONFLAGS) $(CONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE) $(SANITIZECC)) $(CFLAGS)
 pkgcxxflags	::= $(strip $(COMMONFLAGS) $(CXXONLYFLAGS) $(MODEFLAGS) $(OPTIMIZE) $(SANITIZECC)) $(CXXFLAGS)
-pkgldflags	::= $(strip $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
+pkgldflags	::= $(strip $(LDOPTIMIZE) $(LDMODEFLAGS)) -Wl,-export-dynamic -Wl,--as-needed -Wl,--no-undefined -Wl,-Bsymbolic-functions $(LDFLAGS)
 
 # == implicit rules ==
 compiledefs     = $(DEFS) $(EXTRA_DEFS) $($<.DEFS) $($@.DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $($<.INCLUDES) $($@.INCLUDES)
@@ -93,8 +94,8 @@ $1: $2	$3
 	$$(QECHO) LD $$@
 	$$(call LINKER.pre-hook,$@)
 	$$(call LINKER.solink-hook,$@)
-	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 \
-		$$(if $$(findstring --version-script, $$(pkgldflags) $$($$@.LDFLAGS) $2 $4), $$(useld_fast+vs), $$(useld_fast)) \
+	$$Q $$(CXX) $$(CXXSTD) -fPIC -o $$@ $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(LDLIBS) \
+		$$(if $$(findstring --version-script, $$(pkgldflags) $$($$@.LDFLAGS) $2 $4 $(LDLIBS)), $$(useld_fast+vs), $$(useld_fast)) \
 		$(foreach P, $5, -Wl$(,)-rpath='$$$$ORIGIN/$P' -L'$$(@D)/$P') -Wl$,--print-map >$$@.map
 	$$(call LINKER.xdbg-hook,$@)
 	$$(call LINKER.post-hook,$@)

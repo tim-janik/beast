@@ -78,7 +78,7 @@ EXTRA_FLAGS	::= # target private flags, precedence over CXXFLAGS
 include config-utils.mk
 include config-uname.mk
 include config-checks.mk
-.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS
+.config.defaults += CC CFLAGS CXX CXXFLAGS LDFLAGS LDLIBS
 
 # == enduser targets ==
 all: FORCE
@@ -150,6 +150,8 @@ help: FORCE
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 	@echo '  make O=DIR      - Create all output files in DIR'
 	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
+	@echo "  make MODE=...   - Optimize build to be 'quick' or for 'release' mode binaries."
+	@echo '                    Posible debug modes: debug, asan, lsan, tsan, ubsan'
 
 # == all rules ==
 all: $(ALL_TARGETS) $(ALL_TESTS)
@@ -178,7 +180,7 @@ installcheck-buildtest:
 		-c conftest_buildtest.cc \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
-	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest \
+	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest $(LDMODEFLAGS) \
 		`PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
