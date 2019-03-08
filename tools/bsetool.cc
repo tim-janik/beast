@@ -1,38 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsemain.hh>
-#include <bse/bseserver.hh>
-#include <bse/bsemathsignal.hh>
-#include <bse/bsecategories.hh>
-#include <bse/bsestandardsynths.hh>
+#include "bsetool.hh"
 #include <sys/resource.h>
-#include <unordered_map>
 #include <unistd.h>
 #include <stdio.h>
 
-
 using namespace Bse;
+using namespace BseTool;
 
 // == arg parsing ==
-static bool verbose = true;
-#define printq(...)     do { if (verbose) printout (__VA_ARGS__); } while (0)
-
-struct ArgDescription {
-  const char *arg_name, *value_name, *arg_blurb;
-  String value;
-};
-
-class ArgParser {
-  const size_t                                n_args_;
-  ArgDescription                             *const args_;
-  std::unordered_map<String, ArgDescription*> names_;
-  void     parse_args (const size_t N, const ArgDescription *adescs);
-public:
-  template<size_t N>
-  explicit ArgParser  (ArgDescription (&adescs) [N]) : n_args_ (N), args_ (adescs) {}
-  String   parse_args (const uint argc, char *const argv[]); // returns error message
-  String   operator[] (const String &arg_name) const;
-};
-
 String
 ArgParser::operator[] (const String &arg_name) const
 {
@@ -121,31 +96,11 @@ ArgParser::parse_args (const uint argc, char *const argv[])
 }
 
 // == CommandRegistry ==
-class CommandRegistry;
-static CommandRegistry *command_registry_chain = NULL;
-class CommandRegistry {
-  ArgParser        arg_parser_;
-  String         (*cmd_) (const ArgParser&);
-  String           name_, blurb_;
-  CommandRegistry *next_;
-public:
-  template<size_t N>
-  explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&),
-                            const String &name, const String &blurb) :
-    arg_parser_ (adescs), cmd_ (cmd), name_ (name), blurb_ (blurb), next_ (command_registry_chain)
-  {
-    command_registry_chain = this;
-  }
-  ~CommandRegistry()
-  {
-    command_registry_chain = NULL;
-  }
-  CommandRegistry* next       ()                                    { return next_; }
-  String           name       ()                                    { return name_; }
-  String           run        ()                                    { return cmd_ (arg_parser_); }
-  String           parse_args (const uint argc, char *const argv[]) { return arg_parser_.parse_args (argc, argv); }
-};
-
+CommandRegistry *CommandRegistry::command_registry_chain_ = NULL;
+CommandRegistry::~CommandRegistry()
+{
+  command_registry_chain_ = NULL;
+}
 
 // == crawl ==
 static ArgDescription crawl_options[] = {
@@ -466,6 +421,8 @@ static ArgDescription bsetool_options[] = {
   { "--quiet",       "", "Prevent progress output", "" },
 };
 
+bool BseTool::verbose = true;
+
 int
 main (int argc_int, char *argv[])
 {
@@ -494,7 +451,7 @@ main (int argc_int, char *argv[])
     }
   // command parsing
   if (option_argc < argc)
-    for (CommandRegistry *cmd = command_registry_chain; cmd; cmd = cmd->next())
+    for (CommandRegistry *cmd = CommandRegistry::chain_start(); cmd; cmd = cmd->next())
       if (cmd->name() == argv[option_argc])
         {
           String error = cmd->parse_args (argc - option_argc - 1, argv + option_argc + 1);
