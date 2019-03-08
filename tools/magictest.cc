@@ -41,7 +41,7 @@ magic_test (const ArgParser &ap)
 						    0,
 						    0,
 						    magic_presets[i][1]));
-  if (ap["-t"] == "1")
+  if (ap["t"] == "1")
     test_open = TRUE;
 
   for (const auto &file_name : ap.dynamics())
@@ -71,7 +71,10 @@ magic_test (const ArgParser &ap)
                   wfi = bse_wave_file_info_load (file_name.c_str(), &error);
                   if (wfi)
                     bse_wave_file_info_unref (wfi);
-                  printout ("  ERROR: %s", bse_error_blurb (error));
+                  if (error == Bse::Error::NONE)
+                    printout ("  %s", bse_error_blurb (error));
+                  else
+                    printout ("  ERROR: %s", bse_error_blurb (error));
                 }
               else
                 printout (" LOADER: %s", loader->name);
