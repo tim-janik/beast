@@ -27,7 +27,7 @@ steps:
 
    save foo.bse in this directory (add it to the repository)
 
-2) add a new target to Makefile.sub (look at the other tests to see how its done)
+2) add a new target to Makefile.mk (look at the other tests to see how its done)
 
 3) add the target to the check-af-tests rule
 
