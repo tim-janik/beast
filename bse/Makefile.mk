@@ -345,13 +345,6 @@ bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 
-# == bsetool defs ==
-bse/bsetool         ::= $>/bse/bsetool
-bse/bsetool.sources ::= bse/bsetool.cc
-bse/bsetool.objects ::= $(sort $(bse/bsetool.sources:%.cc=$>/%.o))
-bse/bsetool.deps    ::= $(bse/libbse.deps)
-# CUSTOMIZATIONS: bse/bsetool.cc.FLAGS = -O2   ||   $>/bse/bsetool.o.FLAGS = -O3    ||    $>/bse/bsetool.o: EXTRA_FLAGS = -O1
-
 # == bseprocidl defs ==
 bse/bseprocidl			::= $>/bse/bseprocidl
 bse/bseprocidl.sources		::= bse/bseprocidl.cc
@@ -383,15 +376,6 @@ $(call INSTALL_DATA_RULE,			\
 	$(bse/include.headers) $(bse/libbse.deps))
 $(call $(if $(filter release, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
-
-# == bsetool rules ==
-$(bse/bsetool.objects): $(bse/bsetool.deps)
-$(bse/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(call BUILD_PROGRAM, \
-	$(bse/bsetool), \
-	$(bse/bsetool.objects), \
-	$(lib/libbse.so) | $>/bse/, \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/

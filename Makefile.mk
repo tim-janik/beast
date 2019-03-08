@@ -99,6 +99,7 @@ include bse/Makefile.mk
 include plugins/Makefile.mk
 include drivers/Makefile.mk
 include tests/Makefile.mk
+include tools/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
 include docs/Makefile.mk
