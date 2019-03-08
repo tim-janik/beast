@@ -7,6 +7,7 @@ tools/rpath..libbse ::= ../lib
 tools/bsetool.sources ::= $(strip	\
 	tools/bsetool.cc		\
 	tools/magictest.cc		\
+	tools/bsefcompare.cc		\
 	tools/bsefextract.cc		\
 )
 tools/bsetool         ::= $>/tools/bsetool
@@ -15,7 +16,7 @@ tools/bsetool.deps    ::= $(bse/libbse.deps)
 # CUSTOMIZATIONS: tools/bsetool.cc.FLAGS = -O2   ||   $>/tools/bsetool.o.FLAGS = -O3    ||    $>/tools/bsetool.o: EXTRA_FLAGS = -O1
 
 # == bsetool rules ==
-$(tools/bsetool.objects): $(tools/bsetool.deps)
+$(tools/bsetool.objects): $(tools/bsetool.deps)				| $>/tools/
 $(tools/bsetool.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(tools/bsetool), \

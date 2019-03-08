@@ -1,9 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsetool.hh"
+#include "bse/internal.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/gslfft.hh>
-#include "bse/internal.hh"
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -17,148 +18,31 @@
 #include <algorithm>
 
 using namespace Bse;
+using namespace BseTool;
 
 using namespace std;
 
-struct Options {
+struct FCompareOptions {
   string	      program_name;
   double              threshold;
   bool                compact;
   bool                strict;
   bool                verbose;
+  FCompareOptions     ();
+  void assign_options (const ArgParser &ap);
+};
 
-  Options ();
-  void parse (int *argc_p, char **argv_p[]);
-  static void print_usage ();
-} options;
+namespace { // Anon
+FCompareOptions options;
+} // Anon
 
-Options::Options ()
+FCompareOptions::FCompareOptions ()
 {
   program_name = "bsefcompare";
   threshold = 100;
   compact = false;
   strict = false;
   verbose = false;
-}
-
-static bool
-check_arg (uint         argc,
-           char        *argv[],
-           uint        *nth,
-           const char  *opt,              /* for example: --foo */
-           const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
-{
-  assert_return (opt != NULL, false);
-  assert_return (*nth < argc, false);
-
-  const char *arg = argv[*nth];
-  if (!arg)
-    return false;
-
-  uint opt_len = strlen (opt);
-  if (strcmp (arg, opt) == 0)
-    {
-      if (opt_arg && *nth + 1 < argc)     /* match foo option with argument: --foo bar */
-        {
-          argv[(*nth)++] = NULL;
-          *opt_arg = argv[*nth];
-          argv[*nth] = NULL;
-          return true;
-        }
-      else if (!opt_arg)                  /* match foo option without argument: --foo */
-        {
-          argv[*nth] = NULL;
-          return true;
-        }
-      /* fall through to error message */
-    }
-  else if (strncmp (arg, opt, opt_len) == 0 && arg[opt_len] == '=')
-    {
-      if (opt_arg)                        /* match foo option with argument: --foo=bar */
-        {
-          *opt_arg = arg + opt_len + 1;
-          argv[*nth] = NULL;
-          return true;
-        }
-      /* fall through to error message */
-    }
-  else
-    return false;
-
-  Options::print_usage();
-  exit (1);
-}
-
-void
-Options::parse (int   *argc_p,
-                char **argv_p[])
-{
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  unsigned int i;
-
-  assert_return (argc >= 0);
-
-  /*  I am tired of seeing .libs/lt-bsefcompare all the time,
-   *  but basically this should be done (to allow renaming the binary):
-   *
-  if (argc && argv[0])
-    program_name = argv[0];
-  */
-
-  for (i = 1; i < argc; i++)
-    {
-      const char *opt_arg;
-      if (strcmp (argv[i], "--help") == 0 ||
-          strcmp (argv[i], "-h") == 0)
-        {
-          print_usage();
-          exit (0);
-        }
-      else if (strcmp (argv[i], "--version") == 0 ||
-               strcmp (argv[i], "-v") == 0)
-        {
-          printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
-          exit (0);
-        }
-      else if (check_arg (argc, argv, &i, "--compact"))
-        compact = true;
-      else if (check_arg (argc, argv, &i, "--strict"))
-        strict = true;
-      else if (check_arg (argc, argv, &i, "--permissive"))
-        strict = false;
-      else if (check_arg (argc, argv, &i, "--threshold", &opt_arg))
-        threshold = g_ascii_strtod (opt_arg, NULL);
-      else if (check_arg (argc, argv, &i, "--verbose"))
-        verbose = true;
-    }
-
-  /* resort argc/argv */
-  guint e = 1;
-  for (i = 1; i < argc; i++)
-    if (argv[i])
-      {
-        argv[e++] = argv[i];
-        if (i >= e)
-          argv[i] = NULL;
-      }
-  *argc_p = e;
-}
-
-void
-Options::print_usage ()
-{
-  std::string program_name = "bsefcompare";
-  fprintf (stderr, "usage: %s [ <options> ] <featurefile1> <featurefile2>\n", program_name.c_str());
-  fprintf (stderr, "\n");
-  fprintf (stderr, "options:\n");
-  fprintf (stderr, " --threshold=<percent>  set threshold for returning that two files match\n");
-  fprintf (stderr, " --strict               only compare features with exactly the same dimension\n");
-  fprintf (stderr, " --permissive           enable algorithm to compare features with different dimension [default]\n");
-  fprintf (stderr, " --compact              suppress printing individual similarities\n");
-  fprintf (stderr, " --help                 help for %s\n", program_name.c_str());
-  fprintf (stderr, " --version              print version\n");
-  fprintf (stderr, " --verbose              print verbose information\n");
 }
 
 static double
@@ -632,8 +516,8 @@ FeatureValueFile::parse (const string& filename)
   int fd = open (filename.c_str(), O_RDONLY);
   if (fd < 0)
     {
-      fprintf (stderr, "%s: failed to open input file \"%s\": %s\n",
-	       options.program_name.c_str(), filename.c_str(), strerror (errno));
+      printerr ("%s: failed to open input file \"%s\": %s\n",
+                options.program_name, filename, strerror (errno));
       exit (1);
     }
   g_scanner_input_file (scanner, fd);
@@ -665,28 +549,44 @@ FeatureValueFile::~FeatureValueFile()
     delete *fvi;
 }
 
-int
-main (int argc, char **argv)
-{
-  /* parse options */
-  options.parse (&argc, &argv);
+static ArgDescription fcompare_options[32] = {
+  { "<featurefile1>", "",               "Feature files to be compared with each other", "", },
+  { "<featurefile2>", "",               "according to the thresholds set via options", "", },
+  { "--verbose", "",                    "Print verbose information", "" },
+  { "--compact", "",                    "suppress printing individual similarities", "" },
+  { "--permissive", "",                 "enable algorithm to compare features with different dimension [default]", "" },
+  { "--strict", "",                     "only compare features with exactly the same dimension", "" },
+  { "--threshold", "<percent>",         "set threshold for returning that two files match", "100" },
+};
 
-  if (argc != 3)
-    {
-      options.print_usage ();
-      return 1;
-    }
+void
+FCompareOptions::assign_options (const ArgParser &ap)
+{
+  // assign options
+  verbose = ap["verbose"] == "1";
+  compact = ap["compact"] == "1";
+  threshold = g_ascii_strtod (ap["threshold"].c_str(), NULL);
+  if (ap["strict"] == "1")
+    strict = true;
+  if (ap["permissive"] == "1")
+    strict = false;
+}
+
+static String
+fcompare_run (const ArgParser &ap)
+{
+  options.assign_options (ap);
 
   FeatureValueFile file1, file2;
-  file1.parse (argv[1]);
-  file2.parse (argv[2]);
+  file1.parse (ap["featurefile1"]);
+  file2.parse (ap["featurefile2"]);
 
   if (file1.feature_values.size() != file2.feature_values.size())
     {
-      printerr ("%s: can't compare files\n", options.program_name.c_str());
+      printerr ("%s: failed to compare files\n", options.program_name);
       printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
       printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
-      exit (1);
+      exit (5);
     }
 
   vector<double> similarity;
@@ -697,12 +597,12 @@ main (int argc, char **argv)
       double s = f1->similarity (f2);
       if (s < 0)
 	{
-	  printerr ("%s: can't compare features:\n", options.program_name.c_str());
+	  printerr ("%s: failed to compare features:\n", options.program_name);
 	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f1->name.c_str(), f1->printable_type().c_str(), file1.filename.c_str());
 	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f2->name.c_str(), f2->printable_type().c_str(), file2.filename.c_str());
-	  return 1;
+	  exit (4);
 	}
       similarity.push_back (s);
     }
@@ -713,7 +613,7 @@ main (int argc, char **argv)
 
   string verbose_output;
 
-  verbose_output += string_format ("%s: similarities: ", argv[1]);
+  verbose_output += string_format ("%s: similarities: ", options.program_name);
   for (size_t i = 0; i < similarity.size(); i++)
     {
       if (!options.compact)
@@ -748,16 +648,19 @@ main (int argc, char **argv)
       rating = "similarity below threshold";
       result = 1;
     }
-  verbose_output += string_format ("%s: average similarity rating (%s): %.3f%%\n", argv[1], rating.c_str(), average_similarity);
+  verbose_output += string_format ("%s: average similarity rating (%s): %.3f%%\n", options.program_name, rating.c_str(), average_similarity);
 
   if (options.verbose || result != 0)
     printf ("%s", verbose_output.c_str());
 
   if (result == 0)
-    printf ("  PASS     %s\n", argv[1]);
+    printout ("  PASS     %s\n", options.program_name);
   else
-    printf ("  FAIL     %s\n", argv[1]);
-  return result;
+    {
+      printout ("  FAIL     %s\n", options.program_name);
+      exit (1);
+    }
+  return ""; // no error
 }
 
 // extra comparision strategies
@@ -794,4 +697,4 @@ public:
   }
 } timingComparisionStrategy;
 
-/* vim:set ts=8 sts=2 sw=2: */
+static CommandRegistry fcompare_cmd (fcompare_options, fcompare_run, "fcompare", "Compare audio feature sets");
