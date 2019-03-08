@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsetool.hh"
 #include <bse/bsemain.hh>
 #include <bse/gslmagic.hh>
 #include <bse/gslcommon.hh>
@@ -8,21 +9,10 @@
 #include <string.h>
 
 using namespace Bse;
+using namespace BseTool;
 
-static gint
-help (gchar *arg)
-{
-  fprintf (stderr, "usage: magictest [-{h|p|}] [files...]\n");
-  fprintf (stderr, "       -p         include plugins\n");
-  fprintf (stderr, "       -t         test loading file info\n");
-  fprintf (stderr, "       -h         guess what ;)\n");
-
-  return arg != NULL;
-}
-
-int
-main (gint   argc,
-      gchar *argv[])
+static String
+magic_test (const ArgParser &ap)
 {
   static const char *magic_presets[][2] = {
     /* some test entries, order is important for some cases */
@@ -45,59 +35,56 @@ main (gint   argc,
   SfiRing *magic_list = NULL;
   gboolean test_open = FALSE;
   /* initialization */
-  bse_init_inprocess (&argc, argv, "BseMagicTest", Bse::cstrings_to_vector ("stand-alone=1", NULL));
   for (i = 0; i < n_magic_presets; i++)
     magic_list = sfi_ring_append (magic_list,
 				  gsl_magic_create ((void*) magic_presets[i][0],
 						    0,
 						    0,
 						    magic_presets[i][1]));
-  for (i = 1; i < uint (argc); i++)
+  if (ap["-t"] == "1")
+    test_open = TRUE;
+
+  for (const auto &file_name : ap.dynamics())
     {
-      if (strcmp ("-p", argv[i]) == 0)
-	; // FIXME: bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL, NULL, NULL);
-      else if (strcmp ("-t", argv[i]) == 0)
-	test_open = TRUE;
-      else if (strcmp ("-h", argv[i]) == 0)
-	{
-	  return help (NULL);
-	}
+      BseLoader *loader = bse_loader_match (file_name.c_str());
+      GslMagic *magic = gsl_magic_list_match_file (magic_list, file_name.c_str());
+      const uint l = file_name.size();
+      char *pad;
+
+      printout ("%s:", file_name);
+      pad = g_strnfill (MAX (40, l) - l, ' ');
+      printout ("%s", pad);
+      g_free (pad);
+      if (!magic && !loader)
+        printout (" no magic/loader found");
       else
-	{
-	  BseLoader *loader = bse_loader_match (argv[i]);
-	  GslMagic *magic = gsl_magic_list_match_file (magic_list, argv[i]);
-	  guint l = strlen (argv[i]);
-	  gchar *pad;
-
-	  printout ("%s:", argv[i]);
-	  pad = g_strnfill (MAX (40, l) - l, ' ');
-	  printout ("%s", pad);
-	  g_free (pad);
-	  if (!magic && !loader)
-	    printout (" no magic/loader found");
-	  else
-	    {
-	      if (magic)
-		printout (" MAGIC: %s", (char*) magic->data);
-	      if (loader)
+        {
+          if (magic)
+            printout (" MAGIC: %s", (char*) magic->data);
+          if (loader)
+            {
+              if (test_open)
                 {
-                  if (test_open)
-                    {
-                      BseWaveFileInfo *wfi;
-                      Bse::Error error = Bse::Error::NONE;
-                      printout ("\n  LOADER: %s\n", loader->name);
-                      wfi = bse_wave_file_info_load (argv[i], &error);
-                      if (wfi)
-                        bse_wave_file_info_unref (wfi);
-                      printout ("  ERROR: %s", bse_error_blurb (error));
-                    }
-                  else
-                    printout (" LOADER: %s", loader->name);
+                  BseWaveFileInfo *wfi;
+                  Bse::Error error = Bse::Error::NONE;
+                  printout ("\n  LOADER: %s\n", loader->name);
+                  wfi = bse_wave_file_info_load (file_name.c_str(), &error);
+                  if (wfi)
+                    bse_wave_file_info_unref (wfi);
+                  printout ("  ERROR: %s", bse_error_blurb (error));
                 }
-	    }
-	  printout ("\n");
-	}
+              else
+                printout (" LOADER: %s", loader->name);
+            }
+        }
+      printout ("\n");
     }
-
-  return 0;
+  return ""; // no error
 }
+
+static ArgDescription magic_options[] = {
+  { "-t",        "",    "Test loading file info", "" },
+  { "[file...]", "",    "Files to match against magics", "" },
+};
+
+static CommandRegistry magic_cmd (magic_options, magic_test, "magic", "Identify files via magic definitions");
