@@ -22,12 +22,14 @@ class ArgParser {
   const size_t                                n_args_;
   ArgDescription                             *const args_;
   std::unordered_map<String, ArgDescription*> names_;
+  StringVector                                dynamics_;
   void          parse_args (const size_t N, const ArgDescription *adescs);
 public:
   template<size_t N>
   explicit      ArgParser  (ArgDescription (&adescs) [N]) : n_args_ (N), args_ (adescs) {}
   String        parse_args (const uint argc, char *const argv[]); // returns error message
   String        operator[] (const String &arg_name) const;
+  const StringVector& dynamics () const { return dynamics_; }
 };
 
 class CommandRegistry {

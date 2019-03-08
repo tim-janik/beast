@@ -23,6 +23,7 @@ ArgParser::parse_args (const uint argc, char *const argv[])
 {
   std::unordered_map<String, String> aliases;
   std::vector<String> fixed; // fixed arguments, like <OBLIGATION> or [OPTIONAL]
+  bool with_dynamics = false;
   size_t need_obligatory = 0;
   // fill names_ from args_
   for (size_t i = 0; i < n_args_; i++)
@@ -44,7 +45,12 @@ ArgParser::parse_args (const uint argc, char *const argv[])
                   fixed.push_back (name);
                 }
               else if (names[j][0] == '[')
-                fixed.push_back (name);
+                {
+                  if (string_endswith (names[j], "...]"))
+                    with_dynamics = true;
+                  else
+                    fixed.push_back (name);
+                }
             }
           else // found an alias after ','
             names_[name] = &args_[i];
@@ -84,11 +90,16 @@ ArgParser::parse_args (const uint argc, char *const argv[])
       }
     else // non-option arguments
       {
-        if (fixed_index >= fixed.size())
+        if (fixed_index < fixed.size())
+          {
+            ArgDescription *adesc = names_[fixed[fixed_index]];
+            adesc->value = argv[i];
+            fixed_index++;
+          }
+        else if (with_dynamics)
+          dynamics_.push_back (argv[i]);
+        else
           return string_format ("invalid extra argument: %s", argv[i]);
-        ArgDescription *adesc = names_[fixed[fixed_index]];
-        adesc->value = argv[i];
-        fixed_index++;
       }
   if (fixed_index < need_obligatory)
     return string_format ("missing mandatory argument <%s>", fixed[fixed_index]);
