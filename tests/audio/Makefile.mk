@@ -13,10 +13,10 @@ tests/audio/render2wav = $(strip					\
 	  --bse-mixing-freq=48000					\
 	  --bse-pcm-driver null=nosleep					\
 	  --bse-midi-driver null					\
-	  --bse-rcfile "/dev/null"					\
 	  --bse-override-plugin-globs '$>/plugins/*.so'			\
 	  --bse-override-sample-path 'tests/audio:media/Samples'	\
-	  --bse-disable-randomization )
+	  --bse-disable-randomization					\
+	  --bse-rcfile /dev/null )
 
 # == tests/audio/template ==
 # $(call tests/audio/template, 1TESTNAME, 2BSE+REF+DEPS, 3RENDERARGS, 4FEATURES-A, 5FEATURES-B, 6THRESHOLD)
