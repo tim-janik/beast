@@ -13,7 +13,7 @@ which features are supported, call bsefextract --help.
 To run the currently available tests, there is a Makefile rule, so you can
 type:
 
-   make check-af-tests
+   make check-audio
 
 Adding a new test
 =================
@@ -27,18 +27,17 @@ steps:
 
    save foo.bse in this directory (add it to the repository)
 
-2) add a new target to Makefile.mk (look at the other tests to see how its done)
+2) add a new test rule to Makefile.mk (look at the other tests to see how its done),
+   use an empty reference file at first to satisfy dependencies.
 
-3) add the target to the check-af-tests rule
-
-4) run make af-tests/foo once, the test will fail, but you will generate a foo.tmp
+3) run make tests/audio/foo once, the test will fail, but you will generate a foo.tmp
    file, which you can move to the reference file using
 
      mv foo.tmp foo.ref
 
    you need to add the created reference file to the repository
 
-6) run make check-af-tests, the newly added test should be executed and succeed now
+4) run make check-audio, the newly added test should be executed and succeed now
 
 Note, that if you need multiple tests for the same .bse file (for instance
 because you want to set a different threshold for different features), you can
@@ -125,5 +124,4 @@ Tricks:
 		    just contains a fraction of the time of the other, the
 		    --end-time feature will ensure that the complete
 		    comparision will fail
-
 
