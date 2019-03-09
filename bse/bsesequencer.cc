@@ -332,7 +332,9 @@ static std::atomic<bool> sequencer_thread_running { false };
 void
 Sequencer::sequencer_thread ()
 {
-  Bse::TaskRegistry::add ("Sequencer", Bse::this_thread_getpid(), Bse::this_thread_gettid());
+  const char *const myid = "BseSequencer";
+  Bse::this_thread_set_name (myid);
+  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
   sequencer_thread_self = Bse::this_thread_self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });

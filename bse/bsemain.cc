@@ -205,7 +205,9 @@ static std::atomic<bool> main_loop_thread_running { true };
 static void
 bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 {
-  Bse::TaskRegistry::add ("BSE Core", Bse::this_thread_getpid(), Bse::this_thread_gettid());
+  const char *const myid = "BseMain";
+  Bse::this_thread_set_name (myid);
+  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   bse_init_intern ();
 
