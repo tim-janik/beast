@@ -56,11 +56,11 @@ $(call tests/audio/template,							\
 	99.99)	# test for play-type=adsr-wave-2
 
 # == tests/audio/artscompressor ==
-#$(call tests/audio/template,							\
-#	tests/audio/artscompressor,						\
-#	tests/audio/artscompressor.bse tests/audio/artscompressor.ref, ,	\
-#	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy, ,	\
-#	99.99) # FIXME: loops forever
+$(call tests/audio/template,							\
+	tests/audio/artscompressor,						\
+	tests/audio/artscompressor.bse tests/audio/artscompressor.ref, ,	\
+	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy, ,	\
+	99.99)
 
 # == tests/audio/bseadder ==
 $(call tests/audio/template,							\
@@ -94,12 +94,11 @@ $(call tests/audio/template,							\
 	98.00)
 
 # == tests/audio/organsong ==
-#$(call tests/audio/template,							\
-#	tests/audio/organsong,							\
-#	tests/audio/organsong.bse tests/audio/organsong.ref, ,			\
-#	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy, ,	\
-#	98.00)	# test DavOrgan mono voice module
-# FIXME: rendering & beast fail to terminate
+$(call tests/audio/template,							\
+	tests/audio/organsong,							\
+	tests/audio/organsong.bse tests/audio/organsong.ref, ,			\
+	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy, ,	\
+	98.00)	# test DavOrgan mono voice module
 
 # == tests/audio/osc-test ==
 $(call tests/audio/template,							\
@@ -151,14 +150,13 @@ $(call tests/audio/template,							\
 	99.99)	# test for play-type=plain-wave-2
 
 # == tests/audio/simple-loop ==
-#$(call tests/audio/template,							\
-#	tests/audio/simple-loop,						\
-#	tests/audio/simple-loop.bse tests/audio/simple-loop.ref,		\
-#	--seconds 5,								\
-#	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy,		\
-#	--cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy,		\
-#	99.99)	# another simple loop
-# FIXME: loops endlessly despite 5 seconds timeout !!
+$(call tests/audio/template,							\
+	tests/audio/simple-loop,						\
+	tests/audio/simple-loop.bse tests/audio/simple-loop.ref,		\
+	--seconds 5,								\
+	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy,		\
+	--cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy,		\
+	99.99)	# another simple loop
 
 # == tests/audio/soundfont-test ==
 $(call tests/audio/template,							\

@@ -930,6 +930,7 @@ void
 engine_run_slave ()
 {
   std::string myid = Bse::string_format ("DSP #%u", ++slave_counter);
+  Bse::this_thread_set_name (myid);
   Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
   while (slaves_running)
     {
@@ -1193,7 +1194,9 @@ static std::atomic<bool> master_thread_running { false };
 void
 MasterThread::master_thread()
 {
-  Bse::TaskRegistry::add ("DSP #1", Bse::this_thread_getpid(), Bse::this_thread_gettid());
+  const char *const myid = "DSP Master";
+  Bse::this_thread_set_name (myid);
+  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   /* assert pollfd equality, since we're simply casting structures */
   static_assert (sizeof (struct pollfd) == sizeof (GPollFD), "");
