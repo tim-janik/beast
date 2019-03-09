@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsetool.hh"
 #include <bse/bsemain.hh>
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
@@ -20,6 +21,7 @@
 #include <complex>
 
 using namespace Bse;
+using namespace BseTool;
 
 // using namespace std;
 using std::string;
@@ -29,41 +31,43 @@ using std::vector;
 using std::min;
 using std::max;
 
-struct Options {
-  string	      program_name; /* FIXME: what to do with that */
-  guint               channel;
-  bool                cut_zeros_head;
-  bool                cut_zeros_tail;
-  bool                verbose;
-  gdouble             silence_threshold;
-  gdouble             base_freq_hint;
-  gdouble             focus_center;
-  gdouble             focus_width;
-  guint               join_spectrum_slices;
-  guint               timing_window_stepping_ms;
-  guint               timing_window_size_ms;
+struct FExtractOptions {
+  String        program_name;
+  uint          channel;
+  bool          cut_zeros_head;
+  bool          cut_zeros_tail;
+  bool          verbose;
+  double        silence_threshold;
+  double        base_freq_hint;
+  double        focus_center;
+  double        focus_width;
+  uint          join_spectrum_slices;
+  uint          timing_window_stepping_ms;
+  uint          timing_window_size_ms;
+  FILE         *output_file;
 
-  FILE               *output_file;
+  FExtractOptions       ();
+  void assign_options   (const ArgParser &ap);
+  void validate_percent (const string& option, double value);
+  void validate_int     (const string& option, int value, int vmin, int vmax);
+};
 
-  Options ();
-  void parse (int *argc_p, char **argv_p[]);
-  static void print_usage ();
-  void validate_percent (const string& option, gdouble value);
-  void validate_int (const string& option, int value, int vmin, int vmax);
-} options;
+namespace { // Anon
+FExtractOptions options;
+} // Anon
 
 class AudioSignal
 {
   vector<float>   m_samples;
   GslDataHandle	 *m_data_handle;
-  guint		  m_n_channels;
+  uint		  m_n_channels;
   GslLong	  m_length;
   GslLong         m_offset;
 
   /* check if the first sample is silent on all channels */
   bool head_is_silent()
   {
-    for (guint i = 0; i < m_n_channels; i++)
+    for (uint i = 0; i < m_n_channels; i++)
       if (fabs ((*this)[i]) > options.silence_threshold)
 	return false;
 
@@ -73,7 +77,7 @@ class AudioSignal
   /* check if the last sample is silent on all channels */
   bool tail_is_silent()
   {
-    for (guint i = 0; i < m_n_channels; i++)
+    for (uint i = 0; i < m_n_channels; i++)
       if (fabs ((*this)[m_length - m_n_channels + i]) > options.silence_threshold)
 	return false;
 
@@ -157,7 +161,7 @@ public:
     return m_length;
   }
 
-  guint n_channels() const
+  uint n_channels() const
   {
     return m_n_channels;
   }
@@ -447,7 +451,7 @@ struct SpectrumFeature : public Feature
     if (options.join_spectrum_slices > 1)
       {
 	typedef vector< vector<double> >::const_iterator SpectrumConstIterator;
-	const guint jslices = options.join_spectrum_slices; 
+	const uint jslices = options.join_spectrum_slices; 
 
 	/* for N-fold joining, we "truncate" the spectrum so that we only
 	 * have complete sets of N 30ms spectrum buckets to join
@@ -616,7 +620,7 @@ struct RawSignalFeature : public Feature
      * so we don't print it using the usual print_vector or print_value
      * functions (because then gnuplot couldn't parse it any more).
      */
-    for (guint i = 0; i < raw_signal.size(); i++)
+    for (uint i = 0; i < raw_signal.size(); i++)
       fprintf (options.output_file, "%s\n", double_to_string (raw_signal[i]).c_str());
   }
 };
@@ -634,7 +638,7 @@ struct ComplexSignalFeature : public Feature
    * freq = [0..pi] corresponds to [0..mix_freq/2]
    */
   std::complex<double>
-  evaluate_hilbert_response (gdouble freq)
+  evaluate_hilbert_response (double freq)
   {
     std::complex<double> response = hilbert[HSIZE];
 
@@ -721,7 +725,7 @@ struct ComplexSignalFeature : public Feature
      * so we don't print it using the usual print_vector or print_value
      * functions (because then gnuplot couldn't parse it any more).
      */
-    for (guint i = 0; i < complex_signal.size(); i++)
+    for (uint i = 0; i < complex_signal.size(); i++)
       fprintf (options.output_file, "%s %s\n", double_to_string (complex_signal[i].real()).c_str(),
                                                double_to_string (complex_signal[i].imag()).c_str());
   }
@@ -1254,10 +1258,10 @@ struct ReleaseTimes : public Feature
   }
 };
 
-Options::Options () :
+FExtractOptions::FExtractOptions () :
   join_spectrum_slices (1)
 {
-  program_name = "bsefextract";
+  program_name = "bsetool fextract";
   channel = 0;
   verbose = false;
   cut_zeros_head = false;
@@ -1272,236 +1276,60 @@ Options::Options () :
 }
 
 void
-Options::validate_percent (const string &option,
-                           gdouble       value)
+FExtractOptions::validate_percent (const string &option, double value)
 {
   if (value < 0.0 || value > 100.0)
     {
-      fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", program_name.c_str(), value, option.c_str());
-      fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n");
-      fprintf (stderr, "Try `%s --help' for more information.\n", program_name.c_str());
+      printerr ("%s: invalid argument `%f' for `%s'\n\n", program_name, value, option.c_str());
+      printerr ("Valid arguments are percent values (between 0 and 100).\n");
+      printerr ("Try `%s --help' for more information.\n", program_name);
       exit (1);
     }
 }
 
 void
-Options::validate_int (const string &option,
-                       int           value,
-		       int           vmin,
-		       int           vmax)
+FExtractOptions::validate_int (const string &option, int value, int vmin, int vmax)
 {
   if (value < vmin || value > vmax)
     {
-      fprintf (stderr, "%s: invalid argument `%d' for `%s'\n\n", program_name.c_str(), value, option.c_str());
-      fprintf (stderr, "Valid arguments are between %d and %d.\n", vmin, vmax);
-      fprintf (stderr, "Try `%s --help' for more information.\n", program_name.c_str());
+      printerr ("%s: invalid argument `%d' for `%s'\n\n", program_name, value, option.c_str());
+      printerr ("Valid arguments are between %d and %d.\n", vmin, vmax);
+      printerr ("Try `%s --help' for more information.\n", program_name);
       exit (1);
     }
 }
 
-static bool
-check_arg (uint         argc,
-           char        *argv[],
-           uint        *nth,
-           const char  *opt,		  /* for example: --foo */
-           const char **opt_arg = NULL)	  /* if foo needs an argument, pass a pointer to get the argument */
-{
-  assert_return (opt != NULL, false);
-  assert_return (*nth < argc, false);
-
-  const char *arg = argv[*nth];
-  if (!arg)
-    return false;
-
-  uint opt_len = strlen (opt);
-  if (strcmp (arg, opt) == 0)
-    {
-      if (opt_arg && *nth + 1 < argc)	  /* match foo option with argument: --foo bar */
-        {
-          argv[(*nth)++] = NULL;
-          *opt_arg = argv[*nth];
-          argv[*nth] = NULL;
-          return true;
-        }
-      else if (!opt_arg)		  /* match foo option without argument: --foo */
-        {
-          argv[*nth] = NULL;
-          return true;
-        }
-      /* fall through to error message */
-    }
-  else if (strncmp (arg, opt, opt_len) == 0 && arg[opt_len] == '=')
-    {
-      if (opt_arg)			  /* match foo option with argument: --foo=bar */
-        {
-          *opt_arg = arg + opt_len + 1;
-          argv[*nth] = NULL;
-          return true;
-        }
-      /* fall through to error message */
-    }
-  else
-    return false;
-
-  Options::print_usage();
-  exit (1);
-}
-
-void
-Options::parse (int   *argc_p,
-                char **argv_p[])
-{
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  unsigned int i, e;
-
-  assert_return (argc >= 0);
-
-  /*  I am tired of seeing .libs/lt-bsefextract all the time,
-   *  but basically this should be done (to allow renaming the binary):
-   *
-  if (argc && argv[0])
-    program_name = argv[0];
-  */
-
-  for (i = 1; i < argc; i++)
-    {
-      const char *opt_arg;
-      if (strcmp (argv[i], "--help") == 0 ||
-          strcmp (argv[i], "-h") == 0)
-	{
-	  print_usage();
-	  exit (0);
-	}
-      else if (strcmp (argv[i], "--version") == 0 ||
-               strcmp (argv[i], "-v") == 0)
-	{
-	  printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
-	  exit (0);
-	}
-      else if (strcmp (argv[i], "--verbose") == 0)
-	{
-	  verbose = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp (argv[i], "--cut-zeros") == 0)
-	{
-	  cut_zeros_head = cut_zeros_tail = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp (argv[i], "--cut-zeros-head") == 0)
-	{
-	  cut_zeros_head = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp (argv[i], "--cut-zeros-tail") == 0)
-	{
-	  cut_zeros_tail = true;
-	  argv[i] = NULL;
-	}
-      else if (check_arg (argc, argv, &i, "-o", &opt_arg))
-	{
-	  if (output_file != stdout)
-	    {
-	      fprintf (stderr, "%s: can't set %s as output file (more than one -o option)\n",
-		       program_name.c_str(), opt_arg);
-	      exit (1);
-	    }
-	  if (strcmp (opt_arg, "-") != 0)  /* "-" will keep it as it is: stdout */
-	    {
-	      output_file = fopen (opt_arg, "w");
-	      if (!output_file)
-		{
-		  fprintf (stderr, "%s: can't open %s for writing: %s\n", program_name.c_str(), opt_arg, strerror (errno));
-		  exit (1);
-		}
-	    }
-	}
-      else if (check_arg (argc, argv, &i, "--silence-threshold", &opt_arg))
-        silence_threshold = g_ascii_strtod (opt_arg, NULL) / 32767.0;
-      else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
-        validate_percent ("--focus-width", focus_width = g_ascii_strtod (opt_arg, NULL));
-      else if (check_arg (argc, argv, &i, "--focus-center", &opt_arg))
-	validate_percent ("--focus-center", focus_center = g_ascii_strtod (opt_arg, NULL));
-      else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
-	base_freq_hint = g_ascii_strtod (opt_arg, NULL);
-      else if (check_arg (argc, argv, &i, "--timing-window-size", &opt_arg))
-	timing_window_size_ms = g_ascii_strtod (opt_arg, NULL);
-      else if (check_arg (argc, argv, &i, "--timing-window-stepping", &opt_arg))
-	timing_window_stepping_ms = g_ascii_strtod (opt_arg, NULL);
-      else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
-	channel = atoi (opt_arg);
-      else if (check_arg (argc, argv, &i, "--join-spectrum-slices", &opt_arg))
-	{
-	  join_spectrum_slices = atoi (opt_arg);
-	  validate_int ("--join-spectrum-slices", join_spectrum_slices, 1, 100000);
-	}
-      else
-        for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
-          if (check_arg (argc, argv, &i, (*fi)->option))
-            {
-              (*fi)->extract_feature = true;
-              break;
-            }
-    }
-
-  /* resort argc/argv */
-  e = 1;
-  for (i = 1; i < argc; i++)
-    if (argv[i])
-      {
-        argv[e++] = argv[i];
-        if (i >= e)
-          argv[i] = NULL;
-      }
-  *argc_p = e;
-}
-
-void
-Options::print_usage ()
-{
-  fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", options.program_name.c_str());
-  fprintf (stderr, "\n");
-  fprintf (stderr, "features that can be extracted:\n");
-  for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
-    printf (" %-28s%s\n", (*fi)->option, (*fi)->description);
-  fprintf (stderr, "\n");
-  fprintf (stderr, "other options:\n");
-  fprintf (stderr, " --channel <channel>         select channel (0: left, 1: right)\n");
-  fprintf (stderr, " --help                      help for %s\n", options.program_name.c_str());
-  fprintf (stderr, " --version                   print version\n");
-  fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
-  fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
-  fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
-  fprintf (stderr, " --silence-threshold         threshold for zero cutting (as 16bit sample value)\n");
-  fprintf (stderr, " --focus-center=X            center focus region around X%% [50]\n");
-  fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
-  fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
-  fprintf (stderr, " --join-spectrum-slices=N    when extracting a spectrum, join N 30ms slices\n");
-  fprintf (stderr, " --timing-window-size=N      attack/release detector window size in ms [50]\n");
-  fprintf (stderr, "                             (actual window size may be larger, use --verbose)\n");
-  fprintf (stderr, " --timing-window-stepping=N  attack/release detector stepping in ms [30]\n");
-  fprintf (stderr, " -o <output_file>            set the name of a file to write the features to\n");
-  fprintf (stderr, "\n");
-  fprintf (stderr, "(example: %s --start-time --end-time t.wav).\n", options.program_name.c_str());
-}
-
 static void
-print_header (const char *src)
+print_header (const String &src)
 {
   fprintf (options.output_file, "# this output was generated by %s %s from channel %d in file %s\n",
-           options.program_name.c_str(), Bse::version().c_str(), options.channel, src);
+           options.program_name.c_str(), Bse::version().c_str(), options.channel, src.c_str());
   fprintf (options.output_file, "#\n");
 }
 
-int
-main (int    argc,
-      char **argv)
-{
-  /* init */
-  bse_init_inprocess (&argc, argv, NULL,
-                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
-                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
+static ArgDescription fextract_options[32] = {
+  { "<audiofile>", "",                  "Audio file to extract features from", "", },
+  { "--verbose", "",                    "Verbose feature extraction", "" },
+  { "--channel", "<channel>",           "select channel (0: left, 1: right)", "" },
+  { "--cut-zeros", "",                  "cut zero samples at start/end of the signal", "" },
+  { "--cut-zeros-head", "",             "cut zero samples at start of the signal", "" },
+  { "--cut-zeros-tail", "",             "cut zero samples at end of the signal", "" },
+  { "--silence-threshold", "",          "threshold for zero cutting (as 16bit sample value)", "0" },
+  { "--focus-center", "<X>",            "center focus region around X%% [50]", "50" },
+  { "--focus-width", "<Y>",             "width of focus region in %% [100]", "100" },
+  { "--base-freq-hint", "",             "expected base frequency (for the pitch detection)", "0" },
+  { "--join-spectrum-slices", "<N>",    "when extracting a spectrum, join N 30ms slices", "1" },
+  { "--timing-window-size", "<N>",      "attack/release detector window size in ms [50] (actual window size may be larger, use --verbose)", "50" },
+  { "--timing-window-stepping", "<N>",  "attack/release detector stepping in ms [30]", "30" },
+  { "-o", "<output_file>",              "set the name of a file to write the features to", "-" },
+};
+
+static const char*
+fextract_blurb (const char *blurb)
+{ // slight hack to finish up fextract_options before calling CommandRegistry::CommandRegistry()
+  const int NOPTS = 14;
+  assert_return (fextract_options[NOPTS - 1].arg_name != NULL, NULL);
+  assert_return (fextract_options[NOPTS].arg_name == NULL, NULL); // call *once* only
   /* supported features */
   SpectrumFeature *spectrum_feature = new SpectrumFeature;
   ComplexSignalFeature *complex_signal_feature = new ComplexSignalFeature;
@@ -1525,43 +1353,96 @@ main (int    argc,
   feature_list.push_back (new VolumeWobble (volume_feature));
   feature_list.push_back (new AttackTimes (timing_slices));
   feature_list.push_back (new ReleaseTimes (timing_slices));
-
-  /* parse options */
-  options.parse (&argc, &argv);
-  if (argc != 2)
+  // add feature options
+  size_t i = NOPTS;
+  for (const auto &feat : feature_list)
     {
-      options.print_usage ();
-      return 1;
+      fextract_options[i].arg_name = feat->option;
+      fextract_options[i].value_name = "";
+      fextract_options[i].arg_blurb = feat->description;
+      i++;
     }
+  return blurb;
+}
+
+void
+FExtractOptions::assign_options (const ArgParser &ap)
+{
+  // assign options
+  verbose = ap["verbose"] == "1";
+  if (ap["cut-zeros"] == "1")
+    cut_zeros_head = cut_zeros_tail = true;
+  if (ap["cut-zeros-head"] == "1")
+    cut_zeros_head = true;
+  if (ap["cut-zeros-tail"] == "1")
+    cut_zeros_tail = true;
+  silence_threshold = g_ascii_strtod (ap["silence-threshold"].c_str(), NULL) / 32767.0;
+  focus_width = g_ascii_strtod (ap["focus-width"].c_str(), NULL);
+  validate_percent ("--focus-width", focus_width);
+  focus_center = g_ascii_strtod (ap["focus-center"].c_str(), NULL);
+  validate_percent ("--focus-center", focus_center);
+  base_freq_hint = g_ascii_strtod (ap["base-freq-hint"].c_str(), NULL);
+  timing_window_size_ms = g_ascii_strtod (ap["timing-window-size"].c_str(), NULL);
+  timing_window_stepping_ms = g_ascii_strtod (ap["timing-window-stepping"].c_str(), NULL);
+  channel = atoi (ap["channel"].c_str());
+  join_spectrum_slices = atoi (ap["join-spectrum-slices"].c_str());
+  validate_int ("--join-spectrum-slices", join_spectrum_slices, 1, 100000);
+  const String outputfile = ap["o"];
+  if (outputfile == "-")
+    output_file = stdout;
+  else
+    {
+      output_file = fopen (outputfile.c_str(), "w");
+      if (!output_file)
+        {
+          printerr ("%s: failed to open '%s' for writing: %s\n", program_name, outputfile, strerror (errno));
+          exit (3);
+        }
+    }
+  for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
+    {
+      const char *const fname = (*fi)->option;
+      assert_return (fname[0] == '-' && fname[1] == '-');
+      if (ap[fname + 2] == "1")
+        (*fi)->extract_feature = true;
+    }
+}
+
+static String
+fextract_run (const ArgParser &ap)
+{
+  // INIT-NEEDS: "stand-alone=1", "wave-chunk-padding=1", "dcache-block-size=8192", "dcache-cache-memory=5242880"
+  // FExtractOptions options;
+  options.assign_options (ap);
 
   /* open input */
   Bse::Error error;
-
-  BseWaveFileInfo *wave_file_info = bse_wave_file_info_load (argv[1], &error);
+  const String audiofile = ap["audiofile"];
+  BseWaveFileInfo *wave_file_info = bse_wave_file_info_load (audiofile.c_str(), &error);
   if (!wave_file_info)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
+      printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
       exit (1);
     }
 
   BseWaveDsc *waveDsc = bse_wave_dsc_load (wave_file_info, 0, FALSE, &error);
   if (!waveDsc)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
+      printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
       exit (1);
     }
 
   GslDataHandle *dhandle = bse_wave_handle_create (waveDsc, 0, &error);
   if (!dhandle)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
+      printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (dhandle);
   if (error != 0)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
+      printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
       exit (1);
     }
 
@@ -1570,8 +1451,8 @@ main (int    argc,
 
   if (options.channel >= signal.n_channels())
     {
-      fprintf (stderr, "%s: bad channel %d, input file %s has %d channels\n",
-	       options.program_name.c_str(), options.channel, argv[1], signal.n_channels());
+      printerr ("%s: bad channel %d, input file %s has %d channels\n",
+                options.program_name, options.channel, audiofile, signal.n_channels());
       exit (1);
     }
 
@@ -1580,7 +1461,7 @@ main (int    argc,
       (*fi)->compute (signal);
 
   /* print results */
-  print_header (argv[1]);
+  print_header (audiofile);
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     {
       const Feature &feature = *(*fi);
@@ -1590,6 +1471,9 @@ main (int    argc,
 	  feature.print_results();
 	}
     }
+
+  return ""; // no error
 }
 
-/* vim:set ts=8 sts=2 sw=2: */
+static CommandRegistry fextract_cmd (fextract_options, fextract_run, "fextract",
+                                     fextract_blurb ("Audio feature extraction"));

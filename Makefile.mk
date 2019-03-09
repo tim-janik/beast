@@ -83,6 +83,7 @@ include config-checks.mk
 # == enduser targets ==
 all: FORCE
 check: FORCE
+check-audio: FORCE
 install: FORCE
 uninstall: FORCE
 installcheck: FORCE
@@ -98,6 +99,7 @@ include aidacc/Makefile.mk
 include bse/Makefile.mk
 include plugins/Makefile.mk
 include drivers/Makefile.mk
+include tools/Makefile.mk
 include tests/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
@@ -157,7 +159,6 @@ help: FORCE
 all: $(ALL_TARGETS) $(ALL_TESTS)
 
 # == check rules ==
-check: FORCE
 # Macro to generate test runs as 'check' dependencies
 define CHECK_ALL_TESTS_TEST
 CHECK_TARGETS += $$(dir $1)check-$$(notdir $1)
@@ -166,7 +167,7 @@ $$(dir $1)check-$$(notdir $1): $1
 	$$Q $1
 endef
 $(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
-check: $(CHECK_TARGETS)
+check: $(CHECK_TARGETS) check-audio
 $(CHECK_TARGETS): FORCE
 
 # == installcheck ==

@@ -1,38 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsemain.hh>
-#include <bse/bseserver.hh>
-#include <bse/bsemathsignal.hh>
-#include <bse/bsecategories.hh>
-#include <bse/bsestandardsynths.hh>
+#include "bsetool.hh"
 #include <sys/resource.h>
-#include <unordered_map>
 #include <unistd.h>
 #include <stdio.h>
 
-
 using namespace Bse;
+using namespace BseTool;
 
 // == arg parsing ==
-static bool verbose = true;
-#define printq(...)     do { if (verbose) printout (__VA_ARGS__); } while (0)
-
-struct ArgDescription {
-  const char *arg_name, *value_name, *arg_blurb;
-  String value;
-};
-
-class ArgParser {
-  const size_t                                n_args_;
-  ArgDescription                             *const args_;
-  std::unordered_map<String, ArgDescription*> names_;
-  void     parse_args (const size_t N, const ArgDescription *adescs);
-public:
-  template<size_t N>
-  explicit ArgParser  (ArgDescription (&adescs) [N]) : n_args_ (N), args_ (adescs) {}
-  String   parse_args (const uint argc, char *const argv[]); // returns error message
-  String   operator[] (const String &arg_name) const;
-};
-
 String
 ArgParser::operator[] (const String &arg_name) const
 {
@@ -43,15 +18,28 @@ ArgParser::operator[] (const String &arg_name) const
   return adesc->value;
 }
 
+ArgDescriptions
+ArgParser::list_args () const
+{
+  ArgDescriptions args;
+  for (size_t i = 0; i < n_args_; i++)
+    if (args_[i].arg_name && args_[i].arg_name[0])
+      args.push_back (args_[i]);
+  return args;
+}
+
 String
 ArgParser::parse_args (const uint argc, char *const argv[])
 {
   std::unordered_map<String, String> aliases;
   std::vector<String> fixed; // fixed arguments, like <OBLIGATION> or [OPTIONAL]
+  bool with_dynamics = false;
   size_t need_obligatory = 0;
   // fill names_ from args_
   for (size_t i = 0; i < n_args_; i++)
     {
+      if (!args_[i].arg_name)
+        continue;
       StringVector names = string_split (args_[i].arg_name, ",");
       for (size_t j = 0; j < names.size(); j++)
         {
@@ -69,7 +57,12 @@ ArgParser::parse_args (const uint argc, char *const argv[])
                   fixed.push_back (name);
                 }
               else if (names[j][0] == '[')
-                fixed.push_back (name);
+                {
+                  if (string_endswith (names[j], "...]"))
+                    with_dynamics = true;
+                  else
+                    fixed.push_back (name);
+                }
             }
           else // found an alias after ','
             names_[name] = &args_[i];
@@ -109,11 +102,16 @@ ArgParser::parse_args (const uint argc, char *const argv[])
       }
     else // non-option arguments
       {
-        if (fixed_index >= fixed.size())
+        if (fixed_index < fixed.size())
+          {
+            ArgDescription *adesc = names_[fixed[fixed_index]];
+            adesc->value = argv[i];
+            fixed_index++;
+          }
+        else if (with_dynamics)
+          dynamics_.push_back (argv[i]);
+        else
           return string_format ("invalid extra argument: %s", argv[i]);
-        ArgDescription *adesc = names_[fixed[fixed_index]];
-        adesc->value = argv[i];
-        fixed_index++;
       }
   if (fixed_index < need_obligatory)
     return string_format ("missing mandatory argument <%s>", fixed[fixed_index]);
@@ -121,31 +119,11 @@ ArgParser::parse_args (const uint argc, char *const argv[])
 }
 
 // == CommandRegistry ==
-class CommandRegistry;
-static CommandRegistry *command_registry_chain = NULL;
-class CommandRegistry {
-  ArgParser        arg_parser_;
-  String         (*cmd_) (const ArgParser&);
-  String           name_, blurb_;
-  CommandRegistry *next_;
-public:
-  template<size_t N>
-  explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&),
-                            const String &name, const String &blurb) :
-    arg_parser_ (adescs), cmd_ (cmd), name_ (name), blurb_ (blurb), next_ (command_registry_chain)
-  {
-    command_registry_chain = this;
-  }
-  ~CommandRegistry()
-  {
-    command_registry_chain = NULL;
-  }
-  CommandRegistry* next       ()                                    { return next_; }
-  String           name       ()                                    { return name_; }
-  String           run        ()                                    { return cmd_ (arg_parser_); }
-  String           parse_args (const uint argc, char *const argv[]) { return arg_parser_.parse_args (argc, argv); }
-};
-
+CommandRegistry *CommandRegistry::command_registry_chain_ = NULL;
+CommandRegistry::~CommandRegistry()
+{
+  command_registry_chain_ = NULL;
+}
 
 // == crawl ==
 static ArgDescription crawl_options[] = {
@@ -459,12 +437,53 @@ type_tree (const ArgParser &ap)
 
 static CommandRegistry type_tree_cmd (type_tree_options, type_tree, "type-tree", "Printout the BSE type tree");
 
+// == help ==
+static ArgDescription help_options[] = {
+  { "",         "",     "",     "" },
+};
+
+static String
+print_help (const ArgParser &ap)
+{
+  printout ("bsetool version %s\n", Bse::version());
+  printout ("Usage: bsetool <command> [args...]\n");
+  printout ("Commands:\n");
+  std::vector<CommandRegistry*> cmds;
+  for (CommandRegistry *cmd = CommandRegistry::chain_start(); cmd; cmd = cmd->next())
+    cmds.push_back (cmd);
+  auto cmp_cmd = [] (const CommandRegistry *a, const CommandRegistry *b) -> bool {
+    return a->name() < b->name();
+  };
+  std::stable_sort (cmds.begin(), cmds.end(), cmp_cmd);
+  for (const auto *cmd : cmds)
+    {
+      printout ("  %-16s %s\n", cmd->name(), cmd->blurb());
+      for (const auto &arg : cmd->list_args())
+        {
+          String aname = String (arg.arg_name);
+          if (arg.value_name && arg.value_name[0])
+            {
+              aname += " ";
+              aname += arg.value_name;
+            }
+          if (aname.size() <= 14)
+            printout ("    %-14s %s\n", aname, arg.arg_blurb);
+          else
+            printout ("    %s\n%18s %s\n", aname, "", arg.arg_blurb);
+        }
+    }
+  return ""; // success
+}
+
+static CommandRegistry help_cmd (help_options, print_help, "help", "Print commands and options");
 
 // == bse tool ==
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
   { "--quiet",       "", "Prevent progress output", "" },
 };
+
+bool BseTool::verbose = true;
 
 int
 main (int argc_int, char *argv[])
@@ -494,7 +513,7 @@ main (int argc_int, char *argv[])
     }
   // command parsing
   if (option_argc < argc)
-    for (CommandRegistry *cmd = command_registry_chain; cmd; cmd = cmd->next())
+    for (CommandRegistry *cmd = CommandRegistry::chain_start(); cmd; cmd = cmd->next())
       if (cmd->name() == argv[option_argc])
         {
           String error = cmd->parse_args (argc - option_argc - 1, argv + option_argc + 1);
