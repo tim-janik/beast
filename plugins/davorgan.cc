@@ -51,7 +51,7 @@ class Organ : public OrganBase {
     static Tables*
     ref (uint rate)
     {
-      static std::lock_guard<std::mutex> locker (table_mutex);
+      std::lock_guard<std::mutex> locker (table_mutex);
       if (table_map[rate])
 	table_map[rate]->m_ref_count++;
       else
@@ -62,7 +62,7 @@ class Organ : public OrganBase {
     unref()
     {
       return_unless (m_ref_count > 0);
-      static std::lock_guard<std::mutex> locker (table_mutex);
+      std::lock_guard<std::mutex> locker (table_mutex);
       if (--m_ref_count == 0)
 	{
 	  table_map[m_rate] = 0;
