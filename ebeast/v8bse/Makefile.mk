@@ -17,7 +17,8 @@ ebeast/v8bse/gyp.inputs   ::= $(notdir $(ebeast/v8bse/cc.sources))
 ebeast/v8bse/gyp.notflags ::= -fno-exceptions -fno-rtti -std=gnu++0x
 ebeast/v8bse/gyp.ccflags  ::= $(strip	\
 	-Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-fallthrough \
-	-Wno-unused-but-set-variable -Wno-unused-variable \
+	$(if $(HAVE_GCC), -Wno-unused-but-set-variable)	\
+	-Wno-unused-variable \
 )
 ebeast/v8bse/gyp.cxxflags   = $(CXXSTD) -fPIC $(DEFS) $(EXTRA_DEFS) $($@.DEFS) $(pkgcxxflags) $(EXTRA_FLAGS) $($@.FLAGS) $(ebeast/v8bse/gyp.ccflags)
 ebeast_v8bse/gyp.incdirs    = $(abspath $(patsubst -%, , $(patsubst -I%, %, $(INCLUDES) $(EXTRA_INCLUDES) $($@.INCLUDES))))

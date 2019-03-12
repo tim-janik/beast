@@ -1,8 +1,11 @@
 BEAST & BSE
 ===========
 
-[![License LGPL-2.1+](http://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
+[![License LGPL-2.1+](https://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
+[![Chat](https://testbit.eu/~timj/pics/chat-beast-f7b.svg)](irc://irc.gimp.org/beast)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
+[![Download](https://api.bintray.com/packages/beast-team/testing/Beast-AppImage/images/download.svg)](https://bintray.com/beast-team/testing/Beast-AppImage/_latestVersion)
+
 
 # DESCRIPTION
 
@@ -40,17 +43,23 @@ distribution like Ubuntu-18.04.
 
 # INSTALLATION
 
-In short, Beast needs to be built and installed with:
+Beast needs GNU Make to build under Linux:
 
-	./configure
-	make
-	make check         # run simple unit tests
-	make install
-	make installcheck  # run audio tests
+	make			# build all components
+	make check		# run unit and audio tests
+	make install		# install under $(prefix)
+	make installcheck	# run installation tests
 
-Note that Beast has to be fully installed to function properly, and that
-the binaries built in the launchers/ directory have to be installed with
-permissions of the root user.
+The build can be configured with:
+
+	make default prefix=... CXX=... CC=... CXXFLAGS=...
+	make help		# brief description about build targets
+
+Note that some Beast versions provide a realtime scheduling wrapper in
+the launchers/ directory which has to be installed with permissions of
+the root user to work properly. Realtime scheduling priority helps to
+avoid drop outs during audio playback.
+
 
 # BINARY PACKAGES
 
@@ -58,4 +67,6 @@ New source code pushed to the Beast repository is automatically built
 and tested via Travis-CI. Ever so often we create release candidate
 packages and later release packages after a stabilization phase.
 Some of the release candidates and the stable versions are provided
-as binary packages. Refer to the website for download links.
+as binary packages. Refer to the website for download links:
+
+	https://beast.testbit.org/#downloads
