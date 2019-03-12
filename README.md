@@ -3,6 +3,8 @@ BEAST & BSE
 
 [![License LGPL-2.1+](http://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
+[![Download](https://api.bintray.com/packages/beast-team/testing/Beast-AppImage/images/download.svg)](https://bintray.com/beast-team/testing/Beast-AppImage/_latestVersion)
+
 
 # DESCRIPTION
 
