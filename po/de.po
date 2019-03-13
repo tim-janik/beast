@@ -43,7 +43,6 @@ msgstr ""
 "\n"
 "Verfügbare PCM-Treiber:\n"
 
-# CHECK
 #: beast-gtk/bstpatterncolumns.cc:701
 msgid "  allow folding the column into left/right neighbour"
 msgstr ""
@@ -642,6 +641,8 @@ msgstr ""
 msgid ""
 "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
 msgstr ""
+"Ein 8192 Werte FFT-Fenster entspricht einem Spektrum mit 4097 "
+"Frequenzausschlägen"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: bse/bseapi.idl:457

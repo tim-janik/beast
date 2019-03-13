@@ -78,17 +78,17 @@ beast-gtk/gxk/libgxk.cc.deps ::= $(strip	\
 
 # == libgxk defs ==
 beast-gtk/gxk/libgxk.a	     ::= $>/beast-gtk/gxk/libgxk-$(VERSION_MAJOR).$(VERSION_MINOR).a
-beast-gtk/gxk/libgxk.objects ::= $(call SUBST_O, $(beast-gtk/gxk/libgxk.sources:%=$>/%))
+beast-gtk/gxk/libgxk.objects ::= $(call BUILDDIR_O, $(beast-gtk/gxk/libgxk.sources))
 
 # == gxktest defs ==
 beast-gtk/gxk/gxktest		::= $>/beast-gtk/gxk/gxktest
 beast-gtk/gxk/gxktest.sources	::= beast-gtk/gxk/gxktest.cc
-beast-gtk/gxk/gxktest.objects	::= $(sort $(beast-gtk/gxk/gxktest.sources:%.cc=$>/%.o))
+beast-gtk/gxk/gxktest.objects	::= $(call BUILDDIR_O, $(beast-gtk/gxk/gxktest.sources))
 
 # == splinetest defs ==
 beast-gtk/gxk/splinetest	  ::= $>/beast-gtk/gxk/splinetest
 beast-gtk/gxk/splinetest.sources  ::= beast-gtk/gxk/splinetest.cc
-beast-gtk/gxk/splinetest.objects  ::= $(sort $(beast-gtk/gxk/splinetest.sources:%.cc=$>/%.o))
+beast-gtk/gxk/splinetest.objects  ::= $(call BUILDDIR_O, $(beast-gtk/gxk/splinetest.sources))
 
 # == libgxk rules ==
 $(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps) $(bse/libbse.deps)

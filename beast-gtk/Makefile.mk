@@ -145,8 +145,8 @@ beast-gtk/beast.cc.deps ::= $(strip		\
 )
 
 # == beast defs ==
-beast-gtk/beast			::= $>/beast-gtk/beast
-beast-gtk/beast.objects		::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/beast.sources)))
+beast-gtk/beast			::= $>/beast-gtk/beast-$(VERSION_M.M.M)
+beast-gtk/beast.objects		::= $(call BUILDDIR_O, $(beast-gtk/beast.sources))
 
 # == subdirs ==
 include beast-gtk/gxk/Makefile.mk
@@ -164,7 +164,7 @@ $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/libgxk.a) $(lib/libbse.so), \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
 	$(beast-gtk/rpath..libbse))
-$(call INSTALL_BIN_RULE, bin/beast, $(DESTDIR)$(pkglibdir)/bin, $(beast-gtk/beast))
+$(call INSTALL_BIN_RULE, bin/beast-$(VERSION_M.M.M), $(DESTDIR)$(pkglibdir)/bin, $(beast-gtk/beast))
 
 # == bstmarshal ==
 $>/beast-gtk/bstmarshal.h: beast-gtk/bstmarshal.list			| $>/beast-gtk/

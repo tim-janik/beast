@@ -32,7 +32,7 @@ static void	bse_free_verb_context_create	(BseSource		*source,
 static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
 // == Type Registration ==
-#include "../icons/reverb.c"
+#include "plugins/icons/reverb.c"
 BSE_RESIDENT_SOURCE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
                          "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
                          "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",

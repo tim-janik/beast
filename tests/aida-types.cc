@@ -1,5 +1,5 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-#include "testing.hh"
+#include <bse/testing.hh>
 
 using std::ptrdiff_t;
 using namespace Aida;
@@ -95,7 +95,7 @@ public:
 typedef OneIface::OneIfaceP OneIfaceP;
 
 static void
-test_enum_info()
+test_aida_enum_info()
 {
   const Aida::EnumInfo tke1 = Aida::enum_info<Aida::TypeKind>();
   const Aida::EnumInfo tke = tke1;
@@ -106,10 +106,10 @@ test_enum_info()
   TASSERT (ev.ident && String ("STRING") == ev.ident);
   TASSERT (type_kind_name (Aida::VOID) == String ("VOID"));
 }
-TEST_ADD (test_enum_info);
+TEST_ADD (test_aida_enum_info);
 
 static void
-test_handles()
+test_aida_handles()
 {
   // RemoteHandle
   TASSERT (RemoteHandle::__aida_null_handle__() == NULL);
@@ -123,10 +123,10 @@ test_handles()
   TASSERT (!OneHandle (torbo).__aida_null_handle__());
   TASSERT (OneHandle (torbo).__aida_null_handle__().__aida_orbid__() == 0);
 }
-TEST_ADD (test_handles);
+TEST_ADD (test_aida_handles);
 
 static void
-test_any_basics()
+test_aida_any_basics()
 {
   Any f7 (7);
   TASSERT (f7 == f7);
@@ -161,28 +161,28 @@ test_any_basics()
   TASSERT (dup.get_enum_typename() == "TestEnum");
   TASSERT (dup.get<TestEnum>() == TEST_COFFEE_COFFEE);
 }
-TEST_ADD (test_any_basics);
+TEST_ADD (test_aida_any_basics);
 
 static void
-test_any_conversions()
+test_aida_any_conversions()
 {
   Any a;
-  a.set (bool (0));         assert (a.kind() == BOOL && a.get<int64>() == 0);
-  a.set (bool (1));         assert (a.kind() == BOOL && a.get<int64>() == 1);
-  a.set (1.);               assert (a.kind() == FLOAT64 && a.get<double>() == +1.0);
-  a.set (-1.);              assert (a.kind() == FLOAT64 && a.get<double>() == -1.0);
-  a.set (16.5e+6);          assert (a.get<double>() > 16000000.0 && a.get<double>() < 17000000.0);
-  a.set (1);                assert (a.kind() == INT64 && a.get<int64>() == 1 && a.get<double>() == 1);
-  a.set (-1);               assert (a.kind() == INT64 && a.get<int64>() == -1 && a.get<double>() == -1);
-  a.set (int64_t (1));      assert (a.kind() == INT64 && a.get<int64>() == 1 && a.get<double>() == 1);
-  a.set (int64_t (-1));     assert (a.kind() == INT64 && a.get<int64>() == -1 && a.get<double>() == -1);
-  a.set (0);                assert (a.kind() == INT64 && a.get<int64>() == 0 && a.get<double>() == 0);
-  a.set (32767199);         assert (a.kind() == INT64 && a.get<int64>() == 32767199);
-  a.set ("");               assert (a.kind() == STRING && a.get<String>() == "" && a.get<bool>() == 0);
-  a.set ("f");              assert (a.kind() == STRING && a.get<String>() == "f" && a.get<bool>() == 1);
-  a.set ("123456789");      assert (a.kind() == STRING && a.get<String>() == "123456789" && a.get<bool>() == 1);
+  a.set (bool (0));         TASSERT (a.kind() == BOOL && a.get<int64>() == 0);
+  a.set (bool (1));         TASSERT (a.kind() == BOOL && a.get<int64>() == 1);
+  a.set (1.);               TASSERT (a.kind() == FLOAT64 && a.get<double>() == +1.0);
+  a.set (-1.);              TASSERT (a.kind() == FLOAT64 && a.get<double>() == -1.0);
+  a.set (16.5e+6);          TASSERT (a.get<double>() > 16000000.0 && a.get<double>() < 17000000.0);
+  a.set (1);                TASSERT (a.kind() == INT64 && a.get<int64>() == 1 && a.get<double>() == 1);
+  a.set (-1);               TASSERT (a.kind() == INT64 && a.get<int64>() == -1 && a.get<double>() == -1);
+  a.set (int64_t (1));      TASSERT (a.kind() == INT64 && a.get<int64>() == 1 && a.get<double>() == 1);
+  a.set (int64_t (-1));     TASSERT (a.kind() == INT64 && a.get<int64>() == -1 && a.get<double>() == -1);
+  a.set (0);                TASSERT (a.kind() == INT64 && a.get<int64>() == 0 && a.get<double>() == 0);
+  a.set (32767199);         TASSERT (a.kind() == INT64 && a.get<int64>() == 32767199);
+  a.set ("");               TASSERT (a.kind() == STRING && a.get<String>() == "" && a.get<bool>() == 0);
+  a.set ("f");              TASSERT (a.kind() == STRING && a.get<String>() == "f" && a.get<bool>() == 1);
+  a.set ("123456789");      TASSERT (a.kind() == STRING && a.get<String>() == "123456789" && a.get<bool>() == 1);
 }
-TEST_ADD (test_any_conversions);
+TEST_ADD (test_aida_any_conversions);
 
 static void AIDA_UNUSED
 P (const Any &any, const String &name = "")
@@ -193,22 +193,22 @@ P (const Any &any, const String &name = "")
 }
 
 static void
-test_any_equality()
+test_aida_any_equality()
 {
   Any a, b, c, d;
-  a.set (-3);               assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a.set (Any());            assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a = Any();                assert (a == b); assert (!(a != b));  c.set (a); d.set (b); assert (c == d); assert (!(c != d));
-  b.set (Any());            assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a.set (Any());            assert (a == b); assert (!(a != b));  c.set (a); d.set (b); assert (c == d); assert (!(c != d));
-  a.set (13);  b.set (13);  assert (a == b); assert (!(a != b));  c.set (a); d.set (b); assert (c == d); assert (!(c != d));
-  a.set (14);  b.set (15);  assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a.set ("1"); b.set ("1"); assert (a == b); assert (!(a != b));  c.set (a); d.set (b); assert (c == d); assert (!(c != d));
-  a.set ("1"); b.set (1);   assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a.set (1.4); b.set (1.5); assert (a != b); assert (!(a == b));  c.set (a); d.set (b); assert (c != d); assert (!(c == d));
-  a.set (1.6); b.set (1.6); assert (a == b); assert (!(a != b));  c.set (a); d.set (b); assert (c == d); assert (!(c != d));
+  a.set (-3);               TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a.set (Any());            TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a = Any();                TASSERT (a == b); TASSERT (!(a != b));  c.set (a); d.set (b); TASSERT (c == d); TASSERT (!(c != d));
+  b.set (Any());            TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a.set (Any());            TASSERT (a == b); TASSERT (!(a != b));  c.set (a); d.set (b); TASSERT (c == d); TASSERT (!(c != d));
+  a.set (13);  b.set (13);  TASSERT (a == b); TASSERT (!(a != b));  c.set (a); d.set (b); TASSERT (c == d); TASSERT (!(c != d));
+  a.set (14);  b.set (15);  TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a.set ("1"); b.set ("1"); TASSERT (a == b); TASSERT (!(a != b));  c.set (a); d.set (b); TASSERT (c == d); TASSERT (!(c != d));
+  a.set ("1"); b.set (1);   TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a.set (1.4); b.set (1.5); TASSERT (a != b); TASSERT (!(a == b));  c.set (a); d.set (b); TASSERT (c != d); TASSERT (!(c == d));
+  a.set (1.6); b.set (1.6); TASSERT (a == b); TASSERT (!(a != b));  c.set (a); d.set (b); TASSERT (c == d); TASSERT (!(c != d));
 }
-TEST_ADD (test_any_equality);
+TEST_ADD (test_aida_any_equality);
 
 static const double test_double_value = 7.76576e-306;
 
@@ -250,37 +250,37 @@ any_test_get (const Any &a, int what)
     {
       typedef unsigned char uchar;
       bool b; char c; uchar uc; int i; uint ui; long l; ulong ul; int64_t i6; uint64_t u6; double d;
-    case 0:  b  = a.get<bool>();              assert (b == 0);                      break;
-    case 1:  b  = a.get<bool>();              assert (b == true);                   break;
-    case 2:  c  = a.get<char>();              assert (c == -117);                   break;
-    case 3:  uc = a.get<uchar>();             assert (uc == 250);                   break;
-    case 4:  i  = a.get<int>();               assert (i == -134217728);             break;
-    case 5:  ui = a.get<uint>();              assert (ui == 4294967295U);           break;
-    case 6:  l  = a.get<long>();              assert (l == -2147483648);            break;
-    case 7:  ul = a.get<ulong>();             assert (ul == 4294967295U);           break;
-    case 8:  i6 = a.get<int64_t>();           assert (i6 == -0xc0ffeec0ffeeLL);     break;
-    case 9:  u6 = a.get<uint64_t>();          assert (u6 == 0xffffffffffffffffULL); break;
-    case 10: s  = a.get<String>();            assert (s == "Test4test");            break;
-    case 11: d  = a.get<double>();            assert (d == test_double_value);      break;
-    case 12: s  = a.get<Any>().get<String>(); assert (s == "SecondAny");            break;
-    case 13: i6 = a.get<TestEnum>();          assert (i6 == TEST_COFFEE_COFFEE);    break;
+    case 0:  b  = a.get<bool>();              TASSERT (b == 0);                      break;
+    case 1:  b  = a.get<bool>();              TASSERT (b == true);                   break;
+    case 2:  c  = a.get<char>();              TASSERT (c == -117);                   break;
+    case 3:  uc = a.get<uchar>();             TASSERT (uc == 250);                   break;
+    case 4:  i  = a.get<int>();               TASSERT (i == -134217728);             break;
+    case 5:  ui = a.get<uint>();              TASSERT (ui == 4294967295U);           break;
+    case 6:  l  = a.get<long>();              TASSERT (l == -2147483648);            break;
+    case 7:  ul = a.get<ulong>();             TASSERT (ul == 4294967295U);           break;
+    case 8:  i6 = a.get<int64_t>();           TASSERT (i6 == -0xc0ffeec0ffeeLL);     break;
+    case 9:  u6 = a.get<uint64_t>();          TASSERT (u6 == 0xffffffffffffffffULL); break;
+    case 10: s  = a.get<String>();            TASSERT (s == "Test4test");            break;
+    case 11: d  = a.get<double>();            TASSERT (d == test_double_value);      break;
+    case 12: s  = a.get<Any>().get<String>(); TASSERT (s == "SecondAny");            break;
+    case 13: i6 = a.get<TestEnum>();          TASSERT (i6 == TEST_COFFEE_COFFEE);    break;
     case 14:
-      assert (a.kind() == REMOTE);
+      TASSERT (a.kind() == REMOTE);
       thandle = a.get<OneHandle>();
-      assert (thandle.__aida_orbid__() == 0x1f1f0c0c);
+      TASSERT (thandle.__aida_orbid__() == 0x1f1f0c0c);
       break;
     case 15:
       {
-        assert (a.kind() == INSTANCE);
+        TASSERT (a.kind() == INSTANCE);
         OneIface &oiface = a.get<OneIface>();
-        assert (oiface.test_id() == 0x2eeeabcd);
+        TASSERT (oiface.test_id() == 0x2eeeabcd);
       }
       break;
     case 16:
       {
-        assert (a.kind() == INSTANCE);
+        TASSERT (a.kind() == INSTANCE);
         OneIfaceP oiface = a.get<OneIfaceP>();
-        assert (oiface && oiface->test_id() == 0x37afafaf);
+        TASSERT (oiface && oiface->test_id() == 0x37afafaf);
       }
       break;
     }
@@ -290,7 +290,7 @@ any_test_get (const Any &a, int what)
 static Any any5 () { return Any(5); }
 
 static void
-test_any_storage()
+test_aida_any_storage()
 {
   {
     Any ax1 = any5();
@@ -310,22 +310,22 @@ test_any_storage()
             Any a;
             any_test_set (a, cs[cc]);
             const bool any_getter_successfull = any_test_get (a, cs[cc]);
-            assert (any_getter_successfull == true);
+            TASSERT (any_getter_successfull == true);
             Any a2 (a);
             TASSERT (a2.kind() == a.kind());
             const bool any_copy_successfull = any_test_get (a2, cs[cc]);
-            assert (any_copy_successfull == true);
+            TASSERT (any_copy_successfull == true);
             Any a3;
             a3 = a2;
             const bool any_assignment_successfull = any_test_get (a2, cs[cc]);
-            assert (any_assignment_successfull == true);
+            TASSERT (any_assignment_successfull == true);
           }
       }
 }
-TEST_ADD (test_any_storage);
+TEST_ADD (test_aida_any_storage);
 
 static void
-test_any_containers()
+test_aida_any_containers()
 {
   // -- AnyDict --
   Any any1 ("any1"), any2;
@@ -335,28 +335,28 @@ test_any_containers()
   fv.push_back (Any::Field ("anna", 3));
   fv.push_back (Any::Field ("ida", "ida"));
   fv.push_back (Any::Field ("any2", any2));
-  assert (fv[0].name == "otto" && fv[0].get<double>() == 7.7);
-  assert (fv[1].name == "anna" && fv[1].get<int64>() == 3);
-  assert (fv[2].name == "ida" && fv[2].get<String>() == "ida");
-  assert (fv[3].name == "any2" && fv[3].get<Any>().get<String>() == "any1");
+  TASSERT (fv[0].name == "otto" && fv[0].get<double>() == 7.7);
+  TASSERT (fv[1].name == "anna" && fv[1].get<int64>() == 3);
+  TASSERT (fv[2].name == "ida" && fv[2].get<String>() == "ida");
+  TASSERT (fv[3].name == "any2" && fv[3].get<Any>().get<String>() == "any1");
   Any::AnyDict gv = fv;
-  assert (fv == gv);
+  TASSERT (fv == gv);
   gv[1].set (5);
-  assert (fv != gv);
+  TASSERT (fv != gv);
   gv[1].set (int64 (3));
-  assert (fv == gv);
+  TASSERT (fv == gv);
   // -- AnyList --
   Any::AnyList av;
   av.push_back (Any (7.7));
   av.push_back (Any (3));
   av.push_back (Any ("ida"));
   av.push_back (any2);
-  assert (av[0].get<double>() == 7.7);
-  assert (av[1].get<int64>() == 3);
-  assert (av[2].get<String>() == "ida");
-  assert (av[3].kind() == ANY);
+  TASSERT (av[0].get<double>() == 7.7);
+  TASSERT (av[1].get<int64>() == 3);
+  TASSERT (av[2].get<String>() == "ida");
+  TASSERT (av[3].kind() == ANY);
   Any::AnyList bv;
-  assert (av != bv);
+  TASSERT (av != bv);
   for (auto const &f : fv)
     bv.push_back (f);
   if (0)
@@ -365,25 +365,19 @@ test_any_containers()
                &av[i], &bv[i],
                type_kind_name(av[i].kind()), type_kind_name(bv[i].kind()),
                av[i].get<int64>(), bv[i].get<int64>());
-  assert (av == bv);
+  TASSERT (av == bv);
   // -- AnyDict & AnyList --
   if (0)        // compare av (DynamicSequence) with fv (DynamicRecord)
     dprintf (2, "test-compare: %s == %s\n", Any (av).to_string().c_str(), Any (fv).to_string().c_str());
   Any::AnyList cv (fv.begin(), fv.end());     // initialize AnyList with { 7.7, 3, "ida" } from AnyDict (Field is-a Any)
-  assert (av == cv);                            // as AnyList (AnyDict) copy, both vectors contain { 7.7, 3, "ida" }
+  TASSERT (av == cv);                            // as AnyList (AnyDict) copy, both vectors contain { 7.7, 3, "ida" }
   Any arec (fv), aseq (av);
-  assert (arec != aseq);
+  TASSERT (arec != aseq);
   const Any::AnyDict *arv = arec.get<const Any::AnyDict*>();
-  assert (*arv == fv);
+  TASSERT (*arv == fv);
   const Any::AnyList *asv = aseq.get<const Any::AnyList*>();
-  assert (*asv == av);
+  TASSERT (*asv == av);
 }
-TEST_ADD (test_any_containers);
+TEST_ADD (test_aida_any_containers);
 
 } // Anon
-
-int
-main (int argc, const char **argv)
-{
-  return TestChain::run (argc, argv);
-}

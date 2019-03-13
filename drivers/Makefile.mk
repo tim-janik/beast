@@ -6,12 +6,12 @@ drivers/rpath..libbse ::= ../lib
 # == alsapcm defs ==
 drivers/alsapcm.so		::= $>/drivers/alsapcm.so
 drivers/alsapcm.sources		::= drivers/bsepcmdevice-alsa.cc
-drivers/alsapcm.objects		::= $(sort $(drivers/alsapcm.sources:%.cc=$>/%.o))
+drivers/alsapcm.objects		::= $(call BUILDDIR_O, $(drivers/alsapcm.sources))
 
 # == alsamidi defs ==
 drivers/alsamidi.so		::= $>/drivers/alsamidi.so
 drivers/alsamidi.sources	::= drivers/bsemididevice-alsa.cc
-drivers/alsamidi.objects	::= $(sort $(drivers/alsamidi.sources:%.cc=$>/%.o))
+drivers/alsamidi.objects	::= $(call BUILDDIR_O, $(drivers/alsamidi.sources))
 
 # == install rules ==
 $(call INSTALL_BIN_RULE, plugins/drivers, \

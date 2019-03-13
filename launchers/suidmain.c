@@ -1,6 +1,5 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "suidmain.h"
-#include "../config/config.h"   // HAVE_SETEUID, HAVE_SETREUID
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -56,21 +55,16 @@ main (int argc, char **argv)
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
     {
-#if     HAVE_SETEUID
       if (seteuid (uid) < 0)
         {
           perror ("seteuid()");
           _exit (127);
         }
-#elif   HAVE_SETREUID
       if (setreuid (-1, uid) < 0)
         {
           perror ("setreuid()");
           _exit (127);
         }
-#else
-#error platform misses facility to drop privileges
-#endif
       /* verify priviledge drop */
       if (geteuid() != uid)
         {

@@ -1,5 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "suidmain.h"
+#include "bse/sysconfig.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -28,7 +29,7 @@ getbeastexepath (int *argc, char ***argv)
           const size_t l = strlen (exe);
           const size_t j = l + 64;
           char *result = malloc (j);
-          snprintf (result, j, "%s-%u.%u.%u", exe, MAJOR, MINOR, MICRO);
+          snprintf (result, j, "%s-%u.%u.%u", exe, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
           result[j - 1] = 0;
           free (exe);
           return result;

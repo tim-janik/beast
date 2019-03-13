@@ -14,7 +14,6 @@ aidacc/aidacc.imports ::= $(strip	\
 	aidacc/ExtractDocs.py		\
 	aidacc/GenUtils.py		\
 	aidacc/PrettyDump.py		\
-	aidacc/TypeMap.py		\
 	aidacc/yapps2runtime.py		\
 )
 aidacc/aidacc.generated ::= $(strip	\
@@ -31,6 +30,9 @@ aidacc/aidacc.templates ::= $(strip	\
 aidacc/aidacc		::= $>/aidacc/aidacc
 ALL_TARGETS		 += $(aidacc/aidacc)
 aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${VERSION_SHORT}"
+
+# == subdirs ==
+include aidacc/tests/Makefile.mk
 
 # == aidacc rules ==
 $(aidacc/aidacc): aidacc/main.py	$(aidacc/aidacc.imports) $(aidacc/aidacc.generated)
@@ -74,5 +76,5 @@ $(call INSTALL_DATA_RULE,			\
 # == aidacc-check ==
 aidacc-check-build-test: FORCE		| $(aidacc/aidacc)
 	$(QECHO) RUN $@
-	$Q $(aidacc/aidacc) -x TypeMap --list-formats | grep -q AidaTypeMap
+	$Q $(aidacc/aidacc) -x CxxStub --list-formats | grep -q CxxStub
 check: aidacc-check-build-test

@@ -50,7 +50,7 @@ static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 						      gboolean		    trigger_now);
 
 // == Type Registration ==
-#include "./icons/strings.c"
+#include "plugins/icons/strings.c"
 BSE_RESIDENT_SOURCE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/XtalStrings"),
                          "DavXtalStrings is a plucked string synthesizer, using the "
                          "Karplus-Strong Algorithm. Commercial use of this module "

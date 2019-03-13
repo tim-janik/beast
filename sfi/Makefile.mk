@@ -5,7 +5,7 @@ CLEANDIRS += $(wildcard $>/sfi/)
 # == sfidl defs ==
 sfi/sfidl	  ::= $>/sfi/sfidl
 sfi/sfidl.sources ::= sfi/sfidl.cc
-sfi/sfidl.objects ::= $(sort $(sfi/sfidl.sources:%.cc=$>/%.o))
+sfi/sfidl.objects ::= $(call BUILDDIR_O, $(sfi/sfidl.sources))
 sfi/sfidl.cc.FLAGS  = -O0
 
 # == sfidl rules ==
@@ -21,7 +21,7 @@ $(call BUILD_PROGRAM, \
 # == testsfidl defs ==
 sfi/testsfidl		::= $>/sfi/testsfidl
 sfi/testsfidl.sources	  = sfi/testsfidl.cc
-sfi/testsfidl.objects	  = $(sort $(sfi/testsfidl.sources:%.cc=$>/%.o))
+sfi/testsfidl.objects	  = $(call BUILDDIR_O, $(sfi/testsfidl.sources))
 sfi/testsfidl.cc.FLAGS	  = -O0
 
 # == testsfidl rules ==

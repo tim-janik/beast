@@ -35,7 +35,7 @@ static void	bse_simple_adsr_context_create	(BseSource		*source,
 static void	bse_simple_adsr_update_modules	(BseSimpleADSR		*simple_adsr,
 						 BseTrans		*trans);
 // == Type Registration ==
-#include "./icons/adsr.c"
+#include "plugins/icons/adsr.c"
 BSE_RESIDENT_SOURCE_DEF (BseSimpleADSR, bse_simple_adsr, N_("Other Sources/Simple ADSR"),
                          "Simple ADSR envelope generator",
                          adsr_icon);

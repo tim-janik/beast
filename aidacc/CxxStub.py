@@ -499,7 +499,6 @@ class Generator:
     s += 'template<> const EnumInfo&\n'
     s += 'enum_info<%s> ()\n{\n' % c_typename
     s += '  static const EnumValue %s[] = {\n' % varray
-    import TypeMap
     for opt in type_info.options:
       (ident, label, blurb, number) = opt
       # number = self.c_long_postfix (number)

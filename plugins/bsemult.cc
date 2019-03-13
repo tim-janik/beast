@@ -13,10 +13,10 @@ static void	 bse_mult_context_create	(BseSource	*source,
 						 BseTrans	*trans);
 
 // == Type Registration ==
-#include "./icons/multiply.c"
+#include "plugins/icons/prod.c"
 BSE_RESIDENT_SOURCE_DEF (BseMult, bse_mult, N_("Routing/Multiply"),
                          "Mult is a channel multiplier for ring-modulating incoming signals",
-                         multiply_icon);
+                         prod_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;

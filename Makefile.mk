@@ -103,6 +103,7 @@ include tools/Makefile.mk
 include tests/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
+include launchers/Makefile.mk
 include docs/Makefile.mk
 include misc/Makefile.mk
 
@@ -177,11 +178,12 @@ installcheck-buildtest:
 	&& test -r conftest_buildtest.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
-	&& $(CXX) -Werror `PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
+	&& $(CCACHE) $(CXX) $(CXXSTD) -Werror \
+		`PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		-c conftest_buildtest.cc \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \
-	&& $(CXX) -Werror conftest_buildtest.o -o conftest_buildtest $(LDMODEFLAGS) \
+	&& $(CCACHE) $(CXX) $(CXXSTD) -Werror conftest_buildtest.o -o conftest_buildtest $(LDMODEFLAGS) \
 		`PKG_CONFIG_PATH="$(DESTDIR)$(pkglibdir)/lib/pkgconfig:$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$Q cd $> \

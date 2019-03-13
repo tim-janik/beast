@@ -37,7 +37,7 @@ static void dav_syn_drum_update_modules (DavSynDrum      *self,
                                          gboolean         force_trigger);
 
 // == Type Registration ==
-#include "./icons/drum.c"
+#include "plugins/icons/drum.c"
 BSE_RESIDENT_SOURCE_DEF (DavSynDrum, dav_syn_drum, N_("Audio Sources/Synthetic Drum"),
                          "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
                          "input channel or parameter setting. Drums are triggered through a trigger "

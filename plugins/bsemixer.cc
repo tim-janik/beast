@@ -40,11 +40,11 @@ static void	 bse_mixer_update_modules	(BseMixer	*self,
 
 
 // == Type Registration ==
-#include "./icons/mixer.c"
+#include "plugins/icons/ampmix.c"
 BSE_RESIDENT_SOURCE_DEF (BseMixer, bse_mixer, N_("Routing/Mixer"),
                          "The Mixer module sums up incomming signals, and allowes for fine "
                          "adjusted weighting (volume setting) of the input sources",
-                         mixer_icon);
+                         ampmix_icon);
 
 
 /* --- variables --- */

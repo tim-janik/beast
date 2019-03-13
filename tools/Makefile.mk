@@ -11,7 +11,7 @@ tools/bsetool.sources ::= $(strip	\
 	tools/bsefextract.cc		\
 )
 tools/bsetool         ::= $>/tools/bsetool
-tools/bsetool.objects ::= $(sort $(tools/bsetool.sources:%.cc=$>/%.o))
+tools/bsetool.objects ::= $(call BUILDDIR_O, $(tools/bsetool.sources))
 tools/bsetool.deps    ::= $(bse/libbse.deps)
 # CUSTOMIZATIONS: tools/bsetool.cc.FLAGS = -O2   ||   $>/tools/bsetool.o.FLAGS = -O3    ||    $>/tools/bsetool.o: EXTRA_FLAGS = -O1
 
