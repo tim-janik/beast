@@ -103,6 +103,7 @@ include tools/Makefile.mk
 include tests/Makefile.mk
 include ebeast/Makefile.mk
 include beast-gtk/Makefile.mk
+include launchers/Makefile.mk
 include docs/Makefile.mk
 include misc/Makefile.mk
 
