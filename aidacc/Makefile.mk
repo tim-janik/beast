@@ -31,6 +31,9 @@ aidacc/aidacc		::= $>/aidacc/aidacc
 ALL_TARGETS		 += $(aidacc/aidacc)
 aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${VERSION_SHORT}"
 
+# == subdirs ==
+include aidacc/tests/Makefile.mk
+
 # == aidacc rules ==
 $(aidacc/aidacc): aidacc/main.py	$(aidacc/aidacc.imports) $(aidacc/aidacc.generated)
 	$(QGEN)
