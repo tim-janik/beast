@@ -62,8 +62,31 @@ plugins/freeverb.sources = $(strip		\
 )
 plugins/freeverb.so		::= $>/plugins/freeverb.so
 plugins/freeverb.objects	::= $(sort $(plugins/freeverb.sources:%.cc=$>/%.o))
-# rules
-$(plugins/freeverb.objects): $(bse/libbse.deps) | $>/plugins/freeverb/
+
+# == icons ==
+plugins/icons/png.sources ::= $(strip		\
+	plugins/icons/adsr.png			\
+	plugins/icons/ampmix.png		\
+	plugins/icons/atan.png			\
+	plugins/icons/canyon.png		\
+	plugins/icons/drum.png			\
+	plugins/icons/filter.png		\
+	plugins/icons/prod.png			\
+	plugins/icons/reverb.png		\
+	plugins/icons/sequencer.png		\
+	plugins/icons/strings.png		\
+	plugins/icons/sub.png			\
+	plugins/icons/sum.png			\
+)
+plugins/icons/c.files ::= $(plugins/icons/png.sources:%.png=$>/%.c)
+
+# == icon rules ==
+$>/plugins/icons/%.c: plugins/icons/%.png			| $>/plugins/icons/
+	$(QGEN)
+	$Q gdk-pixbuf-csource --name=$*_icon $<		> $@
+
+# == freeverb.so rules ==
+$(plugins/freeverb.objects): $(bse/libbse.deps) $>/plugins/icons/reverb.c | $>/plugins/freeverb/
 $(plugins/freeverb.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(plugins/freeverb.so), \
@@ -81,7 +104,7 @@ $(call INSTALL_BIN_RULE, plugins/modules, \
 	$(plugins/cxxplugins.so) $(plugins/bseplugins.so))
 
 # == cxxplugins.so rules ==
-$(plugins/cxxplugins.objects): $(bse/libbse.deps) | $>/plugins/
+$(plugins/cxxplugins.objects): $(bse/libbse.deps) $(plugins/icons/c.files) | $>/plugins/
 $(plugins/cxxplugins.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(plugins/cxxplugins.so), \
@@ -91,7 +114,7 @@ $(call BUILD_SHARED_LIB, \
 	$(plugins/rpath..libbse))
 
 # == bseplugins.so rules ==
-$(plugins/bseplugins.objects): $(bse/libbse.deps) | $>/plugins/
+$(plugins/bseplugins.objects): $(bse/libbse.deps) $(plugins/icons/c.files) | $>/plugins/
 $(plugins/bseplugins.objects): EXTRA_INCLUDES ::= -I$> -I$>/plugins/ $(GLIB_CFLAGS)
 $(call BUILD_SHARED_LIB, \
 	$(plugins/bseplugins.so), \

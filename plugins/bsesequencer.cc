@@ -33,7 +33,7 @@ static void	bse_sequencer_reset		(BseSource		*source);
 static void	bse_sequencer_update_modules	(BseSequencer		*seq);
 
 // == Type Registration ==
-#include "./icons/sequencer.c"
+#include "plugins/icons/sequencer.c"
 BSE_RESIDENT_SOURCE_DEF (BseSequencer, bse_sequencer, N_("Other Sources/Sequencer"),
                          "The Sequencer produces a frequency signal according to a sequence of notes",
                          sequencer_icon);

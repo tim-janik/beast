@@ -37,7 +37,7 @@ static void dav_canyon_delay_context_create (BseSource           *source,
 static void dav_canyon_delay_update_modules (DavCanyonDelay      *self);
 
 // == Type Registration ==
-#include "./icons/canyon.c"
+#include "plugins/icons/canyon.c"
 BSE_RESIDENT_SOURCE_DEF (DavCanyonDelay, dav_canyon_delay, N_("Enhance/CanyonDelay"),
                          "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
                          canyon_icon);

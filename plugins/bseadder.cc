@@ -34,7 +34,7 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 
 /* --- Export to BSE --- */
-#include "./icons/sum.c"
+#include "plugins/icons/sum.c"
 BSE_RESIDENT_SOURCE_DEF (BseAdder, bse_adder, N_("Routing/Adder"),
                          "The Adder is a very simplisitic prototype mixer that just sums up "
                          "incoming signals (it does allow for switching to subtract mode though)",
@@ -48,7 +48,7 @@ static gpointer		 parent_class = NULL;
 static void
 bse_adder_class_init (BseAdderClass *klass)
 {
-#include "./icons/sub.c"
+#include "plugins/icons/sub.c"
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
@@ -63,7 +63,7 @@ bse_adder_class_init (BseAdderClass *klass)
 
   source_class->context_create = bse_adder_context_create;
 
-  klass->sub_icon = bse_icon_from_pixstream (sub_pixstream);
+  klass->sub_icon = bse_icon_from_pixstream (sub_icon);
 
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
