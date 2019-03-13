@@ -6,6 +6,7 @@ tests/rpath..libbse ::= ../lib
 # == tests/ files ==
 tests/suite1.sources		::= $(strip	\
 	tests/aida-basics.cc			\
+	tests/aida-types.cc			\
 	tests/blocktests.cc			\
 	tests/filterdesign.cc			\
 	tests/filtertest.cc			\
