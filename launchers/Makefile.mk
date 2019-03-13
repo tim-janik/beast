@@ -20,3 +20,9 @@ $(call BUILD_PROGRAM, \
 	$(launchers/beast.objects), \
 	$(lib/libbse.so) | $>/launchers/, \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
+$(call INSTALL_BIN_RULE, bin/beast, $(DESTDIR)$(pkglibdir)/bin, $(launchers/beast))
+install--bin/beast: INSTALL_RULE.post-hook ::= \
+	$Q echo '  MKSUID  ' .../bin/beast \
+	  && cd $(DESTDIR)$(pkglibdir)/bin/ \
+	  && ( chown root beast && chmod 4755 beast ) \
+	  || ( echo -e "***\n*** WARNING: $(DESTDIR)$(pkglibdir)/bin/beast needs to be installed as root to allow renicing \\_(o.o)_/\n***" && sleep 1 )
