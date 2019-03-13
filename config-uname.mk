@@ -164,6 +164,7 @@ define INSTALL_RULE.impl
 .PHONY: install--$(strip $1) uninstall--$(strip $1)
 install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link aliases L, install target T
 	$$(QECHO) INSTALL '$(strip $2)/...'
+	$$(call INSTALL_RULE.pre-hook,$@)
 	$$Q $$(INSTALL) -d '$(strip $2)'
 	$$Q cd '$(strip $2)' \
 	  $$(foreach T, $(notdir $3), \
@@ -177,6 +178,7 @@ install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link ali
 	$$Q $$(foreach D, $$(if $$(filter xdbg, $5), \
 				$$(wildcard $$(join $$(dir $$^), $$(patsubst %, .debug/%.debug, $$(notdir $$^))))), \
 		$4 $$D -D '$(strip $2)'/.debug/$$(notdir $$D))
+	$$(call INSTALL_RULE.post-hook,$@)
 install: install--$(strip $1)
 uninstall--$(strip $1): # delete target T and possible link aliases L
 	$$(QECHO) REMOVE '$(strip $2)/...'
