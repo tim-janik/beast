@@ -93,7 +93,7 @@ main (int argc, char *argv[])
   srand (tv.tv_usec + (tv.tv_sec << 16));
 
   // initialize threading and GLib types
-  Bse::this_thread_set_name ("Beast GUI");
+  Bse::this_thread_set_name ("Beast-GUI");
   Bse::TaskRegistry::add (Bse::this_thread_get_name(), Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   /* initialize Birnet/Sfi */
