@@ -1,23 +1,23 @@
 // Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
 #include <cstdio>
 #include <cmath>
-#include "testing.hh"
-#include "t303-explore_interfaces.hh"
-#include "t303-explore_handles.hh"
+#include <bse/testing.hh>
+#include "explore_interfaces.hh"
+#include "explore_handles.hh"
 using namespace Aida;
 
 static void
-test_seq()
+test_explore_seq()
 {
   Any any;
   const A1::BoolSeq b1 { 0, 1, 1, 0, 1, 0, 1, 1, 0, 1 };
   A1::BoolSeq b2;
-  assert (b1 != b2);
+  TASSERT (b1 != b2);
   any.set (b1);
   b2 = any.get<A1::BoolSeq>();
-  assert (b1 == b2);
+  TASSERT (b1 == b2);
 }
-TEST_ADD (test_seq);
+TEST_ADD (test_explore_seq);
 
 static void
 fill_simple_data_pack (A1::SimpleDataPack &simple)
@@ -64,22 +64,22 @@ fill_big_data_pack (A1::BigDataPack &big)
 }
 
 static void
-test_any()
+test_explore_any()
 {
   // record <-> Any
   A1::BigDataPack big, b2;
-  assert (big == b2);
+  TASSERT (big == b2);
   fill_big_data_pack (big);
-  assert (big != b2);
+  TASSERT (big != b2);
   Aida::Any any;
   any.set (big);
   b2 = any.get<A1::BigDataPack>();
-  assert (big == b2);
+  TASSERT (big == b2);
 }
-TEST_ADD (test_any);
+TEST_ADD (test_explore_any);
 
 static void
-test_enums()
+test_explore_enums()
 {
   TASSERT (  0 == Aida::enum_value_from_string ("A1::CountEnum", "ZERO"));
   TASSERT (  1 == Aida::enum_value_from_string ("A1::CountEnum", "ONE"));
@@ -126,14 +126,7 @@ test_enums()
   const std::vector<int64> reference = { 0, 1, 2, 3, 8, 9, -23, 9223372036854775807, -9223372036854775807-1 };
   TASSERT (enum_values == reference);
 }
-TEST_ADD (test_enums);
+TEST_ADD (test_explore_enums);
 
-// == main ==
-int
-main (int argc, const char **argv)
-{
-  return TestChain::run (argc, argv);
-}
-
-#include "t303-explore_interfaces.cc"
-#include "t303-explore_handles.cc"
+#include "explore_interfaces.cc"
+#include "explore_handles.cc"
