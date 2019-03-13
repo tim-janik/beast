@@ -17,7 +17,7 @@ plugins/cxxplugins.sources = $(strip		\
 	plugins/davxtalstrings.cc		\
 )
 plugins/cxxplugins.so		::= $>/plugins/cxxplugins.so
-plugins/cxxplugins.objects	::= $(sort $(plugins/cxxplugins.sources:%.cc=$>/%.o))
+plugins/cxxplugins.objects	::= $(call BUILDDIR_O, $(plugins/cxxplugins.sources))
 
 plugins/bseplugins.sources = $(strip		\
 	plugins/artscompressor.cc		\
@@ -36,7 +36,7 @@ plugins/bseplugins.sources = $(strip		\
 
 # == bseplugins.so defs ==
 plugins/bseplugins.so		::= $>/plugins/bseplugins.so
-plugins/bseplugins.objects	::= $(sort $(plugins/bseplugins.sources:%.cc=$>/%.o))
+plugins/bseplugins.objects	::= $(call BUILDDIR_O, $(plugins/bseplugins.sources))
 plugins/bseplugins.idlfiles = $(strip		\
 	plugins/artscompressor.idl		\
 	plugins/bseamplifier.idl		\
@@ -61,7 +61,7 @@ plugins/freeverb.sources = $(strip		\
 	plugins/freeverb/bsefreeverb.cc		\
 )
 plugins/freeverb.so		::= $>/plugins/freeverb.so
-plugins/freeverb.objects	::= $(sort $(plugins/freeverb.sources:%.cc=$>/%.o))
+plugins/freeverb.objects	::= $(call BUILDDIR_O, $(plugins/freeverb.sources))
 
 # == icons ==
 plugins/icons/png.sources ::= $(strip		\

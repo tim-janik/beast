@@ -341,7 +341,7 @@ bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
-bse/libbse.objects		::= $(sort $(bse/libbse.sources:%.cc=$>/%.o))
+bse/libbse.objects		::= $(call BUILDDIR_O, $(bse/libbse.sources))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 
@@ -354,7 +354,7 @@ bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
 # == integrity defs ==
 bse/integrity		   ::= $>/bse/integrity
 bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(sort $(bse/integrity.sources:%.cc=$>/%.o))
+bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
 bse/integrity.objects.FLAGS  = -O0	# compile fast
 
 # == subdirs ==

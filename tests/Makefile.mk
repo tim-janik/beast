@@ -27,7 +27,7 @@ tests/suite1.sources		::= $(strip	\
 
 # == suite1 defs ==
 tests/suite1			::= $>/tests/suite1
-tests/suite1.objects		::= $(sort $(tests/suite1.sources:%.cc=$>/%.o))
+tests/suite1.objects		::= $(call BUILDDIR_O, $(tests/suite1.sources))
 
 # == explore.idl ==
 tests/explore.idl.outputs	::= $>/tests/explore_interfaces.hh $>/tests/explore_interfaces.cc $>/tests/explore_handles.hh $>/tests/explore_handles.cc

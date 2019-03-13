@@ -9,7 +9,7 @@ launchers/beast.sources ::= $(strip	\
 	launchers/beaststart.c		\
 )
 launchers/beast         ::= $>/launchers/beast
-launchers/beast.objects ::= $(sort $(launchers/beast.sources:%.c=$>/%.o))
+launchers/beast.objects ::= $(call BUILDDIR_O, $(launchers/beast.sources))
 launchers/beast.deps    ::= $(bse/libbse.deps)
 
 # == beast rules ==
