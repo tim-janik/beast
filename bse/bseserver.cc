@@ -1107,6 +1107,18 @@ ServerImpl::get_version ()
 }
 
 String
+ServerImpl::get_version_date ()
+{
+  return Bse::version_date();
+}
+
+String
+ServerImpl::get_version_buildid ()
+{
+  return Bse::version_buildid();
+}
+
+String
 ServerImpl::get_custom_effect_dir ()
 {
   StringVector strings = string_split (BSE_GCONFIG (effect_path), G_SEARCHPATH_SEPARATOR_S);
