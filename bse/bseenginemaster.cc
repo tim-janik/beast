@@ -929,7 +929,7 @@ engine_wakeup_slaves()
 void
 engine_run_slave ()
 {
-  std::string myid = Bse::string_format ("DSP #%u", ++slave_counter);
+  std::string myid = Bse::string_format ("DSP-#%u", ++slave_counter);
   Bse::this_thread_set_name (myid);
   Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
   while (slaves_running)
@@ -1194,7 +1194,7 @@ static std::atomic<bool> master_thread_running { false };
 void
 MasterThread::master_thread()
 {
-  const char *const myid = "DSP Master";
+  const char *const myid = "DSP-Master";
   Bse::this_thread_set_name (myid);
   Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
