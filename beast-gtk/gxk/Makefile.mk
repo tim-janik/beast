@@ -78,7 +78,7 @@ beast-gtk/gxk/libgxk.cc.deps ::= $(strip	\
 
 # == libgxk defs ==
 beast-gtk/gxk/libgxk.a	     ::= $>/beast-gtk/gxk/libgxk-$(VERSION_MAJOR).$(VERSION_MINOR).a
-beast-gtk/gxk/libgxk.objects ::= $(call SUBST_O, $(beast-gtk/gxk/libgxk.sources:%=$>/%))
+beast-gtk/gxk/libgxk.objects ::= $(call BUILDDIR_O, $(beast-gtk/gxk/libgxk.sources))
 
 # == gxktest defs ==
 beast-gtk/gxk/gxktest		::= $>/beast-gtk/gxk/gxktest

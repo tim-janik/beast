@@ -146,7 +146,7 @@ beast-gtk/beast.cc.deps ::= $(strip		\
 
 # == beast defs ==
 beast-gtk/beast			::= $>/beast-gtk/beast
-beast-gtk/beast.objects		::= $(call SUBST_O, $(addprefix $>/, $(beast-gtk/beast.sources)))
+beast-gtk/beast.objects		::= $(call BUILDDIR_O, $(beast-gtk/beast.sources))
 
 # == subdirs ==
 include beast-gtk/gxk/Makefile.mk

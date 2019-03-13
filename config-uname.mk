@@ -83,9 +83,9 @@ $>/%.o: %.cc
 	$(QECHO) CXX $@
 	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(compiledefs) $(compilecxxflags) -o $@ -c $<
 
-# == SUBST_O ==
-# $(call SUBST_O, sourcefiles...) - generate object file names from sources
-SUBST_O = $(sort $(foreach X, .c .C .cc .CC .y .l, $(subst $X,.o,$(filter %$X,$1))))
+# == BUILDDIR_O ==
+# $(call BUILDDIR_O, sourcefiles...) - generate object file names from sources
+BUILDDIR_O = $(addprefix $>/, $(sort $(foreach X, .c .C .cc .CC .y .l, $(subst $X,.o,$(filter %$X,$1)))))
 
 # == LINKER ==
 # $(call LINKER, EXECUTABLE, OBJECTS, DEPS, LIBS, RELPATHS)

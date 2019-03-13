@@ -348,7 +348,7 @@ bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.
 # == bseprocidl defs ==
 bse/bseprocidl			::= $>/bse/bseprocidl
 bse/bseprocidl.sources		::= bse/bseprocidl.cc
-bse/bseprocidl.objects		::= $(call SUBST_O, $(addprefix $>/, $(bse/bseprocidl.sources)))
+bse/bseprocidl.objects		::= $(call BUILDDIR_O, $(bse/bseprocidl.sources))
 bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
 
 # == integrity defs ==
