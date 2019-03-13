@@ -1,10 +1,10 @@
 // Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
-#include "testing.hh"
+#include <bse/testing.hh>
 
 using namespace Aida;
 
 static void
-test_strings()
+test_aida_strings()
 {
   StringVector sv;
   sv = string_split_any ("a, b, c", ", ");
@@ -94,7 +94,7 @@ test_strings()
   TASSERT (string_match_identifier_tail ("x.FOO", "X-Foo") == true);
   TASSERT (string_match_identifier_tail ("xFOO", "Foo") == false);
 }
-TEST_ADD (test_strings);
+TEST_ADD (test_aida_strings);
 
 static void
 test_aida_posix_printf ()
@@ -107,10 +107,3 @@ test_aida_posix_printf ()
   TASSERT (f0911[2] == '9');
 }
 TEST_ADD (test_aida_posix_printf);
-
-int
-main (int argc, const char **argv)
-{
-  setlocale (LC_ALL, "");
-  return TestChain::run (argc, argv);
-}
