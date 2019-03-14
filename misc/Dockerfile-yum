@@ -20,10 +20,6 @@ RUN retry yum -y install \
     pandoc doxygen graphviz \
     npm ImageMagick libXScrnSaver GConf2
 
-# Pre-fetch electron download
-RUN mkdir -p /root/.electron/ && cd /root/.electron/ && \
-  curl -sfSOL 'https://github.com/electron/electron/releases/download/v1.8.8/electron-v1.8.8-linux-x64.zip'
-
 # Setup build environment and provide the git repositories
 COPY ./.git/ /tmp/beast.git
 RUN \
