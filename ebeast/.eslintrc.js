@@ -27,8 +27,19 @@ module.exports = {
     "indent": [ "off", 2 ],
     "linebreak-style": [ "error", "unix" ],
     "no-mixed-spaces-and-tabs": [ "off" ],
+    'no-useless-escape': 'warn',
+    'vue/multiline-html-element-content-newline': 'off',
+    'vue/html-closing-bracket-spacing': 'off',
+    'vue/html-self-closing': 'off',
+    'vue/max-attributes-per-line': 'off',
+    'vue/html-indent': 'off',
+    'vue/html-closing-bracket-newline': 'off',
+    'vue/no-multi-spaces': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
+    'vue/html-quotes': 'off',
+    'no-irregular-whitespace': 'off', /* ["error", { 'skipStrings': true, 'skipComments': true, 'skipTemplates': true, 'skipRegExps':true } ], */
     "quotes": [ "off", "single" ]
   },
   "plugins": [ "html" ],
-  "extends": "eslint:recommended"
+  "extends": [ "eslint:recommended", "plugin:vue/recommended" ]
 };

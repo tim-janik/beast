@@ -12,12 +12,12 @@
 
   <div class="vc-color-picker" style="position: relative; display: flex;" >
     <button :style="{ 'background-color': color, color: contrast }" @click="open_dropdown()" ><slot>⁜</slot></button>
-    <div ref="dropdown" class="vc-color-picker-dropdown" v-if="visible_dropdown"
+    <div v-if="visible_dropdown" ref="dropdown" class="vc-color-picker-dropdown"
 	 style="display: flex; flex-direction: column; position: absolute; z-index: 91; top: 100%;
 		box-shadow: 3px 3px 16px 0px rgba(0,0,0,0.9);
 		background-color: #4e4e4e; color: #f1f1f1; font-size: 1rem; padding: 10px; " >
       <div style="display: flex; flex-direction: row;"
-	   v-for="(row, row_index) in color_rows" >
+	   v-for="(row, row_index) in color_rows" :key="'row-' + row_index" >
 	<div class="vc-color-picker-entry vc-data-tooltip"
 	     v-for="(item, index) in row"
 	     @click="select (item[0])"
