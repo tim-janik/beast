@@ -25,19 +25,17 @@ ALL_TARGETS	 += $(docs/man5.files)
 docs/md_flags	  ::= -p -s -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline
 docs/html_flags   ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6 # --css /pandoc-html.css
 
-# == doc build rules ==
-$>/doc/%: %								| $>/doc/
-	$(QECHO) COPY $@
-	$Q cp -L $< $@
-$>/doc/%: docs/%							| $>/doc/
-	$(QECHO) COPY $@
-	$Q cp -L $< $@
+# == copy rules ==
+$>/doc/COPYING: 	COPYING		| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
+$>/doc/copyright:	docs/copyright	| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
+
+# == markdown rules ==
 $>/doc/%: %.md								| $>/doc/
 	$(QECHO) MD2TXT $@
 	$Q $(PANDOC) $(docs/md_flags) -t plain --columns=80 $< -o $@.tmp
 	$Q mv $@.tmp $@
 $>/doc/%.html: %.md							| $>/doc/
-	$(QECHO) MD2TXT $@
+	$(QECHO) MD2HTML $@
 	$Q $(PANDOC) $(docs/md_flags) $(docs/html_flags) -t html5 $< -o $@.tmp
 	$Q mv $@.tmp $@
 
