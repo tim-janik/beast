@@ -19,7 +19,7 @@
     <div slot="header">About BEAST</div>
     <slot></slot>
     <table>
-      <tr v-for="p in info_pairs">
+      <tr v-for="p in info_pairs" :key="p[0]" >
 	<th>{{ p[0] }}</th>
 	<td>{{ p[1] }}</td>
       </tr>
