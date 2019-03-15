@@ -8,6 +8,7 @@ docs/doc.files ::= $(strip		\
 	$>/doc/HACKING			\
 	$>/doc/NEWS			\
 	$>/doc/README			\
+	$>/doc/beast-manual.html	\
 	$>/doc/copyright		\
 )
 docs/doc.dir	  ::= $(pkglibdir)/doc
@@ -44,7 +45,6 @@ docs/manual-man-pages ::= $(strip	\
 	docs/bse.5.md			\
 	docs/sfidl.1.md			\
 )
-ALL_TARGETS += $>/doc/beast-manual.html
 
 # == Documentation Date ==
 # shell command to produce 'Month 20YY' from VERSION_DATE
