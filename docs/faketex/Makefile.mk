@@ -61,9 +61,9 @@ FAKETEX_TARGETS += $>/doc/faketex/fonts/CharisSIL-webfont.css
 doc/faketex/faketex.css ::= $>/doc/faketex/faketex.css
 $(doc/faketex/faketex.css): $>/doc/faketex/fonts/Inconsolata-Regular.css
 $(doc/faketex/faketex.css): $>/doc/faketex/fonts/CharisSIL-webfont.css
-$(doc/faketex/faketex.css): docs/faketex/faketex.scss docs/faketex/features.scss	| $>/doc/faketex/fonts/
+$(doc/faketex/faketex.css): docs/faketex/faketex.scss docs/faketex/features.scss $(NODE_MODULES.deps)	| $>/doc/faketex/fonts/
 	$(QGEN)
-	$Q sass $< -t compact $@ || { rm $@ ; exit -1 ; }
+	$Q $(NODE_MODULES.bin)/node-sass $< -t compact $@ || { rm $@ ; exit -1 ; }
 FAKETEX_TARGETS += $(doc/faketex/faketex.css)
 
 # == Downloads ==
