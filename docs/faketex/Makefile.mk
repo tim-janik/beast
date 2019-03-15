@@ -71,7 +71,7 @@ FAKETEX_TARGETS += $(doc/faketex/faketex.css)
 docs/faketex/downloads_filename  = "$(notdir $2)"
 # $(call download_withsha256, hash, url) - download url into ./
 docs/faketex/download_withsha256 = && ( echo "$1 $(notdir $2)" | sha256sum -c - >/dev/null 2>&1 || \
-					wget -O "$(notdir $2)" "$2" ) \
+					curl -sfSOL "$2" ) \
 				   && ( echo "$1 $(notdir $2)" | sha256sum -c - )
 $>/doc/faketex/download.rules: docs/faketex/Makefile.mk					| $>/doc/faketex/downloads/
 	$(QECHO) FETCH	$>/doc/faketex/downloads/
