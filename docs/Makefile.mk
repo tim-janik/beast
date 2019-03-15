@@ -50,6 +50,11 @@ docs/version_month ::= echo '$(VERSION_DATE)' | sed -r -e 's/^([2-9][0-9][0-9][0
 			-e 's/m01/January/ ; s/m02/February/ ; s/m03/March/ ; s/m04/April/ ; s/m05/May/ ; s/m06/June/' \
 			-e 's/m07/July/ ; s/m08/August/ ; s/m09/September/ ; s/m10/October/ ; s/m11/November/ ; s/m12/December/'
 
+
+# == subdirs ==
+include docs/faketex/Makefile.mk
+
+
 # == copy rules ==
 $>/doc/COPYING: 	COPYING		| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
 $>/doc/copyright:	docs/copyright	| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
