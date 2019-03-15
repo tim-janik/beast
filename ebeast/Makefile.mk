@@ -44,6 +44,9 @@ app/generated ::= $(strip 		\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
 )
+# provide node_modules/ for use in other makefiles
+NODE_MODULES.deps ::= $>/ebeast/npm.rules
+NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
 
 # == subdirs ==
 include ebeast/v8bse/Makefile.mk
