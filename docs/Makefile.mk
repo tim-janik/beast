@@ -74,6 +74,7 @@ $>/doc/%.revd.md: docs/%.md						| $>/doc/
 	$Q mv $@.tmp $@
 
 # == beast-manual.pdf rules ==
+# needs: python3-pandocfilters texlive-xetex pandoc2
 $>/doc/beast-manual.pdf: $(docs/manual-chapters) docs/pandoc-pdf.tex docs/Makefile.mk	| $>/doc/
 	$(QGEN)
 	$Q xelatex --version 2>&1 | grep -q '^XeTeX 3.14159265' \
