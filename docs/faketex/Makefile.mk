@@ -83,3 +83,7 @@ $>/doc/faketex/download.rules: docs/faketex/Makefile.mk					| $>/doc/faketex/dow
 faketex: $(FAKETEX_TARGETS) FORCE
 faketex-clean: FORCE
 	rm -f -r $>/doc/faketex/
+
+# == installation rules ==
+doc/faketex/install.files ::= $>/doc/faketex/faketex.css $>/doc/faketex/fonts $>/doc/faketex/stripped-mathjax
+$(call INSTALL_DIR_RULE, doc/faketex/install.files, $(DESTDIR)$(docs/doc.dir)/faketex, $(doc/faketex/install.files))
