@@ -22,8 +22,9 @@ docs/man5.files	::= $>/doc/bse.5
 ALL_TARGETS	 += $(docs/man5.files)
 
 # == pandoc flags ==
-docs/markdown-flavour ::= -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline
-docs/html_flags   ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6 # --css /pandoc-html.css
+docs/html_flags       ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6
+docs/pandoc-nosmart     = $(if $(HAVE_PANDOC1),,-smart)
+docs/markdown-flavour   = -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline$(docs/pandoc-nosmart)
 
 # == beast-manual.pdf defs ==
 docs/manual-chapters ::= $(strip	\
