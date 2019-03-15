@@ -84,6 +84,17 @@ $>/doc/%.revd.md: docs/%.md						| $>/doc/
 	$Q $(PANDOC) $(docs/markdown-flavour) -s -p -t man $< -o $@.tmp
 	$Q mv $@.tmp $@
 
+# == beast-manual.html rules ==
+$>/doc/beast-manual.html: $(docs/manual-chapters) $(FAKETEX_TARGETS)	| $>/doc/
+	$(QGEN)
+	$Q DATE=$$( $(docs/version_month) ) \
+	  && $(PANDOC) $(docs/markdown-flavour) \
+		--toc --number-sections \
+		--variable=subparagraph \
+		-s -c faketex/$(notdir $(doc/faketex/faketex.css)) \
+		--mathjax='faketex/stripped-mathjax/MathJax.js?config=TeX-AMS_SVG-full' \
+		$(docs/manual-chapters) -o $@
+
 # == beast-manual.pdf rules ==
 # needs: python3-pandocfilters texlive-xetex pandoc2
 $>/doc/beast-manual.pdf: $(docs/manual-chapters) docs/pandoc-pdf.tex docs/Makefile.mk	| $>/doc/
