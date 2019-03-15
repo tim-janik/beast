@@ -59,6 +59,7 @@ body {
   text-align: unset;
 }
 pre { code { white-space: inherit; } }	/// Preserve whitespace for <code/> inside <pre/>
+.smallcaps { font-variant: small-caps; }	/// Pandoc2 has this, but pandoc1 uses .smallcaps w/o a CSS definition
 
 // FIXME: facility word break for <pre/> (test on mobile)
 
@@ -130,7 +131,7 @@ dt	{ font-weight: bold; }
 dd	{ margin-inline-start: 3em; }
 
 // == Title & Abstract ==
-header	{
+header, div#header {		/// Pandoc1 uses div#header
   text-align: center;
   h1		 { font-weight: bold; font-size: 2.2em; letter-spacing: 2px; }
   .author,
@@ -144,7 +145,7 @@ header	{
 }
 
 // == Table Of Contents ==
-nav#TOC	{
+nav#TOC, div#TOC {		/// Pandoc1 uses div#TOC
   margin: 3em 0;
   border-top: 1px solid $fg;
   @include pagebreak;
