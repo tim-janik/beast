@@ -26,7 +26,7 @@ docs/html_flags       ::= --html-q-tags --section-divs --email-obfuscation=refer
 docs/pandoc-nosmart     = $(if $(HAVE_PANDOC1),,-smart)
 docs/markdown-flavour   = -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline$(docs/pandoc-nosmart)
 
-# == beast-manual.pdf defs ==
+# == beast-manual defs ==
 docs/manual-chapters ::= $(strip	\
 	docs/ch-intro.md		\
 	docs/ch-tutorials.md		\
@@ -44,6 +44,7 @@ docs/manual-man-pages ::= $(strip	\
 	docs/bse.5.md			\
 	docs/sfidl.1.md			\
 )
+ALL_TARGETS += $>/doc/beast-manual.html
 
 # == Documentation Date ==
 # shell command to produce 'Month 20YY' from VERSION_DATE
