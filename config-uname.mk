@@ -160,7 +160,7 @@ BUILD_PROGRAM = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TARGETS +=
 BUILD_TEST = $(eval $(call LINKER, $1, $2, $3, $4, $5))	$(eval ALL_TESTS += $1)
 
 # == INSTALL_*_RULE ==
-define INSTALL_RULE.impl
+define INSTALL_FILE_RULE.impl
 .PHONY: install--$(strip $1) uninstall--$(strip $1)
 install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, add link aliases L, install target T
 	$$(QECHO) INSTALL '$(strip $2)/...'
@@ -189,9 +189,31 @@ uninstall--$(strip $1): # delete target T and possible link aliases L
 uninstall: uninstall--$(strip $1)
 endef
 # $(call INSTALL_RULE, rulename, directory, files)
-INSTALL_DATA_RULE     = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL_DATA)))
-INSTALL_BIN_RULE      = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
-INSTALL_BIN_RULE_XDBG = $(eval $(call INSTALL_RULE.impl,$(strip $1),$2, $3, $(INSTALL), xdbg))
+INSTALL_DATA_RULE     = $(eval $(call INSTALL_FILE_RULE.impl,$(strip $1),$2, $3, $(INSTALL_DATA)))
+INSTALL_BIN_RULE      = $(eval $(call INSTALL_FILE_RULE.impl,$(strip $1),$2, $3, $(INSTALL)))
+INSTALL_BIN_RULE_XDBG = $(eval $(call INSTALL_FILE_RULE.impl,$(strip $1),$2, $3, $(INSTALL), xdbg))
+
+define INSTALL_DIR_RULE.impl
+.PHONY: install--$(strip $1) uninstall--$(strip $1)
+install--$(strip $1): $3 # mkdir $2, avoid EBUSY by deleting first, install target T
+	$$(QECHO) INSTALL '$(strip $2)/...'
+	$$(call INSTALL_RULE.pre-hook,$@)
+	$$Q $$(INSTALL) -d '$(strip $2)'
+	$$Q cd '$(strip $2)' \
+	  $$(foreach T, $(notdir $3), \
+	    && rm -f -r $$T)
+	$$Q $(CP) -dR $$^ '$(strip $2)'
+	$$(call INSTALL_RULE.post-hook,$@)
+install: install--$(strip $1)
+uninstall--$(strip $1): # delete target T
+	$$(QECHO) REMOVE '$(strip $2)/...'
+	$$Q if cd '$(strip $2)' 2>/dev/null ; then \
+	      rm -f -r	$$(foreach T, $(notdir $3), $$T) ; \
+	    fi
+uninstall: uninstall--$(strip $1)
+endef
+# $(call INSTALL_DIR_RULE, rulename, installdirectory, DIRNAMES) - install directories via recursive copy
+INSTALL_DIR_RULE = $(eval $(call INSTALL_DIR_RULE.impl,$(strip $1),$2, $3))
 
 # $(call INSTALL_SYMLINK, TARGET, LINKNAME) - install symbolic link to target file
 INSTALL_SYMLINK = rm -f $2 && mkdir -p "$$(dirname $2)" && ln -s $1 $2
