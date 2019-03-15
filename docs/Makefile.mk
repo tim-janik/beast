@@ -22,23 +22,40 @@ docs/man5.files	::= $>/doc/bse.5
 ALL_TARGETS	 += $(docs/man5.files)
 
 # == pandoc flags ==
-docs/md_flags	  ::= -p -s -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline
+docs/markdown-flavour ::= -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline
 docs/html_flags   ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6 # --css /pandoc-html.css
 
-# == doc build rules ==
-$>/doc/%: %								| $>/doc/
-	$(QECHO) COPY $@
-	$Q cp -L $< $@
-$>/doc/%: docs/%							| $>/doc/
-	$(QECHO) COPY $@
-	$Q cp -L $< $@
+# == beast-manual.pdf defs ==
+docs/manual-chapters ::= $(strip	\
+	docs/ch-intro.md		\
+	docs/ch-tutorials.md		\
+	docs/ch-howotos.md		\
+	$>/doc/ch-man-pages.md		\
+	docs/ch-formats.md		\
+	docs/ch-background.md		\
+	docs/ch-reference.md		\
+	docs/ch-historic.md		\
+	docs/ch-appendix.md		\
+)
+docs/manual-man-pages ::= $(strip	\
+	docs/beast.1.md			\
+	docs/bsewavetool.1.md		\
+	docs/bse.5.md			\
+	docs/sfidl.1.md			\
+)
+
+# == copy rules ==
+$>/doc/COPYING: 	COPYING		| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
+$>/doc/copyright:	docs/copyright	| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
+
+# == markdown rules ==
 $>/doc/%: %.md								| $>/doc/
 	$(QECHO) MD2TXT $@
-	$Q $(PANDOC) $(docs/md_flags) -t plain --columns=80 $< -o $@.tmp
+	$Q $(PANDOC) $(docs/markdown-flavour) -s -p -t plain --columns=80 $< -o $@.tmp
 	$Q mv $@.tmp $@
 $>/doc/%.html: %.md							| $>/doc/
-	$(QECHO) MD2TXT $@
-	$Q $(PANDOC) $(docs/md_flags) $(docs/html_flags) -t html5 $< -o $@.tmp
+	$(QECHO) MD2HTML $@
+	$Q $(PANDOC) $(docs/markdown-flavour) -s - p $(docs/html_flags) -t html5 $< -o $@.tmp
 	$Q mv $@.tmp $@
 
 # == .revd.md (INTERMEDIATE) ==
@@ -49,11 +66,38 @@ $>/doc/%.revd.md: docs/%.md						| $>/doc/
 # == man build rules ==
 %.1: %.1.revd.md							| $>/doc/
 	$(QECHO) MD2MAN $@
-	$Q $(PANDOC) $(docs/md_flags) -s -t man $< -o $@.tmp
+	$Q $(PANDOC) $(docs/markdown-flavour) -s -p -t man $< -o $@.tmp
 	$Q mv $@.tmp $@
 %.5: %.5.revd.md							| $>/doc/
 	$(QECHO) MD2MAN $@
-	$Q $(PANDOC) $(docs/md_flags) -s -t man $< -o $@.tmp
+	$Q $(PANDOC) $(docs/markdown-flavour) -s -p -t man $< -o $@.tmp
+	$Q mv $@.tmp $@
+
+# == beast-manual.pdf rules ==
+# needs: python3-pandocfilters texlive-xetex pandoc2
+$>/doc/beast-manual.pdf: $(docs/manual-chapters) docs/pandoc-pdf.tex docs/Makefile.mk	| $>/doc/
+	$(QGEN)
+	$Q xelatex --version 2>&1 | grep -q '^XeTeX 3.14159265' \
+	  || { echo '$@: missing xelatex, required version: XeTeX >= 3.14159265' >&2 ; false ; }
+	$Q $(PANDOC) $(docs/markdown-flavour) \
+		--toc --number-sections \
+		--variable=subparagraph \
+		--variable=lot \
+		-H docs/pandoc-pdf.tex \
+		--pdf-engine=xelatex -V mainfont='Charis SIL' -V mathfont=Asana-Math -V monofont=inconsolata \
+		-V fontsize=12pt -V papersize:a4 -V geometry:margin=2cm \
+		$(docs/manual-chapters) -o $@
+# --pdf-engine=pdflatex ; $Q pdflatex --version 2>&1 | grep -q '^pdfTeX 3.14159265' \
+# || { echo '$@: missing pdflatex, required version: pdfTeX >= 3.14159265' >&2 ; false ; }
+$>/doc/ch-man-pages.md: $(docs/manual-man-pages) docs/filt-man.py docs/Makefile.mk	| $>/doc/
+	$(QGEN)
+	$Q echo '# Manual Pages'			 > $@.tmp
+	$Q echo ''					>> $@.tmp
+	$Q for m in $(docs/manual-man-pages) ; do		\
+	  n="$${m%%.md}" ; u="$${n^^}" ; n="$${u##*/}" ;	\
+	  echo "## $${n/\./(})" ; echo ;			\
+	  $(PANDOC) -t markdown -F docs/filt-man.py "$$m"	\
+	  || exit $$? ; echo ; done			>> $@.tmp
 	$Q mv $@.tmp $@
 
 # == installation rules ==
