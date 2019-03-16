@@ -1479,6 +1479,24 @@ ServerImpl::release_shared_block (const SharedBlock &sb)
   release_aligned_block (ab);
 }
 
+int
+ServerImpl::test_counter_inc_fetch ()
+{
+  return ++tc_;
+}
+
+int
+ServerImpl::test_counter_get ()
+{
+  return tc_;
+}
+
+void
+ServerImpl::test_counter_set (int v)
+{
+  tc_ = v;
+}
+
 } // Bse
 
 // == Allocator Tests ==

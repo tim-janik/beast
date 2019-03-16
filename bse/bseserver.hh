@@ -84,6 +84,7 @@ namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   TestObjectImplP    test_object_;
+  int32              tc_ = 0;
 protected:
   virtual            ~ServerImpl            ();
 public:
@@ -131,6 +132,9 @@ public:
   virtual CategorySeq     category_match          (const String &pattern) override;
   virtual int64           tick_stamp_from_systime (int64 systime_usecs) override;
   virtual void            send_user_message       (const UserMessage &umsg) override;
+  virtual void            test_counter_set        (int val) override;
+  virtual int             test_counter_inc_fetch  () override;
+  virtual int             test_counter_get        () override;
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();
 };

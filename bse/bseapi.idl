@@ -1252,6 +1252,11 @@ interface Server : Container {
 
   /// Helper for Wave PCM positioning.
   int64       tick_stamp_from_systime (int64 systime_usecs);
+
+  /// Testing, increment and return the resulting test counter value.
+  int32       test_counter_inc_fetch  ();
+  int32       test_counter_get        ();
+  void        test_counter_set        (int32 val);
 };
 
 } // Bse
