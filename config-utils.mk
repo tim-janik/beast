@@ -66,3 +66,15 @@ MULTIOUTPUTSANITIZE = $(subst /,∕,$(subst $(SPACE),·,$(strip $1)))
 # == MATCH ==
 # $(call MATCH, REGEX, wordlist)
 MATCH = $(shell set -o pipefail; echo ' $2 ' | tr ' ' '\n' | grep -E '$1' | tr '\n' ' ')
+
+# == Word list helpers ==
+# $(call first, list...) - Extract the first word from list...
+first  = $(word 1,$1)
+# $(call second, list...) - Extract the second word from list...
+second = $(word 2,$1)
+# $(call rest, list...) - Retrieve list... with the first word removed
+rest   = $(wordlist 2,$(words $1),$1)
+# $(call rest2, list...) - Retrieve list... with the first two words removed
+rest2  = $(wordlist 3,$(words $1),$1)
+# $(call foreachpair, func, listofpairs, else) - Call func for each pair in listofpairs, terminate with else
+foreachpair = $(if $2,$(call $1,$(call first,$2),$(call second,$2)) $(call foreachpair,$1,$(call rest2,$2),$3),$3)

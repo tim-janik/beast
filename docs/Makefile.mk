@@ -8,6 +8,7 @@ docs/doc.files ::= $(strip		\
 	$>/doc/HACKING			\
 	$>/doc/NEWS			\
 	$>/doc/README			\
+	$>/doc/beast-manual.html	\
 	$>/doc/copyright		\
 )
 docs/doc.dir	  ::= $(pkglibdir)/doc
@@ -22,10 +23,11 @@ docs/man5.files	::= $>/doc/bse.5
 ALL_TARGETS	 += $(docs/man5.files)
 
 # == pandoc flags ==
-docs/markdown-flavour ::= -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline
-docs/html_flags   ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6 # --css /pandoc-html.css
+docs/html_flags       ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6
+docs/pandoc-nosmart     = $(if $(HAVE_PANDOC1),,-smart)
+docs/markdown-flavour   = -f markdown+autolink_bare_uris+emoji+lists_without_preceding_blankline$(docs/pandoc-nosmart)
 
-# == beast-manual.pdf defs ==
+# == beast-manual defs ==
 docs/manual-chapters ::= $(strip	\
 	docs/ch-intro.md		\
 	docs/ch-tutorials.md		\
@@ -43,6 +45,17 @@ docs/manual-man-pages ::= $(strip	\
 	docs/bse.5.md			\
 	docs/sfidl.1.md			\
 )
+
+# == Documentation Date ==
+# shell command to produce 'Month 20YY' from VERSION_DATE
+docs/version_month ::= echo '$(VERSION_DATE)' | sed -r -e 's/^([2-9][0-9][0-9][0-9])-([0-9][0-9])-.*/m\2 \1/' \
+			-e 's/m01/January/ ; s/m02/February/ ; s/m03/March/ ; s/m04/April/ ; s/m05/May/ ; s/m06/June/' \
+			-e 's/m07/July/ ; s/m08/August/ ; s/m09/September/ ; s/m10/October/ ; s/m11/November/ ; s/m12/December/'
+
+
+# == subdirs ==
+include docs/faketex/Makefile.mk
+
 
 # == copy rules ==
 $>/doc/COPYING: 	COPYING		| $>/doc/	; $(QECHO) COPY $@ ; cp -L $< $@
@@ -73,16 +86,29 @@ $>/doc/%.revd.md: docs/%.md						| $>/doc/
 	$Q $(PANDOC) $(docs/markdown-flavour) -s -p -t man $< -o $@.tmp
 	$Q mv $@.tmp $@
 
+# == beast-manual.html rules ==
+$>/doc/beast-manual.html: $(docs/manual-chapters) $(FAKETEX_TARGETS)	| $>/doc/
+	$(QGEN)
+	$Q DATE=$$( $(docs/version_month) ) \
+	  && $(PANDOC) $(docs/markdown-flavour) \
+		--toc --number-sections \
+		--variable=subparagraph \
+		-s -c faketex/$(notdir $(doc/faketex/faketex.css)) \
+		--mathjax='faketex/stripped-mathjax/MathJax.js?config=TeX-AMS_SVG-full' \
+		$(docs/manual-chapters) -o $@
+
 # == beast-manual.pdf rules ==
 # needs: python3-pandocfilters texlive-xetex pandoc2
 $>/doc/beast-manual.pdf: $(docs/manual-chapters) docs/pandoc-pdf.tex docs/Makefile.mk	| $>/doc/
 	$(QGEN)
 	$Q xelatex --version 2>&1 | grep -q '^XeTeX 3.14159265' \
 	  || { echo '$@: missing xelatex, required version: XeTeX >= 3.14159265' >&2 ; false ; }
-	$Q $(PANDOC) $(docs/markdown-flavour) \
+	$Q DATE=$$( $(docs/version_month) ) \
+	  && $(PANDOC) $(docs/markdown-flavour) \
 		--toc --number-sections \
 		--variable=subparagraph \
 		--variable=lot \
+		-V date="$$DATE" \
 		-H docs/pandoc-pdf.tex \
 		--pdf-engine=xelatex -V mainfont='Charis SIL' -V mathfont=Asana-Math -V monofont=inconsolata \
 		-V fontsize=12pt -V papersize:a4 -V geometry:margin=2cm \

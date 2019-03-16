@@ -17,7 +17,7 @@ RUN retry yum -y install \
     findutils file bzip2 \
     gcc-c++ git libtool gettext-devel perl-XML-Parser \
     alsa-lib-devel flac-devel libgnomecanvas-devel libvorbis-devel fluidsynth-devel libmad-devel \
-    pandoc doxygen graphviz \
+    pandoc python3-pandocfilters doxygen graphviz \
     npm ImageMagick libXScrnSaver GConf2
 
 # Setup build environment and provide the git repositories
