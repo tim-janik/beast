@@ -24,6 +24,8 @@ using namespace Bse;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
+static void     attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context);
+
 namespace Bse {
 static void     init_aida_idl ();
 } // Bse
@@ -200,6 +202,7 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
   bse_init_intern ();
 }
 
+static Aida::ExecutionContext *bse_execution_context = NULL;
 static std::atomic<bool> main_loop_thread_running { true };
 
 static void
@@ -209,7 +212,13 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   Bse::this_thread_set_name (myid);
   Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
+  // initialize types, Aida, do early plugin loading
   bse_init_intern ();
+
+  // enable handling of remote calls
+  assert_return (bse_execution_context == NULL);
+  bse_execution_context = Aida::ExecutionContext::new_context();
+  attach_execution_context (bse_main_context, bse_execution_context);
 
   // complete initialization
   bse_initialization_stage++;   // = 2
@@ -249,6 +258,48 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   int msg = init_queue->pop();
   assert_return (msg == 'B');
   delete init_queue;
+}
+
+/// Attach execution_context to a GLib main loop context.
+static void
+attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context)
+{
+  const std::string gsource_name = "Aida::ExecutionContext";
+  const int priority = BSE_PRIORITY_GLUE;
+  const int fds[] = { execution_context->notify_fd() };
+  struct CxxSource : GSource {
+    Aida::ExecutionContext *ec;
+  };
+  auto prepare = [] (GSource *source, gint *timeout_p) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto check = [] (GSource *source) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto dispatch = [] (GSource *source, GSourceFunc callback, gpointer user_data) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    cs.ec->dispatch();
+    return true; // keep alive
+  };
+  auto finalize = [] (GSource *source) {
+    // CxxSource &cs = *(CxxSource*) source;
+    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex... ;-(
+    // delete cs.ec;
+  };
+  // generic portion
+  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
+  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
+  g_source_set_name (source, gsource_name.c_str());
+  g_source_set_priority (source, priority);
+  CxxSource &cs = *(CxxSource*) source;
+  cs.ec = execution_context;
+  for (size_t i = 0; i < sizeof (fds) / sizeof (fds[0]); i++)
+    g_source_add_unix_fd (source, fds[i], G_IO_IN);
+  g_source_attach (source, gmaincontext);
+  g_source_unref (source);
+  g_main_context_wakeup (gmaincontext);
 }
 
 struct AsyncData {
