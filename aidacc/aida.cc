@@ -2259,16 +2259,16 @@ EventFd::~EventFd ()
 }
 
 // == lock-free, single-consumer queue ==
-template<class Data> struct MpScQueueF {
-  struct Node { Node *next; Data data; };
-  MpScQueueF() :
-    head_ (NULL), local_ (NULL)
-  {}
+template<class Data>
+struct MpScQueueF {
+  struct Node {
+    Node *next = NULL;
+    Data data = Data();
+  };
   bool
   push (Data data)
   {
-    Node *node = new Node;
-    node->data = data;
+    Node *node = new Node { NULL, data };
     Node *last_head;
     do
       node->next = last_head = head_;
@@ -2316,9 +2316,119 @@ protected:
       return NULL;
   }
 private:
-  Node  *head_;
-  Node  *local_; // ideally use a different cache line to avoid false sharing between pushing and popping threads
+  Node  *head_ = NULL;
+  Node  *local_ = NULL; // FIXME: ideally use a different cache line to avoid false sharing between pushing and popping threads
 };
+
+// == ExecutionContextImpl ==
+struct ExecutionContext::Impl {
+  EventFd              event_fd_;
+private:
+  MpScQueueF<Closure*> closure_queue_;
+  Closure             *last_closure_ = NULL;
+  enum Op { PEEK, POP, BLOCKING };
+  Closure*
+  get_closure (const Op op)
+  {
+    if (!last_closure_)
+      do
+        {
+          // fetch new messages
+          last_closure_ = closure_queue_.pop();
+          if (!last_closure_)
+            {
+              event_fd_.flush();        // flush stale wakeups, to allow blocking until an empty => full transition
+              last_closure_ = closure_queue_.pop();     // retry, to ensure we've not just discarded a real wakeup
+            }
+          if (last_closure_)
+            break;
+          // no messages available
+          if (op == BLOCKING)
+            event_fd_.pollin();
+        }
+      while (op == BLOCKING);
+    Closure *closure = last_closure_;
+    if (op != PEEK) // advance
+      last_closure_ = NULL;
+    return closure; // may be NULL
+  }
+public:
+  void
+  enqueue_closure_mt (Closure *closure, bool may_wakeup)
+  {
+    const bool was_empty = closure_queue_.push (closure);
+    if (may_wakeup && was_empty)
+      event_fd_.wakeup();                               // wakeups are needed to catch empty => full transition
+  }
+  Closure*              fetch_closure()         { return get_closure (POP); }
+  bool                  has_closure()           { return get_closure (PEEK); }
+  Closure*              pop_closure()           { return get_closure (BLOCKING); }
+  Impl ()
+  {
+    const int create_wakeup_pipe_error = event_fd_.open();
+    AIDA_ASSERT_RETURN (create_wakeup_pipe_error == 0);
+  }
+};
+
+// == ExecutionContext ==
+ExecutionContext::ExecutionContext() :
+  m (*new Impl)
+{}
+
+ExecutionContext::~ExecutionContext()
+{
+  AIDA_ASSERT_RETURN_UNREACHED();
+  delete &m;
+}
+
+/// Returns fd for POLLIN, to wake up on incomming events.
+int
+ExecutionContext::notify_fd ()
+{
+  return m.event_fd_.inputfd();
+}
+
+/// Indicate whether any incoming events are pending that need to be dispatched.
+bool
+ExecutionContext::pending ()
+{
+  return m.has_closure();
+}
+
+/// Dispatch a single event if any is pending.
+void
+ExecutionContext::dispatch ()
+{
+  Closure *closure = m.fetch_closure();
+  if (closure)
+    (*closure) ();
+}
+
+void
+ExecutionContext::enqueue_mt (Closure *closure)
+{
+  if (closure)
+    m.enqueue_closure_mt (closure, true);
+}
+
+/// Create an ExecutionContext.
+/// The current implementation of this instance must outlive the runtime and not be destroyed.
+ExecutionContext*
+ExecutionContext::new_context ()
+{
+  return new ExecutionContext();
+}
+
+// == CallableIface ==
+CallableIface::~CallableIface ()
+{}
+
+/// Retrieve ExecutionContext, save to be called multi-threaded.
+ExecutionContext*
+CallableIface::__execution_context_mt__ () const
+{
+  return NULL;
+}
 
 
 // == TransportChannel ==
