@@ -2137,12 +2137,6 @@ ProtoScopeEmit1Way::ProtoScopeEmit1Way (ProtoMsg &pm, ServerConnection &server_c
   pm.add_header1 (MSGID_EMIT_ONEWAY, hashi, hashlo);
 }
 
-ProtoScopeEmit2Way::ProtoScopeEmit2Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo) :
-  ProtoScope (server_connection)
-{
-  pm.add_header2 (MSGID_EMIT_TWOWAY, hashi, hashlo);
-}
-
 ProtoScopeDisconnect::ProtoScopeDisconnect (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo) :
   ProtoScope (server_connection)
 {
@@ -2716,7 +2710,6 @@ class ClientConnectionImpl : public ClientConnection {
   struct SignalHandler {
     uint64 hhi, hlo, cid;
     RemoteMember<RemoteHandle> remote;
-    SignalEmitHandler *seh;
     void *data;
   };
   typedef std::set<uint64> UIntSet;
@@ -2889,25 +2882,6 @@ ClientConnectionImpl::dispatch ()
   const uint64  idmask = msgid_mask (msgid);
   switch (idmask)
     {
-    case MSGID_EMIT_TWOWAY:
-      {
-        fbr.skip(); // hashhigh
-        fbr.skip(); // hashlow
-        const size_t handler_id = fbr.pop_int64();
-        SignalHandler *client_signal_handler = signal_lookup (handler_id);
-        AIDA_ASSERT_RETURN (client_signal_handler != NULL);
-        ProtoMsg *fr = client_signal_handler->seh (fb, client_signal_handler->data);
-        if (fr == fb)
-          fb = NULL; // prevent deletion
-        if (idmask == MSGID_EMIT_ONEWAY)
-          AIDA_ASSERT_RETURN (fr == NULL);
-        else // MSGID_EMIT_TWOWAY
-          {
-            AIDA_ASSERT_RETURN (fr && msgid_is (fr->first_id(), MSGID_EMIT_RESULT));
-            post_peer_msg (fr);
-          }
-      }
-      break;
     case MSGID_EMIT_ONEWAY:
       remote_handle_dispatch_event_emit_handler (fbr);
       break;
@@ -2966,7 +2940,7 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
           delete fr;
         }
 #endif
-      else if (retmask == MSGID_DISCONNECT || retmask == MSGID_EMIT_ONEWAY || retmask == MSGID_EMIT_TWOWAY)
+      else if (retmask == MSGID_DISCONNECT || retmask == MSGID_EMIT_ONEWAY)
         event_queue_.push_back (fr);
       else if (retmask == MSGID_META_GARBAGE_SWEEP)
         {

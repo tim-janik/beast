@@ -491,7 +491,7 @@ enum MessageId {
   //MSGID_META_ONEWAY       = 0x3000000000000000ULL, ///< One-way method call (void return).
   MSGID_CONNECT             = 0x4000000000000000ULL, ///< Signal handler (dis-)connection, expects CONNECT_RESULT.
   MSGID_CALL_TWOWAY         = 0x5000000000000000ULL, ///< Two-way method call, expects CALL_RESULT.
-  MSGID_EMIT_TWOWAY         = 0x6000000000000000ULL, ///< Two-way signal emissions, expects EMIT_RESULT.
+  // MSGID_EMIT_TWOWAY      = 0x6000000000000000ULL, ///< Two-way signal emissions, expects EMIT_RESULT.
   //MSGID_META_TWOWAY       = 0x7000000000000000ULL, ///< Two-way method call, expects META_REPLY.
   // meta_exception         = 0x8000000000000000
   MSGID_DISCONNECT          = 0xa000000000000000ULL, ///< Signal destroyed, disconnect all handlers.
@@ -1079,9 +1079,6 @@ public:
   template<class H> H    remote_origin   ();
 };
 
-/// Function typoe for internal signal handling.
-typedef ProtoMsg* SignalEmitHandler (const ProtoMsg*, void*);
-
 /// Connection context for IPC servers. @nosubgrouping
 class ServerConnection : public BaseConnection {
   friend  class ClientConnection;
@@ -1151,9 +1148,6 @@ struct ProtoScopeCall2Way : ProtoScope {
 };
 struct ProtoScopeEmit1Way : ProtoScope {
   ProtoScopeEmit1Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
-};
-struct ProtoScopeEmit2Way : ProtoScope {
-  ProtoScopeEmit2Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
 };
 struct ProtoScopeDisconnect : ProtoScope {
   ProtoScopeDisconnect (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
