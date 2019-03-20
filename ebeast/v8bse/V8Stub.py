@@ -256,7 +256,7 @@ class Generator:
     # Class bindings
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
-      b, g = '', ''
+      b = ''
       # Class inheritance
       if tp.storage == Decls.INTERFACE:
         for tb in bases (tp):
@@ -280,40 +280,6 @@ class Generator:
         for mtp in tp.methods:
           rtp, mname = mtp.rtype, mtp.name
           b += '    .set ("%s", &%s::%s)\n' % (mname, cn, mname)
-      # Class signal handlers
-      if tp.storage == Decls.INTERFACE:
-        for sg in tp.signals:
-          g += '  auto onsig_%d = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n' % self.idcounter
-          g += '    %s *__bsehandle = %s::unwrap_object (__v8isolate, __v8args.This());\n' % (colon_typename (tp), v8ppclass_type (tp))
-          g += '    if (!__bsehandle || __v8args.Length() != 1 || !__v8args[0]->IsFunction())\n'
-          g += '      __v8return_exception (__v8isolate, __v8args, "V8stub: on(): invalid invocation");\n'
-          g += '    V8ppCopyablePersistentObject __v8pthis (__v8isolate, __v8args[0]->ToObject());\n'
-          g += '    V8ppCopyablePersistentFunction __v8pfunc (__v8isolate, v8::Local<v8::Function>::Cast (__v8args[0]));\n'
-          l, k = [], []
-          for sa in sg.args:
-            l += [ self.A (sa[0], sa[1]) ]
-            k += [ sa[0] ]
-          rtype = self.R (sg.rtype)
-          g += '    auto sighandler = [__v8isolate, __bsehandle, __v8pthis, __v8pfunc] '
-          g += '(%s) -> %s {\n' % (', '.join (l), rtype)
-          g += '      v8::HandleScope __v8scope (__v8isolate);\n'
-          g += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
-          g += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'
-          g += '      v8::Local<v8::Value> __v8result = v8pp::call_v8 (__v8isolate, __v8func, %s);\n' % ', '.join ([ '__v8this' ] + k)
-          if sg.rtype.storage != Decls.VOID:
-            g += '      return v8pp::from_v8<%s> (__v8isolate, __v8result);\n' % rtype
-          else:
-            g += '      (void) __v8result;\n' # avoid 'unused' warnings
-          g += '    };\n'
-          g += '    __bsehandle->sig_%s() += sighandler;\n' % sg.name
-          g += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n' # TODO: return handle for disconnect?
-          g += '  };\n'
-          b += '    .set ("__on_%s", onsig_%d)\n' % (sg.name, self.idcounter)
-          # TODO: provide a method to disconnect signal handlers, i.e. off()
-          self.idcounter += 1
-      # output generated signal handlers
-      if g:
-        s += g
       # output only non-empty bindings
       if b:
         s += '  %s\n' % v8ppclass (tp)
@@ -354,12 +320,6 @@ jsinit = r"""
   const jsinit = @jsinit_def@;
   jsinit.base_objects.forEach (obj => {
     obj.prototype.on = function (type, listener) { return this.__event_attach__ (type, listener); };
-    obj.prototype.__on_ = function (signal, handler) {
-      const connector = this['__on_' + signal.replace (/[^a-z0-9]/gi, '_')];
-      if (connector instanceof Function)
-        return connector.call (this, handler);
-      throw new ReferenceError (signal + " is not a signal");
-    };
   });
 })
 """
