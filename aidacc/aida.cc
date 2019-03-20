@@ -2770,8 +2770,6 @@ public:
   virtual void         notify_callback   (const std::function<void (ClientConnection&)> &cb) override;
   virtual void         remote_origin     (ImplicitBaseP rorigin) override  { AIDA_ASSERT_RETURN_UNREACHED(); }
   virtual RemoteHandle remote_origin     () override;
-  virtual size_t       signal_connect    (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data) override;
-  virtual bool         signal_disconnect (size_t signal_handler_id) override;
   class ClientOrbObject;
   void
   client_orb_object_deleting (ClientOrbObject &coo)
@@ -2987,70 +2985,6 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
   if (notify_cb_)
     notify_cb_ (*this);
   return fr;
-}
-
-size_t
-ClientConnectionImpl::signal_connect (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data)
-{
-  AIDA_ASSERT_RETURN (rhandle.__aida_orbid__() > 0, 0);
-  AIDA_ASSERT_RETURN (hhi > 0, 0);   // FIXME: check for signal id
-  AIDA_ASSERT_RETURN (hlo > 0, 0);
-  AIDA_ASSERT_RETURN (seh != NULL, 0);
-  SignalHandler *shandler = new SignalHandler;
-  shandler->hhi = hhi;
-  shandler->hlo = hlo;
-  shandler->remote = rhandle;                   // emitting object
-  shandler->cid = 0;
-  shandler->seh = seh;
-  shandler->data = data;
-  pthread_spin_lock (&signal_spin_);
-  const size_t handler_index = signal_handlers_.size();
-  signal_handlers_.push_back (shandler);
-  pthread_spin_unlock (&signal_spin_);
-  const size_t signal_handler_id = 1 + handler_index;
-  ProtoMsg &fb = *ProtoMsg::_new (3 + 1 + 2);
-  fb.add_header2 (MSGID_CONNECT, shandler->hhi, shandler->hlo);
-  add_handle (fb, rhandle);                     // emitting object
-  fb <<= signal_handler_id;                     // handler connection request id
-  fb <<= 0;                                     // disconnection request id
-  ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  AIDA_ASSERT_RETURN (connection_result != NULL, 0);
-  ProtoReader frr (*connection_result);
-  frr.skip_header();
-  pthread_spin_lock (&signal_spin_);
-  frr >>= shandler->cid;
-  pthread_spin_unlock (&signal_spin_);
-  delete connection_result;
-  return signal_handler_id;
-}
-
-bool
-ClientConnectionImpl::signal_disconnect (size_t signal_handler_id)
-{
-  const size_t handler_index = signal_handler_id ? signal_handler_id - 1 : size_t (-1);
-  pthread_spin_lock (&signal_spin_);
-  SignalHandler *shandler = handler_index < signal_handlers_.size() ? signal_handlers_[handler_index] : NULL;
-  if (shandler)
-    signal_handlers_[handler_index] = NULL;
-  pthread_spin_unlock (&signal_spin_);
-  if (!shandler)
-    return  false;
-  ProtoMsg &fb = *ProtoMsg::_new (3 + 1 + 2);
-  fb.add_header2 (MSGID_CONNECT, shandler->hhi, shandler->hlo);
-  add_handle (fb, shandler->remote);            // emitting object
-  fb <<= 0;                                     // handler connection request id
-  fb <<= shandler->cid;                         // disconnection request id
-  ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  AIDA_ASSERT_RETURN (connection_result != NULL, false);
-  ProtoReader frr (*connection_result);
-  frr.skip_header();
-  uint64 disconnection_success;
-  frr >>= disconnection_success;
-  delete connection_result;
-  shandler->seh (NULL, shandler->data); // handler deletion hook
-  delete shandler;
-  AIDA_ASSERT_RETURN (disconnection_success == true, false); // should always succeed due to the above guard; FIXME: possible race w/ ~Signal
-  return disconnection_success;
 }
 
 ClientConnectionImpl::SignalHandler*
