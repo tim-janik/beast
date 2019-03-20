@@ -140,7 +140,7 @@ class YYGlobals (object):
     iface.set_location (*yy.scanner.get_pos())
     self.namespaces[-1].add_type (iface)
     return iface # real type
-  def interface_fill (self, iface, prerequisites, ifields, imethods, isignals):
+  def interface_fill (self, iface, prerequisites, ifields, imethods):
     for prq in prerequisites:
       iface.add_prerequisite (yy.namespace_lookup (prq, astype = True))
     self.parse_assign_auxdata (ifields)
@@ -151,8 +151,7 @@ class YYGlobals (object):
         raise NameError ('duplicate member name: ' + field[0])
       mdict[field[0]] = true
       iface.add_field (field[0], field[1])
-    sigset = set ([sig[0] for sig in isignals])
-    for method in imethods + isignals:
+    for method in imethods:
       if mdict.has_key (method[0]):
         raise NameError ('duplicate member name: ' + method[0])
       mdict[method[0]] = true
@@ -173,7 +172,7 @@ class YYGlobals (object):
           raise AttributeError ('missing subsequent default initializer: ' + method[0] + ' (...' + arg[0] + '...)')
         adict[arg[0]] = true
         mtype.add_arg (arg[0], arg[1], arg[2])
-      iface.add_method (mtype, method[0] in sigset)
+      iface.add_method (mtype, false)
   def parse_assign_auxdata (self, fieldlist):
     for field in fieldlist:
       if not field[2]:
@@ -384,12 +383,6 @@ def AId (ifacetype, identifier):   # assert interface without default initializa
     raise TypeError ('invalid default initialization for interface type: %s %s' % (ifacetype, identifier))
 def ATN (typename):     # assert a typename
   yy.resolve_type (typename) # raises exception
-def ANOTSIG (issignal): # assert no signal declarations
-  if issignal:
-      raise TypeError ("invalid keyword 'signal', use Events instead")
-def AFIELDSIG (issignal, identifier): # assert non-signal decl
-  if issignal:
-    raise TypeError ('non-method invalidly declared as \'signal\': %s' % identifier)
 def TSTREAM (typename):
   return typename in ('IStream', 'OStream', 'JStream')
 def ANOSTREAM (typename, identifier): # assert non-stream decl
@@ -585,25 +578,21 @@ rule method_args:
           ]                                     {{ a = yy.argcheck (aident, atype, adef); args += [ a ] }}
         ) *                                     {{ return args }}
 
-rule field_stream_method_signal_decl:
-                                                {{ signal = false; pure = 1; fargs = []; daux = () }}
-        [ 'signal'                              {{ signal = true; coll = 'void'; ANOTSIG (signal) }}
-          ]
+rule field_stream_method_decl:
+                                                {{ pure = 1; fargs = []; daux = () }}
         ( 'void'                                {{ dtname = 'void' }}
         | typename                              {{ dtname = typename }}
         )
         IDENT                                   {{ dident = IDENT; kind = 'field'; AIc (IDENT) }}
         ( [ '=' auxinit                         {{ daux = auxinit }}
           ]
-        | '\('                                  {{ kind = signal and 'signal' or 'func' }}
+        | '\('                                  {{ kind = 'func' }}
               [ method_args                     {{ fargs = method_args }}
               ] '\)'                            # [ '=' auxinit {{ daux = auxinit }} ]
         ) [ '=' 'concrete'                      {{ pure = 0; ANP (kind == 'func', dident) }}
-          ] ';'                                 {{ if kind == 'field': AFIELDSIG (signal, dident) }}
-                                                {{ if kind == 'field' and TSTREAM (dtname): kind = 'stream' }}
-                                                {{ flags = { 'void' : kind in ('func', 'signal'), 'stream' : kind == 'stream' } }}
+          ] ';'                                 {{ if kind == 'field' and TSTREAM (dtname): kind = 'stream' }}
+                                                {{ flags = { 'void' : kind == 'func', 'stream' : kind == 'stream' } }}
                                                 {{ dtype = yy.link_type (dtname, dident, **flags) }}
-                                                {{ if kind == 'signal': dtype.set_collector (coll) }}
                                                 {{ if kind == 'field': return (kind, [ dident, dtype, daux, None ]) }}
                                                 {{ return (kind, (dident, dtype, daux, fargs, pure)) }}
 
@@ -615,7 +604,7 @@ rule field_group:
                  )+ '}' ';'                     {{ return gfields }}
 rule interface:
         'interface'                             {{ ipls = []; ifls = []; prq = [] }}
-        IDENT                                   {{ iident = IDENT; isigs = []; AIc (IDENT) }}
+        IDENT                                   {{ iident = IDENT; AIc (IDENT) }}
         ( ';'                                   {{ iface = yy.nsadd_interface (iident, True) }}
         |
           [ ':' typename                        {{ prq += [ typename ]; AIi (typename) }}
@@ -624,12 +613,11 @@ rule interface:
           '{'                                   {{ iface = yy.nsadd_interface (iident) }}
              ( field_group                      {{ ipls = ipls + field_group }}
              | info_assignment                  {{ }}
-             | field_stream_method_signal_decl  {{ fmd = field_stream_method_signal_decl }}
+             | field_stream_method_decl         {{ fmd = field_stream_method_decl }}
                                                 {{ if fmd[0] == 'field': ipls = ipls + [ fmd[1] ] }}
                                                 {{ if fmd[0] == 'func': ifls = ifls + [ fmd[1] ] }}
-                                                {{ if fmd[0] == 'signal': isigs = isigs + [ fmd[1] ] }}
              )*
-          '}' ';'                               {{ yy.interface_fill (iface, prq, ipls, ifls, isigs) }}
+          '}' ';'                               {{ yy.interface_fill (iface, prq, ipls, ifls) }}
         )
 
 rule record:
