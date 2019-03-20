@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/testing.hh>
+#include <bse/bse.hh>
 #include <bse/bsemain.hh> // FIXME: bse_init_test
 
 static void
@@ -62,6 +63,34 @@ test_sfi_ring (void)
 }
 TEST_ADD (test_sfi_ring);
 
+static Bse::ServerS bse_server;
+
+static void
+bench_aida()
+{
+  using namespace Bse;
+  double calls = 0, slowest = 0, fastest = 9e+9;
+  for (uint j = 0; j < 37; j++)
+    {
+      bse_server.test_counter_set (0);
+      const int count = 2999;
+      const uint64_t ts0 = timestamp_benchmark();
+      for (int i = 0; i < count; i++)
+        bse_server.test_counter_inc_fetch ();
+      const uint64 ts1 = timestamp_benchmark();
+      TASSERT (bse_server.test_counter_get() == count);
+      double t0 = ts0 / 1000000000.;
+      double t1 = ts1 / 1000000000.;
+      double call1 = (t1 - t0) / count;
+      slowest = MAX (slowest, call1 * 1000000.);
+      fastest = MIN (fastest, call1 * 1000000.);
+      double this_calls = 1 / call1;
+      calls = MAX (calls, this_calls);
+    }
+  double err = (slowest - fastest) / slowest;
+  printout ("  BENCH    Aida: %g calls/s; fastest: %.2fus; slowest: %.2fus; err: %.2f%%\n",
+            calls, fastest, slowest, err * 100);
+}
 
 int
 main (int   argc,
@@ -70,22 +99,28 @@ main (int   argc,
   const Bse::StringVector args = Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL);
   // "wave-chunk-big-pad=2", "dcache-block-size=16"
 
-  // Bse::Test::init (&argc, argv, args); // <- this lacks BSE initialization
-
-  bse_init_test (&argc, argv, args);
-
   Bse::StringVector test_names;
 
   for (ssize_t i = 1; i < argc; i++)
     if (argv[i])
       {
-        if (argv[i][0] == '-')
+        if (strcmp (argv[i], "--bench-aida") == 0)
+          {
+            Bse::init_async (&argc, argv, argv[0], args);
+            Aida::ClientConnectionP connection = Bse::init_server_connection();
+            bse_server = Bse::init_server_instance();
+            bench_aida();
+            return 0;
+          }
+        else if (argv[i][0] == '-')
           {
             Bse::printerr ("%s: unknown option: %s\n", argv[0], argv[i]);
-            exit (7);
+            return 7;
           }
         test_names.push_back (argv[i]);
       }
+
+  bse_init_test (&argc, argv, args);
 
   return test_names.size() ? Bse::Test::run (test_names) : Bse::Test::run();
 }

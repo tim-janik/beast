@@ -6,8 +6,6 @@
 // --- ServerHH Boilerplate ---
 #include <aidacc/aida.hh>
 
-#include <aidacc/aida.hh> // for rcore/signal.hh
-
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
   bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \

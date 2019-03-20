@@ -311,6 +311,7 @@ namespace MandatoryNamespace {
 
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_FirstInterfaceIface;
   static FirstInterfaceHandle   __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -747,6 +748,7 @@ namespace InterfaceTests {
 
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_UIWidgetAreaIface;
   static UIWidgetAreaHandle     __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -790,6 +792,7 @@ typedef ::Aida::ScopedHandle<UIWidgetAreaH> UIWidgetAreaS;
 
 class ParentHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_ParentIface;
   static ParentHandle           __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -808,6 +811,7 @@ typedef ::Aida::ScopedHandle<ParentH> ParentS;
 
 class ChildHandle : public virtual ParentHandle
 {
+  friend                        class I_ChildIface;
   static ChildHandle            __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -828,6 +832,7 @@ typedef ::Aida::ScopedHandle<ChildH> ChildS;
 
 class DescendantHandle : public virtual ChildHandle
 {
+  friend                        class I_DescendantIface;
   static DescendantHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -848,6 +853,7 @@ typedef ::Aida::ScopedHandle<DescendantH> DescendantS;
 
 class GrandChildHandle : public virtual DescendantHandle
 {
+  friend                        class I_GrandChildIface;
   static GrandChildHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -911,6 +917,7 @@ void operator>>= (Aida::ProtoReader&, ClnT_QuickSequence&);
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_QuickIfaceIface;
   static QuickIfaceHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -930,6 +937,7 @@ typedef ::Aida::ScopedHandle<QuickIfaceH> QuickIfaceS;
 
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_MethodTestInterfaceIface;
   static MethodTestInterfaceHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -971,6 +979,7 @@ typedef ::Aida::ScopedHandle<MethodTestInterfaceH> MethodTestInterfaceS;
 
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_SignalTestInterfaceIface;
   static SignalTestInterfaceHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -989,6 +998,7 @@ typedef ::Aida::ScopedHandle<SignalTestInterfaceH> SignalTestInterfaceS;
 
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
+  friend                        class I_ChildInheritingSignalsIface;
   static ChildInheritingSignalsHandle __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1009,6 +1019,7 @@ typedef ::Aida::ScopedHandle<ChildInheritingSignalsH> ChildInheritingSignalsS;
 
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
+  friend                        class I_AnotherChildIface;
   static AnotherChildHandle     __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1029,6 +1040,7 @@ typedef ::Aida::ScopedHandle<AnotherChildH> AnotherChildS;
 
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_PropertyTesterIface;
   static PropertyTesterHandle   __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1084,6 +1096,7 @@ namespace RapicornAidaTest {
 
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
+  friend                        class I_UseIncludesIface;
   static UseIncludesHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1104,6 +1117,7 @@ typedef ::Aida::ScopedHandle<UseIncludesH> UseIncludesS;
 
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_ButtonAreaIface;
   static ButtonAreaHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1137,6 +1151,7 @@ class PureMethodsHandle;
 
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_PureMethodsIface;
   static PureMethodsHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1159,6 +1174,7 @@ namespace Other {
 
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_NameTestsIface;
   static NameTestsHandle        __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1183,6 +1199,7 @@ namespace BseTest {
 
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_CompressorIface;
   static CompressorHandle       __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1239,6 +1256,7 @@ void operator>>= (Aida::ProtoReader&, ClnT_RecordForGroups&);
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
+  friend                        class I_SoundModuleIface;
   static SoundModuleHandle      __aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
@@ -1258,6 +1276,7 @@ typedef ::Aida::ScopedHandle<SoundModuleH> SoundModuleS;
 #endif /* __CLNT__aidacc_tests_t304_testpass_idl */
 // --- Generated by AidaCxxStub ---
 #include "t304-testpass_handles.hh"
+#include "t304-testpass_interfaces.hh"
 
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \

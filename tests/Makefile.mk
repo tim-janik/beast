@@ -94,3 +94,9 @@ tests/check-bse-loading: \
 				$>/tests/bsefiles.lst-g-test	\
 				$>/tests/bsefiles.lst-h-test
 CHECK_TARGETS += tests/check-bse-loading
+
+# == simple benchmark ==
+tests/aida-benchmark: $(tests/suite1) FORCE
+	$(QGEN)
+	$Q $(tests/suite1) --bench-aida
+CHECK_TARGETS += tests/aida-benchmark

@@ -15,10 +15,6 @@ serverhh_boilerplate = r"""
 #include <aidacc/aida.hh>
 """
 
-rapicornsignal_boilerplate = r"""
-#include <aidacc/aida.hh> // for rcore/signal.hh
-"""
-
 common_boilerplate = r"""
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
@@ -595,6 +591,7 @@ class Generator:
     s += ' : ' + heritage + ' %s' % (', ' + heritage + ' ').join (precls) + '\n'
     s += '{\n'
     if self.gen_mode == G4STUB:
+      s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
       for sg in type_info.signals:
         s += self.generate_client_signal_decl (sg, type_info)
       s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
@@ -1286,6 +1283,7 @@ class Generator:
     # inclusions
     if self.gen_clientcc and not self.gen_clienthh:
       s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
+      s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_servercc and not self.gen_serverhh:
       s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_inclusions:
@@ -1301,7 +1299,6 @@ class Generator:
       s += clienthh_boilerplate
     if self.gen_serverhh:
       s += serverhh_boilerplate
-      s += rapicornsignal_boilerplate
     s += common_boilerplate
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'

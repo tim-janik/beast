@@ -114,6 +114,8 @@ class ServerConnection;
 union ProtoUnion;
 class ProtoMsg;
 class ProtoReader;
+class ExecutionContext;
+class CallableIface;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::shared_ptr<BaseConnection> BaseConnectionP;
@@ -228,8 +230,7 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
 
 // == VirtualEnableSharedFromThis ==
 /// Helper class for VirtualEnableSharedFromThis.
-struct VirtualEnableSharedFromThisBase :
-    public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
+struct VirtualEnableSharedFromThisBase : public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
   virtual ~VirtualEnableSharedFromThisBase() = 0;
 };
 /// Virtual base class template that provides std::enable_shared_from_this for multiple inheritance.
@@ -270,6 +271,29 @@ static_assert (__SIZEOF_INT__ == 4, "__SIZEOF_INT__");
 static_assert (sizeof (CastIffy) == sizeof (LongIffy), "CastIffy == LongIffy");
 static_assert (sizeof (UCastIffy) == sizeof (ULongIffy), "UCastIffy == ULongIffy");
 ///@}
+
+// == ExecutionContext ==
+class ExecutionContext {
+  struct Impl;
+  Impl &m;
+  explicit                 ExecutionContext ();
+  /*dtor*/                ~ExecutionContext ();
+public:
+  using                    Closure = std::function<void()>;
+  int                      notify_fd        ();
+  bool                     pending          ();
+  void                     dispatch         ();
+  void                     enqueue_mt       (Closure *closure);
+  static ExecutionContext* new_context      ();
+};
+
+// == CallableIface ==
+class CallableIface : public virtual VirtualEnableSharedFromThis<CallableIface> {
+protected:
+  virtual                  ~CallableIface            ();
+public:
+  virtual ExecutionContext* __execution_context_mt__ () const; ///< Retrieve ExecutionContext, save to be called multi-threaded.
+};
 
 // == EnumValue ==
 /// Aida info for enumeration values.
@@ -882,7 +906,7 @@ public:
 
 // == ImplicitBase ==
 /// Abstract base interface that all IDL interfaces are implicitely derived from.
-class ImplicitBase : public virtual VirtualEnableSharedFromThis<ImplicitBase> {
+class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableSharedFromThis<ImplicitBase> {
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
@@ -895,6 +919,7 @@ public:
   uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
+  using VirtualEnableSharedFromThis<ImplicitBase>::shared_from_this;
 };
 
 // == ==
