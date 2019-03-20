@@ -76,7 +76,7 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  virtual std::string                    __typename__       () const override { return "Rapicorn::OneIface"; }
+  virtual std::string                    __typename__       () const override { return "OneIface"; }
   virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
   virtual const std::vector<String>&     __aida_aux_data__  () const override { static std::vector<String> sv; return sv; }
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
