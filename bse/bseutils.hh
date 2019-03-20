@@ -81,9 +81,14 @@ gint		bse_string_equals		(gconstpointer	 string1,
 
 namespace Bse {
 
+// == icons ==
 Icon icon_from_pixstream (const guint8 *pixstream);
 bool icon_sanitize (Icon *icon);
 
+// == main ==
+Aida::ExecutionContext* execution_context ();   // bsemain.cc
+
+// == memory ==
 struct SharedBlock { // TODO: move to memory.hh
   int64 shm_id = 0;
   int32 mem_offset = 0;

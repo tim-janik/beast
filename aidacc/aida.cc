@@ -2423,7 +2423,6 @@ ExecutionContext::new_context ()
 CallableIface::~CallableIface ()
 {}
 
-/// Retrieve ExecutionContext, save to be called multi-threaded.
 ExecutionContext*
 CallableIface::__execution_context_mt__ () const
 {
