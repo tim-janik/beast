@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 """AidaExtractDocs - Aida IDL Documentation Generator
 
-More details at https://rapicorn.testbit.org/
+More details at https://beast.testbit.org/
 """
 import Decls
 
@@ -81,7 +81,6 @@ def generate (namespace_list, **args):
     raise RuntimeError ("AidaExtractDocs: exactly one IDL input file is required")
   gg = Generator (idlfiles[0])
   all = config['backend-options'] == []
-  ns_rapicorn = Decls.Namespace ('Rapicorn', None, [])
   textstring = gg.generate_docs (config['implementation_types']) # namespace_list
   outname = config.get ('output', '-')
   if outname != '-':

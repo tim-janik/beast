@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/testing.hh>
+#include <bse/bseutils.hh>
 
 using std::ptrdiff_t;
 using namespace Aida;
@@ -76,12 +77,13 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  virtual std::string                    __typename__       () const override { return "Rapicorn::OneIface"; }
+  virtual std::string                    __typename__       () const override { return "OneIface"; }
   virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
   virtual const std::vector<String>&     __aida_aux_data__  () const override { static std::vector<String> sv; return sv; }
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
   virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
+  virtual Aida::ExecutionContext* __execution_context_mt__ () const override    { return Bse::execution_context(); }
   int64 test_id() const { return testid_; }
   static OneIfaceP make_one_iface (int64 id)
   {

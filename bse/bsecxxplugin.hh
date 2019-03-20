@@ -53,10 +53,10 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
       }                                                                 \
     return type_id;                                                     \
   }                                                                     \
-  static void func##__onload () {                                       \
+  static bool init__##__onload = [] () {                                \
     bse_plugin_make_resident();                                         \
-    (void) (volatile GType) func##_get_type();                          \
-  } static Sfi::Init func##__onload_ (func##__onload);
+    return 0 != (volatile GType) func##_get_type();                     \
+  } ();
 #define BSE_RESIDENT_SOURCE_DEF(Object, func, category, blurb, icon)    \
   BSE_RESIDENT_TYPE_DEF(Object, func, BSE_TYPE_SOURCE, category, blurb, icon)
 

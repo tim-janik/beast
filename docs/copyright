@@ -9,21 +9,12 @@ Copyright:
   Copyright (C) 2003-2015, Stefan Westerfeld
 License: LGPL-2.1+
 
-Files: debian/*
-Copyright:
-  Copyright (C) 2015 Tim Janik
-License: MPL-2.0
-Comment:
- The debian/* are under MPL-2.0 so parts can be contributed to
- rapicorn/debian/, Rapicorn is MPL-2.0 licensed as a whole.
-
 Files: misc/*
 Copyright:
   Copyright (C) 2015-2017 Tim Janik
 License: MPL-2.0
 Comment:
- The misc/* files are under MPL-2.0 so parts can be exchanged
- with rapicorn/, Rapicorn is MPL-2.0 licensed as a whole.
+ The misc/* files are under MPL-2.0.
 
 Files: po/*
 Copyright:

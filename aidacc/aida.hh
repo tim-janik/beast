@@ -292,7 +292,7 @@ class CallableIface : public virtual VirtualEnableSharedFromThis<CallableIface> 
 protected:
   virtual                  ~CallableIface            ();
 public:
-  virtual ExecutionContext* __execution_context_mt__ () const; ///< Retrieve ExecutionContext, save to be called multi-threaded.
+  virtual ExecutionContext* __execution_context_mt__ () const = 0; ///< Retrieve ExecutionContext, save to be called multi-threaded.
 };
 
 // == EnumValue ==

@@ -2423,13 +2423,6 @@ ExecutionContext::new_context ()
 CallableIface::~CallableIface ()
 {}
 
-ExecutionContext*
-CallableIface::__execution_context_mt__ () const
-{
-  return NULL;
-}
-
-
 // == TransportChannel ==
 class TransportChannel : public EventFd { // Channel for cross-thread ProtoMsg IO
   MpScQueueF<ProtoMsg*> msg_queue;

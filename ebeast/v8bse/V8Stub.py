@@ -1,7 +1,7 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-"""AidaPyxxStub - Aida Cython Code Generator
+"""AidaPyxxStub - Aida V8 Code Generator
 
-More details at http://www.rapicorn.org/
+More details at https://beast.testbit.org/
 """
 import Decls, re, sys, os
 
@@ -43,7 +43,7 @@ def identifier_name (joiner, type_name, member = None):
   return joiner.join (parts)
 def underscore_typename (tp):
   if tp.storage == Decls.ANY:
-    return 'Rapicorn__Any'
+    return 'Adia__Any'
   return identifier_name ('__', tp)
 def colon_typename (tp):
   name = identifier_name ('::', tp)
@@ -86,7 +86,7 @@ class Generator:
     if tstorage == Decls.INT64:         return 'int64_t'
     if tstorage == Decls.FLOAT64:       return 'double'
     if tstorage == Decls.STRING:        return 'std::string'
-    if tstorage == Decls.ANY:           return 'Rapicorn::Aida::Any'
+    if tstorage == Decls.ANY:           return 'Aida::Any'
     fullnsname = '::'.join (self.type_absolute_namespaces (type_node) + [ type_node.name ])
     return fullnsname
   def C4client (self, type_node):
