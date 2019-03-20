@@ -172,7 +172,7 @@ class YYGlobals (object):
           raise AttributeError ('missing subsequent default initializer: ' + method[0] + ' (...' + arg[0] + '...)')
         adict[arg[0]] = true
         mtype.add_arg (arg[0], arg[1], arg[2])
-      iface.add_method (mtype, false)
+      iface.add_method (mtype)
   def parse_assign_auxdata (self, fieldlist):
     for field in fieldlist:
       if not field[2]:

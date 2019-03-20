@@ -103,11 +103,9 @@ class TypeInfo (BaseDecl):
       self.rtype = None         # holds: TypeInfo
       self.ownertype = None    # TypeInfo
       self.pure = False
-      self.issignal = False
     if self.storage == INTERFACE:
       self.prerequisites = []
       self.methods = []         # holds: TypeInfo
-      self.signals = []         # holds: TypeInfo
     self.auxdata = collections.OrderedDict()
     if self.storage == STREAM:
       self.ioj_stream = ''      # one of: 'I', 'O', 'J'
@@ -161,9 +159,7 @@ class TypeInfo (BaseDecl):
     return tuple ([ord (c) for c in hbytes])
   def type_hash (self):
     if self.storage == FUNC:
-      if self.issignal:
-        tag = "sigcon"
-      elif self.rtype.storage == VOID:
+      if self.rtype.storage == VOID:
         tag = "oneway"
       else:
         tag = "twoway"
@@ -219,8 +215,6 @@ class TypeInfo (BaseDecl):
       ti.rtype = self.rtype
     if hasattr (self, 'pure'):
       ti.pure = self.pure
-    if hasattr (self, 'issignal'):
-      ti.issignal = self.issignal
     if hasattr (self, 'elements'):
       ti.elements = self.elements
     if hasattr (self, 'prerequisites'):
@@ -229,8 +223,6 @@ class TypeInfo (BaseDecl):
       ti.methods += self.methods
     if hasattr (self, 'ownertype'):
       ti.ownertype = self.ownertype
-    if hasattr (self, 'signals'):
-      ti.signals += self.signals
     ti.auxdata.update (self.auxdata)
     return ti
   def update_auxdata (self, auxdict):
@@ -283,17 +275,13 @@ class TypeInfo (BaseDecl):
     self.pure = bool (vbool)
   def set_collector (self, collkind):
     self.collector = collkind
-  def add_method (self, ftype, issignal = False):
+  def add_method (self, ftype):
     assert self.storage == INTERFACE
     assert isinstance (ftype, TypeInfo)
     assert ftype.storage == FUNC
     assert isinstance (ftype.rtype, TypeInfo)
     ftype.ownertype = self
-    ftype.issignal = issignal
-    if issignal:
-      self.signals += [ ftype ]
-    else:
-      self.methods += [ ftype ]
+    self.methods += [ ftype ]
   def add_prerequisite (self, type):
     assert self.storage == INTERFACE
     assert isinstance (type, TypeInfo)
