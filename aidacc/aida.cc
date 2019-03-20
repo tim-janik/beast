@@ -1513,7 +1513,10 @@ Any::set_ibase (ImplicitBase *ibase)
 RemoteHandle
 Any::get_untyped_remote_handle () const
 {
-  return kind() == REMOTE ? u_.rhandle() : RemoteHandle::__aida_null_handle__();
+  RemoteHandle rh;
+  if (kind() == REMOTE)
+    rh = u_.rhandle();
+  return rh;
 }
 
 void
@@ -2812,7 +2815,7 @@ ClientConnectionImpl::remote_origin()
   const MessageId msgid = MessageId (frr.pop_int64());
   frr.skip(); // hashhigh
   frr.skip(); // hashlow
-  AIDA_ASSERT_RETURN (msgid_is (msgid, MSGID_META_WELCOME), RemoteHandle::__aida_null_handle__());
+  AIDA_ASSERT_RETURN (msgid_is (msgid, MSGID_META_WELCOME), RemoteHandle());
   pop_handle (frr, rorigin);
   delete fr;
   errno = 0;
@@ -3028,7 +3031,7 @@ public:
   virtual RemoteHandle
   remote_origin () override
   {
-    RemoteHandle rh = RemoteHandle::__aida_null_handle__();
+    RemoteHandle rh;
     AIDA_ASSERT_RETURN_UNREACHED (rh);
     return rh;
   }
@@ -3672,7 +3675,7 @@ remote_handle_dispatch_event_discard_handler (Aida::ProtoReader &fbr)
   const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
   const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
   AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
-  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  RemoteHandle self;
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL);
   int64_t iface_hid;
@@ -3687,7 +3690,7 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
   const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
   const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
   AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
-  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  RemoteHandle self;
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL);
   int64_t iface_hid;

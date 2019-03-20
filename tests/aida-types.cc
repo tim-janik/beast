@@ -114,16 +114,13 @@ static void
 test_aida_handles()
 {
   // RemoteHandle
-  TASSERT (RemoteHandle::__aida_null_handle__() == NULL);
-  TASSERT (!RemoteHandle::__aida_null_handle__());
-  TASSERT (RemoteHandle::__aida_null_handle__().__aida_orbid__() == 0);
+  TASSERT (RemoteHandle() == NULL);
+  TASSERT (!RemoteHandle());
+  TASSERT (RemoteHandle().__aida_orbid__() == 0);
   std::shared_ptr<TestOrbObject> torbo = std::make_shared<TestOrbObject> (1);
   TASSERT (OneHandle (torbo) != NULL);
   TASSERT (OneHandle (torbo));
   TASSERT (OneHandle (torbo).__aida_orbid__() == 1);
-  TASSERT (OneHandle (torbo).__aida_null_handle__() == NULL);
-  TASSERT (!OneHandle (torbo).__aida_null_handle__());
-  TASSERT (OneHandle (torbo).__aida_null_handle__().__aida_orbid__() == 0);
 }
 TEST_ADD (test_aida_handles);
 

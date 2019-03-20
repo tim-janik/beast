@@ -551,19 +551,14 @@ public:
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
   OrbObjectP        orbop_;
-  template<class Parent>
-  struct NullRemoteHandleT : public Parent {
-    TypeHashList __aida_typelist__ () const { return TypeHashList(); }
-  };
-  typedef NullRemoteHandleT<RemoteHandle> NullRemoteHandle;
   static OrbObjectP __aida_null_orb_object__ ();
 protected:
   explicit          RemoteHandle             (OrbObjectP);
-  explicit          RemoteHandle             ();
   const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
+  explicit                RemoteHandle         ();
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   String                  __typename__         () const;                                //: AIDAID
@@ -574,7 +569,6 @@ public:
   bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
-  static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
