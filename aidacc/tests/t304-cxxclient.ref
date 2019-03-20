@@ -1423,10 +1423,7 @@ FirstInterfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida
 void
 FirstInterfaceHandle::void_func ()
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xc3f858f5171056cbULL, 0x394e47a2bcd63e16ULL);
-  fr = __o_.invoke (&__p_);
-  if (AIDA_UNLIKELY (fr != NULL)) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_FirstInterfaceIface::void_func);
 }
 static const IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooRecord_ = {
   "MandatoryNamespace::XFooRecord\0"
@@ -2179,75 +2176,29 @@ UIWidgetAreaHandle::on_click (const std::string &value)
 double
 UIWidgetAreaHandle::simple_method ()
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xd0dd4c08ba5022c0ULL, 0xb1af31ca1ec7037aULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::simple_method);
 }
 double
 UIWidgetAreaHandle::single_arg (int arg_n)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xe4e890540b4c0579ULL, 0xe14a7ffaa82f1c4fULL);
-  __p_ <<= arg_n;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::single_arg, arg_n);
 }
 double
 UIWidgetAreaHandle::single_arg2 (int arg_n)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x9cfaa316ccbb6ea0ULL, 0x6cc5207c5520e081ULL);
-  __p_ <<= arg_n;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::single_arg2, arg_n);
 }
 double
 UIWidgetAreaHandle::two_args (int arg_n,
                               double arg_r)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x64511c410b16c274ULL, 0x19b47eb22b4cd4d4ULL);
-  __p_ <<= arg_n;
-  __p_ <<= arg_r;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::two_args, arg_n, arg_r);
 }
 double
 UIWidgetAreaHandle::two_args2 (int arg_n,
                                double arg_r)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x2089150ae3f7ad80ULL, 0xe6154471cb4560e0ULL);
-  __p_ <<= arg_n;
-  __p_ <<= arg_r;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::two_args2, arg_n, arg_r);
 }
 double
 UIWidgetAreaHandle::multi_args (bool arg_b,
@@ -2257,21 +2208,7 @@ UIWidgetAreaHandle::multi_args (bool arg_b,
                                 const std::string &arg_s,
                                 double arg_y)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 6), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x349f073a5bad36fdULL, 0xf7a10ae13b8e391bULL);
-  __p_ <<= arg_b;
-  __p_ <<= arg_n;
-  __p_ <<= arg_r;
-  __p_ <<= arg_i;
-  __p_ <<= arg_s;
-  __p_ <<= arg_y;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::multi_args, arg_b, arg_n, arg_r, arg_i, arg_s, arg_y);
 }
 double
 UIWidgetAreaHandle::self_method (UIWidgetAreaHandle &arg_ba1,
@@ -2292,32 +2229,17 @@ UIWidgetAreaHandle::self_method (UIWidgetAreaHandle &arg_ba1,
 void
 UIWidgetAreaHandle::void_method ()
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xdbb304ad4df15873ULL, 0xca276abf2bb1603cULL);
-  fr = __o_.invoke (&__p_);
-  if (AIDA_UNLIKELY (fr != NULL)) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::void_method);
 }
 std::string
 UIWidgetAreaHandle::on_click2out ()
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xb8bc20394724087aULL, 0xbc7b1e7d30aeb178ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::on_click2out);
 }
 void
 UIWidgetAreaHandle::on_click2in (const std::string &arg_command)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x3432c3bb41bc72a0ULL, 0x533bc22135f973bfULL);
-  __p_ <<= arg_command;
-  fr = __o_.invoke (&__p_);
-  if (AIDA_UNLIKELY (fr != NULL)) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::on_click2in, arg_command);
 }
 ParentHandle::ParentHandle ()
 {}
@@ -2496,11 +2418,7 @@ QuickIfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::Ty
 void
 QuickIfaceHandle::simple_function (int arg_i)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x76ac7a704663d246ULL, 0x23abac49621c6802ULL);
-  __p_ <<= arg_i;
-  fr = __o_.invoke (&__p_);
-  if (AIDA_UNLIKELY (fr != NULL)) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_QuickIfaceIface::simple_function, arg_i);
 }
 MethodTestInterfaceHandle::MethodTestInterfaceHandle ()
 {}
@@ -2527,106 +2445,43 @@ MethodTestInterfaceHandle::__aida_cast__ (const Aida::RemoteHandle &other, const
 void
 MethodTestInterfaceHandle::method_with_void ()
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 0), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x1addfccb0a3e01beULL, 0x314f2eb467d7a72bULL);
-  fr = __o_.invoke (&__p_);
-  if (AIDA_UNLIKELY (fr != NULL)) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_MethodTestInterfaceIface::method_with_void);
 }
 bool
 MethodTestInterfaceHandle::method_with_bools (bool arg_input,
                                               bool arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x55291a7348d14242ULL, 0x32dac90dde65a764ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  bool  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_bools, arg_input, arg_optval);
 }
 int
 MethodTestInterfaceHandle::method_with_ints32 (int arg_input,
                                                int arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xdc38cf6855c54108ULL, 0x328ddcdcec8f161eULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_ints32, arg_input, arg_optval);
 }
 int64_t
 MethodTestInterfaceHandle::method_with_ints64 (int64_t arg_input,
                                                int64_t arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x678de8636167b6a1ULL, 0xb27d37ca066b5335ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int64_t  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_ints64, arg_input, arg_optval);
 }
 double
 MethodTestInterfaceHandle::method_with_floats (double arg_input,
                                                double arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xeea6d5fb184699a3ULL, 0xce05c988a9bfd2d9ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_floats, arg_input, arg_optval);
 }
 std::string
 MethodTestInterfaceHandle::method_with_string (const std::string &arg_input,
                                                const std::string &arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x646f80849d732dc5ULL, 0x72fd1ede45b153e3ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_string, arg_input, arg_optval);
 }
 QuickEnum
 MethodTestInterfaceHandle::method_with_enum (QuickEnum arg_input,
                                              QuickEnum arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xee3b0b1c6eb52bdeULL, 0x13729d2db240b4f9ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  QuickEnum  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_enum, arg_input, arg_optval);
 }
 ClnT_QuickRecord
 MethodTestInterfaceHandle::method_with_record (const ClnT_QuickRecord &arg_input,
@@ -2680,17 +2535,7 @@ Aida::Any
 MethodTestInterfaceHandle::method_with_anys (const Aida::Any &arg_input,
                                              const Aida::Any &arg_optval)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 2), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x807e5dacf307a277ULL, 0x2b65069e50e63c80ULL);
-  __p_ <<= arg_input;
-  __p_ <<= arg_optval;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  Aida::Any  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_anys, arg_input, arg_optval);
 }
 QuickIfaceHandle
 MethodTestInterfaceHandle::method_with_quickiface (QuickIfaceHandle &arg_input,
@@ -3198,16 +3043,7 @@ PureMethodsHandle::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::T
 int
 PureMethodsHandle::pure_method (double arg_f)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xf196563f00b6d484ULL, 0x88b59c2ed0597dccULL);
-  __p_ <<= arg_f;
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callr (*this, &I_PureMethodsIface::pure_method, arg_f);
 }
 } // RapicornAidaTest
 

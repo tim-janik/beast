@@ -838,6 +838,23 @@ class Generator:
     s += self.C (mtype.rtype) + '\n'
     q = '%s::%s (' % (self.C (class_info), mtype.name)
     s += q + self.Args (mtype, 'arg_', len (q)) + ')%s\n{\n' % copydoc
+    # generate wrapped lambda call
+    recargs = mtype.rtype.storage in (Decls.RECORD, Decls.INTERFACE, Decls.SEQUENCE)
+    for a in mtype.args:
+      recargs = recargs or a[1].storage in (Decls.RECORD, Decls.INTERFACE, Decls.SEQUENCE)
+    if mtype.rtype.storage == Decls.VOID and not recargs:
+      s += '  return __AIDA_Local__::remote_callv (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
+      for a in mtype.args:
+        s += ', arg_' + a[0]
+      s += ');\n'
+      return s + '}\n'
+    elif not recargs:
+      s += '  return __AIDA_Local__::remote_callr (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
+      for a in mtype.args:
+        s += ', arg_' + a[0]
+      s += ');\n'
+      return s + '}\n'
+    # FIXME: cleanup function rest
     # vars, procedure
     s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + %u), *fr = NULL;\n' % len (mtype.args) # header + self + args
     if hasret:
