@@ -591,6 +591,7 @@ class Generator:
     s += ' : ' + heritage + ' %s' % (', ' + heritage + ' ').join (precls) + '\n'
     s += '{\n'
     if self.gen_mode == G4STUB:
+      s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
       for sg in type_info.signals:
         s += self.generate_client_signal_decl (sg, type_info)
       s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
