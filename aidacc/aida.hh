@@ -904,6 +904,19 @@ public:
   const AnyDict& fields     () const                      { return fields_; }
 };
 
+// == KeyValue ==
+struct KeyValue {
+  std::string key;
+  Any         value;
+};
+namespace KeyValueArgs {
+struct KeyValueConstructor {
+  std::string key;
+  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
+};
+inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
+};
+
 // == ImplicitBase ==
 /// Abstract base interface that all IDL interfaces are implicitely derived from.
 class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableSharedFromThis<ImplicitBase> {
@@ -920,19 +933,6 @@ public:
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
   using VirtualEnableSharedFromThis<ImplicitBase>::shared_from_this;
-};
-
-// == ==
-struct KeyValue {
-  std::string key;
-  Any         value;
-};
-namespace KeyValueArgs {
-struct KeyValueConstructor {
-  std::string key;
-  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
-};
-inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
 };
 
 // == ProtoMsg ==
