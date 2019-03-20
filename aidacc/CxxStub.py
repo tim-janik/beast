@@ -15,10 +15,6 @@ serverhh_boilerplate = r"""
 #include <aidacc/aida.hh>
 """
 
-rapicornsignal_boilerplate = r"""
-#include <aidacc/aida.hh> // for rcore/signal.hh
-"""
-
 common_boilerplate = r"""
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
@@ -1301,7 +1297,6 @@ class Generator:
       s += clienthh_boilerplate
     if self.gen_serverhh:
       s += serverhh_boilerplate
-      s += rapicornsignal_boilerplate
     s += common_boilerplate
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'
