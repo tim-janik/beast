@@ -3,8 +3,7 @@
 #define __SFI_H__
 
 
-// == Rapicorn Imports ==
-#include <bse/sfiwrapper.hh>    // Introduces bcore.hh and Rapicorn
+#include <bse/sfiwrapper.hh>    // Introduces bcore.hh
 
 /* no bin-compat: #include <bse/sficomwire.hh> */
 #include <bse/sficomport.hh>
