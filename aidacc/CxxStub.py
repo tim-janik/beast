@@ -1282,6 +1282,7 @@ class Generator:
     # inclusions
     if self.gen_clientcc and not self.gen_clienthh:
       s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
+      s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_servercc and not self.gen_serverhh:
       s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_inclusions:
