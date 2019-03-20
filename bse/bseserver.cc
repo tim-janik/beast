@@ -1022,14 +1022,6 @@ ServerImpl::engine_active ()
   return self->dev_use_count;
 }
 
-TestObjectIfaceP
-ServerImpl::get_test_object ()
-{
-  if (!test_object_)
-    test_object_ = FriendAllocator<TestObjectImpl>::make_shared();
-  return test_object_;
-}
-
 ObjectIfaceP
 ServerImpl::from_proxy (int64_t proxyid)
 {

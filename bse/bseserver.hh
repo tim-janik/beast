@@ -4,7 +4,6 @@
 #include <bse/bsesuper.hh>
 #include <bse/bsepcmdevice.hh>
 #include <bse/bsemididevice.hh>
-#include <bse/testobject.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
@@ -83,7 +82,6 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
-  TestObjectImplP    test_object_;
   int32              tc_ = 0;
 protected:
   virtual            ~ServerImpl            ();
@@ -92,7 +90,6 @@ public:
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
   explicit                 ServerImpl       (BseObject*);
-  virtual TestObjectIfaceP get_test_object  () override;
   virtual bool             engine_active    () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   (int64 id) override;

@@ -157,7 +157,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/sfiwrapper.hh		\
 	bse/strings.hh			\
 	bse/testing.hh			\
-	bse/testobject.hh		\
 	bse/unicode.hh			\
 )
 bse/libbse.sources ::= $(strip		\
@@ -307,7 +306,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/sfiwrapper.cc		\
 	bse/strings.cc			\
 	bse/testing.cc			\
-	bse/testobject.cc		\
 	bse/unicode.cc			\
 	bse/weaksym.cc			\
 )

@@ -586,12 +586,6 @@ sequence AuxDataSeq {
   AuxData aux_data;
 };
 
-/// Object to carry out IDL, API, signal, etc tests.
-interface TestObject {
-  int32         echo_test       (String msg);   ///< Echo custom message to stdout.
-  // signal void echo_reply     (String msg);   ///< Signal emitted in response to echo_test().
-};
-
 enum UserMessageType {
   ERROR = 1,    ///< Indicate a message about an error condition.
   WARNING,      ///< Indicate a message about a possibly harmful condition.
@@ -1203,7 +1197,6 @@ sequence CategorySeq {
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
-  TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   bool          engine_active   ();                     ///< Retrieve DSP engine activateion state, see also: "enginechange" Event.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
