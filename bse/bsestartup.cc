@@ -2,6 +2,7 @@
 #include "bsestartup.hh"
 #include "bsemain.hh"
 #include "bse/internal.hh"
+#include "bse/bseserver.hh"
 #include <bse/bseapi_handles.hh>
 #include <bse/bse.hh>           // init_server_connection
 
@@ -141,6 +142,10 @@ init_server_instance () // bse.hh
   Aida::ClientConnectionP connection = init_server_connection();
   if (connection)
     server = connection->remote_origin<ServerH>();
+  Aida::ImplicitBaseP &ibasep = server.__iface_ptr__();
+  assert_return (ibasep == NULL, server);
+  ibasep = BSE_SERVER.shared_from_this(); // FIXME: deleter must execute in BSE thread
+  assert_return (ibasep != NULL, server);
   return server;
 }
 
@@ -155,9 +160,9 @@ init_server_connection () // bse.hh
       if (connection)
         bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
       assert_return (bseconnection_server_handle != NULL, NULL);
-      constexpr SfiProxy BSE_SERVER = 1;
-      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER, NULL);
-      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER) == bseconnection_server_handle, NULL);
+      constexpr SfiProxy BSE_SERVER_id = 1;
+      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER_id, NULL);
+      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER_id) == bseconnection_server_handle, NULL);
       assert_return (client_connection == NULL, NULL);
       client_connection = new Aida::ClientConnectionP (connection);
     }

@@ -555,6 +555,7 @@ public:
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
   OrbObjectP        orbop_;
+  ImplicitBaseP     iface_ptr_;
   static OrbObjectP __aida_null_orb_object__ ();
 protected:
   explicit          RemoteHandle             (OrbObjectP);
@@ -573,6 +574,7 @@ public:
   bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
+  ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
