@@ -584,8 +584,6 @@ class Generator:
     s += '{\n'
     if self.gen_mode == G4STUB:
       s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
-      for sg in type_info.signals:
-        s += self.generate_client_signal_decl (sg, type_info)
       s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
       s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
@@ -616,15 +614,6 @@ class Generator:
       il = max (len (fl[0]) for fl in type_info.fields)
     for fl in type_info.fields:
       s += self.generate_property_prototype (type_info, fl[0], fl[1], il)
-    # signals
-    if self.gen_mode == G4SERVANT:
-      for sg in type_info.signals:
-        s += '  ' + self.generate_server_signal_typedef (sg, type_info)
-      for sg in type_info.signals:
-        s += '  ' + self.generate_signal_typename (sg, type_info) + ' sig_%s;\n' % sg.name
-    else: # G4STUB
-      for sg in type_info.signals:
-        s += self.generate_client_signal_api (sg, type_info)
     # methods
     il = 0
     if type_info.methods:
@@ -1010,160 +999,6 @@ class Generator:
     s += '  return &rb;\n'
     s += '}\n'
     return s
-  def generate_signal_typename (self, functype, ctype, prefix = 'Signal'):
-    return '%s_%s' % (prefix, functype.name)
-  def generate_signal_signature_tuple (self, functype, funcname = ''):
-    s, r = '', self.R (functype.rtype)
-    if funcname:
-      s += '%s ' % funcname
-    s += '('
-    l = []
-    for a in functype.args:
-      l += [ self.A (a[0], a[1]) ]
-    s += ', '.join (l)
-    s += ')'
-    return (r, s)
-  def generate_client_signal_decl (self, functype, ctype):
-    assert self.gen_mode == G4STUB
-    s, classH = '', self.C4client (ctype)
-    sigret, sigargs = self.generate_signal_signature_tuple (functype)
-    connector_name = '__Aida_Signal__%s' % functype.name
-    s += '  ' + 'typedef Aida::Connector<%s, %s %s> ' % (classH, sigret, sigargs) + connector_name + ';\n'
-    s += '  size_t ' + '__aida_connect__' + functype.name + ' (size_t, const std::function<%s %s>&);\n' % (sigret, sigargs)
-    return s
-  def generate_client_signal_api (self, functype, ctype):
-    assert self.gen_mode == G4STUB
-    s, classH = '', self.C4client (ctype)
-    sigret, sigargs = self.generate_signal_signature_tuple (functype)
-    connector_name = '__Aida_Signal__%s' % functype.name
-    s += '  ' + self.F (connector_name) + 'sig_' + functype.name + ' () '
-    s += '{ return %s (*this, &%s::__aida_connect__%s); }\n' % (connector_name, classH, functype.name)
-    return s
-  def generate_client_signal_def (self, class_info, stype):
-    assert self.gen_mode == G4STUB
-    s, classH = '', self.C4client (class_info)
-    digest, async = self.method_digest (stype), stype.rtype.storage != Decls.VOID
-    (sigret, sigargs) = self.generate_signal_signature_tuple (stype)
-    emitfunc = '__aida_emit%d__%s__%s' % ((2 if async else 1), classH, stype.name)
-    s += 'static Aida::ProtoMsg*\n%s ' % emitfunc
-    s += '(const Aida::ProtoMsg *sfb, void *data)\n{\n'
-    s += '  auto fptr = (const std::function<%s %s>*) data;\n' % (sigret, sigargs)
-    s += '  if (AIDA_UNLIKELY (!sfb)) // disconnect signal\n'
-    s += '    {\n'
-    s += '      delete fptr;\n'
-    s += '      return NULL;\n'
-    s += '    }\n'
-    s += '  Aida::uint64 emit_result_id;\n'
-    s += '  AIDA_ASSERT_RETURN (NULL != &Aida::ProtoScope::current_client_connection(), NULL);\n'
-    if async:
-      s += '  ' + self.R (stype.rtype) + ' rval = Aida::proto_msg_emit_signal (*sfb, *fptr, emit_result_id);\n'
-      s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_emit_result (sfb, %s, 2);\n' % digest # invalidates fbr
-      s += '  rb <<= emit_result_id;\n'
-      s += self.generate_proto_add_args ('rb', class_info, '', [('rval', stype.rtype)], '')
-      s += '  return &rb;\n'
-    else:
-      s += '  Aida::proto_msg_emit_signal (*sfb, *fptr, emit_result_id);\n'
-      s += '  return NULL;\n'
-    s += '}\n'
-    s += 'size_t\n%s::__aida_connect__%s (size_t signal_handler_id, const std::function<%s %s> &func)\n{\n' % (classH, stype.name, sigret, sigargs)
-    s += '  Aida::ProtoScope __o_ (*__aida_connection__());\n'
-    s += '  if (signal_handler_id)\n'
-    s += '    return __o_.current_client_connection().signal_disconnect (signal_handler_id);\n'
-    s += '  void *fptr = new std::function<%s %s> (func);\n' % (sigret, sigargs)
-    s += '  return __o_.current_client_connection().signal_connect (%s, *this, %s, fptr);\n}\n' % (self.method_digest (stype), emitfunc)
-    return s
-  def generate_server_signal_typedef (self, functype, ctype, prefix = ''):
-    s, signame = '', self.generate_signal_typename (functype, ctype)
-    cpp_rtype, async = self.R (functype.rtype), functype.rtype.storage != Decls.VOID
-    s += 'typedef Aida::%s<%s (' % (('AsyncSignal' if async else 'Signal'), cpp_rtype)
-    l = []
-    for a in functype.args:
-      l += [ self.A (a[0], a[1]) ]
-    s += ', '.join (l)
-    s += ')> ' + prefix + signame + ';\n'
-    return s
-  def generate_server_signal_dispatcher (self, class_info, stype, reglines):
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_connect__%s__%s' % (class_info.name, stype.name)
-    digest, async = self.method_digest (stype), stype.rtype.storage != Decls.VOID
-    reglines += [ (digest, self.namespaced_identifier (dispatcher_name)) ]
-    closure_class = '__AIDA_Closure__%s__%s' % (class_info.name, stype.name)
-    s += 'class %s {\n' % closure_class
-    s += '  Aida::ServerConnection &server_connection_;\n'
-    s += '  const size_t handler_id_;\n'
-    s += 'public:\n'
-    s += '  typedef std::shared_ptr<%s> SharedPtr;\n' % closure_class
-    s += '  %s (Aida::ServerConnection &server_connection, size_t handler_id) :\n' % closure_class # ctor
-    s += '    server_connection_ (server_connection), handler_id_ (handler_id)\n'
-    s += '  {}\n'
-    s += '  ~%s()\n' % closure_class # dtor
-    s += '  {\n'
-    s += '    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1);\n' # header + handler
-    s += '    Aida::ProtoScopeDisconnect __o_ (__p_, server_connection_, %s);\n' % digest
-    s += '    __p_ <<= handler_id_;\n'
-    s += '    __o_.post_peer_msg (&__p_);\n' # deletes __p_
-    s += '  }\n'
-    cpp_rtype = self.R (stype.rtype)
-    s += '  static %s\n' % ('std::future<%s>' % cpp_rtype if async else cpp_rtype)
-    s += '  handler (const SharedPtr &sp'
-    if stype.args:
-      s += ',\n' + ' ' * 11
-      s += self.Args (stype, 'arg_', 11)
-    s += ')\n  {\n'
-    s += '    Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + %u + %d);\n' \
-        % (len (stype.args), 1 if async else 0) # header + handler + args
-    if not async:
-      s += '    Aida::ProtoScopeEmit1Way __o_ (__p_, sp->server_connection_, %s);\n' % digest
-      s += '    __p_ <<= sp->handler_id_;\n'
-    else:
-      s += '    Aida::ProtoScopeEmit2Way __o_ (__p_, sp->server_connection_, %s);\n' % digest
-      s += '    __p_ <<= sp->handler_id_;\n'
-      s += '    auto promise = std::make_shared<std::promise<%s>> ();\n' % cpp_rtype
-      s += '    auto future = promise->get_future();\n'
-      s += '    const size_t lambda_id = 1 + size_t (promise.get());\n' # generate unique (non-pointer) id
-      s += '    auto lambda = [promise] (Aida::ProtoReader &__f_) {\n'
-      s += '      ' + self.R (stype.rtype) + ' retval;\n'
-      s += '    ' + self.generate_proto_pop_args ('__f_', class_info, '', [('retval', stype.rtype)], '')
-      s += '      promise->set_value (retval);\n'
-      s += '    };\n'
-      s += '    sp->server_connection_.emit_result_handler_add (lambda_id, lambda);\n'
-      s += '    __p_ <<= lambda_id;\n'
-    ident_type_args = [(('&arg_' if a[1].storage == Decls.INTERFACE else 'arg_')+ a[0], a[1]) for a in stype.args] # marshaller args
-    args2fb = self.generate_proto_add_args ('__p_', class_info, '', ident_type_args, '')
-    if args2fb:
-      s += reindent ('  ', args2fb) + '\n'
-    s += '    sp->server_connection_.post_peer_msg (&__p_);\n' # deletes __p_
-    if async:
-      s += '    return future;\n'
-    s += '  }\n'
-    s += '};\n'
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);\n'
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    s += '  size_t handler_id;\n'
-    s += '  Aida::uint64 signal_connection, result = 0;\n'
-    s += '  fbr >>= handler_id;\n'
-    s += '  fbr >>= signal_connection;\n'
-    s += '  if (signal_connection)\n'
-    s += '    result = self->sig_%s() -= signal_connection;\n' % stype.name
-    s += '  if (handler_id) {\n'
-    s += '    %s::SharedPtr sp (new %s (Aida::ProtoScope::current_server_connection(), handler_id));\n' % (closure_class, closure_class)
-    if async:
-      s += '    result = self->sig_%s().connect_future (__AIDA_Local__::slot (sp, sp->handler));\n' % stype.name
-    else:
-      s += '    result = self->sig_%s() += __AIDA_Local__::slot (sp, sp->handler);\n' % stype.name
-    s += '  }\n'
-    s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_connect_result (fbr, %s);\n' % digest # invalidates fbr
-    s += '  rb <<= result;\n'
-    s += '  return &rb;\n'
-    s += '}\n'
-    return s
   def generate_server_method_registry (self, reglines):
     s = '\n'
     s += 'namespace { namespace AIDA_CPP_PASTE (__aida_stubs, __COUNTER__) {\n'
@@ -1371,8 +1206,6 @@ class Generator:
             s += self.generate_server_class_any_method_impls (tp)
           if self.gen_clientcc:
             s += self.open_namespace (tp)
-            for sg in tp.signals:
-              s += self.generate_client_signal_def (tp, sg)
             s += self.generate_client_class_methods (tp)
             for fl in tp.fields:
               s += self.generate_client_property_stub (tp, fl[0], fl[1])
@@ -1414,8 +1247,6 @@ class Generator:
             s += self.generate_server_property_setter (tp, fl[0], fl[1], reglines)
           for m in tp.methods:
             s += self.generate_server_method_stub (tp, m, reglines)
-          for sg in tp.signals:
-            s += self.generate_server_signal_dispatcher (tp, sg, reglines)
           s += '\n'
       s += self.open_namespace (None)
       s += self.generate_server_method_registry (reglines) + '\n'

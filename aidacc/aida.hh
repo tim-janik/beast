@@ -491,7 +491,7 @@ enum MessageId {
   //MSGID_META_ONEWAY       = 0x3000000000000000ULL, ///< One-way method call (void return).
   MSGID_CONNECT             = 0x4000000000000000ULL, ///< Signal handler (dis-)connection, expects CONNECT_RESULT.
   MSGID_CALL_TWOWAY         = 0x5000000000000000ULL, ///< Two-way method call, expects CALL_RESULT.
-  MSGID_EMIT_TWOWAY         = 0x6000000000000000ULL, ///< Two-way signal emissions, expects EMIT_RESULT.
+  // MSGID_EMIT_TWOWAY      = 0x6000000000000000ULL, ///< Two-way signal emissions, expects EMIT_RESULT.
   //MSGID_META_TWOWAY       = 0x7000000000000000ULL, ///< Two-way method call, expects META_REPLY.
   // meta_exception         = 0x8000000000000000
   MSGID_DISCONNECT          = 0xa000000000000000ULL, ///< Signal destroyed, disconnect all handlers.
@@ -551,19 +551,14 @@ public:
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
   OrbObjectP        orbop_;
-  template<class Parent>
-  struct NullRemoteHandleT : public Parent {
-    TypeHashList __aida_typelist__ () const { return TypeHashList(); }
-  };
-  typedef NullRemoteHandleT<RemoteHandle> NullRemoteHandle;
   static OrbObjectP __aida_null_orb_object__ ();
 protected:
   explicit          RemoteHandle             (OrbObjectP);
-  explicit          RemoteHandle             ();
   const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
+  explicit                RemoteHandle         ();
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   String                  __typename__         () const;                                //: AIDAID
@@ -574,7 +569,6 @@ public:
   bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
-  static NullRemoteHandle __aida_null_handle__ ()       { return NullRemoteHandle(); }
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
@@ -904,6 +898,19 @@ public:
   const AnyDict& fields     () const                      { return fields_; }
 };
 
+// == KeyValue ==
+struct KeyValue {
+  std::string key;
+  Any         value;
+};
+namespace KeyValueArgs {
+struct KeyValueConstructor {
+  std::string key;
+  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
+};
+inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
+};
+
 // == ImplicitBase ==
 /// Abstract base interface that all IDL interfaces are implicitely derived from.
 class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableSharedFromThis<ImplicitBase> {
@@ -920,19 +927,6 @@ public:
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
   using VirtualEnableSharedFromThis<ImplicitBase>::shared_from_this;
-};
-
-// == ==
-struct KeyValue {
-  std::string key;
-  Any         value;
-};
-namespace KeyValueArgs {
-struct KeyValueConstructor {
-  std::string key;
-  template<typename T> inline KeyValue operator= (const T &value) { Any v; v.set (value); return KeyValue { key, v }; }
-};
-inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyValueConstructor { key }; }
 };
 
 // == ProtoMsg ==
@@ -1079,9 +1073,6 @@ public:
   template<class H> H    remote_origin   ();
 };
 
-/// Function typoe for internal signal handling.
-typedef ProtoMsg* SignalEmitHandler (const ProtoMsg*, void*);
-
 /// Connection context for IPC servers. @nosubgrouping
 class ServerConnection : public BaseConnection {
   friend  class ClientConnection;
@@ -1124,9 +1115,6 @@ public: /// @name API for remote calls.
   virtual void              pop_handle        (ProtoReader &fr, RemoteHandle &rhandle) = 0;
   /// Set callback for wakeups when new events may need dispatching
   virtual void              notify_callback   (const std::function<void (ClientConnection&)> &cb) = 0;
-public: /// @name API for signal event handlers.
-  virtual size_t        signal_connect    (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data) = 0;
-  virtual bool          signal_disconnect (size_t signal_handler_id) = 0;
 };
 
 
@@ -1154,9 +1142,6 @@ struct ProtoScopeCall2Way : ProtoScope {
 };
 struct ProtoScopeEmit1Way : ProtoScope {
   ProtoScopeEmit1Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
-};
-struct ProtoScopeEmit2Way : ProtoScope {
-  ProtoScopeEmit2Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
 };
 struct ProtoScopeDisconnect : ProtoScope {
   ProtoScopeDisconnect (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);

@@ -101,8 +101,8 @@ namespace U { using namespace Unknown; } // not a namespace-name
 interface I { IStream stream_func1(); }; // stream type used in wrong context
 interface I { void stream_func2 (JStream js); }; // stream type used in wrong context
 interface I { void stream_func3 (int32 i32, OStream os); }; // stream type used in wrong context
-interface I { signal JStream stream_signal1(); }; // stream type used in wrong context
-interface I { signal void stream_signal2 (float64 f, OStream os); }; // stream type used in wrong context
+interface I { signal JStream stream_signal1(); }; // invalid use of 'signal'
+interface I { signal void stream_signal2 (float64 f, OStream os); }; // invalid use of 'signal'
 record I { OStream istream; }; // stream type used in wrong context
 sequence S { IStream istream; }; // stream type used in wrong context
 

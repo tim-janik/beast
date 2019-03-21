@@ -1513,7 +1513,10 @@ Any::set_ibase (ImplicitBase *ibase)
 RemoteHandle
 Any::get_untyped_remote_handle () const
 {
-  return kind() == REMOTE ? u_.rhandle() : RemoteHandle::__aida_null_handle__();
+  RemoteHandle rh;
+  if (kind() == REMOTE)
+    rh = u_.rhandle();
+  return rh;
 }
 
 void
@@ -2137,12 +2140,6 @@ ProtoScopeEmit1Way::ProtoScopeEmit1Way (ProtoMsg &pm, ServerConnection &server_c
   pm.add_header1 (MSGID_EMIT_ONEWAY, hashi, hashlo);
 }
 
-ProtoScopeEmit2Way::ProtoScopeEmit2Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo) :
-  ProtoScope (server_connection)
-{
-  pm.add_header2 (MSGID_EMIT_TWOWAY, hashi, hashlo);
-}
-
 ProtoScopeDisconnect::ProtoScopeDisconnect (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo) :
   ProtoScope (server_connection)
 {
@@ -2716,7 +2713,6 @@ class ClientConnectionImpl : public ClientConnection {
   struct SignalHandler {
     uint64 hhi, hlo, cid;
     RemoteMember<RemoteHandle> remote;
-    SignalEmitHandler *seh;
     void *data;
   };
   typedef std::set<uint64> UIntSet;
@@ -2770,8 +2766,6 @@ public:
   virtual void         notify_callback   (const std::function<void (ClientConnection&)> &cb) override;
   virtual void         remote_origin     (ImplicitBaseP rorigin) override  { AIDA_ASSERT_RETURN_UNREACHED(); }
   virtual RemoteHandle remote_origin     () override;
-  virtual size_t       signal_connect    (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data) override;
-  virtual bool         signal_disconnect (size_t signal_handler_id) override;
   class ClientOrbObject;
   void
   client_orb_object_deleting (ClientOrbObject &coo)
@@ -2821,7 +2815,7 @@ ClientConnectionImpl::remote_origin()
   const MessageId msgid = MessageId (frr.pop_int64());
   frr.skip(); // hashhigh
   frr.skip(); // hashlow
-  AIDA_ASSERT_RETURN (msgid_is (msgid, MSGID_META_WELCOME), RemoteHandle::__aida_null_handle__());
+  AIDA_ASSERT_RETURN (msgid_is (msgid, MSGID_META_WELCOME), RemoteHandle());
   pop_handle (frr, rorigin);
   delete fr;
   errno = 0;
@@ -2891,25 +2885,6 @@ ClientConnectionImpl::dispatch ()
   const uint64  idmask = msgid_mask (msgid);
   switch (idmask)
     {
-    case MSGID_EMIT_TWOWAY:
-      {
-        fbr.skip(); // hashhigh
-        fbr.skip(); // hashlow
-        const size_t handler_id = fbr.pop_int64();
-        SignalHandler *client_signal_handler = signal_lookup (handler_id);
-        AIDA_ASSERT_RETURN (client_signal_handler != NULL);
-        ProtoMsg *fr = client_signal_handler->seh (fb, client_signal_handler->data);
-        if (fr == fb)
-          fb = NULL; // prevent deletion
-        if (idmask == MSGID_EMIT_ONEWAY)
-          AIDA_ASSERT_RETURN (fr == NULL);
-        else // MSGID_EMIT_TWOWAY
-          {
-            AIDA_ASSERT_RETURN (fr && msgid_is (fr->first_id(), MSGID_EMIT_RESULT));
-            post_peer_msg (fr);
-          }
-      }
-      break;
     case MSGID_EMIT_ONEWAY:
       remote_handle_dispatch_event_emit_handler (fbr);
       break;
@@ -2968,7 +2943,7 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
           delete fr;
         }
 #endif
-      else if (retmask == MSGID_DISCONNECT || retmask == MSGID_EMIT_ONEWAY || retmask == MSGID_EMIT_TWOWAY)
+      else if (retmask == MSGID_DISCONNECT || retmask == MSGID_EMIT_ONEWAY)
         event_queue_.push_back (fr);
       else if (retmask == MSGID_META_GARBAGE_SWEEP)
         {
@@ -2987,70 +2962,6 @@ ClientConnectionImpl::call_remote (ProtoMsg *fb)
   if (notify_cb_)
     notify_cb_ (*this);
   return fr;
-}
-
-size_t
-ClientConnectionImpl::signal_connect (uint64 hhi, uint64 hlo, const RemoteHandle &rhandle, SignalEmitHandler seh, void *data)
-{
-  AIDA_ASSERT_RETURN (rhandle.__aida_orbid__() > 0, 0);
-  AIDA_ASSERT_RETURN (hhi > 0, 0);   // FIXME: check for signal id
-  AIDA_ASSERT_RETURN (hlo > 0, 0);
-  AIDA_ASSERT_RETURN (seh != NULL, 0);
-  SignalHandler *shandler = new SignalHandler;
-  shandler->hhi = hhi;
-  shandler->hlo = hlo;
-  shandler->remote = rhandle;                   // emitting object
-  shandler->cid = 0;
-  shandler->seh = seh;
-  shandler->data = data;
-  pthread_spin_lock (&signal_spin_);
-  const size_t handler_index = signal_handlers_.size();
-  signal_handlers_.push_back (shandler);
-  pthread_spin_unlock (&signal_spin_);
-  const size_t signal_handler_id = 1 + handler_index;
-  ProtoMsg &fb = *ProtoMsg::_new (3 + 1 + 2);
-  fb.add_header2 (MSGID_CONNECT, shandler->hhi, shandler->hlo);
-  add_handle (fb, rhandle);                     // emitting object
-  fb <<= signal_handler_id;                     // handler connection request id
-  fb <<= 0;                                     // disconnection request id
-  ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  AIDA_ASSERT_RETURN (connection_result != NULL, 0);
-  ProtoReader frr (*connection_result);
-  frr.skip_header();
-  pthread_spin_lock (&signal_spin_);
-  frr >>= shandler->cid;
-  pthread_spin_unlock (&signal_spin_);
-  delete connection_result;
-  return signal_handler_id;
-}
-
-bool
-ClientConnectionImpl::signal_disconnect (size_t signal_handler_id)
-{
-  const size_t handler_index = signal_handler_id ? signal_handler_id - 1 : size_t (-1);
-  pthread_spin_lock (&signal_spin_);
-  SignalHandler *shandler = handler_index < signal_handlers_.size() ? signal_handlers_[handler_index] : NULL;
-  if (shandler)
-    signal_handlers_[handler_index] = NULL;
-  pthread_spin_unlock (&signal_spin_);
-  if (!shandler)
-    return  false;
-  ProtoMsg &fb = *ProtoMsg::_new (3 + 1 + 2);
-  fb.add_header2 (MSGID_CONNECT, shandler->hhi, shandler->hlo);
-  add_handle (fb, shandler->remote);            // emitting object
-  fb <<= 0;                                     // handler connection request id
-  fb <<= shandler->cid;                         // disconnection request id
-  ProtoMsg *connection_result = call_remote (&fb); // deletes fb
-  AIDA_ASSERT_RETURN (connection_result != NULL, false);
-  ProtoReader frr (*connection_result);
-  frr.skip_header();
-  uint64 disconnection_success;
-  frr >>= disconnection_success;
-  delete connection_result;
-  shandler->seh (NULL, shandler->data); // handler deletion hook
-  delete shandler;
-  AIDA_ASSERT_RETURN (disconnection_success == true, false); // should always succeed due to the above guard; FIXME: possible race w/ ~Signal
-  return disconnection_success;
 }
 
 ClientConnectionImpl::SignalHandler*
@@ -3120,7 +3031,7 @@ public:
   virtual RemoteHandle
   remote_origin () override
   {
-    RemoteHandle rh = RemoteHandle::__aida_null_handle__();
+    RemoteHandle rh;
     AIDA_ASSERT_RETURN_UNREACHED (rh);
     return rh;
   }
@@ -3764,7 +3675,7 @@ remote_handle_dispatch_event_discard_handler (Aida::ProtoReader &fbr)
   const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
   const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
   AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
-  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  RemoteHandle self;
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL);
   int64_t iface_hid;
@@ -3779,7 +3690,7 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
   const uint64 echash[2] = { AIDA_HASH___EVENT_CALLBACK__ };
   const uint64 hashhigh = fbr.pop_int64(), hashlow = fbr.pop_int64();
   AIDA_ASSERT_RETURN (hashhigh == echash[0] && hashlow == echash[1]);
-  RemoteHandle self = RemoteHandle::__aida_null_handle__();
+  RemoteHandle self;
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL);
   int64_t iface_hid;
