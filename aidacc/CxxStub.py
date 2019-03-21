@@ -5,44 +5,6 @@ More details at https://beast.testbit.org/
 """
 import Decls, GenUtils, TmplFiles, re, os, collections
 
-enum_macro_boilerplate = r"""
-#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
-  bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
-  bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
-  bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
-  bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
-#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
-  static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
-  static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
-  static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
-  static constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
-  static constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
-  static constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
-  static constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
-  static constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
-  static constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
-  static constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
-  static constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
-  static constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
-  static constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
-  static constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
-  static constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
-  static constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
-  static constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
-  static constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
-  static constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
-  static constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); }
-#ifdef     AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS        AIDA_FLAGS_DEFINE_ARITHMETIC_OPS
-#else  // !AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
-#endif // !AIDA_ENABLE_ENUM_ARITHMETIC
-"""
-
 def reindent (prefix, lines):
   return re.compile (r'^', re.M).sub (prefix, lines.rstrip())
 def backslash_quote (string):
@@ -1043,8 +1005,6 @@ class Generator:
     s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
     if type_info.combinable: # enum as flags
       s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
-    else:
-      s += 'AIDA_ENUM_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
     s += '/// @endcond\n'
     return s
   def generate_enum_info_specialization (self, type_info):
@@ -1133,8 +1093,6 @@ class Generator:
     s += self.insertion_text ('includes')
     if self.gen_clienthh:
       s += '#include <aidacc/aida.hh>\n'
-    if self.gen_clienthh:
-      s += enum_macro_boilerplate
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'
     if self.gen_clientcc:
