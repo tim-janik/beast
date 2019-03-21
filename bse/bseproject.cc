@@ -1226,7 +1226,7 @@ ProjectImpl::get_supers ()
   for (GSList *slist = self->supers; slist; slist = slist->next)
     {
       BseItem *bseitem = (BseItem*) slist->data;
-      sseq.push_back (bseitem->as<SuperIfaceP>());
+      sseq.push_back (bseitem->as<SuperIface*>()->__handle__());
     }
   return sseq;
 }

@@ -455,13 +455,17 @@ part_link_lesser (const Bse::PartLink &a, const Bse::PartLink &b)
     return a.duration < b.duration;
   //if (a.count != b.count)
   //  return a.count < b.count;
+  Bse::TrackIface *atrack = a.track.__iface__();
+  Bse::TrackIface *btrack = b.track.__iface__();
   int64_t aid, bid;
-  aid = a.track.get() ? a.track->proxy_id() : 0;
-  bid = b.track.get() ? b.track->proxy_id() : 0;
+  aid = atrack ? atrack->proxy_id() : 0;
+  bid = btrack ? btrack->proxy_id() : 0;
   if (aid != bid)
     return aid < bid;
-  aid = a.part.get() ? a.part->proxy_id() : 0;
-  bid = b.part.get() ? b.part->proxy_id() : 0;
+  Bse::PartIface *apart = a.part.__iface__();
+  Bse::PartIface *bpart = b.part.__iface__();
+  aid = apart ? apart->proxy_id() : 0;
+  bid = bpart ? bpart->proxy_id() : 0;
   if (aid != bid)
     return aid < bid;
   return false;
@@ -484,9 +488,9 @@ bse_part_list_links (BsePart *self)
             {
               const Bse::TrackPart &tp = tps[i];
               Bse::PartLink pl;
-              pl.track = track->as<Bse::TrackIfaceP>();
+              pl.track = track->as<Bse::TrackIface*>();
               pl.tick = tp.tick;
-              pl.part = self->as<Bse::PartIfaceP>();
+              pl.part = self->as<Bse::PartIface*>();
               pl.duration = tp.duration;
               pls.push_back (pl);
             }

@@ -132,8 +132,6 @@ AidaGlibSource::create (Aida::BaseConnection *connection)
   return AidaGlibSourceImpl::create (connection);
 }
 
-static Aida::ClientConnectionP *client_connection = NULL;
-
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
 ServerHandle
 init_server_instance () // bse.hh
