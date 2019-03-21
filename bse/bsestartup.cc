@@ -139,9 +139,6 @@ ServerHandle
 init_server_instance () // bse.hh
 {
   ServerH server;
-  Aida::ClientConnectionP connection = init_server_connection();
-  if (connection)
-    server = connection->remote_origin<ServerH>();
   server = BSE_SERVER.__handle__();
   return server;
 }
@@ -150,6 +147,7 @@ init_server_instance () // bse.hh
 Aida::ClientConnectionP
 init_server_connection () // bse.hh
 {
+#if 0
   if (!client_connection)
     {
       Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" + Bse::version());
@@ -164,6 +162,8 @@ init_server_connection () // bse.hh
       client_connection = new Aida::ClientConnectionP (connection);
     }
   return *client_connection;
+#endif
+  return Aida::ClientConnectionP();
 }
 
 } // Bse
