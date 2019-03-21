@@ -19,6 +19,8 @@ namespace Aida {
 // == Auxillary macros ==
 #define AIDA_CPP_STRINGIFYi(s)  #s // indirection required to expand __LINE__ etc
 #define AIDA_CPP_STRINGIFY(s)   AIDA_CPP_STRINGIFYi (s)
+#define AIDA_CPP_PASTE2(a,b)    a ## b
+#define AIDA_CPP_PASTE(a,b)     AIDA_CPP_PASTE2 (a, b)
 #define AIDA_I64ELEMENTS(size)  (((size) + sizeof (int64) - 1) / sizeof (int64)) ///< Length of int64[] array to hold @a size.
 #if     __GNUC__ >= 4 || defined __clang__
 #define AIDA_UNUSED             __attribute__ ((__unused__))

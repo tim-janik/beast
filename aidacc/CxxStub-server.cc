@@ -1,11 +1,6 @@
 #ifndef __AIDA_CXXSTUB_SERVER_CC__
 #define __AIDA_CXXSTUB_SERVER_CC__
 
-#ifndef AIDA_CPP_PASTE
-#define AIDA_CPP_CAT2(a,b)    a ## b
-#define AIDA_CPP_PASTE(a,b)     AIDA_CPP_CAT2 (a, b)
-#endif
-
 namespace { // Anon
 
 namespace __AIDA_Local__ {
