@@ -585,6 +585,10 @@ public:
   bool        operator!=    (std::nullptr_t) const noexcept { return 0 != __aida_orbid__(); }
   bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__(); }
   bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
+  bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
+  bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
+  bool        operator>     (const RemoteHandle &rh) const noexcept { return iface_ptr_ > rh.iface_ptr_; }
+  bool        operator>=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ >= rh.iface_ptr_; }
   friend bool operator==    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd == nullp; }
   friend bool operator!=    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd != nullp; }
 private:
