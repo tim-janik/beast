@@ -85,8 +85,6 @@ class Generator:
     self.property_list = 'Aida::PropertyList'
     self.gen_mode = None
     self.strip_path = ''
-    self.aliases_namespaces = []
-    self.aliases_namespacenode = None
     self.declared_pointerdefs = set() # types for which pointerdefs have been generated
     self.reset()
   def warning (self, message, input_file = '', input_line = -1, input_col = -1):
@@ -143,14 +141,14 @@ class Generator:
     if type_node.storage == Decls.INTERFACE:
       return self.Iwrap (tname)                         # construct servant class interface name
     elif type_node.storage in (Decls.SEQUENCE, Decls.RECORD):
-      return self.prefix_namespaced_identifier ('SrvT_', tname)
+      return self.prefix_namespaced_identifier ('', tname)
     return tname
   def C4client (self, type_node):
     tname = self.type2cpp (type_node)
     if type_node.storage == Decls.INTERFACE:
       return tname + 'Handle'                           # construct client class RemoteHandle
     elif type_node.storage in (Decls.SEQUENCE, Decls.RECORD):
-      return self.prefix_namespaced_identifier ('ClnT_', tname)
+      return self.prefix_namespaced_identifier ('', tname)
     return tname
   def C (self, type_node, mode = None):                 # construct Class name
     mode = mode or self.gen_mode
@@ -325,10 +323,6 @@ class Generator:
       s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % classC
       s += 'void operator>>= (Aida::ProtoReader&, %s&);\n' % classC
     #s += '/// @endcond\n'
-    self.aliases += 'typedef %s %s;\n' % (classC, type_info.name)
-    if not type_info.namespace in self.aliases_namespaces:
-      self.aliases_namespaces += [ type_info.namespace ]
-      self.aliases_namespacenode = type_info
     return s
   def generate_proto_add_args (self, fb, type_info, aprefix, arg_info_list, apostfix):
     s = ''
@@ -1030,8 +1024,7 @@ class Generator:
       m = (re.match ('(includes):\s*(//.*)?$', line) or
            re.match ('(class_scope:\w+):\s*(//.*)?$', line) or
            re.match ('(handle_scope:\w+):\s*(//.*)?$', line) or
-           re.match ('(interface_scope:\w+):\s*(//.*)?$', line) or
-           re.match ('(global_scope):\s*(//.*)?$', line))
+           re.match ('(interface_scope:\w+):\s*(//.*)?$', line))
       if not m:
         m = re.match ('(IGNORE):\s*(//.*)?$', line)
       if m:
@@ -1053,7 +1046,6 @@ class Generator:
     return apath
   def reset (self):
     self.idcounter = 1001
-    self.aliases = ''
   def generate_impl_types (self, implementation_types):
     self.reset()
     def text_expand (txt):
@@ -1070,11 +1062,6 @@ class Generator:
       sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
     if self.gen_serverhh or self.gen_clienthh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
-    # aliases
-    if self.gen_serverhh or self.gen_clienthh:
-      s += '#ifndef __%s_ALIASES__\n' % self.cppmacro
-      s += '#define __%s_ALIASES__    %d\n' % (self.cppmacro, clntsrvt_id)
-      s += '#endif\n\n'
     # inclusions
     if self.gen_serverhh:
       s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
@@ -1131,11 +1118,9 @@ class Generator:
             s += self.generate_interface_pointerdefs (tp)
           else:
             s += 'class %s;\n' % self.C (tp)
-        elif tp.storage in (Decls.RECORD, Decls.SEQUENCE):
+        elif self.gen_clienthh and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
           s += self.open_namespace (tp)
           s += self.generate_recseq_decl (tp)
-        elif tp.storage == Decls.ENUM:
-          pass
         elif tp.storage == Decls.INTERFACE:
           s += self.open_namespace (tp)
           s += self.generate_interface_class (tp, class_name_list)     # Class remote handle
@@ -1152,14 +1137,12 @@ class Generator:
       for tp in types:
         if tp.is_forward:
           continue
-        if tp.storage == Decls.RECORD:
+        if tp.storage == Decls.RECORD and self.gen_clientcc:
           s += self.open_namespace (tp)
           s += self.generate_record_impl (tp)
-        elif tp.storage == Decls.SEQUENCE:
+        elif tp.storage == Decls.SEQUENCE and self.gen_clientcc:
           s += self.open_namespace (tp)
           s += self.generate_sequence_impl (tp)
-        elif tp.storage == Decls.ENUM:
-          pass
         elif tp.storage == Decls.INTERFACE:
           if self.gen_servercc:
             s += self.open_namespace (tp)
@@ -1213,23 +1196,12 @@ class Generator:
       s += self.open_namespace (None)
       s += self.generate_server_method_registry (reglines) + '\n'
     s += self.open_namespace (None) # close all namespaces
-    # Generate Aliases (works for single namespace only)
-    if len (self.aliases_namespaces) == 1 and (self.gen_serverhh or self.gen_clienthh):
-      s += '\n'
-      s += '// C++ Aliases\n'
-      s += '#if     __%s_ALIASES__ == %d' % (self.cppmacro, clntsrvt_id) # pick either client or server aliases
-      s += self.open_namespace (self.aliases_namespacenode)
-      s += self.aliases
-      s += self.open_namespace (None) # close all namespaces
-      s += '#endif // __%s_ALIASES__\n' % self.cppmacro
-      s += '\n'
-      s += self.insertion_text ('global_scope')
     # Aida IDs
     if self.gen_aidaids and (self.gen_servercc or self.gen_clientcc):
       s += self.generate_aida_ids ()
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
-      s += '#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
+      s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
     return s
   def generate_aida_ids (self):
     s, nslist = '', []
