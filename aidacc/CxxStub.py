@@ -788,20 +788,24 @@ class Generator:
     q = '%s::%s (' % (self.C (class_info), mtype.name)
     s += q + self.Args (mtype, 'arg_', len (q)) + ')%s\n{\n' % copydoc
     # generate wrapped lambda call
-    recargs = mtype.rtype.storage in (Decls.RECORD, Decls.INTERFACE, Decls.SEQUENCE)
-    for a in mtype.args:
-      recargs = recargs or a[1].storage in (Decls.RECORD, Decls.INTERFACE, Decls.SEQUENCE)
-    if mtype.rtype.storage == Decls.VOID and not recargs:
+    if mtype.rtype.storage == Decls.VOID:
       s += '  return __AIDA_Local__::remote_callv (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
       for a in mtype.args:
-        s += ', arg_' + a[0]
+        if a[1].storage == Decls.INTERFACE:
+          s += ', *arg_' + a[0] + '.__iface__()'
+        else:
+          s += ', arg_' + a[0]
       s += ');\n'
       return s + '}\n'
-    elif not recargs:
+    else:
       s += '  return __AIDA_Local__::remote_callr (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
       for a in mtype.args:
-        s += ', arg_' + a[0]
-      s += ');\n'
+        if a[1].storage == Decls.INTERFACE:
+          s += ', *arg_' + a[0] + '.__iface__()'
+        else:
+          s += ', arg_' + a[0]
+      sharedptrget = '.get()' if mtype.rtype.storage == Decls.INTERFACE else ''
+      s += ')%s;\n' % sharedptrget
       return s + '}\n'
     # FIXME: cleanup function rest
     # vars, procedure
