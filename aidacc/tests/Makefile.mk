@@ -44,6 +44,6 @@ aidacc/tests/check--t305-idlcode-compile: aidacc/tests/t301-pass.idl aidacc/test
 	$Q sed -e '1i#include "t305-inc2_handles.cc"' \
 	       -e '1i#include "t305-inc1_handles.cc"' \
 	       -e '1i#define _(x) x'			-i $>/aidacc/tests/t305-pass_handles.cc
-	$Q cd $>/aidacc/tests/ && $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c t305-pass_interfaces.cc
-	$Q cd $>/aidacc/tests/ && $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c t305-pass_handles.cc
+	$Q $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c $>/aidacc/tests/t305-pass_interfaces.cc -o $>/aidacc/tests/t305-pass_interfaces.o
+	$Q $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c $>/aidacc/tests/t305-pass_handles.cc -o $>/aidacc/tests/t305-pass_handles.o
 aidacc/check-targets += aidacc/tests/check--t305-idlcode-compile
