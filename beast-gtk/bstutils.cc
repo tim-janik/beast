@@ -1422,4 +1422,5 @@ bst_mouse_button_context (GdkEvent *event)
 }
 
 // == bstapi_interfaces.cc ==
-#include "bstapi_interfaces.cc"      // compile types and bindings generated for bstapi.idl
+#include "bstapi_handles.cc"            // compile types and bindings generated for bstapi.idl
+#include "bstapi_interfaces.cc"         // compile types and bindings generated for bstapi.idl
