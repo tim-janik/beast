@@ -584,7 +584,6 @@ class Generator:
     s += '{\n'
     if self.gen_mode == G4STUB:
       s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
-      s += '  ' + self.F ('static %s' % classC) + '__aida_cast__ (const Aida::RemoteHandle&, const Aida::TypeHashList&);\n'
       s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
     s += 'protected:\n'
@@ -603,9 +602,7 @@ class Generator:
       s += self.generate_class_aux_method_decls (type_info)
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
-      s += '  template<class RemoteHandle>\n'
-      s += '  ' + self.F ('static %s' % classH) + 'down_cast (const RemoteHandle &smh) '
-      s += '{ return smh == NULL ? %s() : __aida_cast__ (smh, smh.__aida_typelist__()); }\n' % classH
+      s += '  ' + self.F ('static %s' % classH) + 'down_cast (const RemoteHandle &smh);\n'
       s += '  ' + self.F ('explicit') + '%s ();\n' % classH # ctor
       #s += '  ' + self.F ('inline') + '%s (const %s &src)' % (classH, classH) # copy ctor
       #s += ' : ' + ' (src), '.join (cl) + ' (src) {}\n'
@@ -775,7 +772,7 @@ class Generator:
     s += '}\n'
     return s
   def generate_client_class_methods (self, class_info):
-    s, classH = '', self.C4client (class_info)
+    s, classH, classC = '', self.C4client (class_info), self.C4server (class_info)
     classH2 = (classH, classH)
     precls, heritage, cl, ddc = self.interface_class_inheritance (class_info)
     s += '%s::%s ()' % classH2 # ctor
@@ -786,15 +783,10 @@ class Generator:
     s += '  static const Aida::TypeHash type_hash = Aida::TypeHash (%s);\n' % self.class_digest (class_info)
     s += '  return type_hash;\n'
     s += '}\n'
-    s += '%s\n%s::__aida_cast__ (const Aida::RemoteHandle &other, const Aida::TypeHashList &types)\n{\n' % classH2 # similar to ctor
-    s += '  const Aida::TypeHash &mine = __aida_typeid__();\n'
-    s += '  %s target;\n' % classH
-    s += '  for (size_t i = 0; i < types.size(); i++)\n'
-    s += '    if (mine == types[i]) {\n'
-    s += '      target.__aida_upgrade_from__ (other);\n'
-    s += '      break;\n'
-    s += '    }\n'
-    s += '  return target;\n'
+    s += '%s\n%s::down_cast (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
+    s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
+    s += '  auto *target = dynamic_cast<%s*> (ifacep.get());\n' % classC
+    s += '  return target ? target->__handle__() : %s();\n' % classH
     s += '}\n'
     return s
   def generate_server_class_methods (self, tp):
