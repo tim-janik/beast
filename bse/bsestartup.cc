@@ -142,10 +142,7 @@ init_server_instance () // bse.hh
   Aida::ClientConnectionP connection = init_server_connection();
   if (connection)
     server = connection->remote_origin<ServerH>();
-  Aida::ImplicitBaseP &ibasep = server.__iface_ptr__();
-  assert_return (ibasep == NULL, server);
-  ibasep = BSE_SERVER.shared_from_this(); // FIXME: deleter must execute in BSE thread
-  assert_return (ibasep != NULL, server);
+  server = BSE_SERVER.__handle__();
   return server;
 }
 

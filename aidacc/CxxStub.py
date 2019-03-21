@@ -597,6 +597,7 @@ class Generator:
       s += '  ' + self.F ('/*copy*/') + '%s (const %s&) = default;\n' % (classC, classC)
       s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
+      s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
       s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull
       s += self.generate_class_aux_method_decls (type_info)
@@ -802,6 +803,11 @@ class Generator:
     s += '%s::%s ()' % (classC, classC) # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
+    s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
+    s += '  %s handle;\n' % classH
+    s += '  handle.__iface_ptr__() = this->shared_from_this();\n' # FIXME: deleter must execute in BSE thread
+    s += '  return handle;\n'
+    s += '}\n'
     s += 'void\n'
     s += 'operator<<= (Aida::ProtoMsg &__p_, const %sP &ptr)\n{\n' % classC
     s += '  __p_ <<= ptr.get();\n'
@@ -1107,10 +1113,16 @@ class Generator:
       sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
     if self.gen_serverhh or self.gen_clienthh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
+    # aliases
+    if self.gen_serverhh or self.gen_clienthh:
+      s += '#ifndef __%s_ALIASES__\n' % self.cppmacro
+      s += '#define __%s_ALIASES__    %d\n' % (self.cppmacro, clntsrvt_id)
+      s += '#endif\n\n'
     # inclusions
+    if self.gen_serverhh:
+      s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
     if self.gen_clientcc and not self.gen_clienthh:
       s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
-      s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_servercc and not self.gen_serverhh:
       s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_inclusions:
@@ -1255,9 +1267,6 @@ class Generator:
     if len (self.aliases_namespaces) == 1 and (self.gen_serverhh or self.gen_clienthh):
       s += '\n'
       s += '// C++ Aliases\n'
-      s += '#ifndef __%s_ALIASES__\n' % self.cppmacro
-      s += '#define __%s_ALIASES__    %d\n' % (self.cppmacro, clntsrvt_id)
-      s += '#endif\n'
       s += '#if     __%s_ALIASES__ == %d' % (self.cppmacro, clntsrvt_id) # pick either client or server aliases
       s += self.open_namespace (self.aliases_namespacenode)
       s += self.aliases

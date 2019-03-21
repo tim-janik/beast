@@ -580,10 +580,10 @@ public:
   bool                    __event_detach__     (uint64 connection_id);
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
-  explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
-  bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }
-  bool        operator!=    (std::nullptr_t) const noexcept { return 0 != __aida_orbid__(); }
-  bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__(); }
+  explicit    operator bool () const noexcept               { return iface_ptr_ || 0 != __aida_orbid__(); }
+  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_ && 0 == __aida_orbid__(); }
+  bool        operator!=    (std::nullptr_t) const noexcept { return iface_ptr_ || 0 != __aida_orbid__(); }
+  bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__() && iface_ptr_ == rh.iface_ptr_; }
   bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
   bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
   bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
