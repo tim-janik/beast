@@ -5,17 +5,7 @@ More details at https://beast.testbit.org/
 """
 import Decls, GenUtils, TmplFiles, re, os, collections
 
-clienthh_boilerplate = r"""
-// --- ClientHH Boilerplate ---
-#include <aidacc/aida.hh>
-"""
-
-serverhh_boilerplate = r"""
-// --- ServerHH Boilerplate ---
-#include <aidacc/aida.hh>
-"""
-
-common_boilerplate = r"""
+enum_macro_boilerplate = r"""
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
   bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
@@ -51,8 +41,6 @@ common_boilerplate = r"""
 #else  // !AIDA_ENABLE_ENUM_ARITHMETIC
 #define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
 #endif // !AIDA_ENABLE_ENUM_ARITHMETIC
-
-using IntrospectionRegistry = Aida::IntrospectionRegistry;
 """
 
 def reindent (prefix, lines):
@@ -426,7 +414,7 @@ class Generator:
     s = ''
     # __aida_aux_data__
     s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
-    s += '  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("%s");\n' % absolute_typename
+    s += '  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("%s");\n' % absolute_typename
     s += '  return sv;\n'
     s += '}\n'
     return s
@@ -695,7 +683,7 @@ class Generator:
     fileprefix = 'srvt' if self.gen_servercc else 'clnt'
     absolute_typename = self.type2cpp_absolute (tp)
     unique_type_identifier = re.sub ('::', '_', absolute_typename)
-    s += 'static const IntrospectionRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
+    s += 'static const Aida::IntrospectionRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
     s += '  "%s\\0"\n' % absolute_typename
     s += '  "%s\\0"\n' % Decls.storage_name (tp.storage)
     s += aux_data_string
@@ -716,7 +704,7 @@ class Generator:
     s += self.generate_type_aux_data_registration (tp)
     s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % classH
     s += '  static const Aida::StringVector __d_ =\n    ::Aida::aux_vectors_combine ('
-    s += 'IntrospectionRegistry::lookup ("%s")' % absolute_typename
+    s += 'Aida::IntrospectionRegistry::lookup ("%s")' % absolute_typename
     for atp in reduced_immediate_ancestors:
       s += ',\n                                 this->%s::__aida_aux_data__()' % self.C (atp)
     s += ');\n'
@@ -1144,10 +1132,9 @@ class Generator:
       s += '#endif\n'
     s += self.insertion_text ('includes')
     if self.gen_clienthh:
-      s += clienthh_boilerplate
-    if self.gen_serverhh:
-      s += serverhh_boilerplate
-    s += common_boilerplate
+      s += '#include <aidacc/aida.hh>\n'
+    if self.gen_clienthh:
+      s += enum_macro_boilerplate
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'
     if self.gen_clientcc:
@@ -1160,10 +1147,8 @@ class Generator:
       if tp.isimpl:
         types += [ tp ]
     # Generate Enum Declarations
-    if self.gen_clienthh or self.gen_serverhh:
+    if self.gen_clienthh:
       s += self.open_namespace (None)
-      s += '\n#ifndef __ENUMHH__%s__\n' % self.cppmacro # guard against duplicate declarations
-      s += '#define __ENUMHH__%s__\n' % self.cppmacro
       spc_enums = []
       for tp in types:
         if tp.is_forward:
@@ -1177,11 +1162,9 @@ class Generator:
         for tp in spc_enums:
           s += self.generate_enum_info_specialization (tp)
         s += self.open_namespace (None)
-      s += '\n#endif // __ENUMHH__%s__\n\n' % self.cppmacro
     # generate client/server decls
     if self.gen_clienthh or self.gen_serverhh:
       self.gen_mode = G4SERVANT if self.gen_serverhh else G4STUB
-      s += '\n// --- Interfaces (class declarations) ---\n'
       class_name_list = []
       for tp in types:
         if tp.is_forward:

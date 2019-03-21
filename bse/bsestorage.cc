@@ -654,7 +654,7 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
         const String ident = Aida::enum_value_find (enum_typename, v);
         if (ident.empty()) // 'v' is not a valid enum value
           {
-            auto enumerators = IntrospectionRegistry::list_enumerators (enum_typename);
+            auto enumerators = Aida::IntrospectionRegistry::list_enumerators (enum_typename);
             if (enumerators.size())
               any.set_enum (enum_typename, enumerators[0].second);
             bse_storage_warn (self, "encountered invalid enum value: %s (%d) -> %s", enum_typename, v, enumerators.size() ? enumerators[0].first : "???");
