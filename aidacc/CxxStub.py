@@ -778,6 +778,18 @@ class Generator:
     s += '  return thl;\n'
     s += '}\n'
     return s
+  def generate_remote_call (self, classname, methodname, rstorage, argprefix, args):
+    s = ''
+    variant = 'remote_callv' if rstorage == Decls.VOID else 'remote_callr'
+    s += '  return __AIDA_Local__::%s (*this, &%s::%s' % (variant, classname, methodname)
+    for a in args:
+      if a[1].storage == Decls.INTERFACE:
+        s += ', *' + argprefix + a[0] + '.__iface__()'
+      else:
+        s += ', ' + argprefix + a[0]
+    sharedptrget = '.get()' if rstorage == Decls.INTERFACE else ''
+    s += ')%s;\n' % sharedptrget
+    return s
   def generate_client_method_stub (self, class_info, mtype):
     s,copydoc = '', ''
     hasret = mtype.rtype.storage != Decls.VOID
@@ -788,50 +800,8 @@ class Generator:
     q = '%s::%s (' % (self.C (class_info), mtype.name)
     s += q + self.Args (mtype, 'arg_', len (q)) + ')%s\n{\n' % copydoc
     # generate wrapped lambda call
-    if mtype.rtype.storage == Decls.VOID:
-      s += '  return __AIDA_Local__::remote_callv (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
-      for a in mtype.args:
-        if a[1].storage == Decls.INTERFACE:
-          s += ', *arg_' + a[0] + '.__iface__()'
-        else:
-          s += ', arg_' + a[0]
-      s += ');\n'
-      return s + '}\n'
-    else:
-      s += '  return __AIDA_Local__::remote_callr (*this, &%s::%s' % (self.C4server (class_info), mtype.name)
-      for a in mtype.args:
-        if a[1].storage == Decls.INTERFACE:
-          s += ', *arg_' + a[0] + '.__iface__()'
-        else:
-          s += ', arg_' + a[0]
-      sharedptrget = '.get()' if mtype.rtype.storage == Decls.INTERFACE else ''
-      s += ')%s;\n' % sharedptrget
-      return s + '}\n'
-    # FIXME: cleanup function rest
-    # vars, procedure
-    s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + %u), *fr = NULL;\n' % len (mtype.args) # header + self + args
-    if hasret:
-      s += '  Aida::ProtoScopeCall2Way __o_ (__p_, *this, %s);\n' % self.method_digest (mtype)
-    else:
-      s += '  Aida::ProtoScopeCall1Way __o_ (__p_, *this, %s);\n' % self.method_digest (mtype)
-    # marshal args
-    ident_type_args = [('arg_' + a[0], a[1]) for a in mtype.args]
-    s += self.generate_proto_add_args ('__p_', class_info, '', ident_type_args, '')
-    # call out
-    s += '  fr = __o_.invoke (&__p_);\n' # deletes __p_
-    # unmarshal return
-    if hasret:
-      rarg = ('retval', mtype.rtype)
-      s += '  Aida::ProtoReader __f_ (*fr);\n'
-      s += '  __f_.skip_header();\n'
-      s += '  ' + self.V (rarg[0], rarg[1]) + ';\n'
-      s += self.generate_proto_pop_args ('__f_', class_info, '', [rarg], '')
-      s += '  delete fr;\n'
-      s += '  return retval;\n'
-    else:
-      s += '  if (AIDA_UNLIKELY (fr != NULL)) delete fr;\n' # FIXME: check return error
-    s += '}\n'
-    return s
+    s += self.generate_remote_call (self.C4server (class_info), mtype.name, mtype.rtype.storage, 'arg_', mtype.args)
+    return s + '}\n'
   def generate_server_method_stub (self, class_info, mtype, reglines):
     assert self.gen_mode == G4SERVANT
     s = ''
