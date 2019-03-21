@@ -3,301 +3,41 @@
 #define __SRVT__aidacc_tests_t304_testpass_idl
 
 
-// --- ServerHH Boilerplate ---
-#include <aidacc/aida.hh>
-
-#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
-  bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
-  bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
-  bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
-  bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
-#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
-  static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
-  static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
-  static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
-  static constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
-  static constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
-  static constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
-  static constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
-  static constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
-  static constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
-  static constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
-  static constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
-  static constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
-  static constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
-  static constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
-  static constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
-  static constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
-  static constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
-  static constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
-  static constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
-  static constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); }
-#ifdef     AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS        AIDA_FLAGS_DEFINE_ARITHMETIC_OPS
-#else  // !AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
-#endif // !AIDA_ENABLE_ENUM_ARITHMETIC
-
-using IntrospectionRegistry = Aida::IntrospectionRegistry;
-
-#ifndef __ENUMHH__aidacc_tests_t304_testpass_idl__
-#define __ENUMHH__aidacc_tests_t304_testpass_idl__
-
 namespace MandatoryNamespace {
-
-/// @cond GeneratedEnums
-enum class Enum1 : int64_t {
-  E1_A = 1,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace::Enum1"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum1 &e) { e = Enum1 (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum1);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum1c : int64_t {
-  E1C_A = 1,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace::Enum1c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum1c &e) { e = Enum1c (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum1c);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum2 : int64_t {
-  E2_A = 1,
-  E2_B = 2,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace::Enum2"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum2 &e) { e = Enum2 (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum2);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum2c : int64_t {
-  E2C_A = 1,
-  E2C_B = 2,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace::Enum2c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum2c &e) { e = Enum2c (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum2c);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum3 : int64_t {
-  E3_A = 1,
-  E3_B = 2,
-  E3_C = 3,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace::Enum3"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum3 &e) { e = Enum3 (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum3);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum3c : int64_t {
-  E3C_A = 1,
-  E3C_B = 2,
-  E3C_C = 3,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace::Enum3c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum3c &e) { e = Enum3c (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum3c);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum4a : int64_t {
-  E4A_A = 1,
-  E4A_B = 2,
-  E4A_C = 3,
-  E4A_D = 4,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace::Enum4a"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4a  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4a &e) { e = Enum4a (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum4a);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum4b : int64_t {
-  E4B_A = 1,
-  E4B_B = 2,
-  E4B_C = 3,
-  E4B_D = 4,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace::Enum4b"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4b  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4b &e) { e = Enum4b (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum4b);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum4c : int64_t {
-  E4C_A = 1,
-  E4C_B = 2,
-  E4C_C = 3,
-  E4C_D = 4,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace::Enum4c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4c &e) { e = Enum4c (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum4c);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class Enum4d : int64_t {
-  E4D_A = 1,
-  E4D_B = 2,
-  E4D_C = 3,
-  E4D_D = 4,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace::Enum4d"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4d  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4d &e) { e = Enum4d (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (Enum4d);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class ExtensiveEnum : int64_t {
-  V1a = 1,
-  V1b = 1,
-  V2 = 2,
-  V3 = 3,
-  V4 = 4,
-  V5 = 5, // "V5"
-  V6 = 6, // "V6"
-  V7 = 7, // _("V7")
-  V8 = 8, // _("V8")
-  V9 = 9,
-  V10 = 10,
-  V11 = 11,
-  V12 = 12,
-  V13 = 13,
-  V14 = 14,
-  V15 = 15, // "V15"
-  V16 = 16, // "V16"
-  V17 = 17, // _("V17")
-  V18 = 18, // _("V18")
-  V20 = 20,
-  V21 = 21,
-  V22 = 22,
-  V23 = 23,
-  V24 = 24,
-  V25 = (-9223372036854775807 - 1),
-  V26 = 9223372036854775807,
-  V27 = 9223372036854775807,
-  V28 = -28,
-  V30 = 42,
-  V31 = 43,
-  V32 = 42,
-  V33 = 43,
-  V34 = 44, // "foo"
-  V35 = 42,
-  V36 = 42, // "foo4"
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace::ExtensiveEnum"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  ExtensiveEnum  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, ExtensiveEnum &e) { e = ExtensiveEnum (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (ExtensiveEnum);
-/// @endcond
+class I_FirstInterfaceIface;
 } // MandatoryNamespace
 
 namespace InterfaceTests {
-
-/// @cond GeneratedEnums
-enum class QuickEnum : int64_t {
-  ZERO = 0,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests::QuickEnum"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  QuickEnum  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, QuickEnum &e) { e = QuickEnum (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (QuickEnum);
-/// @endcond
+class I_UIWidgetAreaIface;
+class I_ParentIface;
+class I_ChildIface;
+class I_DescendantIface;
+class I_GrandChildIface;
+class I_QuickIfaceIface;
+class I_MethodTestInterfaceIface;
+class I_SignalTestInterfaceIface;
+class I_ChildInheritingSignalsIface;
+class I_AnotherChildIface;
+class I_PropertyTesterIface;
 } // InterfaceTests
 
 namespace RapicornAidaTest {
-
-/// @cond GeneratedEnums
-enum class ClickType : int64_t {
-  CLICK_ON_PRESS = 1,
-  CLICK_ON_RELEASE = 2,
-  CLICK_SLOW_REPEAT = 3,
-  CLICK_FAST_REPEAT = 4,
-  CLICK_KEY_REPEAT = 5,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest::ClickType"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  ClickType  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, ClickType &e) { e = ClickType (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (ClickType);
-/// @endcond
-
-/// @cond GeneratedEnums
-enum class MathExpressions : int64_t {
-  RESULT_2 = 2,
-  RESULT_5 = 5,
-  RESULT_8 = 8,
-  RESULT_6 = 6,
-  RESULT_7 = 7,
-  RESULT_16 = 16,
-  RESULT_3 = 3,
-  RESULT_24 = 24,
-  RESULT_13 = 13,
-  RESULT_m2 = -2,
-  RESULT_77 = 77,
-  RESULT_511 = 511,
-};
-inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest::MathExpressions"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  MathExpressions  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, MathExpressions &e) { e = MathExpressions (__f_.pop_evalue()); }
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
-AIDA_ENUM_DEFINE_ARITHMETIC_OPS (MathExpressions);
-/// @endcond
+class I_UseIncludesIface;
+class I_ButtonAreaIface;
+class I_PureMethodsIface;
 } // RapicornAidaTest
 
-namespace Aida {
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum1> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum1c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum2> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum2c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum3> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum3c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4a> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4b> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4d> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> ();
-template<> const EnumInfo& enum_info<InterfaceTests::QuickEnum> ();
-template<> const EnumInfo& enum_info<RapicornAidaTest::ClickType> ();
-template<> const EnumInfo& enum_info<RapicornAidaTest::MathExpressions> ();
-} // Aida
+namespace Other {
+class I_NameTestsIface;
+} // Other
 
-#endif // __ENUMHH__aidacc_tests_t304_testpass_idl__
+namespace BseTest {
+class I_CompressorIface;
+class I_SoundModuleIface;
+} // BseTest
+#define __aidacc_tests_t304_testpass_idl_ifx__(interfacecodeextension)	interfacecodeextension
 
-
-// --- Interfaces (class declarations) ---
+#include "t304-testpass_handles.hh"
 
 namespace MandatoryNamespace {
 
@@ -311,6 +51,7 @@ protected:
   explicit                              I_FirstInterfaceIface ();
   virtual  /*dtor*/                    ~I_FirstInterfaceIface () override = 0;
 public:
+  FirstInterfaceHandle                  __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace::FirstInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -325,420 +66,10 @@ void operator<<= (Aida::ProtoMsg&, const I_FirstInterfaceIfaceP&);
 void operator>>= (Aida::ProtoReader&, I_FirstInterfaceIface*&);
 void operator>>= (Aida::ProtoReader&, I_FirstInterfaceIfaceP&);
 
-class SrvT_XFooRecord
-{
-public:
-  /// @cond GeneratedFields
-  bool                          single_bool;
-  int                           single_num;
-  int64_t                       num64;
-  double                        single_float;
-  std::string                   single_string;
-  int                           sibling1;
-  int                           sibling2;
-  int                           multi1;
-  int                           multi2;
-  int                           multi3;
-  int                           multi4;
-  ExtensiveEnum                 enum_field;
-  I_FirstInterfaceIfaceP        iface1;
-  I_FirstInterfaceIfaceP        iface2;
-  I_FirstInterfaceIfaceP        iface3;
-  Aida::Any                     any1;
-  Aida::Any                     any2;
-  Aida::Any                     any3;
-  /// @endcond
-  inline                        SrvT_XFooRecord () { single_bool = 0; single_num = 0; num64 = 0; single_float = 0; sibling1 = 0; sibling2 = 0; multi1 = 0; multi2 = 0; multi3 = 0; multi4 = 0; enum_field = ExtensiveEnum (0); }
-  inline                        SrvT_XFooRecord (const Aida::AnyDict &ad) : SrvT_XFooRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_XFooRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_XFooRecord &other) const;
-  bool                          operator!=  (const SrvT_XFooRecord &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (single_bool, "single_bool");
-    _visitor_ (single_num, "single_num");
-    _visitor_ (num64, "num64");
-    _visitor_ (single_float, "single_float");
-    _visitor_ (single_string, "single_string");
-    _visitor_ (sibling1, "sibling1");
-    _visitor_ (sibling2, "sibling2");
-    _visitor_ (multi1, "multi1");
-    _visitor_ (multi2, "multi2");
-    _visitor_ (multi3, "multi3");
-    _visitor_ (multi4, "multi4");
-    _visitor_ (enum_field, "enum_field");
-    _visitor_ (iface1, "iface1");
-    _visitor_ (iface2, "iface2");
-    _visitor_ (iface3, "iface3");
-    _visitor_ (any1, "any1");
-    _visitor_ (any2, "any2");
-    _visitor_ (any3, "any3");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_XFooRecord&);
-void operator>>= (Aida::ProtoReader&, SrvT_XFooRecord&);
+class NestedTypesRec;
 
-class SrvT_XFooSequence : public std::vector<bool>
-{
-public:
-  typedef std::vector<bool> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_XFooSequence () = default;
-  inline                        SrvT_XFooSequence (const Aida::AnyList &al) : SrvT_XFooSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_XFooSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_XFooSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_XFooSequence&);
-
-class SrvT_IntSequence : public std::vector<int>
-{
-public:
-  typedef std::vector<int> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_IntSequence () = default;
-  inline                        SrvT_IntSequence (const Aida::AnyList &al) : SrvT_IntSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::IntSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_IntSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_IntSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_IntSequence&);
-
-class SrvT_FloatSequence : public std::vector<double>
-{
-public:
-  typedef std::vector<double> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_FloatSequence () = default;
-  inline                        SrvT_FloatSequence (const Aida::AnyList &al) : SrvT_FloatSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::FloatSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_FloatSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_FloatSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_FloatSequence&);
-
-class SrvT_StringSequence : public std::vector<std::string>
-{
-public:
-  typedef std::vector<std::string> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_StringSequence () = default;
-  inline                        SrvT_StringSequence (const Aida::AnyList &al) : SrvT_StringSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::StringSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_StringSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_StringSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_StringSequence&);
-
-class SrvT_ExtensiveEnumSequence : public std::vector<ExtensiveEnum>
-{
-public:
-  typedef std::vector<ExtensiveEnum> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_ExtensiveEnumSequence () = default;
-  inline                        SrvT_ExtensiveEnumSequence (const Aida::AnyList &al) : SrvT_ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::ExtensiveEnumSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_ExtensiveEnumSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_ExtensiveEnumSequence&);
-
-class SrvT_RecordSequence : public std::vector<SrvT_XFooRecord>
-{
-public:
-  typedef std::vector<SrvT_XFooRecord> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_RecordSequence () = default;
-  inline                        SrvT_RecordSequence (const Aida::AnyList &al) : SrvT_RecordSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::RecordSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_RecordSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_RecordSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_RecordSequence&);
-
-class SrvT_SequenceSequence : public std::vector<SrvT_IntSequence>
-{
-public:
-  typedef std::vector<SrvT_IntSequence> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_SequenceSequence () = default;
-  inline                        SrvT_SequenceSequence (const Aida::AnyList &al) : SrvT_SequenceSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::SequenceSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_SequenceSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_SequenceSequence&);
-
-class SrvT_InterfaceSequence : public std::vector<I_FirstInterfaceIfaceP>
-{
-public:
-  typedef std::vector<I_FirstInterfaceIfaceP> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_InterfaceSequence () = default;
-  inline                        SrvT_InterfaceSequence (const Aida::AnyList &al) : SrvT_InterfaceSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::InterfaceSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_InterfaceSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_InterfaceSequence&);
-
-class SrvT_AnySequence : public std::vector<Aida::Any>
-{
-public:
-  typedef std::vector<Aida::Any> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_AnySequence () = default;
-  inline                        SrvT_AnySequence (const Aida::AnyList &al) : SrvT_AnySequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::AnySequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_AnySequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_AnySequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_AnySequence&);
-
-class SrvT_NestedTypesRec;
-
-class SrvT_NestedTypesSeq;
-
-class SrvT_NestedTypesRec
-{
-public:
-  /// @cond GeneratedFields
-  SrvT_XFooRecord               rec;
-  SrvT_XFooSequence             seq;
-  /// @endcond
-  inline                        SrvT_NestedTypesRec () { }
-  inline                        SrvT_NestedTypesRec (const Aida::AnyDict &ad) : SrvT_NestedTypesRec() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesRec"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_NestedTypesRec*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_NestedTypesRec &other) const;
-  bool                          operator!=  (const SrvT_NestedTypesRec &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (rec, "rec");
-    _visitor_ (seq, "seq");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_NestedTypesRec&);
-void operator>>= (Aida::ProtoReader&, SrvT_NestedTypesRec&);
-
-class SrvT_NestedTypesSeq : public std::vector<SrvT_NestedTypesRec>
-{
-public:
-  typedef std::vector<SrvT_NestedTypesRec> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_NestedTypesSeq () = default;
-  inline                        SrvT_NestedTypesSeq (const Aida::AnyList &al) : SrvT_NestedTypesSeq() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesSeq"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_NestedTypesSeq&);
-void operator>>= (Aida::ProtoReader&, SrvT_NestedTypesSeq&);
-
-class SrvT_NewRecord
-{
-public:
-  /// @cond GeneratedFields
-  int                           i;
-  Enum1                         enum1;
-  SrvT_XFooSequence             xfs;
-  SrvT_NestedTypesRec           ntr;
-  /// @endcond
-  inline                        SrvT_NewRecord () { i = 0; enum1 = Enum1 (0); }
-  inline                        SrvT_NewRecord (const Aida::AnyDict &ad) : SrvT_NewRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NewRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_NewRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_NewRecord &other) const;
-  bool                          operator!=  (const SrvT_NewRecord &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (i, "i");
-    _visitor_ (enum1, "enum1");
-    _visitor_ (xfs, "xfs");
-    _visitor_ (ntr, "ntr");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_NewRecord&);
-void operator>>= (Aida::ProtoReader&, SrvT_NewRecord&);
-
-namespace Inner {
-
-class SrvT_InnerRecord
-{
-public:
-  /// @cond GeneratedFields
-  int                           x;
-  int                           y;
-  SrvT_NewRecord                rec;
-  /// @endcond
-  inline                        SrvT_InnerRecord () { x = 0; y = 0; }
-  inline                        SrvT_InnerRecord (const Aida::AnyDict &ad) : SrvT_InnerRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::Inner::InnerRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_InnerRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_InnerRecord &other) const;
-  bool                          operator!=  (const SrvT_InnerRecord &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (x, "x");
-    _visitor_ (y, "y");
-    _visitor_ (rec, "rec");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_InnerRecord&);
-void operator>>= (Aida::ProtoReader&, SrvT_InnerRecord&);
-} // Inner
-
-class SrvT_Refer2Inner
-{
-public:
-  /// @cond GeneratedFields
-  Inner::SrvT_InnerRecord       r;
-  /// @endcond
-  inline                        SrvT_Refer2Inner () { }
-  inline                        SrvT_Refer2Inner (const Aida::AnyDict &ad) : SrvT_Refer2Inner() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::Refer2Inner"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_Refer2Inner*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_Refer2Inner &other) const;
-  bool                          operator!=  (const SrvT_Refer2Inner &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (r, "r");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_Refer2Inner&);
-void operator>>= (Aida::ProtoReader&, SrvT_Refer2Inner&);
+class NestedTypesSeq;
 } // MandatoryNamespace
-
-namespace OtherNamespace {
-
-class SrvT_SomeRecord
-{
-public:
-  /// @cond GeneratedFields
-  MandatoryNamespace::SrvT_NewRecord r1;
-  MandatoryNamespace::SrvT_NewRecord r2;
-  MandatoryNamespace::Inner::SrvT_InnerRecord r3;
-  MandatoryNamespace::Inner::SrvT_InnerRecord r4;
-  /// @endcond
-  inline                        SrvT_SomeRecord () { }
-  inline                        SrvT_SomeRecord (const Aida::AnyDict &ad) : SrvT_SomeRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "OtherNamespace::SomeRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_SomeRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_SomeRecord &other) const;
-  bool                          operator!=  (const SrvT_SomeRecord &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (r1, "r1");
-    _visitor_ (r2, "r2");
-    _visitor_ (r3, "r3");
-    _visitor_ (r4, "r4");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_SomeRecord&);
-void operator>>= (Aida::ProtoReader&, SrvT_SomeRecord&);
-} // OtherNamespace
-
-namespace Auxdata {
-
-class SrvT_RecordWithAuxdata
-{
-public:
-  /// @cond GeneratedFields
-  bool                          aux_bool;
-  int                           aux32;
-  int64_t                       aux64;
-  double                        auxf64;
-  std::string                   aux_str;
-  /// @endcond
-  inline                        SrvT_RecordWithAuxdata () { aux_bool = 0; aux32 = 0; aux64 = 0; auxf64 = 0; }
-  inline                        SrvT_RecordWithAuxdata (const Aida::AnyDict &ad) : SrvT_RecordWithAuxdata() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "Auxdata::RecordWithAuxdata"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_RecordWithAuxdata*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_RecordWithAuxdata &other) const;
-  bool                          operator!=  (const SrvT_RecordWithAuxdata &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (aux_bool, "aux_bool");
-    _visitor_ (aux32, "aux32");
-    _visitor_ (aux64, "aux64");
-    _visitor_ (auxf64, "auxf64");
-    _visitor_ (aux_str, "aux_str");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_RecordWithAuxdata&);
-void operator>>= (Aida::ProtoReader&, SrvT_RecordWithAuxdata&);
-} // Auxdata
 
 namespace InterfaceTests {
 
@@ -752,6 +83,7 @@ protected:
   explicit                              I_UIWidgetAreaIface ();
   virtual  /*dtor*/                    ~I_UIWidgetAreaIface () override = 0;
 public:
+  UIWidgetAreaHandle                    __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::UIWidgetArea"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -800,6 +132,7 @@ protected:
   explicit                              I_ParentIface ();
   virtual  /*dtor*/                    ~I_ParentIface () override = 0;
 public:
+  ParentHandle                          __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Parent"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -823,6 +156,7 @@ protected:
   explicit                              I_ChildIface ();
   virtual  /*dtor*/                    ~I_ChildIface () override = 0;
 public:
+  ChildHandle                           __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Child"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -848,6 +182,7 @@ protected:
   explicit                              I_DescendantIface ();
   virtual  /*dtor*/                    ~I_DescendantIface () override = 0;
 public:
+  DescendantHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Descendant"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -873,6 +208,7 @@ protected:
   explicit                              I_GrandChildIface ();
   virtual  /*dtor*/                    ~I_GrandChildIface () override = 0;
 public:
+  GrandChildHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::GrandChild"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -888,49 +224,6 @@ void operator<<= (Aida::ProtoMsg&, const I_GrandChildIfaceP&);
 void operator>>= (Aida::ProtoReader&, I_GrandChildIface*&);
 void operator>>= (Aida::ProtoReader&, I_GrandChildIfaceP&);
 
-class SrvT_QuickRecord
-{
-public:
-  /// @cond GeneratedFields
-  int                           int1;
-  int                           int2;
-  /// @endcond
-  inline                        SrvT_QuickRecord () { int1 = 0; int2 = 0; }
-  inline                        SrvT_QuickRecord (const Aida::AnyDict &ad) : SrvT_QuickRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "InterfaceTests::QuickRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_QuickRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_QuickRecord &other) const;
-  bool                          operator!=  (const SrvT_QuickRecord &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (int1, "int1");
-    _visitor_ (int2, "int2");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_QuickRecord&);
-void operator>>= (Aida::ProtoReader&, SrvT_QuickRecord&);
-
-class SrvT_QuickSequence : public std::vector<double>
-{
-public:
-  typedef std::vector<double> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
-  explicit                      SrvT_QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SrvT_QuickSequence () = default;
-  inline                        SrvT_QuickSequence (const Aida::AnyList &al) : SrvT_QuickSequence() { __aida_from_any__ (Aida::Any (al)); }
-  std::string                   __typename__      () const	{ return "InterfaceTests::QuickSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SrvT_QuickSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_QuickSequence&);
-void operator>>= (Aida::ProtoReader&, SrvT_QuickSequence&);
-
 class I_QuickIfaceIface;
 typedef std::shared_ptr<I_QuickIfaceIface> I_QuickIfaceIfaceP;
 typedef std::weak_ptr  <I_QuickIfaceIface> I_QuickIfaceIfaceW;
@@ -941,6 +234,7 @@ protected:
   explicit                              I_QuickIfaceIface ();
   virtual  /*dtor*/                    ~I_QuickIfaceIface () override = 0;
 public:
+  QuickIfaceHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::QuickIface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -965,6 +259,7 @@ protected:
   explicit                              I_MethodTestInterfaceIface ();
   virtual  /*dtor*/                    ~I_MethodTestInterfaceIface () override = 0;
 public:
+  MethodTestInterfaceHandle             __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::MethodTestInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -984,10 +279,10 @@ public:
                                                                     const std::string &optval = "default") = 0;
   virtual QuickEnum                     method_with_enum           (QuickEnum input,
                                                                     QuickEnum optval = QuickEnum (0)) = 0;
-  virtual SrvT_QuickRecord              method_with_record         (const SrvT_QuickRecord &input,
-                                                                    const SrvT_QuickRecord &optval = SrvT_QuickRecord()) = 0;
-  virtual SrvT_QuickSequence            method_with_sequence       (const SrvT_QuickSequence &input,
-                                                                    const SrvT_QuickSequence &optval = SrvT_QuickSequence()) = 0;
+  virtual QuickRecord                   method_with_record         (const QuickRecord &input,
+                                                                    const QuickRecord &optval = QuickRecord()) = 0;
+  virtual QuickSequence                 method_with_sequence       (const QuickSequence &input,
+                                                                    const QuickSequence &optval = QuickSequence()) = 0;
   virtual I_GrandChildIfaceP            method_with_interface      (I_GrandChildIface &input,
                                                                     I_GrandChildIface &optval) = 0;
   virtual Aida::Any                     method_with_anys           (const Aida::Any &input,
@@ -1011,6 +306,7 @@ protected:
   explicit                              I_SignalTestInterfaceIface ();
   virtual  /*dtor*/                    ~I_SignalTestInterfaceIface () override = 0;
 public:
+  SignalTestInterfaceHandle             __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::SignalTestInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1034,6 +330,7 @@ protected:
   explicit                              I_ChildInheritingSignalsIface ();
   virtual  /*dtor*/                    ~I_ChildInheritingSignalsIface () override = 0;
 public:
+  ChildInheritingSignalsHandle          __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1059,6 +356,7 @@ protected:
   explicit                              I_AnotherChildIface ();
   virtual  /*dtor*/                    ~I_AnotherChildIface () override = 0;
 public:
+  AnotherChildHandle                    __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::AnotherChild"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1084,6 +382,7 @@ protected:
   explicit                              I_PropertyTesterIface ();
   virtual  /*dtor*/                    ~I_PropertyTesterIface () override = 0;
 public:
+  PropertyTesterHandle                  __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::PropertyTester"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1102,10 +401,10 @@ public:
   virtual void                          string_prop    (const std::string&) = 0;
   virtual QuickEnum                     enum_prop      () const = 0;
   virtual void                          enum_prop      (QuickEnum) = 0;
-  virtual SrvT_QuickRecord              record_prop    () const = 0;
-  virtual void                          record_prop    (const SrvT_QuickRecord&) = 0;
-  virtual SrvT_QuickSequence            sequence_prop  () const = 0;
-  virtual void                          sequence_prop  (const SrvT_QuickSequence&) = 0;
+  virtual QuickRecord                   record_prop    () const = 0;
+  virtual void                          record_prop    (const QuickRecord&) = 0;
+  virtual QuickSequence                 sequence_prop  () const = 0;
+  virtual void                          sequence_prop  (const QuickSequence&) = 0;
   virtual I_GrandChildIfaceP            interface_prop () const = 0;
   virtual void                          interface_prop (I_GrandChildIface*) = 0;
   virtual I_PropertyTesterIfaceP        self_prop      () const = 0;
@@ -1144,6 +443,7 @@ protected:
   explicit                              I_UseIncludesIface ();
   virtual  /*dtor*/                    ~I_UseIncludesIface () override = 0;
 public:
+  UseIncludesHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::UseIncludes"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1169,6 +469,7 @@ protected:
   explicit                              I_ButtonAreaIface ();
   virtual  /*dtor*/                    ~I_ButtonAreaIface () override = 0;
 public:
+  ButtonAreaHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::ButtonArea"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1206,6 +507,7 @@ protected:
   explicit                              I_PureMethodsIface ();
   virtual  /*dtor*/                    ~I_PureMethodsIface () override = 0;
 public:
+  PureMethodsHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::PureMethods"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1233,15 +535,16 @@ protected:
   explicit                              I_NameTestsIface ();
   virtual  /*dtor*/                    ~I_NameTestsIface () override = 0;
 public:
+  NameTestsHandle                       __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "Other::NameTests"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
-  virtual void                          args_from_other_namespace (const InterfaceTests::SrvT_QuickRecord &qr,
+  virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
-                                                                   const OtherNamespace::SrvT_SomeRecord &sr) = 0;
+                                                                   const OtherNamespace::SomeRecord &sr) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1262,6 +565,7 @@ protected:
   explicit                              I_CompressorIface ();
   virtual  /*dtor*/                    ~I_CompressorIface () override = 0;
 public:
+  CompressorHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::Compressor"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1282,37 +586,6 @@ void operator<<= (Aida::ProtoMsg&, const I_CompressorIfaceP&);
 void operator>>= (Aida::ProtoReader&, I_CompressorIface*&);
 void operator>>= (Aida::ProtoReader&, I_CompressorIfaceP&);
 
-class SrvT_RecordForGroups
-{
-public:
-  /// @cond GeneratedFields
-  int                           i;
-  double                        ratio;
-  bool                          ordinary_bool;
-  double                        threshold1;
-  double                        threshold2;
-  /// @endcond
-  inline                        SrvT_RecordForGroups () { i = 0; ratio = 0; ordinary_bool = 0; threshold1 = 0; threshold2 = 0; }
-  inline                        SrvT_RecordForGroups (const Aida::AnyDict &ad) : SrvT_RecordForGroups() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "BseTest::RecordForGroups"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SrvT_RecordForGroups*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SrvT_RecordForGroups &other) const;
-  bool                          operator!=  (const SrvT_RecordForGroups &other) const { return !operator== (other); }
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (i, "i");
-    _visitor_ (ratio, "ratio");
-    _visitor_ (ordinary_bool, "ordinary_bool");
-    _visitor_ (threshold1, "threshold1");
-    _visitor_ (threshold2, "threshold2");
-  }
-};
-void operator<<= (Aida::ProtoMsg&, const SrvT_RecordForGroups&);
-void operator>>= (Aida::ProtoReader&, SrvT_RecordForGroups&);
-
 class I_SoundModuleIface;
 typedef std::shared_ptr<I_SoundModuleIface> I_SoundModuleIfaceP;
 typedef std::weak_ptr  <I_SoundModuleIface> I_SoundModuleIfaceW;
@@ -1323,6 +596,7 @@ protected:
   explicit                              I_SoundModuleIface ();
   virtual  /*dtor*/                    ~I_SoundModuleIface () override = 0;
 public:
+  SoundModuleHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::SoundModule"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
@@ -1356,55 +630,13 @@ void operator>>= (Aida::ProtoReader&, I_SoundModuleIfaceP&);
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (Other::NameTests) \
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (BseTest::Compressor) \
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (BseTest::SoundModule)
+
 #endif /* __SRVT__aidacc_tests_t304_testpass_idl */
 // --- Generated by AidaCxxStub ---
 #include "t304-testpass_interfaces.hh"
 
-#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
-  bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
-  bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
-  bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
-  bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
-#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
-  static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
-  static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
-  static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
-  static constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
-  static constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
-  static constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
-  static constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
-  static constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
-  static constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
-  static constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
-  static constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
-  static constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
-  static constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
-  static constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
-  static constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
-  static constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
-  static constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
-  static constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
-  static constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
-  static constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); }
-#ifdef     AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS        AIDA_FLAGS_DEFINE_ARITHMETIC_OPS
-#else  // !AIDA_ENABLE_ENUM_ARITHMETIC
-#define AIDA_ENUM_DEFINE_ARITHMETIC_OPS(Enum)  /* no arithmetic ops */
-#endif // !AIDA_ENABLE_ENUM_ARITHMETIC
-
-using IntrospectionRegistry = Aida::IntrospectionRegistry;
-
 #ifndef __AIDA_CXXSTUB_SERVER_CC__
 #define __AIDA_CXXSTUB_SERVER_CC__
-
-#ifndef AIDA_CPP_PASTE
-#define AIDA_CPP_CAT2(a,b)    a ## b
-#define AIDA_CPP_PASTE(a,b)     AIDA_CPP_CAT2 (a, b)
-#endif
 
 namespace { // Anon
 
@@ -1452,6 +684,23 @@ I_FirstInterfaceIface::I_FirstInterfaceIface ()
 {}
 I_FirstInterfaceIface::~I_FirstInterfaceIface ()
 {} // define empty dtor to emit vtable
+FirstInterfaceHandle
+I_FirstInterfaceIface::__handle__()
+{
+  FirstInterfaceHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+FirstInterfaceHandle::FirstInterfaceHandle (I_FirstInterfaceIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_FirstInterfaceIface*
+FirstInterfaceHandle::__iface__() const
+{
+  return dynamic_cast<I_FirstInterfaceIface*> (const_cast<FirstInterfaceHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_FirstInterfaceIfaceP &ptr)
 {
@@ -1474,7 +723,7 @@ I_FirstInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x22113f623903ac14ULL, 0x3fe8e50c1a9a78d2ULL)); // FirstInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_FirstInterface_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_FirstInterface_ = {
   "MandatoryNamespace::FirstInterface\0"
   "INTERFACE\0"
   ""};
@@ -1482,7 +731,7 @@ const Aida::StringVector&
 I_FirstInterfaceIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("MandatoryNamespace::FirstInterface"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::FirstInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -1502,686 +751,7 @@ I_FirstInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &_
 {
   return false;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooRecord_ = {
-  "MandatoryNamespace::XFooRecord\0"
-  "RECORD\0"
-  "single_bool.type=BOOL\0"
-  "single_num.type=INT32\0"
-  "num64.type=INT64\0"
-  "single_float.type=FLOAT64\0"
-  "single_string.type=STRING\0"
-  "sibling1.type=INT32\0"
-  "sibling2.type=INT32\0"
-  "multi1.type=INT32\0"
-  "multi2.type=INT32\0"
-  "multi3.type=INT32\0"
-  "multi4.type=INT32\0"
-  "enum_field.type=ENUM\0"
-  "enum_field.typename=MandatoryNamespace::ExtensiveEnum\0"
-  "iface1.type=INTERFACE\0"
-  "iface1.typename=MandatoryNamespace::FirstInterface\0"
-  "iface2.type=INTERFACE\0"
-  "iface2.typename=MandatoryNamespace::FirstInterface\0"
-  "iface3.type=INTERFACE\0"
-  "iface3.typename=MandatoryNamespace::FirstInterface\0"
-  "any1.type=ANY\0"
-  "any2.type=ANY\0"
-  "any3.type=ANY\0"
-};
-const Aida::StringVector&
-SrvT_XFooRecord::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::XFooRecord");
-  return sv;
-}
-bool
-SrvT_XFooRecord::operator== (const SrvT_XFooRecord &other) const
-{
-  if (this->single_bool != other.single_bool) return false;
-  if (this->single_num != other.single_num) return false;
-  if (this->num64 != other.num64) return false;
-  if (this->single_float != other.single_float) return false;
-  if (this->single_string != other.single_string) return false;
-  if (this->sibling1 != other.sibling1) return false;
-  if (this->sibling2 != other.sibling2) return false;
-  if (this->multi1 != other.multi1) return false;
-  if (this->multi2 != other.multi2) return false;
-  if (this->multi3 != other.multi3) return false;
-  if (this->multi4 != other.multi4) return false;
-  if (this->enum_field != other.enum_field) return false;
-  if (this->iface1 != other.iface1) return false;
-  if (this->iface2 != other.iface2) return false;
-  if (this->iface3 != other.iface3) return false;
-  if (this->any1 != other.any1) return false;
-  if (this->any2 != other.any2) return false;
-  if (this->any3 != other.any3) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_XFooRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (18);
-  __p_ <<= self.single_bool;
-  __p_ <<= self.single_num;
-  __p_ <<= self.num64;
-  __p_ <<= self.single_float;
-  __p_ <<= self.single_string;
-  __p_ <<= self.sibling1;
-  __p_ <<= self.sibling2;
-  __p_ <<= self.multi1;
-  __p_ <<= self.multi2;
-  __p_ <<= self.multi3;
-  __p_ <<= self.multi4;
-  __p_ <<= self.enum_field;
-  __p_ <<= self.iface1;
-  __p_ <<= self.iface2;
-  __p_ <<= self.iface3;
-  __p_ <<= self.any1;
-  __p_ <<= self.any2;
-  __p_ <<= self.any3;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_XFooRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 18) return;
-  fbr >>= self.single_bool;
-  fbr >>= self.single_num;
-  fbr >>= self.num64;
-  fbr >>= self.single_float;
-  fbr >>= self.single_string;
-  fbr >>= self.sibling1;
-  fbr >>= self.sibling2;
-  fbr >>= self.multi1;
-  fbr >>= self.multi2;
-  fbr >>= self.multi3;
-  fbr >>= self.multi4;
-  fbr >>= self.enum_field;
-  fbr >>= self.iface1;
-  fbr >>= self.iface2;
-  fbr >>= self.iface3;
-  fbr >>= self.any1;
-  fbr >>= self.any2;
-  fbr >>= self.any3;
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_XFooSequence_ = {
-  "MandatoryNamespace::XFooSequence\0"
-  "SEQUENCE\0"
-  "single_bool.type=BOOL\0"
-};
-const Aida::StringVector&
-SrvT_XFooSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::XFooSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_XFooSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_XFooSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_IntSequence_ = {
-  "MandatoryNamespace::IntSequence\0"
-  "SEQUENCE\0"
-  "numx.type=INT32\0"
-};
-const Aida::StringVector&
-SrvT_IntSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::IntSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_IntSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_IntSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_FloatSequence_ = {
-  "MandatoryNamespace::FloatSequence\0"
-  "SEQUENCE\0"
-  "fractalvalue.type=FLOAT64\0"
-};
-const Aida::StringVector&
-SrvT_FloatSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::FloatSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_FloatSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_FloatSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_StringSequence_ = {
-  "MandatoryNamespace::StringSequence\0"
-  "SEQUENCE\0"
-  "blurb.type=STRING\0"
-};
-const Aida::StringVector&
-SrvT_StringSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::StringSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_StringSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_StringSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnumSequence_ = {
-  "MandatoryNamespace::ExtensiveEnumSequence\0"
-  "SEQUENCE\0"
-  "enum_elements.type=ENUM\0"
-  "enum_elements.typename=MandatoryNamespace::ExtensiveEnum\0"
-};
-const Aida::StringVector&
-SrvT_ExtensiveEnumSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::ExtensiveEnumSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_ExtensiveEnumSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_ExtensiveEnumSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_RecordSequence_ = {
-  "MandatoryNamespace::RecordSequence\0"
-  "SEQUENCE\0"
-  "repeatedfield.type=RECORD\0"
-  "repeatedfield.typename=MandatoryNamespace::XFooRecord\0"
-};
-const Aida::StringVector&
-SrvT_RecordSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::RecordSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_RecordSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_RecordSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_SequenceSequence_ = {
-  "MandatoryNamespace::SequenceSequence\0"
-  "SEQUENCE\0"
-  "moreints.type=SEQUENCE\0"
-  "moreints.typename=MandatoryNamespace::IntSequence\0"
-};
-const Aida::StringVector&
-SrvT_SequenceSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::SequenceSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_SequenceSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_SequenceSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_InterfaceSequence_ = {
-  "MandatoryNamespace::InterfaceSequence\0"
-  "SEQUENCE\0"
-  "iface1.type=INTERFACE\0"
-  "iface1.typename=MandatoryNamespace::FirstInterface\0"
-};
-const Aida::StringVector&
-SrvT_InterfaceSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::InterfaceSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_InterfaceSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_InterfaceSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_AnySequence_ = {
-  "MandatoryNamespace::AnySequence\0"
-  "SEQUENCE\0"
-  "any_value.type=ANY\0"
-};
-const Aida::StringVector&
-SrvT_AnySequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::AnySequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_AnySequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_AnySequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_NestedTypesRec_ = {
-  "MandatoryNamespace::NestedTypesRec\0"
-  "RECORD\0"
-  "rec.type=RECORD\0"
-  "rec.typename=MandatoryNamespace::XFooRecord\0"
-  "seq.type=SEQUENCE\0"
-  "seq.typename=MandatoryNamespace::XFooSequence\0"
-};
-const Aida::StringVector&
-SrvT_NestedTypesRec::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::NestedTypesRec");
-  return sv;
-}
-bool
-SrvT_NestedTypesRec::operator== (const SrvT_NestedTypesRec &other) const
-{
-  if (this->rec != other.rec) return false;
-  if (this->seq != other.seq) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_NestedTypesRec &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (2);
-  __p_ <<= self.rec;
-  __p_ <<= self.seq;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_NestedTypesRec &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 2) return;
-  fbr >>= self.rec;
-  fbr >>= self.seq;
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_NestedTypesSeq_ = {
-  "MandatoryNamespace::NestedTypesSeq\0"
-  "SEQUENCE\0"
-  "ntr.type=RECORD\0"
-  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
-};
-const Aida::StringVector&
-SrvT_NestedTypesSeq::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::NestedTypesSeq");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_NestedTypesSeq &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_NestedTypesSeq &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_NewRecord_ = {
-  "MandatoryNamespace::NewRecord\0"
-  "RECORD\0"
-  "i.type=INT32\0"
-  "enum1.type=ENUM\0"
-  "enum1.typename=MandatoryNamespace::Enum1\0"
-  "xfs.type=SEQUENCE\0"
-  "xfs.typename=MandatoryNamespace::XFooSequence\0"
-  "ntr.type=RECORD\0"
-  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
-};
-const Aida::StringVector&
-SrvT_NewRecord::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::NewRecord");
-  return sv;
-}
-bool
-SrvT_NewRecord::operator== (const SrvT_NewRecord &other) const
-{
-  if (this->i != other.i) return false;
-  if (this->enum1 != other.enum1) return false;
-  if (this->xfs != other.xfs) return false;
-  if (this->ntr != other.ntr) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_NewRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (4);
-  __p_ <<= self.i;
-  __p_ <<= self.enum1;
-  __p_ <<= self.xfs;
-  __p_ <<= self.ntr;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_NewRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 4) return;
-  fbr >>= self.i;
-  fbr >>= self.enum1;
-  fbr >>= self.xfs;
-  fbr >>= self.ntr;
-}
-
-namespace Inner {
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Inner_InnerRecord_ = {
-  "MandatoryNamespace::Inner::InnerRecord\0"
-  "RECORD\0"
-  "x.type=INT32\0"
-  "y.type=INT32\0"
-  "rec.type=RECORD\0"
-  "rec.typename=MandatoryNamespace::NewRecord\0"
-};
-const Aida::StringVector&
-SrvT_InnerRecord::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::Inner::InnerRecord");
-  return sv;
-}
-bool
-SrvT_InnerRecord::operator== (const SrvT_InnerRecord &other) const
-{
-  if (this->x != other.x) return false;
-  if (this->y != other.y) return false;
-  if (this->rec != other.rec) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_InnerRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (3);
-  __p_ <<= self.x;
-  __p_ <<= self.y;
-  __p_ <<= self.rec;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_InnerRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 3) return;
-  fbr >>= self.x;
-  fbr >>= self.y;
-  fbr >>= self.rec;
-}
-} // Inner
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Refer2Inner_ = {
-  "MandatoryNamespace::Refer2Inner\0"
-  "RECORD\0"
-  "r.type=RECORD\0"
-  "r.typename=MandatoryNamespace::Inner::InnerRecord\0"
-};
-const Aida::StringVector&
-SrvT_Refer2Inner::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("MandatoryNamespace::Refer2Inner");
-  return sv;
-}
-bool
-SrvT_Refer2Inner::operator== (const SrvT_Refer2Inner &other) const
-{
-  if (this->r != other.r) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_Refer2Inner &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (1);
-  __p_ <<= self.r;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_Refer2Inner &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 1) return;
-  fbr >>= self.r;
-}
 } // MandatoryNamespace
-
-namespace OtherNamespace {
-static const IntrospectionRegistry __aida_aux_data_srvt__OtherNamespace_SomeRecord_ = {
-  "OtherNamespace::SomeRecord\0"
-  "RECORD\0"
-  "r1.type=RECORD\0"
-  "r1.typename=MandatoryNamespace::NewRecord\0"
-  "r2.type=RECORD\0"
-  "r2.typename=MandatoryNamespace::NewRecord\0"
-  "r3.type=RECORD\0"
-  "r3.typename=MandatoryNamespace::Inner::InnerRecord\0"
-  "r4.type=RECORD\0"
-  "r4.typename=MandatoryNamespace::Inner::InnerRecord\0"
-};
-const Aida::StringVector&
-SrvT_SomeRecord::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("OtherNamespace::SomeRecord");
-  return sv;
-}
-bool
-SrvT_SomeRecord::operator== (const SrvT_SomeRecord &other) const
-{
-  if (this->r1 != other.r1) return false;
-  if (this->r2 != other.r2) return false;
-  if (this->r3 != other.r3) return false;
-  if (this->r4 != other.r4) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_SomeRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (4);
-  __p_ <<= self.r1;
-  __p_ <<= self.r2;
-  __p_ <<= self.r3;
-  __p_ <<= self.r4;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_SomeRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 4) return;
-  fbr >>= self.r1;
-  fbr >>= self.r2;
-  fbr >>= self.r3;
-  fbr >>= self.r4;
-}
-} // OtherNamespace
-
-namespace Auxdata {
-static const IntrospectionRegistry __aida_aux_data_srvt__Auxdata_RecordWithAuxdata_ = {
-  "Auxdata::RecordWithAuxdata\0"
-  "RECORD\0"
-  "aux_bool.type=BOOL\0"
-  "aux_bool.label=AuxBool\0"
-  "aux_bool.blurb=A Boolean\0"
-  "aux_bool.hints=rw\0"
-  "aux_bool.default=0\0"
-  "aux32.type=INT32\0"
-  "aux32.label=Aux32\0"
-  "aux32.blurb=The Bar number\0"
-  "aux32.hints=rw\0"
-  "aux32.default=10007.0\0"
-  "aux64.type=INT64\0"
-  "aux64.label=Aux64\0"
-  "aux64.blurb=64bit auxillary number\0"
-  "aux64.hints=rw\0"
-  "aux64.default=1152921504606846976\0"
-  "auxf64.type=FLOAT64\0"
-  "auxf64.label=AuxF64\0"
-  "auxf64.blurb=X coordinate\0"
-  "auxf64.hints=ro\0"
-  "auxf64.default=0.019\0"
-  "aux_str.type=STRING\0"
-  "aux_str.label=AuxStr\0"
-  "aux_str.blurb=Specify text here\0"
-  "aux_str.hints=rw\0"
-  "aux_str.default=auxtest3\0"
-};
-const Aida::StringVector&
-SrvT_RecordWithAuxdata::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("Auxdata::RecordWithAuxdata");
-  return sv;
-}
-bool
-SrvT_RecordWithAuxdata::operator== (const SrvT_RecordWithAuxdata &other) const
-{
-  if (this->aux_bool != other.aux_bool) return false;
-  if (this->aux32 != other.aux32) return false;
-  if (this->aux64 != other.aux64) return false;
-  if (this->auxf64 != other.auxf64) return false;
-  if (this->aux_str != other.aux_str) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_RecordWithAuxdata &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (5);
-  __p_ <<= self.aux_bool;
-  __p_ <<= self.aux32;
-  __p_ <<= self.aux64;
-  __p_ <<= self.auxf64;
-  __p_ <<= self.aux_str;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_RecordWithAuxdata &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 5) return;
-  fbr >>= self.aux_bool;
-  fbr >>= self.aux32;
-  fbr >>= self.aux64;
-  fbr >>= self.auxf64;
-  fbr >>= self.aux_str;
-}
-} // Auxdata
 
 namespace InterfaceTests {
 
@@ -2189,6 +759,23 @@ I_UIWidgetAreaIface::I_UIWidgetAreaIface ()
 {}
 I_UIWidgetAreaIface::~I_UIWidgetAreaIface ()
 {} // define empty dtor to emit vtable
+UIWidgetAreaHandle
+I_UIWidgetAreaIface::__handle__()
+{
+  UIWidgetAreaHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+UIWidgetAreaHandle::UIWidgetAreaHandle (I_UIWidgetAreaIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_UIWidgetAreaIface*
+UIWidgetAreaHandle::__iface__() const
+{
+  return dynamic_cast<I_UIWidgetAreaIface*> (const_cast<UIWidgetAreaHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_UIWidgetAreaIfaceP &ptr)
 {
@@ -2211,7 +798,7 @@ I_UIWidgetAreaIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x11db82aaba1ee248ULL, 0xd2359653ff87e972ULL)); // UIWidgetArea
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_UIWidgetArea_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_UIWidgetArea_ = {
   "InterfaceTests::UIWidgetArea\0"
   "INTERFACE\0"
   "dummy.type=BOOL\0"
@@ -2224,7 +811,7 @@ const Aida::StringVector&
 I_UIWidgetAreaIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::UIWidgetArea"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::UIWidgetArea"));
   return __d_;
 }
 std::vector<std::string>
@@ -2255,6 +842,23 @@ I_ParentIface::I_ParentIface ()
 {}
 I_ParentIface::~I_ParentIface ()
 {} // define empty dtor to emit vtable
+ParentHandle
+I_ParentIface::__handle__()
+{
+  ParentHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+ParentHandle::ParentHandle (I_ParentIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_ParentIface*
+ParentHandle::__iface__() const
+{
+  return dynamic_cast<I_ParentIface*> (const_cast<ParentHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_ParentIfaceP &ptr)
 {
@@ -2277,7 +881,7 @@ I_ParentIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Parent_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Parent_ = {
   "InterfaceTests::Parent\0"
   "INTERFACE\0"
   ""};
@@ -2285,7 +889,7 @@ const Aida::StringVector&
 I_ParentIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::Parent"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Parent"));
   return __d_;
 }
 std::vector<std::string>
@@ -2310,6 +914,23 @@ I_ChildIface::I_ChildIface ()
 {}
 I_ChildIface::~I_ChildIface ()
 {} // define empty dtor to emit vtable
+ChildHandle
+I_ChildIface::__handle__()
+{
+  ChildHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+ChildHandle::ChildHandle (I_ChildIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_ChildIface*
+ChildHandle::__iface__() const
+{
+  return dynamic_cast<I_ChildIface*> (const_cast<ChildHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_ChildIfaceP &ptr)
 {
@@ -2333,7 +954,7 @@ I_ChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Child_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Child_ = {
   "InterfaceTests::Child\0"
   "INTERFACE\0"
   ""};
@@ -2341,7 +962,7 @@ const Aida::StringVector&
 I_ChildIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::Child"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Child"),
                                  this->I_ParentIface::__aida_aux_data__());
   return __d_;
 }
@@ -2371,6 +992,23 @@ I_DescendantIface::I_DescendantIface ()
 {}
 I_DescendantIface::~I_DescendantIface ()
 {} // define empty dtor to emit vtable
+DescendantHandle
+I_DescendantIface::__handle__()
+{
+  DescendantHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+DescendantHandle::DescendantHandle (I_DescendantIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_DescendantIface*
+DescendantHandle::__iface__() const
+{
+  return dynamic_cast<I_DescendantIface*> (const_cast<DescendantHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_DescendantIfaceP &ptr)
 {
@@ -2395,7 +1033,7 @@ I_DescendantIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Descendant_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Descendant_ = {
   "InterfaceTests::Descendant\0"
   "INTERFACE\0"
   ""};
@@ -2403,7 +1041,7 @@ const Aida::StringVector&
 I_DescendantIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::Descendant"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Descendant"),
                                  this->I_ChildIface::__aida_aux_data__());
   return __d_;
 }
@@ -2433,6 +1071,23 @@ I_GrandChildIface::I_GrandChildIface ()
 {}
 I_GrandChildIface::~I_GrandChildIface ()
 {} // define empty dtor to emit vtable
+GrandChildHandle
+I_GrandChildIface::__handle__()
+{
+  GrandChildHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+GrandChildHandle::GrandChildHandle (I_GrandChildIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_GrandChildIface*
+GrandChildHandle::__iface__() const
+{
+  return dynamic_cast<I_GrandChildIface*> (const_cast<GrandChildHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_GrandChildIfaceP &ptr)
 {
@@ -2458,7 +1113,7 @@ I_GrandChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL)); // Descendant
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_GrandChild_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_GrandChild_ = {
   "InterfaceTests::GrandChild\0"
   "INTERFACE\0"
   ""};
@@ -2466,7 +1121,7 @@ const Aida::StringVector&
 I_GrandChildIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::GrandChild"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::GrandChild"),
                                  this->I_DescendantIface::__aida_aux_data__());
   return __d_;
 }
@@ -2491,75 +1146,28 @@ I_GrandChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
   if (this->I_DescendantIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickRecord_ = {
-  "InterfaceTests::QuickRecord\0"
-  "RECORD\0"
-  "int1.type=INT32\0"
-  "int2.type=INT32\0"
-};
-const Aida::StringVector&
-SrvT_QuickRecord::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("InterfaceTests::QuickRecord");
-  return sv;
-}
-bool
-SrvT_QuickRecord::operator== (const SrvT_QuickRecord &other) const
-{
-  if (this->int1 != other.int1) return false;
-  if (this->int2 != other.int2) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_QuickRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (2);
-  __p_ <<= self.int1;
-  __p_ <<= self.int2;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_QuickRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 2) return;
-  fbr >>= self.int1;
-  fbr >>= self.int2;
-}
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickSequence_ = {
-  "InterfaceTests::QuickSequence\0"
-  "SEQUENCE\0"
-  "somefloat.type=FLOAT64\0"
-};
-const Aida::StringVector&
-SrvT_QuickSequence::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("InterfaceTests::QuickSequence");
-  return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_QuickSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_QuickSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
 
 I_QuickIfaceIface::I_QuickIfaceIface ()
 {}
 I_QuickIfaceIface::~I_QuickIfaceIface ()
 {} // define empty dtor to emit vtable
+QuickIfaceHandle
+I_QuickIfaceIface::__handle__()
+{
+  QuickIfaceHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+QuickIfaceHandle::QuickIfaceHandle (I_QuickIfaceIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_QuickIfaceIface*
+QuickIfaceHandle::__iface__() const
+{
+  return dynamic_cast<I_QuickIfaceIface*> (const_cast<QuickIfaceHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_QuickIfaceIfaceP &ptr)
 {
@@ -2582,7 +1190,7 @@ I_QuickIfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x4524ee119d4e454cULL, 0xbeb61f7c3cc04f7dULL)); // QuickIface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickIface_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickIface_ = {
   "InterfaceTests::QuickIface\0"
   "INTERFACE\0"
   ""};
@@ -2590,7 +1198,7 @@ const Aida::StringVector&
 I_QuickIfaceIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::QuickIface"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::QuickIface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2615,6 +1223,23 @@ I_MethodTestInterfaceIface::I_MethodTestInterfaceIface ()
 {}
 I_MethodTestInterfaceIface::~I_MethodTestInterfaceIface ()
 {} // define empty dtor to emit vtable
+MethodTestInterfaceHandle
+I_MethodTestInterfaceIface::__handle__()
+{
+  MethodTestInterfaceHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+MethodTestInterfaceHandle::MethodTestInterfaceHandle (I_MethodTestInterfaceIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_MethodTestInterfaceIface*
+MethodTestInterfaceHandle::__iface__() const
+{
+  return dynamic_cast<I_MethodTestInterfaceIface*> (const_cast<MethodTestInterfaceHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_MethodTestInterfaceIfaceP &ptr)
 {
@@ -2637,7 +1262,7 @@ I_MethodTestInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x6bf684458ac5f01aULL, 0xf64c02611b807180ULL)); // MethodTestInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_MethodTestInterface_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_MethodTestInterface_ = {
   "InterfaceTests::MethodTestInterface\0"
   "INTERFACE\0"
   ""};
@@ -2645,7 +1270,7 @@ const Aida::StringVector&
 I_MethodTestInterfaceIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::MethodTestInterface"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::MethodTestInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2670,6 +1295,23 @@ I_SignalTestInterfaceIface::I_SignalTestInterfaceIface ()
 {}
 I_SignalTestInterfaceIface::~I_SignalTestInterfaceIface ()
 {} // define empty dtor to emit vtable
+SignalTestInterfaceHandle
+I_SignalTestInterfaceIface::__handle__()
+{
+  SignalTestInterfaceHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+SignalTestInterfaceHandle::SignalTestInterfaceHandle (I_SignalTestInterfaceIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_SignalTestInterfaceIface*
+SignalTestInterfaceHandle::__iface__() const
+{
+  return dynamic_cast<I_SignalTestInterfaceIface*> (const_cast<SignalTestInterfaceHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_SignalTestInterfaceIfaceP &ptr)
 {
@@ -2692,7 +1334,7 @@ I_SignalTestInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_SignalTestInterface_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_SignalTestInterface_ = {
   "InterfaceTests::SignalTestInterface\0"
   "INTERFACE\0"
   ""};
@@ -2700,7 +1342,7 @@ const Aida::StringVector&
 I_SignalTestInterfaceIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::SignalTestInterface"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::SignalTestInterface"));
   return __d_;
 }
 std::vector<std::string>
@@ -2725,6 +1367,23 @@ I_ChildInheritingSignalsIface::I_ChildInheritingSignalsIface ()
 {}
 I_ChildInheritingSignalsIface::~I_ChildInheritingSignalsIface ()
 {} // define empty dtor to emit vtable
+ChildInheritingSignalsHandle
+I_ChildInheritingSignalsIface::__handle__()
+{
+  ChildInheritingSignalsHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+ChildInheritingSignalsHandle::ChildInheritingSignalsHandle (I_ChildInheritingSignalsIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_ChildInheritingSignalsIface*
+ChildInheritingSignalsHandle::__iface__() const
+{
+  return dynamic_cast<I_ChildInheritingSignalsIface*> (const_cast<ChildInheritingSignalsHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_ChildInheritingSignalsIfaceP &ptr)
 {
@@ -2748,7 +1407,7 @@ I_ChildInheritingSignalsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_ChildInheritingSignals_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_ChildInheritingSignals_ = {
   "InterfaceTests::ChildInheritingSignals\0"
   "INTERFACE\0"
   ""};
@@ -2756,7 +1415,7 @@ const Aida::StringVector&
 I_ChildInheritingSignalsIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
 }
@@ -2786,6 +1445,23 @@ I_AnotherChildIface::I_AnotherChildIface ()
 {}
 I_AnotherChildIface::~I_AnotherChildIface ()
 {} // define empty dtor to emit vtable
+AnotherChildHandle
+I_AnotherChildIface::__handle__()
+{
+  AnotherChildHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+AnotherChildHandle::AnotherChildHandle (I_AnotherChildIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_AnotherChildIface*
+AnotherChildHandle::__iface__() const
+{
+  return dynamic_cast<I_AnotherChildIface*> (const_cast<AnotherChildHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_AnotherChildIfaceP &ptr)
 {
@@ -2809,7 +1485,7 @@ I_AnotherChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_AnotherChild_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_AnotherChild_ = {
   "InterfaceTests::AnotherChild\0"
   "INTERFACE\0"
   ""};
@@ -2817,7 +1493,7 @@ const Aida::StringVector&
 I_AnotherChildIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::AnotherChild"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::AnotherChild"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
 }
@@ -2847,6 +1523,23 @@ I_PropertyTesterIface::I_PropertyTesterIface ()
 {}
 I_PropertyTesterIface::~I_PropertyTesterIface ()
 {} // define empty dtor to emit vtable
+PropertyTesterHandle
+I_PropertyTesterIface::__handle__()
+{
+  PropertyTesterHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+PropertyTesterHandle::PropertyTesterHandle (I_PropertyTesterIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_PropertyTesterIface*
+PropertyTesterHandle::__iface__() const
+{
+  return dynamic_cast<I_PropertyTesterIface*> (const_cast<PropertyTesterHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_PropertyTesterIfaceP &ptr)
 {
@@ -2869,7 +1562,7 @@ I_PropertyTesterIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xa37ab462c55a3b3cULL, 0x4f3fd1c9ad9689fbULL)); // PropertyTester
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_PropertyTester_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_PropertyTester_ = {
   "InterfaceTests::PropertyTester\0"
   "INTERFACE\0"
   "bool_prop.type=BOOL\0"
@@ -2893,7 +1586,7 @@ const Aida::StringVector&
 I_PropertyTesterIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("InterfaceTests::PropertyTester"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::PropertyTester"));
   return __d_;
 }
 std::vector<std::string>
@@ -2939,8 +1632,8 @@ I_PropertyTesterIface::__aida_set__ (const std::string &__n_, const Aida::Any &_
   if (__n_ == "float64_prop")    { float64_prop (__a_.get<double>()); return true; }
   if (__n_ == "string_prop")     { string_prop (__a_.get<std::string>()); return true; }
   if (__n_ == "enum_prop")       { enum_prop (__a_.get<QuickEnum>()); return true; }
-  if (__n_ == "record_prop")     { record_prop (__a_.get<SrvT_QuickRecord>()); return true; }
-  if (__n_ == "sequence_prop")   { sequence_prop (__a_.get<SrvT_QuickSequence>()); return true; }
+  if (__n_ == "record_prop")     { record_prop (__a_.get<QuickRecord>()); return true; }
+  if (__n_ == "sequence_prop")   { sequence_prop (__a_.get<QuickSequence>()); return true; }
   if (__n_ == "interface_prop")  { interface_prop (__a_.get<I_GrandChildIfaceP>().get()); return true; }
   if (__n_ == "self_prop")       { self_prop (__a_.get<I_PropertyTesterIfaceP>().get()); return true; }
   if (__n_ == "any_prop")        { any_prop (__a_.get<Aida::Any>()); return true; }
@@ -2954,6 +1647,23 @@ I_UseIncludesIface::I_UseIncludesIface ()
 {}
 I_UseIncludesIface::~I_UseIncludesIface ()
 {} // define empty dtor to emit vtable
+UseIncludesHandle
+I_UseIncludesIface::__handle__()
+{
+  UseIncludesHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+UseIncludesHandle::UseIncludesHandle (I_UseIncludesIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_UseIncludesIface*
+UseIncludesHandle::__iface__() const
+{
+  return dynamic_cast<I_UseIncludesIface*> (const_cast<UseIncludesHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_UseIncludesIfaceP &ptr)
 {
@@ -2977,7 +1687,7 @@ I_UseIncludesIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf2af9bb31127c663ULL, 0xa5e510409f8552a5ULL)); // SomeInterface
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_UseIncludes_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_UseIncludes_ = {
   "RapicornAidaTest::UseIncludes\0"
   "INTERFACE\0"
   ""};
@@ -2985,7 +1695,7 @@ const Aida::StringVector&
 I_UseIncludesIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("RapicornAidaTest::UseIncludes"),
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::UseIncludes"),
                                  this->IncludeCheck::I_SomeInterfaceIface::__aida_aux_data__());
   return __d_;
 }
@@ -3015,6 +1725,23 @@ I_ButtonAreaIface::I_ButtonAreaIface ()
 {}
 I_ButtonAreaIface::~I_ButtonAreaIface ()
 {} // define empty dtor to emit vtable
+ButtonAreaHandle
+I_ButtonAreaIface::__handle__()
+{
+  ButtonAreaHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+ButtonAreaHandle::ButtonAreaHandle (I_ButtonAreaIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_ButtonAreaIface*
+ButtonAreaHandle::__iface__() const
+{
+  return dynamic_cast<I_ButtonAreaIface*> (const_cast<ButtonAreaHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_ButtonAreaIfaceP &ptr)
 {
@@ -3037,7 +1764,7 @@ I_ButtonAreaIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xec371b296fa57436ULL, 0x92e4310e386fc92eULL)); // ButtonArea
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ButtonArea_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ButtonArea_ = {
   "RapicornAidaTest::ButtonArea\0"
   "INTERFACE\0"
   "on_click.type=STRING\0"
@@ -3050,7 +1777,7 @@ const Aida::StringVector&
 I_ButtonAreaIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("RapicornAidaTest::ButtonArea"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::ButtonArea"));
   return __d_;
 }
 std::vector<std::string>
@@ -3087,6 +1814,23 @@ I_PureMethodsIface::I_PureMethodsIface ()
 {}
 I_PureMethodsIface::~I_PureMethodsIface ()
 {} // define empty dtor to emit vtable
+PureMethodsHandle
+I_PureMethodsIface::__handle__()
+{
+  PureMethodsHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+PureMethodsHandle::PureMethodsHandle (I_PureMethodsIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_PureMethodsIface*
+PureMethodsHandle::__iface__() const
+{
+  return dynamic_cast<I_PureMethodsIface*> (const_cast<PureMethodsHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_PureMethodsIfaceP &ptr)
 {
@@ -3109,7 +1853,7 @@ I_PureMethodsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xddc2a514d04d3af5ULL, 0xc0046740434c0486ULL)); // PureMethods
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_PureMethods_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_PureMethods_ = {
   "RapicornAidaTest::PureMethods\0"
   "INTERFACE\0"
   ""};
@@ -3117,7 +1861,7 @@ const Aida::StringVector&
 I_PureMethodsIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("RapicornAidaTest::PureMethods"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::PureMethods"));
   return __d_;
 }
 std::vector<std::string>
@@ -3145,6 +1889,23 @@ I_NameTestsIface::I_NameTestsIface ()
 {}
 I_NameTestsIface::~I_NameTestsIface ()
 {} // define empty dtor to emit vtable
+NameTestsHandle
+I_NameTestsIface::__handle__()
+{
+  NameTestsHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+NameTestsHandle::NameTestsHandle (I_NameTestsIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_NameTestsIface*
+NameTestsHandle::__iface__() const
+{
+  return dynamic_cast<I_NameTestsIface*> (const_cast<NameTestsHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_NameTestsIfaceP &ptr)
 {
@@ -3167,7 +1928,7 @@ I_NameTestsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x542d40cd7d8fcd40ULL, 0x8c1782df29c9b936ULL)); // NameTests
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__Other_NameTests_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__Other_NameTests_ = {
   "Other::NameTests\0"
   "INTERFACE\0"
   ""};
@@ -3175,7 +1936,7 @@ const Aida::StringVector&
 I_NameTestsIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("Other::NameTests"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("Other::NameTests"));
   return __d_;
 }
 std::vector<std::string>
@@ -3203,6 +1964,23 @@ I_CompressorIface::I_CompressorIface ()
 {}
 I_CompressorIface::~I_CompressorIface ()
 {} // define empty dtor to emit vtable
+CompressorHandle
+I_CompressorIface::__handle__()
+{
+  CompressorHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+CompressorHandle::CompressorHandle (I_CompressorIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_CompressorIface*
+CompressorHandle::__iface__() const
+{
+  return dynamic_cast<I_CompressorIface*> (const_cast<CompressorHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_CompressorIfaceP &ptr)
 {
@@ -3225,7 +2003,7 @@ I_CompressorIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x42057a05d51182dfULL, 0x6a0d69cda274433eULL)); // Compressor
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__BseTest_Compressor_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__BseTest_Compressor_ = {
   "BseTest::Compressor\0"
   "INTERFACE\0"
   "threshold.type=FLOAT64\0"
@@ -3241,7 +2019,7 @@ const Aida::StringVector&
 I_CompressorIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("BseTest::Compressor"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::Compressor"));
   return __d_;
 }
 std::vector<std::string>
@@ -3267,60 +2045,28 @@ I_CompressorIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
   if (__n_ == "ratio")           { ratio (__a_.get<double>()); return true; }
   return false;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__BseTest_RecordForGroups_ = {
-  "BseTest::RecordForGroups\0"
-  "RECORD\0"
-  "i.type=INT32\0"
-  "ratio.type=FLOAT64\0"
-  "ratio.hints=w\0"
-  "ratio.default=0\0"
-  "ratio.group=Normal\0"
-  "ordinary_bool.type=BOOL\0"
-  "threshold1.type=FLOAT64\0"
-  "threshold2.type=FLOAT64\0"
-};
-const Aida::StringVector&
-SrvT_RecordForGroups::__aida_aux_data__() const
-{
-  static const Aida::StringVector sv = IntrospectionRegistry::lookup ("BseTest::RecordForGroups");
-  return sv;
-}
-bool
-SrvT_RecordForGroups::operator== (const SrvT_RecordForGroups &other) const
-{
-  if (this->i != other.i) return false;
-  if (this->ratio != other.ratio) return false;
-  if (this->ordinary_bool != other.ordinary_bool) return false;
-  if (this->threshold1 != other.threshold1) return false;
-  if (this->threshold2 != other.threshold2) return false;
-  return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SrvT_RecordForGroups &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (5);
-  __p_ <<= self.i;
-  __p_ <<= self.ratio;
-  __p_ <<= self.ordinary_bool;
-  __p_ <<= self.threshold1;
-  __p_ <<= self.threshold2;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SrvT_RecordForGroups &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 5) return;
-  fbr >>= self.i;
-  fbr >>= self.ratio;
-  fbr >>= self.ordinary_bool;
-  fbr >>= self.threshold1;
-  fbr >>= self.threshold2;
-}
 
 I_SoundModuleIface::I_SoundModuleIface ()
 {}
 I_SoundModuleIface::~I_SoundModuleIface ()
 {} // define empty dtor to emit vtable
+SoundModuleHandle
+I_SoundModuleIface::__handle__()
+{
+  SoundModuleHandle handle;
+  handle.__iface_ptr__() = this->shared_from_this();
+  return handle;
+}
+SoundModuleHandle::SoundModuleHandle (I_SoundModuleIface *iface)
+{
+   if (iface)
+     __iface_ptr__() = iface->shared_from_this();
+}
+I_SoundModuleIface*
+SoundModuleHandle::__iface__() const
+{
+  return dynamic_cast<I_SoundModuleIface*> (const_cast<SoundModuleHandle*> (this)->__iface_ptr__().get());
+}
 void
 operator<<= (Aida::ProtoMsg &__p_, const I_SoundModuleIfaceP &ptr)
 {
@@ -3343,7 +2089,7 @@ I_SoundModuleIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x06447b38b51e0198ULL, 0x848669199cc311deULL)); // SoundModule
   return thl;
 }
-static const IntrospectionRegistry __aida_aux_data_srvt__BseTest_SoundModule_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__BseTest_SoundModule_ = {
   "BseTest::SoundModule\0"
   "INTERFACE\0"
   ""};
@@ -3351,7 +2097,7 @@ const Aida::StringVector&
 I_SoundModuleIface::__aida_aux_data__() const
 {
   static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (IntrospectionRegistry::lookup ("BseTest::SoundModule"));
+    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::SoundModule"));
   return __d_;
 }
 std::vector<std::string>
@@ -3380,7 +2126,7 @@ I_SoundModuleIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_
 
 namespace Aida {
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1_ = {
   "MandatoryNamespace::Enum1\0"
   "ENUM\0"
   "E1_A.value=1\0"
@@ -3394,7 +2140,7 @@ enum_info<MandatoryNamespace::Enum1> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
   "MandatoryNamespace::Enum1c\0"
   "ENUM\0"
   "E1C_A.value=1\0"
@@ -3408,7 +2154,7 @@ enum_info<MandatoryNamespace::Enum1c> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
   "MandatoryNamespace::Enum2\0"
   "ENUM\0"
   "E2_A.value=1\0"
@@ -3424,7 +2170,7 @@ enum_info<MandatoryNamespace::Enum2> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
   "MandatoryNamespace::Enum2c\0"
   "ENUM\0"
   "E2C_A.value=1\0"
@@ -3440,7 +2186,7 @@ enum_info<MandatoryNamespace::Enum2c> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
   "MandatoryNamespace::Enum3\0"
   "ENUM\0"
   "E3_A.value=1\0"
@@ -3458,7 +2204,7 @@ enum_info<MandatoryNamespace::Enum3> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
   "MandatoryNamespace::Enum3c\0"
   "ENUM\0"
   "E3C_A.value=1\0"
@@ -3476,7 +2222,7 @@ enum_info<MandatoryNamespace::Enum3c> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
   "MandatoryNamespace::Enum4a\0"
   "ENUM\0"
   "E4A_A.value=1\0"
@@ -3496,7 +2242,7 @@ enum_info<MandatoryNamespace::Enum4a> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
   "MandatoryNamespace::Enum4b\0"
   "ENUM\0"
   "E4B_A.value=1\0"
@@ -3516,7 +2262,7 @@ enum_info<MandatoryNamespace::Enum4b> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
   "MandatoryNamespace::Enum4c\0"
   "ENUM\0"
   "E4C_A.value=1\0"
@@ -3536,7 +2282,7 @@ enum_info<MandatoryNamespace::Enum4c> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
   "MandatoryNamespace::Enum4d\0"
   "ENUM\0"
   "E4D_A.value=1\0"
@@ -3556,7 +2302,7 @@ enum_info<MandatoryNamespace::Enum4d> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
   "MandatoryNamespace::ExtensiveEnum\0"
   "ENUM\0"
   "V1a.value=1\0"
@@ -3667,7 +2413,7 @@ enum_info<MandatoryNamespace::ExtensiveEnum> ()
   return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
   "InterfaceTests::QuickEnum\0"
   "ENUM\0"
   "ZERO.value=0\0"
@@ -3681,7 +2427,7 @@ enum_info<InterfaceTests::QuickEnum> ()
   return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
   "RapicornAidaTest::ClickType\0"
   "ENUM\0"
   "CLICK_ON_PRESS.value=1\0"
@@ -3703,7 +2449,7 @@ enum_info<RapicornAidaTest::ClickType> ()
   return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
 } // specialization
 
-static const IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
+static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
   "RapicornAidaTest::MathExpressions\0"
   "ENUM\0"
   "RESULT_2.value=2\0"
@@ -4118,11 +2864,11 @@ __aida_call__MethodTestInterface__method_with_record (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickRecord  arg_input;
+  QuickRecord  arg_input;
   fbr >>= arg_input;
-  SrvT_QuickRecord  arg_optval;
+  QuickRecord  arg_optval;
   fbr >>= arg_optval;
-  SrvT_QuickRecord rval = self->method_with_record (arg_input, arg_optval);
+  QuickRecord rval = self->method_with_record (arg_input, arg_optval);
   Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x852c7f5942a87cceULL, 0x487dc78cd38240f6ULL);
   rb <<= rval;
   return &rb;
@@ -4135,11 +2881,11 @@ __aida_call__MethodTestInterface__method_with_sequence (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickSequence  arg_input;
+  QuickSequence  arg_input;
   fbr >>= arg_input;
-  SrvT_QuickSequence  arg_optval;
+  QuickSequence  arg_optval;
   fbr >>= arg_optval;
-  SrvT_QuickSequence rval = self->method_with_sequence (arg_input, arg_optval);
+  QuickSequence rval = self->method_with_sequence (arg_input, arg_optval);
   Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x5534838e08bdc63dULL, 0xd852fd5abb88ab7dULL);
   rb <<= rval;
   return &rb;
@@ -4363,7 +3109,7 @@ __aida_get__PropertyTester__record_prop (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickRecord rval = self->record_prop ();
+  QuickRecord rval = self->record_prop ();
   Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb6ab96740d7834eeULL, 0xe7873bec722bb0c8ULL);
   rb <<= rval;
   return &rb;
@@ -4376,7 +3122,7 @@ __aida_set__PropertyTester__record_prop (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickRecord  arg_record_prop;
+  QuickRecord  arg_record_prop;
   fbr >>= arg_record_prop;
   self->record_prop (arg_record_prop);
   return NULL;
@@ -4389,7 +3135,7 @@ __aida_get__PropertyTester__sequence_prop (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickSequence rval = self->sequence_prop ();
+  QuickSequence rval = self->sequence_prop ();
   Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x7f96e6ff442ecdd5ULL, 0xdb054c03831fd75bULL);
   rb <<= rval;
   return &rb;
@@ -4402,7 +3148,7 @@ __aida_set__PropertyTester__sequence_prop (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  SrvT_QuickSequence  arg_sequence_prop;
+  QuickSequence  arg_sequence_prop;
   fbr >>= arg_sequence_prop;
   self->sequence_prop (arg_sequence_prop);
   return NULL;
@@ -4622,11 +3368,11 @@ __aida_call__NameTests__args_from_other_namespace (Aida::ProtoReader &fbr)
   fbr.skip_header();
   fbr >>= self;
   AIDA_ASSERT_RETURN (self != NULL, NULL);
-  InterfaceTests::SrvT_QuickRecord  arg_qr;
+  InterfaceTests::QuickRecord  arg_qr;
   fbr >>= arg_qr;
   RapicornAidaTest::ClickType  arg_qe;
   fbr >>= arg_qe;
-  OtherNamespace::SrvT_SomeRecord  arg_sr;
+  OtherNamespace::SomeRecord  arg_sr;
   fbr >>= arg_sr;
   self->args_from_other_namespace (arg_qr, arg_qe, arg_sr);
   return NULL;
