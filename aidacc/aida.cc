@@ -2416,6 +2416,39 @@ ExecutionContext::new_context ()
   return new ExecutionContext();
 }
 
+static inline std::vector<ExecutionContext*>&
+get_execution_context_stack()
+{
+  static thread_local std::vector<ExecutionContext*> ecstack;
+  return ecstack;
+}
+
+/// Start using `ec` as active ExecutionContext in the current thread.
+void
+ExecutionContext::push_current (ExecutionContext *ec)
+{
+  assert_return (ec != NULL);
+  auto &ecstack = get_execution_context_stack();
+  ecstack.push_back (ec);
+}
+
+/// Remove the active ExecutionContext from the current thread, after that a previously pushed context becomes active.
+void
+ExecutionContext::pop_current ()
+{
+  auto &ecstack = get_execution_context_stack();
+  assert_return (ecstack.size() > 0);
+  ecstack.pop_back();
+}
+
+/// Retrieve the active ExecutionContext from the current thread.
+ExecutionContext*
+ExecutionContext::get_current ()
+{
+  auto &ecstack = get_execution_context_stack();
+  return ecstack.size() ? ecstack.back() : NULL;
+}
+
 // == CallableIface ==
 CallableIface::~CallableIface ()
 {}
