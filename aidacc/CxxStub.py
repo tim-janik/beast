@@ -778,13 +778,20 @@ class Generator:
     s += '  return thl;\n'
     s += '}\n'
     return s
-  def generate_remote_call (self, classname, methodname, rstorage, argprefix, args):
+  def generate_remote_call (self, classname, methodname, rstorage, specialcase = None, args = ()):
     s = ''
-    variant = 'remote_callv' if rstorage == Decls.VOID else 'remote_callr'
+    asconst, argprefix, deref = False, '', '*'
+    if specialcase == 'c':      # property getters use const this
+      asconst = True
+    elif specialcase == '&':    # property setters may set NULL pointers, regular method args may not be NULL (FIXME?)
+      deref = ''
+    elif isinstance (specialcase, basestring):
+      argprefix = specialcase
+    variant = 'remote_callv' if rstorage == Decls.VOID else ('remote_callc' if asconst else 'remote_callr')
     s += '  return __AIDA_Local__::%s (*this, &%s::%s' % (variant, classname, methodname)
     for a in args:
       if a[1].storage == Decls.INTERFACE:
-        s += ', *' + argprefix + a[0] + '.__iface__()'
+        s += ', ' + deref + argprefix + a[0] + '.__iface__()'
       else:
         s += ', ' + argprefix + a[0]
     sharedptrget = '.get()' if rstorage == Decls.INTERFACE else ''
@@ -868,17 +875,7 @@ class Generator:
     s += tname + '\n'
     q = '%s::%s (' % (self.C (class_info), fident)
     s += q + ') const%s\n{\n' % copydoc
-    s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;\n'
-    s += '  Aida::ProtoScopeCall2Way __o_ (__p_, *this, %s);\n' % self.getter_digest (class_info, fident, ftype)
-    s += '  fr = __o_.invoke (&__p_);\n' # deletes __p_
-    if 1: # hasret
-      rarg = ('retval', ftype)
-      s += '  Aida::ProtoReader __f_ (*fr);\n'
-      s += '  __f_.skip_header();\n'
-      s += '  ' + self.V (rarg[0], rarg[1]) + ';\n'
-      s += self.generate_proto_pop_args ('__f_', class_info, '', [rarg], '')
-      s += '  delete fr;\n'
-      s += '  return retval;\n'
+    s += self.generate_remote_call (self.C4server (class_info), fident, ftype.storage, 'c')
     s += '}\n'
     # setter prototype
     s += 'void\n'
@@ -886,12 +883,7 @@ class Generator:
       s += q + 'const ' + tname + ' &value)%s\n{\n' % copydoc
     else:
       s += q + tname + ' value)%s\n{\n' % copydoc
-    s += '  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;\n' # header + self + value
-    s += '  Aida::ProtoScopeCall1Way __o_ (__p_, *this, %s);\n' % self.setter_digest (class_info, fident, ftype)
-    ident_type_args = [('value', ftype)]
-    s += self.generate_proto_add_args ('__p_', class_info, '', ident_type_args, '')
-    s += '  fr = __o_.invoke (&__p_);\n' # deletes __p_
-    s += '  if (fr) delete fr;\n'
+    s += self.generate_remote_call (self.C4server (class_info), fident, Decls.VOID, '&', [ ('value', ftype) ])
     s += '}\n'
     return s
   def generate_server_property_setter (self, class_info, fident, ftype, reglines):

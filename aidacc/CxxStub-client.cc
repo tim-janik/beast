@@ -31,7 +31,7 @@ thread_semaphore()
 }
 
 template<class T, class... I, class... A> void
-remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&... args)
+remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
@@ -44,7 +44,7 @@ remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&... args)
 }
 
 template<class T, class R, class... I, class... A> R
-remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&... args)
+remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
@@ -59,7 +59,7 @@ remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&... args)
 }
 
 template<class T, class R, class... I, class... A> R
-remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&... args)
+remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());

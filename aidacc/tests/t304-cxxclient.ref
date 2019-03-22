@@ -1245,7 +1245,7 @@ thread_semaphore()
 }
 
 template<class T, class... I, class... A> void
-remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&... args)
+remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
@@ -1258,7 +1258,7 @@ remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&... args)
 }
 
 template<class T, class R, class... I, class... A> R
-remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&... args)
+remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
@@ -1273,7 +1273,7 @@ remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&... args)
 }
 
 template<class T, class R, class... I, class... A> R
-remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&... args)
+remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
 {
   sem_t *const semp = thread_semaphore();
   T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
@@ -2026,46 +2026,22 @@ UIWidgetAreaHandle::down_cast (const Aida::RemoteHandle &other)
 bool
 UIWidgetAreaHandle::dummy () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xf67db704b9d460d6ULL, 0xd4950feab697e61eULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  bool  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_UIWidgetAreaIface::dummy);
 }
 void
 UIWidgetAreaHandle::dummy (bool value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x7aaf2f96f3042829ULL, 0x3d0391e5b72e7ba5ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::dummy, value);
 }
 std::string
 UIWidgetAreaHandle::on_click () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x58ba68f6b64584c9ULL, 0xa7d2686edb40f27aULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_UIWidgetAreaIface::on_click);
 }
 void
 UIWidgetAreaHandle::on_click (const std::string &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xf0025ec0fa66e3e2ULL, 0x880c10e8e6b57cfbULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::on_click, value);
 }
 double
 UIWidgetAreaHandle::simple_method ()
@@ -2438,244 +2414,112 @@ PropertyTesterHandle::down_cast (const Aida::RemoteHandle &other)
 bool
 PropertyTesterHandle::bool_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x14469c03fdfc61e4ULL, 0x3bb8a3b5d9832788ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  bool  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::bool_prop);
 }
 void
 PropertyTesterHandle::bool_prop (bool value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xa88d7a16adc7ad43ULL, 0x33e7a32598f08880ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::bool_prop, value);
 }
 int
 PropertyTesterHandle::int32_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x8a2f1538f2b852fbULL, 0x7d3e8ea6f069a1c0ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::int32_prop);
 }
 void
 PropertyTesterHandle::int32_prop (int value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x7b7b3182160469e4ULL, 0xbd3c44c3a57484ebULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::int32_prop, value);
 }
 int64_t
 PropertyTesterHandle::int64_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xc9bb6114fc5c90deULL, 0x400dff0f59e66f63ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  int64_t  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::int64_prop);
 }
 void
 PropertyTesterHandle::int64_prop (int64_t value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xb33bf89d2259a1dbULL, 0x0154420aebe9a16cULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::int64_prop, value);
 }
 double
 PropertyTesterHandle::float64_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xb3d53f6a66ba171eULL, 0xc9e2fe1ad9d2d2abULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::float64_prop);
 }
 void
 PropertyTesterHandle::float64_prop (double value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xf1df5bd296ac78e2ULL, 0xbb263cff89927093ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::float64_prop, value);
 }
 std::string
 PropertyTesterHandle::string_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xd11acce29fa83acfULL, 0xb251b5fc0f737558ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::string_prop);
 }
 void
 PropertyTesterHandle::string_prop (const std::string &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xfadb1eed1d8d358aULL, 0x17cd2ca684080698ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::string_prop, value);
 }
 QuickEnum
 PropertyTesterHandle::enum_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x42f93106aeb5af11ULL, 0xdc4094dc01da9f81ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  QuickEnum  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::enum_prop);
 }
 void
 PropertyTesterHandle::enum_prop (QuickEnum value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x99206fff699c82d6ULL, 0x1dcbc77498569411ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::enum_prop, value);
 }
 QuickRecord
 PropertyTesterHandle::record_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xb6ab96740d7834eeULL, 0xe7873bec722bb0c8ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  QuickRecord  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::record_prop);
 }
 void
 PropertyTesterHandle::record_prop (const QuickRecord &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x55aaf8cee9dd7a46ULL, 0x83d8416416740bf0ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::record_prop, value);
 }
 QuickSequence
 PropertyTesterHandle::sequence_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x7f96e6ff442ecdd5ULL, 0xdb054c03831fd75bULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  QuickSequence  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::sequence_prop);
 }
 void
 PropertyTesterHandle::sequence_prop (const QuickSequence &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xf86952a034b8bc84ULL, 0x3be169a3f0a9a07dULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::sequence_prop, value);
 }
 GrandChildHandle
 PropertyTesterHandle::interface_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xf3cef8a00677d931ULL, 0x8733ca529b58ea4aULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  GrandChildHandle  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::interface_prop).get();
 }
 void
 PropertyTesterHandle::interface_prop (GrandChildHandle value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xbf62779e2a11aebbULL, 0x95547f4e29ca3814ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::interface_prop, value.__iface__());
 }
 PropertyTesterHandle
 PropertyTesterHandle::self_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xdd2a04f6c2fc3005ULL, 0x68868b01ea78948fULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  PropertyTesterHandle  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::self_prop).get();
 }
 void
 PropertyTesterHandle::self_prop (PropertyTesterHandle value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x1a1ee3ab20ab3c2fULL, 0xeeaf17826dba2891ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::self_prop, value.__iface__());
 }
 Aida::Any
 PropertyTesterHandle::any_prop () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xb54c6ac2d1c8f932ULL, 0x1c8ea2813f2c268eULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  Aida::Any  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::any_prop);
 }
 void
 PropertyTesterHandle::any_prop (const Aida::Any &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xe0c7d397e652f3f7ULL, 0xbbdf7826e88f4f42ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::any_prop, value);
 }
 } // InterfaceTests
 
@@ -2717,90 +2561,42 @@ ButtonAreaHandle::down_cast (const Aida::RemoteHandle &other)
 std::string
 ButtonAreaHandle::on_click () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x199859aecc756e97ULL, 0xa744332174ed27f4ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click);
 }
 void
 ButtonAreaHandle::on_click (const std::string &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xdb3a24116c653985ULL, 0x2a0576faff45b4b2ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click, value);
 }
 std::string
 ButtonAreaHandle::on_click2 () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x1b448d91990181daULL, 0x9751c08ae956c729ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click2);
 }
 void
 ButtonAreaHandle::on_click2 (const std::string &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xfc93898ba4104662ULL, 0xc918694fe5c2bfefULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click2, value);
 }
 std::string
 ButtonAreaHandle::on_click3 () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0x5176fbf25dcf50f4ULL, 0x4d7ae8b51fb816b5ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  std::string  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click3);
 }
 void
 ButtonAreaHandle::on_click3 (const std::string &value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x1c1990dca0fde97cULL, 0x6cc2c7cc49d811f8ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click3, value);
 }
 ClickType
 ButtonAreaHandle::click_type () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xb6ab79b43e1f0df9ULL, 0xaa0f1ec5c39b704aULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  ClickType  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::click_type);
 }
 void
 ButtonAreaHandle::click_type (ClickType value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x1f5a6d031cb7e104ULL, 0x2d4a207f0842bec8ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::click_type, value);
 }
 PureMethodsHandle::PureMethodsHandle ()
 {}
@@ -2874,46 +2670,22 @@ CompressorHandle::down_cast (const Aida::RemoteHandle &other)
 double
 CompressorHandle::threshold () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xdea15f2de1c3d8e3ULL, 0xe3fc9febf31cdc20ULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_CompressorIface::threshold);
 }
 void
 CompressorHandle::threshold (double value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0xf40a3fd3d07b3d0bULL, 0xbae97c41e3d6a92bULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_CompressorIface::threshold, value);
 }
 double
 CompressorHandle::ratio () const
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1), *fr = NULL;
-  Aida::ProtoScopeCall2Way __o_ (__p_, *this, 0xc61a8d739c7b963bULL, 0xca1ad4eeab1aa56eULL);
-  fr = __o_.invoke (&__p_);
-  Aida::ProtoReader __f_ (*fr);
-  __f_.skip_header();
-  double  retval;
-  __f_ >>= retval;
-  delete fr;
-  return retval;
+  return __AIDA_Local__::remote_callc (*this, &I_CompressorIface::ratio);
 }
 void
 CompressorHandle::ratio (double value)
 {
-  Aida::ProtoMsg &__p_ = *Aida::ProtoMsg::_new (3 + 1 + 1), *fr = NULL;
-  Aida::ProtoScopeCall1Way __o_ (__p_, *this, 0x302f0b5b99a2a6c8ULL, 0xc8b771894ecd9315ULL);
-  __p_ <<= value;
-  fr = __o_.invoke (&__p_);
-  if (fr) delete fr;
+  return __AIDA_Local__::remote_callv (*this, &I_CompressorIface::ratio, value);
 }
 static const Aida::IntrospectionRegistry __aida_aux_data_clnt__BseTest_RecordForGroups_ = {
   "BseTest::RecordForGroups\0"
