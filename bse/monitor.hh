@@ -11,6 +11,7 @@ class SignalMonitorImpl : public virtual SignalMonitorIface {
   SourceImplP            source_;
   uint32                 ochannel_;
   ProbeFeatures          probe_features_;
+  Aida::EventDispatcher  event_dispatcher_;
 protected:
   virtual               ~SignalMonitorImpl  ();
   friend class           FriendAllocator<SignalMonitorImpl>;
@@ -25,6 +26,7 @@ public:
   virtual void           set_probe_features (const ProbeFeatures &pf) override;
   virtual ProbeFeatures  get_probe_features () override;
   virtual Aida::ExecutionContext* __execution_context_mt__ () const override;
+  virtual Aida::IfaceEventConnection __attach__            (const String &eventselector, EventHandlerF handler) override;
 };
 typedef std::shared_ptr<SignalMonitorImpl> SignalMonitorImplP;
 

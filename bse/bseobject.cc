@@ -57,6 +57,12 @@ ObjectImpl::__execution_context_mt__ () const
   return execution_context();
 }
 
+Aida::IfaceEventConnection
+ObjectImpl::__attach__ (const String &eventselector, EventHandlerF handler)
+{
+  return event_dispatcher_.attach (eventselector, handler);
+}
+
 std::string
 ObjectImpl::debug_name ()
 {

@@ -8,7 +8,8 @@
 namespace Bse {
 
 class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
-  BseObject             *gobject_;
+  BseObject             *gobject_ = NULL;
+  Aida::EventDispatcher  event_dispatcher_;
 protected:
   virtual void           post_init  ();
 public:
@@ -24,6 +25,7 @@ public:
   virtual void           notify     (const String &detail) override;
   virtual int64_t        proxy_id   () override;
   virtual Aida::ExecutionContext* __execution_context_mt__ () const override;
+  virtual Aida::IfaceEventConnection __attach__            (const String &eventselector, EventHandlerF handler) override;
   typedef Aida::KeyValue KV;
   void  emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
                     const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());

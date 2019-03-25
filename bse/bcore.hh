@@ -33,6 +33,7 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
+using   Aida::EventHandlerF;
 using   Aida::void_t;
 
 // == Id Spaces ==
