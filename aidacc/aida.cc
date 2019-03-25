@@ -2392,13 +2392,40 @@ ExecutionContext::pending ()
   return m.has_closure();
 }
 
+template<class T>
+union PointerTagUnion {
+  T        *ptr;
+  ptrdiff_t address;
+};
+
 /// Dispatch a single event if any is pending.
 void
 ExecutionContext::dispatch ()
 {
-  Closure *closure = m.fetch_closure();
+  PointerTagUnion<Closure> u { m.fetch_closure() };
+  const bool must_delete = AIDA_UNLIKELY (u.address & 1);
+  if (must_delete)
+    u.address -= 1;
+  Closure *closure = u.ptr;
+  if (AIDA_ISLIKELY (closure))
+    {
+      (*closure) ();
+      if (must_delete)
+        delete closure;
+    }
+}
+
+/// Add Closure to ExecutionContext and delete the closure after dispatching.
+void
+ExecutionContext::enqueue_mt (Closure *closure)
+{
   if (closure)
-    (*closure) ();
+    {
+      PointerTagUnion<Closure> u { closure };
+      assert_return ((u.address & 1) == 0);
+      u.address |= 1;
+      m.enqueue_closure_mt (u.ptr, true);
+    }
 }
 
 /// Add Closure to be called by ExecutionContext (possibly remote).

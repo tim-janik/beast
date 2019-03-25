@@ -288,6 +288,7 @@ public:
   bool                     pending          ();
   void                     dispatch         ();
   void                     enqueue_mt       (const Closure &closure);
+  void                     enqueue_mt       (Closure *closure);
   static void              push_current     (ExecutionContext *ec);
   static ExecutionContext* get_current      ();
   static void              pop_current      ();
