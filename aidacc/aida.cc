@@ -2449,6 +2449,124 @@ ExecutionContext::get_current ()
   return ecstack.size() ? ecstack.back() : NULL;
 }
 
+// == EventDispatcher ==
+struct EventDispatcher::ConnectionImpl final {
+  const std::string  selector_;
+  EventHandlerF      handler_;
+  DispatcherImpl    &o_;
+  ConnectionImpl (DispatcherImpl &edispatcher, const String &eventselector, EventHandlerF handler) :
+    selector_ (eventselector), handler_ (handler), o_ (edispatcher)
+  {}
+  bool          connected       () const  { return NULL != handler_; }
+  void          disconnect      ();
+  void
+  emit (const Event &event, const std::string &event_type, const std::string &general_type)
+  {
+    if (connected() &&
+        (selector_ == event_type || selector_ == general_type))
+      handler_ (event);
+  }
+};
+
+struct EventDispatcher::DispatcherImpl final {
+  using EventConnectionP = std::shared_ptr<ConnectionImpl>;
+  std::vector<EventConnectionP> connections;
+  uint                          in_emission = 0;
+  bool                          needs_purging = false;
+  void
+  purge_connections ()
+  {
+    if (in_emission)
+      {
+        needs_purging = true;
+        return;
+      }
+    needs_purging = false;
+    for (size_t i = connections.size() - 1; i < connections.size(); i--)
+      if (!connections[i]->connected())
+        connections.erase (connections.begin() + i);
+  }
+  void
+  emit (const Event &event)
+  {
+    const std::string event_type = event["type"].get<std::string>();
+    if (event_type.empty())
+      return;
+    in_emission++;
+    {
+      const char *const ctype = event_type.c_str(), *const colon = strchr (ctype, ':');
+      const std::string general_type = colon ? event_type.substr (0, colon - ctype) : event_type;
+      for (auto &conp : connections)
+        conp->emit (event, event_type, general_type);
+    }
+    in_emission--;
+    if (in_emission == 0 && needs_purging)
+      purge_connections();
+  }
+  ~DispatcherImpl()
+  {
+    assert_return (in_emission == 0);
+    in_emission++; // short cut purge_connections() calls
+    for (auto &conp : connections)
+      conp->disconnect();
+    in_emission--;
+  }
+};
+
+void
+EventDispatcher::ConnectionImpl::disconnect()
+{
+  const bool was_connected = connected();
+  handler_ = NULL;
+  if (was_connected)
+    o_.purge_connections();
+}
+
+bool
+EventDispatcher::EventConnection::connected () const
+{
+  std::shared_ptr<ConnectionImpl> con = this->lock();
+  return con && con->connected();
+}
+
+void
+EventDispatcher::EventConnection::disconnect () const
+{
+  std::shared_ptr<ConnectionImpl> con = this->lock();
+  if (con)
+    con->disconnect();
+}
+
+EventDispatcher::~EventDispatcher ()
+{
+  reset();
+}
+
+void
+EventDispatcher::reset()
+{
+  DispatcherImpl *old = o_;
+  o_ = NULL;
+  delete old;
+}
+
+EventDispatcher::EventConnection
+EventDispatcher::attach (const String &eventselector, EventHandlerF handler)
+{
+  if (!o_)
+    o_ = new DispatcherImpl();
+  o_->connections.push_back (std::make_shared<EventDispatcher::ConnectionImpl> (*o_, eventselector, handler));
+  std::weak_ptr<EventDispatcher::ConnectionImpl> wptr = o_->connections.back();
+  return *static_cast<EventConnection*> (&wptr);
+}
+
+void
+EventDispatcher::emit (const Event &event)
+{
+  if (o_)
+    o_->emit (event);
+}
+
 // == CallableIface ==
 CallableIface::~CallableIface ()
 {}
