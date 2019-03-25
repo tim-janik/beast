@@ -1745,6 +1745,82 @@ RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
   orbop_ = orbop ? orbop : __aida_null_orb_object__();
 }
 
+struct RemoteHandle::EventHandlerRelay {
+  ExecutionContext    &iface_context_;
+  ExecutionContext    &handler_context_;
+  EventHandlerF        handler_;
+  IfaceEventConnection iface_connection_;
+  explicit EventHandlerRelay (ExecutionContext &handler_execution_context, EventHandlerF handler,
+                              ExecutionContext &iface_execution_context) :
+    iface_context_ (iface_execution_context), handler_context_ (handler_execution_context), handler_ (handler)
+  {}
+  bool
+  connected ()
+  {
+    return handler_ != NULL;
+  }
+  void
+  disconnect ()
+  {
+    if (handler_)
+      {
+        handler_ = NULL;
+        IfaceEventConnection ifaceconnection = iface_connection_;
+        auto remote_disconnect = [ifaceconnection] () { ifaceconnection.disconnect(); };
+        iface_context_.enqueue_mt (new std::function<void()> (remote_disconnect));
+        iface_connection_ = IfaceEventConnection(); // reset
+      }
+  }
+  void
+  local_handler (const Event &event)
+  {
+    if (handler_)
+      handler_ (event);
+  }
+  struct RemoteHandler : std::shared_ptr<EventHandlerRelay> {
+    void
+    operator() (const Event &event)
+    {
+      std::shared_ptr<EventHandlerRelay> &relayp = *this;
+      // relayp and event must be copied for use in a different thread
+      auto localhandler = [relayp, event] () { relayp->local_handler (event); };
+      relayp->handler_context_.enqueue_mt (new std::function<void()> (localhandler));
+    }
+  };
+};
+
+RemoteHandle::EventConnection
+RemoteHandle::__attach__ (const String &eventselector, EventHandlerF handler)
+{
+  RemoteHandle::EventConnection empty;
+  assert_return (*this != NULL, empty);
+  assert_return (handler != NULL, empty);
+  ExecutionContext *current_thread_execution_context = ExecutionContext::get_current ();
+  assert_return (current_thread_execution_context != NULL, empty);
+  ImplicitBase *iface = __iface_ptr__().get();
+  ExecutionContext &iface_execution_context = iface->__execution_context_mt__();
+  auto relay = std::make_shared<EventHandlerRelay> (*current_thread_execution_context, handler, iface_execution_context);
+  EventHandlerRelay::RemoteHandler remotehandler = static_cast<EventHandlerRelay::RemoteHandler&> (relay);
+  relay->iface_connection_ = remote_callr (*this, &ImplicitBase::__attach__, eventselector, remotehandler);
+  std::weak_ptr<EventHandlerRelay> wptr = relay;
+  return *static_cast<EventConnection*> (&wptr);
+}
+
+bool
+RemoteHandle::EventConnection::connected  () const
+{
+  std::shared_ptr<EventHandlerRelay> relay = this->lock();
+  return relay && relay->connected();
+}
+
+void
+RemoteHandle::EventConnection::disconnect () const
+{
+  std::shared_ptr<EventHandlerRelay> relay = this->lock();
+  if (relay)
+    relay->disconnect();
+}
+
 // == DetacherHooks ==
 void
 DetacherHooks::__clear_hooks__ (RemoteHandle *scopedhandle)

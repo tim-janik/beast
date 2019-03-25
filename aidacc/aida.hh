@@ -594,15 +594,23 @@ class RemoteHandle {
   OrbObjectP        orbop_;
   ImplicitBaseP     iface_ptr_;
   static OrbObjectP __aida_null_orb_object__ ();
+  struct EventHandlerRelay;
 protected:
   explicit          RemoteHandle             (OrbObjectP);
   const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
+  struct EventConnection : private std::weak_ptr<EventHandlerRelay> {
+    friend class RemoteHandle;
+    bool   connected  () const;
+    void   disconnect () const;
+  };
+public:
   explicit                RemoteHandle         ();
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
+  EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
   const StringVector&     __aida_aux_data__    () const;                                //: AIDAID
@@ -640,6 +648,7 @@ private:
   }
   friend class BaseConnection;
 };
+using HandleEventConnection = RemoteHandle::EventConnection;
 
 // == RemoteMember ==
 template<class RemoteHandle>
