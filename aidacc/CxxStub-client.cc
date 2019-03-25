@@ -39,7 +39,7 @@ remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
     (self->*mfp) (args...);
     sem_post (semp);
   };
-  self->__execution_context_mt__()->enqueue_mt (&wrapper);
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
   sem_wait (semp);
 }
 
@@ -53,7 +53,7 @@ remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
     r = (self->*mfp) (args...);
     sem_post (semp);
   };
-  self->__execution_context_mt__()->enqueue_mt (&wrapper);
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
   sem_wait (semp);
   return r;
 }
@@ -68,7 +68,7 @@ remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&..
     r = (self->*mfp) (args...);
     sem_post (semp);
   };
-  self->__execution_context_mt__()->enqueue_mt (&wrapper);
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
   sem_wait (semp);
   return r;
 }

@@ -2401,11 +2401,11 @@ ExecutionContext::dispatch ()
     (*closure) ();
 }
 
+/// Add Closure to be called by ExecutionContext (possibly remote).
 void
-ExecutionContext::enqueue_mt (Closure *closure)
+ExecutionContext::enqueue_mt (const Closure &closure)
 {
-  if (closure)
-    m.enqueue_closure_mt (closure, true);
+  m.enqueue_closure_mt (const_cast<Closure*> (&closure), true);
 }
 
 /// Create an ExecutionContext.
