@@ -489,7 +489,7 @@ typedef std::vector<TypeHash> TypeHashList;
 #define AIDA_HASH___EVENT_CALLBACK__    0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL
 
 
-// === EventFd ===
+// == EventFd ==
 /// Wakeup facility for IPC.
 class EventFd
 {
@@ -505,6 +505,18 @@ public:
   bool     pollin    (); ///< Checks whether events are pending.
   void     flush     (); ///< Clear pending wakeups.
   /*Des*/ ~EventFd   ();
+};
+
+// == ScopedSemaphore ==
+class ScopedSemaphore {
+  unsigned long mem_[4];
+  /*copy*/         ScopedSemaphore (const ScopedSemaphore&) = delete;
+  ScopedSemaphore& operator=       (const ScopedSemaphore&) = delete;
+public:
+  explicit  ScopedSemaphore () noexcept;  ///< Create a process-local semaphore.
+  int       post            () noexcept;  ///< Unlock ScopedSemaphore.
+  int       wait            () noexcept;  ///< Unlock ScopedSemaphore.
+  /*dtor*/ ~ScopedSemaphore () noexcept;
 };
 
 // == Type Utilities ==

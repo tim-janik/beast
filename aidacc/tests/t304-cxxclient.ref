@@ -1215,75 +1215,51 @@ typedef ::Aida::ScopedHandle<SoundModuleH> SoundModuleS;
 #ifndef __AIDA_CXXSTUB_CLIENT_CC__
 #define __AIDA_CXXSTUB_CLIENT_CC__
 
-#include <semaphore.h>
-
 namespace { // Anon
 
 namespace __AIDA_Local__ {
 using namespace Aida;
 
-static inline sem_t*
-thread_semaphore()
-{
-  class DeletableSemaphore {
-    DeletableSemaphore (const DeletableSemaphore&) = delete;            // disable copy ctor
-    DeletableSemaphore& operator= (const DeletableSemaphore&) = delete; // disable copy assignment
-  public:
-    sem_t semaphore = sem_t();
-    DeletableSemaphore()
-    {
-      const int ret = sem_init (&semaphore, 0 /*pshared*/, 0 /*value*/);
-      AIDA_ASSERT_RETURN (ret == 0);
-    }
-    ~DeletableSemaphore()
-    {
-      sem_destroy (&semaphore);
-    }
-  };
-  static thread_local DeletableSemaphore thread_local_semaphore;
-  return &thread_local_semaphore.semaphore;
-}
-
 template<class T, class... I, class... A> void
 remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
 {
-  sem_t *const semp = thread_semaphore();
+  ScopedSemaphore sem;
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
-  std::function<void()> wrapper = [semp, self, mfp, &args...] () {
+  std::function<void()> wrapper = [&sem, self, mfp, &args...] () {
     (self->*mfp) (args...);
-    sem_post (semp);
+    sem.post();
   };
   self->__execution_context_mt__()->enqueue_mt (wrapper);
-  sem_wait (semp);
+  sem.wait();
 }
 
 template<class T, class R, class... I, class... A> R
 remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
 {
-  sem_t *const semp = thread_semaphore();
+  ScopedSemaphore sem;
   T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
   R r {};
-  std::function<void()> wrapper = [semp, self, mfp, &args..., &r] () {
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
     r = (self->*mfp) (args...);
-    sem_post (semp);
+    sem.post();
   };
   self->__execution_context_mt__()->enqueue_mt (wrapper);
-  sem_wait (semp);
+  sem.wait();
   return r;
 }
 
 template<class T, class R, class... I, class... A> R
 remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
 {
-  sem_t *const semp = thread_semaphore();
+  ScopedSemaphore sem;
   T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
   R r {};
-  std::function<void()> wrapper = [semp, self, mfp, &args..., &r] () {
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
     r = (self->*mfp) (args...);
-    sem_post (semp);
+    sem.post();
   };
   self->__execution_context_mt__()->enqueue_mt (wrapper);
-  sem_wait (semp);
+  sem.wait();
   return r;
 }
 

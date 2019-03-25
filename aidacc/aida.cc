@@ -2255,6 +2255,40 @@ EventFd::~EventFd ()
   fds[1] = -1;
 }
 
+// == ScopedSemaphore ==
+ScopedSemaphore::ScopedSemaphore () noexcept
+{
+  static_assert (sizeof (mem_) >= sizeof (sem_t), "");
+  sem_t &sem = *(sem_t*) mem_;
+  const int ret = sem_init (&sem, 0 /*pshared*/, 0 /*value*/);
+  assert_return (ret == 0);
+}
+
+int
+ScopedSemaphore::post () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  errno = 0;
+  const int ret = sem_post (&sem);
+  return ret ? errno : 0;
+}
+
+int
+ScopedSemaphore::wait () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  errno = 0;
+  const int ret = sem_wait (&sem);
+  return ret ? errno : 0;
+}
+
+ScopedSemaphore::~ScopedSemaphore () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  const int ret = sem_destroy (&sem);
+  assert_return (ret == 0);
+}
+
 // == lock-free, single-consumer queue ==
 template<class Data>
 struct MpScQueueF {
