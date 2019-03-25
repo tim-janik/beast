@@ -22,7 +22,7 @@ SignalMonitorImpl::~SignalMonitorImpl ()
   probe_features_ = ProbeFeatures();
 }
 
-Aida::ExecutionContext*
+Aida::ExecutionContext&
 SignalMonitorImpl::__execution_context_mt__ () const
 {
   return execution_context();

@@ -321,7 +321,7 @@ public:
   /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
   /// Retrieve ExecutionContext, save to be called multi-threaded.
-  virtual ExecutionContext*    __execution_context_mt__ () const = 0;
+  virtual ExecutionContext&    __execution_context_mt__ () const = 0;
 };
 
 // == EnumValue ==
@@ -1254,7 +1254,7 @@ remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
     (self->*mfp) (args...);
     sem.post();
   };
-  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  self->__execution_context_mt__().enqueue_mt (wrapper);
   sem.wait();
 }
 
@@ -1268,7 +1268,7 @@ remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
     r = (self->*mfp) (args...);
     sem.post();
   };
-  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  self->__execution_context_mt__().enqueue_mt (wrapper);
   sem.wait();
   return r;
 }
@@ -1283,7 +1283,7 @@ remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&..
     r = (self->*mfp) (args...);
     sem.post();
   };
-  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  self->__execution_context_mt__().enqueue_mt (wrapper);
   sem.wait();
   return r;
 }

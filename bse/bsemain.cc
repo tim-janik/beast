@@ -593,10 +593,11 @@ init_aida_idl ()
   g_source_attach (source, bse_main_context);
 }
 
-Aida::ExecutionContext*
+Aida::ExecutionContext&
 execution_context () // bseutils.hh
 {
-  return bse_execution_context;
+  assert_return (bse_execution_context != NULL, *bse_execution_context);
+  return *bse_execution_context;
 }
 
 } // Bse

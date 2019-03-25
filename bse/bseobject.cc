@@ -51,7 +51,7 @@ ObjectImpl::~ObjectImpl ()
   // BseObject keeps ObjectImpl alive until dispose()
 }
 
-Aida::ExecutionContext*
+Aida::ExecutionContext&
 ObjectImpl::__execution_context_mt__ () const
 {
   return execution_context();
