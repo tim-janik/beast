@@ -1244,6 +1244,50 @@ BaseConnection::remote_origin ()
   return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
 }
 
+// == RemoteHandle remote_call<> ==
+template<class T, class... I, class... A> inline void
+remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
+  std::function<void()> wrapper = [&sem, self, mfp, &args...] () {
+    (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  sem.wait();
+}
+
+template<class T, class R, class... I, class... A> inline R
+remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
+  R r {};
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
+    r = (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  sem.wait();
+  return r;
+}
+
+template<class T, class R, class... I, class... A> inline R
+remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
+  R r {};
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
+    r = (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__()->enqueue_mt (wrapper);
+  sem.wait();
+  return r;
+}
+
 // == Enum Helpers ==
 #define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
   bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
