@@ -231,6 +231,8 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
 // == VirtualEnableSharedFromThis ==
 /// Helper class for VirtualEnableSharedFromThis.
 struct VirtualEnableSharedFromThisBase : public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
+  VirtualEnableSharedFromThisBase() = default;
+  VirtualEnableSharedFromThisBase (const VirtualEnableSharedFromThisBase&) = default;
   virtual ~VirtualEnableSharedFromThisBase() = 0;
 };
 /// Virtual base class template that provides std::enable_shared_from_this for multiple inheritance.
