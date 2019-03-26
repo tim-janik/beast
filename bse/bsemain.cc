@@ -234,6 +234,12 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
         g_main_context_iteration (bse_main_context, TRUE);
     }
 
+  // close devices and shutdown engine threads
+  bse_server_shutdown (bse_server_get());
+  // process pending cleanups if needed
+  while (g_main_context_pending (bse_main_context))
+    g_main_context_iteration (bse_main_context, false);
+
   Bse::TaskRegistry::remove (Bse::this_thread_gettid()); // see bse_init_intern
 }
 

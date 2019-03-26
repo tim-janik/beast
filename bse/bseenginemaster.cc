@@ -1245,17 +1245,19 @@ MasterThread::master_thread()
 static std::atomic<MasterThread*> master_thread_singleton { NULL };
 
 void
-MasterThread::reap_master_thread ()
+MasterThread::shutdown ()
 {
-  assert_return (master_thread_singleton != NULL);
-  assert_return (master_thread_running == true);
-  master_thread_running = false;
-  BseInternal::engine_stop_slaves();
-  MasterThread::wakeup();
-  MasterThread *mthread = master_thread_singleton;
-  mthread->thread_.join();
-  master_thread_singleton = NULL;
-  delete mthread;
+  if (master_thread_running)
+    {
+      assert_return (master_thread_singleton != NULL);
+      master_thread_running = false;
+      BseInternal::engine_stop_slaves();
+      MasterThread::wakeup();
+      MasterThread *mthread = master_thread_singleton;
+      mthread->thread_.join();
+      master_thread_singleton = NULL;
+      delete mthread;
+    }
 }
 
 void
@@ -1265,8 +1267,6 @@ MasterThread::start (const std::function<void()> &caller_wakeup)
   MasterThread *mthread = new MasterThread (caller_wakeup);
   master_thread_singleton = mthread;
   assert_return (master_thread_running == false);
-  if (std::atexit (reap_master_thread) != 0)
-    warning ("BSE: failed to install master thread reaper");
   master_thread_running = true;
   mthread->thread_ = std::thread (&MasterThread::master_thread, mthread);
   BseInternal::engine_start_slaves();
