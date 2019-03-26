@@ -222,7 +222,7 @@ class Generator:
     s += '  AidaEvent_class_.class_function_template()->InstanceTemplate()->SetHandler (\n'
     s += '    v8::NamedPropertyHandlerConfiguration (aida_event_generic_getter));\n'
     # .on()
-    s += '  auto __event_attach__ = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n'
+    s += '  auto __attach__ = [__v8isolate] (v8::FunctionCallbackInfo<v8::Value> const &__v8args) -> void {\n'
     s += '    Aida::RemoteHandle *__remotehandle = V8ppType_AidaRemoteHandle::unwrap_object (__v8isolate, __v8args.This());\n'
     s += '    if (!__remotehandle || __v8args.Length() != 2 || !__v8args[0]->IsString() || !__v8args[1]->IsFunction())\n'
     s += '      __v8return_exception (__v8isolate, __v8args, "V8stub: Aida::RemoteHandle.on (type, listener): invalid arguments");\n'
@@ -239,12 +239,12 @@ class Generator:
     s += '      V8ppType_AidaEvent::unreference_external (__v8isolate, event);\n'
     s += '      (void) __v8result;\n'
     s += '    };\n'
-    s += '    const uint64_t __hid = __remotehandle->__event_attach__ (__event, event_handler);\n'
-    # FIXME: add disconnect for __hid
+    s += '    Aida::HandleEventConnection hcon = __remotehandle->__attach__ (__event, event_handler);\n'
+    # FIXME: add disconnect function for hcon
     s += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n'
     s += '  };\n'
     s += '  AidaRemoteHandle_class_\n'
-    s += '    .set ("__event_attach__", __event_attach__)\n'
+    s += '    .set ("__attach__", __attach__)\n'
     s += '  ;\n'
     # Wrapper registration
     for tp in v8pp_class_types:
@@ -319,7 +319,7 @@ jsinit = r"""
 (function (exports) {
   const jsinit = @jsinit_def@;
   jsinit.base_objects.forEach (obj => {
-    obj.prototype.on = function (type, listener) { return this.__event_attach__ (type, listener); };
+    obj.prototype.on = function (type, listener) { return this.__attach__ (type, listener); };
   });
 })
 """
