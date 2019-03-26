@@ -322,10 +322,10 @@ class CallableIface : public virtual VirtualEnableSharedFromThis<CallableIface> 
 protected:
   virtual                     ~CallableIface            ();
 public:
-  /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
-  virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
   /// Retrieve ExecutionContext, save to be called multi-threaded.
   virtual ExecutionContext&    __execution_context_mt__ () const = 0;
+  /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
+  virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
 };
 
 // == EnumValue ==
