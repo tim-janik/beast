@@ -30,7 +30,6 @@ ObjectImpl::ObjectImpl (BseObject *bobj) :
 {
   assert_return (gobject_);
   assert_return (gobject_->cxxobject_ == NULL);
-  g_object_ref (gobject_);
   gobject_->cxxobject_ = this;
   if (BSE_UNLIKELY (!object_impl_post_init))
     object_impl_post_init = &ObjectImpl::post_init;
@@ -46,9 +45,8 @@ ObjectImpl::~ObjectImpl ()
 {
   assert_return (gobject_->cxxobject_ == this);
   gobject_->cxxobject_ = NULL;
-  g_object_unref (gobject_);
-  // ObjectImpl keeps BseObject alive until it is destroyed
-  // BseObject keeps ObjectImpl alive until dispose()
+  // ObjectImplP keeps BseObject alive until it is destroyed
+  // BseObject keeps ObjectImpl alive until finalize()
 }
 
 Aida::ExecutionContext&
@@ -319,9 +317,16 @@ bse_object_do_finalize (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
 
-  bse_id_free (object->unique_id);
-  sfi_ustore_remove (object_id_ustore, object->unique_id);
+  if (object->cxxobject_)
+    {
+      delete object->cxxobject_;
+      assert_return (object->cxxobject_ == NULL);
+    }
+
+  const uint unique_id = object->unique_id;
   object->unique_id = 0;
+  sfi_ustore_remove (object_id_ustore, unique_id);
+  bse_id_free (unique_id);
 
   /* remove object from hash list *before* clearing data list,
    * since the object uname is kept in the datalist!
@@ -1088,7 +1093,9 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     assert_return_unreached (NULL);
   assert_return (object->cxxobject_ == cxxo, NULL);
   assert_return (object->cxxobjref_ == NULL, NULL);
-  object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
+  auto deleter = [] (Bse::ObjectImpl *cxxo) { g_object_unref (static_cast<BseObject*> (*cxxo)); };
+  g_object_ref (object);
+  object->cxxobjref_ = new Bse::ObjectImplP (cxxo, deleter); // shared_ptr that allows enable_shared_from_this
   assert_return (cxxo == *object, NULL);
   assert_return (object == *cxxo, NULL);
   (cxxo->*Bse::object_impl_post_init) ();
