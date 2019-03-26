@@ -225,8 +225,8 @@ url_show (const char *url)
 static ::std::string
 diag_format (bool with_executable, const char *file, int line, const char *func, char kind, const std::string &info, bool will_abort = false)
 {
-  const ::std::string executable = with_executable ? executable_path() : "";
-  ::std::string sout;
+  std::string executable = with_executable ? executable_path() : "";
+  std::string sout;
   using namespace AnsiColors;
   bool need_reset = true;
   if (kind == 'F' or will_abort)
@@ -238,7 +238,17 @@ diag_format (bool with_executable, const char *file, int line, const char *func,
   else
     need_reset = false;
   if (!executable.empty())
-    sout += executable + ": ";
+    {
+      // Fixup *stupid* executable names so errors stay parsable
+      size_t sep = executable.find (" ");
+      if (sep != std::string::npos)
+        executable = executable.substr (0, sep);        // strips electron command line args
+      sep = executable.rfind ("/");
+      if (sep != std::string::npos)
+        executable = executable.substr (sep + 1);       // use simple basename
+      if (!executable.empty())
+        sout += executable + ": ";
+    }
   if (file && file[0])
     {
       sout += file;
