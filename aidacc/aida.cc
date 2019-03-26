@@ -2584,6 +2584,42 @@ ExecutionContext::get_current ()
   return ecstack.size() ? ecstack.back() : NULL;
 }
 
+struct ExecutionContextAdoptedDeleter {
+  ExecutionContext &ec_;
+  CallableIfaceP    sptr_;
+  ExecutionContextAdoptedDeleter (ExecutionContext &ec, const CallableIfaceP &sptr) :
+    ec_ (ec), sptr_ (sptr)
+  {}
+  static void
+  deleter (ExecutionContextAdoptedDeleter *self)
+  {
+    AIDA_DEBUG ("Deleter: %s: queueing deleter for %p\n", __func__, self->sptr_.get());
+    self->ec_.enqueue_mt (new std::function<void()> ([self] () {
+          AIDA_DEBUG ("Deleter: %s: delete %p\n", __func__, self->sptr_.get());
+          delete self;
+        }));
+  }
+};
+
+CallableIfaceP
+ExecutionContext::adopt_deleter_mt (const CallableIfaceP &sharedptr)
+{
+  if (!sharedptr.get())
+    return sharedptr;
+  auto delp = std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (sharedptr);
+  if (delp && ExecutionContextAdoptedDeleter::deleter == *delp)
+    return sharedptr;
+  // create new shared_ptr that's deleted in this ExecutionContext
+  ExecutionContextAdoptedDeleter *ad = new ExecutionContextAdoptedDeleter (*this, sharedptr);
+  auto adp = std::shared_ptr<ExecutionContextAdoptedDeleter> (ad, ExecutionContextAdoptedDeleter::deleter);
+  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (adp), CallableIfaceP());
+  // use aliasing shared_ptr to yield CallableIface* wihle deleting via adp
+  auto remp = CallableIfaceP (adp, sharedptr.get());
+  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (remp), CallableIfaceP());
+  AIDA_DEBUG ("Deleter: %s: adopted deleter for %p\n", __func__, sharedptr.get());
+  return remp;
+}
+
 /// Create a GLib event loop source for this ExecutionContext.
 GSource*
 ExecutionContext::create_gsource (const std::string &name, int priority)

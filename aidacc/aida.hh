@@ -122,6 +122,7 @@ class ProtoReader;
 class ExecutionContext;
 class CallableIface;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
+typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::shared_ptr<BaseConnection> BaseConnectionP;
 typedef std::shared_ptr<ClientConnection> ClientConnectionP;
@@ -297,6 +298,7 @@ public:
   static void              pop_thread_current  ();
   void                     push_thread_current ();
   GSource*                 create_gsource      (const std::string &name, int priority = 0 /*G_PRIORITY_DEFAULT*/);
+  CallableIfaceP           adopt_deleter_mt    (const CallableIfaceP &sharedptr);
 };
 
 // == EventDispatcher ==
