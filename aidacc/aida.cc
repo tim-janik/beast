@@ -2561,16 +2561,15 @@ get_execution_context_stack()
 
 /// Start using `ec` as active ExecutionContext in the current thread.
 void
-ExecutionContext::push_current (ExecutionContext *ec)
+ExecutionContext::push_thread_current()
 {
-  assert_return (ec != NULL);
   auto &ecstack = get_execution_context_stack();
-  ecstack.push_back (ec);
+  ecstack.push_back (this);
 }
 
 /// Remove the active ExecutionContext from the current thread, after that a previously pushed context becomes active.
 void
-ExecutionContext::pop_current ()
+ExecutionContext::pop_thread_current()
 {
   auto &ecstack = get_execution_context_stack();
   assert_return (ecstack.size() > 0);

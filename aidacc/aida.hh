@@ -289,11 +289,11 @@ public:
   void                     dispatch         ();
   void                     enqueue_mt       (const Closure &closure);
   void                     enqueue_mt       (Closure *closure);
-  static void              push_current     (ExecutionContext *ec);
-  static ExecutionContext* get_current      ();
-  static void              pop_current      ();
-  static ExecutionContext* new_context      ();
-  GSource*                 create_gsource   (const std::string &name, int priority = G_PRIORITY_DEFAULT);
+  static ExecutionContext* new_context         ();
+  static ExecutionContext* get_current         ();
+  static void              pop_thread_current  ();
+  void                     push_thread_current ();
+  GSource*                 create_gsource      (const std::string &name, int priority = G_PRIORITY_DEFAULT);
 };
 
 // == EventDispatcher ==
