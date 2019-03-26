@@ -13,6 +13,9 @@
 
 // == config (FIXME) ==
 #define HAVE_SYS_EVENTFD_H 1
+#ifndef __G_MAIN_H__
+typedef struct _GSource GSource;
+#endif // __G_MAIN_H__
 
 namespace Aida {
 
@@ -293,7 +296,7 @@ public:
   static ExecutionContext* get_current         ();
   static void              pop_thread_current  ();
   void                     push_thread_current ();
-  GSource*                 create_gsource      (const std::string &name, int priority = G_PRIORITY_DEFAULT);
+  GSource*                 create_gsource      (const std::string &name, int priority = 0 /*G_PRIORITY_DEFAULT*/);
 };
 
 // == EventDispatcher ==
