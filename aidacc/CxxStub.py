@@ -744,13 +744,14 @@ class Generator:
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
     s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
     s += '  %s handle;\n' % classH
-    s += '  handle.__iface_ptr__() = this->shared_from_this();\n' # FIXME: deleter must execute in BSE thread
+    s += '  Aida::ExecutionContext &ec = this->__execution_context_mt__();\n'
+    s += '  handle.__iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (this->shared_from_this()));\n' % classC
     s += '  return handle;\n'
     s += '}\n'
     # s += '  __%s_ifx__ ( /*conv*/    %s (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
     s += '%s::%s (%s *iface)\n{\n' % (classH, classH, classC)
     s += '   if (iface)\n'
-    s += '     __iface_ptr__() = iface->shared_from_this();\n'
+    s += '     __iface_ptr__() = iface->__handle__().__iface_ptr__();\n'
     s += '}\n'
     # s_ifx__ ( __iface__() )
     s += '%s*\n%s::__iface__() const\n{\n' % (classC, classH)
