@@ -687,15 +687,17 @@ I_FirstInterfaceIface::~I_FirstInterfaceIface ()
 FirstInterfaceHandle
 I_FirstInterfaceIface::__handle__()
 {
-  FirstInterfaceHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  FirstInterfaceHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_FirstInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-FirstInterfaceHandle::FirstInterfaceHandle (I_FirstInterfaceIface *iface)
+FirstInterfaceHandle::FirstInterfaceHandle (const std::shared_ptr<I_FirstInterfaceIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_FirstInterfaceIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_FirstInterfaceIface*
 FirstInterfaceHandle::__iface__() const
@@ -763,15 +765,17 @@ I_UIWidgetAreaIface::~I_UIWidgetAreaIface ()
 UIWidgetAreaHandle
 I_UIWidgetAreaIface::__handle__()
 {
-  UIWidgetAreaHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  UIWidgetAreaHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_UIWidgetAreaIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-UIWidgetAreaHandle::UIWidgetAreaHandle (I_UIWidgetAreaIface *iface)
+UIWidgetAreaHandle::UIWidgetAreaHandle (const std::shared_ptr<I_UIWidgetAreaIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_UIWidgetAreaIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_UIWidgetAreaIface*
 UIWidgetAreaHandle::__iface__() const
@@ -847,15 +851,17 @@ I_ParentIface::~I_ParentIface ()
 ParentHandle
 I_ParentIface::__handle__()
 {
-  ParentHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  ParentHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_ParentIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-ParentHandle::ParentHandle (I_ParentIface *iface)
+ParentHandle::ParentHandle (const std::shared_ptr<I_ParentIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_ParentIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_ParentIface*
 ParentHandle::__iface__() const
@@ -920,15 +926,17 @@ I_ChildIface::~I_ChildIface ()
 ChildHandle
 I_ChildIface::__handle__()
 {
-  ChildHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  ChildHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_ChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-ChildHandle::ChildHandle (I_ChildIface *iface)
+ChildHandle::ChildHandle (const std::shared_ptr<I_ChildIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_ChildIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_ChildIface*
 ChildHandle::__iface__() const
@@ -999,15 +1007,17 @@ I_DescendantIface::~I_DescendantIface ()
 DescendantHandle
 I_DescendantIface::__handle__()
 {
-  DescendantHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  DescendantHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_DescendantIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-DescendantHandle::DescendantHandle (I_DescendantIface *iface)
+DescendantHandle::DescendantHandle (const std::shared_ptr<I_DescendantIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_DescendantIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_DescendantIface*
 DescendantHandle::__iface__() const
@@ -1079,15 +1089,17 @@ I_GrandChildIface::~I_GrandChildIface ()
 GrandChildHandle
 I_GrandChildIface::__handle__()
 {
-  GrandChildHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  GrandChildHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_GrandChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-GrandChildHandle::GrandChildHandle (I_GrandChildIface *iface)
+GrandChildHandle::GrandChildHandle (const std::shared_ptr<I_GrandChildIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_GrandChildIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_GrandChildIface*
 GrandChildHandle::__iface__() const
@@ -1160,15 +1172,17 @@ I_QuickIfaceIface::~I_QuickIfaceIface ()
 QuickIfaceHandle
 I_QuickIfaceIface::__handle__()
 {
-  QuickIfaceHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  QuickIfaceHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_QuickIfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-QuickIfaceHandle::QuickIfaceHandle (I_QuickIfaceIface *iface)
+QuickIfaceHandle::QuickIfaceHandle (const std::shared_ptr<I_QuickIfaceIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_QuickIfaceIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_QuickIfaceIface*
 QuickIfaceHandle::__iface__() const
@@ -1233,15 +1247,17 @@ I_MethodTestInterfaceIface::~I_MethodTestInterfaceIface ()
 MethodTestInterfaceHandle
 I_MethodTestInterfaceIface::__handle__()
 {
-  MethodTestInterfaceHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  MethodTestInterfaceHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_MethodTestInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-MethodTestInterfaceHandle::MethodTestInterfaceHandle (I_MethodTestInterfaceIface *iface)
+MethodTestInterfaceHandle::MethodTestInterfaceHandle (const std::shared_ptr<I_MethodTestInterfaceIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_MethodTestInterfaceIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_MethodTestInterfaceIface*
 MethodTestInterfaceHandle::__iface__() const
@@ -1306,15 +1322,17 @@ I_SignalTestInterfaceIface::~I_SignalTestInterfaceIface ()
 SignalTestInterfaceHandle
 I_SignalTestInterfaceIface::__handle__()
 {
-  SignalTestInterfaceHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  SignalTestInterfaceHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_SignalTestInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-SignalTestInterfaceHandle::SignalTestInterfaceHandle (I_SignalTestInterfaceIface *iface)
+SignalTestInterfaceHandle::SignalTestInterfaceHandle (const std::shared_ptr<I_SignalTestInterfaceIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_SignalTestInterfaceIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_SignalTestInterfaceIface*
 SignalTestInterfaceHandle::__iface__() const
@@ -1379,15 +1397,17 @@ I_ChildInheritingSignalsIface::~I_ChildInheritingSignalsIface ()
 ChildInheritingSignalsHandle
 I_ChildInheritingSignalsIface::__handle__()
 {
-  ChildInheritingSignalsHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  ChildInheritingSignalsHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_ChildInheritingSignalsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-ChildInheritingSignalsHandle::ChildInheritingSignalsHandle (I_ChildInheritingSignalsIface *iface)
+ChildInheritingSignalsHandle::ChildInheritingSignalsHandle (const std::shared_ptr<I_ChildInheritingSignalsIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_ChildInheritingSignalsIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_ChildInheritingSignalsIface*
 ChildInheritingSignalsHandle::__iface__() const
@@ -1458,15 +1478,17 @@ I_AnotherChildIface::~I_AnotherChildIface ()
 AnotherChildHandle
 I_AnotherChildIface::__handle__()
 {
-  AnotherChildHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  AnotherChildHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_AnotherChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-AnotherChildHandle::AnotherChildHandle (I_AnotherChildIface *iface)
+AnotherChildHandle::AnotherChildHandle (const std::shared_ptr<I_AnotherChildIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_AnotherChildIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_AnotherChildIface*
 AnotherChildHandle::__iface__() const
@@ -1537,15 +1559,17 @@ I_PropertyTesterIface::~I_PropertyTesterIface ()
 PropertyTesterHandle
 I_PropertyTesterIface::__handle__()
 {
-  PropertyTesterHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  PropertyTesterHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_PropertyTesterIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-PropertyTesterHandle::PropertyTesterHandle (I_PropertyTesterIface *iface)
+PropertyTesterHandle::PropertyTesterHandle (const std::shared_ptr<I_PropertyTesterIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_PropertyTesterIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_PropertyTesterIface*
 PropertyTesterHandle::__iface__() const
@@ -1662,15 +1686,17 @@ I_UseIncludesIface::~I_UseIncludesIface ()
 UseIncludesHandle
 I_UseIncludesIface::__handle__()
 {
-  UseIncludesHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  UseIncludesHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_UseIncludesIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-UseIncludesHandle::UseIncludesHandle (I_UseIncludesIface *iface)
+UseIncludesHandle::UseIncludesHandle (const std::shared_ptr<I_UseIncludesIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_UseIncludesIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_UseIncludesIface*
 UseIncludesHandle::__iface__() const
@@ -1741,15 +1767,17 @@ I_ButtonAreaIface::~I_ButtonAreaIface ()
 ButtonAreaHandle
 I_ButtonAreaIface::__handle__()
 {
-  ButtonAreaHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  ButtonAreaHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_ButtonAreaIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-ButtonAreaHandle::ButtonAreaHandle (I_ButtonAreaIface *iface)
+ButtonAreaHandle::ButtonAreaHandle (const std::shared_ptr<I_ButtonAreaIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_ButtonAreaIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_ButtonAreaIface*
 ButtonAreaHandle::__iface__() const
@@ -1831,15 +1859,17 @@ I_PureMethodsIface::~I_PureMethodsIface ()
 PureMethodsHandle
 I_PureMethodsIface::__handle__()
 {
-  PureMethodsHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  PureMethodsHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_PureMethodsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-PureMethodsHandle::PureMethodsHandle (I_PureMethodsIface *iface)
+PureMethodsHandle::PureMethodsHandle (const std::shared_ptr<I_PureMethodsIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_PureMethodsIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_PureMethodsIface*
 PureMethodsHandle::__iface__() const
@@ -1907,15 +1937,17 @@ I_NameTestsIface::~I_NameTestsIface ()
 NameTestsHandle
 I_NameTestsIface::__handle__()
 {
-  NameTestsHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  NameTestsHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_NameTestsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-NameTestsHandle::NameTestsHandle (I_NameTestsIface *iface)
+NameTestsHandle::NameTestsHandle (const std::shared_ptr<I_NameTestsIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_NameTestsIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_NameTestsIface*
 NameTestsHandle::__iface__() const
@@ -1983,15 +2015,17 @@ I_CompressorIface::~I_CompressorIface ()
 CompressorHandle
 I_CompressorIface::__handle__()
 {
-  CompressorHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  CompressorHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_CompressorIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-CompressorHandle::CompressorHandle (I_CompressorIface *iface)
+CompressorHandle::CompressorHandle (const std::shared_ptr<I_CompressorIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_CompressorIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_CompressorIface*
 CompressorHandle::__iface__() const
@@ -2070,15 +2104,17 @@ I_SoundModuleIface::~I_SoundModuleIface ()
 SoundModuleHandle
 I_SoundModuleIface::__handle__()
 {
-  SoundModuleHandle handle;
   Aida::ExecutionContext &ec = this->__execution_context_mt__();
+  SoundModuleHandle handle;
   handle.__iface_ptr__() = std::dynamic_pointer_cast<I_SoundModuleIface> (ec.adopt_deleter_mt (this->shared_from_this()));
   return handle;
 }
-SoundModuleHandle::SoundModuleHandle (I_SoundModuleIface *iface)
+SoundModuleHandle::SoundModuleHandle (const std::shared_ptr<I_SoundModuleIface> &ifacep)
 {
-   if (iface)
-     __iface_ptr__() = iface->__handle__().__iface_ptr__();
+  if (!ifacep)
+    return;
+  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
+  __iface_ptr__() = std::dynamic_pointer_cast<I_SoundModuleIface> (ec.adopt_deleter_mt (ifacep));
 }
 I_SoundModuleIface*
 SoundModuleHandle::__iface__() const

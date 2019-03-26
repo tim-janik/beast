@@ -256,7 +256,7 @@ public:
   explicit                      FirstInterfaceHandle ();
   void                          void_func            ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_FirstInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    FirstInterfaceHandle (I_FirstInterfaceIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    FirstInterfaceHandle (const std::shared_ptr<I_FirstInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -714,7 +714,7 @@ public:
   std::string                   on_click2out       ();
   void                          on_click2in        (const std::string &command);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_UIWidgetAreaIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UIWidgetAreaHandle (I_UIWidgetAreaIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UIWidgetAreaHandle (const std::shared_ptr<I_UIWidgetAreaIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "dummy", &UIWidgetAreaHandle::dummy, &UIWidgetAreaHandle::dummy);
@@ -736,7 +736,7 @@ public:
   static ParentHandle           down_cast (const RemoteHandle &smh);
   explicit                      ParentHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_ParentIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ParentHandle (I_ParentIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ParentHandle (const std::shared_ptr<I_ParentIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -755,7 +755,7 @@ public:
   static ChildHandle            down_cast (const RemoteHandle &smh);
   explicit                      ChildHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_ChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildHandle (I_ChildIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildHandle (const std::shared_ptr<I_ChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ParentHandle::__accept_accessor__ (__visitor_);
@@ -776,7 +776,7 @@ public:
   static DescendantHandle       down_cast (const RemoteHandle &smh);
   explicit                      DescendantHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_DescendantIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    DescendantHandle (I_DescendantIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    DescendantHandle (const std::shared_ptr<I_DescendantIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ChildHandle::__accept_accessor__ (__visitor_);
@@ -797,7 +797,7 @@ public:
   static GrandChildHandle       down_cast (const RemoteHandle &smh);
   explicit                      GrandChildHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_GrandChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    GrandChildHandle (I_GrandChildIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    GrandChildHandle (const std::shared_ptr<I_GrandChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->DescendantHandle::__accept_accessor__ (__visitor_);
@@ -862,7 +862,7 @@ public:
   explicit                      QuickIfaceHandle ();
   void                          simple_function  (int i = 9);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_QuickIfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    QuickIfaceHandle (I_QuickIfaceIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    QuickIfaceHandle (const std::shared_ptr<I_QuickIfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -904,7 +904,7 @@ public:
   QuickIfaceHandle              method_with_quickiface    (QuickIfaceHandle &input,
                                                            QuickIfaceHandle &iface0);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_MethodTestInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    MethodTestInterfaceHandle (I_MethodTestInterfaceIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    MethodTestInterfaceHandle (const std::shared_ptr<I_MethodTestInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -923,7 +923,7 @@ public:
   static SignalTestInterfaceHandle down_cast (const RemoteHandle &smh);
   explicit                      SignalTestInterfaceHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_SignalTestInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SignalTestInterfaceHandle (I_SignalTestInterfaceIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SignalTestInterfaceHandle (const std::shared_ptr<I_SignalTestInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -942,7 +942,7 @@ public:
   static ChildInheritingSignalsHandle down_cast (const RemoteHandle &smh);
   explicit                      ChildInheritingSignalsHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_ChildInheritingSignalsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildInheritingSignalsHandle (I_ChildInheritingSignalsIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildInheritingSignalsHandle (const std::shared_ptr<I_ChildInheritingSignalsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -963,7 +963,7 @@ public:
   static AnotherChildHandle     down_cast (const RemoteHandle &smh);
   explicit                      AnotherChildHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_AnotherChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    AnotherChildHandle (I_AnotherChildIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    AnotherChildHandle (const std::shared_ptr<I_AnotherChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -1006,7 +1006,7 @@ public:
   Aida::Any                     any_prop       () const;
   void                          any_prop       (const Aida::Any&);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_PropertyTesterIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PropertyTesterHandle (I_PropertyTesterIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PropertyTesterHandle (const std::shared_ptr<I_PropertyTesterIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "bool_prop", &PropertyTesterHandle::bool_prop, &PropertyTesterHandle::bool_prop);
@@ -1040,7 +1040,7 @@ public:
   static UseIncludesHandle      down_cast (const RemoteHandle &smh);
   explicit                      UseIncludesHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_UseIncludesIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UseIncludesHandle (I_UseIncludesIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UseIncludesHandle (const std::shared_ptr<I_UseIncludesIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->IncludeCheck::SomeInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -1069,7 +1069,7 @@ public:
   ClickType                     click_type () const;
   void                          click_type (ClickType);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_ButtonAreaIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ButtonAreaHandle (I_ButtonAreaIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ButtonAreaHandle (const std::shared_ptr<I_ButtonAreaIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "on_click", &ButtonAreaHandle::on_click, &ButtonAreaHandle::on_click);
@@ -1096,7 +1096,7 @@ public:
   explicit                      PureMethodsHandle ();
   int                           pure_method       (double f);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_PureMethodsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PureMethodsHandle (I_PureMethodsIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PureMethodsHandle (const std::shared_ptr<I_PureMethodsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1121,7 +1121,7 @@ public:
                                                            RapicornAidaTest::ClickType qe,
                                                            const OtherNamespace::SomeRecord &sr);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_NameTestsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    NameTestsHandle (I_NameTestsIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    NameTestsHandle (const std::shared_ptr<I_NameTestsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1147,7 +1147,7 @@ public:
   double                        ratio     () const;
   void                          ratio     (double);
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_CompressorIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    CompressorHandle (I_CompressorIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    CompressorHandle (const std::shared_ptr<I_CompressorIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "threshold", &CompressorHandle::threshold, &CompressorHandle::threshold);
@@ -1200,7 +1200,7 @@ public:
   static SoundModuleHandle      down_cast (const RemoteHandle &smh);
   explicit                      SoundModuleHandle ();
   __aidacc_tests_t304_testpass_idl_ifx__ ( I_SoundModuleIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SoundModuleHandle (I_SoundModuleIface*) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SoundModuleHandle (const std::shared_ptr<I_SoundModuleIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1249,8 +1249,7 @@ FirstInterfaceHandle
 FirstInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_FirstInterfaceIface*> (ifacep.get());
-  return target ? target->__handle__() : FirstInterfaceHandle();
+  return std::dynamic_pointer_cast<I_FirstInterfaceIface> (ifacep);
 }
 void
 FirstInterfaceHandle::void_func ()
@@ -1953,8 +1952,7 @@ UIWidgetAreaHandle
 UIWidgetAreaHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_UIWidgetAreaIface*> (ifacep.get());
-  return target ? target->__handle__() : UIWidgetAreaHandle();
+  return std::dynamic_pointer_cast<I_UIWidgetAreaIface> (ifacep);
 }
 bool
 UIWidgetAreaHandle::dummy () const
@@ -2048,8 +2046,7 @@ ParentHandle
 ParentHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_ParentIface*> (ifacep.get());
-  return target ? target->__handle__() : ParentHandle();
+  return std::dynamic_pointer_cast<I_ParentIface> (ifacep);
 }
 ChildHandle::ChildHandle ()
 {}
@@ -2065,8 +2062,7 @@ ChildHandle
 ChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_ChildIface*> (ifacep.get());
-  return target ? target->__handle__() : ChildHandle();
+  return std::dynamic_pointer_cast<I_ChildIface> (ifacep);
 }
 DescendantHandle::DescendantHandle ()
 {}
@@ -2082,8 +2078,7 @@ DescendantHandle
 DescendantHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_DescendantIface*> (ifacep.get());
-  return target ? target->__handle__() : DescendantHandle();
+  return std::dynamic_pointer_cast<I_DescendantIface> (ifacep);
 }
 GrandChildHandle::GrandChildHandle ()
 {}
@@ -2099,8 +2094,7 @@ GrandChildHandle
 GrandChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_GrandChildIface*> (ifacep.get());
-  return target ? target->__handle__() : GrandChildHandle();
+  return std::dynamic_pointer_cast<I_GrandChildIface> (ifacep);
 }
 static const Aida::IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickRecord_ = {
   "InterfaceTests::QuickRecord\0"
@@ -2180,8 +2174,7 @@ QuickIfaceHandle
 QuickIfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_QuickIfaceIface*> (ifacep.get());
-  return target ? target->__handle__() : QuickIfaceHandle();
+  return std::dynamic_pointer_cast<I_QuickIfaceIface> (ifacep);
 }
 void
 QuickIfaceHandle::simple_function (int arg_i)
@@ -2202,8 +2195,7 @@ MethodTestInterfaceHandle
 MethodTestInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_MethodTestInterfaceIface*> (ifacep.get());
-  return target ? target->__handle__() : MethodTestInterfaceHandle();
+  return std::dynamic_pointer_cast<I_MethodTestInterfaceIface> (ifacep);
 }
 void
 MethodTestInterfaceHandle::method_with_void ()
@@ -2262,7 +2254,7 @@ GrandChildHandle
 MethodTestInterfaceHandle::method_with_interface (GrandChildHandle &arg_input,
                                                   GrandChildHandle &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_interface, *arg_input.__iface__(), *arg_optval.__iface__()).get();
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_interface, *arg_input.__iface__(), *arg_optval.__iface__());
 }
 Aida::Any
 MethodTestInterfaceHandle::method_with_anys (const Aida::Any &arg_input,
@@ -2274,7 +2266,7 @@ QuickIfaceHandle
 MethodTestInterfaceHandle::method_with_quickiface (QuickIfaceHandle &arg_input,
                                                    QuickIfaceHandle &arg_iface0)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_quickiface, *arg_input.__iface__(), *arg_iface0.__iface__()).get();
+  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_quickiface, *arg_input.__iface__(), *arg_iface0.__iface__());
 }
 SignalTestInterfaceHandle::SignalTestInterfaceHandle ()
 {}
@@ -2290,8 +2282,7 @@ SignalTestInterfaceHandle
 SignalTestInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_SignalTestInterfaceIface*> (ifacep.get());
-  return target ? target->__handle__() : SignalTestInterfaceHandle();
+  return std::dynamic_pointer_cast<I_SignalTestInterfaceIface> (ifacep);
 }
 ChildInheritingSignalsHandle::ChildInheritingSignalsHandle ()
 {}
@@ -2307,8 +2298,7 @@ ChildInheritingSignalsHandle
 ChildInheritingSignalsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_ChildInheritingSignalsIface*> (ifacep.get());
-  return target ? target->__handle__() : ChildInheritingSignalsHandle();
+  return std::dynamic_pointer_cast<I_ChildInheritingSignalsIface> (ifacep);
 }
 AnotherChildHandle::AnotherChildHandle ()
 {}
@@ -2324,8 +2314,7 @@ AnotherChildHandle
 AnotherChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_AnotherChildIface*> (ifacep.get());
-  return target ? target->__handle__() : AnotherChildHandle();
+  return std::dynamic_pointer_cast<I_AnotherChildIface> (ifacep);
 }
 PropertyTesterHandle::PropertyTesterHandle ()
 {}
@@ -2341,8 +2330,7 @@ PropertyTesterHandle
 PropertyTesterHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_PropertyTesterIface*> (ifacep.get());
-  return target ? target->__handle__() : PropertyTesterHandle();
+  return std::dynamic_pointer_cast<I_PropertyTesterIface> (ifacep);
 }
 bool
 PropertyTesterHandle::bool_prop () const
@@ -2427,7 +2415,7 @@ PropertyTesterHandle::sequence_prop (const QuickSequence &value)
 GrandChildHandle
 PropertyTesterHandle::interface_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::interface_prop).get();
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::interface_prop);
 }
 void
 PropertyTesterHandle::interface_prop (GrandChildHandle value)
@@ -2437,7 +2425,7 @@ PropertyTesterHandle::interface_prop (GrandChildHandle value)
 PropertyTesterHandle
 PropertyTesterHandle::self_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::self_prop).get();
+  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::self_prop);
 }
 void
 PropertyTesterHandle::self_prop (PropertyTesterHandle value)
@@ -2471,8 +2459,7 @@ UseIncludesHandle
 UseIncludesHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_UseIncludesIface*> (ifacep.get());
-  return target ? target->__handle__() : UseIncludesHandle();
+  return std::dynamic_pointer_cast<I_UseIncludesIface> (ifacep);
 }
 ButtonAreaHandle::ButtonAreaHandle ()
 {}
@@ -2488,8 +2475,7 @@ ButtonAreaHandle
 ButtonAreaHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_ButtonAreaIface*> (ifacep.get());
-  return target ? target->__handle__() : ButtonAreaHandle();
+  return std::dynamic_pointer_cast<I_ButtonAreaIface> (ifacep);
 }
 std::string
 ButtonAreaHandle::on_click () const
@@ -2545,8 +2531,7 @@ PureMethodsHandle
 PureMethodsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_PureMethodsIface*> (ifacep.get());
-  return target ? target->__handle__() : PureMethodsHandle();
+  return std::dynamic_pointer_cast<I_PureMethodsIface> (ifacep);
 }
 int
 PureMethodsHandle::pure_method (double arg_f)
@@ -2570,8 +2555,7 @@ NameTestsHandle
 NameTestsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_NameTestsIface*> (ifacep.get());
-  return target ? target->__handle__() : NameTestsHandle();
+  return std::dynamic_pointer_cast<I_NameTestsIface> (ifacep);
 }
 void
 NameTestsHandle::args_from_other_namespace (const InterfaceTests::QuickRecord &arg_qr,
@@ -2597,8 +2581,7 @@ CompressorHandle
 CompressorHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_CompressorIface*> (ifacep.get());
-  return target ? target->__handle__() : CompressorHandle();
+  return std::dynamic_pointer_cast<I_CompressorIface> (ifacep);
 }
 double
 CompressorHandle::threshold () const
@@ -2683,8 +2666,7 @@ SoundModuleHandle
 SoundModuleHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  auto *target = dynamic_cast<I_SoundModuleIface*> (ifacep.get());
-  return target ? target->__handle__() : SoundModuleHandle();
+  return std::dynamic_pointer_cast<I_SoundModuleIface> (ifacep);
 }
 } // BseTest
 

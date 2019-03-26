@@ -566,7 +566,7 @@ class Generator:
     if self.gen_mode == G4STUB:
       s += '  __%s_ifx__ ( %s*  __iface__ () const );\n' % (self.cppmacro, self.C4server (type_info))
       # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-      s += '  __%s_ifx__ ( /*conv*/    %s (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
+      s += '  __%s_ifx__ ( /*conv*/    %s (const std::shared_ptr<%s>&) );\n' % (self.cppmacro, classC, self.C4server (type_info))
       s += self.insertion_text ('handle_scope:' + type_info.name)
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
@@ -732,8 +732,7 @@ class Generator:
     s += '}\n'
     s += '%s\n%s::down_cast (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
     s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
-    s += '  auto *target = dynamic_cast<%s*> (ifacep.get());\n' % classC
-    s += '  return target ? target->__handle__() : %s();\n' % classH
+    s += '  return std::dynamic_pointer_cast<%s> (ifacep);\n' % classC
     s += '}\n'
     return s
   def generate_server_class_methods (self, tp):
@@ -743,15 +742,16 @@ class Generator:
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
     s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
-    s += '  %s handle;\n' % classH
     s += '  Aida::ExecutionContext &ec = this->__execution_context_mt__();\n'
+    s += '  %s handle;\n' % classH
     s += '  handle.__iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (this->shared_from_this()));\n' % classC
     s += '  return handle;\n'
     s += '}\n'
     # s += '  __%s_ifx__ ( /*conv*/    %s (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-    s += '%s::%s (%s *iface)\n{\n' % (classH, classH, classC)
-    s += '   if (iface)\n'
-    s += '     __iface_ptr__() = iface->__handle__().__iface_ptr__();\n'
+    s += '%s::%s (const std::shared_ptr<%s> &ifacep)\n{\n' % (classH, classH, classC)
+    s += '  if (!ifacep)\n    return;\n'
+    s += '  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();\n'
+    s += '  __iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (ifacep));\n' % classC
     s += '}\n'
     # s_ifx__ ( __iface__() )
     s += '%s*\n%s::__iface__() const\n{\n' % (classC, classH)
@@ -795,8 +795,7 @@ class Generator:
         s += ', ' + deref + argprefix + a[0] + '.__iface__()'
       else:
         s += ', ' + argprefix + a[0]
-    sharedptrget = '.get()' if rstorage == Decls.INTERFACE else ''
-    s += ')%s;\n' % sharedptrget
+    s += ');\n'
     return s
   def generate_client_method_stub (self, class_info, mtype):
     s,copydoc = '', ''
