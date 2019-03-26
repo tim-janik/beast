@@ -6,15 +6,11 @@ struct DUMMY { // dummy class for auto indentation
 
 interface_scope:Object:
   BSE_USE_RESULT
-  uint64_t on  (const ::std::string &type, ::Aida::EventHandlerF handler) { return this->ImplicitBase::__event_attach__ (type, handler); }
+  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::Aida::EventHandlerF handler)   { return this->ImplicitBase::__attach__ (type, handler); }
   BSE_USE_RESULT
-  uint64_t on  (const ::std::string &type, ::std::function<void()> vfunc) { return this->ImplicitBase::__event_attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
-  void     off (uint64_t *connection_id)                                  { this->off (*connection_id); *connection_id = 0; }
-  void     off (uint64_t connection_id)
-  {
-    if (connection_id && !this->ImplicitBase::__event_detach__ (connection_id))
-      Bse::warning ("Bse::ObjectIface.off(): unknown handler id: %u", connection_id);
-  }
+  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::std::function<void()> vfunc)   { return this->ImplicitBase::__attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
+  void     off (::Aida::IfaceEventConnection &hcon)                                             { hcon.disconnect(); }
+  void     off (::Aida::IfaceEventConnection *hcon)                                             { hcon->disconnect(); *hcon = ::Aida::IfaceEventConnection();  }
   // as<BseObjectPtr>()
   template<class BseObjectPtr, typename ::std::enable_if<std::is_pointer<BseObjectPtr>::value, bool>::type = true>
   BseObjectPtr           as ()
