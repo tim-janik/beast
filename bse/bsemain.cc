@@ -219,6 +219,7 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   assert_return (bse_execution_context == NULL);
   bse_execution_context = Aida::ExecutionContext::new_context();
   attach_execution_context (bse_main_context, bse_execution_context);
+  bse_execution_context->push_thread_current();
 
   // complete initialization
   bse_initialization_stage++;   // = 2
