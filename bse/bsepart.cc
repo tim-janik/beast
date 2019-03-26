@@ -488,9 +488,9 @@ bse_part_list_links (BsePart *self)
             {
               const Bse::TrackPart &tp = tps[i];
               Bse::PartLink pl;
-              pl.track = track->as<Bse::TrackIface*>();
+              pl.track = track->as<Bse::TrackIfaceP>();
               pl.tick = tp.tick;
-              pl.part = self->as<Bse::PartIface*>();
+              pl.part = self->as<Bse::PartIfaceP>();
               pl.duration = tp.duration;
               pls.push_back (pl);
             }

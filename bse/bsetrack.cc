@@ -718,7 +718,7 @@ bse_track_list_parts_intern (BseTrack *self, BsePart *part)
 	{
           Bse::TrackPart tp;
 	  tp.tick = entry->tick;
-	  tp.part = entry->part->as<Bse::PartIface*>();
+	  tp.part = entry->part->as<Bse::PartIfaceP>();
 	  if (song)
 	    bse_song_get_timing (song, tp.tick, &timing);
 	  tp.duration = MAX (uint (timing.tpt), entry->part->last_tick_SL);
