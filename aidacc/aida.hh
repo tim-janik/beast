@@ -293,6 +293,7 @@ public:
   static ExecutionContext* get_current      ();
   static void              pop_current      ();
   static ExecutionContext* new_context      ();
+  GSource*                 create_gsource   (const std::string &name, int priority = G_PRIORITY_DEFAULT);
 };
 
 // == EventDispatcher ==

@@ -2585,6 +2585,43 @@ ExecutionContext::get_current ()
   return ecstack.size() ? ecstack.back() : NULL;
 }
 
+/// Create a GLib event loop source for this ExecutionContext.
+GSource*
+ExecutionContext::create_gsource (const std::string &name, int priority)
+{
+  const int fds[] = { this->notify_fd() };
+  struct CxxSource : GSource {
+    Aida::ExecutionContext *ec;
+  };
+  auto prepare = [] (GSource *source, gint *timeout_p) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto check = [] (GSource *source) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto dispatch = [] (GSource *source, GSourceFunc callback, gpointer user_data) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    cs.ec->dispatch();
+    return true; // keep alive
+  };
+  auto finalize = [] (GSource *source) {
+    // CxxSource &cs = *(CxxSource*) source;
+    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex... ;-(
+    // delete cs.ec;
+  };
+  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
+  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
+  CxxSource &cs = *(CxxSource*) source;
+  cs.ec = this;
+  g_source_set_name (source, name.c_str());
+  g_source_set_priority (source, priority);
+  for (size_t i = 0; i < sizeof (fds) / sizeof (fds[0]); i++)
+    g_source_add_unix_fd (source, fds[i], G_IO_IN);
+  return source;
+}
+
 // == EventDispatcher ==
 struct EventDispatcher::ConnectionImpl final {
   const std::string  selector_;
