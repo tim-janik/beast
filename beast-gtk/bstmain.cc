@@ -30,6 +30,7 @@ static void                     bst_init_aida_idl       ();
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
+static Aida::ExecutionContext *bst_execution_context = NULL;
 static GtkWidget   *beast_splash = NULL;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
@@ -518,17 +519,18 @@ static void
 bst_init_aida_idl()
 {
   assert (bse_server == NULL);
-  // connect to BSE thread and fetch server handle
-  Aida::ClientConnectionP connection = Bse::init_server_connection();
-  assert (connection != NULL);
+  // fetch BSE server handle
   bse_server = Bse::init_server_instance();
   assert (bse_server != NULL);
   assert (bse_server.proxy_id() == BSE_SERVER);
   assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
-  // hook Aida connection into our main loop
-  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (connection.get());
-  g_source_set_priority (source, G_PRIORITY_DEFAULT);
-  g_source_attach (source, g_main_context_default());
+  // hook Aida ExecutionContext into event loop to dispatch callbacks
+  assert (bst_execution_context == NULL);
+  bst_execution_context = Aida::ExecutionContext::new_context();
+  GSource *gsource = bst_execution_context->create_gsource ("BST::ExecutionContext", G_PRIORITY_DEFAULT);
+  g_source_attach (gsource, g_main_context_default());
+  g_source_unref (gsource);
+  bst_execution_context->push_thread_current();
 }
 
 static bool initialize_bse_and_exit = false;
