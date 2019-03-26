@@ -2541,7 +2541,7 @@ ExecutionContext::enqueue_mt (Closure *closure)
 void
 ExecutionContext::enqueue_mt (const Closure &closure)
 {
-  m.enqueue_closure_mt (const_cast<Closure*> (&closure), true);
+  enqueue_mt (new Closure (closure));
 }
 
 /// Create an ExecutionContext.
