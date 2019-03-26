@@ -113,7 +113,7 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
       ev[args[i]->key] = args[i]->value;
   ev["name"] = name;
   ev["detail"] = detail;
-  __event_emit__ (ev);          // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
+  event_dispatcher_.emit (ev);  // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
   // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
 }
 
