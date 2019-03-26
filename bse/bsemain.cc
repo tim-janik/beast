@@ -230,7 +230,8 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   while (main_loop_thread_running)
     {
       g_main_context_pending (bse_main_context);
-      g_main_context_iteration (bse_main_context, TRUE);
+      if (main_loop_thread_running)
+        g_main_context_iteration (bse_main_context, TRUE);
     }
 
   Bse::TaskRegistry::remove (Bse::this_thread_gettid()); // see bse_init_intern
