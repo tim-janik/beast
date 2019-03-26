@@ -661,7 +661,7 @@ public:
 
 /// Auxillary class for the ScopedHandle<> implementation.
 class DetacherHooks {
-  std::vector<uint64>   detach_ids_;
+  std::vector<HandleEventConnection> connections_;
 protected:
   void __swap_hooks__   (DetacherHooks &other);
   void __clear_hooks__  (RemoteHandle *scopedhandle);

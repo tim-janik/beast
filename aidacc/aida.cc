@@ -1825,18 +1825,18 @@ RemoteHandle::EventConnection::disconnect () const
 void
 DetacherHooks::__clear_hooks__ (RemoteHandle *scopedhandle)
 {
-  while (!detach_ids_.empty())
+  while (!connections_.empty())
     {
-      const uint64 hid = detach_ids_.back();
-      detach_ids_.pop_back();
-      scopedhandle->__event_detach__ (hid);
+      HandleEventConnection hcon = connections_.back();
+      connections_.pop_back();
+      hcon.disconnect();
     }
 }
 
 void
 DetacherHooks::__swap_hooks__ (DetacherHooks &other)
 {
-  std::swap (other.detach_ids_, detach_ids_);
+  std::swap (other.connections_, connections_);
 }
 
 void
@@ -1844,9 +1844,8 @@ DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type,
 {
   assert_return (scopedhandle != NULL);
   assert_return (*scopedhandle != NULL);
-  const uint64 hid = scopedhandle->__event_attach__ (type, handler);
-  if (hid)
-    detach_ids_.push_back (hid);
+  HandleEventConnection hcon = scopedhandle->__attach__ (type, handler);
+  connections_.push_back (hcon);
 }
 
 void
