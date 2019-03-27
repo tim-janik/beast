@@ -617,6 +617,7 @@ public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
+  TypeHashList            __typelist__         () const;
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
   const StringVector&     __aida_aux_data__    () const;                                //: AIDAID
