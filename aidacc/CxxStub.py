@@ -686,7 +686,7 @@ class Generator:
     # __access__
     s += 'bool\n%s::__access__ (const std::string &n, const PropertyAccessor &p)\n{\n' % classH
     for fname, ftype in tp.fields:
-      if ftype.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.ANY, Decls.INTERFACE):
+      if ftype.storage in (Decls.RECORD, Decls.SEQUENCE):
         continue
       ctype = self.C (ftype) # self.type2cpp_relative (ftype)
       s += '  if (n.empty() || n == "%s") return p (' % fname

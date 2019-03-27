@@ -1362,6 +1362,58 @@ private:
   std::string (T::*getter_) () const = NULL;
   void   (T::*setter_) (const std::string&) = NULL;
 };
+// enum property
+template<class T, class E>
+struct PropertyDesc<T,E,typename std::is_enum<E>::type> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, E (T::*getter) () const, void (T::*setter) (E), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return ENUM; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<E> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<E>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  E      (T::*getter_) () const = NULL;
+  void   (T::*setter_) (E) = NULL;
+};
+// Any property
+template<class T, class A>
+struct PropertyDesc<T,A,typename std::is_base_of<Any,A>::type> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, A (T::*getter) () const, void (T::*setter) (const A&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return ANY; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<A> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<A>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  A      (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const A&) = NULL;
+};
+// Interface property
+template<class T, class I>
+struct PropertyDesc<T,I,typename std::is_base_of<ImplicitBase,I>::type> : PropertyInfo {
+  using IPtr = std::shared_ptr<I>;
+  PropertyDesc (const char *name, T &object, IPtr (T::*getter) () const, void (T::*setter) (I*), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INSTANCE; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<IPtr> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<IPtr>().get()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  IPtr   (T::*getter_) () const = NULL;
+  void   (T::*setter_) (I*) = NULL;
+};
 
 // == RemoteHandle remote_call<> ==
 template<class T, class... I, class... A> inline void
