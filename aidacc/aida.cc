@@ -2787,6 +2787,10 @@ EventDispatcher::emit (const Event &event)
 CallableIface::~CallableIface ()
 {}
 
+// == PropertyAccessor ==
+PropertyAccessor::~PropertyAccessor()
+{}
+
 // == TransportChannel ==
 class TransportChannel : public EventFd { // Channel for cross-thread ProtoMsg IO
   MpScQueueF<ProtoMsg*> msg_queue;

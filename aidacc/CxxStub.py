@@ -700,7 +700,7 @@ class Generator:
         s, a = s + a, ''
       ctype = self.C (ftype) # self.type2cpp_relative (ftype)
       s += '  if (__all || __n == "%s") return __p (' % fname
-      s += 'Aida::PropertyDesc<%s,%s> ("%s", *this, &%s::%s, &%s::%s, NULL)' % (classH, ctype, fname, classH, fname, classH, fname)
+      s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, NULL)' % (classH, ctype, fname, classH, fname, classH, fname)
       s += '), true;\n'
     for atp in reduced_immediate_ancestors:
       s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)

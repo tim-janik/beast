@@ -120,7 +120,7 @@ class ProtoMsg;
 class ProtoReader;
 class ExecutionContext;
 class CallableIface;
-struct PropertyInfo;
+struct PropertyAccessor;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
@@ -982,7 +982,7 @@ class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableS
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
-  using PropertyAccessor = std::function<void (const PropertyInfo&)>;
+  using PropertyAccessor = std::function<void (const PropertyAccessor&)>;
   virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual bool                __access__          (const std::string &propertyname, const PropertyAccessor&) = 0;
   virtual TypeHashList        __aida_typelist__   () const = 0;
@@ -1264,22 +1264,22 @@ BaseConnection::remote_origin ()
   return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
 }
 
-// == PropertyInfo ==
-struct PropertyInfo {
+// == PropertyAccessor ==
+struct PropertyAccessor {
   using Setter = std::function<void(const Any&)>;
   using Getter = std::function<Any()>;
-  virtual              ~PropertyInfo();
+  virtual              ~PropertyAccessor();
   virtual TypeKind      kind    () const = 0;
   virtual std::string   name    () const = 0;
   virtual StringVector  auxinfo () const = 0;
   virtual Any           get     () const = 0;
   virtual void          set     (const Any&) const = 0;
 };
-template<class T, class V, typename = std::true_type> struct PropertyDesc;
+template<class T, class V, typename = std::true_type> struct PropertyAccessorImpl;
 // bool property
 template<class T>
-struct PropertyDesc<T,bool> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, bool (T::*getter) () const, void (T::*setter) (bool), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,bool> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, bool (T::*getter) () const, void (T::*setter) (bool), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return BOOL; }
@@ -1295,8 +1295,8 @@ private:
 };
 // int32 property
 template<class T>
-struct PropertyDesc<T,int> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, int (T::*getter) () const, void (T::*setter) (int), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,int> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, int (T::*getter) () const, void (T::*setter) (int), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return INT32; }
@@ -1312,8 +1312,8 @@ private:
 };
 // int64 property
 template<class T>
-struct PropertyDesc<T,int64> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, int64 (T::*getter) () const, void (T::*setter) (int64), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,int64> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, int64 (T::*getter) () const, void (T::*setter) (int64), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return INT64; }
@@ -1329,8 +1329,8 @@ private:
 };
 // float64 property
 template<class T>
-struct PropertyDesc<T,double> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, double (T::*getter) () const, void (T::*setter) (double), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,double> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, double (T::*getter) () const, void (T::*setter) (double), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return FLOAT64; }
@@ -1346,8 +1346,8 @@ private:
 };
 // string property
 template<class T>
-struct PropertyDesc<T,std::string> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, std::string (T::*getter) () const, void (T::*setter) (const std::string&), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,std::string> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, std::string (T::*getter) () const, void (T::*setter) (const std::string&), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return STRING; }
@@ -1363,8 +1363,8 @@ private:
 };
 // enum property
 template<class T, class E>
-struct PropertyDesc<T,E,typename std::is_enum<E>::type> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, E (T::*getter) () const, void (T::*setter) (E), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,E,typename std::is_enum<E>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, E (T::*getter) () const, void (T::*setter) (E), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return ENUM; }
@@ -1380,8 +1380,8 @@ private:
 };
 // Any property
 template<class T, class A>
-struct PropertyDesc<T,A,typename std::is_base_of<Any,A>::type> : PropertyInfo {
-  PropertyDesc (const char *name, T &object, A (T::*getter) () const, void (T::*setter) (const A&), const char *auxvalues00) :
+struct PropertyAccessorImpl<T,A,typename std::is_base_of<Any,A>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, A (T::*getter) () const, void (T::*setter) (const A&), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return ANY; }
@@ -1397,9 +1397,9 @@ private:
 };
 // Interface property
 template<class T, class I>
-struct PropertyDesc<T,I,typename std::is_base_of<ImplicitBase,I>::type> : PropertyInfo {
+struct PropertyAccessorImpl<T,I,typename std::is_base_of<ImplicitBase,I>::type> : PropertyAccessor {
   using IPtr = std::shared_ptr<I>;
-  PropertyDesc (const char *name, T &object, IPtr (T::*getter) () const, void (T::*setter) (I*), const char *auxvalues00) :
+  PropertyAccessorImpl (const char *name, T &object, IPtr (T::*getter) () const, void (T::*setter) (I*), const char *auxvalues00) :
     object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
   {}
   virtual TypeKind     kind     () const        { return INSTANCE; }
