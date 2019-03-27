@@ -830,6 +830,21 @@ aux_vector_split (const char *char_array, size_t length)
 }
 
 std::vector<String>
+aux_vector_split (const char *auxinfo00)
+{
+  if (!auxinfo00)
+    return {};
+  const char *p = auxinfo00;
+  size_t l = strlen (p);
+  while (l)
+    {
+      p += l + 1;
+      l = strlen (p);
+    }
+  return aux_vector_split (auxinfo00, l + 1);
+}
+
+std::vector<String>
 aux_vectors_combine (const std::vector<String> &v0, const std::vector<String> &v1, const std::vector<String> &v2,
                      const std::vector<String> &v3, const std::vector<String> &v4, const std::vector<String> &v5,
                      const std::vector<String> &v6, const std::vector<String> &v7, const std::vector<String> &v8,
