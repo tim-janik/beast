@@ -287,14 +287,15 @@ public:
   Aida::Any                     any3;
   /// @endcond
   inline                        XFooRecord () { single_bool = 0; single_num = 0; num64 = 0; single_float = 0; sibling1 = 0; sibling2 = 0; multi1 = 0; multi2 = 0; multi3 = 0; multi4 = 0; enum_field = ExtensiveEnum (0); }
-  inline                        XFooRecord (const Aida::AnyDict &ad) : XFooRecord() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        XFooRecord (const Aida::AnyRec &ad) : XFooRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<XFooRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const XFooRecord &other) const;
-  bool                          operator!=  (const XFooRecord &other) const { return !operator== (other); }
+  bool                          operator==   (const XFooRecord &other) const;
+  bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<XFooRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (single_bool, "single_bool");
@@ -494,14 +495,15 @@ public:
   XFooSequence                  seq;
   /// @endcond
   inline                        NestedTypesRec () { }
-  inline                        NestedTypesRec (const Aida::AnyDict &ad) : NestedTypesRec() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        NestedTypesRec (const Aida::AnyRec &ad) : NestedTypesRec() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesRec"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<NestedTypesRec*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const NestedTypesRec &other) const;
-  bool                          operator!=  (const NestedTypesRec &other) const { return !operator== (other); }
+  bool                          operator==   (const NestedTypesRec &other) const;
+  bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NestedTypesRec*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (rec, "rec");
@@ -539,14 +541,15 @@ public:
   NestedTypesRec                ntr;
   /// @endcond
   inline                        NewRecord () { i = 0; enum1 = Enum1 (0); }
-  inline                        NewRecord (const Aida::AnyDict &ad) : NewRecord() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        NewRecord (const Aida::AnyRec &ad) : NewRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::NewRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<NewRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const NewRecord &other) const;
-  bool                          operator!=  (const NewRecord &other) const { return !operator== (other); }
+  bool                          operator==   (const NewRecord &other) const;
+  bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NewRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (i, "i");
@@ -569,14 +572,15 @@ public:
   NewRecord                     rec;
   /// @endcond
   inline                        InnerRecord () { x = 0; y = 0; }
-  inline                        InnerRecord (const Aida::AnyDict &ad) : InnerRecord() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        InnerRecord (const Aida::AnyRec &ad) : InnerRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::Inner::InnerRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<InnerRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const InnerRecord &other) const;
-  bool                          operator!=  (const InnerRecord &other) const { return !operator== (other); }
+  bool                          operator==   (const InnerRecord &other) const;
+  bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<InnerRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (x, "x");
@@ -595,14 +599,15 @@ public:
   Inner::InnerRecord            r;
   /// @endcond
   inline                        Refer2Inner () { }
-  inline                        Refer2Inner (const Aida::AnyDict &ad) : Refer2Inner() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        Refer2Inner (const Aida::AnyRec &ad) : Refer2Inner() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::Refer2Inner"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<Refer2Inner*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const Refer2Inner &other) const;
-  bool                          operator!=  (const Refer2Inner &other) const { return !operator== (other); }
+  bool                          operator==   (const Refer2Inner &other) const;
+  bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<Refer2Inner*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (r, "r");
@@ -624,14 +629,15 @@ public:
   MandatoryNamespace::Inner::InnerRecord r4;
   /// @endcond
   inline                        SomeRecord () { }
-  inline                        SomeRecord (const Aida::AnyDict &ad) : SomeRecord() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        SomeRecord (const Aida::AnyRec &ad) : SomeRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "OtherNamespace::SomeRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<SomeRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const SomeRecord &other) const;
-  bool                          operator!=  (const SomeRecord &other) const { return !operator== (other); }
+  bool                          operator==   (const SomeRecord &other) const;
+  bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<SomeRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (r1, "r1");
@@ -657,14 +663,15 @@ public:
   std::string                   aux_str;
   /// @endcond
   inline                        RecordWithAuxdata () { aux_bool = 0; aux32 = 0; aux64 = 0; auxf64 = 0; }
-  inline                        RecordWithAuxdata (const Aida::AnyDict &ad) : RecordWithAuxdata() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        RecordWithAuxdata (const Aida::AnyRec &ad) : RecordWithAuxdata() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "Auxdata::RecordWithAuxdata"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<RecordWithAuxdata*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const RecordWithAuxdata &other) const;
-  bool                          operator!=  (const RecordWithAuxdata &other) const { return !operator== (other); }
+  bool                          operator==   (const RecordWithAuxdata &other) const;
+  bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordWithAuxdata*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (aux_bool, "aux_bool");
@@ -814,14 +821,15 @@ public:
   int                           int2;
   /// @endcond
   inline                        QuickRecord () { int1 = 0; int2 = 0; }
-  inline                        QuickRecord (const Aida::AnyDict &ad) : QuickRecord() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        QuickRecord (const Aida::AnyRec &ad) : QuickRecord() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "InterfaceTests::QuickRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<QuickRecord*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const QuickRecord &other) const;
-  bool                          operator!=  (const QuickRecord &other) const { return !operator== (other); }
+  bool                          operator==   (const QuickRecord &other) const;
+  bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<QuickRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (int1, "int1");
@@ -1168,14 +1176,15 @@ public:
   double                        threshold2;
   /// @endcond
   inline                        RecordForGroups () { i = 0; ratio = 0; ordinary_bool = 0; threshold1 = 0; threshold2 = 0; }
-  inline                        RecordForGroups (const Aida::AnyDict &ad) : RecordForGroups() { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        RecordForGroups (const Aida::AnyRec &ad) : RecordForGroups() { __aida_from_any__ (Aida::Any (ad)); }
   std::string                   __typename__      () const	{ return "BseTest::RecordForGroups"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
-  operator                      Aida::AnyDict     () const { return const_cast<RecordForGroups*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }
-  bool                          operator==  (const RecordForGroups &other) const;
-  bool                          operator!=  (const RecordForGroups &other) const { return !operator== (other); }
+  bool                          operator==   (const RecordForGroups &other) const;
+  bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordForGroups*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
   template<class Visitor> void  __accept__  (Visitor &_visitor_)
   {
     _visitor_ (i, "i");
@@ -1206,6 +1215,104 @@ public:
 };
 typedef SoundModuleHandle SoundModuleH; ///< Convenience alias for the IDL type SoundModule.
 typedef ::Aida::ScopedHandle<SoundModuleH> SoundModuleS;
+} // BseTest
+
+namespace MandatoryNamespace {
+template<class Visitor> void
+XFooRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (single_bool, "single_bool");
+  std::forward<Visitor> (_visitor_) (single_num, "single_num");
+  std::forward<Visitor> (_visitor_) (num64, "num64");
+  std::forward<Visitor> (_visitor_) (single_float, "single_float");
+  std::forward<Visitor> (_visitor_) (single_string, "single_string");
+  std::forward<Visitor> (_visitor_) (sibling1, "sibling1");
+  std::forward<Visitor> (_visitor_) (sibling2, "sibling2");
+  std::forward<Visitor> (_visitor_) (multi1, "multi1");
+  std::forward<Visitor> (_visitor_) (multi2, "multi2");
+  std::forward<Visitor> (_visitor_) (multi3, "multi3");
+  std::forward<Visitor> (_visitor_) (multi4, "multi4");
+  std::forward<Visitor> (_visitor_) (enum_field, "enum_field");
+  std::forward<Visitor> (_visitor_) (iface1, "iface1");
+  std::forward<Visitor> (_visitor_) (iface2, "iface2");
+  std::forward<Visitor> (_visitor_) (iface3, "iface3");
+  std::forward<Visitor> (_visitor_) (any1, "any1");
+  std::forward<Visitor> (_visitor_) (any2, "any2");
+  std::forward<Visitor> (_visitor_) (any3, "any3");
+}
+template<class Visitor> void
+NestedTypesRec::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (rec, "rec");
+  std::forward<Visitor> (_visitor_) (seq, "seq");
+}
+template<class Visitor> void
+NewRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (i, "i");
+  std::forward<Visitor> (_visitor_) (enum1, "enum1");
+  std::forward<Visitor> (_visitor_) (xfs, "xfs");
+  std::forward<Visitor> (_visitor_) (ntr, "ntr");
+}
+
+namespace Inner {
+template<class Visitor> void
+InnerRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (x, "x");
+  std::forward<Visitor> (_visitor_) (y, "y");
+  std::forward<Visitor> (_visitor_) (rec, "rec");
+}
+} // Inner
+template<class Visitor> void
+Refer2Inner::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (r, "r");
+}
+} // MandatoryNamespace
+
+namespace OtherNamespace {
+template<class Visitor> void
+SomeRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (r1, "r1");
+  std::forward<Visitor> (_visitor_) (r2, "r2");
+  std::forward<Visitor> (_visitor_) (r3, "r3");
+  std::forward<Visitor> (_visitor_) (r4, "r4");
+}
+} // OtherNamespace
+
+namespace Auxdata {
+template<class Visitor> void
+RecordWithAuxdata::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (aux_bool, "aux_bool");
+  std::forward<Visitor> (_visitor_) (aux32, "aux32");
+  std::forward<Visitor> (_visitor_) (aux64, "aux64");
+  std::forward<Visitor> (_visitor_) (auxf64, "auxf64");
+  std::forward<Visitor> (_visitor_) (aux_str, "aux_str");
+}
+} // Auxdata
+
+namespace InterfaceTests {
+template<class Visitor> void
+QuickRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (int1, "int1");
+  std::forward<Visitor> (_visitor_) (int2, "int2");
+}
+} // InterfaceTests
+
+namespace BseTest {
+template<class Visitor> void
+RecordForGroups::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (i, "i");
+  std::forward<Visitor> (_visitor_) (ratio, "ratio");
+  std::forward<Visitor> (_visitor_) (ordinary_bool, "ordinary_bool");
+  std::forward<Visitor> (_visitor_) (threshold1, "threshold1");
+  std::forward<Visitor> (_visitor_) (threshold2, "threshold2");
+}
 } // BseTest
 
 #endif /* __CLNT__aidacc_tests_t304_testpass_idl */

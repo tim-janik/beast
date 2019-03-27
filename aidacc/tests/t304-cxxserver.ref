@@ -55,6 +55,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace::FirstInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -87,6 +88,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::UIWidgetArea"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -136,6 +138,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Parent"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -160,6 +163,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Child"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -186,6 +190,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Descendant"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -212,6 +217,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::GrandChild"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -238,6 +244,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::QuickIface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -263,6 +270,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::MethodTestInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -310,6 +318,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::SignalTestInterface"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -334,6 +343,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -360,6 +370,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::AnotherChild"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -386,6 +397,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests::PropertyTester"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -447,6 +459,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::UseIncludes"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -473,6 +486,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::ButtonArea"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -511,6 +525,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::PureMethods"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -539,6 +554,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "Other::NameTests"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -569,6 +585,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::Compressor"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -600,6 +617,7 @@ public:
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest::SoundModule"; }
   virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessor&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
   virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
@@ -737,6 +755,11 @@ I_FirstInterfaceIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::FirstInterface"));
   return __d_;
 }
+bool
+I_FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
+}
 std::vector<std::string>
 I_FirstInterfaceIface::__aida_dir__ () const
 {
@@ -820,6 +843,14 @@ I_UIWidgetAreaIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::UIWidgetArea"));
   return __d_;
 }
+bool
+I_UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  const bool __all = __n.empty();
+  if (__all || __n == "dummy") return __p (Aida::PropertyAccessorImpl<I_UIWidgetAreaIface,bool> ("dummy", *this, &I_UIWidgetAreaIface::dummy, &I_UIWidgetAreaIface::dummy, NULL)), true;
+  if (__all || __n == "on_click") return __p (Aida::PropertyAccessorImpl<I_UIWidgetAreaIface,std::string> ("on_click", *this, &I_UIWidgetAreaIface::on_click, &I_UIWidgetAreaIface::on_click, NULL)), true;
+  return false;
+}
 std::vector<std::string>
 I_UIWidgetAreaIface::__aida_dir__ () const
 {
@@ -901,6 +932,11 @@ I_ParentIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Parent"));
   return __d_;
 }
+bool
+I_ParentIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
+}
 std::vector<std::string>
 I_ParentIface::__aida_dir__ () const
 {
@@ -977,6 +1013,12 @@ I_ChildIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Child"),
                                  this->I_ParentIface::__aida_aux_data__());
   return __d_;
+}
+bool
+I_ChildIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->I_ParentIface::__access__ (__n, __p)) return true;
+  return false;
 }
 std::vector<std::string>
 I_ChildIface::__aida_dir__ () const
@@ -1059,6 +1101,12 @@ I_DescendantIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Descendant"),
                                  this->I_ChildIface::__aida_aux_data__());
   return __d_;
+}
+bool
+I_DescendantIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->I_ChildIface::__access__ (__n, __p)) return true;
+  return false;
 }
 std::vector<std::string>
 I_DescendantIface::__aida_dir__ () const
@@ -1143,6 +1191,12 @@ I_GrandChildIface::__aida_aux_data__() const
                                  this->I_DescendantIface::__aida_aux_data__());
   return __d_;
 }
+bool
+I_GrandChildIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->I_DescendantIface::__access__ (__n, __p)) return true;
+  return false;
+}
 std::vector<std::string>
 I_GrandChildIface::__aida_dir__ () const
 {
@@ -1222,6 +1276,11 @@ I_QuickIfaceIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::QuickIface"));
   return __d_;
 }
+bool
+I_QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
+}
 std::vector<std::string>
 I_QuickIfaceIface::__aida_dir__ () const
 {
@@ -1297,6 +1356,11 @@ I_MethodTestInterfaceIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::MethodTestInterface"));
   return __d_;
 }
+bool
+I_MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
+}
 std::vector<std::string>
 I_MethodTestInterfaceIface::__aida_dir__ () const
 {
@@ -1371,6 +1435,11 @@ I_SignalTestInterfaceIface::__aida_aux_data__() const
   static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::SignalTestInterface"));
   return __d_;
+}
+bool
+I_SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
 }
 std::vector<std::string>
 I_SignalTestInterfaceIface::__aida_dir__ () const
@@ -1448,6 +1517,12 @@ I_ChildInheritingSignalsIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
+}
+bool
+I_ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->I_SignalTestInterfaceIface::__access__ (__n, __p)) return true;
+  return false;
 }
 std::vector<std::string>
 I_ChildInheritingSignalsIface::__aida_dir__ () const
@@ -1529,6 +1604,12 @@ I_AnotherChildIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::AnotherChild"),
                                  this->I_SignalTestInterfaceIface::__aida_aux_data__());
   return __d_;
+}
+bool
+I_AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->I_SignalTestInterfaceIface::__access__ (__n, __p)) return true;
+  return false;
 }
 std::vector<std::string>
 I_AnotherChildIface::__aida_dir__ () const
@@ -1624,6 +1705,23 @@ I_PropertyTesterIface::__aida_aux_data__() const
   static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::PropertyTester"));
   return __d_;
+}
+bool
+I_PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  const bool __all = __n.empty();
+  if (__all || __n == "bool_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,bool> ("bool_prop", *this, &I_PropertyTesterIface::bool_prop, &I_PropertyTesterIface::bool_prop, NULL)), true;
+  if (__all || __n == "int32_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,int> ("int32_prop", *this, &I_PropertyTesterIface::int32_prop, &I_PropertyTesterIface::int32_prop, NULL)), true;
+  if (__all || __n == "int64_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,int64_t> ("int64_prop", *this, &I_PropertyTesterIface::int64_prop, &I_PropertyTesterIface::int64_prop, NULL)), true;
+  if (__all || __n == "float64_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,double> ("float64_prop", *this, &I_PropertyTesterIface::float64_prop, &I_PropertyTesterIface::float64_prop, NULL)), true;
+  if (__all || __n == "string_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,std::string> ("string_prop", *this, &I_PropertyTesterIface::string_prop, &I_PropertyTesterIface::string_prop, NULL)), true;
+  if (__all || __n == "enum_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,QuickEnum> ("enum_prop", *this, &I_PropertyTesterIface::enum_prop, &I_PropertyTesterIface::enum_prop, NULL)), true;
+  if (__all || __n == "record_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,QuickRecord> ("record_prop", *this, &I_PropertyTesterIface::record_prop, &I_PropertyTesterIface::record_prop, NULL)), true;
+  if (__all || __n == "sequence_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,QuickSequence> ("sequence_prop", *this, &I_PropertyTesterIface::sequence_prop, &I_PropertyTesterIface::sequence_prop, NULL)), true;
+  if (__all || __n == "interface_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,I_GrandChildIface> ("interface_prop", *this, &I_PropertyTesterIface::interface_prop, &I_PropertyTesterIface::interface_prop, NULL)), true;
+  if (__all || __n == "self_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,I_PropertyTesterIface> ("self_prop", *this, &I_PropertyTesterIface::self_prop, &I_PropertyTesterIface::self_prop, NULL)), true;
+  if (__all || __n == "any_prop") return __p (Aida::PropertyAccessorImpl<I_PropertyTesterIface,Aida::Any> ("any_prop", *this, &I_PropertyTesterIface::any_prop, &I_PropertyTesterIface::any_prop, NULL)), true;
+  return false;
 }
 std::vector<std::string>
 I_PropertyTesterIface::__aida_dir__ () const
@@ -1738,6 +1836,12 @@ I_UseIncludesIface::__aida_aux_data__() const
                                  this->IncludeCheck::I_SomeInterfaceIface::__aida_aux_data__());
   return __d_;
 }
+bool
+I_UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  if (this->IncludeCheck::I_SomeInterfaceIface::__access__ (__n, __p)) return true;
+  return false;
+}
 std::vector<std::string>
 I_UseIncludesIface::__aida_dir__ () const
 {
@@ -1821,6 +1925,16 @@ I_ButtonAreaIface::__aida_aux_data__() const
   static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::ButtonArea"));
   return __d_;
+}
+bool
+I_ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  const bool __all = __n.empty();
+  if (__all || __n == "on_click") return __p (Aida::PropertyAccessorImpl<I_ButtonAreaIface,std::string> ("on_click", *this, &I_ButtonAreaIface::on_click, &I_ButtonAreaIface::on_click, NULL)), true;
+  if (__all || __n == "on_click2") return __p (Aida::PropertyAccessorImpl<I_ButtonAreaIface,std::string> ("on_click2", *this, &I_ButtonAreaIface::on_click2, &I_ButtonAreaIface::on_click2, NULL)), true;
+  if (__all || __n == "on_click3") return __p (Aida::PropertyAccessorImpl<I_ButtonAreaIface,std::string> ("on_click3", *this, &I_ButtonAreaIface::on_click3, &I_ButtonAreaIface::on_click3, NULL)), true;
+  if (__all || __n == "click_type") return __p (Aida::PropertyAccessorImpl<I_ButtonAreaIface,ClickType> ("click_type", *this, &I_ButtonAreaIface::click_type, &I_ButtonAreaIface::click_type, NULL)), true;
+  return false;
 }
 std::vector<std::string>
 I_ButtonAreaIface::__aida_dir__ () const
@@ -1909,6 +2023,11 @@ I_PureMethodsIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::PureMethods"));
   return __d_;
 }
+bool
+I_PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
+}
 std::vector<std::string>
 I_PureMethodsIface::__aida_dir__ () const
 {
@@ -1986,6 +2105,11 @@ I_NameTestsIface::__aida_aux_data__() const
   static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("Other::NameTests"));
   return __d_;
+}
+bool
+I_NameTestsIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
 }
 std::vector<std::string>
 I_NameTestsIface::__aida_dir__ () const
@@ -2073,6 +2197,14 @@ I_CompressorIface::__aida_aux_data__() const
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::Compressor"));
   return __d_;
 }
+bool
+I_CompressorIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  const bool __all = __n.empty();
+  if (__all || __n == "threshold") return __p (Aida::PropertyAccessorImpl<I_CompressorIface,double> ("threshold", *this, &I_CompressorIface::threshold, &I_CompressorIface::threshold, NULL)), true;
+  if (__all || __n == "ratio") return __p (Aida::PropertyAccessorImpl<I_CompressorIface,double> ("ratio", *this, &I_CompressorIface::ratio, &I_CompressorIface::ratio, NULL)), true;
+  return false;
+}
 std::vector<std::string>
 I_CompressorIface::__aida_dir__ () const
 {
@@ -2153,6 +2285,11 @@ I_SoundModuleIface::__aida_aux_data__() const
   static const Aida::StringVector __d_ =
     ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::SoundModule"));
   return __d_;
+}
+bool
+I_SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessor &__p)
+{
+  return false;
 }
 std::vector<std::string>
 I_SoundModuleIface::__aida_dir__ () const
