@@ -684,16 +684,19 @@ class Generator:
     s, classH = '', self.C (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __access__
-    s += 'bool\n%s::__access__ (const std::string &n, const PropertyAccessor &p)\n{\n' % classH
+    s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessor &__p)\n{\n' % classH
+    a  = '  const bool __all = __n.empty();\n'
     for fname, ftype in tp.fields:
       if ftype.storage in (Decls.RECORD, Decls.SEQUENCE):
         continue
+      if a:
+        s, a = s + a, ''
       ctype = self.C (ftype) # self.type2cpp_relative (ftype)
-      s += '  if (n.empty() || n == "%s") return p (' % fname
+      s += '  if (__all || __n == "%s") return __p (' % fname
       s += 'Aida::PropertyDesc<%s,%s> ("%s", *this, &%s::%s, &%s::%s, NULL)' % (classH, ctype, fname, classH, fname, classH, fname)
       s += '), true;\n'
     for atp in reduced_immediate_ancestors:
-      s += '  if (this->%s::__access__ (n, p)) return true;\n' % self.C (atp)
+      s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
     s += '  return false;\n'
     s += '}\n'
     # __aida_dir__
