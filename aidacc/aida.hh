@@ -855,6 +855,9 @@ public:
   RemoteHandle get_untyped_remote_handle () const;
   template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
     ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
+  template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyRec.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnyList>::value && !(::std::is_convertible<T, AnyRec>::value ||
+                                                                                 ::std::is_base_of<Any, T>::value)>;
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
@@ -862,9 +865,6 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
-  template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyRec.
-    ::std::integral_constant<bool, ::std::is_convertible<T, AnyList>::value && !(::std::is_convertible<T, AnyRec>::value ||
-                                                                                 ::std::is_base_of<Any, T>::value)>;
   template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnyList / AnyRec.
     ::std::integral_constant<bool, ::std::is_base_of<Any, T>::value || (::std::is_convertible<T, Any>::value &&
                                                                         !::std::is_convertible<T, AnyList>::value &&
@@ -951,8 +951,8 @@ public:
 };
 typedef Any::AnyRec AnyRec;
 typedef Any::AnyList AnyList;
-template<class T>
-using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
+template<class T>       using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
+template<class T>       using ToAnySeqConvertible = Any::ToAnyListConvertible<T>;
 
 // == Event ==
 class Event : public virtual VirtualEnableSharedFromThis<Event> {
@@ -1413,6 +1413,23 @@ private:
   const char *name_ = NULL, *auxvalues00_ = NULL;
   Rec    (T::*getter_) () const = NULL;
   void   (T::*setter_) (const Rec&) = NULL;
+};
+// Sequence property
+template<class T, class Seq>
+struct PropertyAccessorImpl<T,Seq,typename ToAnySeqConvertible<Seq>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, Seq (T::*getter) () const, void (T::*setter) (const Seq&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return SEQUENCE; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<Seq> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<Seq>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  Seq    (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const Seq&) = NULL;
 };
 // Interface property
 template<class T, class I>
