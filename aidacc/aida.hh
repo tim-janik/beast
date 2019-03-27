@@ -106,7 +106,6 @@ typedef uint64_t            uint64;
 typedef std::string         String;
 typedef std::vector<String> StringVector;
 
-
 // == Forward Declarations ==
 class Any;
 class Event;
@@ -861,6 +860,8 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
+  template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
   template<class T> using ToAnyDictConvertible =        ///< Check is_convertible<a T, AnyDict >.
     ::std::integral_constant<bool, ::std::is_convertible<T, AnyDict>::value && !::std::is_base_of<Any, T>::value>;
   template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyDict.

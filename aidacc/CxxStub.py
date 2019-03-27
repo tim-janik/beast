@@ -254,6 +254,14 @@ class Generator:
     if type.storage in (Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
       return self.C (type) + '()'
     return '0'
+  def generate_recseq_visit (self, type_info):
+    s = ''
+    s += 'template<class Visitor> void\n%s::__visit__ (Visitor &&_visitor_)\n{\n' % self.C (type_info)
+    if type_info.storage == Decls.RECORD:
+      for fname, ftype in type_info.fields:
+        s += '  std::forward<Visitor> (_visitor_) (%s, "%s");\n' % (fname, fname)
+    s += '}\n'
+    return s
   def generate_recseq_accept (self, type_info):
     s = ''
     s += '  template<class Visitor> void  __accept__  (Visitor &_visitor_)\n'
@@ -311,8 +319,10 @@ class Generator:
       s += '  ' + self.F ('operator') + 'Aida::AnyDict     () const '
       s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }\n' % classC
     if type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('bool') + 'operator==  (const %s &other) const;\n' % classC
-      s += '  ' + self.F ('bool') + 'operator!=  (const %s &other) const { return !operator== (other); }\n' % classC
+      s += '  ' + self.F ('bool') + 'operator==   (const %s &other) const;\n' % classC
+      s += '  ' + self.F ('bool') + 'operator!=   (const %s &other) const { return !operator== (other); }\n' % classC
+      s += '  ' + self.F ('operator') + 'Aida::AnyRec () const { Aida::AnyRec r; const_cast<%s*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }\n' % classC
+      s += '  ' + self.F ('template<class Visitor> void') + '__visit__    (Visitor &&_visitor_);\n'
       s += self.generate_recseq_accept (type_info)
     if self.gen_mode == G4STUB:
       s += self.insertion_text ('handle_scope:' + type_info.name)
@@ -1131,6 +1141,11 @@ class Generator:
         elif tp.storage == Decls.INTERFACE:
           s += self.open_namespace (tp)
           s += self.generate_interface_class (tp, class_name_list)     # Class remote handle
+      # template impls after *all* types are defined
+      for tp in types:
+        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD,): # Decls.SEQUENCE):
+          s += self.open_namespace (tp)
+          s += self.generate_recseq_visit (tp)
       s += self.open_namespace (None)
       if self.gen_serverhh and class_name_list:
         s += '\n#define %s_INTERFACE_LIST' % self.cppmacro
