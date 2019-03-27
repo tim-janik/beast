@@ -694,7 +694,7 @@ class Generator:
     s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessor &__p)\n{\n' % classH
     a  = '  const bool __all = __n.empty();\n'
     for fname, ftype in tp.fields:
-      if ftype.storage in (Decls.RECORD, Decls.SEQUENCE):
+      if ftype.storage == Decls.SEQUENCE:
         continue
       if a:
         s, a = s + a, ''
