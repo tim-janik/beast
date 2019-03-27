@@ -121,6 +121,7 @@ class ProtoMsg;
 class ProtoReader;
 class ExecutionContext;
 class CallableIface;
+struct PropertyInfo;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
@@ -422,8 +423,10 @@ String enum_value_to_string   (const std::string &enum_typename, int64 evalue, c
 /// Return enum value identifier in @a enum_typename with the exact value @a evalue.
 String enum_value_find        (const std::string &enum_typename, int64 evalue);
 
-/// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
+/// Split @a char_array at '\\0' and construct vector.
 std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
+/// Split @a auxinfo00, assert key=value contents and '\\0\\0' ending.
+std::vector<String> aux_vector_split    (const char *auxinfo00);
 /// Merge string vectors @a v0 .. @a vf.
 std::vector<String> aux_vectors_combine (const std::vector<String> &v0 = std::vector<String>(),
                                          const std::vector<String> &v1 = std::vector<String>(),
@@ -980,7 +983,9 @@ class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableS
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
+  using PropertyAccessor = std::function<void (const PropertyInfo&)>;
   virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
+  virtual bool                __access__          (const std::string &propertyname, const PropertyAccessor&) = 0;
   virtual TypeHashList        __aida_typelist__   () const = 0;
   virtual const StringVector& __aida_aux_data__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
@@ -1259,6 +1264,104 @@ BaseConnection::remote_origin ()
 {
   return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
 }
+
+// == PropertyInfo ==
+struct PropertyInfo {
+  using Setter = std::function<void(const Any&)>;
+  using Getter = std::function<Any()>;
+  virtual              ~PropertyInfo();
+  virtual TypeKind      kind    () const = 0;
+  virtual std::string   name    () const = 0;
+  virtual StringVector  auxinfo () const = 0;
+  virtual Any           get     () const = 0;
+  virtual void          set     (const Any&) const = 0;
+};
+template<class T, class V, typename = std::true_type> struct PropertyDesc;
+// bool property
+template<class T>
+struct PropertyDesc<T,bool> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, bool (T::*getter) () const, void (T::*setter) (bool), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return BOOL; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<bool> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<bool>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  bool   (T::*getter_) () const = NULL;
+  void   (T::*setter_) (bool) = NULL;
+};
+// int32 property
+template<class T>
+struct PropertyDesc<T,int> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, int (T::*getter) () const, void (T::*setter) (int), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INT32; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<int> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  int    (T::*getter_) () const = NULL;
+  void   (T::*setter_) (int) = NULL;
+};
+// int64 property
+template<class T>
+struct PropertyDesc<T,int64> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, int64 (T::*getter) () const, void (T::*setter) (int64), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INT64; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<int64> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int64>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  int64  (T::*getter_) () const = NULL;
+  void   (T::*setter_) (int64) = NULL;
+};
+// float64 property
+template<class T>
+struct PropertyDesc<T,double> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, double (T::*getter) () const, void (T::*setter) (double), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return FLOAT64; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<double> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<double>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  double (T::*getter_) () const = NULL;
+  void   (T::*setter_) (double) = NULL;
+};
+// string property
+template<class T>
+struct PropertyDesc<T,std::string> : PropertyInfo {
+  PropertyDesc (const char *name, T &object, std::string (T::*getter) () const, void (T::*setter) (const std::string&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return STRING; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<std::string> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<std::string>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  std::string (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const std::string&) = NULL;
+};
 
 // == RemoteHandle remote_call<> ==
 template<class T, class... I, class... A> inline void

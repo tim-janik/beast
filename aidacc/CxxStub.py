@@ -674,6 +674,7 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s = ''
     virtual = 'virtual '
+    s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessor&) override;\n' % (virtual + 'bool')
     s += '  %-37s __aida_dir__       () const override;\n' % (virtual + 'std::vector<std::string>')
     s += '  %-37s __aida_get__       (const std::string &name) const override;\n' % (virtual + 'Aida::Any')
     s += '  %-37s __aida_set__       (const std::string &name, const Aida::Any &any) override;\n' % (virtual + 'bool')
@@ -682,6 +683,19 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s, classH = '', self.C (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
+    # __access__
+    s += 'bool\n%s::__access__ (const std::string &n, const PropertyAccessor &p)\n{\n' % classH
+    for fname, ftype in tp.fields:
+      if ftype.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.ANY, Decls.INTERFACE):
+        continue
+      ctype = self.C (ftype) # self.type2cpp_relative (ftype)
+      s += '  if (n.empty() || n == "%s") return p (' % fname
+      s += 'Aida::PropertyDesc<%s,%s> ("%s", *this, &%s::%s, &%s::%s, NULL)' % (classH, ctype, fname, classH, fname, classH, fname)
+      s += '), true;\n'
+    for atp in reduced_immediate_ancestors:
+      s += '  if (this->%s::__access__ (n, p)) return true;\n' % self.C (atp)
+    s += '  return false;\n'
+    s += '}\n'
     # __aida_dir__
     s += 'std::vector<std::string>\n%s::__aida_dir__ () const\n{\n' % classH
     s += '  std::vector<std::string> __d_;\n'
