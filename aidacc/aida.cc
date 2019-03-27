@@ -1079,7 +1079,7 @@ Any::operator= (const Any &clone)
     case STRING:        new (&u_.vstring()) String (clone.u_.vstring());                             break;
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
     case SEQUENCE:      new (&u_.vanys()) AnyList (clone.u_.vanys());                                break;
-    case RECORD:        new (&u_.vfields()) AnyDict (clone.u_.vfields());                            break;
+    case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
     case ENUM:
@@ -1143,7 +1143,7 @@ Any::clear()
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnyList();                  break;
-    case RECORD:        u_.vfields().~AnyDict();                break;
+    case RECORD:        u_.vfields().~AnyRec();                 break;
     case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
     case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
     case TRANSITION: ;
@@ -1170,7 +1170,7 @@ Any::rekind (TypeKind _kind)
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnyList();         break;
-    case RECORD:   new (&u_.vfields()) AnyDict();       break;
+    case RECORD:   new (&u_.vfields()) AnyRec();        break;
     case INSTANCE: new (&u_.ibase()) ImplicitBaseP();   break;
     case REMOTE:   new (&u_.rhandle()) ARemoteHandle(); break;
     default:                                            break;
@@ -1206,7 +1206,7 @@ Any::any_to_strings () const
 template<class T> static String any_vector_to_string (const T *av);
 
 template<> String
-any_vector_to_string (const Any::AnyDict *vec)
+any_vector_to_string (const Any::AnyRec *vec)
 {
   String s;
   if (vec)
@@ -1468,22 +1468,22 @@ Any::set_seq (const AnyList &seq)
     }
 }
 
-const Any::AnyDict&
+const AnyRec&
 Any::get_rec () const
 {
   if (kind() == RECORD && !u_.vfields().empty())
     return u_.vfields();
-  static const AnyDict empty;
+  static const AnyRec empty;
   return empty;
 }
 
 void
-Any::set_rec (const AnyDict &rec)
+Any::set_rec (const AnyRec &rec)
 {
   ensure (RECORD);
   if (&rec != &u_.vfields())
     {
-      AnyDict tmp (rec); // beware of internal references, copy before freeing
+      AnyRec tmp (rec); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vfields());
     }
 }
@@ -1662,7 +1662,7 @@ Any::from_transition (BaseConnection &base_connection)
 }
 
 Any&
-Any::AnyDict::operator[] (const String &name)
+Any::AnyRec::operator[] (const String &name)
 {
   for (size_t i = 0; i < size(); i++)
     if (name == (*this)[i].name)
@@ -1672,7 +1672,7 @@ Any::AnyDict::operator[] (const String &name)
 }
 
 const Any&
-Any::AnyDict::operator[] (const String &name) const
+Any::AnyRec::operator[] (const String &name) const
 {
   for (size_t i = 0; i < size(); i++)
     if (name == (*this)[i].name)
@@ -1687,8 +1687,8 @@ Event::Event (const String &type)
   fields_["type"].set (type);
 }
 
-Event::Event (const AnyDict &adict) :
-  fields_ (adict)
+Event::Event (const AnyRec &arec) :
+  fields_ (arec)
 {
   (void) fields_["type"]; // ensure field is present
 }
@@ -4049,7 +4049,7 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
   fbr >>= iface_hid;
   Aida::Any arg_event;
   fbr >>= arg_event;
-  Event event (arg_event.get<AnyDict>());
+  Event event (arg_event.get<AnyRec>());
   EventHandlerF handler_func = remote_handle_event_handler_get (self.__aida_orbid__(), iface_hid);
   if (handler_func) // handler might have been deleted
     handler_func (event); // self

@@ -305,7 +305,7 @@ class Generator:
         if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
           s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
       s += ' }\n'
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnyDict &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % classFull
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
@@ -316,9 +316,6 @@ class Generator:
     if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_visitable (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnyDict     () const '
-      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnyDict>(); }\n' % classC
-    if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('bool') + 'operator==   (const %s &other) const;\n' % classC
       s += '  ' + self.F ('bool') + 'operator!=   (const %s &other) const { return !operator== (other); }\n' % classC
       s += '  ' + self.F ('operator') + 'Aida::AnyRec () const { Aida::AnyRec r; const_cast<%s*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }\n' % classC
