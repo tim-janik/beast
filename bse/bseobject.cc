@@ -140,6 +140,62 @@ ObjectImpl::uname (const std::string &newname)
   g_object_set (object, "uname", newname.c_str(), NULL);
 }
 
+bool
+ObjectImpl::set_prop (const std::string &name, const Any &value)
+{
+  if (!name.empty())
+    {
+      auto collector = [&value] (const Aida::PropertyAccessor &ps) {
+        ps.set (value);
+        return true;
+      };
+      return __access__ (name, collector);
+    }
+  return false;
+}
+
+Any
+ObjectImpl::get_prop (const std::string &name)
+{
+  Any any;
+  if (!name.empty())
+    {
+      auto collector = [&any] (const Aida::PropertyAccessor &ps) {
+        ps.get().swap (any);
+        return true;
+      };
+      __access__ (name, collector);
+    }
+  return any;
+}
+
+StringSeq
+ObjectImpl::find_prop (const std::string &name)
+{
+  StringSeq kvinfo;
+  if (!name.empty())
+    {
+      auto collector = [&kvinfo] (const Aida::PropertyAccessor &ps) {
+        ps.auxinfo().swap (kvinfo);
+        return false;
+      };
+      __access__ (name, collector);
+    }
+  return kvinfo;
+}
+
+StringSeq
+ObjectImpl::list_props ()
+{
+  StringSeq props;
+  auto collector = [&props] (const Aida::PropertyAccessor &ps) {
+    props.push_back (ps.name());
+    return false;
+  };
+  __access__ ("", collector);
+  return props;
+}
+
 void
 objects_debug_leaks ()
 {
