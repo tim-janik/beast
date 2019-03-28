@@ -1090,13 +1090,13 @@ void
 ItemImpl::push_property_undo (const String &property_name)
 {
   assert_return (property_name.empty() == false);
-  Any saved_value = __aida_get__ (property_name);
+  Any saved_value = get_prop (property_name);
   if (saved_value.empty())
     Bse::warning ("%s: invalid property name: %s", __func__, property_name);
   else
     {
       auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> Error {
-        const bool success = self.__aida_set__ (property_name, saved_value);
+        const bool success = self.set_prop (property_name, saved_value);
         if (!success)
           Bse::warning ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
         return Error::NONE;

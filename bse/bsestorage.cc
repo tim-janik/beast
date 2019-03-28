@@ -628,9 +628,9 @@ item_link_resolved (gpointer     data,
 
 /// Retrive the value of @a field.key through aux_vector_find() and convert the value to @a ValueType.
 template<typename ValueType = std::string> ValueType
-aux_vector_get (const std::vector<std::string> &auxvector, const std::string &field, const std::string &key, const std::string &fallback = "")
+aux_vector_get (const std::vector<std::string> &auxvector, const std::string &key, const std::string &fallback = "")
 {
-  return Bse::string_to_type<ValueType> (Aida::aux_vector_find (auxvector, field, key, fallback));
+  return Bse::string_to_type<ValueType> (Aida::aux_vector_find (auxvector, "", key, fallback));
 }
 
 static bool
@@ -766,20 +766,20 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
   for (size_t i = 0; i < identifier.size(); i++)
     if (identifier.data()[i] == '-')
       identifier[i] = '_';
-  // find identifier in item, we could search __aida_dir__, but *getting* is simpler
-  Bse::Any any = item->__aida_get__ (identifier);
+  // find identifier in item, we could search list_props(), but *getting* is simpler
+  Bse::Any any = item->get_prop (identifier);
   if (any.kind())
     {
-      const std::vector<std::string> auxvector = item->__aida_aux_data__();
+      const std::vector<std::string> auxvector = item->find_prop (identifier);
       // FIXME: need special casing of object references, see bse_storage_parse_item_link
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);    // eat pspec name
       // parse Any value, including the closing ')'
       GTokenType expected_token = storage_parse_property_value (self, identifier, any, auxvector);
       if (expected_token != G_TOKEN_NONE)
         return expected_token;
-      if (Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
+      if (Aida::aux_vector_check_options (auxvector, "", "hints", "r:w:S")) // readable, writable, storage
         {
-          if (!item->__aida_set__ (identifier, any))
+          if (!item->set_prop (identifier, any))
             Bse::warning ("%s: invalid property name: %s", __func__, identifier);
         }
       else
@@ -1265,10 +1265,10 @@ store_item_properties (BseItem    *item,
 static void
 storage_store_property_value (BseStorage *self, const std::string &property_name, Bse::Any any, const std::vector<std::string> &aux_data)
 {
-  if (Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
+  if (Aida::aux_vector_check_options (aux_data, "", "hints", "skip-default"))
     {
       const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
-      const std::string dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
+      const std::string dflt_val = aux_vector_get (aux_data, "default", invalid);
       if (dflt_val != invalid)
         {
           Bse::Any dflt = any; // copy type
@@ -1302,10 +1302,12 @@ static void
 store_cxx_item_properties (BseItem *bitem, BseStorage *self)
 {
   Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
-  const std::vector<std::string> auxvector = item->__aida_aux_data__();
-  for (const std::string &pname : item->__aida_dir__())
-    if (Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
-      storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
+  for (const std::string &pname : item->list_props())
+    {
+      const std::vector<std::string> auxvector = item->find_prop (pname);
+      if (Aida::aux_vector_check_options (auxvector, "", "hints", "r:w:S")) // readable, writable, storage
+        storage_store_property_value (self, pname, item->get_prop (pname), auxvector);
+    }
 }
 
 void
