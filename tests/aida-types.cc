@@ -84,7 +84,7 @@ public:
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
   virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
   virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
-  virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessor&) override { return false; }
+  virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
   int64 test_id() const { return testid_; }

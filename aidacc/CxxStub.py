@@ -347,11 +347,10 @@ class Generator:
     return s
   def generate_aux_data_string (self, tp, name = ''):
     s, prefix = '', (name + '.' if name else '')
-    if name:
-      s += '  "%stype=%s\\0"\n' % (prefix, Decls.storage_name (tp.storage))
-      if tp.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.INTERFACE):
-        fullnsname = self.type2cpp_absolute (tp)
-        s += '  "%stypename=%s\\0"\n' % (prefix, fullnsname)
+    s += '  "%stype=%s\\0"\n' % (prefix, Decls.storage_name (tp.storage))
+    if tp.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.INTERFACE):
+      fullnsname = self.type2cpp_absolute (tp)
+      s += '  "%stypename=%s\\0"\n' % (prefix, fullnsname)
     for k,v in tp.auxdata.items():
       qvalue = backslash_quote (aux_data_value_string (v))
       if qvalue:
@@ -681,7 +680,7 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s = ''
     virtual = 'virtual '
-    s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessor&) override;\n' % (virtual + 'bool')
+    s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
     s += '  %-37s __aida_dir__       () const override;\n' % (virtual + 'std::vector<std::string>')
     s += '  %-37s __aida_get__       (const std::string &name) const override;\n' % (virtual + 'Aida::Any')
     s += '  %-37s __aida_set__       (const std::string &name, const Aida::Any &any) override;\n' % (virtual + 'bool')
@@ -691,15 +690,17 @@ class Generator:
     s, classH = '', self.C (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __access__
-    s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessor &__p)\n{\n' % classH
+    s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessorPred &__p)\n{\n' % classH
     a  = '  const bool __all = __n.empty();\n'
     for fname, ftype in tp.fields:
       if a:
         s, a = s + a, ''
+      faux = self.generate_aux_data_string (ftype, '')
+      s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
       ctype = self.C (ftype) # self.type2cpp_relative (ftype)
-      s += '  if (__all || __n == "%s") return __p (' % fname
-      s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, NULL)' % (classH, ctype, fname, classH, fname, classH, fname)
-      s += '), true;\n'
+      s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
+      s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, __aux__%s)' % (classH, ctype, fname, classH, fname, classH, fname, fname)
+      s += '))\n    return true;\n'
     for atp in reduced_immediate_ancestors:
       s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
     s += '  return false;\n'
