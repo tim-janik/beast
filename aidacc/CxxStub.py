@@ -298,7 +298,7 @@ class Generator:
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnyList &al) : %s() { __aida_from_any__ (Aida::Any (al)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) : %s() { __aida_from_any__ (Aida::Any (as)); }\n' % (classC, classC) # ctor
     elif type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('inline') + '%s () {' % classC # ctor
       for fl in fieldlist:
@@ -311,8 +311,8 @@ class Generator:
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnyList     () const '
-      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnyList>(); }\n' % classC
+      s += '  ' + self.F ('operator') + 'Aida::AnySeq      () const '
+      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }\n' % classC
     if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_visitable (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }\n'

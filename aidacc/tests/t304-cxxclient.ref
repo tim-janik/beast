@@ -329,12 +329,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        XFooSequence () = default;
-  inline                        XFooSequence (const Aida::AnyList &al) : XFooSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        XFooSequence (const Aida::AnySeq &as) : XFooSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<XFooSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<XFooSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const XFooSequence&);
 void operator>>= (Aida::ProtoReader&, XFooSequence&);
@@ -347,12 +347,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        IntSequence () = default;
-  inline                        IntSequence (const Aida::AnyList &al) : IntSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        IntSequence (const Aida::AnySeq &as) : IntSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::IntSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<IntSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<IntSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const IntSequence&);
 void operator>>= (Aida::ProtoReader&, IntSequence&);
@@ -365,12 +365,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        FloatSequence () = default;
-  inline                        FloatSequence (const Aida::AnyList &al) : FloatSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        FloatSequence (const Aida::AnySeq &as) : FloatSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::FloatSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<FloatSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<FloatSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const FloatSequence&);
 void operator>>= (Aida::ProtoReader&, FloatSequence&);
@@ -383,12 +383,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        StringSequence () = default;
-  inline                        StringSequence (const Aida::AnyList &al) : StringSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        StringSequence (const Aida::AnySeq &as) : StringSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::StringSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<StringSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<StringSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const StringSequence&);
 void operator>>= (Aida::ProtoReader&, StringSequence&);
@@ -401,12 +401,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        ExtensiveEnumSequence () = default;
-  inline                        ExtensiveEnumSequence (const Aida::AnyList &al) : ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        ExtensiveEnumSequence (const Aida::AnySeq &as) : ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::ExtensiveEnumSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const ExtensiveEnumSequence&);
 void operator>>= (Aida::ProtoReader&, ExtensiveEnumSequence&);
@@ -419,12 +419,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        RecordSequence () = default;
-  inline                        RecordSequence (const Aida::AnyList &al) : RecordSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        RecordSequence (const Aida::AnySeq &as) : RecordSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::RecordSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<RecordSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<RecordSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const RecordSequence&);
 void operator>>= (Aida::ProtoReader&, RecordSequence&);
@@ -437,12 +437,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SequenceSequence () = default;
-  inline                        SequenceSequence (const Aida::AnyList &al) : SequenceSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        SequenceSequence (const Aida::AnySeq &as) : SequenceSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::SequenceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const SequenceSequence&);
 void operator>>= (Aida::ProtoReader&, SequenceSequence&);
@@ -455,12 +455,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        InterfaceSequence () = default;
-  inline                        InterfaceSequence (const Aida::AnyList &al) : InterfaceSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        InterfaceSequence (const Aida::AnySeq &as) : InterfaceSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::InterfaceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const InterfaceSequence&);
 void operator>>= (Aida::ProtoReader&, InterfaceSequence&);
@@ -473,12 +473,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        AnySequence () = default;
-  inline                        AnySequence (const Aida::AnyList &al) : AnySequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        AnySequence (const Aida::AnySeq &as) : AnySequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::AnySequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<AnySequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<AnySequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const AnySequence&);
 void operator>>= (Aida::ProtoReader&, AnySequence&);
@@ -521,12 +521,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        NestedTypesSeq () = default;
-  inline                        NestedTypesSeq (const Aida::AnyList &al) : NestedTypesSeq() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        NestedTypesSeq (const Aida::AnySeq &as) : NestedTypesSeq() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesSeq"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const NestedTypesSeq&);
 void operator>>= (Aida::ProtoReader&, NestedTypesSeq&);
@@ -847,12 +847,12 @@ public:
   { resize (size() + 1); return back(); }
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        QuickSequence () = default;
-  inline                        QuickSequence (const Aida::AnyList &al) : QuickSequence() { __aida_from_any__ (Aida::Any (al)); }
+  inline                        QuickSequence (const Aida::AnySeq &as) : QuickSequence() { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "InterfaceTests::QuickSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnyList     () const { return const_cast<QuickSequence*> (this)->__aida_to_any__().get<Aida::AnyList>(); }
+  operator                      Aida::AnySeq      () const { return const_cast<QuickSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
 void operator<<= (Aida::ProtoMsg&, const QuickSequence&);
 void operator>>= (Aida::ProtoReader&, QuickSequence&);

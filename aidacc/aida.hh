@@ -795,7 +795,7 @@ public:
     Field (const String &name, V &&value); ///< Initialize Any::Field with a @a name and an Any initialization @a value.
   };
 #endif // DOXYGEN
-  typedef std::vector<Any>   AnyList; ///< Vector of Any structures for use in #SEQUENCE types.
+  typedef std::vector<Any> AnySeq; ///< Vector of Any structures for use in #SEQUENCE types.
   /// Vector of fields (named Any structures) for use in #RECORD types.
   class AnyRec : public std::vector<Field> {
     typedef std::vector<Field> FieldVector;
@@ -818,8 +818,8 @@ private:
                                              std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
     AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
     const AnyRec&        vfields () const { return *(const AnyRec*) this; }
-    AnyList&             vanys   () { return *(AnyList*) this; static_assert (sizeof (AnyList) <= sizeof (*this), ""); }
-    const AnyList&       vanys   () const { return *(const AnyList*) this; }
+    AnySeq&              vanys   () { return *(AnySeq*) this; static_assert (sizeof (AnySeq) <= sizeof (*this), ""); }
+    const AnySeq&        vanys   () const { return *(const AnySeq*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
     ImplicitBaseP&       ibase   () { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
@@ -855,8 +855,8 @@ public:
   RemoteHandle get_untyped_remote_handle () const;
   template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
     ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
-  template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyRec.
-    ::std::integral_constant<bool, ::std::is_convertible<T, AnyList>::value && !(::std::is_convertible<T, AnyRec>::value ||
+  template<class T> using ToAnySeqConvertible =        ///< Check is_convertible<a T, AnySeq > but give precedence to AnyRec.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnySeq>::value && !(::std::is_convertible<T, AnyRec>::value ||
                                                                                  ::std::is_base_of<Any, T>::value)>;
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
@@ -865,9 +865,9 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
-  template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnyList / AnyRec.
+  template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnySeq / AnyRec.
     ::std::integral_constant<bool, ::std::is_base_of<Any, T>::value || (::std::is_convertible<T, Any>::value &&
-                                                                        !::std::is_convertible<T, AnyList>::value &&
+                                                                        !::std::is_convertible<T, AnySeq>::value &&
                                                                         !::std::is_convertible<T, AnyRec>::value)>;
   bool               get_bool    () const;
   void               set_bool    (bool value);
@@ -880,8 +880,8 @@ private:
   Enum               get_enum    () const               { return Enum (get_enum (introspection_typename ->* Enum (0))); }
   template<typename Enum>
   void               set_enum    (Enum value)           { return set_enum (introspection_typename ->* Enum (0), int64 (value)); }
-  const AnyList&     get_seq     () const;
-  void               set_seq     (const AnyList &seq);
+  const AnySeq&      get_seq     () const;
+  void               set_seq     (const AnySeq &seq);
   const AnyRec&      get_rec     () const;
   void               set_rec     (const AnyRec &rec);
   ImplicitBaseP      get_ibasep  () const;
@@ -902,9 +902,9 @@ public:
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            T    get () const { return as_double(); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
-  template<typename T, REQUIRES< std::is_same<const AnyList*, T>::value > = true>      T    get () const { return &get_seq(); }
-  template<typename T, REQUIRES< std::is_same<const AnyList&, T>::value > = true>      T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyList, T>::value > = true>      T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnySeq*, T>::value > = true>       T    get () const { return &get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnySeq&, T>::value > = true>       T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsConvertible<const AnySeq, T>::value > = true>       T    get () const { return get_seq(); }
   template<typename T, REQUIRES< std::is_same<const AnyRec*, T>::value > = true>       T    get () const { return &get_rec(); }
   template<typename T, REQUIRES< std::is_same<const AnyRec&, T>::value > = true>       T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsConvertible<const AnyRec, T>::value > = true>       T    get () const { return get_rec(); }
@@ -919,8 +919,8 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
-  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T &v) { return set_seq (v); }
-  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T *v) { return set_seq (*v); }
+  template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T &v) { return set_seq (v); }
+  template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T *v) { return set_seq (*v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T &v) { return set_rec (v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T *v) { return set_rec (*v); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
@@ -950,9 +950,9 @@ public:
   }
 };
 typedef Any::AnyRec AnyRec;
-typedef Any::AnyList AnyList;
-template<class T>       using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
-template<class T>       using ToAnySeqConvertible = Any::ToAnyListConvertible<T>;
+typedef Any::AnySeq AnySeq;
+template<class T> using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
+template<class T> using ToAnySeqConvertible = Any::ToAnySeqConvertible<T>;
 
 // == Event ==
 class Event : public virtual VirtualEnableSharedFromThis<Event> {

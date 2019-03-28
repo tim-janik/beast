@@ -1093,7 +1093,7 @@ Any::operator= (const Any &clone)
     {
     case STRING:        new (&u_.vstring()) String (clone.u_.vstring());                             break;
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
-    case SEQUENCE:      new (&u_.vanys()) AnyList (clone.u_.vanys());                                break;
+    case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
@@ -1157,7 +1157,7 @@ Any::clear()
     case ENUM:          delete[] u_.enum_typename;              break;
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
-    case SEQUENCE:      u_.vanys().~AnyList();                  break;
+    case SEQUENCE:      u_.vanys().~AnySeq();                   break;
     case RECORD:        u_.vfields().~AnyRec();                 break;
     case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
     case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
@@ -1184,7 +1184,7 @@ Any::rekind (TypeKind _kind)
     case ENUM:     u_.enum_typename = NULL;             break;
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
-    case SEQUENCE: new (&u_.vanys()) AnyList();         break;
+    case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
     case RECORD:   new (&u_.vfields()) AnyRec();        break;
     case INSTANCE: new (&u_.ibase()) ImplicitBaseP();   break;
     case REMOTE:   new (&u_.rhandle()) ARemoteHandle(); break;
@@ -1195,7 +1195,7 @@ Any::rekind (TypeKind _kind)
 Any
 Any::any_from_strings (const std::vector<std::string> &string_container)
 {
-  AnyList av;
+  AnySeq av;
   av.resize (string_container.size());
   for (size_t i = 0; i < av.size(); i++)
     av[i].set (string_container[i]);
@@ -1207,7 +1207,7 @@ Any::any_from_strings (const std::vector<std::string> &string_container)
 std::vector<std::string>
 Any::any_to_strings () const
 {
-  const AnyList *av = get<const AnyList*>();
+  const AnySeq *av = get<const AnySeq*>();
   std::vector<std::string> sv;
   if (av)
     {
@@ -1240,7 +1240,7 @@ any_vector_to_string (const Any::AnyRec *vec)
 }
 
 template<> String
-any_vector_to_string (const Any::AnyList *vec)
+any_vector_to_string (const Any::AnySeq *vec)
 {
   String s;
   if (vec)
@@ -1463,22 +1463,22 @@ Any::set_string (const std::string &value)
   u_.vstring().assign (value);
 }
 
-const Any::AnyList&
+const Any::AnySeq&
 Any::get_seq () const
 {
   if (kind() == SEQUENCE)
     return u_.vanys();
-  static const AnyList empty;
+  static const AnySeq empty;
   return empty;
 }
 
 void
-Any::set_seq (const AnyList &seq)
+Any::set_seq (const AnySeq &seq)
 {
   ensure (SEQUENCE);
   if (&seq != &u_.vanys())
     {
-      AnyList tmp (seq); // beware of internal references, copy before freeing
+      AnySeq tmp (seq); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vanys());
     }
 }

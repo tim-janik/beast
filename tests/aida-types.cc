@@ -347,8 +347,8 @@ test_aida_any_containers()
   TASSERT (fv != gv);
   gv[1].set (int64 (3));
   TASSERT (fv == gv);
-  // -- AnyList --
-  Any::AnyList av;
+  // -- AnySeq --
+  Any::AnySeq av;
   av.push_back (Any (7.7));
   av.push_back (Any (3));
   av.push_back (Any ("ida"));
@@ -357,7 +357,7 @@ test_aida_any_containers()
   TASSERT (av[1].get<int64>() == 3);
   TASSERT (av[2].get<String>() == "ida");
   TASSERT (av[3].kind() == ANY);
-  Any::AnyList bv;
+  Any::AnySeq bv;
   TASSERT (av != bv);
   for (auto const &f : fv)
     bv.push_back (f);
@@ -368,16 +368,16 @@ test_aida_any_containers()
                type_kind_name(av[i].kind()), type_kind_name(bv[i].kind()),
                av[i].get<int64>(), bv[i].get<int64>());
   TASSERT (av == bv);
-  // -- AnyRec & AnyList --
+  // -- AnyRec & AnySeq --
   if (0)        // compare av (DynamicSequence) with fv (DynamicRecord)
     dprintf (2, "test-compare: %s == %s\n", Any (av).to_string().c_str(), Any (fv).to_string().c_str());
-  Any::AnyList cv (fv.begin(), fv.end());     // initialize AnyList with { 7.7, 3, "ida" } from AnyRec (Field is-a Any)
-  TASSERT (av == cv);                            // as AnyList (AnyRec) copy, both vectors contain { 7.7, 3, "ida" }
+  Any::AnySeq cv (fv.begin(), fv.end());     // initialize AnySeq with { 7.7, 3, "ida" } from AnyRec (Field is-a Any)
+  TASSERT (av == cv);                            // as AnySeq (AnyRec) copy, both vectors contain { 7.7, 3, "ida" }
   Any arec (fv), aseq (av);
   TASSERT (arec != aseq);
   const Any::AnyRec *arv = arec.get<const Any::AnyRec*>();
   TASSERT (*arv == fv);
-  const Any::AnyList *asv = aseq.get<const Any::AnyList*>();
+  const Any::AnySeq *asv = aseq.get<const Any::AnySeq*>();
   TASSERT (*asv == av);
 }
 TEST_ADD (test_aida_any_containers);
