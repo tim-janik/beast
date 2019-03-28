@@ -595,6 +595,21 @@ bse_server_open_devices (BseServer *self)
   return error;
 }
 
+void
+bse_server_shutdown (BseServer *self)
+{
+  assert_return (BSE_IS_SERVER (self));
+  // projects in playback can hold an open device use count
+  for (GList *node = self->projects; node; node = node->next)
+    {
+      BseProject *project = (BseProject*) node->data;
+      bse_project_stop_playback (project);
+      bse_project_deactivate (project);
+    }
+  while (self->dev_use_count)
+    bse_server_close_devices (self);
+  bse_engine_shutdown();
+}
 
 void
 bse_server_close_devices (BseServer *self)
@@ -994,7 +1009,6 @@ engine_shutdown (BseServer *server)
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
   bse_engine_user_thread_collect ();
-  // FIXME: need to be able to completely unintialize engine here
   bse_gconfig_unlock ();
 }
 

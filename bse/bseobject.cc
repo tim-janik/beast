@@ -30,7 +30,6 @@ ObjectImpl::ObjectImpl (BseObject *bobj) :
 {
   assert_return (gobject_);
   assert_return (gobject_->cxxobject_ == NULL);
-  g_object_ref (gobject_);
   gobject_->cxxobject_ = this;
   if (BSE_UNLIKELY (!object_impl_post_init))
     object_impl_post_init = &ObjectImpl::post_init;
@@ -46,15 +45,20 @@ ObjectImpl::~ObjectImpl ()
 {
   assert_return (gobject_->cxxobject_ == this);
   gobject_->cxxobject_ = NULL;
-  g_object_unref (gobject_);
-  // ObjectImpl keeps BseObject alive until it is destroyed
-  // BseObject keeps ObjectImpl alive until dispose()
+  // ObjectImplP keeps BseObject alive until it is destroyed
+  // BseObject keeps ObjectImpl alive until finalize()
 }
 
-Aida::ExecutionContext*
+Aida::ExecutionContext&
 ObjectImpl::__execution_context_mt__ () const
 {
   return execution_context();
+}
+
+Aida::IfaceEventConnection
+ObjectImpl::__attach__ (const String &eventselector, EventHandlerF handler)
+{
+  return event_dispatcher_.attach (eventselector, handler);
 }
 
 std::string
@@ -107,7 +111,7 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
       ev[args[i]->key] = args[i]->value;
   ev["name"] = name;
   ev["detail"] = detail;
-  __event_emit__ (ev);          // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
+  event_dispatcher_.emit (ev);  // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
   // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
 }
 
@@ -134,6 +138,62 @@ ObjectImpl::uname (const std::string &newname)
 {
   BseObject *object = *this;
   g_object_set (object, "uname", newname.c_str(), NULL);
+}
+
+bool
+ObjectImpl::set_prop (const std::string &name, const Any &value)
+{
+  if (!name.empty())
+    {
+      auto collector = [&value] (const Aida::PropertyAccessor &ps) {
+        ps.set (value);
+        return true;
+      };
+      return __access__ (name, collector);
+    }
+  return false;
+}
+
+Any
+ObjectImpl::get_prop (const std::string &name)
+{
+  Any any;
+  if (!name.empty())
+    {
+      auto collector = [&any] (const Aida::PropertyAccessor &ps) {
+        ps.get().swap (any);
+        return true;
+      };
+      __access__ (name, collector);
+    }
+  return any;
+}
+
+StringSeq
+ObjectImpl::find_prop (const std::string &name)
+{
+  StringSeq kvinfo;
+  if (!name.empty())
+    {
+      auto collector = [&kvinfo] (const Aida::PropertyAccessor &ps) {
+        ps.auxinfo().swap (kvinfo);
+        return false;
+      };
+      __access__ (name, collector);
+    }
+  return kvinfo;
+}
+
+StringSeq
+ObjectImpl::list_props ()
+{
+  StringSeq props;
+  auto collector = [&props] (const Aida::PropertyAccessor &ps) {
+    props.push_back (ps.name());
+    return false;
+  };
+  __access__ ("", collector);
+  return props;
 }
 
 void
@@ -313,9 +373,16 @@ bse_object_do_finalize (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
 
-  bse_id_free (object->unique_id);
-  sfi_ustore_remove (object_id_ustore, object->unique_id);
+  if (object->cxxobject_)
+    {
+      delete object->cxxobject_;
+      assert_return (object->cxxobject_ == NULL);
+    }
+
+  const uint unique_id = object->unique_id;
   object->unique_id = 0;
+  sfi_ustore_remove (object_id_ustore, unique_id);
+  bse_id_free (unique_id);
 
   /* remove object from hash list *before* clearing data list,
    * since the object uname is kept in the datalist!
@@ -1082,7 +1149,9 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     assert_return_unreached (NULL);
   assert_return (object->cxxobject_ == cxxo, NULL);
   assert_return (object->cxxobjref_ == NULL, NULL);
-  object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
+  auto deleter = [] (Bse::ObjectImpl *cxxo) { g_object_unref (static_cast<BseObject*> (*cxxo)); };
+  g_object_ref (object);
+  object->cxxobjref_ = new Bse::ObjectImplP (cxxo, deleter); // shared_ptr that allows enable_shared_from_this
   assert_return (cxxo == *object, NULL);
   assert_return (object == *cxxo, NULL);
   (cxxo->*Bse::object_impl_post_init) ();

@@ -41,6 +41,7 @@ void            bse_server_start_recording              (BseServer      *server,
                                                          double          n_seconds);
 Bse::Error	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
+void		bse_server_shutdown             	(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);

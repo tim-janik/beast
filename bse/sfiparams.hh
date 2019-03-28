@@ -317,8 +317,10 @@ choice_values_from_enum ()
   return choice_values_from_enum_values (einfo.name(), einfo.value_vector());
 }
 
+GParamSpec*              pspec_from_key_value_list            (const std::string &name, const Aida::StringVector &introspection);
+
 SfiChoiceValues          introspection_enum_to_choice_values  (const Aida::StringVector &introspection, const String &enumname);
-GParamSpec*              introspection_field_to_param_spec    (const Aida::StringVector &introspection, const String &fieldname);
+GParamSpec*              introspection_field_to_param_spec    (const std::string &name, const Aida::StringVector &introspection, const String &subname);
 Aida::StringVector       introspection_list_field_names       (const Aida::StringVector &introspection);
 std::vector<GParamSpec*> introspection_fields_to_param_list   (const Aida::StringVector &introspection);
 

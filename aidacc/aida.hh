@@ -13,12 +13,17 @@
 
 // == config (FIXME) ==
 #define HAVE_SYS_EVENTFD_H 1
+#ifndef __G_MAIN_H__
+typedef struct _GSource GSource;
+#endif // __G_MAIN_H__
 
 namespace Aida {
 
 // == Auxillary macros ==
 #define AIDA_CPP_STRINGIFYi(s)  #s // indirection required to expand __LINE__ etc
 #define AIDA_CPP_STRINGIFY(s)   AIDA_CPP_STRINGIFYi (s)
+#define AIDA_CPP_PASTE2(a,b)    a ## b
+#define AIDA_CPP_PASTE(a,b)     AIDA_CPP_PASTE2 (a, b)
 #define AIDA_I64ELEMENTS(size)  (((size) + sizeof (int64) - 1) / sizeof (int64)) ///< Length of int64[] array to hold @a size.
 #if     __GNUC__ >= 4 || defined __clang__
 #define AIDA_UNUSED             __attribute__ ((__unused__))
@@ -101,7 +106,6 @@ typedef uint64_t            uint64;
 typedef std::string         String;
 typedef std::vector<String> StringVector;
 
-
 // == Forward Declarations ==
 class Any;
 class Event;
@@ -116,7 +120,9 @@ class ProtoMsg;
 class ProtoReader;
 class ExecutionContext;
 class CallableIface;
+struct PropertyAccessor;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
+typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::shared_ptr<BaseConnection> BaseConnectionP;
 typedef std::shared_ptr<ClientConnection> ClientConnectionP;
@@ -231,6 +237,8 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
 // == VirtualEnableSharedFromThis ==
 /// Helper class for VirtualEnableSharedFromThis.
 struct VirtualEnableSharedFromThisBase : public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
+  VirtualEnableSharedFromThisBase() = default;
+  VirtualEnableSharedFromThisBase (const VirtualEnableSharedFromThisBase&) = default;
   virtual ~VirtualEnableSharedFromThisBase() = 0;
 };
 /// Virtual base class template that provides std::enable_shared_from_this for multiple inheritance.
@@ -283,16 +291,43 @@ public:
   int                      notify_fd        ();
   bool                     pending          ();
   void                     dispatch         ();
+  void                     enqueue_mt       (const Closure &closure);
   void                     enqueue_mt       (Closure *closure);
-  static ExecutionContext* new_context      ();
+  static ExecutionContext* new_context         ();
+  static ExecutionContext* get_current         ();
+  static void              pop_thread_current  ();
+  void                     push_thread_current ();
+  GSource*                 create_gsource      (const std::string &name, int priority = 0 /*G_PRIORITY_DEFAULT*/);
+  CallableIfaceP           adopt_deleter_mt    (const CallableIfaceP &sharedptr);
 };
+
+// == EventDispatcher ==
+class EventDispatcher {
+  struct DispatcherImpl;
+  DispatcherImpl *o_ = NULL;
+  struct ConnectionImpl;
+public:
+  struct EventConnection : private std::weak_ptr<EventDispatcher::ConnectionImpl> {
+    friend              class EventDispatcher;
+    bool                connected       () const;
+    void                disconnect      () const;
+  };
+  /*dtor*/             ~EventDispatcher ();
+  void                  reset           ();
+  void                  emit            (const Event &event);
+  EventConnection       attach          (const String &eventselector, EventHandlerF handler);
+};
+using IfaceEventConnection = EventDispatcher::EventConnection;
 
 // == CallableIface ==
 class CallableIface : public virtual VirtualEnableSharedFromThis<CallableIface> {
 protected:
-  virtual                  ~CallableIface            ();
+  virtual                     ~CallableIface            ();
 public:
-  virtual ExecutionContext* __execution_context_mt__ () const = 0; ///< Retrieve ExecutionContext, save to be called multi-threaded.
+  /// Retrieve ExecutionContext, save to be called multi-threaded.
+  virtual ExecutionContext&    __execution_context_mt__ () const = 0;
+  /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
+  virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
 };
 
 // == EnumValue ==
@@ -387,8 +422,10 @@ String enum_value_to_string   (const std::string &enum_typename, int64 evalue, c
 /// Return enum value identifier in @a enum_typename with the exact value @a evalue.
 String enum_value_find        (const std::string &enum_typename, int64 evalue);
 
-/// Split @a char_array at '\\0' and merge with @a v1 .. @a vf.
+/// Split @a char_array at '\\0' and construct vector.
 std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
+/// Split @a auxinfo00, assert key=value contents and '\\0\\0' ending.
+std::vector<String> aux_vector_split    (const char *auxinfo00);
 /// Merge string vectors @a v0 .. @a vf.
 std::vector<String> aux_vectors_combine (const std::vector<String> &v0 = std::vector<String>(),
                                          const std::vector<String> &v1 = std::vector<String>(),
@@ -460,7 +497,7 @@ typedef std::vector<TypeHash> TypeHashList;
 #define AIDA_HASH___EVENT_CALLBACK__    0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL
 
 
-// === EventFd ===
+// == EventFd ==
 /// Wakeup facility for IPC.
 class EventFd
 {
@@ -476,6 +513,18 @@ public:
   bool     pollin    (); ///< Checks whether events are pending.
   void     flush     (); ///< Clear pending wakeups.
   /*Des*/ ~EventFd   ();
+};
+
+// == ScopedSemaphore ==
+class ScopedSemaphore {
+  unsigned long mem_[4];
+  /*copy*/         ScopedSemaphore (const ScopedSemaphore&) = delete;
+  ScopedSemaphore& operator=       (const ScopedSemaphore&) = delete;
+public:
+  explicit  ScopedSemaphore () noexcept;  ///< Create a process-local semaphore.
+  int       post            () noexcept;  ///< Unlock ScopedSemaphore.
+  int       wait            () noexcept;  ///< Unlock ScopedSemaphore.
+  /*dtor*/ ~ScopedSemaphore () noexcept;
 };
 
 // == Type Utilities ==
@@ -551,16 +600,26 @@ public:
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
   OrbObjectP        orbop_;
+  ImplicitBaseP     iface_ptr_;
   static OrbObjectP __aida_null_orb_object__ ();
+  struct EventHandlerRelay;
 protected:
   explicit          RemoteHandle             (OrbObjectP);
   const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
   void              __aida_upgrade_from__    (const OrbObjectP&);
   void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
+  struct EventConnection : private std::weak_ptr<EventHandlerRelay> {
+    friend class RemoteHandle;
+    bool   connected  () const;
+    void   disconnect () const;
+  };
+public:
   explicit                RemoteHandle         ();
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
+  EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
+  TypeHashList            __typelist__         () const;
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
   const StringVector&     __aida_aux_data__    () const;                                //: AIDAID
@@ -569,30 +628,36 @@ public:
   bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
   ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
+  ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   // Support event handlers
   uint64                  __event_attach__     (const String &type, EventHandlerF handler);
   bool                    __event_detach__     (uint64 connection_id);
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
-  explicit    operator bool () const noexcept               { return 0 != __aida_orbid__(); }
-  bool        operator==    (std::nullptr_t) const noexcept { return 0 == __aida_orbid__(); }
-  bool        operator!=    (std::nullptr_t) const noexcept { return 0 != __aida_orbid__(); }
-  bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__(); }
+  explicit    operator bool () const noexcept               { return iface_ptr_ || 0 != __aida_orbid__(); }
+  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_ && 0 == __aida_orbid__(); }
+  bool        operator!=    (std::nullptr_t) const noexcept { return iface_ptr_ || 0 != __aida_orbid__(); }
+  bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__() && iface_ptr_ == rh.iface_ptr_; }
   bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
+  bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
+  bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
+  bool        operator>     (const RemoteHandle &rh) const noexcept { return iface_ptr_ > rh.iface_ptr_; }
+  bool        operator>=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ >= rh.iface_ptr_; }
   friend bool operator==    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd == nullp; }
   friend bool operator!=    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd != nullp; }
 private:
   template<class TargetHandle> static typename
   std::enable_if<(std::is_base_of<RemoteHandle, TargetHandle>::value &&
                   !std::is_same<RemoteHandle, TargetHandle>::value), TargetHandle>::type
-  __aida_reinterpret_down_cast__ (RemoteHandle smh)     ///< Reinterpret & dynamic cast, use discouraged.
+  __aida_reinterpret___cast____ (RemoteHandle smh)     ///< Reinterpret & dynamic cast, use discouraged.
   {
     TargetHandle target;
     target.__aida_upgrade_from__ (smh);                 // like reinterpret_cast<>
-    return TargetHandle::down_cast (target);            // like dynamic_cast<>
+    return TargetHandle::__cast__ (target);            // like dynamic_cast<>
   }
   friend class BaseConnection;
 };
+using HandleEventConnection = RemoteHandle::EventConnection;
 
 // == RemoteMember ==
 template<class RemoteHandle>
@@ -605,7 +670,7 @@ public:
 
 /// Auxillary class for the ScopedHandle<> implementation.
 class DetacherHooks {
-  std::vector<uint64>   detach_ids_;
+  std::vector<HandleEventConnection> connections_;
 protected:
   void __swap_hooks__   (DetacherHooks &other);
   void __clear_hooks__  (RemoteHandle *scopedhandle);
@@ -730,9 +795,9 @@ public:
     Field (const String &name, V &&value); ///< Initialize Any::Field with a @a name and an Any initialization @a value.
   };
 #endif // DOXYGEN
-  typedef std::vector<Any>   AnyList; ///< Vector of Any structures for use in #SEQUENCE types.
+  typedef std::vector<Any> AnySeq; ///< Vector of Any structures for use in #SEQUENCE types.
   /// Vector of fields (named Any structures) for use in #RECORD types.
-  class AnyDict : public std::vector<Field> {
+  class AnyRec : public std::vector<Field> {
     typedef std::vector<Field> FieldVector;
   public:
     void         add        (const String &name, const Any &value)      { (*this)[name] = value; }
@@ -751,10 +816,10 @@ private:
     struct { int64 venum64; char *enum_typename; };
     int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
                                              std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
-    AnyDict&             vfields () { return *(AnyDict*) this; static_assert (sizeof (AnyDict) <= sizeof (*this), ""); }
-    const AnyDict&       vfields () const { return *(const AnyDict*) this; }
-    AnyList&             vanys   () { return *(AnyList*) this; static_assert (sizeof (AnyList) <= sizeof (*this), ""); }
-    const AnyList&       vanys   () const { return *(const AnyList*) this; }
+    AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
+    const AnyRec&        vfields () const { return *(const AnyRec*) this; }
+    AnySeq&              vanys   () { return *(AnySeq*) this; static_assert (sizeof (AnySeq) <= sizeof (*this), ""); }
+    const AnySeq&        vanys   () const { return *(const AnySeq*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
     ImplicitBaseP&       ibase   () { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
@@ -788,6 +853,11 @@ public:
   void      set_enum (const String &enum_typename,
                       int64 value);                     ///< Set Any to hold an enum value.
   RemoteHandle get_untyped_remote_handle () const;
+  template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
+  template<class T> using ToAnySeqConvertible =        ///< Check is_convertible<a T, AnySeq > but give precedence to AnyRec.
+    ::std::integral_constant<bool, ::std::is_convertible<T, AnySeq>::value && !(::std::is_convertible<T, AnyRec>::value ||
+                                                                                 ::std::is_base_of<Any, T>::value)>;
 private:
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
@@ -795,15 +865,10 @@ private:
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
                                     ::std::is_base_of<ImplicitBase, typename RemoveSharedPtr<T>::type >::value)>;
-  template<class T> using ToAnyDictConvertible =        ///< Check is_convertible<a T, AnyDict >.
-    ::std::integral_constant<bool, ::std::is_convertible<T, AnyDict>::value && !::std::is_base_of<Any, T>::value>;
-  template<class T> using ToAnyListConvertible =        ///< Check is_convertible<a T, AnyList > but give precedence to AnyDict.
-    ::std::integral_constant<bool, ::std::is_convertible<T, AnyList>::value && !(::std::is_convertible<T, AnyDict>::value ||
-                                                                                 ::std::is_base_of<Any, T>::value)>;
-  template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnyList / AnyDict.
+  template<class T> using ToAnyConvertible =            ///< Check is_convertible<a T, Any > but give precedence to AnySeq / AnyRec.
     ::std::integral_constant<bool, ::std::is_base_of<Any, T>::value || (::std::is_convertible<T, Any>::value &&
-                                                                        !::std::is_convertible<T, AnyList>::value &&
-                                                                        !::std::is_convertible<T, AnyDict>::value)>;
+                                                                        !::std::is_convertible<T, AnySeq>::value &&
+                                                                        !::std::is_convertible<T, AnyRec>::value)>;
   bool               get_bool    () const;
   void               set_bool    (bool value);
   void               set_int64   (int64 value);
@@ -815,10 +880,10 @@ private:
   Enum               get_enum    () const               { return Enum (get_enum (introspection_typename ->* Enum (0))); }
   template<typename Enum>
   void               set_enum    (Enum value)           { return set_enum (introspection_typename ->* Enum (0), int64 (value)); }
-  const AnyList&     get_seq     () const;
-  void               set_seq     (const AnyList &seq);
-  const AnyDict&     get_rec     () const;
-  void               set_rec     (const AnyDict &rec);
+  const AnySeq&      get_seq     () const;
+  void               set_seq     (const AnySeq &seq);
+  const AnyRec&      get_rec     () const;
+  void               set_rec     (const AnyRec &rec);
   ImplicitBaseP      get_ibasep  () const;
   void               set_ibase   (ImplicitBase *ibase);
   template<typename C>
@@ -826,7 +891,7 @@ private:
   template<typename SP>
   SP                 cast_ibasep () const               { return std::dynamic_pointer_cast<typename SP::element_type> (get_ibasep()); }
   template<typename H>
-  H                  cast_handle () const               { return H::down_cast (get_untyped_remote_handle()); }
+  H                  cast_handle () const               { return H::__cast__ (get_untyped_remote_handle()); }
   void               set_handle  (const RemoteHandle &handle);
   const Any*         get_any     () const;
   void               set_any     (const Any *value);
@@ -837,12 +902,12 @@ public:
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            T    get () const { return as_double(); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
-  template<typename T, REQUIRES< std::is_same<const AnyList*, T>::value > = true>      T    get () const { return &get_seq(); }
-  template<typename T, REQUIRES< std::is_same<const AnyList&, T>::value > = true>      T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyList, T>::value > = true>      T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< std::is_same<const AnyDict*, T>::value > = true>      T    get () const { return &get_rec(); }
-  template<typename T, REQUIRES< std::is_same<const AnyDict&, T>::value > = true>      T    get () const { return get_rec(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyDict, T>::value > = true>      T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< std::is_same<const AnySeq*, T>::value > = true>       T    get () const { return &get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnySeq&, T>::value > = true>       T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsConvertible<const AnySeq, T>::value > = true>       T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< std::is_same<const AnyRec*, T>::value > = true>       T    get () const { return &get_rec(); }
+  template<typename T, REQUIRES< std::is_same<const AnyRec&, T>::value > = true>       T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsConvertible<const AnyRec, T>::value > = true>       T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
@@ -854,10 +919,10 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
-  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T &v) { return set_seq (v); }
-  template<typename T, REQUIRES< ToAnyListConvertible<T>::value > = true>              void set (const T *v) { return set_seq (*v); }
-  template<typename T, REQUIRES< ToAnyDictConvertible<T>::value > = true>              void set (const T &v) { return set_rec (v); }
-  template<typename T, REQUIRES< ToAnyDictConvertible<T>::value > = true>              void set (const T *v) { return set_rec (*v); }
+  template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T &v) { return set_seq (v); }
+  template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T *v) { return set_seq (*v); }
+  template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T &v) { return set_rec (v); }
+  template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T *v) { return set_rec (*v); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
@@ -884,18 +949,20 @@ public:
     return get<R>();
   }
 };
-typedef Any::AnyDict AnyDict;
-typedef Any::AnyList AnyList;
+typedef Any::AnyRec AnyRec;
+typedef Any::AnySeq AnySeq;
+template<class T> using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
+template<class T> using ToAnySeqConvertible = Any::ToAnySeqConvertible<T>;
 
 // == Event ==
 class Event : public virtual VirtualEnableSharedFromThis<Event> {
-  AnyDict  fields_;
+  AnyRec  fields_;
 public:
   explicit       Event      (const String &type);
-  explicit       Event      (const AnyDict &adict);
+  explicit       Event      (const AnyRec &arec);
   Any&           operator[] (const String &name)          { return fields_[name]; }
   const Any&     operator[] (const String &name) const    { return fields_[name]; }
-  const AnyDict& fields     () const                      { return fields_; }
+  const AnyRec&  fields     () const                      { return fields_; }
 };
 
 // == KeyValue ==
@@ -917,7 +984,9 @@ class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableS
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
+  using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
   virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
+  virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
   virtual TypeHashList        __aida_typelist__   () const = 0;
   virtual const StringVector& __aida_aux_data__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
@@ -1194,8 +1263,268 @@ ServerConnection::bind (const String &protocol, std::shared_ptr<C> object_ptr)
 template<class Handle> Handle
 BaseConnection::remote_origin ()
 {
-  return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
+  return RemoteHandle::__aida_reinterpret___cast____<Handle> (remote_origin());
 }
+
+// == PropertyAccessor ==
+struct PropertyAccessor {
+  using Setter = std::function<void(const Any&)>;
+  using Getter = std::function<Any()>;
+  virtual              ~PropertyAccessor();
+  virtual TypeKind      kind    () const = 0;
+  virtual std::string   name    () const = 0;
+  virtual StringVector  auxinfo () const = 0;
+  virtual Any           get     () const = 0;
+  virtual void          set     (const Any&) const = 0;
+};
+template<class T, class V, typename = std::true_type> struct PropertyAccessorImpl;
+// bool property
+template<class T>
+struct PropertyAccessorImpl<T,bool> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, bool (T::*getter) () const, void (T::*setter) (bool), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return BOOL; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<bool> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<bool>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  bool   (T::*getter_) () const = NULL;
+  void   (T::*setter_) (bool) = NULL;
+};
+// int32 property
+template<class T>
+struct PropertyAccessorImpl<T,int> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, int (T::*getter) () const, void (T::*setter) (int), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INT32; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<int> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  int    (T::*getter_) () const = NULL;
+  void   (T::*setter_) (int) = NULL;
+};
+// int64 property
+template<class T>
+struct PropertyAccessorImpl<T,int64> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, int64 (T::*getter) () const, void (T::*setter) (int64), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INT64; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<int64> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int64>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  int64  (T::*getter_) () const = NULL;
+  void   (T::*setter_) (int64) = NULL;
+};
+// float64 property
+template<class T>
+struct PropertyAccessorImpl<T,double> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, double (T::*getter) () const, void (T::*setter) (double), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return FLOAT64; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<double> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<double>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  double (T::*getter_) () const = NULL;
+  void   (T::*setter_) (double) = NULL;
+};
+// string property
+template<class T>
+struct PropertyAccessorImpl<T,std::string> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, std::string (T::*getter) () const, void (T::*setter) (const std::string&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return STRING; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<std::string> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<std::string>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  std::string (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const std::string&) = NULL;
+};
+// enum property
+template<class T, class E>
+struct PropertyAccessorImpl<T,E,typename std::is_enum<E>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, E (T::*getter) () const, void (T::*setter) (E), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return ENUM; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<E> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<E>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  E      (T::*getter_) () const = NULL;
+  void   (T::*setter_) (E) = NULL;
+};
+// Any property
+template<class T, class A>
+struct PropertyAccessorImpl<T,A,typename std::is_base_of<Any,A>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, A (T::*getter) () const, void (T::*setter) (const A&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return ANY; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<A> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<A>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  A      (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const A&) = NULL;
+};
+// Record property
+template<class T, class Rec>
+struct PropertyAccessorImpl<T,Rec,typename ToAnyRecConvertible<Rec>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, Rec (T::*getter) () const, void (T::*setter) (const Rec&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return RECORD; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<Rec> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<Rec>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  Rec    (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const Rec&) = NULL;
+};
+// Sequence property
+template<class T, class Seq>
+struct PropertyAccessorImpl<T,Seq,typename ToAnySeqConvertible<Seq>::type> : PropertyAccessor {
+  PropertyAccessorImpl (const char *name, T &object, Seq (T::*getter) () const, void (T::*setter) (const Seq&), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return SEQUENCE; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<Seq> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<Seq>()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  Seq    (T::*getter_) () const = NULL;
+  void   (T::*setter_) (const Seq&) = NULL;
+};
+// Interface property
+template<class T, class I>
+struct PropertyAccessorImpl<T,I,typename std::is_base_of<ImplicitBase,I>::type> : PropertyAccessor {
+  using IPtr = std::shared_ptr<I>;
+  PropertyAccessorImpl (const char *name, T &object, IPtr (T::*getter) () const, void (T::*setter) (I*), const char *auxvalues00) :
+    object_ (object), name_ (name), auxvalues00_ (auxvalues00), getter_ (getter), setter_ (setter)
+  {}
+  virtual TypeKind     kind     () const        { return INSTANCE; }
+  virtual std::string  name     () const        { return name_; }
+  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual Any          get      () const        { Any a; a.set<IPtr> ((object_.*getter_)()); return a; }
+  virtual void         set (const Any &a) const { (object_.*setter_) (a.get<IPtr>().get()); }
+private:
+  T          &object_;
+  const char *name_ = NULL, *auxvalues00_ = NULL;
+  IPtr   (T::*getter_) () const = NULL;
+  void   (T::*setter_) (I*) = NULL;
+};
+
+// == RemoteHandle remote_call<> ==
+template<class T, class... I, class... A> inline void
+remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
+  std::function<void()> wrapper = [&sem, self, mfp, &args...] () {
+    (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__().enqueue_mt (wrapper);
+  sem.wait();
+}
+
+template<class T, class R, class... I, class... A> inline R
+remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
+  R r {};
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
+    r = (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__().enqueue_mt (wrapper);
+  sem.wait();
+  return r;
+}
+
+template<class T, class R, class... I, class... A> inline R
+remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
+{
+  ScopedSemaphore sem;
+  T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
+  R r {};
+  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
+    r = (self->*mfp) (args...);
+    sem.post();
+  };
+  self->__execution_context_mt__().enqueue_mt (wrapper);
+  sem.wait();
+  return r;
+}
+
+// == Enum Helpers ==
+#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
+  bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
+  bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
+  bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
+  bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
+#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
+  static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
+  static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
+  static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
+  static constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
+  static constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
+  static constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
+  static constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
+  static constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
+  static constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
+  static constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
+  static constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
+  static constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
+  static constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
+  static constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
+  static constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
+  static constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
+  static constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
+  static constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
+  static constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
+  static constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
+  static constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
+  static constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
+  static constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
+  static constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); }
 
 } // Aida
 

@@ -421,7 +421,7 @@ struct AppPage {
 static void
 bst_app_add_page_item (BstApp *self, uint position, SfiProxy itemid)
 {
-  Bse::SuperH super = Bse::SuperH::down_cast (bse_server.from_proxy (itemid));
+  Bse::SuperH super = Bse::SuperH::__cast__ (bse_server.from_proxy (itemid));
   const gchar *stock;
   String name = super.get_name_or_type();
   AppPage *apage = new AppPage (super);
@@ -557,11 +557,11 @@ bst_app_reload_pages (BstApp *self)
 
   // re-select current page
   if (first_unseen && self->select_unseen_super)
-    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::down_cast (bse_server.from_proxy (first_unseen))));
+    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::__cast__ (bse_server.from_proxy (first_unseen))));
   else if (old_super && gxk_assortment_find_pred (self->ppages, app_page_predicate (old_super)))
     gxk_assortment_select_pred (self->ppages, app_page_predicate (old_super));
   else if (first_synth)
-    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::down_cast (bse_server.from_proxy (first_synth))));
+    gxk_assortment_select_pred (self->ppages, app_page_predicate (Bse::SuperH::__cast__ (bse_server.from_proxy (first_synth))));
   self->select_unseen_super = FALSE;
   // restore focus
   if (old_focus)
@@ -848,7 +848,7 @@ app_action_exec (gpointer data,
       proxy = bst_app_get_current_super (self);
       if (BSE_IS_SNET (proxy) && !self->project.is_active())
         {
-          Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (proxy));
+          Bse::SNetH snet = Bse::SNetH::__cast__ (bse_server.from_proxy (proxy));
           self->project.remove_snet (snet);
         }
       self->select_unseen_super = FALSE;

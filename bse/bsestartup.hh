@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#ifndef __BSE_CORE_HH__
-#define __BSE_CORE_HH__
+#ifndef __BSE_STARTUP_HH__
+#define __BSE_STARTUP_HH__
 
 #include <bse/sfi.hh>
 
@@ -33,4 +33,4 @@ public:
 
 } // Bse
 
-#endif /* __BSE_CORE_HH__ */
+#endif // __BSE_STARTUP_HH__

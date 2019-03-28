@@ -18,7 +18,7 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
       SfiProxy item = items[i].proxy_id();
       if (BSE_IS_SONG (item))
         {
-          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (item));
           song.ensure_track_links();    // fixup orphaned parts
           song.ensure_master_bus();     // songs always need a master bus
         }
@@ -48,7 +48,7 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
       SfiProxy item = items[i].proxy_id();
       if (BSE_IS_SONG (item))
         {
-          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (item));
           song.ensure_track_links();    // fixup orphaned parts
           song.ensure_master_bus();     // songs always need a master bus
         }
@@ -90,7 +90,7 @@ bst_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
 {
   Bse::ItemSeq items;
   for (size_t i = 0; i < i3s->n_items; i++)
-    items.push_back (Bse::ItemH::down_cast (bse_server.from_proxy (i3s->items[i])));
+    items.push_back (Bse::ItemH::__cast__ (bse_server.from_proxy (i3s->items[i])));
   return items;
 }
 

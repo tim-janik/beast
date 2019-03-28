@@ -185,9 +185,9 @@ struct StdVectorValueHandle<::std::vector<bool>> :
 // == FromAnyVisitors ==
 /// Visitor to construct a visitable class from an Any::AnyDict.
 class FromAnyFieldsVisitor {
-  const Any::AnyDict &fields_;
+  const Any::AnyRec &fields_;
 public:
-  explicit FromAnyFieldsVisitor (const Any::AnyDict &fields) : fields_ (fields) {}
+  explicit FromAnyFieldsVisitor (const Any::AnyRec &fields) : fields_ (fields) {}
 
   template<class A,
            REQUIRES< !Has__aida_from_any__<A>::value > = true> void
@@ -214,12 +214,12 @@ public:
   }
 };
 
-/// Visitor to construct an Any::AnyList from a visitable class.
-class FromAnyListVisitor {
-  const Any::AnyList &anys_;
-  size_t              index_;
+/// Visitor to construct an Any::AnySeq from a visitable class.
+class FromAnySeqVisitor {
+  const Any::AnySeq &anys_;
+  size_t             index_;
 public:
-  explicit FromAnyListVisitor (const Any::AnyList &anys) : anys_ (anys), index_ (0) {}
+  explicit FromAnySeqVisitor (const Any::AnySeq &anys) : anys_ (anys), index_ (0) {}
 
   template<class A,
            REQUIRES< !Has__aida_from_any__<A>::value > = true> void
@@ -246,11 +246,11 @@ public:
 
 
 // == ToAnyVisitors ==
-/// Visitor to construct an Any::AnyDict from a visitable class.
+/// Visitor to construct an Any::AnyRec from a visitable class.
 class ToAnyFieldsVisitor {
-  Any::AnyDict &fields_;
+  Any::AnyRec &fields_;
 public:
-  explicit ToAnyFieldsVisitor (Any::AnyDict &fields) : fields_ (fields) {}
+  explicit ToAnyFieldsVisitor (Any::AnyRec &fields) : fields_ (fields) {}
 
   template<class A,
            REQUIRES< !Has__aida_to_any__<A>::value > = true> void
@@ -269,11 +269,11 @@ public:
   }
 };
 
-/// Visitor to construct an Any::AnyList from a visitable class.
-class ToAnyListVisitor {
-  Any::AnyList &anys_;
+/// Visitor to construct an Any::AnySeq from a visitable class.
+class ToAnySeqVisitor {
+  Any::AnySeq &anys_;
 public:
-  explicit ToAnyListVisitor (Any::AnyList &anys) : anys_ (anys) {}
+  explicit ToAnySeqVisitor (Any::AnySeq &anys) : anys_ (anys) {}
 
   template<class A,
            REQUIRES< !Has__aida_to_any__<A>::value > = true> void
@@ -300,7 +300,7 @@ template<class Vector>    void any_to_sequence    (const Any &any, Vector    &ve
 template<class Visitable> Any
 any_from_visitable (Visitable &visitable)
 {
-  Any::AnyDict fields;
+  Any::AnyRec fields;
   ToAnyFieldsVisitor visitor (fields);
   static_assert (Has__accept__<Visitable, ToAnyFieldsVisitor>::value, "Visitable provies __accept__");
   visitable.__accept__ (visitor);
@@ -312,7 +312,7 @@ any_from_visitable (Visitable &visitable)
 template<class Visitable> void
 any_to_visitable (const Any &any, Visitable &visitable)
 {
-  const Any::AnyDict &fields = any.get<const Any::AnyDict>();
+  const Any::AnyRec &fields = any.get<const Any::AnyRec>();
   FromAnyFieldsVisitor visitor (fields);
   static_assert (Has__accept__<Visitable, FromAnyFieldsVisitor>::value, "Visitable provies __accept__");
   visitable.__accept__ (visitor);
@@ -322,8 +322,8 @@ template<class Vector> Any
 any_from_sequence (Vector &vector)
 {
   static_assert (DerivesVector<Vector>::value, "Vector derives std::vector");
-  Any::AnyList anys;
-  ToAnyListVisitor visitor (anys);
+  Any::AnySeq anys;
+  ToAnySeqVisitor visitor (anys);
   for (size_t i = 0; i < vector.size(); i++)
     {
       typedef StdVectorValueHandle< typename ::std::vector<typename Vector::value_type> > VectorValueHandle;
@@ -341,8 +341,8 @@ template<class Vector> void
 any_to_sequence (const Any &any, Vector &vector)
 {
   static_assert (DerivesVector<Vector>::value, "Vector derives std::vector");
-  const Any::AnyList &anys = any.get<const Any::AnyList>();
-  FromAnyListVisitor visitor (anys);
+  const Any::AnySeq &anys = any.get<const Any::AnySeq>();
+  FromAnySeqVisitor visitor (anys);
   vector.clear();
   vector.resize (anys.size());
   for (size_t i = 0; i < anys.size(); i++)

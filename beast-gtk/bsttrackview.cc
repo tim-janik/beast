@@ -146,17 +146,17 @@ track_view_fill_value (BstItemView *iview,
         String string;
         if (snet)
           {
-            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (snet));
+            Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (snet));
             string = item.get_name();
           }
         else if (wave)
           {
-            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (wave));
+            Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (wave));
             string = item.get_name();
           }
         else if (sound_font_preset)
           {
-            Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (sound_font_preset));
+            Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (sound_font_preset));
             string = item.get_name();
           }
         else
@@ -170,7 +170,7 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_OUTPUTS:
       {
-        Bse::TrackH track = Bse::TrackH::down_cast (item);
+        Bse::TrackH track = Bse::TrackH::__cast__ (item);
         Bse::ItemSeq items = track.outputs();
         if (items.size() == 1)
           g_value_take_string (value, g_strdup_format ("%s", items[0].get_name_or_type()));
@@ -184,7 +184,7 @@ track_view_fill_value (BstItemView *iview,
       snet = 0;
       bse_proxy_get (item.proxy_id(), "pnet", &snet, NULL);
       {
-        Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (snet));
+        Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (snet));
         g_value_set_string (value, item ? item.get_name().c_str() : "");
       }
       break;
@@ -215,7 +215,7 @@ track_view_synth_edited (BstTrackView *self,
 	  GSList *slist = NULL;
           Bse::PropertyCandidates pc;
 	  /* list possible snet/wave/sound_font_preset candidates */
-          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
           pc = item.get_property_candidates ("snet");
           auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
 	  slist = g_slist_append (slist, snet_i3s.get());
@@ -259,7 +259,7 @@ track_view_post_synth_edited (BstTrackView *self,
 	  GSList *slist = NULL;
 	  /* list possible snet candidates */
 
-          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+          Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
           Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
           auto snet_i3s = std::unique_ptr<BseIt3mSeq> (bst_it3m_seq_from_item_seq (pc.items));
 	  slist = g_slist_append (slist, snet_i3s.get());
@@ -295,7 +295,7 @@ track_view_synth_popup_cb (gpointer              data,
                            BstTrackSynthDialog  *tsdialog)
 {
   SynthPopup *sdata = (SynthPopup*) data;
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
   gxk_cell_renderer_popup_change (sdata->pcell,
                                   item ? item.get_uname_path().c_str() : "",
                                   FALSE,
@@ -314,7 +314,7 @@ track_view_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       if (item.editable_property ("snet"))
         {
           Bse::PropertyCandidates pc = item.get_property_candidates ("snet");
@@ -350,7 +350,7 @@ track_view_post_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       if (item.editable_property ("pnet"))
         {
           Bse::PropertyCandidates pc = item.get_property_candidates ("pnet");
@@ -390,7 +390,7 @@ track_view_outputs_changed (gpointer              data,
 {
   OutputsPopup *odata = (OutputsPopup*) data;
   gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
-  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (odata->item));
+  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (odata->item));
   track.outputs (bst_item_seq_from_it3m_seq (iseq));
 }
 
@@ -406,7 +406,7 @@ track_view_outputs_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy itemid = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (itemid));
+      Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (itemid));
       assert_return (track != NULL);
       Bse::PropertyCandidates pc = track.get_property_candidates ("outputs");
       Bse::ItemSeq items = track.outputs();
@@ -489,7 +489,7 @@ static Bse::TrackH
 get_track (void *data, int row)
 {
   SfiProxy proxy = bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
-  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (proxy));
+  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (proxy));
   return track;
 }
 
@@ -697,11 +697,11 @@ track_view_set_container (BstItemView *iview,
   if (self->troll)
     {
       if (iview->container)
-        bst_track_roll_setup (self->troll, iview->tree, Bse::SongH::down_cast (iview->container));
+        bst_track_roll_setup (self->troll, iview->tree, Bse::SongH::__cast__ (iview->container));
       else
         bst_track_roll_setup (self->troll, NULL, Bse::SongH());
     }
-  self->song = Bse::SongH::down_cast (iview->container);
+  self->song = Bse::SongH::__cast__ (iview->container);
   if (self->song)
     {
       bst_track_roll_controller_set_song (self->tctrl, self->song.proxy_id());
@@ -783,7 +783,7 @@ track_view_action_exec (gpointer data,
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
-      track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
+      track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
       self->song.group_undo ("Delete Track");
       Bse::PartSeq pseq = track.list_parts_uniq();
       self->song.remove_track (track);

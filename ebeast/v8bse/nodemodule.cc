@@ -8,19 +8,19 @@
 #include <v8pp/convert.hpp>
 
 // == RemoteHandle Wrapping ==
-/* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly behind a thread boundary),
+/* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly in another thread),
  * so multiple RemoteHandle objects can point to the same C++ object. There are a couple ways that a
  * RemoteHandle can be mapped onto Javascript:
  * 1) A v8::Object contains a RemoteHandle, i.e. every function that returns a new RemoteHandle also
  *    returns a new Object in JS, even if they all point to the same C++ impl. In this case it is
- *    desirable that the JS Object cannot gain new properties (i.e. isSealed() === true).
+ *    desirable that the JS Object must not accept new properties (i.e. isSealed() === true).
  *    A major downside here is that two JS Objects that point to the same C++ impl are not === equal.
  * 2) All RemoteHandles that point to the same C++ impl are mapped onto a single JS Object of the
  *    appropriate down-cast type. This correctly provides === equality and new properties added to
  *    a JS Object are preseved whenever another RemoteHandles is mapped into a JS Object that points
  *    to the same C++ impl.
  *    Here, an extra map must be maintained to achieve the (n RemoteHandle) => (1 JS Object) mapping
- *    by storing and looking up the orbid_ that defines the object identity each RemoteHandle points to.
+ *    by storing and looking up a unique id that defines the object identity each RemoteHandle points to.
  *    The downside here is resource lockup. Once created, a JS Object must keep its RemoteHandle around
  *    which forces the C++ impl to stay alive. And the v8::Persistent holding the JS Object map entry
  *    must not be weak to prevent GC cycles from "forgetting" the properties stored on the JS Object.
@@ -36,7 +36,7 @@ typedef v8::Local<v8::Object> (*AidaRemoteHandleWrapper) (v8::Isolate *const, Ai
 template<class Native> static v8::Local<v8::Object>
 aida_remote_handle_wrapper_impl (v8::Isolate *const isolate, Aida::RemoteHandle rhandle)
 {
-  Native target = Native::down_cast (rhandle);
+  Native target = Native::__cast__ (rhandle);
   if (target != NULL)
     return v8pp::class_<Native>::import_external (isolate, new Native (target));
   return v8::Local<v8::Object>();
@@ -67,7 +67,7 @@ aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Valu
 }
 
 static v8::Isolate                                               *aida_remote_handle_idmap_isolate = NULL;
-static std::unordered_map<uint64_t, v8pp::persistent<v8::Object>> aida_remote_handle_idmap;
+static std::unordered_map<ptrdiff_t, v8pp::persistent<v8::Object>> aida_remote_handle_idmap;
 
 static void
 aida_remote_handle_cache_add (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle, const v8::Local<v8::Object> &wrapobj)
@@ -75,7 +75,8 @@ aida_remote_handle_cache_add (v8::Isolate *const isolate, const Aida::RemoteHand
   assert_return (isolate == aida_remote_handle_idmap_isolate);
   // check handle consistency
   Aida::RemoteHandle *whandle = aida_remote_handle_unwrap_native<Aida::RemoteHandle> (isolate, wrapobj);
-  assert_return (whandle && whandle->__aida_orbid__() == rhandle.__aida_orbid__());
+  const ptrdiff_t rhandle_ptrid = ptrdiff_t (const_cast<Aida::RemoteHandle&> (rhandle).__iface_ptr__().get());
+  assert_return (whandle && ptrdiff_t (whandle->__iface_ptr__().get()) == rhandle_ptrid);
   // seal object, since property extensions could not survive GC
   wrapobj->SetIntegrityLevel (isolate->GetCurrentContext(), v8::IntegrityLevel::kSealed);
   // use v8::UniquePersistent to keep a unique v8::Object per OrbObject around
@@ -84,17 +85,18 @@ aida_remote_handle_cache_add (v8::Isolate *const isolate, const Aida::RemoteHand
   auto weak_callback = [] (const v8::WeakCallbackInfo<Aida::RemoteHandle> &data) {
     // v8::Isolate *const isolate = data.GetIsolate();
     Aida::RemoteHandle *whandle = data.GetParameter();
-    const uint64_t orbid = whandle->__aida_orbid__();
-    auto it = aida_remote_handle_idmap.find (orbid);
+    const ptrdiff_t ptrid = ptrdiff_t (whandle->__iface_ptr__().get());
+    auto it = aida_remote_handle_idmap.find (ptrid);
     if (it != aida_remote_handle_idmap.end())
       {
         it->second.Reset();
         aida_remote_handle_idmap.erase (it);
+        // Bse::printerr ("NOTE:%s: clearing handle=%p (tid=%d)\n", __func__, (void*) ptrid, Bse::this_thread_gettid());
       }
   };
   po.SetWeak (whandle, weak_callback, v8::WeakCallbackType::kParameter);
   // enter per-isolate cache
-  aida_remote_handle_idmap.emplace (rhandle.__aida_orbid__(), std::move (po));
+  aida_remote_handle_idmap.emplace (rhandle_ptrid, std::move (po));
 }
 
 static v8::Local<v8::Object>
@@ -102,13 +104,14 @@ aida_remote_handle_cache_find (v8::Isolate *const isolate, const Aida::RemoteHan
 {
   v8::Local<v8::Object> result;
   assert_return (isolate == aida_remote_handle_idmap_isolate, result);
-  auto it = aida_remote_handle_idmap.find (rhandle.__aida_orbid__());
+  const ptrdiff_t rhandle_ptrid = ptrdiff_t (const_cast<Aida::RemoteHandle&> (rhandle).__iface_ptr__().get());
+  auto it = aida_remote_handle_idmap.find (rhandle_ptrid);
   if (it != aida_remote_handle_idmap.end())
     result = v8pp::to_local (isolate, it->second);
   return result;
 }
 
-/// Create (or find) the corresponding down_cast() JS Object for a RemoteHandle.
+/// Create (or find) the corresponding __cast__() JS Object for a RemoteHandle.
 static v8::Local<v8::Object>
 aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle)
 {
@@ -120,7 +123,7 @@ aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHa
       if (AIDA_LIKELY (!wrapobj.IsEmpty()))
         return scope.Escape (wrapobj);
     }
-  Aida::TypeHashList thl = rhandle.__aida_typelist__();
+  Aida::TypeHashList thl = rhandle.__typelist__();
   for (const auto &th : thl)
     {
       AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
@@ -234,7 +237,7 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
 
 // event loop integration
 static uv_poll_t               bse_uv_watcher;
-static Aida::ClientConnectionP bse_client_connection;
+static Aida::ExecutionContext *ebeast_execution_context = NULL;
 static Bse::ServerH            bse_server;
 static uv_async_t              bse_uv_dispatcher;
 static uv_prepare_t            bse_uv_preparer;
@@ -280,6 +283,8 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
 
   v8::HandleScope scope (isolate);
 
+  Bse::this_thread_set_name ("EBeast-module");
+
   // workaround electron appending argv[1:] to argv[0]
   if (Bse::program_alias().find ("electron ") != std::string::npos)
     Bse::program_alias_init (Bse::Path::cwd()); // a guess at the actual electron application
@@ -295,49 +300,51 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
   Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", 0);
   Bse::init_async (NULL, NULL, "BEAST", Bse::string_split (bseoptions, ":"));
 
-  // fetch server handle
+  // fetch server handle for remote calls
   assert (bse_server == NULL);
-  assert (bse_client_connection == NULL);
-  bse_client_connection = Bse::init_server_connection();
-  assert (bse_client_connection != NULL);
   bse_server = Bse::init_server_instance();
   assert (bse_server != NULL);
 
-  // hook BSE connection into libuv event loop
-  uv_loop_t *uvloop = uv_default_loop();
-  // Dispatch any pending events from uvlooop
+  // enable handling of local callbacks from remote notifications
+  assert_return (ebeast_execution_context == NULL);
+  ebeast_execution_context = Aida::ExecutionContext::new_context();
+  ebeast_execution_context->push_thread_current();
+
+  // libuv event loop integration
+
+  /* Electron drives the uvloop via UV_RUN_NOWAIT and outsources fd polling into
+   * a dedicated worker thread (however this does not affect the uv_poll_start
+   * callback thread). That means if the ExecutionContext is fetching remote
+   * events and is re-queueing those internally outside of uvdispatchcb (e.g.
+   * due to a Bse call from a JS timeout), notify_fd will not be getting a
+   * chance to wakeup poll(2) to trigger uvdispatchcb eventhough work is pending.
+   * Avoiding this depends on Aida::remote_callr() *not* fetching and internally
+   * re-queueing events, something the old Aida::ClientConnection used to do in
+   * ProtoScope::invoke(), which required pending() checks after each invoke().
+   * That's also why we always process the *entire* work queue in uvdispatchcb().
+   */
+  uv_loop_t *const uvloop = uv_default_loop();
+  // Dispatch all pending events from uvlooop
   auto uvdispatchcb = [] (uv_async_t*) {
-    if (bse_client_connection)
-      while (bse_client_connection->pending())
-        bse_client_connection->dispatch();
+    if (ebeast_execution_context)
+      while (ebeast_execution_context->pending())
+        ebeast_execution_context->dispatch();
   };
   uv_async_init (uvloop, &bse_uv_dispatcher, uvdispatchcb);
   // Poll notify_fd, clear fd and queue dispatcher events
   auto uvpollcb = [] (uv_poll_t*, int, int) {
-    if (bse_client_connection && bse_client_connection->pending())
+    if (ebeast_execution_context && ebeast_execution_context->pending())
       uv_async_send (&bse_uv_dispatcher);
   };
-  uv_poll_init (uvloop, &bse_uv_watcher, bse_client_connection->notify_fd());
+  uv_poll_init (uvloop, &bse_uv_watcher, ebeast_execution_context->notify_fd());
   uv_poll_start (&bse_uv_watcher, UV_READABLE, uvpollcb);
   // Prevent libuv from waiting in poll if events are pending
   auto uvpreparecb = [] (uv_prepare_t*) {
-    if (bse_client_connection && bse_client_connection->pending())
+    if (ebeast_execution_context && ebeast_execution_context->pending())
       uv_async_send (&bse_uv_dispatcher);
   };
   uv_prepare_init (uvloop, &bse_uv_preparer);
   uv_prepare_start (&bse_uv_preparer, uvpreparecb);
-  /* Electron drives the uvloop via UV_RUN_NOWAIT and outsources fd polling into
-   * a dedicated worker thread. And that means the bse_client_connection may be
-   * dispatching calls *and* fetching remote events or return values without
-   * notify_fd getting a chance to wakeup poll(2). So we use a notify_callback
-   * to check for pending events after each remote call.
-   */
-  auto bsenotfycb = [] (Aida::ClientConnection &con) {
-    // bse_client_connection == &con
-    if (bse_client_connection && bse_client_connection->pending())
-      uv_async_send (&bse_uv_dispatcher);
-  };
-  bse_client_connection->notify_callback (bsenotfycb);
 
   // register v8stub C++ bindings
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -362,7 +369,10 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
 
   // debugging aids:
   if (0)
-    Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::this_thread_getpid());
+    {
+      Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::this_thread_getpid());
+      g_usleep (3 * 1000000);
+    }
 
   // Ensure Bse has everything properly loaded
   bse_server.load_assets();

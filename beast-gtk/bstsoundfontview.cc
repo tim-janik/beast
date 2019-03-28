@@ -95,7 +95,7 @@ sound_font_view_action_exec (gpointer                data,
 {
   BstSoundFontView *self = BST_SOUND_FONT_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::SoundFontRepoH sfrepo = Bse::SoundFontRepoH::down_cast (item_view->container);
+  Bse::SoundFontRepoH sfrepo = Bse::SoundFontRepoH::__cast__ (item_view->container);
   switch (action)
     {
     case ACTION_LOAD_SOUND_FONT:
@@ -107,7 +107,7 @@ sound_font_view_action_exec (gpointer                data,
     case ACTION_DELETE_SOUND_FONT:
       {
         SfiProxy item = bst_item_view_get_current (BST_ITEM_VIEW (self));
-        Bse::SoundFontH sound_font = Bse::SoundFontH::down_cast (bse_server.from_proxy (item));
+        Bse::SoundFontH sound_font = Bse::SoundFontH::__cast__ (bse_server.from_proxy (item));
         sfrepo.remove_sound_font (sound_font);
       }
       break;

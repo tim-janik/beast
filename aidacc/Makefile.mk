@@ -2,6 +2,8 @@
 include $(wildcard $>/aidacc/*.d)
 CLEANDIRS += $(wildcard $>/aidacc/)
 
+aidacc/check-targets ::=
+
 # == aidacc/ files ==
 aidacc/include.headers ::= $(strip	\
 	aidacc/aida.hh			\
@@ -73,8 +75,12 @@ $(call INSTALL_DATA_RULE,			\
 	$(DESTDIR)$(pkglibdir)/include/aidacc,	\
 	$(aidacc/include.headers))
 
-# == aidacc-check ==
-aidacc-check-build-test: FORCE		| $(aidacc/aidacc)
+# == build-test ==
+aidacc/build-test: FORCE		| $(aidacc/aidacc)
 	$(QECHO) RUN $@
 	$Q $(aidacc/aidacc) -x CxxStub --list-formats | grep -q CxxStub
-check: aidacc-check-build-test
+aidacc/check-targets += aidacc/build-test
+
+# == aidacc-check ==
+aidacc-check: $(aidacc/check-targets) FORCE
+CHECK_TARGETS += $(aidacc/check-targets)

@@ -33,6 +33,7 @@ typedef std::string String;             ///< Convenience alias for std::string.
 typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
 using   Aida::Any;
 using   Aida::EventFd;
+using   Aida::EventHandlerF;
 using   Aida::void_t;
 
 // == Id Spaces ==
@@ -87,7 +88,7 @@ void   diag_abort_hook      (const std::function<void (const ::std::string&)> &h
   static ::Bse::IntegrityCheck::Test BSE_CPP_PASTE2 (__bse__integrity_check__test_line, __LINE__) (__FILE__, __LINE__, #func, func)
 
 // == Small Utilities ==
-/// Erase element @a value from std::vector @a v if it's present.
+/// Erase element @a value from std::vector @a v if it is present.
 template<class V> bool
 vector_erase_element (V &v, const typename V::value_type &value)
 {
@@ -97,6 +98,18 @@ vector_erase_element (V &v, const typename V::value_type &value)
       v.erase (it);
       return true;
     }
+  return false;
+}
+/// Erase element @a value from std::vector @a v if it matches a vector elements __iface__().
+template<class V, class O> bool
+vector_erase_iface (V &v, O *value)
+{
+  for (auto it = v.begin(); it != v.end(); ++it)
+    if ((*it).__iface__() == value)
+      {
+        v.erase (it);
+        return true;
+      }
   return false;
 }
 

@@ -830,6 +830,21 @@ aux_vector_split (const char *char_array, size_t length)
 }
 
 std::vector<String>
+aux_vector_split (const char *auxinfo00)
+{
+  if (!auxinfo00)
+    return {};
+  const char *p = auxinfo00;
+  size_t l = strlen (p);
+  while (l)
+    {
+      p += l + 1;
+      l = strlen (p);
+    }
+  return aux_vector_split (auxinfo00, p - auxinfo00);
+}
+
+std::vector<String>
 aux_vectors_combine (const std::vector<String> &v0, const std::vector<String> &v1, const std::vector<String> &v2,
                      const std::vector<String> &v3, const std::vector<String> &v4, const std::vector<String> &v5,
                      const std::vector<String> &v6, const std::vector<String> &v7, const std::vector<String> &v8,
@@ -859,7 +874,7 @@ aux_vectors_combine (const std::vector<String> &v0, const std::vector<String> &v
 String
 aux_vector_find (const std::vector<String> &auxvector, const String &field, const String &key, const String &fallback)
 {
-  const String name = field + "." + key + "=";
+  const String name = field.empty() ? key + "=" : field + "." + key + "=";
   for (const auto &kv : auxvector)
     if (name.compare (0, name.size(), kv, 0, name.size()) == 0)
       return kv.substr (name.size());
@@ -1078,8 +1093,8 @@ Any::operator= (const Any &clone)
     {
     case STRING:        new (&u_.vstring()) String (clone.u_.vstring());                             break;
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
-    case SEQUENCE:      new (&u_.vanys()) AnyList (clone.u_.vanys());                                break;
-    case RECORD:        new (&u_.vfields()) AnyDict (clone.u_.vfields());                            break;
+    case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
+    case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
     case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
     case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
     case ENUM:
@@ -1142,8 +1157,8 @@ Any::clear()
     case ENUM:          delete[] u_.enum_typename;              break;
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
-    case SEQUENCE:      u_.vanys().~AnyList();                  break;
-    case RECORD:        u_.vfields().~AnyDict();                break;
+    case SEQUENCE:      u_.vanys().~AnySeq();                   break;
+    case RECORD:        u_.vfields().~AnyRec();                 break;
     case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
     case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
     case TRANSITION: ;
@@ -1169,8 +1184,8 @@ Any::rekind (TypeKind _kind)
     case ENUM:     u_.enum_typename = NULL;             break;
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
-    case SEQUENCE: new (&u_.vanys()) AnyList();         break;
-    case RECORD:   new (&u_.vfields()) AnyDict();       break;
+    case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
+    case RECORD:   new (&u_.vfields()) AnyRec();        break;
     case INSTANCE: new (&u_.ibase()) ImplicitBaseP();   break;
     case REMOTE:   new (&u_.rhandle()) ARemoteHandle(); break;
     default:                                            break;
@@ -1180,7 +1195,7 @@ Any::rekind (TypeKind _kind)
 Any
 Any::any_from_strings (const std::vector<std::string> &string_container)
 {
-  AnyList av;
+  AnySeq av;
   av.resize (string_container.size());
   for (size_t i = 0; i < av.size(); i++)
     av[i].set (string_container[i]);
@@ -1192,7 +1207,7 @@ Any::any_from_strings (const std::vector<std::string> &string_container)
 std::vector<std::string>
 Any::any_to_strings () const
 {
-  const AnyList *av = get<const AnyList*>();
+  const AnySeq *av = get<const AnySeq*>();
   std::vector<std::string> sv;
   if (av)
     {
@@ -1206,7 +1221,7 @@ Any::any_to_strings () const
 template<class T> static String any_vector_to_string (const T *av);
 
 template<> String
-any_vector_to_string (const Any::AnyDict *vec)
+any_vector_to_string (const Any::AnyRec *vec)
 {
   String s;
   if (vec)
@@ -1225,7 +1240,7 @@ any_vector_to_string (const Any::AnyDict *vec)
 }
 
 template<> String
-any_vector_to_string (const Any::AnyList *vec)
+any_vector_to_string (const Any::AnySeq *vec)
 {
   String s;
   if (vec)
@@ -1448,42 +1463,42 @@ Any::set_string (const std::string &value)
   u_.vstring().assign (value);
 }
 
-const Any::AnyList&
+const Any::AnySeq&
 Any::get_seq () const
 {
   if (kind() == SEQUENCE)
     return u_.vanys();
-  static const AnyList empty;
+  static const AnySeq empty;
   return empty;
 }
 
 void
-Any::set_seq (const AnyList &seq)
+Any::set_seq (const AnySeq &seq)
 {
   ensure (SEQUENCE);
   if (&seq != &u_.vanys())
     {
-      AnyList tmp (seq); // beware of internal references, copy before freeing
+      AnySeq tmp (seq); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vanys());
     }
 }
 
-const Any::AnyDict&
+const AnyRec&
 Any::get_rec () const
 {
   if (kind() == RECORD && !u_.vfields().empty())
     return u_.vfields();
-  static const AnyDict empty;
+  static const AnyRec empty;
   return empty;
 }
 
 void
-Any::set_rec (const AnyDict &rec)
+Any::set_rec (const AnyRec &rec)
 {
   ensure (RECORD);
   if (&rec != &u_.vfields())
     {
-      AnyDict tmp (rec); // beware of internal references, copy before freeing
+      AnyRec tmp (rec); // beware of internal references, copy before freeing
       std::swap (tmp, u_.vfields());
     }
 }
@@ -1662,7 +1677,7 @@ Any::from_transition (BaseConnection &base_connection)
 }
 
 Any&
-Any::AnyDict::operator[] (const String &name)
+Any::AnyRec::operator[] (const String &name)
 {
   for (size_t i = 0; i < size(); i++)
     if (name == (*this)[i].name)
@@ -1672,7 +1687,7 @@ Any::AnyDict::operator[] (const String &name)
 }
 
 const Any&
-Any::AnyDict::operator[] (const String &name) const
+Any::AnyRec::operator[] (const String &name) const
 {
   for (size_t i = 0; i < size(); i++)
     if (name == (*this)[i].name)
@@ -1687,8 +1702,8 @@ Event::Event (const String &type)
   fields_["type"].set (type);
 }
 
-Event::Event (const AnyDict &adict) :
-  fields_ (adict)
+Event::Event (const AnyRec &arec) :
+  fields_ (arec)
 {
   (void) fields_["type"]; // ensure field is present
 }
@@ -1745,22 +1760,107 @@ RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
   orbop_ = orbop ? orbop : __aida_null_orb_object__();
 }
 
+struct RemoteHandle::EventHandlerRelay {
+  ExecutionContext    &iface_context_;
+  ExecutionContext    &handler_context_;
+  EventHandlerF        handler_;
+  IfaceEventConnection iface_connection_;
+  explicit EventHandlerRelay (ExecutionContext &handler_execution_context, EventHandlerF handler,
+                              ExecutionContext &iface_execution_context) :
+    iface_context_ (iface_execution_context), handler_context_ (handler_execution_context), handler_ (handler)
+  {}
+  bool
+  connected ()
+  {
+    return handler_ != NULL;
+  }
+  void
+  disconnect ()
+  {
+    if (handler_)
+      {
+        handler_ = NULL;
+        IfaceEventConnection ifaceconnection = iface_connection_;
+        auto remote_disconnect = [ifaceconnection] () { ifaceconnection.disconnect(); };
+        iface_context_.enqueue_mt (new std::function<void()> (remote_disconnect));
+        iface_connection_ = IfaceEventConnection(); // reset
+      }
+  }
+  void
+  local_handler (const Event &event)
+  {
+    if (handler_)
+      handler_ (event);
+  }
+  struct RemoteHandler : std::shared_ptr<EventHandlerRelay> {
+    void
+    operator() (const Event &event)
+    {
+      std::shared_ptr<EventHandlerRelay> &relayp = *this;
+      // relayp and event must be copied for use in a different thread
+      auto localhandler = [relayp, event] () { relayp->local_handler (event); };
+      relayp->handler_context_.enqueue_mt (new std::function<void()> (localhandler));
+    }
+  };
+};
+
+RemoteHandle::EventConnection
+RemoteHandle::__attach__ (const String &eventselector, EventHandlerF handler)
+{
+  RemoteHandle::EventConnection empty;
+  assert_return (*this != NULL, empty);
+  assert_return (handler != NULL, empty);
+  ExecutionContext *current_thread_execution_context = ExecutionContext::get_current ();
+  assert_return (current_thread_execution_context != NULL, empty);
+  ImplicitBase *iface = __iface_ptr__().get();
+  ExecutionContext &iface_execution_context = iface->__execution_context_mt__();
+  auto relay = std::make_shared<EventHandlerRelay> (*current_thread_execution_context, handler, iface_execution_context);
+  EventHandlerRelay::RemoteHandler remotehandler = static_cast<EventHandlerRelay::RemoteHandler&> (relay);
+  relay->iface_connection_ = remote_callr (*this, &ImplicitBase::__attach__, eventselector, remotehandler);
+  std::weak_ptr<EventHandlerRelay> wptr = relay;
+  return *static_cast<EventConnection*> (&wptr);
+}
+
+TypeHashList
+RemoteHandle::__typelist__() const
+{
+  TypeHashList thl;
+  assert_return (*this != NULL, thl);
+  thl = remote_callc (*this, &ImplicitBase::__aida_typelist__);
+  return thl;
+}
+
+bool
+RemoteHandle::EventConnection::connected  () const
+{
+  std::shared_ptr<EventHandlerRelay> relay = this->lock();
+  return relay && relay->connected();
+}
+
+void
+RemoteHandle::EventConnection::disconnect () const
+{
+  std::shared_ptr<EventHandlerRelay> relay = this->lock();
+  if (relay)
+    relay->disconnect();
+}
+
 // == DetacherHooks ==
 void
 DetacherHooks::__clear_hooks__ (RemoteHandle *scopedhandle)
 {
-  while (!detach_ids_.empty())
+  while (!connections_.empty())
     {
-      const uint64 hid = detach_ids_.back();
-      detach_ids_.pop_back();
-      scopedhandle->__event_detach__ (hid);
+      HandleEventConnection hcon = connections_.back();
+      connections_.pop_back();
+      hcon.disconnect();
     }
 }
 
 void
 DetacherHooks::__swap_hooks__ (DetacherHooks &other)
 {
-  std::swap (other.detach_ids_, detach_ids_);
+  std::swap (other.connections_, connections_);
 }
 
 void
@@ -1768,9 +1868,8 @@ DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type,
 {
   assert_return (scopedhandle != NULL);
   assert_return (*scopedhandle != NULL);
-  const uint64 hid = scopedhandle->__event_attach__ (type, handler);
-  if (hid)
-    detach_ids_.push_back (hid);
+  HandleEventConnection hcon = scopedhandle->__attach__ (type, handler);
+  connections_.push_back (hcon);
 }
 
 void
@@ -2255,6 +2354,40 @@ EventFd::~EventFd ()
   fds[1] = -1;
 }
 
+// == ScopedSemaphore ==
+ScopedSemaphore::ScopedSemaphore () noexcept
+{
+  static_assert (sizeof (mem_) >= sizeof (sem_t), "");
+  sem_t &sem = *(sem_t*) mem_;
+  const int ret = sem_init (&sem, 0 /*pshared*/, 0 /*value*/);
+  assert_return (ret == 0);
+}
+
+int
+ScopedSemaphore::post () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  errno = 0;
+  const int ret = sem_post (&sem);
+  return ret ? errno : 0;
+}
+
+int
+ScopedSemaphore::wait () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  errno = 0;
+  const int ret = sem_wait (&sem);
+  return ret ? errno : 0;
+}
+
+ScopedSemaphore::~ScopedSemaphore () noexcept
+{
+  sem_t &sem = *(sem_t*) mem_;
+  const int ret = sem_destroy (&sem);
+  assert_return (ret == 0);
+}
+
 // == lock-free, single-consumer queue ==
 template<class Data>
 struct MpScQueueF {
@@ -2397,15 +2530,26 @@ void
 ExecutionContext::dispatch ()
 {
   Closure *closure = m.fetch_closure();
-  if (closure)
-    (*closure) ();
+  if (AIDA_ISLIKELY (closure))
+    {
+      (*closure) ();
+      delete closure;
+    }
 }
 
+/// Add Closure to ExecutionContext and delete the closure after dispatching.
 void
 ExecutionContext::enqueue_mt (Closure *closure)
 {
   if (closure)
     m.enqueue_closure_mt (closure, true);
+}
+
+/// Add Closure to be called by ExecutionContext (possibly remote).
+void
+ExecutionContext::enqueue_mt (const Closure &closure)
+{
+  enqueue_mt (new Closure (closure));
 }
 
 /// Create an ExecutionContext.
@@ -2416,8 +2560,235 @@ ExecutionContext::new_context ()
   return new ExecutionContext();
 }
 
+static inline std::vector<ExecutionContext*>&
+get_execution_context_stack()
+{
+  static thread_local std::vector<ExecutionContext*> ecstack;
+  return ecstack;
+}
+
+/// Start using `ec` as active ExecutionContext in the current thread.
+void
+ExecutionContext::push_thread_current()
+{
+  auto &ecstack = get_execution_context_stack();
+  ecstack.push_back (this);
+}
+
+/// Remove the active ExecutionContext from the current thread, after that a previously pushed context becomes active.
+void
+ExecutionContext::pop_thread_current()
+{
+  auto &ecstack = get_execution_context_stack();
+  assert_return (ecstack.size() > 0);
+  ecstack.pop_back();
+}
+
+/// Retrieve the active ExecutionContext from the current thread.
+ExecutionContext*
+ExecutionContext::get_current ()
+{
+  auto &ecstack = get_execution_context_stack();
+  return ecstack.size() ? ecstack.back() : NULL;
+}
+
+struct ExecutionContextAdoptedDeleter {
+  ExecutionContext &ec_;
+  CallableIfaceP    sptr_;
+  ExecutionContextAdoptedDeleter (ExecutionContext &ec, const CallableIfaceP &sptr) :
+    ec_ (ec), sptr_ (sptr)
+  {}
+  static void
+  deleter (ExecutionContextAdoptedDeleter *self)
+  {
+    AIDA_DEBUG ("Deleter: %s: queueing deleter for %p\n", __func__, self->sptr_.get());
+    self->ec_.enqueue_mt (new std::function<void()> ([self] () {
+          AIDA_DEBUG ("Deleter: %s: delete %p\n", __func__, self->sptr_.get());
+          delete self;
+        }));
+  }
+};
+
+CallableIfaceP
+ExecutionContext::adopt_deleter_mt (const CallableIfaceP &sharedptr)
+{
+  if (!sharedptr.get())
+    return sharedptr;
+  auto delp = std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (sharedptr);
+  if (delp && ExecutionContextAdoptedDeleter::deleter == *delp)
+    return sharedptr;
+  // create new shared_ptr that's deleted in this ExecutionContext
+  ExecutionContextAdoptedDeleter *ad = new ExecutionContextAdoptedDeleter (*this, sharedptr);
+  auto adp = std::shared_ptr<ExecutionContextAdoptedDeleter> (ad, ExecutionContextAdoptedDeleter::deleter);
+  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (adp), CallableIfaceP());
+  // use aliasing shared_ptr to yield CallableIface* wihle deleting via adp
+  auto remp = CallableIfaceP (adp, sharedptr.get());
+  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (remp), CallableIfaceP());
+  AIDA_DEBUG ("Deleter: %s: adopted deleter for %p\n", __func__, sharedptr.get());
+  return remp;
+}
+
+/// Create a GLib event loop source for this ExecutionContext.
+GSource*
+ExecutionContext::create_gsource (const std::string &name, int priority)
+{
+  const int fds[] = { this->notify_fd() };
+  struct CxxSource : GSource {
+    Aida::ExecutionContext *ec;
+  };
+  auto prepare = [] (GSource *source, gint *timeout_p) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto check = [] (GSource *source) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    return cs.ec->pending();
+  };
+  auto dispatch = [] (GSource *source, GSourceFunc callback, gpointer user_data) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    cs.ec->dispatch();
+    return true; // keep alive
+  };
+  auto finalize = [] (GSource *source) {
+    // CxxSource &cs = *(CxxSource*) source;
+    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex... ;-(
+    // delete cs.ec;
+  };
+  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
+  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
+  CxxSource &cs = *(CxxSource*) source;
+  cs.ec = this;
+  g_source_set_name (source, name.c_str());
+  g_source_set_priority (source, priority);
+  for (size_t i = 0; i < sizeof (fds) / sizeof (fds[0]); i++)
+    g_source_add_unix_fd (source, fds[i], G_IO_IN);
+  return source;
+}
+
+// == EventDispatcher ==
+struct EventDispatcher::ConnectionImpl final {
+  const std::string  selector_;
+  EventHandlerF      handler_;
+  DispatcherImpl    &o_;
+  ConnectionImpl (DispatcherImpl &edispatcher, const String &eventselector, EventHandlerF handler) :
+    selector_ (eventselector), handler_ (handler), o_ (edispatcher)
+  {}
+  bool          connected       () const  { return NULL != handler_; }
+  void          disconnect      ();
+  void
+  emit (const Event &event, const std::string &event_type, const std::string &general_type)
+  {
+    if (connected() &&
+        (selector_ == event_type || selector_ == general_type))
+      handler_ (event);
+  }
+};
+
+struct EventDispatcher::DispatcherImpl final {
+  using EventConnectionP = std::shared_ptr<ConnectionImpl>;
+  std::vector<EventConnectionP> connections;
+  uint                          in_emission = 0;
+  bool                          needs_purging = false;
+  void
+  purge_connections ()
+  {
+    if (in_emission)
+      {
+        needs_purging = true;
+        return;
+      }
+    needs_purging = false;
+    for (size_t i = connections.size() - 1; i < connections.size(); i--)
+      if (!connections[i]->connected())
+        connections.erase (connections.begin() + i);
+  }
+  void
+  emit (const Event &event)
+  {
+    const std::string event_type = event["type"].get<std::string>();
+    if (event_type.empty())
+      return;
+    in_emission++;
+    {
+      const char *const ctype = event_type.c_str(), *const colon = strchr (ctype, ':');
+      const std::string general_type = colon ? event_type.substr (0, colon - ctype) : event_type;
+      for (auto &conp : connections)
+        conp->emit (event, event_type, general_type);
+    }
+    in_emission--;
+    if (in_emission == 0 && needs_purging)
+      purge_connections();
+  }
+  ~DispatcherImpl()
+  {
+    assert_return (in_emission == 0);
+    in_emission++; // short cut purge_connections() calls
+    for (auto &conp : connections)
+      conp->disconnect();
+    in_emission--;
+  }
+};
+
+void
+EventDispatcher::ConnectionImpl::disconnect()
+{
+  const bool was_connected = connected();
+  handler_ = NULL;
+  if (was_connected)
+    o_.purge_connections();
+}
+
+bool
+EventDispatcher::EventConnection::connected () const
+{
+  std::shared_ptr<ConnectionImpl> con = this->lock();
+  return con && con->connected();
+}
+
+void
+EventDispatcher::EventConnection::disconnect () const
+{
+  std::shared_ptr<ConnectionImpl> con = this->lock();
+  if (con)
+    con->disconnect();
+}
+
+EventDispatcher::~EventDispatcher ()
+{
+  reset();
+}
+
+void
+EventDispatcher::reset()
+{
+  DispatcherImpl *old = o_;
+  o_ = NULL;
+  delete old;
+}
+
+EventDispatcher::EventConnection
+EventDispatcher::attach (const String &eventselector, EventHandlerF handler)
+{
+  if (!o_)
+    o_ = new DispatcherImpl();
+  o_->connections.push_back (std::make_shared<EventDispatcher::ConnectionImpl> (*o_, eventselector, handler));
+  std::weak_ptr<EventDispatcher::ConnectionImpl> wptr = o_->connections.back();
+  return *static_cast<EventConnection*> (&wptr);
+}
+
+void
+EventDispatcher::emit (const Event &event)
+{
+  if (o_)
+    o_->emit (event);
+}
+
 // == CallableIface ==
 CallableIface::~CallableIface ()
+{}
+
+// == PropertyAccessor ==
+PropertyAccessor::~PropertyAccessor()
 {}
 
 // == TransportChannel ==
@@ -3697,7 +4068,7 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
   fbr >>= iface_hid;
   Aida::Any arg_event;
   fbr >>= arg_event;
-  Event event (arg_event.get<AnyDict>());
+  Event event (arg_event.get<AnyRec>());
   EventHandlerF handler_func = remote_handle_event_handler_get (self.__aida_orbid__(), iface_hid);
   if (handler_func) // handler might have been deleted
     handler_func (event); // self

@@ -356,7 +356,7 @@ bse_container_remove_item (BseContainer *container,
   if (!finalizing_container)
     {
       using namespace Aida::KeyValueArgs;
-      container->as<Bse::ContainerImplP>()->emit_event ("treechange:removeitem", "item"_v = item->as<Bse::ItemIfaceP>());
+      container->as<Bse::ContainerImpl*>()->emit_event ("treechange:removeitem", "item"_v = item->as<Bse::ItemIfaceP>());
       g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVE], 0, item, seqid);
     }
   BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
@@ -1350,7 +1350,7 @@ static gboolean
 item_seq_add (BseItem *item, void *data)
 {
   ItemSeq *iseq = (ItemSeq*) data;
-  iseq->push_back (item->as<ItemIfaceP>());
+  iseq->push_back (item->as<ItemIface*>()->__handle__());
   return TRUE;
 }
 

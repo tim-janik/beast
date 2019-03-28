@@ -2,6 +2,7 @@
 #include "bsestartup.hh"
 #include "bsemain.hh"
 #include "bse/internal.hh"
+#include "bse/bseserver.hh"
 #include <bse/bseapi_handles.hh>
 #include <bse/bse.hh>           // init_server_connection
 
@@ -131,16 +132,12 @@ AidaGlibSource::create (Aida::BaseConnection *connection)
   return AidaGlibSourceImpl::create (connection);
 }
 
-static Aida::ClientConnectionP *client_connection = NULL;
-
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
 ServerHandle
 init_server_instance () // bse.hh
 {
   ServerH server;
-  Aida::ClientConnectionP connection = init_server_connection();
-  if (connection)
-    server = connection->remote_origin<ServerH>();
+  server = BSE_SERVER.__handle__();
   return server;
 }
 
@@ -148,6 +145,7 @@ init_server_instance () // bse.hh
 Aida::ClientConnectionP
 init_server_connection () // bse.hh
 {
+#if 0
   if (!client_connection)
     {
       Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" + Bse::version());
@@ -155,13 +153,15 @@ init_server_connection () // bse.hh
       if (connection)
         bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
       assert_return (bseconnection_server_handle != NULL, NULL);
-      constexpr SfiProxy BSE_SERVER = 1;
-      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER, NULL);
-      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER) == bseconnection_server_handle, NULL);
+      constexpr SfiProxy BSE_SERVER_id = 1;
+      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER_id, NULL);
+      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER_id) == bseconnection_server_handle, NULL);
       assert_return (client_connection == NULL, NULL);
       client_connection = new Aida::ClientConnectionP (connection);
     }
   return *client_connection;
+#endif
+  return Aida::ClientConnectionP();
 }
 
 } // Bse

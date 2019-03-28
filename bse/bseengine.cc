@@ -1395,6 +1395,13 @@ bse_engine_configure (guint            latency_ms,
   return success;
 }
 
+/// Shutdown all engine threads.
+void
+bse_engine_shutdown ()
+{
+  Bse::MasterThread::shutdown();
+}
+
 /** Initialize the BSE audio processing engine.
  * This function must be called prior to any other engine related function and can only be invoked once.
  */

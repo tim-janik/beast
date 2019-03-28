@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsetool.hh"
+#include <bse/bse.hh>
 #include <sys/resource.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -485,10 +486,9 @@ static ArgDescription bsetool_options[] = {
 
 bool BseTool::verbose = true;
 
-int
-main (int argc_int, char *argv[])
+static int
+bsetool_main (int argc_int, char *argv[])
 {
-  bse_init_inprocess (&argc_int, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
   const unsigned int argc = argc_int;
   // now that the BSE thread runs, drop scheduling priorities if we have any
   setpriority (PRIO_PROCESS, getpid(), 0);
@@ -533,4 +533,20 @@ main (int argc_int, char *argv[])
 
   printerr ("%s: %s\n", argv[0], "missing command");
   return 127;
+}
+
+int
+main (int argc, char *argv[])
+{
+  Bse::init_async (&argc, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
+  auto bse_server = Bse::init_server_instance();
+  int ret = -2147483648;
+  Aida::ScopedSemaphore sem;
+  auto remote_main = [argc, argv, &sem, &ret] () {
+    ret = bsetool_main (argc, argv);
+    sem.post();
+  };
+  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (remote_main);
+  sem.wait();
+  return ret;
 }

@@ -63,7 +63,7 @@ struct TestOrbObject : OrbObject {
 };
 struct OneHandle : RemoteHandle {
   OneHandle (OrbObjectP orbo) : RemoteHandle (orbo) {}
-  static OneHandle down_cast (RemoteHandle smh) { return make_handle (smh.__aida_orbid__()); }
+  static OneHandle __cast__ (RemoteHandle smh) { return make_handle (smh.__aida_orbid__()); }
   static OneHandle make_handle (ptrdiff_t id)
   {
     std::shared_ptr<TestOrbObject> torbo = std::make_shared<TestOrbObject> (id);
@@ -83,7 +83,10 @@ public:
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
   virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
-  virtual Aida::ExecutionContext* __execution_context_mt__ () const override    { return Bse::execution_context(); }
+  virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
+  virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
+  virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
+  { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
   int64 test_id() const { return testid_; }
   static OneIfaceP make_one_iface (int64 id)
   {
@@ -326,10 +329,10 @@ TEST_ADD (test_aida_any_storage);
 static void
 test_aida_any_containers()
 {
-  // -- AnyDict --
+  // -- AnyRec --
   Any any1 ("any1"), any2;
   any2.set (any1);
-  Any::AnyDict fv;
+  Any::AnyRec fv;
   fv.push_back (Any::Field ("otto", 7.7));
   fv.push_back (Any::Field ("anna", 3));
   fv.push_back (Any::Field ("ida", "ida"));
@@ -338,14 +341,14 @@ test_aida_any_containers()
   TASSERT (fv[1].name == "anna" && fv[1].get<int64>() == 3);
   TASSERT (fv[2].name == "ida" && fv[2].get<String>() == "ida");
   TASSERT (fv[3].name == "any2" && fv[3].get<Any>().get<String>() == "any1");
-  Any::AnyDict gv = fv;
+  Any::AnyRec gv = fv;
   TASSERT (fv == gv);
   gv[1].set (5);
   TASSERT (fv != gv);
   gv[1].set (int64 (3));
   TASSERT (fv == gv);
-  // -- AnyList --
-  Any::AnyList av;
+  // -- AnySeq --
+  Any::AnySeq av;
   av.push_back (Any (7.7));
   av.push_back (Any (3));
   av.push_back (Any ("ida"));
@@ -354,7 +357,7 @@ test_aida_any_containers()
   TASSERT (av[1].get<int64>() == 3);
   TASSERT (av[2].get<String>() == "ida");
   TASSERT (av[3].kind() == ANY);
-  Any::AnyList bv;
+  Any::AnySeq bv;
   TASSERT (av != bv);
   for (auto const &f : fv)
     bv.push_back (f);
@@ -365,16 +368,16 @@ test_aida_any_containers()
                type_kind_name(av[i].kind()), type_kind_name(bv[i].kind()),
                av[i].get<int64>(), bv[i].get<int64>());
   TASSERT (av == bv);
-  // -- AnyDict & AnyList --
+  // -- AnyRec & AnySeq --
   if (0)        // compare av (DynamicSequence) with fv (DynamicRecord)
     dprintf (2, "test-compare: %s == %s\n", Any (av).to_string().c_str(), Any (fv).to_string().c_str());
-  Any::AnyList cv (fv.begin(), fv.end());     // initialize AnyList with { 7.7, 3, "ida" } from AnyDict (Field is-a Any)
-  TASSERT (av == cv);                            // as AnyList (AnyDict) copy, both vectors contain { 7.7, 3, "ida" }
+  Any::AnySeq cv (fv.begin(), fv.end());     // initialize AnySeq with { 7.7, 3, "ida" } from AnyRec (Field is-a Any)
+  TASSERT (av == cv);                            // as AnySeq (AnyRec) copy, both vectors contain { 7.7, 3, "ida" }
   Any arec (fv), aseq (av);
   TASSERT (arec != aseq);
-  const Any::AnyDict *arv = arec.get<const Any::AnyDict*>();
+  const Any::AnyRec *arv = arec.get<const Any::AnyRec*>();
   TASSERT (*arv == fv);
-  const Any::AnyList *asv = aseq.get<const Any::AnyList*>();
+  const Any::AnySeq *asv = aseq.get<const Any::AnySeq*>();
   TASSERT (*asv == av);
 }
 TEST_ADD (test_aida_any_containers);

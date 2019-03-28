@@ -11,9 +11,9 @@ ebeast-v8bse-all: $>/ebeast/v8bse/v8bse.node
 
 # == variables ==
 ebeast/v8bse/cc.sources  ::= $(strip	\
-	$>/ebeast/v8bse/nodemodule.cc	\
+	ebeast/v8bse/nodemodule.cc	\
 )
-ebeast/v8bse/gyp.inputs   ::= $(notdir $(ebeast/v8bse/cc.sources))
+ebeast/v8bse/gyp.inputs   ::= $(addprefix ../../../, $(ebeast/v8bse/cc.sources)) # $(notdir $(ebeast/v8bse/cc.sources))
 ebeast/v8bse/gyp.notflags ::= -fno-exceptions -fno-rtti -std=gnu++0x
 ebeast/v8bse/gyp.ccflags  ::= $(strip	\
 	-Wno-type-limits -Wno-unknown-pragmas -Wno-implicit-fallthrough \
@@ -41,7 +41,7 @@ $>/ebeast/v8bse/%.cc: ebeast/v8bse/%.cc		| $>/ebeast/v8bse/
 # in $HOME, it requires the electron target version to pick V8 headers and it calls $(MAKE) internally,
 # so we need to unset MAKEFLAGS, to unconfuse the node-gyp invocation of MAKE wrg jobserver setups.
 # See also: /usr/include/nodejs/common.gypi https://electronjs.org/docs/tutorial/using-native-node-modules
-$>/ebeast/v8bse/v8bse.node: EXTRA_INCLUDES ::= -I$> -Iexternal/v8pp/ $(GLIB_CFLAGS)
+$>/ebeast/v8bse/v8bse.node: EXTRA_INCLUDES ::= -I$> -I$>/ebeast/v8bse -Iexternal/v8pp/ $(GLIB_CFLAGS)
 $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) $(lib/libbse.so) $>/ebeast/npm.rules
 	$(QECHO) 'SETUP' $>/ebeast/v8bse/binding.gyp
 	@: # binding.gyp must be generated on the fly, because it captures Makefile values like CXXFLAGS

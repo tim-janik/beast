@@ -298,7 +298,7 @@ bse_track_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates 
       bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc.items);
       /* remove existing outputs */
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        vector_erase_element (pc.items, ((BseItem*) ring->data)->as<Bse::ItemIfaceP>());
+        vector_erase_iface (pc.items, ((BseItem*) ring->data)->as<Bse::ItemIface*>());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -1287,7 +1287,7 @@ TrackImpl::outputs () const
   for (SfiRing *ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
     {
       BseItem *item = (BseItem*) ring->data;
-      items.push_back (item->as<ItemIfaceP>());
+      items.push_back (item->as<ItemIface*>()->__handle__());
     }
   return items;
 }

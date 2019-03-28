@@ -81,7 +81,7 @@ bst_super_shell_set_property (GObject         *object,
   switch (prop_id)
     {
     case PROP_SUPER:
-      super = Bse::SuperH::down_cast (bse_server.from_proxy (sfi_value_get_proxy (value)));
+      super = Bse::SuperH::__cast__ (bse_server.from_proxy (sfi_value_get_proxy (value)));
       bst_super_shell_set_super (self, super);
       break;
     default:
@@ -177,7 +177,7 @@ super_shell_build_song (BstSuperShell *self,
                               gxk_notebook_create_tabulator (_("Busses"), BST_STOCK_BUS, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (Bse::SNetH::down_cast (super)))),
+                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (Bse::SNetH::__cast__ (super)))),
                               gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, NULL));
 }
 
@@ -185,7 +185,7 @@ static void
 super_shell_build_snet (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  Bse::SNetH snet = Bse::SNetH::down_cast (self->super);
+  Bse::SNetH snet = Bse::SNetH::__cast__ (self->super);
   GtkWidget *param_view;
 
   if (snet.supports_user_synths() || BST_DBG_EXT)

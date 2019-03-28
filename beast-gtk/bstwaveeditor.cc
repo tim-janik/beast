@@ -291,7 +291,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
     {
       if (self->wave)
 	{
-          Bse::ItemH::down_cast (bse_server.from_proxy (self->wave)).unuse();
+          Bse::ItemH::__cast__ (bse_server.from_proxy (self->wave)).unuse();
 	  gxk_list_wrapper_notify_clear (self->chunk_wrapper);
 	}
       bst_wave_editor_unset_esample (self);
@@ -301,8 +301,8 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
 	self->wave = 0;
       if (self->wave)
 	{
-          Bse::ItemH::down_cast (bse_server.from_proxy (self->wave)).use();
-          Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
+          Bse::ItemH::__cast__ (bse_server.from_proxy (self->wave)).use();
+          Bse::WaveH wave = Bse::WaveH::__cast__ (bse_server.from_proxy (self->wave));
 	  /* add wave's chunks to list */
 	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, wave.n_wave_chunks());
 	  /* setup (initial) list selection */
@@ -582,7 +582,7 @@ tree_selection_changed (BstWaveEditor    *self,
 			  -1);
       g_free (osc_str);
       g_free (mix_str);
-      Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
+      Bse::WaveH wave = Bse::WaveH::__cast__ (bse_server.from_proxy (self->wave));
       Bse::EditableSampleHandle esample = wave.use_editable (gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
       bst_wave_editor_set_esample (self, esample);
       esample.unuse(); // FIXME: change use_editable()
@@ -657,7 +657,7 @@ wave_chunk_fill_value (BstWaveEditor *self,
 		       guint          row,
 		       GValue        *value)
 {
-  Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
+  Bse::WaveH wave = Bse::WaveH::__cast__ (bse_server.from_proxy (self->wave));
   guint cidx = row; /* wave chunk index */
 
   switch (column)

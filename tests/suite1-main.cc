@@ -107,7 +107,6 @@ main (int   argc,
         if (strcmp (argv[i], "--bench-aida") == 0)
           {
             Bse::init_async (&argc, argv, argv[0], args);
-            Aida::ClientConnectionP connection = Bse::init_server_connection();
             bse_server = Bse::init_server_instance();
             bench_aida();
             return 0;

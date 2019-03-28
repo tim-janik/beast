@@ -448,7 +448,7 @@ static Bse::TrackH
 scope_get_track (GtkWidget *scope)
 {
   const long trackid = g_object_get_long (scope, "BstTrackRoll-Track");
-  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (trackid));
+  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (trackid));
   return track;
 }
 

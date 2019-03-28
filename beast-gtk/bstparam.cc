@@ -339,7 +339,7 @@ bst_param_set_proxy (GxkParam *param, SfiProxy proxy)
   Bse::ItemH item;
   if (proxy)
     {
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
       assert_return (item != NULL);
     }
   bst_param_set_item (param, item);
@@ -469,8 +469,8 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
       Bse::warning ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
       return;
     }
-  if (!objectp->__aida_set__ (name_to_identifier (pspec->name), any))
-    Bse::warning ("%s: __aida_set__: unknown value name: %s", __func__, name_to_identifier (pspec->name));
+  if (!objectp->set_prop (name_to_identifier (pspec->name), any))
+    Bse::warning ("%s: set_prop: unknown value name: %s", __func__, name_to_identifier (pspec->name));
 }
 
 static void
@@ -478,9 +478,9 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 {
   Bse::ObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
-  Any any = objectp->__aida_get__ (name_to_identifier (pspec->name));
+  Any any = objectp->get_prop (name_to_identifier (pspec->name));
   if (any.empty())
-    Bse::warning ("%s: __aida_get__: unknown value name: %s (empty return value)", __func__, name_to_identifier (pspec->name));
+    Bse::warning ("%s: get_prop: unknown value name: %s (empty return value)", __func__, name_to_identifier (pspec->name));
   GValue value = { 0, };
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (param->pspec)))
     {

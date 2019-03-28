@@ -125,7 +125,7 @@ wave_view_action_exec (gpointer data, size_t action)
 {
   BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::WaveRepoH wrepo = Bse::WaveRepoH::down_cast (item_view->container);
+  Bse::WaveRepoH wrepo = Bse::WaveRepoH::__cast__ (item_view->container);
   switch (action)
     {
     case ACTION_LOAD_WAVE:
@@ -137,7 +137,7 @@ wave_view_action_exec (gpointer data, size_t action)
     case ACTION_DELETE_WAVE:
       {
         SfiProxy item = bst_item_view_get_current (BST_ITEM_VIEW (self));
-        Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (item));
+        Bse::WaveH wave = Bse::WaveH::__cast__ (bse_server.from_proxy (item));
         wrepo.remove_wave (wave);
       }
       break;

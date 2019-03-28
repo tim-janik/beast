@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-
 /* --- record utils --- */
 Bse::PartNote
 bse_part_note (uint id, uint channel, uint tick, uint duration, int note, int fine_tune, double velocity, bool selected)
@@ -62,8 +61,8 @@ BseIt3mSeq*
 bse_it3m_seq_from_item_seq (Bse::ItemSeq &items)
 {
   BseIt3mSeq *i3s = bse_it3m_seq_new();
-  for (auto item : items)
-    bse_it3m_seq_append (i3s, item->as<BseItem*>());
+  for (const auto &item : items)
+    bse_it3m_seq_append (i3s, item.__iface__()->as<BseItem*>());
   return i3s;
 }
 
@@ -72,7 +71,7 @@ bse_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
 {
   Bse::ItemSeq items;
   for (size_t i = 0; i < i3s->n_items; i++)
-    items.push_back (i3s->items[i]->as<Bse::ItemIfaceP>());
+    items.push_back (i3s->items[i]->as<Bse::ItemIface*>()->__handle__());
   return items;
 }
 

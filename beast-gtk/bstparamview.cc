@@ -168,7 +168,7 @@ bst_param_view_apply_defaults (BstParamView *self)
 
   if (self->item)
     {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (self->item));
       item.group_undo ("Reset to defaults");
       for (GSList *slist = self->params; slist; slist = slist->next)
         gxk_param_apply_default ((GxkParam*) slist->data);
@@ -204,14 +204,20 @@ bst_param_view_rebuild (BstParamView *self)
     return;
 
   // extract IDL properties
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
-  Bse::SongH song = Bse::SongH::down_cast (item);
-  Bse::SNetH snet = Bse::SNetH::down_cast (item);
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (self->item));
+  Bse::SongH song = Bse::SongH::__cast__ (item);
+  Bse::SNetH snet = Bse::SNetH::__cast__ (item);
   std::vector<GParamSpec*> cxxpspecs;
-  if (song)
-    cxxpspecs = Bse::introspection_fields_to_param_list (song.__aida_aux_data__());
-  else if (snet)
-    cxxpspecs = Bse::introspection_fields_to_param_list (snet.__aida_aux_data__());
+  if (snet)
+    for (const auto &name : snet.list_props())
+      {
+        const Bse::StringSeq meta = snet.find_prop (name);
+        GParamSpec *pspec = Bse::pspec_from_key_value_list (name, meta);
+        if (pspec)
+          cxxpspecs.push_back (pspec);
+        else
+          printerr ("%s: unknown property type \"%s\": %s\n", __func__, name, meta.empty() ? "" : meta[0]);
+      }
 
   // properties that are useless at the UI
   static const char *const song_reject_properties[] = { "auto_activate" };

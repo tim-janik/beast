@@ -619,7 +619,7 @@ WaveOscImpl::sync_seek_perc (double percentage, const WaveOscSeq &other_oscs)
   for (size_t i = 0; i < n; i++)
     if (other_oscs[i])
       {
-        BseWaveOsc *other = other_oscs[i]->as<BseWaveOsc*>();
+        BseWaveOsc *other = other_oscs[i].__iface__()->as<BseWaveOsc*>();
         if (other != self && BSE_IS_WAVE_OSC (other))
           woscs[j++] = other;
       }

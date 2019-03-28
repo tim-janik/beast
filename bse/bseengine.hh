@@ -174,6 +174,7 @@ void       bse_engine_constrain         (guint                 latency_ms,
                                          guint                *block_size_p,
                                          guint                *control_raster_p);
 void       bse_engine_init              ();
+void       bse_engine_shutdown          ();
 gboolean   bse_engine_configure         (guint                 latency_ms,
                                          guint                 sample_freq,
                                          guint                 control_freq);

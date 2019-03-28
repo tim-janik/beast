@@ -231,7 +231,7 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 				BST_TYPE_CANVAS_SOURCE,
 				NULL);
   csource = BST_CANVAS_SOURCE (item);
-  csource->source = Bse::SourceH::down_cast (bse_server.from_proxy (source));
+  csource->source = Bse::SourceH::__cast__ (bse_server.from_proxy (source));
   if (csource->source)
     csource->source.use();
   csource->source.on ("notify:uname", [csource] () { source_name_changed (csource); });

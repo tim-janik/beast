@@ -22,8 +22,8 @@ bst_play_back_handle_new (void)
   handle->snet = handle->project.create_csynth ("");
   handle->snet.auto_activate (true);
   handle->speaker = handle->snet.create_source ("BsePcmOutput");
-  handle->wosc1 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
-  handle->wosc2 = Bse::WaveOscH::down_cast (handle->snet.create_source ("BseWaveOsc"));
+  handle->wosc1 = Bse::WaveOscH::__cast__ (handle->snet.create_source ("BseWaveOsc"));
+  handle->wosc2 = Bse::WaveOscH::__cast__ (handle->snet.create_source ("BseWaveOsc"));
   bse_proxy_set (handle->wosc2.proxy_id(), "channel", 2, NULL);
   handle->speaker.set_input_by_id (0, handle->wosc1, 0);
   handle->speaker.set_input_by_id (1, handle->wosc2, 0);
@@ -46,7 +46,7 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
     assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   bse_proxy_set (handle->constant.proxy_id(), "frequency_1", osc_freq, NULL);
-  Bse::EditableSampleH es = Bse::EditableSampleH::down_cast (bse_server.from_proxy (esample));
+  Bse::EditableSampleH es = Bse::EditableSampleH::__cast__ (bse_server.from_proxy (esample));
   handle->wosc1.set_from_editable_sample (es);
   handle->wosc2.set_from_editable_sample (es);
 }

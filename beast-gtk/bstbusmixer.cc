@@ -173,7 +173,7 @@ bus_mixer_action_exec (gpointer data,
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (iview->container);
+  Bse::SongH song = Bse::SongH::__cast__ (iview->container);
   switch (action)
     {
     case ACTION_ADD_BUS:
@@ -192,7 +192,7 @@ bus_mixer_action_exec (gpointer data,
       if (self->hbox && BST_IS_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child))
         {
           BstBusEditor *be = BST_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child);
-          Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (be->item));
+          Bse::BusH bus = Bse::BusH::__cast__ (bse_server.from_proxy (be->item));
           if (bus != song.get_master_bus())
             song.remove_bus (bus);
         }
@@ -208,7 +208,7 @@ bus_mixer_action_check (gpointer data,
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (iview->container);
+  Bse::SongH song = Bse::SongH::__cast__ (iview->container);
   switch (action)
     {
     case ACTION_ADD_BUS:
