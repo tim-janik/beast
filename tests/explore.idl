@@ -29,7 +29,7 @@ sequence FloatSeq       { float64 floats; };
 sequence StringSeq      { String strings; };
 sequence CountSeq       { CountEnum enums; };
 sequence LocationSeq    { Location locations; };
-sequence AnySeq         { Any anys; };
+sequence AnyVector      { Any anys; };
 sequence BaseSeq        { Base objects; };
 
 record SimpleDataPack {
@@ -52,7 +52,7 @@ record BigDataPack {
   CountSeq       counts;
   LocationSeq    locations;
   Any            any1;
-  AnySeq         anys;
+  AnyVector      anys;
   // BaseSeq     objects;
   // Other       other;
   // Derived     derived;
@@ -99,7 +99,7 @@ interface Richie : Derived, Base, Other {
   Location  location;
   StringSeq strings;
   Any       any1;
-  AnySeq    anys;
+  AnyVector anys;
   Derived   derived;
   BaseSeq   objects;
 };
