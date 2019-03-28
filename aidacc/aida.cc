@@ -841,7 +841,7 @@ aux_vector_split (const char *auxinfo00)
       p += l + 1;
       l = strlen (p);
     }
-  return aux_vector_split (auxinfo00, l + 1);
+  return aux_vector_split (auxinfo00, p - auxinfo00);
 }
 
 std::vector<String>
