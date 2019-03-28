@@ -245,7 +245,7 @@ namespace MandatoryNamespace {
 
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_FirstInterfaceIface;
+  friend                        class FirstInterfaceIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -255,8 +255,8 @@ public:
   static FirstInterfaceHandle   down_cast (const RemoteHandle &smh);
   explicit                      FirstInterfaceHandle ();
   void                          void_func            ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_FirstInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    FirstInterfaceHandle (const std::shared_ptr<I_FirstInterfaceIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( FirstInterfaceIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    FirstInterfaceHandle (const std::shared_ptr<FirstInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -689,7 +689,7 @@ namespace InterfaceTests {
 
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_UIWidgetAreaIface;
+  friend                        class UIWidgetAreaIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -720,8 +720,8 @@ public:
   void                          void_method        ();
   std::string                   on_click2out       ();
   void                          on_click2in        (const std::string &command);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_UIWidgetAreaIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UIWidgetAreaHandle (const std::shared_ptr<I_UIWidgetAreaIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( UIWidgetAreaIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UIWidgetAreaHandle (const std::shared_ptr<UIWidgetAreaIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "dummy", &UIWidgetAreaHandle::dummy, &UIWidgetAreaHandle::dummy);
@@ -733,7 +733,7 @@ typedef ::Aida::ScopedHandle<UIWidgetAreaH> UIWidgetAreaS;
 
 class ParentHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_ParentIface;
+  friend                        class ParentIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -742,8 +742,8 @@ public:
   ParentHandle&                 operator= (const ParentHandle&) = default;
   static ParentHandle           down_cast (const RemoteHandle &smh);
   explicit                      ParentHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_ParentIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ParentHandle (const std::shared_ptr<I_ParentIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( ParentIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ParentHandle (const std::shared_ptr<ParentIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -752,7 +752,7 @@ typedef ::Aida::ScopedHandle<ParentH> ParentS;
 
 class ChildHandle : public virtual ParentHandle
 {
-  friend                        class I_ChildIface;
+  friend                        class ChildIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -761,8 +761,8 @@ public:
   ChildHandle&                  operator= (const ChildHandle&) = default;
   static ChildHandle            down_cast (const RemoteHandle &smh);
   explicit                      ChildHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_ChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildHandle (const std::shared_ptr<I_ChildIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( ChildIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildHandle (const std::shared_ptr<ChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ParentHandle::__accept_accessor__ (__visitor_);
@@ -773,7 +773,7 @@ typedef ::Aida::ScopedHandle<ChildH> ChildS;
 
 class DescendantHandle : public virtual ChildHandle
 {
-  friend                        class I_DescendantIface;
+  friend                        class DescendantIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -782,8 +782,8 @@ public:
   DescendantHandle&             operator= (const DescendantHandle&) = default;
   static DescendantHandle       down_cast (const RemoteHandle &smh);
   explicit                      DescendantHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_DescendantIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    DescendantHandle (const std::shared_ptr<I_DescendantIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( DescendantIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    DescendantHandle (const std::shared_ptr<DescendantIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ChildHandle::__accept_accessor__ (__visitor_);
@@ -794,7 +794,7 @@ typedef ::Aida::ScopedHandle<DescendantH> DescendantS;
 
 class GrandChildHandle : public virtual DescendantHandle
 {
-  friend                        class I_GrandChildIface;
+  friend                        class GrandChildIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -803,8 +803,8 @@ public:
   GrandChildHandle&             operator= (const GrandChildHandle&) = default;
   static GrandChildHandle       down_cast (const RemoteHandle &smh);
   explicit                      GrandChildHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_GrandChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    GrandChildHandle (const std::shared_ptr<I_GrandChildIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( GrandChildIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    GrandChildHandle (const std::shared_ptr<GrandChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->DescendantHandle::__accept_accessor__ (__visitor_);
@@ -859,7 +859,7 @@ void operator>>= (Aida::ProtoReader&, QuickSequence&);
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_QuickIfaceIface;
+  friend                        class QuickIfaceIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -869,8 +869,8 @@ public:
   static QuickIfaceHandle       down_cast (const RemoteHandle &smh);
   explicit                      QuickIfaceHandle ();
   void                          simple_function  (int i = 9);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_QuickIfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    QuickIfaceHandle (const std::shared_ptr<I_QuickIfaceIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( QuickIfaceIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    QuickIfaceHandle (const std::shared_ptr<QuickIfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -879,7 +879,7 @@ typedef ::Aida::ScopedHandle<QuickIfaceH> QuickIfaceS;
 
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_MethodTestInterfaceIface;
+  friend                        class MethodTestInterfaceIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -911,8 +911,8 @@ public:
                                                            const Aida::Any &optval);
   QuickIfaceHandle              method_with_quickiface    (QuickIfaceHandle &input,
                                                            QuickIfaceHandle &iface0);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_MethodTestInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    MethodTestInterfaceHandle (const std::shared_ptr<I_MethodTestInterfaceIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( MethodTestInterfaceIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    MethodTestInterfaceHandle (const std::shared_ptr<MethodTestInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -921,7 +921,7 @@ typedef ::Aida::ScopedHandle<MethodTestInterfaceH> MethodTestInterfaceS;
 
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_SignalTestInterfaceIface;
+  friend                        class SignalTestInterfaceIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -930,8 +930,8 @@ public:
   SignalTestInterfaceHandle&    operator= (const SignalTestInterfaceHandle&) = default;
   static SignalTestInterfaceHandle down_cast (const RemoteHandle &smh);
   explicit                      SignalTestInterfaceHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_SignalTestInterfaceIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SignalTestInterfaceHandle (const std::shared_ptr<I_SignalTestInterfaceIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( SignalTestInterfaceIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SignalTestInterfaceHandle (const std::shared_ptr<SignalTestInterfaceIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -940,7 +940,7 @@ typedef ::Aida::ScopedHandle<SignalTestInterfaceH> SignalTestInterfaceS;
 
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
-  friend                        class I_ChildInheritingSignalsIface;
+  friend                        class ChildInheritingSignalsIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -949,8 +949,8 @@ public:
   ChildInheritingSignalsHandle& operator= (const ChildInheritingSignalsHandle&) = default;
   static ChildInheritingSignalsHandle down_cast (const RemoteHandle &smh);
   explicit                      ChildInheritingSignalsHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_ChildInheritingSignalsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildInheritingSignalsHandle (const std::shared_ptr<I_ChildInheritingSignalsIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( ChildInheritingSignalsIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ChildInheritingSignalsHandle (const std::shared_ptr<ChildInheritingSignalsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -961,7 +961,7 @@ typedef ::Aida::ScopedHandle<ChildInheritingSignalsH> ChildInheritingSignalsS;
 
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
-  friend                        class I_AnotherChildIface;
+  friend                        class AnotherChildIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -970,8 +970,8 @@ public:
   AnotherChildHandle&           operator= (const AnotherChildHandle&) = default;
   static AnotherChildHandle     down_cast (const RemoteHandle &smh);
   explicit                      AnotherChildHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_AnotherChildIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    AnotherChildHandle (const std::shared_ptr<I_AnotherChildIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( AnotherChildIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    AnotherChildHandle (const std::shared_ptr<AnotherChildIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -982,7 +982,7 @@ typedef ::Aida::ScopedHandle<AnotherChildH> AnotherChildS;
 
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_PropertyTesterIface;
+  friend                        class PropertyTesterIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1013,8 +1013,8 @@ public:
   void                          self_prop      (PropertyTesterHandle);
   Aida::Any                     any_prop       () const;
   void                          any_prop       (const Aida::Any&);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_PropertyTesterIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PropertyTesterHandle (const std::shared_ptr<I_PropertyTesterIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( PropertyTesterIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PropertyTesterHandle (const std::shared_ptr<PropertyTesterIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "bool_prop", &PropertyTesterHandle::bool_prop, &PropertyTesterHandle::bool_prop);
@@ -1038,7 +1038,7 @@ namespace RapicornAidaTest {
 
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
-  friend                        class I_UseIncludesIface;
+  friend                        class UseIncludesIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1047,8 +1047,8 @@ public:
   UseIncludesHandle&            operator= (const UseIncludesHandle&) = default;
   static UseIncludesHandle      down_cast (const RemoteHandle &smh);
   explicit                      UseIncludesHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_UseIncludesIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UseIncludesHandle (const std::shared_ptr<I_UseIncludesIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( UseIncludesIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    UseIncludesHandle (const std::shared_ptr<UseIncludesIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->IncludeCheck::SomeInterfaceHandle::__accept_accessor__ (__visitor_);
@@ -1059,7 +1059,7 @@ typedef ::Aida::ScopedHandle<UseIncludesH> UseIncludesS;
 
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_ButtonAreaIface;
+  friend                        class ButtonAreaIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1076,8 +1076,8 @@ public:
   void                          on_click3  (const std::string&);
   ClickType                     click_type () const;
   void                          click_type (ClickType);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_ButtonAreaIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ButtonAreaHandle (const std::shared_ptr<I_ButtonAreaIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( ButtonAreaIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    ButtonAreaHandle (const std::shared_ptr<ButtonAreaIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "on_click", &ButtonAreaHandle::on_click, &ButtonAreaHandle::on_click);
@@ -1093,7 +1093,7 @@ class PureMethodsHandle;
 
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_PureMethodsIface;
+  friend                        class PureMethodsIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1103,8 +1103,8 @@ public:
   static PureMethodsHandle      down_cast (const RemoteHandle &smh);
   explicit                      PureMethodsHandle ();
   int                           pure_method       (double f);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_PureMethodsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PureMethodsHandle (const std::shared_ptr<I_PureMethodsIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( PureMethodsIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    PureMethodsHandle (const std::shared_ptr<PureMethodsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1116,7 +1116,7 @@ namespace Other {
 
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_NameTestsIface;
+  friend                        class NameTestsIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1128,8 +1128,8 @@ public:
   void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                            RapicornAidaTest::ClickType qe,
                                                            const OtherNamespace::SomeRecord &sr);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_NameTestsIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    NameTestsHandle (const std::shared_ptr<I_NameTestsIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( NameTestsIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    NameTestsHandle (const std::shared_ptr<NameTestsIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1141,7 +1141,7 @@ namespace BseTest {
 
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_CompressorIface;
+  friend                        class CompressorIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1154,8 +1154,8 @@ public:
   void                          threshold (double);
   double                        ratio     () const;
   void                          ratio     (double);
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_CompressorIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    CompressorHandle (const std::shared_ptr<I_CompressorIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( CompressorIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    CompressorHandle (const std::shared_ptr<CompressorIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     __visitor_ (*this, "threshold", &CompressorHandle::threshold, &CompressorHandle::threshold);
@@ -1199,7 +1199,7 @@ void operator>>= (Aida::ProtoReader&, RecordForGroups&);
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class I_SoundModuleIface;
+  friend                        class SoundModuleIface;
   static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
@@ -1208,8 +1208,8 @@ public:
   SoundModuleHandle&            operator= (const SoundModuleHandle&) = default;
   static SoundModuleHandle      down_cast (const RemoteHandle &smh);
   explicit                      SoundModuleHandle ();
-  __aidacc_tests_t304_testpass_idl_ifx__ ( I_SoundModuleIface*  __iface__ () const );
-  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SoundModuleHandle (const std::shared_ptr<I_SoundModuleIface>&) );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( SoundModuleIface*  __iface__ () const );
+  __aidacc_tests_t304_testpass_idl_ifx__ ( /*conv*/    SoundModuleHandle (const std::shared_ptr<SoundModuleIface>&) );
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -1356,12 +1356,12 @@ FirstInterfaceHandle
 FirstInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_FirstInterfaceIface> (ifacep);
+  return std::dynamic_pointer_cast<FirstInterfaceIface> (ifacep);
 }
 void
 FirstInterfaceHandle::void_func ()
 {
-  return __AIDA_Local__::remote_callv (*this, &I_FirstInterfaceIface::void_func);
+  return __AIDA_Local__::remote_callv (*this, &FirstInterfaceIface::void_func);
 }
 static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooRecord_ = {
   "MandatoryNamespace::XFooRecord\0"
@@ -2093,54 +2093,54 @@ UIWidgetAreaHandle
 UIWidgetAreaHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_UIWidgetAreaIface> (ifacep);
+  return std::dynamic_pointer_cast<UIWidgetAreaIface> (ifacep);
 }
 bool
 UIWidgetAreaHandle::dummy () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_UIWidgetAreaIface::dummy);
+  return __AIDA_Local__::remote_callc (*this, &UIWidgetAreaIface::dummy);
 }
 void
 UIWidgetAreaHandle::dummy (bool value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::dummy, value);
+  return __AIDA_Local__::remote_callv (*this, &UIWidgetAreaIface::dummy, value);
 }
 std::string
 UIWidgetAreaHandle::on_click () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_UIWidgetAreaIface::on_click);
+  return __AIDA_Local__::remote_callc (*this, &UIWidgetAreaIface::on_click);
 }
 void
 UIWidgetAreaHandle::on_click (const std::string &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::on_click, value);
+  return __AIDA_Local__::remote_callv (*this, &UIWidgetAreaIface::on_click, value);
 }
 double
 UIWidgetAreaHandle::simple_method ()
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::simple_method);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::simple_method);
 }
 double
 UIWidgetAreaHandle::single_arg (int arg_n)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::single_arg, arg_n);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::single_arg, arg_n);
 }
 double
 UIWidgetAreaHandle::single_arg2 (int arg_n)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::single_arg2, arg_n);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::single_arg2, arg_n);
 }
 double
 UIWidgetAreaHandle::two_args (int arg_n,
                               double arg_r)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::two_args, arg_n, arg_r);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::two_args, arg_n, arg_r);
 }
 double
 UIWidgetAreaHandle::two_args2 (int arg_n,
                                double arg_r)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::two_args2, arg_n, arg_r);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::two_args2, arg_n, arg_r);
 }
 double
 UIWidgetAreaHandle::multi_args (bool arg_b,
@@ -2150,28 +2150,28 @@ UIWidgetAreaHandle::multi_args (bool arg_b,
                                 const std::string &arg_s,
                                 double arg_y)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::multi_args, arg_b, arg_n, arg_r, arg_i, arg_s, arg_y);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::multi_args, arg_b, arg_n, arg_r, arg_i, arg_s, arg_y);
 }
 double
 UIWidgetAreaHandle::self_method (UIWidgetAreaHandle &arg_ba1,
                                  UIWidgetAreaHandle &arg_ba2)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::self_method, *arg_ba1.__iface__(), *arg_ba2.__iface__());
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::self_method, *arg_ba1.__iface__(), *arg_ba2.__iface__());
 }
 void
 UIWidgetAreaHandle::void_method ()
 {
-  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::void_method);
+  return __AIDA_Local__::remote_callv (*this, &UIWidgetAreaIface::void_method);
 }
 std::string
 UIWidgetAreaHandle::on_click2out ()
 {
-  return __AIDA_Local__::remote_callr (*this, &I_UIWidgetAreaIface::on_click2out);
+  return __AIDA_Local__::remote_callr (*this, &UIWidgetAreaIface::on_click2out);
 }
 void
 UIWidgetAreaHandle::on_click2in (const std::string &arg_command)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_UIWidgetAreaIface::on_click2in, arg_command);
+  return __AIDA_Local__::remote_callv (*this, &UIWidgetAreaIface::on_click2in, arg_command);
 }
 ParentHandle::ParentHandle ()
 {}
@@ -2187,7 +2187,7 @@ ParentHandle
 ParentHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_ParentIface> (ifacep);
+  return std::dynamic_pointer_cast<ParentIface> (ifacep);
 }
 ChildHandle::ChildHandle ()
 {}
@@ -2203,7 +2203,7 @@ ChildHandle
 ChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_ChildIface> (ifacep);
+  return std::dynamic_pointer_cast<ChildIface> (ifacep);
 }
 DescendantHandle::DescendantHandle ()
 {}
@@ -2219,7 +2219,7 @@ DescendantHandle
 DescendantHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_DescendantIface> (ifacep);
+  return std::dynamic_pointer_cast<DescendantIface> (ifacep);
 }
 GrandChildHandle::GrandChildHandle ()
 {}
@@ -2235,7 +2235,7 @@ GrandChildHandle
 GrandChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_GrandChildIface> (ifacep);
+  return std::dynamic_pointer_cast<GrandChildIface> (ifacep);
 }
 static const Aida::IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickRecord_ = {
   "InterfaceTests::QuickRecord\0"
@@ -2319,12 +2319,12 @@ QuickIfaceHandle
 QuickIfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_QuickIfaceIface> (ifacep);
+  return std::dynamic_pointer_cast<QuickIfaceIface> (ifacep);
 }
 void
 QuickIfaceHandle::simple_function (int arg_i)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_QuickIfaceIface::simple_function, arg_i);
+  return __AIDA_Local__::remote_callv (*this, &QuickIfaceIface::simple_function, arg_i);
 }
 MethodTestInterfaceHandle::MethodTestInterfaceHandle ()
 {}
@@ -2340,78 +2340,78 @@ MethodTestInterfaceHandle
 MethodTestInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_MethodTestInterfaceIface> (ifacep);
+  return std::dynamic_pointer_cast<MethodTestInterfaceIface> (ifacep);
 }
 void
 MethodTestInterfaceHandle::method_with_void ()
 {
-  return __AIDA_Local__::remote_callv (*this, &I_MethodTestInterfaceIface::method_with_void);
+  return __AIDA_Local__::remote_callv (*this, &MethodTestInterfaceIface::method_with_void);
 }
 bool
 MethodTestInterfaceHandle::method_with_bools (bool arg_input,
                                               bool arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_bools, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_bools, arg_input, arg_optval);
 }
 int
 MethodTestInterfaceHandle::method_with_ints32 (int arg_input,
                                                int arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_ints32, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_ints32, arg_input, arg_optval);
 }
 int64_t
 MethodTestInterfaceHandle::method_with_ints64 (int64_t arg_input,
                                                int64_t arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_ints64, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_ints64, arg_input, arg_optval);
 }
 double
 MethodTestInterfaceHandle::method_with_floats (double arg_input,
                                                double arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_floats, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_floats, arg_input, arg_optval);
 }
 std::string
 MethodTestInterfaceHandle::method_with_string (const std::string &arg_input,
                                                const std::string &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_string, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_string, arg_input, arg_optval);
 }
 QuickEnum
 MethodTestInterfaceHandle::method_with_enum (QuickEnum arg_input,
                                              QuickEnum arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_enum, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_enum, arg_input, arg_optval);
 }
 QuickRecord
 MethodTestInterfaceHandle::method_with_record (const QuickRecord &arg_input,
                                                const QuickRecord &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_record, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_record, arg_input, arg_optval);
 }
 QuickSequence
 MethodTestInterfaceHandle::method_with_sequence (const QuickSequence &arg_input,
                                                  const QuickSequence &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_sequence, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_sequence, arg_input, arg_optval);
 }
 GrandChildHandle
 MethodTestInterfaceHandle::method_with_interface (GrandChildHandle &arg_input,
                                                   GrandChildHandle &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_interface, *arg_input.__iface__(), *arg_optval.__iface__());
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_interface, *arg_input.__iface__(), *arg_optval.__iface__());
 }
 Aida::Any
 MethodTestInterfaceHandle::method_with_anys (const Aida::Any &arg_input,
                                              const Aida::Any &arg_optval)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_anys, arg_input, arg_optval);
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_anys, arg_input, arg_optval);
 }
 QuickIfaceHandle
 MethodTestInterfaceHandle::method_with_quickiface (QuickIfaceHandle &arg_input,
                                                    QuickIfaceHandle &arg_iface0)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_MethodTestInterfaceIface::method_with_quickiface, *arg_input.__iface__(), *arg_iface0.__iface__());
+  return __AIDA_Local__::remote_callr (*this, &MethodTestInterfaceIface::method_with_quickiface, *arg_input.__iface__(), *arg_iface0.__iface__());
 }
 SignalTestInterfaceHandle::SignalTestInterfaceHandle ()
 {}
@@ -2427,7 +2427,7 @@ SignalTestInterfaceHandle
 SignalTestInterfaceHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_SignalTestInterfaceIface> (ifacep);
+  return std::dynamic_pointer_cast<SignalTestInterfaceIface> (ifacep);
 }
 ChildInheritingSignalsHandle::ChildInheritingSignalsHandle ()
 {}
@@ -2443,7 +2443,7 @@ ChildInheritingSignalsHandle
 ChildInheritingSignalsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_ChildInheritingSignalsIface> (ifacep);
+  return std::dynamic_pointer_cast<ChildInheritingSignalsIface> (ifacep);
 }
 AnotherChildHandle::AnotherChildHandle ()
 {}
@@ -2459,7 +2459,7 @@ AnotherChildHandle
 AnotherChildHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_AnotherChildIface> (ifacep);
+  return std::dynamic_pointer_cast<AnotherChildIface> (ifacep);
 }
 PropertyTesterHandle::PropertyTesterHandle ()
 {}
@@ -2475,117 +2475,117 @@ PropertyTesterHandle
 PropertyTesterHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_PropertyTesterIface> (ifacep);
+  return std::dynamic_pointer_cast<PropertyTesterIface> (ifacep);
 }
 bool
 PropertyTesterHandle::bool_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::bool_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::bool_prop);
 }
 void
 PropertyTesterHandle::bool_prop (bool value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::bool_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::bool_prop, value);
 }
 int
 PropertyTesterHandle::int32_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::int32_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::int32_prop);
 }
 void
 PropertyTesterHandle::int32_prop (int value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::int32_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::int32_prop, value);
 }
 int64_t
 PropertyTesterHandle::int64_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::int64_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::int64_prop);
 }
 void
 PropertyTesterHandle::int64_prop (int64_t value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::int64_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::int64_prop, value);
 }
 double
 PropertyTesterHandle::float64_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::float64_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::float64_prop);
 }
 void
 PropertyTesterHandle::float64_prop (double value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::float64_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::float64_prop, value);
 }
 std::string
 PropertyTesterHandle::string_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::string_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::string_prop);
 }
 void
 PropertyTesterHandle::string_prop (const std::string &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::string_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::string_prop, value);
 }
 QuickEnum
 PropertyTesterHandle::enum_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::enum_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::enum_prop);
 }
 void
 PropertyTesterHandle::enum_prop (QuickEnum value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::enum_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::enum_prop, value);
 }
 QuickRecord
 PropertyTesterHandle::record_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::record_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::record_prop);
 }
 void
 PropertyTesterHandle::record_prop (const QuickRecord &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::record_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::record_prop, value);
 }
 QuickSequence
 PropertyTesterHandle::sequence_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::sequence_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::sequence_prop);
 }
 void
 PropertyTesterHandle::sequence_prop (const QuickSequence &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::sequence_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::sequence_prop, value);
 }
 GrandChildHandle
 PropertyTesterHandle::interface_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::interface_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::interface_prop);
 }
 void
 PropertyTesterHandle::interface_prop (GrandChildHandle value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::interface_prop, value.__iface__());
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::interface_prop, value.__iface__());
 }
 PropertyTesterHandle
 PropertyTesterHandle::self_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::self_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::self_prop);
 }
 void
 PropertyTesterHandle::self_prop (PropertyTesterHandle value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::self_prop, value.__iface__());
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::self_prop, value.__iface__());
 }
 Aida::Any
 PropertyTesterHandle::any_prop () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_PropertyTesterIface::any_prop);
+  return __AIDA_Local__::remote_callc (*this, &PropertyTesterIface::any_prop);
 }
 void
 PropertyTesterHandle::any_prop (const Aida::Any &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_PropertyTesterIface::any_prop, value);
+  return __AIDA_Local__::remote_callv (*this, &PropertyTesterIface::any_prop, value);
 }
 } // InterfaceTests
 
@@ -2604,7 +2604,7 @@ UseIncludesHandle
 UseIncludesHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_UseIncludesIface> (ifacep);
+  return std::dynamic_pointer_cast<UseIncludesIface> (ifacep);
 }
 ButtonAreaHandle::ButtonAreaHandle ()
 {}
@@ -2620,47 +2620,47 @@ ButtonAreaHandle
 ButtonAreaHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_ButtonAreaIface> (ifacep);
+  return std::dynamic_pointer_cast<ButtonAreaIface> (ifacep);
 }
 std::string
 ButtonAreaHandle::on_click () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click);
+  return __AIDA_Local__::remote_callc (*this, &ButtonAreaIface::on_click);
 }
 void
 ButtonAreaHandle::on_click (const std::string &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click, value);
+  return __AIDA_Local__::remote_callv (*this, &ButtonAreaIface::on_click, value);
 }
 std::string
 ButtonAreaHandle::on_click2 () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click2);
+  return __AIDA_Local__::remote_callc (*this, &ButtonAreaIface::on_click2);
 }
 void
 ButtonAreaHandle::on_click2 (const std::string &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click2, value);
+  return __AIDA_Local__::remote_callv (*this, &ButtonAreaIface::on_click2, value);
 }
 std::string
 ButtonAreaHandle::on_click3 () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::on_click3);
+  return __AIDA_Local__::remote_callc (*this, &ButtonAreaIface::on_click3);
 }
 void
 ButtonAreaHandle::on_click3 (const std::string &value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::on_click3, value);
+  return __AIDA_Local__::remote_callv (*this, &ButtonAreaIface::on_click3, value);
 }
 ClickType
 ButtonAreaHandle::click_type () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_ButtonAreaIface::click_type);
+  return __AIDA_Local__::remote_callc (*this, &ButtonAreaIface::click_type);
 }
 void
 ButtonAreaHandle::click_type (ClickType value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_ButtonAreaIface::click_type, value);
+  return __AIDA_Local__::remote_callv (*this, &ButtonAreaIface::click_type, value);
 }
 PureMethodsHandle::PureMethodsHandle ()
 {}
@@ -2676,12 +2676,12 @@ PureMethodsHandle
 PureMethodsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_PureMethodsIface> (ifacep);
+  return std::dynamic_pointer_cast<PureMethodsIface> (ifacep);
 }
 int
 PureMethodsHandle::pure_method (double arg_f)
 {
-  return __AIDA_Local__::remote_callr (*this, &I_PureMethodsIface::pure_method, arg_f);
+  return __AIDA_Local__::remote_callr (*this, &PureMethodsIface::pure_method, arg_f);
 }
 } // RapicornAidaTest
 
@@ -2700,14 +2700,14 @@ NameTestsHandle
 NameTestsHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_NameTestsIface> (ifacep);
+  return std::dynamic_pointer_cast<NameTestsIface> (ifacep);
 }
 void
 NameTestsHandle::args_from_other_namespace (const InterfaceTests::QuickRecord &arg_qr,
                                             RapicornAidaTest::ClickType arg_qe,
                                             const OtherNamespace::SomeRecord &arg_sr)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_NameTestsIface::args_from_other_namespace, arg_qr, arg_qe, arg_sr);
+  return __AIDA_Local__::remote_callv (*this, &NameTestsIface::args_from_other_namespace, arg_qr, arg_qe, arg_sr);
 }
 } // Other
 
@@ -2726,27 +2726,27 @@ CompressorHandle
 CompressorHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_CompressorIface> (ifacep);
+  return std::dynamic_pointer_cast<CompressorIface> (ifacep);
 }
 double
 CompressorHandle::threshold () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_CompressorIface::threshold);
+  return __AIDA_Local__::remote_callc (*this, &CompressorIface::threshold);
 }
 void
 CompressorHandle::threshold (double value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_CompressorIface::threshold, value);
+  return __AIDA_Local__::remote_callv (*this, &CompressorIface::threshold, value);
 }
 double
 CompressorHandle::ratio () const
 {
-  return __AIDA_Local__::remote_callc (*this, &I_CompressorIface::ratio);
+  return __AIDA_Local__::remote_callc (*this, &CompressorIface::ratio);
 }
 void
 CompressorHandle::ratio (double value)
 {
-  return __AIDA_Local__::remote_callv (*this, &I_CompressorIface::ratio, value);
+  return __AIDA_Local__::remote_callv (*this, &CompressorIface::ratio, value);
 }
 static const Aida::IntrospectionRegistry __aida_aux_data_clnt__BseTest_RecordForGroups_ = {
   "BseTest::RecordForGroups\0"
@@ -2813,7 +2813,7 @@ SoundModuleHandle
 SoundModuleHandle::down_cast (const Aida::RemoteHandle &other)
 {
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
-  return std::dynamic_pointer_cast<I_SoundModuleIface> (ifacep);
+  return std::dynamic_pointer_cast<SoundModuleIface> (ifacep);
 }
 } // BseTest
 

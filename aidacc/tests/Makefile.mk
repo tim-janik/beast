@@ -22,7 +22,7 @@ aidacc/check-targets += aidacc/tests/check--t302-fail.idl
 aidacc/tests/check--t304-cxxserver-output: aidacc/tests/t301-pass.idl aidacc/tests/t304-cxxserver.ref $(aidacc/aidacc)	| $>/aidacc/tests/
 	$(QECHO) CHECK $@
 	$Q cp $< $>/aidacc/tests/t304-testpass.idl
-	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G iface-prefix=I_ -G aidaids -G strip-path=$(abspath $>)/ $>/aidacc/tests/t304-testpass.idl
+	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G aidaids -G strip-path=$(abspath $>)/ $>/aidacc/tests/t304-testpass.idl
 	$Q cat $>/aidacc/tests/t304-testpass_interfaces.cc		>> $>/aidacc/tests/t304-testpass_interfaces.hh
 	$Q cat $>/aidacc/tests/t304-testpass_handles.cc			>> $>/aidacc/tests/t304-testpass_handles.hh
 	$Q diff -up aidacc/tests/t304-cxxserver.ref $>/aidacc/tests/t304-testpass_interfaces.hh
@@ -35,9 +35,9 @@ aidacc/tests/check--t305-idlcode-compile: aidacc/tests/t301-pass.idl aidacc/test
 	$Q cp aidacc/tests/t301-inc1.idl $>/aidacc/tests/t305-inc1.idl
 	$Q cp aidacc/tests/t301-inc2.idl $>/aidacc/tests/t305-inc2.idl
 	$Q cp aidacc/tests/t301-pass.idl $>/aidacc/tests/t305-pass.idl
-	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G iface-prefix=I_ -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-inc1.idl
-	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G iface-prefix=I_ -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-inc2.idl
-	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G iface-prefix=I_ -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-pass.idl
+	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-inc1.idl
+	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-inc2.idl
+	$Q $(aidacc/aidacc) -x CxxStub -I aidacc/tests -G strip-path=$(abspath $>)/ $>/aidacc/tests/t305-pass.idl
 	$Q sed -e '1i#include "t305-inc2_interfaces.cc"' \
 	       -e '1i#include "t305-inc1_interfaces.cc"' \
 	       -e '1i#define _(x) x'			-i $>/aidacc/tests/t305-pass_interfaces.cc

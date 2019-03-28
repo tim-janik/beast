@@ -65,8 +65,6 @@ def type_name_parts (type_node, include_empty = False):
     parts = [p for p in parts if p]
   return parts
 
-I_prefix_postfix = ('', 'Iface')
-
 class G4STUB: pass    # generate stub classes (remote handles)
 class G4SERVANT: pass    # generate servants classes (interfaces)
 
@@ -109,7 +107,7 @@ class Generator:
       ns, base = '', ident
     return ns + prefix + base + postfix
   def Iwrap (self, name):
-    return self.prefix_namespaced_identifier (I_prefix_postfix[0], name, I_prefix_postfix[1])
+    return self.prefix_namespaced_identifier ('', name, 'Iface')
   def type2cpp_absolute (self, type_node):
     tstorage = type_node.storage
     if tstorage == Decls.VOID:          return 'void'
@@ -1242,7 +1240,6 @@ def error (msg):
 
 def generate (namespace_list, **args):
   import sys, tempfile, os
-  global I_prefix_postfix
   config = {}
   config.update (args)
   idlfiles = config['files']
@@ -1259,10 +1256,6 @@ def generate (namespace_list, **args):
       gg.cppmacro = opt[6:]
     if opt.startswith ('strip-path='):
       gg.strip_path += opt[11:]
-    if opt.startswith ('iface-postfix='):
-      I_prefix_postfix = (I_prefix_postfix[0], opt[14:])
-    if opt.startswith ('iface-prefix='):
-      I_prefix_postfix = (opt[13:], I_prefix_postfix[1])
     if opt.startswith ('property-list=') and opt[14:].lower() in ('0', 'no', 'none', 'false'):
       gg.property_list = ""
   for ifile in config['insertions']:
