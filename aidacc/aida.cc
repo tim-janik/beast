@@ -874,7 +874,7 @@ aux_vectors_combine (const std::vector<String> &v0, const std::vector<String> &v
 String
 aux_vector_find (const std::vector<String> &auxvector, const String &field, const String &key, const String &fallback)
 {
-  const String name = field + "." + key + "=";
+  const String name = field.empty() ? key + "=" : field + "." + key + "=";
   for (const auto &kv : auxvector)
     if (name.compare (0, name.size(), kv, 0, name.size()) == 0)
       return kv.substr (name.size());
