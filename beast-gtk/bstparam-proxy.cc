@@ -34,7 +34,7 @@ param_proxy_populate (GtkWidget *chunter,
   Bse::PropertyCandidates pc;
   proxy = bst_param_get_proxy (param);
   if (proxy)
-    pc = Bse::ItemH::down_cast (bse_server.from_proxy (proxy)).get_property_candidates (param->pspec->name);
+    pc = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy)).get_property_candidates (param->pspec->name);
   if (pc.items.size())
     {
       pop = new ParamProxyPopulation();
@@ -172,7 +172,7 @@ bst_item_seq_list_match (GSList      *item_seq_slist,
       BseIt3mSeq *iseq = (BseIt3mSeq*) slist->data;
       for (i = 0; i < iseq->n_items; i++)
 	{
-          Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[i]));
+          Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (iseq->items[i]));
 	  const String path = item.get_uname_path();
 	  uint j = path.size();
 	  if (j == l && Bse::string_cmp (text, path) == 0)
@@ -209,7 +209,7 @@ param_proxy_create (GxkParam    *param,
   SfiProxy proxy = bst_param_get_proxy (param);
   if (proxy)
     {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
       Bse::PropertyCandidates pc = item.get_property_candidates (param->pspec->name);
       gxk_widget_set_tooltip (chunter, pc.tooltip.c_str());
     }
@@ -232,7 +232,7 @@ param_proxy_update (GxkParam  *param,
 		    GtkWidget *box)
 {
   SfiProxy proxy = sfi_value_get_proxy (&param->value);
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
   const String upath = item ? item.get_uname_path() : "";
   const char *cstring = upath.c_str();
   GtkWidget *entry = ((GtkBoxChild*) GTK_BOX (box)->children->data)->widget;

@@ -25,7 +25,7 @@ param_item_seq_popup_editor (GtkWidget *widget,
   SfiProxy proxy = bst_param_get_proxy (param);
   if (proxy)
     {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
       Bse::PropertyCandidates pc = item.get_property_candidates (param->pspec->name);
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (&param->value);
       BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
@@ -88,7 +88,7 @@ param_item_seq_update (GxkParam  *param,
   gchar *content = NULL;
   if (proxy)
     {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
       Bse::PropertyCandidates pc = item.get_property_candidates (param->pspec->name);
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (&param->value);
       BseIt3mSeq *iseq = seq ? bse_it3m_seq_from_seq (seq) : NULL;
@@ -96,7 +96,7 @@ param_item_seq_update (GxkParam  *param,
         {
           if (iseq->n_items == 1)
             {
-              Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[0]));
+              Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (iseq->items[0]));
               content = g_strdup (item.get_name_or_type().c_str());
             }
           else if (iseq->n_items > 1 && pc.partitions.empty())
@@ -110,7 +110,7 @@ param_item_seq_update (GxkParam  *param,
                   size_t j;
                   for (j = 0; j < pc.partitions.size(); j++)
                     {
-                      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (iseq->items[i]));
+                      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (iseq->items[i]));
                       if (item.check_is_a (pc.partitions[j]))
                         {
                           partitions[j]++;

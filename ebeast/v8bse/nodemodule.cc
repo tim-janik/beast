@@ -36,7 +36,7 @@ typedef v8::Local<v8::Object> (*AidaRemoteHandleWrapper) (v8::Isolate *const, Ai
 template<class Native> static v8::Local<v8::Object>
 aida_remote_handle_wrapper_impl (v8::Isolate *const isolate, Aida::RemoteHandle rhandle)
 {
-  Native target = Native::down_cast (rhandle);
+  Native target = Native::__cast__ (rhandle);
   if (target != NULL)
     return v8pp::class_<Native>::import_external (isolate, new Native (target));
   return v8::Local<v8::Object>();
@@ -111,7 +111,7 @@ aida_remote_handle_cache_find (v8::Isolate *const isolate, const Aida::RemoteHan
   return result;
 }
 
-/// Create (or find) the corresponding down_cast() JS Object for a RemoteHandle.
+/// Create (or find) the corresponding __cast__() JS Object for a RemoteHandle.
 static v8::Local<v8::Object>
 aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHandle &rhandle)
 {

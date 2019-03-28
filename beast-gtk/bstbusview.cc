@@ -66,7 +66,7 @@ bus_view_action_exec (gpointer                data,
 {
   BstBusView *self = BST_BUS_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (item_view->container);
+  Bse::SongH song = Bse::SongH::__cast__ (item_view->container);
   Bse::BusH bus;
   switch (action)
     {
@@ -75,7 +75,7 @@ bus_view_action_exec (gpointer                data,
       bst_item_view_select (item_view, bus.proxy_id());
       break;
     case ACTION_DELETE_BUS:
-      bus = Bse::BusH::down_cast (bse_server.from_proxy (bst_item_view_get_current (item_view)));
+      bus = Bse::BusH::__cast__ (bse_server.from_proxy (bst_item_view_get_current (item_view)));
       song.remove_bus (bus);
       break;
     }

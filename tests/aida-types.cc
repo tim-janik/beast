@@ -63,7 +63,7 @@ struct TestOrbObject : OrbObject {
 };
 struct OneHandle : RemoteHandle {
   OneHandle (OrbObjectP orbo) : RemoteHandle (orbo) {}
-  static OneHandle down_cast (RemoteHandle smh) { return make_handle (smh.__aida_orbid__()); }
+  static OneHandle __cast__ (RemoteHandle smh) { return make_handle (smh.__aida_orbid__()); }
   static OneHandle make_handle (ptrdiff_t id)
   {
     std::shared_ptr<TestOrbObject> torbo = std::make_shared<TestOrbObject> (id);

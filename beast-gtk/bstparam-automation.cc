@@ -43,7 +43,7 @@ param_automation_dialog_ok (GxkDialog *dialog)
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) dialog, "GxkParam-automation-control");
       gint midi_channel = sfi_value_get_int (&param_channel->value);
       Bse::MidiControl control_type = Aida::enum_value_from_string<Bse::MidiControl> (sfi_value_get_choice (&param_control->value));
-      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (proxy));
       source.set_automation (param->pspec->name, midi_channel, control_type);
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
@@ -90,7 +90,7 @@ param_automation_popup_editor (GtkWidget *widget,
       g_object_set_data ((GObject*) automation_dialog, "beast-GxkParam", param);
       GxkParam *param_channel = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-channel");
       GxkParam *param_control = (GxkParam*) g_object_get_data ((GObject*) automation_dialog, "GxkParam-automation-control");
-      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (proxy));
       sfi_value_set_int (&param_channel->value, source.get_automation_channel (param->pspec->name));
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
       sfi_value_set_choice (&param_control->value, Aida::enum_value_to_string (control_type).c_str());
@@ -180,7 +180,7 @@ param_automation_update (GxkParam  *param,
   gchar *content = NULL, *tip = NULL;
   if (proxy)
     {
-      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+      Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (proxy));
       const gchar *prefix = "";
       int midi_channel = source.get_automation_channel (param->pspec->name);
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
@@ -236,7 +236,7 @@ param_automation_update (GxkParam  *param,
   gxk_widget_set_tooltip (widget, tip);
   gxk_widget_set_tooltip (gxk_parent_find_descendant (widget, GTK_TYPE_BUTTON), tip);
   g_free (tip);
-  Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (proxy));
+  Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (proxy));
   gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !source.is_prepared());
 }
 

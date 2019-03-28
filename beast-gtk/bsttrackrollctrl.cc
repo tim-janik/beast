@@ -301,7 +301,7 @@ bst_track_roll_controller_quantize (BstTrackRollController *self,
 
   assert_return (self != NULL, fine_tick);
 
-  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+  Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (self->song));
   Bse::SongTiming timing = song.get_timing (fine_tick);
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
@@ -420,7 +420,7 @@ insert_start (BstTrackRollController *self,
       Bse::PartH part = track.get_part (tick);
       if (!part)
 	{
-          Bse::SongH song = Bse::SongH::down_cast (drag->current_track.get_parent());
+          Bse::SongH song = Bse::SongH::__cast__ (drag->current_track.get_parent());
           song.group_undo ("Insert part");
           Bse::PartH part = song.create_part();
 	  if (part && track.insert_part (tick, part) > 0)
@@ -449,7 +449,7 @@ delete_start (BstTrackRollController *self,
 {
   if (self->obj_part)	/* got part to delete */
     {
-      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (self->song));
       song.group_undo ("Delete Part");
       Bse::TrackH track = self->obj_track;
       track.remove_tick (self->obj_tick);
@@ -562,7 +562,7 @@ pointer_move (BstTrackRollController *self,
       drag->type != GXK_DRAG_DONE) /* skip release events */
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (self->song));
       song.tick_pointer (tick);
       drag->state = GXK_DRAG_CONTINUE;
     }
@@ -575,7 +575,7 @@ tick_left_move (BstTrackRollController *self,
   if (self->song)
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (self->song));
       song.loop_left (tick);
       drag->state = GXK_DRAG_CONTINUE;
     }
@@ -588,7 +588,7 @@ tick_right_move (BstTrackRollController *self,
   if (self->song)
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      Bse::SongH song = Bse::SongH::__cast__ (bse_server.from_proxy (self->song));
       song.loop_right (tick);
       drag->state = GXK_DRAG_CONTINUE;
     }

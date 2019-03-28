@@ -339,7 +339,7 @@ bst_param_set_proxy (GxkParam *param, SfiProxy proxy)
   Bse::ItemH item;
   if (proxy)
     {
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
       assert_return (item != NULL);
     }
   bst_param_set_item (param, item);

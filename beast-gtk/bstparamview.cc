@@ -168,7 +168,7 @@ bst_param_view_apply_defaults (BstParamView *self)
 
   if (self->item)
     {
-      Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
+      Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (self->item));
       item.group_undo ("Reset to defaults");
       for (GSList *slist = self->params; slist; slist = slist->next)
         gxk_param_apply_default ((GxkParam*) slist->data);
@@ -204,9 +204,9 @@ bst_param_view_rebuild (BstParamView *self)
     return;
 
   // extract IDL properties
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (self->item));
-  Bse::SongH song = Bse::SongH::down_cast (item);
-  Bse::SNetH snet = Bse::SNetH::down_cast (item);
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (self->item));
+  Bse::SongH song = Bse::SongH::__cast__ (item);
+  Bse::SNetH snet = Bse::SNetH::__cast__ (item);
   std::vector<GParamSpec*> cxxpspecs;
   if (snet)
     for (const auto &name : snet.list_props())

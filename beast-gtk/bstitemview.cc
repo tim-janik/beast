@@ -88,7 +88,7 @@ bst_item_view_name_edited (BstItemView *self,
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (self, row);
       if (item)
-        Bse::ItemH::down_cast (bse_server.from_proxy (item)).set_name (text);
+        Bse::ItemH::__cast__ (bse_server.from_proxy (item)).set_name (text);
     }
 }
 
@@ -241,7 +241,7 @@ item_view_set_container (BstItemView *self,
       if (self->pview)
 	bst_param_view_set_item (BST_PARAM_VIEW (self->pview), 0);
     }
-  self->container = Bse::ContainerH::down_cast (bse_server.from_proxy (new_container));
+  self->container = Bse::ContainerH::__cast__ (bse_server.from_proxy (new_container));
   if (self->container)
     {
       bse_proxy_connect (self->container.proxy_id(),
@@ -271,7 +271,7 @@ bst_item_view_select (BstItemView *self,
 {
   assert_return (BST_IS_ITEM_VIEW (self));
   assert_return (BSE_IS_ITEM (itemid));
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
   Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
   if (self->tree && parent && parent.proxy_id() == self->container.proxy_id())
@@ -298,7 +298,7 @@ bst_item_view_get_proxy_row (BstItemView *self,
 {
   assert_return (BST_IS_ITEM_VIEW (self), -1);
   assert_return (BSE_IS_ITEM (itemid), -1);
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
   Bse::ItemH parent = item ? item.get_parent() : Bse::ItemH();
 
   if (self->tree && parent && parent.proxy_id() == self->container.proxy_id())
@@ -356,7 +356,7 @@ Bse::PartH
 bst_item_view_get_current_part (BstItemView *self)
 {
   SfiProxy proxy = bst_item_view_get_current (self);
-  return Bse::PartH::down_cast (bse_server.from_proxy (proxy));
+  return Bse::PartH::__cast__ (bse_server.from_proxy (proxy));
 }
 
 SfiProxy

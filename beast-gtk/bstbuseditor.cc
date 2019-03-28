@@ -116,7 +116,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       Bst::remove_handler (&self->mon_handler);
       self->lmonitor = NULL;
       self->rmonitor = NULL;
-      Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
+      Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (self->item));
       bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
@@ -127,7 +127,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
   self->item = item;
   if (self->item)
     {
-      self->source = Bse::SourceH::down_cast (bse_server.from_proxy (self->item));
+      self->source = Bse::SourceH::__cast__ (bse_server.from_proxy (self->item));
       GParamSpec *pspec;
       SfiRing *ring;
       bse_proxy_connect (self->item,

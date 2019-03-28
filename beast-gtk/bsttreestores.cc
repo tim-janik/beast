@@ -291,7 +291,7 @@ child_list_wrapper_item_removed (SfiProxy    container,
 static gint
 child_list_wrapper_row_from_proxy (ProxyStore *ps, SfiProxy proxy)
 {
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
   return int (item ? item.get_seqid() : 0) - 1;
 }
 
@@ -339,7 +339,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
                          "signal::item_added", child_list_wrapper_item_added, ps,
                          "signal::item_remove", child_list_wrapper_item_removed, ps,
                          NULL);
-      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (ps->cl.containerid));
+      Bse::ContainerH container = Bse::ContainerH::__cast__ (bse_server.from_proxy (ps->cl.containerid));
       Bse::ItemSeq items = container.list_children();
       for (size_t i = 0; i < items.size(); i++)
         child_list_wrapper_item_added (ps->cl.containerid, items[i].proxy_id(), ps);
@@ -393,7 +393,7 @@ bst_child_list_wrapper_get_proxy (GxkListWrapper *self,
   if (ps && row >= 0)
     {
       guint seqid = row + 1;
-      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (ps->cl.containerid));
+      Bse::ContainerH container = Bse::ContainerH::__cast__ (bse_server.from_proxy (ps->cl.containerid));
       Bse::ItemH item;
       if (container)
         item = container.get_item (ps->cl.child_type, seqid);
@@ -440,18 +440,18 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
       break;
     case BST_PROXY_STORE_NAME:
       itemid = bst_child_list_wrapper_get_proxy (self, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       g_value_set_string (value, item.get_name().c_str());
       break;
     case BST_PROXY_STORE_BLURB:
       itemid = bst_child_list_wrapper_get_proxy (self, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       bse_proxy_get (item.proxy_id(), "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
     case BST_PROXY_STORE_TYPE:
       itemid = bst_child_list_wrapper_get_proxy (self, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       g_value_set_string (value, item.get_type().c_str());
       break;
     }
@@ -487,23 +487,23 @@ item_seq_store_fill_value (GxkListWrapper *self,
       SfiProxy itemid;
     case BST_PROXY_STORE_SEQID:
       itemid = bst_item_seq_store_get_proxy (model, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       g_value_take_string (value, g_strdup_format ("%03u", item.get_seqid()));
       break;
     case BST_PROXY_STORE_NAME:
       itemid = bst_item_seq_store_get_proxy (model, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       g_value_set_string (value, item.get_name().c_str());
       break;
     case BST_PROXY_STORE_BLURB:
       itemid = bst_item_seq_store_get_proxy (model, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       bse_proxy_get (item.proxy_id(), "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
     case BST_PROXY_STORE_TYPE:
       itemid = bst_item_seq_store_get_proxy (model, row);
-      item = Bse::ItemH::down_cast (bse_server.from_proxy (itemid));
+      item = Bse::ItemH::__cast__ (bse_server.from_proxy (itemid));
       g_value_set_string (value, item.get_type().c_str());
       break;
     }
@@ -548,8 +548,8 @@ proxy_cmp_sorted (SfiProxy p1, SfiProxy p2)
 {
   if (!p1 || !p2)
     return p2 ? -1 : p1 != 0;
-  Bse::ItemH item1 = Bse::ItemH::down_cast (bse_server.from_proxy (p1));
-  Bse::ItemH item2 = Bse::ItemH::down_cast (bse_server.from_proxy (p2));
+  Bse::ItemH item1 = Bse::ItemH::__cast__ (bse_server.from_proxy (p1));
+  Bse::ItemH item2 = Bse::ItemH::__cast__ (bse_server.from_proxy (p2));
   const String t1 = item1.get_type(), t2 = item2.get_type();
   const gchar *s1 = t1.c_str();
   const gchar *s2 = t2.c_str();

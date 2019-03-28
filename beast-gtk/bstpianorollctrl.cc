@@ -892,12 +892,12 @@ controller_piano_drag (BstPianoRollController *self,
 		       BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  Bse::SongH song = Bse::SongH::down_cast (part.get_parent());
+  Bse::SongH song = Bse::SongH::__cast__ (part.get_parent());
   Bse::ProjectH project;
   Bse::TrackH track;
   if (song)
     {
-      project = Bse::ProjectH::down_cast (song.get_parent());
+      project = Bse::ProjectH::__cast__ (song.get_parent());
       track = song.find_track_for_part (part);
     }
 

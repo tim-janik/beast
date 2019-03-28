@@ -649,11 +649,11 @@ private:
   template<class TargetHandle> static typename
   std::enable_if<(std::is_base_of<RemoteHandle, TargetHandle>::value &&
                   !std::is_same<RemoteHandle, TargetHandle>::value), TargetHandle>::type
-  __aida_reinterpret_down_cast__ (RemoteHandle smh)     ///< Reinterpret & dynamic cast, use discouraged.
+  __aida_reinterpret___cast____ (RemoteHandle smh)     ///< Reinterpret & dynamic cast, use discouraged.
   {
     TargetHandle target;
     target.__aida_upgrade_from__ (smh);                 // like reinterpret_cast<>
-    return TargetHandle::down_cast (target);            // like dynamic_cast<>
+    return TargetHandle::__cast__ (target);            // like dynamic_cast<>
   }
   friend class BaseConnection;
 };
@@ -891,7 +891,7 @@ private:
   template<typename SP>
   SP                 cast_ibasep () const               { return std::dynamic_pointer_cast<typename SP::element_type> (get_ibasep()); }
   template<typename H>
-  H                  cast_handle () const               { return H::down_cast (get_untyped_remote_handle()); }
+  H                  cast_handle () const               { return H::__cast__ (get_untyped_remote_handle()); }
   void               set_handle  (const RemoteHandle &handle);
   const Any*         get_any     () const;
   void               set_any     (const Any *value);
@@ -1263,7 +1263,7 @@ ServerConnection::bind (const String &protocol, std::shared_ptr<C> object_ptr)
 template<class Handle> Handle
 BaseConnection::remote_origin ()
 {
-  return RemoteHandle::__aida_reinterpret_down_cast__<Handle> (remote_origin());
+  return RemoteHandle::__aida_reinterpret___cast____<Handle> (remote_origin());
 }
 
 // == PropertyAccessor ==

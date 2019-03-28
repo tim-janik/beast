@@ -550,7 +550,7 @@ class Generator:
       s += self.generate_class_aux_method_decls (type_info)
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
-      s += '  ' + self.F ('static %s' % classH) + 'down_cast (const RemoteHandle &smh);\n'
+      s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
       s += '  ' + self.F ('explicit') + '%s ();\n' % classH # ctor
       #s += '  ' + self.F ('inline') + '%s (const %s &src)' % (classH, classH) # copy ctor
       #s += ' : ' + ' (src), '.join (cl) + ' (src) {}\n'
@@ -751,7 +751,7 @@ class Generator:
     s += '  static const Aida::TypeHash type_hash = Aida::TypeHash (%s);\n' % self.class_digest (class_info)
     s += '  return type_hash;\n'
     s += '}\n'
-    s += '%s\n%s::down_cast (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
+    s += '%s\n%s::__cast__ (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
     s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
     s += '  return std::dynamic_pointer_cast<%s> (ifacep);\n' % classC
     s += '}\n'

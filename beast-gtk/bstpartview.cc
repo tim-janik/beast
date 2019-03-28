@@ -84,7 +84,7 @@ part_view_action_exec (gpointer                data,
 {
   BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  Bse::SongH song = Bse::SongH::down_cast (item_view->container);
+  Bse::SongH song = Bse::SongH::__cast__ (item_view->container);
   Bse::PartH part;
   switch (action)
     {
@@ -95,7 +95,7 @@ part_view_action_exec (gpointer                data,
       break;
     case ACTION_DELETE_PART:
       item = bst_item_view_get_current (item_view);
-      part = Bse::PartH::down_cast (bse_server.from_proxy (item));
+      part = Bse::PartH::__cast__ (bse_server.from_proxy (item));
       song.remove_part (part);
       break;
     case ACTION_EDIT_PART:

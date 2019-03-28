@@ -310,7 +310,7 @@ bst_window_sync_title_to_proxy (gpointer     window,
       assert_return (BSE_IS_ITEM (proxy));
       assert_return (title_format != NULL);
     }
-  Bse::ItemH item = Bse::ItemH::down_cast (bse_server.from_proxy (proxy));
+  Bse::ItemH item = Bse::ItemH::__cast__ (bse_server.from_proxy (proxy));
   if (item)
     {
       Bse::ItemS *itemp = new Bse::ItemS (item);
