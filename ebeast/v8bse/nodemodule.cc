@@ -196,57 +196,117 @@ struct convert_AidaSequence
   }
 };
 
+static v8::Local<v8::Value>     any_to_v8   (v8::Isolate*, const Aida::Any&);
+static Aida::Any                any_from_v8 (v8::Isolate*, v8::Local<v8::Value>&);
+
 struct convert_AidaAny {
   using to_type = v8::Local<v8::Value>; // Javascript type
   using from_type = Aida::Any;          // native C++ type
   static bool
-  is_valid (v8::Isolate *const isolate, v8::Local<v8::Value> v)
+  is_valid (v8::Isolate *const iso, v8::Local<v8::Value> v)
   {
     if (v.IsEmpty())
       return false;
-    /* IsNull IsNullOrUndefined IsTrue IsFalse IsName IsSymbol IsFunction IsArray IsObject
+    /* IsUndefined IsNull IsNullOrUndefined IsTrue IsFalse IsName IsSymbol IsFunction IsArray
      * IsExternal IsDate IsArgumentsObject IseanObject IsNumberObject IsStringObject IsSymbolObject
      * IsNativeError IsRegExp IsAsyncFunction IsGeneratorFunction IsGeneratorObject IsPromise IsMap
      * IsSet IsMapIterator IsSetIterator IsWeakMap IsWeakSet IsArrayBuffer IsArrayBufferView
      * IsTypedArray IsUint8Array IsUint8ClampedArray IsInt8Array IsUint16Array IsInt16Array
      * IsUint32Array IsInt32Array IsFloat32Array IsFloat64Array IsDataView IsSharedArrayBuffer
-     * IsProxy IsWebAssemblyCompiledModule IsUndefined
+     * IsProxy IsWebAssemblyCompiledModule
      */
     if (v->IsBoolean())         return true; // Aida::BOOL
     if (v->IsInt32())           return true; // Aida::INT32
     if (v->IsUint32())          return true; // Aida::INT64
     if (v->IsNumber())          return true; // Aida::FLOAT64
     if (v->IsString())          return true; // Aida::STRING
+    if (v->IsObject())          return true; // Aida::RECORD
     return false;
   }
   static from_type
-  from_v8 (v8::Isolate *const isolate, v8::Local<v8::Value> v)
+  from_v8 (v8::Isolate *const iso, v8::Local<v8::Value> v)
   {
     Aida::Any a;
     if      (v->IsBoolean())    a.set<bool> (v->BooleanValue());
     else if (v->IsInt32())      a.set<int32_t> (v->Int32Value());
     else if (v->IsUint32())     a.set<int64_t> (v->Uint32Value());
     else if (v->IsNumber())     a.set<double> (v->NumberValue());
-    else if (v->IsString())     a.set<std::string> (v8pp::from_v8<std::string> (isolate, v));
+    else if (v->IsString())     a.set<std::string> (v8pp::from_v8<std::string> (iso, v));
+    else if (v->IsObject())     any_from_v8object (iso, a, v.As<v8::Object>());
     return a;
   }
   static to_type
-  to_v8 (v8::Isolate *const isolate, const from_type &a)
+  to_v8 (v8::Isolate *const iso, const from_type &a)
   {
     switch (int (a.kind()))
       {
-      case Aida::BOOL:          return v8::Boolean::New (isolate, a.get<bool>());
-      case Aida::INT32:         return v8::Integer::New (isolate, a.get<int32_t>());
-      case Aida::FLOAT64:       return v8::Number::New (isolate, a.get<double>());
-      case Aida::STRING:        return v8pp::to_v8 (isolate, a.get<std::string>());
+        int64_t big;
+      case Aida::BOOL:          return v8::Boolean::New (iso, a.get<bool>());
+      case Aida::INT32:         return v8::Integer::New (iso, a.get<int32_t>());
+      case Aida::FLOAT64:       return v8::Number::New (iso, a.get<double>());
+      case Aida::STRING:        return v8pp::to_v8 (iso, a.get<std::string>());
+      case Aida::RECORD:        return any_to_v8object (iso, a);
+      case Aida::INT64:
+        big = a.get<int64_t>();
+        if (big >= -2147483648 && big <= +2147483647)
+          return v8::Integer::New (iso, big);
+        if (big >= 0 && big <= +4294967295)
+          return v8::Integer::NewFromUnsigned (iso, big);
+        if (big >= -9007199254740992 && big <= +9007199254740992)
+          return v8::Number::New (iso, big);
+        Bse::warning ("converting Aida::Any exceeds v8::Number precision: %d", big);
+        return v8::Number::New (iso, big);
       }
-    return v8::Undefined (isolate);
+    return v8::Undefined (iso);
+  }
+  static void
+  any_from_v8object (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Object> object)
+  {
+    v8::Local<v8::Array> prop_names = object->GetPropertyNames();
+    Aida::AnyRec r;
+    const size_t l = prop_names->Length();
+    for (size_t i = 0; i < l; i++)
+      {
+        v8::Local<v8::Value> v8key = prop_names->Get (i);
+        v8::Local<v8::Value> v8val = object->Get (v8key);
+        const std::string key = v8pp::from_v8<std::string> (iso, v8key);
+        if (key.empty())
+          continue;
+        r[key] = any_from_v8 (iso, v8val);
+      }
+    a.set (r);
+  }
+  static to_type
+  any_to_v8object (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    v8::Local<v8::Object> o = v8::Object::New (iso);
+    const Aida::AnyRec *r = a.get<const Aida::AnyRec*>();
+    if (r)
+      for (auto const &field : *r)
+        {
+          v8::Local<v8::Value> v = any_to_v8 (iso, field);
+          o->Set (v8pp::to_v8 (iso, field.name), v);
+        }
+    return v8scope.Escape (o);
   }
 };
 
 namespace v8pp {
 template<> struct convert<Aida::Any> : convert_AidaAny {};
 } // v8pp
+
+static v8::Local<v8::Value>
+any_to_v8 (v8::Isolate *iso, const Aida::Any &a)
+{
+  return v8pp::to_v8<Aida::Any> (iso, a);
+}
+
+static Aida::Any
+any_from_v8 (v8::Isolate *iso, v8::Local<v8::Value> &v)
+{
+  return v8pp::from_v8<Aida::Any> (iso, v);
+}
 
 typedef v8pp::class_<Aida::Event>                V8ppType_AidaEvent;
 typedef v8pp::class_<Aida::RemoteHandle>         V8ppType_AidaRemoteHandle;
