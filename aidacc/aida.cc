@@ -1506,6 +1506,11 @@ Any::set_rec (const AnyRec &rec)
 ImplicitBaseP
 Any::get_ibasep () const
 {
+  if (kind() == REMOTE)
+    {
+      RemoteHandle rh = u_.rhandle();
+      return rh.__iface_ptr__();
+    }
   if (kind() == INSTANCE)
     return u_.ibase();
   return ImplicitBaseP();
