@@ -123,15 +123,18 @@ aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHa
       if (AIDA_LIKELY (!wrapobj.IsEmpty()))
         return scope.Escape (wrapobj);
     }
-  Aida::TypeHashList thl = rhandle.__typelist__();
-  for (const auto &th : thl)
+  if (rhandle)
     {
-      AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
-      if (wrapper)
+      Aida::TypeHashList thl = rhandle.__typelist__();
+      for (const auto &th : thl)
         {
-          wrapobj = wrapper (isolate, rhandle);
-          aida_remote_handle_cache_add (isolate, rhandle, wrapobj);
-          break;
+          AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
+          if (wrapper)
+            {
+              wrapobj = wrapper (isolate, rhandle);
+              aida_remote_handle_cache_add (isolate, rhandle, wrapobj);
+              break;
+            }
         }
     }
   return scope.Escape (wrapobj);
