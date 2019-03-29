@@ -461,8 +461,7 @@ enum TypeKind {
   ENUM           = 'E', ///< Enumeration type to represent choices.
   SEQUENCE       = 'Q', ///< Type to form sequences of an other type.
   RECORD         = 'R', ///< Record type containing named fields.
-  INSTANCE       = 'C', ///< Interface instance type.
-  REMOTE         = 'r', ///< RemoteHandle type.
+  INSTANCE       = 'C', ///< RemoteHandle type.
   TRANSITION     = 'T', ///< Instance or RemoteHandle in transition between remotes.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
@@ -814,18 +813,14 @@ private:
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany;
     struct { int64 venum64; char *enum_typename; };
-    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
-                                             std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
+    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)), sizeof (ARemoteHandle)))];
     AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
     const AnyRec&        vfields () const { return *(const AnyRec*) this; }
     AnySeq&              vanys   () { return *(AnySeq*) this; static_assert (sizeof (AnySeq) <= sizeof (*this), ""); }
     const AnySeq&        vanys   () const { return *(const AnySeq*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
-    ImplicitBaseP&       ibase   () { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
-    const ImplicitBaseP& ibase   () const { return *(const ImplicitBaseP*) this; }
-    ARemoteHandle&       rhandle () { return *(ARemoteHandle*) this; static_assert (sizeof (ARemoteHandle) <= sizeof (*this), ""); }
-    const ARemoteHandle& rhandle () const { return *(const ARemoteHandle*) this; }
+    ARemoteHandle&       rhandle () const { return *(ARemoteHandle*) this; static_assert (sizeof (ARemoteHandle) <= sizeof (*this), ""); }
   } u_;
   ///@endcond
   void    ensure  (TypeKind _kind) { if (AIDA_LIKELY (kind() == _kind)) return; rekind (_kind); }
@@ -889,7 +884,6 @@ private:
   const AnyRec&      get_rec     () const;
   void               set_rec     (const AnyRec &rec);
   ImplicitBaseP      get_ibasep  () const;
-  void               set_ibase   (ImplicitBase *ibase);
   template<typename C>
   C*                 cast_ibase  () const               { return dynamic_cast<C*> (get_ibasep().get()); }
   template<typename SP>

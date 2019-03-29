@@ -236,8 +236,6 @@ any_test_set (Any &a, int what)
     case 12: { Any a2; a2.set ("SecondAny"); a.set (a2); }         break;
     case 13: a.set (TEST_COFFEE_COFFEE);                           break;
     case 14: a.set (OneHandle::make_handle (0x1f1f0c0c));          break;
-    case 15: a.set (*OneIface::make_one_iface (0x2eeeabcd).get()); break;
-    case 16: a.set (OneIface::make_one_iface (0x37afafaf));        break;
 #define ANY_TEST_COUNT    17
     }
   // printerr ("SET: %d) Any=%p %i %s: %u\n", what, &a, a.kind(), type_kind_name(a.kind()), a.get<int64>());
@@ -268,23 +266,9 @@ any_test_get (const Any &a, int what)
     case 12: s  = a.get<Any>().get<String>(); TASSERT (s == "SecondAny");            break;
     case 13: i6 = a.get<TestEnum>();          TASSERT (i6 == TEST_COFFEE_COFFEE);    break;
     case 14:
-      TASSERT (a.kind() == REMOTE);
+      TASSERT (a.kind() == INSTANCE);
       thandle = a.get<OneHandle>();
       TASSERT (thandle.__aida_orbid__() == 0x1f1f0c0c);
-      break;
-    case 15:
-      {
-        TASSERT (a.kind() == INSTANCE);
-        OneIface &oiface = a.get<OneIface>();
-        TASSERT (oiface.test_id() == 0x2eeeabcd);
-      }
-      break;
-    case 16:
-      {
-        TASSERT (a.kind() == INSTANCE);
-        OneIfaceP oiface = a.get<OneIfaceP>();
-        TASSERT (oiface && oiface->test_id() == 0x37afafaf);
-      }
       break;
     }
   return true;
