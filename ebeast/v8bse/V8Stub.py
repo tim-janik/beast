@@ -309,7 +309,7 @@ class Generator:
     s += '  v8::Local<v8::Function> fun = v8::Local<v8::Function>::Cast (bcode);\n'
     s += '  assert (!fun.IsEmpty());\n'
     s += '  v8::Local<v8::Value> args[] = { exports };\n'
-    s += '  fun->Call (context, context->Global(), sizeof (args) / sizeof (args[0]), args);\n'
+    s += '  v8::MaybeLocal<v8::Value> ret = fun->Call (context, context->Global(), sizeof (args) / sizeof (args[0]), args);\n'
     # jsinit - end
     s += '}\n'
     return s

@@ -473,8 +473,8 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
 
   // export server handle
   v8::Local<v8::Object> v8_server = server_class.import_external (isolate, new Bse::ServerH (bse_server));
-  module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"),
-                                      v8_server, v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
+  v8::Maybe<bool> ret = module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"), v8_server,
+                                                            v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
 
   // execute v8stub javascript initialization
   bse_v8stub->jsinit (context, exports);
