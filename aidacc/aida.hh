@@ -859,8 +859,12 @@ public:
     ::std::integral_constant<bool, ::std::is_convertible<T, AnySeq>::value && !(::std::is_convertible<T, AnyRec>::value ||
                                                                                  ::std::is_base_of<Any, T>::value)>;
 private:
+  template<class A, class B> using IsDecayedSame =
+    ::std::integral_constant<bool, ::std::is_same<typename ::std::decay<A>::type, typename ::std::decay<B>::type>::value>;
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
+  template<class A, class B> using IsJustConvertible = ///< Avoid std::is_same<> ambiguity.
+    ::std::integral_constant<bool, IsConvertible<A, B>::value && !IsDecayedSame<A, B>::value>;
   template<class T>          using IsConstCharPtr        = ::std::is_same<const char*, typename ::std::decay<T>::type>;
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
@@ -903,11 +907,11 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
   template<typename T, REQUIRES< std::is_same<const AnySeq*, T>::value > = true>       T    get () const { return &get_seq(); }
-  template<typename T, REQUIRES< std::is_same<const AnySeq&, T>::value > = true>       T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnySeq, T>::value > = true>       T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsDecayedSame<const AnySeq&, T>::value > = true>      T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsJustConvertible<const AnySeq, T>::value > = true>   T    get () const { return get_seq(); }
   template<typename T, REQUIRES< std::is_same<const AnyRec*, T>::value > = true>       T    get () const { return &get_rec(); }
-  template<typename T, REQUIRES< std::is_same<const AnyRec&, T>::value > = true>       T    get () const { return get_rec(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyRec, T>::value > = true>       T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsDecayedSame<const AnyRec&, T>::value > = true>      T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsJustConvertible<const AnyRec, T>::value > = true>   T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
