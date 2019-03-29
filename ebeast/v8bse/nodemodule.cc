@@ -54,14 +54,14 @@ aida_remote_handle_wrapper_map (const Aida::TypeHash &thash, AidaRemoteHandleWra
 }
 
 /// Retrieve the native RemoteHandle from a JS Object.
-template<class NativeClass> static NativeClass*
+template<class NativeClass, bool WARN = true> static NativeClass*
 aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Value> value)
 {
   v8::HandleScope scope (isolate);
   NativeClass *nobject = NULL;
   if (!value.IsEmpty() && value->IsObject())
     nobject = v8pp::class_<NativeClass>::unwrap_object (isolate, value);
-  if (!nobject)
+  if (WARN && !nobject)
     throw std::runtime_error ("failed to unwrap C++ Aida::RemoteHandle");
   return nobject;
 }
@@ -224,7 +224,7 @@ struct convert_AidaAny {
     if (v->IsNumber())          return true; // Aida::FLOAT64
     if (v->IsString())          return true; // Aida::STRING
     if (v->IsArray())           return true; // Aida::SEQUENCE
-    if (v->IsObject())          return true; // Aida::RECORD
+    if (v->IsObject())          return true; // Aida::RECORD Aida::INSTANCE
     return false;
   }
   static from_type
@@ -252,6 +252,7 @@ struct convert_AidaAny {
       case Aida::STRING:        return v8pp::to_v8 (iso, a.get<std::string>());
       case Aida::SEQUENCE:      return any_to_v8array (iso, a);
       case Aida::RECORD:        return any_to_v8object (iso, a);
+      case Aida::INSTANCE:      return any_handle_to_v8object (iso, a);
       case Aida::INT64:
         big = a.get<int64_t>();
         if (big >= -2147483648 && big <= +2147483647)
@@ -288,6 +289,14 @@ struct convert_AidaAny {
   static void
   any_from_v8object (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Object> object)
   {
+    // convert as Aida::INSTANCE
+    Aida::RemoteHandle *whandle = aida_remote_handle_unwrap_native<Aida::RemoteHandle, false> (iso, object);
+    if (whandle)
+      {
+        a.set (*whandle);
+        return;
+      }
+    // convert as Aida::RECORD
     v8::Local<v8::Array> prop_names = object->GetPropertyNames();
     Aida::AnyRec r;
     const size_t l = prop_names->Length();
@@ -309,6 +318,16 @@ struct convert_AidaAny {
     const Aida::AnyRec &r = a.get<const Aida::AnyRec&>();
     for (auto const &field : r)
       o->Set (v8pp::to_v8 (iso, field.name), any_to_v8 (iso, field));
+    return v8scope.Escape (o);
+  }
+  static to_type
+  any_handle_to_v8object (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    const Aida::RemoteHandle rhandle = a.get_untyped_remote_handle();
+    if (!rhandle)
+      return v8::Null (iso);
+    v8::Local<v8::Object> o = aida_remote_handle_wrap_native (iso, rhandle);
     return v8scope.Escape (o);
   }
 };
@@ -352,13 +371,12 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
       const std::string __str = Aida::enum_value_to_string (__any.get_enum_typename(), __any.as_int64(), "+");
       __v8ret.Set (v8pp::to_v8 (__v8isolate, __str));
       break; }
-    case Aida::REMOTE: {
+    case Aida::INSTANCE: {
       const Aida::RemoteHandle __rhandle = __any.get_untyped_remote_handle();
       __v8ret.Set (v8pp::to_v8 (__v8isolate, aida_remote_handle_wrap_native (__v8isolate, __rhandle)));
       break; }
     case Aida::SEQUENCE:
     case Aida::RECORD:
-    case Aida::INSTANCE:
     case Aida::ANY:
     case Aida::UNTYPED:
     case Aida::TRANSITION:
