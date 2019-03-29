@@ -197,7 +197,7 @@ struct convert_AidaSequence
 };
 
 static v8::Local<v8::Value>     any_to_v8   (v8::Isolate*, const Aida::Any&);
-static Aida::Any                any_from_v8 (v8::Isolate*, v8::Local<v8::Value>&);
+static Aida::Any                any_from_v8 (v8::Isolate*, const v8::Local<v8::Value>&);
 
 struct convert_AidaAny {
   using to_type = v8::Local<v8::Value>; // Javascript type
@@ -207,7 +207,7 @@ struct convert_AidaAny {
   {
     if (v.IsEmpty())
       return false;
-    /* IsUndefined IsNull IsNullOrUndefined IsTrue IsFalse IsName IsSymbol IsFunction IsArray
+    /* IsUndefined IsNull IsNullOrUndefined IsTrue IsFalse IsName IsSymbol IsFunction
      * IsExternal IsDate IsArgumentsObject IseanObject IsNumberObject IsStringObject IsSymbolObject
      * IsNativeError IsRegExp IsAsyncFunction IsGeneratorFunction IsGeneratorObject IsPromise IsMap
      * IsSet IsMapIterator IsSetIterator IsWeakMap IsWeakSet IsArrayBuffer IsArrayBufferView
@@ -220,6 +220,7 @@ struct convert_AidaAny {
     if (v->IsUint32())          return true; // Aida::INT64
     if (v->IsNumber())          return true; // Aida::FLOAT64
     if (v->IsString())          return true; // Aida::STRING
+    if (v->IsArray())           return true; // Aida::SEQUENCE
     if (v->IsObject())          return true; // Aida::RECORD
     return false;
   }
@@ -232,6 +233,7 @@ struct convert_AidaAny {
     else if (v->IsUint32())     a.set<int64_t> (v->Uint32Value());
     else if (v->IsNumber())     a.set<double> (v->NumberValue());
     else if (v->IsString())     a.set<std::string> (v8pp::from_v8<std::string> (iso, v));
+    else if (v->IsArray())      any_from_v8array (iso, a, v.As<v8::Array>());
     else if (v->IsObject())     any_from_v8object (iso, a, v.As<v8::Object>());
     return a;
   }
@@ -245,6 +247,7 @@ struct convert_AidaAny {
       case Aida::INT32:         return v8::Integer::New (iso, a.get<int32_t>());
       case Aida::FLOAT64:       return v8::Number::New (iso, a.get<double>());
       case Aida::STRING:        return v8pp::to_v8 (iso, a.get<std::string>());
+      case Aida::SEQUENCE:      return any_to_v8array (iso, a);
       case Aida::RECORD:        return any_to_v8object (iso, a);
       case Aida::INT64:
         big = a.get<int64_t>();
@@ -260,19 +263,38 @@ struct convert_AidaAny {
     return v8::Undefined (iso);
   }
   static void
+  any_from_v8array (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Array> array)
+  {
+    Aida::AnySeq s;
+    const size_t l = array->Length();
+    for (uint32_t i = 0; i < l; i++)
+      s.push_back (any_from_v8 (iso, array->Get (i)));
+    a.set (s);
+  }
+  static to_type
+  any_to_v8array (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    const Aida::AnySeq &seq = a.get<const Aida::AnySeq&>();
+    const size_t l = seq.size();
+    v8::Local<v8::Array> arr = v8::Array::New (iso, l);
+    for (uint32_t i = 0; i < l; i++)
+      arr->Set (i, any_to_v8 (iso, seq[i]));
+    return v8scope.Escape (arr);
+  }
+  static void
   any_from_v8object (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Object> object)
   {
     v8::Local<v8::Array> prop_names = object->GetPropertyNames();
     Aida::AnyRec r;
     const size_t l = prop_names->Length();
-    for (size_t i = 0; i < l; i++)
+    for (uint32_t i = 0; i < l; i++)
       {
         v8::Local<v8::Value> v8key = prop_names->Get (i);
-        v8::Local<v8::Value> v8val = object->Get (v8key);
         const std::string key = v8pp::from_v8<std::string> (iso, v8key);
         if (key.empty())
           continue;
-        r[key] = any_from_v8 (iso, v8val);
+        r[key] = any_from_v8 (iso, object->Get (v8key));
       }
     a.set (r);
   }
@@ -281,13 +303,9 @@ struct convert_AidaAny {
   {
     v8::EscapableHandleScope v8scope (iso);
     v8::Local<v8::Object> o = v8::Object::New (iso);
-    const Aida::AnyRec *r = a.get<const Aida::AnyRec*>();
-    if (r)
-      for (auto const &field : *r)
-        {
-          v8::Local<v8::Value> v = any_to_v8 (iso, field);
-          o->Set (v8pp::to_v8 (iso, field.name), v);
-        }
+    const Aida::AnyRec &r = a.get<const Aida::AnyRec&>();
+    for (auto const &field : r)
+      o->Set (v8pp::to_v8 (iso, field.name), any_to_v8 (iso, field));
     return v8scope.Escape (o);
   }
 };
@@ -303,7 +321,7 @@ any_to_v8 (v8::Isolate *iso, const Aida::Any &a)
 }
 
 static Aida::Any
-any_from_v8 (v8::Isolate *iso, v8::Local<v8::Value> &v)
+any_from_v8 (v8::Isolate *iso, const v8::Local<v8::Value> &v)
 {
   return v8pp::from_v8<Aida::Any> (iso, v);
 }
