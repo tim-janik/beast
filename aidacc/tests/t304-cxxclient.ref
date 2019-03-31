@@ -163,7 +163,7 @@ enum class ExtensiveEnum : int64_t {
   V32 = 42,
   V33 = 43,
   V34 = 44, // "foo"
-  V35 = 42,
+  V35 = 35,
   V36 = 42, // "foo4"
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace::ExtensiveEnum"; }

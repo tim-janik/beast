@@ -488,6 +488,7 @@ parser IdlSyntaxParser:
         token IDENT:        r'[a-zA-Z_][a-zA-Z_0-9]*'       # identifiers
         token NSIDENT:      r'[a-zA-Z_][a-zA-Z_0-9$]*'      # identifier + '$'
         token INTEGER:      r'[0-9]+'
+        token CHARACTER:    r"[ -~]"
         token HEXINT:       r'0[xX][0-9abcdefABCDEF]+'
         token FULLFLOAT:    r'([1-9][0-9]*|0)(\.[0-9]*)?([eE][+-]?[0-9]+)?'
         token FRACTFLOAT:                     r'\.[0-9]+([eE][+-]?[0-9]+)?'
@@ -695,6 +696,7 @@ rule power:
 rule term:                                      # numerical/string term
           '(TRUE|True|true)'                    {{ return 1; }}
         | '(FALSE|False|false)'                 {{ return 0; }}
+        | "'" CHARACTER "'"                     {{ return ord (CHARACTER); }}
         | INTEGER                               {{ return int (INTEGER); }}
         | HEXINT                                {{ return int (HEXINT, 16); }}
         | FULLFLOAT                             {{ return float (FULLFLOAT); }}

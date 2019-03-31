@@ -111,7 +111,7 @@ enum ExtensiveEnum {
   V32 = Enum (Vint),
   V33 = Enum (Vstring),
   V34 = Enum (Vstring, Vstring),
-  V35 = Enum (Vint, Vstring),
+  V35 = Enum ('#', Vstring),
   V36 = Enum (Vint, Vstring, Vstring "4"),
 };
 // reassignment: Const V36 = 36;
