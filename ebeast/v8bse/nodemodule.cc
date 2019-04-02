@@ -54,14 +54,14 @@ aida_remote_handle_wrapper_map (const Aida::TypeHash &thash, AidaRemoteHandleWra
 }
 
 /// Retrieve the native RemoteHandle from a JS Object.
-template<class NativeClass> static NativeClass*
+template<class NativeClass, bool WARN = true> static NativeClass*
 aida_remote_handle_unwrap_native (v8::Isolate *const isolate, v8::Local<v8::Value> value)
 {
   v8::HandleScope scope (isolate);
   NativeClass *nobject = NULL;
   if (!value.IsEmpty() && value->IsObject())
     nobject = v8pp::class_<NativeClass>::unwrap_object (isolate, value);
-  if (!nobject)
+  if (WARN && !nobject)
     throw std::runtime_error ("failed to unwrap C++ Aida::RemoteHandle");
   return nobject;
 }
@@ -123,15 +123,18 @@ aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHa
       if (AIDA_LIKELY (!wrapobj.IsEmpty()))
         return scope.Escape (wrapobj);
     }
-  Aida::TypeHashList thl = rhandle.__typelist__();
-  for (const auto &th : thl)
+  if (rhandle)
     {
-      AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
-      if (wrapper)
+      Aida::TypeHashList thl = rhandle.__typelist__();
+      for (const auto &th : thl)
         {
-          wrapobj = wrapper (isolate, rhandle);
-          aida_remote_handle_cache_add (isolate, rhandle, wrapobj);
-          break;
+          AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
+          if (wrapper)
+            {
+              wrapobj = wrapper (isolate, rhandle);
+              aida_remote_handle_cache_add (isolate, rhandle, wrapobj);
+              break;
+            }
         }
     }
   return scope.Escape (wrapobj);
@@ -196,6 +199,155 @@ struct convert_AidaSequence
   }
 };
 
+static v8::Local<v8::Value>     any_to_v8   (v8::Isolate*, const Aida::Any&);
+static Aida::Any                any_from_v8 (v8::Isolate*, const v8::Local<v8::Value>&);
+
+struct convert_AidaAny {
+  using to_type = v8::Local<v8::Value>; // Javascript type
+  using from_type = Aida::Any;          // native C++ type
+  static bool
+  is_valid (v8::Isolate *const iso, v8::Local<v8::Value> v)
+  {
+    if (v.IsEmpty())
+      return false;
+    /* IsUndefined IsNull IsNullOrUndefined IsTrue IsFalse IsName IsSymbol IsFunction
+     * IsExternal IsDate IsArgumentsObject IseanObject IsNumberObject IsStringObject IsSymbolObject
+     * IsNativeError IsRegExp IsAsyncFunction IsGeneratorFunction IsGeneratorObject IsPromise IsMap
+     * IsSet IsMapIterator IsSetIterator IsWeakMap IsWeakSet IsArrayBuffer IsArrayBufferView
+     * IsTypedArray IsUint8Array IsUint8ClampedArray IsInt8Array IsUint16Array IsInt16Array
+     * IsUint32Array IsInt32Array IsFloat32Array IsFloat64Array IsDataView IsSharedArrayBuffer
+     * IsProxy IsWebAssemblyCompiledModule
+     */
+    if (v->IsBoolean())         return true; // Aida::BOOL
+    if (v->IsInt32())           return true; // Aida::INT32
+    if (v->IsUint32())          return true; // Aida::INT64
+    if (v->IsNumber())          return true; // Aida::FLOAT64
+    if (v->IsString())          return true; // Aida::STRING
+    if (v->IsArray())           return true; // Aida::SEQUENCE
+    if (v->IsObject())          return true; // Aida::RECORD Aida::INSTANCE
+    return false;
+  }
+  static from_type
+  from_v8 (v8::Isolate *const iso, v8::Local<v8::Value> v)
+  {
+    Aida::Any a;
+    if      (v->IsBoolean())    a.set<bool> (v->BooleanValue());
+    else if (v->IsInt32())      a.set<int32_t> (v->Int32Value());
+    else if (v->IsUint32())     a.set<int64_t> (v->Uint32Value());
+    else if (v->IsNumber())     a.set<double> (v->NumberValue());
+    else if (v->IsString())     a.set<std::string> (v8pp::from_v8<std::string> (iso, v));
+    else if (v->IsArray())      any_from_v8array (iso, a, v.As<v8::Array>());
+    else if (v->IsObject())     any_from_v8object (iso, a, v.As<v8::Object>());
+    return a;
+  }
+  static to_type
+  to_v8 (v8::Isolate *const iso, const from_type &a)
+  {
+    switch (int (a.kind()))
+      {
+        int64_t big;
+      case Aida::BOOL:          return v8::Boolean::New (iso, a.get<bool>());
+      case Aida::INT32:         return v8::Integer::New (iso, a.get<int32_t>());
+      case Aida::FLOAT64:       return v8::Number::New (iso, a.get<double>());
+      case Aida::STRING:        return v8pp::to_v8 (iso, a.get<std::string>());
+      case Aida::SEQUENCE:      return any_to_v8array (iso, a);
+      case Aida::RECORD:        return any_to_v8object (iso, a);
+      case Aida::INSTANCE:      return any_handle_to_v8object (iso, a);
+      case Aida::INT64:
+        big = a.get<int64_t>();
+        if (big >= -2147483648 && big <= +2147483647)
+          return v8::Integer::New (iso, big);
+        if (big >= 0 && big <= +4294967295)
+          return v8::Integer::NewFromUnsigned (iso, big);
+        if (big >= -9007199254740992 && big <= +9007199254740992)
+          return v8::Number::New (iso, big);
+        Bse::warning ("converting Aida::Any exceeds v8::Number precision: %d", big);
+        return v8::Number::New (iso, big);
+      }
+    return v8::Undefined (iso);
+  }
+  static void
+  any_from_v8array (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Array> array)
+  {
+    Aida::AnySeq s;
+    const size_t l = array->Length();
+    for (uint32_t i = 0; i < l; i++)
+      s.push_back (any_from_v8 (iso, array->Get (i)));
+    a.set (s);
+  }
+  static to_type
+  any_to_v8array (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    const Aida::AnySeq &seq = a.get<const Aida::AnySeq&>();
+    const size_t l = seq.size();
+    v8::Local<v8::Array> arr = v8::Array::New (iso, l);
+    for (uint32_t i = 0; i < l; i++)
+      arr->Set (i, any_to_v8 (iso, seq[i]));
+    return v8scope.Escape (arr);
+  }
+  static void
+  any_from_v8object (v8::Isolate *const iso, Aida::Any &a, v8::Local<v8::Object> object)
+  {
+    // convert as Aida::INSTANCE
+    Aida::RemoteHandle *whandle = aida_remote_handle_unwrap_native<Aida::RemoteHandle, false> (iso, object);
+    if (whandle)
+      {
+        a.set (*whandle);
+        return;
+      }
+    // convert as Aida::RECORD
+    v8::Local<v8::Array> prop_names = object->GetPropertyNames();
+    Aida::AnyRec r;
+    const size_t l = prop_names->Length();
+    for (uint32_t i = 0; i < l; i++)
+      {
+        v8::Local<v8::Value> v8key = prop_names->Get (i);
+        const std::string key = v8pp::from_v8<std::string> (iso, v8key);
+        if (key.empty())
+          continue;
+        r[key] = any_from_v8 (iso, object->Get (v8key));
+      }
+    a.set (r);
+  }
+  static to_type
+  any_to_v8object (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    v8::Local<v8::Object> o = v8::Object::New (iso);
+    const Aida::AnyRec &r = a.get<const Aida::AnyRec&>();
+    for (auto const &field : r)
+      o->Set (v8pp::to_v8 (iso, field.name), any_to_v8 (iso, field));
+    return v8scope.Escape (o);
+  }
+  static to_type
+  any_handle_to_v8object (v8::Isolate *const iso, const from_type &a)
+  {
+    v8::EscapableHandleScope v8scope (iso);
+    const Aida::RemoteHandle rhandle = a.get_untyped_remote_handle();
+    if (!rhandle)
+      return v8::Null (iso);
+    v8::Local<v8::Object> o = aida_remote_handle_wrap_native (iso, rhandle);
+    return v8scope.Escape (o);
+  }
+};
+
+namespace v8pp {
+template<> struct convert<Aida::Any> : convert_AidaAny {};
+} // v8pp
+
+static v8::Local<v8::Value>
+any_to_v8 (v8::Isolate *iso, const Aida::Any &a)
+{
+  return v8pp::to_v8<Aida::Any> (iso, a);
+}
+
+static Aida::Any
+any_from_v8 (v8::Isolate *iso, const v8::Local<v8::Value> &v)
+{
+  return v8pp::from_v8<Aida::Any> (iso, v);
+}
+
 typedef v8pp::class_<Aida::Event>                V8ppType_AidaEvent;
 typedef v8pp::class_<Aida::RemoteHandle>         V8ppType_AidaRemoteHandle;
 
@@ -219,13 +371,12 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
       const std::string __str = Aida::enum_value_to_string (__any.get_enum_typename(), __any.as_int64(), "+");
       __v8ret.Set (v8pp::to_v8 (__v8isolate, __str));
       break; }
-    case Aida::REMOTE: {
+    case Aida::INSTANCE: {
       const Aida::RemoteHandle __rhandle = __any.get_untyped_remote_handle();
       __v8ret.Set (v8pp::to_v8 (__v8isolate, aida_remote_handle_wrap_native (__v8isolate, __rhandle)));
       break; }
     case Aida::SEQUENCE:
     case Aida::RECORD:
-    case Aida::INSTANCE:
     case Aida::ANY:
     case Aida::UNTYPED:
     case Aida::TRANSITION:
@@ -361,8 +512,8 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
 
   // export server handle
   v8::Local<v8::Object> v8_server = server_class.import_external (isolate, new Bse::ServerH (bse_server));
-  module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"),
-                                      v8_server, v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
+  v8::Maybe<bool> ret = module_instance->DefineOwnProperty (context, v8pp::to_v8 (isolate, "server"), v8_server,
+                                                            v8::PropertyAttribute (v8::ReadOnly | v8::DontDelete));
 
   // execute v8stub javascript initialization
   bse_v8stub->jsinit (context, exports);

@@ -2,7 +2,7 @@ BEAST & BSE
 ===========
 
 [![License LGPL-2.1+](https://testbit.eu/~timj/pics/license-lgpl-2-1+.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
-[![Chat](https://testbit.eu/~timj/pics/chat-beast-f7b.svg)](irc://irc.gimp.org/beast)
+[![Chat](https://testbit.eu/~timj/pics/chat-beast-f7b.svg)](https://chat.mibbit.com/?server=irc.gimp.org&channel=%23beast)
 [![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
 [![Download](https://api.bintray.com/packages/beast-team/testing/Beast-AppImage/images/download.svg)](https://bintray.com/beast-team/testing/Beast-AppImage/_latestVersion)
 

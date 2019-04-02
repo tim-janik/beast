@@ -461,8 +461,7 @@ enum TypeKind {
   ENUM           = 'E', ///< Enumeration type to represent choices.
   SEQUENCE       = 'Q', ///< Type to form sequences of an other type.
   RECORD         = 'R', ///< Record type containing named fields.
-  INSTANCE       = 'C', ///< Interface instance type.
-  REMOTE         = 'r', ///< RemoteHandle type.
+  INSTANCE       = 'C', ///< RemoteHandle type.
   TRANSITION     = 'T', ///< Instance or RemoteHandle in transition between remotes.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
@@ -814,18 +813,14 @@ private:
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany;
     struct { int64 venum64; char *enum_typename; };
-    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)),
-                                             std::max (sizeof (ImplicitBaseP), sizeof (ARemoteHandle))))];
+    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)), sizeof (ARemoteHandle)))];
     AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
     const AnyRec&        vfields () const { return *(const AnyRec*) this; }
     AnySeq&              vanys   () { return *(AnySeq*) this; static_assert (sizeof (AnySeq) <= sizeof (*this), ""); }
     const AnySeq&        vanys   () const { return *(const AnySeq*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
-    ImplicitBaseP&       ibase   () { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
-    const ImplicitBaseP& ibase   () const { return *(const ImplicitBaseP*) this; }
-    ARemoteHandle&       rhandle () { return *(ARemoteHandle*) this; static_assert (sizeof (ARemoteHandle) <= sizeof (*this), ""); }
-    const ARemoteHandle& rhandle () const { return *(const ARemoteHandle*) this; }
+    ARemoteHandle&       rhandle () const { return *(ARemoteHandle*) this; static_assert (sizeof (ARemoteHandle) <= sizeof (*this), ""); }
   } u_;
   ///@endcond
   void    ensure  (TypeKind _kind) { if (AIDA_LIKELY (kind() == _kind)) return; rekind (_kind); }
@@ -859,8 +854,12 @@ public:
     ::std::integral_constant<bool, ::std::is_convertible<T, AnySeq>::value && !(::std::is_convertible<T, AnyRec>::value ||
                                                                                  ::std::is_base_of<Any, T>::value)>;
 private:
+  template<class A, class B> using IsDecayedSame =
+    ::std::integral_constant<bool, ::std::is_same<typename ::std::decay<A>::type, typename ::std::decay<B>::type>::value>;
   template<class A, class B> using IsConvertible = ///< Avoid pointer->bool reduction for std::is_convertible<>.
     ::std::integral_constant<bool, ::std::is_convertible<A, B>::value && (!::std::is_pointer<A>::value || !IsBool<B>::value)>;
+  template<class A, class B> using IsJustConvertible = ///< Avoid std::is_same<> ambiguity.
+    ::std::integral_constant<bool, IsConvertible<A, B>::value && !IsDecayedSame<A, B>::value>;
   template<class T>          using IsConstCharPtr        = ::std::is_same<const char*, typename ::std::decay<T>::type>;
   template<class T>          using IsImplicitBaseDerivedP =
     ::std::integral_constant<bool, (DerivesSharedPtr<T>::value && // check without SFINAE error on missing T::element_type
@@ -885,7 +884,6 @@ private:
   const AnyRec&      get_rec     () const;
   void               set_rec     (const AnyRec &rec);
   ImplicitBaseP      get_ibasep  () const;
-  void               set_ibase   (ImplicitBase *ibase);
   template<typename C>
   C*                 cast_ibase  () const               { return dynamic_cast<C*> (get_ibasep().get()); }
   template<typename SP>
@@ -903,11 +901,11 @@ public:
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
   template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
   template<typename T, REQUIRES< std::is_same<const AnySeq*, T>::value > = true>       T    get () const { return &get_seq(); }
-  template<typename T, REQUIRES< std::is_same<const AnySeq&, T>::value > = true>       T    get () const { return get_seq(); }
-  template<typename T, REQUIRES< IsConvertible<const AnySeq, T>::value > = true>       T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsDecayedSame<const AnySeq&, T>::value > = true>      T    get () const { return get_seq(); }
+  template<typename T, REQUIRES< IsJustConvertible<const AnySeq, T>::value > = true>   T    get () const { return get_seq(); }
   template<typename T, REQUIRES< std::is_same<const AnyRec*, T>::value > = true>       T    get () const { return &get_rec(); }
-  template<typename T, REQUIRES< std::is_same<const AnyRec&, T>::value > = true>       T    get () const { return get_rec(); }
-  template<typename T, REQUIRES< IsConvertible<const AnyRec, T>::value > = true>       T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsDecayedSame<const AnyRec&, T>::value > = true>      T    get () const { return get_rec(); }
+  template<typename T, REQUIRES< IsJustConvertible<const AnyRec, T>::value > = true>   T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
@@ -923,8 +921,8 @@ public:
   template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T *v) { return set_seq (*v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T &v) { return set_rec (v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T *v) { return set_rec (*v); }
-  template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_ibase (&v); }
-  template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { return set_ibase (v.get()); }
+  template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_handle (v.__handle__()); }
+  template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { auto p = v.get(); set_handle (p ? p->__handle__() : RemoteHandle()); }
   template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
   template<typename T, REQUIRES< ToAnyConvertible<T>::value > = true>                  void set (const T &v) { return set_any (&v); }
   // convenience

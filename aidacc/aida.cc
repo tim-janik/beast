@@ -907,7 +907,6 @@ enum_info<TypeKind> ()
     { SEQUENCE,         "SEQUENCE",             NULL, NULL },
     { RECORD,           "RECORD",               NULL, NULL },
     { INSTANCE,         "INSTANCE",             NULL, NULL },
-    { REMOTE,           "REMOTE",               NULL, NULL },
     { TRANSITION,       "TRANSITION",           NULL, NULL },
     { ANY,              "ANY",                  NULL, NULL },
   };
@@ -1095,8 +1094,7 @@ Any::operator= (const Any &clone)
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
     case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
-    case INSTANCE:      new (&u_.ibase()) ImplicitBaseP (clone.u_.ibase());                          break;
-    case REMOTE:        new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
+    case INSTANCE:      new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
     case ENUM:
       if (clone.u_.enum_typename)
         {
@@ -1121,8 +1119,7 @@ swap_any_unions (TypeKind kind, U &u, U &v)
     case STRING:        std::swap (u.vstring(), v.vstring()); break;
     case SEQUENCE:      std::swap (u.vanys(), v.vanys());     break;
     case RECORD:        std::swap (u.vfields(), v.vfields()); break;
-    case INSTANCE:      std::swap (u.ibase(), v.ibase());     break;
-    case REMOTE:        std::swap (u.rhandle(), v.rhandle()); break;
+    case INSTANCE:      std::swap (u.rhandle(), v.rhandle()); break;
     case ANY:           std::swap (u.vany, v.vany);           break;
     default:            AIDA_ASSERT_RETURN_UNREACHED();       break;
     }
@@ -1159,8 +1156,7 @@ Any::clear()
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnySeq();                   break;
     case RECORD:        u_.vfields().~AnyRec();                 break;
-    case INSTANCE:      u_.ibase().~ImplicitBaseP();            break;
-    case REMOTE:        u_.rhandle().~ARemoteHandle();          break;
+    case INSTANCE:      u_.rhandle().~ARemoteHandle();          break;
     case TRANSITION: ;
     default: ;
     }
@@ -1186,8 +1182,7 @@ Any::rekind (TypeKind _kind)
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
     case RECORD:   new (&u_.vfields()) AnyRec();        break;
-    case INSTANCE: new (&u_.ibase()) ImplicitBaseP();   break;
-    case REMOTE:   new (&u_.rhandle()) ARemoteHandle(); break;
+    case INSTANCE: new (&u_.rhandle()) ARemoteHandle(); break;
     default:                                            break;
     }
 }
@@ -1294,8 +1289,7 @@ Any::to_string() const
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
-    case INSTANCE:   s += posix_sprintf ("((ImplicitBase*) %p)", u_.ibase().get());                              break;
-    case REMOTE:     s += posix_sprintf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
+    case INSTANCE:   s += posix_sprintf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
     case TRANSITION: s += posix_sprintf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
     case ANY:
       s += "(Any (";
@@ -1340,9 +1334,7 @@ Any::operator== (const Any &clone) const
       else
         return *u_.vany == *clone.u_.vany;
     case INSTANCE:
-      return u_.ibase().get() == clone.u_.ibase().get();
-    case REMOTE:
-      return u_.rhandle().__aida_orbid__() == clone.u_.rhandle().__aida_orbid__();
+      return u_.rhandle().__iface_ptr__() == clone.u_.rhandle().__iface_ptr__();
     default:
       AIDA_ASSERT_RETURN_UNREACHED (false);
       return false;
@@ -1366,8 +1358,7 @@ Any::get_bool () const
     case STRING:        return !u_.vstring().empty();
     case SEQUENCE:      return !u_.vanys().empty();
     case RECORD:        return !u_.vfields().empty();
-    case INSTANCE:      return u_.ibase().get() != NULL;
-    case REMOTE:        return u_.rhandle().__aida_orbid__() != 0;
+    case INSTANCE:      return u_.rhandle().__iface_ptr__() != NULL;
     default: ;
     }
   return 0;
@@ -1507,21 +1498,11 @@ ImplicitBaseP
 Any::get_ibasep () const
 {
   if (kind() == INSTANCE)
-    return u_.ibase();
-  return ImplicitBaseP();
-}
-
-void
-Any::set_ibase (ImplicitBase *ibase)
-{
-  ensure (INSTANCE);
-  if (u_.ibase().get() != ibase)
     {
-      ImplicitBaseP next;
-      if (ibase)
-        next = ibase->shared_from_this(); // beware of internal references, copy before freeing
-      std::swap (u_.ibase(), next);
+      RemoteHandle rh = u_.rhandle();
+      return rh.__iface_ptr__();
     }
+  return ImplicitBaseP();
 }
 
 /// Use Any.get<DerivedType>() instead.
@@ -1529,7 +1510,7 @@ RemoteHandle
 Any::get_untyped_remote_handle () const
 {
   RemoteHandle rh;
-  if (kind() == REMOTE)
+  if (kind() == INSTANCE)
     rh = u_.rhandle();
   return rh;
 }
@@ -1537,7 +1518,7 @@ Any::get_untyped_remote_handle () const
 void
 Any::set_handle (const RemoteHandle &handle)
 {
-  ensure (REMOTE);
+  ensure (INSTANCE);
   u_.rhandle() = handle;
 }
 
@@ -1559,120 +1540,6 @@ Any::set_any (const Any *value)
       Any *old = u_.vany;
       u_.vany = value && value->kind() != UNTYPED ? new Any (*value) : NULL;
       delete old;
-    }
-}
-
-void
-Any::to_transition (BaseConnection &base_connection)
-{
-  switch (kind())
-    {
-    case SEQUENCE:
-      for (size_t i = 0; i < u_.vanys().size(); i++)
-        u_.vanys()[i].to_transition (base_connection);
-      break;
-    case RECORD:
-      for (size_t i = 0; i < u_.vfields().size(); i++)
-        u_.vfields()[i].to_transition (base_connection);
-      break;
-    case ANY:
-      if (u_.vany)
-        u_.vany->to_transition (base_connection);
-      break;
-    case INSTANCE:
-      if (u_.ibase().get())
-        {
-          ServerConnection *server_connection = dynamic_cast<ServerConnection*> (&base_connection);
-          assert (server_connection);
-          ProtoMsg *pm = ProtoMsg::_new (1);
-          server_connection->add_interface (*pm, u_.ibase());
-          Aida::ProtoReader pmr (*pm);
-          rekind (TRANSITION);
-          u_.vint64 = pmr.pop_orbid();
-          delete pm;
-        }
-      else
-        {
-          rekind (TRANSITION);
-          u_.vint64 = 0;
-        }
-      break;
-    case REMOTE:
-      if (u_.rhandle().__aida_orbid__())
-        {
-          ClientConnection *client_connection = dynamic_cast<ClientConnection*> (&base_connection);
-          assert (client_connection);
-          ProtoMsg *pm = ProtoMsg::_new (1);
-          client_connection->add_handle (*pm, u_.rhandle());
-          Aida::ProtoReader pmr (*pm);
-          rekind (TRANSITION);
-          u_.vint64 = pmr.pop_orbid();
-          delete pm;
-        }
-      else
-        {
-          rekind (TRANSITION);
-          u_.vint64 = 0;
-        }
-      break;
-    case UNTYPED: case BOOL: case ENUM: case INT32: case INT64: case FLOAT64: case STRING:
-      break;            // leave plain values alone
-    case TRANSITION: ;  // conversion must occour only once
-    default:
-      AIDA_ASSERT_RETURN_UNREACHED();
-    }
-}
-
-void
-Any::from_transition (BaseConnection &base_connection)
-{
-  switch (kind())
-    {
-      ServerConnection *server_connection;
-      ClientConnection *client_connection;
-    case SEQUENCE:
-      for (size_t i = 0; i < u_.vanys().size(); i++)
-        u_.vanys()[i].from_transition (base_connection);
-      break;
-    case RECORD:
-      for (size_t i = 0; i < u_.vfields().size(); i++)
-        u_.vfields()[i].from_transition (base_connection);
-      break;
-    case ANY:
-      if (u_.vany)
-        u_.vany->from_transition (base_connection);
-      break;
-    case TRANSITION:
-      server_connection = dynamic_cast<ServerConnection*> (&base_connection);
-      client_connection = dynamic_cast<ClientConnection*> (&base_connection);
-      assert ((client_connection != NULL) ^ (server_connection != NULL));
-      if (server_connection)
-        {
-          ProtoMsg *pm = ProtoMsg::_new (1);
-          pm->add_orbid (u_.vint64);
-          Aida::ProtoReader pmr (*pm);
-          ImplicitBaseP ibasep = server_connection->pop_interface (pmr);
-          delete pm;
-          rekind (INSTANCE);
-          std::swap (u_.ibase(), ibasep);
-        }
-      else // client_connection
-        {
-          ProtoMsg *pm = ProtoMsg::_new (1);
-          pm->add_orbid (u_.vint64);
-          Aida::ProtoReader pmr (*pm);
-          ARemoteHandle next_handle;
-          client_connection->pop_handle (pmr, next_handle);
-          delete pm;
-          rekind (REMOTE);
-          u_.rhandle() = next_handle;
-        }
-      break;
-    case UNTYPED: case BOOL: case ENUM: case INT32: case INT64: case FLOAT64: case STRING:
-      break;                            // leave plain values alone
-    case INSTANCE: case REMOTE: ;       // conversion must occour only once
-    default:
-      AIDA_ASSERT_RETURN_UNREACHED();
     }
 }
 
@@ -1926,7 +1793,7 @@ ProtoMsg::add_any (const Any &vany, BaseConnection &bcon)
 {
   ProtoUnion &u = addu (ANY);
   u.vany = new Any (vany);
-  u.vany->to_transition (bcon);
+  // BROKEN
 }
 
 Any
@@ -1934,7 +1801,7 @@ ProtoReader::pop_any (BaseConnection &bcon)
 {
   ProtoUnion &u = fb_popu (ANY);
   Any vany = *u.vany;
-  vany.from_transition (bcon);
+  // BROKEN
   return vany;
 }
 

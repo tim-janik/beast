@@ -312,7 +312,7 @@ any_from_visitable (Visitable &visitable)
 template<class Visitable> void
 any_to_visitable (const Any &any, Visitable &visitable)
 {
-  const Any::AnyRec &fields = any.get<const Any::AnyRec>();
+  const Any::AnyRec &fields = any.get<const Any::AnyRec&>();
   FromAnyFieldsVisitor visitor (fields);
   static_assert (Has__accept__<Visitable, FromAnyFieldsVisitor>::value, "Visitable provies __accept__");
   visitable.__accept__ (visitor);

@@ -68,7 +68,7 @@ $>/doc/%: %.md								| $>/doc/
 	$Q mv $@.tmp $@
 $>/doc/%.html: %.md							| $>/doc/
 	$(QECHO) MD2HTML $@
-	$Q $(PANDOC) $(docs/markdown-flavour) -s - p $(docs/html_flags) -t html5 $< -o $@.tmp
+	$Q $(PANDOC) $(docs/markdown-flavour) -s -p $(docs/html_flags) -t html5 $< -o $@.tmp
 	$Q mv $@.tmp $@
 
 # == .revd.md (INTERMEDIATE) ==
