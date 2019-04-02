@@ -240,10 +240,13 @@ string_to_int (const String &string, size_t *consumed, uint base)
   const char *const start = string.c_str(), *p = start;
   while (*p == ' ' || *p == '\n' || *p == '\t' || *p == '\r')
     p++;
+  const bool negate = p[0] == '-';
+  if (negate)
+    p++;
   const bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
   const char *const number = hex ? p + 2 : p;
   char *endptr = NULL;
-  const int64 result = strtoll (number, &endptr, hex ? 16 : base);
+  const uint64_t result = strtoull (number, &endptr, hex ? 16 : base);
   if (consumed)
     {
       if (!endptr || endptr <= number)
@@ -251,7 +254,9 @@ string_to_int (const String &string, size_t *consumed, uint base)
       else
         *consumed = endptr - start;
     }
-  return result;
+  if (result < 9223372036854775808ull)
+    return negate ? -int64_t (result) : result;
+  return negate ? -9223372036854775807ll - 1 : 9223372036854775808ull - 1;
 }
 
 /// Parse a string into a 64bit unsigned integer, optionally specifying the expected number base.
