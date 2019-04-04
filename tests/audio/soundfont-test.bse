@@ -19,7 +19,7 @@
       (program 20))))
 (container-child "BseSong::Titel"
   (bpm 120)
-  (musical_tuning OD_12_TET)
+  (musical_tuning Bse.MusicalTuning.OD_12_TET)
   (auto_activate 1)
   (denominator 4)
   (numerator 4)
