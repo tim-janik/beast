@@ -504,8 +504,6 @@ class Generator:
     precls, heritage, cl, ddc = self.interface_class_inheritance (type_info)
     s += ' : ' + heritage + ' %s' % (', ' + heritage + ' ').join (precls) + '\n'
     s += '{\n'
-    if self.gen_mode == G4STUB:
-      s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
     # constructors
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:

@@ -186,7 +186,6 @@ namespace MandatoryNamespace {
 
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class FirstInterfaceIface;
 protected:
 public:
   virtual /*dtor*/             ~FirstInterfaceHandle () override;
@@ -595,7 +594,6 @@ namespace InterfaceTests {
 
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class UIWidgetAreaIface;
 protected:
 public:
   virtual /*dtor*/             ~UIWidgetAreaHandle () override;
@@ -638,7 +636,6 @@ typedef ::Aida::ScopedHandle<UIWidgetAreaH> UIWidgetAreaS;
 
 class ParentHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class ParentIface;
 protected:
 public:
   virtual /*dtor*/             ~ParentHandle () override;
@@ -656,7 +653,6 @@ typedef ::Aida::ScopedHandle<ParentH> ParentS;
 
 class ChildHandle : public virtual ParentHandle
 {
-  friend                        class ChildIface;
 protected:
 public:
   virtual /*dtor*/             ~ChildHandle () override;
@@ -676,7 +672,6 @@ typedef ::Aida::ScopedHandle<ChildH> ChildS;
 
 class DescendantHandle : public virtual ChildHandle
 {
-  friend                        class DescendantIface;
 protected:
 public:
   virtual /*dtor*/             ~DescendantHandle () override;
@@ -696,7 +691,6 @@ typedef ::Aida::ScopedHandle<DescendantH> DescendantS;
 
 class GrandChildHandle : public virtual DescendantHandle
 {
-  friend                        class GrandChildIface;
 protected:
 public:
   virtual /*dtor*/             ~GrandChildHandle () override;
@@ -756,7 +750,6 @@ public:
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class QuickIfaceIface;
 protected:
 public:
   virtual /*dtor*/             ~QuickIfaceHandle () override;
@@ -775,7 +768,6 @@ typedef ::Aida::ScopedHandle<QuickIfaceH> QuickIfaceS;
 
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class MethodTestInterfaceIface;
 protected:
 public:
   virtual /*dtor*/             ~MethodTestInterfaceHandle () override;
@@ -816,7 +808,6 @@ typedef ::Aida::ScopedHandle<MethodTestInterfaceH> MethodTestInterfaceS;
 
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class SignalTestInterfaceIface;
 protected:
 public:
   virtual /*dtor*/             ~SignalTestInterfaceHandle () override;
@@ -834,7 +825,6 @@ typedef ::Aida::ScopedHandle<SignalTestInterfaceH> SignalTestInterfaceS;
 
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
-  friend                        class ChildInheritingSignalsIface;
 protected:
 public:
   virtual /*dtor*/             ~ChildInheritingSignalsHandle () override;
@@ -854,7 +844,6 @@ typedef ::Aida::ScopedHandle<ChildInheritingSignalsH> ChildInheritingSignalsS;
 
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
-  friend                        class AnotherChildIface;
 protected:
 public:
   virtual /*dtor*/             ~AnotherChildHandle () override;
@@ -874,7 +863,6 @@ typedef ::Aida::ScopedHandle<AnotherChildH> AnotherChildS;
 
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class PropertyTesterIface;
 protected:
 public:
   virtual /*dtor*/             ~PropertyTesterHandle () override;
@@ -929,7 +917,6 @@ namespace RapicornAidaTest {
 
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
-  friend                        class UseIncludesIface;
 protected:
 public:
   virtual /*dtor*/             ~UseIncludesHandle () override;
@@ -949,7 +936,6 @@ typedef ::Aida::ScopedHandle<UseIncludesH> UseIncludesS;
 
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class ButtonAreaIface;
 protected:
 public:
   virtual /*dtor*/             ~ButtonAreaHandle () override;
@@ -982,7 +968,6 @@ class PureMethodsHandle;
 
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class PureMethodsIface;
 protected:
 public:
   virtual /*dtor*/             ~PureMethodsHandle () override;
@@ -1004,7 +989,6 @@ namespace Other {
 
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class NameTestsIface;
 protected:
 public:
   virtual /*dtor*/             ~NameTestsHandle () override;
@@ -1028,7 +1012,6 @@ namespace BseTest {
 
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class CompressorIface;
 protected:
 public:
   virtual /*dtor*/             ~CompressorHandle () override;
@@ -1083,7 +1066,6 @@ public:
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
-  friend                        class SoundModuleIface;
 protected:
 public:
   virtual /*dtor*/             ~SoundModuleHandle () override;
