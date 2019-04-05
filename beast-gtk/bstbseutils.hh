@@ -45,7 +45,7 @@ Bse::ItemSeq    bst_item_seq_from_it3m_seq (BseIt3mSeq *i3s);
 
 
 namespace Bse {
-const char*     error_blurb (Bse::Error error_value); ///< Retrieve the description of an error value
+std::string error_blurb (Bse::Error error_value); ///< Retrieve the description of an error value
 } // Bse
 
 #endif /* __BST_BSE_UTILS_H__ */

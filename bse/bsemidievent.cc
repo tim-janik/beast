@@ -49,8 +49,7 @@ bse_midi_signal_default (Bse::MidiSignal type)
 const char*
 bse_midi_signal_name (Bse::MidiSignal signal)
 {
-  const Aida::EnumValue ev = Aida::enum_info<Bse::MidiSignal>().find_value (signal);
-  return ev.blurb;
+  return Aida::Introspection::legacy_enumerator ("Bse.MidiSignal", int64_t (signal));
 }
 
 

@@ -53,8 +53,7 @@ protected:
 public:
   FirstInterfaceHandle                  __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace::FirstInterface"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace.FirstInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -86,8 +85,7 @@ protected:
 public:
   UIWidgetAreaHandle                    __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::UIWidgetArea"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.UIWidgetArea"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -136,8 +134,7 @@ protected:
 public:
   ParentHandle                          __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Parent"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Parent"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -161,8 +158,7 @@ protected:
 public:
   ChildHandle                           __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Child"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Child"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -188,8 +184,7 @@ protected:
 public:
   DescendantHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::Descendant"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Descendant"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -215,8 +210,7 @@ protected:
 public:
   GrandChildHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::GrandChild"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.GrandChild"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -242,8 +236,7 @@ protected:
 public:
   QuickIfaceHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::QuickIface"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.QuickIface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -268,8 +261,7 @@ protected:
 public:
   MethodTestInterfaceHandle             __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::MethodTestInterface"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.MethodTestInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -316,8 +308,7 @@ protected:
 public:
   SignalTestInterfaceHandle             __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::SignalTestInterface"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.SignalTestInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -341,8 +332,7 @@ protected:
 public:
   ChildInheritingSignalsHandle          __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::ChildInheritingSignals"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.ChildInheritingSignals"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -368,8 +358,7 @@ protected:
 public:
   AnotherChildHandle                    __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::AnotherChild"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.AnotherChild"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -395,8 +384,7 @@ protected:
 public:
   PropertyTesterHandle                  __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests::PropertyTester"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.PropertyTester"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -457,8 +445,7 @@ protected:
 public:
   UseIncludesHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::UseIncludes"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.UseIncludes"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -484,8 +471,7 @@ protected:
 public:
   ButtonAreaHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::ButtonArea"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.ButtonArea"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -523,8 +509,7 @@ protected:
 public:
   PureMethodsHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest::PureMethods"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.PureMethods"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -552,8 +537,7 @@ protected:
 public:
   NameTestsHandle                       __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "Other::NameTests"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "Other.NameTests"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -583,8 +567,7 @@ protected:
 public:
   CompressorHandle                      __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "BseTest::Compressor"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "BseTest.Compressor"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -615,8 +598,7 @@ protected:
 public:
   SoundModuleHandle                     __handle__         ();
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "BseTest::SoundModule"; }
-  virtual const Aida::StringVector&     __aida_aux_data__  () const override;
+  virtual std::string                   __typename__       () const override	{ return "BseTest.SoundModule"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::vector<std::string>      __aida_dir__       () const override;
   virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
@@ -744,19 +726,6 @@ FirstInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x22113f623903ac14ULL, 0x3fe8e50c1a9a78d2ULL)); // FirstInterface
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_FirstInterface_ = {
-  "MandatoryNamespace::FirstInterface\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=MandatoryNamespace::FirstInterface\0"
-};
-const Aida::StringVector&
-FirstInterfaceIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::FirstInterface"));
-  return __d_;
-}
 bool
 FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -828,24 +797,6 @@ UIWidgetAreaIface::__aida_typelist__ () const
   Aida::TypeHashList thl;
   thl.push_back (Aida::TypeHash (0x11db82aaba1ee248ULL, 0xd2359653ff87e972ULL)); // UIWidgetArea
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_UIWidgetArea_ = {
-  "InterfaceTests::UIWidgetArea\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::UIWidgetArea\0"
-  "dummy.type=BOOL\0"
-  "on_click.type=STRING\0"
-  "on_click.label=On CLick\0"
-  "on_click.blurb=Command on button1 click\0"
-  "on_click.hints=rw\0"
-};
-const Aida::StringVector&
-UIWidgetAreaIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::UIWidgetArea"));
-  return __d_;
 }
 bool
 UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -936,19 +887,6 @@ ParentIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Parent_ = {
-  "InterfaceTests::Parent\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::Parent\0"
-};
-const Aida::StringVector&
-ParentIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Parent"));
-  return __d_;
-}
 bool
 ParentIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1018,20 +956,6 @@ ChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Child_ = {
-  "InterfaceTests::Child\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::Child\0"
-};
-const Aida::StringVector&
-ChildIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Child"),
-                                 this->ParentIface::__aida_aux_data__());
-  return __d_;
 }
 bool
 ChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1108,20 +1032,6 @@ DescendantIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
   thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_Descendant_ = {
-  "InterfaceTests::Descendant\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::Descendant\0"
-};
-const Aida::StringVector&
-DescendantIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::Descendant"),
-                                 this->ChildIface::__aida_aux_data__());
-  return __d_;
 }
 bool
 DescendantIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1200,20 +1110,6 @@ GrandChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL)); // Descendant
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_GrandChild_ = {
-  "InterfaceTests::GrandChild\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::GrandChild\0"
-};
-const Aida::StringVector&
-GrandChildIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::GrandChild"),
-                                 this->DescendantIface::__aida_aux_data__());
-  return __d_;
-}
 bool
 GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1288,19 +1184,6 @@ QuickIfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x4524ee119d4e454cULL, 0xbeb61f7c3cc04f7dULL)); // QuickIface
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickIface_ = {
-  "InterfaceTests::QuickIface\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::QuickIface\0"
-};
-const Aida::StringVector&
-QuickIfaceIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::QuickIface"));
-  return __d_;
-}
 bool
 QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1369,19 +1252,6 @@ MethodTestInterfaceIface::__aida_typelist__ () const
   Aida::TypeHashList thl;
   thl.push_back (Aida::TypeHash (0x6bf684458ac5f01aULL, 0xf64c02611b807180ULL)); // MethodTestInterface
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_MethodTestInterface_ = {
-  "InterfaceTests::MethodTestInterface\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::MethodTestInterface\0"
-};
-const Aida::StringVector&
-MethodTestInterfaceIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::MethodTestInterface"));
-  return __d_;
 }
 bool
 MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1452,19 +1322,6 @@ SignalTestInterfaceIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_SignalTestInterface_ = {
-  "InterfaceTests::SignalTestInterface\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::SignalTestInterface\0"
-};
-const Aida::StringVector&
-SignalTestInterfaceIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::SignalTestInterface"));
-  return __d_;
-}
 bool
 SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1534,20 +1391,6 @@ ChildInheritingSignalsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf20ff30241b5b694ULL, 0x9f544b2626e183f0ULL)); // ChildInheritingSignals
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_ChildInheritingSignals_ = {
-  "InterfaceTests::ChildInheritingSignals\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::ChildInheritingSignals\0"
-};
-const Aida::StringVector&
-ChildInheritingSignalsIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::ChildInheritingSignals"),
-                                 this->SignalTestInterfaceIface::__aida_aux_data__());
-  return __d_;
 }
 bool
 ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1624,20 +1467,6 @@ AnotherChildIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_AnotherChild_ = {
-  "InterfaceTests::AnotherChild\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::AnotherChild\0"
-};
-const Aida::StringVector&
-AnotherChildIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::AnotherChild"),
-                                 this->SignalTestInterfaceIface::__aida_aux_data__());
-  return __d_;
-}
 bool
 AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1712,35 +1541,6 @@ PropertyTesterIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xa37ab462c55a3b3cULL, 0x4f3fd1c9ad9689fbULL)); // PropertyTester
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_PropertyTester_ = {
-  "InterfaceTests::PropertyTester\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=InterfaceTests::PropertyTester\0"
-  "bool_prop.type=BOOL\0"
-  "int32_prop.type=INT32\0"
-  "int64_prop.type=INT64\0"
-  "float64_prop.type=FLOAT64\0"
-  "string_prop.type=STRING\0"
-  "enum_prop.type=ENUM\0"
-  "enum_prop.typename=InterfaceTests::QuickEnum\0"
-  "record_prop.type=RECORD\0"
-  "record_prop.typename=InterfaceTests::QuickRecord\0"
-  "sequence_prop.type=SEQUENCE\0"
-  "sequence_prop.typename=InterfaceTests::QuickSequence\0"
-  "interface_prop.type=INTERFACE\0"
-  "interface_prop.typename=InterfaceTests::GrandChild\0"
-  "self_prop.type=INTERFACE\0"
-  "self_prop.typename=InterfaceTests::PropertyTester\0"
-  "any_prop.type=ANY\0"
-};
-const Aida::StringVector&
-PropertyTesterIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("InterfaceTests::PropertyTester"));
-  return __d_;
-}
 bool
 PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1771,52 +1571,27 @@ PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorP
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,std::string> ("string_prop", *this, &PropertyTesterIface::string_prop, &PropertyTesterIface::string_prop, __aux__string_prop)))
     return true;
   const char *const __aux__enum_prop =
-    "type=ENUM\0"
-    "typename=InterfaceTests::QuickEnum\0"
-    "ZERO.value=0\0";
+    "type=InterfaceTests.QuickEnum\0";
   if ((__all || __n == "enum_prop") &&
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,QuickEnum> ("enum_prop", *this, &PropertyTesterIface::enum_prop, &PropertyTesterIface::enum_prop, __aux__enum_prop)))
     return true;
   const char *const __aux__record_prop =
-    "type=RECORD\0"
-    "typename=InterfaceTests::QuickRecord\0"
-    "int1.type=INT32\0"
-    "int2.type=INT32\0";
+    "type=InterfaceTests.QuickRecord\0";
   if ((__all || __n == "record_prop") &&
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,QuickRecord> ("record_prop", *this, &PropertyTesterIface::record_prop, &PropertyTesterIface::record_prop, __aux__record_prop)))
     return true;
   const char *const __aux__sequence_prop =
-    "type=SEQUENCE\0"
-    "typename=InterfaceTests::QuickSequence\0"
-    "somefloat.type=FLOAT64\0";
+    "type=InterfaceTests.QuickSequence\0";
   if ((__all || __n == "sequence_prop") &&
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,QuickSequence> ("sequence_prop", *this, &PropertyTesterIface::sequence_prop, &PropertyTesterIface::sequence_prop, __aux__sequence_prop)))
     return true;
   const char *const __aux__interface_prop =
-    "type=INTERFACE\0"
-    "typename=InterfaceTests::GrandChild\0";
+    "type=InterfaceTests.GrandChild\0";
   if ((__all || __n == "interface_prop") &&
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,GrandChildIface> ("interface_prop", *this, &PropertyTesterIface::interface_prop, &PropertyTesterIface::interface_prop, __aux__interface_prop)))
     return true;
   const char *const __aux__self_prop =
-    "type=INTERFACE\0"
-    "typename=InterfaceTests::PropertyTester\0"
-    "bool_prop.type=BOOL\0"
-    "int32_prop.type=INT32\0"
-    "int64_prop.type=INT64\0"
-    "float64_prop.type=FLOAT64\0"
-    "string_prop.type=STRING\0"
-    "enum_prop.type=ENUM\0"
-    "enum_prop.typename=InterfaceTests::QuickEnum\0"
-    "record_prop.type=RECORD\0"
-    "record_prop.typename=InterfaceTests::QuickRecord\0"
-    "sequence_prop.type=SEQUENCE\0"
-    "sequence_prop.typename=InterfaceTests::QuickSequence\0"
-    "interface_prop.type=INTERFACE\0"
-    "interface_prop.typename=InterfaceTests::GrandChild\0"
-    "self_prop.type=INTERFACE\0"
-    "self_prop.typename=InterfaceTests::PropertyTester\0"
-    "any_prop.type=ANY\0";
+    "type=InterfaceTests.PropertyTester\0";
   if ((__all || __n == "self_prop") &&
       __p (Aida::PropertyAccessorImpl<PropertyTesterIface,PropertyTesterIface> ("self_prop", *this, &PropertyTesterIface::self_prop, &PropertyTesterIface::self_prop, __aux__self_prop)))
     return true;
@@ -1928,20 +1703,6 @@ UseIncludesIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xf2af9bb31127c663ULL, 0xa5e510409f8552a5ULL)); // SomeInterface
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_UseIncludes_ = {
-  "RapicornAidaTest::UseIncludes\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=RapicornAidaTest::UseIncludes\0"
-};
-const Aida::StringVector&
-UseIncludesIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::UseIncludes"),
-                                 this->IncludeCheck::SomeInterfaceIface::__aida_aux_data__());
-  return __d_;
-}
 bool
 UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2016,24 +1777,6 @@ ButtonAreaIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xec371b296fa57436ULL, 0x92e4310e386fc92eULL)); // ButtonArea
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ButtonArea_ = {
-  "RapicornAidaTest::ButtonArea\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=RapicornAidaTest::ButtonArea\0"
-  "on_click.type=STRING\0"
-  "on_click2.type=STRING\0"
-  "on_click3.type=STRING\0"
-  "click_type.type=ENUM\0"
-  "click_type.typename=RapicornAidaTest::ClickType\0"
-};
-const Aida::StringVector&
-ButtonAreaIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::ButtonArea"));
-  return __d_;
-}
 bool
 ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2054,13 +1797,7 @@ ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred 
       __p (Aida::PropertyAccessorImpl<ButtonAreaIface,std::string> ("on_click3", *this, &ButtonAreaIface::on_click3, &ButtonAreaIface::on_click3, __aux__on_click3)))
     return true;
   const char *const __aux__click_type =
-    "type=ENUM\0"
-    "typename=RapicornAidaTest::ClickType\0"
-    "CLICK_ON_PRESS.value=1\0"
-    "CLICK_ON_RELEASE.value=2\0"
-    "CLICK_SLOW_REPEAT.value=3\0"
-    "CLICK_FAST_REPEAT.value=4\0"
-    "CLICK_KEY_REPEAT.value=5\0";
+    "type=RapicornAidaTest.ClickType\0";
   if ((__all || __n == "click_type") &&
       __p (Aida::PropertyAccessorImpl<ButtonAreaIface,ClickType> ("click_type", *this, &ButtonAreaIface::click_type, &ButtonAreaIface::click_type, __aux__click_type)))
     return true;
@@ -2142,19 +1879,6 @@ PureMethodsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0xddc2a514d04d3af5ULL, 0xc0046740434c0486ULL)); // PureMethods
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_PureMethods_ = {
-  "RapicornAidaTest::PureMethods\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=RapicornAidaTest::PureMethods\0"
-};
-const Aida::StringVector&
-PureMethodsIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("RapicornAidaTest::PureMethods"));
-  return __d_;
-}
 bool
 PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2227,19 +1951,6 @@ NameTestsIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x542d40cd7d8fcd40ULL, 0x8c1782df29c9b936ULL)); // NameTests
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__Other_NameTests_ = {
-  "Other::NameTests\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=Other::NameTests\0"
-};
-const Aida::StringVector&
-NameTestsIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("Other::NameTests"));
-  return __d_;
-}
 bool
 NameTestsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2311,27 +2022,6 @@ CompressorIface::__aida_typelist__ () const
   Aida::TypeHashList thl;
   thl.push_back (Aida::TypeHash (0x42057a05d51182dfULL, 0x6a0d69cda274433eULL)); // Compressor
   return thl;
-}
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__BseTest_Compressor_ = {
-  "BseTest::Compressor\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=BseTest::Compressor\0"
-  "threshold.type=FLOAT64\0"
-  "threshold.hints=w\0"
-  "threshold.default=0\0"
-  "threshold.group=Compatibility Settings\0"
-  "ratio.type=FLOAT64\0"
-  "ratio.hints=w\0"
-  "ratio.default=0\0"
-  "ratio.group=Compatibility Settings\0"
-};
-const Aida::StringVector&
-CompressorIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::Compressor"));
-  return __d_;
 }
 bool
 CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -2425,19 +2115,6 @@ SoundModuleIface::__aida_typelist__ () const
   thl.push_back (Aida::TypeHash (0x06447b38b51e0198ULL, 0x848669199cc311deULL)); // SoundModule
   return thl;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__BseTest_SoundModule_ = {
-  "BseTest::SoundModule\0"
-  "INTERFACE\0"
-  "type=INTERFACE\0"
-  "typename=BseTest::SoundModule\0"
-};
-const Aida::StringVector&
-SoundModuleIface::__aida_aux_data__() const
-{
-  static const Aida::StringVector __d_ =
-    ::Aida::aux_vectors_combine (Aida::IntrospectionRegistry::lookup ("BseTest::SoundModule"));
-  return __d_;
-}
 bool
 SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2469,207 +2146,98 @@ SoundModuleIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 
 namespace Aida {
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1_ = {
-  "MandatoryNamespace::Enum1\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1_ = {
+  "typename=MandatoryNamespace.Enum1\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum1\0"
+  "enumerators=E1_A\0"
   "E1_A.value=1\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum1> ()
-{
-  static const EnumValue _aida_enumvalues_1001[] = {
-    { int64_t (MandatoryNamespace::Enum1::E1_A), "E1_A", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum1c_ = {
-  "MandatoryNamespace::Enum1c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1c_ = {
+  "typename=MandatoryNamespace.Enum1c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum1c\0"
+  "enumerators=E1C_A\0"
   "E1C_A.value=1\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum1c> ()
-{
-  static const EnumValue _aida_enumvalues_1002[] = {
-    { int64_t (MandatoryNamespace::Enum1c::E1C_A), "E1C_A", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2_ = {
-  "MandatoryNamespace::Enum2\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2_ = {
+  "typename=MandatoryNamespace.Enum2\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum2\0"
+  "enumerators=E2_A;E2_B\0"
   "E2_A.value=1\0"
   "E2_B.value=2\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum2> ()
-{
-  static const EnumValue _aida_enumvalues_1003[] = {
-    { int64_t (MandatoryNamespace::Enum2::E2_A), "E2_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum2::E2_B), "E2_B", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum2c_ = {
-  "MandatoryNamespace::Enum2c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2c_ = {
+  "typename=MandatoryNamespace.Enum2c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum2c\0"
+  "enumerators=E2C_A;E2C_B\0"
   "E2C_A.value=1\0"
   "E2C_B.value=2\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum2c> ()
-{
-  static const EnumValue _aida_enumvalues_1004[] = {
-    { int64_t (MandatoryNamespace::Enum2c::E2C_A), "E2C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum2c::E2C_B), "E2C_B", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3_ = {
-  "MandatoryNamespace::Enum3\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3_ = {
+  "typename=MandatoryNamespace.Enum3\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum3\0"
+  "enumerators=E3_A;E3_B;E3_C\0"
   "E3_A.value=1\0"
   "E3_B.value=2\0"
   "E3_C.value=3\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum3> ()
-{
-  static const EnumValue _aida_enumvalues_1005[] = {
-    { int64_t (MandatoryNamespace::Enum3::E3_A), "E3_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3::E3_B), "E3_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3::E3_C), "E3_C", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum3c_ = {
-  "MandatoryNamespace::Enum3c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3c_ = {
+  "typename=MandatoryNamespace.Enum3c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum3c\0"
+  "enumerators=E3C_A;E3C_B;E3C_C\0"
   "E3C_A.value=1\0"
   "E3C_B.value=2\0"
   "E3C_C.value=3\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum3c> ()
-{
-  static const EnumValue _aida_enumvalues_1006[] = {
-    { int64_t (MandatoryNamespace::Enum3c::E3C_A), "E3C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3c::E3C_B), "E3C_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3c::E3C_C), "E3C_C", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4a_ = {
-  "MandatoryNamespace::Enum4a\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4a_ = {
+  "typename=MandatoryNamespace.Enum4a\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4a\0"
+  "enumerators=E4A_A;E4A_B;E4A_C;E4A_D\0"
   "E4A_A.value=1\0"
   "E4A_B.value=2\0"
   "E4A_C.value=3\0"
   "E4A_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4a> ()
-{
-  static const EnumValue _aida_enumvalues_1007[] = {
-    { int64_t (MandatoryNamespace::Enum4a::E4A_A), "E4A_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_B), "E4A_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_C), "E4A_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_D), "E4A_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4b_ = {
-  "MandatoryNamespace::Enum4b\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4b_ = {
+  "typename=MandatoryNamespace.Enum4b\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4b\0"
+  "enumerators=E4B_A;E4B_B;E4B_C;E4B_D\0"
   "E4B_A.value=1\0"
   "E4B_B.value=2\0"
   "E4B_C.value=3\0"
   "E4B_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4b> ()
-{
-  static const EnumValue _aida_enumvalues_1008[] = {
-    { int64_t (MandatoryNamespace::Enum4b::E4B_A), "E4B_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_B), "E4B_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_C), "E4B_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_D), "E4B_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4c_ = {
-  "MandatoryNamespace::Enum4c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4c_ = {
+  "typename=MandatoryNamespace.Enum4c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4c\0"
+  "enumerators=E4C_A;E4C_B;E4C_C;E4C_D\0"
   "E4C_A.value=1\0"
   "E4C_B.value=2\0"
   "E4C_C.value=3\0"
   "E4C_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4c> ()
-{
-  static const EnumValue _aida_enumvalues_1009[] = {
-    { int64_t (MandatoryNamespace::Enum4c::E4C_A), "E4C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_B), "E4C_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_C), "E4C_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_D), "E4C_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_Enum4d_ = {
-  "MandatoryNamespace::Enum4d\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4d_ = {
+  "typename=MandatoryNamespace.Enum4d\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4d\0"
+  "enumerators=E4D_A;E4D_B;E4D_C;E4D_D\0"
   "E4D_A.value=1\0"
   "E4D_B.value=2\0"
   "E4D_C.value=3\0"
   "E4D_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4d> ()
-{
-  static const EnumValue _aida_enumvalues_1010[] = {
-    { int64_t (MandatoryNamespace::Enum4d::E4D_A), "E4D_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_B), "E4D_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_C), "E4D_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_D), "E4D_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespace_ExtensiveEnum_ = {
-  "MandatoryNamespace::ExtensiveEnum\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnum_ = {
+  "typename=MandatoryNamespace.ExtensiveEnum\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::ExtensiveEnum\0"
+  "enumerators=V1a;V1b;V2;V3;V4;V5;V6;V7;V8;V9;V10;V11;V12;V13;V14;V15;V16;V17;V18;V20;V21;V22;V23;V24;V25;V26;V27;V28;V30;V31;V32;V33;V34;V35;V36\0"
   "V1a.value=1\0"
   "V1b.value=1\0"
   "V2.value=2\0"
@@ -2729,100 +2297,35 @@ static const Aida::IntrospectionRegistry __aida_aux_data_srvt__MandatoryNamespac
   "V34.value=44\0"
   "V34.label=" "foo" "\0"
   "V34.blurb=" "foo" "\0"
-  "V35.value=42\0"
+  "V35.value=35\0"
   "V35.label=" "foo" "\0"
   "V36.value=42\0"
   "V36.label=" "foo" "\0"
   "V36.blurb=" "foo4" "\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::ExtensiveEnum> ()
-{
-  static const EnumValue _aida_enumvalues_1011[] = {
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V1a), "V1a", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V1b), "V1b", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V2), "V2", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V3), "V3", "v3", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V4), "V4", _("v4"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V5), "V5", "v5", "V5" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V6), "V6", _("v6"), "V6" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V7), "V7", "v7", _("V7") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V8), "V8", _("v8"), _("V8") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V9), "V9", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V10), "V10", "v10", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V11), "V11", _("v11"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V12), "V12", "v12", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V13), "V13", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V14), "V14", _("v14"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V15), "V15", "v15", "V15" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V16), "V16", _("v16"), "V16" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V17), "V17", "v17", _("V17") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V18), "V18", _("v18"), _("V18") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V20), "V20", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V21), "V21", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V22), "V22", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V23), "V23", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V24), "V24", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V25), "V25", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V26), "V26", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V27), "V27", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V28), "V28", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V30), "V30", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V31), "V31", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V32), "V32", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V33), "V33", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V34), "V34", "foo", "foo" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V35), "V35", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V36), "V36", "foo", "foo4" },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__InterfaceTests_QuickEnum_ = {
-  "InterfaceTests::QuickEnum\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickEnum_ = {
+  "typename=InterfaceTests.QuickEnum\0"
   "type=ENUM\0"
-  "typename=InterfaceTests::QuickEnum\0"
+  "enumerators=ZERO\0"
   "ZERO.value=0\0"
 };
-template<> const EnumInfo&
-enum_info<InterfaceTests::QuickEnum> ()
-{
-  static const EnumValue _aida_enumvalues_1012[] = {
-    { int64_t (InterfaceTests::QuickEnum::ZERO), "ZERO", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_ClickType_ = {
-  "RapicornAidaTest::ClickType\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_ClickType_ = {
+  "typename=RapicornAidaTest.ClickType\0"
   "type=ENUM\0"
-  "typename=RapicornAidaTest::ClickType\0"
+  "enumerators=CLICK_ON_PRESS;CLICK_ON_RELEASE;CLICK_SLOW_REPEAT;CLICK_FAST_REPEAT;CLICK_KEY_REPEAT\0"
   "CLICK_ON_PRESS.value=1\0"
   "CLICK_ON_RELEASE.value=2\0"
   "CLICK_SLOW_REPEAT.value=3\0"
   "CLICK_FAST_REPEAT.value=4\0"
   "CLICK_KEY_REPEAT.value=5\0"
 };
-template<> const EnumInfo&
-enum_info<RapicornAidaTest::ClickType> ()
-{
-  static const EnumValue _aida_enumvalues_1013[] = {
-    { int64_t (RapicornAidaTest::ClickType::CLICK_ON_PRESS), "CLICK_ON_PRESS", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_ON_RELEASE), "CLICK_ON_RELEASE", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_SLOW_REPEAT), "CLICK_SLOW_REPEAT", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_FAST_REPEAT), "CLICK_FAST_REPEAT", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_KEY_REPEAT), "CLICK_KEY_REPEAT", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_MathExpressions_ = {
-  "RapicornAidaTest::MathExpressions\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_MathExpressions_ = {
+  "typename=RapicornAidaTest.MathExpressions\0"
   "type=ENUM\0"
-  "typename=RapicornAidaTest::MathExpressions\0"
+  "enumerators=RESULT_2;RESULT_5;RESULT_8;RESULT_6;RESULT_7;RESULT_16;RESULT_3;RESULT_24;RESULT_13;RESULT_m2;RESULT_77;RESULT_511\0"
   "RESULT_2.value=2\0"
   "RESULT_5.value=5\0"
   "RESULT_8.value=8\0"
@@ -2836,25 +2339,6 @@ static const Aida::IntrospectionRegistry __aida_aux_data_srvt__RapicornAidaTest_
   "RESULT_77.value=77\0"
   "RESULT_511.value=511\0"
 };
-template<> const EnumInfo&
-enum_info<RapicornAidaTest::MathExpressions> ()
-{
-  static const EnumValue _aida_enumvalues_1014[] = {
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_2), "RESULT_2", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_5), "RESULT_5", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_8), "RESULT_8", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_6), "RESULT_6", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_7), "RESULT_7", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_16), "RESULT_16", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_3), "RESULT_3", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_24), "RESULT_24", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_13), "RESULT_13", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_m2), "RESULT_m2", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_77), "RESULT_77", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_511), "RESULT_511", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::MathExpressions", 0, _aida_enumvalues_1014);
-} // specialization
 } // Aida
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__
@@ -3884,9 +3368,6 @@ static_assert (Aida::TypeHash { AIDA_HASH___TYPENAME__ } ==
 static_assert (Aida::TypeHash { AIDA_HASH___AIDA_TYPELIST__ } ==
                Aida::TypeHash { 0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL },
                "Expecting hash defined as:\n#define AIDA_HASH___AIDA_TYPELIST__ 	0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_AUX_DATA__ } ==
-               Aida::TypeHash { 0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_AUX_DATA__ 	0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL");
 static_assert (Aida::TypeHash { AIDA_HASH___AIDA_DIR__ } ==
                Aida::TypeHash { 0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL },
                "Expecting hash defined as:\n#define AIDA_HASH___AIDA_DIR__ 	0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL");

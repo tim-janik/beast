@@ -199,7 +199,7 @@ bst_part_dialog_init (BstPartDialog *self)
       GtkWidget *rwidget = gxk_param_create_editor (param, "choice-button");
       gxk_radget_add (radget, "event-roll-control-area", rwidget);
       g_object_connect (radget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
-      sfi_value_set_choice (&param->value, Aida::enum_value_to_string<Bse::MidiSignal> (Bse::MidiSignal::VELOCITY).c_str());
+      sfi_value_set_choice (&param->value, Aida::enum_value_to_short_string (Bse::MidiSignal::VELOCITY).c_str());
       gxk_param_apply_value (param); /* update model, auto updates GUI */
     }
 

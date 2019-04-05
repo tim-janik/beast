@@ -41,8 +41,7 @@ bse_type_register_enums (void)
 const char*
 bse_error_blurb (Bse::Error error_value)
 {
-  const Aida::EnumValue ev = Aida::enum_info<Bse::Error>().find_value (error_value);
-  return ev.blurb;
+  return Aida::Introspection::legacy_enumerator ("Bse.Error", int64_t (error_value));
 }
 
 Bse::Error

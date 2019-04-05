@@ -157,7 +157,7 @@ identifier_char_canon (char c)
   else if (c >= 'a' && c <= 'z')
     return c;
   else
-    return '-';
+    return '_';
 }
 
 static inline constexpr bool
@@ -240,10 +240,13 @@ string_to_int (const String &string, size_t *consumed, uint base)
   const char *const start = string.c_str(), *p = start;
   while (*p == ' ' || *p == '\n' || *p == '\t' || *p == '\r')
     p++;
+  const bool negate = p[0] == '-';
+  if (negate)
+    p++;
   const bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
   const char *const number = hex ? p + 2 : p;
   char *endptr = NULL;
-  const int64 result = strtoll (number, &endptr, hex ? 16 : base);
+  const uint64_t result = strtoull (number, &endptr, hex ? 16 : base);
   if (consumed)
     {
       if (!endptr || endptr <= number)
@@ -251,7 +254,9 @@ string_to_int (const String &string, size_t *consumed, uint base)
       else
         *consumed = endptr - start;
     }
-  return result;
+  if (result < 9223372036854775808ull)
+    return negate ? -int64_t (result) : result;
+  return negate ? -9223372036854775807ll - 1 : 9223372036854775808ull - 1;
 }
 
 /// Parse a string into a 64bit unsigned integer, optionally specifying the expected number base.
@@ -572,25 +577,7 @@ EnumInfo::value_from_string (const String &valuestring) const
   return ev.ident ? ev.value : string_to_int (valuestring);
 }
 
-struct GlobalEnumInfoMap {
-  std::mutex                        mutex;
-  std::map<String, const EnumInfo*> map;
-};
-static DurableInstance<GlobalEnumInfoMap> global_enum_info;
-
-const EnumInfo&
-EnumInfo::cached_enum_info (const String &enum_name, bool isflags, uint32_t n_values, const EnumValue *values)
-{
-  std::lock_guard<std::mutex> locker (global_enum_info->mutex);
-  auto it = global_enum_info->map.find (enum_name);
-  if (it != global_enum_info->map.end())
-    return *it->second;
-  EnumInfo *einfo = new EnumInfo (enum_name, isflags, n_values, values);
-  global_enum_info->map[einfo->name()] = einfo;
-  return *einfo;
-}
-
-// == IntrospectionRegistry ==
+// == IntrospectionEntryMap ==
 struct IntrospectionEntry {
   const char  *type_name;
   const char  *fundamental;
@@ -608,201 +595,289 @@ aux_data_map()
   return aux_data_map;
 }
 
-void
-IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
+// == Introspection ==
+static inline bool
+is_identifier_char (int ch)
 {
-
-  const char *type_name = auxentry;                             // first element is the type name
-  AIDA_ASSERT_RETURN (strchr (type_name, '=') == NULL);
-  const char *fundamental = type_name + strlen (type_name) + 1; // second element is the fundamental type
-  AIDA_ASSERT_RETURN (strchr (fundamental, '=') == NULL);
-  AIDA_ASSERT_RETURN (fundamental < auxentry + length);
-  const char *entries = fundamental + strlen (fundamental) + 1;
-  AIDA_ASSERT_RETURN (entries < auxentry + length);
-  aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, entries, length - (entries - auxentry) };
+  if ((ch >= 'A' && ch <= 'Z') ||
+      (ch >= 'a' && ch <= 'z') ||
+      (ch >= '0' && ch <= '9') ||
+      ch == '_' || ch == '$')
+    return true;
+  return false;
 }
 
-String
-IntrospectionRegistry::lookup_type (const std::string &abstypename)
+static std::string
+normalize_typename (const std::string &string)
 {
-  auto it = aux_data_map().find (abstypename);
-  if (it != aux_data_map().end())
-    {
-      IntrospectionEntry &info = it->second;
-      return info.fundamental;
-    }
-  return "";
+  std::string normalized;
+  for (size_t i = 0; i < string.size() && string[i]; ++i)
+    if (is_identifier_char (string[i]))
+      normalized += string[i];
+    else if (normalized.size() && normalized[normalized.size() - 1] != '.')
+      normalized += '.';
+  return normalized;
 }
 
 const StringVector&
-IntrospectionRegistry::lookup (const std::string &abstypename, String *fundamental_type)
+find_normalized_type (const std::string &abstypename, std::string *kind)
 {
-  auto it = aux_data_map().find (abstypename);
+  const auto it = aux_data_map().find (abstypename);
   if (it != aux_data_map().end())
     {
       IntrospectionEntry &info = it->second;
       if (!info.entries.size())
         {
           static std::mutex mutex;
-          static std::lock_guard<std::mutex> locker (mutex);
+          std::lock_guard<std::mutex> locker (mutex);
           if (!info.entries.size())
             {
               StringVector entries = aux_vector_split (info.auxentries, info.length);
               std::swap (info.entries, entries);
             }
         }
-      if (fundamental_type)
-        *fundamental_type = info.fundamental;
+      if (kind)
+        *kind = info.fundamental;
       return info.entries;
     }
-  if (fundamental_type)
-    *fundamental_type = "";
+  if (kind)
+    *kind = "";
   static const StringVector empty;
   return empty;
 }
 
-/// Match 'MEMBER.property=VALUE' against @a kvpair, return <MEMBER,VALUE> if @a property matches.
-static inline std::pair<String, const char*>
-split_member_at_property (const String &kvpair, const char *property)
+/// Retrieve the `key=value` pair properties associated with `abstypename`, optionally extracting `kind`.
+const StringVector&
+Introspection::find_type (const std::string &abstypename, std::string *kind)
 {
-  const char *kv = kvpair.c_str();
+  const StringVector &kvlist = find_normalized_type (abstypename, kind);
+  if (kvlist.empty())
+    {
+      const String normalized = normalize_typename (abstypename);
+      return find_normalized_type (normalized, kind);
+    }
+  return kvlist;
+}
+
+/// Convenience function to retrieve the `kind` string of `find_type()` for `abstypename`.
+std::string
+Introspection::find_type_kind (const std::string &abstypename)
+{
+  if (abstypename == "VOID" ||
+      abstypename == "BOOL" ||
+      abstypename == "INT32" ||
+      abstypename == "INT64" ||
+      abstypename == "FLOAT64" ||
+      abstypename == "STRING" ||
+      abstypename == "ENUM" ||
+      abstypename == "RECORD" ||
+      abstypename == "SEQUENCE" ||
+      abstypename == "FUNC" ||
+      abstypename == "INTERFACE" ||
+      abstypename == "STREAM" ||
+      abstypename == "ANY")
+    return abstypename;
+  std::string kind;
+  find_type (abstypename, &kind);
+  return kind;
+}
+
+/// Retrieve the value of a `key=value` pair matching `key` in `kvlist` or `fallback` if none is found.
+std::string
+Introspection::find_value (const std::string &key, const StringVector &kvlist, const std::string &fallback)
+{
+  const size_t l = key.size();
+  for (size_t i = 0; i < kvlist.size(); i++)
+    if (kvlist[i].size() > l && kvlist[i][l] == '=' && strncmp (&kvlist[i][0], &key[0], l) == 0)
+      return &kvlist[i][l + 1];
+  return fallback;
+}
+
+/// List all properties in `kvlist` that are prefixed under `field`.
+StringVector
+Introspection::find_nested (const std::string &field, const StringVector &kvlist)
+{
+  const size_t l = field.size();
+  StringVector r;
+  for (size_t i = 0; i < kvlist.size(); i++)
+    if (kvlist[i].size() > l && kvlist[i][l] == '.' && strncmp (&kvlist[i][0], &field[0], l) == 0)
+      r.push_back (&kvlist[i][l + 1]);
+  return r;
+}
+
+static std::string
+split_enumerator (const std::string &enumerator, std::string *tail)
+{
+  const size_t pdot = enumerator.rfind ('.');
+  *tail = pdot != std::string::npos ? enumerator.substr (pdot + 1) : enumerator;
+  return pdot != std::string::npos ? enumerator.substr (0, pdot) : "";
+}
+
+/// List all properties of `enumerator` in `enumtypename`.
+StringVector
+Introspection::find_enumerator (const std::string &enumerator)
+{
+  String tail, enumtype = split_enumerator (normalize_typename (enumerator), &tail);
+  const StringVector &kvlist = find_normalized_type (enumtype, NULL);
+  return find_nested (tail, kvlist);
+}
+
+/// Match 'MEMBER.property=VALUE' against @a kvpair, return <MEMBER,VALUE> if @a property matches.
+static inline std::pair<size_t, const char*>
+split_member_at_property (const char *const kv, const char *const property)
+{
   const char *eq = strchr (kv, '=');
   const int   lp = strlen (property);
   const int   bt = 1 + lp;              // backtrack from '='
   if (eq && eq - kv > bt && eq[-bt] == '.' && strncmp (eq - lp, property, lp) == 0)
-    return std::make_pair (kvpair.substr (0, eq - kv - bt), eq + 1);
-  return std::make_pair (String (""), nullptr);
+    return std::make_pair (eq - kv - bt, eq + 1);
+  return std::make_pair (0, nullptr);
 }
 
-std::vector<IntrospectionRegistry::Enumerator>
-IntrospectionRegistry::list_enumerators (const std::string &enum_typename)
+/// List all enumerator names for `enum_typename`.
+StringVector
+Introspection::list_enumerators (const std::string &enum_typename)
 {
-  std::vector<Enumerator> enumerators;
-  if (IntrospectionRegistry::lookup_type (enum_typename) != "ENUM")
-    return enumerators;
-  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
-  for (const String &kv : pairs)
+  const String normalized = normalize_typename (enum_typename);
+  String kind;
+  const StringVector &kvlist = find_normalized_type (normalized, &kind);
+  if (kind == "ENUM")
     {
-      const auto mvpair = split_member_at_property (kv, "value");
+      String enumerators = find_value ("enumerators", kvlist);
+      StringVector enumerator_list;
+      for (const auto &shortname : string_split_any (enumerators, ";"))
+        enumerator_list.push_back (normalized + "." + shortname);
+      return enumerator_list;
+    }
+  return {};
+}
+
+/// Return enum value identifier in `enumtypename` with the exact numeric `value`.
+std::string
+Introspection::enumerator_from_value (const std::string &enumtypename, int64_t value)
+{
+  const String normalized = normalize_typename (enumtypename);
+  const StringVector &kvlist = find_normalized_type (normalized, NULL);
+  for (const String &kv : kvlist)
+    {
+      const char *kvc = kv.c_str();
+      const auto mvpair = split_member_at_property (kvc, "value");
       if (!mvpair.second)
         continue;                                       // not an IDENT.value=123 entry
       size_t consumed = 0;
-      const int64 value = string_to_int (mvpair.second, &consumed);
+      const int64 pvalue = string_to_int (mvpair.second, &consumed);
       if (!consumed)
         continue;                                       // not a parsable value number
-      enumerators.push_back (std::make_pair (mvpair.first, value));
+      if (value == pvalue)
+        return normalized + "." + kv.substr (0, mvpair.first);
     }
-  return enumerators;
+  return "";
 }
 
-/// Find 'valuestring.value=n' in @a pairs, matching @a valuestring from tail and yield @a n as int64.
-static bool
-find_enum_value (const StringVector &pairs, const String &valuestring, int64 *value)
+/// Match `partialenumerator`, considering the enum/enumerator `enum_context`.
+std::string
+Introspection::match_enumerator (const std::string &partialenumerator, const std::string &enum_context)
 {
-  for (const String &kv : pairs)
+  const String partial = normalize_typename (partialenumerator);
+  // first, determine enum type
+  String tail, enumname = split_enumerator (partial, &tail);
+  bool enum_match = find_type_kind (enumname) == "ENUM";
+  if (!enum_match)
     {
-      const auto mvpair = split_member_at_property (kv, "value");
-      if (!mvpair.second)
-        continue;
-      if (string_match_identifier_tail (mvpair.first, valuestring))
+      // try enum_context
+      enumname = normalize_typename (enum_context);
+      enum_match = find_type_kind (enumname) == "ENUM";
+      if (!enum_match)
         {
-          *value = string_to_int (mvpair.second);
-          return true;
+          // try enum_context after splitting off enumerator
+          const size_t cdot = enumname.rfind ('.');
+          if (cdot != std::string::npos)
+            {
+              enumname = enumname.substr (0, cdot);
+              enum_match = find_type_kind (enumname) == "ENUM";
+            }
         }
     }
-  return false;
+  if (!enum_match)
+    return "";          // no matching enum type found
+  // second, match enumerator while allowing prefix omissions
+  String kind;
+  const StringVector &kvlist = find_normalized_type (enumname, &kind);
+  if (kind == "ENUM")
+    {
+      const String enumerators = find_value ("enumerators", kvlist);
+      for (const auto &enumerator : string_split_any (enumerators, ";"))
+        if (string_match_identifier_tail (enumerator, tail))
+          return enumname + "." + enumerator;
+    }
+  return "";            // no matching enumerator
 }
 
-int64
-enum_value_from_string (const std::string &enum_typename, const String &valuestring)
+/// Retrieve numeric value for `enumerator` or 0.
+int64_t
+Introspection::enumerator_to_value (const std::string &enumerator, const std::string &enum_context)
 {
-  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", 0);
-  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
-  int64 value = 0;
-  // try exact match
-  if (find_enum_value (pairs, valuestring, &value))
-    return value;
-  // try bit filling
-  const char *const joiners = "+ \t\n\r|,;:";
-  const StringVector parts = string_split_any (valuestring, joiners);
-  if (parts.size() > 1)
+  const String normalizedenumerator = match_enumerator (enumerator, enum_context);
+  const char *fallback = NULL;
+  if (!normalizedenumerator.empty())
     {
-      int64 result = 0;
-      int matches = 0;
-      for (const String &ident : parts)
-        if (find_enum_value (pairs, ident, &value))
-          {
-            result |= value;
-            matches++;
-          }
-      if (matches > 0)
-        return result;
+      String tail, enumtype = split_enumerator (normalizedenumerator, &tail);
+      const StringVector *kvlist = &find_normalized_type (enumtype, NULL);
+      for (const std::string &kv : *kvlist)
+        {
+          const auto mvpair = split_member_at_property (kv.c_str(), "value");
+          if (!mvpair.second)
+            continue;                                   // not an IDENT.value=123 entry
+          if (tail == kv.substr (0, mvpair.first))
+            return string_to_int (mvpair.second);
+          if (!fallback)
+            fallback = mvpair.second;                   // capture first enumerator as fallback
+        }
     }
-  // fallback
-  return string_to_int (valuestring);
+  return fallback ? string_to_int (fallback) : 0;
 }
 
-String
-enum_value_find (const std::string &enum_typename, int64 evalue)
+std::string
+Introspection::strip_type_prefix (const std::string &dottedstring)
 {
-  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", "");
-  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
-  // try exact match
-  for (const String &kv : pairs)
-    {
-      const auto mvpair = split_member_at_property (kv, "value");
-      if (!mvpair.second)
-        continue;                                       // not an IDENT.value=123 entry
-      size_t consumed = 0;
-      const int64 value = string_to_int (mvpair.second, &consumed);
-      if (!consumed)
-        continue;                                       // not a parsable value number
-      if (evalue == value)
-        return mvpair.first;                            // exact match
-    }
-  return "";                                            // avoid fallbacks
+  const size_t dot = dottedstring.rfind ('.');
+  return dot == std::string::npos ? dottedstring : dottedstring.substr (dot + 1);
 }
 
-String
-enum_value_to_string (const std::string &enum_typename, int64 evalue, const String &joiner)
+/// Retrieve a statically allocated c_str for `string`, may be called from any thread.
+static const char*
+legacy_string_set_mt (const String &string)
 {
-  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM", "");
-  const StringVector &pairs = IntrospectionRegistry::lookup (enum_typename);
-  std::vector<std::pair<String, int64> > values;        // saved bit state
-  // try exact match
-  for (const String &kv : pairs)
-    {
-      const auto mvpair = split_member_at_property (kv, "value");
-      if (!mvpair.second)
-        continue;                                       // not an IDENT.value=123 entry
-      size_t consumed = 0;
-      const int64 value = string_to_int (mvpair.second, &consumed);
-      if (!consumed)
-        continue;                                       // not a parsable value number
-      if (evalue == value)
-        return mvpair.first;                            // exact match
-      if (!joiner.empty())
-        values.push_back (std::make_pair (mvpair.first, value));
-    }
-  // try bit filling
-  if (!joiner.empty())
-    {
-      int64 filled = 0;
-      std::vector<String> idents;
-      for (size_t i = 0; i < values.size(); i++)
-        if ((values[i].second & ~evalue) == 0 &&    // must not set unrelated bits
-            (values[i].second & ~filled) != 0)      // must fill new bits
-          {
-            idents.push_back (values[i].first);
-            filled |= values[i].second;
-            if (filled == evalue)
-              break;
-          }
-      if (filled == evalue)
-        return string_join (joiner, idents);
-    }
-  // fallback
-  return evalue < 0 ? posix_sprintf ("%lli", LLI evalue) : posix_sprintf ("0x%llx", LLU evalue);
+  static std::set<std::string> strings;
+  static std::mutex mutex;
+  std::lock_guard<std::mutex> locker (mutex);
+  auto iter_inserted = strings.insert (string);         // pair<iterator,bool>
+  assert_return (iter_inserted.first != strings.end(), NULL);
+  return iter_inserted.first->c_str();
+}
+
+/// Legacy variant of find_enumerator_name() that returns a c_str.
+const char*
+Introspection::legacy_enumerator (const std::string &enumtypename, int64_t value)
+{
+  const String name = enumerator_from_value (enumtypename, value);
+  return legacy_string_set_mt (name);
+}
+
+// == IntrospectionRegistry ==
+void
+IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
+{
+  AIDA_ASSERT_RETURN (auxentry && length > 0 && auxentry[length - 1] == 0);
+  AIDA_ASSERT_RETURN (strncmp (auxentry, "typename=", 9) == 0);     // first element is the type name
+  const char *type_name = auxentry + 9;
+  const char *fundamental = type_name + strlen (type_name) + 1; // second element is the fundamental type
+  AIDA_ASSERT_RETURN (fundamental - type_name < length && strncmp (fundamental, "type=", 5) == 0);
+  fundamental += 5;
+  AIDA_ASSERT_RETURN (fundamental[0] != 0);
+  const char *entries = fundamental + strlen (fundamental) + 1;
+  AIDA_ASSERT_RETURN (entries < auxentry + length);
+  aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, entries, length - (entries - auxentry) };
 }
 
 static std::vector<const char*>
@@ -892,33 +967,29 @@ aux_vector_check_options (const std::vector<String> &auxvector, const String &fi
 
 
 // == TypeKind ==
-template<> const EnumInfo&
-enum_info<TypeKind> ()
-{
-  static const EnumValue values[] = {
-    { UNTYPED,          "UNTYPED",              NULL, NULL },
-    { VOID,             "VOID",                 NULL, NULL },
-    { BOOL,             "BOOL",                 NULL, NULL },
-    { INT32,            "INT32",                NULL, NULL },
-    { INT64,            "INT64",                NULL, NULL },
-    { FLOAT64,          "FLOAT64",              NULL, NULL },
-    { STRING,           "STRING",               NULL, NULL },
-    { ENUM,             "ENUM",                 NULL, NULL },
-    { SEQUENCE,         "SEQUENCE",             NULL, NULL },
-    { RECORD,           "RECORD",               NULL, NULL },
-    { INSTANCE,         "INSTANCE",             NULL, NULL },
-    { TRANSITION,       "TRANSITION",           NULL, NULL },
-    { ANY,              "ANY",                  NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info (typeid_name<TypeKind>(), false, values);
-} // specialization
-template<> const EnumInfo& enum_info<TypeKind> (); // instantiation
+static const Aida::IntrospectionRegistry aux_data_TypeKind = {
+  "typename=Aida.TypeKind\0"
+  "type=ENUM\0"
+  "enumerators=UNTYPED;VOID;BOOL;INT32;INT64;FLOAT64;STRING;ENUM;SEQUENCE;RECORD;INSTANCE;TRANSITION;ANY\0"
+  "UNTYPED.value=0\0"
+  "VOID.value=118\0"
+  "BOOL.value=98\0"
+  "INT32.value=105\0"
+  "INT64.value=108\0"
+  "FLOAT64.value=100\0"
+  "STRING.value=115\0"
+  "ENUM.value=69\0"
+  "SEQUENCE.value=81\0"
+  "RECORD.value=82\0"
+  "INSTANCE.value=67\0"
+  "TRANSITION.value=84\0"
+  "ANY.value=89\0"
+};
 
 const char*
 type_kind_name (TypeKind type_kind)
 {
-  const EnumValue ev = enum_info<TypeKind>().find_value (type_kind);
-  return ev.ident;
+  return Introspection::legacy_enumerator ("Aida.TypeKind", type_kind);
 }
 
 // == TypeHash ==
@@ -1090,19 +1161,12 @@ Any::operator= (const Any &clone)
   type_kind_ = clone.type_kind_;
   switch (kind())
     {
+    case ENUM:
     case STRING:        new (&u_.vstring()) String (clone.u_.vstring());                             break;
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
     case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
     case INSTANCE:      new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
-    case ENUM:
-      if (clone.u_.enum_typename)
-        {
-          u_.enum_typename = new char[strlen (clone.u_.enum_typename) + 1];
-          strcpy (u_.enum_typename, clone.u_.enum_typename);
-        }
-      u_.venum64 = clone.u_.venum64;
-      break;
     case TRANSITION:    // u_.vint64 = clone.u_.vint64;
     default:            u_ = clone.u_;                                                               break;
     }
@@ -1114,8 +1178,9 @@ swap_any_unions (TypeKind kind, U &u, U &v)
 {
   switch (kind)
     {
-    case UNTYPED: case BOOL: case ENUM: case INT32: case INT64: case FLOAT64:
+    case UNTYPED: case BOOL: case INT32: case INT64: case FLOAT64:
     case TRANSITION:    std::swap (u, v);                     break;
+    case ENUM:
     case STRING:        std::swap (u.vstring(), v.vstring()); break;
     case SEQUENCE:      std::swap (u.vanys(), v.vanys());     break;
     case RECORD:        std::swap (u.vfields(), v.vfields()); break;
@@ -1151,7 +1216,7 @@ Any::clear()
 {
   switch (kind())
     {
-    case ENUM:          delete[] u_.enum_typename;              break;
+    case ENUM:
     case STRING:        u_.vstring().~String();                 break;
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnySeq();                   break;
@@ -1177,7 +1242,7 @@ Any::rekind (TypeKind _kind)
   type_kind_ = _kind;
   switch (_kind)
     {
-    case ENUM:     u_.enum_typename = NULL;             break;
+    case ENUM:
     case STRING:   new (&u_.vstring()) String();        break;
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
@@ -1257,14 +1322,12 @@ Any::repr (const String &field_name) const
 {
   String s = "{ ";
   s += "type=" + string_to_cquote (type_kind_name (kind()));
-  if (kind() == ENUM && u_.enum_typename)
-    s += ", typename=" + String (u_.enum_typename);
   if (!field_name.empty())
     s += ", name=" + string_to_cquote (field_name);
   s += ", value=";
   if (kind() == ANY)
     s += u_.vany ? u_.vany->repr() : Any().repr();
-  else if (kind() == STRING)
+  else if (kind() == STRING || kind() == ENUM)
     s += string_to_cquote (u_.vstring());
   else
     s += to_string();
@@ -1279,13 +1342,11 @@ Any::to_string() const
   String s;
   switch (kind())
     {
-    case ENUM:
-      if (u_.enum_typename)
-        s += "(" + String (u_.enum_typename) + ") ";
       // fall through
     case BOOL: case INT32:
     case INT64:      s += posix_sprintf ("%lld", LLI u_.vint64);                                                 break;
     case FLOAT64:    s += posix_sprintf ("%.17g", u_.vdouble);                                                   break;
+    case ENUM:
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
@@ -1316,14 +1377,8 @@ Any::operator== (const Any &clone) const
     case TRANSITION: case BOOL: case INT32: // chain
     case INT64:    if (u_.vint64 != clone.u_.vint64) return false;                                       break;
     case FLOAT64:  if (u_.vdouble != clone.u_.vdouble) return false;                                     break;
-    case STRING:   if (u_.vstring() != clone.u_.vstring()) return false;                                 break;
     case ENUM:
-      if (u_.vint64 != clone.u_.vint64)
-        return false;
-      if (!u_.enum_typename || !clone.u_.enum_typename)
-        return u_.enum_typename == clone.u_.enum_typename;
-      else
-        return strcmp (u_.enum_typename, clone.u_.enum_typename) == 0;
+    case STRING:   if (u_.vstring() != clone.u_.vstring()) return false;                                 break;
     case SEQUENCE:
       return u_.vanys() == clone.u_.vanys();
     case RECORD:
@@ -1353,8 +1408,9 @@ Any::get_bool () const
 {
   switch (kind())
     {
-    case TRANSITION: case BOOL: case ENUM: case INT32:
+    case TRANSITION: case BOOL: case INT32:
     case INT64:         return u_.vint64 != 0;
+    case ENUM:
     case STRING:        return !u_.vstring().empty();
     case SEQUENCE:      return !u_.vanys().empty();
     case RECORD:        return !u_.vfields().empty();
@@ -1376,12 +1432,13 @@ Any::as_int64 () const
 {
   switch (kind())
     {
-    case BOOL: case ENUM: case INT32:
+    case BOOL: case INT32:
     case INT64:         return u_.vint64;
     case FLOAT64:       return u_.vdouble;
     case STRING:        return u_.vstring().size();
     case SEQUENCE:      return u_.vanys().size();
     case RECORD:        return u_.vfields().size();
+    case ENUM:
     default:            return 0;
     }
 }
@@ -1394,29 +1451,16 @@ Any::set_int64 (int64 value)
 }
 
 void
-Any::set_enum (const String &enum_typename, int64 value)
+Any::set_enum (const String &enumerator)
 {
-  AIDA_ASSERT_RETURN (IntrospectionRegistry::lookup_type (enum_typename) == "ENUM");
   ensure (ENUM);
-  u_.venum64 = value;
-  u_.enum_typename = new char[strlen (enum_typename.c_str()) + 1];
-  strcpy (u_.enum_typename, enum_typename.c_str());
+  u_.vstring().assign (enumerator);
 }
 
-int64
-Any::get_enum (const String &enum_typename) const
+std::string
+Any::get_enum() const
 {
-  if (kind() != ENUM)
-    return 0;
-  if (!u_.enum_typename || !u_.enum_typename[0])
-    return enum_typename.empty() ? u_.venum64 : 0;
-  return enum_typename != u_.enum_typename ? 0 : u_.venum64;
-}
-
-String
-Any::get_enum_typename () const
-{
-  return kind() == ENUM && u_.enum_typename ? u_.enum_typename : "";
+  return kind() == ENUM || kind() == STRING ? u_.vstring() : "";
 }
 
 double
@@ -1438,9 +1482,10 @@ Any::get_string () const
   switch (kind())
     {
     case BOOL:          return u_.vint64 ? "true" : "false";
-    case ENUM: case INT32:
+    case INT32:
     case INT64:         return posix_sprintf ("%lli", LLI u_.vint64);
     case FLOAT64:       return string_from_double (u_.vdouble);
+    case ENUM:
     case STRING:        return u_.vstring();
     default: ;
     }
@@ -3677,42 +3722,6 @@ ImplicitBase____aida_typelist__ (ProtoReader &__f_)
   return &__r_;
 }
 
-const StringVector&
-RemoteHandle::__aida_aux_data__ () const
-{
-  static const StringVector empty;
-  if (*this == NULL)
-    return empty;
-  if (orbop_->cached_aux_data_.empty())
-    {
-      ProtoMsg &__b_ = *ProtoMsg::_new (3 + 1 + 0); // header + self
-      ProtoScopeCall2Way __o_ (__b_, *this, AIDA_HASH___AIDA_AUX_DATA__);
-      ProtoMsg *__r_ = __o_.invoke (&__b_);
-      AIDA_ASSERT_RETURN (__r_ != NULL, empty);
-      ProtoReader __f_ (*__r_);
-      __f_.skip_header();
-      Any __v_;
-      __f_ >>= __v_;
-      delete __r_;
-      orbop_->cached_aux_data_ = __v_.any_to_strings();
-    }
-  return orbop_->cached_aux_data_;
-}
-
-static ProtoMsg*
-ImplicitBase____aida_aux_data__ (ProtoReader &__b_)
-{
-  AIDA_ASSERT_RETURN (__b_.remaining() == 3 + 1 + 0, NULL); // header + self
-  __b_.skip_header();
-  ImplicitBase *self = __b_.pop_instance<ImplicitBase>().get();
-  AIDA_ASSERT_RETURN (self, NULL);
-  std::vector<String> __s_ = self->__aida_aux_data__();
-  Any __v_ = Any::any_from_strings (__s_);
-  ProtoMsg &__r_ = *ProtoMsg::renew_into_result (__b_, MSGID_CALL_RESULT, AIDA_HASH___AIDA_AUX_DATA__);
-  __r_ <<= __v_;
-  return &__r_;
-}
-
 std::vector<String>
 RemoteHandle::__aida_dir__ () const
 {
@@ -3944,7 +3953,6 @@ remote_handle_dispatch_event_emit_handler (Aida::ProtoReader &fbr)
 static const ServerConnection::MethodEntry implicit_base_methods[] = {
   { AIDA_HASH___TYPENAME__,             ImplicitBase____typename__, },
   { AIDA_HASH___AIDA_TYPELIST__,        ImplicitBase____aida_typelist__, },
-  { AIDA_HASH___AIDA_AUX_DATA__,        ImplicitBase____aida_aux_data__, },
   { AIDA_HASH___AIDA_DIR__,             ImplicitBase____aida_dir__, },
   { AIDA_HASH___AIDA_GET__,             ImplicitBase____aida_get__, },
   { AIDA_HASH___AIDA_SET__,             ImplicitBase____aida_set__, },

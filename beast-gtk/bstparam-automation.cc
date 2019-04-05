@@ -18,7 +18,7 @@ param_automation_pspec_control_type()
   static GParamSpec *control_type_pspec =
     g_param_spec_ref_sink (sfi_pspec_choice ("control_type", _("Control Type"),
                                              _("The type of control events used for automation"),
-                                             Aida::enum_value_to_string (Bse::MidiControl::CONTINUOUS_16).c_str(),
+                                             Aida::enum_value_to_short_string (Bse::MidiControl::CONTINUOUS_16).c_str(),
                                              Bse::choice_values_from_enum<Bse::MidiControl>(),
                                              SFI_PARAM_STANDARD));
   return g_param_spec_ref (control_type_pspec);
@@ -93,7 +93,7 @@ param_automation_popup_editor (GtkWidget *widget,
       Bse::SourceH source = Bse::SourceH::__cast__ (bse_server.from_proxy (proxy));
       sfi_value_set_int (&param_channel->value, source.get_automation_channel (param->pspec->name));
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
-      sfi_value_set_choice (&param_control->value, Aida::enum_value_to_string (control_type).c_str());
+      sfi_value_set_choice (&param_control->value, Aida::enum_value_to_short_string (control_type).c_str());
       gxk_param_apply_value (param_channel); /* update model, auto updates GUI */
       gxk_param_apply_value (param_control); /* update model, auto updates GUI */
       g_object_set_data ((GObject*) widget, "GxkParam-automation-channel", param_channel);
@@ -185,7 +185,7 @@ param_automation_update (GxkParam  *param,
       int midi_channel = source.get_automation_channel (param->pspec->name);
       Bse::MidiControl control_type = source.get_automation_control (param->pspec->name);
       GParamSpec *control_pspec = g_param_spec_ref (param_automation_pspec_control_type());
-      const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_string (control_type).c_str(), control_pspec);
+      const SfiChoiceValue *cv = param_automation_find_choice_value (Aida::enum_value_to_short_string (control_type).c_str(), control_pspec);
       g_param_spec_unref (control_pspec);
       if (control_type >= Bse::MidiControl::CONTINUOUS_0 && control_type <= Bse::MidiControl::CONTINUOUS_31)
         {

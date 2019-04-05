@@ -14,7 +14,7 @@ namespace MandatoryNamespace {
 enum class Enum1 : int64_t {
   E1_A = 1,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace::Enum1"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace.Enum1"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum1 &e) { e = Enum1 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
@@ -24,7 +24,7 @@ AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
 enum class Enum1c : int64_t {
   E1C_A = 1,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace::Enum1c"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace.Enum1c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum1c &e) { e = Enum1c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
@@ -35,7 +35,7 @@ enum class Enum2 : int64_t {
   E2_A = 1,
   E2_B = 2,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace::Enum2"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace.Enum2"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum2 &e) { e = Enum2 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
@@ -46,7 +46,7 @@ enum class Enum2c : int64_t {
   E2C_A = 1,
   E2C_B = 2,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace::Enum2c"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace.Enum2c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum2c &e) { e = Enum2c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
@@ -58,7 +58,7 @@ enum class Enum3 : int64_t {
   E3_B = 2,
   E3_C = 3,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace::Enum3"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace.Enum3"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum3 &e) { e = Enum3 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
@@ -70,7 +70,7 @@ enum class Enum3c : int64_t {
   E3C_B = 2,
   E3C_C = 3,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace::Enum3c"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace.Enum3c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum3c &e) { e = Enum3c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
@@ -83,7 +83,7 @@ enum class Enum4a : int64_t {
   E4A_C = 3,
   E4A_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace::Enum4a"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace.Enum4a"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4a  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4a &e) { e = Enum4a (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
@@ -96,7 +96,7 @@ enum class Enum4b : int64_t {
   E4B_C = 3,
   E4B_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace::Enum4b"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace.Enum4b"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4b  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4b &e) { e = Enum4b (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
@@ -109,7 +109,7 @@ enum class Enum4c : int64_t {
   E4C_C = 3,
   E4C_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace::Enum4c"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace.Enum4c"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4c  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4c &e) { e = Enum4c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
@@ -122,7 +122,7 @@ enum class Enum4d : int64_t {
   E4D_C = 3,
   E4D_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace::Enum4d"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace.Enum4d"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4d  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, Enum4d &e) { e = Enum4d (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
@@ -163,10 +163,10 @@ enum class ExtensiveEnum : int64_t {
   V32 = 42,
   V33 = 43,
   V34 = 44, // "foo"
-  V35 = 42,
+  V35 = 35,
   V36 = 42, // "foo4"
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace::ExtensiveEnum"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace.ExtensiveEnum"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  ExtensiveEnum  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, ExtensiveEnum &e) { e = ExtensiveEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
@@ -179,7 +179,7 @@ namespace InterfaceTests {
 enum class QuickEnum : int64_t {
   ZERO = 0,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests::QuickEnum"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests.QuickEnum"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  QuickEnum  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, QuickEnum &e) { e = QuickEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
@@ -196,7 +196,7 @@ enum class ClickType : int64_t {
   CLICK_FAST_REPEAT = 4,
   CLICK_KEY_REPEAT = 5,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest::ClickType"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest.ClickType"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  ClickType  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, ClickType &e) { e = ClickType (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
@@ -217,29 +217,12 @@ enum class MathExpressions : int64_t {
   RESULT_77 = 77,
   RESULT_511 = 511,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest::MathExpressions"; }
+inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest.MathExpressions"; }
 inline void operator<<= (Aida::ProtoMsg &__p_,  MathExpressions  e) { __p_ <<= Aida::EnumValue (e); }
 inline void operator>>= (Aida::ProtoReader &__f_, MathExpressions &e) { e = MathExpressions (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
 /// @endcond
 } // RapicornAidaTest
-
-namespace Aida {
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum1> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum1c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum2> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum2c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum3> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum3c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4a> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4b> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4c> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::Enum4d> ();
-template<> const EnumInfo& enum_info<MandatoryNamespace::ExtensiveEnum> ();
-template<> const EnumInfo& enum_info<InterfaceTests::QuickEnum> ();
-template<> const EnumInfo& enum_info<RapicornAidaTest::ClickType> ();
-template<> const EnumInfo& enum_info<RapicornAidaTest::MathExpressions> ();
-} // Aida
 
 namespace MandatoryNamespace {
 
@@ -288,7 +271,7 @@ public:
   /// @endcond
   inline                        XFooRecord () { single_bool = 0; single_num = 0; num64 = 0; single_float = 0; sibling1 = 0; sibling2 = 0; multi1 = 0; multi2 = 0; multi3 = 0; multi4 = 0; enum_field = ExtensiveEnum (0); }
   inline                        XFooRecord (const Aida::AnyRec &ad) : XFooRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooRecord"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -330,7 +313,7 @@ public:
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        XFooSequence () = default;
   inline                        XFooSequence (const Aida::AnySeq &as) : XFooSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::XFooSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -348,7 +331,7 @@ public:
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        IntSequence () = default;
   inline                        IntSequence (const Aida::AnySeq &as) : IntSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::IntSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -366,7 +349,7 @@ public:
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        FloatSequence () = default;
   inline                        FloatSequence (const Aida::AnySeq &as) : FloatSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::FloatSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -384,7 +367,7 @@ public:
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        StringSequence () = default;
   inline                        StringSequence (const Aida::AnySeq &as) : StringSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::StringSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -402,7 +385,7 @@ public:
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        ExtensiveEnumSequence () = default;
   inline                        ExtensiveEnumSequence (const Aida::AnySeq &as) : ExtensiveEnumSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::ExtensiveEnumSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -420,7 +403,7 @@ public:
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        RecordSequence () = default;
   inline                        RecordSequence (const Aida::AnySeq &as) : RecordSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::RecordSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -438,7 +421,7 @@ public:
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        SequenceSequence () = default;
   inline                        SequenceSequence (const Aida::AnySeq &as) : SequenceSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::SequenceSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -456,7 +439,7 @@ public:
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        InterfaceSequence () = default;
   inline                        InterfaceSequence (const Aida::AnySeq &as) : InterfaceSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::InterfaceSequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -474,7 +457,7 @@ public:
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        AnySequence () = default;
   inline                        AnySequence (const Aida::AnySeq &as) : AnySequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::AnySequence"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -496,7 +479,7 @@ public:
   /// @endcond
   inline                        NestedTypesRec () { }
   inline                        NestedTypesRec (const Aida::AnyRec &ad) : NestedTypesRec() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesRec"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -522,7 +505,7 @@ public:
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        NestedTypesSeq () = default;
   inline                        NestedTypesSeq (const Aida::AnySeq &as) : NestedTypesSeq() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NestedTypesSeq"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -542,7 +525,7 @@ public:
   /// @endcond
   inline                        NewRecord () { i = 0; enum1 = Enum1 (0); }
   inline                        NewRecord (const Aida::AnyRec &ad) : NewRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::NewRecord"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -573,7 +556,7 @@ public:
   /// @endcond
   inline                        InnerRecord () { x = 0; y = 0; }
   inline                        InnerRecord (const Aida::AnyRec &ad) : InnerRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::Inner::InnerRecord"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -600,7 +583,7 @@ public:
   /// @endcond
   inline                        Refer2Inner () { }
   inline                        Refer2Inner (const Aida::AnyRec &ad) : Refer2Inner() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace::Refer2Inner"; }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -630,7 +613,7 @@ public:
   /// @endcond
   inline                        SomeRecord () { }
   inline                        SomeRecord (const Aida::AnyRec &ad) : SomeRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "OtherNamespace::SomeRecord"; }
+  std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -664,7 +647,7 @@ public:
   /// @endcond
   inline                        RecordWithAuxdata () { aux_bool = 0; aux32 = 0; aux64 = 0; auxf64 = 0; }
   inline                        RecordWithAuxdata (const Aida::AnyRec &ad) : RecordWithAuxdata() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "Auxdata::RecordWithAuxdata"; }
+  std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -822,7 +805,7 @@ public:
   /// @endcond
   inline                        QuickRecord () { int1 = 0; int2 = 0; }
   inline                        QuickRecord (const Aida::AnyRec &ad) : QuickRecord() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "InterfaceTests::QuickRecord"; }
+  std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -848,7 +831,7 @@ public:
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   inline                        QuickSequence () = default;
   inline                        QuickSequence (const Aida::AnySeq &as) : QuickSequence() { __aida_from_any__ (Aida::Any (as)); }
-  std::string                   __typename__      () const	{ return "InterfaceTests::QuickSequence"; }
+  std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
@@ -1177,7 +1160,7 @@ public:
   /// @endcond
   inline                        RecordForGroups () { i = 0; ratio = 0; ordinary_bool = 0; threshold1 = 0; threshold2 = 0; }
   inline                        RecordForGroups (const Aida::AnyRec &ad) : RecordForGroups() { __aida_from_any__ (Aida::Any (ad)); }
-  std::string                   __typename__      () const	{ return "BseTest::RecordForGroups"; }
+  std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
@@ -1363,11 +1346,10 @@ FirstInterfaceHandle::void_func ()
 {
   return __AIDA_Local__::remote_callv (*this, &FirstInterfaceIface::void_func);
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooRecord_ = {
-  "MandatoryNamespace::XFooRecord\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooRecord_ = {
+  "typename=MandatoryNamespace.XFooRecord\0"
   "type=RECORD\0"
-  "typename=MandatoryNamespace::XFooRecord\0"
+  "fields=single_bool;single_num;num64;single_float;single_string;sibling1;sibling2;multi1;multi2;multi3;multi4;enum_field;iface1;iface2;iface3;any1;any2;any3\0"
   "single_bool.type=BOOL\0"
   "single_num.type=INT32\0"
   "num64.type=INT64\0"
@@ -1379,14 +1361,10 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespac
   "multi2.type=INT32\0"
   "multi3.type=INT32\0"
   "multi4.type=INT32\0"
-  "enum_field.type=ENUM\0"
-  "enum_field.typename=MandatoryNamespace::ExtensiveEnum\0"
-  "iface1.type=INTERFACE\0"
-  "iface1.typename=MandatoryNamespace::FirstInterface\0"
-  "iface2.type=INTERFACE\0"
-  "iface2.typename=MandatoryNamespace::FirstInterface\0"
-  "iface3.type=INTERFACE\0"
-  "iface3.typename=MandatoryNamespace::FirstInterface\0"
+  "enum_field.type=MandatoryNamespace.ExtensiveEnum\0"
+  "iface1.type=MandatoryNamespace.FirstInterface\0"
+  "iface2.type=MandatoryNamespace.FirstInterface\0"
+  "iface3.type=MandatoryNamespace.FirstInterface\0"
   "any1.type=ANY\0"
   "any2.type=ANY\0"
   "any3.type=ANY\0"
@@ -1394,7 +1372,7 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespac
 const Aida::StringVector&
 XFooRecord::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::XFooRecord");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooRecord");
   return sv;
 }
 bool
@@ -1467,17 +1445,16 @@ operator>>= (Aida::ProtoReader &src, XFooRecord &self)
   fbr >>= self.any2;
   fbr >>= self.any3;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_XFooSequence_ = {
-  "MandatoryNamespace::XFooSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooSequence_ = {
+  "typename=MandatoryNamespace.XFooSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::XFooSequence\0"
+  "fields=single_bool\0"
   "single_bool.type=BOOL\0"
 };
 const Aida::StringVector&
 XFooSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::XFooSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1499,17 +1476,16 @@ operator>>= (Aida::ProtoReader &src, XFooSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_IntSequence_ = {
-  "MandatoryNamespace::IntSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_IntSequence_ = {
+  "typename=MandatoryNamespace.IntSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::IntSequence\0"
+  "fields=numx\0"
   "numx.type=INT32\0"
 };
 const Aida::StringVector&
 IntSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::IntSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1531,17 +1507,16 @@ operator>>= (Aida::ProtoReader &src, IntSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_FloatSequence_ = {
-  "MandatoryNamespace::FloatSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_FloatSequence_ = {
+  "typename=MandatoryNamespace.FloatSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::FloatSequence\0"
+  "fields=fractalvalue\0"
   "fractalvalue.type=FLOAT64\0"
 };
 const Aida::StringVector&
 FloatSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::FloatSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1563,17 +1538,16 @@ operator>>= (Aida::ProtoReader &src, FloatSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_StringSequence_ = {
-  "MandatoryNamespace::StringSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_StringSequence_ = {
+  "typename=MandatoryNamespace.StringSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::StringSequence\0"
+  "fields=blurb\0"
   "blurb.type=STRING\0"
 };
 const Aida::StringVector&
 StringSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::StringSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1595,18 +1569,16 @@ operator>>= (Aida::ProtoReader &src, StringSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnumSequence_ = {
-  "MandatoryNamespace::ExtensiveEnumSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnumSequence_ = {
+  "typename=MandatoryNamespace.ExtensiveEnumSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::ExtensiveEnumSequence\0"
-  "enum_elements.type=ENUM\0"
-  "enum_elements.typename=MandatoryNamespace::ExtensiveEnum\0"
+  "fields=enum_elements\0"
+  "enum_elements.type=MandatoryNamespace.ExtensiveEnum\0"
 };
 const Aida::StringVector&
 ExtensiveEnumSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::ExtensiveEnumSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1628,18 +1600,16 @@ operator>>= (Aida::ProtoReader &src, ExtensiveEnumSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_RecordSequence_ = {
-  "MandatoryNamespace::RecordSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_RecordSequence_ = {
+  "typename=MandatoryNamespace.RecordSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::RecordSequence\0"
-  "repeatedfield.type=RECORD\0"
-  "repeatedfield.typename=MandatoryNamespace::XFooRecord\0"
+  "fields=repeatedfield\0"
+  "repeatedfield.type=MandatoryNamespace.XFooRecord\0"
 };
 const Aida::StringVector&
 RecordSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::RecordSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1661,18 +1631,16 @@ operator>>= (Aida::ProtoReader &src, RecordSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_SequenceSequence_ = {
-  "MandatoryNamespace::SequenceSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_SequenceSequence_ = {
+  "typename=MandatoryNamespace.SequenceSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::SequenceSequence\0"
-  "moreints.type=SEQUENCE\0"
-  "moreints.typename=MandatoryNamespace::IntSequence\0"
+  "fields=moreints\0"
+  "moreints.type=MandatoryNamespace.IntSequence\0"
 };
 const Aida::StringVector&
 SequenceSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::SequenceSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1694,18 +1662,16 @@ operator>>= (Aida::ProtoReader &src, SequenceSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_InterfaceSequence_ = {
-  "MandatoryNamespace::InterfaceSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_InterfaceSequence_ = {
+  "typename=MandatoryNamespace.InterfaceSequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::InterfaceSequence\0"
-  "iface1.type=INTERFACE\0"
-  "iface1.typename=MandatoryNamespace::FirstInterface\0"
+  "fields=iface1\0"
+  "iface1.type=MandatoryNamespace.FirstInterface\0"
 };
 const Aida::StringVector&
 InterfaceSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::InterfaceSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1727,17 +1693,16 @@ operator>>= (Aida::ProtoReader &src, InterfaceSequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_AnySequence_ = {
-  "MandatoryNamespace::AnySequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_AnySequence_ = {
+  "typename=MandatoryNamespace.AnySequence\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::AnySequence\0"
+  "fields=any_value\0"
   "any_value.type=ANY\0"
 };
 const Aida::StringVector&
 AnySequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::AnySequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1759,20 +1724,17 @@ operator>>= (Aida::ProtoReader &src, AnySequence &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NestedTypesRec_ = {
-  "MandatoryNamespace::NestedTypesRec\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesRec_ = {
+  "typename=MandatoryNamespace.NestedTypesRec\0"
   "type=RECORD\0"
-  "typename=MandatoryNamespace::NestedTypesRec\0"
-  "rec.type=RECORD\0"
-  "rec.typename=MandatoryNamespace::XFooRecord\0"
-  "seq.type=SEQUENCE\0"
-  "seq.typename=MandatoryNamespace::XFooSequence\0"
+  "fields=rec;seq\0"
+  "rec.type=MandatoryNamespace.XFooRecord\0"
+  "seq.type=MandatoryNamespace.XFooSequence\0"
 };
 const Aida::StringVector&
 NestedTypesRec::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::NestedTypesRec");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesRec");
   return sv;
 }
 bool
@@ -1797,18 +1759,16 @@ operator>>= (Aida::ProtoReader &src, NestedTypesRec &self)
   fbr >>= self.rec;
   fbr >>= self.seq;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NestedTypesSeq_ = {
-  "MandatoryNamespace::NestedTypesSeq\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesSeq_ = {
+  "typename=MandatoryNamespace.NestedTypesSeq\0"
   "type=SEQUENCE\0"
-  "typename=MandatoryNamespace::NestedTypesSeq\0"
-  "ntr.type=RECORD\0"
-  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
+  "fields=ntr\0"
+  "ntr.type=MandatoryNamespace.NestedTypesRec\0"
 };
 const Aida::StringVector&
 NestedTypesSeq::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::NestedTypesSeq");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -1830,23 +1790,19 @@ operator>>= (Aida::ProtoReader &src, NestedTypesSeq &self)
     fbr >>= self[k];
   }
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_NewRecord_ = {
-  "MandatoryNamespace::NewRecord\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NewRecord_ = {
+  "typename=MandatoryNamespace.NewRecord\0"
   "type=RECORD\0"
-  "typename=MandatoryNamespace::NewRecord\0"
+  "fields=i;enum1;xfs;ntr\0"
   "i.type=INT32\0"
-  "enum1.type=ENUM\0"
-  "enum1.typename=MandatoryNamespace::Enum1\0"
-  "xfs.type=SEQUENCE\0"
-  "xfs.typename=MandatoryNamespace::XFooSequence\0"
-  "ntr.type=RECORD\0"
-  "ntr.typename=MandatoryNamespace::NestedTypesRec\0"
+  "enum1.type=MandatoryNamespace.Enum1\0"
+  "xfs.type=MandatoryNamespace.XFooSequence\0"
+  "ntr.type=MandatoryNamespace.NestedTypesRec\0"
 };
 const Aida::StringVector&
 NewRecord::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::NewRecord");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NewRecord");
   return sv;
 }
 bool
@@ -1879,20 +1835,18 @@ operator>>= (Aida::ProtoReader &src, NewRecord &self)
 }
 
 namespace Inner {
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Inner_InnerRecord_ = {
-  "MandatoryNamespace::Inner::InnerRecord\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Inner_InnerRecord_ = {
+  "typename=MandatoryNamespace.Inner.InnerRecord\0"
   "type=RECORD\0"
-  "typename=MandatoryNamespace::Inner::InnerRecord\0"
+  "fields=x;y;rec\0"
   "x.type=INT32\0"
   "y.type=INT32\0"
-  "rec.type=RECORD\0"
-  "rec.typename=MandatoryNamespace::NewRecord\0"
+  "rec.type=MandatoryNamespace.NewRecord\0"
 };
 const Aida::StringVector&
 InnerRecord::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::Inner::InnerRecord");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Inner.InnerRecord");
   return sv;
 }
 bool
@@ -1921,18 +1875,16 @@ operator>>= (Aida::ProtoReader &src, InnerRecord &self)
   fbr >>= self.rec;
 }
 } // Inner
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Refer2Inner_ = {
-  "MandatoryNamespace::Refer2Inner\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Refer2Inner_ = {
+  "typename=MandatoryNamespace.Refer2Inner\0"
   "type=RECORD\0"
-  "typename=MandatoryNamespace::Refer2Inner\0"
-  "r.type=RECORD\0"
-  "r.typename=MandatoryNamespace::Inner::InnerRecord\0"
+  "fields=r\0"
+  "r.type=MandatoryNamespace.Inner.InnerRecord\0"
 };
 const Aida::StringVector&
 Refer2Inner::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("MandatoryNamespace::Refer2Inner");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Refer2Inner");
   return sv;
 }
 bool
@@ -1957,24 +1909,19 @@ operator>>= (Aida::ProtoReader &src, Refer2Inner &self)
 } // MandatoryNamespace
 
 namespace OtherNamespace {
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__OtherNamespace_SomeRecord_ = {
-  "OtherNamespace::SomeRecord\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__OtherNamespace_SomeRecord_ = {
+  "typename=OtherNamespace.SomeRecord\0"
   "type=RECORD\0"
-  "typename=OtherNamespace::SomeRecord\0"
-  "r1.type=RECORD\0"
-  "r1.typename=MandatoryNamespace::NewRecord\0"
-  "r2.type=RECORD\0"
-  "r2.typename=MandatoryNamespace::NewRecord\0"
-  "r3.type=RECORD\0"
-  "r3.typename=MandatoryNamespace::Inner::InnerRecord\0"
-  "r4.type=RECORD\0"
-  "r4.typename=MandatoryNamespace::Inner::InnerRecord\0"
+  "fields=r1;r2;r3;r4\0"
+  "r1.type=MandatoryNamespace.NewRecord\0"
+  "r2.type=MandatoryNamespace.NewRecord\0"
+  "r3.type=MandatoryNamespace.Inner.InnerRecord\0"
+  "r4.type=MandatoryNamespace.Inner.InnerRecord\0"
 };
 const Aida::StringVector&
 SomeRecord::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("OtherNamespace::SomeRecord");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("OtherNamespace.SomeRecord");
   return sv;
 }
 bool
@@ -2008,11 +1955,10 @@ operator>>= (Aida::ProtoReader &src, SomeRecord &self)
 } // OtherNamespace
 
 namespace Auxdata {
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__Auxdata_RecordWithAuxdata_ = {
-  "Auxdata::RecordWithAuxdata\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__Auxdata_RecordWithAuxdata_ = {
+  "typename=Auxdata.RecordWithAuxdata\0"
   "type=RECORD\0"
-  "typename=Auxdata::RecordWithAuxdata\0"
+  "fields=aux_bool;aux32;aux64;auxf64;aux_str\0"
   "aux_bool.type=BOOL\0"
   "aux_bool.label=AuxBool\0"
   "aux_bool.blurb=A Boolean\0"
@@ -2042,7 +1988,7 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__Auxdata_RecordWit
 const Aida::StringVector&
 RecordWithAuxdata::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("Auxdata::RecordWithAuxdata");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("Auxdata.RecordWithAuxdata");
   return sv;
 }
 bool
@@ -2237,18 +2183,17 @@ GrandChildHandle::__cast__ (const Aida::RemoteHandle &other)
   Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();
   return std::dynamic_pointer_cast<GrandChildIface> (ifacep);
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickRecord_ = {
-  "InterfaceTests::QuickRecord\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickRecord_ = {
+  "typename=InterfaceTests.QuickRecord\0"
   "type=RECORD\0"
-  "typename=InterfaceTests::QuickRecord\0"
+  "fields=int1;int2\0"
   "int1.type=INT32\0"
   "int2.type=INT32\0"
 };
 const Aida::StringVector&
 QuickRecord::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("InterfaceTests::QuickRecord");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickRecord");
   return sv;
 }
 bool
@@ -2273,17 +2218,16 @@ operator>>= (Aida::ProtoReader &src, QuickRecord &self)
   fbr >>= self.int1;
   fbr >>= self.int2;
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickSequence_ = {
-  "InterfaceTests::QuickSequence\0"
-  "SEQUENCE\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickSequence_ = {
+  "typename=InterfaceTests.QuickSequence\0"
   "type=SEQUENCE\0"
-  "typename=InterfaceTests::QuickSequence\0"
+  "fields=somefloat\0"
   "somefloat.type=FLOAT64\0"
 };
 const Aida::StringVector&
 QuickSequence::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("InterfaceTests::QuickSequence");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
   return sv;
 }
 inline void __attribute__ ((used))
@@ -2748,11 +2692,10 @@ CompressorHandle::ratio (double value)
 {
   return __AIDA_Local__::remote_callv (*this, &CompressorIface::ratio, value);
 }
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__BseTest_RecordForGroups_ = {
-  "BseTest::RecordForGroups\0"
-  "RECORD\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__BseTest_RecordForGroups_ = {
+  "typename=BseTest.RecordForGroups\0"
   "type=RECORD\0"
-  "typename=BseTest::RecordForGroups\0"
+  "fields=i;ratio;ordinary_bool;threshold1;threshold2\0"
   "i.type=INT32\0"
   "ratio.type=FLOAT64\0"
   "ratio.hints=w\0"
@@ -2765,7 +2708,7 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__BseTest_RecordFor
 const Aida::StringVector&
 RecordForGroups::__aida_aux_data__() const
 {
-  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("BseTest::RecordForGroups");
+  static const Aida::StringVector sv = Aida::Introspection::find_type ("BseTest.RecordForGroups");
   return sv;
 }
 bool
@@ -2821,207 +2764,98 @@ SoundModuleHandle::__cast__ (const Aida::RemoteHandle &other)
 
 namespace Aida {
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1_ = {
-  "MandatoryNamespace::Enum1\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1_ = {
+  "typename=MandatoryNamespace.Enum1\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum1\0"
+  "enumerators=E1_A\0"
   "E1_A.value=1\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum1> ()
-{
-  static const EnumValue _aida_enumvalues_1001[] = {
-    { int64_t (MandatoryNamespace::Enum1::E1_A), "E1_A", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1", 0, _aida_enumvalues_1001);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum1c_ = {
-  "MandatoryNamespace::Enum1c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1c_ = {
+  "typename=MandatoryNamespace.Enum1c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum1c\0"
+  "enumerators=E1C_A\0"
   "E1C_A.value=1\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum1c> ()
-{
-  static const EnumValue _aida_enumvalues_1002[] = {
-    { int64_t (MandatoryNamespace::Enum1c::E1C_A), "E1C_A", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum1c", 0, _aida_enumvalues_1002);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2_ = {
-  "MandatoryNamespace::Enum2\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2_ = {
+  "typename=MandatoryNamespace.Enum2\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum2\0"
+  "enumerators=E2_A;E2_B\0"
   "E2_A.value=1\0"
   "E2_B.value=2\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum2> ()
-{
-  static const EnumValue _aida_enumvalues_1003[] = {
-    { int64_t (MandatoryNamespace::Enum2::E2_A), "E2_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum2::E2_B), "E2_B", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2", 0, _aida_enumvalues_1003);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum2c_ = {
-  "MandatoryNamespace::Enum2c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2c_ = {
+  "typename=MandatoryNamespace.Enum2c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum2c\0"
+  "enumerators=E2C_A;E2C_B\0"
   "E2C_A.value=1\0"
   "E2C_B.value=2\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum2c> ()
-{
-  static const EnumValue _aida_enumvalues_1004[] = {
-    { int64_t (MandatoryNamespace::Enum2c::E2C_A), "E2C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum2c::E2C_B), "E2C_B", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum2c", 0, _aida_enumvalues_1004);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3_ = {
-  "MandatoryNamespace::Enum3\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3_ = {
+  "typename=MandatoryNamespace.Enum3\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum3\0"
+  "enumerators=E3_A;E3_B;E3_C\0"
   "E3_A.value=1\0"
   "E3_B.value=2\0"
   "E3_C.value=3\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum3> ()
-{
-  static const EnumValue _aida_enumvalues_1005[] = {
-    { int64_t (MandatoryNamespace::Enum3::E3_A), "E3_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3::E3_B), "E3_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3::E3_C), "E3_C", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3", 0, _aida_enumvalues_1005);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum3c_ = {
-  "MandatoryNamespace::Enum3c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3c_ = {
+  "typename=MandatoryNamespace.Enum3c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum3c\0"
+  "enumerators=E3C_A;E3C_B;E3C_C\0"
   "E3C_A.value=1\0"
   "E3C_B.value=2\0"
   "E3C_C.value=3\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum3c> ()
-{
-  static const EnumValue _aida_enumvalues_1006[] = {
-    { int64_t (MandatoryNamespace::Enum3c::E3C_A), "E3C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3c::E3C_B), "E3C_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum3c::E3C_C), "E3C_C", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum3c", 0, _aida_enumvalues_1006);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4a_ = {
-  "MandatoryNamespace::Enum4a\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4a_ = {
+  "typename=MandatoryNamespace.Enum4a\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4a\0"
+  "enumerators=E4A_A;E4A_B;E4A_C;E4A_D\0"
   "E4A_A.value=1\0"
   "E4A_B.value=2\0"
   "E4A_C.value=3\0"
   "E4A_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4a> ()
-{
-  static const EnumValue _aida_enumvalues_1007[] = {
-    { int64_t (MandatoryNamespace::Enum4a::E4A_A), "E4A_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_B), "E4A_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_C), "E4A_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4a::E4A_D), "E4A_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4a", 0, _aida_enumvalues_1007);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4b_ = {
-  "MandatoryNamespace::Enum4b\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4b_ = {
+  "typename=MandatoryNamespace.Enum4b\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4b\0"
+  "enumerators=E4B_A;E4B_B;E4B_C;E4B_D\0"
   "E4B_A.value=1\0"
   "E4B_B.value=2\0"
   "E4B_C.value=3\0"
   "E4B_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4b> ()
-{
-  static const EnumValue _aida_enumvalues_1008[] = {
-    { int64_t (MandatoryNamespace::Enum4b::E4B_A), "E4B_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_B), "E4B_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_C), "E4B_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4b::E4B_D), "E4B_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4b", 0, _aida_enumvalues_1008);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4c_ = {
-  "MandatoryNamespace::Enum4c\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4c_ = {
+  "typename=MandatoryNamespace.Enum4c\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4c\0"
+  "enumerators=E4C_A;E4C_B;E4C_C;E4C_D\0"
   "E4C_A.value=1\0"
   "E4C_B.value=2\0"
   "E4C_C.value=3\0"
   "E4C_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4c> ()
-{
-  static const EnumValue _aida_enumvalues_1009[] = {
-    { int64_t (MandatoryNamespace::Enum4c::E4C_A), "E4C_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_B), "E4C_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_C), "E4C_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4c::E4C_D), "E4C_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4c", 0, _aida_enumvalues_1009);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_Enum4d_ = {
-  "MandatoryNamespace::Enum4d\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4d_ = {
+  "typename=MandatoryNamespace.Enum4d\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::Enum4d\0"
+  "enumerators=E4D_A;E4D_B;E4D_C;E4D_D\0"
   "E4D_A.value=1\0"
   "E4D_B.value=2\0"
   "E4D_C.value=3\0"
   "E4D_D.value=4\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::Enum4d> ()
-{
-  static const EnumValue _aida_enumvalues_1010[] = {
-    { int64_t (MandatoryNamespace::Enum4d::E4D_A), "E4D_A", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_B), "E4D_B", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_C), "E4D_C", NULL, NULL },
-    { int64_t (MandatoryNamespace::Enum4d::E4D_D), "E4D_D", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::Enum4d", 0, _aida_enumvalues_1010);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespace_ExtensiveEnum_ = {
-  "MandatoryNamespace::ExtensiveEnum\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnum_ = {
+  "typename=MandatoryNamespace.ExtensiveEnum\0"
   "type=ENUM\0"
-  "typename=MandatoryNamespace::ExtensiveEnum\0"
+  "enumerators=V1a;V1b;V2;V3;V4;V5;V6;V7;V8;V9;V10;V11;V12;V13;V14;V15;V16;V17;V18;V20;V21;V22;V23;V24;V25;V26;V27;V28;V30;V31;V32;V33;V34;V35;V36\0"
   "V1a.value=1\0"
   "V1b.value=1\0"
   "V2.value=2\0"
@@ -3081,100 +2915,35 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__MandatoryNamespac
   "V34.value=44\0"
   "V34.label=" "foo" "\0"
   "V34.blurb=" "foo" "\0"
-  "V35.value=42\0"
+  "V35.value=35\0"
   "V35.label=" "foo" "\0"
   "V36.value=42\0"
   "V36.label=" "foo" "\0"
   "V36.blurb=" "foo4" "\0"
 };
-template<> const EnumInfo&
-enum_info<MandatoryNamespace::ExtensiveEnum> ()
-{
-  static const EnumValue _aida_enumvalues_1011[] = {
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V1a), "V1a", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V1b), "V1b", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V2), "V2", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V3), "V3", "v3", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V4), "V4", _("v4"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V5), "V5", "v5", "V5" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V6), "V6", _("v6"), "V6" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V7), "V7", "v7", _("V7") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V8), "V8", _("v8"), _("V8") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V9), "V9", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V10), "V10", "v10", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V11), "V11", _("v11"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V12), "V12", "v12", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V13), "V13", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V14), "V14", _("v14"), NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V15), "V15", "v15", "V15" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V16), "V16", _("v16"), "V16" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V17), "V17", "v17", _("V17") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V18), "V18", _("v18"), _("V18") },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V20), "V20", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V21), "V21", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V22), "V22", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V23), "V23", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V24), "V24", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V25), "V25", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V26), "V26", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V27), "V27", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V28), "V28", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V30), "V30", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V31), "V31", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V32), "V32", NULL, NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V33), "V33", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V34), "V34", "foo", "foo" },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V35), "V35", "foo", NULL },
-    { int64_t (MandatoryNamespace::ExtensiveEnum::V36), "V36", "foo", "foo4" },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("MandatoryNamespace::ExtensiveEnum", 0, _aida_enumvalues_1011);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__InterfaceTests_QuickEnum_ = {
-  "InterfaceTests::QuickEnum\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickEnum_ = {
+  "typename=InterfaceTests.QuickEnum\0"
   "type=ENUM\0"
-  "typename=InterfaceTests::QuickEnum\0"
+  "enumerators=ZERO\0"
   "ZERO.value=0\0"
 };
-template<> const EnumInfo&
-enum_info<InterfaceTests::QuickEnum> ()
-{
-  static const EnumValue _aida_enumvalues_1012[] = {
-    { int64_t (InterfaceTests::QuickEnum::ZERO), "ZERO", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("InterfaceTests::QuickEnum", 0, _aida_enumvalues_1012);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_ClickType_ = {
-  "RapicornAidaTest::ClickType\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_ClickType_ = {
+  "typename=RapicornAidaTest.ClickType\0"
   "type=ENUM\0"
-  "typename=RapicornAidaTest::ClickType\0"
+  "enumerators=CLICK_ON_PRESS;CLICK_ON_RELEASE;CLICK_SLOW_REPEAT;CLICK_FAST_REPEAT;CLICK_KEY_REPEAT\0"
   "CLICK_ON_PRESS.value=1\0"
   "CLICK_ON_RELEASE.value=2\0"
   "CLICK_SLOW_REPEAT.value=3\0"
   "CLICK_FAST_REPEAT.value=4\0"
   "CLICK_KEY_REPEAT.value=5\0"
 };
-template<> const EnumInfo&
-enum_info<RapicornAidaTest::ClickType> ()
-{
-  static const EnumValue _aida_enumvalues_1013[] = {
-    { int64_t (RapicornAidaTest::ClickType::CLICK_ON_PRESS), "CLICK_ON_PRESS", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_ON_RELEASE), "CLICK_ON_RELEASE", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_SLOW_REPEAT), "CLICK_SLOW_REPEAT", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_FAST_REPEAT), "CLICK_FAST_REPEAT", NULL, NULL },
-    { int64_t (RapicornAidaTest::ClickType::CLICK_KEY_REPEAT), "CLICK_KEY_REPEAT", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::ClickType", 0, _aida_enumvalues_1013);
-} // specialization
 
-static const Aida::IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_MathExpressions_ = {
-  "RapicornAidaTest::MathExpressions\0"
-  "ENUM\0"
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_MathExpressions_ = {
+  "typename=RapicornAidaTest.MathExpressions\0"
   "type=ENUM\0"
-  "typename=RapicornAidaTest::MathExpressions\0"
+  "enumerators=RESULT_2;RESULT_5;RESULT_8;RESULT_6;RESULT_7;RESULT_16;RESULT_3;RESULT_24;RESULT_13;RESULT_m2;RESULT_77;RESULT_511\0"
   "RESULT_2.value=2\0"
   "RESULT_5.value=5\0"
   "RESULT_8.value=8\0"
@@ -3188,25 +2957,6 @@ static const Aida::IntrospectionRegistry __aida_aux_data_clnt__RapicornAidaTest_
   "RESULT_77.value=77\0"
   "RESULT_511.value=511\0"
 };
-template<> const EnumInfo&
-enum_info<RapicornAidaTest::MathExpressions> ()
-{
-  static const EnumValue _aida_enumvalues_1014[] = {
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_2), "RESULT_2", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_5), "RESULT_5", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_8), "RESULT_8", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_6), "RESULT_6", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_7), "RESULT_7", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_16), "RESULT_16", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_3), "RESULT_3", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_24), "RESULT_24", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_13), "RESULT_13", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_m2), "RESULT_m2", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_77), "RESULT_77", NULL, NULL },
-    { int64_t (RapicornAidaTest::MathExpressions::RESULT_511), "RESULT_511", NULL, NULL },
-  };
-  return ::Aida::EnumInfo::cached_enum_info ("RapicornAidaTest::MathExpressions", 0, _aida_enumvalues_1014);
-} // specialization
 } // Aida
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__
@@ -3217,9 +2967,6 @@ static_assert (Aida::TypeHash { AIDA_HASH___TYPENAME__ } ==
 static_assert (Aida::TypeHash { AIDA_HASH___AIDA_TYPELIST__ } ==
                Aida::TypeHash { 0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL },
                "Expecting hash defined as:\n#define AIDA_HASH___AIDA_TYPELIST__ 	0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_AUX_DATA__ } ==
-               Aida::TypeHash { 0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_AUX_DATA__ 	0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL");
 static_assert (Aida::TypeHash { AIDA_HASH___AIDA_DIR__ } ==
                Aida::TypeHash { 0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL },
                "Expecting hash defined as:\n#define AIDA_HASH___AIDA_DIR__ 	0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL");

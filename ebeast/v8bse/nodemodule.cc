@@ -249,6 +249,7 @@ struct convert_AidaAny {
       case Aida::BOOL:          return v8::Boolean::New (iso, a.get<bool>());
       case Aida::INT32:         return v8::Integer::New (iso, a.get<int32_t>());
       case Aida::FLOAT64:       return v8::Number::New (iso, a.get<double>());
+      case Aida::ENUM:
       case Aida::STRING:        return v8pp::to_v8 (iso, a.get<std::string>());
       case Aida::SEQUENCE:      return any_to_v8array (iso, a);
       case Aida::RECORD:        return any_to_v8object (iso, a);
@@ -368,7 +369,7 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
     case Aida::INT64:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<int64>())); break;
     case Aida::STRING:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<std::string>())); break;
     case Aida::ENUM: {
-      const std::string __str = Aida::enum_value_to_string (__any.get_enum_typename(), __any.as_int64(), "+");
+      const std::string __str = __any.get<Aida::ENUM>();
       __v8ret.Set (v8pp::to_v8 (__v8isolate, __str));
       break; }
     case Aida::INSTANCE: {

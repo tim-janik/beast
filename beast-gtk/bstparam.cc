@@ -459,8 +459,8 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
         {
           const char *enum_typename = sfi_pspec_get_enum_typename (pspec);
           assert_return (NULL != enum_typename && enum_typename[0]);
-          const int64 v = Aida::enum_value_from_string (enum_typename, sfi_value_get_choice (value));
-          any.set_enum (enum_typename, v);
+          const String e = Aida::Introspection::match_enumerator (sfi_value_get_choice (value), enum_typename);
+          any.set<Aida::ENUM> (e);
         }
       else                      // sfi_pspec_string
         any.set (g_value_get_string (value));
@@ -501,7 +501,7 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
         {
           const char *enum_typename = sfi_pspec_get_enum_typename (pspec);
           assert_return (NULL != enum_typename && enum_typename[0]);
-          const String enumerator = Aida::enum_value_to_string (enum_typename, any.as_int64());
+          const String enumerator = Aida::Introspection::match_enumerator (any.to_string(), enum_typename);
           g_value_init (&value, SFI_TYPE_CHOICE);
           sfi_value_set_choice (&value, enumerator.c_str());
         }

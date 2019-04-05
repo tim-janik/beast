@@ -90,10 +90,12 @@ public:
   template<class A> void
   visit_enum (A &a, Name name)
   {
+#if 0 // FIXME: broken
     GParamSpec *pspec = sfi_pspec_choice (name, get_label (name).c_str(), get_blurb (name).c_str(), get_dflt (name).c_str(),
                                           Bse::choice_values_from_enum<A>(), get_hints (name).c_str());
     add_group (name, pspec);
     pspecs_.push_back (pspec);
+#endif
   }
   template<class A> void
   visit_visitable (A &a, Name name)
@@ -150,7 +152,9 @@ public:
   template<class A> void
   visit_enum (A &a, Name name)
   {
+#if 0 // FIXME: broken
     sfi_rec_set_choice (rec_, name, Aida::enum_info<A>().value_to_string (a).c_str());
+#endif
   }
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)

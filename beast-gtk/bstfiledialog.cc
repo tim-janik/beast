@@ -506,7 +506,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
     {
       if (!want_overwrite)
         {
-          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), project.get_name(), file_name, Bse::error_blurb (error));
+          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), project.get_name(), file_name, Bse::error_blurb (error).c_str());
           GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
                                                          BST_CHOICE_TEXT (text),
                                                          BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
@@ -530,7 +530,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
           if (error != Bse::Error::NONE)
             {
               unlink (temp_file); /* error != Bse::Error::FILE_EXISTS */
-              msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
+              msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error).c_str());
             }
           else if (rename (temp_file, file_name.c_str()) < 0)
             {
@@ -544,7 +544,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
         handled = FALSE;        /* exists && !overwrite */
     }
   else if (error != Bse::Error::NONE)
-    msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
+    msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error).c_str());
   /* report errors */
   if (msg)
     {
