@@ -7,14 +7,14 @@ using namespace Aida;
 
 enum TestEnum { TEST_COFFEE_COFFEE = -0xc0ffeec0ffeeLL };
 
-#if 1 // Manually adding TestEnum introspection information
+// Manually adding TestEnum introspection information for basic testing
 inline const char* operator->* (::Aida::IntrospectionTypename, TestEnum) { return "TestEnum"; }
 static const IntrospectionRegistry __aida_aux_data_srvt__Aida_TestEnum_ = {
-  "TestEnum\0"
-  "ENUM\0"
+  "typename=TestEnum\0"
+  "type=ENUM\0"
+  "enumerators=TEST_COFFEE_COFFEE\0"
   "TEST_COFFEE_COFFEE.value=-0xc0ffeec0ffee\0"
 };
-#endif
 
 namespace {
 
@@ -80,7 +80,6 @@ public:
   OneHandle                              __handle__         () { return OneHandle (NULL); }
   virtual std::string                    __typename__       () const override { return "OneIface"; }
   virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
-  virtual const std::vector<String>&     __aida_aux_data__  () const override { static std::vector<String> sv; return sv; }
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
   virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
@@ -103,14 +102,44 @@ typedef OneIface::OneIfaceP OneIfaceP;
 static void
 test_aida_enum_info()
 {
-  const Aida::EnumInfo tke1 = Aida::enum_info<Aida::TypeKind>();
-  const Aida::EnumInfo tke = tke1;
-  TASSERT (not tke.name().empty() && tke.has_values());
-  Aida::EnumValue ev = tke.find_value ("UNTYPED");
-  TASSERT (ev.value == Aida::UNTYPED);
-  ev = tke.find_value (Aida::STRING);
-  TASSERT (ev.ident && String ("STRING") == ev.ident);
-  TASSERT (type_kind_name (Aida::VOID) == String ("VOID"));
+  const StringVector &atk = Aida::Introspection::find_type ("Aida.TypeKind");
+  TASSERT (atk.size() > 0);
+  const StringVector &atk_cxx = Aida::Introspection::find_type ("Aida::TypeKind");
+  TASSERT (atk_cxx.size() > 0 && atk_cxx == atk);
+  Aida::TypeKind k = enum_value_from_string<Aida::TypeKind> ("UNTYPED");
+  TASSERT (k == Aida::TypeKind::UNTYPED);
+  const String enumerators_value = Aida::Introspection::find_value ("enumerators", atk);
+  const StringVector enumerators = Bse::string_split (enumerators_value, ";");
+  TASSERT (enumerators.size() && enumerators[0] == "UNTYPED");
+  const String STRING_name = Aida::Introspection::enumerator_from_value ("Aida.TypeKind", Aida::TypeKind::STRING);
+  TASSERT (STRING_name == "Aida.TypeKind.STRING");
+  const char *STRING_c_str = Aida::Introspection::legacy_enumerator ("Aida.TypeKind", Aida::TypeKind::STRING);
+  TASSERT (STRING_name == STRING_c_str);
+  const String STRING_name2 = Aida::enum_value_to_string<Aida::TypeKind> (Aida::TypeKind::STRING);
+  TASSERT (STRING_name == STRING_name2);
+  const String FLOAT64_value = Aida::Introspection::find_value ("FLOAT64.value", atk);
+  const int64_t FLOAT64_int = string_to_int (FLOAT64_value);
+  TASSERT (Aida::TypeKind::FLOAT64 == FLOAT64_int);
+  const String VOID_name = Aida::Introspection::enumerator_from_value ("Aida.TypeKind", Aida::TypeKind::VOID);
+  TASSERT (VOID_name == "Aida.TypeKind.VOID");
+  const String VOID_name2 = type_kind_name (Aida::VOID);
+  TASSERT (VOID_name == VOID_name2);
+  TASSERT (Introspection::match_enumerator ("VOID", "Aida.TypeKind") == "Aida.TypeKind.VOID");
+  TASSERT (Introspection::match_enumerator ("Aida.TypeKind.VOID", "") == "Aida.TypeKind.VOID");
+  TASSERT (Introspection::match_enumerator ("Aida.TypeKind.VOID", "Anonymous.No.Such.Thing") == "Aida.TypeKind.VOID");
+  int64 i;
+  i = Introspection::enumerator_to_value ("Aida.TypeKind.INT64");
+  TASSERT (i == Aida::TypeKind::INT64);
+  i = Introspection::enumerator_to_value ("INT64", "Aida.TypeKind");
+  TASSERT (i == Aida::TypeKind::INT64);
+  i = Introspection::enumerator_to_value ("INT64", "::Aida::TypeKind");
+  TASSERT (i == Aida::TypeKind::INT64);
+  i = Introspection::enumerator_to_value ("INT64", "Aida.TypeKind.SOME_SIBLING");
+  TASSERT (i == Aida::TypeKind::INT64);
+  i = Introspection::enumerator_to_value ("Aida.TypeKind.bool");
+  TASSERT (i == Aida::TypeKind::BOOL);
+  i = Introspection::enumerator_to_value ("NT64", "Aida.TypeKind");
+  TASSERT (i != Aida::TypeKind::INT64);
 }
 TEST_ADD (test_aida_enum_info);
 
@@ -161,7 +190,7 @@ test_aida_any_basics()
   TASSERT (b.kind() == ENUM);
   TASSERT (b.get<TestEnum>() == TEST_COFFEE_COFFEE);
   Any dup = b;
-  TASSERT (dup.get_enum_typename() == "TestEnum");
+  TASSERT (dup.get<ENUM>() == "TestEnum.TEST_COFFEE_COFFEE");
   TASSERT (dup.get<TestEnum>() == TEST_COFFEE_COFFEE);
 }
 TEST_ADD (test_aida_any_basics);
@@ -184,6 +213,10 @@ test_aida_any_conversions()
   a.set ("");               TASSERT (a.kind() == STRING && a.get<String>() == "" && a.get<bool>() == 0);
   a.set ("f");              TASSERT (a.kind() == STRING && a.get<String>() == "f" && a.get<bool>() == 1);
   a.set ("123456789");      TASSERT (a.kind() == STRING && a.get<String>() == "123456789" && a.get<bool>() == 1);
+  a.set<TypeKind> (INT32);  TASSERT (a.kind() == ENUM && a.get<String>() == "Aida.TypeKind.INT32" && a.get<TypeKind>() == INT32);
+  a.set<TypeKind> (FLOAT64); TASSERT (a.kind() == ENUM && a.get<String>() == "Aida.TypeKind.FLOAT64" && a.get<TypeKind>() == FLOAT64);
+  a.set<ENUM> ("Aida.TypeKind.FLOAT64"); TASSERT (a.kind() == ENUM && a.get<String>() == "Aida.TypeKind.FLOAT64");
+  a.set<ENUM> ("INT64");    TASSERT (a.kind() == ENUM && a.get<String>() == "INT64" && a.get<TypeKind>() == INT64);
 }
 TEST_ADD (test_aida_any_conversions);
 
