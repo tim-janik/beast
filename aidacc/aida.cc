@@ -774,19 +774,18 @@ Introspection::enumerator_from_value (const std::string &enumtypename, int64_t v
   return "";
 }
 
-/// Match `partialenumerator`, considering the enum/enumerator `enum_context`.
-std::string
-Introspection::match_enumerator (const std::string &partialenumerator, const std::string &enum_context)
+static std::string
+resolve_enum_context (const std::string &partialenumerator, const std::string &enum_context, std::string *tail)
 {
   const String partial = normalize_typename (partialenumerator);
-  // first, determine enum type
-  String tail, enumname = split_enumerator (partial, &tail);
-  bool enum_match = find_type_kind (enumname) == "ENUM";
+  // determine enum type
+  String enumname = split_enumerator (partial, tail);
+  bool enum_match = Introspection::find_type_kind (enumname) == "ENUM";
   if (!enum_match)
     {
       // try enum_context
       enumname = normalize_typename (enum_context);
-      enum_match = find_type_kind (enumname) == "ENUM";
+      enum_match = Introspection::find_type_kind (enumname) == "ENUM";
       if (!enum_match)
         {
           // try enum_context after splitting off enumerator
@@ -794,13 +793,21 @@ Introspection::match_enumerator (const std::string &partialenumerator, const std
           if (cdot != std::string::npos)
             {
               enumname = enumname.substr (0, cdot);
-              enum_match = find_type_kind (enumname) == "ENUM";
+              enum_match = Introspection::find_type_kind (enumname) == "ENUM";
             }
         }
     }
-  if (!enum_match)
-    return "";          // no matching enum type found
-  // second, match enumerator while allowing prefix omissions
+  return enum_match ? enumname : "";    // returns "" if no matching enum type was found
+}
+
+/// Match `partialenumerator`, considering the enum/enumerator `enum_context`.
+std::string
+Introspection::match_enumerator (const std::string &partialenumerator, const std::string &enum_context)
+{
+  String tail, enumname = resolve_enum_context (partialenumerator, enum_context, &tail);
+  if (enumname.empty())
+    return "";                  // no matching enum type
+  // match enumerator while allowing prefix omissions
   String kind;
   const StringVector &kvlist = find_normalized_type (enumname, &kind);
   if (kind == "ENUM")
@@ -810,25 +817,25 @@ Introspection::match_enumerator (const std::string &partialenumerator, const std
         if (string_match_identifier_tail (enumerator, tail))
           return enumname + "." + enumerator;
     }
-  return "";            // no matching enumerator
+  return "";                    // no matching enumerator
 }
 
 /// Retrieve numeric value for `enumerator` or 0.
 int64_t
 Introspection::enumerator_to_value (const std::string &enumerator, const std::string &enum_context)
 {
-  const String normalizedenumerator = match_enumerator (enumerator, enum_context);
+  String tail, enumname = resolve_enum_context (enumerator, enum_context, &tail);
+  String kind;
+  const StringVector &kvlist = find_normalized_type (enumname, &kind);
   const char *fallback = NULL;
-  if (!normalizedenumerator.empty())
+  if (kind == "ENUM")
     {
-      String tail, enumtype = split_enumerator (normalizedenumerator, &tail);
-      const StringVector *kvlist = &find_normalized_type (enumtype, NULL);
-      for (const std::string &kv : *kvlist)
+      for (const std::string &kv : kvlist)
         {
           const auto mvpair = split_member_at_property (kv.c_str(), "value");
           if (!mvpair.second)
             continue;                                   // not an IDENT.value=123 entry
-          if (tail == kv.substr (0, mvpair.first))
+          if (string_match_identifier_tail (kv.substr (0, mvpair.first), tail))
             return string_to_int (mvpair.second);
           if (!fallback)
             fallback = mvpair.second;                   // capture first enumerator as fallback
