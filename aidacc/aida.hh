@@ -351,10 +351,6 @@ class EnumInfo {
   const uint32_t         n_values_;
   const bool             flags_;
   explicit               EnumInfo          (const String &enum_name, bool isflags, uint32_t n_values, const EnumValue *values);
-  static const EnumInfo& cached_enum_info  (const String &enum_name, bool isflags, uint32_t n_values, const EnumValue *values);
-  template<size_t N>
-  static const EnumInfo& cached_enum_info  (const String &enum_name, bool isflags, const EnumValue (&varray)[N])
-  { return cached_enum_info (enum_name, isflags, N, varray); }
 public:
   String          name              () const;                           ///< Retrieve the enum type name for this Enum.
   EnumValue       find_value        (const String &name) const;         ///< Find first enum value matching @a name.
@@ -371,22 +367,7 @@ public:
   String          value_to_string   (T     value) const                     { return value_to_string (int64 (value)); }
   String          value_to_string   (int64 value) const;
   String          value_to_string   (int64 value, const String &joiner) const;
-  /// Template to be specialised by introspectable enums.
-  template<typename EnumType> friend
-  const EnumInfo& enum_info         ()
-  {
-    static_assert (std::is_enum<EnumType>::value, "");
-    return cached_enum_info (typeid_name<EnumType>(), false, 0, NULL);
-  }
 };
-template<typename EnumType> const EnumInfo& enum_info (); // clang++ needs this extra prototype of the above friend
-
-template<typename EnumType> EnumType
-enum_value_from_string (const String &valuestring)      ///< Type-safe variant of EnumInfo.value_from_string().
-{ return (EnumType) Aida::enum_info<EnumType>().value_from_string (valuestring); }
-template<typename EnumType> String
-enum_value_to_string (EnumType evalue)                  ///< Type-safe variant of EnumInfo.value_to_string().
-{ return Aida::enum_info<EnumType>().value_to_string (evalue); }
 
 // == IntrospectionTypename ==
 struct IntrospectionTypename {};
@@ -401,26 +382,49 @@ operator->* (Aida::IntrospectionTypename, T &&t)
 }
 
 // == IntrospectionRegistry ==
+class Introspection {
+public:
+  static const StringVector&     find_type              (const std::string &abstypename, std::string *kind = NULL);
+  static std::string             find_type_kind         (const std::string &abstypename);
+  static std::string             find_value             (const std::string &key, const StringVector &kvlist, const std::string &fallback = "");
+  static StringVector            find_nested            (const std::string &field, const StringVector &kvlist);
+  static std::string             strip_type_prefix      (const std::string &dottedstring);
+  // enum helpers
+  static StringVector            list_enumerators       (const std::string &enum_typename);
+  static std::string             match_enumerator       (const std::string &partialenumerator, const std::string &enum_context);
+  static StringVector            find_enumerator        (const std::string &enumerator);
+  static int64_t                 enumerator_to_value    (const std::string &enumerator, const std::string &enum_context = "");
+  static std::string             enumerator_from_value  (const std::string &enumtypename, int64_t value);
+  static const char*             legacy_enumerator      (const std::string &enumtypename, int64_t value);
+};
+
+/// Return the numeric value of `valuestring` in `enum_typename`.
+/// See also the underlying Introspection::enumerator_to_value().
+template<typename EnumType> EnumType
+enum_value_from_string (const String &valuestring)
+{ return EnumType (Introspection::enumerator_to_value (valuestring, typeid_name<EnumType>())); }
+
+/// Return fully qualified enumerator for `evalue`.
+/// See also the underlying Introspection::enumerator_from_value().
+template<typename EnumType> String
+enum_value_to_string (EnumType evalue)
+{ return Introspection::enumerator_from_value (typeid_name<EnumType>(), int64_t (evalue)); }
+
+/// Retrieve the enumerator without type name from enum_value_to_string<>().
+template<typename EnumType> String
+enum_value_to_short_string (EnumType evalue)
+{ return Introspection::strip_type_prefix (enum_value_to_string<EnumType> (evalue)); }
+
+// == IntrospectionRegistry ==
 class IntrospectionRegistry {
   static void register_aux_data (const char *auxentry, size_t length);
 public:
-  using Enumerator = std::pair<String,int64>;
-  static const StringVector&     lookup                 (const std::string &abstypename, String *fundamental_type = NULL);
-  static String                  lookup_type            (const std::string &abstypename);
-  static std::vector<Enumerator> list_enumerators       (const std::string &enum_typename);
   template<size_t I>             IntrospectionRegistry  (const char (&auxentry) [I])
   {
     static_assert (I >= 1, "");
     register_aux_data (auxentry, I);
   }
 };
-
-/// Return the numeric value of @a valuestring in @a enum_typename.
-int64  enum_value_from_string (const std::string &enum_typename, const String &valuestring);
-/// Construct a string representation of @a evalue in @a enum_typename, joining flags with @a joiner.
-String enum_value_to_string   (const std::string &enum_typename, int64 evalue, const String &joiner = "");
-/// Return enum value identifier in @a enum_typename with the exact value @a evalue.
-String enum_value_find        (const std::string &enum_typename, int64 evalue);
 
 /// Split @a char_array at '\\0' and construct vector.
 std::vector<String> aux_vector_split    (const char *char_array, size_t length); // Splits @a char_array at '\\0'
@@ -465,7 +469,6 @@ enum TypeKind {
   TRANSITION     = 'T', ///< Instance or RemoteHandle in transition between remotes.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
-template<> const EnumInfo& enum_info<TypeKind> ();
 
 const char* type_kind_name (TypeKind type_kind); ///< Obtain TypeKind names as a string.
 
@@ -487,7 +490,6 @@ typedef std::vector<TypeHash> TypeHashList;
 // == Internal Type Hashes ==
 #define AIDA_HASH___TYPENAME__          0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL
 #define AIDA_HASH___AIDA_TYPELIST__     0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL
-#define AIDA_HASH___AIDA_AUX_DATA__     0x42fc748a3a55dc79ULL, 0x04053ea3795243f7ULL
 #define AIDA_HASH___AIDA_DIR__          0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL
 #define AIDA_HASH___AIDA_GET__          0x4aed20bb93591defULL, 0xc75b192eab6983edULL
 #define AIDA_HASH___AIDA_SET__          0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL
@@ -621,7 +623,6 @@ public:
   TypeHashList            __typelist__         () const;
   String                  __typename__         () const;                                //: AIDAID
   TypeHashList            __aida_typelist__    () const;                                //: AIDAID
-  const StringVector&     __aida_aux_data__    () const;                                //: AIDAID
   std::vector<String>     __aida_dir__         () const;                                //: AIDAID
   Any                     __aida_get__         (const String &name) const;              //: AIDAID
   bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
@@ -812,7 +813,6 @@ private:
   typedef RemoteMember<RemoteHandle> ARemoteHandle;
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany;
-    struct { int64 venum64; char *enum_typename; };
     int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)), sizeof (ARemoteHandle)))];
     AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
     const AnyRec&        vfields () const { return *(const AnyRec*) this; }
@@ -844,9 +844,7 @@ public:
   void      swap   (Any           &other);              ///< Swap the contents of @a this and @a other in constant time.
   void      clear  ();                                  ///< Erase Any contents, making it empty like a newly constructed Any().
   bool      empty  () const;                            ///< Returns true if Any is newly constructed or after clear().
-  String    get_enum_typename () const;                 ///< Get the enum typename from an enum holding any.
-  void      set_enum (const String &enum_typename,
-                      int64 value);                     ///< Set Any to hold an enum value.
+  void      set_enum (const String &enumerator);        ///< Set Any to hold an enumerator value.
   RemoteHandle get_untyped_remote_handle () const;
   template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
     ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
@@ -874,11 +872,7 @@ private:
   void               set_double  (double value);
   std::string        get_string  () const;
   void               set_string  (const std::string &value);
-  int64              get_enum    (const String &enum_typename) const;
-  template<typename Enum>
-  Enum               get_enum    () const               { return Enum (get_enum (introspection_typename ->* Enum (0))); }
-  template<typename Enum>
-  void               set_enum    (Enum value)           { return set_enum (introspection_typename ->* Enum (0), int64 (value)); }
+  std::string        get_enum    () const;
   const AnySeq&      get_seq     () const;
   void               set_seq     (const AnySeq &seq);
   const AnyRec&      get_rec     () const;
@@ -899,7 +893,8 @@ public:
   template<typename T, REQUIRES< IsInteger<T>::value > = true>                         T    get () const { return as_int64(); }
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            T    get () const { return as_double(); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     T    get () const { return get_string(); }
-  template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return get_enum<T>(); }
+  template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      T    get () const { return enum_value_from_string<T> (get_enum()); }
+  template<TypeKind V, REQUIRES< V == Aida::ENUM > = true>                   std::string    get () const { return get_enum(); }
   template<typename T, REQUIRES< std::is_same<const AnySeq*, T>::value > = true>       T    get () const { return &get_seq(); }
   template<typename T, REQUIRES< IsDecayedSame<const AnySeq&, T>::value > = true>      T    get () const { return get_seq(); }
   template<typename T, REQUIRES< IsJustConvertible<const AnySeq, T>::value > = true>   T    get () const { return get_seq(); }
@@ -916,7 +911,8 @@ public:
   template<typename T, REQUIRES< std::is_floating_point<T>::value > = true>            void set (T v) { return set_double (v); }
   template<typename T, REQUIRES< DerivesString<T>::value > = true>                     void set (T v) { return set_string (v); }
   template<typename T, REQUIRES< IsConstCharPtr<T>::value > = true>                    void set (T v) { return set_string (v); }
-  template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum<T> (v); }
+  template<typename T, REQUIRES< std::is_enum<T>::value > = true>                      void set (T v) { return set_enum (enum_value_to_string<T> (v)); }
+  template<TypeKind V, REQUIRES< V == Aida::ENUM > = true>                             void set (const std::string &enumerator) { set_enum (enumerator); }
   template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T &v) { return set_seq (v); }
   template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T *v) { return set_seq (*v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T &v) { return set_rec (v); }
@@ -986,7 +982,6 @@ public:
   virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
   virtual TypeHashList        __aida_typelist__   () const = 0;
-  virtual const StringVector& __aida_aux_data__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;

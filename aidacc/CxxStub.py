@@ -108,6 +108,14 @@ class Generator:
     return ns + prefix + base + postfix
   def Iwrap (self, name):
     return self.prefix_namespaced_identifier ('', name, 'Iface')
+  def type_identifier (self, tp):
+    # compound types
+    if tp.storage in (Decls.ENUM, Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE):
+      tnsl = tp.list_namespaces() # type namespace list
+      absolute_namespaces = [d.name for d in tnsl if d.name]
+      fullnsname = '.'.join (absolute_namespaces + [ tp.name ])
+      return fullnsname
+    return Decls.storage_name (tp.storage)
   def type2cpp_absolute (self, type_node):
     tstorage = type_node.storage
     if tstorage == Decls.VOID:          return 'void'
@@ -271,7 +279,8 @@ class Generator:
     return s
   def generate_recseq_decl (self, type_info):
     s = '\n'
-    classC, classFull = self.C (type_info), self.namespaced_identifier (type_info.name)
+    classC = self.C (type_info)
+    type_identifier = self.type_identifier (type_info)
     # s += self.generate_shortdoc (type_info)   # doxygen IDL snippet
     if type_info.storage == Decls.SEQUENCE:
       fl = type_info.elements
@@ -304,7 +313,7 @@ class Generator:
           s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
       s += ' }\n'
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
-    s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % classFull
+    s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
@@ -343,17 +352,31 @@ class Generator:
       ident = aprefix + ident + apostfix
       s += '  %s >>= %s;\n' % (fbr, ident)
     return s
-  def generate_aux_data_string (self, tp, name = ''):
-    s, prefix = '', (name + '.' if name else '')
-    s += '  "%stype=%s\\0"\n' % (prefix, Decls.storage_name (tp.storage))
-    if tp.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.INTERFACE):
-      fullnsname = self.type2cpp_absolute (tp)
-      s += '  "%stypename=%s\\0"\n' % (prefix, fullnsname)
+  def generate_aux_data_string (self, tp, fieldname = '', prefix = ''):
+    s = ''
+    # types
+    if not fieldname and not prefix and tp.storage in (Decls.ENUM, Decls.RECORD, Decls.SEQUENCE, Decls.INTERFACE):
+      s += '  "typename=%s\\0"\n' % self.type_identifier (tp)
+      s += '  "%stype=%s\\0"\n' % (prefix, Decls.storage_name (tp.storage))
+    # fields
+    if fieldname:
+      # s += '  "%sname=%s\\0"\n' % (prefix, fieldname)
+      s += '  "%stype=%s\\0"\n' % (prefix, self.type_identifier (tp))
+    if not fieldname and tp.storage == Decls.SEQUENCE:
+      s += '  "%sfields=%s\\0"\n' % (prefix, tp.elements[0])
+    if not fieldname and tp.storage == Decls.RECORD:
+      s += '  "%sfields=' % prefix
+      s += ';'.join (fid for (fid, ftp) in tp.fields)
+      s += '\\0"\n'
+    if not fieldname and tp.storage == Decls.ENUM:
+      s += '  "%senumerators=' % prefix
+      s += ';'.join (ev[0] for ev in tp.options)
+      s += '\\0"\n'
     for k,v in tp.auxdata.items():
       qvalue = backslash_quote (aux_data_value_string (v))
       if qvalue:
         s += '  "%s%s=%s\\0"\n' % (prefix, k, qvalue)
-    if not name and tp.storage == Decls.ENUM:
+    if not fieldname and tp.storage == Decls.ENUM:
       for ev in tp.options:
         (ident, label, blurb, number) = ev
         s += '  "%s.value=%d\\0"\n' % (ident, number)
@@ -363,18 +386,18 @@ class Generator:
         if blurb:
           #blurb = blurb[-1] == ')' and re.sub ('[A-Z]*_\(', '', blurb[:-1]) or blurb # strip i18n function wrapper
           s += '  "%s.blurb=" %s "\\0"\n' % (ident, blurb)
-    if not name and tp.storage == Decls.SEQUENCE:
-      s += self.generate_aux_data_string (tp.elements[1], prefix + tp.elements[0])
-    if not name and tp.storage in (Decls.RECORD, Decls.INTERFACE):
+    if not fieldname and tp.storage == Decls.SEQUENCE:
+      s += self.generate_aux_data_string (tp.elements[1], tp.elements[0], prefix + tp.elements[0] + '.')
+    if not fieldname and tp.storage == Decls.RECORD:
       for fid, ftp in tp.fields:
-        s += self.generate_aux_data_string (ftp, prefix + fid)
+        s += self.generate_aux_data_string (ftp, fid, prefix + fid + '.')
     return s
   def generate_recseq_aux_method_impls (self, tp): # FIXME: rename
-    absolute_typename = self.type2cpp_absolute (tp)
+    type_identifier = self.type_identifier (tp)
     s = ''
     # __aida_aux_data__
     s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
-    s += '  static const Aida::StringVector sv = Aida::IntrospectionRegistry::lookup ("%s");\n' % absolute_typename
+    s += '  static const Aida::StringVector sv = Aida::Introspection::find_type ("%s");\n' % type_identifier
     s += '  return sv;\n'
     s += '}\n'
     return s
@@ -428,26 +451,9 @@ class Generator:
     return s
   def generate_enum_info_impl (self, type_info):
     u_typename, c_typename = '__'.join (type_name_parts (type_info)), '::'.join (type_name_parts (type_info))
+    type_identifier = self.type_identifier (type_info)
     s, varray = '\n', '_aida_enumvalues_%u' % self.idcounter
     s += self.generate_type_aux_data_registration (type_info)
-    self.idcounter += 1
-    enum_ns, enum_class = '::'.join (self.type_relative_namespaces (type_info)), type_info.name
-    s += 'template<> const EnumInfo&\n'
-    s += 'enum_info<%s> ()\n{\n' % c_typename
-    s += '  static const EnumValue %s[] = {\n' % varray
-    for opt in type_info.options:
-      (ident, label, blurb, number) = opt
-      # number = self.c_long_postfix (number)
-      number = enum_ns + '::' + enum_class + '::' + ident
-      ident = cquote (ident)
-      label = label if label else "NULL"
-      blurb = blurb if blurb else "NULL"
-      s += '    { int64_t (%s), %s, %s, %s },\n' % (number, ident, label, blurb)
-    s += '  };\n'
-    s += '  return ::Aida::EnumInfo::cached_enum_info ("%s", %s, %s);\n' % (c_typename, int (type_info.combinable), varray)
-    s += '} // specialization\n'
-    # explicit instantiation occuring after an explicit specialization has no effect
-    # s += 'template const EnumInfo& enum_info<%s> (); // instantiation\n' % c_typename
     return s
   def digest2cbytes (self, digest):
     return '0x%02x%02x%02x%02x%02x%02x%02x%02xULL, 0x%02x%02x%02x%02x%02x%02x%02x%02xULL' % digest
@@ -519,6 +525,7 @@ class Generator:
     return s
   def generate_interface_class (self, type_info, class_name_list):
     s, classC, classH, classFull = '\n', self.C (type_info), self.C4client (type_info), self.namespaced_identifier (type_info.name)
+    type_identifier = self.type_identifier (type_info)
     class_name_list += [ classFull ]
     if self.gen_mode == G4SERVANT:
       s += self.generate_interface_pointerdefs (type_info)
@@ -546,8 +553,7 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
-      s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % classFull
-      s += self.generate_class_aux_method_decls (type_info)
+      s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % type_identifier
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
       s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
@@ -643,36 +649,11 @@ class Generator:
     s = ''
     aux_data_string = self.generate_aux_data_string (tp)
     aux_data_string = aux_data_string if aux_data_string else '  ""'
-    fileprefix = 'srvt' if self.gen_servercc else 'clnt'
     absolute_typename = self.type2cpp_absolute (tp)
     unique_type_identifier = re.sub ('::', '_', absolute_typename)
-    s += 'static const Aida::IntrospectionRegistry __aida_aux_data_%s__%s_ = {\n' % (fileprefix, unique_type_identifier)
-    s += '  "%s\\0"\n' % absolute_typename
-    s += '  "%s\\0"\n' % Decls.storage_name (tp.storage)
+    s += 'static const Aida::IntrospectionRegistry __aida__aux__data__%s_ = {\n' % unique_type_identifier
     s += aux_data_string
     s += '};\n'
-    return s
-  def generate_class_aux_method_decls (self, tp):
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    virtual = 'virtual '
-    s += '  %-37s __aida_aux_data__  () const override;\n' % (virtual + 'const Aida::StringVector&')
-    return s
-  def generate_server_class_aux_method_impls (self, tp):
-    assert self.gen_mode == G4SERVANT
-    s, classH = '', self.C (tp)
-    absolute_typename = self.type2cpp_absolute (tp)
-    reduced_immediate_ancestors = self.interface_class_ancestors (tp)
-    # __aida_aux_data__
-    s += self.generate_type_aux_data_registration (tp)
-    s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % classH
-    s += '  static const Aida::StringVector __d_ =\n    ::Aida::aux_vectors_combine ('
-    s += 'Aida::IntrospectionRegistry::lookup ("%s")' % absolute_typename
-    for atp in reduced_immediate_ancestors:
-      s += ',\n                                 this->%s::__aida_aux_data__()' % self.C (atp)
-    s += ');\n'
-    s += '  return __d_;\n'
-    s += '}\n'
     return s
   def generate_class_any_method_decls (self, tp):
     assert self.gen_mode == G4SERVANT
@@ -693,7 +674,7 @@ class Generator:
     for fname, ftype in tp.fields:
       if a:
         s, a = s + a, ''
-      faux = self.generate_aux_data_string (ftype, '')
+      faux = self.generate_aux_data_string (ftype, fname)
       s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
       ctype = self.C (ftype) # self.type2cpp_relative (ftype)
       s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
@@ -980,7 +961,7 @@ class Generator:
     return str (number)
   def generate_enum_decl (self, type_info):
     s = '\n'
-    nm, c_typename = type_info.name, self.namespaced_identifier (type_info.name)
+    nm, type_identifier = type_info.name, self.type_identifier (type_info)
     l = []
     s += '/// @cond GeneratedEnums\n'
     s += 'enum class %s : int64_t {\n' % type_info.name
@@ -991,7 +972,7 @@ class Generator:
         s += ' // %s' % re.sub ('\n', ' ', blurb)
       s += '\n'
     s += '};\n'
-    s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, c_typename)
+    s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, type_identifier)
     s += 'inline void operator<<= (Aida::ProtoMsg &__p_,  %s  e) ' % nm
     s += '{ __p_ <<= Aida::EnumValue (e); }\n'
     s += 'inline void operator>>= (Aida::ProtoReader &__f_, %s &e) ' % nm
@@ -1000,11 +981,6 @@ class Generator:
     if type_info.combinable: # enum as flags
       s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
     s += '/// @endcond\n'
-    return s
-  def generate_enum_info_specialization (self, type_info):
-    s = ''
-    classFull = '::'.join (self.type_relative_namespaces (type_info) + [ type_info.name ])
-    s += 'template<> const EnumInfo& enum_info<%s> ();\n' % classFull
     return s
   def insertion_text (self, key):
     text = self.insertions.get (key, '')
@@ -1113,11 +1089,6 @@ class Generator:
           s += self.open_namespace (tp)
           s += self.generate_enum_decl (tp)
           spc_enums += [ tp ]
-      if spc_enums:
-        s += self.open_namespace (self.ns_aida)
-        for tp in spc_enums:
-          s += self.generate_enum_info_specialization (tp)
-        s += self.open_namespace (None)
     # generate client/server decls
     if self.gen_clienthh or self.gen_serverhh:
       self.gen_mode = G4SERVANT if self.gen_serverhh else G4STUB
@@ -1163,7 +1134,6 @@ class Generator:
           if self.gen_servercc:
             s += self.open_namespace (tp)
             s += self.generate_server_class_methods (tp)
-            s += self.generate_server_class_aux_method_impls (tp)
             s += self.generate_server_class_any_method_impls (tp)
           if self.gen_clientcc:
             s += self.open_namespace (tp)
