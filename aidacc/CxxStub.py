@@ -519,6 +519,7 @@ class Generator:
       s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
       s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
+      s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist__       () const override;\n'
       s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
       s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % type_identifier
       s += self.generate_class_any_method_decls (type_info)
@@ -723,6 +724,14 @@ class Generator:
     s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
     s += '}\n'
     # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
+    s += 'Aida::StringVector\n'
+    s += '%s::__typelist__ () const\n{\n' % classC
+    s += '  return { '
+    ancestors = self.class_ancestry (tp)
+    for an in ancestors:
+      s += '"%s", ' % self.type_identifier (an)
+    s += '};\n'
+    s += '}\n'
     s += 'Aida::TypeHashList\n'
     s += '%s::__aida_typelist__ () const\n{\n' % classC
     s += '  Aida::TypeHashList thl;\n'

@@ -52,6 +52,7 @@ protected:
   virtual  /*dtor*/                    ~FirstInterfaceIface () override = 0;
 public:
   FirstInterfaceHandle                  __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace.FirstInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -81,6 +82,7 @@ protected:
   virtual  /*dtor*/                    ~UIWidgetAreaIface () override = 0;
 public:
   UIWidgetAreaHandle                    __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.UIWidgetArea"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -127,6 +129,7 @@ protected:
   virtual  /*dtor*/                    ~ParentIface () override = 0;
 public:
   ParentHandle                          __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Parent"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -148,6 +151,7 @@ protected:
   virtual  /*dtor*/                    ~ChildIface () override = 0;
 public:
   ChildHandle                           __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Child"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -171,6 +175,7 @@ protected:
   virtual  /*dtor*/                    ~DescendantIface () override = 0;
 public:
   DescendantHandle                      __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Descendant"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -194,6 +199,7 @@ protected:
   virtual  /*dtor*/                    ~GrandChildIface () override = 0;
 public:
   GrandChildHandle                      __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.GrandChild"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -217,6 +223,7 @@ protected:
   virtual  /*dtor*/                    ~QuickIfaceIface () override = 0;
 public:
   QuickIfaceHandle                      __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.QuickIface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -239,6 +246,7 @@ protected:
   virtual  /*dtor*/                    ~MethodTestInterfaceIface () override = 0;
 public:
   MethodTestInterfaceHandle             __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.MethodTestInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -283,6 +291,7 @@ protected:
   virtual  /*dtor*/                    ~SignalTestInterfaceIface () override = 0;
 public:
   SignalTestInterfaceHandle             __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.SignalTestInterface"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -304,6 +313,7 @@ protected:
   virtual  /*dtor*/                    ~ChildInheritingSignalsIface () override = 0;
 public:
   ChildInheritingSignalsHandle          __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.ChildInheritingSignals"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -327,6 +337,7 @@ protected:
   virtual  /*dtor*/                    ~AnotherChildIface () override = 0;
 public:
   AnotherChildHandle                    __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.AnotherChild"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -350,6 +361,7 @@ protected:
   virtual  /*dtor*/                    ~PropertyTesterIface () override = 0;
 public:
   PropertyTesterHandle                  __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "InterfaceTests.PropertyTester"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -408,6 +420,7 @@ protected:
   virtual  /*dtor*/                    ~UseIncludesIface () override = 0;
 public:
   UseIncludesHandle                     __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.UseIncludes"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -431,6 +444,7 @@ protected:
   virtual  /*dtor*/                    ~ButtonAreaIface () override = 0;
 public:
   ButtonAreaHandle                      __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.ButtonArea"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -466,6 +480,7 @@ protected:
   virtual  /*dtor*/                    ~PureMethodsIface () override = 0;
 public:
   PureMethodsHandle                     __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.PureMethods"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -491,6 +506,7 @@ protected:
   virtual  /*dtor*/                    ~NameTestsIface () override = 0;
 public:
   NameTestsHandle                       __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "Other.NameTests"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -518,6 +534,7 @@ protected:
   virtual  /*dtor*/                    ~CompressorIface () override = 0;
 public:
   CompressorHandle                      __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest.Compressor"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -546,6 +563,7 @@ protected:
   virtual  /*dtor*/                    ~SoundModuleIface () override = 0;
 public:
   SoundModuleHandle                     __handle__         ();
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual Aida::TypeHashList            __aida_typelist__  () const override;
   virtual std::string                   __typename__       () const override	{ return "BseTest.SoundModule"; }
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
@@ -632,6 +650,11 @@ FirstInterfaceHandle::__iface__() const
 {
   return dynamic_cast<FirstInterfaceIface*> (const_cast<FirstInterfaceHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+FirstInterfaceIface::__typelist__ () const
+{
+  return { "MandatoryNamespace.FirstInterface", };
+}
 Aida::TypeHashList
 FirstInterfaceIface::__aida_typelist__ () const
 {
@@ -688,6 +711,11 @@ UIWidgetAreaIface*
 UIWidgetAreaHandle::__iface__() const
 {
   return dynamic_cast<UIWidgetAreaIface*> (const_cast<UIWidgetAreaHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+UIWidgetAreaIface::__typelist__ () const
+{
+  return { "InterfaceTests.UIWidgetArea", };
 }
 Aida::TypeHashList
 UIWidgetAreaIface::__aida_typelist__ () const
@@ -763,6 +791,11 @@ ParentHandle::__iface__() const
 {
   return dynamic_cast<ParentIface*> (const_cast<ParentHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+ParentIface::__typelist__ () const
+{
+  return { "InterfaceTests.Parent", };
+}
 Aida::TypeHashList
 ParentIface::__aida_typelist__ () const
 {
@@ -816,6 +849,11 @@ ChildIface*
 ChildHandle::__iface__() const
 {
   return dynamic_cast<ChildIface*> (const_cast<ChildHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+ChildIface::__typelist__ () const
+{
+  return { "InterfaceTests.Child", "InterfaceTests.Parent", };
 }
 Aida::TypeHashList
 ChildIface::__aida_typelist__ () const
@@ -877,6 +915,11 @@ DescendantHandle::__iface__() const
 {
   return dynamic_cast<DescendantIface*> (const_cast<DescendantHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+DescendantIface::__typelist__ () const
+{
+  return { "InterfaceTests.Descendant", "InterfaceTests.Parent", "InterfaceTests.Child", };
+}
 Aida::TypeHashList
 DescendantIface::__aida_typelist__ () const
 {
@@ -937,6 +980,11 @@ GrandChildIface*
 GrandChildHandle::__iface__() const
 {
   return dynamic_cast<GrandChildIface*> (const_cast<GrandChildHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+GrandChildIface::__typelist__ () const
+{
+  return { "InterfaceTests.GrandChild", "InterfaceTests.Parent", "InterfaceTests.Child", "InterfaceTests.Descendant", };
 }
 Aida::TypeHashList
 GrandChildIface::__aida_typelist__ () const
@@ -1000,6 +1048,11 @@ QuickIfaceHandle::__iface__() const
 {
   return dynamic_cast<QuickIfaceIface*> (const_cast<QuickIfaceHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+QuickIfaceIface::__typelist__ () const
+{
+  return { "InterfaceTests.QuickIface", };
+}
 Aida::TypeHashList
 QuickIfaceIface::__aida_typelist__ () const
 {
@@ -1053,6 +1106,11 @@ MethodTestInterfaceIface*
 MethodTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<MethodTestInterfaceIface*> (const_cast<MethodTestInterfaceHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+MethodTestInterfaceIface::__typelist__ () const
+{
+  return { "InterfaceTests.MethodTestInterface", };
 }
 Aida::TypeHashList
 MethodTestInterfaceIface::__aida_typelist__ () const
@@ -1108,6 +1166,11 @@ SignalTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<SignalTestInterfaceIface*> (const_cast<SignalTestInterfaceHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+SignalTestInterfaceIface::__typelist__ () const
+{
+  return { "InterfaceTests.SignalTestInterface", };
+}
 Aida::TypeHashList
 SignalTestInterfaceIface::__aida_typelist__ () const
 {
@@ -1161,6 +1224,11 @@ ChildInheritingSignalsIface*
 ChildInheritingSignalsHandle::__iface__() const
 {
   return dynamic_cast<ChildInheritingSignalsIface*> (const_cast<ChildInheritingSignalsHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+ChildInheritingSignalsIface::__typelist__ () const
+{
+  return { "InterfaceTests.ChildInheritingSignals", "InterfaceTests.SignalTestInterface", };
 }
 Aida::TypeHashList
 ChildInheritingSignalsIface::__aida_typelist__ () const
@@ -1222,6 +1290,11 @@ AnotherChildHandle::__iface__() const
 {
   return dynamic_cast<AnotherChildIface*> (const_cast<AnotherChildHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+AnotherChildIface::__typelist__ () const
+{
+  return { "InterfaceTests.AnotherChild", "InterfaceTests.SignalTestInterface", };
+}
 Aida::TypeHashList
 AnotherChildIface::__aida_typelist__ () const
 {
@@ -1281,6 +1354,11 @@ PropertyTesterIface*
 PropertyTesterHandle::__iface__() const
 {
   return dynamic_cast<PropertyTesterIface*> (const_cast<PropertyTesterHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+PropertyTesterIface::__typelist__ () const
+{
+  return { "InterfaceTests.PropertyTester", };
 }
 Aida::TypeHashList
 PropertyTesterIface::__aida_typelist__ () const
@@ -1428,6 +1506,11 @@ UseIncludesHandle::__iface__() const
 {
   return dynamic_cast<UseIncludesIface*> (const_cast<UseIncludesHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+UseIncludesIface::__typelist__ () const
+{
+  return { "RapicornAidaTest.UseIncludes", "IncludeCheck.SomeInterface", };
+}
 Aida::TypeHashList
 UseIncludesIface::__aida_typelist__ () const
 {
@@ -1487,6 +1570,11 @@ ButtonAreaIface*
 ButtonAreaHandle::__iface__() const
 {
   return dynamic_cast<ButtonAreaIface*> (const_cast<ButtonAreaHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+ButtonAreaIface::__typelist__ () const
+{
+  return { "RapicornAidaTest.ButtonArea", };
 }
 Aida::TypeHashList
 ButtonAreaIface::__aida_typelist__ () const
@@ -1575,6 +1663,11 @@ PureMethodsHandle::__iface__() const
 {
   return dynamic_cast<PureMethodsIface*> (const_cast<PureMethodsHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+PureMethodsIface::__typelist__ () const
+{
+  return { "RapicornAidaTest.PureMethods", };
+}
 Aida::TypeHashList
 PureMethodsIface::__aida_typelist__ () const
 {
@@ -1632,6 +1725,11 @@ NameTestsHandle::__iface__() const
 {
   return dynamic_cast<NameTestsIface*> (const_cast<NameTestsHandle*> (this)->__iface_ptr__().get());
 }
+Aida::StringVector
+NameTestsIface::__typelist__ () const
+{
+  return { "Other.NameTests", };
+}
 Aida::TypeHashList
 NameTestsIface::__aida_typelist__ () const
 {
@@ -1688,6 +1786,11 @@ CompressorIface*
 CompressorHandle::__iface__() const
 {
   return dynamic_cast<CompressorIface*> (const_cast<CompressorHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+CompressorIface::__typelist__ () const
+{
+  return { "BseTest.Compressor", };
 }
 Aida::TypeHashList
 CompressorIface::__aida_typelist__ () const
@@ -1765,6 +1868,11 @@ SoundModuleIface*
 SoundModuleHandle::__iface__() const
 {
   return dynamic_cast<SoundModuleIface*> (const_cast<SoundModuleHandle*> (this)->__iface_ptr__().get());
+}
+Aida::StringVector
+SoundModuleIface::__typelist__ () const
+{
+  return { "BseTest.SoundModule", };
 }
 Aida::TypeHashList
 SoundModuleIface::__aida_typelist__ () const

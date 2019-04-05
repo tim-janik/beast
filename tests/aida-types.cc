@@ -69,6 +69,7 @@ public:
   // static Aida::BaseConnection* __aida_connection__();
   OneHandle                              __handle__         () { return OneHandle(); }
   virtual std::string                    __typename__       () const override { return "OneIface"; }
+  virtual Aida::StringVector             __typelist__       () const override { return { "OneIface" }; }
   virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
   virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
   virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }

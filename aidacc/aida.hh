@@ -561,7 +561,7 @@ public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
-  TypeHashList            __typelist__         () const;
+  StringVector            __typelist__         () const;
   ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   // Support event handlers
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
@@ -911,6 +911,7 @@ public:
   using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
   virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
+  virtual StringVector        __typelist__        () const = 0;
   virtual TypeHashList        __aida_typelist__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;

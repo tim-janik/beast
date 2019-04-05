@@ -1677,13 +1677,13 @@ RemoteHandle::__attach__ (const String &eventselector, EventHandlerF handler)
   return *static_cast<EventConnection*> (&wptr);
 }
 
-TypeHashList
+StringVector
 RemoteHandle::__typelist__() const
 {
-  TypeHashList thl;
-  assert_return (*this != NULL, thl);
-  thl = remote_callc (*this, &ImplicitBase::__aida_typelist__);
-  return thl;
+  StringVector types;
+  assert_return (*this != NULL, types);
+  types = remote_callc (*this, &ImplicitBase::__typelist__);
+  return types;
 }
 
 bool
