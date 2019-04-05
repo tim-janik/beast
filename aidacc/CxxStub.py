@@ -333,9 +333,6 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
     s += '};\n'
-    if type_info.storage in (Decls.RECORD, Decls.SEQUENCE):
-      s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % classC
-      s += 'void operator>>= (Aida::ProtoReader&, %s&);\n' % classC
     #s += '/// @endcond\n'
     return s
   def generate_proto_add_args (self, fb, type_info, aprefix, arg_info_list, apostfix):
@@ -412,42 +409,12 @@ class Generator:
       s += '  if (this->%s != other.%s) return false;\n' % (ident, ident)
     s += '  return true;\n'
     s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator<<= (Aida::ProtoMsg &dst, const %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoMsg &__p_ = dst.add_rec (%u);\n' % len (type_info.fields)
-    s += self.generate_proto_add_args ('__p_', type_info, 'self.', type_info.fields, '')
-    s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator>>= (Aida::ProtoReader &src, %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoReader fbr (src.pop_rec());\n'
-    s += '  if (fbr.remaining() < %u) return;\n' % len (type_info.fields)
-    s += self.generate_proto_pop_args ('fbr', type_info, 'self.', type_info.fields)
-    s += '}\n'
     return s
   def generate_sequence_impl (self, type_info):
     s = ''
     s += self.generate_type_aux_data_registration (type_info)
     s += self.generate_recseq_aux_method_impls (type_info)
     el = type_info.elements
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator<<= (Aida::ProtoMsg &dst, const %s &self)\n{\n' % self.C (type_info)
-    s += '  const size_t len = self.size();\n'
-    s += '  Aida::ProtoMsg &__p_ = dst.add_seq (len);\n'
-    s += '  for (size_t k = 0; k < len; k++) {\n'
-    s += reindent ('  ', self.generate_proto_add_args ('__p_', type_info, '',
-                                                       [('self', type_info.elements[1])],
-                                                       '[k]')) + '\n'
-    s += '  }\n'
-    s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator>>= (Aida::ProtoReader &src, %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoReader fbr (src.pop_seq());\n'
-    s += '  const size_t len = fbr.remaining();\n'
-    s += '  self.resize (len);\n'
-    s += '  for (size_t k = 0; k < len; k++) {\n'
-    s += '    fbr >>= self[k];\n'
-    s += '  }\n'
-    s += '}\n'
     return s
   def generate_enum_info_impl (self, type_info):
     u_typename, c_typename = '__'.join (type_name_parts (type_info)), '::'.join (type_name_parts (type_info))
@@ -583,10 +550,6 @@ class Generator:
     # accept
     s += self.generate_class_accept_accessor (type_info)
     s += '};\n'
-    if self.gen_mode == G4SERVANT:
-      s += 'void operator<<= (Aida::ProtoMsg&, const %sP&);\n' % self.C (type_info)
-      s += 'void operator>>= (Aida::ProtoReader&, %s*&);\n' % self.C (type_info)
-      s += 'void operator>>= (Aida::ProtoReader&, %sP&);\n' % self.C (type_info)
     # typedef alias
     if self.gen_mode == G4STUB:
       s += self.generate_handle_typedefs (type_info)
@@ -760,18 +723,6 @@ class Generator:
     s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
     s += '}\n'
     # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-    s += 'void\n'
-    s += 'operator<<= (Aida::ProtoMsg &__p_, const %sP &ptr)\n{\n' % classC
-    s += '  __p_ <<= ptr.get();\n'
-    s += '}\n'
-    s += 'void\n'
-    s += 'operator>>= (Aida::ProtoReader &__f_, %sP &obj)\n{\n' % classC
-    s += '  obj = __f_.pop_instance<%s>();\n' % classC
-    s += '}\n'
-    s += 'void\n'
-    s += 'operator>>= (Aida::ProtoReader &__f_, %s* &obj)\n{\n' % classC
-    s += '  obj = __f_.pop_instance<%s>().get();\n' % classC
-    s += '}\n'
     s += 'Aida::TypeHashList\n'
     s += '%s::__aida_typelist__ () const\n{\n' % classC
     s += '  Aida::TypeHashList thl;\n'
@@ -870,10 +821,6 @@ class Generator:
       s += '\n'
     s += '};\n'
     s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, type_identifier)
-    s += 'inline void operator<<= (Aida::ProtoMsg &__p_,  %s  e) ' % nm
-    s += '{ __p_ <<= Aida::EnumValue (e); }\n'
-    s += 'inline void operator>>= (Aida::ProtoReader &__f_, %s &e) ' % nm
-    s += '{ e = %s (__f_.pop_evalue()); }\n' % nm
     s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
     if type_info.combinable: # enum as flags
       s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm

@@ -15,8 +15,6 @@ enum class Enum1 : int64_t {
   E1_A = 1,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace.Enum1"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum1 &e) { e = Enum1 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
 /// @endcond
 
@@ -25,8 +23,6 @@ enum class Enum1c : int64_t {
   E1C_A = 1,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace.Enum1c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum1c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum1c &e) { e = Enum1c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
 /// @endcond
 
@@ -36,8 +32,6 @@ enum class Enum2 : int64_t {
   E2_B = 2,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace.Enum2"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum2 &e) { e = Enum2 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
 /// @endcond
 
@@ -47,8 +41,6 @@ enum class Enum2c : int64_t {
   E2C_B = 2,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace.Enum2c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum2c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum2c &e) { e = Enum2c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
 /// @endcond
 
@@ -59,8 +51,6 @@ enum class Enum3 : int64_t {
   E3_C = 3,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace.Enum3"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum3 &e) { e = Enum3 (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
 /// @endcond
 
@@ -71,8 +61,6 @@ enum class Enum3c : int64_t {
   E3C_C = 3,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace.Enum3c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum3c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum3c &e) { e = Enum3c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
 /// @endcond
 
@@ -84,8 +72,6 @@ enum class Enum4a : int64_t {
   E4A_D = 4,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace.Enum4a"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4a  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4a &e) { e = Enum4a (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
 /// @endcond
 
@@ -97,8 +83,6 @@ enum class Enum4b : int64_t {
   E4B_D = 4,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace.Enum4b"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4b  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4b &e) { e = Enum4b (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
 /// @endcond
 
@@ -110,8 +94,6 @@ enum class Enum4c : int64_t {
   E4C_D = 4,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace.Enum4c"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4c  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4c &e) { e = Enum4c (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
 /// @endcond
 
@@ -123,8 +105,6 @@ enum class Enum4d : int64_t {
   E4D_D = 4,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace.Enum4d"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  Enum4d  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, Enum4d &e) { e = Enum4d (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
 /// @endcond
 
@@ -167,8 +147,6 @@ enum class ExtensiveEnum : int64_t {
   V36 = 42, // "foo4"
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace.ExtensiveEnum"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  ExtensiveEnum  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, ExtensiveEnum &e) { e = ExtensiveEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
 /// @endcond
 } // MandatoryNamespace
@@ -180,8 +158,6 @@ enum class QuickEnum : int64_t {
   ZERO = 0,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests.QuickEnum"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  QuickEnum  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, QuickEnum &e) { e = QuickEnum (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
 /// @endcond
 } // InterfaceTests
@@ -197,8 +173,6 @@ enum class ClickType : int64_t {
   CLICK_KEY_REPEAT = 5,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest.ClickType"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  ClickType  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, ClickType &e) { e = ClickType (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
 /// @endcond
 
@@ -218,8 +192,6 @@ enum class MathExpressions : int64_t {
   RESULT_511 = 511,
 };
 inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest.MathExpressions"; }
-inline void operator<<= (Aida::ProtoMsg &__p_,  MathExpressions  e) { __p_ <<= Aida::EnumValue (e); }
-inline void operator>>= (Aida::ProtoReader &__f_, MathExpressions &e) { e = MathExpressions (__f_.pop_evalue()); }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
 /// @endcond
 } // RapicornAidaTest
@@ -301,8 +273,6 @@ public:
     _visitor_ (any3, "any3");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const XFooRecord&);
-void operator>>= (Aida::ProtoReader&, XFooRecord&);
 
 class XFooSequence : public std::vector<bool>
 {
@@ -319,8 +289,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<XFooSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const XFooSequence&);
-void operator>>= (Aida::ProtoReader&, XFooSequence&);
 
 class IntSequence : public std::vector<int>
 {
@@ -337,8 +305,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<IntSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const IntSequence&);
-void operator>>= (Aida::ProtoReader&, IntSequence&);
 
 class FloatSequence : public std::vector<double>
 {
@@ -355,8 +321,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<FloatSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const FloatSequence&);
-void operator>>= (Aida::ProtoReader&, FloatSequence&);
 
 class StringSequence : public std::vector<std::string>
 {
@@ -373,8 +337,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<StringSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const StringSequence&);
-void operator>>= (Aida::ProtoReader&, StringSequence&);
 
 class ExtensiveEnumSequence : public std::vector<ExtensiveEnum>
 {
@@ -391,8 +353,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const ExtensiveEnumSequence&);
-void operator>>= (Aida::ProtoReader&, ExtensiveEnumSequence&);
 
 class RecordSequence : public std::vector<XFooRecord>
 {
@@ -409,8 +369,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<RecordSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const RecordSequence&);
-void operator>>= (Aida::ProtoReader&, RecordSequence&);
 
 class SequenceSequence : public std::vector<IntSequence>
 {
@@ -427,8 +385,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const SequenceSequence&);
-void operator>>= (Aida::ProtoReader&, SequenceSequence&);
 
 class InterfaceSequence : public std::vector<Aida::RemoteMember<FirstInterfaceHandle>>
 {
@@ -445,8 +401,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const InterfaceSequence&);
-void operator>>= (Aida::ProtoReader&, InterfaceSequence&);
 
 class AnySequence : public std::vector<Aida::Any>
 {
@@ -463,8 +417,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<AnySequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const AnySequence&);
-void operator>>= (Aida::ProtoReader&, AnySequence&);
 
 class NestedTypesRec;
 
@@ -493,8 +445,6 @@ public:
     _visitor_ (seq, "seq");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const NestedTypesRec&);
-void operator>>= (Aida::ProtoReader&, NestedTypesRec&);
 
 class NestedTypesSeq : public std::vector<NestedTypesRec>
 {
@@ -511,8 +461,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const NestedTypesSeq&);
-void operator>>= (Aida::ProtoReader&, NestedTypesSeq&);
 
 class NewRecord
 {
@@ -541,8 +489,6 @@ public:
     _visitor_ (ntr, "ntr");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const NewRecord&);
-void operator>>= (Aida::ProtoReader&, NewRecord&);
 
 namespace Inner {
 
@@ -571,8 +517,6 @@ public:
     _visitor_ (rec, "rec");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const InnerRecord&);
-void operator>>= (Aida::ProtoReader&, InnerRecord&);
 } // Inner
 
 class Refer2Inner
@@ -596,8 +540,6 @@ public:
     _visitor_ (r, "r");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const Refer2Inner&);
-void operator>>= (Aida::ProtoReader&, Refer2Inner&);
 } // MandatoryNamespace
 
 namespace OtherNamespace {
@@ -629,8 +571,6 @@ public:
     _visitor_ (r4, "r4");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const SomeRecord&);
-void operator>>= (Aida::ProtoReader&, SomeRecord&);
 } // OtherNamespace
 
 namespace Auxdata {
@@ -664,8 +604,6 @@ public:
     _visitor_ (aux_str, "aux_str");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const RecordWithAuxdata&);
-void operator>>= (Aida::ProtoReader&, RecordWithAuxdata&);
 } // Auxdata
 
 namespace InterfaceTests {
@@ -819,8 +757,6 @@ public:
     _visitor_ (int2, "int2");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const QuickRecord&);
-void operator>>= (Aida::ProtoReader&, QuickRecord&);
 
 class QuickSequence : public std::vector<double>
 {
@@ -837,8 +773,6 @@ public:
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   operator                      Aida::AnySeq      () const { return const_cast<QuickSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
 };
-void operator<<= (Aida::ProtoMsg&, const QuickSequence&);
-void operator>>= (Aida::ProtoReader&, QuickSequence&);
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
@@ -1177,8 +1111,6 @@ public:
     _visitor_ (threshold2, "threshold2");
   }
 };
-void operator<<= (Aida::ProtoMsg&, const RecordForGroups&);
-void operator>>= (Aida::ProtoReader&, RecordForGroups&);
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
@@ -1310,13 +1242,6 @@ namespace { // Anon
 namespace __AIDA_Local__ {
 using namespace Aida;
 
-// helper
-static inline ProtoMsg*
-new_emit_result (const ProtoMsg *fb, uint64 h, uint64 l, uint32 n)
-{
-  return ProtoMsg::renew_into_result (const_cast<ProtoMsg*> (fb), Aida::MSGID_EMIT_RESULT, h, l, n);
-}
-
 } } // Anon::__AIDA_Local__
 
 #endif // __AIDA_CXXSTUB_CLIENT_CC__
@@ -1398,53 +1323,6 @@ XFooRecord::operator== (const XFooRecord &other) const
   if (this->any3 != other.any3) return false;
   return true;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const XFooRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (18);
-  __p_ <<= self.single_bool;
-  __p_ <<= self.single_num;
-  __p_ <<= self.num64;
-  __p_ <<= self.single_float;
-  __p_ <<= self.single_string;
-  __p_ <<= self.sibling1;
-  __p_ <<= self.sibling2;
-  __p_ <<= self.multi1;
-  __p_ <<= self.multi2;
-  __p_ <<= self.multi3;
-  __p_ <<= self.multi4;
-  __p_ <<= self.enum_field;
-  __p_ <<= self.iface1;
-  __p_ <<= self.iface2;
-  __p_ <<= self.iface3;
-  __p_ <<= self.any1;
-  __p_ <<= self.any2;
-  __p_ <<= self.any3;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, XFooRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 18) return;
-  fbr >>= self.single_bool;
-  fbr >>= self.single_num;
-  fbr >>= self.num64;
-  fbr >>= self.single_float;
-  fbr >>= self.single_string;
-  fbr >>= self.sibling1;
-  fbr >>= self.sibling2;
-  fbr >>= self.multi1;
-  fbr >>= self.multi2;
-  fbr >>= self.multi3;
-  fbr >>= self.multi4;
-  fbr >>= self.enum_field;
-  fbr >>= self.iface1;
-  fbr >>= self.iface2;
-  fbr >>= self.iface3;
-  fbr >>= self.any1;
-  fbr >>= self.any2;
-  fbr >>= self.any3;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooSequence_ = {
   "typename=MandatoryNamespace.XFooSequence\0"
   "type=SEQUENCE\0"
@@ -1456,25 +1334,6 @@ XFooSequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const XFooSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, XFooSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_IntSequence_ = {
   "typename=MandatoryNamespace.IntSequence\0"
@@ -1488,25 +1347,6 @@ IntSequence::__aida_aux_data__() const
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
   return sv;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const IntSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, IntSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_FloatSequence_ = {
   "typename=MandatoryNamespace.FloatSequence\0"
   "type=SEQUENCE\0"
@@ -1518,25 +1358,6 @@ FloatSequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const FloatSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, FloatSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_StringSequence_ = {
   "typename=MandatoryNamespace.StringSequence\0"
@@ -1550,25 +1371,6 @@ StringSequence::__aida_aux_data__() const
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
   return sv;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const StringSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, StringSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnumSequence_ = {
   "typename=MandatoryNamespace.ExtensiveEnumSequence\0"
   "type=SEQUENCE\0"
@@ -1580,25 +1382,6 @@ ExtensiveEnumSequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const ExtensiveEnumSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, ExtensiveEnumSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_RecordSequence_ = {
   "typename=MandatoryNamespace.RecordSequence\0"
@@ -1612,25 +1395,6 @@ RecordSequence::__aida_aux_data__() const
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
   return sv;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const RecordSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, RecordSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_SequenceSequence_ = {
   "typename=MandatoryNamespace.SequenceSequence\0"
   "type=SEQUENCE\0"
@@ -1642,25 +1406,6 @@ SequenceSequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SequenceSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SequenceSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_InterfaceSequence_ = {
   "typename=MandatoryNamespace.InterfaceSequence\0"
@@ -1674,25 +1419,6 @@ InterfaceSequence::__aida_aux_data__() const
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
   return sv;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const InterfaceSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, InterfaceSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_AnySequence_ = {
   "typename=MandatoryNamespace.AnySequence\0"
   "type=SEQUENCE\0"
@@ -1704,25 +1430,6 @@ AnySequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const AnySequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, AnySequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesRec_ = {
   "typename=MandatoryNamespace.NestedTypesRec\0"
@@ -1744,21 +1451,6 @@ NestedTypesRec::operator== (const NestedTypesRec &other) const
   if (this->seq != other.seq) return false;
   return true;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const NestedTypesRec &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (2);
-  __p_ <<= self.rec;
-  __p_ <<= self.seq;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, NestedTypesRec &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 2) return;
-  fbr >>= self.rec;
-  fbr >>= self.seq;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesSeq_ = {
   "typename=MandatoryNamespace.NestedTypesSeq\0"
   "type=SEQUENCE\0"
@@ -1770,25 +1462,6 @@ NestedTypesSeq::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const NestedTypesSeq &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, NestedTypesSeq &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NewRecord_ = {
   "typename=MandatoryNamespace.NewRecord\0"
@@ -1814,25 +1487,6 @@ NewRecord::operator== (const NewRecord &other) const
   if (this->ntr != other.ntr) return false;
   return true;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const NewRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (4);
-  __p_ <<= self.i;
-  __p_ <<= self.enum1;
-  __p_ <<= self.xfs;
-  __p_ <<= self.ntr;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, NewRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 4) return;
-  fbr >>= self.i;
-  fbr >>= self.enum1;
-  fbr >>= self.xfs;
-  fbr >>= self.ntr;
-}
 
 namespace Inner {
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Inner_InnerRecord_ = {
@@ -1857,23 +1511,6 @@ InnerRecord::operator== (const InnerRecord &other) const
   if (this->rec != other.rec) return false;
   return true;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const InnerRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (3);
-  __p_ <<= self.x;
-  __p_ <<= self.y;
-  __p_ <<= self.rec;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, InnerRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 3) return;
-  fbr >>= self.x;
-  fbr >>= self.y;
-  fbr >>= self.rec;
-}
 } // Inner
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Refer2Inner_ = {
   "typename=MandatoryNamespace.Refer2Inner\0"
@@ -1892,19 +1529,6 @@ Refer2Inner::operator== (const Refer2Inner &other) const
 {
   if (this->r != other.r) return false;
   return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const Refer2Inner &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (1);
-  __p_ <<= self.r;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, Refer2Inner &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 1) return;
-  fbr >>= self.r;
 }
 } // MandatoryNamespace
 
@@ -1932,25 +1556,6 @@ SomeRecord::operator== (const SomeRecord &other) const
   if (this->r3 != other.r3) return false;
   if (this->r4 != other.r4) return false;
   return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const SomeRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (4);
-  __p_ <<= self.r1;
-  __p_ <<= self.r2;
-  __p_ <<= self.r3;
-  __p_ <<= self.r4;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, SomeRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 4) return;
-  fbr >>= self.r1;
-  fbr >>= self.r2;
-  fbr >>= self.r3;
-  fbr >>= self.r4;
 }
 } // OtherNamespace
 
@@ -2000,27 +1605,6 @@ RecordWithAuxdata::operator== (const RecordWithAuxdata &other) const
   if (this->auxf64 != other.auxf64) return false;
   if (this->aux_str != other.aux_str) return false;
   return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const RecordWithAuxdata &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (5);
-  __p_ <<= self.aux_bool;
-  __p_ <<= self.aux32;
-  __p_ <<= self.aux64;
-  __p_ <<= self.auxf64;
-  __p_ <<= self.aux_str;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, RecordWithAuxdata &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 5) return;
-  fbr >>= self.aux_bool;
-  fbr >>= self.aux32;
-  fbr >>= self.aux64;
-  fbr >>= self.auxf64;
-  fbr >>= self.aux_str;
 }
 } // Auxdata
 
@@ -2203,21 +1787,6 @@ QuickRecord::operator== (const QuickRecord &other) const
   if (this->int2 != other.int2) return false;
   return true;
 }
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const QuickRecord &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (2);
-  __p_ <<= self.int1;
-  __p_ <<= self.int2;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, QuickRecord &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 2) return;
-  fbr >>= self.int1;
-  fbr >>= self.int2;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickSequence_ = {
   "typename=InterfaceTests.QuickSequence\0"
   "type=SEQUENCE\0"
@@ -2229,25 +1798,6 @@ QuickSequence::__aida_aux_data__() const
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
   return sv;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const QuickSequence &self)
-{
-  const size_t len = self.size();
-  Aida::ProtoMsg &__p_ = dst.add_seq (len);
-  for (size_t k = 0; k < len; k++) {
-    __p_ <<= self[k];
-  }
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, QuickSequence &self)
-{
-  Aida::ProtoReader fbr (src.pop_seq());
-  const size_t len = fbr.remaining();
-  self.resize (len);
-  for (size_t k = 0; k < len; k++) {
-    fbr >>= self[k];
-  }
 }
 QuickIfaceHandle::QuickIfaceHandle ()
 {}
@@ -2720,27 +2270,6 @@ RecordForGroups::operator== (const RecordForGroups &other) const
   if (this->threshold1 != other.threshold1) return false;
   if (this->threshold2 != other.threshold2) return false;
   return true;
-}
-inline void __attribute__ ((used))
-operator<<= (Aida::ProtoMsg &dst, const RecordForGroups &self)
-{
-  Aida::ProtoMsg &__p_ = dst.add_rec (5);
-  __p_ <<= self.i;
-  __p_ <<= self.ratio;
-  __p_ <<= self.ordinary_bool;
-  __p_ <<= self.threshold1;
-  __p_ <<= self.threshold2;
-}
-inline void __attribute__ ((used))
-operator>>= (Aida::ProtoReader &src, RecordForGroups &self)
-{
-  Aida::ProtoReader fbr (src.pop_rec());
-  if (fbr.remaining() < 5) return;
-  fbr >>= self.i;
-  fbr >>= self.ratio;
-  fbr >>= self.ordinary_bool;
-  fbr >>= self.threshold1;
-  fbr >>= self.threshold2;
 }
 SoundModuleHandle::SoundModuleHandle ()
 {}

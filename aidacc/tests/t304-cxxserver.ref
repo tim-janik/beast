@@ -62,9 +62,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const FirstInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, FirstInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, FirstInterfaceIfaceP&);
 
 class NestedTypesRec;
 
@@ -118,9 +115,6 @@ public:
     __visitor_ (*this, "on_click", &UIWidgetAreaIface::on_click, &UIWidgetAreaIface::on_click);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const UIWidgetAreaIfaceP&);
-void operator>>= (Aida::ProtoReader&, UIWidgetAreaIface*&);
-void operator>>= (Aida::ProtoReader&, UIWidgetAreaIfaceP&);
 
 class ParentIface;
 typedef std::shared_ptr<ParentIface> ParentIfaceP;
@@ -142,9 +136,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const ParentIfaceP&);
-void operator>>= (Aida::ProtoReader&, ParentIface*&);
-void operator>>= (Aida::ProtoReader&, ParentIfaceP&);
 
 class ChildIface;
 typedef std::shared_ptr<ChildIface> ChildIfaceP;
@@ -168,9 +159,6 @@ public:
     this->ParentIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, ChildIface*&);
-void operator>>= (Aida::ProtoReader&, ChildIfaceP&);
 
 class DescendantIface;
 typedef std::shared_ptr<DescendantIface> DescendantIfaceP;
@@ -194,9 +182,6 @@ public:
     this->ChildIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const DescendantIfaceP&);
-void operator>>= (Aida::ProtoReader&, DescendantIface*&);
-void operator>>= (Aida::ProtoReader&, DescendantIfaceP&);
 
 class GrandChildIface;
 typedef std::shared_ptr<GrandChildIface> GrandChildIfaceP;
@@ -220,9 +205,6 @@ public:
     this->DescendantIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const GrandChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, GrandChildIface*&);
-void operator>>= (Aida::ProtoReader&, GrandChildIfaceP&);
 
 class QuickIfaceIface;
 typedef std::shared_ptr<QuickIfaceIface> QuickIfaceIfaceP;
@@ -245,9 +227,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const QuickIfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, QuickIfaceIface*&);
-void operator>>= (Aida::ProtoReader&, QuickIfaceIfaceP&);
 
 class MethodTestInterfaceIface;
 typedef std::shared_ptr<MethodTestInterfaceIface> MethodTestInterfaceIfaceP;
@@ -292,9 +271,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const MethodTestInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, MethodTestInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, MethodTestInterfaceIfaceP&);
 
 class SignalTestInterfaceIface;
 typedef std::shared_ptr<SignalTestInterfaceIface> SignalTestInterfaceIfaceP;
@@ -316,9 +292,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const SignalTestInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, SignalTestInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, SignalTestInterfaceIfaceP&);
 
 class ChildInheritingSignalsIface;
 typedef std::shared_ptr<ChildInheritingSignalsIface> ChildInheritingSignalsIfaceP;
@@ -342,9 +315,6 @@ public:
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ChildInheritingSignalsIfaceP&);
-void operator>>= (Aida::ProtoReader&, ChildInheritingSignalsIface*&);
-void operator>>= (Aida::ProtoReader&, ChildInheritingSignalsIfaceP&);
 
 class AnotherChildIface;
 typedef std::shared_ptr<AnotherChildIface> AnotherChildIfaceP;
@@ -368,9 +338,6 @@ public:
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const AnotherChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, AnotherChildIface*&);
-void operator>>= (Aida::ProtoReader&, AnotherChildIfaceP&);
 
 class PropertyTesterIface;
 typedef std::shared_ptr<PropertyTesterIface> PropertyTesterIfaceP;
@@ -426,9 +393,6 @@ public:
     __visitor_ (*this, "any_prop", &PropertyTesterIface::any_prop, &PropertyTesterIface::any_prop);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const PropertyTesterIfaceP&);
-void operator>>= (Aida::ProtoReader&, PropertyTesterIface*&);
-void operator>>= (Aida::ProtoReader&, PropertyTesterIfaceP&);
 } // InterfaceTests
 
 namespace RapicornAidaTest {
@@ -455,9 +419,6 @@ public:
     this->IncludeCheck::SomeInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const UseIncludesIfaceP&);
-void operator>>= (Aida::ProtoReader&, UseIncludesIface*&);
-void operator>>= (Aida::ProtoReader&, UseIncludesIfaceP&);
 
 class ButtonAreaIface;
 typedef std::shared_ptr<ButtonAreaIface> ButtonAreaIfaceP;
@@ -492,9 +453,6 @@ public:
     __visitor_ (*this, "click_type", &ButtonAreaIface::click_type, &ButtonAreaIface::click_type);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ButtonAreaIfaceP&);
-void operator>>= (Aida::ProtoReader&, ButtonAreaIface*&);
-void operator>>= (Aida::ProtoReader&, ButtonAreaIfaceP&);
 
 class PureMethodsIface;
 typedef std::shared_ptr<PureMethodsIface> PureMethodsIfaceP;
@@ -518,9 +476,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const PureMethodsIfaceP&);
-void operator>>= (Aida::ProtoReader&, PureMethodsIface*&);
-void operator>>= (Aida::ProtoReader&, PureMethodsIfaceP&);
 } // RapicornAidaTest
 
 namespace Other {
@@ -548,9 +503,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const NameTestsIfaceP&);
-void operator>>= (Aida::ProtoReader&, NameTestsIface*&);
-void operator>>= (Aida::ProtoReader&, NameTestsIfaceP&);
 } // Other
 
 namespace BseTest {
@@ -582,9 +534,6 @@ public:
     __visitor_ (*this, "ratio", &CompressorIface::ratio, &CompressorIface::ratio);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const CompressorIfaceP&);
-void operator>>= (Aida::ProtoReader&, CompressorIface*&);
-void operator>>= (Aida::ProtoReader&, CompressorIfaceP&);
 
 class SoundModuleIface;
 typedef std::shared_ptr<SoundModuleIface> SoundModuleIfaceP;
@@ -606,9 +555,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const SoundModuleIfaceP&);
-void operator>>= (Aida::ProtoReader&, SoundModuleIface*&);
-void operator>>= (Aida::ProtoReader&, SoundModuleIfaceP&);
 } // BseTest
 
 #define aidacc_tests_t304_testpass_idl_INTERFACE_LIST \
@@ -645,19 +591,6 @@ using namespace Aida;
 
 static_assert (std::is_base_of<Aida::ImplicitBase, Aida::ImplicitBase>::value,
                "IDL interface base 'Aida::ImplicitBase' must derive 'Aida::ImplicitBase'");
-
-// objects
-static inline ProtoMsg*
-new_call_result (ProtoReader &fbr, uint64 h, uint64 l, uint32 n = 1)
-{
-  return ProtoMsg::renew_into_result (fbr, Aida::MSGID_CALL_RESULT, h, l, n);
-}
-
-static inline ProtoMsg*
-new_connect_result (ProtoReader &fbr, uint64 h, uint64 l, uint32 n = 1)
-{
-  return ProtoMsg::renew_into_result (fbr, Aida::MSGID_CONNECT_RESULT, h, l, n);
-}
 
 // slot
 template<class SharedPtr, class R, class... Args> std::function<R (Args...)>
@@ -698,21 +631,6 @@ FirstInterfaceIface*
 FirstInterfaceHandle::__iface__() const
 {
   return dynamic_cast<FirstInterfaceIface*> (const_cast<FirstInterfaceHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const FirstInterfaceIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, FirstInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<FirstInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, FirstInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<FirstInterfaceIface>().get();
 }
 Aida::TypeHashList
 FirstInterfaceIface::__aida_typelist__ () const
@@ -770,21 +688,6 @@ UIWidgetAreaIface*
 UIWidgetAreaHandle::__iface__() const
 {
   return dynamic_cast<UIWidgetAreaIface*> (const_cast<UIWidgetAreaHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const UIWidgetAreaIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UIWidgetAreaIfaceP &obj)
-{
-  obj = __f_.pop_instance<UIWidgetAreaIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UIWidgetAreaIface* &obj)
-{
-  obj = __f_.pop_instance<UIWidgetAreaIface>().get();
 }
 Aida::TypeHashList
 UIWidgetAreaIface::__aida_typelist__ () const
@@ -860,21 +763,6 @@ ParentHandle::__iface__() const
 {
   return dynamic_cast<ParentIface*> (const_cast<ParentHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const ParentIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ParentIfaceP &obj)
-{
-  obj = __f_.pop_instance<ParentIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ParentIface* &obj)
-{
-  obj = __f_.pop_instance<ParentIface>().get();
-}
 Aida::TypeHashList
 ParentIface::__aida_typelist__ () const
 {
@@ -928,21 +816,6 @@ ChildIface*
 ChildHandle::__iface__() const
 {
   return dynamic_cast<ChildIface*> (const_cast<ChildHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const ChildIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<ChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildIface* &obj)
-{
-  obj = __f_.pop_instance<ChildIface>().get();
 }
 Aida::TypeHashList
 ChildIface::__aida_typelist__ () const
@@ -1004,21 +877,6 @@ DescendantHandle::__iface__() const
 {
   return dynamic_cast<DescendantIface*> (const_cast<DescendantHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const DescendantIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, DescendantIfaceP &obj)
-{
-  obj = __f_.pop_instance<DescendantIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, DescendantIface* &obj)
-{
-  obj = __f_.pop_instance<DescendantIface>().get();
-}
 Aida::TypeHashList
 DescendantIface::__aida_typelist__ () const
 {
@@ -1079,21 +937,6 @@ GrandChildIface*
 GrandChildHandle::__iface__() const
 {
   return dynamic_cast<GrandChildIface*> (const_cast<GrandChildHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const GrandChildIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, GrandChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<GrandChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, GrandChildIface* &obj)
-{
-  obj = __f_.pop_instance<GrandChildIface>().get();
 }
 Aida::TypeHashList
 GrandChildIface::__aida_typelist__ () const
@@ -1157,21 +1000,6 @@ QuickIfaceHandle::__iface__() const
 {
   return dynamic_cast<QuickIfaceIface*> (const_cast<QuickIfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const QuickIfaceIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, QuickIfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<QuickIfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, QuickIfaceIface* &obj)
-{
-  obj = __f_.pop_instance<QuickIfaceIface>().get();
-}
 Aida::TypeHashList
 QuickIfaceIface::__aida_typelist__ () const
 {
@@ -1225,21 +1053,6 @@ MethodTestInterfaceIface*
 MethodTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<MethodTestInterfaceIface*> (const_cast<MethodTestInterfaceHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const MethodTestInterfaceIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, MethodTestInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<MethodTestInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, MethodTestInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<MethodTestInterfaceIface>().get();
 }
 Aida::TypeHashList
 MethodTestInterfaceIface::__aida_typelist__ () const
@@ -1295,21 +1108,6 @@ SignalTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<SignalTestInterfaceIface*> (const_cast<SignalTestInterfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const SignalTestInterfaceIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SignalTestInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<SignalTestInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SignalTestInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<SignalTestInterfaceIface>().get();
-}
 Aida::TypeHashList
 SignalTestInterfaceIface::__aida_typelist__ () const
 {
@@ -1363,21 +1161,6 @@ ChildInheritingSignalsIface*
 ChildInheritingSignalsHandle::__iface__() const
 {
   return dynamic_cast<ChildInheritingSignalsIface*> (const_cast<ChildInheritingSignalsHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const ChildInheritingSignalsIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildInheritingSignalsIfaceP &obj)
-{
-  obj = __f_.pop_instance<ChildInheritingSignalsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildInheritingSignalsIface* &obj)
-{
-  obj = __f_.pop_instance<ChildInheritingSignalsIface>().get();
 }
 Aida::TypeHashList
 ChildInheritingSignalsIface::__aida_typelist__ () const
@@ -1439,21 +1222,6 @@ AnotherChildHandle::__iface__() const
 {
   return dynamic_cast<AnotherChildIface*> (const_cast<AnotherChildHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const AnotherChildIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, AnotherChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<AnotherChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, AnotherChildIface* &obj)
-{
-  obj = __f_.pop_instance<AnotherChildIface>().get();
-}
 Aida::TypeHashList
 AnotherChildIface::__aida_typelist__ () const
 {
@@ -1513,21 +1281,6 @@ PropertyTesterIface*
 PropertyTesterHandle::__iface__() const
 {
   return dynamic_cast<PropertyTesterIface*> (const_cast<PropertyTesterHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const PropertyTesterIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PropertyTesterIfaceP &obj)
-{
-  obj = __f_.pop_instance<PropertyTesterIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PropertyTesterIface* &obj)
-{
-  obj = __f_.pop_instance<PropertyTesterIface>().get();
 }
 Aida::TypeHashList
 PropertyTesterIface::__aida_typelist__ () const
@@ -1675,21 +1428,6 @@ UseIncludesHandle::__iface__() const
 {
   return dynamic_cast<UseIncludesIface*> (const_cast<UseIncludesHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const UseIncludesIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UseIncludesIfaceP &obj)
-{
-  obj = __f_.pop_instance<UseIncludesIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UseIncludesIface* &obj)
-{
-  obj = __f_.pop_instance<UseIncludesIface>().get();
-}
 Aida::TypeHashList
 UseIncludesIface::__aida_typelist__ () const
 {
@@ -1749,21 +1487,6 @@ ButtonAreaIface*
 ButtonAreaHandle::__iface__() const
 {
   return dynamic_cast<ButtonAreaIface*> (const_cast<ButtonAreaHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const ButtonAreaIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ButtonAreaIfaceP &obj)
-{
-  obj = __f_.pop_instance<ButtonAreaIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ButtonAreaIface* &obj)
-{
-  obj = __f_.pop_instance<ButtonAreaIface>().get();
 }
 Aida::TypeHashList
 ButtonAreaIface::__aida_typelist__ () const
@@ -1852,21 +1575,6 @@ PureMethodsHandle::__iface__() const
 {
   return dynamic_cast<PureMethodsIface*> (const_cast<PureMethodsHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const PureMethodsIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PureMethodsIfaceP &obj)
-{
-  obj = __f_.pop_instance<PureMethodsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PureMethodsIface* &obj)
-{
-  obj = __f_.pop_instance<PureMethodsIface>().get();
-}
 Aida::TypeHashList
 PureMethodsIface::__aida_typelist__ () const
 {
@@ -1924,21 +1632,6 @@ NameTestsHandle::__iface__() const
 {
   return dynamic_cast<NameTestsIface*> (const_cast<NameTestsHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const NameTestsIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, NameTestsIfaceP &obj)
-{
-  obj = __f_.pop_instance<NameTestsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, NameTestsIface* &obj)
-{
-  obj = __f_.pop_instance<NameTestsIface>().get();
-}
 Aida::TypeHashList
 NameTestsIface::__aida_typelist__ () const
 {
@@ -1995,21 +1688,6 @@ CompressorIface*
 CompressorHandle::__iface__() const
 {
   return dynamic_cast<CompressorIface*> (const_cast<CompressorHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const CompressorIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, CompressorIfaceP &obj)
-{
-  obj = __f_.pop_instance<CompressorIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, CompressorIface* &obj)
-{
-  obj = __f_.pop_instance<CompressorIface>().get();
 }
 Aida::TypeHashList
 CompressorIface::__aida_typelist__ () const
@@ -2087,21 +1765,6 @@ SoundModuleIface*
 SoundModuleHandle::__iface__() const
 {
   return dynamic_cast<SoundModuleIface*> (const_cast<SoundModuleHandle*> (this)->__iface_ptr__().get());
-}
-void
-operator<<= (Aida::ProtoMsg &__p_, const SoundModuleIfaceP &ptr)
-{
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SoundModuleIfaceP &obj)
-{
-  obj = __f_.pop_instance<SoundModuleIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SoundModuleIface* &obj)
-{
-  obj = __f_.pop_instance<SoundModuleIface>().get();
 }
 Aida::TypeHashList
 SoundModuleIface::__aida_typelist__ () const
