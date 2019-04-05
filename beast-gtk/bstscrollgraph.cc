@@ -103,13 +103,13 @@ bst_scrollgraph_get_property (GObject     *object,
       sfi_value_set_bool (value, self->flip);
       break;
     case PROP_DIRECTION:
-      sfi_value_set_choice (value, Aida::enum_value_to_string<Bst::Direction> (self->direction).c_str());
+      sfi_value_set_choice (value, Aida::enum_value_to_short_string (self->direction).c_str());
       break;
     case PROP_BOOST:
       sfi_value_set_real (value, self->boost);
       break;
     case PROP_WINDOW_SIZE:
-      sfi_value_set_choice (value, Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
+      sfi_value_set_choice (value, Aida::enum_value_to_short_string (Bst::FFTSize (self->window_size)).c_str());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

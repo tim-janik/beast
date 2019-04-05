@@ -96,11 +96,17 @@ bst_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
 
 namespace Bse {
 
-const char*
+std::string
 error_blurb (Bse::Error error_value)
 {
-  const Aida::EnumValue ev = Aida::enum_info<Bse::Error>().find_value (error_value);
-  return ev.blurb;
+  const String enumerator = Aida::enum_value_to_string (error_value);
+  const StringVector kvpairs = Aida::Introspection::find_enumerator (enumerator);
+  String ret = Aida::Introspection::find_value ("blurb", kvpairs);
+  if (ret.empty())
+    ret = Aida::Introspection::find_value ("label", kvpairs);
+  if (ret.empty())
+    ret = enumerator;
+  return ret;
 }
 
 } // Bse

@@ -13,9 +13,9 @@ static GSList *msg_windows = NULL;
 const char*
 bst_msg_type_ident (BstMsgType bmt)
 {
-  const Aida::EnumValue ev = Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
-  if (ev.ident)
-    return ev.ident;
+  const char *ident = Aida::Introspection::legacy_enumerator ("Bse.UserMessageType", bmt);
+  if (ident)
+    return ident;
   switch (bmt)
     {
     case BST_MSG_SCRIPT:        return "script";
@@ -519,7 +519,7 @@ bst_message_dialogs_popdown (void)
     gtk_widget_destroy ((GtkWidget*) msg_windows->data);
 }
 
-static void
+static BSE_UNUSED void
 server_user_message (const Bse::UserMessage &umsg)
 {
   auto convert_msg_type = [] (Bse::UserMessageType mtype) {
@@ -541,8 +541,8 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  const Aida::EnumValue ev = Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
-  msg.ident = ev.ident;
+  const String evident = Aida::enum_value_to_short_string (Bse::UserMessageType (umsg.utype));
+  msg.ident = evident.c_str();
   msg.label = NULL;
   msg.process = 0;
   msg.pid = 0;
