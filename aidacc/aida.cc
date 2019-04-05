@@ -991,13 +991,6 @@ type_kind_name (TypeKind type_kind)
   return Introspection::legacy_enumerator ("Aida.TypeKind", type_kind);
 }
 
-// == TypeHash ==
-String
-TypeHash::to_string () const
-{
-  return posix_sprintf ("(0x%016llx,0x%016llx)", LLU typehi, LLU typelo);
-}
-
 // == ImplicitBase ==
 class ImplicitBaseExtra {
   explicit           ImplicitBaseExtra (const ImplicitBaseExtra&) = delete;

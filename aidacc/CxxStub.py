@@ -506,7 +506,6 @@ class Generator:
     s += '{\n'
     if self.gen_mode == G4STUB:
       s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
-      s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:
@@ -520,8 +519,6 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
       s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist__       () const override;\n'
-      s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
-      s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % type_identifier
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
       s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
@@ -691,11 +688,6 @@ class Generator:
     s += '%s::%s ()' % classH2 # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % classH2 # dtor
-    s += 'const Aida::TypeHash&\n'
-    s += '%s::__aida_typeid__()\n{\n' % classH
-    s += '  static const Aida::TypeHash type_hash = Aida::TypeHash (%s);\n' % self.class_digest (class_info)
-    s += '  return type_hash;\n'
-    s += '}\n'
     s += '%s\n%s::__cast__ (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
     s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
     s += '  return std::dynamic_pointer_cast<%s> (ifacep);\n' % classC
@@ -731,14 +723,6 @@ class Generator:
     for an in ancestors:
       s += '"%s", ' % self.type_identifier (an)
     s += '};\n'
-    s += '}\n'
-    s += 'Aida::TypeHashList\n'
-    s += '%s::__aida_typelist__ () const\n{\n' % classC
-    s += '  Aida::TypeHashList thl;\n'
-    ancestors = self.class_ancestry (tp)
-    for an in ancestors:
-      s += '  thl.push_back (Aida::TypeHash (%s)); // %s\n' % (self.class_digest (an), an.name)
-    s += '  return thl;\n'
     s += '}\n'
     return s
   def generate_remote_call (self, classname, methodname, rstorage, specialcase = None, args = ()):

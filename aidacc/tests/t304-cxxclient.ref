@@ -187,7 +187,6 @@ namespace MandatoryNamespace {
 class FirstInterfaceHandle : public virtual Aida::RemoteHandle
 {
   friend                        class FirstInterfaceIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~FirstInterfaceHandle () override;
@@ -597,7 +596,6 @@ namespace InterfaceTests {
 class UIWidgetAreaHandle : public virtual Aida::RemoteHandle
 {
   friend                        class UIWidgetAreaIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~UIWidgetAreaHandle () override;
@@ -641,7 +639,6 @@ typedef ::Aida::ScopedHandle<UIWidgetAreaH> UIWidgetAreaS;
 class ParentHandle : public virtual Aida::RemoteHandle
 {
   friend                        class ParentIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~ParentHandle () override;
@@ -660,7 +657,6 @@ typedef ::Aida::ScopedHandle<ParentH> ParentS;
 class ChildHandle : public virtual ParentHandle
 {
   friend                        class ChildIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~ChildHandle () override;
@@ -681,7 +677,6 @@ typedef ::Aida::ScopedHandle<ChildH> ChildS;
 class DescendantHandle : public virtual ChildHandle
 {
   friend                        class DescendantIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~DescendantHandle () override;
@@ -702,7 +697,6 @@ typedef ::Aida::ScopedHandle<DescendantH> DescendantS;
 class GrandChildHandle : public virtual DescendantHandle
 {
   friend                        class GrandChildIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~GrandChildHandle () override;
@@ -763,7 +757,6 @@ public:
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
 {
   friend                        class QuickIfaceIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~QuickIfaceHandle () override;
@@ -783,7 +776,6 @@ typedef ::Aida::ScopedHandle<QuickIfaceH> QuickIfaceS;
 class MethodTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
   friend                        class MethodTestInterfaceIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~MethodTestInterfaceHandle () override;
@@ -825,7 +817,6 @@ typedef ::Aida::ScopedHandle<MethodTestInterfaceH> MethodTestInterfaceS;
 class SignalTestInterfaceHandle : public virtual Aida::RemoteHandle
 {
   friend                        class SignalTestInterfaceIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~SignalTestInterfaceHandle () override;
@@ -844,7 +835,6 @@ typedef ::Aida::ScopedHandle<SignalTestInterfaceH> SignalTestInterfaceS;
 class ChildInheritingSignalsHandle : public virtual SignalTestInterfaceHandle
 {
   friend                        class ChildInheritingSignalsIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~ChildInheritingSignalsHandle () override;
@@ -865,7 +855,6 @@ typedef ::Aida::ScopedHandle<ChildInheritingSignalsH> ChildInheritingSignalsS;
 class AnotherChildHandle : public virtual SignalTestInterfaceHandle
 {
   friend                        class AnotherChildIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~AnotherChildHandle () override;
@@ -886,7 +875,6 @@ typedef ::Aida::ScopedHandle<AnotherChildH> AnotherChildS;
 class PropertyTesterHandle : public virtual Aida::RemoteHandle
 {
   friend                        class PropertyTesterIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~PropertyTesterHandle () override;
@@ -942,7 +930,6 @@ namespace RapicornAidaTest {
 class UseIncludesHandle : public virtual IncludeCheck::SomeInterfaceHandle
 {
   friend                        class UseIncludesIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~UseIncludesHandle () override;
@@ -963,7 +950,6 @@ typedef ::Aida::ScopedHandle<UseIncludesH> UseIncludesS;
 class ButtonAreaHandle : public virtual Aida::RemoteHandle
 {
   friend                        class ButtonAreaIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~ButtonAreaHandle () override;
@@ -997,7 +983,6 @@ class PureMethodsHandle;
 class PureMethodsHandle : public virtual Aida::RemoteHandle
 {
   friend                        class PureMethodsIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~PureMethodsHandle () override;
@@ -1020,7 +1005,6 @@ namespace Other {
 class NameTestsHandle : public virtual Aida::RemoteHandle
 {
   friend                        class NameTestsIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~NameTestsHandle () override;
@@ -1045,7 +1029,6 @@ namespace BseTest {
 class CompressorHandle : public virtual Aida::RemoteHandle
 {
   friend                        class CompressorIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~CompressorHandle () override;
@@ -1101,7 +1084,6 @@ public:
 class SoundModuleHandle : public virtual Aida::RemoteHandle
 {
   friend                        class SoundModuleIface;
-  static const Aida::TypeHash&  __aida_typeid__();
 protected:
 public:
   virtual /*dtor*/             ~SoundModuleHandle () override;
@@ -1240,12 +1222,6 @@ FirstInterfaceHandle::FirstInterfaceHandle ()
 {}
 FirstInterfaceHandle::~FirstInterfaceHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-FirstInterfaceHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x22113f623903ac14ULL, 0x3fe8e50c1a9a78d2ULL);
-  return type_hash;
-}
 FirstInterfaceHandle
 FirstInterfaceHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1599,12 +1575,6 @@ UIWidgetAreaHandle::UIWidgetAreaHandle ()
 {}
 UIWidgetAreaHandle::~UIWidgetAreaHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-UIWidgetAreaHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x11db82aaba1ee248ULL, 0xd2359653ff87e972ULL);
-  return type_hash;
-}
 UIWidgetAreaHandle
 UIWidgetAreaHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1693,12 +1663,6 @@ ParentHandle::ParentHandle ()
 {}
 ParentHandle::~ParentHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-ParentHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL);
-  return type_hash;
-}
 ParentHandle
 ParentHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1709,12 +1673,6 @@ ChildHandle::ChildHandle ()
 {}
 ChildHandle::~ChildHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-ChildHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL);
-  return type_hash;
-}
 ChildHandle
 ChildHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1725,12 +1683,6 @@ DescendantHandle::DescendantHandle ()
 {}
 DescendantHandle::~DescendantHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-DescendantHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL);
-  return type_hash;
-}
 DescendantHandle
 DescendantHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1741,12 +1693,6 @@ GrandChildHandle::GrandChildHandle ()
 {}
 GrandChildHandle::~GrandChildHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-GrandChildHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xf6975e5e92250718ULL, 0x53730d44919c46f9ULL);
-  return type_hash;
-}
 GrandChildHandle
 GrandChildHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1789,12 +1735,6 @@ QuickIfaceHandle::QuickIfaceHandle ()
 {}
 QuickIfaceHandle::~QuickIfaceHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-QuickIfaceHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x4524ee119d4e454cULL, 0xbeb61f7c3cc04f7dULL);
-  return type_hash;
-}
 QuickIfaceHandle
 QuickIfaceHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1810,12 +1750,6 @@ MethodTestInterfaceHandle::MethodTestInterfaceHandle ()
 {}
 MethodTestInterfaceHandle::~MethodTestInterfaceHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-MethodTestInterfaceHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x6bf684458ac5f01aULL, 0xf64c02611b807180ULL);
-  return type_hash;
-}
 MethodTestInterfaceHandle
 MethodTestInterfaceHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1897,12 +1831,6 @@ SignalTestInterfaceHandle::SignalTestInterfaceHandle ()
 {}
 SignalTestInterfaceHandle::~SignalTestInterfaceHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-SignalTestInterfaceHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL);
-  return type_hash;
-}
 SignalTestInterfaceHandle
 SignalTestInterfaceHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1913,12 +1841,6 @@ ChildInheritingSignalsHandle::ChildInheritingSignalsHandle ()
 {}
 ChildInheritingSignalsHandle::~ChildInheritingSignalsHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-ChildInheritingSignalsHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xf20ff30241b5b694ULL, 0x9f544b2626e183f0ULL);
-  return type_hash;
-}
 ChildInheritingSignalsHandle
 ChildInheritingSignalsHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1929,12 +1851,6 @@ AnotherChildHandle::AnotherChildHandle ()
 {}
 AnotherChildHandle::~AnotherChildHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-AnotherChildHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x9a33af1b27f7e36dULL, 0xdf625f7bd18934faULL);
-  return type_hash;
-}
 AnotherChildHandle
 AnotherChildHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -1945,12 +1861,6 @@ PropertyTesterHandle::PropertyTesterHandle ()
 {}
 PropertyTesterHandle::~PropertyTesterHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-PropertyTesterHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xa37ab462c55a3b3cULL, 0x4f3fd1c9ad9689fbULL);
-  return type_hash;
-}
 PropertyTesterHandle
 PropertyTesterHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2074,12 +1984,6 @@ UseIncludesHandle::UseIncludesHandle ()
 {}
 UseIncludesHandle::~UseIncludesHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-UseIncludesHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xfbdf1e0d7f39f4f0ULL, 0x78270f907e3216b4ULL);
-  return type_hash;
-}
 UseIncludesHandle
 UseIncludesHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2090,12 +1994,6 @@ ButtonAreaHandle::ButtonAreaHandle ()
 {}
 ButtonAreaHandle::~ButtonAreaHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-ButtonAreaHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xec371b296fa57436ULL, 0x92e4310e386fc92eULL);
-  return type_hash;
-}
 ButtonAreaHandle
 ButtonAreaHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2146,12 +2044,6 @@ PureMethodsHandle::PureMethodsHandle ()
 {}
 PureMethodsHandle::~PureMethodsHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-PureMethodsHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0xddc2a514d04d3af5ULL, 0xc0046740434c0486ULL);
-  return type_hash;
-}
 PureMethodsHandle
 PureMethodsHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2170,12 +2062,6 @@ NameTestsHandle::NameTestsHandle ()
 {}
 NameTestsHandle::~NameTestsHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-NameTestsHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x542d40cd7d8fcd40ULL, 0x8c1782df29c9b936ULL);
-  return type_hash;
-}
 NameTestsHandle
 NameTestsHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2196,12 +2082,6 @@ CompressorHandle::CompressorHandle ()
 {}
 CompressorHandle::~CompressorHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-CompressorHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x42057a05d51182dfULL, 0x6a0d69cda274433eULL);
-  return type_hash;
-}
 CompressorHandle
 CompressorHandle::__cast__ (const Aida::RemoteHandle &other)
 {
@@ -2261,12 +2141,6 @@ SoundModuleHandle::SoundModuleHandle ()
 {}
 SoundModuleHandle::~SoundModuleHandle ()
 {} // define empty dtor to emit vtable
-const Aida::TypeHash&
-SoundModuleHandle::__aida_typeid__()
-{
-  static const Aida::TypeHash type_hash = Aida::TypeHash (0x06447b38b51e0198ULL, 0x848669199cc311deULL);
-  return type_hash;
-}
 SoundModuleHandle
 SoundModuleHandle::__cast__ (const Aida::RemoteHandle &other)
 {

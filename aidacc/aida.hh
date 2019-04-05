@@ -447,21 +447,6 @@ enum TypeKind {
 
 const char* type_kind_name (TypeKind type_kind); ///< Obtain TypeKind names as a string.
 
-// == TypeHash ==
-struct TypeHash {
-  uint64 typehi, typelo;
-  constexpr      TypeHash   (uint64 hi, uint64 lo) : typehi (hi), typelo (lo) {}
-  constexpr      TypeHash   () : typehi (0), typelo (0)                       {}
-  String         to_string  () const;
-  constexpr bool operator== (const TypeHash &z) const                         { return typehi == z.typehi && typelo == z.typelo; }
-  friend    bool operator<  (const TypeHash &a, const TypeHash &b)
-  {
-    return AIDA_UNLIKELY (a.typehi == b.typehi) ? a.typelo < b.typelo : a.typehi < b.typehi;
-  }
-};
-typedef std::vector<TypeHash> TypeHashList;
-
-
 // == EventFd ==
 /// Wakeup facility for IPC.
 class EventFd
@@ -908,11 +893,9 @@ class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableS
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
+  virtual StringVector        __typelist__        () const = 0; ///< Retrieve the IDL type names of an instance.
   using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
-  virtual std::string         __typename__        () const = 0; ///< Retrieve the IDL type name of an instance.
   virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
-  virtual StringVector        __typelist__        () const = 0;
-  virtual TypeHashList        __aida_typelist__   () const = 0;
   virtual std::vector<String> __aida_dir__        () const = 0;
   virtual Any                 __aida_get__        (const String &name) const = 0;
   virtual bool                __aida_set__        (const String &name, const Any &any) = 0;
