@@ -773,9 +773,9 @@ class Generator:
         s += ' // %s' % re.sub ('\n', ' ', blurb)
       s += '\n'
     s += '};\n'
-    s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
+    s += 'AIDA_DEFINE_ENUM_EQUALITY (%s);\n' % nm
     if type_info.combinable: # enum as flags
-      s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
+      s += 'AIDA_DEFINE_FLAGS_ARITHMETIC (%s);\n' % nm
     s += '/// @endcond\n'
     return s
   def insertion_text (self, key):

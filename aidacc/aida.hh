@@ -1142,38 +1142,6 @@ remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&..
   return r;
 }
 
-// == Enum Helpers ==
-#define AIDA_ENUM_DEFINE_ARITHMETIC_EQ(Enum)   \
-  bool constexpr operator== (Enum v, int64_t n) { return int64_t (v) == n; } \
-  bool constexpr operator== (int64_t n, Enum v) { return n == int64_t (v); } \
-  bool constexpr operator!= (Enum v, int64_t n) { return int64_t (v) != n; } \
-  bool constexpr operator!= (int64_t n, Enum v) { return n != int64_t (v); }
-#define AIDA_FLAGS_DEFINE_ARITHMETIC_OPS(Enum)   \
-  static constexpr int64_t operator>> (Enum v, int64_t n) { return int64_t (v) >> n; } \
-  static constexpr int64_t operator<< (Enum v, int64_t n) { return int64_t (v) << n; } \
-  static constexpr int64_t operator^  (Enum v, int64_t n) { return int64_t (v) ^ n; } \
-  static constexpr int64_t operator^  (int64_t n, Enum v) { return n ^ int64_t (v); } \
-  static constexpr Enum    operator^  (Enum v, Enum w)    { return Enum (int64_t (v) ^ w); } \
-  static constexpr int64_t operator|  (Enum v, int64_t n) { return int64_t (v) | n; } \
-  static constexpr int64_t operator|  (int64_t n, Enum v) { return n | int64_t (v); } \
-  static constexpr Enum    operator|  (Enum v, Enum w)    { return Enum (int64_t (v) | w); } \
-  static constexpr int64_t operator&  (Enum v, int64_t n) { return int64_t (v) & n; } \
-  static constexpr int64_t operator&  (int64_t n, Enum v) { return n & int64_t (v); } \
-  static constexpr Enum    operator&  (Enum v, Enum w)    { return Enum (int64_t (v) & w); } \
-  static constexpr int64_t operator~  (Enum v)            { return ~int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v)            { return +int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v)            { return -int64_t (v); } \
-  static constexpr int64_t operator+  (Enum v, int64_t n) { return int64_t (v) + n; } \
-  static constexpr int64_t operator+  (int64_t n, Enum v) { return n + int64_t (v); } \
-  static constexpr int64_t operator-  (Enum v, int64_t n) { return int64_t (v) - n; } \
-  static constexpr int64_t operator-  (int64_t n, Enum v) { return n - int64_t (v); } \
-  static constexpr int64_t operator*  (Enum v, int64_t n) { return int64_t (v) * n; } \
-  static constexpr int64_t operator*  (int64_t n, Enum v) { return n * int64_t (v); } \
-  static constexpr int64_t operator/  (Enum v, int64_t n) { return int64_t (v) / n; } \
-  static constexpr int64_t operator/  (int64_t n, Enum v) { return n / int64_t (v); } \
-  static constexpr int64_t operator%  (Enum v, int64_t n) { return int64_t (v) % n; } \
-  static constexpr int64_t operator%  (int64_t n, Enum v) { return n % int64_t (v); }
-
 } // Aida
 
 #include "visitor.hh"

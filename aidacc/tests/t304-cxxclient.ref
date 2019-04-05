@@ -14,14 +14,14 @@ namespace MandatoryNamespace {
 enum class Enum1 : int64_t {
   E1_A = 1,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
+AIDA_DEFINE_ENUM_EQUALITY (Enum1);
 /// @endcond
 
 /// @cond GeneratedEnums
 enum class Enum1c : int64_t {
   E1C_A = 1,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
+AIDA_DEFINE_ENUM_EQUALITY (Enum1c);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -29,7 +29,7 @@ enum class Enum2 : int64_t {
   E2_A = 1,
   E2_B = 2,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
+AIDA_DEFINE_ENUM_EQUALITY (Enum2);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -37,7 +37,7 @@ enum class Enum2c : int64_t {
   E2C_A = 1,
   E2C_B = 2,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
+AIDA_DEFINE_ENUM_EQUALITY (Enum2c);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -46,7 +46,7 @@ enum class Enum3 : int64_t {
   E3_B = 2,
   E3_C = 3,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
+AIDA_DEFINE_ENUM_EQUALITY (Enum3);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -55,7 +55,7 @@ enum class Enum3c : int64_t {
   E3C_B = 2,
   E3C_C = 3,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
+AIDA_DEFINE_ENUM_EQUALITY (Enum3c);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -65,7 +65,7 @@ enum class Enum4a : int64_t {
   E4A_C = 3,
   E4A_D = 4,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
+AIDA_DEFINE_ENUM_EQUALITY (Enum4a);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -75,7 +75,7 @@ enum class Enum4b : int64_t {
   E4B_C = 3,
   E4B_D = 4,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
+AIDA_DEFINE_ENUM_EQUALITY (Enum4b);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -85,7 +85,7 @@ enum class Enum4c : int64_t {
   E4C_C = 3,
   E4C_D = 4,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
+AIDA_DEFINE_ENUM_EQUALITY (Enum4c);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -95,7 +95,7 @@ enum class Enum4d : int64_t {
   E4D_C = 3,
   E4D_D = 4,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
+AIDA_DEFINE_ENUM_EQUALITY (Enum4d);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -136,7 +136,7 @@ enum class ExtensiveEnum : int64_t {
   V35 = 35,
   V36 = 42, // "foo4"
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
+AIDA_DEFINE_ENUM_EQUALITY (ExtensiveEnum);
 /// @endcond
 } // MandatoryNamespace
 
@@ -146,7 +146,7 @@ namespace InterfaceTests {
 enum class QuickEnum : int64_t {
   ZERO = 0,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
+AIDA_DEFINE_ENUM_EQUALITY (QuickEnum);
 /// @endcond
 } // InterfaceTests
 
@@ -160,7 +160,7 @@ enum class ClickType : int64_t {
   CLICK_FAST_REPEAT = 4,
   CLICK_KEY_REPEAT = 5,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
+AIDA_DEFINE_ENUM_EQUALITY (ClickType);
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -178,7 +178,7 @@ enum class MathExpressions : int64_t {
   RESULT_77 = 77,
   RESULT_511 = 511,
 };
-AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
+AIDA_DEFINE_ENUM_EQUALITY (MathExpressions);
 /// @endcond
 } // RapicornAidaTest
 
