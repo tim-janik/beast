@@ -67,11 +67,8 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  OneHandle                              __handle__         () { return OneHandle(); }
-  virtual Aida::StringVector             __typelist__       () const override { return { "OneIface" }; }
-  virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
-  virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
-  virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
+  OneHandle                          __handle__               () { return OneHandle(); }
+  virtual Aida::StringVector         __typelist__             () const override { return { "OneIface" }; }
   virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override

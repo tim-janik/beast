@@ -54,9 +54,6 @@ public:
   FirstInterfaceHandle                  __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          void_func           () = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
@@ -82,9 +79,6 @@ public:
   UIWidgetAreaHandle                    __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual bool                          dummy    () const = 0;
   virtual void                          dummy    (bool) = 0;
   virtual std::string                   on_click () const = 0;
@@ -127,9 +121,6 @@ public:
   ParentHandle                          __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -147,9 +138,6 @@ public:
   ChildHandle                           __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ParentIface::__accept_accessor__ (__visitor_);
@@ -169,9 +157,6 @@ public:
   DescendantHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ChildIface::__accept_accessor__ (__visitor_);
@@ -191,9 +176,6 @@ public:
   GrandChildHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->DescendantIface::__accept_accessor__ (__visitor_);
@@ -213,9 +195,6 @@ public:
   QuickIfaceHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          simple_function (int i = 9) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
@@ -234,9 +213,6 @@ public:
   MethodTestInterfaceHandle             __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          method_with_void         () = 0;
   virtual bool                          method_with_bools        (bool input,
                                                                   bool optval = 0) = 0;
@@ -277,9 +253,6 @@ public:
   SignalTestInterfaceHandle             __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -297,9 +270,6 @@ public:
   ChildInheritingSignalsHandle          __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
@@ -319,9 +289,6 @@ public:
   AnotherChildHandle                    __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
@@ -341,9 +308,6 @@ public:
   PropertyTesterHandle                  __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual bool                          bool_prop      () const = 0;
   virtual void                          bool_prop      (bool) = 0;
   virtual int                           int32_prop     () const = 0;
@@ -398,9 +362,6 @@ public:
   UseIncludesHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->IncludeCheck::SomeInterfaceIface::__accept_accessor__ (__visitor_);
@@ -420,9 +381,6 @@ public:
   ButtonAreaHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual std::string                   on_click   () const = 0;
   virtual void                          on_click   (const std::string&) = 0;
   virtual std::string                   on_click2  () const = 0;
@@ -454,9 +412,6 @@ public:
   PureMethodsHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual int                           pure_method      (double f) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
@@ -478,9 +433,6 @@ public:
   NameTestsHandle                       __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
@@ -504,9 +456,6 @@ public:
   CompressorHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual double                        threshold () const = 0;
   virtual void                          threshold (double) = 0;
   virtual double                        ratio     () const = 0;
@@ -531,9 +480,6 @@ public:
   SoundModuleHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
@@ -624,23 +570,6 @@ FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorP
 {
   return false;
 }
-std::vector<std::string>
-FirstInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-FirstInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-FirstInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  return false;
-}
 } // MandatoryNamespace
 
 namespace InterfaceTests {
@@ -693,29 +622,6 @@ UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessorPre
     return true;
   return false;
 }
-std::vector<std::string>
-UIWidgetAreaIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("dummy");
-  __d_.push_back ("on_click");
-  return __d_;
-}
-Aida::Any
-UIWidgetAreaIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "dummy")           { __a_.set (dummy()); return __a_; }
-  if (__n_ == "on_click")        { __a_.set (on_click()); return __a_; }
-  return __a_;
-}
-bool
-UIWidgetAreaIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "dummy")           { dummy (__a_.get<bool>()); return true; }
-  if (__n_ == "on_click")        { on_click (__a_.get<std::string>()); return true; }
-  return false;
-}
 
 ParentIface::ParentIface ()
 {}
@@ -748,23 +654,6 @@ ParentIface::__typelist__ () const
 }
 bool
 ParentIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-ParentIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-ParentIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-ParentIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -804,27 +693,6 @@ ChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
   if (this->ParentIface::__access__ (__n, __p)) return true;
   return false;
 }
-std::vector<std::string>
-ChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->ParentIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-ChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->ParentIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-ChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->ParentIface::__aida_set__ (__n_, __a_)) return true;
-  return false;
-}
 
 DescendantIface::DescendantIface ()
 {}
@@ -859,27 +727,6 @@ bool
 DescendantIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->ChildIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-DescendantIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->ChildIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-DescendantIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->ChildIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-DescendantIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->ChildIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -918,27 +765,6 @@ GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred 
   if (this->DescendantIface::__access__ (__n, __p)) return true;
   return false;
 }
-std::vector<std::string>
-GrandChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->DescendantIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-GrandChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->DescendantIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-GrandChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->DescendantIface::__aida_set__ (__n_, __a_)) return true;
-  return false;
-}
 
 QuickIfaceIface::QuickIfaceIface ()
 {}
@@ -971,23 +797,6 @@ QuickIfaceIface::__typelist__ () const
 }
 bool
 QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-QuickIfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-QuickIfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-QuickIfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1026,23 +835,6 @@ MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAcce
 {
   return false;
 }
-std::vector<std::string>
-MethodTestInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-MethodTestInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-MethodTestInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  return false;
-}
 
 SignalTestInterfaceIface::SignalTestInterfaceIface ()
 {}
@@ -1075,23 +867,6 @@ SignalTestInterfaceIface::__typelist__ () const
 }
 bool
 SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-SignalTestInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-SignalTestInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-SignalTestInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1131,27 +906,6 @@ ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyA
   if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
   return false;
 }
-std::vector<std::string>
-ChildInheritingSignalsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->SignalTestInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-ChildInheritingSignalsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->SignalTestInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-ChildInheritingSignalsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->SignalTestInterfaceIface::__aida_set__ (__n_, __a_)) return true;
-  return false;
-}
 
 AnotherChildIface::AnotherChildIface ()
 {}
@@ -1186,27 +940,6 @@ bool
 AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-AnotherChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->SignalTestInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-AnotherChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->SignalTestInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-AnotherChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->SignalTestInterfaceIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1300,56 +1033,6 @@ PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorP
     return true;
   return false;
 }
-std::vector<std::string>
-PropertyTesterIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("bool_prop");
-  __d_.push_back ("int32_prop");
-  __d_.push_back ("int64_prop");
-  __d_.push_back ("float64_prop");
-  __d_.push_back ("string_prop");
-  __d_.push_back ("enum_prop");
-  __d_.push_back ("record_prop");
-  __d_.push_back ("sequence_prop");
-  __d_.push_back ("interface_prop");
-  __d_.push_back ("self_prop");
-  __d_.push_back ("any_prop");
-  return __d_;
-}
-Aida::Any
-PropertyTesterIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "bool_prop")       { __a_.set (bool_prop()); return __a_; }
-  if (__n_ == "int32_prop")      { __a_.set (int32_prop()); return __a_; }
-  if (__n_ == "int64_prop")      { __a_.set (int64_prop()); return __a_; }
-  if (__n_ == "float64_prop")    { __a_.set (float64_prop()); return __a_; }
-  if (__n_ == "string_prop")     { __a_.set (string_prop()); return __a_; }
-  if (__n_ == "enum_prop")       { __a_.set (enum_prop()); return __a_; }
-  if (__n_ == "record_prop")     { __a_.set (record_prop()); return __a_; }
-  if (__n_ == "sequence_prop")   { __a_.set (sequence_prop()); return __a_; }
-  if (__n_ == "interface_prop")  { __a_.set (interface_prop()); return __a_; }
-  if (__n_ == "self_prop")       { __a_.set (self_prop()); return __a_; }
-  if (__n_ == "any_prop")        { __a_.set (any_prop()); return __a_; }
-  return __a_;
-}
-bool
-PropertyTesterIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "bool_prop")       { bool_prop (__a_.get<bool>()); return true; }
-  if (__n_ == "int32_prop")      { int32_prop (__a_.get<int>()); return true; }
-  if (__n_ == "int64_prop")      { int64_prop (__a_.get<int64_t>()); return true; }
-  if (__n_ == "float64_prop")    { float64_prop (__a_.get<double>()); return true; }
-  if (__n_ == "string_prop")     { string_prop (__a_.get<std::string>()); return true; }
-  if (__n_ == "enum_prop")       { enum_prop (__a_.get<QuickEnum>()); return true; }
-  if (__n_ == "record_prop")     { record_prop (__a_.get<QuickRecord>()); return true; }
-  if (__n_ == "sequence_prop")   { sequence_prop (__a_.get<QuickSequence>()); return true; }
-  if (__n_ == "interface_prop")  { interface_prop (__a_.get<GrandChildIfaceP>().get()); return true; }
-  if (__n_ == "self_prop")       { self_prop (__a_.get<PropertyTesterIfaceP>().get()); return true; }
-  if (__n_ == "any_prop")        { any_prop (__a_.get<Aida::Any>()); return true; }
-  return false;
-}
 } // InterfaceTests
 
 namespace RapicornAidaTest {
@@ -1387,27 +1070,6 @@ bool
 UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->IncludeCheck::SomeInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-UseIncludesIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->IncludeCheck::SomeInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-UseIncludesIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->IncludeCheck::SomeInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-UseIncludesIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->IncludeCheck::SomeInterfaceIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1466,35 +1128,6 @@ ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred 
     return true;
   return false;
 }
-std::vector<std::string>
-ButtonAreaIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("on_click");
-  __d_.push_back ("on_click2");
-  __d_.push_back ("on_click3");
-  __d_.push_back ("click_type");
-  return __d_;
-}
-Aida::Any
-ButtonAreaIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "on_click")        { __a_.set (on_click()); return __a_; }
-  if (__n_ == "on_click2")       { __a_.set (on_click2()); return __a_; }
-  if (__n_ == "on_click3")       { __a_.set (on_click3()); return __a_; }
-  if (__n_ == "click_type")      { __a_.set (click_type()); return __a_; }
-  return __a_;
-}
-bool
-ButtonAreaIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "on_click")        { on_click (__a_.get<std::string>()); return true; }
-  if (__n_ == "on_click2")       { on_click2 (__a_.get<std::string>()); return true; }
-  if (__n_ == "on_click3")       { on_click3 (__a_.get<std::string>()); return true; }
-  if (__n_ == "click_type")      { click_type (__a_.get<ClickType>()); return true; }
-  return false;
-}
 
 PureMethodsIface::PureMethodsIface ()
 {}
@@ -1527,23 +1160,6 @@ PureMethodsIface::__typelist__ () const
 }
 bool
 PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-PureMethodsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-PureMethodsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-PureMethodsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1582,23 +1198,6 @@ NameTestsIface::__typelist__ () const
 }
 bool
 NameTestsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-NameTestsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-NameTestsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-NameTestsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1657,29 +1256,6 @@ CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred 
     return true;
   return false;
 }
-std::vector<std::string>
-CompressorIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("threshold");
-  __d_.push_back ("ratio");
-  return __d_;
-}
-Aida::Any
-CompressorIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "threshold")       { __a_.set (threshold()); return __a_; }
-  if (__n_ == "ratio")           { __a_.set (ratio()); return __a_; }
-  return __a_;
-}
-bool
-CompressorIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "threshold")       { threshold (__a_.get<double>()); return true; }
-  if (__n_ == "ratio")           { ratio (__a_.get<double>()); return true; }
-  return false;
-}
 
 SoundModuleIface::SoundModuleIface ()
 {}
@@ -1712,23 +1288,6 @@ SoundModuleIface::__typelist__ () const
 }
 bool
 SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-SoundModuleIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-SoundModuleIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-SoundModuleIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
