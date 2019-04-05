@@ -89,9 +89,6 @@ assertion_failed (const char *file, int line, const char *func, const char *stmt
   AIDA_DIAGNOSTIC_IMPL (file, line, func, 'A', stmt ? stmt : "state unreachable", false);
 }
 
-// == Type Helpers ==
-typedef std::weak_ptr<OrbObject>    OrbObjectW;
-
 // == Helper Classes ==
 /// Create an instance of @a Class on demand that is constructed and never destructed.
 /// DurableInstance<Class*> provides the memory for a @a Class instance and calls it's
@@ -1353,7 +1350,7 @@ Any::to_string() const
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
-    case INSTANCE:   s += posix_sprintf ("(RemoteHandle (orbid=0x#%08llx))", LLU u_.rhandle().__aida_orbid__()); break;
+    case INSTANCE:   s += posix_sprintf ("(RemoteHandle (ptr=%p))", &*u_.rhandle().__iface_ptr__());             break;
     case TRANSITION: s += posix_sprintf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
     case ANY:
       s += "(Any (";
@@ -1623,51 +1620,9 @@ Event::Event (const AnyRec &arec) :
   (void) fields_["type"]; // ensure field is present
 }
 
-// == OrbObject ==
-OrbObject::OrbObject (uint64 orbid) :
-  orbid_ (orbid)
-{}
-
-OrbObject::~OrbObject()
-{}
-
-class NullOrbObject : public virtual OrbObject {
-public:
-  explicit NullOrbObject  () : OrbObject (0) {}
-  virtual  ~NullOrbObject () override        {}
-};
-
 // == RemoteHandle ==
-static void (RemoteHandle::*pmf_upgrade_from)  (const OrbObjectP&);
-
-OrbObjectP
-RemoteHandle::__aida_null_orb_object__ ()
-{
-  static OrbObjectP null_orbo = [] () {                         // use lambda to sneak in extra code
-    pmf_upgrade_from = &RemoteHandle::__aida_upgrade_from__;    // export accessor for internal maintenance
-    return std::make_shared<NullOrbObject>();
-  } ();                                                         // executes lambda atomically
-  return null_orbo;
-}
-
-RemoteHandle::RemoteHandle () :
-  orbop_ (__aida_null_orb_object__())
-{}
-
-RemoteHandle::RemoteHandle (OrbObjectP orbo) :
-  orbop_ (orbo ? orbo : __aida_null_orb_object__())
-{}
-
 RemoteHandle::~RemoteHandle()
 {}
-
-/// Upgrade a @a Null RemoteHandle into a handle for an existing object.
-void
-RemoteHandle::__aida_upgrade_from__ (const OrbObjectP &orbop)
-{
-  AIDA_ASSERT_RETURN (__aida_orbid__() == 0);
-  orbop_ = orbop ? orbop : __aida_null_orb_object__();
-}
 
 struct RemoteHandle::EventHandlerRelay {
   ExecutionContext    &iface_context_;
@@ -2627,131 +2582,5 @@ public:
     AIDA_ASSERT_RETURN (create_wakeup_pipe_error == 0);
   }
 };
-
-// == ObjectMap ==
-template<class Instance>
-class ObjectMap {
-public:
-  typedef std::shared_ptr<Instance>     InstanceP;
-private:
-  struct Entry {
-    OrbObjectW  orbow;
-    InstanceP   instancep;
-  };
-  uint64                                start_id_, id_mask_;
-  std::vector<Entry>                    entries_;
-  std::unordered_map<Instance*, uint64> map_;
-  std::vector<uint>                     free_list_;
-  class MappedObject : public virtual OrbObject {
-    ObjectMap &omap_;
-  public:
-    explicit MappedObject (uint64 orbid, ObjectMap &omap) : OrbObject (orbid), omap_ (omap) { assert (orbid); }
-    virtual ~MappedObject ()                              { omap_.delete_orbid (orbid()); }
-  };
-  void          delete_orbid            (uint64            orbid);
-  uint          next_index              ();
-public:
-  explicit   ObjectMap          (size_t            start_id = 0) : start_id_ (start_id), id_mask_ (0xffffffffffffffff) {}
-  /*dtor*/  ~ObjectMap          ()                 { assert (entries_.size() == 0); assert (map_.size() == 0); }
-  OrbObjectP orbo_from_instance (InstanceP         instancep);
-  InstanceP  instance_from_orbo (const OrbObjectP &orbo);
-  OrbObjectP orbo_from_orbid    (uint64            orbid);
-  void       assign_start_id    (uint64 start_id, uint64 mask = 0xffffffffffffffff);
-};
-
-template<class Instance> void
-ObjectMap<Instance>::assign_start_id (uint64 start_id, uint64 id_mask)
-{
-  assert (entries_.size() == 0);
-  assert ((start_id_ & id_mask) == start_id_);
-  start_id_ = start_id;
-  assert (id_mask > 0);
-  id_mask_ = id_mask;
-  assert (map_.size() == 0);
-}
-
-template<class Instance> void
-ObjectMap<Instance>::delete_orbid (uint64 orbid)
-{
-  assert ((orbid & id_mask_) >= start_id_);
-  const uint64 index = (orbid & id_mask_) - start_id_;
-  assert (index < entries_.size());
-  Entry &e = entries_[index];
-  assert (e.orbow.expired());   // ensure last OrbObjectP reference has been dropped
-  assert (e.instancep != NULL); // ensure *first* deletion attempt for this entry
-  auto it = map_.find (e.instancep.get());
-  assert (it != map_.end());
-  map_.erase (it);
-  e.instancep.reset();
-  e.orbow.reset();
-  free_list_.push_back (index);
-}
-
-template<class Instance> uint
-ObjectMap<Instance>::next_index ()
-{
-  uint idx;
-  const size_t FREE_LENGTH = 31;
-  if (free_list_.size() > FREE_LENGTH)
-    {
-      const size_t prandom = fnv1a_bytehash64 ((uint8*) free_list_.data(), sizeof (*free_list_.data()) * free_list_.size());
-      const size_t end = free_list_.size(), j = prandom % (end - 1);
-      assert (j < end - 1); // use end-1 to avoid popping the last pushed slot
-      idx = free_list_[j];
-      free_list_[j] = free_list_[end - 1];
-      free_list_.pop_back();
-    }
-  else
-    {
-      idx = entries_.size();
-      entries_.resize (idx + 1);
-    }
-  return idx;
-}
-
-template<class Instance> OrbObjectP
-ObjectMap<Instance>::orbo_from_instance (InstanceP instancep)
-{
-  OrbObjectP orbop;
-  if (instancep)
-    {
-      uint64 orbid = map_[instancep.get()];
-      if (AIDA_UNLIKELY (orbid == 0))
-        {
-          const uint64 index = next_index();
-          orbid = start_id_ + index;
-          orbop = std::make_shared<MappedObject> (orbid, *this); // calls delete_orbid from dtor
-          Entry e { orbop, instancep };
-          entries_[index] = e;
-          map_[instancep.get()] = orbid;
-        }
-      else
-        orbop = entries_[(orbid & id_mask_) - start_id_].orbow.lock();
-    }
-  return orbop;
-}
-
-template<class Instance> OrbObjectP
-ObjectMap<Instance>::orbo_from_orbid (uint64 orbid)
-{
-  assert ((orbid & id_mask_) >= start_id_);
-  const uint64 index = (orbid & id_mask_) - start_id_;
-  if (index < entries_.size() && entries_[index].instancep) // check for deletion
-    return entries_[index].orbow.lock();
-  return OrbObjectP();
-}
-
-template<class Instance> std::shared_ptr<Instance>
-ObjectMap<Instance>::instance_from_orbo (const OrbObjectP &orbo)
-{
-  const uint64 orbid = orbo ? orbo->orbid() : 0;
-  if ((orbid & id_mask_) >= start_id_)
-    {
-      const uint64 index = (orbid & id_mask_) - start_id_;
-      if (index < entries_.size())
-        return entries_[index].instancep;
-    }
-  return NULL;
-}
 
 } // Aida

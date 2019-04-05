@@ -110,7 +110,6 @@ typedef std::vector<String> StringVector;
 class Any;
 class Event;
 class RemoteHandle;
-class OrbObject;
 class ImplicitBase;
 union ProtoUnion;
 class ProtoMsg;
@@ -118,7 +117,6 @@ class ProtoReader;
 class ExecutionContext;
 class CallableIface;
 struct PropertyAccessor;
-typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef ProtoMsg* (*DispatchFunc) (ProtoReader&);
@@ -564,33 +562,11 @@ union IdentifierParts {
 };
 constexpr uint64 CONNECTION_MASK = 0x0000ffff;
 
-// == OrbObject ==
-/// Internal management structure for remote objects.
-class OrbObject {
-  const uint64        orbid_;
-  std::vector<String> cached_aux_data_;
-  friend class RemoteHandle;
-protected:
-  explicit                  OrbObject         (uint64 orbid);
-  virtual                  ~OrbObject         ();
-public:
-  uint64                    orbid             () const       { return orbid_; }
-  static uint64             orbid_make        (uint16 connection, uint16 type_index, uint32 counter)
-  { return (uint64 (connection) << 48) | (uint64 (type_index) << 32) | counter; }
-};
-
 // == RemoteHandle ==
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
-  OrbObjectP        orbop_;
   ImplicitBaseP     iface_ptr_;
-  static OrbObjectP __aida_null_orb_object__ ();
   struct EventHandlerRelay;
-protected:
-  explicit          RemoteHandle             (OrbObjectP);
-  const OrbObjectP& __aida_orb_object__      () const   { return orbop_; }
-  void              __aida_upgrade_from__    (const OrbObjectP&);
-  void              __aida_upgrade_from__    (const RemoteHandle &rhandle) { __aida_upgrade_from__ (rhandle.__aida_orb_object__()); }
 public:
   struct EventConnection : private std::weak_ptr<EventHandlerRelay> {
     friend class RemoteHandle;
@@ -598,20 +574,19 @@ public:
     void   disconnect () const;
   };
 public:
-  explicit                RemoteHandle         ();
+  explicit                RemoteHandle         () = default;
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
   TypeHashList            __typelist__         () const;
-  uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   // Support event handlers
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
-  explicit    operator bool () const noexcept               { return iface_ptr_ || 0 != __aida_orbid__(); }
-  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_ && 0 == __aida_orbid__(); }
-  bool        operator!=    (std::nullptr_t) const noexcept { return iface_ptr_ || 0 != __aida_orbid__(); }
-  bool        operator==    (const RemoteHandle &rh) const noexcept { return __aida_orbid__() == rh.__aida_orbid__() && iface_ptr_ == rh.iface_ptr_; }
+  explicit    operator bool () const noexcept               { return !! iface_ptr_; }
+  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_; }
+  bool        operator!=    (std::nullptr_t) const noexcept { return !! iface_ptr_; }
+  bool        operator==    (const RemoteHandle &rh) const noexcept { return iface_ptr_ == rh.iface_ptr_; }
   bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
   bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
   bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
