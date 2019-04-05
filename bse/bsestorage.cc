@@ -659,6 +659,8 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
             if (enumerators.size())
               enumerator = enumerators[0];
           }
+        if (enumerator != string)
+          bse_storage_warn (self, "nearest match for enumerator \"%s\": %s", string, enumerator);
         any.set<Aida::ENUM> (enumerator);
         break;
       }
