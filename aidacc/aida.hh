@@ -357,18 +357,6 @@ public:
   String          value_to_string   (int64 value, const String &joiner) const;
 };
 
-// == IntrospectionTypename ==
-struct IntrospectionTypename {};
-constexpr IntrospectionTypename introspection_typename {};
-
-/// Allow to query typename via Aida::introspection_typename ->* someinstance; overloadable via ADL.
-template<class T> const char*
-operator->* (Aida::IntrospectionTypename, T &&t)
-{
-  // static_assert (!sizeof (T), "no Introspection registered for T");
-  return t.__typename__();
-}
-
 // == IntrospectionRegistry ==
 class Introspection {
 public:

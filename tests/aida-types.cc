@@ -8,7 +8,6 @@ using namespace Aida;
 enum TestEnum { TEST_COFFEE_COFFEE = -0xc0ffeec0ffeeLL };
 
 // Manually adding TestEnum introspection information for basic testing
-inline const char* operator->* (::Aida::IntrospectionTypename, TestEnum) { return "TestEnum"; }
 static const IntrospectionRegistry __aida_aux_data_srvt__Aida_TestEnum_ = {
   "typename=TestEnum\0"
   "type=ENUM\0"

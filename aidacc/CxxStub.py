@@ -820,7 +820,6 @@ class Generator:
         s += ' // %s' % re.sub ('\n', ' ', blurb)
       s += '\n'
     s += '};\n'
-    s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, type_identifier)
     s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
     if type_info.combinable: # enum as flags
       s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm

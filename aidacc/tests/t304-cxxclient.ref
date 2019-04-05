@@ -14,7 +14,6 @@ namespace MandatoryNamespace {
 enum class Enum1 : int64_t {
   E1_A = 1,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1) { return "MandatoryNamespace.Enum1"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
 /// @endcond
 
@@ -22,7 +21,6 @@ AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1);
 enum class Enum1c : int64_t {
   E1C_A = 1,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum1c) { return "MandatoryNamespace.Enum1c"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum1c);
 /// @endcond
 
@@ -31,7 +29,6 @@ enum class Enum2 : int64_t {
   E2_A = 1,
   E2_B = 2,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2) { return "MandatoryNamespace.Enum2"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2);
 /// @endcond
 
@@ -40,7 +37,6 @@ enum class Enum2c : int64_t {
   E2C_A = 1,
   E2C_B = 2,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum2c) { return "MandatoryNamespace.Enum2c"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum2c);
 /// @endcond
 
@@ -50,7 +46,6 @@ enum class Enum3 : int64_t {
   E3_B = 2,
   E3_C = 3,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3) { return "MandatoryNamespace.Enum3"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3);
 /// @endcond
 
@@ -60,7 +55,6 @@ enum class Enum3c : int64_t {
   E3C_B = 2,
   E3C_C = 3,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum3c) { return "MandatoryNamespace.Enum3c"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum3c);
 /// @endcond
 
@@ -71,7 +65,6 @@ enum class Enum4a : int64_t {
   E4A_C = 3,
   E4A_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4a) { return "MandatoryNamespace.Enum4a"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4a);
 /// @endcond
 
@@ -82,7 +75,6 @@ enum class Enum4b : int64_t {
   E4B_C = 3,
   E4B_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4b) { return "MandatoryNamespace.Enum4b"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4b);
 /// @endcond
 
@@ -93,7 +85,6 @@ enum class Enum4c : int64_t {
   E4C_C = 3,
   E4C_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4c) { return "MandatoryNamespace.Enum4c"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4c);
 /// @endcond
 
@@ -104,7 +95,6 @@ enum class Enum4d : int64_t {
   E4D_C = 3,
   E4D_D = 4,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, Enum4d) { return "MandatoryNamespace.Enum4d"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (Enum4d);
 /// @endcond
 
@@ -146,7 +136,6 @@ enum class ExtensiveEnum : int64_t {
   V35 = 35,
   V36 = 42, // "foo4"
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, ExtensiveEnum) { return "MandatoryNamespace.ExtensiveEnum"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ExtensiveEnum);
 /// @endcond
 } // MandatoryNamespace
@@ -157,7 +146,6 @@ namespace InterfaceTests {
 enum class QuickEnum : int64_t {
   ZERO = 0,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, QuickEnum) { return "InterfaceTests.QuickEnum"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (QuickEnum);
 /// @endcond
 } // InterfaceTests
@@ -172,7 +160,6 @@ enum class ClickType : int64_t {
   CLICK_FAST_REPEAT = 4,
   CLICK_KEY_REPEAT = 5,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, ClickType) { return "RapicornAidaTest.ClickType"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (ClickType);
 /// @endcond
 
@@ -191,7 +178,6 @@ enum class MathExpressions : int64_t {
   RESULT_77 = 77,
   RESULT_511 = 511,
 };
-inline const char* operator->* (::Aida::IntrospectionTypename, MathExpressions) { return "RapicornAidaTest.MathExpressions"; }
 AIDA_ENUM_DEFINE_ARITHMETIC_EQ (MathExpressions);
 /// @endcond
 } // RapicornAidaTest
