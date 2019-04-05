@@ -89,6 +89,14 @@ class Generator:
     if tstorage == Decls.ANY:           return 'Aida::Any'
     fullnsname = '::'.join (self.type_absolute_namespaces (type_node) + [ type_node.name ])
     return fullnsname
+  def type_identifier (self, tp):
+    # compound types
+    if tp.storage in (Decls.ENUM, Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE):
+      tnsl = tp.list_namespaces() # type namespace list
+      absolute_namespaces = [d.name for d in tnsl if d.name]
+      fullnsname = '.'.join (absolute_namespaces + [ tp.name ])
+      return fullnsname
+    return Decls.storage_name (tp.storage)
   def C4client (self, type_node):
     tname = self.type2cpp (type_node)
     if type_node.storage == Decls.INTERFACE:
@@ -250,9 +258,9 @@ class Generator:
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
       if tp.storage == Decls.INTERFACE:
-        s += '  aida_remote_handle_wrapper_map (Aida::TypeHash '
-        s += '(%s), ' % class_digest (tp)
-        s += 'aida_remote_handle_wrapper_impl<%s>);\n' % cn
+        s += '  aida_remote_handle_wrapper_map ('
+        s += '%-25s' % ('"' + self.type_identifier (tp) + '",')
+        s += ' aida_remote_handle_wrapper_impl<%s>);\n' % cn
     # Class bindings
     for tp in v8pp_class_types:
       cn = colon_typename (tp)
