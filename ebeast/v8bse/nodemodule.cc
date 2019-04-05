@@ -380,7 +380,6 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
     case Aida::RECORD:
     case Aida::ANY:
     case Aida::UNTYPED:
-    case Aida::TRANSITION:
     default:        	; // undefined
     }
 }

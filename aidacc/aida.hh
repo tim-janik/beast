@@ -454,7 +454,6 @@ enum TypeKind {
   SEQUENCE       = 'Q', ///< Type to form sequences of an other type.
   RECORD         = 'R', ///< Record type containing named fields.
   INSTANCE       = 'C', ///< RemoteHandle type.
-  TRANSITION     = 'T', ///< Instance or RemoteHandle in transition between remotes.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
 

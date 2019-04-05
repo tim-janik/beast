@@ -970,7 +970,7 @@ aux_vector_check_options (const std::vector<String> &auxvector, const String &fi
 static const Aida::IntrospectionRegistry aux_data_TypeKind = {
   "typename=Aida.TypeKind\0"
   "type=ENUM\0"
-  "enumerators=UNTYPED;VOID;BOOL;INT32;INT64;FLOAT64;STRING;ENUM;SEQUENCE;RECORD;INSTANCE;TRANSITION;ANY\0"
+  "enumerators=UNTYPED;VOID;BOOL;INT32;INT64;FLOAT64;STRING;ENUM;SEQUENCE;RECORD;INSTANCE;ANY\0"
   "UNTYPED.value=0\0"
   "VOID.value=118\0"
   "BOOL.value=98\0"
@@ -982,7 +982,6 @@ static const Aida::IntrospectionRegistry aux_data_TypeKind = {
   "SEQUENCE.value=81\0"
   "RECORD.value=82\0"
   "INSTANCE.value=67\0"
-  "TRANSITION.value=84\0"
   "ANY.value=89\0"
 };
 
@@ -1164,7 +1163,6 @@ Any::operator= (const Any &clone)
     case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
     case INSTANCE:      new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
-    case TRANSITION:    // u_.vint64 = clone.u_.vint64;
     default:            u_ = clone.u_;                                                               break;
     }
   return *this;
@@ -1176,7 +1174,6 @@ swap_any_unions (TypeKind kind, U &u, U &v)
   switch (kind)
     {
     case UNTYPED: case BOOL: case INT32: case INT64: case FLOAT64:
-    case TRANSITION:    std::swap (u, v);                     break;
     case ENUM:
     case STRING:        std::swap (u.vstring(), v.vstring()); break;
     case SEQUENCE:      std::swap (u.vanys(), v.vanys());     break;
@@ -1219,7 +1216,6 @@ Any::clear()
     case SEQUENCE:      u_.vanys().~AnySeq();                   break;
     case RECORD:        u_.vfields().~AnyRec();                 break;
     case INSTANCE:      u_.rhandle().~ARemoteHandle();          break;
-    case TRANSITION: ;
     default: ;
     }
   type_kind_ = UNTYPED;
@@ -1348,7 +1344,6 @@ Any::to_string() const
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
     case INSTANCE:   s += posix_sprintf ("(RemoteHandle (ptr=%p))", &*u_.rhandle().__iface_ptr__());             break;
-    case TRANSITION: s += posix_sprintf ("(Any (TRANSITION, orbid=0x#%08llx))", LLU u_.vint64);                  break;
     case ANY:
       s += "(Any (";
       if (u_.vany && u_.vany->kind() == STRING)
@@ -1371,7 +1366,7 @@ Any::operator== (const Any &clone) const
   switch (kind())
     {
     case UNTYPED:     break;
-    case TRANSITION: case BOOL: case INT32: // chain
+    case BOOL: case INT32: // chain
     case INT64:    if (u_.vint64 != clone.u_.vint64) return false;                                       break;
     case FLOAT64:  if (u_.vdouble != clone.u_.vdouble) return false;                                     break;
     case ENUM:
@@ -1405,7 +1400,7 @@ Any::get_bool () const
 {
   switch (kind())
     {
-    case TRANSITION: case BOOL: case INT32:
+    case BOOL: case INT32:
     case INT64:         return u_.vint64 != 0;
     case ENUM:
     case STRING:        return !u_.vstring().empty();
