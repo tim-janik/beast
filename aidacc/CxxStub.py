@@ -811,44 +811,6 @@ class Generator:
     # generate wrapped lambda call
     s += self.generate_remote_call (self.C4server (class_info), mtype.name, mtype.rtype.storage, 'arg_', mtype.args)
     return s + '}\n'
-  def generate_server_method_stub (self, class_info, mtype, reglines): # FIXME: reglines is unused
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_call__%s__%s' % (class_info.name, mtype.name)
-    reglines += [ (self.method_digest (mtype), self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + %u, NULL);\n' % len (mtype.args)
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # fetch args
-    for a in mtype.args:
-      s += '  ' + self.V ('arg_' + a[0], a[1]) + ';\n'
-      s += self.generate_proto_pop_args ('fbr', class_info, 'arg_', [(a[0], a[1])])
-    # return var
-    s += '  '
-    hasret = mtype.rtype.storage != Decls.VOID
-    if hasret:
-      s += self.R (mtype.rtype) + ' rval = '
-    # call out
-    s += 'self->' + mtype.name + ' ('
-    s += ', '.join (self.U ('arg_' + a[0], a[1]) for a in mtype.args)
-    s += ');\n'
-    # store return value
-    if hasret:
-      s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, %s);\n' % self.method_digest (mtype) # invalidates fbr
-      rval = 'rval'
-      s += self.generate_proto_add_args ('rb', class_info, '', [(rval, mtype.rtype)], '')
-      s += '  return &rb;\n'
-    else:
-      s += '  return NULL;\n'
-    # done
-    s += '}\n'
-    return s
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
     if self.gen_docs:
@@ -886,57 +848,6 @@ class Generator:
     else:
       s += q + tname + ' value)%s\n{\n' % copydoc
     s += self.generate_remote_call (self.C4server (class_info), fident, Decls.VOID, '&', [ ('value', ftype) ])
-    s += '}\n'
-    return s
-  def generate_server_property_setter (self, class_info, fident, ftype, reglines): # FIXME: reglines is unused
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_set__%s__%s' % (class_info.name, fident)
-    setter_hash = self.setter_digest (class_info, fident, ftype)
-    reglines += [ (setter_hash, self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);\n'
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # fetch property
-    s += '  ' + self.V ('arg_' + fident, ftype) + ';\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, 'arg_', [(fident, ftype)])
-    ref = '&' if ftype.storage == Decls.INTERFACE else ''
-    # call out
-    s += '  self->' + fident + ' (' + ref + self.U ('arg_' + fident, ftype) + ');\n'
-    s += '  return NULL;\n'
-    s += '}\n'
-    return s
-  def generate_server_property_getter (self, class_info, fident, ftype, reglines): # FIXME: reglines is unused
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_get__%s__%s' % (class_info.name, fident)
-    getter_hash = self.getter_digest (class_info, fident, ftype)
-    reglines += [ (getter_hash, self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);\n'
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # return var
-    s += '  '
-    s += self.R (ftype) + ' rval = '
-    # call out
-    s += 'self->' + fident + ' ();\n'
-    # store return value
-    s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, %s);\n' % getter_hash # invalidates fbr
-    rval = 'rval'
-    s += self.generate_proto_add_args ('rb', class_info, '', [(rval, ftype)], '')
-    s += '  return &rb;\n'
     s += '}\n'
     return s
   def c_long_postfix (self, number):
@@ -1149,23 +1060,6 @@ class Generator:
           s += self.generate_enum_info_impl (tp)
         s += self.open_namespace (None)
         s += '\n#endif // __ENUMCC__%s__\n\n' % self.cppmacro
-    # generate unmarshalling server calls
-    if self.gen_servercc:
-      self.gen_mode = G4SERVANT
-      s += '\n// --- Method Dispatchers & Registry ---\n'
-      reglines = []
-      for tp in types:
-        if tp.is_forward:
-          continue
-        s += self.open_namespace (tp)
-        if tp.storage == Decls.INTERFACE:
-          for fl in tp.fields:
-            s += self.generate_server_property_getter (tp, fl[0], fl[1], reglines)
-            s += self.generate_server_property_setter (tp, fl[0], fl[1], reglines)
-          for m in tp.methods:
-            s += self.generate_server_method_stub (tp, m, reglines)
-          s += '\n'
-      s += self.open_namespace (None)
     s += self.open_namespace (None) # close all namespaces
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
