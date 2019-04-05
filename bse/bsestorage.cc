@@ -636,7 +636,7 @@ aux_vector_get (const std::vector<std::string> &auxvector, const std::string &ke
 static bool
 any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
 {
-  switch (any.kind())
+  switch (any.kind()) // Any kind() needs to be pre-populated
     {
     case Aida::BOOL:
       if (string.size() == 2 && string.data()[0] == '#')
@@ -649,18 +649,17 @@ any_set_from_string (BseStorage *self, Bse::Any &any, const std::string &string)
     case Aida::STRING:          any.set (Bse::string_from_cquote (string));   break;
     case Aida::ENUM:
       {
-        const String enum_typename = any.get_enum_typename();
-        const int64 v = Aida::enum_value_from_string (enum_typename, string);
-        const String ident = Aida::enum_value_find (enum_typename, v);
-        if (ident.empty()) // 'v' is not a valid enum value
+        const String enumerator_hint = any.get<Aida::ENUM>();
+        String enumerator = Aida::Introspection::match_enumerator (string, enumerator_hint);
+        if (enumerator.empty()) // string is not a valid enumerator value
           {
-            auto enumerators = Aida::IntrospectionRegistry::list_enumerators (enum_typename);
+            const size_t dot = enumerator_hint.rfind ('.');
+            const String enum_typename = dot != std::string::npos ? enumerator_hint.substr (0, dot) : enumerator_hint;
+            auto enumerators = Aida::Introspection::list_enumerators (enumerator_hint.substr (0, dot));
             if (enumerators.size())
-              any.set_enum (enum_typename, enumerators[0].second);
-            bse_storage_warn (self, "encountered invalid enum value: %s (%d) -> %s", enum_typename, v, enumerators.size() ? enumerators[0].first : "???");
+              enumerator = enumerators[0];
           }
-        else
-          any.set_enum (enum_typename, v);
+        any.set<Aida::ENUM> (enumerator);
         break;
       }
     default:
@@ -1284,9 +1283,7 @@ storage_store_property_value (BseStorage *self, const std::string &property_name
     case Aida::INT64:           target = Bse::string_from_int (any.get<int64>());            break;
     case Aida::FLOAT64:         target = Bse::string_from_double (any.get<double>());        break;
     case Aida::STRING:          target = Bse::string_to_cquote (any.get<std::string>());     break;
-    case Aida::ENUM:
-      target = Aida::enum_value_to_string (any.get_enum_typename(), any.as_int64());
-      break;
+    case Aida::ENUM:            target = any.get<Aida::ENUM> ();                             break;
     default:                    assert_return_unreached();
     }
   assert_return (!target.empty());
