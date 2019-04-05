@@ -811,7 +811,7 @@ class Generator:
     # generate wrapped lambda call
     s += self.generate_remote_call (self.C4server (class_info), mtype.name, mtype.rtype.storage, 'arg_', mtype.args)
     return s + '}\n'
-  def generate_server_method_stub (self, class_info, mtype, reglines):
+  def generate_server_method_stub (self, class_info, mtype, reglines): # FIXME: reglines is unused
     assert self.gen_mode == G4SERVANT
     s = ''
     dispatcher_name = '__aida_call__%s__%s' % (class_info.name, mtype.name)
@@ -888,7 +888,7 @@ class Generator:
     s += self.generate_remote_call (self.C4server (class_info), fident, Decls.VOID, '&', [ ('value', ftype) ])
     s += '}\n'
     return s
-  def generate_server_property_setter (self, class_info, fident, ftype, reglines):
+  def generate_server_property_setter (self, class_info, fident, ftype, reglines): # FIXME: reglines is unused
     assert self.gen_mode == G4SERVANT
     s = ''
     dispatcher_name = '__aida_set__%s__%s' % (class_info.name, fident)
@@ -912,7 +912,7 @@ class Generator:
     s += '  return NULL;\n'
     s += '}\n'
     return s
-  def generate_server_property_getter (self, class_info, fident, ftype, reglines):
+  def generate_server_property_getter (self, class_info, fident, ftype, reglines): # FIXME: reglines is unused
     assert self.gen_mode == G4SERVANT
     s = ''
     dispatcher_name = '__aida_get__%s__%s' % (class_info.name, fident)
@@ -938,20 +938,6 @@ class Generator:
     s += self.generate_proto_add_args ('rb', class_info, '', [(rval, ftype)], '')
     s += '  return &rb;\n'
     s += '}\n'
-    return s
-  def generate_server_method_registry (self, reglines):
-    s = '\n'
-    s += 'namespace { namespace AIDA_CPP_PASTE (__aida_stubs, __COUNTER__) {\n'
-    if len (reglines) == 0:
-      return '// Skipping empty MethodRegistry\n'
-    s += 'static const __AIDA_Local__::MethodEntry entries[] = {\n'
-    for dispatcher in reglines:
-      cdigest, dispatcher_name = dispatcher
-      s += '  { ' + cdigest + ', '
-      s += dispatcher_name + ', },\n'
-    s += '};\n'
-    s += 'static __AIDA_Local__::MethodRegistry registry (entries);\n'
-    s += '} } // anon::__aida_stubs##__COUNTER__\n'
     return s
   def c_long_postfix (self, number):
     if number >= 9223372036854775808:
@@ -1180,27 +1166,10 @@ class Generator:
             s += self.generate_server_method_stub (tp, m, reglines)
           s += '\n'
       s += self.open_namespace (None)
-      s += self.generate_server_method_registry (reglines) + '\n'
     s += self.open_namespace (None) # close all namespaces
-    # Aida IDs
-    if self.gen_aidaids and (self.gen_servercc or self.gen_clientcc):
-      s += self.generate_aida_ids ()
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
       s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
-    return s
-  def generate_aida_ids (self):
-    s, nslist = '', []
-    nslist += [ Decls.Namespace ('Aida', None, []) ]
-    iface = Decls.TypeInfo ('ImplicitBase', Decls.INTERFACE, False)
-    nslist[-1].add_type (iface) # iface.full_name() == Aida::ImplicitBase
-    import IdStrings
-    identifiers = IdStrings.id_dict
-    for k,v in identifiers.items():
-      IDENT, digest = k.upper(), self.internal_digest (iface, v)
-      s += 'static_assert (Aida::TypeHash { AIDA_HASH_%s } ==\n' % IDENT
-      s += '               Aida::TypeHash { %s },\n' % digest
-      s += '               "Expecting hash defined as:\\n#define AIDA_HASH_%s \t%s");\n' % (IDENT, digest)
     return s
 
 def error (msg):

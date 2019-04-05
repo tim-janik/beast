@@ -2961,27 +2961,3 @@ static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_Mat
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__
 
-static_assert (Aida::TypeHash { AIDA_HASH___TYPENAME__ } ==
-               Aida::TypeHash { 0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___TYPENAME__ 	0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_TYPELIST__ } ==
-               Aida::TypeHash { 0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_TYPELIST__ 	0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_DIR__ } ==
-               Aida::TypeHash { 0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_DIR__ 	0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_GET__ } ==
-               Aida::TypeHash { 0x4aed20bb93591defULL, 0xc75b192eab6983edULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_GET__ 	0x4aed20bb93591defULL, 0xc75b192eab6983edULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_SET__ } ==
-               Aida::TypeHash { 0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_SET__ 	0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_ATTACH__ } ==
-               Aida::TypeHash { 0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_ATTACH__ 	0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHID__ } ==
-               Aida::TypeHash { 0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHID__ 	0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_CALLBACK__ } ==
-               Aida::TypeHash { 0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_CALLBACK__ 	0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL");

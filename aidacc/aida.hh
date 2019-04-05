@@ -112,9 +112,6 @@ class Event;
 class RemoteHandle;
 class OrbObject;
 class ImplicitBase;
-class BaseConnection;
-class ClientConnection;
-class ServerConnection;
 union ProtoUnion;
 class ProtoMsg;
 class ProtoReader;
@@ -124,9 +121,6 @@ struct PropertyAccessor;
 typedef std::shared_ptr<OrbObject>    OrbObjectP;
 typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
-typedef std::shared_ptr<BaseConnection> BaseConnectionP;
-typedef std::shared_ptr<ClientConnection> ClientConnectionP;
-typedef std::shared_ptr<ServerConnection> ServerConnectionP;
 typedef ProtoMsg* (*DispatchFunc) (ProtoReader&);
 typedef std::function<void (const Event&)> EventHandlerF;
 
@@ -487,17 +481,6 @@ struct TypeHash {
 typedef std::vector<TypeHash> TypeHashList;
 
 
-// == Internal Type Hashes ==
-#define AIDA_HASH___TYPENAME__          0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL
-#define AIDA_HASH___AIDA_TYPELIST__     0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL
-#define AIDA_HASH___AIDA_DIR__          0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL
-#define AIDA_HASH___AIDA_GET__          0x4aed20bb93591defULL, 0xc75b192eab6983edULL
-#define AIDA_HASH___AIDA_SET__          0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL
-#define AIDA_HASH___EVENT_ATTACH__      0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL
-#define AIDA_HASH___EVENT_DETACHID__    0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL
-#define AIDA_HASH___EVENT_CALLBACK__    0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL
-
-
 // == EventFd ==
 /// Wakeup facility for IPC.
 class EventFd
@@ -592,7 +575,6 @@ protected:
   virtual                  ~OrbObject         ();
 public:
   uint64                    orbid             () const       { return orbid_; }
-  virtual ClientConnection* client_connection ();
   static uint64             orbid_make        (uint16 connection, uint16 type_index, uint32 counter)
   { return (uint64 (connection) << 48) | (uint64 (type_index) << 32) | counter; }
 };
@@ -621,17 +603,9 @@ public:
   virtual                ~RemoteHandle         ();
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
   TypeHashList            __typelist__         () const;
-  String                  __typename__         () const;                                //: AIDAID
-  TypeHashList            __aida_typelist__    () const;                                //: AIDAID
-  std::vector<String>     __aida_dir__         () const;                                //: AIDAID
-  Any                     __aida_get__         (const String &name) const;              //: AIDAID
-  bool                    __aida_set__         (const String &name, const Any &any);    //: AIDAID
-  ClientConnection*       __aida_connection__  () const { return orbop_->client_connection(); }
   uint64                  __aida_orbid__       () const { return orbop_->orbid(); }
   ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   // Support event handlers
-  uint64                  __event_attach__     (const String &type, EventHandlerF handler);
-  bool                    __event_detach__     (uint64 connection_id);
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
   // Determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return iface_ptr_ || 0 != __aida_orbid__(); }
@@ -924,8 +898,6 @@ public:
   // convenience
   static Any          any_from_strings (const std::vector<std::string> &string_container);
   std::vector<String> any_to_strings   () const;
-  void                to_transition    (BaseConnection &base_connection);
-  void                from_transition  (BaseConnection &base_connection);
   String              repr             (const String &field_name = "") const;
   String              to_string        () const; ///< Retrieve string representation of Any for printouts.
   int64               as_int64         () const; ///< Obtain contents as int64.
@@ -1028,7 +1000,6 @@ public:
   inline void add_double (double vdouble)  { ProtoUnion &u = addu (FLOAT64); u.vdouble = vdouble; }
   inline void add_orbid  (uint64 objid)    { ProtoUnion &u = addu (TRANSITION); u.vint64 = objid; }
   void        add_string (const String &s);
-  void        add_any    (const Any &vany, BaseConnection &bcon);
   inline void add_header1 (MessageId m, uint64 h, uint64 l) { add_int64 (IdentifierParts (m).vuint64); add_int64 (h); add_int64 (l); }
   inline void add_header2 (MessageId m, uint64 h, uint64 l) { add_int64 (IdentifierParts (m).vuint64); add_int64 (h); add_int64 (l); }
   inline ProtoMsg& add_rec      (uint32 nt) { ProtoUnion &u = addu (RECORD); return *new (&u) ProtoMsg (nt); }
@@ -1053,7 +1024,7 @@ public:
   inline void operator<<= (EnumValue e)       { ProtoUnion &u = addu (ENUM); u.vint64 = e.value; }
   inline void operator<<= (const String &s)   { add_string (s); }
   inline void operator<<= (const TypeHash &h) { *this <<= h.typehi; *this <<= h.typelo; }
-  void        operator<<= (const Any &vany);
+  void        operator<<= (const Any &vany)   {}
   void        operator<<= (const RemoteHandle &rhandle);
   void        operator<<= (ImplicitBase *instance);
 };
@@ -1090,7 +1061,6 @@ public:
   inline double          pop_double  () { ProtoUnion &u = fb_popu (FLOAT64); return u.vdouble; }
   inline const String&   pop_string  () { ProtoUnion &u = fb_popu (STRING); return *u.vstr; }
   inline uint64          pop_orbid   () { ProtoUnion &u = fb_popu (TRANSITION); return u.vint64; }
-  Any                    pop_any     (BaseConnection &bcon);
   inline const ProtoMsg& pop_rec     () { ProtoUnion &u = fb_popu (RECORD); return *(ProtoMsg*) &u; }
   inline const ProtoMsg& pop_seq     () { ProtoUnion &u = fb_popu (SEQUENCE); return *(ProtoMsg*) &u; }
   inline void operator>>= (uint32 &v)          { ProtoUnion &u = fb_popu (INT64); v = u.vint64; }
@@ -1105,95 +1075,20 @@ public:
   inline void operator>>= (String &s)          { ProtoUnion &u = fb_popu (STRING); s = *u.vstr; }
   inline void operator>>= (TypeHash &h)        { *this >>= h.typehi; *this >>= h.typelo; }
   inline void operator>>= (std::vector<bool>::reference v) { bool b; *this >>= b; v = b; }
-  void        operator>>= (Any &vany);
+  void        operator>>= (Any &vany)          {}
   void        operator>>= (RemoteHandle &rhandle);
   template<class Target> std::shared_ptr<Target> pop_instance () { return std::dynamic_pointer_cast<Target> (pop_interface()); }
-};
-
-
-// == Connections ==
-/// Base connection context for ORB message exchange.
-class BaseConnection {
-  const std::string protocol_;
-  BaseConnection   *peer_;
-  AIDA_CLASS_NON_COPYABLE (BaseConnection);
-protected:
-  explicit               BaseConnection  (const std::string &protocol);
-  virtual               ~BaseConnection  ();
-  virtual void           remote_origin   (ImplicitBaseP rorigin) = 0;
-  virtual RemoteHandle   remote_origin   () = 0;
-  virtual void           receive_msg     (ProtoMsg*) = 0; ///< Accepts an incoming message, transfers memory.
-  void                   post_peer_msg   (ProtoMsg*);     ///< Send message to peer, transfers memory.
-  void                   peer_connection (BaseConnection &peer);
-public:
-  BaseConnection&        peer_connection () const;
-  bool                   has_peer        () const;
-  String                 protocol        () const { return protocol_; }
-  virtual int            notify_fd       () = 0; ///< Returns fd for POLLIN, to wake up on incomming events.
-  virtual bool           pending         () = 0; ///< Indicate whether any incoming events are pending that need to be dispatched.
-  virtual void           dispatch        () = 0; ///< Dispatch a single event if any is pending.
-  template<class H> H    remote_origin   ();
-};
-
-/// Connection context for IPC servers. @nosubgrouping
-class ServerConnection : public BaseConnection {
-  friend  class ClientConnection;
-  AIDA_CLASS_NON_COPYABLE (ServerConnection);
-  static ServerConnectionP make_server_connection (const String &protocol);
-protected:
-  /*ctor*/                  ServerConnection      (const std::string &protocol);
-  virtual                  ~ServerConnection      ();
-  virtual void              cast_interface_handle (RemoteHandle &rhandle, ImplicitBaseP ibase) = 0;
-public:
-  typedef std::function<void (Aida::ProtoReader&)> EmitResultHandler;
-  template<class C>
-  static ServerConnectionP  bind                    (const String &protocol, std::shared_ptr<C> object_ptr);
-  void                      post_peer_msg           (ProtoMsg *pm)      { BaseConnection::post_peer_msg (pm); }
-  virtual void              emit_result_handler_add (size_t id, const EmitResultHandler &handler) = 0;
-  virtual void              add_interface           (ProtoMsg &fb, ImplicitBaseP ibase) = 0;
-  virtual ImplicitBaseP     pop_interface           (ProtoReader &fr) = 0;
-protected: /// @name Registry for IPC method lookups
-  static DispatchFunc find_method (uint64 hi, uint64 lo); ///< Lookup method in registry.
-public:
-  struct MethodEntry       { uint64 hashhi, hashlo; DispatchFunc dispatcher; };
-  struct MethodRegistry    /// Registry structure for IPC method stubs.
-  {
-    template<size_t S> MethodRegistry  (const MethodEntry (&static_const_entries)[S])
-    { for (size_t i = 0; i < S; i++) register_method (static_const_entries[i]); }
-  private: static void register_method  (const MethodEntry &mentry);
-  };
-};
-
-/// Connection context for IPC clients. @nosubgrouping
-class ClientConnection : public BaseConnection {
-  AIDA_CLASS_NON_COPYABLE (ClientConnection);
-protected:
-  explicit              ClientConnection (const std::string &protocol);
-  virtual              ~ClientConnection ();
-public: /// @name API for remote calls.
-  static ClientConnectionP  connect           (const String &protocol);
-  virtual ProtoMsg*         call_remote       (ProtoMsg*) = 0; ///< Carry out a remote call syncronously, transfers memory.
-  virtual void              add_handle        (ProtoMsg &fb, const RemoteHandle &rhandle) = 0;
-  virtual void              pop_handle        (ProtoReader &fr, RemoteHandle &rhandle) = 0;
-  /// Set callback for wakeups when new events may need dispatching
-  virtual void              notify_callback   (const std::function<void (ClientConnection&)> &cb) = 0;
 };
 
 
 // == ProtoScpope ==
 /// ProtoScpope keeps track of the ServerConnection and ClientConnection during RPC marshalling.
 class ProtoScope {
-  bool nested_;
 public:
   /// Start/create an RPC scope for a connection pair within the current thread.
-  explicit                 ProtoScope                (ClientConnection &client_connection);
-  explicit                 ProtoScope                (ServerConnection &server_connection);
   /*dtor*/                ~ProtoScope                (); ///< Finish/destroy an RPC scope.
   ProtoMsg*                invoke                    (ProtoMsg *pm); ///< Carry out a remote call syncronously, transfers memory.
   void                     post_peer_msg             (ProtoMsg *pm); ///< Send message to peer, transfers memory.
-  static ClientConnection& current_client_connection (); ///< Access the client connection of the current thread-specific RPC scope.
-  static ServerConnection& current_server_connection (); ///< Access the server connection of the current thread-specific RPC scope.
-  static BaseConnection&   current_base_connection   (); ///< Access the client or server connection of the current thread-specific RPC scope.
   AIDA_CLASS_NON_COPYABLE (ProtoScope);
 };
 struct ProtoScopeCall1Way : ProtoScope {
@@ -1203,10 +1098,8 @@ struct ProtoScopeCall2Way : ProtoScope {
   ProtoScopeCall2Way (ProtoMsg &pm, const RemoteHandle &rhandle, uint64 hashi, uint64 hashlo);
 };
 struct ProtoScopeEmit1Way : ProtoScope {
-  ProtoScopeEmit1Way (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
 };
 struct ProtoScopeDisconnect : ProtoScope {
-  ProtoScopeDisconnect (ProtoMsg &pm, ServerConnection &server_connection, uint64 hashi, uint64 hashlo);
 };
 
 
@@ -1239,24 +1132,6 @@ ProtoMsg::reset()
         default: ;
         }
     }
-}
-
-/// Initialize the ServerConnection of @a C and accept connections via @a protocol
-template<class C> ServerConnectionP
-ServerConnection::bind (const String &protocol, std::shared_ptr<C> object_ptr)
-{
-  AIDA_ASSERT_RETURN (object_ptr != NULL, NULL);
-  auto server_connection = make_server_connection (protocol);
-  if (server_connection)
-    server_connection->remote_origin (object_ptr);
-  return server_connection;
-}
-
-/// Retrieve the remote origin of type @a Handle from a connection.
-template<class Handle> Handle
-BaseConnection::remote_origin ()
-{
-  return RemoteHandle::__aida_reinterpret___cast____<Handle> (remote_origin());
 }
 
 // == PropertyAccessor ==

@@ -6,11 +6,6 @@ namespace { // Anon
 namespace __AIDA_Local__ {
 using namespace Aida;
 
-// types
-typedef ServerConnection::EmitResultHandler EmitResultHandler;
-typedef ServerConnection::MethodRegistry    MethodRegistry;
-typedef ServerConnection::MethodEntry       MethodEntry;
-
 static_assert (std::is_base_of<Aida::ImplicitBase, $AIDA_iface_base$>::value,
                "IDL interface base '$AIDA_iface_base$' must derive 'Aida::ImplicitBase'");
 
