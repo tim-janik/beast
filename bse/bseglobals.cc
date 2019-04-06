@@ -63,6 +63,57 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  * BSE_PRIORITY_BACKGROUND	= G_PRIORITY_LOW + 500
  */
 
+namespace Bse {
+
+// Run `function` immediately with the next event loop iteration.
+uint
+exec_now (const std::function<void()> &function)
+{
+  using Func = std::function<void()>;
+  Func *func = new Func (function);
+  void *data = func;
+  GSourceFunc wrapper = [] (void *data) -> gboolean {
+    Func *func = (Func*) data;
+    (*func) ();
+    return false;
+  };
+  GDestroyNotify destroy = [] (void *data) {
+    Func *func = (Func*) data;
+    delete func;
+  };
+  GSource *source = g_idle_source_new ();
+  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  g_source_set_callback (source, wrapper, data, destroy);
+  uint id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
+// Run `function` immediately with the next event loop iteration, return `true` to keep alive.
+uint
+exec_now (const std::function<bool()> &function)
+{
+  using Func = std::function<bool()>;
+  Func *func = new Func (function);
+  void *data = func;
+  GSourceFunc wrapper = [] (void *data) -> gboolean {
+    Func *func = (Func*) data;
+    return (*func) ();
+  };
+  GDestroyNotify destroy = [] (void *data) {
+    Func *func = (Func*) data;
+    delete func;
+  };
+  GSource *source = g_idle_source_new ();
+  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  g_source_set_callback (source, wrapper, data, destroy);
+  uint id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
+} // Bse
+
 /**
  * @param function	user function
  * @param data	        user data

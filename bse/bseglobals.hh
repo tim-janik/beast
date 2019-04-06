@@ -53,6 +53,10 @@ guint	  bse_idle_timed	(guint64	usec_delay,
 				 GSourceFunc    function,
 				 gpointer       data);
 
+namespace Bse {
+uint    exec_now        	(const std::function<void()> &function);
+uint    exec_now        	(const std::function<bool()> &function);
+} // Bse
 
 /* semitone factorization tables, i.e.
  * Index                     Factor
