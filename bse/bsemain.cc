@@ -26,10 +26,6 @@ using namespace Bse;
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 static void     attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context);
 
-namespace Bse {
-static void     init_aida_idl ();
-} // Bse
-
 /* --- variables --- */
 /* from bse.hh */
 static volatile gboolean bse_initialization_stage = 0;
@@ -146,9 +142,6 @@ bse_init_intern()
           g_free (name);
         }
     }
-
-  // allow aida IDL remoting
-  Bse::init_aida_idl();
 
   // start other threads
   struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
@@ -551,22 +544,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 }
 
 namespace Bse {
-
-static void
-init_aida_idl ()
-{
-  // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
-  Aida::ServerConnectionP bseserver_connection =
-    Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
-                                                    Bse::shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance())); // sets errno
-  assert_return (bseserver_connection != NULL);
-  static Aida::ServerConnectionP *static_connection = new Aida::ServerConnectionP (bseserver_connection); // keep connection alive for entire runtime
-  (void) static_connection;
-  // hook up server connection to main loop to process remote calls
-  AidaGlibSource *source = AidaGlibSource::create (bseserver_connection.get());
-  g_source_set_priority (source, BSE_PRIORITY_GLUE);
-  g_source_attach (source, bse_main_context);
-}
 
 Aida::ExecutionContext&
 execution_context () // bseutils.hh

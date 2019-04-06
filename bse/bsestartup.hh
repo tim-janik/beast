@@ -25,12 +25,6 @@ void		init_async	    (int *argc, char **argv, const char *app_name, const String
 bool		init_needed	    ();
 void		objects_debug_leaks ();
 
-/// A GSource implementation to attach an Aida::BaseConnection to a Glib main loop.
-class AidaGlibSource : public GSource {
-public:
-  static AidaGlibSource* create (Aida::BaseConnection *connection);
-};
-
 } // Bse
 
 #endif // __BSE_STARTUP_HH__

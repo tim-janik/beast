@@ -509,31 +509,6 @@ aida_diagnostic_impl (const char *file, int line, const char *func, char kind, c
   Bse::diag_printerr (diag_message);
 }
 
-// Parse BSE_CONFIG=gc-seconds=N
-static uint
-aida_gc_seconds (uint default_msecs)
-{
-  const char *ev = getenv ("BSE_CONFIG");
-  if (ev)
-    {
-      const std::string v = Bse::feature_toggle_find (ev, "gc-seconds", "");
-      if (!v.empty())
-        return Bse::string_to_uint (v);
-    }
-  return (default_msecs + 999) / 1000;
-}
-
-static uint
-aida_defer_handler (uint msecs, int (*func) (void*), void *data)
-{
-  assert_return (bse_main_context != NULL, 0);
-  static const uint gc_seconds = aida_gc_seconds (msecs);
-  GSource *source = gc_seconds ? g_timeout_source_new_seconds (gc_seconds) : g_idle_source_new();
-  g_source_set_callback (source, func, data, NULL);
-  uint id = g_source_attach (source, bse_main_context);
-  g_source_unref (source);
-  return id;
-}
 #define AIDA_DEFER_GARBAGE_COLLECTION(msecs, func, data)        aida_defer_handler (msecs, func, data)
 #define AIDA_DEFER_GARBAGE_COLLECTION_CANCEL(id)                g_source_remove (id)
 #define AIDA_DIAGNOSTIC_IMPL(file, line, func, kind, message, will_abort) \

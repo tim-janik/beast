@@ -7,7 +7,6 @@
 
 namespace Bse { // clientapi glue code, see bsestartup.cc
 ServerHandle            init_server_instance   ();
-BSE_DEPRECATED Aida::ClientConnectionP init_server_connection ();
 } // Bse
 
 #endif /* __BSE_H__ */

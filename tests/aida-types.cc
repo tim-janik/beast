@@ -8,7 +8,6 @@ using namespace Aida;
 enum TestEnum { TEST_COFFEE_COFFEE = -0xc0ffeec0ffeeLL };
 
 // Manually adding TestEnum introspection information for basic testing
-inline const char* operator->* (::Aida::IntrospectionTypename, TestEnum) { return "TestEnum"; }
 static const IntrospectionRegistry __aida_aux_data_srvt__Aida_TestEnum_ = {
   "typename=TestEnum\0"
   "type=ENUM\0"
@@ -58,17 +57,8 @@ test_aida_cxxaux()
 TEST_ADD (test_aida_cxxaux);
 
 // Dummy handles for test purposes
-struct TestOrbObject : OrbObject {
-  TestOrbObject (ptrdiff_t x) : OrbObject (x) {}
-};
 struct OneHandle : RemoteHandle {
-  OneHandle (OrbObjectP orbo) : RemoteHandle (orbo) {}
-  static OneHandle __cast__ (RemoteHandle smh) { return make_handle (smh.__aida_orbid__()); }
-  static OneHandle make_handle (ptrdiff_t id)
-  {
-    std::shared_ptr<TestOrbObject> torbo = std::make_shared<TestOrbObject> (id);
-    return OneHandle (torbo);
-  }
+  static OneHandle __cast__ (RemoteHandle smh) { OneHandle oh; return oh; }
 };
 class OneIface : public virtual ImplicitBase {
   int64 testid_;
@@ -77,12 +67,8 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  OneHandle                              __handle__         () { return OneHandle (NULL); }
-  virtual std::string                    __typename__       () const override { return "OneIface"; }
-  virtual Aida::TypeHashList             __aida_typelist__  () const override { return TypeHashList(); }
-  virtual std::vector<String>            __aida_dir__ () const override                             { return std::vector<String>(); }
-  virtual Any                            __aida_get__ (const String &name) const override           { return Any(); }
-  virtual bool                           __aida_set__ (const String &name, const Any &any) override { return false; }
+  OneHandle                          __handle__               () { return OneHandle(); }
+  virtual Aida::StringVector         __typelist__             () const override { return { "OneIface" }; }
   virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
@@ -149,11 +135,7 @@ test_aida_handles()
   // RemoteHandle
   TASSERT (RemoteHandle() == NULL);
   TASSERT (!RemoteHandle());
-  TASSERT (RemoteHandle().__aida_orbid__() == 0);
-  std::shared_ptr<TestOrbObject> torbo = std::make_shared<TestOrbObject> (1);
-  TASSERT (OneHandle (torbo) != NULL);
-  TASSERT (OneHandle (torbo));
-  TASSERT (OneHandle (torbo).__aida_orbid__() == 1);
+  TASSERT (RemoteHandle().__iface_ptr__().get() == 0);
 }
 TEST_ADD (test_aida_handles);
 
@@ -268,8 +250,7 @@ any_test_set (Any &a, int what)
     case 11: a.set (test_double_value);                            break;
     case 12: { Any a2; a2.set ("SecondAny"); a.set (a2); }         break;
     case 13: a.set (TEST_COFFEE_COFFEE);                           break;
-    case 14: a.set (OneHandle::make_handle (0x1f1f0c0c));          break;
-#define ANY_TEST_COUNT    17
+#define ANY_TEST_COUNT    13
     }
   // printerr ("SET: %d) Any=%p %i %s: %u\n", what, &a, a.kind(), type_kind_name(a.kind()), a.get<int64>());
 }
@@ -279,7 +260,6 @@ any_test_get (const Any &a, int what)
 {
   std::string s;
   // printerr ("GET: %d) Any=%p %i %s: %u\n", what, &a, a.kind(), type_kind_name(a.kind()), a.get<int64>());
-  OneHandle thandle (0);
   switch (what)
     {
       typedef unsigned char uchar;
@@ -298,11 +278,6 @@ any_test_get (const Any &a, int what)
     case 11: d  = a.get<double>();            TASSERT (d == test_double_value);      break;
     case 12: s  = a.get<Any>().get<String>(); TASSERT (s == "SecondAny");            break;
     case 13: i6 = a.get<TestEnum>();          TASSERT (i6 == TEST_COFFEE_COFFEE);    break;
-    case 14:
-      TASSERT (a.kind() == INSTANCE);
-      thandle = a.get<OneHandle>();
-      TASSERT (thandle.__aida_orbid__() == 0x1f1f0c0c);
-      break;
     }
   return true;
 }

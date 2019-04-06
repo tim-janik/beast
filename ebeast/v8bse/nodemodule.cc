@@ -44,12 +44,12 @@ aida_remote_handle_wrapper_impl (v8::Isolate *const isolate, Aida::RemoteHandle 
 
 /// Map Aida type ids to the corresponding AidaRemoteHandleWrapper.
 static AidaRemoteHandleWrapper
-aida_remote_handle_wrapper_map (const Aida::TypeHash &thash, AidaRemoteHandleWrapper newfunc)
+aida_remote_handle_wrapper_map (const std::string &type_name, AidaRemoteHandleWrapper newfunc)
 {
-  static std::map<Aida::TypeHash, AidaRemoteHandleWrapper> wmap;
+  static std::map<std::string, AidaRemoteHandleWrapper> wmap;
   if (!newfunc)
-    return wmap[thash];
-  wmap[thash] = newfunc;
+    return wmap[type_name];
+  wmap[type_name] = newfunc;
   return NULL;
 }
 
@@ -125,10 +125,10 @@ aida_remote_handle_wrap_native (v8::Isolate *const isolate, const Aida::RemoteHa
     }
   if (rhandle)
     {
-      Aida::TypeHashList thl = rhandle.__typelist__();
-      for (const auto &th : thl)
+      Aida::StringVector types = rhandle.__typelist__();
+      for (const auto &type_name : types)
         {
-          AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (th, AidaRemoteHandleWrapper (NULL));
+          AidaRemoteHandleWrapper wrapper = aida_remote_handle_wrapper_map (type_name, AidaRemoteHandleWrapper (NULL));
           if (wrapper)
             {
               wrapobj = wrapper (isolate, rhandle);
@@ -380,7 +380,6 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
     case Aida::RECORD:
     case Aida::ANY:
     case Aida::UNTYPED:
-    case Aida::TRANSITION:
     default:        	; // undefined
     }
 }

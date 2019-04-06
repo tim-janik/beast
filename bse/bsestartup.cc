@@ -4,7 +4,6 @@
 #include "bse/internal.hh"
 #include "bse/bseserver.hh"
 #include <bse/bseapi_handles.hh>
-#include <bse/bse.hh>           // init_server_connection
 
 namespace Bse {
 
@@ -79,59 +78,6 @@ TaskRegistry::list ()
   return task_registry_tasks_;
 }
 
-class AidaGlibSourceImpl : public AidaGlibSource {
-  static AidaGlibSourceImpl* self_         (GSource *src)                     { return (AidaGlibSourceImpl*) src; }
-  static int                 glib_prepare  (GSource *src, int *timeoutp)      { return self_ (src)->prepare (timeoutp); }
-  static int                 glib_check    (GSource *src)                     { return self_ (src)->check(); }
-  static int                 glib_dispatch (GSource *src, GSourceFunc, void*) { return self_ (src)->dispatch(); }
-  static void                glib_finalize (GSource *src)                     { self_ (src)->~AidaGlibSourceImpl(); }
-  Aida::BaseConnection      *connection_;
-  GPollFD                         pfd_;
-  AidaGlibSourceImpl (Aida::BaseConnection *connection) :
-    connection_ (connection), pfd_ { -1, 0, 0 }
-  {
-    pfd_.fd = connection_->notify_fd();
-    pfd_.events = G_IO_IN;
-    g_source_add_poll (this, &pfd_);
-  }
-  ~AidaGlibSourceImpl ()
-  {
-    g_source_remove_poll (this, &pfd_);
-  }
-  bool
-  prepare (int *timeoutp)
-  {
-    return pfd_.revents || connection_->pending();
-  }
-  bool
-  check ()
-  {
-    return pfd_.revents || connection_->pending();
-  }
-  bool
-  dispatch ()
-  {
-    pfd_.revents = 0;
-    connection_->dispatch();
-    return true;
-  }
-public:
-  static AidaGlibSourceImpl*
-  create (Aida::BaseConnection *connection)
-  {
-    assert_return (connection != NULL, NULL);
-    static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
-    GSource *src = g_source_new (&glib_source_funcs, sizeof (AidaGlibSourceImpl));
-    return new (src) AidaGlibSourceImpl (connection);
-  }
-};
-
-AidaGlibSource*
-AidaGlibSource::create (Aida::BaseConnection *connection)
-{
-  return AidaGlibSourceImpl::create (connection);
-}
-
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
 ServerHandle
 init_server_instance () // bse.hh
@@ -139,29 +85,6 @@ init_server_instance () // bse.hh
   ServerH server;
   server = BSE_SERVER.__handle__();
   return server;
-}
-
-/// Retrieve the ClientConnection used for RPC communication with the Bse thread.
-Aida::ClientConnectionP
-init_server_connection () // bse.hh
-{
-#if 0
-  if (!client_connection)
-    {
-      Aida::ClientConnectionP connection = Aida::ClientConnection::connect ("inproc://BSE-" + Bse::version());
-      ServerH bseconnection_server_handle;
-      if (connection)
-        bseconnection_server_handle = connection->remote_origin<ServerH>(); // sets errno
-      assert_return (bseconnection_server_handle != NULL, NULL);
-      constexpr SfiProxy BSE_SERVER_id = 1;
-      assert_return (bseconnection_server_handle.proxy_id() == BSE_SERVER_id, NULL);
-      assert_return (bseconnection_server_handle.from_proxy (BSE_SERVER_id) == bseconnection_server_handle, NULL);
-      assert_return (client_connection == NULL, NULL);
-      client_connection = new Aida::ClientConnectionP (connection);
-    }
-  return *client_connection;
-#endif
-  return Aida::ClientConnectionP();
 }
 
 } // Bse

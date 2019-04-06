@@ -260,13 +260,26 @@ class Generator:
     if type.storage in (Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
       return self.C (type) + '()'
     return '0'
-  def generate_recseq_visit (self, type_info):
-    s = ''
-    s += 'template<class Visitor> void\n%s::__visit__ (Visitor &&_visitor_)\n{\n' % self.C (type_info)
+  def generate_recseq_visitors (self, type_info):
+    s, classC = '', self.C (type_info)
     if type_info.storage == Decls.RECORD:
+      s += 'template<class Visitor> void\n%s::__visit__ (Visitor &&_visitor_)\n{\n' % classC
       for fname, ftype in type_info.fields:
         s += '  std::forward<Visitor> (_visitor_) (%s, "%s");\n' % (fname, fname)
-    s += '}\n'
+      s += '}\n'
+    if type_info.storage == Decls.SEQUENCE:
+      s += 'inline\n'
+      s += '%s::%s (const Aida::AnySeq &s)\n{\n' % (classC, classC) # ctor
+      s += '  for (const auto &any : s)\n'
+      s += '    push_back (any.get< typename std::decay<%s::value_type>::type >());\n' % classC
+      s += '}\n'
+      s += 'inline\n'
+      s += '%s::operator Aida::AnySeq () const\n{\n' % classC
+      s += '  Aida::AnySeq s;\n'
+      s += '  for (const auto &v : *this)\n'
+      s += '    s.push_back (Aida::Any (v));\n'
+      s += '  return s;\n'
+      s += '}\n'
     return s
   def generate_recseq_accept (self, type_info):
     s = ''
@@ -296,33 +309,28 @@ class Generator:
       s += '  /// @cond GeneratedFields\n'
       fieldlist = type_info.fields
       for fl in fieldlist:
-        s += '  ' + self.F (self.M (fl[1])) + fl[0] + ';\n'
+        initializer = ''
+        if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
+          initializer = " = %s" % self.mkzero (fl[1])
+        s += '  ' + self.F (self.M (fl[1])) + fl[0] + '%s;\n' % initializer
       s += '  /// @endcond\n'
     elif type_info.storage == Decls.SEQUENCE:
       s += '  typedef std::vector<' + self.M (fl[1]) + '> Sequence;\n'
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
       s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
-      s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) : %s() { __aida_from_any__ (Aida::Any (as)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &s);\n' % classC # ctor
+      s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
     elif type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('inline') + '%s () {' % classC # ctor
-      for fl in fieldlist:
-        if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
-          s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
-      s += ' }\n'
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
+      s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
-      s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
-      s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnySeq      () const '
-      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }\n' % classC
+      s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
     if type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_visitable (*this); }\n'
-      s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }\n'
       s += '  ' + self.F ('bool') + 'operator==   (const %s &other) const;\n' % classC
       s += '  ' + self.F ('bool') + 'operator!=   (const %s &other) const { return !operator== (other); }\n' % classC
       s += '  ' + self.F ('operator') + 'Aida::AnyRec () const { Aida::AnyRec r; const_cast<%s*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }\n' % classC
@@ -333,9 +341,6 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
     s += '};\n'
-    if type_info.storage in (Decls.RECORD, Decls.SEQUENCE):
-      s += 'void operator<<= (Aida::ProtoMsg&, const %s&);\n' % classC
-      s += 'void operator>>= (Aida::ProtoReader&, %s&);\n' % classC
     #s += '/// @endcond\n'
     return s
   def generate_proto_add_args (self, fb, type_info, aprefix, arg_info_list, apostfix):
@@ -412,42 +417,12 @@ class Generator:
       s += '  if (this->%s != other.%s) return false;\n' % (ident, ident)
     s += '  return true;\n'
     s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator<<= (Aida::ProtoMsg &dst, const %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoMsg &__p_ = dst.add_rec (%u);\n' % len (type_info.fields)
-    s += self.generate_proto_add_args ('__p_', type_info, 'self.', type_info.fields, '')
-    s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator>>= (Aida::ProtoReader &src, %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoReader fbr (src.pop_rec());\n'
-    s += '  if (fbr.remaining() < %u) return;\n' % len (type_info.fields)
-    s += self.generate_proto_pop_args ('fbr', type_info, 'self.', type_info.fields)
-    s += '}\n'
     return s
   def generate_sequence_impl (self, type_info):
     s = ''
     s += self.generate_type_aux_data_registration (type_info)
     s += self.generate_recseq_aux_method_impls (type_info)
     el = type_info.elements
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator<<= (Aida::ProtoMsg &dst, const %s &self)\n{\n' % self.C (type_info)
-    s += '  const size_t len = self.size();\n'
-    s += '  Aida::ProtoMsg &__p_ = dst.add_seq (len);\n'
-    s += '  for (size_t k = 0; k < len; k++) {\n'
-    s += reindent ('  ', self.generate_proto_add_args ('__p_', type_info, '',
-                                                       [('self', type_info.elements[1])],
-                                                       '[k]')) + '\n'
-    s += '  }\n'
-    s += '}\n'
-    s += 'inline void __attribute__ ((used))\n'
-    s += 'operator>>= (Aida::ProtoReader &src, %s &self)\n{\n' % self.C (type_info)
-    s += '  Aida::ProtoReader fbr (src.pop_seq());\n'
-    s += '  const size_t len = fbr.remaining();\n'
-    s += '  self.resize (len);\n'
-    s += '  for (size_t k = 0; k < len; k++) {\n'
-    s += '    fbr >>= self[k];\n'
-    s += '  }\n'
-    s += '}\n'
     return s
   def generate_enum_info_impl (self, type_info):
     u_typename, c_typename = '__'.join (type_name_parts (type_info)), '::'.join (type_name_parts (type_info))
@@ -537,9 +512,6 @@ class Generator:
     precls, heritage, cl, ddc = self.interface_class_inheritance (type_info)
     s += ' : ' + heritage + ' %s' % (', ' + heritage + ' ').join (precls) + '\n'
     s += '{\n'
-    if self.gen_mode == G4STUB:
-      s += '  ' + self.F ('friend') + 'class ' + self.C4server (type_info) + ';\n'
-      s += '  ' + self.F ('static const Aida::TypeHash&') + '__aida_typeid__();\n'
     # constructors
     s += 'protected:\n'
     if self.gen_mode == G4SERVANT:
@@ -552,8 +524,7 @@ class Generator:
       s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
       s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
-      s += '  virtual ' + self.F ('Aida::TypeHashList') + '__aida_typelist__  () const override;\n'
-      s += '  virtual ' + self.F ('std::string') + '__typename__       () const override\t{ return "%s"; }\n' % type_identifier
+      s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist__       () const override;\n'
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
       s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
@@ -583,10 +554,6 @@ class Generator:
     # accept
     s += self.generate_class_accept_accessor (type_info)
     s += '};\n'
-    if self.gen_mode == G4SERVANT:
-      s += 'void operator<<= (Aida::ProtoMsg&, const %sP&);\n' % self.C (type_info)
-      s += 'void operator>>= (Aida::ProtoReader&, %s*&);\n' % self.C (type_info)
-      s += 'void operator>>= (Aida::ProtoReader&, %sP&);\n' % self.C (type_info)
     # typedef alias
     if self.gen_mode == G4STUB:
       s += self.generate_handle_typedefs (type_info)
@@ -660,9 +627,6 @@ class Generator:
     s = ''
     virtual = 'virtual '
     s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
-    s += '  %-37s __aida_dir__       () const override;\n' % (virtual + 'std::vector<std::string>')
-    s += '  %-37s __aida_get__       (const std::string &name) const override;\n' % (virtual + 'Aida::Any')
-    s += '  %-37s __aida_set__       (const std::string &name, const Aida::Any &any) override;\n' % (virtual + 'bool')
     return s
   def generate_server_class_any_method_impls (self, tp):
     assert self.gen_mode == G4SERVANT
@@ -684,41 +648,6 @@ class Generator:
       s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
     s += '  return false;\n'
     s += '}\n'
-    # __aida_dir__
-    s += 'std::vector<std::string>\n%s::__aida_dir__ () const\n{\n' % classH
-    s += '  std::vector<std::string> __d_;\n'
-    for fname, ftype in tp.fields:
-      ctype = self.C (ftype)
-      s += '  __d_.push_back ("%s");\n' % fname
-    for atp in reduced_immediate_ancestors:
-      s += '  { const Aida::StringVector &__t_ = this->%s::__aida_dir__();\n' % self.C (atp)
-      s += '    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }\n'
-    s += '  return __d_;\n'
-    s += '}\n'
-    # __aida_get__
-    s += 'Aida::Any\n%s::__aida_get__ (const std::string &__n_) const\n{\n' % classH
-    s += '  Aida::Any __a_;\n'
-    for fname, ftype in tp.fields:
-      ctype = self.C (ftype)
-      cond = 'if (__n_ == "%s")' % fname
-      s += '  %-30s { %s (%s()); return __a_; }\n' % (cond, '__a_.set', fname)
-    for atp in reduced_immediate_ancestors:
-      s += '  __a_ = this->%s::__aida_get__ (__n_); if (__a_.kind()) return __a_;\n' % self.C (atp)
-    s += '  return __a_;\n'
-    s += '}\n'
-    # __aida_set__
-    s += 'bool\n%s::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)\n{\n' % classH
-    for fname, ftype in tp.fields:
-      ctype = self.C (ftype)
-      cond = 'if (__n_ == "%s")' % fname
-      if ftype.storage == Decls.INTERFACE: # need to deref shared_ptr
-        s += '  %-30s { %s (__a_.get<%sP>().get()); return true; }\n' % (cond, fname, ctype)
-      else:
-        s += '  %-30s { %s (__a_.get<%s>()); return true; }\n' % (cond, fname, ctype)
-    for atp in reduced_immediate_ancestors:
-      s += '  if (this->%s::__aida_set__ (__n_, __a_)) return true;\n' % self.C (atp)
-    s += '  return false;\n'
-    s += '}\n'
     return s
   def generate_client_class_methods (self, class_info):
     s, classH, classC = '', self.C4client (class_info), self.C4server (class_info)
@@ -727,11 +656,6 @@ class Generator:
     s += '%s::%s ()' % classH2 # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % classH2 # dtor
-    s += 'const Aida::TypeHash&\n'
-    s += '%s::__aida_typeid__()\n{\n' % classH
-    s += '  static const Aida::TypeHash type_hash = Aida::TypeHash (%s);\n' % self.class_digest (class_info)
-    s += '  return type_hash;\n'
-    s += '}\n'
     s += '%s\n%s::__cast__ (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
     s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
     s += '  return std::dynamic_pointer_cast<%s> (ifacep);\n' % classC
@@ -760,25 +684,13 @@ class Generator:
     s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
     s += '}\n'
     # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-    s += 'void\n'
-    s += 'operator<<= (Aida::ProtoMsg &__p_, const %sP &ptr)\n{\n' % classC
-    s += '  __p_ <<= ptr.get();\n'
-    s += '}\n'
-    s += 'void\n'
-    s += 'operator>>= (Aida::ProtoReader &__f_, %sP &obj)\n{\n' % classC
-    s += '  obj = __f_.pop_instance<%s>();\n' % classC
-    s += '}\n'
-    s += 'void\n'
-    s += 'operator>>= (Aida::ProtoReader &__f_, %s* &obj)\n{\n' % classC
-    s += '  obj = __f_.pop_instance<%s>().get();\n' % classC
-    s += '}\n'
-    s += 'Aida::TypeHashList\n'
-    s += '%s::__aida_typelist__ () const\n{\n' % classC
-    s += '  Aida::TypeHashList thl;\n'
+    s += 'Aida::StringVector\n'
+    s += '%s::__typelist__ () const\n{\n' % classC
+    s += '  return { '
     ancestors = self.class_ancestry (tp)
     for an in ancestors:
-      s += '  thl.push_back (Aida::TypeHash (%s)); // %s\n' % (self.class_digest (an), an.name)
-    s += '  return thl;\n'
+      s += '"%s", ' % self.type_identifier (an)
+    s += '};\n'
     s += '}\n'
     return s
   def generate_remote_call (self, classname, methodname, rstorage, specialcase = None, args = ()):
@@ -811,44 +723,6 @@ class Generator:
     # generate wrapped lambda call
     s += self.generate_remote_call (self.C4server (class_info), mtype.name, mtype.rtype.storage, 'arg_', mtype.args)
     return s + '}\n'
-  def generate_server_method_stub (self, class_info, mtype, reglines):
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_call__%s__%s' % (class_info.name, mtype.name)
-    reglines += [ (self.method_digest (mtype), self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + %u, NULL);\n' % len (mtype.args)
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # fetch args
-    for a in mtype.args:
-      s += '  ' + self.V ('arg_' + a[0], a[1]) + ';\n'
-      s += self.generate_proto_pop_args ('fbr', class_info, 'arg_', [(a[0], a[1])])
-    # return var
-    s += '  '
-    hasret = mtype.rtype.storage != Decls.VOID
-    if hasret:
-      s += self.R (mtype.rtype) + ' rval = '
-    # call out
-    s += 'self->' + mtype.name + ' ('
-    s += ', '.join (self.U ('arg_' + a[0], a[1]) for a in mtype.args)
-    s += ');\n'
-    # store return value
-    if hasret:
-      s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, %s);\n' % self.method_digest (mtype) # invalidates fbr
-      rval = 'rval'
-      s += self.generate_proto_add_args ('rb', class_info, '', [(rval, mtype.rtype)], '')
-      s += '  return &rb;\n'
-    else:
-      s += '  return NULL;\n'
-    # done
-    s += '}\n'
-    return s
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
     if self.gen_docs:
@@ -888,71 +762,6 @@ class Generator:
     s += self.generate_remote_call (self.C4server (class_info), fident, Decls.VOID, '&', [ ('value', ftype) ])
     s += '}\n'
     return s
-  def generate_server_property_setter (self, class_info, fident, ftype, reglines):
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_set__%s__%s' % (class_info.name, fident)
-    setter_hash = self.setter_digest (class_info, fident, ftype)
-    reglines += [ (setter_hash, self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);\n'
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # fetch property
-    s += '  ' + self.V ('arg_' + fident, ftype) + ';\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, 'arg_', [(fident, ftype)])
-    ref = '&' if ftype.storage == Decls.INTERFACE else ''
-    # call out
-    s += '  self->' + fident + ' (' + ref + self.U ('arg_' + fident, ftype) + ');\n'
-    s += '  return NULL;\n'
-    s += '}\n'
-    return s
-  def generate_server_property_getter (self, class_info, fident, ftype, reglines):
-    assert self.gen_mode == G4SERVANT
-    s = ''
-    dispatcher_name = '__aida_get__%s__%s' % (class_info.name, fident)
-    getter_hash = self.getter_digest (class_info, fident, ftype)
-    reglines += [ (getter_hash, self.namespaced_identifier (dispatcher_name)) ]
-    s += 'static Aida::ProtoMsg*\n'
-    s += dispatcher_name + ' (Aida::ProtoReader &fbr)\n'
-    s += '{\n'
-    s += '  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);\n'
-    # fetch self
-    s += '  %s *self;\n' % self.C (class_info)
-    s += '  fbr.skip_header();\n'
-    s += self.generate_proto_pop_args ('fbr', class_info, '', [('self', class_info)])
-    s += '  AIDA_ASSERT_RETURN (self != NULL, NULL);\n'
-    # return var
-    s += '  '
-    s += self.R (ftype) + ' rval = '
-    # call out
-    s += 'self->' + fident + ' ();\n'
-    # store return value
-    s += '  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, %s);\n' % getter_hash # invalidates fbr
-    rval = 'rval'
-    s += self.generate_proto_add_args ('rb', class_info, '', [(rval, ftype)], '')
-    s += '  return &rb;\n'
-    s += '}\n'
-    return s
-  def generate_server_method_registry (self, reglines):
-    s = '\n'
-    s += 'namespace { namespace AIDA_CPP_PASTE (__aida_stubs, __COUNTER__) {\n'
-    if len (reglines) == 0:
-      return '// Skipping empty MethodRegistry\n'
-    s += 'static const __AIDA_Local__::MethodEntry entries[] = {\n'
-    for dispatcher in reglines:
-      cdigest, dispatcher_name = dispatcher
-      s += '  { ' + cdigest + ', '
-      s += dispatcher_name + ', },\n'
-    s += '};\n'
-    s += 'static __AIDA_Local__::MethodRegistry registry (entries);\n'
-    s += '} } // anon::__aida_stubs##__COUNTER__\n'
-    return s
   def c_long_postfix (self, number):
     if number >= 9223372036854775808:
       return str (number) + 'u'
@@ -972,14 +781,9 @@ class Generator:
         s += ' // %s' % re.sub ('\n', ' ', blurb)
       s += '\n'
     s += '};\n'
-    s += 'inline const char* operator->* (::Aida::IntrospectionTypename, %s) { return "%s"; }\n' % (nm, type_identifier)
-    s += 'inline void operator<<= (Aida::ProtoMsg &__p_,  %s  e) ' % nm
-    s += '{ __p_ <<= Aida::EnumValue (e); }\n'
-    s += 'inline void operator>>= (Aida::ProtoReader &__f_, %s &e) ' % nm
-    s += '{ e = %s (__f_.pop_evalue()); }\n' % nm
-    s += 'AIDA_ENUM_DEFINE_ARITHMETIC_EQ (%s);\n' % nm
+    s += 'AIDA_DEFINE_ENUM_EQUALITY (%s);\n' % nm
     if type_info.combinable: # enum as flags
-      s += 'AIDA_FLAGS_DEFINE_ARITHMETIC_OPS (%s);\n' % nm
+      s += 'AIDA_DEFINE_FLAGS_ARITHMETIC (%s);\n' % nm
     s += '/// @endcond\n'
     return s
   def insertion_text (self, key):
@@ -1108,9 +912,9 @@ class Generator:
           s += self.generate_interface_class (tp, class_name_list)     # Class remote handle
       # template impls after *all* types are defined
       for tp in types:
-        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD,): # Decls.SEQUENCE):
+        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
           s += self.open_namespace (tp)
-          s += self.generate_recseq_visit (tp)
+          s += self.generate_recseq_visitors (tp)
       s += self.open_namespace (None)
       if self.gen_serverhh and class_name_list:
         s += '\n#define %s_INTERFACE_LIST' % self.cppmacro
@@ -1163,44 +967,10 @@ class Generator:
           s += self.generate_enum_info_impl (tp)
         s += self.open_namespace (None)
         s += '\n#endif // __ENUMCC__%s__\n\n' % self.cppmacro
-    # generate unmarshalling server calls
-    if self.gen_servercc:
-      self.gen_mode = G4SERVANT
-      s += '\n// --- Method Dispatchers & Registry ---\n'
-      reglines = []
-      for tp in types:
-        if tp.is_forward:
-          continue
-        s += self.open_namespace (tp)
-        if tp.storage == Decls.INTERFACE:
-          for fl in tp.fields:
-            s += self.generate_server_property_getter (tp, fl[0], fl[1], reglines)
-            s += self.generate_server_property_setter (tp, fl[0], fl[1], reglines)
-          for m in tp.methods:
-            s += self.generate_server_method_stub (tp, m, reglines)
-          s += '\n'
-      s += self.open_namespace (None)
-      s += self.generate_server_method_registry (reglines) + '\n'
     s += self.open_namespace (None) # close all namespaces
-    # Aida IDs
-    if self.gen_aidaids and (self.gen_servercc or self.gen_clientcc):
-      s += self.generate_aida_ids ()
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
       s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
-    return s
-  def generate_aida_ids (self):
-    s, nslist = '', []
-    nslist += [ Decls.Namespace ('Aida', None, []) ]
-    iface = Decls.TypeInfo ('ImplicitBase', Decls.INTERFACE, False)
-    nslist[-1].add_type (iface) # iface.full_name() == Aida::ImplicitBase
-    import IdStrings
-    identifiers = IdStrings.id_dict
-    for k,v in identifiers.items():
-      IDENT, digest = k.upper(), self.internal_digest (iface, v)
-      s += 'static_assert (Aida::TypeHash { AIDA_HASH_%s } ==\n' % IDENT
-      s += '               Aida::TypeHash { %s },\n' % digest
-      s += '               "Expecting hash defined as:\\n#define AIDA_HASH_%s \t%s");\n' % (IDENT, digest)
     return s
 
 def error (msg):

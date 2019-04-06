@@ -52,19 +52,12 @@ protected:
   virtual  /*dtor*/                    ~FirstInterfaceIface () override = 0;
 public:
   FirstInterfaceHandle                  __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "MandatoryNamespace.FirstInterface"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          void_func           () = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const FirstInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, FirstInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, FirstInterfaceIfaceP&);
 
 class NestedTypesRec;
 
@@ -84,12 +77,8 @@ protected:
   virtual  /*dtor*/                    ~UIWidgetAreaIface () override = 0;
 public:
   UIWidgetAreaHandle                    __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.UIWidgetArea"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual bool                          dummy    () const = 0;
   virtual void                          dummy    (bool) = 0;
   virtual std::string                   on_click () const = 0;
@@ -118,9 +107,6 @@ public:
     __visitor_ (*this, "on_click", &UIWidgetAreaIface::on_click, &UIWidgetAreaIface::on_click);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const UIWidgetAreaIfaceP&);
-void operator>>= (Aida::ProtoReader&, UIWidgetAreaIface*&);
-void operator>>= (Aida::ProtoReader&, UIWidgetAreaIfaceP&);
 
 class ParentIface;
 typedef std::shared_ptr<ParentIface> ParentIfaceP;
@@ -133,18 +119,11 @@ protected:
   virtual  /*dtor*/                    ~ParentIface () override = 0;
 public:
   ParentHandle                          __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Parent"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const ParentIfaceP&);
-void operator>>= (Aida::ProtoReader&, ParentIface*&);
-void operator>>= (Aida::ProtoReader&, ParentIfaceP&);
 
 class ChildIface;
 typedef std::shared_ptr<ChildIface> ChildIfaceP;
@@ -157,20 +136,13 @@ protected:
   virtual  /*dtor*/                    ~ChildIface () override = 0;
 public:
   ChildHandle                           __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Child"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ParentIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, ChildIface*&);
-void operator>>= (Aida::ProtoReader&, ChildIfaceP&);
 
 class DescendantIface;
 typedef std::shared_ptr<DescendantIface> DescendantIfaceP;
@@ -183,20 +155,13 @@ protected:
   virtual  /*dtor*/                    ~DescendantIface () override = 0;
 public:
   DescendantHandle                      __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.Descendant"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->ChildIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const DescendantIfaceP&);
-void operator>>= (Aida::ProtoReader&, DescendantIface*&);
-void operator>>= (Aida::ProtoReader&, DescendantIfaceP&);
 
 class GrandChildIface;
 typedef std::shared_ptr<GrandChildIface> GrandChildIfaceP;
@@ -209,20 +174,13 @@ protected:
   virtual  /*dtor*/                    ~GrandChildIface () override = 0;
 public:
   GrandChildHandle                      __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.GrandChild"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->DescendantIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const GrandChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, GrandChildIface*&);
-void operator>>= (Aida::ProtoReader&, GrandChildIfaceP&);
 
 class QuickIfaceIface;
 typedef std::shared_ptr<QuickIfaceIface> QuickIfaceIfaceP;
@@ -235,19 +193,12 @@ protected:
   virtual  /*dtor*/                    ~QuickIfaceIface () override = 0;
 public:
   QuickIfaceHandle                      __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.QuickIface"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          simple_function (int i = 9) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const QuickIfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, QuickIfaceIface*&);
-void operator>>= (Aida::ProtoReader&, QuickIfaceIfaceP&);
 
 class MethodTestInterfaceIface;
 typedef std::shared_ptr<MethodTestInterfaceIface> MethodTestInterfaceIfaceP;
@@ -260,12 +211,8 @@ protected:
   virtual  /*dtor*/                    ~MethodTestInterfaceIface () override = 0;
 public:
   MethodTestInterfaceHandle             __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.MethodTestInterface"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          method_with_void         () = 0;
   virtual bool                          method_with_bools        (bool input,
                                                                   bool optval = 0) = 0;
@@ -292,9 +239,6 @@ public:
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const MethodTestInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, MethodTestInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, MethodTestInterfaceIfaceP&);
 
 class SignalTestInterfaceIface;
 typedef std::shared_ptr<SignalTestInterfaceIface> SignalTestInterfaceIfaceP;
@@ -307,18 +251,11 @@ protected:
   virtual  /*dtor*/                    ~SignalTestInterfaceIface () override = 0;
 public:
   SignalTestInterfaceHandle             __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.SignalTestInterface"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const SignalTestInterfaceIfaceP&);
-void operator>>= (Aida::ProtoReader&, SignalTestInterfaceIface*&);
-void operator>>= (Aida::ProtoReader&, SignalTestInterfaceIfaceP&);
 
 class ChildInheritingSignalsIface;
 typedef std::shared_ptr<ChildInheritingSignalsIface> ChildInheritingSignalsIfaceP;
@@ -331,20 +268,13 @@ protected:
   virtual  /*dtor*/                    ~ChildInheritingSignalsIface () override = 0;
 public:
   ChildInheritingSignalsHandle          __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.ChildInheritingSignals"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ChildInheritingSignalsIfaceP&);
-void operator>>= (Aida::ProtoReader&, ChildInheritingSignalsIface*&);
-void operator>>= (Aida::ProtoReader&, ChildInheritingSignalsIfaceP&);
 
 class AnotherChildIface;
 typedef std::shared_ptr<AnotherChildIface> AnotherChildIfaceP;
@@ -357,20 +287,13 @@ protected:
   virtual  /*dtor*/                    ~AnotherChildIface () override = 0;
 public:
   AnotherChildHandle                    __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.AnotherChild"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const AnotherChildIfaceP&);
-void operator>>= (Aida::ProtoReader&, AnotherChildIface*&);
-void operator>>= (Aida::ProtoReader&, AnotherChildIfaceP&);
 
 class PropertyTesterIface;
 typedef std::shared_ptr<PropertyTesterIface> PropertyTesterIfaceP;
@@ -383,12 +306,8 @@ protected:
   virtual  /*dtor*/                    ~PropertyTesterIface () override = 0;
 public:
   PropertyTesterHandle                  __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "InterfaceTests.PropertyTester"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual bool                          bool_prop      () const = 0;
   virtual void                          bool_prop      (bool) = 0;
   virtual int                           int32_prop     () const = 0;
@@ -426,9 +345,6 @@ public:
     __visitor_ (*this, "any_prop", &PropertyTesterIface::any_prop, &PropertyTesterIface::any_prop);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const PropertyTesterIfaceP&);
-void operator>>= (Aida::ProtoReader&, PropertyTesterIface*&);
-void operator>>= (Aida::ProtoReader&, PropertyTesterIfaceP&);
 } // InterfaceTests
 
 namespace RapicornAidaTest {
@@ -444,20 +360,13 @@ protected:
   virtual  /*dtor*/                    ~UseIncludesIface () override = 0;
 public:
   UseIncludesHandle                     __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.UseIncludes"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {
     this->IncludeCheck::SomeInterfaceIface::__accept_accessor__ (__visitor_);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const UseIncludesIfaceP&);
-void operator>>= (Aida::ProtoReader&, UseIncludesIface*&);
-void operator>>= (Aida::ProtoReader&, UseIncludesIfaceP&);
 
 class ButtonAreaIface;
 typedef std::shared_ptr<ButtonAreaIface> ButtonAreaIfaceP;
@@ -470,12 +379,8 @@ protected:
   virtual  /*dtor*/                    ~ButtonAreaIface () override = 0;
 public:
   ButtonAreaHandle                      __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.ButtonArea"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual std::string                   on_click   () const = 0;
   virtual void                          on_click   (const std::string&) = 0;
   virtual std::string                   on_click2  () const = 0;
@@ -492,9 +397,6 @@ public:
     __visitor_ (*this, "click_type", &ButtonAreaIface::click_type, &ButtonAreaIface::click_type);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const ButtonAreaIfaceP&);
-void operator>>= (Aida::ProtoReader&, ButtonAreaIface*&);
-void operator>>= (Aida::ProtoReader&, ButtonAreaIfaceP&);
 
 class PureMethodsIface;
 typedef std::shared_ptr<PureMethodsIface> PureMethodsIfaceP;
@@ -508,19 +410,12 @@ protected:
   virtual  /*dtor*/                    ~PureMethodsIface () override = 0;
 public:
   PureMethodsHandle                     __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "RapicornAidaTest.PureMethods"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual int                           pure_method      (double f) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const PureMethodsIfaceP&);
-void operator>>= (Aida::ProtoReader&, PureMethodsIface*&);
-void operator>>= (Aida::ProtoReader&, PureMethodsIfaceP&);
 } // RapicornAidaTest
 
 namespace Other {
@@ -536,21 +431,14 @@ protected:
   virtual  /*dtor*/                    ~NameTestsIface () override = 0;
 public:
   NameTestsHandle                       __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "Other.NameTests"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const NameTestsIfaceP&);
-void operator>>= (Aida::ProtoReader&, NameTestsIface*&);
-void operator>>= (Aida::ProtoReader&, NameTestsIfaceP&);
 } // Other
 
 namespace BseTest {
@@ -566,12 +454,8 @@ protected:
   virtual  /*dtor*/                    ~CompressorIface () override = 0;
 public:
   CompressorHandle                      __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "BseTest.Compressor"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   virtual double                        threshold () const = 0;
   virtual void                          threshold (double) = 0;
   virtual double                        ratio     () const = 0;
@@ -582,9 +466,6 @@ public:
     __visitor_ (*this, "ratio", &CompressorIface::ratio, &CompressorIface::ratio);
   }
 };
-void operator<<= (Aida::ProtoMsg&, const CompressorIfaceP&);
-void operator>>= (Aida::ProtoReader&, CompressorIface*&);
-void operator>>= (Aida::ProtoReader&, CompressorIfaceP&);
 
 class SoundModuleIface;
 typedef std::shared_ptr<SoundModuleIface> SoundModuleIfaceP;
@@ -597,18 +478,11 @@ protected:
   virtual  /*dtor*/                    ~SoundModuleIface () override = 0;
 public:
   SoundModuleHandle                     __handle__         ();
-  virtual Aida::TypeHashList            __aida_typelist__  () const override;
-  virtual std::string                   __typename__       () const override	{ return "BseTest.SoundModule"; }
+  virtual Aida::StringVector            __typelist__       () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  virtual std::vector<std::string>      __aida_dir__       () const override;
-  virtual Aida::Any                     __aida_get__       (const std::string &name) const override;
-  virtual bool                          __aida_set__       (const std::string &name, const Aida::Any &any) override;
   template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
   {}
 };
-void operator<<= (Aida::ProtoMsg&, const SoundModuleIfaceP&);
-void operator>>= (Aida::ProtoReader&, SoundModuleIface*&);
-void operator>>= (Aida::ProtoReader&, SoundModuleIfaceP&);
 } // BseTest
 
 #define aidacc_tests_t304_testpass_idl_INTERFACE_LIST \
@@ -643,26 +517,8 @@ namespace { // Anon
 namespace __AIDA_Local__ {
 using namespace Aida;
 
-// types
-typedef ServerConnection::EmitResultHandler EmitResultHandler;
-typedef ServerConnection::MethodRegistry    MethodRegistry;
-typedef ServerConnection::MethodEntry       MethodEntry;
-
 static_assert (std::is_base_of<Aida::ImplicitBase, Aida::ImplicitBase>::value,
                "IDL interface base 'Aida::ImplicitBase' must derive 'Aida::ImplicitBase'");
-
-// objects
-static inline ProtoMsg*
-new_call_result (ProtoReader &fbr, uint64 h, uint64 l, uint32 n = 1)
-{
-  return ProtoMsg::renew_into_result (fbr, Aida::MSGID_CALL_RESULT, h, l, n);
-}
-
-static inline ProtoMsg*
-new_connect_result (ProtoReader &fbr, uint64 h, uint64 l, uint32 n = 1)
-{
-  return ProtoMsg::renew_into_result (fbr, Aida::MSGID_CONNECT_RESULT, h, l, n);
-}
 
 // slot
 template<class SharedPtr, class R, class... Args> std::function<R (Args...)>
@@ -704,47 +560,13 @@ FirstInterfaceHandle::__iface__() const
 {
   return dynamic_cast<FirstInterfaceIface*> (const_cast<FirstInterfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const FirstInterfaceIfaceP &ptr)
+Aida::StringVector
+FirstInterfaceIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, FirstInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<FirstInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, FirstInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<FirstInterfaceIface>().get();
-}
-Aida::TypeHashList
-FirstInterfaceIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x22113f623903ac14ULL, 0x3fe8e50c1a9a78d2ULL)); // FirstInterface
-  return thl;
+  return { "MandatoryNamespace.FirstInterface", };
 }
 bool
 FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-FirstInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-FirstInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-FirstInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -776,27 +598,10 @@ UIWidgetAreaHandle::__iface__() const
 {
   return dynamic_cast<UIWidgetAreaIface*> (const_cast<UIWidgetAreaHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const UIWidgetAreaIfaceP &ptr)
+Aida::StringVector
+UIWidgetAreaIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UIWidgetAreaIfaceP &obj)
-{
-  obj = __f_.pop_instance<UIWidgetAreaIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UIWidgetAreaIface* &obj)
-{
-  obj = __f_.pop_instance<UIWidgetAreaIface>().get();
-}
-Aida::TypeHashList
-UIWidgetAreaIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x11db82aaba1ee248ULL, 0xd2359653ff87e972ULL)); // UIWidgetArea
-  return thl;
+  return { "InterfaceTests.UIWidgetArea", };
 }
 bool
 UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -815,29 +620,6 @@ UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessorPre
   if ((__all || __n == "on_click") &&
       __p (Aida::PropertyAccessorImpl<UIWidgetAreaIface,std::string> ("on_click", *this, &UIWidgetAreaIface::on_click, &UIWidgetAreaIface::on_click, __aux__on_click)))
     return true;
-  return false;
-}
-std::vector<std::string>
-UIWidgetAreaIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("dummy");
-  __d_.push_back ("on_click");
-  return __d_;
-}
-Aida::Any
-UIWidgetAreaIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "dummy")           { __a_.set (dummy()); return __a_; }
-  if (__n_ == "on_click")        { __a_.set (on_click()); return __a_; }
-  return __a_;
-}
-bool
-UIWidgetAreaIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "dummy")           { dummy (__a_.get<bool>()); return true; }
-  if (__n_ == "on_click")        { on_click (__a_.get<std::string>()); return true; }
   return false;
 }
 
@@ -865,47 +647,13 @@ ParentHandle::__iface__() const
 {
   return dynamic_cast<ParentIface*> (const_cast<ParentHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const ParentIfaceP &ptr)
+Aida::StringVector
+ParentIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ParentIfaceP &obj)
-{
-  obj = __f_.pop_instance<ParentIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ParentIface* &obj)
-{
-  obj = __f_.pop_instance<ParentIface>().get();
-}
-Aida::TypeHashList
-ParentIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
-  return thl;
+  return { "InterfaceTests.Parent", };
 }
 bool
 ParentIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-ParentIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-ParentIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-ParentIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -934,54 +682,15 @@ ChildHandle::__iface__() const
 {
   return dynamic_cast<ChildIface*> (const_cast<ChildHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const ChildIfaceP &ptr)
+Aida::StringVector
+ChildIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<ChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildIface* &obj)
-{
-  obj = __f_.pop_instance<ChildIface>().get();
-}
-Aida::TypeHashList
-ChildIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
-  thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
-  return thl;
+  return { "InterfaceTests.Child", "InterfaceTests.Parent", };
 }
 bool
 ChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->ParentIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-ChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->ParentIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-ChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->ParentIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-ChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->ParentIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1009,55 +718,15 @@ DescendantHandle::__iface__() const
 {
   return dynamic_cast<DescendantIface*> (const_cast<DescendantHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const DescendantIfaceP &ptr)
+Aida::StringVector
+DescendantIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, DescendantIfaceP &obj)
-{
-  obj = __f_.pop_instance<DescendantIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, DescendantIface* &obj)
-{
-  obj = __f_.pop_instance<DescendantIface>().get();
-}
-Aida::TypeHashList
-DescendantIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL)); // Descendant
-  thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
-  thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
-  return thl;
+  return { "InterfaceTests.Descendant", "InterfaceTests.Parent", "InterfaceTests.Child", };
 }
 bool
 DescendantIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->ChildIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-DescendantIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->ChildIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-DescendantIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->ChildIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-DescendantIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->ChildIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1085,56 +754,15 @@ GrandChildHandle::__iface__() const
 {
   return dynamic_cast<GrandChildIface*> (const_cast<GrandChildHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const GrandChildIfaceP &ptr)
+Aida::StringVector
+GrandChildIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, GrandChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<GrandChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, GrandChildIface* &obj)
-{
-  obj = __f_.pop_instance<GrandChildIface>().get();
-}
-Aida::TypeHashList
-GrandChildIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xf6975e5e92250718ULL, 0x53730d44919c46f9ULL)); // GrandChild
-  thl.push_back (Aida::TypeHash (0xf3967d3ac61708d2ULL, 0x4043a82003ee6f1eULL)); // Parent
-  thl.push_back (Aida::TypeHash (0xacf30fad3093ffcdULL, 0x4d8c65c035fba090ULL)); // Child
-  thl.push_back (Aida::TypeHash (0x846a6876889dd896ULL, 0xbe521465806f3d42ULL)); // Descendant
-  return thl;
+  return { "InterfaceTests.GrandChild", "InterfaceTests.Parent", "InterfaceTests.Child", "InterfaceTests.Descendant", };
 }
 bool
 GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->DescendantIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-GrandChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->DescendantIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-GrandChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->DescendantIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-GrandChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->DescendantIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1162,47 +790,13 @@ QuickIfaceHandle::__iface__() const
 {
   return dynamic_cast<QuickIfaceIface*> (const_cast<QuickIfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const QuickIfaceIfaceP &ptr)
+Aida::StringVector
+QuickIfaceIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, QuickIfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<QuickIfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, QuickIfaceIface* &obj)
-{
-  obj = __f_.pop_instance<QuickIfaceIface>().get();
-}
-Aida::TypeHashList
-QuickIfaceIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x4524ee119d4e454cULL, 0xbeb61f7c3cc04f7dULL)); // QuickIface
-  return thl;
+  return { "InterfaceTests.QuickIface", };
 }
 bool
 QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-QuickIfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-QuickIfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-QuickIfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1231,47 +825,13 @@ MethodTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<MethodTestInterfaceIface*> (const_cast<MethodTestInterfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const MethodTestInterfaceIfaceP &ptr)
+Aida::StringVector
+MethodTestInterfaceIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, MethodTestInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<MethodTestInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, MethodTestInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<MethodTestInterfaceIface>().get();
-}
-Aida::TypeHashList
-MethodTestInterfaceIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x6bf684458ac5f01aULL, 0xf64c02611b807180ULL)); // MethodTestInterface
-  return thl;
+  return { "InterfaceTests.MethodTestInterface", };
 }
 bool
 MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-MethodTestInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-MethodTestInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-MethodTestInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1300,47 +860,13 @@ SignalTestInterfaceHandle::__iface__() const
 {
   return dynamic_cast<SignalTestInterfaceIface*> (const_cast<SignalTestInterfaceHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const SignalTestInterfaceIfaceP &ptr)
+Aida::StringVector
+SignalTestInterfaceIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SignalTestInterfaceIfaceP &obj)
-{
-  obj = __f_.pop_instance<SignalTestInterfaceIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SignalTestInterfaceIface* &obj)
-{
-  obj = __f_.pop_instance<SignalTestInterfaceIface>().get();
-}
-Aida::TypeHashList
-SignalTestInterfaceIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
-  return thl;
+  return { "InterfaceTests.SignalTestInterface", };
 }
 bool
 SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-SignalTestInterfaceIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-SignalTestInterfaceIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-SignalTestInterfaceIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1369,54 +895,15 @@ ChildInheritingSignalsHandle::__iface__() const
 {
   return dynamic_cast<ChildInheritingSignalsIface*> (const_cast<ChildInheritingSignalsHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const ChildInheritingSignalsIfaceP &ptr)
+Aida::StringVector
+ChildInheritingSignalsIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildInheritingSignalsIfaceP &obj)
-{
-  obj = __f_.pop_instance<ChildInheritingSignalsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ChildInheritingSignalsIface* &obj)
-{
-  obj = __f_.pop_instance<ChildInheritingSignalsIface>().get();
-}
-Aida::TypeHashList
-ChildInheritingSignalsIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xf20ff30241b5b694ULL, 0x9f544b2626e183f0ULL)); // ChildInheritingSignals
-  thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
-  return thl;
+  return { "InterfaceTests.ChildInheritingSignals", "InterfaceTests.SignalTestInterface", };
 }
 bool
 ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-ChildInheritingSignalsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->SignalTestInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-ChildInheritingSignalsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->SignalTestInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-ChildInheritingSignalsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->SignalTestInterfaceIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1444,54 +931,15 @@ AnotherChildHandle::__iface__() const
 {
   return dynamic_cast<AnotherChildIface*> (const_cast<AnotherChildHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const AnotherChildIfaceP &ptr)
+Aida::StringVector
+AnotherChildIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, AnotherChildIfaceP &obj)
-{
-  obj = __f_.pop_instance<AnotherChildIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, AnotherChildIface* &obj)
-{
-  obj = __f_.pop_instance<AnotherChildIface>().get();
-}
-Aida::TypeHashList
-AnotherChildIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x9a33af1b27f7e36dULL, 0xdf625f7bd18934faULL)); // AnotherChild
-  thl.push_back (Aida::TypeHash (0x2873064ee22c0249ULL, 0xd8fae6f300b8e408ULL)); // SignalTestInterface
-  return thl;
+  return { "InterfaceTests.AnotherChild", "InterfaceTests.SignalTestInterface", };
 }
 bool
 AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-AnotherChildIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->SignalTestInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-AnotherChildIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->SignalTestInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-AnotherChildIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->SignalTestInterfaceIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1519,27 +967,10 @@ PropertyTesterHandle::__iface__() const
 {
   return dynamic_cast<PropertyTesterIface*> (const_cast<PropertyTesterHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const PropertyTesterIfaceP &ptr)
+Aida::StringVector
+PropertyTesterIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PropertyTesterIfaceP &obj)
-{
-  obj = __f_.pop_instance<PropertyTesterIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PropertyTesterIface* &obj)
-{
-  obj = __f_.pop_instance<PropertyTesterIface>().get();
-}
-Aida::TypeHashList
-PropertyTesterIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xa37ab462c55a3b3cULL, 0x4f3fd1c9ad9689fbULL)); // PropertyTester
-  return thl;
+  return { "InterfaceTests.PropertyTester", };
 }
 bool
 PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1602,56 +1033,6 @@ PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorP
     return true;
   return false;
 }
-std::vector<std::string>
-PropertyTesterIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("bool_prop");
-  __d_.push_back ("int32_prop");
-  __d_.push_back ("int64_prop");
-  __d_.push_back ("float64_prop");
-  __d_.push_back ("string_prop");
-  __d_.push_back ("enum_prop");
-  __d_.push_back ("record_prop");
-  __d_.push_back ("sequence_prop");
-  __d_.push_back ("interface_prop");
-  __d_.push_back ("self_prop");
-  __d_.push_back ("any_prop");
-  return __d_;
-}
-Aida::Any
-PropertyTesterIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "bool_prop")       { __a_.set (bool_prop()); return __a_; }
-  if (__n_ == "int32_prop")      { __a_.set (int32_prop()); return __a_; }
-  if (__n_ == "int64_prop")      { __a_.set (int64_prop()); return __a_; }
-  if (__n_ == "float64_prop")    { __a_.set (float64_prop()); return __a_; }
-  if (__n_ == "string_prop")     { __a_.set (string_prop()); return __a_; }
-  if (__n_ == "enum_prop")       { __a_.set (enum_prop()); return __a_; }
-  if (__n_ == "record_prop")     { __a_.set (record_prop()); return __a_; }
-  if (__n_ == "sequence_prop")   { __a_.set (sequence_prop()); return __a_; }
-  if (__n_ == "interface_prop")  { __a_.set (interface_prop()); return __a_; }
-  if (__n_ == "self_prop")       { __a_.set (self_prop()); return __a_; }
-  if (__n_ == "any_prop")        { __a_.set (any_prop()); return __a_; }
-  return __a_;
-}
-bool
-PropertyTesterIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "bool_prop")       { bool_prop (__a_.get<bool>()); return true; }
-  if (__n_ == "int32_prop")      { int32_prop (__a_.get<int>()); return true; }
-  if (__n_ == "int64_prop")      { int64_prop (__a_.get<int64_t>()); return true; }
-  if (__n_ == "float64_prop")    { float64_prop (__a_.get<double>()); return true; }
-  if (__n_ == "string_prop")     { string_prop (__a_.get<std::string>()); return true; }
-  if (__n_ == "enum_prop")       { enum_prop (__a_.get<QuickEnum>()); return true; }
-  if (__n_ == "record_prop")     { record_prop (__a_.get<QuickRecord>()); return true; }
-  if (__n_ == "sequence_prop")   { sequence_prop (__a_.get<QuickSequence>()); return true; }
-  if (__n_ == "interface_prop")  { interface_prop (__a_.get<GrandChildIfaceP>().get()); return true; }
-  if (__n_ == "self_prop")       { self_prop (__a_.get<PropertyTesterIfaceP>().get()); return true; }
-  if (__n_ == "any_prop")        { any_prop (__a_.get<Aida::Any>()); return true; }
-  return false;
-}
 } // InterfaceTests
 
 namespace RapicornAidaTest {
@@ -1680,54 +1061,15 @@ UseIncludesHandle::__iface__() const
 {
   return dynamic_cast<UseIncludesIface*> (const_cast<UseIncludesHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const UseIncludesIfaceP &ptr)
+Aida::StringVector
+UseIncludesIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UseIncludesIfaceP &obj)
-{
-  obj = __f_.pop_instance<UseIncludesIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, UseIncludesIface* &obj)
-{
-  obj = __f_.pop_instance<UseIncludesIface>().get();
-}
-Aida::TypeHashList
-UseIncludesIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xfbdf1e0d7f39f4f0ULL, 0x78270f907e3216b4ULL)); // UseIncludes
-  thl.push_back (Aida::TypeHash (0xf2af9bb31127c663ULL, 0xa5e510409f8552a5ULL)); // SomeInterface
-  return thl;
+  return { "RapicornAidaTest.UseIncludes", "IncludeCheck.SomeInterface", };
 }
 bool
 UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
   if (this->IncludeCheck::SomeInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
-std::vector<std::string>
-UseIncludesIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  { const Aida::StringVector &__t_ = this->IncludeCheck::SomeInterfaceIface::__aida_dir__();
-    __d_.insert (__d_.end(), __t_.begin(), __t_.end()); }
-  return __d_;
-}
-Aida::Any
-UseIncludesIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  __a_ = this->IncludeCheck::SomeInterfaceIface::__aida_get__ (__n_); if (__a_.kind()) return __a_;
-  return __a_;
-}
-bool
-UseIncludesIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (this->IncludeCheck::SomeInterfaceIface::__aida_set__ (__n_, __a_)) return true;
   return false;
 }
 
@@ -1755,27 +1097,10 @@ ButtonAreaHandle::__iface__() const
 {
   return dynamic_cast<ButtonAreaIface*> (const_cast<ButtonAreaHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const ButtonAreaIfaceP &ptr)
+Aida::StringVector
+ButtonAreaIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ButtonAreaIfaceP &obj)
-{
-  obj = __f_.pop_instance<ButtonAreaIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, ButtonAreaIface* &obj)
-{
-  obj = __f_.pop_instance<ButtonAreaIface>().get();
-}
-Aida::TypeHashList
-ButtonAreaIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xec371b296fa57436ULL, 0x92e4310e386fc92eULL)); // ButtonArea
-  return thl;
+  return { "RapicornAidaTest.ButtonArea", };
 }
 bool
 ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -1803,35 +1128,6 @@ ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred 
     return true;
   return false;
 }
-std::vector<std::string>
-ButtonAreaIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("on_click");
-  __d_.push_back ("on_click2");
-  __d_.push_back ("on_click3");
-  __d_.push_back ("click_type");
-  return __d_;
-}
-Aida::Any
-ButtonAreaIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "on_click")        { __a_.set (on_click()); return __a_; }
-  if (__n_ == "on_click2")       { __a_.set (on_click2()); return __a_; }
-  if (__n_ == "on_click3")       { __a_.set (on_click3()); return __a_; }
-  if (__n_ == "click_type")      { __a_.set (click_type()); return __a_; }
-  return __a_;
-}
-bool
-ButtonAreaIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "on_click")        { on_click (__a_.get<std::string>()); return true; }
-  if (__n_ == "on_click2")       { on_click2 (__a_.get<std::string>()); return true; }
-  if (__n_ == "on_click3")       { on_click3 (__a_.get<std::string>()); return true; }
-  if (__n_ == "click_type")      { click_type (__a_.get<ClickType>()); return true; }
-  return false;
-}
 
 PureMethodsIface::PureMethodsIface ()
 {}
@@ -1857,47 +1153,13 @@ PureMethodsHandle::__iface__() const
 {
   return dynamic_cast<PureMethodsIface*> (const_cast<PureMethodsHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const PureMethodsIfaceP &ptr)
+Aida::StringVector
+PureMethodsIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PureMethodsIfaceP &obj)
-{
-  obj = __f_.pop_instance<PureMethodsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, PureMethodsIface* &obj)
-{
-  obj = __f_.pop_instance<PureMethodsIface>().get();
-}
-Aida::TypeHashList
-PureMethodsIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0xddc2a514d04d3af5ULL, 0xc0046740434c0486ULL)); // PureMethods
-  return thl;
+  return { "RapicornAidaTest.PureMethods", };
 }
 bool
 PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-PureMethodsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-PureMethodsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-PureMethodsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -1929,47 +1191,13 @@ NameTestsHandle::__iface__() const
 {
   return dynamic_cast<NameTestsIface*> (const_cast<NameTestsHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const NameTestsIfaceP &ptr)
+Aida::StringVector
+NameTestsIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, NameTestsIfaceP &obj)
-{
-  obj = __f_.pop_instance<NameTestsIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, NameTestsIface* &obj)
-{
-  obj = __f_.pop_instance<NameTestsIface>().get();
-}
-Aida::TypeHashList
-NameTestsIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x542d40cd7d8fcd40ULL, 0x8c1782df29c9b936ULL)); // NameTests
-  return thl;
+  return { "Other.NameTests", };
 }
 bool
 NameTestsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-NameTestsIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-NameTestsIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-NameTestsIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -2001,27 +1229,10 @@ CompressorHandle::__iface__() const
 {
   return dynamic_cast<CompressorIface*> (const_cast<CompressorHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const CompressorIfaceP &ptr)
+Aida::StringVector
+CompressorIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, CompressorIfaceP &obj)
-{
-  obj = __f_.pop_instance<CompressorIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, CompressorIface* &obj)
-{
-  obj = __f_.pop_instance<CompressorIface>().get();
-}
-Aida::TypeHashList
-CompressorIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x42057a05d51182dfULL, 0x6a0d69cda274433eULL)); // Compressor
-  return thl;
+  return { "BseTest.Compressor", };
 }
 bool
 CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
@@ -2043,29 +1254,6 @@ CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred 
   if ((__all || __n == "ratio") &&
       __p (Aida::PropertyAccessorImpl<CompressorIface,double> ("ratio", *this, &CompressorIface::ratio, &CompressorIface::ratio, __aux__ratio)))
     return true;
-  return false;
-}
-std::vector<std::string>
-CompressorIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  __d_.push_back ("threshold");
-  __d_.push_back ("ratio");
-  return __d_;
-}
-Aida::Any
-CompressorIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  if (__n_ == "threshold")       { __a_.set (threshold()); return __a_; }
-  if (__n_ == "ratio")           { __a_.set (ratio()); return __a_; }
-  return __a_;
-}
-bool
-CompressorIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
-{
-  if (__n_ == "threshold")       { threshold (__a_.get<double>()); return true; }
-  if (__n_ == "ratio")           { ratio (__a_.get<double>()); return true; }
   return false;
 }
 
@@ -2093,47 +1281,13 @@ SoundModuleHandle::__iface__() const
 {
   return dynamic_cast<SoundModuleIface*> (const_cast<SoundModuleHandle*> (this)->__iface_ptr__().get());
 }
-void
-operator<<= (Aida::ProtoMsg &__p_, const SoundModuleIfaceP &ptr)
+Aida::StringVector
+SoundModuleIface::__typelist__ () const
 {
-  __p_ <<= ptr.get();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SoundModuleIfaceP &obj)
-{
-  obj = __f_.pop_instance<SoundModuleIface>();
-}
-void
-operator>>= (Aida::ProtoReader &__f_, SoundModuleIface* &obj)
-{
-  obj = __f_.pop_instance<SoundModuleIface>().get();
-}
-Aida::TypeHashList
-SoundModuleIface::__aida_typelist__ () const
-{
-  Aida::TypeHashList thl;
-  thl.push_back (Aida::TypeHash (0x06447b38b51e0198ULL, 0x848669199cc311deULL)); // SoundModule
-  return thl;
+  return { "BseTest.SoundModule", };
 }
 bool
 SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
-std::vector<std::string>
-SoundModuleIface::__aida_dir__ () const
-{
-  std::vector<std::string> __d_;
-  return __d_;
-}
-Aida::Any
-SoundModuleIface::__aida_get__ (const std::string &__n_) const
-{
-  Aida::Any __a_;
-  return __a_;
-}
-bool
-SoundModuleIface::__aida_set__ (const std::string &__n_, const Aida::Any &__a_)
 {
   return false;
 }
@@ -2343,1046 +1497,3 @@ static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_Mat
 
 #endif // __ENUMCC__aidacc_tests_t304_testpass_idl__
 
-
-// --- Method Dispatchers & Registry ---
-
-namespace MandatoryNamespace {
-static Aida::ProtoMsg*
-__aida_call__FirstInterface__void_func (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
-  FirstInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  self->void_func ();
-  return NULL;
-}
-
-
-namespace Inner {
-} // Inner
-} // MandatoryNamespace
-
-namespace OtherNamespace {
-} // OtherNamespace
-
-namespace Auxdata {
-} // Auxdata
-
-namespace InterfaceTests {
-static Aida::ProtoMsg*
-__aida_get__UIWidgetArea__dummy (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool rval = self->dummy ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xf67db704b9d460d6ULL, 0xd4950feab697e61eULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__UIWidgetArea__dummy (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool  arg_dummy;
-  fbr >>= arg_dummy;
-  self->dummy (arg_dummy);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__UIWidgetArea__on_click (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->on_click ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x58ba68f6b64584c9ULL, 0xa7d2686edb40f27aULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__UIWidgetArea__on_click (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_on_click;
-  fbr >>= arg_on_click;
-  self->on_click (arg_on_click);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__simple_method (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double rval = self->simple_method ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xd0dd4c08ba5022c0ULL, 0xb1af31ca1ec7037aULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__single_arg (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_n;
-  fbr >>= arg_n;
-  double rval = self->single_arg (arg_n);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xe4e890540b4c0579ULL, 0xe14a7ffaa82f1c4fULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__single_arg2 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_n;
-  fbr >>= arg_n;
-  double rval = self->single_arg2 (arg_n);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x9cfaa316ccbb6ea0ULL, 0x6cc5207c5520e081ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__two_args (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_n;
-  fbr >>= arg_n;
-  double  arg_r;
-  fbr >>= arg_r;
-  double rval = self->two_args (arg_n, arg_r);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x64511c410b16c274ULL, 0x19b47eb22b4cd4d4ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__two_args2 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_n;
-  fbr >>= arg_n;
-  double  arg_r;
-  fbr >>= arg_r;
-  double rval = self->two_args2 (arg_n, arg_r);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x2089150ae3f7ad80ULL, 0xe6154471cb4560e0ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__multi_args (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 6, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool  arg_b;
-  fbr >>= arg_b;
-  int64_t  arg_n;
-  fbr >>= arg_n;
-  double  arg_r;
-  fbr >>= arg_r;
-  int  arg_i;
-  fbr >>= arg_i;
-  std::string  arg_s;
-  fbr >>= arg_s;
-  double  arg_y;
-  fbr >>= arg_y;
-  double rval = self->multi_args (arg_b, arg_n, arg_r, arg_i, arg_s, arg_y);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x349f073a5bad36fdULL, 0xf7a10ae13b8e391bULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__self_method (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  UIWidgetAreaIface *arg_ba1;
-  fbr >>= arg_ba1;
-  UIWidgetAreaIface *arg_ba2;
-  fbr >>= arg_ba2;
-  double rval = self->self_method (*arg_ba1, *arg_ba2);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x4b479b2f4e3ba551ULL, 0xb7c407eee57eb21aULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__void_method (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  self->void_method ();
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__on_click2out (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->on_click2out ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb8bc20394724087aULL, 0xbc7b1e7d30aeb178ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__UIWidgetArea__on_click2in (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  UIWidgetAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_command;
-  fbr >>= arg_command;
-  self->on_click2in (arg_command);
-  return NULL;
-}
-
-
-
-
-
-static Aida::ProtoMsg*
-__aida_call__QuickIface__simple_function (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  QuickIfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_i;
-  fbr >>= arg_i;
-  self->simple_function (arg_i);
-  return NULL;
-}
-
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_void (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 0, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  self->method_with_void ();
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_bools (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool  arg_input;
-  fbr >>= arg_input;
-  bool  arg_optval;
-  fbr >>= arg_optval;
-  bool rval = self->method_with_bools (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x55291a7348d14242ULL, 0x32dac90dde65a764ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_ints32 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_input;
-  fbr >>= arg_input;
-  int  arg_optval;
-  fbr >>= arg_optval;
-  int rval = self->method_with_ints32 (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xdc38cf6855c54108ULL, 0x328ddcdcec8f161eULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_ints64 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int64_t  arg_input;
-  fbr >>= arg_input;
-  int64_t  arg_optval;
-  fbr >>= arg_optval;
-  int64_t rval = self->method_with_ints64 (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x678de8636167b6a1ULL, 0xb27d37ca066b5335ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_floats (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double  arg_input;
-  fbr >>= arg_input;
-  double  arg_optval;
-  fbr >>= arg_optval;
-  double rval = self->method_with_floats (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xeea6d5fb184699a3ULL, 0xce05c988a9bfd2d9ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_string (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_input;
-  fbr >>= arg_input;
-  std::string  arg_optval;
-  fbr >>= arg_optval;
-  std::string rval = self->method_with_string (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x646f80849d732dc5ULL, 0x72fd1ede45b153e3ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_enum (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickEnum  arg_input;
-  fbr >>= arg_input;
-  QuickEnum  arg_optval;
-  fbr >>= arg_optval;
-  QuickEnum rval = self->method_with_enum (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xee3b0b1c6eb52bdeULL, 0x13729d2db240b4f9ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_record (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickRecord  arg_input;
-  fbr >>= arg_input;
-  QuickRecord  arg_optval;
-  fbr >>= arg_optval;
-  QuickRecord rval = self->method_with_record (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x852c7f5942a87cceULL, 0x487dc78cd38240f6ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_sequence (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickSequence  arg_input;
-  fbr >>= arg_input;
-  QuickSequence  arg_optval;
-  fbr >>= arg_optval;
-  QuickSequence rval = self->method_with_sequence (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x5534838e08bdc63dULL, 0xd852fd5abb88ab7dULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_interface (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  GrandChildIface *arg_input;
-  fbr >>= arg_input;
-  GrandChildIface *arg_optval;
-  fbr >>= arg_optval;
-  GrandChildIfaceP rval = self->method_with_interface (*arg_input, *arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xfe9af28dc9c5de7dULL, 0x418be0c0e085ea6dULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_anys (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  Aida::Any  arg_input;
-  fbr >>= arg_input;
-  Aida::Any  arg_optval;
-  fbr >>= arg_optval;
-  Aida::Any rval = self->method_with_anys (arg_input, arg_optval);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x807e5dacf307a277ULL, 0x2b65069e50e63c80ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_call__MethodTestInterface__method_with_quickiface (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 2, NULL);
-  MethodTestInterfaceIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickIfaceIface *arg_input;
-  fbr >>= arg_input;
-  QuickIfaceIface *arg_iface0;
-  fbr >>= arg_iface0;
-  QuickIfaceIfaceP rval = self->method_with_quickiface (*arg_input, *arg_iface0);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xbe67f4e0afeafd68ULL, 0x5cdf24c075b03215ULL);
-  rb <<= rval;
-  return &rb;
-}
-
-
-
-
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__bool_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool rval = self->bool_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x14469c03fdfc61e4ULL, 0x3bb8a3b5d9832788ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__bool_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  bool  arg_bool_prop;
-  fbr >>= arg_bool_prop;
-  self->bool_prop (arg_bool_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__int32_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int rval = self->int32_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x8a2f1538f2b852fbULL, 0x7d3e8ea6f069a1c0ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__int32_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int  arg_int32_prop;
-  fbr >>= arg_int32_prop;
-  self->int32_prop (arg_int32_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__int64_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int64_t rval = self->int64_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xc9bb6114fc5c90deULL, 0x400dff0f59e66f63ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__int64_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  int64_t  arg_int64_prop;
-  fbr >>= arg_int64_prop;
-  self->int64_prop (arg_int64_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__float64_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double rval = self->float64_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb3d53f6a66ba171eULL, 0xc9e2fe1ad9d2d2abULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__float64_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double  arg_float64_prop;
-  fbr >>= arg_float64_prop;
-  self->float64_prop (arg_float64_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__string_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->string_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xd11acce29fa83acfULL, 0xb251b5fc0f737558ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__string_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_string_prop;
-  fbr >>= arg_string_prop;
-  self->string_prop (arg_string_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__enum_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickEnum rval = self->enum_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x42f93106aeb5af11ULL, 0xdc4094dc01da9f81ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__enum_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickEnum  arg_enum_prop;
-  fbr >>= arg_enum_prop;
-  self->enum_prop (arg_enum_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__record_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickRecord rval = self->record_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb6ab96740d7834eeULL, 0xe7873bec722bb0c8ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__record_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickRecord  arg_record_prop;
-  fbr >>= arg_record_prop;
-  self->record_prop (arg_record_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__sequence_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickSequence rval = self->sequence_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x7f96e6ff442ecdd5ULL, 0xdb054c03831fd75bULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__sequence_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  QuickSequence  arg_sequence_prop;
-  fbr >>= arg_sequence_prop;
-  self->sequence_prop (arg_sequence_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__interface_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  GrandChildIfaceP rval = self->interface_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xf3cef8a00677d931ULL, 0x8733ca529b58ea4aULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__interface_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  GrandChildIface *arg_interface_prop;
-  fbr >>= arg_interface_prop;
-  self->interface_prop (&*arg_interface_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__self_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  PropertyTesterIfaceP rval = self->self_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xdd2a04f6c2fc3005ULL, 0x68868b01ea78948fULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__self_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  PropertyTesterIface *arg_self_prop;
-  fbr >>= arg_self_prop;
-  self->self_prop (&*arg_self_prop);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__PropertyTester__any_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  Aida::Any rval = self->any_prop ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb54c6ac2d1c8f932ULL, 0x1c8ea2813f2c268eULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__PropertyTester__any_prop (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PropertyTesterIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  Aida::Any  arg_any_prop;
-  fbr >>= arg_any_prop;
-  self->any_prop (arg_any_prop);
-  return NULL;
-}
-
-} // InterfaceTests
-
-namespace RapicornAidaTest {
-
-static Aida::ProtoMsg*
-__aida_get__ButtonArea__on_click (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->on_click ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x199859aecc756e97ULL, 0xa744332174ed27f4ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__ButtonArea__on_click (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_on_click;
-  fbr >>= arg_on_click;
-  self->on_click (arg_on_click);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__ButtonArea__on_click2 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->on_click2 ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x1b448d91990181daULL, 0x9751c08ae956c729ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__ButtonArea__on_click2 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_on_click2;
-  fbr >>= arg_on_click2;
-  self->on_click2 (arg_on_click2);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__ButtonArea__on_click3 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string rval = self->on_click3 ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0x5176fbf25dcf50f4ULL, 0x4d7ae8b51fb816b5ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__ButtonArea__on_click3 (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  std::string  arg_on_click3;
-  fbr >>= arg_on_click3;
-  self->on_click3 (arg_on_click3);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__ButtonArea__click_type (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  ClickType rval = self->click_type ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xb6ab79b43e1f0df9ULL, 0xaa0f1ec5c39b704aULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__ButtonArea__click_type (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  ButtonAreaIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  ClickType  arg_click_type;
-  fbr >>= arg_click_type;
-  self->click_type (arg_click_type);
-  return NULL;
-}
-
-static Aida::ProtoMsg*
-__aida_call__PureMethods__pure_method (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  PureMethodsIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double  arg_f;
-  fbr >>= arg_f;
-  int rval = self->pure_method (arg_f);
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xf196563f00b6d484ULL, 0x88b59c2ed0597dccULL);
-  rb <<= rval;
-  return &rb;
-}
-
-} // RapicornAidaTest
-
-namespace Other {
-static Aida::ProtoMsg*
-__aida_call__NameTests__args_from_other_namespace (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 3, NULL);
-  NameTestsIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  InterfaceTests::QuickRecord  arg_qr;
-  fbr >>= arg_qr;
-  RapicornAidaTest::ClickType  arg_qe;
-  fbr >>= arg_qe;
-  OtherNamespace::SomeRecord  arg_sr;
-  fbr >>= arg_sr;
-  self->args_from_other_namespace (arg_qr, arg_qe, arg_sr);
-  return NULL;
-}
-
-} // Other
-
-namespace BseTest {
-static Aida::ProtoMsg*
-__aida_get__Compressor__threshold (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  CompressorIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double rval = self->threshold ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xdea15f2de1c3d8e3ULL, 0xe3fc9febf31cdc20ULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__Compressor__threshold (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  CompressorIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double  arg_threshold;
-  fbr >>= arg_threshold;
-  self->threshold (arg_threshold);
-  return NULL;
-}
-static Aida::ProtoMsg*
-__aida_get__Compressor__ratio (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1, NULL);
-  CompressorIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double rval = self->ratio ();
-  Aida::ProtoMsg &rb = *__AIDA_Local__::new_call_result (fbr, 0xc61a8d739c7b963bULL, 0xca1ad4eeab1aa56eULL);
-  rb <<= rval;
-  return &rb;
-}
-static Aida::ProtoMsg*
-__aida_set__Compressor__ratio (Aida::ProtoReader &fbr)
-{
-  AIDA_ASSERT_RETURN (fbr.remaining() == 3 + 1 + 1, NULL);
-  CompressorIface *self;
-  fbr.skip_header();
-  fbr >>= self;
-  AIDA_ASSERT_RETURN (self != NULL, NULL);
-  double  arg_ratio;
-  fbr >>= arg_ratio;
-  self->ratio (arg_ratio);
-  return NULL;
-}
-
-
-} // BseTest
-
-namespace { namespace AIDA_CPP_PASTE (__aida_stubs, __COUNTER__) {
-static const __AIDA_Local__::MethodEntry entries[] = {
-  { 0xc3f858f5171056cbULL, 0x394e47a2bcd63e16ULL, MandatoryNamespace::__aida_call__FirstInterface__void_func, },
-  { 0xf67db704b9d460d6ULL, 0xd4950feab697e61eULL, InterfaceTests::__aida_get__UIWidgetArea__dummy, },
-  { 0x7aaf2f96f3042829ULL, 0x3d0391e5b72e7ba5ULL, InterfaceTests::__aida_set__UIWidgetArea__dummy, },
-  { 0x58ba68f6b64584c9ULL, 0xa7d2686edb40f27aULL, InterfaceTests::__aida_get__UIWidgetArea__on_click, },
-  { 0xf0025ec0fa66e3e2ULL, 0x880c10e8e6b57cfbULL, InterfaceTests::__aida_set__UIWidgetArea__on_click, },
-  { 0xd0dd4c08ba5022c0ULL, 0xb1af31ca1ec7037aULL, InterfaceTests::__aida_call__UIWidgetArea__simple_method, },
-  { 0xe4e890540b4c0579ULL, 0xe14a7ffaa82f1c4fULL, InterfaceTests::__aida_call__UIWidgetArea__single_arg, },
-  { 0x9cfaa316ccbb6ea0ULL, 0x6cc5207c5520e081ULL, InterfaceTests::__aida_call__UIWidgetArea__single_arg2, },
-  { 0x64511c410b16c274ULL, 0x19b47eb22b4cd4d4ULL, InterfaceTests::__aida_call__UIWidgetArea__two_args, },
-  { 0x2089150ae3f7ad80ULL, 0xe6154471cb4560e0ULL, InterfaceTests::__aida_call__UIWidgetArea__two_args2, },
-  { 0x349f073a5bad36fdULL, 0xf7a10ae13b8e391bULL, InterfaceTests::__aida_call__UIWidgetArea__multi_args, },
-  { 0x4b479b2f4e3ba551ULL, 0xb7c407eee57eb21aULL, InterfaceTests::__aida_call__UIWidgetArea__self_method, },
-  { 0xdbb304ad4df15873ULL, 0xca276abf2bb1603cULL, InterfaceTests::__aida_call__UIWidgetArea__void_method, },
-  { 0xb8bc20394724087aULL, 0xbc7b1e7d30aeb178ULL, InterfaceTests::__aida_call__UIWidgetArea__on_click2out, },
-  { 0x3432c3bb41bc72a0ULL, 0x533bc22135f973bfULL, InterfaceTests::__aida_call__UIWidgetArea__on_click2in, },
-  { 0x76ac7a704663d246ULL, 0x23abac49621c6802ULL, InterfaceTests::__aida_call__QuickIface__simple_function, },
-  { 0x1addfccb0a3e01beULL, 0x314f2eb467d7a72bULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_void, },
-  { 0x55291a7348d14242ULL, 0x32dac90dde65a764ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_bools, },
-  { 0xdc38cf6855c54108ULL, 0x328ddcdcec8f161eULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_ints32, },
-  { 0x678de8636167b6a1ULL, 0xb27d37ca066b5335ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_ints64, },
-  { 0xeea6d5fb184699a3ULL, 0xce05c988a9bfd2d9ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_floats, },
-  { 0x646f80849d732dc5ULL, 0x72fd1ede45b153e3ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_string, },
-  { 0xee3b0b1c6eb52bdeULL, 0x13729d2db240b4f9ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_enum, },
-  { 0x852c7f5942a87cceULL, 0x487dc78cd38240f6ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_record, },
-  { 0x5534838e08bdc63dULL, 0xd852fd5abb88ab7dULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_sequence, },
-  { 0xfe9af28dc9c5de7dULL, 0x418be0c0e085ea6dULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_interface, },
-  { 0x807e5dacf307a277ULL, 0x2b65069e50e63c80ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_anys, },
-  { 0xbe67f4e0afeafd68ULL, 0x5cdf24c075b03215ULL, InterfaceTests::__aida_call__MethodTestInterface__method_with_quickiface, },
-  { 0x14469c03fdfc61e4ULL, 0x3bb8a3b5d9832788ULL, InterfaceTests::__aida_get__PropertyTester__bool_prop, },
-  { 0xa88d7a16adc7ad43ULL, 0x33e7a32598f08880ULL, InterfaceTests::__aida_set__PropertyTester__bool_prop, },
-  { 0x8a2f1538f2b852fbULL, 0x7d3e8ea6f069a1c0ULL, InterfaceTests::__aida_get__PropertyTester__int32_prop, },
-  { 0x7b7b3182160469e4ULL, 0xbd3c44c3a57484ebULL, InterfaceTests::__aida_set__PropertyTester__int32_prop, },
-  { 0xc9bb6114fc5c90deULL, 0x400dff0f59e66f63ULL, InterfaceTests::__aida_get__PropertyTester__int64_prop, },
-  { 0xb33bf89d2259a1dbULL, 0x0154420aebe9a16cULL, InterfaceTests::__aida_set__PropertyTester__int64_prop, },
-  { 0xb3d53f6a66ba171eULL, 0xc9e2fe1ad9d2d2abULL, InterfaceTests::__aida_get__PropertyTester__float64_prop, },
-  { 0xf1df5bd296ac78e2ULL, 0xbb263cff89927093ULL, InterfaceTests::__aida_set__PropertyTester__float64_prop, },
-  { 0xd11acce29fa83acfULL, 0xb251b5fc0f737558ULL, InterfaceTests::__aida_get__PropertyTester__string_prop, },
-  { 0xfadb1eed1d8d358aULL, 0x17cd2ca684080698ULL, InterfaceTests::__aida_set__PropertyTester__string_prop, },
-  { 0x42f93106aeb5af11ULL, 0xdc4094dc01da9f81ULL, InterfaceTests::__aida_get__PropertyTester__enum_prop, },
-  { 0x99206fff699c82d6ULL, 0x1dcbc77498569411ULL, InterfaceTests::__aida_set__PropertyTester__enum_prop, },
-  { 0xb6ab96740d7834eeULL, 0xe7873bec722bb0c8ULL, InterfaceTests::__aida_get__PropertyTester__record_prop, },
-  { 0x55aaf8cee9dd7a46ULL, 0x83d8416416740bf0ULL, InterfaceTests::__aida_set__PropertyTester__record_prop, },
-  { 0x7f96e6ff442ecdd5ULL, 0xdb054c03831fd75bULL, InterfaceTests::__aida_get__PropertyTester__sequence_prop, },
-  { 0xf86952a034b8bc84ULL, 0x3be169a3f0a9a07dULL, InterfaceTests::__aida_set__PropertyTester__sequence_prop, },
-  { 0xf3cef8a00677d931ULL, 0x8733ca529b58ea4aULL, InterfaceTests::__aida_get__PropertyTester__interface_prop, },
-  { 0xbf62779e2a11aebbULL, 0x95547f4e29ca3814ULL, InterfaceTests::__aida_set__PropertyTester__interface_prop, },
-  { 0xdd2a04f6c2fc3005ULL, 0x68868b01ea78948fULL, InterfaceTests::__aida_get__PropertyTester__self_prop, },
-  { 0x1a1ee3ab20ab3c2fULL, 0xeeaf17826dba2891ULL, InterfaceTests::__aida_set__PropertyTester__self_prop, },
-  { 0xb54c6ac2d1c8f932ULL, 0x1c8ea2813f2c268eULL, InterfaceTests::__aida_get__PropertyTester__any_prop, },
-  { 0xe0c7d397e652f3f7ULL, 0xbbdf7826e88f4f42ULL, InterfaceTests::__aida_set__PropertyTester__any_prop, },
-  { 0x199859aecc756e97ULL, 0xa744332174ed27f4ULL, RapicornAidaTest::__aida_get__ButtonArea__on_click, },
-  { 0xdb3a24116c653985ULL, 0x2a0576faff45b4b2ULL, RapicornAidaTest::__aida_set__ButtonArea__on_click, },
-  { 0x1b448d91990181daULL, 0x9751c08ae956c729ULL, RapicornAidaTest::__aida_get__ButtonArea__on_click2, },
-  { 0xfc93898ba4104662ULL, 0xc918694fe5c2bfefULL, RapicornAidaTest::__aida_set__ButtonArea__on_click2, },
-  { 0x5176fbf25dcf50f4ULL, 0x4d7ae8b51fb816b5ULL, RapicornAidaTest::__aida_get__ButtonArea__on_click3, },
-  { 0x1c1990dca0fde97cULL, 0x6cc2c7cc49d811f8ULL, RapicornAidaTest::__aida_set__ButtonArea__on_click3, },
-  { 0xb6ab79b43e1f0df9ULL, 0xaa0f1ec5c39b704aULL, RapicornAidaTest::__aida_get__ButtonArea__click_type, },
-  { 0x1f5a6d031cb7e104ULL, 0x2d4a207f0842bec8ULL, RapicornAidaTest::__aida_set__ButtonArea__click_type, },
-  { 0xf196563f00b6d484ULL, 0x88b59c2ed0597dccULL, RapicornAidaTest::__aida_call__PureMethods__pure_method, },
-  { 0xd471f88e8c15081cULL, 0x963d2094339d0220ULL, Other::__aida_call__NameTests__args_from_other_namespace, },
-  { 0xdea15f2de1c3d8e3ULL, 0xe3fc9febf31cdc20ULL, BseTest::__aida_get__Compressor__threshold, },
-  { 0xf40a3fd3d07b3d0bULL, 0xbae97c41e3d6a92bULL, BseTest::__aida_set__Compressor__threshold, },
-  { 0xc61a8d739c7b963bULL, 0xca1ad4eeab1aa56eULL, BseTest::__aida_get__Compressor__ratio, },
-  { 0x302f0b5b99a2a6c8ULL, 0xc8b771894ecd9315ULL, BseTest::__aida_set__Compressor__ratio, },
-};
-static __AIDA_Local__::MethodRegistry registry (entries);
-} } // anon::__aida_stubs##__COUNTER__
-
-static_assert (Aida::TypeHash { AIDA_HASH___TYPENAME__ } ==
-               Aida::TypeHash { 0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___TYPENAME__ 	0x51cded9001a397cfULL, 0xb54ad82e7dba3ecdULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_TYPELIST__ } ==
-               Aida::TypeHash { 0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_TYPELIST__ 	0x7e82df289d876d3fULL, 0xf8f5d4684116729cULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_DIR__ } ==
-               Aida::TypeHash { 0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_DIR__ 	0xa35c47733d813815ULL, 0x25c2ae6cf0d91567ULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_GET__ } ==
-               Aida::TypeHash { 0x4aed20bb93591defULL, 0xc75b192eab6983edULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_GET__ 	0x4aed20bb93591defULL, 0xc75b192eab6983edULL");
-static_assert (Aida::TypeHash { AIDA_HASH___AIDA_SET__ } ==
-               Aida::TypeHash { 0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___AIDA_SET__ 	0x9b7396e68c10cd21ULL, 0x2d19eea7536aa1b9ULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_ATTACH__ } ==
-               Aida::TypeHash { 0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_ATTACH__ 	0xbfceda11a8b5f5f6ULL, 0x2848342815fe5acbULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_DETACHID__ } ==
-               Aida::TypeHash { 0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_DETACHID__ 	0xd6c0b4477875ecc4ULL, 0x7ddefe71b4272a9bULL");
-static_assert (Aida::TypeHash { AIDA_HASH___EVENT_CALLBACK__ } ==
-               Aida::TypeHash { 0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL },
-               "Expecting hash defined as:\n#define AIDA_HASH___EVENT_CALLBACK__ 	0x74d6b010e16cff95ULL, 0x71917df9fae9c99fULL");
