@@ -895,19 +895,15 @@ SongImpl::musical_tuning () const
 void
 SongImpl::musical_tuning (MusicalTuning tuning)
 {
-  BseSong *self = as<BseSong*>();
-  if (self->musical_tuning != tuning)
+  if (!prepared())
     {
-      const char prop[] = "musical_tuning";
-      if (!BSE_SOURCE_PREPARED (self))
+      BseSong *self = as<BseSong*>();
+      if (APPLY_IDL_PROPERTY (self->musical_tuning, tuning))
         {
-          push_property_undo (prop);
-          self->musical_tuning = tuning;
           SfiRing *ring;
           for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
             bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
         }
-      notify (prop);
     }
 }
 
