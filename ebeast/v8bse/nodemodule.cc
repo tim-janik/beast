@@ -355,26 +355,28 @@ typedef v8pp::class_<Aida::RemoteHandle>         V8ppType_AidaRemoteHandle;
 static void
 aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info)
 {
-  v8::Isolate *const __v8isolate = info.GetIsolate();
-  const std::string __pname = v8pp::from_v8<std::string> (__v8isolate, property);
-  const Aida::Event *const __event = V8ppType_AidaEvent::unwrap_object (__v8isolate, info.This());
-  return_unless (__event != NULL);
-  v8::ReturnValue<v8::Value> __v8ret = info.GetReturnValue();
-  const Aida::Any &__any = (*__event)[__pname];
-  switch (__any.kind())
+  if (property->IsSymbol()) return;
+  v8::Isolate *const iso = info.GetIsolate();
+  v8::Local<v8::String> name = v8::Local<v8::String>::Cast (property);
+  const std::string pname = v8pp::from_v8<std::string> (iso, name);
+  const Aida::Event *const event = V8ppType_AidaEvent::unwrap_object (iso, info.This());
+  return_unless (event != NULL);
+  v8::ReturnValue<v8::Value> v8ret = info.GetReturnValue();
+  const Aida::Any &any = (*event)[pname];
+  switch (any.kind())
     {
-    case Aida::BOOL:		__v8ret.Set (__any.get<bool>()); break;
-    case Aida::FLOAT64:         __v8ret.Set (__any.get<double>()); break;
-    case Aida::INT32: 		__v8ret.Set (__any.get<int32>()); break;
-    case Aida::INT64:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<int64>())); break;
-    case Aida::STRING:		__v8ret.Set (v8pp::to_v8 (__v8isolate, __any.get<std::string>())); break;
+    case Aida::BOOL:		v8ret.Set (any.get<bool>()); break;
+    case Aida::FLOAT64:         v8ret.Set (any.get<double>()); break;
+    case Aida::INT32: 		v8ret.Set (any.get<int32>()); break;
+    case Aida::INT64:		v8ret.Set (v8pp::to_v8 (iso, any.get<int64>())); break;
+    case Aida::STRING:		v8ret.Set (v8pp::to_v8 (iso, any.get<std::string>())); break;
     case Aida::ENUM: {
-      const std::string __str = __any.get<Aida::ENUM>();
-      __v8ret.Set (v8pp::to_v8 (__v8isolate, __str));
+      const std::string str = any.get<Aida::ENUM>();
+      v8ret.Set (v8pp::to_v8 (iso, str));
       break; }
     case Aida::INSTANCE: {
-      const Aida::RemoteHandle __rhandle = __any.get_untyped_remote_handle();
-      __v8ret.Set (v8pp::to_v8 (__v8isolate, aida_remote_handle_wrap_native (__v8isolate, __rhandle)));
+      const Aida::RemoteHandle rhandle = any.get_untyped_remote_handle();
+      v8ret.Set (v8pp::to_v8 (iso, aida_remote_handle_wrap_native (iso, rhandle)));
       break; }
     case Aida::SEQUENCE:
     case Aida::RECORD:
@@ -382,6 +384,19 @@ aida_event_generic_getter (v8::Local<v8::Name> property, const v8::PropertyCallb
     case Aida::UNTYPED:
     default:        	; // undefined
     }
+}
+
+static void
+aida_event_generic_propertyenumerator (const v8::PropertyCallbackInfo<v8::Array> &info)
+{
+  v8::Isolate *const iso = info.GetIsolate();
+  const Aida::Event *const event = V8ppType_AidaEvent::unwrap_object (iso, info.This());
+  return_unless (event != NULL);
+  const Aida::AnyRec &fields = event->fields();
+  v8::Local<v8::Array> array = v8::Array::New (iso, fields.size());
+  for (size_t i = 0; i < fields.size(); ++i)
+    array->Set (i, v8pp::to_v8<std::string> (iso, fields[i].name));
+  info.GetReturnValue().Set (array);
 }
 
 #include "v8bse.cc"
@@ -522,7 +537,7 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
   if (0)
     {
       Bse::printerr ("gdb %s %u -ex 'catch catch' -ex 'catch throw'\n", Bse::string_split (program_invocation_name, " ", 1)[0], Bse::this_thread_getpid());
-      g_usleep (3 * 1000000);
+      // g_usleep (3 * 1000000);
     }
 
   // Ensure Bse has everything properly loaded
