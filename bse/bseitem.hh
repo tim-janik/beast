@@ -227,7 +227,24 @@ public:
   /// Resolve an undo descriptor back to an object, see also undo_descriptor().
   template<class Obj>
   Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
+  /// Constrain and assign property value if it has changed, emit notification.
+  template<class T> bool
+  apply_idl_property (T &lvalue, const T &rvalue, const String &propname)
+  {
+    if (lvalue == rvalue)
+      return false;
+    push_property_undo (propname);
+    lvalue = rvalue;
+    auto lifeguard = shared_from_this();
+    exec_now ([this, propname, lifeguard] () { this->notify (propname); });
+    return true;
+  }
 };
+
+#define BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)   this->apply_idl_property (lvalue, rvalue, __func__)
+#ifdef  BSE_COMPILATION
+#define APPLY_IDL_PROPERTY(lvalue, rvalue)              BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)
+#endif
 
 } // Bse
 
