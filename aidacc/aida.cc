@@ -446,36 +446,6 @@ string_option_check (const String &option_string, const String &option)
   return cstring_to_bool (value.c_str(), true);
 }
 
-// == Message IDs ==
-/// Mask MessageId bits, see IdentifierParts.message_id.
-static inline constexpr MessageId
-msgid_mask (uint64 msgid)
-{
-  // return MessageId (IdentifierParts (IdentifierParts (msgid).message_id, 0, 0).vuint64);
-  return MessageId (msgid & 0xff00000000000000ULL);
-}
-
-/// Add the highest bit that indicates results or replies, does not neccessarily yield a valid result message id.
-static inline constexpr MessageId
-msgid_as_result (MessageId msgid)
-{
-  return MessageId (msgid | 0x8000000000000000ULL);
-}
-
-/// Check if @a msgid expects a _RESULT or _REPLY message.
-static inline constexpr bool
-msgid_needs_result (MessageId msgid)
-{
-  return (msgid & 0xc000000000000000ULL) == 0x4000000000000000ULL;
-}
-
-/// Check if the @a msgid matches @a check_id, @a msgid will be masked accordingly.
-static inline constexpr bool
-msgid_is (uint64 msgid, MessageId check_id)
-{
-  return msgid_mask (msgid) == check_id;
-}
-
 // == IntrospectionEntryMap ==
 struct IntrospectionEntry {
   const char  *type_name;

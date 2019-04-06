@@ -443,54 +443,6 @@ template<class Y> struct ValueType           { typedef Y T; };
 template<class Y> struct ValueType<Y&>       { typedef Y T; };
 template<class Y> struct ValueType<const Y&> { typedef Y T; };
 
-// == Message IDs ==
-enum MessageId {
-  // none                   = 0x0000000000000000
-  MSGID_CALL_ONEWAY         = 0x1000000000000000ULL, ///< One-way method call (void return).
-  MSGID_EMIT_ONEWAY         = 0x2000000000000000ULL, ///< One-way signal emissions (void return).
-  //MSGID_META_ONEWAY       = 0x3000000000000000ULL, ///< One-way method call (void return).
-  MSGID_CONNECT             = 0x4000000000000000ULL, ///< Signal handler (dis-)connection, expects CONNECT_RESULT.
-  MSGID_CALL_TWOWAY         = 0x5000000000000000ULL, ///< Two-way method call, expects CALL_RESULT.
-  // MSGID_EMIT_TWOWAY      = 0x6000000000000000ULL, ///< Two-way signal emissions, expects EMIT_RESULT.
-  //MSGID_META_TWOWAY       = 0x7000000000000000ULL, ///< Two-way method call, expects META_REPLY.
-  // meta_exception         = 0x8000000000000000
-  MSGID_DISCONNECT          = 0xa000000000000000ULL, ///< Signal destroyed, disconnect all handlers.
-  MSGID_CONNECT_RESULT      = 0xc000000000000000ULL, ///< Result message for CONNECT.
-  MSGID_CALL_RESULT         = 0xd000000000000000ULL, ///< Result message for CALL_TWOWAY.
-  MSGID_EMIT_RESULT         = 0xe000000000000000ULL, ///< Result message for EMIT_TWOWAY.
-  //MSGID_META_REPLY        = 0xf000000000000000ULL, ///< Result message for MSGID_META_TWOWAY.
-  // meta messages and results
-  MSGID_META_HELLO          = 0x7100000000000000ULL, ///< Hello from client, expects WELCOME.
-  MSGID_META_WELCOME        = 0xf100000000000000ULL, ///< Hello reply from server, contains remote_origin.
-  MSGID_META_GARBAGE_SWEEP  = 0x7200000000000000ULL, ///< Garbage collection cycle, expects GARBAGE_REPORT.
-  MSGID_META_GARBAGE_REPORT = 0xf200000000000000ULL, ///< Reports expired/retained references.
-  MSGID_META_SEEN_GARBAGE   = 0x3300000000000000ULL, ///< Client indicates garbage collection may be useful.
-};
-/// Check if msgid is a reply for a two-way call (one of the _RESULT or _REPLY message ids).
-inline constexpr bool msgid_is_result (MessageId msgid) { return (msgid & 0xc000000000000000ULL) == 0xc000000000000000ULL; }
-
-/// Helper structure to pack MessageId, sender and receiver connection IDs.
-union IdentifierParts {
-  uint64        vuint64;
-  struct { // MessageId bits
-# if __BYTE_ORDER == __LITTLE_ENDIAN
-    uint        sender_connection : 16, free16 : 16, destination_connection : 16, free8 : 8, message_id : 8;
-# elif __BYTE_ORDER == __BIG_ENDIAN
-    uint        message_id : 8, free8 : 8, destination_connection : 16, free16 : 16, sender_connection : 16;
-# endif
-  };
-  static_assert (__BYTE_ORDER == __LITTLE_ENDIAN || __BYTE_ORDER == __BIG_ENDIAN, "__BYTE_ORDER unknown");
-  constexpr IdentifierParts (uint64 vu64) : vuint64 (vu64) {}
-  constexpr IdentifierParts (MessageId id, uint destination, uint sender) :
-# if __BYTE_ORDER == __LITTLE_ENDIAN
-    sender_connection (sender), free16 (0), destination_connection (destination), free8 (0), message_id (IdentifierParts (id).message_id)
-# elif __BYTE_ORDER == __BIG_ENDIAN
-    message_id (IdentifierParts (id).message_id), free8 (0), destination_connection (destination), free16 (0), sender_connection (sender)
-# endif
-  {}
-};
-constexpr uint64 CONNECTION_MASK = 0x0000ffff;
-
 // == RemoteHandle ==
 /// Handle for a remote object living in a different thread or process.
 class RemoteHandle {
@@ -509,9 +461,8 @@ public:
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
   StringVector            __typelist__         () const;
   ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
-  // Support event handlers
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
-  // Determine if this RemoteHandle contains an object or null handle.
+  // Compare and determine if this RemoteHandle contains an object or null handle.
   explicit    operator bool () const noexcept               { return !! iface_ptr_; }
   bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_; }
   bool        operator!=    (std::nullptr_t) const noexcept { return !! iface_ptr_; }
@@ -523,17 +474,6 @@ public:
   bool        operator>=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ >= rh.iface_ptr_; }
   friend bool operator==    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd == nullp; }
   friend bool operator!=    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd != nullp; }
-private:
-  template<class TargetHandle> static typename
-  std::enable_if<(std::is_base_of<RemoteHandle, TargetHandle>::value &&
-                  !std::is_same<RemoteHandle, TargetHandle>::value), TargetHandle>::type
-  __aida_reinterpret___cast____ (RemoteHandle smh)     ///< Reinterpret & dynamic cast, use discouraged.
-  {
-    TargetHandle target;
-    target.__aida_upgrade_from__ (smh);                 // like reinterpret_cast<>
-    return TargetHandle::__cast__ (target);            // like dynamic_cast<>
-  }
-  friend class BaseConnection;
 };
 using HandleEventConnection = RemoteHandle::EventConnection;
 
