@@ -318,45 +318,6 @@ public:
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
 };
 
-// == EnumValue ==
-/// Aida info for enumeration values.
-struct EnumValue {
-  int64       value;
-  const char *ident, *label, *blurb;
-  template<class EValue>
-  constexpr EnumValue (EValue dflt) : value (int64 (dflt)), ident (0), label (0), blurb (0) {}
-  constexpr EnumValue ()            : value (0), ident (0), label (0), blurb (0) {}
-  constexpr EnumValue (int64 v, const char *vident, const char *vlabel, const char *vblurb) :
-    value (v), ident (vident), label (vlabel), blurb (vblurb) {}
-};
-typedef std::vector<EnumValue> EnumValueVector;
-
-// == Enum ==
-/// Class for enum type introspection.
-class EnumInfo {
-  const String           enum_name_;
-  const EnumValue *const values_;
-  const uint32_t         n_values_;
-  const bool             flags_;
-  explicit               EnumInfo          (const String &enum_name, bool isflags, uint32_t n_values, const EnumValue *values);
-public:
-  String          name              () const;                           ///< Retrieve the enum type name for this Enum.
-  EnumValue       find_value        (const String &name) const;         ///< Find first enum value matching @a name.
-  int64           value_from_string (const String &valuestring) const;  ///< Reconstruct an enum value from @a valuestring.
-  bool            flags_enum        () const;   ///< Whether enum values support bit combinations to form flags.
-  bool            has_values        () const;   ///< Indicate if the value_vector() is non-empty.
-  EnumValueVector value_vector      () const;   ///< Retrieve the list of possible enum values as a std::vector<>.
-  /// Find first enum value equal to @a value.
-  template<typename T, REQUIRES< std::is_enum<T>::value > = true>
-  EnumValue       find_value        (T     value) const                     { return find_value (int64 (value)); }
-  EnumValue       find_value        (int64 value) const;
-  /// Create a string representing @a value.
-  template<typename T, REQUIRES< std::is_enum<T>::value > = true>
-  String          value_to_string   (T     value) const                     { return value_to_string (int64 (value)); }
-  String          value_to_string   (int64 value) const;
-  String          value_to_string   (int64 value, const String &joiner) const;
-};
-
 // == IntrospectionRegistry ==
 class Introspection {
 public:
