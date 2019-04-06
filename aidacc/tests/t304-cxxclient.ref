@@ -229,8 +229,6 @@ public:
   inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const XFooRecord &other) const;
   bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<XFooRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -269,8 +267,6 @@ public:
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -285,8 +281,6 @@ public:
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -301,8 +295,6 @@ public:
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -317,8 +309,6 @@ public:
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -333,8 +323,6 @@ public:
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -349,8 +337,6 @@ public:
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -365,8 +351,6 @@ public:
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -381,8 +365,6 @@ public:
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -397,8 +379,6 @@ public:
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -417,8 +397,6 @@ public:
   inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const NestedTypesRec &other) const;
   bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NestedTypesRec*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -441,8 +419,6 @@ public:
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -459,8 +435,6 @@ public:
   inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const NewRecord &other) const;
   bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NewRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -488,8 +462,6 @@ public:
   inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const InnerRecord &other) const;
   bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<InnerRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -513,8 +485,6 @@ public:
   inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const Refer2Inner &other) const;
   bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<Refer2Inner*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -541,8 +511,6 @@ public:
   inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const SomeRecord &other) const;
   bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<SomeRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -573,8 +541,6 @@ public:
   inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const RecordWithAuxdata &other) const;
   bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordWithAuxdata*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -719,8 +685,6 @@ public:
   inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const QuickRecord &other) const;
   bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<QuickRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -743,8 +707,6 @@ public:
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -1048,8 +1010,6 @@ public:
   inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
-  Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
-  void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }
   bool                          operator==   (const RecordForGroups &other) const;
   bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordForGroups*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
