@@ -1546,12 +1546,19 @@ RemoteHandle::__attach__ (const String &eventselector, EventHandlerF handler)
   return *static_cast<EventConnection*> (&wptr);
 }
 
+std::string
+RemoteHandle::__typename__ () const
+{
+  const StringVector &types = __typelist__();
+  return types.empty() ? "" : types[0];
+}
+
 StringVector
 RemoteHandle::__typelist__() const
 {
   StringVector types;
-  assert_return (*this != NULL, types);
-  types = remote_callc (*this, &ImplicitBase::__typelist__);
+  if (*this)
+    types = const_cast<RemoteHandle*> (this)->__iface_ptr__()->__typelist_mt__();
   return types;
 }
 
@@ -2144,6 +2151,13 @@ EventDispatcher::emit (const Event &event)
 // == CallableIface ==
 CallableIface::~CallableIface ()
 {}
+
+std::string
+CallableIface::__typename__ () const
+{
+  const StringVector &types = __typelist_mt__();
+  return types.empty() ? "" : types[0];
+}
 
 // == PropertyAccessor ==
 PropertyAccessor::~PropertyAccessor()

@@ -316,6 +316,12 @@ public:
   virtual ExecutionContext&    __execution_context_mt__ () const = 0;
   /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
+  /// Retrieve the IDL type names of an instance, save to be called multi-threaded.
+  virtual StringVector         __typelist_mt__          () const = 0;
+  /// Retrieve the IDL type name of an instance.
+  std::string                  __typename__             () const;
+  /// Retrieve the IDL type names of an instance, wrapper for __typelist_mt__().
+  StringVector                 __typelist__             () const        { return __typelist_mt__(); }
 };
 
 // == IntrospectionRegistry ==
@@ -459,6 +465,7 @@ public:
   /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
   virtual                ~RemoteHandle         ();
   EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
+  std::string             __typename__         () const;
   StringVector            __typelist__         () const;
   ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
   RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
@@ -794,7 +801,6 @@ class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableS
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
-  virtual StringVector        __typelist__        () const = 0; ///< Retrieve the IDL type names of an instance.
   using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
   virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
   uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID

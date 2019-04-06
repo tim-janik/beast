@@ -524,7 +524,7 @@ class Generator:
       s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
       s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
-      s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist__       () const override;\n'
+      s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist_mt__    () const override;\n'
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
       s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
@@ -685,7 +685,7 @@ class Generator:
     s += '}\n'
     # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
     s += 'Aida::StringVector\n'
-    s += '%s::__typelist__ () const\n{\n' % classC
+    s += '%s::__typelist_mt__ () const\n{\n' % classC
     s += '  return { '
     ancestors = self.class_ancestry (tp)
     for an in ancestors:
