@@ -296,23 +296,22 @@ class Generator:
       s += '  /// @cond GeneratedFields\n'
       fieldlist = type_info.fields
       for fl in fieldlist:
-        s += '  ' + self.F (self.M (fl[1])) + fl[0] + ';\n'
+        initializer = ''
+        if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
+          initializer = " = %s" % self.mkzero (fl[1])
+        s += '  ' + self.F (self.M (fl[1])) + fl[0] + '%s;\n' % initializer
       s += '  /// @endcond\n'
     elif type_info.storage == Decls.SEQUENCE:
       s += '  typedef std::vector<' + self.M (fl[1]) + '> Sequence;\n'
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
       s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
-      s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) : %s() { __aida_from_any__ (Aida::Any (as)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }\n' % classC # ctor
     elif type_info.storage == Decls.RECORD:
-      s += '  ' + self.F ('inline') + '%s () {' % classC # ctor
-      for fl in fieldlist:
-        if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
-          s += " %s = %s;" % (fl[0], self.mkzero (fl[1]))
-      s += ' }\n'
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) : %s() { __aida_from_any__ (Aida::Any (ad)); }\n' % (classC, classC) # ctor
+      s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }\n' % classC # ctor
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
