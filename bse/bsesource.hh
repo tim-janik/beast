@@ -288,6 +288,7 @@ protected:
   virtual             ~SourceImpl              ();
 public:
   explicit             SourceImpl              (BseObject*);
+  bool                 prepared                () const;
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
   virtual void         clear_inputs            () override;
   virtual void         clear_outputs           () override;
