@@ -252,6 +252,8 @@ class Generator:
     s += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n'
     s += '  };\n'
     s += '  AidaRemoteHandle_class_\n'
+    s += '    .set ("__typename__", &Aida::RemoteHandle::__typename__)\n'
+    s += '    .set ("__typelist__", &Aida::RemoteHandle::__typelist__)\n'
     s += '    .set ("__attach__", __attach__)\n'
     s += '  ;\n'
     # Wrapper registration
