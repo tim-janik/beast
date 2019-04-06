@@ -226,7 +226,7 @@ public:
   Aida::Any                     any3;
   /// @endcond
   inline                        XFooRecord () = default;
-  inline                        XFooRecord (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -414,7 +414,7 @@ public:
   XFooSequence                  seq;
   /// @endcond
   inline                        NestedTypesRec () = default;
-  inline                        NestedTypesRec (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -456,7 +456,7 @@ public:
   NestedTypesRec                ntr;
   /// @endcond
   inline                        NewRecord () = default;
-  inline                        NewRecord (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -485,7 +485,7 @@ public:
   NewRecord                     rec;
   /// @endcond
   inline                        InnerRecord () = default;
-  inline                        InnerRecord (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -510,7 +510,7 @@ public:
   Inner::InnerRecord            r;
   /// @endcond
   inline                        Refer2Inner () = default;
-  inline                        Refer2Inner (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -538,7 +538,7 @@ public:
   MandatoryNamespace::Inner::InnerRecord r4;
   /// @endcond
   inline                        SomeRecord () = default;
-  inline                        SomeRecord (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -570,7 +570,7 @@ public:
   std::string                   aux_str;
   /// @endcond
   inline                        RecordWithAuxdata () = default;
-  inline                        RecordWithAuxdata (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -716,7 +716,7 @@ public:
   int                           int2 = 0;
   /// @endcond
   inline                        QuickRecord () = default;
-  inline                        QuickRecord (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }
@@ -1045,7 +1045,7 @@ public:
   double                        threshold2 = 0;
   /// @endcond
   inline                        RecordForGroups () = default;
-  inline                        RecordForGroups (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }
+  inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_visitable (*this); }

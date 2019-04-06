@@ -311,7 +311,8 @@ class Generator:
       s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }\n' % classC # ctor
     elif type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &ad) { __aida_from_any__ (Aida::Any (ad)); }\n' % classC # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
+      s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
     if type_info.storage == Decls.SEQUENCE:
