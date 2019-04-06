@@ -265,13 +265,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        XFooSequence () = default;
+  inline                        XFooSequence (const Aida::AnySeq &s);
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        XFooSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<XFooSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class IntSequence : public std::vector<int>
@@ -281,13 +281,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        IntSequence () = default;
+  inline                        IntSequence (const Aida::AnySeq &s);
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        IntSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<IntSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class FloatSequence : public std::vector<double>
@@ -297,13 +297,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        FloatSequence () = default;
+  inline                        FloatSequence (const Aida::AnySeq &s);
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        FloatSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<FloatSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class StringSequence : public std::vector<std::string>
@@ -313,13 +313,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        StringSequence () = default;
+  inline                        StringSequence (const Aida::AnySeq &s);
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        StringSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<StringSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class ExtensiveEnumSequence : public std::vector<ExtensiveEnum>
@@ -329,13 +329,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        ExtensiveEnumSequence () = default;
+  inline                        ExtensiveEnumSequence (const Aida::AnySeq &s);
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        ExtensiveEnumSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<ExtensiveEnumSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class RecordSequence : public std::vector<XFooRecord>
@@ -345,13 +345,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        RecordSequence () = default;
+  inline                        RecordSequence (const Aida::AnySeq &s);
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        RecordSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<RecordSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class SequenceSequence : public std::vector<IntSequence>
@@ -361,13 +361,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        SequenceSequence () = default;
+  inline                        SequenceSequence (const Aida::AnySeq &s);
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        SequenceSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<SequenceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class InterfaceSequence : public std::vector<Aida::RemoteMember<FirstInterfaceHandle>>
@@ -377,13 +377,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        InterfaceSequence () = default;
+  inline                        InterfaceSequence (const Aida::AnySeq &s);
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        InterfaceSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<InterfaceSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class AnySequence : public std::vector<Aida::Any>
@@ -393,13 +393,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        AnySequence () = default;
+  inline                        AnySequence (const Aida::AnySeq &s);
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        AnySequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<AnySequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class NestedTypesRec;
@@ -437,13 +437,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        NestedTypesSeq () = default;
+  inline                        NestedTypesSeq (const Aida::AnySeq &s);
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        NestedTypesSeq (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<NestedTypesSeq*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class NewRecord
@@ -739,13 +739,13 @@ public:
   reference append_back() ///< Append data at the end, returns write reference to data.
   { resize (size() + 1); return back(); }
   inline                        QuickSequence () = default;
+  inline                        QuickSequence (const Aida::AnySeq &s);
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  inline                        QuickSequence (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
   const Aida::StringVector&     __aida_aux_data__ () const;
   Aida::Any                     __aida_to_any__   () { return Aida::any_from_sequence (*this); }
   void                          __aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }
-  operator                      Aida::AnySeq      () const { return const_cast<QuickSequence*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }
+  inline operator               Aida::AnySeq      () const;
 };
 
 class QuickIfaceHandle : public virtual Aida::RemoteHandle
@@ -1105,11 +1105,151 @@ XFooRecord::__visit__ (Visitor &&_visitor_)
   std::forward<Visitor> (_visitor_) (any2, "any2");
   std::forward<Visitor> (_visitor_) (any3, "any3");
 }
+inline
+XFooSequence::XFooSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<XFooSequence::value_type>::type >());
+}
+inline
+XFooSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+IntSequence::IntSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<IntSequence::value_type>::type >());
+}
+inline
+IntSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+FloatSequence::FloatSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<FloatSequence::value_type>::type >());
+}
+inline
+FloatSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+StringSequence::StringSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<StringSequence::value_type>::type >());
+}
+inline
+StringSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+ExtensiveEnumSequence::ExtensiveEnumSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<ExtensiveEnumSequence::value_type>::type >());
+}
+inline
+ExtensiveEnumSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+RecordSequence::RecordSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<RecordSequence::value_type>::type >());
+}
+inline
+RecordSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+SequenceSequence::SequenceSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<SequenceSequence::value_type>::type >());
+}
+inline
+SequenceSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+InterfaceSequence::InterfaceSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<InterfaceSequence::value_type>::type >());
+}
+inline
+InterfaceSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+AnySequence::AnySequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<AnySequence::value_type>::type >());
+}
+inline
+AnySequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
 template<class Visitor> void
 NestedTypesRec::__visit__ (Visitor &&_visitor_)
 {
   std::forward<Visitor> (_visitor_) (rec, "rec");
   std::forward<Visitor> (_visitor_) (seq, "seq");
+}
+inline
+NestedTypesSeq::NestedTypesSeq (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<NestedTypesSeq::value_type>::type >());
+}
+inline
+NestedTypesSeq::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
 }
 template<class Visitor> void
 NewRecord::__visit__ (Visitor &&_visitor_)
@@ -1165,6 +1305,20 @@ QuickRecord::__visit__ (Visitor &&_visitor_)
 {
   std::forward<Visitor> (_visitor_) (int1, "int1");
   std::forward<Visitor> (_visitor_) (int2, "int2");
+}
+inline
+QuickSequence::QuickSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<QuickSequence::value_type>::type >());
+}
+inline
+QuickSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
 }
 } // InterfaceTests
 

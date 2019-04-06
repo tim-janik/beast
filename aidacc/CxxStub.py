@@ -260,13 +260,26 @@ class Generator:
     if type.storage in (Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
       return self.C (type) + '()'
     return '0'
-  def generate_recseq_visit (self, type_info):
-    s = ''
-    s += 'template<class Visitor> void\n%s::__visit__ (Visitor &&_visitor_)\n{\n' % self.C (type_info)
+  def generate_recseq_visitors (self, type_info):
+    s, classC = '', self.C (type_info)
     if type_info.storage == Decls.RECORD:
+      s += 'template<class Visitor> void\n%s::__visit__ (Visitor &&_visitor_)\n{\n' % classC
       for fname, ftype in type_info.fields:
         s += '  std::forward<Visitor> (_visitor_) (%s, "%s");\n' % (fname, fname)
-    s += '}\n'
+      s += '}\n'
+    if type_info.storage == Decls.SEQUENCE:
+      s += 'inline\n'
+      s += '%s::%s (const Aida::AnySeq &s)\n{\n' % (classC, classC) # ctor
+      s += '  for (const auto &any : s)\n'
+      s += '    push_back (any.get< typename std::decay<%s::value_type>::type >());\n' % classC
+      s += '}\n'
+      s += 'inline\n'
+      s += '%s::operator Aida::AnySeq () const\n{\n' % classC
+      s += '  Aida::AnySeq s;\n'
+      s += '  for (const auto &v : *this)\n'
+      s += '    s.push_back (Aida::Any (v));\n'
+      s += '  return s;\n'
+      s += '}\n'
     return s
   def generate_recseq_accept (self, type_info):
     s = ''
@@ -307,8 +320,8 @@ class Generator:
       s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
+      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &s);\n' % classC # ctor
       s += '  ' + self.F ('explicit') + '%s (std::initializer_list<value_type> il) : Sequence (il) {};\n' % classC
-      s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &as) { __aida_from_any__ (Aida::Any (as)); }\n' % classC # ctor
     elif type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
@@ -318,8 +331,7 @@ class Generator:
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_sequence (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_sequence (any, *this); }\n'
-      s += '  ' + self.F ('operator') + 'Aida::AnySeq      () const '
-      s += '{ return const_cast<%s*> (this)->__aida_to_any__().get<Aida::AnySeq>(); }\n' % classC
+      s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
     if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('Aida::Any') + '__aida_to_any__   () { return Aida::any_from_visitable (*this); }\n'
       s += '  ' + self.F ('void') + '__aida_from_any__ (const Aida::Any &any) { return Aida::any_to_visitable (any, *this); }\n'
@@ -904,9 +916,9 @@ class Generator:
           s += self.generate_interface_class (tp, class_name_list)     # Class remote handle
       # template impls after *all* types are defined
       for tp in types:
-        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD,): # Decls.SEQUENCE):
+        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
           s += self.open_namespace (tp)
-          s += self.generate_recseq_visit (tp)
+          s += self.generate_recseq_visitors (tp)
       s += self.open_namespace (None)
       if self.gen_serverhh and class_name_list:
         s += '\n#define %s_INTERFACE_LIST' % self.cppmacro
