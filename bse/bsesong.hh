@@ -21,9 +21,9 @@ struct BseSongVoice {
   BseSource *sub_synth;
 };
 struct BseSong : BseSNet {
-  guint		    tpqn;		/* ticks per querter note */
-  guint		    numerator;
-  guint		    denominator;
+  int		    tpqn;		/* ticks per querter note */
+  int		    numerator;
+  int		    denominator;
   float             bpm;
   Bse::MusicalTuning musical_tuning;
   SfiRing          *parts;              /* of type BsePart* */

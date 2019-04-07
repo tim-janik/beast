@@ -804,16 +804,8 @@ void
 SongImpl::numerator (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->numerator) != val)
-    {
-      const char *prop = "numerator";
-      push_property_undo (prop);
-
-      self->numerator = val;
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->numerator, val))
+    bse_song_update_tpsi_SL (self);
 }
 
 int
@@ -828,16 +820,9 @@ void
 SongImpl::denominator (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->denominator) != val)
-    {
-      const char *prop = "denominator";
-      push_property_undo (prop);
-
-      self->denominator = val <= 2 ? val : 1 << g_bit_storage (val - 1);
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  const int d = val <= 2 ? val : 1 << g_bit_storage (val - 1);
+  if (APPLY_IDL_PROPERTY (self->denominator, d))
+    bse_song_update_tpsi_SL (self);
 }
 
 double
@@ -851,14 +836,8 @@ void
 SongImpl::bpm (double val)
 {
   BseSong *self = as<BseSong*>();
-  if (self->bpm != val)
-    {
-      const char prop[] = "bpm";
-      push_property_undo (prop);
-      self->bpm = val;
-      bse_song_update_tpsi_SL (self);
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->bpm, float (val)))
+    bse_song_update_tpsi_SL (self);
 }
 
 
@@ -873,16 +852,8 @@ void
 SongImpl::tpqn (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->tpqn) != val)
-    {
-      const char *prop = "tpqn";
-      push_property_undo (prop);
-
-      self->tpqn = val;
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->tpqn, val))
+    bse_song_update_tpsi_SL (self);
 }
 
 MusicalTuning
