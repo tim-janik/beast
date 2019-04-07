@@ -1272,4 +1272,63 @@ ItemImpl::get_property_candidates (const String &property_name)
   return PropertyCandidates();
 }
 
+bool
+ItemImpl::constrain_idl_enum (int64_t &i, const StringVector &kvlist)
+{
+  const String &type_name = Aida::Introspection::find_value ("type", kvlist);
+  if (!type_name.empty())
+    {
+      const String &enumerator = Aida::Introspection::enumerator_from_value (type_name, i);
+      if (!enumerator.empty())
+        return true;
+    }
+  return false;
+}
+
+bool
+ItemImpl::constrain_idl_int (int64_t &i, const StringVector &kvlist)
+{
+  const String &smin = Aida::Introspection::find_value ("min", kvlist);
+  int64_t dbg = i;
+  if (!smin.empty())
+    {
+      size_t consumed = 0;
+      const int64_t b = string_to_int (smin, &consumed);
+      if (consumed && i < b)
+        i = b;
+    }
+  const String &smax = Aida::Introspection::find_value ("max", kvlist);
+  if (!smax.empty())
+    {
+      size_t consumed = 0;
+      const int64_t b = string_to_int (smax, &consumed);
+      if (consumed && i > b)
+        i = b;
+    }
+  return true;
+}
+
+bool
+ItemImpl::constrain_idl_double (double &d, const StringVector &kvlist)
+{
+  const String &smin = Aida::Introspection::find_value ("min", kvlist);
+  const double dbg = d;
+  if (!smin.empty())
+    {
+      const char *const cmin = smin.c_str(), *end = NULL;
+      const double b = string_to_double (cmin, &end);
+      if (end > cmin && d < b)
+        d = b;
+    }
+  const String &smax = Aida::Introspection::find_value ("max", kvlist);
+  if (!smax.empty())
+    {
+      const char *const cmax = smax.c_str(), *end = NULL;
+      const double b = string_to_double (cmax, &end);
+      if (end > cmax && d > b)
+        d = b;
+    }
+  return true;
+}
+
 } // Bse

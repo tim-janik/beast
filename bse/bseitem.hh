@@ -227,14 +227,52 @@ public:
   /// Resolve an undo descriptor back to an object, see also undo_descriptor().
   template<class Obj>
   Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
+  static bool constrain_idl_enum   (int64_t &i, const StringVector &kvlist);
+  static bool constrain_idl_int    (int64_t &i, const StringVector &kvlist);
+  static bool constrain_idl_double (double  &d, const StringVector &kvlist);
+  template<class T, Aida::REQUIRES< std::is_enum<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    int64_t i = int64_t (lvalue);
+    const bool valid = constrain_idl_enum (i, kvlist);
+    lvalue = T (i);
+    return valid;
+  }
+  template<class T, Aida::REQUIRES< std::is_integral<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    int64_t i = int64_t (lvalue);
+    const bool valid = constrain_idl_int (i, kvlist);
+    lvalue = T (i);
+    return valid;
+  }
+  template<class T, Aida::REQUIRES< std::is_floating_point<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    double d = lvalue;
+    const bool valid = constrain_idl_double (d, kvlist);
+    lvalue = d;
+    return valid;
+  }
   /// Constrain and assign property value if it has changed, emit notification.
   template<class T> bool
-  apply_idl_property (T &lvalue, const T &rvalue, const String &propname)
+  apply_idl_property (T &lvalue, const T &cvalue, const String &propname)
   {
-    if (lvalue == rvalue)
-      return false;
-    push_property_undo (propname);
-    lvalue = rvalue;
+    if (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
+      { // avoid value copy for non primitive types
+        T rvalue = cvalue;
+        if (!constrain_idl_property (rvalue, find_prop (propname)))
+          return false;
+        if (lvalue == rvalue)
+          return false;
+        push_property_undo (propname);
+        lvalue = std::move (rvalue);
+      }
+    else if (lvalue == cvalue)
+      {
+        return false;
+        lvalue = cvalue;
+      }
     auto lifeguard = shared_from_this();
     exec_now ([this, propname, lifeguard] () { this->notify (propname); });
     return true;
