@@ -248,8 +248,9 @@ class Generator:
     s += '      (void) __v8result;\n'
     s += '    };\n'
     s += '    Aida::HandleEventConnection hcon = __remotehandle->__attach__ (__event, event_handler);\n'
-    # FIXME: add disconnect function for hcon
-    s += '    __v8args.GetReturnValue().Set (v8::Null (__v8isolate));\n'
+    s += '    auto disconnector = [hcon]() { hcon.disconnect(); };\n'
+    s += '    v8::Local<v8::Function> v8disconnector = v8pp::wrap_function (__v8isolate, "disconnector", disconnector);\n'
+    s += '    __v8args.GetReturnValue().Set (v8disconnector);\n'
     s += '  };\n'
     s += '  AidaRemoteHandle_class_\n'
     s += '    .set ("__typename__", &Aida::RemoteHandle::__typename__)\n'

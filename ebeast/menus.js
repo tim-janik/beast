@@ -9,6 +9,7 @@ const view_menu = [
   { label: _('Toggle &Fullscreen'), 	 role: 'toggle-fulscreen', 	accelerator: 'F11', },
 ];
 const help_menu = [
+  { label: _('Beast &Manual...'),	role: 'manual-dialog-html',	},
   { label: _('&About...'),		role: 'about-dialog',		},
 ];
 const menubar_menus = [
@@ -43,6 +44,24 @@ function menu_command (role, _data) {
   case 'about-dialog':
     Shell.show_about_dialog = !Shell.show_about_dialog;
     break;
+  case 'manual-dialog-html': {
+    const win = new Electron.BrowserWindow ({
+      backgroundColor: '#fefdfc',
+      webPreferences: { contextIsolation: true,
+			nodeIntegration: false,
+			plugins: true, // needed for pdf_viewer
+			sandbox: true } });
+    win.setMenu (null);
+    win.loadURL ('file:///' + __dirname + '/../doc/beast-manual.html');
+    win.webContents.on ('before-input-event', (event, input) => {
+      if (input.alt && input.code=="ArrowLeft" &&
+	  win.webContents.canGoBack())
+	win.webContents.goBack();
+      if (input.alt && input.code=="ArrowRight" &&
+	  win.webContents.canGoForward())
+	win.webContents.goForward();
+    });
+    break; }
   case 'toggle-fulscreen':
     BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
     break;

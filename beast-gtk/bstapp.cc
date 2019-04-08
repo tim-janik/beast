@@ -32,18 +32,11 @@ enum {
   ACTION_SHOW_PREFERENCES,
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
-#define ACTION_HELP_FIRST   ACTION_HELP_INDEX
-  ACTION_HELP_INDEX,
-  ACTION_HELP_FAQ,
-  ACTION_HELP_RELEASE_NOTES,
-  ACTION_HELP_QUICK_START,
-  ACTION_HELP_PLUGIN_DEVEL,
-  ACTION_HELP_DSP_ENGINE,
-  ACTION_HELP_DEVELOPMENT,
+#define ACTION_HELP_FIRST   ACTION_HELP_MANUAL
+  ACTION_HELP_MANUAL,
   ACTION_HELP_ABOUT,
 #define ACTION_HELP_LAST    ACTION_HELP_ABOUT
   ACTION_URL_BEAST_SITE,
-  ACTION_URL_HELP_DESK,
   ACTION_URL_REPORT_BUG,
   ACTION_URL_ONLINE_SYNTHESIZERS,
   ACTION_URL_ONLINE_DEMOS,
@@ -128,18 +121,10 @@ static const GxkStockAction library_files_actions[] = {
     BST_ACTION_SAVE_EFFECT,     BST_STOCK_SAVE_AS },
 };
 static const GxkStockAction simple_help_actions[] = {
-  { N_("Document _Index..."),   NULL,           N_("Provide an overview of all BEAST documentation contents"),
-    ACTION_HELP_INDEX,          BST_STOCK_DOC_INDEX },
-  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
-    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
-  { N_("_Beast Website..."),    NULL,           N_("Start a web browser pointing to the BEAST website"),
+  { N_("_Beast Manual..."),     NULL,           N_("Browse the Beast manual, covering Tutorials, Howotos and in-depth knowledge on Beast"),
+    ACTION_HELP_MANUAL,          BST_STOCK_DOC_INDEX },
+  { N_("_Beast Website..."),    NULL,           N_("Start a web browser pointing to the Beast website"),
     ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
-  { N_("_FAQ..."),              NULL,           N_("Answers to frequently asked questions"),
-    ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
-  { N_("_Quick Start..."),      NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
-    ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
-  { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
-    ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
   { N_("Report a Beast Bug..."),NULL,           N_("Start a web browser with the bug report form for the BEAST bugzilla product"),
     ACTION_URL_REPORT_BUG,      BST_STOCK_ONLINE_BUGS },
 #if 0
@@ -753,13 +738,6 @@ skin_entries_create (BstApp *app)
   return alist;
 }
 
-void
-bst_app_show_release_notes (BstApp *app)
-{
-  if (app_action_check (app, ACTION_HELP_RELEASE_NOTES, gxk_action_inc_cache_stamp()))
-    app_action_exec (app, ACTION_HELP_RELEASE_NOTES);
-}
-
 static void
 app_action_exec (gpointer data,
                  size_t   action)
@@ -899,17 +877,8 @@ app_action_exec (gpointer data,
                              NULL);
       gtk_widget_queue_draw (GTK_WIDGET (self->notebook));
       break;
-    case ACTION_HELP_INDEX:
-      docs_url = "html/index.html";
-      goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_RELEASE_NOTES:
-      docs_url = "html/beast-NEWS.html";
-      goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_DSP_ENGINE:
-      docs_url = "html/engine-mplan.html";
-      goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_DEVELOPMENT:
-      docs_url = "html/index.html";
+    case ACTION_HELP_MANUAL:
+      docs_url = "beast-manual.html";
       goto BROWSE_LOCAL_URL;
     BROWSE_LOCAL_URL:
       if (docs_url)
@@ -919,26 +888,14 @@ app_action_exec (gpointer data,
           g_free (local_url);
         }
       break;
-    case ACTION_HELP_FAQ:
-      sfi_url_show ("http://beast.testbit.eu/Beast_FAQ");
-      break;
-    case ACTION_HELP_QUICK_START:
-      sfi_url_show ("http://beast.testbit.eu/Beast-Quickstart");
-      break;
-    case ACTION_HELP_PLUGIN_DEVEL:
-      sfi_url_show ("http://beast.testbit.eu/BSE_Plugin_Development");
-      break;
     case ACTION_HELP_ABOUT:
       beast_show_about_box ();
       break;
-    case ACTION_URL_HELP_DESK:
-      sfi_url_show ("http://beast.testbit.eu/Beast_Help_Desk");
-      break;
     case ACTION_URL_BEAST_SITE:
-      sfi_url_show ("http://beast.testbit.eu/");
+      sfi_url_show ("https://beast.testbit.org/");
       break;
     case ACTION_URL_REPORT_BUG:
-      sfi_url_show ("https://bugzilla.gnome.org/enter_bug.cgi?product=beast");
+      sfi_url_show ("https://github.com/tim-janik/beast/issues/");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
       sfi_url_show ("http://beast.testbit.eu/Beast_Sound_Gallery");
@@ -1038,15 +995,8 @@ app_action_check (gpointer data,
     case BST_ACTION_SAVE_INSTRUMENT:
       super = bst_app_get_current_super (self);
       return BSE_IS_CSYNTH (super) && !self->project.is_active();
-    case ACTION_HELP_INDEX:
-    case ACTION_HELP_RELEASE_NOTES:
-    case ACTION_HELP_QUICK_START:
-    case ACTION_HELP_FAQ:
-    case ACTION_HELP_DSP_ENGINE:
-    case ACTION_HELP_PLUGIN_DEVEL:
-    case ACTION_HELP_DEVELOPMENT:
+    case ACTION_HELP_MANUAL:
     case ACTION_HELP_ABOUT:
-    case ACTION_URL_HELP_DESK:
     case ACTION_URL_BEAST_SITE:
     case ACTION_URL_REPORT_BUG:
     case ACTION_URL_ONLINE_SYNTHESIZERS:
