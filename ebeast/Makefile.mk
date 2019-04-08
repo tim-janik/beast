@@ -2,11 +2,8 @@
 include $(wildcard $>/ebeast/*.d)
 ebeast/cleandirs ::= $(wildcard $>/ebeast/ $>/electron/ $>/app/)
 CLEANDIRS         += $(ebeast/cleandirs)
-ALL_TARGETS       += ebeast-all
-CHECK_TARGETS     += ebeast-check
-INSTALL_TARGETS   += ebeast-install
-UNINSTALL_TARGETS += ebeast-uninstall
-ebeast-all: $>/ebeast/app.rules
+ALL_TARGETS       += ebeast/all
+ebeast/all: $>/ebeast/app.rules
 
 # This Makefile creates $>/electron/ebeast and builds the ebeast app in $>/app/.
 
@@ -147,9 +144,9 @@ ebeast/uninstall: FORCE
 	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
 uninstall: ebeast/uninstall
 
-# == ebeast-run ==
+# == ebeast/run ==
 # export ELECTRON_ENABLE_LOGGING=1
-ebeast-run: $>/ebeast/app.rules
+ebeast/run: $>/ebeast/app.rules
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
 	$>/electron/ebeast
 #	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
@@ -174,8 +171,6 @@ $>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk	| $>/ebeast/
 # the BrowserWindow.darkTheme option. Here, we preselect a commonly installed dark Gtk+2
 # theme if it's present.
 
-# == ebeast-clean ==
-ebeast-clean: FORCE
-	rm -f $>/ebeast/npm.rules $>/ebeast/* 2>/dev/null ; :
-	rm -f -r $>/app/ $(ebeast/cleandirs)
-
+# == ebeast/clean ==
+ebeast/clean: FORCE
+	rm -f -r $(ebeast/cleandirs)

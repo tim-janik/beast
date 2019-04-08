@@ -131,6 +131,9 @@ default: FORCE
 	  fi )
 	$Q mv $@.tmp config-defaults.mk
 
+# == run ==
+run: FORCE ebeast/run
+
 # == clean rules ==
 clean: FORCE
 	@test -z "$(strip $(CLEANFILES))" || (set -x; rm -f $(CLEANFILES) )

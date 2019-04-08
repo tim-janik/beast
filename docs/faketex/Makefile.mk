@@ -73,10 +73,20 @@ docs/faketex/downloads_filename  = "$(notdir $2)"
 docs/faketex/download_withsha256 = && ( echo "$1 $(notdir $2)" | sha256sum -c - >/dev/null 2>&1 || \
 					curl -sfSOL "$2" ) \
 				   && ( echo "$1 $(notdir $2)" | sha256sum -c - )
+# $(call docs/faketex/download_fromcache, hash, url) - copy download from ~/.cache if available
+docs/faketex/download_fromcache = && ( test ! -e "$(XDG_CACHE_BEAST)/$(notdir $2)" || $(CP) "$(XDG_CACHE_BEAST)/$(notdir $2)" . )
+# $(call docs/faketex/download_tocache, hash, url) - copy downloads to ~/.cache if available
+docs/faketex/download_tocache = && ( test ! -e "$(notdir $2)" || cmp -s "$(notdir $2)" "$(XDG_CACHE_BEAST)/$(notdir $2)" || $(CP) "$(notdir $2)" "$(XDG_CACHE_BEAST)/" )
 $>/doc/faketex/download.rules: docs/faketex/Makefile.mk					| $>/doc/faketex/downloads/
 	$(QECHO) FETCH	$>/doc/faketex/downloads/
 	$Q cd $>/doc/faketex/downloads/ \
+	     $(call foreachpair, docs/faketex/download_fromcache, $(docs/faketex/all-downloads))
+	$Q cd $>/doc/faketex/downloads/ \
 	     $(call foreachpair, docs/faketex/download_withsha256, $(docs/faketex/all-downloads))
+	$Q cd $>/doc/faketex/downloads/ \
+	  && test ! -x "$(XDG_CACHE_HOME)/" \
+	  || mkdir -p "$(XDG_CACHE_BEAST)" \
+	     $(call foreachpair, docs/faketex/download_tocache, $(docs/faketex/all-downloads))
 	$Q touch $@
 
 # == faketex ==
