@@ -1,6 +1,8 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/doc/*.d)
-CLEANDIRS += $(wildcard $>/doc/)
+docs/cleandirs ::= $(wildcard $>/doc/)
+CLEANDIRS       += $(docs/cleandirs)
+ALL_TARGETS    += docs/all
 
 # == plain text files ==
 docs/doc.files ::= $(strip		\
@@ -12,15 +14,15 @@ docs/doc.files ::= $(strip		\
 	$>/doc/copyright		\
 )
 docs/doc.dir	  ::= $(pkglibdir)/doc
-ALL_TARGETS	   += $(docs/doc.files)
+docs/all: $(docs/doc.files)
 
 # == man1 files ==
 docs/man1.files	::= $>/doc/beast.1 $>/doc/bsewavetool.1
-ALL_TARGETS	 += $(docs/man1.files)
+docs/all: $(docs/man1.files)
 
 # == man5 files ==
 docs/man5.files	::= $>/doc/bse.5
-ALL_TARGETS	 += $(docs/man5.files)
+docs/all: $(docs/man5.files)
 
 # == pandoc flags ==
 docs/html_flags       ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6
@@ -143,3 +145,7 @@ doc/uninstall-prefix-symlinks: FORCE
 	$Q rm -f '$(DESTDIR)$(mandir)/man1/bsewavetool.1'
 	$Q rm -f '$(DESTDIR)$(mandir)/man5/bse.5'
 uninstall: doc/uninstall-prefix-symlinks
+
+# == docs/clean ==
+docs/clean: FORCE
+	rm -f -r $(docs/cleandirs)
