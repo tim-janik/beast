@@ -1,13 +1,10 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-include $(wildcard $>/ebeast/*.d)
-v8bse/rpath..libbse ::= ../../lib
-
-CLEANDIRS         += $(wildcard $>/ebeast/)
-ALL_TARGETS       += ebeast-all
-CHECK_TARGETS     += ebeast-check
-INSTALL_TARGETS   += ebeast-install
-UNINSTALL_TARGETS += ebeast-uninstall
-ebeast-v8bse-all: $>/ebeast/v8bse/v8bse.node
+include $(wildcard $>ebeast/v8bse/*.d)
+ebeast/v8bse/cleandirs     ::= $(wildcard $>/ebeast/v8bse/)
+ebeast/v8bse/rpath..libbse ::= ../../lib
+CLEANDIRS         += $(ebeast/v8bse/cleandirs)
+ALL_TARGETS       += ebeast/v8bse/all
+ebeast/v8bse/all: $>/ebeast/v8bse/v8bse.node
 
 # == variables ==
 ebeast/v8bse/cc.sources  ::= $(strip	\
@@ -53,7 +50,7 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	$Q echo "  'cflags_cc':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.cxxflags)) ],"	>>$@.tmp
 	$Q echo "  'include_dirs': [ $(patsubst %, '%'$(,), $(ebeast_v8bse/gyp.incdirs)) ],"	>>$@.tmp
 	$Q echo "  'libraries':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.libs))"		>>$@.tmp
-	$Q echo "                    \"'-Wl,-rpath,"'$$$$'"ORIGIN/$(v8bse/rpath..libbse)'\" ],"	>>$@.tmp
+	$Q echo "           \"'-Wl,-rpath,"'$$$$'"ORIGIN/$(ebeast/v8bse/rpath..libbse)'\" ],"	>>$@.tmp
 	@: # Adding -rpath,'$ORIGIN' requires single-quotes for this Makefile's subshell, escaping '$' in the current
 	@: # Makefile, escaping '$' in the generated *.target.mk file and signle-quotes for the *.target.mk subshell.
 	$Q echo "  } ] }"									>>$@.tmp
@@ -74,3 +71,6 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	@: # Note, we leave cleaning of ebeast/node_modules/node-gyp/cache/ to ../node_modules/ cleanups
 $>/ebeast/v8bse/v8bse.node: $(config-stamps) ebeast/v8bse/Makefile.mk	# Rebuild binding.gyp once makefiles change
 
+# == /ebeast/v8bse/clean ==
+ebeast/v8bse/clean: FORCE
+	rm -f -r $(ebeast/v8bse/cleandirs)
