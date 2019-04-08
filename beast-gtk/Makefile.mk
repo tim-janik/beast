@@ -1,7 +1,9 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/beast-gtk/*.d)
-CLEANDIRS += $(wildcard $>/beast-gtk/)
+beast-gtk/cleandirs     ::= $(wildcard $>/beast-gtk/)
+CLEANDIRS                += $(beast-gtk/cleandirs)
 beast-gtk/rpath..libbse ::= ../lib
+ALL_TARGETS              += ebeast/all
 
 # == beast-gtk/ files ==
 beast-gtk/beast.sources ::= $(strip		\
@@ -165,6 +167,7 @@ $(call BUILD_PROGRAM, \
 	$(beast-gtk/gxk/libgxk.a) -lbse-$(VERSION_MAJOR) $(GTK_LIBS) $(XKB_LIBS), \
 	$(beast-gtk/rpath..libbse))
 $(call INSTALL_BIN_RULE, bin/beast-$(VERSION_M.M.M), $(DESTDIR)$(pkglibdir)/bin, $(beast-gtk/beast))
+beast-gtk/all: $(beast-gtk/beast)
 
 # == bstmarshal ==
 $>/beast-gtk/bstmarshal.h: beast-gtk/bstmarshal.list			| $>/beast-gtk/
@@ -194,3 +197,7 @@ $>/beast-gtk/bstoldbseapi.cc: $(wildcard bse/*.idl) $>/bse/bsehack.idl $>/beast-
 	$Q echo -e "/* #include \"beast-gtk/bstoldbseapi.h\" */\n"					> $@.tmp
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes) -I$>/bse --client-c --source --prefix beast_ bse/bse.idl	>>$@.tmp
 	$Q mv $@.tmp $@
+
+# == beast-gtk/clean ==
+beast-gtk/clean: FORCE
+	rm -f -r $(beast-gtk/cleandirs)
