@@ -1,6 +1,9 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/bse/*.d)
-CLEANDIRS     += $(wildcard $>/bse/ $>/lib/)
+bse/cleandirs ::= $(wildcard $>/bse/ $>/lib/)
+CLEANDIRS      += $(bse/cleandirs)
+ALL_TARGETS    += bse/all
+CHECK_TARGETS  += bse/check
 
 # == bse/ files ==
 bse/libbse.headers ::= $(strip		\
@@ -342,18 +345,21 @@ lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION
 bse/libbse.objects		::= $(call BUILDDIR_O, $(bse/libbse.sources))
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
+bse/all: $(lib/libbse.so)
 
 # == bseprocidl defs ==
 bse/bseprocidl			::= $>/bse/bseprocidl
 bse/bseprocidl.sources		::= bse/bseprocidl.cc
 bse/bseprocidl.objects		::= $(call BUILDDIR_O, $(bse/bseprocidl.sources))
 bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
+bse/all: $(bse/bseprocidl)
 
 # == integrity defs ==
 bse/integrity		   ::= $>/bse/integrity
 bse/integrity.sources	   ::= bse/integrity.cc
 bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
 bse/integrity.objects.FLAGS  = -O0	# compile fast
+bse/all: $(bse/integrity)
 
 # == subdirs ==
 include bse/icons/Makefile.mk
@@ -535,4 +541,8 @@ $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
 		grep -qi 'in.*my_compare_func'	   $@.tmp || $(QDIE) --backtrace failed
 	$Q rm $@.tmp
 	@echo "  PASS    " $@
-CHECK_TARGETS += $>/bse/t279-assertions-test
+bse/check: $>/bse/t279-assertions-test
+
+# == bse/clean ==
+bse/clean: FORCE
+	rm -f -r $(bse/cleandirs)
