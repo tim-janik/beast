@@ -72,7 +72,7 @@ while test $# -ne 0 ; do
 done
 
 # == Decide Dockerfile base ==
-DIST=timjanik/beast:cibase-190131-bionic
+DIST=timjanik/beast:cibase-190408-bionic
 
 # == Prepare Build Environment ==
 DOCKERFILE=misc/Dockerfile-cibuild
