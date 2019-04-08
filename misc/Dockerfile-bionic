@@ -40,12 +40,17 @@ RUN \
   : 'Provide Beast dependencies, add libXss.so for electron' && \
   retry apt-get install -y \
 	build-essential automake autoconf autoconf-archive libtool \
-	curl doxygen graphviz texlive-binaries pandoc git libxml2-utils \
+	curl doxygen graphviz texlive-binaries git libxml2-utils \
 	cppcheck clang clang-tidy clang-tools \
 	gawk python2.7-dev python3 \
 	libxml2-dev libpango1.0-dev libgnomecanvas2-dev \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
 	imagemagick libgconf-2-4 nodejs npm libxss1 && \
+  \
+  : 'Provide recent Pandoc' && \
+  retry curl -SOL https://github.com/jgm/pandoc/releases/download/2.7.2/pandoc-2.7.2-1-amd64.deb && \
+  dpkg -i pandoc-2.7.2-1-amd64.deb && \
+  rm pandoc-2.7.2-1-amd64.deb && \
   \
   : '# Cleanup' && \
   apt-get --purge remove -y cmake python2.7-dev && \
