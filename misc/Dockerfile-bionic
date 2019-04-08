@@ -47,10 +47,6 @@ RUN \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
 	imagemagick libgconf-2-4 nodejs npm libxss1 && \
   \
-  : '# Pre-fetch electron download' && \
-  mkdir -p /root/.electron/ && cd /root/.electron/ && \
-  curl -sfSOL 'https://github.com/electron/electron/releases/download/v1.8.8/electron-v1.8.8-linux-x64.zip' && \
-  \
   : '# Cleanup' && \
   apt-get --purge remove -y cmake python2.7-dev && \
   apt-get autoremove -y && \
