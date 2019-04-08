@@ -14,6 +14,11 @@ CP			?= cp --reflink=auto
 .config.defaults	+= CP PERL PYTHON2 YAPPS PKG_CONFIG GLIB_MKENUMS GLIB_GENMARSHAL GDK_PIXBUF_CSOURCE PANDOC IMAGEMAGICK_CONVERT
 HAVE_PANDOC1		 = $(shell $(PANDOC) --version | grep -q '^pandoc 1\.' && echo 1)
 
+HOME			?= $(shell echo ~)
+XDG_CACHE_HOME		?= $(HOME)/.cache
+XDG_CACHE_BEAST		?= $(XDG_CACHE_HOME)/beast/build-$(VERSION_MAJOR)-$(VERSION_MINOR)
+.config.defaults	+= XDG_CACHE_HOME
+
 INSTALL 		:= /usr/bin/install -c
 INSTALL_DATA 		:= $(INSTALL) -m 644
 MSGFMT			:= /usr/bin/msgfmt
