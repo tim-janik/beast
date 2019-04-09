@@ -135,17 +135,16 @@ bse_sound_font_load_blob (BseSoundFont       *self,
       if (init_presets)
 	{
 	  fluid_sfont_t *fluid_sfont = fluid_synth_get_sfont_by_id (fluid_synth, sfont_id);
-	  fluid_preset_t fluid_preset;
 
-	  fluid_sfont->iteration_start (fluid_sfont);
-	  while (fluid_sfont->iteration_next (fluid_sfont, &fluid_preset))
+	  fluid_sfont_iteration_start (fluid_sfont);
+	  while (fluid_preset_t *fluid_preset = fluid_sfont_iteration_next (fluid_sfont))
 	    {
 	      BseSoundFontPreset *sound_font_preset;
               sound_font_preset = (BseSoundFontPreset *) bse_object_new (BSE_TYPE_SOUND_FONT_PRESET,
-								         "uname", fluid_preset.get_name (&fluid_preset),
+								         "uname", fluid_preset_get_name (fluid_preset),
 								         NULL);
 	      bse_container_add_item (BSE_CONTAINER (self), BSE_ITEM (sound_font_preset));
-	      bse_sound_font_preset_init_preset (sound_font_preset, &fluid_preset);
+	      bse_sound_font_preset_init_preset (sound_font_preset, fluid_preset);
 	    }
 	}
       sound_font_impl->sfont_id = sfont_id;
