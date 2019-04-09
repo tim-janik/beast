@@ -6,6 +6,8 @@
 #include "bseblockutils.hh"
 #include "bse/internal.hh"
 
+using std::max;
+
 /* --- parameters --- */
 enum
 {
@@ -124,13 +126,13 @@ bse_sound_font_repo_prepare (BseSource *source)
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  guint channels_required = 0;
+  uint channels_required = 0;
   for (auto& o : sfrepo_impl->oscs)
     {
       if (o.osc)
 	o.channel = channels_required++;
     }
-  guint mix_freq = bse_engine_sample_freq();
+  uint mix_freq = bse_engine_sample_freq();
   if (sfrepo_impl->n_fluid_channels != channels_required || sfrepo_impl->fluid_mix_freq != mix_freq)
     {
       sfrepo_impl->channel_state.resize (channels_required);
@@ -145,14 +147,20 @@ bse_sound_font_repo_prepare (BseSource *source)
       sfrepo_impl->n_fluid_channels = channels_required;
       sfrepo_impl->fluid_mix_freq = mix_freq;
 
+      /* midi channels required must be: at least 16, a multiple of 16 */
+      const int midi_channels_required = (channels_required / 16 + 1) * 16;
+
+      /* audio channels required must not be zero */
+      const int audio_channels_required = max<int> (1, channels_required);
+
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
       /* soundfont instruments should be as loud as beast synthesis network instruments */
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.gain", 1.0);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", channels_required);
-      fluid_settings_setstr (sfrepo_impl->fluid_settings, "synth.reverb.active", "no");
-      fluid_settings_setstr (sfrepo_impl->fluid_settings, "synth.chorus.active", "no");
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", midi_channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", audio_channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", audio_channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.reverb.active", 0);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.chorus.active", 0);
 
       bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
       if (sfrepo_impl->fluid_synth)
