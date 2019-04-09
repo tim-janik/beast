@@ -100,8 +100,15 @@ $>/ebeast/app.rules: $(app/tree) $(app/generated) $>/ebeast/lint.rules $>/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
 
-# == $>/app/% ==
-$>/app/assets/stylesheets.css: $>/app/app.scss $(app/vc/files.scss)	| $>/ebeast/npm.rules
+# == $>/app/assets/ ==
+ebeast/inter-typeface-downloads ::= \
+  5f310d16c579ab3b1e9e8cb3298e14bb935ed7e802e1b23c35bd1819307d6c59 \
+    https://github.com/rsms/inter/raw/v3.5/docs/font-files/Inter-Medium.woff2
+$>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
+	$(QGEN)
+	$Q cd $(@D) \
+		$(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/inter-typeface-downloads))
+$>/app/assets/stylesheets.css: $>/app/app.scss $(app/vc/files.scss) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/npm.rules
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
 	$Q cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
@@ -112,6 +119,8 @@ $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
+
+# == $>/app/% ==
 define app/cp.EXT
 $>/app/%.$1:	  ebeast/%.$1	| $>/app/vc/
 	$$(QECHO) COPY $$@
