@@ -20,7 +20,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-projectshell { }
   .vc-projectshell-part-area {
     background-color: $vc-button-border;

@@ -7,7 +7,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-button-bar {
       display: inline-flex; background-color: $vc-button-border;
       border: 1px solid $vc-button-border;

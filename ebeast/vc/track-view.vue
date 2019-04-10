@@ -30,7 +30,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   $vc-track-view-level-height: 3px;
   $vc-track-view-level-space: 1px;
   .vc-track-view-lbg {

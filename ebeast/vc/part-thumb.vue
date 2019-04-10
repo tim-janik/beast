@@ -15,7 +15,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: $vc-track-list-row-height;

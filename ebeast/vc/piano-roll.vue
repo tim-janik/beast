@@ -40,7 +40,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-piano-roll {
     border: 1px solid red;
   }

@@ -11,7 +11,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-button                  	{ @include vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
   .vc-button:focus            	{ outline: $vc-focus-outline; }
   .vc-button:hover            	{ @include vc-buttonhover; }
