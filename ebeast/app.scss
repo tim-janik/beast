@@ -1,6 +1,6 @@
 @import 'vc/styles.scss';
 
-/* == Settings == */
+// == Settings ==
 $theme-foreground:		$vc-theme-foreground;
 $theme-background:		$vc-theme-background;
 $theme-border-radius:		$vc-theme-border-radius;
@@ -26,16 +26,16 @@ $button-active-border:		$vc-button-active-border;
 $glow-control:			$vc-glow-control;
 $focus-outline:			$vc-focus-outline;
 
-/* == Body Styles == */
-BrowserWindowDefaults		{ ; /* used by main.js */
-				  backgroundColor:          $theme-background; /* #rrggbb needed */
-				  defaultFontSize:          14;              /* int needed */
-				  defaultMonospaceFontSize: 13;              /* int needed */ }
+// == Body Styles ==
+BrowserWindowDefaults		{ ; // used by main.js
+				  backgroundColor:          $theme-background; 	// #rrggbb needed
+				  defaultFontSize:          14;              	// int needed
+				  defaultMonospaceFontSize: 13; }		// int needed
 gradient-01	{ -im-convert: "-size 67x1080 -attenuate 0.2 +noise Uniform gradient:#{$panel-background-lg0}-#{$panel-background-lg1}"; }
 @mixin gradient-01-bg		{ background-color: $theme-background;
-				  /* gradient with banding */
+				  // gradient with banding
 				  background-image: $panel-background-lg;
-				  /* gradient image with reduced banding */
+				  // gradient image with reduced banding
 				  background: url(gradient-01.png) center repeat-x; background-size: auto 100%; }
 html				{ width: 100vw; height: 100vh; font-family: sans; }
 body				{ width: 100%; height: 100%; overflow: hidden; font: inherit;
@@ -44,7 +44,7 @@ body				{ width: 100%; height: 100%; overflow: hidden; font: inherit;
 body.window-inactive 		{ color: fade($theme-foreground, 80%); }
 *				{ box-sizing: border-box; text-overflow: ellipsis; }
 
-/* == Scrollbars == */
+// == Scrollbars ==
 ::-webkit-scrollbar 		{ height: 5px; width: 5px; background: #000; }
 ::-webkit-scrollbar-corner	{ background: rgba(0, 0, 0, 0); }
 ::-webkit-scrollbar-track 	{ background-size: 2px 2px;
@@ -54,22 +54,24 @@ body.window-inactive 		{ color: fade($theme-foreground, 80%); }
 ::-webkit-scrollbar-thumb 	{ background: $glow-control; -webkit-border-radius: 0.1ex;
 				  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75); }
 ::-webkit-scrollbar-thumb:window-inactive	{ background: #333;
-						  /* background: fade($glow-control, 20%); */
+						  // background: fade($glow-control, 20%);
 						  -webkit-box-shadow: none; }
 
-/* == Application Widgets == */
+// == Application Widgets ==
 .PlayControls			{ padding: 1em; margin: 1em;
 				  background-color: $toolbar-background; background-image: $toolbar-background-lg; }
 .StatusBar			{ text-align: left; background-color: #000; }
 .StatusBar .StatusField		{ padding-left: 1em; }
 
 
-/* == Resets == */
+// == Resets ==
 input, textarea, keygen, select,
 button          		{ font: inherit; }
 button          		{ -webkit-appearance: normal; }
 
+// https://www.w3.org/TR/css-flexbox-1/#valdef-flex-basis-content
+// https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 
-/* https://www.w3.org/TR/css-flexbox-1/#valdef-flex-basis-content
- * https://css-tricks.com/snippets/css/a-guide-to-flexbox/
- */
+// == FontAwesome ==
+$fa-font-path: '../node_modules/font-awesome/fonts/';
+@import        'node_modules/font-awesome/scss/font-awesome.scss';
