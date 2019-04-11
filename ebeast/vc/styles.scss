@@ -10,6 +10,7 @@
 // Only put *!default* definitions here, so `variables.scss` takes precedence.
 
 // theme basics
+$vc-theme-font-family:		sans-serif !default;
 $vc-theme-foreground: 		#ffffff !default;
 $vc-theme-background: 		#505050 !default;
 $vc-theme-border-radius:	3px !default;
@@ -40,13 +41,13 @@ $vc-boxshadow-color:		fade(#000000, 30%) !default;
 $vc-track-list-row-height: 2em !default;
 
 // vc-part-thumb
-$vc-part-thumb-font: bold 0.75em sans-serif !default; // format: italic small-caps bold 12px serif
+$vc-part-thumb-font: bold 0.75em $vc-theme-font-family !default; // format: italic small-caps bold 12px serif
 $vc-part-thumb-font-color: rgba(255, 255, 255, 0.7) !default;
 $vc-part-thumb-note-color: rgba(255, 255, 255, 0.7) !default;
 $vc-part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0 !default;
 
 // vc-piano-roll
-$vc-piano-roll-font:	     	bold 0.75em sans-serif !default;	// format: italic small-caps bold 12px serif
+$vc-piano-roll-font:	     	bold 0.75em $vc-theme-font-family !default;	// format: italic small-caps bold 12px serif
 $vc-piano-roll-font-color:   	rgba(5, 5, 5, 0.7) !default;
 $vc-piano-roll-light-row:    	#303030 !default;		// background row color for notes
 $vc-piano-roll-dark-row:     	#272727 !default;		// background row color for notes
@@ -61,12 +62,12 @@ $vc-piano-roll-black-base:   	#181818 !default;		// base color for black piano k
 $vc-piano-roll-black-glint:  	#3a3a3a !default;		// highlight on black piano key
 $vc-piano-roll-black-shine:  	#666666 !default;		// reflection on black piano key
 $vc-piano-roll-black-border: 	#222222 !default;		// border around black piano key
-$vc-piano-roll-key-font:     	bold 9px sans-serif !default;   	// the '9px' part is dynamically resized
+$vc-piano-roll-key-font:     	bold 9px $vc-theme-font-family !default;   	// the '9px' part is dynamically resized
 $vc-piano-roll-key-font-color:  #221111 !default;
-$vc-piano-roll-note-font:      	normal 9px sans-serif !default; 	// the '9px' part is dynamically resized
+$vc-piano-roll-note-font:      	normal 9px $vc-theme-font-family !default; 	// the '9px' part is dynamically resized
 $vc-piano-roll-note-font-color:	#88cc88 !default;
 $vc-piano-roll-key-length:	88px !default;
-$vc-piano-roll-buttons-font:	normal 9px sans-serif !default;	// size must fit into vc-piano-roll-key-length
+$vc-piano-roll-buttons-font:	normal 9px $vc-theme-font-family !default;	// size must fit into vc-piano-roll-key-length
 
 // == Mixins ==
 @mixin vc-buttonframe() 	{ border: 1px solid $vc-button-border; }
