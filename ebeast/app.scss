@@ -37,7 +37,7 @@ gradient-01	{ -im-convert: "-size 67x1080 -attenuate 0.2 +noise Uniform gradient
 				  background-image: $panel-background-lg;
 				  // gradient image with reduced banding
 				  background: url(gradient-01.png) center repeat-x; background-size: auto 100%; }
-html				{ width: 100vw; height: 100vh; font-family: sans; }
+html				{ width: 100vw; height: 100vh; }
 body				{ width: 100%; height: 100%; overflow: hidden; font: inherit;
 				  padding: 0; margin: 0; color: $theme-foreground;
 				  @include gradient-01-bg; }
@@ -75,3 +75,62 @@ button          		{ -webkit-appearance: normal; }
 // == FontAwesome ==
 $fa-font-path: '../node_modules/font-awesome/fonts/';
 @import        'node_modules/font-awesome/scss/font-awesome.scss';
+
+// == Font-family "Inter" ==
+@font-face	{ font-family: 'Inter'; font-style: normal; font-weight: 500;
+		  src: url("Inter-Medium.woff2") format("woff2"); }
+@mixin inter-font-features() {
+  font-feature-settings:
+  "dlig" 1,     // Discretionary ligatures, e.g. !? -> interrobang
+  // "tnum",	// Tabular numbers (fixed width); use `font-variant-numeric: tabular-nums;`
+  "salt" 0,     // Stylistic Alternates
+  "ss01" 0,     // Stylistic set 1 "Open Digits"
+  "ss02" 0,     // Stylistic set 2 "Disambiguation"
+  "ss03" 0,     // Stylistic set 3 "Lower case r curves into round neighbors"
+  // "zero",    // Slashed zero; use `font-variant-numeric: slashed-zero;`
+  "numr" 0,     // Numerators
+  "dnom" 0,     // Denominators
+  "case" 1,     // Case alternates
+  "frac" 0,     // Contextual automatic fractions
+  "sups" 0,     // Superscript
+  "subs" 0,     // Subscript
+  "cpsp" 0,     // Capital spacing (adds 16 UPM to each sidebearing)
+  "cv01" 1,     // Alternate one
+  "cv02" 1,     // Open four
+  "cv03" 1,     // Open six
+  "cv04" 1,     // Open nine
+  "cv05" 1,     // Lower case L with tail
+  "cv06" 1,     // Lower case r with curved tail
+  "cv07" 0,     // Alternate German double-s
+  "cv08" 1,     // Upper-case i with serif
+  "cv09" 0,     // Flat top three
+  "cv10" 1,     // Capital G with spur
+  "cv11" 0,     // Single-storey a
+  "calt",       // Contextual alternates (default)
+  "liga",       // Common ligatures (default, none in Inter)
+  "kern";       // Kerning (default)
+}
+@mixin inter-font-family	{
+  font-family: 'Inter', BlinkMacSystemFont, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0.011em;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "wght" 450; // "slnt" 0deg
+  @include inter-font-features;
+}
+@mixin inter-font-bold		{ letter-spacing: 0.031em; font-weight: bold; }
+@mixin inter-font-bolder	{ letter-spacing: 0.031em; font-weight: bolder; }
+@mixin inter-font-italic	{ font-style: italic; }
+
+// == Font Setup ==
+.inter, html				{ @include inter-font-family; }
+.italic, i, cite, em, var, address, dfn	{ @include inter-font-italic; }
+::-webkit-validation-bubble-heading,
+strong, b, h1, h2, h3, h4, h5, h6, th,
+.bold					{ @include inter-font-bold; }
+.bolder, optgroup			{ @include inter-font-bolder; }
+input:-webkit-autofill-strong-password,
+plaintext, listing, xmp,
+.tnum, .code, tt, pre, code, kbd, samp	{ font-variant-numeric: tabular-nums slashed-zero; }
+.slashed-zero				{ font-variant-numeric: slashed-zero; }
+.tabular-nums				{ font-variant-numeric: tabular-nums; }
+.tabular-nums.slashed-zero		{ font-variant-numeric: tabular-nums slashed-zero; }
