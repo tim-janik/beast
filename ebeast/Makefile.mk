@@ -144,7 +144,7 @@ uninstall: ebeast/uninstall
 
 # == ebeast/run ==
 # export ELECTRON_ENABLE_LOGGING=1
-ebeast/run: $>/ebeast/app.rules
+ebeast/run: $>/ebeast/app.rules $>/doc/beast-manual.html
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
 	$>/electron/ebeast
 #	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
