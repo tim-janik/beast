@@ -1,4 +1,4 @@
-# API Reference
+# BSE API Reference
 
 ## Namespace Bse
 
