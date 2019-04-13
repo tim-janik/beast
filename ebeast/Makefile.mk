@@ -88,7 +88,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/copies) $(app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/copies) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
 	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
