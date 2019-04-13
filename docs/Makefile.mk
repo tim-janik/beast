@@ -38,6 +38,7 @@ docs/manual-chapters ::= $(strip	\
 	docs/ch-formats.md		\
 	docs/ch-background.md		\
 	ebeast/vc/ch-vue.md		\
+	$>/ebeast/vue-docs.md		\
 	docs/ch-reference.md		\
 	docs/ch-historic.md		\
 	docs/ch-appendix.md		\
