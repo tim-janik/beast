@@ -7,7 +7,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-playcontrols { }
 </style>
 

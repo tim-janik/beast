@@ -1,8 +1,81 @@
-/* GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html */
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-/* == FontAwesome == */
-$fa-font-path: '../node_modules/font-awesome/fonts/';
-@import        '../node_modules/font-awesome/scss/font-awesome.scss';
+// == User Settings & Overrides ==
+@import '../variables.scss';
 
-/* == User Settings & Overrides == */
-@import 'mixins.scss';
+// == Scss Helper Functions ==
+@import 'cssaux.scss';
+
+// == Variables ==
+// Only put *!default* definitions here, so `variables.scss` takes precedence.
+
+// theme basics
+$vc-theme-font-family:		sans-serif !default;
+$vc-theme-foreground: 		#ffffff !default;
+$vc-theme-background: 		#505050 !default;
+$vc-theme-border-radius:	3px !default;
+$vc-panel-background-lg0:	lighten($vc-theme-background, 1%) !default;
+$vc-panel-background-lg1:	darken($vc-theme-background, 1%) !default;
+$vc-panel-background-lg:	linear-gradient(to bottom, $vc-panel-background-lg0 0%, $vc-panel-background-lg1 100%) !default;
+$vc-panel-background-border:	darken($vc-theme-background, 25%) !default;
+$vc-panel-background-light:	lighten($vc-theme-background, 9%) !default;
+$vc-panel-background-dark:	darken($vc-theme-background, 9%) !default;
+$vc-toolbar-background:		#606060 !default;
+$vc-toolbar-background-lg:	linear-gradient(to bottom, #666666 0%, #5a5a5a 100%) !default;
+$vc-button-foreground:   	#dddddd !default;
+$vc-button-light:   		#999999 !default;
+$vc-button-lg:      		linear-gradient(to bottom, #777777 0%, #707070 45%, #606060 55%, #555555 100%) !default;
+$vc-button-dark:    		#444444 !default;
+$vc-button-radius:		$vc-theme-border-radius !default;
+$vc-button-border:   		#333333 !default;
+$vc-button-hover:		fade(#ffffff, 10%) !default;
+$vc-button-active:		fade(#000000, 20%) !default;
+$vc-button-active-fg:		#bbbbbb !default;
+$vc-button-active-lg:     	linear-gradient(to bottom, #606060 0%, #707070 50%, #606060 100%) !default;
+$vc-button-active-border:	#555555 !default;
+$vc-glow-control:		#0080ff !default;
+$vc-focus-outline:		1px solid $vc-glow-control !default;
+$vc-boxshadow-color:		fade(#000000, 30%) !default;
+
+// vc-track-list
+$vc-track-list-row-height: 2em !default;
+
+// vc-part-thumb
+$vc-part-thumb-font: bold 0.75em $vc-theme-font-family !default; // format: italic small-caps bold 12px serif
+$vc-part-thumb-font-color: rgba(255, 255, 255, 0.7) !default;
+$vc-part-thumb-note-color: rgba(255, 255, 255, 0.7) !default;
+$vc-part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0 !default;
+
+// vc-piano-roll
+$vc-piano-roll-font:	     	bold 0.75em $vc-theme-font-family !default;	// format: italic small-caps bold 12px serif
+$vc-piano-roll-font-color:   	rgba(5, 5, 5, 0.7) !default;
+$vc-piano-roll-light-row:    	#303030 !default;		// background row color for notes
+$vc-piano-roll-dark-row:     	#272727 !default;		// background row color for notes
+$vc-piano-roll-semitone12:   	#555555 !default;		// separator per octave
+$vc-piano-roll-semitone6:    	#555555 !default;		// separator after 6 semitones
+$vc-piano-roll-grid-main1:   	#555555 !default;		// separator, usually per measure
+$vc-piano-roll-grid-sub1:    	#3b3b3b !default;		// separator, usually per quarter
+$vc-piano-roll-white-base:   	#cccccc !default;		// base color for white piano key
+$vc-piano-roll-white-glint:  	#eeeeee !default;		// highlight on white piano key
+$vc-piano-roll-white-border: 	#111111 !default;		// border around white piano key
+$vc-piano-roll-black-base:   	#181818 !default;		// base color for black piano key
+$vc-piano-roll-black-glint:  	#3a3a3a !default;		// highlight on black piano key
+$vc-piano-roll-black-shine:  	#666666 !default;		// reflection on black piano key
+$vc-piano-roll-black-border: 	#222222 !default;		// border around black piano key
+$vc-piano-roll-key-font:     	bold 9px $vc-theme-font-family !default;   	// the '9px' part is dynamically resized
+$vc-piano-roll-key-font-color:  #221111 !default;
+$vc-piano-roll-note-font:      	normal 9px $vc-theme-font-family !default; 	// the '9px' part is dynamically resized
+$vc-piano-roll-note-font-color:	#88cc88 !default;
+$vc-piano-roll-key-length:	88px !default;
+$vc-piano-roll-buttons-font:	normal 9px $vc-theme-font-family !default;	// size must fit into vc-piano-roll-key-length
+
+// == Mixins ==
+@mixin vc-buttonframe() 	{ border: 1px solid $vc-button-border; }
+@mixin vc-buttonshade() 	{ background-image: $vc-button-lg;
+				  border-top: 1px solid $vc-button-light; border-left: 1px solid $vc-button-light;
+				  border-bottom: 1px solid $vc-button-dark; border-right: 1px solid $vc-button-dark; }
+@mixin vc-buttonhover()		{ box-shadow: inset 500px 500px $vc-button-hover; }
+@mixin vc-buttonactive()	{ box-shadow: inset 500px 500px $vc-button-active;
+				  background-image: $vc-button-active-lg;
+				  border-color: $vc-button-active-border; }
+@mixin vc-popup-box-shadow()	{ box-shadow: 0 2px 8px $vc-boxshadow-color; }

@@ -30,7 +30,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
 
   .vc-color-picker {
     * {

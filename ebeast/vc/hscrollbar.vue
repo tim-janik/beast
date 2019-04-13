@@ -39,7 +39,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-hscrollbar {
     .trough {
       display: flex;

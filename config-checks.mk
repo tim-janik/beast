@@ -16,7 +16,7 @@ HAVE_PANDOC1		 = $(shell $(PANDOC) --version | grep -q '^pandoc 1\.' && echo 1)
 
 HOME			?= $(shell echo ~)
 XDG_CACHE_HOME		?= $(HOME)/.cache
-XDG_CACHE_BEAST		?= $(XDG_CACHE_HOME)/beast/build-$(VERSION_MAJOR)-$(VERSION_MINOR)
+XDG_CACHE_BEAST		?= $(XDG_CACHE_HOME)/beast/
 .config.defaults	+= XDG_CACHE_HOME
 
 INSTALL 		:= /usr/bin/install -c
@@ -44,6 +44,17 @@ useld_fast		:= $(or $(useld_lld), $(useld_gold))
 useld_lld+vs		!= ld.lld --version 2>&1 | grep -v '^LLD [0123456]\.' | grep -q '^LLD ' && echo '-fuse-ld=lld'
 useld_fast+vs		:= $(or $(useld_lld+vs), $(useld_gold))
 endif
+
+# == Cache downloads in XDG_CACHE_BEAST ==
+# $(call AND_DOWNLOAD_SHAURL, sha256sum, url) - Download and cache file via `url`, verify `sha256sum`
+AND_DOWNLOAD_SHAURL = && ( : \
+	&& ( test ! -e "$(XDG_CACHE_BEAST)/downloads/$(notdir $2)" || $(CP) "$(XDG_CACHE_BEAST)/downloads/$(notdir $2)" . ) \
+	&& ( echo "$(strip $1) $(notdir $2)" | sha256sum -c - >/dev/null 2>&1 || curl -sfSOL "$(strip $2)" ) \
+	&& ( echo "$(strip $1) $(notdir $2)" | sha256sum -c - ) \
+	&& ( test ! -x "$(XDG_CACHE_HOME)/" \
+	   || ( mkdir -p "$(XDG_CACHE_BEAST)/downloads" \
+	      && ( cmp -s "$(notdir $2)" "$(XDG_CACHE_BEAST)/downloads/$(notdir $2)" \
+		 || $(CP) "$(notdir $2)" "$(XDG_CACHE_BEAST)/downloads/" ) ) ) )
 
 # == conftest_lib & conftest_require_lib ==
 # $(call conftest_lib, header, symbol, lib) -> $CONFTEST

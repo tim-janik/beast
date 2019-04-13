@@ -24,19 +24,18 @@ ebeast/js.inputs ::= $(strip 		\
 )
 ebeast/vc/js.inputs	::= $(wildcard ebeast/vc/*.js)
 ebeast/vc/vue.inputs	::= $(wildcard ebeast/vc/*.vue)
+ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/vc/*.scss)
+ebeast/vc/bundle.js.d   ::= $(wildcard ebeast/*.js ebeast/vc/*.js)
+ebeast/vc/bundle.vue.d  ::= $(wildcard ebeast/vc/*.vue)
+ebeast/lint.appfiles    ::= $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d)
 ebeast/vc/scss.inputs	::= $(wildcard ebeast/vc/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
-app/vc/files.js		::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/js.inputs)))
-app/vc/files.vue	::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/vue.inputs)))
-app/vc/files.scss	::= $(addprefix $>/app/vc/, $(notdir $(ebeast/vc/scss.inputs)))
-app/tree ::= $(strip 			\
-	$(app/files.js)			\
-	$(app/vc/files.js)		\
-	$(app/vc/files.vue)		\
-	$(app/vc/files.scss)		\
+app/copies		::= $(strip 	\
+	$>/app/main.js			\
+	$>/app/menus.js			\
+	$>/app/window.html		\
 )
-app/generated ::= $(strip 		\
-	$>/app/app.scss			\
+app/generated 		::= $(strip	\
 	$>/app/assets/gradient-01.png	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
@@ -74,8 +73,7 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 
 # == linting ==
 ebeast/sed.uncommentjs ::= sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
-ebeast/lint.appfiles   ::= $(app/files.js) $(app/vc/files.js) $(app/vc/files.vue)
-$>/ebeast/lint.rules: $(ebeast/lint.appfiles) $(ebeast/vc/vue.inputs) | $>/ebeast/npm.rules
+$>/ebeast/lint.rules: $(ebeast/lint.appfiles) | $>/ebeast/npm.rules
 	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix $(ebeast/lint.appfiles)
 	@: # check for component pitfalls
@@ -90,7 +88,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/tree) $(app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/copies) $(app/generated) $>/ebeast/lint.rules $>/ebeast/vue-docs.html $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
 	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
@@ -99,11 +97,23 @@ $>/ebeast/app.rules: $(app/tree) $(app/generated) $>/ebeast/lint.rules $>/ebeast
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
+$(app/copies): $>/app/%: ebeast/%		| $>/app/
+	$(QECHO) COPY $@
+	$Q $(CP) -P $< $@
 
-# == $>/app/% ==
-$>/app/assets/stylesheets.css: $>/app/app.scss $(app/vc/files.scss)	| $>/ebeast/npm.rules
+# == $>/app/assets/ ==
+ebeast/inter-typeface-downloads ::= \
+  5f310d16c579ab3b1e9e8cb3298e14bb935ed7e802e1b23c35bd1819307d6c59 \
+    https://github.com/rsms/inter/raw/v3.5/docs/font-files/Inter-Medium.woff2
+$>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
+	$(QGEN)
+	$Q cd $(@D) \
+		$(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/inter-typeface-downloads))
+$>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/npm.rules
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
-	$Q cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
+	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
+	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
+		--include-path ebeast/ --include-path $>/ebeast/ --source-map true
 $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
@@ -112,26 +122,14 @@ $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
-define app/cp.EXT
-$>/app/%.$1:	  ebeast/%.$1	| $>/app/vc/
-	$$(QECHO) COPY $$@
-	$Q $(CP) -P $$< $$@
-endef
-$(eval $(call app/cp.EXT ,scss))	# $>/app/%.scss: ebeast/%.scss
-$(eval $(call app/cp.EXT ,html))	# $>/app/%.html: ebeast/%.html
-$(eval $(call app/cp.EXT ,vue))		# $>/app/%.vue: ebeast/%.vue
-$(eval $(call app/cp.EXT ,js))		# $>/app/%.js: ebeast/%.js
 
 # == assets/components.js ==
-$>/app/assets/components.js: $(app/vc/files.js) $(app/vc/files.vue)	| $>/ebeast/lint.rules
+$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/lint.rules
 	$(QGEN)
-	@: # development node_modules are required to generate assets/components.js from vc/*
-	$Q cd $>/app/vc/ \
-	  && rm -f node_modules \
-	  && ln -s ../../ebeast/node_modules \
-	  && ./node_modules/.bin/browserify --node --debug -t vueify -e ./bundle.js -o ../assets/components.js \
-	  && rm -f node_modules
-	@: # Note, since vc/*.js and vc/*.vue are bundled, they do not need to be installed
+	@: # set NODE_PATH, since browserify fails to search ./node_modules for a ../ entry point
+	$Q cd $>/ebeast/ \
+	  && NODE_PATH=node_modules node_modules/.bin/browserify --node --debug -t vueify \
+		-e ../$(build2srcdir)/ebeast/vc/bundle.js -o ../app/assets/components.js
 
 # == installation ==
 ebeast/install: $>/ebeast/app.rules FORCE

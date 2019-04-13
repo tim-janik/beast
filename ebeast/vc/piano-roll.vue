@@ -30,8 +30,8 @@
 		     width: '100%',
 		     'background-color': 'blue',
 		     }" >
-	  <canvas ref="piano-canvas" class="vc-piano-roll-piano" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="vc-piano-roll-notes" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="piano-canvas" class="vc-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="vc-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
 	</div>
       </div>
     </div>
@@ -40,7 +40,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-piano-roll {
     border: 1px solid red;
   }

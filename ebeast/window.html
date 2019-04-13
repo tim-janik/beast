@@ -88,6 +88,14 @@
       data: { Shell: shell_placeholder },
     });
     assert (vue_mountpoint); // $root
+    document.fonts.ready.then (() => {
+      function vue_update (component) {
+	component.$forceUpdate();
+	for (let child of component.$children)
+	  vue_update (child);
+      };
+      vue_update (vue_mountpoint);
+    });
   }
   { // setup menubar
     const menus = require ('./menus.js');

@@ -7,11 +7,11 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-aboutdialog .vc-modaldialog-container	{ max-width: 70em; }
   .vc-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
   .vc-aboutdialog th	{ text-align: right; padding-right: .5em; min-width: 15em; }
-  .vc-aboutdialog td	{ font-family: monospace; max-width: 50%; overflow-wrap: break-word; }
+  .vc-aboutdialog td	{ max-width: 50%; overflow-wrap: break-word; }
 </style>
 
 <template>

@@ -18,7 +18,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-modaldialog * { flex-shrink: 0; }
   @mixin vc-flex-vbox() {
       display: flex; flex-basis: auto; align-items: center; justify-content: center;

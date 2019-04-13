@@ -15,7 +15,7 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: $vc-track-list-row-height;
@@ -31,6 +31,7 @@ const Util = require ('./utilities.js');
 const tick_quant = 384; // FIXME
 module.exports = {
   name: 'vc-part-thumb',
+  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'part': { type: Bse.Part, },
     'tick': { type: Number, },
@@ -48,6 +49,9 @@ module.exports = {
   },
   methods: {
     render_canvas: render_canvas,
+    dom_updated() {
+      this.render_canvas();
+    },
   },
   mounted() {
     /* DOM and $el is in place, now:
