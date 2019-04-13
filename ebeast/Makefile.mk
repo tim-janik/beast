@@ -144,24 +144,24 @@ uninstall: ebeast/uninstall
 
 # == ebeast/run ==
 # export ELECTRON_ENABLE_LOGGING=1
-ebeast/run: $>/ebeast/app.rules
+ebeast/run: $>/ebeast/app.rules $>/doc/beast-manual.html
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
 	$>/electron/ebeast
 #	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
 
-# == ebeast/vue-docs.html ==
-$>/ebeast/vue-docs.html: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk	| $>/ebeast/
+# == ebeast/vue-docs ==
+$>/ebeast/vue-docs.md: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk docs/filt-docs2.py	| $>/ebeast/
 	$(QGEN)
-	$Q echo -e "# Vue Components \n\n"		> $@.tmp
+	$Q echo -e "<!-- Vue Components -->\n\n"				> $@.tmp
 	@: # extract <docs/> blocks from vue files and feed them into pandoc
 	$Q for f in $(sort $(ebeast/vc/vue.inputs)) ; do \
 	    echo ""								>>$@.tmp ; \
 	    sed -n '/^<docs>\s*$$/{ :loop n; /^<\/docs>/q; p;  b loop }' <"$$f"	>>$@.tmp \
 	    || exit $$? ; \
 	done
-	$Q sed 's/^  // ; s/^### /\n### /' -i $@.tmp # unindent
-	$Q $(PANDOC) --columns=9999 -f markdown_github+pandoc_title_block-hard_line_breaks -t html -s -o $@ $@.tmp
-	$Q rm $@.tmp
+	$Q sed -r 's/^  // ; s/^#/\n#/; ' -i $@.tmp # unindent, spread heading_without_preceding_blankline
+	$Q $(PANDOC) -t markdown -F docs/filt-docs2.py -f markdown+compact_definition_lists $@.tmp -o $@.tmp2
+	$Q mv $@.tmp2 $@ && rm -f $@.tmp
 
 # NOTE1, prefer LD_PRELOAD over LD_LIBRARY_PATH, to pick up $(builddir)/libbse *before* /usr/lib/libbse
 # NOTE2, add --js-flags="--expose-gc" to the command line to enable global.gc();

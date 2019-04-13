@@ -1,10 +1,13 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-track-view - Vue template to display a song track
-  ### Props:
-  - **project** - The BSE project containing playback tracks.
-  - **track** - The BseTrack to display.
+  # VC-TRACK-VIEW
+  A Vue template to display a song's Bse.Track.
+  ## Props:
+  *project*
+  : The *Bse.project* containing playback tracks.
+  *track*
+  : The *Bse.Track* to display.
 </docs>
 
 <template>

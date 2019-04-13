@@ -1,12 +1,16 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-piano-roll - Vue template to display a part as a piano roll
-  ### Props:
-  - **piano-part** - The `BsePart` to display.
-  ### data:
-  - **hscrollbar** - The horizontal scrollbar component, used to provide the virtual scrolling position for the notes canvas.
-  - **part** - Retrieve the `BsePart` set via the `piano-part` property.
+  # VC-PIANO-ROLL
+  A Vue template to display a Bse.part as a piano roll.
+  ## Props:
+  *piano-part*
+  : The Bse.Part to display.
+  ## Data:
+  *hscrollbar*
+  : The horizontal scrollbar component, used to provide the virtual scrolling position for the notes canvas.
+  *part*
+  : Retrieve the *Bse.Part* set via the `piano-part` property.
 </docs>
 
 <template>

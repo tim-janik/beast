@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-track-list - A container to display song tracks
-  ### Props:
-  - **project** - The BSE project containing playback tracks.
+  # VC-TRACK-LIST
+  A container for vertical display of Bse.Track instances.
+  ## Props:
+  *project*
+  : The *Bse.project* containing playback tracks.
 </docs>
 
 <template>
