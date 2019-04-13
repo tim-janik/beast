@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-playcontrols - A container holding the play and seek controls for a song
-  ### Props:
-  - **project** - Injected, using vc-projectshell.project.
+  # VC-PLAYCONTROLS
+  A container holding the play and seek controls for a Bse.song.
+  ## Props:
+  *project*
+  : Injected *Bse.Project*, using `vc-projectshell.project`.
 </docs>
 
 <style lang="scss">

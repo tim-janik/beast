@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-aboutdialog - Modal dialog listing version informatoin about Beast
-  ### Events:
-  - **close** - A *close* event is emitted once the "Close" button activated.
+  # VC-ABOUTDIALOG
+  A [vc-modaldialog] that displays version information about Beast.
+  ## Events:
+  *close*
+  : A *close* event is emitted once the "Close" button activated.
 </docs>
 
 <style lang="scss">

@@ -1,11 +1,14 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-color-picker - Vue template to display a color picker
-  ### Props:
-  - **initial-color** - The initial color to display.
-  ### data:
-  - **color** - The currently selected color.
+  # VC-COLOR-PICKER
+  Vue template to display a color picker popup.
+  ## Props:
+  *initial-color*
+  : The initial color to display.
+  ## data:
+  *color*
+  : The currently selected color.
 </docs>
 
 <template>

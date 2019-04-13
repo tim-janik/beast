@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-projectshell - Shell for editing and display of a Bse.Project.
-  ### Props:
-  - **project** - Implicit, using App.bse_project().
+  # VC-PROJECTSHELL
+  Shell for editing and display of a Bse.Project.
+  ## Props:
+  *project*
+  : Implicit *Bse.Project*, using App.bse_project().
 </docs>
 
 <template>

@@ -1,20 +1,27 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-modaldialog - A dialog component that dims everything else
+  # VC-MODALDIALOG
+  A dialog component that disables and dims everything else for exclusive dialog use.
   Using *vc-modaldialog* with *v-if* enables a modal dialog that dims all other
   elements while it is visible and constrains the focus chain. A *close* event is
   emitted on clicks outside of the dialog area, if *Escape* is pressed or the default
   *Close* button is actiavted.
-  ### Events:
-  - **close** - A *close* event is emitted once the "Close" button activated.
-  ### Slots:
-  - **header** - Slot to hold the modal dialog title.
-  - **default** - Slot for the main content.
-  - **footer** - Slot that by defaults holds a *Close* button which emits the *close* event.
-  ### CSS:
-  - **vc-modaldialog-mask** - Css class for the backdrop beneath the dialog contents.
-  - **vc-modaldialog-container** - Css class for the actual dialog contents.
+  ## Events:
+  *close*
+  : A *close* event is emitted once the "Close" button activated.
+  ## Slots:
+  *header*
+  : The *header* slot can be used to hold the modal dialog title.
+  *default*
+  : The *default* slot holds the main content.
+  *footer*
+  : By default, the *footer* slot holds a *Close* button which emits the *close* event.
+  ## CSS Classes:
+  *vc-modaldialog-mask*
+  : The *vc-modaldialog-mask* CSS class is used as backdrop beneath the dialog contents to mask non-modal contents.
+  *vc-modaldialog-container*
+  : The *vc-modaldialog-container* CSS class contains styling for the actual dialog contents.
 </docs>
 
 <style lang="scss">

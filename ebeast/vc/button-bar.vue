@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-button-bar - A container for tight packing of buttons
-  ### Slots:
-  - **slot** - All contents passed into this element will be packed tightly and styled as buttons.
+  # VC-BUTTON-BAR
+  A Vue container for tight packing of buttons.
+  ## Slots:
+  *slot*
+  : All contents passed into this element will be packed tightly and styled as buttons.
 </docs>
 
 <style lang="scss">

@@ -1,9 +1,11 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-hscrollbar - Vue template to display a horizontal scrollbar
-  ### Props:
-  - **value** - The current scrollbar value.
+  # VC-HSCROLLBAR
+  Vue template to display a horizontal scrollbar.
+  ## Props:
+  *value*
+  : The current scrollbar value.
 </docs>
 
 <template>

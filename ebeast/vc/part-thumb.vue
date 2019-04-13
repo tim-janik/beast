@@ -1,10 +1,13 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-part-thumb - Vue template to display a part thumbnail
-  ### Props:
-  - **part** - The BsePart to display.
-  - **tick** - The BseTrack tick position.
+  # VC-PART-THUMB
+  A Vue template to display a thumbnail for a Bse.Part.
+  ## Props:
+  *part*
+  : The Bse.Part to display.
+  *tick*
+  : The Bse.Track tick position.
 </docs>
 
 <template>

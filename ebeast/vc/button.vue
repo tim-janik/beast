@@ -1,13 +1,17 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-button - A button element that responds to clicks
-  ### Props:
-  - **hotkey** - Keyboard accelerator to trigger a ''click'' event.
-  ### Events:
-  - **click** - A *click* event is emitted for activation through mouse buttons, Space or Enter keys.
-  ### Slots:
-  - **default** - All contents passed into this element will be rendered as contents of the button.
+  # VC-BUTTON
+  A button element that responds to clicks.
+  ## Props:
+  *hotkey*
+  : Keyboard accelerator to trigger a *click* event.
+  ## Events:
+  *click*
+  : A *click* event is emitted for activation through mouse buttons, Space or Enter keys.
+  ## Slots:
+  *default*
+  : All contents passed into this element will be rendered as contents of the button.
 </docs>
 
 <style lang="scss">
