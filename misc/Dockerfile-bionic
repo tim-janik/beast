@@ -53,6 +53,10 @@ RUN \
   dpkg -i pandoc-2.7.2-1-amd64.deb && \
   rm pandoc-2.7.2-1-amd64.deb && \
   \
+  : '# Pre-fetch electron download' && \
+  mkdir -p /root/.electron/ && cd /root/.electron/ && \
+  curl -sfSOL 'https://github.com/electron/electron/releases/download/v2.0.18/electron-v2.0.18-linux-x64.zip' && \
+  \
   : '# Cleanup' && \
   apt-get --purge remove -y cmake python2.7-dev && \
   apt-get autoremove -y && \
