@@ -42,7 +42,7 @@ RUN \
   retry apt-get install -y \
 	build-essential automake autoconf autoconf-archive libtool \
 	curl doxygen graphviz texlive-binaries git libxml2-utils \
-	cppcheck clang clang-tidy clang-tools \
+	cppcheck clang clang-tidy clang-tools python3-pandocfilters \
 	gawk python2.7-dev python3 \
 	libxml2-dev libpango1.0-dev libgnomecanvas2-dev \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
