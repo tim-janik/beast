@@ -19,11 +19,12 @@ RUN \
   : '# Build stripped down fluidsynth version without drivers' && \
   retry apt-get install -y build-essential curl cmake libglib2.0-dev && \
   mkdir -p /tmp/fluid/build && cd /tmp/fluid/ && \
-  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v1.1.11.tar.gz && \
-  tar xf v1.1.11.tar.gz && rm v1.1.11.tar.gz && cd build && \
-  cmake ../fluidsynth-1.1.11 \
+  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.4.tar.gz && \
+  tar xf v2.0.4.tar.gz && rm v2.0.4.tar.gz && cd build && \
+  cmake ../fluidsynth-2.0.4 \
 	-DCMAKE_INSTALL_PREFIX=/usr/ \
 	-DLIB_SUFFIX="/`dpkg-architecture -qDEB_HOST_MULTIARCH`" \
+	-Denable-libsndfile=1 \
 	-Denable-dbus=0 \
 	-Denable-ipv6=0 \
 	-Denable-jack=0 \
