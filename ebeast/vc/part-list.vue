@@ -1,10 +1,13 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  ## vc-part-list - Vue template to display a list of parts
-  ### Props:
-  - **project** - The BSE project containing playback tracks.
-  - **track** - The BseTrack containing the parts to display.
+  # VC-PART-LIST
+  A Vue template to display a list of Bse.Part instances.
+  ## Props:
+  *project*
+  : The BSE project containing playback tracks.
+  *track*
+  : The BseTrack containing the parts to display.
 </docs>
 
 <template>
@@ -17,11 +20,11 @@
 </template>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import 'styles.scss';
   .vc-part-list {
     display: inline-block;
     position: relative;
-    height: $vc-track-list-row-height;	/* fixed height is required to accurately calculate vertical scroll area */
+    height: $vc-track-list-row-height;	//* fixed height is required to accurately calculate vertical scroll area */
   }
 </style>
 
