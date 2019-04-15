@@ -60,7 +60,10 @@ TEST_ADD (test_aida_cxxaux);
 struct OneHandle : RemoteHandle {
   static OneHandle __cast__ (RemoteHandle smh) { OneHandle oh; return oh; }
 };
-class OneIface : public virtual ImplicitBase {
+class OneIface :
+    public virtual ImplicitBase,
+    public virtual EnableSharedFromThis<OneIface>
+{
   int64 testid_;
 public:
   virtual /*Des*/ ~OneIface () override     {}
