@@ -6,8 +6,6 @@
 #include "bseblockutils.hh"
 #include "bse/internal.hh"
 
-using std::max;
-
 /* --- parameters --- */
 enum
 {
@@ -151,7 +149,7 @@ bse_sound_font_repo_prepare (BseSource *source)
       const int midi_channels_required = (channels_required / 16 + 1) * 16;
 
       /* audio channels required must not be zero */
-      const int audio_channels_required = max<int> (1, channels_required);
+      const int audio_channels_required = std::max<int> (1, channels_required);
 
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
       /* soundfont instruments should be as loud as beast synthesis network instruments */
