@@ -137,7 +137,7 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 .PHONY: appimage
 
 # == bintray ==
-BINTRAY_KEEPS            = 99
+BINTRAY_KEEPS            = 52
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
 bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
