@@ -23,6 +23,25 @@ BseObject::change_flags (uint16 f, bool ason)
 
 namespace Bse {
 
+static void
+object_impl_unref_bse_object (Bse::ObjectImpl *cxxo)
+{
+  BseObject *const object = cxxo->as_bse_object();
+  g_object_unref (object);
+}
+
+Aida::SharedFromThisP
+ObjectImpl::__shared_from_this__ ()
+{
+  BseObject *const object = as_bse_object();
+  if (!object->cxxobjref_)
+    {
+      g_object_ref (object);
+      object->cxxobjref_ = new Bse::ObjectImplP (this, object_impl_unref_bse_object);
+    }
+  return *object->cxxobjref_;
+}
+
 static void (ObjectImpl::*object_impl_post_init) () = NULL;
 
 ObjectImpl::ObjectImpl (BseObject *bobj) :
@@ -313,8 +332,8 @@ static void
 bse_object_init (BseObject *object)
 {
   assert_return (in_bse_object_new);
-  object->cxxobject_ = NULL;
-  object->cxxobjref_ = NULL;
+  assert_return (object->cxxobjref_ == NULL);
+  assert_return (object->cxxobject_ == NULL);
   object->unset_flag (BseObjectFlags (~0)); // flags_ = 0;
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
@@ -361,9 +380,9 @@ bse_object_do_dispose (GObject *gobject)
 
   if (object->cxxobjref_)
     {
-      object->cxxobjref_->reset();
       Bse::ObjectImplP *cxxobjref = object->cxxobjref_;
       object->cxxobjref_ = NULL;
+      cxxobjref->reset();
       delete cxxobjref;
     }
 }
@@ -1149,9 +1168,9 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     assert_return_unreached (NULL);
   assert_return (object->cxxobject_ == cxxo, NULL);
   assert_return (object->cxxobjref_ == NULL, NULL);
-  auto deleter = [] (Bse::ObjectImpl *cxxo) { g_object_unref (static_cast<BseObject*> (*cxxo)); };
-  g_object_ref (object);
-  object->cxxobjref_ = new Bse::ObjectImplP (cxxo, deleter); // shared_ptr that allows enable_shared_from_this
+  Aida::CallableIfaceP cxxobjref = cxxo->shared_from_this();
+  assert_return (cxxo == &*cxxobjref, NULL);
+  assert_return (cxxo == object->cxxobjref_->get(), NULL);
   assert_return (cxxo == *object, NULL);
   assert_return (object == *cxxo, NULL);
   (cxxo->*Bse::object_impl_post_init) ();
