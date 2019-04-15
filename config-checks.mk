@@ -91,13 +91,23 @@ config-checks.require.pkgconfig ::= $(strip	\
 # mad.pc exists in Debian only:	mad >= 0.14.2
 # VORBISFILE_BAD_SEEK indicates pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
 
-# == config-cache.mk ==
+# == pkg-config variables ==
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
 GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
 # used for GLIB_CFLAGS and GLIB_LIBS
 BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
--include $>/config-cache.mk
+
+# == config-cache.mk ==
+# Note, using '-include config-cache.mk' will ignore errors during config-cache.mk creation,
+# e.g. due to missing pkg-config requirements. So we have to use 'include config-cache.mk'
+# and then need to work around the file not existing initially by creating a dummy and
+# forcing a remake via 'FORCE'.
+ifeq ('','$(wildcard $>/config-cache.mk)')
+  $(shell mkdir -p $>/ && echo '$>/config-cache.mk: FORCE' > $>/config-cache.mk)
+endif
+include $>/config-cache.mk
+# Rule for the actual checks:
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$(QECHO) CHECK    Configuration dependencies...
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
@@ -117,13 +127,13 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp \
 	  && echo "BSE_GETTEXT_DOMAIN ::=" \
 		"beast-$$MAJOR.$$MINOR.$$MICRO" >>$@.tmp
-	$Q GLIB_CFLAGS=$$(pkg-config --cflags $(GLIB_PACKAGES)) \
+	$Q GLIB_CFLAGS=$$($(PKG_CONFIG) --cflags $(GLIB_PACKAGES)) \
 	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
-	$Q GLIB_LIBS=$$(pkg-config --libs $(GLIB_PACKAGES)) \
+	$Q GLIB_LIBS=$$($(PKG_CONFIG) --libs $(GLIB_PACKAGES)) \
 	  && echo "GLIB_LIBS ::= $$GLIB_LIBS"			>>$@.tmp
-	$Q BSEDEPS_CFLAGS=$$(pkg-config --cflags $(BSEDEPS_PACKAGES)) \
+	$Q BSEDEPS_CFLAGS=$$($(PKG_CONFIG) --cflags $(BSEDEPS_PACKAGES)) \
 	  && echo "BSEDEPS_CFLAGS ::= $$BSEDEPS_CFLAGS"		>>$@.tmp
-	$Q BSEDEPS_LIBS=$$(pkg-config --libs $(BSEDEPS_PACKAGES)) \
+	$Q BSEDEPS_LIBS=$$($(PKG_CONFIG) --libs $(BSEDEPS_PACKAGES)) \
 	  && echo "BSEDEPS_LIBS ::= $$BSEDEPS_LIBS"		>>$@.tmp
 	$Q ALSA_LIBS='-lasound' \
 	  && echo "ALSA_LIBS ::= $$ALSA_LIBS"			>>$@.tmp \
@@ -134,9 +144,9 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$MAD_LIBS)
 	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
 	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
-	$Q GTK_CFLAGS=$$(pkg-config --cflags $(GTK_PACKAGES)) \
+	$Q GTK_CFLAGS=$$($(PKG_CONFIG) --cflags $(GTK_PACKAGES)) \
 	  && echo "GTK_CFLAGS ::= $$GTK_CFLAGS"			>>$@.tmp
-	$Q GTK_LIBS=$$(pkg-config --libs $(GTK_PACKAGES)) \
+	$Q GTK_LIBS=$$($(PKG_CONFIG) --libs $(GTK_PACKAGES)) \
 	  && echo "GTK_LIBS ::= $$GTK_LIBS"			>>$@.tmp
 	$Q XKB_LIBS='-lX11' L='' \
 	  && $(call conftest_lib, X11/XKBlib.h, XkbGetKeyboard, $$XKB_LIBS) \

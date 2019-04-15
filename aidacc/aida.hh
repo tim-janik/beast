@@ -238,7 +238,7 @@ public:
   /// Retrieve std::shared_ptr<>() from this.
   std::shared_ptr<T>       shared_from_this()       { return std::dynamic_pointer_cast<T> (__shared_from_this__()); }
   /// Retrieve std::shared_ptr<const>() from const this.
-  std::shared_ptr<const T> shared_from_this() const { return std::dynamic_pointer_cast<T> (__shared_from_this__()); }
+  std::shared_ptr<const T> shared_from_this() const { return std::dynamic_pointer_cast<T> (const_cast<SharedFromThis*> (this)->__shared_from_this__()); }
 };
 
 /// A (virtual) base class template that provides shared_from_this() for multiple inheritance.
