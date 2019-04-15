@@ -10,13 +10,13 @@ RUN ln -sf bash /bin/sh && ls -al /bin/sh
 # Keep all steps + cleanups in one layer to reduce the resulting size
 RUN \
   \
-  : '# Provide /bin/retry' && \
+  echo '## Provide /bin/retry' && \
   echo -e '#!/bin/bash\n"$@" || { sleep 15 ; "$@" ; } || { sleep 90 ; "$@" ; }' > /bin/retry && chmod +x /bin/retry && \
   \
-  : '# Upgrade packages' && \
+  echo '## Upgrade packages' && \
   retry apt-get update && retry apt-get -y upgrade && \
   \
-  : '# Build stripped down fluidsynth version without drivers' && \
+  echo '## Build stripped down fluidsynth version without drivers' && \
   retry apt-get install -y build-essential curl cmake libglib2.0-dev && \
   mkdir -p /tmp/fluid/build && cd /tmp/fluid/ && \
   curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.4.tar.gz && \
@@ -38,7 +38,7 @@ RUN \
   make && make install && cd / && rm -rf /tmp/fluid/ && \
   apt-get --purge remove -y cmake && \
   \
-  : 'Provide Beast dependencies, add libXss.so for electron' && \
+  echo '## Provide Beast dependencies, add libXss.so for electron' && \
   retry apt-get install -y \
 	build-essential automake autoconf autoconf-archive libtool \
 	curl doxygen graphviz texlive-binaries git libxml2-utils \
@@ -48,16 +48,16 @@ RUN \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
 	imagemagick libgconf-2-4 nodejs npm libxss1 && \
   \
-  : 'Provide recent Pandoc' && \
-  retry curl -SOL https://github.com/jgm/pandoc/releases/download/2.7.2/pandoc-2.7.2-1-amd64.deb && \
+  echo '## Provide recent Pandoc' && \
+  retry curl -ROL 'https://github.com/jgm/pandoc/releases/download/2.7.2/pandoc-2.7.2-1-amd64.deb' && \
   dpkg -i pandoc-2.7.2-1-amd64.deb && \
   rm pandoc-2.7.2-1-amd64.deb && \
   \
-  : '# Pre-fetch electron download' && \
+  echo '## Pre-fetch electron download' && \
   mkdir -p /root/.electron/ && cd /root/.electron/ && \
-  curl -sfSOL 'https://github.com/electron/electron/releases/download/v2.0.18/electron-v2.0.18-linux-x64.zip' && \
+  curl -ROL 'https://github.com/electron/electron/releases/download/v2.0.18/electron-v2.0.18-linux-x64.zip' && \
   \
-  : '# Cleanup' && \
+  echo '## Cleanup' && \
   apt-get --purge remove -y cmake python2.7-dev && \
   apt-get autoremove -y && \
   apt-get clean && rm -rf /var/lib/apt/lists/* && \
