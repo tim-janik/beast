@@ -28,8 +28,8 @@ void
 bse_sound_font_preset_init_preset (BseSoundFontPreset *self,
                                    fluid_preset_t     *fluid_preset)
 {
-  self->bank = fluid_preset->get_banknum (fluid_preset);
-  self->program = fluid_preset->get_num (fluid_preset);
+  self->bank = fluid_preset_get_banknum (fluid_preset);
+  self->program = fluid_preset_get_num (fluid_preset);
 }
 
 static void

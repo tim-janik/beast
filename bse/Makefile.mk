@@ -366,7 +366,7 @@ include bse/icons/Makefile.mk
 
 # == libbse.so rules ==
 $(bse/libbse.objects): $(bse/libbse.deps) $(bse/libbse.cc.deps) $(bse/icons/c.csources)
-$(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(bse/libbse.objects): EXTRA_INCLUDES ::= -I$> $(BSEDEPS_CFLAGS)
 $(bse/libbse.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
 $(lib/libbse.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
 $(call BUILD_SHARED_LIB_XDBG, \
