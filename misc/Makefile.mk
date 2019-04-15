@@ -81,7 +81,7 @@ clang-tidy:								| $>/misc/clang-tidy/
 	  -DBSE_COMPILATION \
 	  -DGXK_COMPILATION \
 	  -D__TOPDIR__=\"`pwd`\" \
-	  `pkg-config --cflags libgnomecanvas-2.0`			> $>/misc/clang-tidy/clang-tidy.raw
+	  `$(PKG_CONFIG) --cflags libgnomecanvas-2.0`			> $>/misc/clang-tidy/clang-tidy.raw
 	$Q sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw		> $>/misc/clang-tidy/clang-tidy.log
 	$Q rm -f $>/misc/clang-tidy/clang-tidy.raw  $>/misc/tmpls.all  $>/misc/tmpls.cchh  $>/misc/tmpls.clangtidy
 	misc/blame-lines -b $>/misc/clang-tidy/clang-tidy.log
