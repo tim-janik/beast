@@ -91,13 +91,23 @@ config-checks.require.pkgconfig ::= $(strip	\
 # mad.pc exists in Debian only:	mad >= 0.14.2
 # VORBISFILE_BAD_SEEK indicates pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
 
-# == config-cache.mk ==
+# == pkg-config variables ==
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
 GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
 # used for GLIB_CFLAGS and GLIB_LIBS
 BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
--include $>/config-cache.mk
+
+# == config-cache.mk ==
+# Note, using '-include config-cache.mk' will ignore errors during config-cache.mk creation,
+# e.g. due to missing pkg-config requirements. So we have to use 'include config-cache.mk'
+# and then need to work around the file not existing initially by creating a dummy and
+# forcing a remake via 'FORCE'.
+ifeq ('','$(wildcard $>/config-cache.mk)')
+  $(shell mkdir -p $>/ && echo '$>/config-cache.mk: FORCE' > $>/config-cache.mk)
+endif
+include $>/config-cache.mk
+# Rule for the actual checks:
 $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	$(QECHO) CHECK    Configuration dependencies...
 	$Q $(PKG_CONFIG) --exists --print-errors '$(config-checks.require.pkgconfig)'
