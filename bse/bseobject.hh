@@ -10,6 +10,7 @@ namespace Bse {
 class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
   BseObject             *gobject_ = NULL;
   Aida::EventDispatcher  event_dispatcher_;
+  virtual Aida::SharedFromThisP __shared_from_this__ () override;
 protected:
   virtual void          post_init   ();
 public:

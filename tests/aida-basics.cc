@@ -67,7 +67,7 @@ test_aida_strings()
   TASSERT (string_option_check (" bar=0true ", "bar") == false);
   TASSERT (typeid_name<int>() == "int");
   TASSERT (typeid_name<bool>() == "bool");
-  TASSERT (typeid_name<VirtualEnableSharedFromThisBase>() == "Aida::VirtualEnableSharedFromThisBase");
+  TASSERT (typeid_name<SharedFromThisIface>() == "Aida::SharedFromThisIface");
   TASSERT (string_from_double (1.0) == "1");
   TASSERT (string_from_double (-1.0) == "-1");
   TASSERT (string_from_double (0.0) == "0");

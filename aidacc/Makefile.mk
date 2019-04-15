@@ -1,8 +1,11 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/aidacc/*.d)
-CLEANDIRS += $(wildcard $>/aidacc/)
-
-aidacc/check-targets ::=
+aidacc/cleandirs ::= $(wildcard $>/aidacc/)
+CLEANDIRS         += $(aidacc/cleandirs)
+aidacc/check: FORCE
+CHECK_TARGETS += aidacc/check
+aidacc/all:
+ALL_TARGETS += aidacc/all
 
 # == aidacc/ files ==
 aidacc/include.headers ::= $(strip	\
@@ -30,7 +33,6 @@ aidacc/aidacc.templates ::= $(strip	\
 
 # == aidacc defs ==
 aidacc/aidacc		::= $>/aidacc/aidacc
-ALL_TARGETS		 += $(aidacc/aidacc)
 aidacc/aidacc.config	::= "aidaccpydir" : "../aidacc", "AIDA_VERSION" : "${VERSION_SHORT}"
 
 # == subdirs ==
@@ -44,6 +46,7 @@ $(aidacc/aidacc): aidacc/main.py	$(aidacc/aidacc.imports) $(aidacc/aidacc.genera
 	  -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${aidacc/aidacc.config}|'
 	$Q chmod +x $@.tmp
 	$Q mv $@.tmp $@
+aidacc/all: $(aidacc/aidacc)
 
 # == IdStrings.py ==
 $>/aidacc/IdStrings.py: aidacc/aida.hh	aidacc/ExtractIdStrings.py	| $>/aidacc/
@@ -79,8 +82,8 @@ $(call INSTALL_DATA_RULE,			\
 aidacc/build-test: FORCE		| $(aidacc/aidacc)
 	$(QECHO) RUN $@
 	$Q $(aidacc/aidacc) -x CxxStub --list-formats | grep -q CxxStub
-aidacc/check-targets += aidacc/build-test
+aidacc/check: aidacc/build-test
 
-# == aidacc-check ==
-aidacc-check: $(aidacc/check-targets) FORCE
-CHECK_TARGETS += $(aidacc/check-targets)
+# == aidacc/clean ==
+aidacc/clean: FORCE
+	rm -f -r $(aidacc/cleandirs)

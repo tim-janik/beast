@@ -7,7 +7,7 @@
 
 namespace Bse {
 
-class SignalMonitorImpl : public virtual SignalMonitorIface {
+class SignalMonitorImpl : public virtual SignalMonitorIface, public virtual Aida::EnableSharedFromThis<SignalMonitorImpl> {
   SourceImplP            source_;
   uint32                 ochannel_;
   ProbeFeatures          probe_features_;

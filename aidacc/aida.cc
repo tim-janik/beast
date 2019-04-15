@@ -129,10 +129,6 @@ public:
   explicit     operator bool () const           { return ptr_ != NULL; }
 };
 
-// == VirtualEnableSharedFromThisBase ==
-VirtualEnableSharedFromThisBase::~VirtualEnableSharedFromThisBase()
-{} // force emission of vtable
-
 // == String Utilitiies ==
 static inline constexpr bool
 c_isalnum (uint8 c)
@@ -2149,9 +2145,6 @@ EventDispatcher::emit (const Event &event)
 }
 
 // == CallableIface ==
-CallableIface::~CallableIface ()
-{}
-
 std::string
 CallableIface::__typename__ () const
 {

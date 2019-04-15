@@ -113,7 +113,9 @@ class RemoteHandle;
 class ImplicitBase;
 class ExecutionContext;
 class CallableIface;
+class SharedFromThisIface;
 struct PropertyAccessor;
+typedef std::shared_ptr<SharedFromThisIface> SharedFromThisP;
 typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::function<void (const Event&)> EventHandlerF;
@@ -222,18 +224,34 @@ fnv1a_bytehash64 (const Num *const ztdata, size_t n)
   return fnv1a_bytehash64 (ztdata, ztdata + n);
 }
 
-// == VirtualEnableSharedFromThis ==
-/// Helper class for VirtualEnableSharedFromThis.
-struct VirtualEnableSharedFromThisBase : public virtual std::enable_shared_from_this<VirtualEnableSharedFromThisBase> {
-  VirtualEnableSharedFromThisBase() = default;
-  VirtualEnableSharedFromThisBase (const VirtualEnableSharedFromThisBase&) = default;
-  virtual ~VirtualEnableSharedFromThisBase() = 0;
+// == SharedFromThis ==
+/// Helper class for SharedFromThis.
+class SharedFromThisIface {
+protected:
+  virtual SharedFromThisP __shared_from_this__ () = 0;
 };
-/// Virtual base class template that provides std::enable_shared_from_this for multiple inheritance.
+
+/// Virtual base class template that provides shared_from_this() for multiple inheritance.
 template<class T>
-struct VirtualEnableSharedFromThis : public virtual VirtualEnableSharedFromThisBase {
-  std::shared_ptr<T>       shared_from_this()       { return std::dynamic_pointer_cast<T> (VirtualEnableSharedFromThisBase::shared_from_this()); }
-  std::shared_ptr<const T> shared_from_this() const { return std::dynamic_pointer_cast<T> (VirtualEnableSharedFromThisBase::shared_from_this()); }
+class SharedFromThis : public virtual SharedFromThisIface {
+public:
+  /// Retrieve std::shared_ptr<>() from this.
+  std::shared_ptr<T>       shared_from_this()       { return std::dynamic_pointer_cast<T> (__shared_from_this__()); }
+  /// Retrieve std::shared_ptr<const>() from const this.
+  std::shared_ptr<const T> shared_from_this() const { return std::dynamic_pointer_cast<T> (__shared_from_this__()); }
+};
+
+/// A (virtual) base class template that provides shared_from_this() for multiple inheritance.
+template<class T>
+class EnableSharedFromThis :
+  public virtual SharedFromThis<T>,
+  public virtual std::enable_shared_from_this<SharedFromThisIface>
+{
+  virtual SharedFromThisP
+  __shared_from_this__ () override
+  {
+    return this->std::enable_shared_from_this<SharedFromThisIface>::shared_from_this();
+  }
 };
 
 // == LongIffy and ULongIffy ==
@@ -308,9 +326,7 @@ public:
 using IfaceEventConnection = EventDispatcher::EventConnection;
 
 // == CallableIface ==
-class CallableIface : public virtual VirtualEnableSharedFromThis<CallableIface> {
-protected:
-  virtual                     ~CallableIface            ();
+class CallableIface : public virtual SharedFromThis<CallableIface> {
 public:
   /// Retrieve ExecutionContext, save to be called multi-threaded.
   virtual ExecutionContext&    __execution_context_mt__ () const = 0;
@@ -772,7 +788,7 @@ template<class T> using ToAnyRecConvertible = Any::ToAnyRecConvertible<T>;
 template<class T> using ToAnySeqConvertible = Any::ToAnySeqConvertible<T>;
 
 // == Event ==
-class Event : public virtual VirtualEnableSharedFromThis<Event> {
+class Event : public virtual EnableSharedFromThis<Event> {
   AnyRec  fields_;
 public:
   explicit       Event      (const String &type);
@@ -797,7 +813,7 @@ inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyVa
 
 // == ImplicitBase ==
 /// Abstract base interface that all IDL interfaces are implicitely derived from.
-class ImplicitBase : public virtual CallableIface, public virtual VirtualEnableSharedFromThis<ImplicitBase> {
+class ImplicitBase : public virtual CallableIface, public virtual SharedFromThis<ImplicitBase> {
 protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
@@ -806,7 +822,7 @@ public:
   uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
-  using VirtualEnableSharedFromThis<ImplicitBase>::shared_from_this;
+  using SharedFromThis<ImplicitBase>::shared_from_this;
 };
 
 // == inline implementations ==
