@@ -294,23 +294,19 @@ list_tests ()
 }
 
 int
-run_test (const TestEntry &entry)
+run_test (const std::string &test_identifier)
 {
   for (const TestChain *t = global_test_chain; t; t = t->next())
-    if (entry.ident == t->name())
+    if (test_identifier == t->name())
       {
-        if ((t->flags() & entry.flags) == t->flags())
-          {
-            fflush (stderr);
-            printout ("  RUN…     %s\n", t->name());
-            fflush (stdout);
-            t->run();
-            fflush (stderr);
-            printout ("  PASS     %s\n", t->name());
-            fflush (stdout);
-            return 1; // ran and passed
-          }
-        return 0; // found one but mismatching flags
+        fflush (stderr);
+        printout ("  RUN…     %s\n", t->name());
+        fflush (stdout);
+        t->run();
+        fflush (stderr);
+        printout ("  PASS     %s\n", t->name());
+        fflush (stdout);
+        return 1; // ran and passed
       }
   return -1; // none found
 }
