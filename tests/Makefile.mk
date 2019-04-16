@@ -1,6 +1,8 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/tests/*.d)
-CLEANDIRS += $(wildcard $>/tests/)
+tests/cleandirs ::= $(wildcard $>/tests/)
+CLEANDIRS        += $(tests/cleandirs)
+ALL_TARGETS      += tests/all
 tests/rpath..libbse ::= ../lib
 
 # == tests/ files ==
@@ -44,6 +46,7 @@ $(call BUILD_TEST, \
 	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
 	$(tests/rpath..libbse))
+tests/all: $(tests/suite1)
 
 # == explore.idl rules ==
 $(tests/suite1.objects):	$(tests/explore.idl.outputs)
@@ -100,3 +103,7 @@ tests/aida-benchmark: $(tests/suite1) FORCE
 	$(QGEN)
 	$Q $(tests/suite1) --bench-aida
 CHECK_TARGETS += tests/aida-benchmark
+
+# == tests/clean ==
+tests/clean: FORCE
+	rm -f -r $(tests/cleandirs)
