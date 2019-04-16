@@ -275,4 +275,44 @@ run (void)
   return 0;
 }
 
+TestEntries
+list_tests ()
+{
+  TestEntries entries;
+  for (const TestChain *t = global_test_chain; t; t = t->next())
+    {
+      entries.resize (entries.size() + 1);
+      TestEntry &entry = entries.back();
+      entry.ident = t->name();
+      entry.flags = t->flags();
+    }
+  std::stable_sort (entries.begin(), entries.end(), // cmp_lesser
+                    [] (const TestEntry &a, const TestEntry &b) {
+                      return a.ident < b.ident;
+                    });
+  return entries;
+}
+
+int
+run_test (const TestEntry &entry)
+{
+  for (const TestChain *t = global_test_chain; t; t = t->next())
+    if (entry.ident == t->name())
+      {
+        if ((t->flags() & entry.flags) == t->flags())
+          {
+            fflush (stderr);
+            printout ("  RUN…     %s\n", t->name());
+            fflush (stdout);
+            t->run();
+            fflush (stderr);
+            printout ("  PASS     %s\n", t->name());
+            fflush (stdout);
+            return 1; // ran and passed
+          }
+        return 0; // found one but mismatching flags
+      }
+  return -1; // none found
+}
+
 } } // Bse::Test

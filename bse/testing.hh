@@ -24,10 +24,10 @@ void init (int *argcp, char **argv, const StringVector &args = StringVector());
 #define TOK()                   do {} while (0)                 ///< Deprecated progress indicator, tests generally need to run fast.
 
 /// Register a function to run as part of the unit test suite.
-#define TEST_ADD(fun)           static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::PLAIN)
-#define TEST_SLOW(fun)          static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::SLOW)
-#define TEST_BENCH(fun)         static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::BENCH)
-#define TEST_BROKEN(fun)        static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::TestChain::BROKEN)
+#define TEST_ADD(fun)           static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::PLAIN)
+#define TEST_SLOW(fun)          static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::SLOW)
+#define TEST_BENCH(fun)         static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::BENCH)
+#define TEST_BROKEN(fun)        static const ::Bse::Test::TestChain BSE_CPP_PASTE2 (__Bse__Test__TestChain_, __LINE__) (fun, BSE_CPP_STRINGIFY (fun), ::Bse::Test::BROKEN)
 
 /** Class for profiling benchmark tests.
  * UseCase: Benchmarking function implementations, e.g. to compare sorting implementations.
@@ -58,6 +58,23 @@ public:
   double         benchmark    (Callee callee);
 };
 
+// == test array ==
+enum Kind {
+  PLAIN         = 0,
+  SLOW          = 1,
+  BENCH         = 2,
+  BROKEN        = 4,
+};
+struct TestEntry {
+  std::string ident;
+  int64       flags = 0;
+  TestEntry (const std::string identi = "", int64 flagsi = 0) :
+    ident (identi), flags (flagsi)
+  {}
+};
+using TestEntries = std::vector<TestEntry>;
+TestEntries list_tests ();
+int         run_test   (const TestEntry&);
 
 // === test maintenance ===
 int     run             ();     ///< Run all registered tests.
@@ -65,7 +82,6 @@ int     run             (const StringVector &test_names);     ///< Run named tes
 bool    verbose         ();     ///< Indicates whether tests should run verbosely.
 bool    slow            ();     ///< Indicates whether slow tests should be run.
 void    test_output     (int kind, const String &string);
-
 
 /// == Stringify Args ==
 inline String                   stringify_arg  (const char   *a, const char *str_a) { return a ? string_to_cquote (a) : "(__null)"; }
@@ -129,11 +145,14 @@ Timer::benchmark (Callee callee)
 
 class TestChain {
 public:
-  enum        Kind      { PLAIN = 0, SLOW = 1, BENCH = 3, BROKEN = 99 };
-  explicit    TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind);
-  static void run       (ptrdiff_t internal_token, const StringVector *test_names);
+  explicit         TestChain (std::function<void()> tfunc, const std::string &tname, Kind kind);
+  static void      run       (ptrdiff_t internal_token, const StringVector *test_names);
+  const TestChain* next      () const { return next_; }
+  std::string      name      () const { return name_; }
+  int64            flags     () const { return kind_; }
+  void             run       () const { func_(); }
 private:
-  std::string           name_;
+  const std::string     name_;
   std::function<void()> func_;
   const TestChain      *const next_ = NULL;
   Kind                  kind_ = PLAIN;
