@@ -100,6 +100,7 @@ main (int   argc,
   // "wave-chunk-big-pad=2", "dcache-block-size=16"
 
   Bse::StringVector test_names;
+  Bse::Test::TestEntries test_entries;
 
   for (ssize_t i = 1; i < argc; i++)
     if (argv[i])
@@ -117,9 +118,26 @@ main (int   argc,
             return 7;
           }
         test_names.push_back (argv[i]);
+        test_entries.push_back (Bse::Test::TestEntry (argv[i]));
       }
 
   bse_init_test (&argc, argv, args);
 
-  return test_names.size() ? Bse::Test::run (test_names) : Bse::Test::run();
+  if (test_entries.size() == 0)
+    test_entries = Bse::Test::list_tests();
+
+  int64 slow = 0;
+  int64 bench = 0;
+
+  for (Bse::Test::TestEntry entry : test_entries)
+    {
+      entry.flags = slow * Bse::Test::SLOW | bench * Bse::Test::BENCH;
+      if (Bse::Test::run_test (entry) < 0)
+        {
+          Bse::printout ("  RUN…     %s\n", entry.ident);
+          Bse::printout ("  FAIL     %s - test missing\n", entry.ident);
+          exit (1);
+        }
+    }
+  return 0;
 }
