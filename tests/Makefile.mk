@@ -41,7 +41,7 @@ include tests/audio/Makefile.mk
 # == suite1 rules ==
 $(tests/suite1.objects):	$(bse/libbse.deps) | $>/tests/
 $(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> -I$>/tests $(GLIB_CFLAGS)
-$(call BUILD_TEST, \
+$(call BUILD_PROGRAM, \
 	$(tests/suite1), \
 	$(tests/suite1.objects), \
 	$(lib/libbse.so), \
@@ -99,7 +99,13 @@ tests/check-bse-loading: \
 				$>/tests/bsefiles.lst-h-test
 CHECK_TARGETS += tests/check-bse-loading
 
-# == simple benchmark ==
+# == run unit tests ==
+tests/check-suite1: $(tests/suite1) FORCE
+	$(QGEN)
+	$Q $(tests/suite1) $(if $(PARALLEL_MAKE), -j )
+CHECK_TARGETS += tests/check-suite1
+
+# == AIDA benchmark ==
 tests/aida-benchmark: $(tests/suite1) FORCE
 	$(QGEN)
 	$Q $(tests/suite1) --bench-aida
