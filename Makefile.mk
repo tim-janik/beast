@@ -145,13 +145,17 @@ help: FORCE
 	@: #   12345678911234567892123456789312345678941234567895123456789612345678971234567898
 	@echo '  all             - Build all targets, uses config-defaults.mk if present.'
 	@echo '  clean           - Remove build directory, but keeps config-defaults.mk.'
+	@echo '  install         - Install binaries and data files under $$(prefix)'
+	@echo '  uninstall       - Uninstall binaries, aliases and data files'
+	@echo '  installcheck    - Run checks on the installed project files.'
 	@echo '  default         - Create config-defaults.mk with variables set via the MAKE'
 	@echo '                    command line. Inspect the file for a list of variables to'
 	@echo '                    be customized. Deleting it will undo any customizations.'
 	@echo '  check           - Run selfttests and unit tests'
-	@echo '  install         - Install binaries and data files under $$(prefix)'
-	@echo '  uninstall       - Uninstall binaries, aliases and data files'
-	@echo '  installcheck    - Run checks on the installed project files.'
+	@echo '  check-audio     - Validate BSE rendering against reference files'
+	@echo '  check-bench     - Run the benchmark tests'
+	@echo '  check-loading   - Check all distributed BSE files load properly'
+	@echo '  check-suite     - Run the unit test suite'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 	@echo '  make O=DIR      - Create all output files in DIR'
@@ -171,8 +175,9 @@ $$(dir $1)check-$$(notdir $1): $1
 	$$Q $1
 endef
 $(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
-check: $(CHECK_TARGETS) check-audio
+check: $(CHECK_TARGETS) check-audio check-bench
 $(CHECK_TARGETS): FORCE
+check-bench: FORCE
 
 # == installcheck ==
 installcheck-buildtest:

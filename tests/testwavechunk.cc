@@ -216,38 +216,45 @@ simple_loop_tests (void)
 }
 TEST_ADD (simple_loop_tests);
 
-static void
+template<int LOOP_COUNT> static void
 full_loop_tests (int jinc, int kinc, const char *kind)
 {
-  int i, count = 6;
-  for (i = 1; i <= count; i++)
+  for (uint j = 0; j < my_data_length - 1; j += jinc)
     {
-      for (uint j = 0; j < my_data_length - 1; j += jinc)
+      for (uint k = j + 1; k < my_data_length; k += kinc)
         {
-          for (uint k = j + 1; k < my_data_length; k += kinc)
-            {
-              run_loop_test (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
-              run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
-              run_loop_test (GSL_WAVE_LOOP_JUMP, -1, j, k, i);
-              run_loop_test (GSL_WAVE_LOOP_PINGPONG, -1, j, k, i);
-            }
-          TOK();
+          run_loop_test (GSL_WAVE_LOOP_JUMP, 1, j, k, LOOP_COUNT);
+          run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, j, k, LOOP_COUNT);
+          run_loop_test (GSL_WAVE_LOOP_JUMP, -1, j, k, LOOP_COUNT);
+          run_loop_test (GSL_WAVE_LOOP_PINGPONG, -1, j, k, LOOP_COUNT);
         }
-      printout ("  OK       %s loop test %d/%d\n", kind, i, 6);
+      TOK();
     }
+  // printout ("  OK       %s loop test %d\n", kind, LOOP_COUNT);
 }
 
-static void
-fast_loop_tests (void)
+template<int LOOP_COUNT> static void
+fast_loop_test (void)
 {
-  full_loop_tests (5, 7, "Fast");
+  full_loop_tests<LOOP_COUNT> (5, 7, "Fast");
 }
-TEST_ADD (fast_loop_tests);
+
+TEST_ADD (fast_loop_test<1>);
+TEST_ADD (fast_loop_test<2>);
+TEST_ADD (fast_loop_test<3>);
+TEST_ADD (fast_loop_test<4>);
+TEST_ADD (fast_loop_test<5>);
+TEST_ADD (fast_loop_test<6>);
 
 static void
 brute_force_loop_tests (void)
 {
-  full_loop_tests (1, 1, "Brute force");
+  full_loop_tests<1> (1, 1, "Brute force");
+  full_loop_tests<2> (1, 1, "Brute force");
+  full_loop_tests<3> (1, 1, "Brute force");
+  full_loop_tests<4> (1, 1, "Brute force");
+  full_loop_tests<5> (1, 1, "Brute force");
+  full_loop_tests<6> (1, 1, "Brute force");
 }
 TEST_SLOW (brute_force_loop_tests);
 

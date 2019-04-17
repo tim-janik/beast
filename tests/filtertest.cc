@@ -511,7 +511,7 @@ test_problem_candidates ()
 }
 TEST_ADD (test_problem_candidates);
 
-static void
+template<int VARIANT> static void
 random_filter_tests ()
 {
   BseIIRFilterRequest frequest = { BseIIRFilterKind (0), };
@@ -567,7 +567,8 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Butterworth", filter_index, filters, skip_count);
+  if (VARIANT == 1)
+    generic_filter_tests ("Random Butterworth", filter_index, filters, skip_count);
 
   /* generate filter requirements */
   filter_index = 0;
@@ -595,7 +596,8 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Chebyshev1", filter_index, filters, skip_count);
+  if (VARIANT == 2)
+    generic_filter_tests ("Random Chebyshev1", filter_index, filters, skip_count);
 
   /* generate filter requirements */
   filter_index = 0;
@@ -628,7 +630,8 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, skip_count);
+  if (VARIANT == 3)
+    generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, skip_count);
 
   /* generate filter requirements */
   filter_index = 0;
@@ -663,10 +666,15 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, skip_count);
+  if (VARIANT == 4)
+    generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, skip_count);
 #undef MAKE_FILTER
 }
-TEST_ADD (random_filter_tests);
+
+TEST_ADD (random_filter_tests<1>);
+TEST_ADD (random_filter_tests<2>);
+TEST_ADD (random_filter_tests<3>);
+TEST_ADD (random_filter_tests<4>);
 
 static void
 test_filter_catalog ()
@@ -696,7 +704,6 @@ generic_filter_tests (const char        *test_name,
   uint i;
   const double coefficients_epsilon = 1e-7;
   const double max_gain = 0.01; // maximum gain in passband
-  TSTART ("%s", test_name);
   skip_count = MAX (1, skip_count);
   for (i = 0; i < n_filters; i += 1 + g_random_int() % skip_count)
     {
@@ -778,5 +785,5 @@ generic_filter_tests (const char        *test_name,
         TOK();
       diag_abort_hook (NULL);
     }
-  TDONE();
+  TPASS ("%s", test_name);
 }

@@ -186,7 +186,7 @@ generate_test_signal (vector<Sample> &signal,
 }
 
 static void
-run_tests (const char *run_type)
+run_tests (const char *run_type, int p)
 {
   struct TestParameters {
     int bits;
@@ -194,54 +194,51 @@ run_tests (const char *run_type)
     double stereo_upsample_db;
     double mono_downsample_db;
     double stereo_downsample_db;
-  } params[] =
-  {
+  };
+  TestParameters params[] = {
     {  8,  -48,  -48, -48,   -48 },
     { 12,  -72,  -72, -72,   -72 },
     { 16,  -98,  -95, -96,   -96 },
     { 20, -120, -117, -120, -120 },
     { 24, -125, -125, -134, -131 },
-    { 0, 0, 0 }
   };
+  assert_return (p >= 0 && p < sizeof (params) / sizeof (params[0]));
 
-  for (int p = 0; params[p].bits; p++)
-    {
-      const int LEN = 44100 / 2;  /* 500ms test signal */
-      vector<float> input;
-      vector<double> expected;
+  const int LEN = 44100 / 2;  /* 500ms test signal */
+  vector<float> input;
+  vector<double> expected;
 
-      // mono upsampling test
-      generate_test_signal (input, LEN, 44100, 440);
-      generate_test_signal (expected, LEN * 2, 88200, 440);
-      check ("Up", "M", params[p].bits, run_type,
-             input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
-             params[p].bits, params[p].mono_upsample_db);
-      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+  // mono upsampling test
+  generate_test_signal (input, LEN, 44100, 440);
+  generate_test_signal (expected, LEN * 2, 88200, 440);
+  check ("Up", "M", params[p].bits, run_type,
+         input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         params[p].bits, params[p].mono_upsample_db);
+  // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
-      // stereo upsampling test
-      generate_test_signal (input, LEN, 44100, 440, 1000);
-      generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
-      check ("Up", "S", params[p].bits, run_type,
-             input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
-             params[p].bits, params[p].stereo_upsample_db);
-      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+  // stereo upsampling test
+  generate_test_signal (input, LEN, 44100, 440, 1000);
+  generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
+  check ("Up", "S", params[p].bits, run_type,
+         input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         params[p].bits, params[p].stereo_upsample_db);
+  // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
-      // mono downsampling test
-      generate_test_signal (input, LEN, 44100, 440);
-      generate_test_signal (expected, LEN / 2, 22050, 440);
-      check ("Dn", "M", params[p].bits, run_type,
-             input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-             params[p].bits, params[p].mono_downsample_db);
-      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+  // mono downsampling test
+  generate_test_signal (input, LEN, 44100, 440);
+  generate_test_signal (expected, LEN / 2, 22050, 440);
+  check ("Dn", "M", params[p].bits, run_type,
+         input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         params[p].bits, params[p].mono_downsample_db);
+  // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
-      // stereo downsampling test
-      generate_test_signal (input, LEN, 44100, 440, 1000);
-      generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
-      check ("Dn", "S", params[p].bits, run_type,
-             input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-             params[p].bits, params[p].stereo_downsample_db);
-      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-    }
+  // stereo downsampling test
+  generate_test_signal (input, LEN, 44100, 440, 1000);
+  generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
+  check ("Dn", "S", params[p].bits, run_type,
+         input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         params[p].bits, params[p].stereo_downsample_db);
+  // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 }
 
 static void
@@ -453,24 +450,60 @@ test_state_length (const char *run_type)
 }
 
 static void
-test_resample_handle()
+test_resample_handle_c_api()
 {
   Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
   Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
   printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name());
-
-  test_c_api ("FPU");
-  test_delay_compensation ("FPU");
-  test_state_length ("FPU");
-  run_tests ("FPU");
-
-  /* check for possible specialization */
-  if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-    return;     /* nothing changed */
-
   test_c_api ("SSE");
-  test_delay_compensation ("SSE");
-  test_state_length ("SSE");
-  run_tests ("SSE");
 }
-TEST_ADD (test_resample_handle);
+TEST_ADD (test_resample_handle_c_api);
+
+static void
+test_resample_delay_compensation()
+{
+  test_delay_compensation ("SSE");
+}
+TEST_ADD (test_resample_delay_compensation);
+
+static void
+test_resample_state_length()
+{
+  test_state_length ("SSE");
+}
+TEST_ADD (test_resample_state_length);
+
+static void
+test_resample_handle_8()
+{
+  run_tests ("SSE", 0);
+}
+TEST_ADD (test_resample_handle_8);
+
+static void
+test_resample_handle_12()
+{
+  run_tests ("SSE", 1);
+}
+TEST_ADD (test_resample_handle_12);
+
+static void
+test_resample_handle_16()
+{
+  run_tests ("SSE", 2);
+}
+TEST_ADD (test_resample_handle_16);
+
+static void
+test_resample_handle_20()
+{
+  run_tests ("SSE", 3);
+}
+TEST_ADD (test_resample_handle_20);
+
+static void
+test_resample_handle_24()
+{
+  run_tests ("SSE", 4);
+}
+TEST_ADD (test_resample_handle_24);

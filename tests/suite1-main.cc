@@ -2,6 +2,12 @@
 #include <bse/testing.hh>
 #include <bse/bse.hh>
 #include <bse/bsemain.hh> // FIXME: bse_init_test
+#include "ipc.hh"
+
+#define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
+
+static int                      jobserver (const char *const argv0, Bse::StringVector &tests);
+static void BSE_NORETURN        jobclient (int jobfd);
 
 static void
 print_int_ring (SfiRing *ring)
@@ -100,26 +106,171 @@ main (int   argc,
   // "wave-chunk-big-pad=2", "dcache-block-size=16"
 
   Bse::StringVector test_names;
+  Bse::Test::TestEntries test_entries;
+  int64 jobs = 0;
+  int jobfd = -1;
+  int64 testflags = 0;
 
   for (ssize_t i = 1; i < argc; i++)
     if (argv[i])
       {
-        if (strcmp (argv[i], "--bench-aida") == 0)
+        if (std::string ("--aida-bench") == argv[i])
           {
             Bse::init_async (&argc, argv, argv[0], args);
             bse_server = Bse::init_server_instance();
             bench_aida();
             return 0;
           }
-        else if (argv[i][0] == '-')
+        else if (std::string ("--broken") == argv[i])
+          {
+            testflags |= Bse::Test::BROKEN;
+          }
+        else if (std::string ("--slow") == argv[i])
+          {
+            testflags |= Bse::Test::SLOW;
+          }
+        else if (std::string ("--bench") == argv[i])
+          {
+            testflags |= Bse::Test::BENCH;
+          }
+        else if (std::string ("--jobfd") == argv[i] && i + 1 < argc)
+          {
+            jobfd = Bse::string_to_int (argv[++i]);
+          }
+        else if (std::string ("-j") == argv[i])
+          {
+            jobs = 1;
+          }
+        else if ('-' == argv[i][0])
           {
             Bse::printerr ("%s: unknown option: %s\n", argv[0], argv[i]);
             return 7;
           }
-        test_names.push_back (argv[i]);
+        else
+          {
+            test_names.push_back (argv[i]);
+            test_entries.push_back (Bse::Test::TestEntry (argv[i]));
+          }
       }
 
   bse_init_test (&argc, argv, args);
 
-  return test_names.size() ? Bse::Test::run (test_names) : Bse::Test::run();
+  if (jobfd != -1)
+    jobclient (jobfd);  // noreturn
+
+  if (test_entries.size() == 0)
+    test_entries = Bse::Test::list_tests();
+
+  if (jobs)
+    {
+      Bse::StringVector tests;
+      for (const Bse::Test::TestEntry &entry : test_entries)
+        if (0 == (entry.flags & ~testflags))
+          tests.push_back (entry.ident);
+      const int serverstatus = jobserver (argv[0], tests);
+      exit (serverstatus);
+    }
+
+  for (Bse::Test::TestEntry entry : test_entries)
+    if (0 == (entry.flags & ~testflags))
+      {
+        const int result = Bse::Test::run_test (entry.ident);
+        if (result < 0)
+          {
+            Bse::printout ("  RUN…     %s\n", entry.ident);
+            Bse::printout ("  FAIL     %s - test missing\n", entry.ident);
+            exit (-1);
+          }
+      }
+  return 0;
+}
+
+static void BSE_NORETURN
+jobclient (int jobfd)
+{
+  IpcSharedMem *sm = IpcSharedMem::acquire_shared (jobfd);
+  Bse::StringVector tests;
+  const std::string testlist = sm->get_string();
+  for (const auto &line : Bse::string_split (testlist, "\n"))
+    if (!line.empty())
+      tests.push_back (line);
+  for (int64 v = sm->counter.fetch_add (-1); v > 0; v = sm->counter.fetch_add (-1))
+    {
+      const size_t test_index = v - 1;
+      TASSERT (test_index < tests.size());
+      const int result = Bse::Test::run_test (tests[test_index]);
+      if (result < 0)
+        {
+          Bse::printout ("  RUN…     %s\n", tests[test_index]);
+          Bse::printout ("  FAIL     %s - test missing\n", tests[test_index]);
+          exit (-1);
+        }
+    }
+  IpcSharedMem::release_shared (sm, jobfd);
+  DEBUG ("JOBDONE (%u)\n", Bse::this_thread_getpid());
+  exit (0);
+}
+
+#include <unistd.h> // setsid
+#include <sys/wait.h> // waitpid
+
+static int
+jobserver (const char *const argv0, Bse::StringVector &tests)
+{
+  BSE_UNUSED const pid_t pgid = setsid();       // keep server and spawned jobs in the same process group
+  std::reverse (tests.begin(), tests.end());    // the IpcSharedMem counter is decremented
+  const std::string testlist = Bse::string_join ("\n", tests);
+  int fd = -1;
+  IpcSharedMem *sm = IpcSharedMem::create_shared (testlist, &fd, tests.size());
+  if (fd < 0 || !sm)
+    die ("failed to create shared memory segment: %s", Bse::strerror (errno));
+  DEBUG ("jobserver: pid=%u\n", Bse::this_thread_getpid());
+  const size_t n_jobs = std::max (1, Bse::this_thread_online_cpus());
+  std::vector<pid_t> jobs;
+  for (size_t i = 0; i < n_jobs; i++)
+    if (sm->counter > 0)        // avoid spawning jobs if there's no work
+      {
+        const pid_t child = fork();
+        if (child == 0)
+          {
+            execl (argv0, argv0, "--jobfd", Bse::string_from_int (fd).c_str(), NULL);
+            die ("failed to execl(\"%s\"): %s", argv0, Bse::strerror (errno));
+          }
+        else if (child < 0)
+          {
+            DEBUG ("%s: failed to fork: %s\n", argv0, Bse::strerror (errno));
+          }
+        else
+          jobs.push_back (child);
+      }
+  int serverstatus = 0;
+  while (jobs.size())
+    {
+      int wstatus = 0;
+      const int pid = waitpid (-1, &wstatus, 0);
+      if (pid < 0)
+        {
+          DEBUG ("%s: waitpid(%d) failed: %s\n", argv0, pid, Bse::strerror (errno));
+          if (errno == ECHILD)
+            abort(); // lost track of jobs
+          continue;
+        }
+      const int exitstatus = WIFEXITED (wstatus) ? WEXITSTATUS (wstatus) :
+                             WIFSIGNALED (wstatus) ? -WTERMSIG (wstatus) :
+                             -128;
+      auto it = std::find (jobs.begin(), jobs.end(), pid);
+      if (it == jobs.end())
+        DEBUG ("%s: orphan (%d) exited: %d\n", argv0, pid, exitstatus);
+      else
+        {
+          jobs.erase (it);
+          if (!serverstatus)
+            serverstatus = exitstatus;
+          DEBUG ("%s: child (%d) exited: %d\n", argv0, pid, exitstatus);
+        }
+    }
+  const ssize_t remaining_tests = sm->counter;
+  TASSERT (remaining_tests <= 0);
+  IpcSharedMem::destroy_shared (sm, fd);
+  return serverstatus;
 }

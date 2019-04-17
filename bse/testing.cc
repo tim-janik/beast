@@ -275,4 +275,46 @@ run (void)
   return 0;
 }
 
+TestEntries
+list_tests ()
+{
+  TestEntries entries;
+  for (const TestChain *t = global_test_chain; t; t = t->next())
+    {
+      entries.resize (entries.size() + 1);
+      TestEntry &entry = entries.back();
+      entry.ident = t->name();
+      entry.flags = t->flags();
+    }
+  std::stable_sort (entries.begin(), entries.end(), // cmp_lesser
+                    [] (const TestEntry &a, const TestEntry &b) {
+                      return a.ident < b.ident;
+                    });
+  std::string last;
+  for (const auto &entry : entries)
+    if (last == entry.ident)
+      Bse::fatal_error ("duplicate test entry: %s", entry.ident);
+    else
+      last = entry.ident;
+  return entries;
+}
+
+int
+run_test (const std::string &test_identifier)
+{
+  for (const TestChain *t = global_test_chain; t; t = t->next())
+    if (test_identifier == t->name())
+      {
+        fflush (stderr);
+        printout ("  RUN…     %s\n", t->name());
+        fflush (stdout);
+        t->run();
+        fflush (stderr);
+        printout ("  PASS     %s\n", t->name());
+        fflush (stdout);
+        return 1; // ran and passed
+      }
+  return -1; // none found
+}
+
 } } // Bse::Test
