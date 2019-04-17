@@ -9,6 +9,7 @@ tests/rpath..libbse ::= ../lib
 tests/suite1.sources		::= $(strip	\
 	tests/aida-basics.cc			\
 	tests/aida-types.cc			\
+	tests/benchmarks.cc			\
 	tests/blocktests.cc			\
 	tests/explore-tests.cc			\
 	tests/filterdesign.cc			\
