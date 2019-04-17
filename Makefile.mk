@@ -154,6 +154,7 @@ help: FORCE
 	@echo '  check           - Run selfttests and unit tests'
 	@echo '  check-audio     - Validate BSE rendering against reference files'
 	@echo '  check-loading   - Check all distributed BSE files load properly'
+	@echo '  check-suite     - Run the unit test suite'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 	@echo '  make O=DIR      - Create all output files in DIR'

@@ -101,10 +101,10 @@ check-loading: \
 CHECK_TARGETS += check-loading
 
 # == run unit tests ==
-tests/check-suite1: $(tests/suite1) FORCE
+check-suite: $(tests/suite1) FORCE
 	$(QGEN)
 	$Q $(tests/suite1) $(if $(PARALLEL_MAKE), -j )
-CHECK_TARGETS += tests/check-suite1
+CHECK_TARGETS += check-suite
 
 # == AIDA benchmark ==
 tests/aida-benchmark: $(tests/suite1) FORCE
