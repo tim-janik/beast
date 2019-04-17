@@ -109,7 +109,7 @@ CHECK_TARGETS += tests/check-suite1
 # == AIDA benchmark ==
 tests/aida-benchmark: $(tests/suite1) FORCE
 	$(QGEN)
-	$Q $(tests/suite1) --bench-aida
+	$Q $(tests/suite1) --aida-bench
 CHECK_TARGETS += tests/aida-benchmark
 
 # == tests/clean ==

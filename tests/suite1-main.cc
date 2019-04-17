@@ -114,7 +114,7 @@ main (int   argc,
   for (ssize_t i = 1; i < argc; i++)
     if (argv[i])
       {
-        if (std::string ("--bench-aida") == argv[i])
+        if (std::string ("--aida-bench") == argv[i])
           {
             Bse::init_async (&argc, argv, argv[0], args);
             bse_server = Bse::init_server_instance();
