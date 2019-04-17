@@ -152,6 +152,7 @@ help: FORCE
 	@echo '                    command line. Inspect the file for a list of variables to'
 	@echo '                    be customized. Deleting it will undo any customizations.'
 	@echo '  check           - Run selfttests and unit tests'
+	@echo '  check-audio     - Validate BSE rendering against reference files'
 	@echo '  check-loading   - Check all distributed BSE files load properly'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
