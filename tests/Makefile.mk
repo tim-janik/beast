@@ -57,7 +57,7 @@ $(call MULTIOUTPUT, $(tests/explore.idl.outputs)): tests/explore.idl $(aidacc/ai
 	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ -o $>/tests/ $<
 	$Q sed -e '1i#define _(x) x' -i $>/tests/explore_interfaces.cc $>/tests/explore_handles.cc
 
-# == check-bse-loading ==
+# == check-loading ==
 # This test checks that all .bse files contained in the beast tarball
 # will load without any warnings or errors being issued. At first,
 # we split the (long) list of files into multiple lists that can be
@@ -89,7 +89,7 @@ $>/tests/bsefiles.lst-%-test: $>/tests/bsefiles.lst $(tools/bsetool)
 	    test ! -s $@.log || exit 1 &&				\
 	    echo "  OK       Loading: $$tfile" ;			\
 	  fi ; done ; rm -f $@.log $(@:-test=)
-tests/check-bse-loading: \
+check-loading: \
 				$>/tests/bsefiles.lst-a-test	\
 				$>/tests/bsefiles.lst-b-test	\
 				$>/tests/bsefiles.lst-c-test	\
@@ -98,7 +98,7 @@ tests/check-bse-loading: \
 				$>/tests/bsefiles.lst-f-test	\
 				$>/tests/bsefiles.lst-g-test	\
 				$>/tests/bsefiles.lst-h-test
-CHECK_TARGETS += tests/check-bse-loading
+CHECK_TARGETS += check-loading
 
 # == run unit tests ==
 tests/check-suite1: $(tests/suite1) FORCE
