@@ -290,6 +290,12 @@ list_tests ()
                     [] (const TestEntry &a, const TestEntry &b) {
                       return a.ident < b.ident;
                     });
+  std::string last;
+  for (const auto &entry : entries)
+    if (last == entry.ident)
+      Bse::fatal_error ("duplicate test entry: %s", entry.ident);
+    else
+      last = entry.ident;
   return entries;
 }
 
