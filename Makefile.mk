@@ -153,6 +153,7 @@ help: FORCE
 	@echo '                    be customized. Deleting it will undo any customizations.'
 	@echo '  check           - Run selfttests and unit tests'
 	@echo '  check-audio     - Validate BSE rendering against reference files'
+	@echo '  check-bench     - Run the benchmark tests'
 	@echo '  check-loading   - Check all distributed BSE files load properly'
 	@echo '  check-suite     - Run the unit test suite'
 	@echo 'Invocation:'
@@ -174,8 +175,9 @@ $$(dir $1)check-$$(notdir $1): $1
 	$$Q $1
 endef
 $(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
-check: $(CHECK_TARGETS) check-audio
+check: $(CHECK_TARGETS) check-audio check-bench
 $(CHECK_TARGETS): FORCE
+check-bench: FORCE
 
 # == installcheck ==
 installcheck-buildtest:

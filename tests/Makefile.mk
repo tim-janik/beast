@@ -110,7 +110,13 @@ CHECK_TARGETS += check-suite
 tests/aida-benchmark: $(tests/suite1) FORCE
 	$(QGEN)
 	$Q $(tests/suite1) --aida-bench
-CHECK_TARGETS += tests/aida-benchmark
+check-bench: tests/aida-benchmark
+
+# == run unit tests ==
+tests/suite-benchmark: $(tests/suite1) FORCE
+	$(QGEN)
+	$Q $(tests/suite1) --bench $(if $(PARALLEL_MAKE), -j )
+check-bench: tests/suite-benchmark
 
 # == tests/clean ==
 tests/clean: FORCE
