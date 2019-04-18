@@ -75,7 +75,7 @@ merge-po: $>/po/messages.po FORCE	# PO=...
 # == poscan.list ==
 # List files with translatable strings, tracked in Git.
 po/scan_match = '(\.cc|\.hh|\.idl|\.xml|\.vue|\.js|\.html|\.(desktop|xml|keys)\.in)$$'
-po/scan_skip  = '^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
+po/scan_skip  = '^external/|^tests/|/tests/|^aidacc/|^plugins/evaluator/|^yapps2_deb/|^drivers/bse-portaudio/'
 $>/po/poscan.list: $(GITCOMMITDEPS)	| $>/po/
 	$(QGEN)
 	$Q git ls-tree --name-only --full-tree -r HEAD > $@.tmp1
