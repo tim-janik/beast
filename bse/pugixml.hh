@@ -11,6 +11,8 @@
 // #define PUGIXML_MEMORY_OUTPUT_STACK 10240
 // #define PUGIXML_MEMORY_XPATH_PAGE_SIZE 4096
 
+#define PUGIXML_NO_EXCEPTIONS   // use error return codes
+
 #include "../external/pugixml/src/pugixml.hpp"
 
 #endif // __BSE_PUGIXML_HH__
