@@ -252,6 +252,8 @@ class EnableSharedFromThis :
   {
     return this->std::enable_shared_from_this<SharedFromThisIface>::shared_from_this();
   }
+public:
+  using SharedFromThis<T>::shared_from_this;
 };
 
 // == LongIffy and ULongIffy ==
