@@ -16,3 +16,5 @@ RUN : && \
       cp --reflink=auto --preserve=timestamps /root/.electron/*.zip /home/cibuilder/.electron/ ; } && \
   chown -R ${USERGROUP} /home/cibuilder
 # Also copies pre-fetched electron download
+
+COPY .cicache/electron/ /home/cibuilder/.electron/
