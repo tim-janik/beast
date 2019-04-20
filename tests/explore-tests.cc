@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cmath>
 #include <bse/testing.hh>
+#include <bse/bseutils.hh>
 #include "explore_interfaces.hh"
 #include "explore_handles.hh"
 using namespace Aida;
@@ -35,6 +36,14 @@ fill_simple_data_pack (A1::SimpleDataPack &simple)
   simple.strings.push_back ("STUVWXYZ");
 }
 
+struct A1DerivedImpl : public virtual A1::DerivedIface, public virtual EnableSharedFromThis<A1DerivedImpl> {
+  virtual void                       self_args                (DerivedIface &self) override {}
+  virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
+  virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
+  virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
+  { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
+};
+
 static void
 fill_big_data_pack (A1::BigDataPack &big)
 {
@@ -56,11 +65,12 @@ fill_big_data_pack (A1::BigDataPack &big)
   l.x =  0; l.y =  0; big.locations.push_back (l);
   l.x = +1; l.y = +1; big.locations.push_back (l);
   l.x = +9; l.y = +2; big.locations.push_back (l);
-  // any1;
-  // anys;
-  // objects;
-  // other;
-  // derived;
+  big.any1.set ("Foohoo");
+  big.anys.push_back (Any (7));
+  big.anys.push_back (Any ("seven"));
+  big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()->__handle__()));
+  big.derived = std::make_shared<A1DerivedImpl>()->__handle__();
+  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
 }
 
 static void
@@ -75,6 +85,8 @@ test_explore_any()
   any.set (big);
   b2 = any.get<A1::BigDataPack>();
   TASSERT (big == b2);
+  TASSERT (b2.anys.size() == 3);
+  TASSERT (b2.bases.size() == 1);
 }
 TEST_ADD (test_explore_any);
 

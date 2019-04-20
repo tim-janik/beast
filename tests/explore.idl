@@ -43,6 +43,10 @@ record SimpleDataPack {
   StringSeq     strings;
 };
 
+interface Derived : Base {
+  void           self_args        (Derived self_);
+};
+
 record BigDataPack {
   SimpleDataPack simple_pack;
   BoolSeq        bools;
@@ -53,9 +57,8 @@ record BigDataPack {
   LocationSeq    locations;
   Any            any1;
   AnyVector      anys;
-  // BaseSeq     objects;
-  // Other       other;
-  // Derived     derived;
+  Derived        derived;
+  BaseSeq        bases;
 };
 
 interface Other : Base {
@@ -83,10 +86,6 @@ interface Other : Base {
   void           interface_arg    (Other i);
   void           any_arg          (Any a);
   void           self_args        (Other self_);
-};
-
-interface Derived : Base {
-  void           self_args        (Derived self_);
 };
 
 interface Richie : Derived, Base, Other {
