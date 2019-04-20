@@ -161,28 +161,30 @@ main (int   argc,
   if (test_entries.size() == 0)
     test_entries = Bse::Test::list_tests();
 
+  int serverstatus = 0;
   if (jobs)
     {
       Bse::StringVector tests;
       for (const Bse::Test::TestEntry &entry : test_entries)
         if (0 == (entry.flags & ~testflags))
           tests.push_back (entry.ident);
-      const int serverstatus = jobserver (argv[0], tests);
-      exit (serverstatus);
+      serverstatus = jobserver (argv[0], tests);
     }
-
-  for (Bse::Test::TestEntry entry : test_entries)
-    if (0 == (entry.flags & ~testflags))
-      {
-        const int result = Bse::Test::run_test (entry.ident);
-        if (result < 0)
-          {
-            Bse::printout ("  RUN…     %s\n", entry.ident);
-            Bse::printout ("  FAIL     %s - test missing\n", entry.ident);
-            exit (-1);
-          }
-      }
-  return 0;
+  else
+    for (Bse::Test::TestEntry entry : test_entries)
+      if (0 == (entry.flags & ~testflags))
+        {
+          const int result = Bse::Test::run_test (entry.ident);
+          if (result < 0)
+            {
+              Bse::printout ("  RUN…     %s\n", entry.ident);
+              Bse::printout ("  FAIL     %s - test missing\n", entry.ident);
+              serverstatus = -1;
+              break;
+            }
+        }
+  Bse::printout ("  EXIT     %d - %s\n", serverstatus, serverstatus ? "FAIL" : "OK");
+  return serverstatus;
 }
 
 static void BSE_NORETURN
