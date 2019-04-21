@@ -145,18 +145,12 @@ bse_sound_font_repo_prepare (BseSource *source)
       sfrepo_impl->n_fluid_channels = channels_required;
       sfrepo_impl->fluid_mix_freq = mix_freq;
 
-      /* midi channels required must be: at least 16, a multiple of 16 */
-      const int midi_channels_required = (channels_required / 16 + 1) * 16;
-
-      /* audio channels required must not be zero */
-      const int audio_channels_required = std::max<int> (1, channels_required);
-
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
       /* soundfont instruments should be as loud as beast synthesis network instruments */
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.gain", 1.0);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", midi_channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", audio_channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", audio_channels_required);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", 16);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", 1);
+      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", 1);
       fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.reverb.active", 0);
       fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.chorus.active", 0);
 

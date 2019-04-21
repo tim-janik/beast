@@ -23,7 +23,7 @@ Bse::Error      bse_sound_font_load_blob	(BseSoundFont       *sound_font,
 						 gboolean            init_presets);
 void		bse_sound_font_unload           (BseSoundFont       *sound_font);
 Bse::Error      bse_sound_font_reload           (BseSoundFont       *sound_font);
-int             bse_sound_font_get_id           (BseSoundFont       *sound_font);
+std::string     bse_sound_font_get_filename     (BseSoundFont       *sound_font);
 
 namespace Bse {
 
