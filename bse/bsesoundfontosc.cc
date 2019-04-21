@@ -263,7 +263,7 @@ bse_sound_font_osc_set_property (GObject      *object,
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->preset), bse_sound_font_osc_uncross_preset);
               bse_object_proxy_notifies (self->preset, self, "notify::preset");
-	      self->config.sfont_id = bse_sound_font_get_id (BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent));
+	      self->config.filename = g_strdup (bse_sound_font_get_filename (BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent)).c_str()); // FIXME: LEAK
 	      self->config.bank = self->preset->bank;
 	      self->config.program = self->preset->program;
 	      self->config.update_preset++;
@@ -318,6 +318,9 @@ bse_sound_font_osc_get_candidates (BseItem *item, uint param_id, Bse::PropertyCa
 typedef struct
 {
   BseSoundFontOscConfig	config;
+  SfiRing              *fluid_events;
+  fluid_synth_t        *fluid_synth;
+  int                   sfont_id;
   int			last_update_preset;
   guint64               n_silence_samples;    // for done detection
 } SoundFontOscModule;
@@ -346,40 +349,31 @@ sound_font_osc_reset (BseModule *module)
   flmod->last_update_preset = -1;
 }
 
-/* process_fluid is only called once per block, not once per module
- */
 static void
-process_fluid_L (BseSoundFontRepo   *sfrepo,
-	         fluid_synth_t	    *fluid_synth,
-                 guint64	     now_tick_stamp)
+sound_font_osc_process (BseModule *module,
+		        guint      n_values)
 {
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
 
-  float **channel_values_left = (float **) g_alloca (sfrepo_impl->n_fluid_channels * sizeof (float *));
-  float **channel_values_right = (float **) g_alloca (sfrepo_impl->n_fluid_channels * sizeof (float *));
+  guint values_remaining = n_values;
+  guint64 now_tick_stamp = bse_module_tick_stamp (module); //Bse::TickStamp::current();
+  fluid_synth_t *fluid_synth = flmod->fluid_synth;
+  float *channel_values_left[1];
+  float *channel_values_right[1];
   float null_fx[BSE_STREAM_MAX_VALUES];
   float *channel_fx_null[2] = { null_fx, null_fx };
 
-  assert_return (now_tick_stamp > sfrepo_impl->channel_values_tick_stamp);
-  sfrepo_impl->channel_values_tick_stamp = now_tick_stamp;
+  channel_values_left[0] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
+  channel_values_right[0] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
 
-  /* Sample precise timing: If events don't occur at block boundary, the block
-     is partially calculated, then the event is executed, and then the rest of
-     the block (until the next event) is calculated, and so on */
-  for (guint i = 0; i < sfrepo_impl->n_fluid_channels; i++)
-    {
-      channel_values_left[i] = &sfrepo_impl->channel_state[i].values_left[0];
-      channel_values_right[i] = &sfrepo_impl->channel_state[i].values_right[0];
-    }
-  guint values_remaining = bse_engine_block_size();
   while (values_remaining)
     {
       /* get 1st event tick stamp */
       BseFluidEvent *event = NULL;
       guint64 event_tick_stamp;
-      if (sfrepo_impl->fluid_events)
+      if (flmod->fluid_events)
 	{
-	  event = (BseFluidEvent *) sfrepo_impl->fluid_events->data;
+	  event = (BseFluidEvent *) flmod->fluid_events->data;
 	  event_tick_stamp = event->tick_stamp;
 	}
       else
@@ -392,7 +386,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 	  switch (event->command)
 	    {
 	      case BSE_MIDI_NOTE_ON:    fluid_synth_noteon (fluid_synth, event->channel, event->arg1, event->arg2);
-					sfrepo_impl->channel_state[event->channel].n_silence_samples = 0;
+					flmod->n_silence_samples = 0;
 					break;
 	      case BSE_MIDI_NOTE_OFF:   fluid_synth_noteoff (fluid_synth, event->channel, event->arg1);
 					break;
@@ -408,7 +402,7 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 							event->arg1, event->arg2);
 					break;
 	    }
-	  sfrepo_impl->fluid_events = sfi_ring_remove_node (sfrepo_impl->fluid_events, sfrepo_impl->fluid_events);
+	  flmod->fluid_events = sfi_ring_remove_node (flmod->fluid_events, flmod->fluid_events);
 	  g_free (event);
 	}
       else						     /* future event tick stamp: process audio until then */
@@ -419,61 +413,31 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 				    channel_fx_null, channel_fx_null);
 	  values_remaining -= values_todo;
 	  now_tick_stamp += values_todo;
-	  for (guint i = 0; i < sfrepo_impl->n_fluid_channels; i++)          /* increment fluid synth output buffer pointers */
-	    {
-	      channel_values_left[i] += values_todo;
-	      channel_values_right[i] += values_todo;
-	    }
+
+	  /* increment fluid synth output buffer pointers */
+          channel_values_left[0] += values_todo;
+          channel_values_right[0] += values_todo;
 	}
     }
-}
-
-static void
-sound_font_osc_process (BseModule *module,
-		        guint      n_values)
-{
-  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  BseSoundFontRepo *sfrepo = flmod->config.sfrepo;
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-
-  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sfrepo));
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sfrepo);
   if (flmod->config.update_preset != flmod->last_update_preset)
     {
-      fluid_synth_program_select (fluid_synth,	sfrepo_impl->oscs[flmod->config.osc_id].channel,
-						flmod->config.sfont_id, flmod->config.bank, flmod->config.program);
+      fluid_synth_program_select (fluid_synth, 0, flmod->sfont_id, flmod->config.bank, flmod->config.program);
       flmod->last_update_preset = flmod->config.update_preset;
     }
-  guint64 now_tick_stamp = Bse::TickStamp::current();
-  if (sfrepo_impl->channel_values_tick_stamp != now_tick_stamp)
-    process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 
-  auto& cstate = sfrepo_impl->channel_state[sfrepo_impl->oscs[flmod->config.osc_id].channel];
-  float *left_output = &cstate.values_left[0];
-  float *right_output = &cstate.values_right[0];
+  const float *left_output = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
+  const float *right_output = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
 
-  int delta = bse_module_tick_stamp (module) - now_tick_stamp;
-  if (delta + n_values <= bse_engine_block_size())    /* paranoid check, should always pass */
-    {
-      left_output += delta;
-      right_output += delta;
-      BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT).values = left_output;
-      BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT).values = right_output;
-    }
-  else
-    {
-      Bse::warning (G_STRLOC ": access past end of channel_values buffer");
-    }
   if (BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).connected)
     {
       guint i;
       for (i = 0; i < n_values && left_output[i] == 0.0 && right_output[i] == 0.0; i++)
 	;
       if (i == n_values)
-	cstate.n_silence_samples += n_values;
+	flmod->n_silence_samples += n_values;
       else
-	cstate.n_silence_samples = 0;
-      float done = (cstate.n_silence_samples > flmod->config.silence_bound && sfrepo_impl->fluid_events == NULL) ? 1.0 : 0.0;
+	flmod->n_silence_samples = 0;
+      float done = (flmod->n_silence_samples > flmod->config.silence_bound && flmod->fluid_events == NULL) ? 1.0 : 0.0;
       BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).values = bse_engine_const_values (done);
     }
 }
@@ -498,8 +462,7 @@ sound_font_osc_process_midi (gpointer            null,
                              BseTrans           *trans)
 {
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (flmod->config.sfrepo));
-  Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
+
   int note = bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
   switch (event->status)
@@ -551,8 +514,8 @@ sound_font_osc_process_midi (gpointer            null,
   if (fluid_event)
     {
       fluid_event->tick_stamp = event->delta_time;
-      fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
-      sfrepo_impl->fluid_events = sfi_ring_insert_sorted (sfrepo_impl->fluid_events, fluid_event, event_cmp, NULL);
+      fluid_event->channel = 0;
+      flmod->fluid_events = sfi_ring_insert_sorted (flmod->fluid_events, fluid_event, event_cmp, NULL);
     }
 }
 
@@ -573,20 +536,19 @@ event_handler_setup_func (BseModule *module,
                                        sound_font_osc_process_midi,
                                        NULL,
                                        ehs->module);
-
-  /* setup program before first midi event */
-  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  Bse::SoundFontRepoImpl *sfrepo_impl = flmod->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
-
-  BseFluidEvent *fluid_event = g_new0 (BseFluidEvent, 1);
-  fluid_event->command = BSE_FLUID_SYNTH_PROGRAM_SELECT;
-  fluid_event->channel = sfrepo_impl->oscs[flmod->config.osc_id].channel;
-  fluid_event->arg1 = flmod->config.bank;
-  fluid_event->arg2 = flmod->config.program;
-  fluid_event->sfont_id = flmod->config.sfont_id;
-  fluid_event->tick_stamp = 0; /* now */
-  sfrepo_impl->fluid_events = sfi_ring_insert_sorted (sfrepo_impl->fluid_events, fluid_event, event_cmp, NULL);
 }
+
+#include <sys/time.h>
+
+static double
+gettime()
+{
+  timeval tv;
+  gettimeofday (&tv, 0);
+
+  return tv.tv_sec + tv.tv_usec / 1000000.0;
+}
+
 
 static void
 bse_sound_font_osc_context_create (BseSource *source,
@@ -628,14 +590,16 @@ bse_sound_font_osc_context_create (BseSource *source,
   ehs->module = module;
   bse_trans_add (trans, bse_job_access (module, event_handler_setup_func, ehs, g_free));
 
-  /* reset fluid synth if necessary */
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
-  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
-  fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (self->config.sfrepo);
   Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
-  if (sfrepo_impl->n_channel_oscs_active == 0)
-    fluid_synth_system_reset (fluid_synth);
-  sfrepo_impl->n_channel_oscs_active++;
+  sound_font_osc->fluid_synth = new_fluid_synth (sfrepo_impl->fluid_settings);
+  printf ("loading soundfont: %s\n", self->config.filename);
+  double time1 = gettime();
+  sound_font_osc->sfont_id = fluid_synth_sfload (sound_font_osc->fluid_synth, self->config.filename, 0);
+  fluid_synth_system_reset (sound_font_osc->fluid_synth);
+  fluid_synth_program_select (sound_font_osc->fluid_synth, 0, sound_font_osc->sfont_id, self->config.bank, self->config.program);
+  double time2 = gettime();
+  printf (" - time delta %f\n", time2 - time1);
 }
 
 static void
@@ -669,6 +633,11 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
     }
   sfrepo_impl->n_channel_oscs_active--;
   sfrepo_impl->fluid_events = fluid_events;
+
+  /* cleanup fluid synth instance */
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
+  delete_fluid_synth (flmod->fluid_synth);
+  flmod->fluid_synth = nullptr;
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
