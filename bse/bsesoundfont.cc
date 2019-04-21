@@ -128,7 +128,6 @@ bse_sound_font_load_blob (BseSoundFont       *self,
   assert_return (sound_font_impl->sfrepo != NULL, Bse::Error::INTERNAL);
   assert_return (sound_font_impl->sfont_id == -1, Bse::Error::INTERNAL);
 
-  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
   fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
   int sfont_id = fluid_synth_sfload (fluid_synth, use_searchpath (blob->file_name()).c_str(), 0);
   Bse::Error error;
@@ -170,7 +169,6 @@ bse_sound_font_unload (BseSoundFont *sound_font)
 
   if (sound_font_impl->sfont_id != -1)
     {
-      std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (sound_font_impl->sfrepo));
       fluid_synth_t *fluid_synth = bse_sound_font_repo_fluid_synth (sound_font_impl->sfrepo);
 
       fluid_synth_sfunload (fluid_synth, sound_font_impl->sfont_id, 1 /* reset presets */);
