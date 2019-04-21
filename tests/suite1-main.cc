@@ -6,8 +6,8 @@
 
 #define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
 
-static int                      jobserver (const char *const argv0, Bse::StringVector &tests);
-static void BSE_NORETURN        jobclient (int jobfd);
+static int      jobserver (const char *const argv0, Bse::StringVector &tests);
+static int      jobclient (int jobfd);
 
 static void
 print_int_ring (SfiRing *ring)
@@ -98,13 +98,9 @@ bench_aida()
             calls, fastest, slowest, err * 100);
 }
 
-int
-main (int   argc,
-      char *argv[])
+static int
+test_main (int argc, char *argv[])
 {
-  const Bse::StringVector args = Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL);
-  // "wave-chunk-big-pad=2", "dcache-block-size=16"
-
   Bse::StringVector test_names;
   Bse::Test::TestEntries test_entries;
   int64 jobs = 0;
@@ -114,14 +110,7 @@ main (int   argc,
   for (ssize_t i = 1; i < argc; i++)
     if (argv[i])
       {
-        if (std::string ("--aida-bench") == argv[i])
-          {
-            Bse::init_async (&argc, argv, argv[0], args);
-            bse_server = Bse::init_server_instance();
-            bench_aida();
-            return 0;
-          }
-        else if (std::string ("--broken") == argv[i])
+        if (std::string ("--broken") == argv[i])
           {
             testflags |= Bse::Test::BROKEN;
           }
@@ -153,10 +142,8 @@ main (int   argc,
           }
       }
 
-  bse_init_test (&argc, argv, args);
-
   if (jobfd != -1)
-    jobclient (jobfd);  // noreturn
+    return jobclient (jobfd);
 
   if (test_entries.size() == 0)
     test_entries = Bse::Test::list_tests();
@@ -187,7 +174,25 @@ main (int   argc,
   return serverstatus;
 }
 
-static void BSE_NORETURN
+int
+main (int argc, char *argv[])
+{
+  const Bse::StringVector args = Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL);
+  // "wave-chunk-big-pad=2", "dcache-block-size=16"
+  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
+  // special case aida-bench
+  if (argc >= 2 && argv[1] && std::string ("--aida-bench") == argv[1])
+    {
+      Bse::init_async (&argc, argv, argv[0], args);
+      bse_server = Bse::init_server_instance();
+      bench_aida();
+      return 0;
+    }
+  // run tests
+  return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); }, args);
+}
+
+static int
 jobclient (int jobfd)
 {
   IpcSharedMem *sm = IpcSharedMem::acquire_shared (jobfd);
@@ -205,12 +210,12 @@ jobclient (int jobfd)
         {
           Bse::printout ("  RUN…     %s\n", tests[test_index]);
           Bse::printout ("  FAIL     %s - test missing\n", tests[test_index]);
-          exit (-1);
+          return -1;
         }
     }
   IpcSharedMem::release_shared (sm, jobfd);
   DEBUG ("JOBDONE (%u)\n", Bse::this_thread_getpid());
-  exit (0);
+  return 0;
 }
 
 #include <unistd.h> // setsid
