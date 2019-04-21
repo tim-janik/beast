@@ -272,13 +272,6 @@ bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo, Bse::ItemSeq &it
   gather_presets (BSE_ITEM (sfrepo), &items);
 }
 
-std::mutex&
-bse_sound_font_repo_mutex (BseSoundFontRepo *sfrepo)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  return sfrepo_impl->fluid_synth_mutex;
-}
-
 fluid_synth_t*
 bse_sound_font_repo_fluid_synth (BseSoundFontRepo *sfrepo)
 {

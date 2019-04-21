@@ -35,15 +35,12 @@ struct BseSoundFontRepoClass : BseSuperClass
 /* --- prototypes --- */
 void	       bse_sound_font_repo_list_all_presets   (BseSoundFontRepo *sfrepo,
 						       Bse::ItemSeq     &items);
-std::mutex&    bse_sound_font_repo_mutex              (BseSoundFontRepo *sfrepo);
 fluid_synth_t* bse_sound_font_repo_fluid_synth        (BseSoundFontRepo *sfrepo);
 
 namespace Bse {
 
 class SoundFontRepoImpl : public SuperImpl, public virtual SoundFontRepoIface {
 public:
-  std::mutex	     fluid_synth_mutex;
-
   std::vector<BseSoundFont *> sound_fonts;
 
   fluid_settings_t           *fluid_settings;
