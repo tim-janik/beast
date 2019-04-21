@@ -124,25 +124,9 @@ bse_sound_font_repo_prepare (BseSource *source)
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  uint channels_required = 0;
-  for (auto& o : sfrepo_impl->oscs)
-    {
-      if (o.osc)
-	o.channel = channels_required++;
-    }
   uint mix_freq = bse_engine_sample_freq();
-  if (sfrepo_impl->n_fluid_channels != channels_required || sfrepo_impl->fluid_mix_freq != mix_freq)
+  if (sfrepo_impl->fluid_mix_freq != mix_freq)
     {
-      sfrepo_impl->channel_state.resize (channels_required);
-
-      for (auto& cstate : sfrepo_impl->channel_state)
-        {
-          cstate.n_silence_samples = 0;
-          cstate.values_left.resize (BSE_STREAM_MAX_VALUES);
-          cstate.values_right.resize (BSE_STREAM_MAX_VALUES);
-        }
-
-      sfrepo_impl->n_fluid_channels = channels_required;
       sfrepo_impl->fluid_mix_freq = mix_freq;
 
       fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
@@ -302,34 +286,6 @@ bse_sound_font_repo_fluid_synth (BseSoundFontRepo *sfrepo)
   return sfrepo_impl->fluid_synth;
 }
 
-int
-bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
-                             BseSoundFontOsc  *osc)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  for (guint i = 0; i < sfrepo_impl->oscs.size(); i++)
-    {
-      if (!sfrepo_impl->oscs[i].osc)
-	{
-	  sfrepo_impl->oscs[i].osc = osc;
-	  return i;
-	}
-    }
-  sfrepo_impl->oscs.push_back ({ osc, 0 });
-  return sfrepo_impl->oscs.size() - 1;
-}
-
-void
-bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
-                                guint             osc_id)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-
-  assert_return (osc_id < sfrepo_impl->oscs.size());
-
-  sfrepo_impl->oscs[osc_id].osc = nullptr;
-}
-
 namespace Bse {
 
 SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
@@ -351,12 +307,6 @@ SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
     }
 
   fluid_mix_freq = 0;
-  fluid_events = nullptr;
-
-  n_fluid_channels = 0;
-
-  n_channel_oscs_active = 0;
-  channel_values_tick_stamp = 0;
 }
 
 SoundFontRepoImpl::~SoundFontRepoImpl ()
@@ -381,10 +331,6 @@ SoundFontRepoImpl::~SoundFontRepoImpl ()
       delete_fluid_settings (fluid_settings);
       fluid_settings = NULL;
     }
-  n_fluid_channels = 0;
-
-  if (fluid_events != NULL)
-    Bse::warning (G_STRLOC ": fluid event queue should be empty in SoundFontRepoImpl destructor");
 }
 
 static Error

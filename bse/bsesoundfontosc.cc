@@ -195,8 +195,6 @@ bse_sound_font_osc_dispose (GObject *object)
 
   if (self->config.sfrepo)
     {
-      bse_sound_font_repo_remove_osc (self->config.sfrepo, self->config.osc_id);
-
       self->config.sfrepo = NULL;
     }
 
@@ -223,7 +221,6 @@ get_sfrepo (BseSoundFontOsc *self)
       if (project)
 	{
 	  self->config.sfrepo = bse_project_get_sound_font_repo (project);
-	  self->config.osc_id = bse_sound_font_repo_add_osc (self->config.sfrepo, self);
 	}
       else
 	{
@@ -608,7 +605,6 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
 			            BseTrans		 *trans)
 {
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
-  Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
   BseModule *module = bse_source_get_context_omodule (source, context_handle);
   BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
   bse_midi_receiver_remove_event_handler (mc.midi_receiver,
@@ -617,25 +613,20 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
                                           NULL,
                                           module);
   /* remove old events from the event queue */
-  std::lock_guard<std::mutex> guard (bse_sound_font_repo_mutex (self->config.sfrepo));
-  SfiRing *fluid_events = sfrepo_impl->fluid_events;
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
+  SfiRing *fluid_events = flmod->fluid_events;
   SfiRing *node = fluid_events;
   while (node)
     {
       SfiRing *next_node = sfi_ring_walk (node, fluid_events);
       BseFluidEvent *event = (BseFluidEvent *) node->data;
-      if (event->channel == sfrepo_impl->oscs[self->config.osc_id].channel)
-	{
-	  g_free (event);
-	  fluid_events = sfi_ring_remove_node (fluid_events, node);
-	}
+      g_free (event);
+      fluid_events = sfi_ring_remove_node (fluid_events, node);
       node = next_node;
     }
-  sfrepo_impl->n_channel_oscs_active--;
-  sfrepo_impl->fluid_events = fluid_events;
+  flmod->fluid_events = fluid_events;
 
   /* cleanup fluid synth instance */
-  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
   delete_fluid_synth (flmod->fluid_synth);
   flmod->fluid_synth = nullptr;
   /* chain parent class' handler */
