@@ -78,12 +78,16 @@ DIST=timjanik/beast:cibase-190415-bionic
 DOCKERFILE=misc/Dockerfile-cibuild
 TUID=`id -u`
 TGID=`id -g`
+mkdir -p misc/.cicache/electron/
+test ! -d ~/.electron/.       || cp --reflink=auto --preserve=timestamps ~/.electron/.       -r misc/.cicache/electron/
+test ! -d ~/.cache/electron/. || cp --reflink=auto --preserve=timestamps ~/.cache/electron/. -r misc/.cicache/electron/
 ( set -x
   docker build -f "$DOCKERFILE" \
 	 --build-arg DIST="$DIST" \
 	 --build-arg USERGROUP="$TUID:$TGID" \
 	 -t beast-cibuild misc/
 )
+rm -r misc/.cicache/
 BEAST_USER_VOLUME="--user $TUID:$TGID -v `pwd`:/usr/src/beast/"
 
 # == Copy CWD to temporary volume ==

@@ -138,7 +138,7 @@ usage ()
 
 }
 
-
+#ifdef STANDALONE
 static bool
 check_arg (uint         argc,
            char        *argv[],
@@ -309,6 +309,7 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
+#endif // STANDALONE
 
 static int
 test_filter_impl()
@@ -662,6 +663,7 @@ perform_test()
     }
 }
 
+#ifdef STANDALONE
 static string
 test_title()
 {
@@ -762,6 +764,7 @@ standalone (int argc, char **argv)
     }
   return result;
 }
+#endif // STANDALONE
 
 // == test collection ==
 static void
