@@ -321,12 +321,23 @@ bse_main_wakeup ()
   g_main_context_wakeup (bse_main_context);
 }
 
-void
-bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
+int
+bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args)
 {
-  assert_return (initialized_for_unit_testing < 0);
+  // initialize
+  assert_return (initialized_for_unit_testing < 0, -128);
   initialized_for_unit_testing = 1;
-  bse_init_inprocess (argc, argv, NULL, args);
+  _bse_init_async (argc, argv, NULL, args);
+  // run tests
+  Aida::ScopedSemaphore sem;
+  int retval = -128;
+  std::function<void()> wrapper = [&sem, &bsetester, &retval] () {
+    retval = bsetester();
+    sem.post();
+  };
+  bse_execution_context->enqueue_mt (wrapper);
+  sem.wait();
+  return retval;
 }
 
 static guint

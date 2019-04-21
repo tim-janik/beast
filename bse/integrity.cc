@@ -36,17 +36,14 @@ static int      // for backtrace tests
 my_compare_func (const void*, const void*)
 {
   BSE_BACKTRACE();
-  exit (0);
+  _Exit (0);
 }
 
 
 // == Main test program ==
-int
-main (int argc, char *argv[])
+static int
+test_main (int argc, char *argv[])
 {
-  bse_init_test (&argc, argv);
-  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
-
   if (argc >= 2 && String ("--backtrace") == argv[1])
     {
       char dummy_array[3] = { 1, 2, 3 };
@@ -95,4 +92,11 @@ main (int argc, char *argv[])
       }
 
   return 0;
+}
+
+int
+main (int argc, char *argv[])
+{
+  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
+  return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); });
 }
