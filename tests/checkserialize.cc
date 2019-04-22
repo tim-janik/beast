@@ -529,3 +529,20 @@ test_big_data_pack()
   TASSERT (big == other);
  }
 TEST_ADD (test_big_data_pack);
+
+static void
+test_serialize_configuration()
+{
+  SerializeToXML so ("configuration");
+  Configuration config;
+  config.license_default = "NONE";
+  so.save (config);
+  Configuration config2;
+  TASSERT (config != config2);
+  SerializeFromXML si (so.to_xml());
+  const bool success = si.load (config2);
+  TASSERT (success == true);
+  TASSERT (config == config2);
+  printout ("%s", so.to_xml());
+}
+TEST_ADD (test_serialize_configuration);
