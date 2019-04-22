@@ -57,7 +57,7 @@ jobs:
         echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
       before_cache: |
-        rm -v -rf ~/cache/
+        rm -rf ~/cache/
 
     # == Stage2 Fedora ==
     # Fedora build tests, runs *after* the 'appimage' succeeded

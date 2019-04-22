@@ -1429,8 +1429,7 @@ Any::get_any () const
 {
   if (kind() == ANY && u_.vany)
     return u_.vany;
-  static const Any empty;
-  return &empty;
+  return this;
 }
 
 void
