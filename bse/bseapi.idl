@@ -1176,6 +1176,41 @@ interface Project : Container {
 interface PcmWriter : Item {
 };
 
+// == Bse Configuration ==
+record Configuration {
+  group _("Synthesis Settings") {
+    int32 synth_latency      = Range (_("Latency [ms]"),
+                                      _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
+                                      STANDARD, 1, 2000, 5);
+    int32 synth_mixing_freq  = Range (_("Synth Mixing Frequency"),
+                                      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
+                                      STANDARD, 8000, 192000, 0);
+    int32 synth_control_freq = Range (_("Synth Control Frequency"),
+                                      _("Frequency at which control values are evaluated, "
+                                        "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
+                                      STANDARD, 1, 192000, 0);
+  };
+  group _("MIDI") {
+    bool invert_sustain = Bool (_("Invert Sustain Pedal"), _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"), STANDARD);
+  };
+  group _("Default Values") {
+    String author_default  = String (_("Default Author"), _("Default value for 'Author' fields"), STANDARD);
+    String license_default = String (_("Default License"), _("Default value for 'License' fields"), STANDARD);
+  };
+  group _("Search Paths") {
+    String sample_path     = String (_("Sample Path"), _("Search path of directories, seperated by \";\", used to find audio samples."),
+                                     STANDARD ":searchpath");
+    String effect_path     = String (_("Effect Path"), _("Search path of directories, seperated by \";\", used to find BSE effect files."),
+                                     STANDARD ":searchpath");
+    String instrument_path = String (_("Instrument Path"), _("Search path of directories, seperated by \";\", used to find BSE instrument files."),
+                                     STANDARD ":searchpath");
+    String plugin_path     = String (_("Plugin Path"),
+                                     _("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
+                                       "is searched for in addition to the standard BSE plugin location on this system."),
+                                     STANDARD ":searchpath");
+  };
+};
+
 /// Categories describe useful type entities.
 record Category
 {
