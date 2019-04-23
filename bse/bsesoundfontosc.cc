@@ -546,6 +546,28 @@ gettime()
   return tv.tv_sec + tv.tv_usec / 1000000.0;
 }
 
+static void
+sound_font_osc_free_data (void                 *data,
+                          const BseModuleClass *klass)
+{
+  /* remove old events from the event queue */
+  SoundFontOscModule *flmod = (SoundFontOscModule *) data;
+  SfiRing *fluid_events = flmod->fluid_events;
+  SfiRing *node = fluid_events;
+  while (node)
+    {
+      SfiRing *next_node = sfi_ring_walk (node, fluid_events);
+      BseFluidEvent *event = (BseFluidEvent *) node->data;
+      g_free (event);
+      fluid_events = sfi_ring_remove_node (fluid_events, node);
+      node = next_node;
+    }
+  flmod->fluid_events = fluid_events;
+
+  /* cleanup fluid synth instance */
+  delete_fluid_synth (flmod->fluid_synth);
+  flmod->fluid_synth = nullptr;
+}
 
 static void
 bse_sound_font_osc_context_create (BseSource *source,
@@ -559,8 +581,8 @@ bse_sound_font_osc_context_create (BseSource *source,
     sound_font_osc_process,	    /* process */
     NULL,			    /* process_defer */
     sound_font_osc_reset,	    /* reset */
-    (BseModuleFreeFunc) g_free,	    /* free */
-    Bse::ModuleFlag::CHEAP,		    /* flags */
+    (BseModuleFreeFunc) sound_font_osc_free_data,  /* free */
+    Bse::ModuleFlag::CHEAP,	    /* flags */
   };
   SoundFontOscModule *sound_font_osc = g_new0 (SoundFontOscModule, 1);
   BseModule *module;
@@ -604,7 +626,6 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
 			            guint		  context_handle,
 			            BseTrans		 *trans)
 {
-  BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
   BseModule *module = bse_source_get_context_omodule (source, context_handle);
   BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
   bse_midi_receiver_remove_event_handler (mc.midi_receiver,
@@ -612,23 +633,6 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
 					  sound_font_osc_process_midi,
                                           NULL,
                                           module);
-  /* remove old events from the event queue */
-  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
-  SfiRing *fluid_events = flmod->fluid_events;
-  SfiRing *node = fluid_events;
-  while (node)
-    {
-      SfiRing *next_node = sfi_ring_walk (node, fluid_events);
-      BseFluidEvent *event = (BseFluidEvent *) node->data;
-      g_free (event);
-      fluid_events = sfi_ring_remove_node (fluid_events, node);
-      node = next_node;
-    }
-  flmod->fluid_events = fluid_events;
-
-  /* cleanup fluid synth instance */
-  delete_fluid_synth (flmod->fluid_synth);
-  flmod->fluid_synth = nullptr;
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
