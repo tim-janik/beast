@@ -33,9 +33,17 @@ struct BseSoundFontOsc : BseSource {
   BseSoundFontPreset   *preset;
   BseSoundFontOscConfig	config;
 
+
+
   /* C++ allocated data */
   struct Data {
     std::string         filename;
+
+    fluid_synth_t      *cached_fluid_synth = nullptr;
+    fluid_settings_t   *cached_fluid_settings = nullptr;
+    uint                cached_mix_freq = 0;
+    std::string         cached_filename;
+    int                 cached_sfont_id = 0;
   } data;
 };
 struct BseSoundFontOscClass : BseSourceClass
