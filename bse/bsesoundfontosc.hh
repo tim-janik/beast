@@ -26,13 +26,17 @@ struct BseSoundFontOscConfig {
   int			program;
   uint                  silence_bound;
   BseSoundFontRepo     *sfrepo;
-  const char           *filename;
 
   int                   update_preset;  /* preset changed indicator */
 };
 struct BseSoundFontOsc : BseSource {
   BseSoundFontPreset   *preset;
   BseSoundFontOscConfig	config;
+
+  /* C++ allocated data */
+  struct Data {
+    std::string         filename;
+  } data;
 };
 struct BseSoundFontOscClass : BseSourceClass
 {};
