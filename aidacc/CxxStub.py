@@ -782,6 +782,8 @@ class Generator:
       s += '\n'
     s += '};\n'
     s += 'AIDA_DEFINE_ENUM_EQUALITY (%s);\n' % nm
+    s += 'inline std::string to_string   (%s ev)                         { return Aida::enum_value_to_string (ev); }\n' % nm
+    s += 'inline bool        from_string (const std::string &en, %s &ev) { ev = Aida::enum_value_from_string<%s> (en); return true; }\n' % (nm, nm)
     if type_info.combinable: # enum as flags
       s += 'AIDA_DEFINE_FLAGS_ARITHMETIC (%s);\n' % nm
     s += '/// @endcond\n'
