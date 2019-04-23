@@ -45,7 +45,6 @@ public:
 
   fluid_settings_t           *fluid_settings;
   fluid_synth_t              *fluid_synth;
-  guint                       fluid_mix_freq;
 
 protected:
   virtual  ~SoundFontRepoImpl ();
