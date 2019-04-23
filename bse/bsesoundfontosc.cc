@@ -183,6 +183,8 @@ bse_sound_font_osc_class_init (BseSoundFontOscClass *klass)
 static void
 bse_sound_font_osc_init (BseSoundFontOsc *self)
 {
+  new (&self->data) BseSoundFontOsc::Data();
+
   memset (&self->config, 0, sizeof (self->config));
   self->config.silence_bound = bse_engine_sample_freq() * 0.020;  /* output is zero for 20 ms => set done output */
   self->preset = NULL;
@@ -194,9 +196,7 @@ bse_sound_font_osc_dispose (GObject *object)
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (object);
 
   if (self->config.sfrepo)
-    {
-      self->config.sfrepo = NULL;
-    }
+    self->config.sfrepo = NULL;
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -205,7 +205,9 @@ bse_sound_font_osc_dispose (GObject *object)
 static void
 bse_sound_font_osc_finalize (GObject *object)
 {
-  //BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (object);
+  BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (object);
+
+  self->data.~Data();
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -260,10 +262,10 @@ bse_sound_font_osc_set_property (GObject      *object,
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->preset), bse_sound_font_osc_uncross_preset);
               bse_object_proxy_notifies (self->preset, self, "notify::preset");
-	      self->config.filename = g_strdup (bse_sound_font_get_filename (BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent)).c_str()); // FIXME: LEAK
 	      self->config.bank = self->preset->bank;
 	      self->config.program = self->preset->program;
 	      self->config.update_preset++;
+	      self->data.filename = bse_sound_font_get_filename (BSE_SOUND_FONT (BSE_ITEM (self->preset)->parent));
               bse_sound_font_osc_update_modules (self, NULL);
             }
         }
@@ -535,17 +537,6 @@ event_handler_setup_func (BseModule *module,
                                        ehs->module);
 }
 
-#include <sys/time.h>
-
-static double
-gettime()
-{
-  timeval tv;
-  gettimeofday (&tv, 0);
-
-  return tv.tv_sec + tv.tv_usec / 1000000.0;
-}
-
 static void
 sound_font_osc_free_data (void                 *data,
                           const BseModuleClass *klass)
@@ -611,14 +602,12 @@ bse_sound_font_osc_context_create (BseSource *source,
 
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
   Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
+
   sound_font_osc->fluid_synth = new_fluid_synth (sfrepo_impl->fluid_settings);
-  printf ("loading soundfont: %s\n", self->config.filename);
-  double time1 = gettime();
-  sound_font_osc->sfont_id = fluid_synth_sfload (sound_font_osc->fluid_synth, self->config.filename, 0);
+  sound_font_osc->sfont_id = fluid_synth_sfload (sound_font_osc->fluid_synth, self->data.filename.c_str(), 0);
+
   fluid_synth_system_reset (sound_font_osc->fluid_synth);
   fluid_synth_program_select (sound_font_osc->fluid_synth, 0, sound_font_osc->sfont_id, self->config.bank, self->config.program);
-  double time2 = gettime();
-  printf (" - time delta %f\n", time2 - time1);
 }
 
 static void
