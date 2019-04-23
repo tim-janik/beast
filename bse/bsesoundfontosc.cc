@@ -145,7 +145,19 @@ bse_sound_font_osc_dispose (GObject *object)
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (object);
 
   if (self->config.sfrepo)
-    self->config.sfrepo = NULL;
+    self->config.sfrepo = nullptr;
+
+  if (self->data.cached_fluid_synth)
+    {
+      delete_fluid_synth (self->data.cached_fluid_synth);
+      self->data.cached_fluid_synth = nullptr;
+    }
+
+  if (self->data.cached_fluid_settings)
+    {
+      delete_fluid_settings (self->data.cached_fluid_settings);
+      self->data.cached_fluid_settings = nullptr;
+    }
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -277,8 +289,6 @@ static void
 bse_sound_font_osc_update_modules (BseSoundFontOsc *sound_font_osc,
 				   BseTrans        *trans)
 {
-  get_sfrepo (sound_font_osc);
-
   if (BSE_SOURCE_PREPARED (sound_font_osc))
     {
       bse_source_update_modules (BSE_SOURCE (sound_font_osc),
@@ -503,10 +513,6 @@ sound_font_osc_free_data (void                 *data,
       node = next_node;
     }
   flmod->fluid_events = fluid_events;
-
-  /* cleanup fluid synth instance */
-  delete_fluid_synth (flmod->fluid_synth);
-  flmod->fluid_synth = nullptr;
 }
 
 static void
@@ -550,10 +556,43 @@ bse_sound_font_osc_context_create (BseSource *source,
   bse_trans_add (trans, bse_job_access (module, event_handler_setup_func, ehs, g_free));
 
   BseSoundFontOsc *self = BSE_SOUND_FONT_OSC (source);
-  Bse::SoundFontRepoImpl *sfrepo_impl = self->config.sfrepo->as<Bse::SoundFontRepoImpl *>();
 
-  sound_font_osc->fluid_synth = new_fluid_synth (sfrepo_impl->fluid_settings);
-  sound_font_osc->sfont_id = fluid_synth_sfload (sound_font_osc->fluid_synth, self->data.filename.c_str(), 0);
+  /* loading a soundfont can take a while, so instead of freeing the
+   * fluid_synth afer using it, we keep it in data.cached_fluid_synth
+   *
+   * if the settings still match the next time the user hits play, we reuse the
+   * existing instance
+   *
+   * since the module uses the fluid_synth instance, we cannot modify it
+   * while the project is playing
+   */
+  uint mix_freq = bse_engine_sample_freq();
+  if (self->data.cached_filename != self->data.filename || self->data.cached_mix_freq != mix_freq)
+    {
+      if (self->data.cached_fluid_synth)
+        delete_fluid_synth (self->data.cached_fluid_synth);
+
+      if (self->data.cached_fluid_settings)
+        delete_fluid_settings (self->data.cached_fluid_settings);
+
+      fluid_settings_t *fluid_settings = self->data.cached_fluid_settings = new_fluid_settings();
+
+      fluid_settings_setnum (fluid_settings, "synth.sample-rate", mix_freq);
+      /* soundfont instruments should be as loud as beast synthesis network instruments */
+      fluid_settings_setnum (fluid_settings, "synth.gain", 1.0);
+      fluid_settings_setint (fluid_settings, "synth.midi-channels", 16);
+      fluid_settings_setint (fluid_settings, "synth.audio-channels", 1);
+      fluid_settings_setint (fluid_settings, "synth.audio-groups", 1);
+      fluid_settings_setint (fluid_settings, "synth.reverb.active", 0);
+      fluid_settings_setint (fluid_settings, "synth.chorus.active", 0);
+
+      self->data.cached_filename = self->data.filename;
+      self->data.cached_fluid_synth = new_fluid_synth (fluid_settings);
+      self->data.cached_sfont_id = fluid_synth_sfload (self->data.cached_fluid_synth, self->data.filename.c_str(), 0);
+      self->data.cached_mix_freq = mix_freq;
+    }
+  sound_font_osc->fluid_synth = self->data.cached_fluid_synth;
+  sound_font_osc->sfont_id    = self->data.cached_sfont_id;
 
   fluid_synth_system_reset (sound_font_osc->fluid_synth);
   fluid_synth_program_select (sound_font_osc->fluid_synth, 0, sound_font_osc->sfont_id, self->config.bank, self->config.program);
