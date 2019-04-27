@@ -5,6 +5,7 @@
 #include <bse/blob.hh>
 #include <bse/backtrace.hh>
 #include <bse/platform.hh>
+#include <bse/regex.hh>
 #include <bse/strings.hh>
 #include <bse/unicode.hh>
 #include <bse/glib-extra.hh>

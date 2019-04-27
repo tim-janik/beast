@@ -137,6 +137,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/platform.hh			\
 	bse/pugixml.hh			\
 	bse/randomhash.hh		\
+	bse/regex.hh			\
 	bse/sfi.hh			\
 	bse/sficomport.hh		\
 	bse/sficomwire.hh		\
@@ -289,6 +290,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/platform.cc			\
 	bse/pugixml.cc			\
 	bse/randomhash.cc		\
+	bse/regex.cc			\
 	bse/sficomport.cc		\
 	bse/sficomwire.cc		\
 	bse/sfifilecrawler.cc		\
