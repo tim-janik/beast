@@ -53,6 +53,7 @@ runpath (RPath rpath)
     case RPath::SAMPLEDIR:      return libbse_installdir + "/media/Samples";
     case RPath::LADSPADIRS:     return construct_ladspa_path();
     }
+  return "";
 }
 
 static std::string
