@@ -268,9 +268,11 @@ public:
         push_property_undo (propname);
         lvalue = std::move (rvalue);
       }
-    else if (lvalue == cvalue)
+    else
       {
-        return false;
+        if (lvalue == cvalue)
+          return false;
+        push_property_undo (propname);
         lvalue = cvalue;
       }
     auto lifeguard = shared_from_this();
