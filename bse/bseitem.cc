@@ -1331,4 +1331,10 @@ ItemImpl::constrain_idl_double (double &d, const StringVector &kvlist)
   return true;
 }
 
+bool
+ItemImpl::apply_idl_property_need_undo (const StringVector &kvlist)
+{
+  return !Aida::aux_vector_check_options (kvlist, "", "hints", "skip-undo");
+}
+
 } // Bse

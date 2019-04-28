@@ -230,6 +230,7 @@ public:
   static bool constrain_idl_enum   (int64_t &i, const StringVector &kvlist);
   static bool constrain_idl_int    (int64_t &i, const StringVector &kvlist);
   static bool constrain_idl_double (double  &d, const StringVector &kvlist);
+  static bool apply_idl_property_need_undo (const StringVector &kvlist);
   template<class T, Aida::REQUIRES< std::is_enum<T>::value > = true> bool
   constrain_idl_property (T &lvalue, const StringVector &kvlist)
   {
@@ -261,18 +262,21 @@ public:
     if (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
       { // avoid value copy for non primitive types
         T rvalue = cvalue;
-        if (!constrain_idl_property (rvalue, find_prop (propname)))
+        StringVector kvlist = find_prop (propname);
+        if (!constrain_idl_property (rvalue, kvlist))
           return false;
         if (lvalue == rvalue)
           return false;
-        push_property_undo (propname);
+        if (apply_idl_property_need_undo (kvlist))
+          push_property_undo (propname);
         lvalue = std::move (rvalue);
       }
     else
       {
         if (lvalue == cvalue)
           return false;
-        push_property_undo (propname);
+        if (apply_idl_property_need_undo (find_prop (propname)))
+          push_property_undo (propname);
         lvalue = cvalue;
       }
     auto lifeguard = shared_from_this();
