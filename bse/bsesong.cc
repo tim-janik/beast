@@ -892,15 +892,13 @@ SongImpl::loop_enabled (bool enabled)
   BseSong *self = as<BseSong*>();
 
   enabled = enabled && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
-  if (enabled != self->loop_enabled_SL)
+  bool value = self->loop_enabled_SL;
+
+  if (APPLY_IDL_PROPERTY (value, enabled))
     {
-      // this property has no undo
-
       BSE_SEQUENCER_LOCK ();
-      self->loop_enabled_SL = enabled;
+      self->loop_enabled_SL = value;
       BSE_SEQUENCER_UNLOCK ();
-
-      notify ("loop_enabled");
     }
 }
 
