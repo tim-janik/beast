@@ -11,6 +11,7 @@ tests/suite1.sources		::= $(strip	\
 	tests/aida-types.cc			\
 	tests/benchmarks.cc			\
 	tests/blocktests.cc			\
+	tests/checkserialize.cc			\
 	tests/explore-tests.cc			\
 	tests/filterdesign.cc			\
 	tests/filtertest.cc			\

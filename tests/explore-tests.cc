@@ -1,10 +1,10 @@
 // Licensed CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
+#include "explore.hh"
 #include <cstdio>
 #include <cmath>
 #include <bse/testing.hh>
 #include <bse/bseutils.hh>
-#include "explore_interfaces.hh"
-#include "explore_handles.hh"
+#include <bse/serialize.hh>
 using namespace Aida;
 
 static void
@@ -44,7 +44,13 @@ struct A1DerivedImpl : public virtual A1::DerivedIface, public virtual EnableSha
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
 };
 
-static void
+static inline void
+serialize_content (A1DerivedImpl &o, Bse::SerializeContext &sc)
+{}
+
+BSE_SERIALIZATION_EXPORT (A1DerivedImpl);
+
+void
 fill_big_data_pack (A1::BigDataPack &big)
 {
   const double TstNAN = 0 ? NAN : 909.909; // "NAN" is useful to test but breaks assert (in == out)
@@ -71,6 +77,7 @@ fill_big_data_pack (A1::BigDataPack &big)
   big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()->__handle__()));
   big.derived = std::make_shared<A1DerivedImpl>()->__handle__();
   big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
+  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
 }
 
 static void
@@ -86,7 +93,7 @@ test_explore_any()
   b2 = any.get<A1::BigDataPack>();
   TASSERT (big == b2);
   TASSERT (b2.anys.size() == 3);
-  TASSERT (b2.bases.size() == 1);
+  TASSERT (b2.bases.size() == 2);
 }
 TEST_ADD (test_explore_any);
 

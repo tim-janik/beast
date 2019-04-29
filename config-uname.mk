@@ -15,7 +15,7 @@ CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
 # == C/CXX/LD Flags ==
 COMMONFLAGS	::= -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations
-COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-declaration
+COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-declaration -Werror=return-type
 #COMMONFLAGS	 += -Wdate-time -Wconversion -Wshadow
 CONLYFLAGS	::= -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
 CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
