@@ -259,26 +259,18 @@ public:
   template<class T> bool
   apply_idl_property (T &lvalue, const T &cvalue, const String &propname)
   {
+    if (lvalue == cvalue)
+      return false;
+    T rvalue = cvalue;
+    const StringVector kvlist = find_prop (propname);
     if (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
-      { // avoid value copy for non primitive types
-        T rvalue = cvalue;
-        StringVector kvlist = find_prop (propname);
+      {
         if (!constrain_idl_property (rvalue, kvlist))
           return false;
-        if (lvalue == rvalue)
-          return false;
-        if (apply_idl_property_need_undo (kvlist))
-          push_property_undo (propname);
-        lvalue = std::move (rvalue);
       }
-    else
-      {
-        if (lvalue == cvalue)
-          return false;
-        if (apply_idl_property_need_undo (find_prop (propname)))
-          push_property_undo (propname);
-        lvalue = cvalue;
-      }
+    if (apply_idl_property_need_undo (kvlist))
+      push_property_undo (propname);
+    lvalue = std::move (rvalue);        // avoid value copy for non-primitive types
     auto lifeguard = shared_from_this();
     exec_now ([this, propname, lifeguard] () { this->notify (propname); });
     return true;

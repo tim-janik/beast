@@ -1289,7 +1289,6 @@ bool
 ItemImpl::constrain_idl_int (int64_t &i, const StringVector &kvlist)
 {
   const String &smin = Aida::Introspection::find_value ("min", kvlist);
-  int64_t dbg = i;
   if (!smin.empty())
     {
       size_t consumed = 0;
@@ -1312,7 +1311,6 @@ bool
 ItemImpl::constrain_idl_double (double &d, const StringVector &kvlist)
 {
   const String &smin = Aida::Introspection::find_value ("min", kvlist);
-  const double dbg = d;
   if (!smin.empty())
     {
       const char *const cmin = smin.c_str(), *end = NULL;
