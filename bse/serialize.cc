@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "serialize.hh"
+#include "bse/internal.hh"
 #include <sstream>
 #include <algorithm>
 
@@ -11,9 +12,14 @@ namespace Bse {
 typedef pugi::xml_document      XmlDoc;
 typedef pugi::xml_node          XmlNode; // A convenient XML node pointer
 typedef pugi::xml_attribute     XmlAttr; // A convenient XML attribute pointer
-#define add_attribute(xmlnode, attr, ...)                       \
+#define APPEND_ATTRIBUTE(xmlnode, attr, ...)                    \
   ({ xmlnode                                                    \
       .append_attribute (Bse::String (attr).c_str())            \
+      .set_value (Bse::string_format (__VA_ARGS__).c_str());    \
+  })
+#define PREPEND_ATTRIBUTE(xmlnode, attr, ...)                    \
+  ({ xmlnode                                                    \
+      .prepend_attribute (Bse::String (attr).c_str())            \
       .set_value (Bse::string_format (__VA_ARGS__).c_str());    \
   })
 #define add_textnode(xmlnode, txtnode, ...)     ({      \
@@ -48,10 +54,9 @@ struct SerializeContext::Private {
 };
 
 // == SerializeFromXML ==
-SerializeFromXML::SerializeFromXML (std::istream &is)
+SerializeFromXML::SerializeFromXML (const std::string &input)
 {
-  const std::string xmlstring (std::istreambuf_iterator<char> (is), {});
-  std::stringstream inputstream (xmlstring);
+  std::stringstream inputstream (input);
   SerializeContextCommonP common = std::make_shared<SerializeContextCommon> ();
   pugi::xml_parse_result result = common->doc.load (inputstream, pugi::parse_default, pugi::encoding_utf8);
   common->root = common->doc.first_child();
@@ -60,58 +65,64 @@ SerializeFromXML::SerializeFromXML (std::istream &is)
   sc_ = FriendAllocator<SerializeContext>::make_shared (priv);
   if (!result)
     {
-      const size_t l = 1 + std::count (xmlstring.begin(), xmlstring.begin() + result.offset, '\n');
+      const size_t l = 1 + std::count (input.begin(), input.begin() + result.offset, '\n');
       sc_->set_error (string_format ("%u: %s", l, result.description()));
     }
   assert_return (sc_->is_root());
 }
 
-SerializeFromXML::~SerializeFromXML ()
+SerializeFromXML::~SerializeFromXML()
 {}
 
-void
-SerializeFromXML::disown_all_pointers ()
+size_t
+SerializeFromXML::copy_all_pointers (VoidPtrVector &vv)
 {
-  sc_->disown_all_pointers();
-}
-
-void
-SerializeFromXML::delete_all_pointers ()
-{
-  sc_->delete_all_pointers();
+  return sc_->copy_all_pointers (vv);
 }
 
 // == SerializeToXML ==
-SerializeToXML::SerializeToXML (std::ostream &os, const String &roottag, const String &version) :
-  os_ (os)
+SerializeToXML::SerializeToXML (const String &roottag, const String &version)
 {
   SerializeContextCommonP common = std::make_shared<SerializeContextCommon> ();
   common->root = common->doc.append_child (String (roottag.empty() ? "data" : roottag).c_str());
   if (!version.empty())
-    add_attribute (common->root, "version", "%s", version);
+    APPEND_ATTRIBUTE (common->root, "version", "%s", version);
   SerializeContext::Private priv (common);
   priv.node = priv.common->root;
   sc_ = FriendAllocator<SerializeContext>::make_shared (priv);
   assert_return (sc_->is_root());
 }
 
-bool
-SerializeToXML::flush ()
+std::string
+SerializeToXML::to_xml ()
 {
-  if (!flushed_)
+  if (result_.empty())
     {
-      sc_->p_.common->doc.save (os_, "  ", pugi::format_indent); // pugi::format_indent_attributes
-      flushed_ = true;
+      std::stringstream serialization_stream;
+      PREPEND_ATTRIBUTE (sc_->p_.common->root, "xmlns:xo", "https://testbit.eu/d/xmlns-xml-serialize");
+      uint flags = pugi::format_no_declaration | pugi::format_indent | pugi::format_indent_attributes;
+      sc_->p_.common->doc.save (serialization_stream, "  ", flags);
+      result_ = serialization_stream.str();
+      // regex to make simple nodes one-liner
+      const std::string pat = "(\\n *)<([^<>\"]+)\\n *([^<>\"=]+)=\"([^<>\"]+)\" *(/?)>",
+                        rpl = "$1<$2 $3=\"$4\"$5>";
+      result_ = Re::sub (pat, rpl, result_);
     }
-  return !in_error();
+  return result_;
 }
 
 SerializeToXML::~SerializeToXML ()
-{
-  flush();
-}
+{}
 
 // == SerializeContext ==
+const char *SerializeContext::attr_main   = "xo:main";
+const char *SerializeContext::attr_this   = "xo:this";
+const char *SerializeContext::attr_item   = "item";
+const char *SerializeContext::attr_link   = "xo:link";
+const char *SerializeContext::attr_object = "object";
+const char *SerializeContext::attr_record = "record";
+const char *SerializeContext::attr_typeid = "xo:typeid";
+
 SerializeContext::SerializeContext (Private &priv) :
   p_ (*new (privatemem_) Private (priv)),
   is_range_ (false)
@@ -244,36 +255,19 @@ SerializeContext::clear_maps()
   p_.common->refmap.clear();
   p_.common->uid_map.clear();
   p_.common->uid_set.clear();
+  // trashpointers keeps references until destructor
 }
 
-void
-SerializeContext::disown_pointer (void *pointer)
+size_t
+SerializeContext::copy_all_pointers (VoidPtrVector &vv)
 {
-  if (!in_load() || !pointer)
-    return;     // ignore in_save() silently to simplify user code
+  const size_t l = vv.size();
+  vv.reserve (vv.size() + p_.common->refmap.size() + p_.common->trashpointers.size());
   for (const auto pair : p_.common->refmap)
-    if (pair.second.holds (pointer))
-      {
-        if (!pair.second.disarm_deleter())
-          Bse::warning ("SerializeContext.disown_pointer: shared_ptr is not deletable: %p", pointer);
-        return;
-      }
-  Bse::warning ("SerializeContext.disown_pointer: attempt to disown unknown pointer: %p", pointer);
-}
-
-void
-SerializeContext::disown_all_pointers()
-{
-  assert_return (!in_load() && !in_save()); // can't work while the refmap is still being build/used
+    vv.push_back (pair.second);
   for (auto p : p_.common->trashpointers)
-    p.disarm_deleter();
-}
-
-void
-SerializeContext::delete_all_pointers()
-{
-  assert_return (!in_load() && !in_save()); // can't work while the refmap is still being build/used
-  p_.common->trashpointers.clear();
+    vv.push_back (p);
+  return vv.size() - l;
 }
 
 String
@@ -282,7 +276,7 @@ SerializeContext::find_uid (void *address, const std::type_info &type, bool isro
   String uid = p_.common->uid_map[address];
   if (uid.empty() && isroot)
     {
-      uid = sc_main;
+      uid = attr_main;
       const bool main_saved = p_.common->uid_set.count (uid) != 0;
       assert_return (main_saved == false, uid); // save() can only be used once
       p_.common->uid_map[address] = uid;
@@ -291,7 +285,7 @@ SerializeContext::find_uid (void *address, const std::type_info &type, bool isro
     }
   else if (uid.empty())
     {
-      const String tname = cxx_demangle (type.name());
+      const String tname = Aida::string_demangle_cxx (type.name());
       const char *part = strrchr (tname.c_str(), ':');
       part = part ? part + 1 : tname.c_str();
       const String name = string_tolower (part);
@@ -321,7 +315,7 @@ SerializeContext::find_nested_by_uid (const String &objectid)
   const char hint = 'S';
   for (XmlNode child = p_.common->root.first_child(); child; child = child.next_sibling())
     {
-      XmlAttr attr = child.attribute (sc_uid.c_str());
+      XmlAttr attr = child.attribute (attr_this);
       if (!attr.empty() && objectid == attr.value())
         {
           Private priv (p_);
@@ -346,7 +340,7 @@ SerializeContext::load_nested (const String &attribute, char hint)
       Private priv (p_);
       priv.node = child;
       nested = FriendAllocator<SerializeContext>::make_shared (priv);
-      nested->is_range_ = hint == 'R';
+      nested->is_range_ = hint == 'S';  // Sequence
     }
   return nested;
 }
@@ -354,12 +348,17 @@ SerializeContext::load_nested (const String &attribute, char hint)
 SerializeContextP
 SerializeContext::save_nested (const String &attribute, char hint)
 {
+  // Hints:
+  // R - Record
+  // S - Sequence
+  // O - Object
+  // ^ - Root Object
   assert_return (in_save(), NULL);
-  XmlNode parent = hint == 'S' ? p_.common->root : p_.node;
+  XmlNode parent = hint == '^' ? p_.common->root : p_.node;
   Private priv (p_);
   priv.node = parent.append_child (attribute.c_str());
   SerializeContextP nested = FriendAllocator<SerializeContext>::make_shared (priv);
-  nested->is_range_ = hint == 'R';
+  nested->is_range_ = hint == 'S';
   return nested;
 }
 
@@ -382,6 +381,13 @@ void
 SerializeContext::rotate_children()
 {
   p_.node.append_move (p_.node.first_child());
+}
+
+void
+SerializeContext::save_comment (const String &comment)
+{
+  assert_return (in_save());
+  p_.node.append_child (pugi::node_comment).set_value (comment.c_str());
 }
 
 static String
@@ -413,31 +419,14 @@ find_attribute_child (XmlNode node, const String &key, bool *found)
 static bool
 is_simple_string (const std::string &s)
 {
-  if (s.size() > 20)
+  if (s.size() > 80)
     return false;
   for (auto c : s)
-    if (strchr ("<&>\"", c) || c < ' ' || c > '~')
+    if (c == '<' || c == '&' || c == '>' || c == '"' ||
+        unicode_is_noncharacter (c) ||
+        unicode_is_control_code (c) ||
+        unicode_is_private (c))
       return false;
-  return true;
-}
-
-static bool
-short_attribute_row (XmlNode node, int64 maxlen = 90)
-{
-  if (maxlen < 0)
-    return false;
-  maxlen -= strlen (node.name()) + 1;
-  if (maxlen < 0)
-    return false;
-  for (pugi::xml_attribute attr = node.first_attribute(); attr; attr = attr.next_attribute())
-    {
-      maxlen -= strlen (attr.name()) + 1;
-      if (maxlen < 0)
-        return false;
-      maxlen -= strlen (attr.value()) + 1;
-      if (maxlen < 0)
-        return false;
-    }
   return true;
 }
 
@@ -451,6 +440,7 @@ SerializeContext::load_integral (const String &attribute, char hint, bool *found
   switch (hint)
     {
     case 'B':   i64 = string_to_bool (value);           break;
+    case 'U':   i64 = string_to_uint (value);           break;
     default:    i64 = string_to_int (value);            break;
     }
   return i64;
@@ -465,11 +455,12 @@ SerializeContext::save_integral (const String &attribute, int64 val, char hint)
   switch (hint)
     {
     case 'B':   string = val ? "true" : "false";                break;
-    case 'E':   string = string_format ("0x%02x", val);         break;
+    case 'U':   string = string_format ("%u", val);             break;
+    case 'E': // fallthrough
     default:    string = string_format ("%d", val);             break;
     }
-  if (!is_range_ && is_simple_string (string) && short_attribute_row (p_.node))
-    add_attribute (p_.node, attribute, "%s", string);
+  if (!is_range_ && is_simple_string (string))
+    APPEND_ATTRIBUTE (p_.node, attribute, "%s", string);
   else
     add_textnode (p_.node, attribute, "%s", string);
 }
@@ -491,16 +482,20 @@ SerializeContext::save_float (const String &attribute, long double val, char hin
   String string;
   switch (hint)
     {
-    default:    string = string_format ("%e", val);             break;
+      // FLOAT:  "%1.8e"  or "%.9g"
+      // DOUBLE: "%1.16e" or "%.17g"
+    default:
+      string = string_format ("%.17g", val);
+      break;
     }
-  if (!is_range_ && is_simple_string (string) && short_attribute_row (p_.node))
-    add_attribute (p_.node, attribute, "%s", string);
+  if (!is_range_ && is_simple_string (string))
+    APPEND_ATTRIBUTE (p_.node, attribute, "%s", string);
   else
     add_textnode (p_.node, attribute, "%s", string);
 }
 
 std::string
-SerializeContext::load_string (const String &attribute, char hint, bool *found)
+SerializeContext::load_string (const String &attribute, bool *found)
 {
   assert_return (in_load(), "");
   assert_return (attribute.empty() == false, "");
@@ -515,12 +510,12 @@ SerializeContext::save_string (const String &attribute, const std::string &val, 
   assert_return (attribute.empty() == false);
   switch (is_range_ ? 0 : hint)
     {
-    case '-':
-      add_attribute (p_.node, attribute, "%s", val);
+    case '^':
+      PREPEND_ATTRIBUTE (p_.node, attribute, "%s", val);
       break;
     default:
-      if (is_simple_string (val) && short_attribute_row (p_.node))
-        add_attribute (p_.node, attribute, "%s", val);
+      if (!is_range_ && is_simple_string (val))
+        APPEND_ATTRIBUTE (p_.node, attribute, "%s", val);
       else
         add_textnode (p_.node, attribute, "%s", val);
       break;
@@ -530,15 +525,11 @@ SerializeContext::save_string (const String &attribute, const std::string &val, 
 // == SerializeContext::Factory ==
 SerializeContext::Factory *SerializeContext::Factory::factories_ = NULL;
 
-SerializeContext::Factory::Factory (Factory *register_factory) :
-  next_ (NULL)
+SerializeContext::Factory::Factory (const std::type_info &typeinfo) :
+  next_ (NULL), typeinfo_ (typeinfo), factory_type_ (canonify_mangled (typeinfo_.name()))
 {
-  if (register_factory)
-    {
-      assert_return (register_factory == this);
-      next_ = factories_;
-      factories_ = this;
-    }
+  next_ = factories_;
+  factories_ = this;
 }
 
 SerializeContext::Factory::~Factory()
@@ -553,31 +544,37 @@ SerializeContext::Factory::~Factory()
 }
 
 SerializeContext::Factory*
-SerializeContext::Factory::find_name (const std::string &type_name)
+SerializeContext::Factory::find_factory (const std::string &factorytype)
 {
   for (Factory *f = factories_; f; f = f->next_)
-    {
-      Factory *factory = f->match_name (type_name);
-      if (factory)
-        return factory;
-    }
+    if (f->factory_type_ == factorytype)
+      return f;
   return NULL;
 }
 
-std::string
-SerializeContext::Factory::find_type (const std::type_info &target, bool mandatory)
+SerializeContext::Factory*
+SerializeContext::Factory::find_factory (const std::type_info &typeinfo)
 {
   for (Factory *f = factories_; f; f = f->next_)
-    {
-      const std::string type_name = f->match_type (target);
-      if (!type_name.empty())
-        return type_name;
-    }
-  if (mandatory)
-    warning ("SerializeContext: unexported type, need: BSE_SERIALIZATION_EXPORT (%s);", cxx_demangle (target.name()));
-  return "";
+    if (f->typeinfo_ == typeinfo)
+      return f;
+  return NULL;
 }
 
+SerializeContext::Factory*
+SerializeContext::Factory::lookup_factory (const std::type_info &typeinfo)
+{
+  Factory *factory = find_factory (typeinfo);
+  if (!factory)
+    warning ("SerializeContext: unexported type, need: BSE_SERIALIZATION_EXPORT (%s);", Aida::string_demangle_cxx (typeinfo.name()));
+  return factory;
+}
+
+String
+SerializeContext::Factory::canonify_mangled (const char *mangled)
+{
+  return Aida::string_demangle_cxx (mangled);
+}
 
 // == SerializableBase ==
 SerializableBase::SerializableBase ()
