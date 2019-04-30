@@ -585,6 +585,10 @@ bse_sound_font_osc_context_create (BseSource *source,
       fluid_settings_setint (fluid_settings, "synth.audio-groups", 1);
       fluid_settings_setint (fluid_settings, "synth.reverb.active", 0);
       fluid_settings_setint (fluid_settings, "synth.chorus.active", 0);
+      /* we ensure that our fluid_synth instance is only used by one thread at a time
+       *  => we can disable automated locks that protect all fluid synth API calls
+       */
+      fluid_settings_setint (fluid_settings, "synth.threadsafe-api", 0);
 
       self->data.cached_filename = self->data.filename;
       self->data.cached_fluid_synth = new_fluid_synth (fluid_settings);
