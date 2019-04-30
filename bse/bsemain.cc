@@ -13,6 +13,7 @@
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
+#include "serialize.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -529,6 +530,91 @@ execution_context () // bseutils.hh
 {
   assert_return (bse_execution_context != NULL, *bse_execution_context);
   return *bse_execution_context;
+}
+
+// == Bse::Configuration ==
+static Configuration global_config;
+static bool          global_config_loaded = false;
+static bool          global_config_dirty = false;
+
+static Configuration
+global_config_get_defaults ()
+{
+  Configuration config;
+  // static defaults
+  config.synth_latency = 50;
+  config.synth_mixing_freq = 48000;
+  config.synth_control_freq = 1000;
+  config.invert_sustain = false;
+  config.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
+  // dynamic defaults
+  const String default_user_path = Path::join (Path::user_home(), "Beast");
+  config.effect_path     = default_user_path + "/Effects";
+  config.instrument_path = default_user_path + "/Instruments";
+  config.plugin_path     = default_user_path + "/Plugins";
+  config.sample_path     = default_user_path + "/Samples";
+  const char *user = g_get_user_name();
+  if (user)
+    {
+      const char *name = g_get_real_name();
+      if (name && name[0] && strcmp (user, name) != 0)
+        config.author_default = name;
+      else
+        config.author_default = user;
+    }
+  return config;
+}
+
+static String
+global_config_beastrc()
+{
+  return Path::join (Path::config_home(), "beast", "beastrc");
+}
+
+Configuration
+global_config_get ()
+{
+  if (!global_config_loaded)
+    {
+      Configuration config = global_config_get_defaults();
+      // load from rcfile
+      String fileconfig = Path::stringread (global_config_beastrc());
+      if (!fileconfig.empty())
+        {
+          Configuration tmp;
+          SerializeFromXML si (fileconfig);
+          if (si.load (tmp))
+            config = tmp;
+        }
+      global_config_loaded = true;
+      global_config = config;
+    }
+  return global_config;
+}
+
+void
+global_config_set (const Configuration &configuration)
+{
+  if (global_config == configuration)
+    return;
+  global_config = configuration;
+  if (!global_config_dirty)
+    {
+      exec_timeout (global_config_flush, 500);
+      global_config_dirty = true;
+    }
+}
+
+void
+global_config_flush ()
+{
+  if (global_config_dirty)
+    {
+      SerializeToXML so ("configuration", version());
+      so.save (global_config);
+      Path::stringwrite (global_config_beastrc(), so.to_xml(), true);
+      global_config_dirty = false;
+    }
 }
 
 } // Bse

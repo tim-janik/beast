@@ -1,13 +1,25 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
-#include        <bse/bsetype.hh>
+
+#include <bse/bseenums.hh>
+
 // == BSE Initialization ==
 void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
 bool _bse_initialized	();
 int  bse_init_and_test 	(int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args = Bse::StringVector());
 void bse_main_wakeup    ();
 SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
+
+namespace Bse {
+
+// == Bse Configuration ==
+Configuration   global_config_get ();
+void            global_config_set (const Configuration &configuration);
+void            global_config_flush ();
+
+} // Bse
+
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
