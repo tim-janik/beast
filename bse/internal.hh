@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#ifndef __BSE_PRIVATE_HH__
-#define __BSE_PRIVATE_HH__
+#ifndef __BSE_INTERNAL_HH__
+#define __BSE_INTERNAL_HH__
 
 // Import simple BSE types into global scope
 using Bse::uint8;
@@ -43,4 +43,7 @@ using Bse::String;
 /// Yield the number of C @a array elements.
 #define ARRAY_SIZE(array)               BSE_ARRAY_SIZE (array)
 
-#endif  // __BSE_PRIVATE_HH__
+/// Constrain, apply, notify and implement a property change, the property name must equal `__func__`.
+#define APPLY_IDL_PROPERTY(lvalue, rvalue)      BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)
+
+#endif  // __BSE_INTERNAL_HH__

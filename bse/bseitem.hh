@@ -242,9 +242,6 @@ public:
 };
 
 #define BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)   this->apply_idl_property (lvalue, rvalue, __func__)
-#ifdef  BSE_COMPILATION
-#define APPLY_IDL_PROPERTY(lvalue, rvalue)              BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)
-#endif
 
 } // Bse
 
