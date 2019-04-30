@@ -186,15 +186,6 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
     sfi_init (argc, argv);
 }
 
-void
-bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  initialize_with_argv (argc, argv, app_name, args);
-
-  // initialize globals, signals, types, builtins, etc
-  bse_init_intern ();
-}
-
 static Aida::ExecutionContext *bse_execution_context = NULL;
 static std::atomic<bool> main_loop_thread_running { true };
 
