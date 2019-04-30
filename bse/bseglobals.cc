@@ -65,15 +65,18 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
 
 namespace Bse {
 
-// Run `function` immediately with the next event loop iteration.
-uint
-exec_now (const std::function<void()> &function)
+template<class R> static uint
+exec_gsource (const std::function<R()> &function, uint delay_ms, int priority)
 {
-  using Func = std::function<void()>;
+  using Func = std::function<R()>;
   Func *func = new Func (function);
   void *data = func;
   GSourceFunc wrapper = [] (void *data) -> gboolean {
     Func *func = (Func*) data;
+    if constexpr (std::is_same<R,bool>::value) {
+        return (*func) ();
+      }
+    // else
     (*func) ();
     return false;
   };
@@ -81,8 +84,8 @@ exec_now (const std::function<void()> &function)
     Func *func = (Func*) data;
     delete func;
   };
-  GSource *source = g_idle_source_new ();
-  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  GSource *source = delay_ms ? g_timeout_source_new (delay_ms) : g_idle_source_new ();
+  g_source_set_priority (source, priority);
   g_source_set_callback (source, wrapper, data, destroy);
   uint id = g_source_attach (source, bse_main_context);
   g_source_unref (source);
@@ -93,23 +96,28 @@ exec_now (const std::function<void()> &function)
 uint
 exec_now (const std::function<bool()> &function)
 {
-  using Func = std::function<bool()>;
-  Func *func = new Func (function);
-  void *data = func;
-  GSourceFunc wrapper = [] (void *data) -> gboolean {
-    Func *func = (Func*) data;
-    return (*func) ();
-  };
-  GDestroyNotify destroy = [] (void *data) {
-    Func *func = (Func*) data;
-    delete func;
-  };
-  GSource *source = g_idle_source_new ();
-  g_source_set_priority (source, BSE_PRIORITY_NOW);
-  g_source_set_callback (source, wrapper, data, destroy);
-  uint id = g_source_attach (source, bse_main_context);
-  g_source_unref (source);
-  return id;
+  return exec_gsource (function, 0, BSE_PRIORITY_NOW);
+}
+
+// Run `function` immediately with the next event loop iteration.
+uint
+exec_now (const std::function<void()> &function)
+{
+  return exec_gsource (function, 0, BSE_PRIORITY_NOW);
+}
+
+// Run `function` after `delay_ms` milliseconds have passed, return `true` to keep alive.
+uint
+exec_timeout (const std::function<bool()> &function, uint delay_ms)
+{
+  return exec_gsource (function, delay_ms, BSE_PRIORITY_NORMAL);
+}
+
+// Run `function` after `delay_ms` milliseconds have passed.
+uint
+exec_timeout (const std::function<void()> &function, uint delay_ms)
+{
+  return exec_gsource (function, delay_ms, BSE_PRIORITY_NORMAL);
 }
 
 } // Bse
