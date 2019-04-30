@@ -641,6 +641,30 @@ memwrite (const String &filename, size_t len, const uint8 *bytes)
   return success;
 }
 
+// Read `filename` into a std::string, check `errno` for empty returns.
+String
+stringread (const String &filename)
+{
+  String s;
+  size_t length = 0;
+  errno = 0;
+  char *data = memread (filename, &length);
+  if (data)
+    {
+      s = String (data, length);
+      memfree (data);
+      errno = 0;
+    }
+  return s;
+}
+
+// Write `data` into `filename`, check `errno` for false returns.
+bool
+stringwrite (const String &filename, const String &data)
+{
+  return memwrite (filename, data.size(), (const uint8*) data.data());
+}
+
 } // Path
 } // Bse
 

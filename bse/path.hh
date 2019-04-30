@@ -56,6 +56,8 @@ char*        memread             (const String &filename,
                                   size_t       *lengthp);
 void         memfree             (char         *memread_mem);
 bool         memwrite            (const String &filename, size_t len, const uint8 *bytes);
+String       stringread          (const String &filename);
+bool         stringwrite         (const String &filename, const String &data);
 String       cwd                 ();
 String       vpath_find          (const String &file, const String &mode = "e");
 bool         searchpath_contains (const String &searchpath, const String &element);
