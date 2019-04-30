@@ -227,7 +227,58 @@ public:
   /// Resolve an undo descriptor back to an object, see also undo_descriptor().
   template<class Obj>
   Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
+  /// Constrain and assign property value if it has changed, emit notification.
+  template<class T> bool
+  apply_idl_property (T &lvalue, const T &cvalue, const String &propname)
+  {
+    if (lvalue == cvalue)
+      return false;
+    T rvalue = cvalue;
+    const StringVector kvlist = find_prop (propname);
+    if (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
+      {
+        if (!constrain_idl_property (rvalue, kvlist))
+          return false;
+      }
+    if (apply_idl_property_need_undo (kvlist))
+      push_property_undo (propname);
+    lvalue = std::move (rvalue);        // avoid value copy for non-primitive types
+    auto lifeguard = shared_from_this();
+    exec_now ([this, propname, lifeguard] () { this->notify (propname); });
+    return true;
+  }
+private:
+  static bool constrain_idl_enum   (int64_t &i, const StringVector &kvlist);
+  static bool constrain_idl_int    (int64_t &i, const StringVector &kvlist);
+  static bool constrain_idl_double (double  &d, const StringVector &kvlist);
+  static bool apply_idl_property_need_undo (const StringVector &kvlist);
+  template<class T, Aida::REQUIRES< std::is_enum<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    int64_t i = int64_t (lvalue);
+    const bool valid = constrain_idl_enum (i, kvlist);
+    lvalue = T (i);
+    return valid;
+  }
+  template<class T, Aida::REQUIRES< std::is_integral<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    int64_t i = int64_t (lvalue);
+    const bool valid = constrain_idl_int (i, kvlist);
+    lvalue = T (i);
+    return valid;
+  }
+  template<class T, Aida::REQUIRES< std::is_floating_point<T>::value > = true> bool
+  constrain_idl_property (T &lvalue, const StringVector &kvlist)
+  {
+    double d = lvalue;
+    const bool valid = constrain_idl_double (d, kvlist);
+    lvalue = d;
+    return valid;
+  }
 };
+
+#define BSE_OBJECT_APPLY_IDL_PROPERTY(lvalue, rvalue)   this->apply_idl_property (lvalue, rvalue, __func__)
 
 } // Bse
 

@@ -2087,6 +2087,13 @@ SourceImpl::~SourceImpl ()
   cmon_delete();        // delete cmons_ and cmon_block_
 }
 
+bool
+SourceImpl::prepared() const
+{
+  BseObject *bseobject = const_cast<SourceImpl*> (this)->as_bse_object();
+  return BSE_SOURCE_PREPARED (bseobject);
+}
+
 SourceIfaceP
 SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
 {

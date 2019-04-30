@@ -804,16 +804,8 @@ void
 SongImpl::numerator (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->numerator) != val)
-    {
-      const char *prop = "numerator";
-      push_property_undo (prop);
-
-      self->numerator = val;
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->numerator, val))
+    bse_song_update_tpsi_SL (self);
 }
 
 int
@@ -828,16 +820,9 @@ void
 SongImpl::denominator (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->denominator) != val)
-    {
-      const char *prop = "denominator";
-      push_property_undo (prop);
-
-      self->denominator = val <= 2 ? val : 1 << g_bit_storage (val - 1);
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  const int d = val <= 2 ? val : 1 << g_bit_storage (val - 1);
+  if (APPLY_IDL_PROPERTY (self->denominator, d))
+    bse_song_update_tpsi_SL (self);
 }
 
 double
@@ -851,14 +836,8 @@ void
 SongImpl::bpm (double val)
 {
   BseSong *self = as<BseSong*>();
-  if (self->bpm != val)
-    {
-      const char prop[] = "bpm";
-      push_property_undo (prop);
-      self->bpm = val;
-      bse_song_update_tpsi_SL (self);
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->bpm, float (val)))
+    bse_song_update_tpsi_SL (self);
 }
 
 
@@ -873,16 +852,8 @@ void
 SongImpl::tpqn (int val)
 {
   BseSong *self = as<BseSong*>();
-  if (int (self->tpqn) != val)
-    {
-      const char *prop = "tpqn";
-      push_property_undo (prop);
-
-      self->tpqn = val;
-      bse_song_update_tpsi_SL (self);
-
-      notify (prop);
-    }
+  if (APPLY_IDL_PROPERTY (self->tpqn, val))
+    bse_song_update_tpsi_SL (self);
 }
 
 MusicalTuning
@@ -895,19 +866,15 @@ SongImpl::musical_tuning () const
 void
 SongImpl::musical_tuning (MusicalTuning tuning)
 {
-  BseSong *self = as<BseSong*>();
-  if (self->musical_tuning != tuning)
+  if (!prepared())
     {
-      const char prop[] = "musical_tuning";
-      if (!BSE_SOURCE_PREPARED (self))
+      BseSong *self = as<BseSong*>();
+      if (APPLY_IDL_PROPERTY (self->musical_tuning, tuning))
         {
-          push_property_undo (prop);
-          self->musical_tuning = tuning;
           SfiRing *ring;
           for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
             bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
         }
-      notify (prop);
     }
 }
 
@@ -925,15 +892,13 @@ SongImpl::loop_enabled (bool enabled)
   BseSong *self = as<BseSong*>();
 
   enabled = enabled && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
-  if (enabled != self->loop_enabled_SL)
+  bool value = self->loop_enabled_SL;
+
+  if (APPLY_IDL_PROPERTY (value, enabled))
     {
-      // this property has no undo
-
       BSE_SEQUENCER_LOCK ();
-      self->loop_enabled_SL = enabled;
+      self->loop_enabled_SL = value;
       BSE_SEQUENCER_UNLOCK ();
-
-      notify ("loop_enabled");
     }
 }
 
