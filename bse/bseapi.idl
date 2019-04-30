@@ -1266,6 +1266,8 @@ interface Server : Container {
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.
   SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
+  Configuration  get_config        ();                                  ///< Retrieve Bse::Configuration settings.
+  void           set_config        (Configuration configuration);       ///< Assign updated Bse::Configuration settings.
 
   /// Describe a note, providing information about its octave, semitone, frequency, etc.
   NoteDescription note_describe (MusicalTuning musical_tuning, int32 note, int32 fine_tune);

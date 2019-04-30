@@ -120,6 +120,8 @@ public:
   virtual AuxData    find_module_type       (const String &module_type) override;
   virtual Icon       module_type_icon       (const String &module_type) override;
   virtual SampleFileInfo sample_file_info   (const String &filename) override;
+  virtual Configuration  get_config         () override;
+  virtual void           set_config         (const Configuration &configuration) override;
   virtual NoteDescription note_describe_from_freq (MusicalTuning musical_tuning, double freq) override;
   virtual NoteDescription note_describe    (MusicalTuning musical_tuning, int note, int fine_tune) override;
   virtual NoteDescription note_construct   (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune) override;
