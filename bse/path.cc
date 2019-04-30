@@ -102,6 +102,13 @@ isdirname (const String &path)
   return false;
 }
 
+/// Create the directories in `dirpath` with `mode`, check errno on false returns.
+bool
+mkdirs (const String &dirpath, uint mode)
+{
+  return g_mkdir_with_parents (dirpath.c_str(), mode) == 0;
+}
+
 /// Get a @a user's home directory, uses $HOME if no @a username is given.
 String
 user_home (const String &username)
@@ -660,8 +667,10 @@ stringread (const String &filename)
 
 // Write `data` into `filename`, check `errno` for false returns.
 bool
-stringwrite (const String &filename, const String &data)
+stringwrite (const String &filename, const String &data, bool mkdirs_)
 {
+  if (mkdirs_)
+    mkdirs (dirname (filename), 0750);
   return memwrite (filename, data.size(), (const uint8*) data.data());
 }
 
