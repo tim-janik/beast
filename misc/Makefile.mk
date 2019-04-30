@@ -68,7 +68,7 @@ clang-tidy:								| $>/misc/clang-tidy/
 	$Q egrep $(CLANG_TIDY_GLOB) < $>/misc/tmpls.all			> $>/misc/tmpls.cchh
 	$Q egrep -vf misc/clang-tidy.ignore  $>/misc/tmpls.cchh		> $>/misc/tmpls.clangtidy
 	clang-tidy `cat $>/misc/tmpls.clangtidy` -- \
-	  -std=gnu++14 \
+	  -std=gnu++17 \
 	  -I . \
 	  -I $> \
 	  -I sfi \
