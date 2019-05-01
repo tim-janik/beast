@@ -23,6 +23,7 @@ const vue_components = [
   require ('./track-list.vue'),
   require ('./track-view.vue'),
   require ('./projectshell.vue'),
+  require ('./example.vue'),
 ];
 
 // register components
