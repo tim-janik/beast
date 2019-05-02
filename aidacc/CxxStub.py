@@ -327,7 +327,7 @@ class Generator:
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
       s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
-    s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
+    s += '  ' + self.F ('static const Aida::StringVector&') + '__aida_aux_data__ ();\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
     if type_info.storage == Decls.RECORD:
@@ -401,7 +401,7 @@ class Generator:
     type_identifier = self.type_identifier (tp)
     s = ''
     # __aida_aux_data__
-    s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
+    s += 'const Aida::StringVector&\n%s::__aida_aux_data__()\n{\n' % self.C (tp)
     s += '  static const Aida::StringVector sv = Aida::Introspection::find_type ("%s");\n' % type_identifier
     s += '  return sv;\n'
     s += '}\n'
