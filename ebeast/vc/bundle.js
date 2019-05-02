@@ -14,6 +14,7 @@ const vue_components = [
   require ('./button-bar.vue'),
   require ('./color-picker.vue'),
   require ('./icon-button.vue'),
+  require ('./fed-number.vue'),
   require ('./fed-switch.vue'),
   require ('./piano-roll.vue'),
   require ('./playcontrols.vue'),
