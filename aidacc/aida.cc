@@ -741,15 +741,15 @@ void
 IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
 {
   AIDA_ASSERT_RETURN (auxentry && length > 0 && auxentry[length - 1] == 0);
-  AIDA_ASSERT_RETURN (strncmp (auxentry, "typename=", 9) == 0);     // first element is the type name
+  AIDA_ASSERT_RETURN (strncmp (auxentry, "typename=", 9) == 0); // first element is the type name
   const char *type_name = auxentry + 9;
   const char *fundamental = type_name + strlen (type_name) + 1; // second element is the fundamental type
-  AIDA_ASSERT_RETURN (fundamental - type_name < length && strncmp (fundamental, "type=", 5) == 0);
+  AIDA_ASSERT_RETURN (length > fundamental + 5 - auxentry && strncmp (fundamental, "type=", 5) == 0);
   fundamental += 5;
   AIDA_ASSERT_RETURN (fundamental[0] != 0);
   const char *entries = fundamental + strlen (fundamental) + 1;
-  AIDA_ASSERT_RETURN (entries < auxentry + length);
-  aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, entries, length - (entries - auxentry) };
+  AIDA_ASSERT_RETURN (length > entries - auxentry);
+  aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, auxentry, length };
 }
 
 static std::vector<const char*>
