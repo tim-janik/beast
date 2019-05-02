@@ -278,6 +278,9 @@ class Generator:
       # Class ctor
       if tp.storage == Decls.SEQUENCE or tp.storage == Decls.RECORD:
         b += '    .ctor()\n'
+      # Class typedata
+      if tp.storage in (Decls.SEQUENCE, Decls.RECORD):
+        b += '    .set ("__typedata__", &%s::__aida_aux_data__)\n' % cn
       # Class properties
       if tp.storage != Decls.SEQUENCE:
         for fname, ftp in tp.fields:
