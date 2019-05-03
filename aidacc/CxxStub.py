@@ -844,7 +844,6 @@ class Generator:
         types += [ tp ]
     # CPP guards
     sc_macro_prefix, sc_other_prefix = '__CLNT__', '__SRVT__' # for G4STUB
-    clntsrvt_id = 2 if self.gen_serverhh or self.gen_servercc else 1
     if self.gen_mode == G4SERVANT:
       sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
     if self.gen_serverhh or self.gen_clienthh:
@@ -949,7 +948,7 @@ class Generator:
             for m in tp.methods:
               s += self.generate_client_method_stub (tp, m)
     # Generate Enum Implementations
-    if self.gen_clientcc or self.gen_servercc:
+    if self.gen_clientcc:
       spc_enums = []
       for tp in types:
         if tp.is_forward:
@@ -959,16 +958,9 @@ class Generator:
       if spc_enums:
         s += self.open_namespace (None)
         s += '\n'
-        if self.gen_servercc:
-          s += '#ifndef __ENUMCC__%s__\n' % self.cppmacro # pick default implementation
-          s += '#define __ENUMCC__%s__    %d\n' % (self.cppmacro, clntsrvt_id)
-          s += '#endif\n'
-        s += '#if     __ENUMCC__%s__ == %d\n' % (self.cppmacro, clntsrvt_id) # pick either client or server aliases
         s += self.open_namespace (self.ns_aida)
         for tp in spc_enums:
           s += self.generate_enum_info_impl (tp)
-        s += self.open_namespace (None)
-        s += '\n#endif // __ENUMCC__%s__\n\n' % self.cppmacro
     s += self.open_namespace (None) # close all namespaces
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
