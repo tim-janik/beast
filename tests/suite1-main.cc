@@ -1,7 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/testing.hh>
+#include <bse/bsemain.hh>
 #include <bse/bse.hh>
-#include <bse/bsemain.hh> // FIXME: bse_init_test
 #include "ipc.hh"
 
 #define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
