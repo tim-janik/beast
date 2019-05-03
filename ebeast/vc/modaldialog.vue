@@ -120,8 +120,6 @@
 </template>
 
 <script>
-const Util = require ('./utilities.js');
-
 module.exports = {
   name: 'vc-modaldialog',
   mounted () {

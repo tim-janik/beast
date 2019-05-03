@@ -82,8 +82,6 @@
 </style>
 
 <script>
-const Util = require ('./utilities.js');
-
 module.exports = {
   name: 'vc-color-picker',
   mixins: [ Util.vue_mixins.hyphen_props ],
