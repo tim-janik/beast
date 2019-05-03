@@ -15,6 +15,8 @@ enum class Enum1 : int64_t {
   E1_A = 1,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum1);
+inline std::string to_string   (Enum1 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum1 &ev) { ev = Aida::enum_value_from_string<Enum1> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -22,6 +24,8 @@ enum class Enum1c : int64_t {
   E1C_A = 1,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum1c);
+inline std::string to_string   (Enum1c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum1c &ev) { ev = Aida::enum_value_from_string<Enum1c> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -30,6 +34,8 @@ enum class Enum2 : int64_t {
   E2_B = 2,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum2);
+inline std::string to_string   (Enum2 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum2 &ev) { ev = Aida::enum_value_from_string<Enum2> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -38,6 +44,8 @@ enum class Enum2c : int64_t {
   E2C_B = 2,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum2c);
+inline std::string to_string   (Enum2c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum2c &ev) { ev = Aida::enum_value_from_string<Enum2c> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -47,6 +55,8 @@ enum class Enum3 : int64_t {
   E3_C = 3,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum3);
+inline std::string to_string   (Enum3 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum3 &ev) { ev = Aida::enum_value_from_string<Enum3> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -56,6 +66,8 @@ enum class Enum3c : int64_t {
   E3C_C = 3,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum3c);
+inline std::string to_string   (Enum3c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum3c &ev) { ev = Aida::enum_value_from_string<Enum3c> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -66,6 +78,8 @@ enum class Enum4a : int64_t {
   E4A_D = 4,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum4a);
+inline std::string to_string   (Enum4a ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4a &ev) { ev = Aida::enum_value_from_string<Enum4a> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -76,6 +90,8 @@ enum class Enum4b : int64_t {
   E4B_D = 4,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum4b);
+inline std::string to_string   (Enum4b ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4b &ev) { ev = Aida::enum_value_from_string<Enum4b> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -86,6 +102,8 @@ enum class Enum4c : int64_t {
   E4C_D = 4,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum4c);
+inline std::string to_string   (Enum4c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4c &ev) { ev = Aida::enum_value_from_string<Enum4c> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -96,6 +114,8 @@ enum class Enum4d : int64_t {
   E4D_D = 4,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum4d);
+inline std::string to_string   (Enum4d ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4d &ev) { ev = Aida::enum_value_from_string<Enum4d> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -137,6 +157,8 @@ enum class ExtensiveEnum : int64_t {
   V36 = 42, // "foo4"
 };
 AIDA_DEFINE_ENUM_EQUALITY (ExtensiveEnum);
+inline std::string to_string   (ExtensiveEnum ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, ExtensiveEnum &ev) { ev = Aida::enum_value_from_string<ExtensiveEnum> (en); return true; }
 /// @endcond
 } // MandatoryNamespace
 
@@ -147,6 +169,8 @@ enum class QuickEnum : int64_t {
   ZERO = 0,
 };
 AIDA_DEFINE_ENUM_EQUALITY (QuickEnum);
+inline std::string to_string   (QuickEnum ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, QuickEnum &ev) { ev = Aida::enum_value_from_string<QuickEnum> (en); return true; }
 /// @endcond
 } // InterfaceTests
 
@@ -161,6 +185,8 @@ enum class ClickType : int64_t {
   CLICK_KEY_REPEAT = 5,
 };
 AIDA_DEFINE_ENUM_EQUALITY (ClickType);
+inline std::string to_string   (ClickType ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, ClickType &ev) { ev = Aida::enum_value_from_string<ClickType> (en); return true; }
 /// @endcond
 
 /// @cond GeneratedEnums
@@ -179,6 +205,8 @@ enum class MathExpressions : int64_t {
   RESULT_511 = 511,
 };
 AIDA_DEFINE_ENUM_EQUALITY (MathExpressions);
+inline std::string to_string   (MathExpressions ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, MathExpressions &ev) { ev = Aida::enum_value_from_string<MathExpressions> (en); return true; }
 /// @endcond
 } // RapicornAidaTest
 
@@ -228,7 +256,7 @@ public:
   inline                        XFooRecord () = default;
   inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const XFooRecord &other) const;
   bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<XFooRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -266,7 +294,7 @@ public:
   inline                        XFooSequence (const Aida::AnySeq &s);
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -280,7 +308,7 @@ public:
   inline                        IntSequence (const Aida::AnySeq &s);
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -294,7 +322,7 @@ public:
   inline                        FloatSequence (const Aida::AnySeq &s);
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -308,7 +336,7 @@ public:
   inline                        StringSequence (const Aida::AnySeq &s);
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -322,7 +350,7 @@ public:
   inline                        ExtensiveEnumSequence (const Aida::AnySeq &s);
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -336,7 +364,7 @@ public:
   inline                        RecordSequence (const Aida::AnySeq &s);
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -350,7 +378,7 @@ public:
   inline                        SequenceSequence (const Aida::AnySeq &s);
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -364,7 +392,7 @@ public:
   inline                        InterfaceSequence (const Aida::AnySeq &s);
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -378,7 +406,7 @@ public:
   inline                        AnySequence (const Aida::AnySeq &s);
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -396,7 +424,7 @@ public:
   inline                        NestedTypesRec () = default;
   inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const NestedTypesRec &other) const;
   bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NestedTypesRec*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -418,7 +446,7 @@ public:
   inline                        NestedTypesSeq (const Aida::AnySeq &s);
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -434,7 +462,7 @@ public:
   inline                        NewRecord () = default;
   inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const NewRecord &other) const;
   bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NewRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -461,7 +489,7 @@ public:
   inline                        InnerRecord () = default;
   inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const InnerRecord &other) const;
   bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<InnerRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -484,7 +512,7 @@ public:
   inline                        Refer2Inner () = default;
   inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const Refer2Inner &other) const;
   bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<Refer2Inner*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -510,7 +538,7 @@ public:
   inline                        SomeRecord () = default;
   inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const SomeRecord &other) const;
   bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<SomeRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -540,7 +568,7 @@ public:
   inline                        RecordWithAuxdata () = default;
   inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const RecordWithAuxdata &other) const;
   bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordWithAuxdata*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -684,7 +712,7 @@ public:
   inline                        QuickRecord () = default;
   inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const QuickRecord &other) const;
   bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<QuickRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -706,7 +734,7 @@ public:
   inline                        QuickSequence (const Aida::AnySeq &s);
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
 
@@ -1009,7 +1037,7 @@ public:
   inline                        RecordForGroups () = default;
   inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
-  const Aida::StringVector&     __aida_aux_data__ () const;
+  static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const RecordForGroups &other) const;
   bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordForGroups*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
@@ -1310,6 +1338,9 @@ using namespace Aida;
 
 #endif // __AIDA_CXXSTUB_CLIENT_CC__
 
+#undef _
+#define _(...)          __VA_ARGS__
+
 
 // --- Implementations ---
 
@@ -1353,7 +1384,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_X
   "any3.type=ANY\0"
 };
 const Aida::StringVector&
-XFooRecord::__aida_aux_data__() const
+XFooRecord::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooRecord");
   return sv;
@@ -1388,7 +1419,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_X
   "single_bool.type=BOOL\0"
 };
 const Aida::StringVector&
-XFooSequence::__aida_aux_data__() const
+XFooSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
   return sv;
@@ -1400,7 +1431,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
   "numx.type=INT32\0"
 };
 const Aida::StringVector&
-IntSequence::__aida_aux_data__() const
+IntSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
   return sv;
@@ -1412,7 +1443,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_F
   "fractalvalue.type=FLOAT64\0"
 };
 const Aida::StringVector&
-FloatSequence::__aida_aux_data__() const
+FloatSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
   return sv;
@@ -1424,7 +1455,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_S
   "blurb.type=STRING\0"
 };
 const Aida::StringVector&
-StringSequence::__aida_aux_data__() const
+StringSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
   return sv;
@@ -1436,7 +1467,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_E
   "enum_elements.type=MandatoryNamespace.ExtensiveEnum\0"
 };
 const Aida::StringVector&
-ExtensiveEnumSequence::__aida_aux_data__() const
+ExtensiveEnumSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
   return sv;
@@ -1448,7 +1479,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_R
   "repeatedfield.type=MandatoryNamespace.XFooRecord\0"
 };
 const Aida::StringVector&
-RecordSequence::__aida_aux_data__() const
+RecordSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
   return sv;
@@ -1460,7 +1491,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_S
   "moreints.type=MandatoryNamespace.IntSequence\0"
 };
 const Aida::StringVector&
-SequenceSequence::__aida_aux_data__() const
+SequenceSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
   return sv;
@@ -1472,7 +1503,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
   "iface1.type=MandatoryNamespace.FirstInterface\0"
 };
 const Aida::StringVector&
-InterfaceSequence::__aida_aux_data__() const
+InterfaceSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
   return sv;
@@ -1484,7 +1515,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_A
   "any_value.type=ANY\0"
 };
 const Aida::StringVector&
-AnySequence::__aida_aux_data__() const
+AnySequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
   return sv;
@@ -1497,7 +1528,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
   "seq.type=MandatoryNamespace.XFooSequence\0"
 };
 const Aida::StringVector&
-NestedTypesRec::__aida_aux_data__() const
+NestedTypesRec::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesRec");
   return sv;
@@ -1516,7 +1547,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
   "ntr.type=MandatoryNamespace.NestedTypesRec\0"
 };
 const Aida::StringVector&
-NestedTypesSeq::__aida_aux_data__() const
+NestedTypesSeq::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
   return sv;
@@ -1531,7 +1562,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
   "ntr.type=MandatoryNamespace.NestedTypesRec\0"
 };
 const Aida::StringVector&
-NewRecord::__aida_aux_data__() const
+NewRecord::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NewRecord");
   return sv;
@@ -1556,7 +1587,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
   "rec.type=MandatoryNamespace.NewRecord\0"
 };
 const Aida::StringVector&
-InnerRecord::__aida_aux_data__() const
+InnerRecord::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Inner.InnerRecord");
   return sv;
@@ -1577,7 +1608,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_R
   "r.type=MandatoryNamespace.Inner.InnerRecord\0"
 };
 const Aida::StringVector&
-Refer2Inner::__aida_aux_data__() const
+Refer2Inner::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Refer2Inner");
   return sv;
@@ -1601,7 +1632,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__OtherNamespace_SomeR
   "r4.type=MandatoryNamespace.Inner.InnerRecord\0"
 };
 const Aida::StringVector&
-SomeRecord::__aida_aux_data__() const
+SomeRecord::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("OtherNamespace.SomeRecord");
   return sv;
@@ -1649,7 +1680,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__Auxdata_RecordWithAu
   "aux_str.default=auxtest3\0"
 };
 const Aida::StringVector&
-RecordWithAuxdata::__aida_aux_data__() const
+RecordWithAuxdata::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("Auxdata.RecordWithAuxdata");
   return sv;
@@ -1803,7 +1834,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_Quick
   "int2.type=INT32\0"
 };
 const Aida::StringVector&
-QuickRecord::__aida_aux_data__() const
+QuickRecord::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickRecord");
   return sv;
@@ -1822,7 +1853,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_Quick
   "somefloat.type=FLOAT64\0"
 };
 const Aida::StringVector&
-QuickSequence::__aida_aux_data__() const
+QuickSequence::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
   return sv;
@@ -2218,7 +2249,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__BseTest_RecordForGro
   "threshold2.type=FLOAT64\0"
 };
 const Aida::StringVector&
-RecordForGroups::__aida_aux_data__() const
+RecordForGroups::__typedata__()
 {
   static const Aida::StringVector sv = Aida::Introspection::find_type ("BseTest.RecordForGroups");
   return sv;
@@ -2245,7 +2276,6 @@ SoundModuleHandle::__cast__ (const Aida::RemoteHandle &other)
 }
 } // BseTest
 
-#if     __ENUMCC__aidacc_tests_t304_testpass_idl__ == 1
 
 namespace Aida {
 
@@ -2443,6 +2473,3 @@ static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_Mat
   "RESULT_511.value=511\0"
 };
 } // Aida
-
-#endif // __ENUMCC__aidacc_tests_t304_testpass_idl__
-
