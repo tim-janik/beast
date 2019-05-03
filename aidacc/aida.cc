@@ -484,7 +484,7 @@ normalize_typename (const std::string &string)
   return normalized;
 }
 
-const StringVector&
+static const StringVector&
 find_normalized_type (const std::string &abstypename, std::string *kind)
 {
   const auto it = aux_data_map().find (abstypename);
@@ -740,15 +740,16 @@ Introspection::legacy_enumerator (const std::string &enumtypename, int64_t value
 void
 IntrospectionRegistry::register_aux_data (const char *auxentry, size_t length)
 {
+  const ssize_t slength = length;
   AIDA_ASSERT_RETURN (auxentry && length > 0 && auxentry[length - 1] == 0);
   AIDA_ASSERT_RETURN (strncmp (auxentry, "typename=", 9) == 0); // first element is the type name
   const char *type_name = auxentry + 9;
   const char *fundamental = type_name + strlen (type_name) + 1; // second element is the fundamental type
-  AIDA_ASSERT_RETURN (length > fundamental + 5 - auxentry && strncmp (fundamental, "type=", 5) == 0);
+  AIDA_ASSERT_RETURN (slength > fundamental + 5 - auxentry && strncmp (fundamental, "type=", 5) == 0);
   fundamental += 5;
   AIDA_ASSERT_RETURN (fundamental[0] != 0);
   const char *entries = fundamental + strlen (fundamental) + 1;
-  AIDA_ASSERT_RETURN (length > entries - auxentry);
+  AIDA_ASSERT_RETURN (slength > entries - auxentry);
   aux_data_map()[type_name] = IntrospectionEntry { type_name, fundamental, auxentry, length };
 }
 
