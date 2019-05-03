@@ -94,6 +94,11 @@ beast-gtk/gxk/splinetest.objects  ::= $(call BUILDDIR_O, $(beast-gtk/gxk/splinet
 $(beast-gtk/gxk/libgxk.objects): $(beast-gtk/gxk/libgxk.deps) $(beast-gtk/gxk/libgxk.cc.deps) $(bse/libbse.deps)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_INCLUDES ::= -I$> -I$>/beast-gtk -Ibeast-gtk $(GTK_CFLAGS)
 $(beast-gtk/gxk/libgxk.objects): EXTRA_DEFS ::= -DGXK_COMPILATION
+beast-gtk/gxk/libgxk.deprecated.objects ::=	\
+	$>/beast-gtk/gxk/gxkauxwidgets.o	\
+	$>/beast-gtk/gxk/gxkradgetfactory.o	\
+	$>/beast-gtk/gxk/gxkradget.o
+$(beast-gtk/gxk/libgxk.deprecated.objects): EXTRA_DEFS ::= -DGXK_COMPILATION -DGLIB_DISABLE_DEPRECATION_WARNINGS
 $(call BUILD_STATIC_LIB, \
 	$(beast-gtk/gxk/libgxk.a), \
 	$(beast-gtk/gxk/libgxk.objects), \
