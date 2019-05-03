@@ -86,16 +86,6 @@ serialize_content (B &self, SerializeContext &sc)
 BSE_SERIALIZATION_EXPORT (B);
 
 static void
-serialize_content (D &self, SerializeContext &sc)
-{
-  std::string str = "Class D is not exported as serialization type";
-  sc["Note"] ->* str;
-  str = self.name(); sc["name"] ->* str;
-  str = self.vname(); sc["vname"] ->* str;
-  TASSERT (self.vname() == str);
-}
-
-static void
 serialize_content (G &self, SerializeContext &sc)
 {
   std::string str = "Class G uses BSE_SERIALIZATION_EXPORT";
