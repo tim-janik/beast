@@ -11,13 +11,13 @@
 <template>
 
   <div class="vc-hscrollbar" role="scrollbar" aria-orientation="horizontal"
-       aria-valuemin="0" aria-valuemax="100" :aria-valuenow="(this.value * 100).toFixed (2)" >
+       aria-valuemin="0" aria-valuemax="100" :aria-valuenow="(value * 100).toFixed (2)" >
     <div class="trough" @mousedown="click_drag" >
       <div ref="track" class="track" style="width: 100%" >
 	<div ref="slider" class="slider" @mousedown="drag_start"
 	     :style="{
-		     width: this.percentage + '%',
-		     left:  this.value * (100 - this.percentage) + '%'
+		     width: percentage + '%',
+		     left:  value * (100 - percentage) + '%'
 		     }" >
 	  <svg width='28' height='8' >
 	    <rect x='1'  y='1' width='2' height='2' style='fill:#ddd;fill-opacity:0.7;' />
