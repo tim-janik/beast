@@ -7,7 +7,7 @@ aidacc/tests/rpath..libbse ::= ../../lib
 aidacc/tests/check--t301-pass.idl: aidacc/tests/t301-pass.idl $(aidacc/aidacc)
 	$(QECHO) CHECK $@
 	$Q $(aidacc/aidacc) $< # --aida-debug
-aidacc/check-targets += aidacc/tests/check--t301-pass.idl
+aidacc/check: aidacc/tests/check--t301-pass.idl
 
 # == check--t302-fail.idl ==
 aidacc/tests/check--t302-fail.idl: aidacc/tests/t302-fail.idl aidacc/tests/t302-fail.ref $(aidacc/aidacc)
@@ -15,7 +15,7 @@ aidacc/tests/check--t302-fail.idl: aidacc/tests/t302-fail.idl aidacc/tests/t302-
 	$Q $(aidacc/aidacc) --aida-fail-file-test $<	> $@.out
 	$Q sed 's/\(:[0-9]\+:[0-9]\+: Trying to find one of \).*/\1.../' < $@.out > $@.notokens && mv $@.notokens $@.out
 	$Q diff -up aidacc/tests/t302-fail.ref $@.out && rm -f $@.out
-aidacc/check-targets += aidacc/tests/check--t302-fail.idl
+aidacc/check: aidacc/tests/check--t302-fail.idl
 
 # == check--t304-cxxserver-output ==
 # test CxxStub Generation for Client & Server
@@ -27,7 +27,7 @@ aidacc/tests/check--t304-cxxserver-output: aidacc/tests/t301-pass.idl aidacc/tes
 	$Q cat $>/aidacc/tests/t304-testpass_handles.cc			>> $>/aidacc/tests/t304-testpass_handles.hh
 	$Q diff -up aidacc/tests/t304-cxxserver.ref $>/aidacc/tests/t304-testpass_interfaces.hh
 	$Q diff -up aidacc/tests/t304-cxxclient.ref $>/aidacc/tests/t304-testpass_handles.hh
-aidacc/check-targets += aidacc/tests/check--t304-cxxserver-output
+aidacc/check: aidacc/tests/check--t304-cxxserver-output
 
 # == check--t305-idlcode-compile ==
 aidacc/tests/check--t305-idlcode-compile: aidacc/tests/t301-pass.idl aidacc/tests/t301-inc1.idl aidacc/tests/t301-inc2.idl $(aidacc/aidacc)	| $>/aidacc/tests/
@@ -46,4 +46,4 @@ aidacc/tests/check--t305-idlcode-compile: aidacc/tests/t301-pass.idl aidacc/test
 	       -e '1i#define _(x) x'			-i $>/aidacc/tests/t305-pass_handles.cc
 	$Q $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c $>/aidacc/tests/t305-pass_interfaces.cc -o $>/aidacc/tests/t305-pass_interfaces.o
 	$Q $(CCACHE) $(CXX) $(CXXSTD) -I $(abspath .) -c $>/aidacc/tests/t305-pass_handles.cc -o $>/aidacc/tests/t305-pass_handles.o
-aidacc/check-targets += aidacc/tests/check--t305-idlcode-compile
+aidacc/check: aidacc/tests/check--t305-idlcode-compile
