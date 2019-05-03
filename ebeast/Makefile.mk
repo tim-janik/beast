@@ -124,7 +124,7 @@ $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$Q rm $@.cli && mv $@.tmp.png $@
 
 # == assets/components.js ==
-$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/lint.rules
+$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
 	$(QGEN)
 	@: # set NODE_PATH, since browserify fails to search ./node_modules for a ../ entry point
 	$Q cd $>/ebeast/ \
