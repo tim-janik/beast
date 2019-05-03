@@ -14,6 +14,18 @@ function array_remove (array, item) {
 }
 exports.array_remove = array_remove;
 
+/// Generate map by splittoing the key=value pairs in `kvarray`
+function map_from_kvpairs (kvarray) {
+  let o = {};
+  for (let kv of kvarray) {
+    const key = kv.split ('=', 1)[0];
+    const value = kv.substr (key.length + 1);
+    o[key] = value;
+  }
+  return o;
+}
+exports.map_from_kvpairs = map_from_kvpairs;
+
 /** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
 function* range (bound, end, step = 1) {
   if (end === undefined) {

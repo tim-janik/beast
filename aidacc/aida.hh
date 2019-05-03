@@ -844,11 +844,11 @@ struct PropertyAccessor {
   using Setter = std::function<void(const Any&)>;
   using Getter = std::function<Any()>;
   virtual              ~PropertyAccessor();
-  virtual TypeKind      kind    () const = 0;
-  virtual std::string   name    () const = 0;
-  virtual StringVector  auxinfo () const = 0;
-  virtual Any           get     () const = 0;
-  virtual void          set     (const Any&) const = 0;
+  virtual TypeKind      kind     () const = 0;
+  virtual std::string   name     () const = 0;
+  virtual StringVector  typedata () const = 0;
+  virtual Any           get      () const = 0;
+  virtual void          set      (const Any&) const = 0;
 };
 template<class T, class V, typename = std::true_type> struct PropertyAccessorImpl;
 // bool property
@@ -859,7 +859,7 @@ struct PropertyAccessorImpl<T,bool> : PropertyAccessor {
   {}
   virtual TypeKind     kind     () const        { return BOOL; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<bool> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<bool>()); }
 private:
@@ -876,7 +876,7 @@ struct PropertyAccessorImpl<T,int> : PropertyAccessor {
   {}
   virtual TypeKind     kind     () const        { return INT32; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<int> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int>()); }
 private:
@@ -893,7 +893,7 @@ struct PropertyAccessorImpl<T,int64> : PropertyAccessor {
   {}
   virtual TypeKind     kind     () const        { return INT64; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<int64> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<int64>()); }
 private:
@@ -910,7 +910,7 @@ struct PropertyAccessorImpl<T,double> : PropertyAccessor {
   {}
   virtual TypeKind     kind     () const        { return FLOAT64; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<double> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<double>()); }
 private:
@@ -927,7 +927,7 @@ struct PropertyAccessorImpl<T,std::string> : PropertyAccessor {
   {}
   virtual TypeKind     kind     () const        { return STRING; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<std::string> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<std::string>()); }
 private:
@@ -944,7 +944,7 @@ struct PropertyAccessorImpl<T,E,typename std::is_enum<E>::type> : PropertyAccess
   {}
   virtual TypeKind     kind     () const        { return ENUM; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<E> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<E>()); }
 private:
@@ -961,7 +961,7 @@ struct PropertyAccessorImpl<T,A,typename std::is_base_of<Any,A>::type> : Propert
   {}
   virtual TypeKind     kind     () const        { return ANY; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<A> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<A>()); }
 private:
@@ -978,7 +978,7 @@ struct PropertyAccessorImpl<T,Rec,typename ToAnyRecConvertible<Rec>::type> : Pro
   {}
   virtual TypeKind     kind     () const        { return RECORD; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<Rec> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<Rec>()); }
 private:
@@ -995,7 +995,7 @@ struct PropertyAccessorImpl<T,Seq,typename ToAnySeqConvertible<Seq>::type> : Pro
   {}
   virtual TypeKind     kind     () const        { return SEQUENCE; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<Seq> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<Seq>()); }
 private:
@@ -1013,7 +1013,7 @@ struct PropertyAccessorImpl<T,I,typename std::is_base_of<ImplicitBase,I>::type> 
   {}
   virtual TypeKind     kind     () const        { return INSTANCE; }
   virtual std::string  name     () const        { return name_; }
-  virtual StringVector auxinfo  () const        { return aux_vector_split (auxvalues00_); }
+  virtual StringVector typedata () const        { return aux_vector_split (auxvalues00_); }
   virtual Any          get      () const        { Any a; a.set<IPtr> ((object_.*getter_)()); return a; }
   virtual void         set (const Any &a) const { (object_.*setter_) (a.get<IPtr>().get()); }
 private:

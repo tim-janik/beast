@@ -306,7 +306,7 @@ sfi_pspecs_rec_fields_from_visitable (Visitable &visitable)
   if (sfi_pspecs_rec_fields_cache (typeid (Visitable), &rec_fields))
     return rec_fields;
   std::vector<GParamSpec*> pspecs;
-  PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
+  PspecVisitor pspec_visitor (pspecs, visitable.__typedata__());
   visitable.__accept__ (pspec_visitor);
   rec_fields.n_fields = pspecs.size();
   rec_fields.fields = g_new0 (GParamSpec*, rec_fields.n_fields);
@@ -327,7 +327,7 @@ sfi_pspec_seq_field_from_visitable (Visitable &visitable)
   if (sfi_pspecs_seq_field_cache (typeid (Visitable), &pspec))
     return pspec;
   std::vector<GParamSpec*> pspecs;
-  PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
+  PspecVisitor pspec_visitor (pspecs, visitable.__typedata__());
   typedef typename Visitable::value_type A;
   A example_element = A();
   pspec_visitor (example_element, "seqelement");
@@ -354,7 +354,7 @@ sfi_pspecs_fields_from_accessor_visitable (Visitable &visitable)
   if (sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp))
     return *pspecsp;
   std::vector<GParamSpec*> pspecs;
-  PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
+  PspecVisitor pspec_visitor (pspecs, visitable.__typedata__());
   visitable.__accept_accessor__ (pspec_visitor);
   for (size_t i = 0; i < pspecs.size(); i++)
     {

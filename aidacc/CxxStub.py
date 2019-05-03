@@ -327,7 +327,7 @@ class Generator:
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
       s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
-    s += '  ' + self.F ('const Aida::StringVector&') + '__aida_aux_data__ () const;\n'
+    s += '  ' + self.F ('static const Aida::StringVector&') + '__typedata__ ();\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
     if type_info.storage == Decls.RECORD:
@@ -400,8 +400,8 @@ class Generator:
   def generate_recseq_aux_method_impls (self, tp): # FIXME: rename
     type_identifier = self.type_identifier (tp)
     s = ''
-    # __aida_aux_data__
-    s += 'const Aida::StringVector&\n%s::__aida_aux_data__() const\n{\n' % self.C (tp)
+    # __typedata__
+    s += 'const Aida::StringVector&\n%s::__typedata__()\n{\n' % self.C (tp)
     s += '  static const Aida::StringVector sv = Aida::Introspection::find_type ("%s");\n' % type_identifier
     s += '  return sv;\n'
     s += '}\n'
@@ -844,7 +844,6 @@ class Generator:
         types += [ tp ]
     # CPP guards
     sc_macro_prefix, sc_other_prefix = '__CLNT__', '__SRVT__' # for G4STUB
-    clntsrvt_id = 2 if self.gen_serverhh or self.gen_servercc else 1
     if self.gen_mode == G4SERVANT:
       sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
     if self.gen_serverhh or self.gen_clienthh:
@@ -949,7 +948,7 @@ class Generator:
             for m in tp.methods:
               s += self.generate_client_method_stub (tp, m)
     # Generate Enum Implementations
-    if self.gen_clientcc or self.gen_servercc:
+    if self.gen_clientcc:
       spc_enums = []
       for tp in types:
         if tp.is_forward:
@@ -959,16 +958,9 @@ class Generator:
       if spc_enums:
         s += self.open_namespace (None)
         s += '\n'
-        if self.gen_servercc:
-          s += '#ifndef __ENUMCC__%s__\n' % self.cppmacro # pick default implementation
-          s += '#define __ENUMCC__%s__    %d\n' % (self.cppmacro, clntsrvt_id)
-          s += '#endif\n'
-        s += '#if     __ENUMCC__%s__ == %d\n' % (self.cppmacro, clntsrvt_id) # pick either client or server aliases
         s += self.open_namespace (self.ns_aida)
         for tp in spc_enums:
           s += self.generate_enum_info_impl (tp)
-        s += self.open_namespace (None)
-        s += '\n#endif // __ENUMCC__%s__\n\n' % self.cppmacro
     s += self.open_namespace (None) # close all namespaces
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:

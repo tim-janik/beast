@@ -195,7 +195,7 @@ ObjectImpl::find_prop (const std::string &name)
   if (!name.empty())
     {
       auto collector = [&kvinfo] (const Aida::PropertyAccessor &ps) {
-        ps.auxinfo().swap (kvinfo);
+        ps.typedata().swap (kvinfo);
         return false;
       };
       __access__ (name, collector);
