@@ -407,7 +407,6 @@ public:
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
   std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
   static const Aida::StringVector& __typedata__ ();
-  inline operator               Aida::AnySeq      () const;
 };
 
 class NestedTypesRec;
@@ -1210,14 +1209,6 @@ AnySequence::AnySequence (const Aida::AnySeq &s)
 {
   for (const auto &any : s)
     push_back (any.get< typename std::decay<AnySequence::value_type>::type >());
-}
-inline
-AnySequence::operator Aida::AnySeq () const
-{
-  Aida::AnySeq s;
-  for (const auto &v : *this)
-    s.push_back (Aida::Any (v));
-  return s;
 }
 template<class Visitor> void
 NestedTypesRec::__visit__ (Visitor &&_visitor_)

@@ -16,7 +16,7 @@
       <vc-track-list :song="song"></vc-track-list>
     </div>
     <div class="vc-projectshell-part-area" style="display: flex; overflow: hidden;" >
-      <vc-piano-roll :piano-part="this.piano_roll_part" ></vc-piano-roll>
+      <vc-piano-roll :piano-part="piano_roll_part" ></vc-piano-roll>
     </div>
   </div>
 </template>

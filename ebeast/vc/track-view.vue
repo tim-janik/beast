@@ -25,7 +25,7 @@
       </div>
     </div>
     <span class="vc-track-view-partlist" >
-      <vc-part-thumb v-for="(tp, pindex) in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
+      <vc-part-thumb v-for="(tp, pindex) in track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
 		     :part="tp.part" :tick="tp.tick" :track-index="index" :index="pindex" ></vc-part-thumb>
     </span>
   </div>

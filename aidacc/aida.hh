@@ -252,6 +252,10 @@ class EnableSharedFromThis :
   {
     return this->std::enable_shared_from_this<SharedFromThisIface>::shared_from_this();
   }
+protected:
+  virtual ~EnableSharedFromThis ()                              {}
+  /*ctor*/ EnableSharedFromThis () = default;
+  /*copy*/ EnableSharedFromThis (const EnableSharedFromThis&) = default;
 public:
   using SharedFromThis<T>::shared_from_this;
 };

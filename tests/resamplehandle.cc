@@ -186,7 +186,7 @@ generate_test_signal (vector<Sample> &signal,
 }
 
 static void
-run_tests (const char *run_type, int p)
+run_tests (const char *run_type, uint p)
 {
   struct TestParameters {
     int bits;

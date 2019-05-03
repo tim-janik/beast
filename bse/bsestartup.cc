@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include "bse/internal.hh"
 #include "bse/bseserver.hh"
-#include <bse/bseapi_handles.hh>
+#include <bse/bse.hh>
 
 namespace Bse {
 

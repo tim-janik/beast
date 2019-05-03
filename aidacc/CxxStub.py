@@ -273,6 +273,7 @@ class Generator:
       s += '  for (const auto &any : s)\n'
       s += '    push_back (any.get< typename std::decay<%s::value_type>::type >());\n' % classC
       s += '}\n'
+    if type_info.storage == Decls.SEQUENCE and type_info.elements[1].storage != Decls.ANY:
       s += 'inline\n'
       s += '%s::operator Aida::AnySeq () const\n{\n' % classC
       s += '  Aida::AnySeq s;\n'
@@ -328,7 +329,7 @@ class Generator:
       s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
     s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('static const Aida::StringVector&') + '__typedata__ ();\n'
-    if type_info.storage == Decls.SEQUENCE:
+    if type_info.storage == Decls.SEQUENCE and type_info.elements[1].storage != Decls.ANY:
       s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
     if type_info.storage == Decls.RECORD:
       s += '  ' + self.F ('bool') + 'operator==   (const %s &other) const;\n' % classC
