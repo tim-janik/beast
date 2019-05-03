@@ -56,6 +56,8 @@ guint	  bse_idle_timed	(guint64	usec_delay,
 namespace Bse {
 uint    exec_now        	(const std::function<void()> &function);
 uint    exec_now        	(const std::function<bool()> &function);
+uint    exec_timeout        	(const std::function<bool()> &function, uint delay_ms);
+uint    exec_timeout        	(const std::function<void()> &function, uint delay_ms);
 } // Bse
 
 /* semitone factorization tables, i.e.

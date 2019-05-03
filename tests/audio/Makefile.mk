@@ -17,6 +17,7 @@ tests/audio/render2wav = $(strip					\
 	  --bse-override-sample-path 'tests/audio:media/Samples'	\
 	  --bse-disable-randomization					\
 	  --bse-rcfile /dev/null )
+tests/audio/plugin.deps = $(plugins/cxxplugins.so) $(plugins/bseplugins.so) $(plugins/freeverb.so)
 
 # == tests/audio/template ==
 # $(call tests/audio/template, 1TESTNAME, 2BSE+REF+DEPS, 3RENDERARGS, 4FEATURES-A, 5FEATURES-B, 6THRESHOLD)
@@ -200,5 +201,5 @@ $(call tests/audio/template,							\
 	99.90)
 
 # == check-audio ==
-$(tests/audio/checks): $(tools/bsetool) FORCE		| $>/tests/audio/
+$(tests/audio/checks): $(tools/bsetool) $(tests/audio/plugin.deps) FORCE		| $>/tests/audio/
 check-audio: $(tests/audio/checks)
