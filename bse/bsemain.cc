@@ -47,41 +47,57 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
-static gboolean single_thread_registration_done = FALSE;
+static int initialized_for_unit_testing = -1;
+static std::thread async_bse_thread;
 
-static void
-server_registration (SfiProxy            server,
-                     BseRegistrationType rtype,
-                     const gchar        *what,
-                     const gchar        *error,
-                     gpointer            data)
+bool
+_bse_initialized ()
 {
-  // BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
-  if (rtype == BSE_REGISTER_DONE)
-    single_thread_registration_done = TRUE;
-  else
-    {
-      if (error && error[0])
-        Bse::info ("failed to register \"%s\": %s", what, error);
-    }
+  return async_bse_thread.get_id() != std::thread::id(); // has async_bse_thread started?
 }
 
-static int initialized_for_unit_testing = -1;
-
 static void
-bse_init_intern()
+initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
+  assert_return (_bse_initialized() == false);
   assert_return (bse_main_context == NULL);
 
-  // paranoid assertions
+  // setup GLib's prgname for error messages
+  if (argc && argv && *argc && !g_get_prgname ())
+    g_set_prgname (*argv);
+
+  // argument handling
+  bse_main_args = &default_main_args;
+  if (argc && argv)
+    init_parse_args (argc, argv, bse_main_args, args);
+
+  // initialize SFI
+  if (initialized_for_unit_testing > 0)
+    Bse::Test::init (argc, argv);
+  else
+    sfi_init (argc, argv);
+}
+
+static_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN, "");
+
+static Aida::ExecutionContext *bse_execution_context = NULL;
+static std::atomic<bool> main_loop_thread_running { true };
+
+static void
+bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
+{
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
     {
-      Bse::warning ("%s() may only be called once", "bse_init_inprocess");
+      Bse::warning ("%s() may only be called once", __func__);
       return;
     }
-  assert_return (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+  // register new thread
+  const char *const myid = "BseMain";
+  Bse::this_thread_set_name (myid);
+  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
 
   // main loop
+  assert_return (bse_main_context == NULL);
   bse_main_context = g_main_context_new ();
 
   // basic components
@@ -131,6 +147,10 @@ bse_init_intern()
   // initialize core plugins
   if (bse_main_args->load_core_plugins)
     {
+      auto server_registration = [] (SfiProxy server, BseRegistrationType rtype, const char *what, const char *error, void *data) {
+        if (rtype != BSE_REGISTER_DONE && error && error[0])
+          Bse::info ("failed to register \"%s\": %s", what, error);
+      };
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
       SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
       while (ring)
@@ -154,59 +174,6 @@ bse_init_intern()
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
       TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
-}
-
-static std::thread async_bse_thread;
-
-bool
-_bse_initialized ()
-{
-  return async_bse_thread.get_id() != std::thread::id(); // has async_bse_thread started?
-}
-
-static void
-initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  assert_return (_bse_initialized() == false);
-  assert_return (bse_main_context == NULL);
-
-  // setup GLib's prgname for error messages
-  if (argc && argv && *argc && !g_get_prgname ())
-    g_set_prgname (*argv);
-
-  // argument handling
-  bse_main_args = &default_main_args;
-  if (argc && argv)
-    init_parse_args (argc, argv, bse_main_args, args);
-
-  // initialize SFI
-  if (initialized_for_unit_testing > 0)
-    Bse::Test::init (argc, argv);
-  else
-    sfi_init (argc, argv);
-}
-
-void
-bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  initialize_with_argv (argc, argv, app_name, args);
-
-  // initialize globals, signals, types, builtins, etc
-  bse_init_intern ();
-}
-
-static Aida::ExecutionContext *bse_execution_context = NULL;
-static std::atomic<bool> main_loop_thread_running { true };
-
-static void
-bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
-{
-  const char *const myid = "BseMain";
-  Bse::this_thread_set_name (myid);
-  Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());
-
-  // initialize types, Aida, do early plugin loading
-  bse_init_intern ();
 
   // enable handling of remote calls
   assert_return (bse_execution_context == NULL);
@@ -233,7 +200,8 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   while (g_main_context_pending (bse_main_context))
     g_main_context_iteration (bse_main_context, false);
 
-  Bse::TaskRegistry::remove (Bse::this_thread_gettid()); // see bse_init_intern
+  // unregister new thread
+  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
 static void
@@ -254,7 +222,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   if (std::atexit (reap_main_loop_thread) != 0)
     Bse::warning ("BSE: failed to install main thread reaper");
   auto *init_queue = new Bse::AsyncBlockingQueue<int>();
-  async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
+  async_bse_thread = std::thread (bse_main_loop_thread, init_queue);
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
   assert_return (msg == 'B');

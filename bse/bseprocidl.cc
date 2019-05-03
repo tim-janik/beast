@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "bsemain.hh"
+#include "bsestartup.hh"
 #include "bsecategories.hh"
-#include "bseglue.hh"
 #include <bse/sfiglue.hh>
 #include <stdio.h>
 #include <string.h>
@@ -397,8 +396,8 @@ printForwardDecls ()
       print ("interface %s;\n", ci->c_str());
     }
 }
-int
-main (int argc, char **argv)
+static int
+procidl_main (int argc, char **argv)
 {
   /* exclude all types given in a file, passed as first argument, from generation */
   if (argc >= 2)
@@ -418,8 +417,6 @@ main (int argc, char **argv)
 	}
     }
 
-  bse_init_inprocess (&argc, argv, "BseProcIDL");
-  sfi_glue_context_push (bse_glue_context_intern ("BseProcIdl"));
   std::string s = sfi_glue_base_iface ();
   /* small hackery to collect all enum types that need to be printed */
   silent = true;
@@ -435,9 +432,20 @@ main (int argc, char **argv)
   printInterface ("");  /* prints procedures without interface */
   indent--;
   print ("};\n");
-
-
-  sfi_glue_context_pop ();
+  return 0;
 }
 
-/* vim:set ts=8 sts=2 sw=2: */
+int
+main (int argc, char *argv[])
+{
+  const Bse::StringVector args = Bse::cstrings_to_vector ("stand-alone=1", NULL);
+  Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
+  Bse::init_async (&argc, argv, argv[0], args);
+  sfi_glue_context_push (Bse::init_glue_context ("BseProcIdl", [] () { g_main_context_wakeup (g_main_context_default ()); }));
+  // run main logic
+  // const int status = bse_init_and_test (&argc, argv, [&]() { return procidl_main (argc, argv); }, args);
+  const int status = procidl_main (argc, argv);
+  // exit
+  sfi_glue_context_pop ();
+  return status;
+}

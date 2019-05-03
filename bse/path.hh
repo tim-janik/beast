@@ -33,6 +33,7 @@ String       realpath            (const String &path);
 String       abspath             (const String &path, const String &incwd = "");
 bool         isabs               (const String &path);
 bool         isdirname           (const String &path);
+bool         mkdirs              (const String &dirpath, uint mode = 0750);
 String       expand_tilde        (const String &path);
 String       user_home           (const String &username = "");
 String       data_home           ();
@@ -56,6 +57,8 @@ char*        memread             (const String &filename,
                                   size_t       *lengthp);
 void         memfree             (char         *memread_mem);
 bool         memwrite            (const String &filename, size_t len, const uint8 *bytes);
+String       stringread          (const String &filename);
+bool         stringwrite         (const String &filename, const String &data, bool mkdirs = false);
 String       cwd                 ();
 String       vpath_find          (const String &file, const String &mode = "e");
 bool         searchpath_contains (const String &searchpath, const String &element);
