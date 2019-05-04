@@ -23,7 +23,6 @@ enum
   PROP_INPUTS,
   PROP_OUTPUTS,
   PROP_SNET,
-  PROP_MUTE,
   PROP_SOLO,
   PROP_SYNC,
   PROP_LEFT_VOLUME,
@@ -391,10 +390,6 @@ bse_bus_set_property (GObject      *object,
     case PROP_SNET:
       g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_MUTE:
-      self->muted = sfi_value_get_bool (value);
-      bus_volume_changed (self);
-      break;
     case PROP_SOLO:
       parent = BSE_ITEM (self)->parent;
       if (BSE_IS_SONG (parent))
@@ -498,9 +493,6 @@ bse_bus_get_property (GObject    *object,
     case PROP_SNET:
       g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_MUTE:
-      g_value_set_boolean (value, self->muted);
-      break;
     case PROP_SOLO:
       parent = BSE_ITEM (self)->parent;
       if (BSE_IS_SONG (parent))
@@ -544,7 +536,7 @@ bse_bus_change_solo (BseBus         *self,
   self->solo_muted = solo_muted;
   bus_volume_changed (self);
   g_object_notify (G_OBJECT (self), "solo");
-  g_object_notify (G_OBJECT (self), "mute");
+  self->as<Bse::BusImpl*>()->notify ("mute");
 }
 
 static void
@@ -928,8 +920,6 @@ bse_bus_class_init (BseBusClass *klass)
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
 
-  bse_object_class_add_param (object_class, _("Adjustments"), PROP_MUTE,
-                              sfi_pspec_bool ("mute", _("Mute"), _("Mute: turn off the bus volume"), FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SOLO,
                               sfi_pspec_bool ("solo", _("Solo"), _("Solo: mute all other busses"), FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SYNC,
@@ -1002,6 +992,23 @@ BusImpl::BusImpl (BseObject *bobj) :
 
 BusImpl::~BusImpl ()
 {}
+
+bool
+BusImpl::mute() const
+{
+  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+
+  return self->muted;
+}
+
+void
+BusImpl::mute (bool val)
+{
+  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+
+  if (APPLY_IDL_PROPERTY (self->muted, val))
+    bus_volume_changed (self);
+}
 
 Error
 BusImpl::ensure_output ()
