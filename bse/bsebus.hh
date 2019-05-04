@@ -18,7 +18,7 @@ struct BseBus : BseSubSynth {
   SfiRing      *inputs;
   double        left_volume;
   double        right_volume;
-  guint         muted : 1;
+  bool          muted;
   guint         synced : 1;
   guint         saved_sync : 1;
   guint         solo_muted : 1;
@@ -80,11 +80,13 @@ protected:
   virtual          ~BusImpl          ();
 public:
   explicit          BusImpl          (BseObject*);
-  virtual Error ensure_output    () override;
-  virtual Error connect_bus      (BusIface &bus) override;
-  virtual Error connect_track    (TrackIface &track) override;
-  virtual Error disconnect_bus   (BusIface &bus) override;
-  virtual Error disconnect_track (TrackIface &track) override;
+  virtual bool      mute             () const override;
+  virtual void      mute             (bool val) override;
+  virtual Error     ensure_output    () override;
+  virtual Error     connect_bus      (BusIface &bus) override;
+  virtual Error     connect_track    (TrackIface &track) override;
+  virtual Error     disconnect_bus   (BusIface &bus) override;
+  virtual Error     disconnect_track (TrackIface &track) override;
 };
 
 } // Bse
