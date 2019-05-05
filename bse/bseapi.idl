@@ -976,6 +976,11 @@ sequence TrackPartSeq {
   TrackPart parts;
 };
 
+Const BUS_VOLUME_MIN = 1.58489319246111e-05; /* -96dB */
+Const BUS_VOLUME_MAX = 15.8489319246111;     /* +24dB */
+Const BUS_VOLUME_DEF = 1;
+Const BUS_VOLUME_STEP = 0.1;
+
 /// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
   Error ensure_output    ();            ///< Ensure that a bus has an output connection.
@@ -993,6 +998,8 @@ interface Bus : SubSynth {
     bool mute = Bool (_("Mute"), _("Mute: turn off the bus volume"), STANDARD SKIP_DEFAULT, false);
     bool solo = Bool (_("Solo"), _("Solo: mute all other busses"), STANDARD SKIP_DEFAULT, false);
     bool sync = Bool (_("Sync"), _("Synchronize left and right volume"), STANDARD SKIP_DEFAULT, true);
+    float64 left_volume = Range (_("Left Volume"), _("Volume adjustment in decibel of left bus channel"), STANDARD ":scale:db-volume",
+                                 BUS_VOLUME_MIN, BUS_VOLUME_MAX, BUS_VOLUME_STEP, BUS_VOLUME_DEF);
   };
 };
 
