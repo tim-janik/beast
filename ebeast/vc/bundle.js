@@ -17,6 +17,7 @@ const vue_components = [
   require ('./fed-number.vue'),
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
+  require ('./fed-object.vue'),
   require ('./piano-roll.vue'),
   require ('./playcontrols.vue'),
   require ('./part-thumb.vue'),
