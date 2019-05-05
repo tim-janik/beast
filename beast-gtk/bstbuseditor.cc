@@ -150,7 +150,6 @@ bst_bus_editor_set_bus (BstBusEditor *self,
   if (self->item)
     {
       self->source = Bse::SourceH::__cast__ (bse_server.from_proxy (self->item));
-      GParamSpec *pspec;
       SfiRing *ring;
       bse_proxy_connect (self->item,
                          "signal::release", bus_editor_release_item, self,
@@ -158,8 +157,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       /* create and hook up volume params & scopes */
       GxkParam *lvolume = get_property_param (self, "left_volume");
       GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
-      pspec = bse_proxy_get_pspec (self->item, "right-volume");
-      GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
+      GxkParam *rvolume = get_property_param (self, "right_volume");
       GtkWidget *rspinner = gxk_param_create_editor (rvolume, "spinner");
       BstDBMeter *dbmeter = (BstDBMeter*) gxk_radget_find (self, "db-meter");
       if (dbmeter)
