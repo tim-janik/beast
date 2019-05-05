@@ -23,7 +23,6 @@ enum
   PROP_INPUTS,
   PROP_OUTPUTS,
   PROP_SNET,
-  PROP_SOLO,
   PROP_SYNC,
   PROP_LEFT_VOLUME,
   PROP_RIGHT_VOLUME,
@@ -183,7 +182,7 @@ bus_disconnect_outputs (BseBus *self)
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
   g_object_notify (G_OBJECT (self), "master-output");   /* master may have changed */
-  g_object_notify (G_OBJECT (self), "solo");            /* master may have changed */
+  self->as<Bse::BusImpl*>()->notify ("solo");           /* master may have changed */
 }
 
 static void
@@ -197,7 +196,7 @@ song_connect_master (BseSong        *song,
       bse_source_must_set_input (song->postprocess, 0, osource, 0);
       bse_source_must_set_input (song->postprocess, 1, osource, 1);
       g_object_notify (G_OBJECT (bus), "master-output");
-      g_object_notify (G_OBJECT (bus), "solo");
+      bus->as<Bse::BusImpl*>()->notify ("solo");
     }
 }
 
@@ -390,18 +389,6 @@ bse_bus_set_property (GObject      *object,
     case PROP_SNET:
       g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_SOLO:
-      parent = BSE_ITEM (self)->parent;
-      if (BSE_IS_SONG (parent))
-        {
-          BseSong *song = BSE_SONG (parent);
-          gboolean is_solo = sfi_value_get_bool (value);
-          if (is_solo && song->solo_bus != self)
-            bse_song_set_solo_bus (song, self);
-          else if (!is_solo && song->solo_bus == self)
-            bse_song_set_solo_bus (song, NULL);
-        }
-      break;
     case PROP_SYNC:
       vbool = sfi_value_get_bool (value);
       if (vbool != self->synced)
@@ -493,16 +480,6 @@ bse_bus_get_property (GObject    *object,
     case PROP_SNET:
       g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
-    case PROP_SOLO:
-      parent = BSE_ITEM (self)->parent;
-      if (BSE_IS_SONG (parent))
-        {
-          BseSong *song = BSE_SONG (parent);
-          g_value_set_boolean (value, song->solo_bus == self);
-        }
-      else
-        g_value_set_boolean (value, FALSE);
-      break;
     case PROP_SYNC:
       g_value_set_boolean (value, self->synced);
       break;
@@ -535,8 +512,10 @@ bse_bus_change_solo (BseBus         *self,
 {
   self->solo_muted = solo_muted;
   bus_volume_changed (self);
-  g_object_notify (G_OBJECT (self), "solo");
-  self->as<Bse::BusImpl*>()->notify ("mute");
+
+  auto impl = self->as<Bse::BusImpl*>();
+  impl->notify ("solo");
+  impl->notify ("mute");
 }
 
 static void
@@ -920,8 +899,6 @@ bse_bus_class_init (BseBusClass *klass)
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
 
-  bse_object_class_add_param (object_class, _("Adjustments"), PROP_SOLO,
-                              sfi_pspec_bool ("solo", _("Solo"), _("Solo: mute all other busses"), FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SYNC,
                               sfi_pspec_bool ("sync", _("Sync"), _("Syncronize left and right volume"), TRUE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_LEFT_VOLUME,
@@ -1004,10 +981,48 @@ BusImpl::mute() const
 void
 BusImpl::mute (bool val)
 {
-  BseBus *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+  BseBus *self = as<BseBus*>();
 
   if (APPLY_IDL_PROPERTY (self->muted, val))
     bus_volume_changed (self);
+}
+
+bool
+BusImpl::solo() const
+{
+  BseBus  *self = const_cast<BusImpl*> (this)->as<BseBus*>();
+  BseItem *parent = BSE_ITEM (self)->parent;
+
+  if (BSE_IS_SONG (parent))
+    {
+      BseSong *song = BSE_SONG (parent);
+      return song->solo_bus == self;
+    }
+  return false;
+}
+
+void
+BusImpl::solo (bool is_solo)
+{
+  BseBus *self = as<BseBus*>();
+
+  if (solo() != is_solo)
+    {
+      const auto prop = "solo";
+      push_property_undo (prop);
+
+      BseItem *parent = BSE_ITEM (self)->parent;
+      if (BSE_IS_SONG (parent))
+        {
+          BseSong *song = BSE_SONG (parent);
+
+          if (is_solo && song->solo_bus != self)
+            bse_song_set_solo_bus (song, self);
+          else if (!is_solo && song->solo_bus == self)
+            bse_song_set_solo_bus (song, NULL);
+        }
+      notify (prop);
+    }
 }
 
 Error
