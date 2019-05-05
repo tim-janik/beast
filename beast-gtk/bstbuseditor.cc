@@ -82,6 +82,20 @@ bus_editor_release_item (SfiProxy      item,
   bst_bus_editor_set_bus (self, 0);
 }
 
+static GxkParam *
+get_property_param (BstBusEditor *self,
+                    const gchar  *property)
+{
+  Bse::BusH bus = Bse::BusH::__cast__ (bse_server.from_proxy (self->item));
+  const Bse::StringSeq kvlist = bus.find_prop (property);
+
+  GParamSpec *cxxpspec = Bse::pspec_from_key_value_list (property, kvlist);
+  if (cxxpspec)
+    return bst_param_new_property (cxxpspec, bus);
+
+  return nullptr;
+}
+
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
                  const gchar  *property,
@@ -89,15 +103,7 @@ bus_build_param (BstBusEditor *self,
                  const gchar  *editor,
                  const gchar  *label)
 {
-  GxkParam *gxk_param = nullptr;
-
-  /* aida property? */
-  Bse::BusH bus = Bse::BusH::__cast__ (bse_server.from_proxy (self->item));
-  const Bse::StringSeq meta = bus.find_prop (property);
-
-  GParamSpec *cxxpspec = Bse::pspec_from_key_value_list (property, meta);
-  if (cxxpspec)
-    gxk_param = bst_param_new_property (cxxpspec, bus);
+  GxkParam *gxk_param = get_property_param (self, property); /* aida property? */
 
   if (!gxk_param)
     {
@@ -150,8 +156,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
       /* create and hook up volume params & scopes */
-      pspec = bse_proxy_get_pspec (self->item, "left-volume");
-      GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
+      GxkParam *lvolume = get_property_param (self, "left_volume");
       GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
       pspec = bse_proxy_get_pspec (self->item, "right-volume");
       GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
