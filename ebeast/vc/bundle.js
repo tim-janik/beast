@@ -23,6 +23,7 @@ const vue_components = [
   require ('./part-thumb.vue'),
   require ('./modaldialog.vue'),
   require ('./aboutdialog.vue'),
+  require ('./preferencesdialog.vue'),
   require ('./hscrollbar.vue'),
   require ('./track-list.vue'),
   require ('./track-view.vue'),

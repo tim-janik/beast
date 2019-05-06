@@ -35,6 +35,11 @@ module.exports = {
   data_tmpl: {
     piano_roll_part: undefined,
     show_about_dialog: false,
+    show_preferences_dialog: false,
+  },
+  watch: {
+    show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
+    show_preferences_dialog: function (newval) { if (newval && this.show_about_dialog) this.show_about_dialog = false; },
   },
   computed: {
     project: function () {
