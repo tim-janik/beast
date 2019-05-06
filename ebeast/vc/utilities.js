@@ -3,6 +3,22 @@
 
 exports.vue_mixins = {};
 
+/// Loop over all properties in `source` and assign to `target*
+function assign_forin (target, source) {
+  for (let p in source)
+    target[p] = source[p];
+  return target;
+}
+exports.assign_forin = assign_forin;
+
+/// Loop over all elements of `source` and assign to `target*
+function assign_forof (target, source) {
+  for (let e of source)
+    target[e] = source[e];
+  return target;
+}
+exports.assign_forof = assign_forof;
+
 /** Remove element `item` from `array` */
 function array_remove (array, item) {
   for (let i = 0; i < array.length; i++)
