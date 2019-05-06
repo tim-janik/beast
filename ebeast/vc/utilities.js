@@ -19,6 +19,33 @@ function assign_forof (target, source) {
 }
 exports.assign_forof = assign_forof;
 
+/// Yield a wrapper that delays calling `callback` until `delay` miliseconds have passed since the last wrapper call.
+function debounce (delay, callback) {
+  if (!(callback instanceof Function))
+    throw new TypeError ('argument `callback` must be of type Function');
+  let ctimer, cthis, cargs, creturn; // closure variables
+  function invoke_callback() {
+    ctimer = undefined;
+    const invoke_this = cthis, invoke_args = cargs;
+    cthis = undefined;
+    cargs = undefined;
+    creturn = callback.apply (invoke_this, invoke_args);
+    return undefined;
+  }
+  function cwrapper (...args) {
+    cthis = this;
+    cargs = args;
+    if (ctimer != undefined)
+      clearTimeout (ctimer);
+    ctimer = setTimeout (invoke_callback, delay);
+    const last_return = creturn;
+    creturn = undefined;
+    return last_return;
+  }
+  return cwrapper;
+}
+exports.debounce = debounce;
+
 /** Remove element `item` from `array` */
 function array_remove (array, item) {
   for (let i = 0; i < array.length; i++)
