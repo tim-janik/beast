@@ -12,6 +12,8 @@
   : Object with default property values.
   *readonly*
   : Make this component non editable for the user.
+  *debounce*
+  : Delay in milliseconds for `input` event notifications.
   ## Events:
   *input*
   : This event is emitted whenever the value changes through user input or needs to be constrained.
@@ -63,6 +65,7 @@ module.exports = {
   name: 'vc-fed-object',
   props: {
     readonly:	{ default: false, },
+    debounce:	{ default: 0, },
     value:	{ required: true, },
     default:	{ },
     typedata:	{ },
@@ -154,7 +157,12 @@ module.exports = {
     apply_field (fieldname, value) {
       const [o] = this.editable_object();
       Vue.set (o, fieldname, value);
-      this.$emit ('input', o);
+      if (this.emit_update_ == undefined)
+	this.emit_update_ = Util.debounce (this.debounce, function () {
+	  const [o] = this.editable_object();
+	  this.$emit ('input', o);
+	});
+      this.emit_update_();
     },
   },
 };
