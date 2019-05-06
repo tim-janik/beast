@@ -342,7 +342,7 @@ function modal_shield (close_handler, preserve_element) {
   const shield = document.createElement ("div");
   document._vc_modal_shields.unshift (shield);
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		 'background-color: rgba(0,0,0,0.05);';
+		 'background-color: rgba(0,0,0,0.60);';
   document.body.appendChild (shield);
   // destroying the shield
   shield.destroy = function (call_handler = true) {
