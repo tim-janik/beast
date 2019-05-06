@@ -537,7 +537,7 @@ static Configuration global_config;
 static bool          global_config_loaded = false;
 static bool          global_config_dirty = false;
 
-static Configuration
+Configuration
 global_config_get_defaults ()
 {
   Configuration config;

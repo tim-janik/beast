@@ -1266,6 +1266,7 @@ interface Server : Container {
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.
   SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
+  Configuration  get_config_defaults ();                                ///< Retrieve Bse::Configuration setting defaults.
   Configuration  get_config        ();                                  ///< Retrieve Bse::Configuration settings.
   void           set_config        (Configuration configuration);       ///< Assign updated Bse::Configuration settings.
 

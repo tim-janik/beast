@@ -1369,6 +1369,12 @@ ServerImpl::sample_file_info (const String &filename)
 }
 
 Configuration
+ServerImpl::get_config_defaults ()
+{
+  return global_config_get_defaults();
+}
+
+Configuration
 ServerImpl::get_config ()
 {
   return global_config_get();

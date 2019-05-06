@@ -14,6 +14,7 @@ SfiGlueContext* _bse_glue_context_create (const char *client, const std::functio
 namespace Bse {
 
 // == Bse Configuration ==
+Configuration   global_config_get_defaults ();
 Configuration   global_config_get ();
 void            global_config_set (const Configuration &configuration);
 void            global_config_flush ();
