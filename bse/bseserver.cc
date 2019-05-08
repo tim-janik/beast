@@ -4,7 +4,6 @@
 #include "bseengine.hh"
 #include "gslcommon.hh"
 #include "bseglue.hh"
-#include "bsegconfig.hh"
 #include "bsemidinotifier.hh"
 #include "bsemain.hh"		/* threads enter/leave */
 #include "bsepcmwriter.hh"
@@ -29,7 +28,6 @@ using namespace Bse;
 enum
 {
   PROP_0,
-  PROP_GCONFIG,
   PROP_WAVE_FILE,
   PROP_LOG_MESSAGES
 };
@@ -112,10 +110,6 @@ bse_server_class_init (BseServerClass *klass)
   container_class->forall_items = bse_server_forall_items;
   container_class->release_children = bse_server_release_children;
 
-  _bse_gconfig_init ();
-  bse_object_class_add_param (object_class, "BSE Configuration",
-			      PROP_GCONFIG,
-			      bse_gconfig_pspec ());	/* "bse-preferences" */
   bse_object_class_add_param (object_class, "PCM Recording",
 			      PROP_WAVE_FILE,
 			      sfi_pspec_string ("wave_file", _("WAVE File"),
@@ -130,33 +124,6 @@ bse_server_class_init (BseServerClass *klass)
 						     BSE_TYPE_REGISTRATION_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-}
-
-static GTokenType
-rc_file_try_statement (gpointer   context_data,
-		       SfiRStore *rstore,
-		       GScanner  *scanner,
-		       gpointer   user_data)
-{
-  BseServer *server = (BseServer*) context_data;
-  assert_return (scanner->next_token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
-  if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
-    {
-      GValue *value = sfi_value_rec (NULL);
-      GTokenType token;
-      SfiRec *rec;
-      g_scanner_get_next_token (rstore->scanner);
-      token = sfi_rstore_parse_param (rstore, value, bse_gconfig_pspec ());
-      rec = sfi_value_get_rec (value);
-      if (token == G_TOKEN_NONE && rec)
-	bse_item_set (server,
-                      "bse-preferences", rec,
-                      NULL);
-      sfi_value_free (value);
-      return token;
-    }
-  else
-    return SFI_TOKEN_UNMATCHED;
 }
 
 static void
@@ -181,24 +148,6 @@ bse_server_init (BseServer *self)
   /* start dispatching main thread stuff */
   main_thread_source_setup (self);
 
-  /* read rc file */
-  int fd = -1;
-  if (!bse_main_args->stand_alone &&
-      bse_main_args->bse_rcfile &&
-      bse_main_args->bse_rcfile[0])
-    fd = open (bse_main_args->bse_rcfile, O_RDONLY, 0);
-  if (fd >= 0)
-    {
-      SfiRStore *rstore = sfi_rstore_new ();
-      sfi_rstore_input_fd (rstore, fd, bse_main_args->bse_rcfile);
-      sfi_rstore_parse_all (rstore, self, rc_file_try_statement, NULL);
-      sfi_rstore_destroy (rstore);
-      close (fd);
-    }
-
-  /* integrate argv overides */
-  bse_gconfig_merge_args (bse_main_args);
-
   /* dispatch midi notifiers */
   bse_midi_notifiers_attach_source();
 }
@@ -222,12 +171,6 @@ bse_server_set_property (GObject      *object,
   BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
-      SfiRec *rec;
-    case PROP_GCONFIG:
-      rec = sfi_value_get_rec (value);
-      if (rec)
-	bse_gconfig_apply (rec);
-      break;
     case PROP_WAVE_FILE:
       bse_server_start_recording (self, g_value_get_string (value), 0);
       break;
@@ -249,12 +192,6 @@ bse_server_get_property (GObject    *object,
   BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
-      SfiRec *rec;
-    case PROP_GCONFIG:
-      rec = bse_gconfig_to_rec (bse_global_config);
-      sfi_value_set_rec (value, rec);
-      sfi_rec_unref (rec);
-      break;
     case PROP_WAVE_FILE:
       g_value_set_string (value, self->wave_file);
       break;
@@ -265,14 +202,6 @@ bse_server_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-}
-
-void
-bse_server_notify_gconfig (BseServer *server)
-{
-  assert_return (BSE_IS_SERVER (server));
-
-  g_object_notify ((GObject*) server, bse_gconfig_pspec ()->name);
 }
 
 static void
@@ -398,17 +327,14 @@ bse_server_start_recording (BseServer      *self,
                             const char     *wave_file,
                             double          n_seconds)
 {
-  if (!bse_gconfig_locked ())
+  self->wave_seconds = MAX (n_seconds, 0);
+  self->wave_file = g_strdup_stripped (wave_file ? wave_file : "");
+  if (!self->wave_file[0])
     {
-      self->wave_seconds = MAX (n_seconds, 0);
-      self->wave_file = g_strdup_stripped (wave_file ? wave_file : "");
-      if (!self->wave_file[0])
-        {
-          g_free (self->wave_file);
-          self->wave_file = NULL;
-        }
-      g_object_notify ((GObject*) self, "wave-file");
+      g_free (self->wave_file);
+      self->wave_file = NULL;
     }
+  g_object_notify ((GObject*) self, "wave-file");
 }
 
 void
@@ -525,10 +451,10 @@ bse_server_open_devices (BseServer *self)
       return Bse::Error::NONE;
     }
   /* lock playback/capture/latency settings */
-  bse_gconfig_lock ();
+  Bse::global_config->lock();
   /* calculate block_size for pcm setup */
-  guint block_size, latency = BSE_GCONFIG (synth_latency), mix_freq = BSE_GCONFIG (synth_mixing_freq);
-  bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
+  guint block_size, latency = Bse::global_config->synth_latency, mix_freq = Bse::global_config->synth_mixing_freq;
+  bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
   /* try opening devices */
   if (error == 0)
     error = server_open_pcm_device (self, mix_freq, latency, block_size);
@@ -536,7 +462,7 @@ bse_server_open_devices (BseServer *self)
   if (error != 0 && aligned_freq != mix_freq)
     {
       mix_freq = aligned_freq;
-      bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
+      bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
       Bse::Error new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
       error = new_error != 0 ? error : Bse::Error::NONE;
     }
@@ -591,7 +517,7 @@ bse_server_open_devices (BseServer *self)
 	  self->pcm_device = NULL;
 	}
     }
-  bse_gconfig_unlock ();        /* engine_init() holds another lock count on success */
+  Bse::global_config->unlock();
   return error;
 }
 
@@ -982,7 +908,7 @@ engine_init (BseServer *server,
 
   assert_return (server->engine_source == NULL);
 
-  bse_gconfig_lock ();
+  Bse::global_config->lock();
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
   g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
 
@@ -996,7 +922,7 @@ engine_init (BseServer *server,
       if (current_priority <= -2 && mytid)
         setpriority (PRIO_PROCESS, mytid, current_priority + 1);
     }
-  bse_engine_configure (BSE_GCONFIG (synth_latency), mix_freq, BSE_GCONFIG (synth_control_freq));
+  bse_engine_configure (Bse::global_config->synth_latency, mix_freq, Bse::global_config->synth_control_freq);
 
   g_source_attach (server->engine_source, bse_main_context);
 }
@@ -1009,7 +935,7 @@ engine_shutdown (BseServer *server)
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
   bse_engine_user_thread_collect ();
-  bse_gconfig_unlock ();
+  Bse::global_config->unlock();
 }
 
 
@@ -1079,25 +1005,25 @@ ServerImpl::get_ladspa_path ()
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::PLUGINDIR), BSE_GCONFIG (plugin_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::PLUGINDIR), Bse::global_config->plugin_path);
 }
 
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), BSE_GCONFIG (instrument_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), Bse::global_config->instrument_path);
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), BSE_GCONFIG (sample_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_config->sample_path);
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), BSE_GCONFIG (effect_path));
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), Bse::global_config->effect_path);
 }
 
 String
@@ -1127,42 +1053,15 @@ ServerImpl::get_version_buildid ()
 String
 ServerImpl::get_custom_effect_dir ()
 {
-  StringVector strings = string_split (BSE_GCONFIG (effect_path), G_SEARCHPATH_SEPARATOR_S);
+  StringVector strings = string_split (Bse::global_config->effect_path, G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
 }
 
 String
 ServerImpl::get_custom_instrument_dir ()
 {
-  StringVector strings = string_split (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S);
+  StringVector strings = string_split (Bse::global_config->instrument_path, G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
-}
-
-void
-ServerImpl::save_preferences ()
-{
-  gchar *file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
-  int fd = open (file_name, O_WRONLY | O_CREAT | O_TRUNC /* | O_EXCL */, 0666);
-  g_free (file_name);
-  if (fd < 0)
-    return;
-
-  SfiWStore *wstore = sfi_wstore_new ();
-  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", Bse::version());
-
-  /* store BseGConfig */
-  sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
-  SfiRec *rec = bse_gconfig_to_rec (bse_global_config);
-  GValue *value = sfi_value_rec (rec);
-  sfi_wstore_put_param (wstore, value, bse_gconfig_pspec ());
-  sfi_value_free (value);
-  sfi_rec_unref (rec);
-  sfi_wstore_puts (wstore, "\n");
-
-  /* flush stuff to rc file */
-  sfi_wstore_flush_fd (wstore, fd);
-  sfi_wstore_destroy (wstore);
-  close (fd);
 }
 
 void
@@ -1210,12 +1109,6 @@ ServerImpl::start_recording (const String &wave_file, double n_seconds)
 {
   BseServer *server = as<BseServer*>();
   bse_server_start_recording (server, wave_file.c_str(), n_seconds);
-}
-
-bool
-ServerImpl::preferences_locked ()
-{
-  return bse_gconfig_locked();
 }
 
 bool
@@ -1371,19 +1264,25 @@ ServerImpl::sample_file_info (const String &filename)
 Configuration
 ServerImpl::get_config_defaults ()
 {
-  return global_config_get_defaults();
+  return global_config->defaults();
 }
 
 Configuration
 ServerImpl::get_config ()
 {
-  return global_config_get();
+  return *global_config;
 }
 
 void
 ServerImpl::set_config (const Configuration &configuration)
 {
-  global_config_set (configuration);
+  global_config->assign (configuration);
+}
+
+bool
+ServerImpl::locked_config()
+{
+  return global_config->locked();
 }
 
 NoteDescription

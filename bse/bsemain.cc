@@ -532,13 +532,14 @@ execution_context () // bseutils.hh
   return *bse_execution_context;
 }
 
-// == Bse::Configuration ==
-static Configuration global_config;
-static bool          global_config_loaded = false;
+// == Bse::GlobalConfig ==
+static Configuration global_config_rcsettings;
 static bool          global_config_dirty = false;
+static size_t        global_config_stamp = 1;
+static std::atomic<size_t> global_config_lockcount { 0 };
 
 Configuration
-global_config_get_defaults ()
+GlobalConfig::defaults ()
 {
   Configuration config;
   // static defaults
@@ -571,12 +572,13 @@ global_config_beastrc()
   return Path::join (Path::config_home(), "beast", "beastrc");
 }
 
-Configuration
-global_config_get ()
+static Configuration
+global_config_load ()
 {
-  if (!global_config_loaded)
+  static bool loaded_once = false;
+  if (!loaded_once)
     {
-      Configuration config = global_config_get_defaults();
+      Configuration config = GlobalConfig::defaults();
       // load from rcfile
       String fileconfig = Path::stringread (global_config_beastrc());
       if (!fileconfig.empty())
@@ -586,35 +588,72 @@ global_config_get ()
           if (si.load (tmp))
             config = tmp;
         }
-      global_config_loaded = true;
-      global_config = config;
+      loaded_once = true;
+      global_config_rcsettings = config;
+      global_config_stamp++;
     }
-  return global_config;
+  return global_config_rcsettings;
 }
 
 void
-global_config_set (const Configuration &configuration)
+GlobalConfig::assign (const Configuration &configuration)
 {
-  if (global_config == configuration)
+  if (global_config_rcsettings == configuration)
     return;
-  global_config = configuration;
+  global_config_rcsettings = configuration;
+  global_config_stamp++;
   if (!global_config_dirty)
     {
-      exec_timeout (global_config_flush, 500);
+      exec_timeout (GlobalConfig::flush, 500);
       global_config_dirty = true;
     }
 }
 
 void
-global_config_flush ()
+GlobalConfig::flush ()
 {
   if (global_config_dirty)
     {
       SerializeToXML so ("configuration", version());
-      so.save (global_config);
+      so.save (global_config_rcsettings);
       Path::stringwrite (global_config_beastrc(), so.to_xml(), true);
       global_config_dirty = false;
     }
+}
+
+void
+GlobalConfig::lock ()
+{
+  global_config_lockcount += 1;
+}
+
+void
+GlobalConfig::unlock ()
+{
+  assert_return (global_config_lockcount > 0);
+  global_config_lockcount -= 1;
+}
+
+bool
+GlobalConfig::locked ()
+{
+  return global_config_lockcount > 0;
+}
+
+const GlobalConfig*
+GlobalConfigPtr::operator-> () const
+{
+  static Configuration static_config = GlobalConfig::defaults();
+  if (!GlobalConfig::locked())
+    {
+      static size_t last_stamp = 0;
+      if (last_stamp != global_config_stamp)
+        {
+          static_config = global_config_load();
+          last_stamp = global_config_stamp;
+        }
+    }
+  return static_cast<GlobalConfig*> (&static_config);
 }
 
 } // Bse

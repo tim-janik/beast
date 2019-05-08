@@ -14,10 +14,19 @@ SfiGlueContext* _bse_glue_context_create (const char *client, const std::functio
 namespace Bse {
 
 // == Bse Configuration ==
-Configuration   global_config_get_defaults ();
-Configuration   global_config_get ();
-void            global_config_set (const Configuration &configuration);
-void            global_config_flush ();
+struct GlobalConfig : Configuration {
+  static Configuration defaults ();
+  static void          assign   (const Configuration &configuration);
+  static void          flush    ();
+  static void          lock     ();
+  static void          unlock   ();
+  static bool          locked   ();
+};
+struct GlobalConfigPtr {
+  const GlobalConfig* operator-> () const;
+  const GlobalConfig& operator*  () const { return *operator->(); }
+};
+inline GlobalConfigPtr global_config;
 
 } // Bse
 

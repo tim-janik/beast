@@ -30,7 +30,7 @@ bse_midi_signal_default (Bse::MidiSignal type)
     case Bse::MidiSignal::CONTROL_10:	return 0.5;	        /* Panorama MSB */
     case Bse::MidiSignal::CONTROL_11:	return 1.0;	        /* Expression MSB */
     case Bse::MidiSignal::CONTROL_64:
-      return BSE_GCONFIG (invert_sustain) ? 1.0 : 0.0;	        /* Damper Pedal Switch */
+      return Bse::global_config->invert_sustain ? 1.0 : 0.0;    /* Damper Pedal Switch */
     case Bse::MidiSignal::CONTROL_120:	return 1.0;	        /* All Sound Off ITrigger */
     case Bse::MidiSignal::CONTROL_121:	return 1.0;	        /* All Controllers Off ITrigger */
     case Bse::MidiSignal::CONTROL_123:	return 1.0;	        /* All Notes Off ITrigger */

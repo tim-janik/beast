@@ -86,11 +86,6 @@ void    bse_param_types_init			();
 #include        <bse/bsegentypes.h>
 
 
-/* --- dynamic config --- */
-#define BSE_GCONFIG(cfg) (bse_global_config->cfg)
-extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
-
-
 /* --- provide IDL pspec initializers --- */
 #define sfidl_pspec_Bool sfidl_pspec_SfiBool
 #define sfidl_pspec_SfiBool(group, locfile, locline, name, nick, blurb, dflt, options) \
