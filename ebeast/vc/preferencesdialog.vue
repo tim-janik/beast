@@ -19,7 +19,7 @@
   <vc-modaldialog class="vc-preferencesdialog" @close="$emit ('close')">
     <div slot="header">BEAST Preferences</div>
     <slot></slot>
-    <vc-fed-object :ref="fedobject" :value="preferences()" :default="defaults()" @input="value_changed" debounce=500>
+    <vc-fed-object :ref="fedobject" :value="preferences()" :default="defaults()" :readonly="locked()" @input="value_changed" debounce=500>
     </vc-fed-object>
   </vc-modaldialog>
 </template>
@@ -30,6 +30,9 @@ module.exports = {
   methods: {
     defaults() {
       return Bse.server.get_config_defaults();
+    },
+    locked() {
+      return Bse.server.locked_config();
     },
     preferences() {
       return Bse.server.get_config();
