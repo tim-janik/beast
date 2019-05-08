@@ -50,7 +50,6 @@ struct BseMainArgs {
   uint   	        midi_kammer_note;
   /* kammer frequency, normally 440Hz, historically 435Hz */
   double 	        kammer_freq;
-  const char           *bse_rcfile;
   const char           *override_plugin_globs;
   const char 	       *override_sample_path;
   bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.

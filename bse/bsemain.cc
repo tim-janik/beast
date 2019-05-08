@@ -38,7 +38,6 @@ static BseMainArgs       default_main_args = {
   10 * 1024 * 1024,     // dcache_cache_memory
   BSE_KAMMER_NOTE,      // midi_kammer_note (69)
   BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
   NULL,			// override_sample_path
   false,                // stand_alone
@@ -309,6 +308,9 @@ bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester
   return retval;
 }
 
+// == parse args ==
+static String argv_bse_rcfile;
+
 static guint
 get_n_processors (void)
 {
@@ -413,8 +415,7 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
       else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
 	{
           argv[i++] = NULL;
-          g_free ((char*) margs->bse_rcfile);
-          margs->bse_rcfile = g_strdup (argv[i]);
+          argv_bse_rcfile = argv[i];
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-force-fpu", argv[i]) == 0)
@@ -433,9 +434,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	  argv[i] = NULL;
 	}
     }
-
-  if (!margs->bse_rcfile)
-    margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
 
   guint e = 1;
   for (i = 1; i < argc; i++)
@@ -530,7 +528,7 @@ GlobalConfig::defaults ()
 static String
 global_config_beastrc()
 {
-  return Path::join (Path::config_home(), "beast", "beastrc");
+  return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "beastrc") : argv_bse_rcfile;
 }
 
 static Configuration
