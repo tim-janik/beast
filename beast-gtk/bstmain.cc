@@ -479,8 +479,6 @@ main_save_rc_files ()
     return;
   if (!bst_preferences_saved())
     {
-      if (may_auto_update_bse_rc_file)
-        bse_server.save_preferences();
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
       Bse::Error error = bst_rc_dump (file_name);

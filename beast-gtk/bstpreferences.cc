@@ -30,7 +30,6 @@ bst_preferences_init (BstPreferences *self)
   BstKeyBinding *kbinding;
   GParamSpec *pspec;
   GtkWidget *pchild;
-  SfiRec *rec;
 
   self->notebook = (GtkNotebook*) g_object_new (GXK_TYPE_NOTEBOOK,
                                                 "visible", TRUE,
@@ -69,13 +68,6 @@ bst_preferences_init (BstPreferences *self)
   self->rec_skin = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_skin, sfi_pspec_get_rec_fields (pspec), &self->params_skin);
   gxk_notebook_append (self->notebook, pchild, _("Skin"), FALSE);
-
-  pspec = bse_proxy_get_pspec (BSE_SERVER, "bse-preferences");
-  self->bsepspec = g_param_spec_ref (pspec);
-  bse_proxy_get (BSE_SERVER, "bse-preferences", &rec, NULL);
-  self->bserec = sfi_rec_copy_deep (rec);
-  pchild = bst_preferences_build_rec_editor (self->bserec, sfi_pspec_get_rec_fields (pspec), &self->bseparams);
-  gxk_notebook_append (self->notebook, pchild, "BSE", FALSE);
 }
 
 static void
@@ -98,19 +90,6 @@ bst_preferences_destroy (GtkObject *object)
     }
   sfi_ring_free (self->params_skin);
   self->params_skin = NULL;
-
-  if (self->bsepspec)
-    {
-      g_param_spec_unref (self->bsepspec);
-      self->bsepspec = NULL;
-    }
-  if (self->bserec)
-    {
-      sfi_rec_unref (self->bserec);
-      self->bserec = NULL;
-    }
-  sfi_ring_free (self->bseparams);
-  self->bseparams = NULL;
 
   GTK_OBJECT_CLASS (bst_preferences_parent_class)->destroy (object);
 }
@@ -158,8 +137,6 @@ bst_preferences_update_params (BstPreferences *self)
     gxk_param_update ((GxkParam*) ring->data);
   for (ring = self->params_skin; ring; ring = sfi_ring_walk (ring, self->params_skin))
     gxk_param_update ((GxkParam*) ring->data);
-  for (ring = self->bseparams; ring; ring = sfi_ring_walk (ring, self->bseparams))
-    gxk_param_update ((GxkParam*) ring->data);
 }
 
 void
@@ -192,11 +169,6 @@ bst_preferences_revert (BstPreferences *self)
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (self->rec_skin, crec);
-  sfi_rec_unref (crec);
-
-  bse_proxy_get (BSE_SERVER, "bse-preferences", &rec, NULL);
-  crec = sfi_rec_copy_deep (rec);
-  sfi_rec_swap_fields (self->bserec, crec);
   sfi_rec_unref (crec);
 
   bst_preferences_update_params (self);
@@ -235,11 +207,6 @@ bst_preferences_default_revert (BstPreferences *self)
   sfi_rec_swap_fields (self->rec_skin, rec);
   sfi_rec_unref (rec);
 
-  rec = sfi_rec_new ();
-  sfi_rec_validate (rec, sfi_pspec_get_rec_fields (self->bsepspec));
-  sfi_rec_swap_fields (self->bserec, rec);
-  sfi_rec_unref (rec);
-
   bst_preferences_update_params (self);
 }
 
@@ -267,8 +234,6 @@ bst_preferences_apply (BstPreferences *self)
   sfi_seq_unref (seq);
 
   bst_skin_config_apply (self->rec_skin, NULL);
-
-  bse_proxy_set (BSE_SERVER, "bse-preferences", self->bserec, NULL);
 
   bst_preferences_revert (self);
 }
@@ -314,8 +279,6 @@ bst_preferences_save (BstPreferences *self)
   GSList *slist = NULL;
 
   assert_return (BST_IS_PREFERENCES (self));
-
-  bse_server.save_preferences();
 
   file_name = BST_STRDUP_RC_FILE ();
   error = bst_rc_dump (file_name);
