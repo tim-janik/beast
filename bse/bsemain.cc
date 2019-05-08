@@ -374,45 +374,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	  g_log_set_always_fatal (fatal_mask);
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
-	       strncmp ("--bse-latency=", argv[i], 14) == 0)
-	{
-	  gchar *equal = argv[i] + 13;
-	  if (*equal == '=')
-            margs->latency = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->latency = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
-	       strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
-	{
-	  gchar *equal = argv[i] + 17;
-	  if (*equal == '=')
-            margs->mixing_freq = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->mixing_freq = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
-	       strncmp ("--bse-control-freq=", argv[i], 19) == 0)
-	{
-	  gchar *equal = argv[i] + 18;
-	  if (*equal == '=')
-            margs->control_freq = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->control_freq = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
 	{
           margs->load_drivers_early = TRUE;

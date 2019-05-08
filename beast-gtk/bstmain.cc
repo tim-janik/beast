@@ -36,7 +36,6 @@ static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
 static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
-static gboolean     may_auto_update_bse_rc_file = TRUE;
 static bool         rewrite_bse_file = false;
 
 /* --- functions --- */
@@ -607,33 +606,6 @@ bst_args_parse_early (int *argc_p, char **argv)
         {
           const char *arg = argv[i][9 - 1] == '=' ? argv[i] + 9 : (argv[i + 1] ? argv[i + 1] : "");
           bst_skin_config_set_rcfile (arg);
-        }
-      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
-               strncmp ("--bse-latency=", argv[i], 14) == 0)
-        {
-          gchar *equal = argv[i] + 13;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
-               strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
-        {
-          gchar *equal = argv[i] + 17;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
-               strncmp ("--bse-control-freq=", argv[i], 19) == 0)
-        {
-          gchar *equal = argv[i] + 18;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
         }
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
         {

@@ -60,9 +60,6 @@ struct BseMainArgs {
   bool		        debug_extensions;	///< Initialization argument "debug-extensions" - enable debugging extensions
   bool                  load_drivers_early;
   bool                  dump_driver_list;
-  int                   latency;
-  int                   mixing_freq;
-  int                   control_freq;
   SfiRing              *pcm_drivers;
   SfiRing              *midi_drivers;
 };

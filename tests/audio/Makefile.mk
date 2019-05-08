@@ -10,7 +10,6 @@ tests/audio/render2wav = $(strip					\
 	$(tools/bsetool)						\
 	  $(if $(findstring 1, $(V)),, --quiet)				\
 	  render2wav							\
-	  --bse-mixing-freq=48000					\
 	  --bse-pcm-driver null=nosleep					\
 	  --bse-midi-driver null					\
 	  --bse-override-plugin-globs '$>/plugins/*.so'			\
