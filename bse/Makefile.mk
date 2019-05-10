@@ -388,9 +388,9 @@ $(call $(if $(filter release, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG)
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
 
 # == bseapi.idl rules ==
-$(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc) bse/AuxTypes.py	| $>/bse/
+$(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc)	| $>/bse/
 	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
-	$Q $(aidacc/aidacc) -x CxxStub -x bse/AuxTypes.py -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
+	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
 	$Q sed '1i#define _(x) x' -i $>/bse/bseapi_interfaces.cc && sed '1i#undef _' -i $>/bse/bseapi_interfaces.cc
 
 # == sfidl rules ==

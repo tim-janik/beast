@@ -1368,6 +1368,24 @@ ServerImpl::sample_file_info (const String &filename)
   return info;
 }
 
+Configuration
+ServerImpl::get_config_defaults ()
+{
+  return global_config_get_defaults();
+}
+
+Configuration
+ServerImpl::get_config ()
+{
+  return global_config_get();
+}
+
+void
+ServerImpl::set_config (const Configuration &configuration)
+{
+  global_config_set (configuration);
+}
+
 NoteDescription
 ServerImpl::note_describe_from_freq (MusicalTuning musical_tuning, double freq)
 {
