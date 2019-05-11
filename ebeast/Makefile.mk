@@ -39,6 +39,7 @@ app/generated 		::= $(strip	\
 	$>/app/assets/gradient-01.png	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
+	$>/app/assets/utilities.js	\
 )
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
@@ -122,9 +123,12 @@ $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
+$>/app/assets/utilities.js: ebeast/vc/utilities.js	| $>/ebeast/npm.rules
+	$(QECHO) COPY $@
+	$Q $(CP) -P $< $@
 
 # == assets/components.js ==
-$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/lint.rules
+$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
 	$(QGEN)
 	@: # set NODE_PATH, since browserify fails to search ./node_modules for a ../ entry point
 	$Q cd $>/ebeast/ \

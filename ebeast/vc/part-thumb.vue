@@ -29,8 +29,6 @@
 </style>
 
 <script>
-const Util = require ('./utilities.js');
-
 const tick_quant = 384; // FIXME
 module.exports = {
   name: 'vc-part-thumb',

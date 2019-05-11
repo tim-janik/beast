@@ -38,7 +38,6 @@ static BseMainArgs       default_main_args = {
   10 * 1024 * 1024,     // dcache_cache_memory
   BSE_KAMMER_NOTE,      // midi_kammer_note (69)
   BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
   NULL,			// override_sample_path
   false,                // stand_alone
@@ -309,6 +308,9 @@ bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester
   return retval;
 }
 
+// == parse args ==
+static String argv_bse_rcfile;
+
 static guint
 get_n_processors (void)
 {
@@ -374,45 +376,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	  g_log_set_always_fatal (fatal_mask);
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
-	       strncmp ("--bse-latency=", argv[i], 14) == 0)
-	{
-	  gchar *equal = argv[i] + 13;
-	  if (*equal == '=')
-            margs->latency = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->latency = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
-	       strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
-	{
-	  gchar *equal = argv[i] + 17;
-	  if (*equal == '=')
-            margs->mixing_freq = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->mixing_freq = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
-	       strncmp ("--bse-control-freq=", argv[i], 19) == 0)
-	{
-	  gchar *equal = argv[i] + 18;
-	  if (*equal == '=')
-            margs->control_freq = g_ascii_strtoull (equal + 1, NULL, 10);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->control_freq = g_ascii_strtoull (argv[i], NULL, 10);
-	    }
-	  argv[i] = NULL;
-	}
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
 	{
           margs->load_drivers_early = TRUE;
@@ -452,8 +415,7 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
       else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
 	{
           argv[i++] = NULL;
-          g_free ((char*) margs->bse_rcfile);
-          margs->bse_rcfile = g_strdup (argv[i]);
+          argv_bse_rcfile = argv[i];
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-force-fpu", argv[i]) == 0)
@@ -472,9 +434,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	  argv[i] = NULL;
 	}
     }
-
-  if (!margs->bse_rcfile)
-    margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
 
   guint e = 1;
   for (i = 1; i < argc; i++)
@@ -532,13 +491,14 @@ execution_context () // bseutils.hh
   return *bse_execution_context;
 }
 
-// == Bse::Configuration ==
-static Configuration global_config;
-static bool          global_config_loaded = false;
+// == Bse::GlobalConfig ==
+static Configuration global_config_rcsettings;
 static bool          global_config_dirty = false;
+static size_t        global_config_stamp = 1;
+static std::atomic<size_t> global_config_lockcount { 0 };
 
 Configuration
-global_config_get_defaults ()
+GlobalConfig::defaults ()
 {
   Configuration config;
   // static defaults
@@ -568,15 +528,16 @@ global_config_get_defaults ()
 static String
 global_config_beastrc()
 {
-  return Path::join (Path::config_home(), "beast", "beastrc");
+  return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "beastrc") : argv_bse_rcfile;
 }
 
-Configuration
-global_config_get ()
+static Configuration
+global_config_load ()
 {
-  if (!global_config_loaded)
+  static bool loaded_once = false;
+  if (!loaded_once)
     {
-      Configuration config = global_config_get_defaults();
+      Configuration config = GlobalConfig::defaults();
       // load from rcfile
       String fileconfig = Path::stringread (global_config_beastrc());
       if (!fileconfig.empty())
@@ -586,35 +547,72 @@ global_config_get ()
           if (si.load (tmp))
             config = tmp;
         }
-      global_config_loaded = true;
-      global_config = config;
+      loaded_once = true;
+      global_config_rcsettings = config;
+      global_config_stamp++;
     }
-  return global_config;
+  return global_config_rcsettings;
 }
 
 void
-global_config_set (const Configuration &configuration)
+GlobalConfig::assign (const Configuration &configuration)
 {
-  if (global_config == configuration)
+  if (global_config_rcsettings == configuration)
     return;
-  global_config = configuration;
+  global_config_rcsettings = configuration;
+  global_config_stamp++;
   if (!global_config_dirty)
     {
-      exec_timeout (global_config_flush, 500);
+      exec_timeout (GlobalConfig::flush, 500);
       global_config_dirty = true;
     }
 }
 
 void
-global_config_flush ()
+GlobalConfig::flush ()
 {
   if (global_config_dirty)
     {
       SerializeToXML so ("configuration", version());
-      so.save (global_config);
+      so.save (global_config_rcsettings);
       Path::stringwrite (global_config_beastrc(), so.to_xml(), true);
       global_config_dirty = false;
     }
+}
+
+void
+GlobalConfig::lock ()
+{
+  global_config_lockcount += 1;
+}
+
+void
+GlobalConfig::unlock ()
+{
+  assert_return (global_config_lockcount > 0);
+  global_config_lockcount -= 1;
+}
+
+bool
+GlobalConfig::locked ()
+{
+  return global_config_lockcount > 0;
+}
+
+const GlobalConfig*
+GlobalConfigPtr::operator-> () const
+{
+  static Configuration static_config = GlobalConfig::defaults();
+  if (!GlobalConfig::locked())
+    {
+      static size_t last_stamp = 0;
+      if (last_stamp != global_config_stamp)
+        {
+          static_config = global_config_load();
+          last_stamp = global_config_stamp;
+        }
+    }
+  return static_cast<GlobalConfig*> (&static_config);
 }
 
 } // Bse

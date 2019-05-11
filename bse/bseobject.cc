@@ -3,9 +3,9 @@
 #include "bseexports.hh"
 #include "bsestorage.hh"
 #include "bsecategories.hh"
-#include "bsegconfig.hh"
 #include "bsesource.hh"		/* debug hack */
 #include "bsestartup.hh"
+#include "bsemain.hh"
 #include "bse/internal.hh"
 #include <string.h>
 
@@ -645,11 +645,8 @@ bse_object_lock (gpointer _object)
   if (!object->lock_count)
     {
       g_object_ref (object);
-
-      /* we also keep the globals locked so we don't need to duplicate
-       * this all over the place
-       */
-      bse_gconfig_lock ();
+      // locking any object also freezes configuration
+      Bse::global_config->lock();
     }
 
   object->lock_count += 1;
@@ -667,8 +664,8 @@ bse_object_unlock (gpointer _object)
 
   if (!object->lock_count)
     {
-      /* release global lock */
-      bse_gconfig_unlock ();
+      // tentatively also unfreeze global configuration
+      Bse::global_config->unlock();
 
       if (BSE_OBJECT_GET_CLASS (object)->unlocked)
 	BSE_OBJECT_GET_CLASS (object)->unlocked (object);

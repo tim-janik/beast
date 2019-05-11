@@ -12,6 +12,7 @@ module.exports = {
     "Vue": false,
     "Bse": false,
     "Shell": false,
+    "Util": false,
     "_": false,
     "MAXINT": false,
     "MAXUINT": false,

@@ -41,7 +41,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseenums.hh			\
 	bse/bseexports.hh		\
 	bse/bsefilter.hh		\
-	bse/bsegconfig.hh		\
 	bse/bsegenclosures.hh		\
 	bse/bseglobals.hh		\
 	bse/bseglue.hh			\
@@ -200,7 +199,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bseenums.cc			\
 	bse/bsefilter-ellf.cc		\
 	bse/bsefilter.cc		\
-	bse/bsegconfig.cc		\
 	bse/bseglobals.cc		\
 	bse/bseglue.cc			\
 	bse/bseinstrumentinput.cc	\

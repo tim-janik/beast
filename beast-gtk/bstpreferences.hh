@@ -33,10 +33,6 @@ struct _BstPreferences
 
   SfiRec               *rec_skin;
   SfiRing              *params_skin;
-
-  GParamSpec           *bsepspec;
-  SfiRec	       *bserec;
-  SfiRing	       *bseparams;
 };
 struct _BstPreferencesClass
 {

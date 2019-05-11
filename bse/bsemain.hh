@@ -14,10 +14,19 @@ SfiGlueContext* _bse_glue_context_create (const char *client, const std::functio
 namespace Bse {
 
 // == Bse Configuration ==
-Configuration   global_config_get_defaults ();
-Configuration   global_config_get ();
-void            global_config_set (const Configuration &configuration);
-void            global_config_flush ();
+struct GlobalConfig : Configuration {
+  static Configuration defaults ();
+  static void          assign   (const Configuration &configuration);
+  static void          flush    ();
+  static void          lock     ();
+  static void          unlock   ();
+  static bool          locked   ();
+};
+struct GlobalConfigPtr {
+  const GlobalConfig* operator-> () const;
+  const GlobalConfig& operator*  () const { return *operator->(); }
+};
+inline GlobalConfigPtr global_config;
 
 } // Bse
 
@@ -41,7 +50,6 @@ struct BseMainArgs {
   uint   	        midi_kammer_note;
   /* kammer frequency, normally 440Hz, historically 435Hz */
   double 	        kammer_freq;
-  const char           *bse_rcfile;
   const char           *override_plugin_globs;
   const char 	       *override_sample_path;
   bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.
@@ -51,9 +59,6 @@ struct BseMainArgs {
   bool		        debug_extensions;	///< Initialization argument "debug-extensions" - enable debugging extensions
   bool                  load_drivers_early;
   bool                  dump_driver_list;
-  int                   latency;
-  int                   mixing_freq;
-  int                   control_freq;
   SfiRing              *pcm_drivers;
   SfiRing              *midi_drivers;
 };

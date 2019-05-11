@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesuper.hh"
 #include "bseproject.hh"
+#include "bse/bsemain.hh"
 #include "bse/internal.hh"
 #include <string.h>
 
@@ -37,12 +38,10 @@ bse_super_init (BseSuper *super,
   bse_item_set (super, "uname", _("Unnamed"), NULL);
 
   // default-fill fields
-  const char *value = BSE_GCONFIG (author_default);
-  if (value && value[0])
-    bse_item_set (super, "author", value, NULL);
-  value = BSE_GCONFIG (license_default);
-  if (value && value[0])
-    bse_item_set (super, "license", value, NULL);
+  if (!Bse::global_config->author_default.empty())
+    bse_item_set (super, "author", Bse::global_config->author_default.c_str(), NULL);
+  if (!Bse::global_config->license_default.empty())
+    bse_item_set (super, "license", Bse::global_config->license_default.c_str(), NULL);
 }
 
 static void

@@ -3,6 +3,7 @@
 // == Application Menu ==
 const file_menu = [
   { label: _('&Open...'),		role: 'open-file',		accelerator: 'Ctrl+O', },
+  { label: _('&Preferences...'),	role: 'preferences-dialog',	accelerator: 'Ctrl+,', },
   { label: _('&Quit'),			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
 ];
 const view_menu = [
@@ -43,6 +44,9 @@ function menu_command (role, _data) {
   switch (role) {
   case 'about-dialog':
     Shell.show_about_dialog = !Shell.show_about_dialog;
+    break;
+  case 'preferences-dialog':
+      Shell.show_preferences_dialog = !Shell.show_preferences_dialog;
     break;
   case 'manual-dialog-html': {
     const win = new Electron.BrowserWindow ({

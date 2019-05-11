@@ -1253,11 +1253,9 @@ interface Server : Container {
   String        get_version ();              ///< Retrieve BSE version.
   String        get_version_date ();         ///< Retrieve BSE release date.
   String        get_version_buildid ();      ///< Retrieve BSE buildid.
-  void          save_preferences ();         ///< Save the bse-preferences property to disk.
   void          register_ladspa_plugins();   ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins asynchronously, DEPRECATED.
   void          register_core_plugins();     ///< Register core plugins asynchronously, DEPRECATED.
   void          load_assets();               ///< Register plugins and scripts immediately.
-  bool          preferences_locked();        ///< Returns whether the bse-preferences property is currently locked against modifications or not.
   bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
@@ -1269,6 +1267,7 @@ interface Server : Container {
   Configuration  get_config_defaults ();                                ///< Retrieve Bse::Configuration setting defaults.
   Configuration  get_config        ();                                  ///< Retrieve Bse::Configuration settings.
   void           set_config        (Configuration configuration);       ///< Assign updated Bse::Configuration settings.
+  bool           locked_config     ();          ///< Returns whether `Configuration` is in use and locked against modifications.
 
   /// Describe a note, providing information about its octave, semitone, frequency, etc.
   NoteDescription note_describe (MusicalTuning musical_tuning, int32 note, int32 fine_tune);

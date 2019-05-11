@@ -34,7 +34,11 @@ $vc-button-active-fg:		#bbbbbb !default;
 $vc-button-active-lg:     	linear-gradient(to bottom, #606060 0%, #707070 50%, #606060 100%) !default;
 $vc-button-active-border:	#555555 !default;
 $vc-glow-control:		#0080ff !default;
-$vc-focus-outline:		1px solid $vc-glow-control !default;
+$vc-switch-inactive:		#999999 !default;
+$vc-switch-active:		#2080f0 !default;
+$vc-switch-knob:		$vc-button-foreground !default;
+$vc-focus-outline:		1px solid $vc-glow-control !default;	// suitable for rectangular outlines
+$vc-focus-box-shadow:		0 0 0 1px $vc-glow-control !default;	// suitable for rounded outlines
 $vc-boxshadow-color:		fade(#000000, 30%) !default;
 
 // vc-track-list

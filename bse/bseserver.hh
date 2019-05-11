@@ -76,7 +76,6 @@ void		bse_server_registration			(BseServer          *server,
 							 const gchar	    *error);
 void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
-void		bse_server_notify_gconfig		(BseServer	    *server);
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 
@@ -107,12 +106,10 @@ public:
   virtual String        get_version_buildid () override;
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
-  virtual void   save_preferences        () override;
   virtual void   register_ladspa_plugins () override;
   virtual void   register_core_plugins   () override;
   virtual void   start_recording         (const String &wave_file, double n_seconds) override;
   virtual void   load_assets             () override;
-  virtual bool   preferences_locked      () override;
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
   virtual void          destroy_project  (ProjectIface &project) override;
@@ -123,6 +120,7 @@ public:
   virtual Configuration  get_config_defaults () override;
   virtual Configuration  get_config         () override;
   virtual void           set_config         (const Configuration &configuration) override;
+  virtual bool           locked_config      () override;
   virtual NoteDescription note_describe_from_freq (MusicalTuning musical_tuning, double freq) override;
   virtual NoteDescription note_describe    (MusicalTuning musical_tuning, int note, int fine_tune) override;
   virtual NoteDescription note_construct   (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune) override;

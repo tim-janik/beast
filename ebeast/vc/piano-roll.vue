@@ -83,7 +83,6 @@
 </style>
 
 <script>
-const Util = require ('./utilities.js');
 const floor = Math.floor, round = Math.round;
 const piano_roll_cssheight = 841;
 

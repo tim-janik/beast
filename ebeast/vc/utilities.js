@@ -3,6 +3,49 @@
 
 exports.vue_mixins = {};
 
+/// Loop over all properties in `source` and assign to `target*
+function assign_forin (target, source) {
+  for (let p in source)
+    target[p] = source[p];
+  return target;
+}
+exports.assign_forin = assign_forin;
+
+/// Loop over all elements of `source` and assign to `target*
+function assign_forof (target, source) {
+  for (let e of source)
+    target[e] = source[e];
+  return target;
+}
+exports.assign_forof = assign_forof;
+
+/// Yield a wrapper that delays calling `callback` until `delay` miliseconds have passed since the last wrapper call.
+function debounce (delay, callback) {
+  if (!(callback instanceof Function))
+    throw new TypeError ('argument `callback` must be of type Function');
+  let ctimer, cthis, cargs, creturn; // closure variables
+  function invoke_callback() {
+    ctimer = undefined;
+    const invoke_this = cthis, invoke_args = cargs;
+    cthis = undefined;
+    cargs = undefined;
+    creturn = callback.apply (invoke_this, invoke_args);
+    return undefined;
+  }
+  function cwrapper (...args) {
+    cthis = this;
+    cargs = args;
+    if (ctimer != undefined)
+      clearTimeout (ctimer);
+    ctimer = setTimeout (invoke_callback, delay);
+    const last_return = creturn;
+    creturn = undefined;
+    return last_return;
+  }
+  return cwrapper;
+}
+exports.debounce = debounce;
+
 /** Remove element `item` from `array` */
 function array_remove (array, item) {
   for (let i = 0; i < array.length; i++)
@@ -299,7 +342,7 @@ function modal_shield (close_handler, preserve_element) {
   const shield = document.createElement ("div");
   document._vc_modal_shields.unshift (shield);
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		 'background-color: rgba(0,0,0,0.05);';
+		 'background-color: rgba(0,0,0,0.60);';
   document.body.appendChild (shield);
   // destroying the shield
   shield.destroy = function (call_handler = true) {
