@@ -42,45 +42,45 @@ module.exports.build_menubar = function () {
 function menu_command (role, _data) {
   const BrowserWindow = Electron.getCurrentWindow(); // http://electron.atom.io/docs/api/browser-window/
   switch (role) {
-  case 'about-dialog':
-    Shell.show_about_dialog = !Shell.show_about_dialog;
-    break;
-  case 'preferences-dialog':
+    case 'about-dialog':
+      Shell.show_about_dialog = !Shell.show_about_dialog;
+      break;
+    case 'preferences-dialog':
       Shell.show_preferences_dialog = !Shell.show_preferences_dialog;
-    break;
-  case 'manual-dialog-html': {
-    const win = new Electron.BrowserWindow ({
-      backgroundColor: '#fefdfc',
-      webPreferences: { contextIsolation: true,
-			nodeIntegration: false,
-			plugins: true, // needed for pdf_viewer
-			sandbox: true } });
-    win.setMenu (null);
-    win.loadURL ('file:///' + __dirname + '/../doc/beast-manual.html');
-    win.webContents.on ('before-input-event', (event, input) => {
-      if (input.alt && input.code=="ArrowLeft" &&
-	  win.webContents.canGoBack())
-	win.webContents.goBack();
-      if (input.alt && input.code=="ArrowRight" &&
-	  win.webContents.canGoForward())
-	win.webContents.goForward();
-    });
-    break; }
-  case 'toggle-fulscreen':
-    BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
-    break;
-  case 'quit-app':
-    Electron.app.quit();
-    return false;
-  case 'open-file':
-    Electron.dialog.showOpenDialog ({
-      properties: ['openFile', 'openDirectory', 'multiSelections'],
-    }, (result) => {
-      console.log ('open-file: ' + result);
-    });
-    break;
-  default:
-    console.log ('unhandled menu command: ' + role);
-    break;
+      break;
+    case 'manual-dialog-html': {
+      const win = new Electron.BrowserWindow ({
+	backgroundColor: '#fefdfc',
+	webPreferences: { contextIsolation: true,
+			  nodeIntegration: false,
+			  plugins: true, // needed for pdf_viewer
+			  sandbox: true } });
+      win.setMenu (null);
+      win.loadURL ('file:///' + __dirname + '/../doc/beast-manual.html');
+      win.webContents.on ('before-input-event', (event, input) => {
+	if (input.alt && input.code=="ArrowLeft" &&
+	    win.webContents.canGoBack())
+	  win.webContents.goBack();
+	if (input.alt && input.code=="ArrowRight" &&
+	    win.webContents.canGoForward())
+	  win.webContents.goForward();
+      });
+      break; }
+    case 'toggle-fulscreen':
+      BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
+      break;
+    case 'quit-app':
+      Electron.app.quit();
+      return false;
+    case 'open-file':
+      Electron.dialog.showOpenDialog ({
+	properties: ['openFile', 'openDirectory', 'multiSelections'],
+      }, (result) => {
+	console.log ('open-file: ' + result);
+      });
+      break;
+    default:
+      console.log ('unhandled menu command: ' + role);
+      break;
   }
 }
