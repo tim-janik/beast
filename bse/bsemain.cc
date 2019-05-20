@@ -528,7 +528,7 @@ GlobalConfig::defaults ()
 static String
 global_config_beastrc()
 {
-  return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "beastrc") : argv_bse_rcfile;
+  return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "bserc.xml") : argv_bse_rcfile;
 }
 
 static Configuration
