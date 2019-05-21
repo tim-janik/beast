@@ -12,8 +12,6 @@
 
 #define parse_or_return         bse_storage_scanner_parse_or_return
 
-using std::string;
-
 enum {
   PARAM_0,
   PARAM_FILE_NAME,
@@ -186,7 +184,7 @@ bse_sound_font_reload (BseSoundFont *sound_font)
   return bse_sound_font_load_blob (sound_font, sound_font_impl->blob, FALSE);
 }
 
-string
+std::string
 bse_sound_font_get_filename (BseSoundFont *sound_font)
 {
   Bse::SoundFontImpl *sound_font_impl = sound_font->as<Bse::SoundFontImpl *>();
