@@ -73,14 +73,30 @@ function menu_command (role, _data) {
       Electron.app.quit();
       return false;
     case 'open-file':
-      Electron.dialog.showOpenDialog ({
-	properties: ['openFile', 'openDirectory', 'multiSelections'],
-      }, (result) => {
-	console.log ('open-file: ' + result);
-      });
+      if (!open_dialog_lastdir)
+	open_dialog_lastdir = Bse.server.get_demo_path();
+      Electron.dialog.showOpenDialog (Electron.getCurrentWindow(),
+				      {
+					title: Util.format_title ('Beast', 'Select File To Open'),
+					buttonLabel: 'Open File',
+					defaultPath: open_dialog_lastdir,
+					properties: ['openFile', ], // 'multiSelections' 'openDirectory' 'showHiddenFiles'
+					filters: [ { name: 'BSE Projects', extensions: ['bse'] },
+						   { name: 'Audio Files', extensions: [ 'bse', 'mid', 'wav', 'mp3', 'ogg' ] },
+						   { name: 'All Files', extensions: [ '*' ] }, ],
+				      }, (result) => {
+					if (result && result.length == 1)
+					  {
+					    const Path = require ('path');
+					    open_dialog_lastdir = Path.dirname (result[0]);
+					    Shell.load_project (result[0]);
+					  }
+				      });
       break;
     default:
       console.log ('unhandled menu command: ' + role);
       break;
   }
 }
+
+let open_dialog_lastdir = undefined;
