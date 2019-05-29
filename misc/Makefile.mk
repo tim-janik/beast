@@ -159,3 +159,41 @@ bintray:		# upload $>/misc/ contents to bintray
 release-news:
 	git log --first-parent --date=short --pretty='%s    # %cd %an %h%d%n%w(0,4,4)%b' --reverse HEAD "`./version.sh --last`^!" | \
 	  sed -e '/^\s*Signed-off-by:.*<.*@.*>/d' -e '/^\s*$$/d'
+
+# == release-increment ==
+release-commits:
+	@ # Ensure master is on a *.0-alpha tag
+	$(Q) LAST_TAG=`./version.sh --last` \
+	&& EXPECTED_TAG=`git describe --match '[0-9]*.[0-9]*.0-alpha' --abbrev=0 --first-parent HEAD` \
+	&& set -x \
+	&& test "$$LAST_TAG" == "$$EXPECTED_TAG"
+	@ # NEWS: turn alpha into release version, remove alpha-warning
+	$(Q) RELEASE_DATE=`date +%Y-%m-%d` \
+	&& $(NEWS_2R) < NEWS.md > NEWS.md.tmp \
+	&& ! cmp -s NEWS.md NEWS.md.tmp || (echo 'NEWS: edit failed' >&2 ; false ) \
+	&& mv NEWS.md.tmp NEWS.md \
+	&& head -vn1 NEWS.md
+	@ # Commit and tag release
+	$(Q) RELEASE_TAG=`./version.sh --last | sed 's/-alpha$$//'` \
+	&& set -x \
+	&& git commit -s -m "Release $$RELEASE_TAG" NEWS.md \
+	&& git tag -a "$$RELEASE_TAG" -m "`git log -1 --pretty=%s`"
+	@ # NEWS: add alpha + warning, commit and tag
+	$(Q) LAST_TAG=`./version.sh --last` \
+	&& ALPHA_TAG=`python3 -c "l = '$$LAST_TAG'.split ('.'); l[1] = str (int (l[1]) + 1); print ('.'.join (l))"`-alpha \
+	&& $(NEWS_2A) < NEWS.md > NEWS.md.tmp \
+	&& ! cmp -s NEWS.md NEWS.md.tmp || (echo 'NEWS: edit failed' >&2 ; false ) \
+        && mv NEWS.md.tmp NEWS.md \
+        && head -vn1 NEWS.md \
+	&& set -x \
+	&& git commit -s -m "NEWS: now working on $$ALPHA_TAG" NEWS.md \
+	&& git tag -a "$$ALPHA_TAG" -m "`git log -1 --pretty=%s`"
+# NEWS EDIT for RELEASE
+NEWS_2R_IN  = r'^(\#\# Beast [0-9.]+)-alpha:\n*\*Note:[^*]*\*\n*'
+NEWS_2R_OUT = r'\\1:\t\t\t\t\t($$RELEASE_DATE)\n\n'
+NEWS_2R     = python3 -c "import sys, re; sys.stdout.write (re.sub ($(NEWS_2R_IN), $(NEWS_2R_OUT), sys.stdin.read(), re.M))"
+# NEWS EDIT for ALPHA
+NEWS_2A_OUT = '\#\# Beast $$ALPHA_TAG:\n\n' + \
+	      '*Note: This is the master branch of Beast, which contains alpha version software.\n' + \
+	      'Beware of file format instabilities and report any bugs you find in it.*\n\n\n'
+NEWS_2A     = python3 -c "import sys, re; sys.stdout.write (re.sub (r'^', $(NEWS_2A_OUT), sys.stdin.read(), re.M))"
