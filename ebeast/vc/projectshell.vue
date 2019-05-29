@@ -36,33 +36,13 @@ module.exports = {
     piano_roll_part: undefined,
     show_about_dialog: false,
     show_preferences_dialog: false,
+    project: undefined,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
     show_preferences_dialog: function (newval) { if (newval && this.show_about_dialog) this.show_about_dialog = false; },
   },
   computed: {
-    project: function () {
-      if (!this.project_) {
-	this.project_ = Bse.server.create_project ('Untitled');
-	if (this.project_) {
-	  this.title_hid_ = this.project_.on ("notify:uname", () => {
-	    if (this.project_) {
-	      const name = this.project_.get_name_or_type();
-	      document.title = name + ' - Beast';
-	    }
-	  });
-	}
-	if (this.project_) {
-	  // __dirname is invalid inside vue components
-	  let example = window.BEASTDIR + '/media/Demos/partymonster.bse';
-	  this.project_.restore_from_file (example);
-	  const path = require ('path');
-	  this.project_.set_name (path.basename (example));
-	}
-      }
-      return this.project_;
-    },
     song: function () {
       let s, supers = this.project.get_supers();
       for (s of supers) {
@@ -82,17 +62,44 @@ module.exports = {
     // inject Shell into all Vue components
     Vue.prototype.Shell = this;
     assert (this === p.Shell);
-    // force root updates with new Shell properties in place
-    (p || this).$forceUpdate();
+    // provide default project
+    this.load_project();
+    // load_project() also forces an update with new Shell properties in place
   },
   provide () { return { 'vc-projectshell': this }; },
   methods: {
     open_part_edit (part) {
-      assert (part instanceof Bse.Part);
+      assert (part == undefined || part instanceof Bse.Part);
       this.piano_roll_part = part;
     },
     status (...args) {
       console.log (...args);
+    },
+    load_project (projectpath) {
+      let newproject = Bse.server.create_project ('Untitled');
+      if (projectpath != undefined)
+	{
+	  const ret = newproject.restore_from_file (projectpath);
+	  if (ret != Bse.Error.NONE)
+	    return ret;
+	  const path = require ('path');
+	  newproject.set_name (path.basename (projectpath));
+	}
+      if (this.project)
+	{
+	  this.project.stop();
+	  this.open_part_edit (undefined);
+	  this.title_off_();
+	}
+      this.project = newproject;
+      const update_title = () => {
+	const name = this.project ? this.project.get_name_or_type() : undefined;
+	document.title = Util.format_title ('Beast', name);
+      };
+      this.title_off_ = this.project.on ("notify:uname", update_title);
+      update_title();
+      this.$forceUpdate();
+      return Bse.Error.NONE;
     },
   },
 };

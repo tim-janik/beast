@@ -671,3 +671,21 @@ function array_fields_f64 (afields, byte_offset) {
   return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
 }
 exports.array_fields_f64 = array_fields_f64;
+
+// Format window titles
+function format_title (prgname, entity = undefined, infos = undefined, extras = undefined) {
+  let title = prgname;
+  if (entity)
+    {
+      let sub = entity;
+      if (infos)
+	{
+	  sub += ' - ' + infos;
+	  if (extras)
+	    sub += ' (' + extras + ')';
+	}
+      title = sub + ' – ' + title;
+    }
+  return title;
+}
+exports.format_title = format_title;
