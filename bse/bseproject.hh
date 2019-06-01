@@ -99,6 +99,7 @@ public:
   virtual ProjectState       get_state           () override;
   virtual SuperSeq           get_supers          () override;
   virtual Error              store_bse           (SuperIface &super, const String &file_name, bool self_contained) override;
+  virtual Error              store               (const String &file_name, bool self_contained) override;
   virtual SongIfaceP         create_song         (const String &name) override;
   virtual WaveRepoIfaceP     get_wave_repo       () override;
   virtual SoundFontRepoIfaceP get_sound_font_repo () override;

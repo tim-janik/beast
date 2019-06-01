@@ -1267,6 +1267,13 @@ ProjectImpl::store_bse (SuperIface &super_iface, const String &file_name, bool s
   return bse_project_store_bse (self, bsesuper, file_name.c_str(), self_contained);
 }
 
+Error
+ProjectImpl::store (const String &file_name, bool self_contained)
+{
+  BseProject *self = as<BseProject*>();
+  return bse_project_store_bse (self, NULL, file_name.c_str(), self_contained);
+}
+
 SongIfaceP
 ProjectImpl::create_song (const String &name)
 {
