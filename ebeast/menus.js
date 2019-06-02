@@ -3,6 +3,7 @@
 // == Application Menu ==
 const file_menu = [
   { label: _('&Open...'),		role: 'open-file',		accelerator: 'Ctrl+O', },
+  { label: _('&Save As...'),		role: 'save-as',		accelerator: 'Shift+Ctrl+S', },
   { label: _('&Preferences...'),	role: 'preferences-dialog',	accelerator: 'Ctrl+,', },
   { label: _('&Quit'),			role: 'quit-app',		accelerator: 'Shift+Ctrl+Q', },
 ];
@@ -84,13 +85,40 @@ function menu_command (role, _data) {
 					filters: [ { name: 'BSE Projects', extensions: ['bse'] },
 						   { name: 'Audio Files', extensions: [ 'bse', 'mid', 'wav', 'mp3', 'ogg' ] },
 						   { name: 'All Files', extensions: [ '*' ] }, ],
-				      }, (result) => {
+				      },
+				      (result) => {
 					if (result && result.length == 1)
 					  {
 					    const Path = require ('path');
 					    open_dialog_lastdir = Path.dirname (result[0]);
 					    Shell.load_project (result[0]);
 					  }
+				      });
+      break;
+    case 'save-as':
+      if (!save_dialog_lastdir)
+	{
+	  const Path = require ('path');
+	  save_dialog_lastdir = Electron.app.getPath ('music') || Path.resolve ('.');
+	}
+      Electron.dialog.showSaveDialog (Electron.getCurrentWindow(),
+				      {
+					title: Util.format_title ('Beast', 'Save Project'),
+					buttonLabel: 'Save As',
+					defaultPath: save_dialog_lastdir,
+					filters: [ { name: 'BSE Projects', extensions: ['bse'] }, ],
+				      },
+				      (savepath) => {
+					if (!savepath)
+					  return;
+					const Path = require ('path');
+					save_dialog_lastdir = Path.dirname (savepath);
+					if (!savepath.endsWith ('.bse'))
+					  savepath += '.bse';
+					const Fs = require ('fs');
+					if (Fs.existsSync (savepath))
+					  Fs.unlinkSync (savepath);
+					Shell.save_project (savepath);
 				      });
       break;
     default:
@@ -100,3 +128,4 @@ function menu_command (role, _data) {
 }
 
 let open_dialog_lastdir = undefined;
+let save_dialog_lastdir = undefined;
