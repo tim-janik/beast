@@ -75,7 +75,8 @@ module.exports = {
     status (...args) {
       console.log (...args);
     },
-    load_project (projectpath) {
+    load_project (projectpath)
+    {
       let newproject = Bse.server.create_project ('Untitled');
       if (projectpath != undefined)
 	{
@@ -100,6 +101,28 @@ module.exports = {
       update_title();
       this.$forceUpdate();
       return Bse.Error.NONE;
+    },
+    save_project (projectpath)
+    {
+      if (this.project)
+	{
+	  const self_contained = true;
+	  const ret = this.project.store (projectpath, self_contained);
+	  const Path = require ('path');
+	  if (ret != Bse.Error.NONE)
+	    Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
+					    {
+					      type: 'error',
+					      title: Util.format_title ('Beast', 'Failed to Save Project'),
+					      message: 'Failed to save project as "' + Path.basename (projectpath) + '"',
+					      detail:  'Error during saving: ' + ret,
+					      buttons: [ '&Dismiss', ],
+					      cancelId: 1, defaultId: 1, normalizeAccessKeys: true,
+					    },
+					    (response, checked) => {
+					      // nothing
+					    });
+	}
     },
   },
 };
