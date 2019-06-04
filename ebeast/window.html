@@ -102,7 +102,7 @@
   }
   { // setup menubar
     const menus = require ('./menus.js');
-    Electron.Menu.setApplicationMenu (menus.build_menubar());
+    menus.setup_app_menu();
   }
   </script>
 
