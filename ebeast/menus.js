@@ -2,6 +2,7 @@
 
 // == Application Menu ==
 const file_menuitems = [
+  { label: _('&New Project'),		id: 'new-project',		accelerator: 'Ctrl+N', },
   { label: _('&Open...'),		id: 'open-file',		accelerator: 'Ctrl+O', },
   { label: _('&Save'),			id: 'save-same',		accelerator: 'Ctrl+S', },
   { label: _('&Save As...'),		id: 'save-as',			accelerator: 'Shift+Ctrl+S', },
@@ -116,6 +117,10 @@ function menu_command (menuitem)
     case 'quit-app':
       Electron.app.quit();
       return false;
+    case 'new-project':
+      save_same_filename = undefined;
+      Shell.load_project();
+      break;
     case 'open-file':
       if (!open_dialog_lastdir)
 	open_dialog_lastdir = Bse.server.get_demo_path();
