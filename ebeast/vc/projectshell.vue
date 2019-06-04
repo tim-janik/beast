@@ -104,10 +104,11 @@ module.exports = {
     },
     save_project (projectpath)
     {
+      let ret = Bse.Error.INTERNAL;
       if (this.project)
 	{
 	  const self_contained = true;
-	  const ret = this.project.store (projectpath, self_contained);
+	  ret = this.project.store (projectpath, self_contained);
 	  const Path = require ('path');
 	  if (ret != Bse.Error.NONE)
 	    Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
@@ -123,6 +124,7 @@ module.exports = {
 					      // nothing
 					    });
 	}
+      return ret;
     },
   },
 };
