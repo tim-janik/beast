@@ -91,6 +91,7 @@ module.exports = {
 	  this.project.stop();
 	  this.open_part_edit (undefined);
 	  this.title_off_();
+	  Bse.server.destroy_project (this.project);
 	}
       this.project = newproject;
       const update_title = () => {
