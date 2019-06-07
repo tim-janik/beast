@@ -35,7 +35,7 @@ else ifeq ($(MODE),ubsan)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=undefined
 LDMODEFLAGS	 += -lubsan
 else ifeq ($(MODE),asan)
-MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=address
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=address -fno-common
 LDMODEFLAGS	 += -lasan
 else ifeq ($(MODE),tsan)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=thread
