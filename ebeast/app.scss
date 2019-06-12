@@ -31,7 +31,9 @@ BrowserWindowDefaults		{ ; // used by main.js
 				  backgroundColor:          $theme-background; 	// #rrggbb needed
 				  defaultFontSize:          14;              	// int needed
 				  defaultMonospaceFontSize: 13; }		// int needed
-gradient-01	{ -im-convert: "-size 67x1080 -attenuate 0.2 +noise Uniform gradient:#{$panel-background-lg0}-#{$panel-background-lg1}"; }
+@supports (--makefile: rule) {
+  gradient-01	{ im-convert: "-size 67x1080 -attenuate 0.2 +noise Uniform gradient:#{$panel-background-lg0}-#{$panel-background-lg1}"; }
+}
 @mixin gradient-01-bg		{ background-color: $theme-background;
 				  // gradient with banding
 				  background-image: $panel-background-lg;
