@@ -1,7 +1,8 @@
 
 // == Scrollbar Settings ==
-$scrollbar-handle-base:		#707070;
 $webkit-scrollbar-size:		11px;
+$scrollbar-handle-base:		#707070;
+$scrollbar-background:		#333333;
 
 // == Scrollbars ==
 ::-webkit-scrollbar {
@@ -12,10 +13,9 @@ $webkit-scrollbar-size:		11px;
 ::-webkit-scrollbar-corner {
   background: $theme-background;
 }
-::-webkit-scrollbar-track 	{ background-size: 2px 2px;
-				  background-image: linear-gradient(45deg,
-								    #111 0%, #444 50%,
-								    #333 50%, #aaa 100%); }
+::-webkit-scrollbar-track {
+  background: $scrollbar-background;
+}
 ::-webkit-scrollbar-thumb {
   background: $scrollbar-handle-base;
   -webkit-border-radius: 0.1ex;
