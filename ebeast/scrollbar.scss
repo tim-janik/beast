@@ -1,4 +1,7 @@
 
+// == Scrollbar Settings ==
+$scrollbar-handle-base:		#707070;
+
 // == Scrollbars ==
 ::-webkit-scrollbar 		{ height: 5px; width: 5px; background: #000; }
 ::-webkit-scrollbar-corner	{ background: rgba(0, 0, 0, 0); }
@@ -12,3 +15,8 @@
 						  // background: fade($glow-control, 20%);
 						  -webkit-box-shadow: none; }
 
+
+// See Makefile.mk for scrollbar-arrow image generation
+@supports (--makefile: rule) {
+  scrollbar-arrow { im-convert: "-fuzz 99% -fill #{$scrollbar-handle-base} -opaque black"; } // convert arrow color
+}
