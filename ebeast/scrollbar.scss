@@ -1,10 +1,14 @@
 
 // == Scrollbar Settings ==
 $webkit-scrollbar-size:		11px;
-$scrollbar-handle-base:		#707070;
 $scrollbar-background:		#333333;
 $scrollbar-track-border0:	#080808;
 $scrollbar-track-border1:	#111111;
+$scrollbar-handle-spread:	7.4%;
+$scrollbar-handle-base:		#707070;
+$scrollbar-handle-dim:		mix($scrollbar-background, $scrollbar-handle-base); 	// inactive
+$scrollbar-handle-hover:	adjust-color($scrollbar-handle-base, $lightness: +15%); // mouse hover
+$webkit-scrollbar-thumb-border: change-color($scrollbar-track-border0, $alpha: 0.34);
 $scrollbar-shadow-rgba:		rgba(0, 0, 0, 0.25);
 
 // == Scrollbars ==
@@ -33,11 +37,27 @@ $scrollbar-shadow-rgba:		rgba(0, 0, 0, 0.25);
 ::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: $scrollbar-handle-base;
-  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+  // the thumb is hardcoded to always be as wide as the scrollbar; to make it appear as
+  // running *inside* the track, we use a combination of background-clip and fake border.
+  border: 1px solid $webkit-scrollbar-thumb-border;
 }
-::-webkit-scrollbar-thumb:window-inactive	{ background: #333;
-						  // background: fade($glow-control, 20%);
-						  -webkit-box-shadow: none; }
+@mixin webkit-scrollbar-thumb-shading ($basecolor, $spreadlightness, $dir: bottom) {
+  $bg-light:    adjust-color($basecolor, $lightness: +$spreadlightness);
+  $bg-dark:     adjust-color($basecolor, $lightness: -$spreadlightness);
+  background: linear-gradient(to $dir, $bg-light, $bg-dark);
+  background-clip: content-box;
+  $xpx: if($dir != bottom, 1px, 0);
+  $ypx: if($dir == bottom, 1px, 0);
+  box-shadow: $xpx $ypx 0 0 rgba(255, 255, 255, 0.15) inset;
+  box-shadow: $xpx $ypx 0 0 rgba(255, 255, 255, 0.15) inset;
+}
+@mixin webkit-scrollbar-thumb($dir) {
+  &:hover { @include webkit-scrollbar-thumb-shading ($scrollbar-handle-hover, $scrollbar-handle-spread, $dir); }
+  &:window-inactive { @include webkit-scrollbar-thumb-shading ($scrollbar-handle-dim, $scrollbar-handle-spread, $dir); }
+  @include webkit-scrollbar-thumb-shading ($scrollbar-handle-base, $scrollbar-handle-spread, $dir);
+}
+::-webkit-scrollbar-thumb:vertical   { @include webkit-scrollbar-thumb (right); }
+::-webkit-scrollbar-thumb:horizontal { @include webkit-scrollbar-thumb (bottom); }
 
 
 // See Makefile.mk for scrollbar-arrow image generation
