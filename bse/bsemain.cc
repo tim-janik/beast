@@ -68,8 +68,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
   // argument handling
   bse_main_args = &default_main_args;
-  if (argc && argv)
-    init_parse_args (argc, argv, bse_main_args, args);
+  init_parse_args (argc, argv, bse_main_args, args);
 
   // initialize SFI
   if (initialized_for_unit_testing > 0)
@@ -216,6 +215,7 @@ reap_main_loop_thread ()
 void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
+  assert_return (argc && argv);
   initialize_with_argv (argc, argv, app_name, args);
 
   // start main BSE thread
