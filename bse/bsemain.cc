@@ -366,7 +366,7 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
-  guint i;
+  uint i;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--g-fatal-warnings") == 0)
@@ -435,15 +435,18 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	}
     }
 
-  guint e = 1;
-  for (i = 1; i < argc; i++)
-    if (argv[i])
-      {
-        argv[e++] = argv[i];
-        if (i >= e)
-          argv[i] = NULL;
-      }
-  *argc_p = e;
+  if (*argc_p > 1)
+    {
+      uint e = 1;
+      for (i = 1; i < argc; i++)
+        if (argv[i])
+          {
+            argv[e++] = argv[i];
+            if (i >= e)
+              argv[i] = NULL;
+          }
+      *argc_p = e;
+    }
   for (auto arg : args)
     {
       bool b; double d; int64 i;
