@@ -464,7 +464,9 @@ v8bse_register_module (v8::Local<v8::Object> exports, v8::Local<v8::Object> modu
 
   // start Bse
   Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", 0);
-  Bse::init_async (NULL, NULL, "BEAST", Bse::string_split (bseoptions, ":"));
+  int argc0 = 1;
+  char *args[] = { (char*) "ebeast", NULL };
+  Bse::init_async (&argc0, args, "BEAST", Bse::string_split (bseoptions, ":"));
 
   // fetch server handle for remote calls
   assert (bse_server == NULL);
