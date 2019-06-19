@@ -35,7 +35,14 @@ app/copies		::= $(strip 	\
 	$>/app/menus.js			\
 	$>/app/window.html		\
 )
+app/assets/tri-pngs	::= $(strip	\
+	$>/app/assets/tri-n.png		\
+	$>/app/assets/tri-e.png		\
+	$>/app/assets/tri-s.png		\
+	$>/app/assets/tri-w.png		\
+)
 app/generated 		::= $(strip	\
+	$(app/assets/tri-pngs)		\
 	$>/app/assets/gradient-01.png	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
@@ -115,17 +122,36 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map true
+$>/app/assets/utilities.js: ebeast/vc/utilities.js	| $>/ebeast/npm.rules
+	$(QECHO) COPY $@
+	$Q $(CP) -P $< $@
 $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
 	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
-	     sed -nr 's/.*\bgradient-01\s*\{[^}]*-im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
+	     sed -nr 's/.*@supports\s*\(--makefile:\s*rule\)\s*\{\s*gradient-01\s*\{\s*im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
-$>/app/assets/utilities.js: ebeast/vc/utilities.js	| $>/ebeast/npm.rules
-	$(QECHO) COPY $@
-	$Q $(CP) -P $< $@
+$>/app/assets/tri-n.png: ebeast/triangle32.png $>/app/assets/stylesheets.css	| $>/app/assets/
+	$(QGEN)
+	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
+	     sed -nr 's/.*@supports\s*\(--makefile:\s*rule\)\s*\{\s*scrollbar-arrow\s*\{\s*im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
+	$Q test -s $@.cli # check that we actually found the -im-convert directive
+	$Q $(IMAGEMAGICK_CONVERT) $< $$(cat $@.cli) $@.tmp.png
+	$Q rm $@.cli && mv $@.tmp.png $@
+$>/app/assets/tri-e.png: $>/app/assets/tri-n.png
+	$(QGEN)
+	$Q $(IMAGEMAGICK_CONVERT) $< -rotate 90 $@.tmp.png
+	$Q mv $@.tmp.png $@
+$>/app/assets/tri-s.png: $>/app/assets/tri-n.png
+	$(QGEN)
+	$Q $(IMAGEMAGICK_CONVERT) $< -rotate 180 $@.tmp.png
+	$Q mv $@.tmp.png $@
+$>/app/assets/tri-w.png: $>/app/assets/tri-n.png
+	$(QGEN)
+	$Q $(IMAGEMAGICK_CONVERT) $< -rotate 270 $@.tmp.png
+	$Q mv $@.tmp.png $@
 
 # == assets/components.js ==
 $>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
