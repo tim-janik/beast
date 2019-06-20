@@ -154,3 +154,8 @@ bintray:		# upload $>/misc/ contents to bintray
 	done
 .PHONY: bintray
 # Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
+
+# == release-news ==
+release-news:
+	git log --first-parent --date=short --pretty='%s    # %cd %an %h%d%n%w(0,4,4)%b' --reverse HEAD "`./version.sh --last`^!" | \
+	  sed -e '/^\s*Signed-off-by:.*<.*@.*>/d' -e '/^\s*$$/d'

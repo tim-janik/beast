@@ -8,6 +8,7 @@ while test $# -ne 0 ; do
     -s)			SHORT=true ;;
     -l)			LONG=true ;;
     -d)			RDATE=true ;;
+    --last)		exec git describe --match '[0-9]*.[0-9]*.*[0-9a]' --abbrev=0 --first-parent HEAD ;;
     *)                  : ;;
   esac
   shift

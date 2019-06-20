@@ -56,9 +56,9 @@ NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
 include ebeast/v8bse/Makefile.mk
 
 # == npm ==
-NPM_PROGRESS = $(if $(PARALLEL_MAKE), --progress=false)
+NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
 ifeq ($(MODE),debug)
-ebeast/npm-install-debug = && npm install electron-devtools-installer $(NPM_PROGRESS)
+ebeast/npm-install-debug = && $(NPM_INSTALL) electron-devtools-installer
 else
 ebeast/npm-install-debug =
 endif
@@ -70,13 +70,13 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
 		$< > $>/app/package.json
 	$Q cd $>/app/ \
-	  && npm install --production $(NPM_PROGRESS) \
+	  && $(NPM_INSTALL) --production \
 	  && rm -f package-lock.json \
 	    $(ebeast/npm-install-debug) \
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
 	$Q $(CP) -a $>/app/node_modules $>/app/package.json $>/ebeast/
 	$Q cd $>/ebeast/ \
-	  && npm install $(NPM_PROGRESS)
+	  && $(NPM_INSTALL)
 	$Q echo >$@
 
 # == linting ==
