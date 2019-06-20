@@ -18,7 +18,7 @@ COMMONFLAGS	::= -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wp
 COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-declaration -Werror=return-type
 #COMMONFLAGS	 += -Wdate-time -Wconversion -Wshadow
 CONLYFLAGS	::= -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
-CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo
+CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo -fvisibility-inlines-hidden
 #CXXONLYFLAGS	 += -Wnon-virtual-dtor -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 OPTIMIZE	::= -funroll-loops -ftree-vectorize
 SANITIZECC	::= -fno-strict-overflow -fno-strict-aliasing # sane C / C++
@@ -35,7 +35,7 @@ else ifeq ($(MODE),ubsan)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=undefined
 LDMODEFLAGS	 += -lubsan
 else ifeq ($(MODE),asan)
-MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=address
+MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=address -fno-common
 LDMODEFLAGS	 += -lasan
 else ifeq ($(MODE),tsan)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=thread
