@@ -3,8 +3,52 @@
 *Note: This is the master branch of Beast, which contains alpha version software.
 Beware of file format instabilities and report any bugs you find in it.*
 
+#### System Requirements
+* Linux - Ubuntu 18.04 or Fedora-27 are needed to run the Beast AppImage.
 
-## Beast 0.13.0:
+#### User Interface EBEAST
+* Added a preferences dialog.
+* Properly support Open and Save of `.bse` files.
+* Completed the Javascript IPC binding to support notifications and Anys.
+* Added new styling for browser scrollbars.
+
+#### Build Improvements
+* Rewrote the entire build system to purely use non-recursive GNU Make and
+  to get rid of autoconf, automake, libtool and related auto* tools.
+* Support `make help` to outline build rules and build variables.
+* Introduce `make default MODE=release` to configure for for production builds.
+* Build artefacts are now generated under `./out/`, adjustable via
+  `make default builddir=...`
+* Merged all unit tests into a single binary which can run fully parallelized.
+* Removed checks for pre-2009 POSIX systems and other legacy configurations.
+* Replaced lengthy checks with `__has_include` and compiler builtins.
+* Support builds from Github source code archives.
+* Streamlined release process and version extraction.
+
+#### Size Reductions
+* Rewrote the Aida IPC layer to make it leaner by using C++ lambdas.
+* Removed a lot of outdated code, which remains an ongoing effort.
+
+#### Upgrades
+* Upgrade to node-gyp-3.8 and node-sass-4.11
+* Update to vue-2.6
+* Upgrade to browserify-16 and babelify-10
+* Upgrade electron to 2.0.18.
+* Upgrade to fluidsynth 2.0.4. #101
+* Fixed pandoc usage to support pandoc-2.
+* Updated the C++ dependency to C++17.
+* The build now makes use of g++-7 and clang++-6 optimization facilities.
+
+#### Regression Fixes
+* Fixed deadlock in DavOrgan during unref.
+
+#### Other Changes
+* Moved to XDG compliant config files in ~/.config/beast/.
+* Integrated all Beast documentation artefacts into a single manual.
+* Support latex formula rendering and proper fonts for the manual.
+
+
+## Beast 0.13.0:					(2019-02-08)
 
 #### System Requirements
 * Linux - Ubuntu 18.04 or Fedora-27 are needed to run the Beast AppImage.
