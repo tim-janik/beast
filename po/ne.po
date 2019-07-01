@@ -22,7 +22,7 @@ msgstr ""
 "X-Generator: KBabel 1.10.2\n"
 "Plural-Forms: nplurals=2;plural=(n!=1)\n"
 
-#: bse/bsemain.cc:129
+#: bse/bsemain.cc:142
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -30,7 +30,7 @@ msgstr ""
 "\n"
 "उपलब्ध मिडि ड्राइभर:\n"
 
-#: bse/bsemain.cc:127
+#: bse/bsemain.cc:140
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -114,32 +114,52 @@ msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s:"
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s: (MIDI च्यानल: %d)"
 
-#: ebeast/menus.js:12
+#: ebeast/menus.js:20
 #, fuzzy
 msgid "&About..."
 msgstr "बारेमा..."
 
-#: ebeast/menus.js:15
+#: ebeast/menus.js:23
 #, fuzzy
 msgid "&File"
 msgstr "फाइल"
 
-#: ebeast/menus.js:17
+#: ebeast/menus.js:25
 #, fuzzy
 msgid "&Help"
 msgstr "मद्दत"
 
 #: ebeast/menus.js:5
 #, fuzzy
+msgid "&New Project"
+msgstr "परियोजना खोल्नुहोस्"
+
+#: ebeast/menus.js:6
+#, fuzzy
 msgid "&Open..."
 msgstr "खोल्नुहोस्....."
 
-#: ebeast/menus.js:6
+#: ebeast/menus.js:10
+#, fuzzy
+msgid "&Preferences..."
+msgstr "प्राथमिकता..."
+
+#: ebeast/menus.js:12
 #, fuzzy
 msgid "&Quit"
 msgstr "अन्त्य गर्नुहोस्"
 
-#: ebeast/menus.js:16
+#: ebeast/menus.js:7
+#, fuzzy
+msgid "&Save"
+msgstr "बचत गर्नुहोस्"
+
+#: ebeast/menus.js:8
+#, fuzzy
+msgid "&Save As..."
+msgstr "यस रूपमा बचत गर्नुहोस्..."
+
+#: ebeast/menus.js:24
 #, fuzzy
 msgid "&View"
 msgstr "दृश्य"
@@ -657,7 +677,7 @@ msgid ""
 "171 cent steps."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:146
+#: beast-gtk/bstapp.cc:131
 msgid "A guide to synthesis plugin development"
 msgstr "प्लगइन विकास सिन्थेसिस गर्न एउटा बाटोदर्शक"
 
@@ -704,15 +724,15 @@ msgstr "एम्प्लिफाइड अडियो निर्गत"
 msgid "Add"
 msgstr "थप्नुहोस्"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:106
 msgid "Add Custom Synthesizer"
 msgstr "अनुकूलन सिन्थेसाइजर थप्नुहोस्"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:108
 msgid "Add MIDI Synthesizer"
 msgstr "MIDI सिन्थेसाइजर थप्नुहोस्"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:108
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr "बाह्या MIDI घटनाहरूबाट बाजा नियन्त्रण गर्न नयाँ MIDI सिन्थेसाइजर थप्नुहोस्"
@@ -721,7 +741,7 @@ msgstr "बाह्या MIDI घटनाहरूबाट बाजा न�
 msgid "Add a new bus to the mixer"
 msgstr "मिक्सरमा नयाँ बस थप्नुहोस्"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:106
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr "प्रभाव वा गीतमा बाजाको रूपमा प्रयोग गर्न नयाँ सिन्थेसाइजर मेस थप्नुहोस्"
 
@@ -775,7 +795,7 @@ msgstr "आगत भोल्युम नियन्त्रण सङ्क
 msgid "Adjust output balance between left and right"
 msgstr "बायाँ र दायाँ बीचमा निर्गतको सन्तुलन समायोजन गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:71
 msgid "Adjust overall program behaviour"
 msgstr "सम्पुर्ण कार्यक्रम व्यवहार समायोजन गर्नुहोस्"
 
@@ -810,8 +830,8 @@ msgstr "राउटर प्रदर्शनको जुम तत्व �
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "पङ्क्तिको सट्टा डी बी मान समायोजन गर्नुहोस्"
 
-#: bse/bsebus.cc:932 bse/bsebus.cc:934 bse/bsebus.cc:936 bse/bsebus.cc:938
-#: bse/bsebus.cc:942 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
+#: bse/bsebus.cc:931 bse/bsebus.cc:933 bse/bsebus.cc:935 bse/bsebus.cc:937
+#: bse/bsebus.cc:941 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
 #: bse/bsemidisynth.cc:378 bse/bsetrack.cc:1111
 msgid "Adjustments"
 msgstr "समायोजन"
@@ -904,7 +924,7 @@ msgstr "डिट्युनिङ्गको रकम सेन्टमा 
 msgid "Amplified audio output"
 msgstr "एम्प्लिफाइड अडियो निर्गत"
 
-#: bse/bseserver.cc:426
+#: bse/bseserver.cc:352
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -915,15 +935,11 @@ msgstr ""
 "रेकर्डिङ मोडमा खोलिएको छैन । सङ्केत रेकर्डेड सङ्केतको सट्टा आगतमा प्रयोग हुन्छ, त्यसैले "
 "प्लेब्याक सञ्चालनले वास्तवमा इन्डेन्टपरिणाम लेराउन सक्दछ (जस्तै एउटा मौन निर्गत सङ्केत)"
 
-#: bse/bseserver.cc:565
+#: bse/bseserver.cc:491
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr "रेकर्डिङ फाइल खोल्दा त्रुटि भयो, अर्को फाइल चयन गर्दा यो समस्या नहुन सक्छ ।"
-
-#: beast-gtk/bstapp.cc:137
-msgid "Answers to frequently asked questions"
-msgstr "लगातार सोधिने प्रश्नहरूको उत्तर दिन्छ"
 
 #: beast-gtk/bstapi.idl:114
 msgid "Anti-Alias"
@@ -1027,8 +1043,7 @@ msgid "Attenuate the level of control input 2"
 msgstr "नियन्त्रण आगत २ को तह एटेनुयट गर्नुहोस्"
 
 #. category
-#. i18n example
-#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:60
 msgid "Audio"
 msgstr "अडियो"
 
@@ -1042,7 +1057,7 @@ msgstr "अडियो"
 msgid "Audio Gate"
 msgstr "अडियो निर्गत"
 
-#: bse/bseserver.cc:478
+#: bse/bseserver.cc:404
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "अडियो निर्गत"
@@ -1134,7 +1149,7 @@ msgstr "अडियो निर्गत २"
 msgid "Audio Output"
 msgstr "अडियो निर्गत"
 
-#: bse/bseserver.cc:424
+#: bse/bseserver.cc:350
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1158,7 +1173,7 @@ msgstr "अडियो निर्गत १"
 msgid "Audio Sum2"
 msgstr "अडियो निर्गत २"
 
-#: bse/bseserver.cc:431
+#: bse/bseserver.cc:357
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr "आगतका लागि अडियो यन्त्र \"%s\" खुल्ला छैन, अडियो ड्राइभर: %s=%s"
@@ -1175,11 +1190,11 @@ msgstr "अडियो आगत १"
 msgid "Audio input 2"
 msgstr "अडियो आगत २"
 
-#: bse/bsesuper.cc:183
+#: bse/bsesuper.cc:182
 msgid "Author"
 msgstr "लेखक"
 
-#: bse/bseapi.idl:897
+#: bse/bseapi.idl:896
 #, fuzzy
 msgid "Auto Activate"
 msgstr "स्वत: काट्नुहोस्"
@@ -1201,7 +1216,7 @@ msgstr ""
 "स्वत: विशेष ड्राइभर हो, स्वत: ड्राइभर छनोटका लागि यसले\n"
 "स्थानहोल्डर सरह कार्य गर्दछ"
 
-#: bse/bseapi.idl:898
+#: bse/bseapi.idl:897
 msgid ""
 "Automatic activation only needs to be enabled for synthesis networks that "
 "don't use virtual ports for their input and output"
@@ -1213,7 +1228,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.cc:119
+#: bse/bsebus.cc:118
 msgid "Available Inputs"
 msgstr "उपलब्ध आगत"
 
@@ -1222,7 +1237,7 @@ msgstr "उपलब्ध आगत"
 msgid "Available Items:"
 msgstr "उपलब्ध वस्तुहरू:"
 
-#: bse/bsebus.cc:134 bse/bsetrack.cc:296
+#: bse/bsebus.cc:133 bse/bsetrack.cc:296
 msgid "Available Outputs"
 msgstr "उपलब्ध आगत"
 
@@ -1265,24 +1280,24 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:946
+#: beast-gtk/bstmain.cc:909
 msgid "BEAST About"
 msgstr "BEAST बारेमा"
 
-#: beast-gtk/bstmain.cc:184
+#: beast-gtk/bstmain.cc:183
 msgid "BEAST Startup"
 msgstr "BEAST सुरुवात"
 
-#: beast-gtk/bstmain.cc:947
+#: beast-gtk/bstmain.cc:910
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST संस्करण %s"
 
-#: bse/bseapi.idl:1022
+#: bse/bseapi.idl:1021
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:232
+#: beast-gtk/bstmain.cc:231
 msgid "BSE Core"
 msgstr "BSE कोर"
 
@@ -1364,7 +1379,11 @@ msgstr "आधार भोल्युम"
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "आधार एम्प्लिकेसन (नियन्त्रण सङ्केतले यसमा थप्दछ)"
 
-#: bse/bseapi.idl:1022
+#: ebeast/menus.js:18
+msgid "Beast &Manual..."
+msgstr ""
+
+#: bse/bseapi.idl:1021
 msgid "Beats per minute"
 msgstr "प्रति मिनेटमा बिट्स"
 
@@ -1387,6 +1406,12 @@ msgstr ""
 #: bse/bseapi.idl:106 bse/bseapi.idl:283
 msgid "Breath Control"
 msgstr "श्वास नियन्त्रण"
+
+#: beast-gtk/bstapp.cc:124
+msgid ""
+"Browse the Beast manual, covering Tutorials, Howotos and in-depth knowledge "
+"on Beast"
+msgstr ""
 
 # ###########################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################३३३३३३३३३३३३३######################################################################################################################################################################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!######################################!!!!!!!!!!!!!!!!!!!#######################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
 #: plugins/bseamplifier.idl:15
@@ -1429,7 +1454,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "बस नाम"
 
-#: bse/bsebus.cc:991
+#: bse/bsebus.cc:990
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1456,7 +1481,7 @@ msgstr "CPU #"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:576
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
 
@@ -1488,7 +1513,7 @@ msgstr ""
 msgid "Change..."
 msgstr "परिवर्तन गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:586
+#: beast-gtk/bstapp.cc:571
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1553,16 +1578,16 @@ msgstr "खाली गर्नुहोस्"
 msgid "Clear the current selection"
 msgstr "हालको चयन खाली गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:584
+#: beast-gtk/bstapp.cc:569
 #, c-format
 msgid "Close %s"
 msgstr "%s बन्द गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:67
 msgid "Close all windows and quit"
 msgstr "सबै सञ्झ्याल बन्द गर्नुहोस् र अन्त्य गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:57
 msgid "Close the project"
 msgstr "परियोजना बन्द गर्नुहोस्"
 
@@ -1577,7 +1602,7 @@ msgid "Color Entry"
 msgstr "रङ प्रविष्टि"
 
 #: beast-gtk/bstitemview.cc:197 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:953
+#: bse/bseobject.cc:1042
 msgid "Comment"
 msgstr "टिप्पणी"
 
@@ -1717,7 +1742,7 @@ msgstr "लगातार ९"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "निरन्तर मिडि नियन्त्रण #1 - बैक चय"
 
-#: beast-gtk/bstmain.cc:948
+#: beast-gtk/bstmain.cc:911
 msgid "Contributions made by:"
 msgstr "योगदानकर्ता:"
 
@@ -2052,7 +2077,7 @@ msgstr "प्रतिलिपि बनाउनुहोस्"
 msgid "Copy the current selection into clipboard"
 msgstr "हालको चयन क्लिपबोर्डमा प्रतिलिपि बनाउनुहोस्"
 
-#: bse/bsesuper.cc:188
+#: bse/bsesuper.cc:187
 msgid "Copyright license applying to this object"
 msgstr "यो वस्तुमा लागू गरिएको प्रतिलिपिअधिकार अनुमतिपत्र"
 
@@ -2061,19 +2086,19 @@ msgstr "यो वस्तुमा लागू गरिएको प्र�
 msgid "Create Link"
 msgstr "लिङ्क सिर्जना गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:104
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "नयाँ गीत, मिक्सर ट्र्याक्स, पार्टस् र टिप्पणी सिर्जना गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:101
+#: beast-gtk/bstapp.cc:94
 msgid "Create an extra view of the project"
 msgstr "परियोजनाको छुट्टै दृश्य सिर्जना गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:56
+#: beast-gtk/bstapp.cc:49
 msgid "Create new project"
 msgstr "नयाँ परियोजना सिर्जना गर्नुहोस्"
 
-#: bse/bsesuper.cc:196
+#: bse/bsesuper.cc:195
 msgid "Creation Time"
 msgstr "सिर्जना समय"
 
@@ -2135,11 +2160,11 @@ msgstr "काट्नु [Hz]"
 msgid "DCA"
 msgstr "DCA"
 
-#: bse/bsepcmdevice-oss.cc:611
+#: bse/bsepcmdevice-oss.cc:617
 msgid "DEVICE,MODE"
 msgstr "यन्त्र, मोड"
 
-#: beast-gtk/bstapp.cc:148
+#: beast-gtk/bstapp.cc:133
 msgid "DSP Engine..."
 msgstr "DSP इन्जिन..."
 
@@ -2178,26 +2203,26 @@ msgstr "डिके [%]"
 msgid "Decay [%]"
 msgstr "डिके [%]"
 
-#: bse/bsebasics.idl:118
+#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
 #, fuzzy
 msgid "Default Author"
 msgstr "लेखक"
 
-#: bse/bsebasics.idl:119
+#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
 #, fuzzy
 msgid "Default License"
 msgstr "अनुमतिपत्र"
 
-#: bse/bsebasics.idl:117
+#: bse/bseapi.idl:1198 bse/bsebasics.idl:117
 #, fuzzy
 msgid "Default Values"
 msgstr "मान कोर्नुहोस्"
 
-#: bse/bsebasics.idl:118
+#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
 msgid "Default value for 'Author' fields"
 msgstr ""
 
-#: bse/bsebasics.idl:119
+#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
 msgid "Default value for 'License' fields"
 msgstr ""
 
@@ -2238,7 +2263,7 @@ msgstr "द्रष्टव्य मेट्नुहोस् (माउस
 msgid "Delete parts"
 msgstr "अंश मेट्नुहोस्"
 
-#: beast-gtk/bstapp.cc:95
+#: beast-gtk/bstapp.cc:88
 msgid "Delete the complete undo history"
 msgstr "पूर्वस्थितिमा फर्काइएको इतिहास सम्पूर्ण मेट्नुहोस्"
 
@@ -2263,7 +2288,7 @@ msgstr "हालमा चयन गरिएको ट्र्याक म�
 msgid "Delete the currently selected wave"
 msgstr "हालमा चयन गरिएको तरङ मेट्नुहोस्"
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1020
 msgid "Denominator"
 msgstr "हर"
 
@@ -2279,11 +2304,11 @@ msgstr "विवरण:"
 msgid "Detected file format"
 msgstr "पत्ता लगाइएको फाइल ढाँचा"
 
-#: beast-gtk/bstapp.cc:146
+#: beast-gtk/bstapp.cc:131
 msgid "Developing Plugins..."
 msgstr "प्लगइन विकास गर्दैछ..."
 
-#: beast-gtk/bstapp.cc:150
+#: beast-gtk/bstapp.cc:135
 msgid "Development..."
 msgstr "विकास..."
 
@@ -2312,7 +2337,7 @@ msgstr "डायल"
 msgid "Dial (Logarithmic)"
 msgstr "डायल (लोगारिथ्मिक)"
 
-#: beast-gtk/bstmain.cc:293
+#: beast-gtk/bstmain.cc:292
 msgid "Dialogs"
 msgstr "संवाद"
 
@@ -2336,7 +2361,7 @@ msgstr ""
 msgid "Direction"
 msgstr "दिशा"
 
-#: beast-gtk/bstapp.cc:590
+#: beast-gtk/bstapp.cc:575
 msgid "Discard Changes"
 msgstr "परिवर्तन छोड्नुहोस्"
 
@@ -2383,12 +2408,12 @@ msgstr "जडान नभएको बाहिर"
 msgid "Disconnect Outputs"
 msgstr "जडान नभएको बाहिर"
 
-#: bse/bseserver.cc:563
+#: bse/bseserver.cc:489
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "डिक्स रेकर्डिङ सुरु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:85
+#: beast-gtk/bstapp.cc:78
 msgid "Display developer and contributor credits"
 msgstr "विकासकर्ता र योगदानकर्ता श्रेय प्रदर्शन गर्नुहोस्"
 
@@ -2400,17 +2425,13 @@ msgstr "त्रुटि सच्याउने सन्देशसँग 
 msgid "Display dialogs with information messages"
 msgstr "सूचना सन्देशसँग संवाद प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:99
+#: beast-gtk/bstapp.cc:92
 msgid "Display statistics and timing information"
 msgstr "तथ्याङ्क र समय सूचना प्रदर्शन गर्नुहोस्"
 
 #: plugins/bseatandistort.cc:71
 msgid "Distorted Audio Output"
 msgstr "डिस्टोर्ट गरिएको अडियो निर्गत"
-
-#: beast-gtk/bstapp.cc:131
-msgid "Document _Index..."
-msgstr "कागजात अनुक्रमण..."
 
 #: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
 #: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
@@ -2545,7 +2566,7 @@ msgstr "प्रभाव नियन्त्रण १"
 msgid "Effect Control 2"
 msgstr "प्रभाव नियन्त्रण २"
 
-#: bse/bsebasics.idl:125
+#: bse/bseapi.idl:1205 bse/bsebasics.idl:125
 msgid "Effect Path"
 msgstr "प्रभाव बाटो"
 
@@ -2689,7 +2710,7 @@ msgstr "एक्पोनेन्सियल नियन्त्रण"
 msgid "Exponential FM"
 msgstr "एक्सपोनेन्शल FM"
 
-#: beast-gtk/bstapp.cc:268
+#: beast-gtk/bstapp.cc:253
 msgid "Export Audio"
 msgstr "अडियो निर्यात गर्नुहोस्"
 
@@ -2723,7 +2744,7 @@ msgstr "यन्त्र च्यानलहरूको नम्बर क
 msgid "Failed to detect header"
 msgstr "शीर्षक पत्ता लगाउन (खोल्न) असफल"
 
-#: beast-gtk/bstmain.cc:380
+#: beast-gtk/bstmain.cc:379
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
@@ -2733,28 +2754,28 @@ msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:327
-#: beast-gtk/bstmain.cc:343
+#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:326
+#: beast-gtk/bstmain.cc:342
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "वेभ फाइल \"%s\" लोड गर्न असफल: %s"
 
-#: beast-gtk/bstmain.cc:386
+#: beast-gtk/bstmain.cc:385
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "परियोजना गाभ्न असफल \"%s\": %s"
 
-#: bse/bseserver.cc:509
+#: bse/bseserver.cc:435
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "मिडि यन्त्र खोल्न असफल: %s"
 
-#: bse/bseserver.cc:482
+#: bse/bseserver.cc:408
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "PCM यन्त्र खोल्न असफल: %s"
 
-#: bse/bseserver.cc:567
+#: bse/bseserver.cc:493
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "निर्गतका लागि फाइल \"%s\" खोल्न असफल: %s"
@@ -2809,12 +2830,12 @@ msgstr ""
 msgid "Failed to spawn child process"
 msgstr "शाखा प्रकृया स्पान गर्न असफल"
 
-#: bse/bseserver.cc:564
+#: bse/bseserver.cc:490
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "डिक्समा रेकर्डिङ सुरु गर्न असफल"
 
-#: bse/bseserver.cc:425
+#: bse/bseserver.cc:351
 msgid "Failed to start recording from audio device."
 msgstr "अडियो यन्त्रबाट रेकर्ड सुरु गर्न असफल"
 
@@ -2968,7 +2989,7 @@ msgstr "पाद नियन्त्रक"
 msgid "Format"
 msgstr "ढाँचा"
 
-#: bse/bseobject.cc:953
+#: bse/bseobject.cc:1042
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3015,7 +3036,7 @@ msgstr "आवृत्ति"
 msgid "Frequency Signal"
 msgstr "आवृति सङ्केत"
 
-#: bse/bsebasics.idl:108
+#: bse/bseapi.idl:1191 bse/bsebasics.idl:108
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3114,7 +3135,7 @@ msgstr "साधारण उद्देश्य नियन्त्रक 
 msgid "General Purpose Controller 4"
 msgstr "साधारण उद्देश्य नियन्त्रक ४"
 
-#: beast-gtk/bstpreferences.cc:62
+#: beast-gtk/bstpreferences.cc:61
 msgid "Generic Keys"
 msgstr "जेनेरिक कुञ्जी"
 
@@ -3238,7 +3259,7 @@ msgstr "छवि सेड"
 msgid "Import MIDI: %s"
 msgstr "MIDI आयात गर्नुहोस्: %s"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:55
 msgid "Import a standard MIDI file into the current project"
 msgstr "हालको परियोजनामा मानक MIDI फाइल आयात गर्नुहोस्"
 
@@ -3285,7 +3306,7 @@ msgstr "ठाडो मापन"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "ओस्सिलेटर तरङ्ग फारमको प्रारम्भिक फेज (डिग्रीमा साइकल अफसेट)"
 
-#: beast-gtk/bstmain.cc:198
+#: beast-gtk/bstmain.cc:197
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
@@ -3322,7 +3343,7 @@ msgid "Input Port %u"
 msgstr "आगत पोर्ट %u"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.cc:949
+#: bse/bsebus.cc:948
 msgid "Input Signals"
 msgstr "आगत सङ्केत"
 
@@ -3430,7 +3451,7 @@ msgstr "अशं घुसाउनुहोस्/सम्पादन गर
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "घुसाउनुहोस्/रिसाइज गर्नुहोस्/द्रष्टव्य सार्नुहोस् (माउस बटन १ र २)"
 
-#: bse/bsebasics.idl:128
+#: bse/bseapi.idl:1207 bse/bsebasics.idl:128
 msgid "Instrument Path"
 msgstr "बाजा बाटो"
 
@@ -3448,7 +3469,7 @@ msgstr "अपर्याप्त अनुमति"
 msgid "Internal error (please report)"
 msgstr "आन्तरिक त्रुटि (कृपया प्रतिवेदन गर्नुहोस्)"
 
-#: bse/bsebus.cc:961
+#: bse/bsebus.cc:960
 msgid "Internals"
 msgstr "आन्तरिक"
 
@@ -3488,7 +3509,7 @@ msgstr "सिन्थेसिस मोड्युल प्रकार ख
 msgid "Invert"
 msgstr "उल्टो पार्नुहोस्"
 
-#: bse/bsebasics.idl:113
+#: bse/bseapi.idl:1196 bse/bsebasics.idl:113
 msgid "Invert Sustain Pedal"
 msgstr "थाम्ने पेडल उल्टो पार्नुहोस्"
 
@@ -3496,7 +3517,7 @@ msgstr "थाम्ने पेडल उल्टो पार्नुहो
 msgid "Invert the current selection"
 msgstr "हालमा चयन उल्टो पार्नुहोस्"
 
-#: bse/bsebasics.idl:114
+#: bse/bseapi.idl:1196 bse/bsebasics.idl:114
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
@@ -3549,7 +3570,7 @@ msgstr "नब"
 msgid "Knob (Logarithmic)"
 msgstr "नब (लोगारिथ्मिक)"
 
-#: beast-gtk/bstmain.cc:261
+#: beast-gtk/bstmain.cc:260
 msgid "LADSPA Plugins"
 msgstr "लाडस्पा प्लगइन"
 
@@ -3557,11 +3578,11 @@ msgstr "लाडस्पा प्लगइन"
 msgid "Label"
 msgstr "लेबुल"
 
-#: bse/bsesuper.cc:200
+#: bse/bsesuper.cc:199
 msgid "Last modification time"
 msgstr "अन्तिम संशोधन समय"
 
-#: bse/bsebasics.idl:99
+#: bse/bseapi.idl:1184 bse/bsebasics.idl:99
 msgid "Latency [ms]"
 msgstr "ल्याटेन्स  [ms]"
 
@@ -3578,7 +3599,7 @@ msgstr "बायाँ"
 msgid "Left Audio"
 msgstr "बायाँ अडियो"
 
-#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
 #: plugins/freeverb/bsefreeverb.cc:100
 msgid "Left Audio In"
 msgstr "बायाँ अडियो आगत"
@@ -3587,7 +3608,7 @@ msgstr "बायाँ अडियो आगत"
 msgid "Left Audio Input"
 msgstr "बायाँ अडियो आगत"
 
-#: bse/bsebus.cc:970 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
+#: bse/bsebus.cc:969 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
 msgid "Left Audio Out"
 msgstr "बायाँ अडियो निर्गत"
 
@@ -3616,7 +3637,7 @@ msgstr "बायाँ बाहिर"
 msgid "Left Output"
 msgstr "बायाँ निर्गत"
 
-#: bse/bsebus.cc:939
+#: bse/bsebus.cc:938
 msgid "Left Volume"
 msgstr "बायाँ भोल्युम"
 
@@ -3624,11 +3645,11 @@ msgstr "बायाँ भोल्युम"
 msgid "Left audio output"
 msgstr "बायाँ अडियो निर्गत"
 
-#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
 msgid "Left channel input"
 msgstr "बायाँ च्यानल आगत"
 
-#: bse/bsebus.cc:970 bse/bsepcminput.cc:110
+#: bse/bsebus.cc:969 bse/bsepcminput.cc:110
 msgid "Left channel output"
 msgstr "बायाँ च्यानल निर्गत"
 
@@ -3646,7 +3667,7 @@ msgstr "लेबुल"
 msgid "Lib..."
 msgstr "लिब..."
 
-#: bse/bsesuper.cc:188
+#: bse/bsesuper.cc:187
 msgid "License"
 msgstr "अनुमतिपत्र"
 
@@ -3668,7 +3689,7 @@ msgstr "लिङ्क अंश"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "लिङ्क वा अंशहरू चलाउनुहोस् (माउसको बटन १ र २)"
 
-#: bse/bsebus.cc:135
+#: bse/bsebus.cc:134
 msgid "List of available mixer busses to be used as bus output"
 msgstr "बस आगतमा प्रयोग गर्न उपलब्ध मिश्रण बसहरूको सूची"
 
@@ -3707,7 +3728,7 @@ msgstr "यसबाट सब सञ्जाल रोज्नका ला�
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "ट्र्याक बाजा रोज्नका लागि उपलब्ध सिन्थेसिस सञ्जालको सूची"
 
-#: bse/bsebus.cc:120
+#: bse/bsebus.cc:119
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "बस आगतमा प्रयोग गर्न उपलब्ध सिन्थेसिस सङ्केतहरूको सूची"
 
@@ -3747,11 +3768,11 @@ msgstr ""
 msgid "Load Wave"
 msgstr "तरङ लोड गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:116
 msgid "Load _Effect..."
 msgstr "लोड प्रभाव..."
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:114
 msgid "Load _Instrument..."
 msgstr "बाजा लोड गर्नुहोस्..."
 
@@ -3777,11 +3798,11 @@ msgstr "लाइब्रेरी बाटोबाट एउटा नया
 msgid "Load a sound font file from library paths"
 msgstr "लाइब्रेरी बाटोबाट एउटा नयाँ वेभ फाइल लोड गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:116
 msgid "Load synthesizer mesh from effects folder"
 msgstr "सिन्थेसाइजर मेस प्रभाव फोल्डरबाट लोड गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:114
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "सिन्थेसाइजर मेस बाजा फोल्डरबाट लोड गर्नुहोस्"
 
@@ -3789,12 +3810,12 @@ msgstr "सिन्थेसाइजर मेस बाजा फोल्ड
 msgid "Load..."
 msgstr "लोड गर्नुहोस्..."
 
-#: beast-gtk/bstmain.cc:323 beast-gtk/bstmain.cc:325
+#: beast-gtk/bstmain.cc:322 beast-gtk/bstmain.cc:324
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" लोड हुँदैछ"
 
-#: beast-gtk/bstapp.cc:740
+#: beast-gtk/bstapp.cc:725
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' स्किन लोड हुँदैछ"
@@ -3809,7 +3830,7 @@ msgstr "`%s' स्किन लोड हुँदैछ"
 msgid "Loading wave `%s'"
 msgstr "तरङ `%s' लोड हुँदैछ"
 
-#: beast-gtk/bstmain.cc:303
+#: beast-gtk/bstmain.cc:302
 msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
@@ -3818,21 +3839,21 @@ msgstr "लोड हुँदैछ..."
 msgid "Location"
 msgstr "स्थान"
 
-#: bse/bseapi.idl:1033
+#: bse/bseapi.idl:1032
 msgid "Loop Enabled"
 msgstr ""
 
-#: bse/bseapi.idl:1034
+#: bse/bseapi.idl:1033
 #, fuzzy
 msgid "Loop Left"
 msgstr "बायाँ"
 
-#: bse/bseapi.idl:1035
+#: bse/bseapi.idl:1034
 #, fuzzy
 msgid "Loop Right"
 msgstr "लूप"
 
-#: bse/bseapi.idl:1032
+#: bse/bseapi.idl:1031
 msgid "Looping"
 msgstr "लूप"
 
@@ -3865,7 +3886,7 @@ msgstr "लोपास [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "नियन्त्रण सङ्केतका लागि लोपास फिल्टर आवृति"
 
-#: bse/bsebasics.idl:112
+#: bse/bseapi.idl:1195 bse/bsebasics.idl:112
 msgid "MIDI"
 msgstr "मिडि"
 
@@ -3874,7 +3895,7 @@ msgstr "मिडि"
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
-#: bse/bseserver.cc:505
+#: bse/bseserver.cc:431
 msgid "MIDI I/O Failed"
 msgstr ""
 
@@ -3900,7 +3921,7 @@ msgstr "मिडि सङ्केत ३"
 msgid "MIDI Signal 4"
 msgstr "मिडि सङ्केत ४"
 
-#: beast-gtk/bstapp.cc:451
+#: beast-gtk/bstapp.cc:436
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI सिन्थेसाइजर: %s"
@@ -3910,12 +3931,12 @@ msgstr "MIDI सिन्थेसाइजर: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "मिडि ट्र्याकर, सङ्गीत रचना र मोड्युलर सिन्थेसिस अनुप्रयोग"
 
-#: bse/bseserver.cc:510
+#: bse/bseserver.cc:436
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "मिडि यन्त्र चयन समस्याको बारेमा सन्देश देखाउनुहोस्"
 
-#: bse/bseserver.cc:506
+#: bse/bseserver.cc:432
 #, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "मिडि आगत वा निर्गत उपलब्ध छैन ।"
@@ -3933,7 +3954,7 @@ msgstr ""
 msgid "Master"
 msgstr "मास्टर"
 
-#: bse/bsebus.cc:963
+#: bse/bsebus.cc:962
 msgid "Master Output"
 msgstr "मास्टर निर्गत"
 
@@ -3961,15 +3982,15 @@ msgstr "म्याक्स स्वर"
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "समकालिन प्लेब्याकका लागि आवाजको अधिकतम सङ्ख्या"
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1020
 msgid "Measure denominator, must be a power of 2"
 msgstr "हर नाप्नुहोस्, यसको पावर २ हुनुपर्दछ"
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1019
 msgid "Measure numerator"
 msgstr "गणक नाप्नुहोस्"
 
-#: beast-gtk/bstapp.cc:60
+#: beast-gtk/bstapp.cc:53
 msgid "Merge an existing project into the current project"
 msgstr "हालको परियोजनामा अवस्थित परियोजना गाभ्नुहोस्"
 
@@ -4004,7 +4025,7 @@ msgid_plural "Message has been repeated %u times"
 msgstr[0] "सन्देश %u पटक दोहोरियो"
 msgstr[1] "सन्देश %u पटक दोहोरियो"
 
-#: beast-gtk/bstpreferences.cc:66
+#: beast-gtk/bstpreferences.cc:65
 msgid "Messages"
 msgstr "सन्देश"
 
@@ -4055,7 +4076,7 @@ msgstr "मिक्सर"
 msgid "Mixer busses connected to track output"
 msgstr "मिश्रण बसहरू ट्र्याक आगतका लागि जडान गरियो"
 
-#: bse/bsebus.cc:958
+#: bse/bsebus.cc:957
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "सिन्थेसिस सङ्केतका लागि आगतको मिश्रण बस"
 
@@ -4200,15 +4221,15 @@ msgstr "गुणन नियन्त्रण"
 msgid "Music Composer"
 msgstr "सङ्गीत रचनाकार"
 
-#: bse/bseapi.idl:1025
+#: bse/bseapi.idl:1024
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.cc:933
+#: bse/bsebus.cc:932
 msgid "Mute"
 msgstr "मौन"
 
-#: bse/bsebus.cc:933
+#: bse/bsebus.cc:932
 msgid "Mute: turn off the bus volume"
 msgstr "मौन: बसको भोल्युम बन्द गर्नुहोस्"
 
@@ -4217,7 +4238,7 @@ msgid "Muted"
 msgstr "मौन गराइएको"
 
 #: beast-gtk/bstfiledialog.cc:121 beast-gtk/bstitemview.cc:194
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:943
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:1032
 msgid "Name"
 msgstr "नाम"
 
@@ -4225,7 +4246,7 @@ msgstr "नाम"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "हालको स्किन कन्फिगरेसनका लागि नाम (स्किन चयनका लागि प्रयोग गरिने)"
 
-#: bse/bseserver.cc:122
+#: bse/bseserver.cc:116
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "BSE ध्वनि निर्गत रेकर्ड गर्न प्रयोग गरिने वेभ फाइलको नाम"
 
@@ -4233,11 +4254,11 @@ msgstr "BSE ध्वनि निर्गत रेकर्ड गर्न �
 msgid "Negative Value Color"
 msgstr "नकरात्मक मान रङ"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:104
 msgid "New Song"
 msgstr "नयाँ गीत"
 
-#: beast-gtk/bstapp.cc:101
+#: beast-gtk/bstapp.cc:94
 msgid "New View"
 msgstr "नयाँ दृश्य"
 
@@ -4266,7 +4287,7 @@ msgstr "अंश छैन"
 msgid "No Track"
 msgstr "ट्र्याक छैन"
 
-#: bse/bseserver.cc:507
+#: bse/bseserver.cc:433
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -4274,7 +4295,7 @@ msgstr ""
 "उपलब्ध मिडि यन्त्रहरू सफलतापूर्वक फेला पारेर खोल्न सकेन । शून्य यन्त्र पुन: प्राप्त गर्दैछ, "
 "मिडि घटनाहरू पाइएन वा पठाइएको छैन ।"
 
-#: bse/bseserver.cc:480
+#: bse/bseserver.cc:406
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -4282,7 +4303,7 @@ msgstr ""
 "उपलब्ध अडियो यन्त्र सफलतापूर्वक फेला पारेर खोल्न सकेन । माफ गर्नुहोस्, अडियो यन्त्रका लागि "
 "फलब्याक चयन बनाउन सकिँदैन, छोड्दैछ ।"
 
-#: bse/bseserver.cc:479
+#: bse/bseserver.cc:405
 msgid "No available audio device was found."
 msgstr "उपलब्ध अडियो यन्त्र फेला परेन"
 
@@ -4434,10 +4455,6 @@ msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:133
-msgid "Notes and informations about this release cycle"
-msgstr "निष्काशन चक्रका बारेमा टिप्पणी र सूचना"
-
 #: beast-gtk/bsttrackview.cc:643
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
@@ -4459,11 +4476,11 @@ msgstr "पङ्क्तिको सङ्ख्या"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "एक्सपोनेन्सियल आवृति मोडुलेसनबाट प्रभावित हुने अक्टेभको सङ्ख्या"
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1018
 msgid "Number of ticks per quarter note"
 msgstr "प्रति चौथाइ द्रष्टव्यमा टिकको सङ्ख्या"
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1019
 msgid "Numerator"
 msgstr "गणक"
 
@@ -4485,17 +4502,13 @@ msgstr "वस्तु चयन: %s"
 msgid "Octaves"
 msgstr "ओक्टेभ"
 
-#: beast-gtk/bstapp.cc:159
+#: beast-gtk/bstapp.cc:144
 msgid "Online Demos..."
 msgstr "अनलाइन डेमोहरू..."
 
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:140
 msgid "Online Sound Archive..."
 msgstr "अनलाइन ध्वनि सङ्ग्रह..."
-
-#: beast-gtk/bstapp.cc:141
-msgid "Online _Help Desk..."
-msgstr "अनलाइन मद्दत डेस्क..."
 
 #: plugins/artscompressor.idl:37
 msgid "Only parts louder than threshold are compressed"
@@ -4506,7 +4519,7 @@ msgid "Open Project"
 msgstr "परियोजना खोल्नुहोस्"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.cc:235
+#: bse/bsemididevice-oss.cc:240
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4519,7 +4532,7 @@ msgstr ""
 "           पढ्न मात्र, पढ्न-लेख्न वा लेख्न-मात्र पहुँच"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-oss.cc:613
+#: bse/bsepcmdevice-oss.cc:619
 msgid ""
 "Open Sound System PCM driver:\n"
 "  DEVICE - PCM device file name\n"
@@ -4533,7 +4546,7 @@ msgstr ""
 "           पढ्न-मात्र, पढ्न-लेख्न वा लेख्न मात्र सक्षम; \n"
 "           जोड्नुहोस् \"एचएस\" तल चालूमा कडा समक्रमण दवाब\n"
 
-#: beast-gtk/bstapp.cc:58
+#: beast-gtk/bstapp.cc:51
 msgid "Open existing project"
 msgstr "अवस्थित परियोजना खोल्नुहोस्"
 
@@ -4545,7 +4558,7 @@ msgstr "खोल्न असफल"
 msgid "Open file browser"
 msgstr "फाइल ब्राउजर खोल्नुहोस्"
 
-#: beast-gtk/bstapp.cc:673 beast-gtk/bstapp.cc:681
+#: beast-gtk/bstapp.cc:658 beast-gtk/bstapp.cc:666
 #: beast-gtk/bstfiledialog.cc:431 beast-gtk/bstfiledialog.cc:439
 #, c-format
 msgid "Opening project `%s'"
@@ -4587,7 +4600,7 @@ msgstr "उत्पत्ती:  %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1097
+#: bse/bsesong.cc:1062
 msgid "Orphan Parts"
 msgstr "ओर्फन अंश"
 
@@ -4660,7 +4673,7 @@ msgstr "निर्गत पोर्ट %u"
 msgid "Output Signal Monitor"
 msgstr "आगत सङ्केत मोनिटर"
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:957 bse/bsetrack.cc:1148
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1148
 msgid "Output Signals"
 msgstr "आगत सङ्केत"
 
@@ -4703,12 +4716,12 @@ msgstr "PCM आगत मोड्युल"
 msgid "PCM Output module"
 msgstr "PCM आगत मोड्युल"
 
-#: bse/bseserver.cc:483
+#: bse/bseserver.cc:409
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "PCM यन्त्र चयन समस्याको सन्देश देखाउनुहोस्"
 
-#: bse/bseserver.cc:568
+#: bse/bseserver.cc:494
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "रेकर्डिङ फाइल त्रुटि देखाउनुहोस्"
@@ -4808,7 +4821,7 @@ msgstr "पृष्ठभूमि छवि पिक्सेल पृष्
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "पङ्क्तिको सट्टा एक्सपोनेन्सियल आवृतिको मोडुलेसन कार्यसम्पादन गर्नुहोस्"
 
-#: bse/bsesuper.cc:183
+#: bse/bsesuper.cc:182
 msgid "Person changing or creating this object"
 msgstr "यो वस्तु परिवर्तन वा निर्माण गर्ने व्यक्ति"
 
@@ -4816,7 +4829,7 @@ msgstr "यो वस्तु परिवर्तन वा निर्म�
 msgid "Phase"
 msgstr "फेज"
 
-#: beast-gtk/bstpreferences.cc:55
+#: beast-gtk/bstpreferences.cc:54
 msgid "Piano Keys"
 msgstr "पियानो कुञ्जी"
 
@@ -4834,7 +4847,7 @@ msgstr "पिच बेन्ड"
 msgid "Play note"
 msgstr "द्रष्टव्य प्ले गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:98
 msgid "Play or restart playback of the project"
 msgstr "परियोजनाको प्लेब्याक प्ले गर्नुहोस् वा पुन: सुरु गर्नुहोस्"
 
@@ -4847,7 +4860,7 @@ msgstr "प्लेब्याक"
 #. /< Insert a new module into a synthesis network.
 #. /< Remove an existing module from its synthesis network.
 #. signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
-#: bse/bseapi.idl:896
+#: bse/bseapi.idl:895
 msgid "Playback Settings"
 msgstr "प्लेब्याक सेटिङ"
 
@@ -4873,11 +4886,11 @@ msgstr "बढेको कुनामा प्लक स्ट्रिङ"
 msgid "Pluck the string"
 msgstr "प्लेब्याक सेटिङ"
 
-#: bse/bsebasics.idl:131
+#: bse/bseapi.idl:1209 bse/bsebasics.idl:131
 msgid "Plugin Path"
 msgstr "प्लगइन बाटो"
 
-#: beast-gtk/bstmain.cc:239
+#: beast-gtk/bstmain.cc:238
 msgid "Plugins"
 msgstr "प्लगइन"
 
@@ -4905,7 +4918,7 @@ msgstr "सकरात्मक मान रङ"
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर"
 
-#: beast-gtk/bstapp.cc:880
+#: beast-gtk/bstapp.cc:858
 msgid "Preferences"
 msgstr "प्राथमिकता"
 
@@ -4941,14 +4954,14 @@ msgstr "कार्यविधि परामिति खारेज छ"
 msgid "Process: %s\n"
 msgstr "प्रकृया: %s\n"
 
-#: bse/bsebasics.idl:100
+#: bse/bseapi.idl:1185 bse/bsebasics.idl:100
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 "एकल नमूनाको निर्गत र आगत बिचको प्रकृया अवधि, साना मानहरूले CPU लोडको भार बढाउँछ"
 
-#: beast-gtk/bstapp.cc:99 beast-gtk/bstprofiler.cc:115
+#: beast-gtk/bstapp.cc:92 beast-gtk/bstprofiler.cc:115
 msgid "Profiler"
 msgstr "प्रोफाइलर"
 
@@ -4979,17 +4992,9 @@ msgstr ""
 "समानुपातिक सकरात्मक अवयव प्लस तरङ्ग समय फारम (प्रभाव पार्नका लागि प्लसलाई तरङ्ग "
 "फारमको रूपमा चयन गर्नुपर्ने हुन्छ)"
 
-#: beast-gtk/bstapp.cc:131
-msgid "Provide an overview of all BEAST documentation contents"
-msgstr "सबै BEAST मिसिलीकरण सामग्रीहरूको समिक्षा प्रदान गर्नुहोस्"
-
-#: beast-gtk/bstapp.cc:150
+#: beast-gtk/bstapp.cc:135
 msgid "Provide an overview of development related topics and documents"
 msgstr "विकास सम्बन्धित शीर्षक र कागजातको समिक्षा प्रदान गर्नुहोस्"
-
-#: beast-gtk/bstapp.cc:139
-msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr "साधारण कार्य कसरी सम्पन्न गर्ने भन्ने बारे सूचना पठाउनुहोस्"
 
 #. disabled
 #: bse/bsestandardosc.cc:166 bse/bsestandardosc.cc:173
@@ -5127,7 +5132,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:209
+#: beast-gtk/bstmain.cc:208
 msgid "RC Files"
 msgstr "आर सी फाइल"
 
@@ -5152,7 +5157,7 @@ msgstr "अनुपात [x:१]"
 msgid "Read failed"
 msgstr "पढ्न असफल"
 
-#: beast-gtk/bstapp.cc:82
+#: beast-gtk/bstapp.cc:75
 msgid "Rebuild"
 msgstr "फेरी बनाउनुहोस्"
 
@@ -5164,7 +5169,7 @@ msgstr "आयात चयन द्रष्टव्य"
 msgid "Redo"
 msgstr "रिडु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:84
 msgid "Redo the last undone action"
 msgstr "अन्तिममा पूर्वस्थितिमा फर्काएको कार्य रिडु गर्नुहोस्"
 
@@ -5209,7 +5214,7 @@ msgstr "मोड्युल हटाउनुहोस्"
 msgid "Remove Paths"
 msgstr "बाटो हटाउनुहोस्"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:110
 msgid "Remove Song or Synthesizer"
 msgstr "गीत वा सिन्थेसाइजर हटाउनुहोस्"
 
@@ -5221,7 +5226,7 @@ msgstr "फोकस कक्षमा केही घटना हटाउ�
 msgid "Remove directory from searchpath"
 msgstr "खोजी बाटोबाट डाइरेक्टरी हटाउनुहोस्"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:110
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "हालमा चयन गरिएको सिन्थेसाइजर (गीत) हटाउनुहोस्"
 
@@ -5248,7 +5253,7 @@ msgstr "दोहोर्याउनुस्"
 msgid "Repeat playback within loop points"
 msgstr "लूप बिन्दु बीचमा प्लेब्याक दोहोर्याउनुहोस्"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:128
 msgid "Report a Beast Bug..."
 msgstr ""
 
@@ -5299,7 +5304,7 @@ msgstr "दायाँ"
 msgid "Right Audio"
 msgstr "दायाँ अडियो"
 
-#: bse/bsebus.cc:968 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:967 bse/bsepcmoutput.cc:112
 #: plugins/freeverb/bsefreeverb.cc:101
 msgid "Right Audio In"
 msgstr "दायाँ अडियो आगत"
@@ -5308,7 +5313,7 @@ msgstr "दायाँ अडियो आगत"
 msgid "Right Audio Input"
 msgstr "दायाँ अडियो आगत"
 
-#: bse/bsebus.cc:972 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
+#: bse/bsebus.cc:971 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
 msgid "Right Audio Out"
 msgstr "दायाँ अडियो निर्गत"
 
@@ -5337,7 +5342,7 @@ msgstr "दायाँ बाहिर"
 msgid "Right Output"
 msgstr "दायाँ निर्गत"
 
-#: bse/bsebus.cc:943
+#: bse/bsebus.cc:942
 msgid "Right Volume"
 msgstr "दायाँ भोल्युम"
 
@@ -5349,11 +5354,11 @@ msgstr "दायाँ अडियो निर्गत"
 msgid "Right channel Input"
 msgstr "दायाँ च्यानल आगत"
 
-#: bse/bsebus.cc:968
+#: bse/bsebus.cc:967
 msgid "Right channel input"
 msgstr "दायाँ च्यानल आगत"
 
-#: bse/bsebus.cc:972 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:971 bse/bsepcminput.cc:112
 msgid "Right channel output"
 msgstr "दायाँ च्यानल निर्गत"
 
@@ -5389,7 +5394,7 @@ msgstr "पङ्क्ति छायाँकरण"
 msgid "STime"
 msgstr "एस समय"
 
-#: bse/bsebasics.idl:122
+#: bse/bseapi.idl:1203 bse/bsebasics.idl:122
 msgid "Sample Path"
 msgstr "नमूना बाटो"
 
@@ -5426,15 +5431,15 @@ msgid ""
 "curvature across all levels"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:120
 msgid "Save As Effect..."
 msgstr "प्रभावको रूपमा बचत गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:118
 msgid "Save As Instrument..."
 msgstr "बाजाको रूपमा बचत गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:589
+#: beast-gtk/bstapp.cc:574
 msgid "Save Changes"
 msgstr "परिवर्तन बचत गर्नुहोस्"
 
@@ -5446,19 +5451,19 @@ msgstr "प्रभाव बचत गर्नुहोस्"
 msgid "Save Instrument"
 msgstr "बाजा बचत गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:63
 msgid "Save _As..."
 msgstr "यस रूपमा बचत गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:120
 msgid "Save synthesizer mesh to effects folder"
 msgstr "सिन्थेसाइजर मेस प्रभाव फोल्डरमा बचत गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:118
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "सिन्थेसाइजर मेस बाजा फोल्डरमा बचत गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:588
+#: beast-gtk/bstapp.cc:573
 msgid "Save the project before closing its window?"
 msgstr "यसको सञ्झ्याल बन्द गर्नु पहिले परियोजना बचत गर्नुहुन्छ ?"
 
@@ -5498,11 +5503,11 @@ msgstr "कुनै पनि स्क्रोल नगर्नुहोस
 msgid "Scroll Right"
 msgstr "दायाँ स्क्रोल गर्नुहोस्"
 
-#: bse/bsebasics.idl:121
+#: bse/bseapi.idl:1202 bse/bsebasics.idl:121
 msgid "Search Paths"
 msgstr "खोजी बाटो"
 
-#: bse/bsebasics.idl:126
+#: bse/bseapi.idl:1205 bse/bsebasics.idl:126
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5511,7 +5516,7 @@ msgstr ""
 "BSE प्रभाव फाइलहरू फेला पार्न प्रयोग हुने,\"%s\" बाट छुट्ट्याइएको डाइरेक्टरीको बाटो खोजी "
 "गर्नुहोस्"
 
-#: bse/bsebasics.idl:129
+#: bse/bseapi.idl:1207 bse/bsebasics.idl:129
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5520,7 +5525,7 @@ msgstr ""
 "BSE फाइलहरू फेला पार्न प्रयोग हुने, \"%s\" बाट छुट्ट्याइएको डाइरेक्टरीको बाटो खोजी "
 "गर्नुहोस्"
 
-#: bse/bsebasics.idl:132
+#: bse/bseapi.idl:1210 bse/bsebasics.idl:132
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -5530,7 +5535,7 @@ msgstr ""
 "\"%s\", बाट छुट्ट्याइएको, BSE प्लगइन फेला पार्न प्रयोग हुने डाइरेक्टरी बाटो खोजी गर्नुहोस् "
 "। यो प्रणालीमा स्ट्यान्डर्ड BSE प्लगइन स्थानमा थपका लागि खोजी गरिन्छ"
 
-#: bse/bsebasics.idl:123
+#: bse/bseapi.idl:1203 bse/bsebasics.idl:123
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -5723,11 +5728,11 @@ msgstr "स्क्रोल गर्न योग्य क्षेत्र
 msgid "Signal In"
 msgstr "सङ्केत भित्री"
 
-#: bse/bsebus.cc:946
+#: bse/bsebus.cc:945
 msgid "Signal Inputs"
 msgstr "सङ्केत आगत"
 
-#: bse/bsebus.cc:955 bse/bsetrack.cc:1146
+#: bse/bsebus.cc:954 bse/bsetrack.cc:1146
 msgid "Signal Outputs"
 msgstr "सङ्केत आगत"
 
@@ -5777,7 +5782,7 @@ msgstr "न्युनतम रूपरेखा"
 msgid "Sketch Range"
 msgstr "रूपरेखा दायरा"
 
-#: beast-gtk/bstpreferences.cc:71
+#: beast-gtk/bstpreferences.cc:70
 msgid "Skin"
 msgstr "स्किन"
 
@@ -5814,11 +5819,11 @@ msgstr ""
 msgid "Sole Output"
 msgstr "सोल निर्गत"
 
-#: bse/bsebus.cc:935
+#: bse/bsebus.cc:934
 msgid "Solo"
 msgstr "एकल"
 
-#: bse/bsebus.cc:935
+#: bse/bsebus.cc:934
 msgid "Solo: mute all other busses"
 msgstr "एकल: अरू बसलाई मौन गराउनुहोस्"
 
@@ -5827,7 +5832,7 @@ msgstr "एकल: अरू बसलाई मौन गराउनुहो�
 msgid "Song"
 msgstr "गीत"
 
-#: beast-gtk/bstapp.cc:446
+#: beast-gtk/bstapp.cc:431
 #, c-format
 msgid "Song: %s"
 msgstr "गीत: %s"
@@ -5863,7 +5868,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "स्पिन बटन (लोगारिथ्मिक)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:217
+#: beast-gtk/bstmain.cc:216
 msgid "Splash Image"
 msgstr "स्प्ल्यास छवि"
 
@@ -5902,24 +5907,20 @@ msgstr ""
 msgid "Start Editor"
 msgstr "सम्पादनक सुरु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:159
+#: beast-gtk/bstapp.cc:144
 msgid "Start a web browser pointing to online demo songs"
 msgstr "वेब ब्राउजर सूचित अनलाइन डेमो गीत सुरु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:135
-msgid "Start a web browser pointing to the BEAST website"
+#: beast-gtk/bstapp.cc:126
+#, fuzzy
+msgid "Start a web browser pointing to the Beast website"
 msgstr "वेब ब्राउजर सूचक BEAST वेबसाइटमा सुरु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:141
-msgid ""
-"Start a web browser pointing to the online help desk at the BEAST website"
-msgstr "वेब ब्राउजर अनलाइन मद्दत डेस्क BEAST वेबसाइटमा सुरु गर्नुहोस्"
-
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:140
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "वेब ब्राउजर सूचित अनलाइन ध्वनि सङ्ग्रह सुरु गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:128
 #, fuzzy
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
@@ -5933,7 +5934,7 @@ msgstr "सुरु:"
 msgid "Starting Playback"
 msgstr "प्लेब्याक सुरु हुँदैछ"
 
-#: beast-gtk/bstmain.cc:191
+#: beast-gtk/bstmain.cc:190
 msgid "Startup"
 msgstr "सुरुवात"
 
@@ -5941,7 +5942,7 @@ msgstr "सुरुवात"
 msgid "Steps"
 msgstr "चरण"
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:100
 msgid "Stop playback of the project"
 msgstr "परियोजनाको प्लेब्याक रोक्नुहोस्"
 
@@ -6009,7 +6010,7 @@ msgstr "स्विच"
 msgid "SynDrum Output"
 msgstr "सिन्ड्रम निर्गत"
 
-#: bse/bsebus.cc:937
+#: bse/bsebus.cc:936
 msgid "Sync"
 msgstr "सिन्क्रोनाइज"
 
@@ -6029,7 +6030,7 @@ msgstr "सिन्क्रोनाइजेसन आगत"
 msgid "Syncronization Output"
 msgstr "सिन्क्रोनाइजेसन निर्गत"
 
-#: bse/bsebus.cc:937
+#: bse/bsebus.cc:936
 msgid "Syncronize left and right volume"
 msgstr "दायाँ र बायाँ भोल्युम सिन्क्रोनाइज गर्नुहोस्"
 
@@ -6038,7 +6039,7 @@ msgstr "दायाँ र बायाँ भोल्युम सिन्�
 msgid "Synth"
 msgstr "सिन्थ"
 
-#: bse/bsebasics.idl:107
+#: bse/bseapi.idl:1190 bse/bsebasics.idl:107
 msgid "Synth Control Frequency"
 msgstr "सिन्थ नियन्त्रण आवृति"
 
@@ -6051,7 +6052,7 @@ msgstr "सिन्थ गरियो"
 msgid "Synth Input"
 msgstr "सिन्थ आगत"
 
-#: bse/bsebasics.idl:103
+#: bse/bseapi.idl:1187 bse/bsebasics.idl:103
 msgid "Synth Mixing Frequency"
 msgstr "सिन्थ मिश्रण आवृति"
 
@@ -6060,11 +6061,11 @@ msgstr "सिन्थ मिश्रण आवृति"
 msgid "Synthesis Modules"
 msgstr "सिन्थेसिस मोड्युल"
 
-#: bse/bsebasics.idl:97
+#: bse/bseapi.idl:1183 bse/bsebasics.idl:97
 msgid "Synthesis Settings"
 msgstr "सिन्थेसिस सेटिङ"
 
-#: bse/bsebasics.idl:104
+#: bse/bseapi.idl:1188 bse/bsebasics.idl:104
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "सिन्थेसिस मिश्रण आवृति, साझा मानहरू: २२०५०, ४४१००, ४८०००"
 
@@ -6101,7 +6102,7 @@ msgstr "सम्मिलित सब सञ्जालको रूपमा
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.cc:953
+#: bse/bsebus.cc:952
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "बस आगतमा सिन्थेसिस सङ्केतहरूको प्रयोग (ट्र्याक र बसहरूबाट)"
 
@@ -6115,7 +6116,7 @@ msgstr "सिन्थेसाइजर"
 msgid "Synthesizer Selection: %s"
 msgstr "सिन्थेसाइजर चयन: %s"
 
-#: beast-gtk/bstapp.cc:456
+#: beast-gtk/bstapp.cc:441
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "सिन्थेसाइजर: %s"
@@ -6128,11 +6129,11 @@ msgstr ""
 msgid "TID"
 msgstr "TID"
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1018
 msgid "TPQN"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:148
+#: beast-gtk/bstapp.cc:133
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "बहु-थ्रेड भएको सिन्थेसिस इन्जिन इन्नर्ड्सको प्राविधिक वर्णन"
 
@@ -6271,7 +6272,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "आगत<->निर्गत पोर्ट सम्बन्ध स्थापना गर्न पोर्टको नाम अद्वितिय नाम छ"
 
-#: beast-gtk/bstapp.cc:585
+#: beast-gtk/bstapp.cc:570
 msgid "The project has been modified."
 msgstr "परियोजना परिमार्जन गरिएको छ।"
 
@@ -6302,7 +6303,7 @@ msgstr ""
 msgid "The time for the right to left delay"
 msgstr ""
 
-#: bse/bseapi.idl:1026
+#: bse/bseapi.idl:1025
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6391,7 +6392,7 @@ msgstr "थ्रेड प्राथमिकता -२० (उच्च) �
 msgid "Threshold [dB]"
 msgstr "थ्रेसहोल्ड [dB]"
 
-#: bse/bseapi.idl:1036
+#: bse/bseapi.idl:1035
 msgid "Tick Pointer"
 msgstr ""
 
@@ -6407,11 +6408,11 @@ msgstr "समय प्रविष्टि"
 #. group _("MIDI Instrument") {
 #. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
 #. };
-#: bse/bseapi.idl:1018
+#: bse/bseapi.idl:1017
 msgid "Timing"
 msgstr "समय"
 
-#: ebeast/menus.js:9
+#: ebeast/menus.js:15
 msgid "Toggle &Fullscreen"
 msgstr ""
 
@@ -6537,7 +6538,7 @@ msgstr "ट्रिप्लेट बत्तिसौं द्रष्ट�
 msgid "Triplet whole note"
 msgstr "ट्रिप्लेट पूरा द्रष्टव्य"
 
-#: bse/bseapi.idl:1024
+#: bse/bseapi.idl:1023
 #, fuzzy
 msgid "Tuning"
 msgstr "समय"
@@ -6562,7 +6563,7 @@ msgstr "पूर्वस्थितिमा फर्काउनुहो�
 msgid "Undo last editing step"
 msgstr "अन्तिम सम्पादन चरण पूर्वस्थितिमा फर्काउनुहोस्"
 
-#: beast-gtk/bstapp.cc:89
+#: beast-gtk/bstapp.cc:82
 msgid "Undo the effect of the last action"
 msgstr "पछिल्लो कार्यको प्रभाव पूर्वस्थितिमा फर्काउनुहोस्"
 
@@ -6574,7 +6575,7 @@ msgstr "फिल्टर नगरिएको अडियो सङ्के
 msgid "Unfiltered Input"
 msgstr "फिल्टर नगरिएको आगत"
 
-#: bse/bseobject.cc:943
+#: bse/bseobject.cc:1032
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6587,7 +6588,7 @@ msgid "Unknown format"
 msgstr "अज्ञात ढाँचा"
 
 #. default to 'Unnamed-###' unames
-#: bse/bsesuper.cc:37
+#: bse/bsesuper.cc:38
 #, fuzzy
 msgid "Unnamed"
 msgstr "पुन: नामकरण गर्नुहोस्"
@@ -6719,15 +6720,15 @@ msgstr "अवास्तविक निर्गत %u"
 msgid "Volume"
 msgstr "भोल्युम"
 
-#: bse/bsebus.cc:939
+#: bse/bsebus.cc:938
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "बायाँ बस च्यानलको डेसिबलमा भोल्युम समायोजन"
 
-#: bse/bsebus.cc:943
+#: bse/bsebus.cc:942
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "दायाँ बस च्यानलको डेसिबलमा भोल्युम समायोजन"
 
-#: bse/bseserver.cc:121
+#: bse/bseserver.cc:115
 msgid "WAVE File"
 msgstr "वेभ फाइल"
 
@@ -6749,7 +6750,7 @@ msgstr "तरङ्ग फारम"
 msgid "Wave Output"
 msgstr "तरङ निर्गत"
 
-#: beast-gtk/bstapp.cc:441
+#: beast-gtk/bstapp.cc:426
 msgid "Wave Repository"
 msgstr "तरङ्ग भण्डारण"
 
@@ -6766,7 +6767,7 @@ msgstr "ओस्सिलेटर स्रोतको रूपमा प्
 msgid "Wave_s"
 msgstr "तरङ्ग"
 
-#: beast-gtk/bstapp.cc:439 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:424 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "तरङ्ग"
 
@@ -6804,11 +6805,11 @@ msgstr "सञ्झ्याल साइज"
 msgid "Write failed"
 msgstr "लेख्न असफल"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:63
 msgid "Write project to a specific file"
 msgstr "निर्दिष्ट फाइलमा परियोजना लेख्नुहोस्"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:61
 msgid "Write project to disk"
 msgstr "परियोजना डिस्कमा लेख्नुहोस्"
 
@@ -6841,7 +6842,7 @@ msgstr "जुम:"
 msgid "[nosleep]"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:85
+#: beast-gtk/bstapp.cc:78
 msgid "_About..."
 msgstr "बारेमा..."
 
@@ -6865,7 +6866,12 @@ msgstr "अडियो स्रोत"
 msgid "_Back"
 msgstr "पछाडि"
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:124
+#, fuzzy
+msgid "_Beast Manual..."
+msgstr "BEAST वेबसाइट..."
+
+#: beast-gtk/bstapp.cc:126
 #, fuzzy
 msgid "_Beast Website..."
 msgstr "BEAST वेबसाइट..."
@@ -6875,11 +6881,11 @@ msgstr "BEAST वेबसाइट..."
 msgid "_Cancel"
 msgstr "रद्द गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:95 beast-gtk/bstpartdialog.cc:52
+#: beast-gtk/bstapp.cc:88 beast-gtk/bstpartdialog.cc:52
 msgid "_Clear Undo"
 msgstr "पूर्वस्थितिमा फर्काएको खाली गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:57
 msgid "_Close"
 msgstr "बन्द गर्नुहोस्"
 
@@ -6903,10 +6909,6 @@ msgstr "सम्पादन"
 #: res/gxk/radgets-beast.xml:110
 msgid "_Enhance"
 msgstr "बढाउनुहोस्"
-
-#: beast-gtk/bstapp.cc:137
-msgid "_FAQ..."
-msgstr "FAQ..."
 
 #. label=
 #: res/gxk/radgets-beast.xml:613
@@ -6933,7 +6935,7 @@ msgstr "अगाडि"
 msgid "_Help"
 msgstr "मद्दत"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:55
 msgid "_Import MIDI..."
 msgstr "MIDI आयात गर्नुहोस्..."
 
@@ -6952,7 +6954,7 @@ msgstr "आगत र निर्गत"
 msgid "_LADSPA"
 msgstr "LADSPA"
 
-#: beast-gtk/bstapp.cc:60
+#: beast-gtk/bstapp.cc:53
 msgid "_Merge..."
 msgstr "गाभ्नुहोस्..."
 
@@ -6961,11 +6963,11 @@ msgstr "गाभ्नुहोस्..."
 msgid "_Misc"
 msgstr "विविध"
 
-#: beast-gtk/bstapp.cc:56
+#: beast-gtk/bstapp.cc:49
 msgid "_New"
 msgstr "नयाँ"
 
-#: beast-gtk/bstapp.cc:58
+#: beast-gtk/bstapp.cc:51
 msgid "_Open..."
 msgstr "खोल्नुहोस्....."
 
@@ -6974,11 +6976,11 @@ msgstr "खोल्नुहोस्....."
 msgid "_Other Sources"
 msgstr "अन्य स्रोत"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:98
 msgid "_Play"
 msgstr "प्ले गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:71
 msgid "_Preferences..."
 msgstr "प्राथमिकता..."
 
@@ -6992,21 +6994,13 @@ msgstr "परियोजना"
 msgid "_Quantization"
 msgstr "क्वान्टिजेसन"
 
-#: beast-gtk/bstapp.cc:139
-msgid "_Quick Start..."
-msgstr "शिघ्र सुरु..."
-
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:67
 msgid "_Quit"
 msgstr "अन्त्य गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:84
 msgid "_Redo"
 msgstr "रिडु गर्नुहोस्"
-
-#: beast-gtk/bstapp.cc:133
-msgid "_Release Notes..."
-msgstr "टिप्पणी निष्काशन गर्नुहोस्..."
 
 #. label=
 #: res/gxk/radgets-standard.xml:461
@@ -7023,7 +7017,7 @@ msgstr "हटाउनुहोस्"
 msgid "_Routing"
 msgstr "राउटिङ"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:61
 msgid "_Save"
 msgstr "बचत गर्नुहोस्"
 
@@ -7047,7 +7041,7 @@ msgstr "गीत"
 msgid "_Spatial"
 msgstr "अवकाशिय"
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:100
 msgid "_Stop"
 msgstr "रोक्नुहोस्"
 
@@ -7067,7 +7061,7 @@ msgstr "सिन्थेसाइजर"
 msgid "_Tools"
 msgstr "उपकरण"
 
-#: beast-gtk/bstapp.cc:89
+#: beast-gtk/bstapp.cc:82
 msgid "_Undo"
 msgstr "पूर्वस्थितिमा फर्काउनुहोस्"
 
@@ -7086,7 +7080,7 @@ msgstr "दृश्य"
 msgid "_Virtualization"
 msgstr "अवास्तविकता"
 
-#: bse/bseserver.cc:435
+#: bse/bseserver.cc:361
 #, fuzzy
 msgid "audio input problems"
 msgstr "अडियो आगत समस्याका बारेमा सन्देश देखाउनुहोस्"
@@ -7350,6 +7344,9 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #~ msgid "An error occoured during execution of script procedure '%s': %s"
 #~ msgstr "स्क्रिप्ट कार्यविधिको कार्यान्वयन गरेको बेलामा एउटा त्रटि भयो '%s': %s"
 
+#~ msgid "Answers to frequently asked questions"
+#~ msgstr "लगातार सोधिने प्रश्नहरूको उत्तर दिन्छ"
+
 #, fuzzy
 #~ msgid "Apply Loop"
 #~ msgstr "लागू गर्नुहोस्"
@@ -7432,6 +7429,9 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 
 #~ msgid "Display dialogs with dignostic messages"
 #~ msgstr "डाइनोस्टिक सन्देशसँग संवाद प्रदर्शन गर्नुहोस्"
+
+#~ msgid "Document _Index..."
+#~ msgstr "कागजात अनुक्रमण..."
 
 #~ msgid "Duplicate"
 #~ msgstr "नक्कल गर्नुहोस्"
@@ -7590,8 +7590,14 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #~ msgid "No valid synthesis network supplied"
 #~ msgstr "एन्टी-एलाइज गरिएको सिन्थेसिस सञ्जाल कोर्नुहुन्छ ?"
 
+#~ msgid "Notes and informations about this release cycle"
+#~ msgstr "निष्काशन चक्रका बारेमा टिप्पणी र सूचना"
+
 #~ msgid "Number of elements (C specific)"
 #~ msgstr "तत्वको सङ्ख्या (C निर्दिष्ट)"
+
+#~ msgid "Online _Help Desk..."
+#~ msgstr "अनलाइन मद्दत डेस्क..."
 
 #, fuzzy
 #~ msgid "Output Channels:"
@@ -7645,6 +7651,13 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #, fuzzy
 #~ msgid "Properties:"
 #~ msgstr "गुण"
+
+#~ msgid "Provide an overview of all BEAST documentation contents"
+#~ msgstr "सबै BEAST मिसिलीकरण सामग्रीहरूको समिक्षा प्रदान गर्नुहोस्"
+
+#~ msgid ""
+#~ "Provides an introduction about how to accomplish the most common tasks"
+#~ msgstr "साधारण कार्य कसरी सम्पन्न गर्ने भन्ने बारे सूचना पठाउनुहोस्"
 
 #~ msgid "Rack"
 #~ msgstr "र्याक"
@@ -7744,6 +7757,10 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #~ msgid "Start Procedure"
 #~ msgstr "कार्यविधि सुरु गर्नुहोस्"
 
+#~ msgid ""
+#~ "Start a web browser pointing to the online help desk at the BEAST website"
+#~ msgstr "वेब ब्राउजर अनलाइन मद्दत डेस्क BEAST वेबसाइटमा सुरु गर्नुहोस्"
+
 #~ msgid "State"
 #~ msgstr "स्थिति"
 
@@ -7832,6 +7849,15 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #, fuzzy
 #~ msgid "Zoom Selection"
 #~ msgstr "फाइल चयन"
+
+#~ msgid "_FAQ..."
+#~ msgstr "FAQ..."
+
+#~ msgid "_Quick Start..."
+#~ msgstr "शिघ्र सुरु..."
+
+#~ msgid "_Release Notes..."
+#~ msgstr "टिप्पणी निष्काशन गर्नुहोस्..."
 
 #~ msgid "bar, |"
 #~ msgstr "पट्टी, |"

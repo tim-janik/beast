@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:129
+#: bse/bsemain.cc:142
 #, fuzzy
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr "利用可能なアイテム:"
 
-#: bse/bsemain.cc:127
+#: bse/bsemain.cc:140
 #, fuzzy
 msgid ""
 "\n"
@@ -105,32 +105,52 @@ msgstr "%s: MIDI コントロールからの自動化: %s"
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: MIDI コントロールからの自動化: %s (MIDI チャネル: %d)"
 
-#: ebeast/menus.js:12
+#: ebeast/menus.js:20
 #, fuzzy
 msgid "&About..."
 msgstr "情報(_A)..."
 
-#: ebeast/menus.js:15
+#: ebeast/menus.js:23
 #, fuzzy
 msgid "&File"
 msgstr "ファイル(_F)"
 
-#: ebeast/menus.js:17
+#: ebeast/menus.js:25
 #, fuzzy
 msgid "&Help"
 msgstr "ヘルプ(_H)"
 
 #: ebeast/menus.js:5
 #, fuzzy
+msgid "&New Project"
+msgstr "プロジェクトを開く"
+
+#: ebeast/menus.js:6
+#, fuzzy
 msgid "&Open..."
 msgstr "開く(_O)..."
 
-#: ebeast/menus.js:6
+#: ebeast/menus.js:10
+#, fuzzy
+msgid "&Preferences..."
+msgstr "設定(_P)..."
+
+#: ebeast/menus.js:12
 #, fuzzy
 msgid "&Quit"
 msgstr "終了(_Q)"
 
-#: ebeast/menus.js:16
+#: ebeast/menus.js:7
+#, fuzzy
+msgid "&Save"
+msgstr "保存(_S)"
+
+#: ebeast/menus.js:8
+#, fuzzy
+msgid "&Save As..."
+msgstr "別名で保存(_A)..."
+
+#: ebeast/menus.js:24
 #, fuzzy
 msgid "&View"
 msgstr "ビュー(_V)"
@@ -649,7 +669,7 @@ msgid ""
 "171 cent steps."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:146
+#: beast-gtk/bstapp.cc:131
 msgid "A guide to synthesis plugin development"
 msgstr "シンセプラグイン開発のガイド"
 
@@ -696,17 +716,17 @@ msgstr "アンプオーディオ出力"
 msgid "Add"
 msgstr "追加"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:106
 #, fuzzy
 msgid "Add Custom Synthesizer"
 msgstr "新しいカスタムシンセサイザ"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:108
 #, fuzzy
 msgid "Add MIDI Synthesizer"
 msgstr "新しい MIDI シンセサイザ"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:108
 #, fuzzy
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
@@ -719,7 +739,7 @@ msgstr ""
 msgid "Add a new bus to the mixer"
 msgstr "新しいトラックをこの曲に追加"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:106
 #, fuzzy
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
@@ -776,7 +796,7 @@ msgstr "コントロール信号の出力音量に対する影響がどれぐら
 msgid "Adjust output balance between left and right"
 msgstr "左右の出力バランスを調整"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:71
 msgid "Adjust overall program behaviour"
 msgstr "プログラム全般の動作を調整"
 
@@ -811,8 +831,8 @@ msgstr "ルーターディスプレイのズーム比率を調整"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "線の代りに dB 値を表示するかどうか設定"
 
-#: bse/bsebus.cc:932 bse/bsebus.cc:934 bse/bsebus.cc:936 bse/bsebus.cc:938
-#: bse/bsebus.cc:942 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
+#: bse/bsebus.cc:931 bse/bsebus.cc:933 bse/bsebus.cc:935 bse/bsebus.cc:937
+#: bse/bsebus.cc:941 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
 #: bse/bsemidisynth.cc:378 bse/bsetrack.cc:1111
 msgid "Adjustments"
 msgstr "調整"
@@ -882,7 +902,7 @@ msgstr ""
 msgid "Amplified audio output"
 msgstr "アンプオーディオ出力"
 
-#: bse/bseserver.cc:426
+#: bse/bseserver.cc:352
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -890,16 +910,11 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 
-#: bse/bseserver.cc:565
+#: bse/bseserver.cc:491
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
-
-#: beast-gtk/bstapp.cc:137
-#, fuzzy
-msgid "Answers to frequently asked questions"
-msgstr "よくある質問と答え"
 
 #: beast-gtk/bstapi.idl:114
 msgid "Anti-Alias"
@@ -981,8 +996,7 @@ msgid "Attenuate the level of control input 2"
 msgstr "コントロール入力 2 のレベルを下げる"
 
 #. category
-#. i18n example
-#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:57
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:60
 msgid "Audio"
 msgstr "オーディオ"
 
@@ -996,7 +1010,7 @@ msgstr "オーディオ"
 msgid "Audio Gate"
 msgstr "オーティオ出力"
 
-#: bse/bseserver.cc:478
+#: bse/bseserver.cc:404
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "オーティオ出力"
@@ -1090,7 +1104,7 @@ msgstr "オーティオ出力"
 msgid "Audio Output"
 msgstr "オーディオ出力"
 
-#: bse/bseserver.cc:424
+#: bse/bseserver.cc:350
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1114,7 +1128,7 @@ msgstr "オーティオ出力"
 msgid "Audio Sum2"
 msgstr "オーティオ出力"
 
-#: bse/bseserver.cc:431
+#: bse/bseserver.cc:357
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
@@ -1133,11 +1147,11 @@ msgstr "オーディオ入力 1"
 msgid "Audio input 2"
 msgstr "オーディオ入力 2"
 
-#: bse/bsesuper.cc:183
+#: bse/bsesuper.cc:182
 msgid "Author"
 msgstr "作者"
 
-#: bse/bseapi.idl:897
+#: bse/bseapi.idl:896
 #, fuzzy
 msgid "Auto Activate"
 msgstr "自動カット"
@@ -1158,7 +1172,7 @@ msgid ""
 "automatic driver selection."
 msgstr ""
 
-#: bse/bseapi.idl:898
+#: bse/bseapi.idl:897
 msgid ""
 "Automatic activation only needs to be enabled for synthesis networks that "
 "don't use virtual ports for their input and output"
@@ -1170,7 +1184,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.cc:119
+#: bse/bsebus.cc:118
 msgid "Available Inputs"
 msgstr "利用可能な入力"
 
@@ -1179,7 +1193,7 @@ msgstr "利用可能な入力"
 msgid "Available Items:"
 msgstr "利用可能なアイテム:"
 
-#: bse/bsebus.cc:134 bse/bsetrack.cc:296
+#: bse/bsebus.cc:133 bse/bsetrack.cc:296
 #, fuzzy
 msgid "Available Outputs"
 msgstr "利用可能な入力"
@@ -1221,24 +1235,24 @@ msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:946
+#: beast-gtk/bstmain.cc:909
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
-#: beast-gtk/bstmain.cc:184
+#: beast-gtk/bstmain.cc:183
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: beast-gtk/bstmain.cc:947
+#: beast-gtk/bstmain.cc:910
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
 
-#: bse/bseapi.idl:1022
+#: bse/bseapi.idl:1021
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:232
+#: beast-gtk/bstmain.cc:231
 msgid "BSE Core"
 msgstr "BSE コア"
 
@@ -1320,7 +1334,11 @@ msgstr "ベース音量"
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "ベースアンプ (加えられるコントロール信号)"
 
-#: bse/bseapi.idl:1022
+#: ebeast/menus.js:18
+msgid "Beast &Manual..."
+msgstr ""
+
+#: bse/bseapi.idl:1021
 msgid "Beats per minute"
 msgstr "BPM"
 
@@ -1343,6 +1361,12 @@ msgstr ""
 #: bse/bseapi.idl:106 bse/bseapi.idl:283
 msgid "Breath Control"
 msgstr "ブレスコントロール"
+
+#: beast-gtk/bstapp.cc:124
+msgid ""
+"Browse the Beast manual, covering Tutorials, Howotos and in-depth knowledge "
+"on Beast"
+msgstr ""
 
 #: plugins/bseamplifier.idl:15
 msgid ""
@@ -1385,7 +1409,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "バス名"
 
-#: bse/bsebus.cc:991
+#: bse/bsebus.cc:990
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1413,7 +1437,7 @@ msgstr "CPU%"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:591
+#: beast-gtk/bstapp.cc:576
 #, fuzzy
 msgid "Cancel"
 msgstr "取り消し(_C)"
@@ -1446,7 +1470,7 @@ msgstr ""
 msgid "Change..."
 msgstr "変更..."
 
-#: beast-gtk/bstapp.cc:586
+#: beast-gtk/bstapp.cc:571
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1512,16 +1536,16 @@ msgstr "クリア"
 msgid "Clear the current selection"
 msgstr "選択をクリア"
 
-#: beast-gtk/bstapp.cc:584
+#: beast-gtk/bstapp.cc:569
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "閉じる(_C)"
 
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:67
 msgid "Close all windows and quit"
 msgstr "すべてのウィンドウを閉じて終了"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:57
 msgid "Close the project"
 msgstr "プロジェクトを閉じる"
 
@@ -1535,7 +1559,7 @@ msgid "Color Entry"
 msgstr "色エントリ"
 
 #: beast-gtk/bstitemview.cc:197 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:953
+#: bse/bseobject.cc:1042
 msgid "Comment"
 msgstr "コメント"
 
@@ -1676,7 +1700,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "連続 MIDI コントロール #1 - バンク選択"
 
-#: beast-gtk/bstmain.cc:948
+#: beast-gtk/bstmain.cc:911
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
@@ -2012,7 +2036,7 @@ msgstr "コピー"
 msgid "Copy the current selection into clipboard"
 msgstr "選択領域をクリップボードにコピー"
 
-#: bse/bsesuper.cc:188
+#: bse/bsesuper.cc:187
 msgid "Copyright license applying to this object"
 msgstr "このオブジェクトに適用するコピーライトライセンス"
 
@@ -2021,19 +2045,19 @@ msgstr "このオブジェクトに適用するコピーライトライセンス
 msgid "Create Link"
 msgstr "リンク作成"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:104
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "ミキサー、トラック、パートとノートを含む新しい曲を作成"
 
-#: beast-gtk/bstapp.cc:101
+#: beast-gtk/bstapp.cc:94
 msgid "Create an extra view of the project"
 msgstr "プロジェクトの別のビューを作成"
 
-#: beast-gtk/bstapp.cc:56
+#: beast-gtk/bstapp.cc:49
 msgid "Create new project"
 msgstr "新しいプロジェクト"
 
-#: bse/bsesuper.cc:196
+#: bse/bsesuper.cc:195
 msgid "Creation Time"
 msgstr "作成日時"
 
@@ -2095,11 +2119,11 @@ msgstr "カットオフ [Hz]"
 msgid "DCA"
 msgstr "DCA"
 
-#: bse/bsepcmdevice-oss.cc:611
+#: bse/bsepcmdevice-oss.cc:617
 msgid "DEVICE,MODE"
 msgstr "DEVICE.MODE"
 
-#: beast-gtk/bstapp.cc:148
+#: beast-gtk/bstapp.cc:133
 msgid "DSP Engine..."
 msgstr "DSP エンジン..."
 
@@ -2138,26 +2162,26 @@ msgstr "減衰 [%]"
 msgid "Decay [%]"
 msgstr "減衰 [%]"
 
-#: bse/bsebasics.idl:118
+#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
 #, fuzzy
 msgid "Default Author"
 msgstr "作者"
 
-#: bse/bsebasics.idl:119
+#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
 #, fuzzy
 msgid "Default License"
 msgstr "ライセンス"
 
-#: bse/bsebasics.idl:117
+#: bse/bseapi.idl:1198 bse/bsebasics.idl:117
 #, fuzzy
 msgid "Default Values"
 msgstr "値を表示"
 
-#: bse/bsebasics.idl:118
+#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
 msgid "Default value for 'Author' fields"
 msgstr ""
 
-#: bse/bsebasics.idl:119
+#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
 msgid "Default value for 'License' fields"
 msgstr ""
 
@@ -2198,7 +2222,7 @@ msgstr "ノートを削除(マウスボタン 1)"
 msgid "Delete parts"
 msgstr "パートを削除"
 
-#: beast-gtk/bstapp.cc:95
+#: beast-gtk/bstapp.cc:88
 msgid "Delete the complete undo history"
 msgstr "アンドゥ履歴を完全に削除"
 
@@ -2224,7 +2248,7 @@ msgstr "現在選択しているトラックを削除"
 msgid "Delete the currently selected wave"
 msgstr "現在選択している wave を削除"
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1020
 msgid "Denominator"
 msgstr ""
 
@@ -2240,11 +2264,11 @@ msgstr "詳細:"
 msgid "Detected file format"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:146
+#: beast-gtk/bstapp.cc:131
 msgid "Developing Plugins..."
 msgstr "プラグイン開発..."
 
-#: beast-gtk/bstapp.cc:150
+#: beast-gtk/bstapp.cc:135
 msgid "Development..."
 msgstr "開発..."
 
@@ -2274,7 +2298,7 @@ msgstr "ダイアル"
 msgid "Dial (Logarithmic)"
 msgstr "ダイアル (対数)"
 
-#: beast-gtk/bstmain.cc:293
+#: beast-gtk/bstmain.cc:292
 msgid "Dialogs"
 msgstr "ダイアログ"
 
@@ -2298,7 +2322,7 @@ msgstr ""
 msgid "Direction"
 msgstr "方向"
 
-#: beast-gtk/bstapp.cc:590
+#: beast-gtk/bstapp.cc:575
 msgid "Discard Changes"
 msgstr ""
 
@@ -2343,11 +2367,11 @@ msgstr "出力切断"
 msgid "Disconnect Outputs"
 msgstr "出力切断"
 
-#: bse/bseserver.cc:563
+#: bse/bseserver.cc:489
 msgid "Disk Recording Failed"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:85
+#: beast-gtk/bstapp.cc:78
 msgid "Display developer and contributor credits"
 msgstr "開発者と貢献者のクレジットを表示"
 
@@ -2359,17 +2383,13 @@ msgstr ""
 msgid "Display dialogs with information messages"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:99
+#: beast-gtk/bstapp.cc:92
 msgid "Display statistics and timing information"
 msgstr "状態とタイミング情報を表示"
 
 #: plugins/bseatandistort.cc:71
 msgid "Distorted Audio Output"
 msgstr "歪みオーディオ出力"
-
-#: beast-gtk/bstapp.cc:131
-msgid "Document _Index..."
-msgstr "文書索引(_I)..."
 
 #: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
 #: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
@@ -2503,7 +2523,7 @@ msgstr "エフェクトコントロール 1"
 msgid "Effect Control 2"
 msgstr "エフェクトコントロール 2"
 
-#: bse/bsebasics.idl:125
+#: bse/bseapi.idl:1205 bse/bsebasics.idl:125
 msgid "Effect Path"
 msgstr "エフェクトパス"
 
@@ -2647,7 +2667,7 @@ msgstr "指数コントロール"
 msgid "Exponential FM"
 msgstr "指数関数 FM"
 
-#: beast-gtk/bstapp.cc:268
+#: beast-gtk/bstapp.cc:253
 msgid "Export Audio"
 msgstr "オーディオにエクスポート"
 
@@ -2680,7 +2700,7 @@ msgstr "デバイスチャネル設定に失敗"
 msgid "Failed to detect header"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:380
+#: beast-gtk/bstmain.cc:379
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -2690,28 +2710,28 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:327
-#: beast-gtk/bstmain.cc:343
+#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:326
+#: beast-gtk/bstmain.cc:342
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstmain.cc:386
+#: beast-gtk/bstmain.cc:385
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: bse/bseserver.cc:509
+#: bse/bseserver.cc:435
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "PCM デバイスを開くのに失敗、中止しました: %s"
 
-#: bse/bseserver.cc:482
+#: bse/bseserver.cc:408
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "PCM デバイスを開くのに失敗、中止しました: %s"
 
-#: bse/bseserver.cc:567
+#: bse/bseserver.cc:493
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -2765,11 +2785,11 @@ msgstr ""
 msgid "Failed to spawn child process"
 msgstr "子プロセスの起動に失敗"
 
-#: bse/bseserver.cc:564
+#: bse/bseserver.cc:490
 msgid "Failed to start PCM recording to disk."
 msgstr ""
 
-#: bse/bseserver.cc:425
+#: bse/bseserver.cc:351
 msgid "Failed to start recording from audio device."
 msgstr ""
 
@@ -2925,7 +2945,7 @@ msgstr "フットコントローラ"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:953
+#: bse/bseobject.cc:1042
 msgid "Free form comment or description"
 msgstr ""
 
@@ -2972,7 +2992,7 @@ msgstr "周波数"
 msgid "Frequency Signal"
 msgstr "周波数信号"
 
-#: bse/bsebasics.idl:108
+#: bse/bseapi.idl:1191 bse/bsebasics.idl:108
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3071,7 +3091,7 @@ msgstr "汎用コントローラ 3"
 msgid "General Purpose Controller 4"
 msgstr "汎用コントローラ 4"
 
-#: beast-gtk/bstpreferences.cc:62
+#: beast-gtk/bstpreferences.cc:61
 msgid "Generic Keys"
 msgstr "一般キー"
 
@@ -3197,7 +3217,7 @@ msgstr "透明度"
 msgid "Import MIDI: %s"
 msgstr "MIDI をインポート: %s"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:55
 msgid "Import a standard MIDI file into the current project"
 msgstr "標準 MIDI ファイルを現在のプロジェクトにインポート"
 
@@ -3244,7 +3264,7 @@ msgstr "垂直方向スケール"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:198
+#: beast-gtk/bstmain.cc:197
 msgid "Initializers"
 msgstr "初期化"
 
@@ -3281,7 +3301,7 @@ msgid "Input Port %u"
 msgstr "入力ポート %u"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.cc:949
+#: bse/bsebus.cc:948
 msgid "Input Signals"
 msgstr "入力信号"
 
@@ -3390,7 +3410,7 @@ msgstr "パートを挿入/編集/移動 (マウスボタン1, 2)"
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "ノートを挿入/リサイズ/移動(マウスボタン 1, 2)"
 
-#: bse/bsebasics.idl:128
+#: bse/bseapi.idl:1207 bse/bsebasics.idl:128
 msgid "Instrument Path"
 msgstr "インストゥルメントパス"
 
@@ -3407,7 +3427,7 @@ msgstr ""
 msgid "Internal error (please report)"
 msgstr ""
 
-#: bse/bsebus.cc:961
+#: bse/bsebus.cc:960
 msgid "Internals"
 msgstr "内部"
 
@@ -3449,7 +3469,7 @@ msgstr "不正なシンセモジュールタイプ"
 msgid "Invert"
 msgstr "挿入"
 
-#: bse/bsebasics.idl:113
+#: bse/bseapi.idl:1196 bse/bsebasics.idl:113
 msgid "Invert Sustain Pedal"
 msgstr "サスティンペダルを反転"
 
@@ -3458,7 +3478,7 @@ msgstr "サスティンペダルを反転"
 msgid "Invert the current selection"
 msgstr "選択をクリア"
 
-#: bse/bsebasics.idl:114
+#: bse/bseapi.idl:1196 bse/bsebasics.idl:114
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr "サスティン(ダンパー)ペダルのオン/オフを反転"
@@ -3513,7 +3533,7 @@ msgstr "ノブ"
 msgid "Knob (Logarithmic)"
 msgstr "ノブ (対数"
 
-#: beast-gtk/bstmain.cc:261
+#: beast-gtk/bstmain.cc:260
 msgid "LADSPA Plugins"
 msgstr "LADSPA プラグイン"
 
@@ -3521,11 +3541,11 @@ msgstr "LADSPA プラグイン"
 msgid "Label"
 msgstr "ラベル"
 
-#: bse/bsesuper.cc:200
+#: bse/bsesuper.cc:199
 msgid "Last modification time"
 msgstr "最終更新日時"
 
-#: bse/bsebasics.idl:99
+#: bse/bseapi.idl:1184 bse/bsebasics.idl:99
 msgid "Latency [ms]"
 msgstr "レイテンシ [ms]"
 
@@ -3542,7 +3562,7 @@ msgstr "左"
 msgid "Left Audio"
 msgstr "左オーディオ"
 
-#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
 #: plugins/freeverb/bsefreeverb.cc:100
 msgid "Left Audio In"
 msgstr "左オーディオ入力"
@@ -3551,7 +3571,7 @@ msgstr "左オーディオ入力"
 msgid "Left Audio Input"
 msgstr "左オーディオ入力"
 
-#: bse/bsebus.cc:970 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
+#: bse/bsebus.cc:969 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
 msgid "Left Audio Out"
 msgstr "左オーディオ出力"
 
@@ -3580,7 +3600,7 @@ msgstr "左出力"
 msgid "Left Output"
 msgstr "左出力"
 
-#: bse/bsebus.cc:939
+#: bse/bsebus.cc:938
 msgid "Left Volume"
 msgstr "左音量"
 
@@ -3588,11 +3608,11 @@ msgstr "左音量"
 msgid "Left audio output"
 msgstr "左オーディオ出力"
 
-#: bse/bsebus.cc:966 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
 msgid "Left channel input"
 msgstr "左チャネル入力"
 
-#: bse/bsebus.cc:970 bse/bsepcminput.cc:110
+#: bse/bsebus.cc:969 bse/bsepcminput.cc:110
 msgid "Left channel output"
 msgstr "左チャネル出力"
 
@@ -3609,7 +3629,7 @@ msgstr "レベル"
 msgid "Lib..."
 msgstr "ライブラリ..."
 
-#: bse/bsesuper.cc:188
+#: bse/bsesuper.cc:187
 msgid "License"
 msgstr "ライセンス"
 
@@ -3631,7 +3651,7 @@ msgstr "パートをリンク"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "パートをリンク、移動 (マウスボタン1, 2)"
 
-#: bse/bsebus.cc:135
+#: bse/bsebus.cc:134
 #, fuzzy
 msgid "List of available mixer busses to be used as bus output"
 msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
@@ -3673,7 +3693,7 @@ msgstr "副ネットワークを選択するための、利用可能なネット
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "トラック情報を選択するための、利用可能なシンセネットワークのリスト"
 
-#: bse/bsebus.cc:120
+#: bse/bsebus.cc:119
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
 
@@ -3713,12 +3733,12 @@ msgstr ""
 msgid "Load Wave"
 msgstr "WAVE を読み込み"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:116
 #, fuzzy
 msgid "Load _Effect..."
 msgstr "エフェクトを読み込み(_E)"
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:114
 #, fuzzy
 msgid "Load _Instrument..."
 msgstr "インストゥルメントを読み込み(_I)"
@@ -3745,11 +3765,11 @@ msgstr "新しい wave ファイルをライブラリパスから読み込み"
 msgid "Load a sound font file from library paths"
 msgstr "新しい wave ファイルをライブラリパスから読み込み"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:116
 msgid "Load synthesizer mesh from effects folder"
 msgstr "エフェクトフォルダからシンセサイザメッシュを読み込み"
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:114
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "インストゥルメントフォルダからシンセサイザメッシュを読み込み"
 
@@ -3757,12 +3777,12 @@ msgstr "インストゥルメントフォルダからシンセサイザメッシ
 msgid "Load..."
 msgstr "読み込み..."
 
-#: beast-gtk/bstmain.cc:323 beast-gtk/bstmain.cc:325
+#: beast-gtk/bstmain.cc:322 beast-gtk/bstmain.cc:324
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" を読み込み中"
 
-#: beast-gtk/bstapp.cc:740
+#: beast-gtk/bstapp.cc:725
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "スキン `%s' を読み込み"
@@ -3777,7 +3797,7 @@ msgstr "スキン `%s' を読み込み"
 msgid "Loading wave `%s'"
 msgstr "WAVE '%s' を読み込み中"
 
-#: beast-gtk/bstmain.cc:303
+#: beast-gtk/bstmain.cc:302
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -3786,21 +3806,21 @@ msgstr "読み込み中..."
 msgid "Location"
 msgstr "場所"
 
-#: bse/bseapi.idl:1033
+#: bse/bseapi.idl:1032
 msgid "Loop Enabled"
 msgstr ""
 
-#: bse/bseapi.idl:1034
+#: bse/bseapi.idl:1033
 #, fuzzy
 msgid "Loop Left"
 msgstr "左"
 
-#: bse/bseapi.idl:1035
+#: bse/bseapi.idl:1034
 #, fuzzy
 msgid "Loop Right"
 msgstr "ループ"
 
-#: bse/bseapi.idl:1032
+#: bse/bseapi.idl:1031
 msgid "Looping"
 msgstr "ループ"
 
@@ -3833,7 +3853,7 @@ msgstr "低周波数パス [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "コントロール信号の低周波数パスフィルタ周波数"
 
-#: bse/bsebasics.idl:112
+#: bse/bseapi.idl:1195 bse/bsebasics.idl:112
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -3842,7 +3862,7 @@ msgstr "MIDI"
 msgid "MIDI Channel"
 msgstr "MIDI チャネル"
 
-#: bse/bseserver.cc:505
+#: bse/bseserver.cc:431
 msgid "MIDI I/O Failed"
 msgstr ""
 
@@ -3868,7 +3888,7 @@ msgstr "MIDI 信号 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI 信号 4"
 
-#: beast-gtk/bstapp.cc:451
+#: beast-gtk/bstapp.cc:436
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI シンセサイザ: %s"
@@ -3878,12 +3898,12 @@ msgstr "MIDI シンセサイザ: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "MIDI トラッカー、音楽編集そしてモジュールシンセサイザアプリケーション"
 
-#: bse/bseserver.cc:510
+#: bse/bseserver.cc:436
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "MIDI デバイス選択の問題についてのメッセージを表示"
 
-#: bse/bseserver.cc:506
+#: bse/bseserver.cc:432
 msgid "MIDI input or output is not available."
 msgstr ""
 
@@ -3901,7 +3921,7 @@ msgstr ""
 msgid "Master"
 msgstr "主音量"
 
-#: bse/bsebus.cc:963
+#: bse/bsebus.cc:962
 msgid "Master Output"
 msgstr "主出力"
 
@@ -3933,15 +3953,15 @@ msgstr "最大音数"
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "同時再生する最大音声数"
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1020
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1019
 msgid "Measure numerator"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:60
+#: beast-gtk/bstapp.cc:53
 msgid "Merge an existing project into the current project"
 msgstr "既存のプロジェクトを現在のプロジェクトに統合"
 
@@ -3976,7 +3996,7 @@ msgid_plural "Message has been repeated %u times"
 msgstr[0] "メッセージは %u 回繰り返されました"
 msgstr[1] "メッセージは %u 回繰り返されました"
 
-#: beast-gtk/bstpreferences.cc:66
+#: beast-gtk/bstpreferences.cc:65
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -4030,7 +4050,7 @@ msgstr "ミキサー"
 msgid "Mixer busses connected to track output"
 msgstr "トラック出力に接続するミキサーバス"
 
-#: bse/bsebus.cc:958
+#: bse/bsebus.cc:957
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "シンセ信号の出力として使われるミキサーバス"
 
@@ -4175,15 +4195,15 @@ msgstr "コントロールを掛け合せ"
 msgid "Music Composer"
 msgstr "音楽編集"
 
-#: bse/bseapi.idl:1025
+#: bse/bseapi.idl:1024
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.cc:933
+#: bse/bsebus.cc:932
 msgid "Mute"
 msgstr "ミュート"
 
-#: bse/bsebus.cc:933
+#: bse/bsebus.cc:932
 msgid "Mute: turn off the bus volume"
 msgstr "ミュート: バス音量を切る"
 
@@ -4192,7 +4212,7 @@ msgid "Muted"
 msgstr "ミュート"
 
 #: beast-gtk/bstfiledialog.cc:121 beast-gtk/bstitemview.cc:194
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:943
+#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:1032
 msgid "Name"
 msgstr "名前"
 
@@ -4200,7 +4220,7 @@ msgstr "名前"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "今のスキン設定の名前(スキン選択時に利用)"
 
-#: bse/bseserver.cc:122
+#: bse/bseserver.cc:116
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "BSE 音声出力を録音する WAVE ファイル名"
 
@@ -4208,11 +4228,11 @@ msgstr "BSE 音声出力を録音する WAVE ファイル名"
 msgid "Negative Value Color"
 msgstr "負の値の色"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:104
 msgid "New Song"
 msgstr "新しい曲"
 
-#: beast-gtk/bstapp.cc:101
+#: beast-gtk/bstapp.cc:94
 msgid "New View"
 msgstr "新しいビュー"
 
@@ -4241,19 +4261,19 @@ msgstr "パートなし"
 msgid "No Track"
 msgstr "トラックなし"
 
-#: bse/bseserver.cc:507
+#: bse/bseserver.cc:433
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
 
-#: bse/bseserver.cc:480
+#: bse/bseserver.cc:406
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: bse/bseserver.cc:479
+#: bse/bseserver.cc:405
 msgid "No available audio device was found."
 msgstr ""
 
@@ -4407,10 +4427,6 @@ msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:133
-msgid "Notes and informations about this release cycle"
-msgstr "このリリースサイクルについてのノートと情報"
-
 #: beast-gtk/bsttrackview.cc:643
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
@@ -4432,11 +4448,11 @@ msgstr "列数"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "指数関数的周波数変調の影響を受けるオクターブ数"
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1018
 msgid "Number of ticks per quarter note"
 msgstr "4分ノート当りのティック数"
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1019
 msgid "Numerator"
 msgstr ""
 
@@ -4458,17 +4474,13 @@ msgstr "ファイル選択"
 msgid "Octaves"
 msgstr "オクターブ"
 
-#: beast-gtk/bstapp.cc:159
+#: beast-gtk/bstapp.cc:144
 msgid "Online Demos..."
 msgstr "オンラインデモ..."
 
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:140
 msgid "Online Sound Archive..."
 msgstr "オンラインサウンドアーカイブ..."
-
-#: beast-gtk/bstapp.cc:141
-msgid "Online _Help Desk..."
-msgstr "オンラインヘルプデスク(_H)..."
 
 #: plugins/artscompressor.idl:37
 msgid "Only parts louder than threshold are compressed"
@@ -4479,7 +4491,7 @@ msgid "Open Project"
 msgstr "プロジェクトを開く"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.cc:235
+#: bse/bsemididevice-oss.cc:240
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4488,7 +4500,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-oss.cc:613
+#: bse/bsepcmdevice-oss.cc:619
 msgid ""
 "Open Sound System PCM driver:\n"
 "  DEVICE - PCM device file name\n"
@@ -4497,7 +4509,7 @@ msgid ""
 "           adding \"hs\" forces hard sync on underruns.\n"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:58
+#: beast-gtk/bstapp.cc:51
 msgid "Open existing project"
 msgstr "プロジェクトを開く"
 
@@ -4510,7 +4522,7 @@ msgstr "ファイルブラウザを開く"
 msgid "Open file browser"
 msgstr "ファイルブラウザを開く"
 
-#: beast-gtk/bstapp.cc:673 beast-gtk/bstapp.cc:681
+#: beast-gtk/bstapp.cc:658 beast-gtk/bstapp.cc:666
 #: beast-gtk/bstfiledialog.cc:431 beast-gtk/bstfiledialog.cc:439
 #, c-format
 msgid "Opening project `%s'"
@@ -4552,7 +4564,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1097
+#: bse/bsesong.cc:1062
 msgid "Orphan Parts"
 msgstr "パートを破棄"
 
@@ -4625,7 +4637,7 @@ msgstr "出力ポート %u"
 msgid "Output Signal Monitor"
 msgstr "入力信号"
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:957 bse/bsetrack.cc:1148
+#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1148
 msgid "Output Signals"
 msgstr "出力信号"
 
@@ -4670,12 +4682,12 @@ msgstr "PCM 入力モジュール"
 msgid "PCM Output module"
 msgstr "PCM 出力モジュール"
 
-#: bse/bseserver.cc:483
+#: bse/bseserver.cc:409
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "PCM デバイス選択の問題についてのメッセージを表示"
 
-#: bse/bseserver.cc:568
+#: bse/bseserver.cc:494
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "録音ファイルエラーを表示"
@@ -4775,7 +4787,7 @@ msgstr "背景画像ピクセルを背景色に混ぜ合わせる割合(%)"
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "線形の代わりに指数関数的周波数変調を実行"
 
-#: bse/bsesuper.cc:183
+#: bse/bsesuper.cc:182
 msgid "Person changing or creating this object"
 msgstr "このオブジェクトをつくった/変更した人"
 
@@ -4783,7 +4795,7 @@ msgstr "このオブジェクトをつくった/変更した人"
 msgid "Phase"
 msgstr "位相"
 
-#: beast-gtk/bstpreferences.cc:55
+#: beast-gtk/bstpreferences.cc:54
 msgid "Piano Keys"
 msgstr "ピアノキー"
 
@@ -4801,7 +4813,7 @@ msgstr "ピッチベンド"
 msgid "Play note"
 msgstr "ノートを演奏"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:98
 msgid "Play or restart playback of the project"
 msgstr "プロジェクトの再生を開始/再開"
 
@@ -4814,7 +4826,7 @@ msgstr "再生"
 #. /< Insert a new module into a synthesis network.
 #. /< Remove an existing module from its synthesis network.
 #. signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
-#: bse/bseapi.idl:896
+#: bse/bseapi.idl:895
 #, fuzzy
 msgid "Playback Settings"
 msgstr "再生"
@@ -4841,11 +4853,11 @@ msgstr "レイズ端でストリングスをヒット"
 msgid "Pluck the string"
 msgstr "再生"
 
-#: bse/bsebasics.idl:131
+#: bse/bseapi.idl:1209 bse/bsebasics.idl:131
 msgid "Plugin Path"
 msgstr "プラグインパス"
 
-#: beast-gtk/bstmain.cc:239
+#: beast-gtk/bstmain.cc:238
 msgid "Plugins"
 msgstr "プラグイン"
 
@@ -4873,7 +4885,7 @@ msgstr "正の値の色"
 msgid "Postprocessor"
 msgstr "ポストプロセッサ"
 
-#: beast-gtk/bstapp.cc:880
+#: beast-gtk/bstapp.cc:858
 msgid "Preferences"
 msgstr "設定"
 
@@ -4909,7 +4921,7 @@ msgstr "プロセスパラメータが不正です"
 msgid "Process: %s\n"
 msgstr "プロセッサ: %s\n"
 
-#: bse/bsebasics.idl:100
+#: bse/bseapi.idl:1185 bse/bsebasics.idl:100
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -4917,7 +4929,7 @@ msgstr ""
 "サンプル一つの入出力の間での処理遅延時間。より小さくなるほど CPU 負荷を増大さ"
 "せる"
 
-#: beast-gtk/bstapp.cc:99 beast-gtk/bstprofiler.cc:115
+#: beast-gtk/bstapp.cc:92 beast-gtk/bstprofiler.cc:115
 msgid "Profiler"
 msgstr "プロファイラ"
 
@@ -4948,17 +4960,9 @@ msgstr ""
 "パルス波形の正コンポーネントデュレイションの比率(このエフェクトについてはパル"
 "ス波形を選択しなければなりません)"
 
-#: beast-gtk/bstapp.cc:131
-msgid "Provide an overview of all BEAST documentation contents"
-msgstr "すべての BEAST 文書内容の概要を提供します"
-
-#: beast-gtk/bstapp.cc:150
+#: beast-gtk/bstapp.cc:135
 msgid "Provide an overview of development related topics and documents"
 msgstr "開発関連のトピックや文書の概要を提供します"
-
-#: beast-gtk/bstapp.cc:139
-msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr "どのようにほとんどの共通タスクをこなすかについての情報を提供します"
 
 #. disabled
 #: bse/bsestandardosc.cc:166 bse/bsestandardosc.cc:173
@@ -5096,7 +5100,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:209
+#: beast-gtk/bstmain.cc:208
 msgid "RC Files"
 msgstr "初期化ファイル"
 
@@ -5122,7 +5126,7 @@ msgstr "比率入力"
 msgid "Read failed"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:82
+#: beast-gtk/bstapp.cc:75
 msgid "Rebuild"
 msgstr "再構築"
 
@@ -5134,7 +5138,7 @@ msgstr "ノートを矩形選択"
 msgid "Redo"
 msgstr "リドゥ"
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:84
 msgid "Redo the last undone action"
 msgstr "最後のアンドゥアクションを元に戻す"
 
@@ -5179,7 +5183,7 @@ msgstr "モジュールを削除"
 msgid "Remove Paths"
 msgstr "パスを削除"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:110
 msgid "Remove Song or Synthesizer"
 msgstr "曲またはシンセサイザを削除"
 
@@ -5191,7 +5195,7 @@ msgstr "フォーカスセル内のイベントを削除"
 msgid "Remove directory from searchpath"
 msgstr "検索パスからディレクトリを削除"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:110
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "選択したショートカットを削除"
 
@@ -5218,7 +5222,7 @@ msgstr "繰り返し"
 msgid "Repeat playback within loop points"
 msgstr "ループ点なしに再生を繰り返し"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:128
 msgid "Report a Beast Bug..."
 msgstr ""
 
@@ -5269,7 +5273,7 @@ msgstr "右"
 msgid "Right Audio"
 msgstr "右オーディオ"
 
-#: bse/bsebus.cc:968 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:967 bse/bsepcmoutput.cc:112
 #: plugins/freeverb/bsefreeverb.cc:101
 msgid "Right Audio In"
 msgstr "右オーディオ入力"
@@ -5278,7 +5282,7 @@ msgstr "右オーディオ入力"
 msgid "Right Audio Input"
 msgstr "右オーディオ入力"
 
-#: bse/bsebus.cc:972 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
+#: bse/bsebus.cc:971 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
 msgid "Right Audio Out"
 msgstr "右オーディオ出力"
 
@@ -5307,7 +5311,7 @@ msgstr "右出力"
 msgid "Right Output"
 msgstr "右出力"
 
-#: bse/bsebus.cc:943
+#: bse/bsebus.cc:942
 msgid "Right Volume"
 msgstr "右音量"
 
@@ -5319,11 +5323,11 @@ msgstr "右オーディオ出力"
 msgid "Right channel Input"
 msgstr "右チャネル入力"
 
-#: bse/bsebus.cc:968
+#: bse/bsebus.cc:967
 msgid "Right channel input"
 msgstr "右チャネル入力"
 
-#: bse/bsebus.cc:972 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:971 bse/bsepcminput.cc:112
 msgid "Right channel output"
 msgstr "右チャネル出力"
 
@@ -5359,7 +5363,7 @@ msgstr "隠す列数"
 msgid "STime"
 msgstr "STime"
 
-#: bse/bsebasics.idl:122
+#: bse/bseapi.idl:1203 bse/bsebasics.idl:122
 msgid "Sample Path"
 msgstr "サンプルパス"
 
@@ -5397,17 +5401,17 @@ msgid ""
 "curvature across all levels"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:120
 #, fuzzy
 msgid "Save As Effect..."
 msgstr "エフェクトを別名で保存"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:118
 #, fuzzy
 msgid "Save As Instrument..."
 msgstr "インストゥルメントを別名で保存"
 
-#: beast-gtk/bstapp.cc:589
+#: beast-gtk/bstapp.cc:574
 #, fuzzy
 msgid "Save Changes"
 msgstr "シェープ範囲"
@@ -5420,19 +5424,19 @@ msgstr "エフェクトを保存"
 msgid "Save Instrument"
 msgstr "インストゥルメントを保存"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:63
 msgid "Save _As..."
 msgstr "別名で保存(_A)..."
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:120
 msgid "Save synthesizer mesh to effects folder"
 msgstr "エフェクトフォルダにシンセサイザメッシュを保存"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:118
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "インストゥルメントフォルダにシンセサイザメッシュを保存"
 
-#: beast-gtk/bstapp.cc:588
+#: beast-gtk/bstapp.cc:573
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5472,11 +5476,11 @@ msgstr "スクロールしない"
 msgid "Scroll Right"
 msgstr "右へスクロール"
 
-#: bse/bsebasics.idl:121
+#: bse/bseapi.idl:1202 bse/bsebasics.idl:121
 msgid "Search Paths"
 msgstr "検索パス"
 
-#: bse/bsebasics.idl:126
+#: bse/bseapi.idl:1205 bse/bsebasics.idl:126
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5485,7 +5489,7 @@ msgstr ""
 "BSE エフェクトファイルをみつけるための \"%s\" で区切られたディレクトリの検索"
 "パス"
 
-#: bse/bsebasics.idl:129
+#: bse/bseapi.idl:1207 bse/bsebasics.idl:129
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5494,7 +5498,7 @@ msgstr ""
 "BSE インストゥルメントファイルをみつけるための \"%s\" で区切られたディレクト"
 "リの検索パス"
 
-#: bse/bsebasics.idl:132
+#: bse/bseapi.idl:1210 bse/bsebasics.idl:132
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -5504,7 +5508,7 @@ msgstr ""
 "BSE プラグインをみつけるための \"%s\" で区切られたディレクトリの検索パスシス"
 "テムの標準 BSE プラグイン配置場所に加えてこのパスも検索されます"
 
-#: bse/bsebasics.idl:123
+#: bse/bseapi.idl:1203 bse/bsebasics.idl:123
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -5699,11 +5703,11 @@ msgstr "スクロール可能なエリアを畳む"
 msgid "Signal In"
 msgstr "信号入力"
 
-#: bse/bsebus.cc:946
+#: bse/bsebus.cc:945
 msgid "Signal Inputs"
 msgstr "信号入力"
 
-#: bse/bsebus.cc:955 bse/bsetrack.cc:1146
+#: bse/bsebus.cc:954 bse/bsetrack.cc:1146
 msgid "Signal Outputs"
 msgstr "信号出力"
 
@@ -5754,7 +5758,7 @@ msgstr "スケッチ最小"
 msgid "Sketch Range"
 msgstr "スケッチ範囲"
 
-#: beast-gtk/bstpreferences.cc:71
+#: beast-gtk/bstpreferences.cc:70
 msgid "Skin"
 msgstr "スキン"
 
@@ -5792,11 +5796,11 @@ msgstr ""
 msgid "Sole Output"
 msgstr "単一出力"
 
-#: bse/bsebus.cc:935
+#: bse/bsebus.cc:934
 msgid "Solo"
 msgstr "ソロ"
 
-#: bse/bsebus.cc:935
+#: bse/bsebus.cc:934
 msgid "Solo: mute all other busses"
 msgstr "ソロ: 他のすべてのバスをミュート"
 
@@ -5805,7 +5809,7 @@ msgstr "ソロ: 他のすべてのバスをミュート"
 msgid "Song"
 msgstr "曲(_S)"
 
-#: beast-gtk/bstapp.cc:446
+#: beast-gtk/bstapp.cc:431
 #, c-format
 msgid "Song: %s"
 msgstr "曲: %s"
@@ -5841,7 +5845,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "スピンボタン(対数)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:217
+#: beast-gtk/bstmain.cc:216
 msgid "Splash Image"
 msgstr "スプラッシュイメージ"
 
@@ -5879,24 +5883,20 @@ msgstr ""
 msgid "Start Editor"
 msgstr "エディタ起動"
 
-#: beast-gtk/bstapp.cc:159
+#: beast-gtk/bstapp.cc:144
 msgid "Start a web browser pointing to online demo songs"
 msgstr "オンラインデモ曲をブラウザで開く"
 
-#: beast-gtk/bstapp.cc:135
-msgid "Start a web browser pointing to the BEAST website"
+#: beast-gtk/bstapp.cc:126
+#, fuzzy
+msgid "Start a web browser pointing to the Beast website"
 msgstr "BEAST ウェブサイトをブラウザで開く"
 
-#: beast-gtk/bstapp.cc:141
-msgid ""
-"Start a web browser pointing to the online help desk at the BEAST website"
-msgstr "BEAST オンラインヘルプデスクサイトをブラウザで開く"
-
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:140
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "オンラインサウンドアーカイブをブラウザで開く"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:128
 #, fuzzy
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
@@ -5910,7 +5910,7 @@ msgstr "開始:"
 msgid "Starting Playback"
 msgstr "再生を開始"
 
-#: beast-gtk/bstmain.cc:191
+#: beast-gtk/bstmain.cc:190
 msgid "Startup"
 msgstr "起動"
 
@@ -5918,7 +5918,7 @@ msgstr "起動"
 msgid "Steps"
 msgstr "ステップ"
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:100
 msgid "Stop playback of the project"
 msgstr "プロジェクトの再生を停止"
 
@@ -5987,7 +5987,7 @@ msgstr "ステップ"
 msgid "SynDrum Output"
 msgstr "SynDrum 出力"
 
-#: bse/bsebus.cc:937
+#: bse/bsebus.cc:936
 msgid "Sync"
 msgstr "同期"
 
@@ -6007,7 +6007,7 @@ msgstr "同期入力"
 msgid "Syncronization Output"
 msgstr "同期出力"
 
-#: bse/bsebus.cc:937
+#: bse/bsebus.cc:936
 msgid "Syncronize left and right volume"
 msgstr "左右の音量を同期"
 
@@ -6016,7 +6016,7 @@ msgstr "左右の音量を同期"
 msgid "Synth"
 msgstr "シンセ(_S)"
 
-#: bse/bsebasics.idl:107
+#: bse/bseapi.idl:1190 bse/bsebasics.idl:107
 msgid "Synth Control Frequency"
 msgstr "シンセコントロール周波数"
 
@@ -6029,7 +6029,7 @@ msgstr "シンセ完了"
 msgid "Synth Input"
 msgstr "シンセ入力"
 
-#: bse/bsebasics.idl:103
+#: bse/bseapi.idl:1187 bse/bsebasics.idl:103
 msgid "Synth Mixing Frequency"
 msgstr "シンセミキサ周波数"
 
@@ -6038,11 +6038,11 @@ msgstr "シンセミキサ周波数"
 msgid "Synthesis Modules"
 msgstr "シンセモジュール"
 
-#: bse/bsebasics.idl:97
+#: bse/bseapi.idl:1183 bse/bsebasics.idl:97
 msgid "Synthesis Settings"
 msgstr "シンセ設定"
 
-#: bse/bsebasics.idl:104
+#: bse/bseapi.idl:1188 bse/bsebasics.idl:104
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "シンセミキサ周波数。通常値: 22050, 44100, 48000"
 
@@ -6080,7 +6080,7 @@ msgstr "組み込み副ネットワークとして使うシンセネットワー
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.cc:953
+#: bse/bsebus.cc:952
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "バス入力として使う(トラックとバスからの)シンセ信号"
 
@@ -6094,7 +6094,7 @@ msgstr "シンセサイザ"
 msgid "Synthesizer Selection: %s"
 msgstr "シンセサイザー: %s"
 
-#: beast-gtk/bstapp.cc:456
+#: beast-gtk/bstapp.cc:441
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "シンセサイザー: %s"
@@ -6107,11 +6107,11 @@ msgstr ""
 msgid "TID"
 msgstr "TID"
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1018
 msgid "TPQN"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:148
+#: beast-gtk/bstapp.cc:133
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "マルチスレッドシンセエンジン内部の技術的な説明"
 
@@ -6248,7 +6248,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "入出力ポートの関係を確立するためにポート名として固有な名前を与えます"
 
-#: beast-gtk/bstapp.cc:585
+#: beast-gtk/bstapp.cc:570
 msgid "The project has been modified."
 msgstr ""
 
@@ -6279,7 +6279,7 @@ msgstr ""
 msgid "The time for the right to left delay"
 msgstr ""
 
-#: bse/bseapi.idl:1026
+#: bse/bseapi.idl:1025
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6369,7 +6369,7 @@ msgstr "スレッド優先度(-20:最高 〜 +19:最低)"
 msgid "Threshold [dB]"
 msgstr "スレッシュホールド"
 
-#: bse/bseapi.idl:1036
+#: bse/bseapi.idl:1035
 msgid "Tick Pointer"
 msgstr ""
 
@@ -6386,11 +6386,11 @@ msgstr "時間エントリ"
 #. group _("MIDI Instrument") {
 #. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
 #. };
-#: bse/bseapi.idl:1018
+#: bse/bseapi.idl:1017
 msgid "Timing"
 msgstr "タイミング"
 
-#: ebeast/menus.js:9
+#: ebeast/menus.js:15
 msgid "Toggle &Fullscreen"
 msgstr ""
 
@@ -6516,7 +6516,7 @@ msgstr "三連 32分ノート"
 msgid "Triplet whole note"
 msgstr "三連全ノート"
 
-#: bse/bseapi.idl:1024
+#: bse/bseapi.idl:1023
 #, fuzzy
 msgid "Tuning"
 msgstr "タイミング"
@@ -6541,7 +6541,7 @@ msgstr "アンドゥ"
 msgid "Undo last editing step"
 msgstr "最後に編集したステップをアンドゥ"
 
-#: beast-gtk/bstapp.cc:89
+#: beast-gtk/bstapp.cc:82
 msgid "Undo the effect of the last action"
 msgstr "最後のアクションのエフェクトをアンドゥ"
 
@@ -6553,7 +6553,7 @@ msgstr "未フィルターのオーディオ信号"
 msgid "Unfiltered Input"
 msgstr "未フィルターの入力"
 
-#: bse/bseobject.cc:943
+#: bse/bseobject.cc:1032
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6566,7 +6566,7 @@ msgid "Unknown format"
 msgstr ""
 
 #. default to 'Unnamed-###' unames
-#: bse/bsesuper.cc:37
+#: bse/bsesuper.cc:38
 #, fuzzy
 msgid "Unnamed"
 msgstr "名前の変更"
@@ -6700,15 +6700,15 @@ msgstr "仮想出力 %u"
 msgid "Volume"
 msgstr "音量"
 
-#: bse/bsebus.cc:939
+#: bse/bsebus.cc:938
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "左バスチャネルの音量調整(dB)"
 
-#: bse/bsebus.cc:943
+#: bse/bsebus.cc:942
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "右バスチャネルの音量調整(dB)"
 
-#: bse/bseserver.cc:121
+#: bse/bseserver.cc:115
 msgid "WAVE File"
 msgstr "WAVE ファイル"
 
@@ -6730,7 +6730,7 @@ msgstr "波形"
 msgid "Wave Output"
 msgstr "波形出力"
 
-#: beast-gtk/bstapp.cc:441
+#: beast-gtk/bstapp.cc:426
 msgid "Wave Repository"
 msgstr "Wav リポジトリ"
 
@@ -6747,7 +6747,7 @@ msgstr "発振器ソースとして使う波形"
 msgid "Wave_s"
 msgstr "Wave(_s)"
 
-#: beast-gtk/bstapp.cc:439 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:424 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr "Wave ファイル"
 
@@ -6786,11 +6786,11 @@ msgstr "ウィンドウサイズ"
 msgid "Write failed"
 msgstr "トリガーフィルター"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:63
 msgid "Write project to a specific file"
 msgstr "指定するファイルにプロジェクトを書き込み"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:61
 msgid "Write project to disk"
 msgstr "プロジェクトをディスクに書き込み"
 
@@ -6824,7 +6824,7 @@ msgstr "ズーム:"
 msgid "[nosleep]"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:85
+#: beast-gtk/bstapp.cc:78
 msgid "_About..."
 msgstr "情報(_A)..."
 
@@ -6848,7 +6848,12 @@ msgstr "オーティオソース(_A)"
 msgid "_Back"
 msgstr "戻る(_B)"
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:124
+#, fuzzy
+msgid "_Beast Manual..."
+msgstr "BEAST ウェブ(_B)..."
+
+#: beast-gtk/bstapp.cc:126
 #, fuzzy
 msgid "_Beast Website..."
 msgstr "BEAST ウェブ(_B)..."
@@ -6858,11 +6863,11 @@ msgstr "BEAST ウェブ(_B)..."
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
-#: beast-gtk/bstapp.cc:95 beast-gtk/bstpartdialog.cc:52
+#: beast-gtk/bstapp.cc:88 beast-gtk/bstpartdialog.cc:52
 msgid "_Clear Undo"
 msgstr "アンドゥをクリア(_C)"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:57
 msgid "_Close"
 msgstr "閉じる(_C)"
 
@@ -6886,10 +6891,6 @@ msgstr "編集(_E)"
 #: res/gxk/radgets-beast.xml:110
 msgid "_Enhance"
 msgstr "強調(_E)"
-
-#: beast-gtk/bstapp.cc:137
-msgid "_FAQ..."
-msgstr "FAQ(_F)..."
 
 #. label=
 #: res/gxk/radgets-beast.xml:613
@@ -6916,7 +6917,7 @@ msgstr "進む(_F)"
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:55
 msgid "_Import MIDI..."
 msgstr "MIDI をインポート(_I)..."
 
@@ -6935,7 +6936,7 @@ msgstr "入出力(_I)"
 msgid "_LADSPA"
 msgstr "LADSPA(_L)"
 
-#: beast-gtk/bstapp.cc:60
+#: beast-gtk/bstapp.cc:53
 msgid "_Merge..."
 msgstr "統合(_M)..."
 
@@ -6944,11 +6945,11 @@ msgstr "統合(_M)..."
 msgid "_Misc"
 msgstr "その他(_M)"
 
-#: beast-gtk/bstapp.cc:56
+#: beast-gtk/bstapp.cc:49
 msgid "_New"
 msgstr "新規(_N)"
 
-#: beast-gtk/bstapp.cc:58
+#: beast-gtk/bstapp.cc:51
 msgid "_Open..."
 msgstr "開く(_O)..."
 
@@ -6957,11 +6958,11 @@ msgstr "開く(_O)..."
 msgid "_Other Sources"
 msgstr "他のソース(_O)"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:98
 msgid "_Play"
 msgstr "演奏(_P)"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:71
 msgid "_Preferences..."
 msgstr "設定(_P)..."
 
@@ -6975,22 +6976,13 @@ msgstr "プロジェクト(_P)"
 msgid "_Quantization"
 msgstr "量子化(_Q)"
 
-#: beast-gtk/bstapp.cc:139
-#, fuzzy
-msgid "_Quick Start..."
-msgstr "クィックスタート..."
-
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:67
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:84
 msgid "_Redo"
 msgstr "リドゥ(_R)"
-
-#: beast-gtk/bstapp.cc:133
-msgid "_Release Notes..."
-msgstr "リリースノート(_R)..."
 
 #. label=
 #: res/gxk/radgets-standard.xml:461
@@ -7007,7 +6999,7 @@ msgstr "削除(_R)"
 msgid "_Routing"
 msgstr "ルーティング(_R)"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:61
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -7032,7 +7024,7 @@ msgstr "曲(_S)"
 msgid "_Spatial"
 msgstr "空間的(_S)"
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:100
 msgid "_Stop"
 msgstr "停止(_S)"
 
@@ -7052,7 +7044,7 @@ msgstr "シンセサイザー(_S)"
 msgid "_Tools"
 msgstr "ツール(_T)"
 
-#: beast-gtk/bstapp.cc:89
+#: beast-gtk/bstapp.cc:82
 msgid "_Undo"
 msgstr "アンドゥ(_U)"
 
@@ -7071,7 +7063,7 @@ msgstr "ビュー(_V)"
 msgid "_Virtualization"
 msgstr "仮想化(_V)"
 
-#: bse/bseserver.cc:435
+#: bse/bseserver.cc:361
 #, fuzzy
 msgid "audio input problems"
 msgstr "オーディオ録音障害についてのメッセージを表示"
@@ -7342,6 +7334,10 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 #~ msgid "Advice about MIDI device selections"
 #~ msgstr "MIDI デバイス選択についてアドバイス"
 
+#, fuzzy
+#~ msgid "Answers to frequently asked questions"
+#~ msgstr "よくある質問と答え"
+
 #~ msgid "Apply Loop"
 #~ msgstr "ループ適用"
 
@@ -7444,6 +7440,9 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
 #~ msgid "Display an overview of all procedures"
 #~ msgstr "すべてのプロセスを表示"
+
+#~ msgid "Document _Index..."
+#~ msgstr "文書索引(_I)..."
 
 #~ msgid "Duplicate"
 #~ msgstr "複製"
@@ -7578,8 +7577,14 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 #~ msgid "No valid synthesis network supplied"
 #~ msgstr "シンセネットワークをアンチエイリアス表示するかどうか"
 
+#~ msgid "Notes and informations about this release cycle"
+#~ msgstr "このリリースサイクルについてのノートと情報"
+
 #~ msgid "Notice"
 #~ msgstr "通知"
+
+#~ msgid "Online _Help Desk..."
+#~ msgstr "オンラインヘルプデスク(_H)..."
 
 #~ msgid "Output Channels:"
 #~ msgstr "出力チャネル:"
@@ -7620,6 +7625,13 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
 #~ msgid "Properties:"
 #~ msgstr "プロパティ:"
+
+#~ msgid "Provide an overview of all BEAST documentation contents"
+#~ msgstr "すべての BEAST 文書内容の概要を提供します"
+
+#~ msgid ""
+#~ "Provides an introduction about how to accomplish the most common tasks"
+#~ msgstr "どのようにほとんどの共通タスクをこなすかについての情報を提供します"
 
 #~ msgid "Quantize to full note boundaries"
 #~ msgstr "全ノート境界を量子化"
@@ -7745,6 +7757,10 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 #~ msgid "Start Procedure"
 #~ msgstr "プロセス"
 
+#~ msgid ""
+#~ "Start a web browser pointing to the online help desk at the BEAST website"
+#~ msgstr "BEAST オンラインヘルプデスクサイトをブラウザで開く"
+
 #~ msgid "State"
 #~ msgstr "状態"
 
@@ -7841,6 +7857,16 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
 #~ msgid "Zoom Selection"
 #~ msgstr "ズーム選択"
+
+#~ msgid "_FAQ..."
+#~ msgstr "FAQ(_F)..."
+
+#, fuzzy
+#~ msgid "_Quick Start..."
+#~ msgstr "クィックスタート..."
+
+#~ msgid "_Release Notes..."
+#~ msgstr "リリースノート(_R)..."
 
 #~ msgid "b12"
 #~ msgstr "b12"
