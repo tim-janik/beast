@@ -133,8 +133,8 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	@echo '  RUN     ' appimagetool ...
 	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
 	$Q rm -fr $(APPDIR) $(APPDIR2)
-	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(distversion)-x64.AppImage
-	$Q ls -l -h --color=auto $>/misc/bin/beast-*-x64.AppImage
+	$Q mv BEAST-x86_64.AppImage $>/beast-$(distversion)-x64.AppImage
+	$Q ls -l -h --color=auto $>/beast-*-x64.AppImage
 .PHONY: appimage
 
 # == bintray ==
@@ -144,9 +144,9 @@ bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
 	@$(eval distversion != ./version.sh -l)
 	@: # upload beast-*-x64.AppImage if it exists
-	$Q test -x "$>/misc/bin/beast-$(distversion)-x64.AppImage" || exit 0 ; \
+	$Q test -x "$>/beast-$(distversion)-x64.AppImage" || exit 0 ; \
 		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(distversion) $(USE_BINTRAY_API_KEY_FILE) \
-		  -d $>/misc/bin/beast-$(distversion)-x64.AppImage
+		  -d $>/beast-$(distversion)-x64.AppImage
 	@: # upload tarballs of existing log directories
 	$Q for d in cppcheck scan-build clang-tidy hacks unused asan ; do \
 		(set -- $>/misc/$$d/*.* ; test -r "$$1") || continue ; \
