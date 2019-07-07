@@ -11,9 +11,16 @@
 <template>
 
   <div class="vc-track-list" >
-    <div class="vc-track-list-inner" >
-      <vc-track-view v-for="(item, index) in list_tracks()" :key="item.unique_id()"
-		     :song="song" :track="item" :index="index"></vc-track-view>
+    <div class="vc-track-list-tracks" >
+      <vc-track-view class="vc-track-list-row"
+		     v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
+		     :song="song" :track="item" :trackindex="tindex"></vc-track-view>
+      <div class="vc-track-scrollbar-spacer"></div>
+    </div>
+    <div class="vc-track-list-parts" >
+      <vc-part-list class="vc-track-list-row"
+		    v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
+		    :track="item" :trackindex="tindex"></vc-part-list>
     </div>
   </div>
 
@@ -22,10 +29,27 @@
 <style lang="scss">
   @import 'styles.scss';
   .vc-track-list {
-    white-space: nowrap; overflow: scroll;
+    display: flex;
     background-color: $vc-button-border;
     border: 1px solid $vc-button-border; }
-  .vc-track-list > *	{ margin: 0; }
+  .vc-track-list-row {
+    height: 2em;
+    margin-bottom: 1px;
+  }
+  .vc-track-list-tracks {
+    display: flex;
+    flex-direction: column;
+  }
+  .vc-track-scrollbar-spacer {
+    height: $vc-scrollbar-thickness;
+    background-color: grey;
+  }
+  .vc-track-list-parts {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap; overflow-x: scroll;
+    width: 100%;
+  }
 </style>
 
 <script>
