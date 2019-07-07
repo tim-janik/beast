@@ -33,7 +33,6 @@ static void     bse_sound_font_repo_forall_items (BseContainer		*container,
 						  gpointer		 data);
 static void     bse_sound_font_repo_remove_item	 (BseContainer		*container,
 						  BseItem		*item);
-static void     bse_sound_font_repo_prepare      (BseSource             *source);
 
 
 /* --- variables --- */
@@ -78,7 +77,6 @@ bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
   parent_class = g_type_class_peek_parent (klass);
 
@@ -91,22 +89,11 @@ bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
   container_class->remove_item = bse_sound_font_repo_remove_item;
   container_class->forall_items = bse_sound_font_repo_forall_items;
   container_class->release_children = bse_sound_font_repo_release_children;
-
-  source_class->prepare = bse_sound_font_repo_prepare;
 }
 
 static void
 bse_sound_font_repo_init (BseSoundFontRepo *sfrepo)
 {
-}
-
-static gboolean
-reload_sound_font (BseItem *item,
-                   gpointer data)
-{
-  BseSoundFont *sound_font = BSE_SOUND_FONT (item);
-  bse_sound_font_reload (sound_font);
-  return TRUE;
 }
 
 static gboolean
@@ -116,60 +103,6 @@ unload_sound_font (BseItem *item,
   BseSoundFont *sound_font = BSE_SOUND_FONT (item);
   bse_sound_font_unload (sound_font);
   return TRUE;
-}
-
-static void
-bse_sound_font_repo_prepare (BseSource *source)
-{
-  BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (source);
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-
-  uint channels_required = 0;
-  for (auto& o : sfrepo_impl->oscs)
-    {
-      if (o.osc)
-	o.channel = channels_required++;
-    }
-  uint mix_freq = bse_engine_sample_freq();
-  if (sfrepo_impl->n_fluid_channels != channels_required || sfrepo_impl->fluid_mix_freq != mix_freq)
-    {
-      sfrepo_impl->channel_state.resize (channels_required);
-
-      for (auto& cstate : sfrepo_impl->channel_state)
-        {
-          cstate.n_silence_samples = 0;
-          cstate.values_left.resize (BSE_STREAM_MAX_VALUES);
-          cstate.values_right.resize (BSE_STREAM_MAX_VALUES);
-        }
-
-      sfrepo_impl->n_fluid_channels = channels_required;
-      sfrepo_impl->fluid_mix_freq = mix_freq;
-
-      /* midi channels required must be: at least 16, a multiple of 16 */
-      const int midi_channels_required = (channels_required / 16 + 1) * 16;
-
-      /* audio channels required must not be zero */
-      const int audio_channels_required = std::max<int> (1, channels_required);
-
-      fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.sample-rate", mix_freq);
-      /* soundfont instruments should be as loud as beast synthesis network instruments */
-      fluid_settings_setnum (sfrepo_impl->fluid_settings, "synth.gain", 1.0);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.midi-channels", midi_channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-channels", audio_channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.audio-groups", audio_channels_required);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.reverb.active", 0);
-      fluid_settings_setint (sfrepo_impl->fluid_settings, "synth.chorus.active", 0);
-
-      bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), unload_sound_font, sfrepo);
-      if (sfrepo_impl->fluid_synth)
-	delete_fluid_synth (sfrepo_impl->fluid_synth);
-
-      sfrepo_impl->fluid_synth = new_fluid_synth (sfrepo_impl->fluid_settings);
-      bse_sound_font_repo_forall_items (BSE_CONTAINER (sfrepo), reload_sound_font, sfrepo);
-    }
-
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
 static void
@@ -294,46 +227,11 @@ bse_sound_font_repo_list_all_presets (BseSoundFontRepo *sfrepo, Bse::ItemSeq &it
   gather_presets (BSE_ITEM (sfrepo), &items);
 }
 
-std::mutex&
-bse_sound_font_repo_mutex (BseSoundFontRepo *sfrepo)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  return sfrepo_impl->fluid_synth_mutex;
-}
-
 fluid_synth_t*
 bse_sound_font_repo_fluid_synth (BseSoundFontRepo *sfrepo)
 {
   Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
   return sfrepo_impl->fluid_synth;
-}
-
-int
-bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
-                             BseSoundFontOsc  *osc)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-  for (guint i = 0; i < sfrepo_impl->oscs.size(); i++)
-    {
-      if (!sfrepo_impl->oscs[i].osc)
-	{
-	  sfrepo_impl->oscs[i].osc = osc;
-	  return i;
-	}
-    }
-  sfrepo_impl->oscs.push_back ({ osc, 0 });
-  return sfrepo_impl->oscs.size() - 1;
-}
-
-void
-bse_sound_font_repo_remove_osc (BseSoundFontRepo *sfrepo,
-                                guint             osc_id)
-{
-  Bse::SoundFontRepoImpl *sfrepo_impl = sfrepo->as<Bse::SoundFontRepoImpl *>();
-
-  assert_return (osc_id < sfrepo_impl->oscs.size());
-
-  sfrepo_impl->oscs[osc_id].osc = nullptr;
 }
 
 namespace Bse {
@@ -355,14 +253,6 @@ SoundFontRepoImpl::SoundFontRepoImpl (BseObject *bobj) :
 
       log_init_done = true;
     }
-
-  fluid_mix_freq = 0;
-  fluid_events = nullptr;
-
-  n_fluid_channels = 0;
-
-  n_channel_oscs_active = 0;
-  channel_values_tick_stamp = 0;
 }
 
 SoundFontRepoImpl::~SoundFontRepoImpl ()
@@ -387,10 +277,6 @@ SoundFontRepoImpl::~SoundFontRepoImpl ()
       delete_fluid_settings (fluid_settings);
       fluid_settings = NULL;
     }
-  n_fluid_channels = 0;
-
-  if (fluid_events != NULL)
-    Bse::warning (G_STRLOC ": fluid event queue should be empty in SoundFontRepoImpl destructor");
 }
 
 static Error
