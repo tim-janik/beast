@@ -38,6 +38,7 @@ const vue_components = [
   require ('./projectshell.vue'),
   require ('./track-list.vue'),
   require ('./track-view.vue'),
+  require ('./treeselector.vue'),
   require ('./treeselector-item.vue'),
 ];
 
