@@ -976,6 +976,11 @@ sequence TrackPartSeq {
   TrackPart parts;
 };
 
+Const BUS_VOLUME_MIN = 1.58489319246111e-05; /* -96dB */
+Const BUS_VOLUME_MAX = 15.8489319246111;     /* +24dB */
+Const BUS_VOLUME_DEF = 1;
+Const BUS_VOLUME_STEP = 0.1;
+
 /// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
   Error ensure_output    ();            ///< Ensure that a bus has an output connection.
@@ -986,12 +991,18 @@ interface Bus : SubSynth {
   // ItemSeq   inputs        = Object ("Input Signals", "Synthesis signals (from tracks and busses) used as bus input", GUI ":item-sequence");
   // ItemSeq   outputs       = Object ("Output Signals", "Mixer busses used as output for synthesis signals", GUI ":item-sequence");
   // CSynth    snet          = Object ("SNet", "Synthesis network used internally to implement effect stack", READWRITE ":skip-undo");
-  // bool      mute          = Bool   ("Mute", "Mute: turn off the bus volume",    STANDARD ":skip-default", FALSE);
-  // bool      solo          = Bool   ("Solo", "Solo: mute all other busses",      STANDARD ":skip-default", FALSE);
-  // bool      sync          = Bool   ("Sync", "Synchronize left and right volume", STANDARD ":skip-default", TRUE);
-  // float64   left_volume   = Num    ("Left Volume",  "Volume adjustment in decibel of left bus channel",  STANDARD ":scale:db-volume");
-  // float64   right_volume  = Num    ("Right Volume", "Volume adjustment in decibel of right bus channel", STANDARD ":scale:db-volume");
-  // bool      master_output = Bool   ("Master Output", "", STORAGE ":skip-default", FALSE);
+  group _("Adjustments") {
+    bool    mute         = Bool  (_("Mute"), _("Mute: turn off the bus volume"), STANDARD SKIP_DEFAULT, false);
+    bool    solo         = Bool  (_("Solo"), _("Solo: mute all other busses"), STANDARD SKIP_DEFAULT, false);
+    bool    sync         = Bool  (_("Sync"), _("Synchronize left and right volume"), STANDARD SKIP_DEFAULT, true);
+    float64 left_volume  = Range (_("Left Volume"), _("Volume adjustment in decibel of left bus channel"), STANDARD ":scale:db-volume",
+                                  BUS_VOLUME_MIN, BUS_VOLUME_MAX, BUS_VOLUME_STEP, BUS_VOLUME_DEF);
+    float64 right_volume = Range (_("Right Volume"), _("Volume adjustment in decibel of right bus channel"), STANDARD ":scale:db-volume",
+                                  BUS_VOLUME_MIN, BUS_VOLUME_MAX, BUS_VOLUME_STEP, BUS_VOLUME_DEF);
+  };
+  group _("Internals") {
+    bool master_output = Bool (_("Master Output"), "", STORAGE SKIP_DEFAULT, false);
+  };
 };
 
 /// Interface for Track and Part objects, as well as meta data for sequencing.

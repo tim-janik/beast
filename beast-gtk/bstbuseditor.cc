@@ -82,15 +82,38 @@ bus_editor_release_item (SfiProxy      item,
   bst_bus_editor_set_bus (self, 0);
 }
 
+static GxkParam *
+get_property_param (BstBusEditor *self,
+                    Bse::BusH     bus,
+                    const gchar  *property)
+{
+  const Bse::StringSeq kvlist = bus.find_prop (property);
+
+  if (!kvlist.empty())
+    {
+      /* aida property */
+      GParamSpec *cxxpspec = Bse::pspec_from_key_value_list (property, kvlist);
+      return bst_param_new_property (cxxpspec, bus);
+    }
+  else
+    {
+      /* proxy property */
+      auto pspec = bse_proxy_get_pspec (self->item, property);
+      return bst_param_new_proxy (pspec, self->item);
+    }
+}
+
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
+                 Bse::BusH     bus,
                  const gchar  *property,
                  const gchar  *area,
                  const gchar  *editor,
                  const gchar  *label)
 {
-  GParamSpec *pspec = bse_proxy_get_pspec (self->item, property);
-  self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
+  GxkParam *gxk_param = get_property_param (self, bus, property);
+  self->params = sfi_ring_prepend (self->params, gxk_param);
+
   GtkWidget *ewidget = gxk_param_create_editor ((GxkParam*) self->params->data, editor);
   gxk_radget_add (self, area, ewidget);
   if (label)
@@ -128,17 +151,15 @@ bst_bus_editor_set_bus (BstBusEditor *self,
   if (self->item)
     {
       self->source = Bse::SourceH::__cast__ (bse_server.from_proxy (self->item));
-      GParamSpec *pspec;
       SfiRing *ring;
       bse_proxy_connect (self->item,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
       /* create and hook up volume params & scopes */
-      pspec = bse_proxy_get_pspec (self->item, "left-volume");
-      GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
+      Bse::BusH bus = Bse::BusH::__cast__ (bse_server.from_proxy (self->item));
+      GxkParam *lvolume = get_property_param (self, bus, "left_volume");
       GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
-      pspec = bse_proxy_get_pspec (self->item, "right-volume");
-      GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
+      GxkParam *rvolume = get_property_param (self, bus, "right_volume");
       GtkWidget *rspinner = gxk_param_create_editor (rvolume, "spinner");
       BstDBMeter *dbmeter = (BstDBMeter*) gxk_radget_find (self, "db-meter");
       if (dbmeter)
@@ -161,12 +182,12 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       self->params = sfi_ring_prepend (self->params, lvolume);
       self->params = sfi_ring_prepend (self->params, rvolume);
       /* create remaining params */
-      bus_build_param (self, "uname", "name-box", NULL, NULL);
-      bus_build_param (self, "inputs", "inputs-box", NULL, NULL);
-      bus_build_param (self, "mute", "toggle-box", "toggle+label", "M");
-      bus_build_param (self, "sync", "toggle-box", "toggle+label", "Y");
-      bus_build_param (self, "solo", "toggle-box", "toggle+label", "S");
-      bus_build_param (self, "outputs", "outputs-box", NULL, NULL);
+      bus_build_param (self, bus, "uname", "name-box", NULL, NULL);
+      bus_build_param (self, bus, "inputs", "inputs-box", NULL, NULL);
+      bus_build_param (self, bus, "mute", "toggle-box", "toggle+label", "M");
+      bus_build_param (self, bus, "sync", "toggle-box", "toggle+label", "Y");
+      bus_build_param (self, bus, "solo", "toggle-box", "toggle+label", "S");
+      bus_build_param (self, bus, "outputs", "outputs-box", NULL, NULL);
       /* update params */
       for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
         gxk_param_update ((GxkParam*) ring->data);

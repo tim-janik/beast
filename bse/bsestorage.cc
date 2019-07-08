@@ -676,8 +676,8 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
 {
   // configure scanner to pass through most characters, so we can delay parsing
   const GScannerConfig saved_config = *scanner->config;
-  scanner->config->cset_skip_characters = (char*) " \t\r\n";
-  scanner->config->scan_identifier = true;
+  scanner->config->cset_skip_characters = (char*) "";
+  scanner->config->scan_identifier = false;
   scanner->config->scan_identifier_1char = false;
   scanner->config->identifier_2_string = false;
   scanner->config->scan_symbols = false;
@@ -687,9 +687,9 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
   scanner->config->scan_hex = false;
   scanner->config->scan_hex_dollar = false;
   scanner->config->char_2_token = false;
+  const char *const text0 = scanner->text;      // capture start parsing position
   GTokenType expected_token = G_TOKEN_NONE, token = g_scanner_get_next_token (scanner);
   uint level = 1; // need one ')' to terminate
-  std::string rest;
   while (token && expected_token == G_TOKEN_NONE)
     {
       if (token == G_TOKEN_CHAR)
@@ -702,27 +702,11 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
               if (level == 0)
                 break;
             }
-          else
-            rest += scanner->value.v_char;
         }
       else if (token == G_TOKEN_STRING)
-        {
-          if (!rest.empty())
-            rest += " ";
-          rest += Bse::string_to_cquote (scanner->value.v_string);
-        }
-      else if (token == G_TOKEN_IDENTIFIER)
-        {
-          if (!rest.empty())
-            rest += " ";
-          rest += scanner->value.v_string;
-        }
+        ;
       else if (token == G_TOKEN_INT)
-        {
-          if (!rest.empty())
-            rest += " ";
-          rest += Bse::string_from_int (scanner->value.v_int);
-        }
+        ;
       else
         {
           expected_token = G_TOKEN_RIGHT_PAREN; // was expecting a char, got something unknown
@@ -730,9 +714,18 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
         }
       token = g_scanner_get_next_token (scanner);
     }
+  const char *const text1 = scanner->text;      // capture end parsing position
   *scanner->config = saved_config;
+  /* we need to capture GScanner's private ->text positions for proper input
+   * capturing, because things like unconditional INT parsing (including leading
+   * 0s), float and identifier conversions prevent per-character capturing through
+   * the get_next_token() interface.
+   */
   if (result && expected_token == G_TOKEN_NONE)
-    *result = rest;
+    {
+      assert_return (text1 > text0 && text1[-1] == ')', G_TOKEN_ERROR);
+      *result = Bse::string_strip (String (text0, text1 - text0 - 1));
+    }
   return expected_token; // G_TOKEN_NONE on success
 }
 
