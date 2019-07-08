@@ -10,26 +10,26 @@ Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (c
 
 // load Vue components
 const vue_components = [
-  require ('./button.vue'),
+  require ('./aboutdialog.vue'),
   require ('./button-bar.vue'),
+  require ('./button.vue'),
   require ('./color-picker.vue'),
   require ('./icon.vue'),
+  require ('./example.vue'),
   require ('./fed-number.vue'),
+  require ('./fed-object.vue'),
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
-  require ('./fed-object.vue'),
-  require ('./piano-roll.vue'),
-  require ('./playcontrols.vue'),
+  require ('./hscrollbar.vue'),
+  require ('./modaldialog.vue'),
   require ('./part-list.vue'),
   require ('./part-thumb.vue'),
-  require ('./modaldialog.vue'),
-  require ('./aboutdialog.vue'),
+  require ('./piano-roll.vue'),
+  require ('./playcontrols.vue'),
   require ('./preferencesdialog.vue'),
-  require ('./hscrollbar.vue'),
+  require ('./projectshell.vue'),
   require ('./track-list.vue'),
   require ('./track-view.vue'),
-  require ('./projectshell.vue'),
-  require ('./example.vue'),
 ];
 
 // register components
