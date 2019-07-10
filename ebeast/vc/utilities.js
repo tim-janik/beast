@@ -689,3 +689,26 @@ function format_title (prgname, entity = undefined, infos = undefined, extras = 
   return title;
 }
 exports.format_title = format_title;
+
+let keyboard_click_state = { inclick: 0 };
+
+/// Check if the current click event originates from keyboard activation.
+function in_keyboard_click()
+{
+  return keyboard_click_state.inclick > 0;
+}
+exports.in_keyboard_click = in_keyboard_click;
+
+/// Trigger elemtn click via keyboard.
+function keyboard_click (element)
+{
+  if (element)
+    {
+      keyboard_click_state.inclick += 1;
+      element.click();
+      keyboard_click_state.inclick -= 1;
+      return true;
+    }
+  return false;
+}
+exports.keyboard_click = keyboard_click;
