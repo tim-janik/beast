@@ -742,6 +742,7 @@ function is_navigation_key_code (keycode)
 {
   return in_array (keycode, navigation_keys);
 }
+exports.is_navigation_key_code = is_navigation_key_code;
 
 /// Match an event's key code, considering modifiers.
 function match_key_event (event, keyname)
