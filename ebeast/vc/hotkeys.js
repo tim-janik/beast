@@ -73,7 +73,7 @@ $(document).keydown (function (event) {
       return; // no hotkey activation possible when in text input
     }
     if ($.inArray (document.activeElement.type, navigation_types) >= 0 &&
-	Util.is_navigation_key_code (event.keyCode))
+	KeyCode.ENTER != event.keyCode && Util.is_navigation_key_code (event.keyCode))
       {
 	$('#statusarea').text ('IGNORE-NAV: ' + event.keyCode + ' (' + document.activeElement.tagName + ')');
 	return; // no navigation hotkey possible when a navigatable element has focus
@@ -90,7 +90,10 @@ $(document).keydown (function (event) {
 	return;
       }
     }
-    if (Util.match_key_event (event, 'Enter'))
-      Util.keyboard_click (document.activeElement);
+    if (Util.match_key_event (event, 'Enter') && document.activeElement)
+      {
+	event.preventDefault();
+	Util.keyboard_click (document.activeElement);
+      }
   }
 });

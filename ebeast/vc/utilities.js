@@ -705,6 +705,12 @@ function keyboard_click (element)
   if (element)
     {
       keyboard_click_state.inclick += 1;
+      if (!element.classList.contains ('active'))
+	{
+	  const e = element;
+	  e.classList.toggle ('active', true);
+	  setTimeout (() => e.classList.toggle ('active', false), 42); // exceed 1/24th frame
+	}
       element.click();
       keyboard_click_state.inclick -= 1;
       return true;
