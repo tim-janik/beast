@@ -364,16 +364,22 @@ exports.modal_shield = modal_shield;
 const prevent_focus = (array, node, preserve) => {
   if (node == preserve)
     return;
-  if (node.tabIndex > -1) {
-    if (node._vc_focus_guard > 0)
-      node._vc_focus_guard += 1;
-    else {
-      node._vc_focus_guard = 1;
-      node._vc_focus_guard_tabIndex = node.tabIndex;
-      node.tabIndex = -1;
+  if (node.tabIndex > -1)
+    {
+      if (node._vc_focus_guard > 0)
+	node._vc_focus_guard += 1;
+      else {
+	node._vc_focus_guard = 1;
+	node._vc_focus_guard_tabIndex = node.tabIndex;
+	node.tabIndex = -1;
+      }
+      array.push (node);
     }
-    array.push (node);
-  }
+  else if (node._vc_focus_guard > 0)
+    {
+      node._vc_focus_guard += 1;
+      array.push (node);
+    }
   if (node.firstChild)
     prevent_focus (array, node.firstChild, preserve);
   if (node.nextSibling)
@@ -385,9 +391,10 @@ const restore_focus = (node) => {
   if (node._vc_focus_guard > 0) {
     node._vc_focus_guard -= 1;
     if (node._vc_focus_guard == 0) {
-      node.tabIndex = node._vc_focus_guard_tabIndex;
+      const tabIndex = node._vc_focus_guard_tabIndex;
       delete node._vc_focus_guard_tabIndex;
       delete node._vc_focus_guard;
+      node.tabIndex = tabIndex;
     }
   }
 };
