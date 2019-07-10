@@ -712,3 +712,9 @@ function keyboard_click (element)
   return false;
 }
 exports.keyboard_click = keyboard_click;
+
+/// Check if an element can be found in a given array.
+function in_array (element, array)
+{
+  return array.indexOf (element) >= 0;
+}
