@@ -742,3 +742,47 @@ function is_navigation_key_code (keycode)
 {
   return in_array (keycode, navigation_keys);
 }
+
+/// Match an event's key code, considering modifiers.
+function match_key_event (event, keyname)
+{
+  // SEE: http://unixpapa.com/js/key.html & https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/Gecko_keypress_event
+  // split_hotkey (hotkey)
+  const rex = new RegExp (/\s*[+]\s*/); // Split 'Shift+Ctrl+Alt+Meta+SPACE'
+  const parts = keyname.toLowerCase().split (rex);
+  const char = String.fromCharCode (event.which || event.keyCode);
+  let need_meta = 0, need_alt = 0, need_ctrl = 0, need_shift = 0;
+  for (let i = 0; i < parts.length; i++)
+    {
+      // collect meta keys
+      switch (parts[i])
+      {
+	case 'cmd': case 'command':
+	case 'super': case 'meta':	need_meta  = 1; continue;
+	case 'option': case 'alt':	need_alt   = 1; continue;
+	case 'control': case 'ctrl':	need_ctrl  = 1; continue;
+	case 'shift':		  	need_shift = 1; continue;
+      }
+      // match named keys (special)
+      const key_val = KeyCode[parts[i].toUpperCase()];
+      if (key_val !== undefined && char.length == 1 && key_val == char.charCodeAt (0))
+	continue;
+      // match characters
+      if (char.toLowerCase() == parts[i])
+	continue;
+      // failed to match
+      return false;
+    }
+  // ignore shift for case insensitive characters (except for navigations)
+  if (char.toLowerCase() == char.toUpperCase() &&
+      !is_navigation_key_code (event.keyCode))
+    need_shift = -1;
+  // match meta keys
+  if (need_meta   != 0 + event.metaKey ||
+      need_alt    != 0 + event.altKey ||
+      need_ctrl   != 0 + event.ctrlKey ||
+      (need_shift != 0 + event.shiftKey && need_shift >= 0))
+    return false;
+  return true;
+}
+exports.match_key_event = match_key_event;
