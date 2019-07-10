@@ -95,7 +95,7 @@
   <transition name="vc-modaldialog-transition">
     <div class="vc-modaldialog vc-modaldialog-mask" @click="close">
       <div class="vc-modaldialog-wrapper">
-	<div class="vc-modaldialog-container" @click.stop>
+	<div class="vc-modaldialog-container" @click.stop ref="container">
 
 	  <div class="vc-modaldialog-header">
 	    <slot name="header">
@@ -123,7 +123,7 @@
 module.exports = {
   name: 'vc-modaldialog',
   mounted () {
-    this.shield = Util.modal_shield (this.close);
+    this.shield = Util.modal_shield (this.close, this.$refs['container']);
     this.$refs.bclose.$el.focus();
   },
   beforeDestroy () {
