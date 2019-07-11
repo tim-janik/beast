@@ -10,20 +10,23 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-playcontrols { }
+  .vc-playcontrols {
+    .vc-button	{ padding: 5px; }
+    .vc-icon	{ fill: $vc-button-foreground; }
+  }
 </style>
 
 <template>
 
   <vc-button-bar
       class="vc-playcontrols" >
-    <vc-icon-button hotkey="L"     icon="fa-fast-backward" @click="pcall ('...Last')"></vc-icon-button>
-    <vc-icon-button hotkey="B"     icon="fa-backward"      @click="pcall ('...Backwards')"></vc-icon-button>
-    <vc-icon-button hotkey="Space" icon="fa-stop"          @click="pcall ('stop')"></vc-icon-button>
-    <vc-icon-button hotkey="P"     icon="fa-play"          @click="pcall ('play')"></vc-icon-button>
-    <vc-icon-button hotkey="R"     icon="fa-circle"        @click="pcall ('...Record')"></vc-icon-button>
-    <vc-icon-button hotkey="F"     icon="fa-forward"       @click="pcall ('...Forwards')"></vc-icon-button>
-    <vc-icon-button hotkey="N"     icon="fa-fast-forward"  @click="pcall ('...Next')"></vc-icon-button>
+    <vc-button hotkey="L"     @click="pcall ('...Last')"      ><vc-icon fw lg fa="fast-backward" /></vc-button>
+    <vc-button hotkey="B"     @click="pcall ('...Backwards')" ><vc-icon fw lg fa="backward"      /></vc-button>
+    <vc-button hotkey="Space" @click="pcall ('stop')"         ><vc-icon fw lg fa="stop"          /></vc-button>
+    <vc-button hotkey="P"     @click="pcall ('play')"         ><vc-icon fw lg fa="play"          /></vc-button>
+    <vc-button hotkey="R"     @click="pcall ('...Record')"    ><vc-icon fw lg fa="circle"        /></vc-button>
+    <vc-button hotkey="F"     @click="pcall ('...Forwards')"  ><vc-icon fw lg fa="forward"       /></vc-button>
+    <vc-button hotkey="N"     @click="pcall ('...Next')"      ><vc-icon fw lg fa="fast-forward"  /></vc-button>
   </vc-button-bar>
 
 </template>
