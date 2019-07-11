@@ -64,10 +64,6 @@ button          		{ -webkit-appearance: normal; }
 // https://www.w3.org/TR/css-flexbox-1/#valdef-flex-basis-content
 // https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 
-// == FontAwesome ==
-$fa-font-path: '../node_modules/font-awesome/fonts/';
-@import        'node_modules/font-awesome/scss/font-awesome.scss';
-
 // == Font-family "Inter" ==
 @font-face	{ font-family: 'Inter'; font-style: normal; font-weight: 500;
 		  src: url("Inter-Medium.woff2") format("woff2"); }
