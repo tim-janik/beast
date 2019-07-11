@@ -115,7 +115,7 @@
 module.exports = {
   name: 'vc-modaldialog',
   mounted () {
-    this.shield = Util.modal_shield (this.close, this.$refs['container']);
+    this.shield = Util.modal_shield (this.close, this.$refs['container'], { focuscycle: true });
     const focus_close = true;
     if (focus_close)
       this.$refs.bclose.$el.focus();
