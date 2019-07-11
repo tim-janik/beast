@@ -328,6 +328,38 @@ const modal_keyboard_guard = function (ev) {
     }
 };
 
+/// List all elements that can take focus and are descendants of `element` or the document.
+function list_focusables (element)
+{
+  if (!element)
+    element = document.body;
+  const candidates = [
+    'a[href]',
+    'audio[controls]',
+    'button',
+    'input:not([type="radio"]):not([type="hidden"])',
+    'select',
+    'textarea',
+    'video[controls]',
+    '[contenteditable]:not([contenteditable="false"])',
+    '[tabindex]',
+  ];
+  const excludes = ':not([disabled])' +
+		   ':not([tabindex="-1"])' +
+		   ':not([display="none"])';
+  const candidate_selector = candidates.map (e => e + excludes).join (', ');
+  const nodes = element.querySelectorAll (candidate_selector); // selector for focusable elements
+  const array1 = [].slice.call (nodes);
+  // filter out non-taabable elements
+  const array = array1.filter (element => {
+    if (element.offsetWidth <= 0 || element.offsetHeight <= 0) // with display:none parents
+      return false;
+    return true;
+  });
+  return array;
+}
+exports.list_focusables = list_focusables;
+
 /** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
 function modal_shield (close_handler, preserve_element) {
   // prevent focus during modal shield
