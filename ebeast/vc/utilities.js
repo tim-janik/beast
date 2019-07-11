@@ -361,7 +361,7 @@ function list_focusables (element)
 exports.list_focusables = list_focusables;
 
 /** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
-function modal_shield (close_handler, preserve_element) {
+function modal_shield (close_handler, preserve_element, opts = {}) {
   // prevent focus during modal shield
   const focus_guard = install_focus_guard (preserve_element);
   // keep a shield list and handle keyboard / mouse events on the shield
@@ -376,8 +376,44 @@ function modal_shield (close_handler, preserve_element) {
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
 		 'background-color: rgba(0,0,0,0.60);';
   document.body.appendChild (shield);
+  // avoid window loosing focus
+  let refocus = { last: null, handler: null, timer: 0 };
+  if (opts['focuscycle'])
+    {
+      refocus.handler = (e) =>
+	{
+	  if (e.type == 'focusin')
+	    refocus.last = e.target;
+	  if (e.type == 'blur' && !refocus.timer)
+	    refocus.timer = setTimeout (() =>
+	      {
+		refocus.timer = 0;
+		// re-focus if possible
+		if (!document.activeElement || document.activeElement == document.body)
+		  {
+		    const fa = list_focusables();
+		    if (fa.length)
+		      {
+			const lastidx = refocus.last ? fa.indexOf (refocus.last) : -1;
+			let newidx = 0;
+			if (lastidx >= 0 && lastidx < fa.length / 2)
+			  newidx = fa.length - 1;
+			fa[newidx].focus();
+		      }
+		  }
+	      }, 0);
+	};
+      window.addEventListener ('focusin', refocus.handler, { passive: true });
+      window.addEventListener ('blur', refocus.handler, { passive: true });
+      refocus.handler ({ type: 'blur' });
+    }
   // destroying the shield
   shield.destroy = function (call_handler = true) {
+    if (refocus.handler)
+      {
+	window.removeEventListener ('blur', refocus.handler, { passive: true });
+	window.removeEventListener ('focusin', refocus.handler, { passive: true });
+      }
     if (shield.parentNode)
       shield.parentNode.removeChild (shield);
     array_remove (document._vc_modal_shields, shield);
