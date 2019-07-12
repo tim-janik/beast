@@ -784,7 +784,7 @@ function keyboard_click (element)
 	{
 	  const e = element;
 	  e.classList.toggle ('active', true);
-	  setTimeout (() => e.classList.toggle ('active', false), 42); // exceed 1/24th frame
+	  setTimeout (() => e.classList.toggle ('active', false), 170); // match focus-activation delay
 	}
       element.click();
       keyboard_click_state.inclick -= 1;
