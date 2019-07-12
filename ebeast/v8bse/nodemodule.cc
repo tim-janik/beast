@@ -6,6 +6,7 @@
 #include <uv.h>
 #include <v8pp/class.hpp>
 #include <v8pp/convert.hpp>
+#include <v8pp/persistent.hpp>
 
 // == RemoteHandle Wrapping ==
 /* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly in another thread),
