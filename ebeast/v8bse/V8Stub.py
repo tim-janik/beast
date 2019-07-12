@@ -317,9 +317,10 @@ class Generator:
     s += '  v8::HandleScope __v8scope (isolate);\n'
     s += '  v8::ScriptOrigin org = v8::ScriptOrigin (v8pp::to_v8 (isolate, __FILE__),\n'
     s += '                                           v8::Integer::New (isolate, __LINE__));\n'
-    s += '  const char *const script = "%s";\n' % j
-    s += '  v8::Local<v8::String> code = v8pp::to_v8 (isolate, script);\n'
-    s += '  v8::Local<v8::Value> bcode = v8::Script::Compile (context, code, &org).ToLocalChecked()->Run();\n'
+    s += '  const char *const javascript = "%s";\n' % j
+    s += '  v8::Local<v8::String> code = v8pp::to_v8 (isolate, javascript);\n'
+    s += '  v8::Local<v8::Script> script = v8::Script::Compile (context, code, &org).ToLocalChecked();\n'
+    s += '  v8::Local<v8::Value> bcode = script->Run (context).ToLocalChecked();\n'
     s += '  v8::Local<v8::Function> fun = v8::Local<v8::Function>::Cast (bcode);\n'
     s += '  assert (!fun.IsEmpty());\n'
     s += '  v8::Local<v8::Value> args[] = { exports };\n'
