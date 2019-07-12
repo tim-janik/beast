@@ -242,7 +242,7 @@ class Generator:
     s += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
     s += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'
     s += '      Aida::Event *event = const_cast<Aida::Event*> (&const_event);\n'
-    s += '      v8::Handle<v8::Value> __v8event = V8ppType_AidaEvent::reference_external (__v8isolate, event);\n'
+    s += '      v8::Local<v8::Value> __v8event = V8ppType_AidaEvent::reference_external (__v8isolate, event);\n'
     s += '      v8::Local<v8::Value> __v8result = v8pp::call_v8 (__v8isolate, __v8func, __v8this, __v8event);\n'
     s += '      V8ppType_AidaEvent::unreference_external (__v8isolate, event);\n'
     s += '      (void) __v8result;\n'
