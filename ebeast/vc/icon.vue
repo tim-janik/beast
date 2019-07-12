@@ -27,7 +27,7 @@
 
 <template>
   <svg class="vc-icon" :class="iconclasses" role="icon" :aria-label="fa">
-    <use v-if="fa" :href="'assets/fa-4-sprites.svg#' + fa" />
+    <use v-if="fa" :href="'assets/fa-sprites.svg#' + fa" />
   </svg>
 </template>
 <!-- SVG-1.1 notation: <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="...svg"></use> -->

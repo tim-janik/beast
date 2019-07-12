@@ -44,7 +44,7 @@ app/assets/tri-pngs	::= $(strip	\
 app/generated 		::= $(strip	\
 	$(app/assets/tri-pngs)		\
 	$>/app/assets/gradient-01.png	\
-	$>/app/assets/fa-4-sprites.svg	\
+	$>/app/assets/fa-sprites.svg	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
 	$>/app/assets/utilities.js	\
@@ -126,15 +126,15 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 $>/app/assets/utilities.js: ebeast/vc/utilities.js	| $>/ebeast/npm.rules
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
-$>/app/assets/fa-4-sprites.svg: 			| $>/app/assets/
-	$(QECHO) FETCH fa-sprites-4.7.0.svg.xz
+$>/app/assets/fa-sprites.svg:	 			| $>/app/assets/
+	$(QECHO) FETCH fork-awesome-sprites-0.1.svg.xz
 	$Q cd $>/app/assets/ \
 	     $(call AND_DOWNLOAD_SHAURL, \
-		dd8918f9674ef7f5e10daf019a200cd28ed19d3c998f6d126f7d09862fcbfba9, \
-		  https://github.com/tim-janik/assets/releases/download/fa-sprites-4.7.0/fa-sprites-4.7.0.svg.xz)
+		452e590d930ae0a46d1d300fb899c99fc95785d00395ed881ff49184aa7dcf3d, \
+		  https://github.com/tim-janik/Fork-Awesome/releases/download/fork-awesome-sprites-0.1/fork-awesome-sprites-0.1.svg.xz)
 	$(QGEN)
-	$Q xz --decompress $>/app/assets/fa-sprites-4.7.0.svg.xz
-	$Q mv $>/app/assets/fa-sprites-4.7.0.svg $@
+	$Q xz --decompress $>/app/assets/fork-awesome-sprites-0.1.svg.xz
+	$Q mv $>/app/assets/fork-awesome-sprites-0.1.svg $@
 $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
