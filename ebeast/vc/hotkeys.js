@@ -3,6 +3,7 @@
 
 // assert jQuery
 console.assert ($ !== undefined);
+const Util = require ('./utilities.js');
 
 // == Keys ==
 const KeyCode = {
@@ -53,7 +54,7 @@ $.fn.click_hotkey = function (hotkey) {
   let self = this;
   $(document).add_hotkey (hotkey, function (/*event*/) {
     self.addClass ('vc-fakeactive');
-    self.click();
+    Util.keyboard_click (self);
     setTimeout (function () {
       self.removeClass ('vc-fakeactive');
     }, 45);
@@ -72,64 +73,27 @@ $(document).keydown (function (event) {
       return; // no hotkey activation possible when in text input
     }
     if ($.inArray (document.activeElement.type, navigation_types) >= 0 &&
-	$.inArray (event.keyCode, match_hotkey_event.navigation_keys) >= 0) {
-      $('#statusarea').text ('IGNORE-NAV: ' + event.keyCode + ' (' + document.activeElement.tagName + ')');
-      return; // no navigation hotkey possible when a navigatable element has focus
-    }
+	KeyCode.ENTER != event.keyCode && Util.is_navigation_key_code (event.keyCode))
+      {
+	$('#statusarea').text ('IGNORE-NAV: ' + event.keyCode + ' (' + document.activeElement.tagName + ')');
+	return; // no navigation hotkey possible when a navigatable element has focus
+      }
     const hotkeys = $(document).data()['hotkeys'];
     if (hotkeys === undefined)
       return;
     Shell.status ('HOTKEY: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
 		  ' (' + document.activeElement.tagName + ')');
     for (let key in hotkeys) {
-      if (match_hotkey_event (event, key)) {
+      if (Util.match_key_event (event, key)) {
 	const hotkey_callbacks = hotkeys[key];
 	hotkey_callbacks.fire (event);
 	return;
       }
     }
+    if (Util.match_key_event (event, 'Enter') && document.activeElement)
+      {
+	event.preventDefault();
+	Util.keyboard_click (document.activeElement);
+      }
   }
 });
-
-let match_hotkey_event = function (event, keyname) {
-  // SEE: http://unixpapa.com/js/key.html & https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/Gecko_keypress_event
-  const parts = split_hotkey (keyname);
-  const char = String.fromCharCode (event.which || event.keyCode);
-  let need_meta = 0, need_alt = 0, need_ctrl = 0, need_shift = 0;
-  for (let i = 0; i < parts.length; i++) {
-    // collect meta keys
-    switch (parts[i]) {
-    case 'cmd': case 'command':
-    case 'super': case 'meta':	  need_meta  = 1; continue;
-    case 'option': case 'alt':	  need_alt   = 1; continue;
-    case 'control': case 'ctrl':  need_ctrl  = 1; continue;
-    case 'shift':		  need_shift = 1; continue;
-    }
-    // match named keys (special)
-    const key_val = KeyCode[parts[i].toUpperCase()];
-    if (key_val !== undefined && char.length == 1 && key_val == char.charCodeAt(0))
-      continue;
-    // match characters
-    if (char.toLowerCase() == parts[i])
-      continue;
-    // failed to match
-    return false;
-  }
-  // ignore shift for case insensitive characters (except for navigations)
-  if (char.toLowerCase() == char.toUpperCase() &&
-      $.inArray (event.keyCode, match_hotkey_event.navigation_keys) == -1)
-    need_shift = 2;
-  // match meta keys
-  if (need_meta   != 0 + event.metaKey ||
-      need_alt    != 0 + event.altKey ||
-      need_ctrl   != 0 + event.ctrlKey ||
-      (need_shift != 0 + event.shiftKey && need_shift != 2))
-    return false;
-  return true;
-};
-
-match_hotkey_event.navigation_keys = [
-  KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
-  KeyCode.TAB, KeyCode.SPACE, KeyCode.ENTER /*13*/, 10 /*LINEFEED*/,
-  KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
-  93 /*CONTEXT_MENU*/, KeyCode.ESCAPE, ];

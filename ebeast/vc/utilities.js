@@ -328,8 +328,40 @@ const modal_keyboard_guard = function (ev) {
     }
 };
 
+/// List all elements that can take focus and are descendants of `element` or the document.
+function list_focusables (element)
+{
+  if (!element)
+    element = document.body;
+  const candidates = [
+    'a[href]',
+    'audio[controls]',
+    'button',
+    'input:not([type="radio"]):not([type="hidden"])',
+    'select',
+    'textarea',
+    'video[controls]',
+    '[contenteditable]:not([contenteditable="false"])',
+    '[tabindex]',
+  ];
+  const excludes = ':not([disabled])' +
+		   ':not([tabindex="-1"])' +
+		   ':not([display="none"])';
+  const candidate_selector = candidates.map (e => e + excludes).join (', ');
+  const nodes = element.querySelectorAll (candidate_selector); // selector for focusable elements
+  const array1 = [].slice.call (nodes);
+  // filter out non-taabable elements
+  const array = array1.filter (element => {
+    if (element.offsetWidth <= 0 || element.offsetHeight <= 0) // with display:none parents
+      return false;
+    return true;
+  });
+  return array;
+}
+exports.list_focusables = list_focusables;
+
 /** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
-function modal_shield (close_handler, preserve_element) {
+function modal_shield (close_handler, preserve_element, opts = {}) {
   // prevent focus during modal shield
   const focus_guard = install_focus_guard (preserve_element);
   // keep a shield list and handle keyboard / mouse events on the shield
@@ -344,8 +376,44 @@ function modal_shield (close_handler, preserve_element) {
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
 		 'background-color: rgba(0,0,0,0.60);';
   document.body.appendChild (shield);
+  // avoid window loosing focus
+  let refocus = { last: null, handler: null, timer: 0 };
+  if (opts['focuscycle'])
+    {
+      refocus.handler = (e) =>
+	{
+	  if (e.type == 'focusin')
+	    refocus.last = e.target;
+	  if (e.type == 'blur' && !refocus.timer)
+	    refocus.timer = setTimeout (() =>
+	      {
+		refocus.timer = 0;
+		// re-focus if possible
+		if (!document.activeElement || document.activeElement == document.body)
+		  {
+		    const fa = list_focusables();
+		    if (fa.length)
+		      {
+			const lastidx = refocus.last ? fa.indexOf (refocus.last) : -1;
+			let newidx = 0;
+			if (lastidx >= 0 && lastidx < fa.length / 2)
+			  newidx = fa.length - 1;
+			fa[newidx].focus();
+		      }
+		  }
+	      }, 0);
+	};
+      window.addEventListener ('focusin', refocus.handler, { passive: true });
+      window.addEventListener ('blur', refocus.handler, { passive: true });
+      refocus.handler ({ type: 'blur' });
+    }
   // destroying the shield
   shield.destroy = function (call_handler = true) {
+    if (refocus.handler)
+      {
+	window.removeEventListener ('blur', refocus.handler, { passive: true });
+	window.removeEventListener ('focusin', refocus.handler, { passive: true });
+      }
     if (shield.parentNode)
       shield.parentNode.removeChild (shield);
     array_remove (document._vc_modal_shields, shield);
@@ -364,16 +432,22 @@ exports.modal_shield = modal_shield;
 const prevent_focus = (array, node, preserve) => {
   if (node == preserve)
     return;
-  if (node.tabIndex > -1) {
-    if (node._vc_focus_guard > 0)
-      node._vc_focus_guard += 1;
-    else {
-      node._vc_focus_guard = 1;
-      node._vc_focus_guard_tabIndex = node.tabIndex;
-      node.tabIndex = -1;
+  if (node.tabIndex > -1)
+    {
+      if (node._vc_focus_guard > 0)
+	node._vc_focus_guard += 1;
+      else {
+	node._vc_focus_guard = 1;
+	node._vc_focus_guard_tabIndex = node.tabIndex;
+	node.tabIndex = -1;
+      }
+      array.push (node);
     }
-    array.push (node);
-  }
+  else if (node._vc_focus_guard > 0)
+    {
+      node._vc_focus_guard += 1;
+      array.push (node);
+    }
   if (node.firstChild)
     prevent_focus (array, node.firstChild, preserve);
   if (node.nextSibling)
@@ -385,9 +459,10 @@ const restore_focus = (node) => {
   if (node._vc_focus_guard > 0) {
     node._vc_focus_guard -= 1;
     if (node._vc_focus_guard == 0) {
-      node.tabIndex = node._vc_focus_guard_tabIndex;
+      const tabIndex = node._vc_focus_guard_tabIndex;
       delete node._vc_focus_guard_tabIndex;
       delete node._vc_focus_guard;
+      node.tabIndex = tabIndex;
     }
   }
 };
@@ -689,3 +764,107 @@ function format_title (prgname, entity = undefined, infos = undefined, extras = 
   return title;
 }
 exports.format_title = format_title;
+
+let keyboard_click_state = { inclick: 0 };
+
+/// Check if the current click event originates from keyboard activation.
+function in_keyboard_click()
+{
+  return keyboard_click_state.inclick > 0;
+}
+exports.in_keyboard_click = in_keyboard_click;
+
+/// Trigger elemtn click via keyboard.
+function keyboard_click (element)
+{
+  if (element)
+    {
+      keyboard_click_state.inclick += 1;
+      if (!element.classList.contains ('active'))
+	{
+	  const e = element;
+	  e.classList.toggle ('active', true);
+	  setTimeout (() => e.classList.toggle ('active', false), 42); // exceed 1/24th frame
+	}
+      element.click();
+      keyboard_click_state.inclick -= 1;
+      return true;
+    }
+  return false;
+}
+exports.keyboard_click = keyboard_click;
+
+/// Check if an element can be found in a given array.
+function in_array (element, array)
+{
+  return array.indexOf (element) >= 0;
+}
+
+/// Export key codes
+const KeyCode = {
+  BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
+  PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46,
+  F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117, F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
+  F13: 124, F14: 125, F15: 126, F16: 127, F17: 128, F18: 129, F19: 130, F20: 131, F21: 132, F22: 133, F23: 134, F24: 135,
+  BROWSERBACK: 166, BROWSERFORWARD: 167, PLUS: 187/*FIXME*/, MINUS: 189/*FIXME*/, PAUSE: 230, ALTGR: 255,
+  VOLUMEMUTE: 173, VOLUMEDOWN: 174, VOLUMEUP: 175, MEDIANEXTTRACK: 176, MEDIAPREVIOUSTRACK: 177, MEDIASTOP: 178, MEDIAPLAYPAUSE: 179,
+};
+Object.assign (exports, KeyCode);
+
+const navigation_keys = [
+  KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
+  KeyCode.TAB, KeyCode.SPACE, KeyCode.ENTER /*13*/, 10 /*LINEFEED*/,
+  KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
+  93 /*CONTEXT_MENU*/, KeyCode.ESCAPE,
+];
+
+/// Check if a key code is used of rnavigaiton (and non alphanumeric).
+function is_navigation_key_code (keycode)
+{
+  return in_array (keycode, navigation_keys);
+}
+exports.is_navigation_key_code = is_navigation_key_code;
+
+/// Match an event's key code, considering modifiers.
+function match_key_event (event, keyname)
+{
+  // SEE: http://unixpapa.com/js/key.html & https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/Gecko_keypress_event
+  // split_hotkey (hotkey)
+  const rex = new RegExp (/\s*[+]\s*/); // Split 'Shift+Ctrl+Alt+Meta+SPACE'
+  const parts = keyname.toLowerCase().split (rex);
+  const char = String.fromCharCode (event.which || event.keyCode);
+  let need_meta = 0, need_alt = 0, need_ctrl = 0, need_shift = 0;
+  for (let i = 0; i < parts.length; i++)
+    {
+      // collect meta keys
+      switch (parts[i])
+      {
+	case 'cmd': case 'command':
+	case 'super': case 'meta':	need_meta  = 1; continue;
+	case 'option': case 'alt':	need_alt   = 1; continue;
+	case 'control': case 'ctrl':	need_ctrl  = 1; continue;
+	case 'shift':		  	need_shift = 1; continue;
+      }
+      // match named keys (special)
+      const key_val = KeyCode[parts[i].toUpperCase()];
+      if (key_val !== undefined && char.length == 1 && key_val == char.charCodeAt (0))
+	continue;
+      // match characters
+      if (char.toLowerCase() == parts[i])
+	continue;
+      // failed to match
+      return false;
+    }
+  // ignore shift for case insensitive characters (except for navigations)
+  if (char.toLowerCase() == char.toUpperCase() &&
+      !is_navigation_key_code (event.keyCode))
+    need_shift = -1;
+  // match meta keys
+  if (need_meta   != 0 + event.metaKey ||
+      need_alt    != 0 + event.altKey ||
+      need_ctrl   != 0 + event.ctrlKey ||
+      (need_shift != 0 + event.shiftKey && need_shift >= 0))
+    return false;
+  return true;
+}
+exports.match_key_event = match_key_event;

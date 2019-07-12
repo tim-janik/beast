@@ -19,10 +19,10 @@
   .vc-button                  	{ @include vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
   .vc-button:focus            	{ outline: $vc-focus-outline; }
   .vc-button:hover            	{ @include vc-buttonhover; }
-  .vc-button.vc-fakeactive,
+  .vc-button.active,
   .vc-button:active           	{ @include vc-buttonactive; }
   .vc-button, .vc-button *	{ color: $vc-button-foreground; fill: $vc-button-foreground !important; }
-  .vc-button.vc-fakeactive *,	/* use '*' + fill!important to include svg elements in buttons */
+  .vc-button.active *,	/* use '*' + fill!important to include svg elements in buttons */
   .vc-button:active *         	{ color: $vc-button-active-fg;  fill: $vc-button-active-fg !important; }
 </style>
 

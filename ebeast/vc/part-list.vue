@@ -13,7 +13,7 @@
 <template>
 
   <div class="vc-part-list" >
-    <vc-part-thumb v-for="(tp, pindex) in this.track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
+    <vc-part-thumb v-for="(tp, pindex) in track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
 		   :part="tp.part" :tick="tp.tick" :trackindex="trackindex" :index="pindex" ></vc-part-thumb>
   </div>
 
