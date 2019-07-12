@@ -168,14 +168,14 @@ struct convert_AidaSequence
 {
   using from_type = Class;
   using value_type = typename Class::value_type;
-  using to_type = v8::Handle<v8::Array>;
+  using to_type = v8::Local<v8::Array>;
   static bool
-  is_valid (v8::Isolate*, v8::Handle<v8::Value> value)
+  is_valid (v8::Isolate*, v8::Local<v8::Value> value)
   {
     return !value.IsEmpty() && value->IsArray();
   }
   static from_type
-  from_v8 (v8::Isolate *const isolate, v8::Handle<v8::Value> value)
+  from_v8 (v8::Isolate *const isolate, v8::Local<v8::Value> value)
   {
     v8::HandleScope scope (isolate);
     if (!is_valid (isolate, value))
