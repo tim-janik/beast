@@ -9,30 +9,29 @@
 #ifndef V8PP_MODULE_HPP_INCLUDED
 #define V8PP_MODULE_HPP_INCLUDED
 
-#pragma warning(push, 0)
 #include <v8.h>
-#pragma warning(pop)
 
-#include "v8pp/config.hpp"
 #include "v8pp/function.hpp"
 #include "v8pp/property.hpp"
 
 namespace v8pp {
 
-template<typename T>
+template<typename T, typename Traits>
 class class_;
 
 /// Module (similar to v8::ObjectTemplate)
 class module
 {
 public:
+	/// Create new module in the specified V8 isolate
 	explicit module(v8::Isolate* isolate)
 		: isolate_(isolate)
 		, obj_(v8::ObjectTemplate::New(isolate))
 	{
 	}
 
-	explicit module(v8::Isolate* isolate, v8::Handle<v8::ObjectTemplate> obj)
+	/// Create new module in the specified V8 isolate for existing ObjectTemplate
+	explicit module(v8::Isolate* isolate, v8::Local<v8::ObjectTemplate> obj)
 		: isolate_(isolate)
 		, obj_(obj)
 	{
@@ -43,7 +42,7 @@ public:
 
 	/// Set a V8 value in the module with specified name
 	template<typename Data>
-	module& set(char const* name, v8::Handle<Data> value)
+	module& set(char const* name, v8::Local<Data> value)
 	{
 		obj_->Set(v8pp::to_v8(isolate_, name), value);
 		return *this;
@@ -56,8 +55,8 @@ public:
 	}
 
 	/// Set wrapped C++ class in the module with specified name
-	template<typename T>
-	module& set(char const* name, class_<T>& cl)
+	template<typename T, typename Traits>
+	module& set(char const* name, class_<T, Traits>& cl)
 	{
 		v8::HandleScope scope(isolate_);
 
@@ -95,21 +94,21 @@ public:
 
 	/// Set v8pp::property in the module with specified name
 	template<typename GetFunction, typename SetFunction>
-	module& set(char const *name, property_<GetFunction, SetFunction>&& prop)
+	module& set(char const *name, property_<GetFunction, SetFunction>&& property)
 	{
-		using prop_type = property_<GetFunction, SetFunction>;
+		using property_type = property_<GetFunction, SetFunction>;
 
 		v8::HandleScope scope(isolate_);
 
-		v8::AccessorGetterCallback getter = prop_type::get;
-		v8::AccessorSetterCallback setter = prop_type::set;
-		if (prop_type::is_readonly)
+		v8::AccessorGetterCallback getter = property_type::get;
+		v8::AccessorSetterCallback setter = property_type::set;
+		if (property_type::is_readonly)
 		{
 			setter = nullptr;
 		}
 
 		obj_->SetAccessor(v8pp::to_v8(isolate_, name), getter, setter,
-			detail::set_external_data(isolate_, std::forward<prop_type>(prop)),
+			detail::set_external_data(isolate_, std::forward<property_type>(property)),
 			v8::DEFAULT,
 			v8::PropertyAttribute(v8::DontDelete | (setter ? 0 : v8::ReadOnly)));
 		return *this;
@@ -137,7 +136,10 @@ public:
 	}
 
 	/// Create a new module instance in V8
-	v8::Local<v8::Object> new_instance() { return obj_->NewInstance(); }
+	v8::Local<v8::Object> new_instance()
+	{
+		return obj_->NewInstance(isolate_->GetCurrentContext()).ToLocalChecked();
+	}
 
 private:
 	template<typename Variable>
@@ -161,7 +163,7 @@ private:
 	}
 
 	v8::Isolate* isolate_;
-	v8::Handle<v8::ObjectTemplate> obj_;
+	v8::Local<v8::ObjectTemplate> obj_;
 };
 
 } // namespace v8pp

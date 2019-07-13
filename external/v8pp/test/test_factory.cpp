@@ -9,6 +9,7 @@
 #include "v8pp/factory.hpp"
 #include "v8pp/context.hpp"
 #include "v8pp/call_v8.hpp"
+#include "v8pp/ptr_traits.hpp"
 
 #include "test.hpp"
 
@@ -62,8 +63,11 @@ private:
 template<typename T, typename ...Args>
 void test_(v8::Isolate* isolate, Args&&... args)
 {
-	T* obj = v8pp::factory<T>::create(isolate, std::forward<Args>(args)...);
-	v8pp::factory<T>::destroy(isolate, obj);
+	T* obj = v8pp::factory<T, v8pp::raw_ptr_traits>::create(isolate, std::forward<Args>(args)...);
+	v8pp::factory<T, v8pp::raw_ptr_traits>::destroy(isolate, obj);
+
+	std::shared_ptr<T> sp_obj = v8pp::factory<T, v8pp::shared_ptr_traits>::create(isolate, std::forward<Args>(args)...);
+	v8pp::factory<T, v8pp::shared_ptr_traits>::destroy(isolate, sp_obj);
 }
 
 void test_factories(v8::FunctionCallbackInfo<v8::Value> const& args)
@@ -85,7 +89,7 @@ void test_factories(v8::FunctionCallbackInfo<v8::Value> const& args)
 namespace v8pp {
 
 template<>
-struct factory<Y>
+struct factory<Y, v8pp::raw_ptr_traits>
 {
 	static Y* create(v8::Isolate*, int arg)
 	{
@@ -100,6 +104,22 @@ struct factory<Y>
 	}
 };
 
+template<>
+struct factory<Y, v8pp::shared_ptr_traits>
+{
+	static std::shared_ptr<Y> create(v8::Isolate*, int arg)
+	{
+		++ctor_count;
+		return std::shared_ptr<Y>(Y::make(arg), Y::done);
+	}
+
+	static void destroy(v8::Isolate*, std::shared_ptr<Y> const&)
+	{
+		// std::shared_ptr deleter will work
+		++dtor_count;
+	}
+};
+
 } // v8pp
 
 void test_factory()
@@ -108,10 +128,10 @@ void test_factory()
 
 	v8::Isolate* isolate = context.isolate();
 	v8::HandleScope scope(isolate);
-	v8::Handle<v8::Function> fun = v8::Function::New(isolate, test_factories);
+	v8::Local<v8::Function> fun = v8::Function::New(isolate->GetCurrentContext(), test_factories).ToLocalChecked();
 
 	v8pp::call_v8(isolate, fun, fun);
 	check_eq("all ctors called", ctor_types, 0x0F);
-	check_eq("ctor count", ctor_count, 5);
-	check_eq("dtor count", dtor_count, 5);
+	check_eq("ctor count", ctor_count, 10);
+	check_eq("dtor count", dtor_count, 10);
 }

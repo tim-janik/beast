@@ -9,34 +9,32 @@
 #ifndef V8PP_FACTORY_HPP_INCLUDED
 #define V8PP_FACTORY_HPP_INCLUDED
 
-#include <utility>
+#include <memory>
 
-#pragma warning(push, 0)
 #include <v8.h>
-#pragma warning(pop)
 
 namespace v8pp {
 
-// Factory that calls C++ constructor
-template<typename T>
+// Factory that creates new C++ objects of type T
+template<typename T, typename Traits>
 struct factory
 {
-	static size_t const object_size = sizeof(T);
+	using object_pointer_type = typename Traits::template object_pointer_type<T>;
 
 	template<typename ...Args>
-	static T* create(v8::Isolate* isolate, Args... args)
+	static object_pointer_type create(v8::Isolate* isolate, Args... args)
 	{
-		T* object = new T(std::forward<Args>(args)...);
+		object_pointer_type object = Traits::template create<T>(std::forward<Args>(args)...);
 		isolate->AdjustAmountOfExternalAllocatedMemory(
-			static_cast<int64_t>(object_size));
+			static_cast<int64_t>(Traits::object_size(object)));
 		return object;
 	}
 
-	static void destroy(v8::Isolate* isolate, T* object)
+	static void destroy(v8::Isolate* isolate, object_pointer_type const& object)
 	{
-		delete object;
 		isolate->AdjustAmountOfExternalAllocatedMemory(
-			-static_cast<int64_t>(object_size));
+			-static_cast<int64_t>(Traits::object_size(object)));
+		Traits::destroy(object);
 	}
 };
 

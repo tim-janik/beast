@@ -18,7 +18,7 @@ void test_conv(v8::Isolate* isolate, T value)
 {
 	v8::Local<v8::Value> v8_value = v8pp::to_v8(isolate, value);
 	auto const value2 = v8pp::from_v8<T>(isolate, v8_value);
-	check_eq(typeid(T).name(), value2, value);
+	check_eq(v8pp::detail::type_id<T>().name(), value2, value);
 }
 
 template<typename Char, size_t N>
@@ -75,9 +75,9 @@ template<>
 struct convert<person>
 {
 	using from_type = person;
-	using to_type = v8::Handle<v8::Object>;
+	using to_type = v8::Local<v8::Object>;
 
-	static bool is_valid(v8::Isolate*, v8::Handle<v8::Value> value)
+	static bool is_valid(v8::Isolate*, v8::Local<v8::Value> value)
 	{
 		return !value.IsEmpty() && value->IsObject();
 	}
@@ -86,8 +86,8 @@ struct convert<person>
 	{
 		v8::EscapableHandleScope scope(isolate);
 		v8::Local<v8::Object> obj = v8::Object::New(isolate);
-		obj->Set(v8pp::to_v8(isolate, "name"), v8pp::to_v8(isolate, p.name));
-		obj->Set(v8pp::to_v8(isolate, "age"), v8pp::to_v8(isolate, p.age));
+		obj->Set(isolate->GetCurrentContext(), v8pp::to_v8(isolate, "name"), v8pp::to_v8(isolate, p.name)).FromJust();
+		obj->Set(isolate->GetCurrentContext(), v8pp::to_v8(isolate, "age"), v8pp::to_v8(isolate, p.age)).FromJust();
 		/* Simpler after #include <v8pp/object.hpp>
 		set_option(isolate, obj, "name", p.name);
 		set_option(isolate, obj, "age", p.age);
@@ -95,7 +95,7 @@ struct convert<person>
 		return scope.Escape(obj);
 	}
 
-	static from_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
+	static from_type from_v8(v8::Isolate* isolate, v8::Local<v8::Value> value)
 	{
 		if (!is_valid(isolate, value))
 		{
@@ -107,9 +107,9 @@ struct convert<person>
 
 		person result;
 		result.name = v8pp::from_v8<std::string>(isolate,
-			obj->Get(v8pp::to_v8(isolate, "name")));
+			obj->Get(isolate->GetCurrentContext(), v8pp::to_v8(isolate, "name")).ToLocalChecked());
 		result.age = v8pp::from_v8<int>(isolate,
-			obj->Get(v8pp::to_v8(isolate, "age")));
+			obj->Get(isolate->GetCurrentContext(), v8pp::to_v8(isolate, "age")).ToLocalChecked());
 		
 		/* Simpler after #include <v8pp/object.hpp>
 		get_option(isolate, obj, "name", result.name);
@@ -138,6 +138,7 @@ void test_convert()
 	test_conv(isolate, new_enum::Z);
 
 	test_string_conv(isolate, "qaz");
+	test_string_conv(isolate, u"qaz");
 #ifdef WIN32
 	test_string_conv(isolate, L"qaz");
 #endif
@@ -150,13 +151,12 @@ void test_convert()
 	std::map<char, int> map = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
 	test_conv(isolate, map);
 
-	std::array<int, 3> array = { 1, 2, 3 };
+	std::array<int, 3> array = { { 1, 2, 3 } };
 	test_conv(isolate, array);
 
-	check_ex<std::runtime_error>("wrong array length", [isolate, array]()
+	check_ex<std::runtime_error>("wrong array length", [isolate, &array]()
 	{
-		v8::Local<v8::Array> arr = v8pp::to_v8(isolate,
-			std::array<int, 3>{ 1, 2, 3 });
+		v8::Local<v8::Array> arr = v8pp::to_v8(isolate, array);
 		v8pp::from_v8<std::array<int, 2>>(isolate, arr);
 	});
 

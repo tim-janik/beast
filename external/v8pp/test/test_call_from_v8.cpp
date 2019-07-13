@@ -9,33 +9,40 @@
 #include "v8pp/call_from_v8.hpp"
 #include "v8pp/context.hpp"
 #include "v8pp/function.hpp"
+#include "v8pp/ptr_traits.hpp"
 
 #include "test.hpp"
 
-namespace {
-
-int x()
+static int x()
 {
 	return 0;
 }
-int y(int a)
+static int y(int a)
 {
 	return a;
 }
-int z(v8::Isolate*, int a)
+static int z(v8::Isolate*, int a)
 {
 	return a;
 }
 
-void w(v8::FunctionCallbackInfo<v8::Value> const& args)
+static void w(v8::FunctionCallbackInfo<v8::Value> const& args)
 {
 	return args.GetReturnValue().Set(args.Length());
 }
+
+struct X;
+void class_ref(X&);
+void class_ptr(X*);
+void class_sptr(std::shared_ptr<X>);
 
 using v8pp::detail::select_call_traits;
 using v8pp::detail::call_from_v8_traits;
 using v8pp::detail::isolate_arg_call_traits;
 using v8pp::detail::v8_args_call_traits;
+
+using v8pp::raw_ptr_traits;
+using v8pp::shared_ptr_traits;
 
 static_assert(select_call_traits<decltype(&x)>::arg_count == 0, "x argc count");
 static_assert(std::is_same<select_call_traits<decltype(&x)>::arg_type<0>,
@@ -52,15 +59,21 @@ static_assert(std::is_same<select_call_traits<decltype(&z)>::arg_type<1>,
 	int>::value, "z 2nd arg");
 
 static_assert(std::is_same<select_call_traits<decltype(&x)>,
-	call_from_v8_traits<decltype(&x) >> ::value, "");
+	call_from_v8_traits<decltype(&x)>> ::value, "");
 
 static_assert(std::is_same<select_call_traits<decltype(&z)>,
-	isolate_arg_call_traits<decltype(&z) >> ::value, "");
+	isolate_arg_call_traits<decltype(&z)>> ::value, "");
 
 static_assert(std::is_same<select_call_traits<decltype(&w)>,
-	v8_args_call_traits<decltype(&w) >> ::value, "");
+	v8_args_call_traits<decltype(&w)>> ::value, "");
 
-} // unnamed namespace
+static_assert(std::is_same<select_call_traits<decltype(&class_ptr)>::arg_convert<0, raw_ptr_traits>::from_type, X*>::value, "class ptr");
+static_assert(std::is_same<select_call_traits<decltype(&class_ref)>::arg_convert<0, raw_ptr_traits>::from_type, X&>::value, "class ref");
+static_assert(std::is_same<select_call_traits<decltype(&class_sptr)>::arg_convert<0, raw_ptr_traits>::from_type, std::shared_ptr<X>>::value, "class shared_ptr");
+
+static_assert(std::is_same<select_call_traits<decltype(&class_ptr)>::arg_convert<0, shared_ptr_traits>::from_type, std::shared_ptr<X>>::value, "class ptr");
+static_assert(std::is_same<select_call_traits<decltype(&class_ref)>::arg_convert<0, shared_ptr_traits>::from_type, X&>::value, "class ref");
+static_assert(std::is_same<select_call_traits<decltype(&class_sptr)>::arg_convert<0, shared_ptr_traits>::from_type, std::shared_ptr<X>>::value, "class shared_ptr");
 
 void test_call_from_v8()
 {
