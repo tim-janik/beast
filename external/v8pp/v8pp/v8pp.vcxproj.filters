@@ -2,6 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="context.cpp" />
+    <ClCompile Include="json.cpp" />
+    <ClCompile Include="class.cpp" />
+    <ClCompile Include="throw_ex.cpp" />
+    <ClCompile Include="convert.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context.hpp" />
@@ -18,8 +22,13 @@
     <ClInclude Include="function.hpp" />
     <ClInclude Include="object.hpp" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="ptr_traits.hpp" />
+    <ClInclude Include="persistent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="class.ipp" />
+    <None Include="json.ipp" />
+    <None Include="throw_ex.ipp" />
   </ItemGroup>
 </Project>

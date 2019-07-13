@@ -242,7 +242,7 @@ class Generator:
     s += '      v8::Local<v8::Object> __v8this = v8pp::to_local (__v8isolate, __v8pthis);\n'
     s += '      v8::Local<v8::Function> __v8func = v8pp::to_local (__v8isolate, __v8pfunc);\n'
     s += '      Aida::Event *event = const_cast<Aida::Event*> (&const_event);\n'
-    s += '      v8::Handle<v8::Value> __v8event = V8ppType_AidaEvent::reference_external (__v8isolate, event);\n'
+    s += '      v8::Local<v8::Value> __v8event = V8ppType_AidaEvent::reference_external (__v8isolate, event);\n'
     s += '      v8::Local<v8::Value> __v8result = v8pp::call_v8 (__v8isolate, __v8func, __v8this, __v8event);\n'
     s += '      V8ppType_AidaEvent::unreference_external (__v8isolate, event);\n'
     s += '      (void) __v8result;\n'
@@ -286,7 +286,7 @@ class Generator:
         for fname, ftp in tp.fields:
           if tp.storage == Decls.INTERFACE:
             b += '    .set ("%s", ' % fname
-            b += 'v8pp::property (&%s::%s, &%s::%s))\n' % (cn, fname, cn, fname)
+            b += 'v8pp_property (&%s::%s, &%s::%s))\n' % (cn, fname, cn, fname)
           elif tp.storage == Decls.RECORD:
             b += '    .set ("%s", &%s::%s)\n' % (fname, cn, fname)
       # Class methods
@@ -317,9 +317,10 @@ class Generator:
     s += '  v8::HandleScope __v8scope (isolate);\n'
     s += '  v8::ScriptOrigin org = v8::ScriptOrigin (v8pp::to_v8 (isolate, __FILE__),\n'
     s += '                                           v8::Integer::New (isolate, __LINE__));\n'
-    s += '  const char *const script = "%s";\n' % j
-    s += '  v8::Local<v8::String> code = v8pp::to_v8 (isolate, script);\n'
-    s += '  v8::Local<v8::Value> bcode = v8::Script::Compile (context, code, &org).ToLocalChecked()->Run();\n'
+    s += '  const char *const javascript = "%s";\n' % j
+    s += '  v8::Local<v8::String> code = v8pp::to_v8 (isolate, javascript);\n'
+    s += '  v8::Local<v8::Script> script = v8::Script::Compile (context, code, &org).ToLocalChecked();\n'
+    s += '  v8::Local<v8::Value> bcode = script->Run (context).ToLocalChecked();\n'
     s += '  v8::Local<v8::Function> fun = v8::Local<v8::Function>::Cast (bcode);\n'
     s += '  assert (!fun.IsEmpty());\n'
     s += '  v8::Local<v8::Value> args[] = { exports };\n'

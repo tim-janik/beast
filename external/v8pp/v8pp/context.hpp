@@ -12,9 +12,7 @@
 #include <string>
 #include <map>
 
-#pragma warning(push, 0)
 #include <v8.h>
-#pragma warning(pop)
 
 #include "v8pp/convert.hpp"
 
@@ -22,7 +20,7 @@ namespace v8pp {
 
 class module;
 
-template<typename T>
+template<typename T, typename Traits>
 class class_;
 
 /// V8 isolate and context wrapper
@@ -30,9 +28,11 @@ class context
 {
 public:
 	/// Create context with optional existing v8::Isolate
-	/// and v8::ArrayBuffer::Allocator
+	/// and v8::ArrayBuffer::Allocator,
+	//  and add default global methods (`require()`, `run()`)
 	explicit context(v8::Isolate* isolate = nullptr,
-		v8::ArrayBuffer::Allocator* allocator = nullptr);
+		v8::ArrayBuffer::Allocator* allocator = nullptr,
+		bool add_default_global_methods = true);
 	~context();
 
 	/// V8 isolate associated with this context
@@ -47,31 +47,31 @@ public:
 	/// Run script file, returns script result
 	/// or empty handle on failure, use v8::TryCatch around it to find out why.
 	/// Must be invoked in a v8::HandleScope
-	v8::Handle<v8::Value> run_file(std::string const& filename);
+	v8::Local<v8::Value> run_file(std::string const& filename);
 
 	/// The same as run_file but uses string as the script source
-	v8::Handle<v8::Value> run_script(std::string const& source,
+	v8::Local<v8::Value> run_script(std::string const& source,
 		std::string const& filename = "");
 
 	/// Set a V8 value in the context global object with specified name
-	context& set(char const* name, v8::Handle<v8::Value> value);
+	context& set(char const* name, v8::Local<v8::Value> value);
 
 	/// Set module to the context global object
 	context& set(char const *name, module& m);
 
 	/// Set class to the context global object
-	template<typename T>
-	context& set(char const* name, class_<T>& cl)
+	template<typename T, typename Traits>
+	context& set(char const* name, class_<T, Traits>& cl)
 	{
 		v8::HandleScope scope(isolate_);
 		cl.class_function_template()->SetClassName(v8pp::to_v8(isolate_, name));
-		return set(name, cl.js_function_template()->GetFunction());
+		return set(name, cl.js_function_template()->GetFunction(isolate_->GetCurrentContext()).ToLocalChecked());
 	}
 
 private:
 	bool own_isolate_;
 	v8::Isolate* isolate_;
-	v8::Persistent<v8::Context> impl_;
+	v8::Global<v8::Context> impl_;
 
 	struct dynamic_module;
 	using dynamic_modules = std::map<std::string, dynamic_module>;

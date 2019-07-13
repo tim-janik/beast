@@ -11,8 +11,6 @@
 #include "v8pp/utility.hpp"
 #include "test.hpp"
 
-namespace {
-
 template<typename Ret, typename F>
 void test_ret(F&&)
 {
@@ -161,20 +159,6 @@ struct Z
 	void operator()();
 };
 
-void test_apply_tuple()
-{
-	using v8pp::detail::apply_tuple;
-	using v8pp::detail::apply;
-
-	apply_tuple(f, std::make_tuple());
-	apply_tuple(g, std::make_tuple(1));
-	apply_tuple(h, std::make_tuple(1, true));
-	
-	check_eq("apply(f)", apply(f), 1);
-	check_eq("apply(g)", apply(g, 2), 2);
-	check_eq("apply(h)", apply(h, 3, true), 3);
-}
-
 void test_is_callable()
 {
 	using v8pp::detail::is_callable;
@@ -193,14 +177,13 @@ void test_is_callable()
 	static_assert(!is_callable<Y>::value, "Y is not callable");
 }
 
-} // unnamed namespace
-
 struct some_struct {};
 namespace test { class some_class {}; }
 
 void test_utility()
 {
-	test_apply_tuple();
+	test_function_traits();
+	test_tuple_tail();
 	test_is_callable();
 
 	using v8pp::detail::type_id;

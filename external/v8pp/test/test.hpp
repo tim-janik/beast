@@ -14,6 +14,7 @@
 
 #include "v8pp/context.hpp"
 #include "v8pp/convert.hpp"
+#include "v8pp/utility.hpp"
 
 template<typename Char, typename Traits,
 	typename T, typename Alloc, typename ...Other,
@@ -101,7 +102,7 @@ void check_ex(std::string msg, F&& f)
 	try
 	{
 		f();
-		check(msg + " expected " + typeid(Ex).name() + " exception", false);
+		check(msg + " expected " + v8pp::detail::type_id<Ex>().name() + " exception", false);
 	}
 	catch (Ex const&)
 	{
@@ -114,12 +115,12 @@ T run_script(v8pp::context& context, std::string const& source)
 	v8::Isolate* isolate = context.isolate();
 
 	v8::HandleScope scope(isolate);
-	v8::TryCatch try_catch;
-	v8::Handle<v8::Value> result = context.run_script(source);
+	v8::TryCatch try_catch(isolate);
+	v8::Local<v8::Value> result = context.run_script(source);
 	if (try_catch.HasCaught())
 	{
 		std::string const msg = v8pp::from_v8<std::string>(isolate,
-			try_catch.Exception()->ToString());
+			try_catch.Exception()->ToString(isolate->GetCurrentContext()).ToLocalChecked());
 		throw std::runtime_error(msg);
 	}
 	return v8pp::from_v8<T>(isolate, result);

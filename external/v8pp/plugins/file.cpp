@@ -33,7 +33,7 @@ public:
 	{
 		if (args.Length() == 1)
 		{
-			v8::String::Utf8Value str(args[0]);
+			v8::String::Utf8Value const str(args.GetIsolate(), args[0]);
 			open(*str);
 		}
 	}
@@ -51,7 +51,7 @@ public:
 		for (int i = 0; i < args.Length(); ++i)
 		{
 			if (i > 0) stream_ << ' ';
-			v8::String::Utf8Value str(args[i]);
+			v8::String::Utf8Value const str(args.GetIsolate(), args[i]);
 			stream_ << *str;
 		}
 	}
@@ -77,7 +77,7 @@ public:
 		return stream_.good();
 	}
 
-	v8::Handle<v8::Value> getline(v8::Isolate* isolate)
+	v8::Local<v8::Value> getline(v8::Isolate* isolate)
 	{
 		if ( stream_.good() && ! stream_.eof())
 		{
@@ -92,7 +92,7 @@ public:
 	}
 };
 
-v8::Handle<v8::Value> init(v8::Isolate* isolate)
+v8::Local<v8::Value> init(v8::Isolate* isolate)
 {
 	v8::EscapableHandleScope scope(isolate);
 

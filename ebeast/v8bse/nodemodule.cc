@@ -4,8 +4,21 @@
 #include <math.h>
 #include <node.h>
 #include <uv.h>
+
+// == v8pp ==
 #include <v8pp/class.hpp>
 #include <v8pp/convert.hpp>
+#include <v8pp/persistent.hpp>
+
+// == v8pp extensions ==
+/// Create read/write property from get and set member functions, match getter via const this
+template<class Class, typename Ret, typename Arg>
+v8pp::property_<Ret (Class::*) () const, void (Class::*) (Arg)>
+v8pp_property (Ret (Class::*get) () const, void (Class::*set) (Arg))
+{
+  v8pp::property_<Ret (Class::*) () const, void (Class::*) (Arg)> prop (get, set);
+  return prop;
+}
 
 // == RemoteHandle Wrapping ==
 /* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly in another thread),
@@ -168,14 +181,14 @@ struct convert_AidaSequence
 {
   using from_type = Class;
   using value_type = typename Class::value_type;
-  using to_type = v8::Handle<v8::Array>;
+  using to_type = v8::Local<v8::Array>;
   static bool
-  is_valid (v8::Isolate*, v8::Handle<v8::Value> value)
+  is_valid (v8::Isolate*, v8::Local<v8::Value> value)
   {
     return !value.IsEmpty() && value->IsArray();
   }
   static from_type
-  from_v8 (v8::Isolate *const isolate, v8::Handle<v8::Value> value)
+  from_v8 (v8::Isolate *const isolate, v8::Local<v8::Value> value)
   {
     v8::HandleScope scope (isolate);
     if (!is_valid (isolate, value))

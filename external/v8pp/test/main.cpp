@@ -13,8 +13,8 @@
 #include <exception>
 #include <string>
 
-#include "v8.h"
-#include "libplatform/libplatform.h"
+#include <v8.h>
+#include <libplatform/libplatform.h>
 
 #include "v8pp/context.hpp"
 
@@ -27,6 +27,7 @@ void run_tests()
 	void test_call_v8();
 	void test_call_from_v8();
 	void test_function();
+	void test_ptr_traits();
 	void test_factory();
 	void test_module();
 	void test_class();
@@ -41,6 +42,7 @@ void run_tests()
 		{ "test_convert", test_convert },
 		{ "test_throw_ex", test_throw_ex },
 		{ "test_function", test_function },
+		{ "test_ptr_traits", test_ptr_traits },
 		{ "test_call_v8", test_call_v8 },
 		{ "test_call_from_v8", test_call_from_v8 },
 		{ "test_factory", test_factory },
@@ -107,9 +109,13 @@ int main(int argc, char const * argv[])
 		}
 	}
 
-	v8::V8::InitializeICU();
-	//v8::V8::InitializeExternalStartupData(argv[0]);
+	//v8::V8::InitializeICU();
+	v8::V8::InitializeExternalStartupData(argv[0]);
+#if V8_MAJOR_VERSION >= 7
+	std::unique_ptr<v8::Platform> platform(v8::platform::NewDefaultPlatform());
+#else
 	std::unique_ptr<v8::Platform> platform(v8::platform::CreateDefaultPlatform());
+#endif
 	v8::V8::InitializePlatform(platform.get());
 	v8::V8::Initialize();
 
