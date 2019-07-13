@@ -470,13 +470,10 @@ struct convert<v8::Local<T>>
 };
 
 
-template<typename T, typename Enable = void>
-struct is_wrapped_class;
+template<typename T>
+struct is_wrapped_class : std::is_class<T> {};
 
 // convert specialization for wrapped user classes
-template<typename T>
-struct is_wrapped_class<T> : std::is_class<T> {};
-
 template<typename T>
 struct is_wrapped_class<v8::Local<T>> : std::false_type {};
 
@@ -551,6 +548,13 @@ struct convert<T, typename std::enable_if<is_wrapped_class<T>::value>::type>
 
 	static to_type to_v8(v8::Isolate* isolate, T const& value)
 	{
+          { // try to convert a *registered* object instance
+            v8::Local<v8::Object> mayberesult = convert<T*>::to_v8(isolate, &value);
+            if (!mayberesult.IsEmpty()) return mayberesult;
+            // the lookup failed, assume temporary instance, create a copy on the heap
+            using Class = typename std::remove_cv<T>::type;
+            return class_<Class,raw_ptr_traits>::import_external (isolate, new Class (value));
+          }
 		v8::Local<v8::Object> result = convert<T*>::to_v8(isolate, &value);
 		if (!result.IsEmpty()) return result;
 		throw std::runtime_error("failed to wrap C++ object");
