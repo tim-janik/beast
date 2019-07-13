@@ -286,7 +286,7 @@ class Generator:
         for fname, ftp in tp.fields:
           if tp.storage == Decls.INTERFACE:
             b += '    .set ("%s", ' % fname
-            b += 'v8pp::property (&%s::%s, &%s::%s))\n' % (cn, fname, cn, fname)
+            b += 'v8pp_property (&%s::%s, &%s::%s))\n' % (cn, fname, cn, fname)
           elif tp.storage == Decls.RECORD:
             b += '    .set ("%s", &%s::%s)\n' % (fname, cn, fname)
       # Class methods

@@ -4,9 +4,21 @@
 #include <math.h>
 #include <node.h>
 #include <uv.h>
+
+// == v8pp ==
 #include <v8pp/class.hpp>
 #include <v8pp/convert.hpp>
 #include <v8pp/persistent.hpp>
+
+// == v8pp extensions ==
+/// Create read/write property from get and set member functions, match getter via const this
+template<class Class, typename Ret, typename Arg>
+v8pp::property_<Ret (Class::*) () const, void (Class::*) (Arg)>
+v8pp_property (Ret (Class::*get) () const, void (Class::*set) (Arg))
+{
+  v8pp::property_<Ret (Class::*) () const, void (Class::*) (Arg)> prop (get, set);
+  return prop;
+}
 
 // == RemoteHandle Wrapping ==
 /* NOTE: A RemoteHandle is a smart pointer to a complex C++ object (possibly in another thread),
