@@ -42,7 +42,7 @@ module.exports = {
       let classes = [];
       if (this.fw || this.fw === '')
 	classes.push ('b-icon-fw');
-      else if (this.nosize || this.nosize == '')
+      else if (!(this.nosize || this.nosize == ''))
 	classes.push ('b-icon-dfl');
       if (this.lg || this.lg == '')
 	classes.push ('b-icon-lg');
