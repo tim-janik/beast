@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-BUTTON
+  # B-BUTTON
   A button element that responds to clicks.
   ## Props:
   *hotkey*
@@ -16,26 +16,26 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-button                  	{ @include vc-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
-  .vc-button:focus            	{ outline: $vc-focus-outline; }
-  .vc-button:hover            	{ @include vc-buttonhover; }
-  .vc-button.active,
-  .vc-button:active           	{ @include vc-buttonactive; }
-  .vc-button, .vc-button *	{ color: $vc-button-foreground; fill: $vc-button-foreground !important; }
-  .vc-button.active *,	/* use '*' + fill!important to include svg elements in buttons */
-  .vc-button:active *         	{ color: $vc-button-active-fg;  fill: $vc-button-active-fg !important; }
+  .b-button                  	{ @include b-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
+  .b-button:focus            	{ outline: $b-focus-outline; }
+  .b-button:hover            	{ @include b-buttonhover; }
+  .b-button.active,
+  .b-button:active           	{ @include b-buttonactive; }
+  .b-button, .b-button *	{ color: $b-button-foreground; fill: $b-button-foreground !important; }
+  .b-button.active *,	/* use '*' + fill!important to include svg elements in buttons */
+  .b-button:active *         	{ color: $b-button-active-fg;  fill: $b-button-active-fg !important; }
 </style>
 
 <template>
   <button ref="btn"
-	  class="vc-button"
+	  class="b-button"
 	  @click="emit ('click', $event)"
-  ><slot class="vc-slot"></slot></button>
+  ><slot class="b-slot"></slot></button>
 </template>
 
 <script>
 module.exports = {
-  name: 'vc-button',
+  name: 'b-button',
   props: [ 'hotkey' ],
   methods: {
     emit (what, ev) {

@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-TRACK-LIST
+  # B-TRACK-LIST
   A container for vertical display of Bse.Track instances.
   ## Props:
   *project*
@@ -10,17 +10,17 @@
 
 <template>
 
-  <div class="vc-track-list" >
-    <div class="vc-track-list-tracks" >
-      <vc-track-view class="vc-track-list-row"
+  <div class="b-track-list" >
+    <div class="b-track-list-tracks" >
+      <b-track-view class="b-track-list-row"
 		     v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
-		     :song="song" :track="item" :trackindex="tindex"></vc-track-view>
-      <div class="vc-track-scrollbar-spacer"></div>
+		     :song="song" :track="item" :trackindex="tindex"></b-track-view>
+      <div class="b-track-scrollbar-spacer"></div>
     </div>
-    <div class="vc-track-list-parts" >
-      <vc-part-list class="vc-track-list-row"
+    <div class="b-track-list-parts" >
+      <b-part-list class="b-track-list-row"
 		    v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
-		    :track="item" :trackindex="tindex"></vc-part-list>
+		    :track="item" :trackindex="tindex"></b-part-list>
     </div>
   </div>
 
@@ -28,23 +28,23 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-track-list {
+  .b-track-list {
     display: flex;
-    background-color: $vc-button-border;
-    border: 1px solid $vc-button-border; }
-  .vc-track-list-row {
+    background-color: $b-button-border;
+    border: 1px solid $b-button-border; }
+  .b-track-list-row {
     height: 2em;
     margin-bottom: 1px;
   }
-  .vc-track-list-tracks {
+  .b-track-list-tracks {
     display: flex;
     flex-direction: column;
   }
-  .vc-track-scrollbar-spacer {
-    height: $vc-scrollbar-thickness;
+  .b-track-scrollbar-spacer {
+    height: $b-scrollbar-thickness;
     background-color: grey;
   }
-  .vc-track-list-parts {
+  .b-track-list-parts {
     display: flex;
     flex-direction: column;
     white-space: nowrap; overflow-x: scroll;
@@ -54,7 +54,7 @@
 
 <script>
 module.exports = {
-  name: 'vc-track-list',
+  name: 'b-track-list',
   props: {
     song: { type: Bse.Song }
   },

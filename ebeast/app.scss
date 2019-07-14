@@ -1,30 +1,30 @@
-@import 'vc/styles.scss';
+@import 'b/styles.scss';
 
 // == Settings ==
-$theme-foreground:		$vc-theme-foreground;
-$theme-background:		$vc-theme-background;
-$theme-border-radius:		$vc-theme-border-radius;
-$panel-background-lg0:		$vc-panel-background-lg0;
-$panel-background-lg1:		$vc-panel-background-lg1;
-$panel-background-lg:		$vc-panel-background-lg;
-$panel-background-border:	$vc-panel-background-border;
-$panel-background-light:	$vc-panel-background-light;
-$panel-background-dark:		$vc-panel-background-dark;
-$toolbar-background:		$vc-toolbar-background;
-$toolbar-background-lg:		$vc-toolbar-background-lg;
-$button-foreground:		$vc-button-foreground;
-$button-light:			$vc-button-light;
-$button-lg:			$vc-button-lg;
-$button-dark:			$vc-button-dark;
-$button-radius:			$vc-button-radius;
-$button-border:			$vc-button-border;
-$button-hover:			$vc-button-hover;
-$button-active:			$vc-button-active;
-$button-active-fg:		$vc-button-active-fg;
-$button-active-lg:		$vc-button-active-lg;
-$button-active-border:		$vc-button-active-border;
-$glow-control:			$vc-glow-control;
-$focus-outline:			$vc-focus-outline;
+$theme-foreground:		$b-theme-foreground;
+$theme-background:		$b-theme-background;
+$theme-border-radius:		$b-theme-border-radius;
+$panel-background-lg0:		$b-panel-background-lg0;
+$panel-background-lg1:		$b-panel-background-lg1;
+$panel-background-lg:		$b-panel-background-lg;
+$panel-background-border:	$b-panel-background-border;
+$panel-background-light:	$b-panel-background-light;
+$panel-background-dark:		$b-panel-background-dark;
+$toolbar-background:		$b-toolbar-background;
+$toolbar-background-lg:		$b-toolbar-background-lg;
+$button-foreground:		$b-button-foreground;
+$button-light:			$b-button-light;
+$button-lg:			$b-button-lg;
+$button-dark:			$b-button-dark;
+$button-radius:			$b-button-radius;
+$button-border:			$b-button-border;
+$button-hover:			$b-button-hover;
+$button-active:			$b-button-active;
+$button-active-fg:		$b-button-active-fg;
+$button-active-lg:		$b-button-active-lg;
+$button-active-border:		$b-button-active-border;
+$glow-control:			$b-glow-control;
+$focus-outline:			$b-focus-outline;
 
 // == Body Styles ==
 BrowserWindowDefaults		{ ; // used by main.js

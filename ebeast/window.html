@@ -62,7 +62,7 @@
   Vue.config.productionTip = false;
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
   Vue.prototype._ = _;
-  // load Vue components, bundled via vc/bundle.js
+  // load Vue components, bundled via b/bundle.js
   require ('./assets/components.js'); // adding './' avoids node_modules/-relative lookup
   </script>
 
@@ -70,9 +70,9 @@
 <body>
 
   <div id="vue-mountpoint">
-    <vc-projectshell ref="Vue-prototype-Shell" ></vc-projectshell>
-    <vc-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></vc-aboutdialog>
-    <vc-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></vc-preferencesdialog>
+    <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
+    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
+    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
   </div>
 
   <script>

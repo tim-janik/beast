@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-PART-THUMB
+  # B-PART-THUMB
   A Vue template to display a thumbnail for a Bse.Part.
   ## Props:
   *part*
@@ -12,26 +12,26 @@
 
 <template>
 
-  <canvas ref="canvas" class="vc-part-thumb" @click="Shell.open_part_edit (part)"
+  <canvas ref="canvas" class="b-part-thumb" @click="Shell.open_part_edit (part)"
 	  :style="{ left: pxoffset + 'px', width: canvas_width + 'px', }" ></canvas>
 
 </template>
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-part-thumb {
+  .b-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
-    height: $vc-track-list-row-height;
-    border-radius: $vc-theme-border-radius;
-    --part-thumb-font-color: #{$vc-part-thumb-font-color}; --part-thumb-font: #{$vc-part-thumb-font};
-    --part-thumb-note-color: #{$vc-part-thumb-note-color}; --part-thumb-colors: #{$vc-part-thumb-colors};
+    height: $b-track-list-row-height;
+    border-radius: $b-theme-border-radius;
+    --part-thumb-font-color: #{$b-part-thumb-font-color}; --part-thumb-font: #{$b-part-thumb-font};
+    --part-thumb-note-color: #{$b-part-thumb-note-color}; --part-thumb-colors: #{$b-part-thumb-colors};
   }
 </style>
 
 <script>
 const tick_quant = 384; // FIXME
 module.exports = {
-  name: 'vc-part-thumb',
+  name: 'b-part-thumb',
   mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'part': { type: Bse.Part, },

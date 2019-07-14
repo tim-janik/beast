@@ -37,7 +37,7 @@ docs/manual-chapters ::= $(strip	\
 	$>/doc/ch-man-pages.md		\
 	docs/ch-formats.md		\
 	docs/ch-background.md		\
-	ebeast/vc/ch-vue.md		\
+	ebeast/b/ch-vue.md		\
 	$>/ebeast/vue-docs.md		\
 	docs/ch-reference.md		\
 	docs/ch-historic.md		\

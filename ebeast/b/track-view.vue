@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-TRACK-VIEW
+  # B-TRACK-VIEW
   A Vue template to display a song's Bse.Track.
   ## Props:
   *project*
@@ -12,16 +12,16 @@
 
 <template>
 
-  <div class="vc-track-view" >
-    <div class="vc-track-view-control">
-      <span class="vc-track-view-label">{{ track.get_name() }}</span>
-      <div class="vc-track-view-meter">
-	<div class="vc-track-view-lbg" ref="levelbg"></div>
-	<div class="vc-track-view-cm0" ref="covermid0"></div>
-	<div class="vc-track-view-ct0" ref="covertip0"></div>
-	<div class="vc-track-view-lsp"></div>
-	<div class="vc-track-view-cm1" ref="covermid1"></div>
-	<div class="vc-track-view-ct1" ref="covertip1"></div>
+  <div class="b-track-view" >
+    <div class="b-track-view-control">
+      <span class="b-track-view-label">{{ track.get_name() }}</span>
+      <div class="b-track-view-meter">
+	<div class="b-track-view-lbg" ref="levelbg"></div>
+	<div class="b-track-view-cm0" ref="covermid0"></div>
+	<div class="b-track-view-ct0" ref="covertip0"></div>
+	<div class="b-track-view-lsp"></div>
+	<div class="b-track-view-cm1" ref="covermid1"></div>
+	<div class="b-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
   </div>
@@ -30,46 +30,46 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  $vc-track-view-level-height: 3px;
-  $vc-track-view-level-space: 1px;
-  .vc-track-view-lbg {
-    height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
+  $b-track-view-level-height: 3px;
+  $b-track-view-level-space: 1px;
+  .b-track-view-lbg {
+    height: $b-track-view-level-height + $b-track-view-level-space + $b-track-view-level-height;
     --db-zpc: 66.66%;
     background: linear-gradient(to right, #0b0, #bb0 var(--db-zpc), #b00);
   }
-  .vc-track-view-ct0, .vc-track-view-cm0, .vc-track-view-ct1, .vc-track-view-cm1,
-  .vc-track-view-lbg, .vc-track-view-lsp	{ position: absolute; width: 100%; }
-  .vc-track-view-ct0, .vc-track-view-cm0	{ top: 0px; }
-  .vc-track-view-lsp				{ top: $vc-track-view-level-height; height: $vc-track-view-level-space; }
-  .vc-track-view-ct1, .vc-track-view-cm1	{ top: $vc-track-view-level-height + $vc-track-view-level-space; }
-  .vc-track-view-lsp {
+  .b-track-view-ct0, .b-track-view-cm0, .b-track-view-ct1, .b-track-view-cm1,
+  .b-track-view-lbg, .b-track-view-lsp	{ position: absolute; width: 100%; }
+  .b-track-view-ct0, .b-track-view-cm0	{ top: 0px; }
+  .b-track-view-lsp				{ top: $b-track-view-level-height; height: $b-track-view-level-space; }
+  .b-track-view-ct1, .b-track-view-cm1	{ top: $b-track-view-level-height + $b-track-view-level-space; }
+  .b-track-view-lsp {
     background-color: rgba( 0, 0, 0, .80);
   }
-  .vc-track-view-ct0, .vc-track-view-cm0, .vc-track-view-ct1, .vc-track-view-cm1 {
-    height: $vc-track-view-level-height;
+  .b-track-view-ct0, .b-track-view-cm0, .b-track-view-ct1, .b-track-view-cm1 {
+    height: $b-track-view-level-height;
     background-color: rgba( 0, 0, 0, .75);
     transform-origin: center right;
     will-change: transform;
     transform: scaleX(1);
   }
-  .vc-track-view-cm0, .vc-track-view-cm1	{ width: 100%; -x-background-color: red; }
-  .vc-track-view-meter {
-    height: $vc-track-view-level-height + $vc-track-view-level-space + $vc-track-view-level-height;
+  .b-track-view-cm0, .b-track-view-cm1	{ width: 100%; -x-background-color: red; }
+  .b-track-view-meter {
+    height: $b-track-view-level-height + $b-track-view-level-space + $b-track-view-level-height;
     position: relative;
     /* Pushing this element onto its own compositing layer helps to reduce
      * the compositing overhead for the layers contained within.
      */
     will-change: auto;
   }
-  .vc-track-view-control {
+  .b-track-view-control {
     margin-right: 5px;
   }
-  .vc-track-view {
+  .b-track-view {
     display: flex; align-items: center; /* vertical centering */
-    background-color: $vc-button-border;
-    border: 1px solid $vc-button-border;
-    border-radius: $vc-button-radius; }
-  .vc-track-view-label {
+    background-color: $b-button-border;
+    border: 1px solid $b-button-border;
+    border-radius: $b-button-radius; }
+  .b-track-view-label {
     display: inline-block; width: 7em;
     text-overflow: ellipsis;
     overflow: hidden; white-space: nowrap;
@@ -81,7 +81,7 @@ const mindb = -48.0; // -96.0;
 const maxdb =  +6.0; // +12.0;
 
 module.exports = {
-  name: 'vc-track-view',
+  name: 'b-track-view',
   mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },

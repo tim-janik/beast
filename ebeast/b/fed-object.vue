@@ -1,7 +1,7 @@
 <!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
-  # VC-FED-OBJECT
+  # B-FED-OBJECT
   A field-editor for object input.
   A copy of the input value is edited, update notifications are provided via
   an `input` event.
@@ -21,16 +21,16 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-fed-object		{
-    .vc-fed-object-clear	{
+  .b-fed-object		{
+    .b-fed-object-clear	{
       font-size: 1.1em; font-weight: bolder;
       color: #888; background: none; padding: 0 0.1em 0;
-      outline: none; border: 1px solid rgba(0,0,0,0); border-radius: $vc-button-radius;
+      outline: none; border: 1px solid rgba(0,0,0,0); border-radius: $b-button-radius;
       &:hover			{ color: #eb4; }
       &:active			{ color: #3bf; }
 
     } }
-  table.vc-fed-object		{ table-layout: fixed; max-width: 100%;
+  table.b-fed-object		{ table-layout: fixed; max-width: 100%;
     & > tr			{
       & > td			{ overflow-wrap: break-word; }
       & > td:first-child	{ max-width: 40%; }
@@ -40,7 +40,7 @@
 
 <!-- field = [ ident, iscomponent, label, attrs, o, handler ] -->
 <template>
-  <table class="vc-fed-object">
+  <table class="b-fed-object">
     <template v-for="group in list_fields()">
       <tr :key="'group:' + group[0]">
 	<td colspan="3">
@@ -54,7 +54,7 @@
 	<td style="text-align: right" :title="field[3].blurb">
 	  <component :is="field[1]" v-bind="field[3]"
 		     :value="field[4][field[0]]" @input="field[5]"></component></td>
-	<td><button class="vc-fed-object-clear" onfocus="this.blur()" @click="clear_field (field[0])"> ⊗  </button></td>
+	<td><button class="b-fed-object-clear" onfocus="this.blur()" @click="clear_field (field[0])"> ⊗  </button></td>
       </tr>
     </template>
   </table>
@@ -62,7 +62,7 @@
 
 <script>
 module.exports = {
-  name: 'vc-fed-object',
+  name: 'b-fed-object',
   props: {
     readonly:	{ default: false, },
     debounce:	{ default: 0, },
@@ -117,13 +117,13 @@ module.exports = {
 	const handler = (v) => this.apply_field (f, v);
 	let ct = '';			// component type
 	const ft = typeof (o[f]); // FIXME: use td
-	if (ft == "number") {		ct = 'vc-fed-number';
+	if (ft == "number") {		ct = 'b-fed-number';
 	  if (o[f] != 0|o[f]) // not int // FIXME: use td
 	    attrs.allowfloat = true;
 	  // min max
 	}
-	else if (ft == "boolean")	ct = 'vc-fed-switch';
-	else if (ft == "string")	ct = 'vc-fed-text';
+	else if (ft == "boolean")	ct = 'b-fed-switch';
+	else if (ft == "string")	ct = 'b-fed-text';
 	let label = td[f + '.label'] || f;
 	if (ct)
 	  {

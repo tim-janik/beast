@@ -22,13 +22,13 @@ ebeast/js.inputs ::= $(strip 		\
 	ebeast/menus.js			\
 	ebeast/window.html		\
 )
-ebeast/vc/js.inputs	::= $(wildcard ebeast/vc/*.js)
-ebeast/vc/vue.inputs	::= $(wildcard ebeast/vc/*.vue)
-ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/vc/*.scss)
-ebeast/vc/bundle.js.d   ::= $(wildcard ebeast/*.js ebeast/vc/*.js)
-ebeast/vc/bundle.vue.d  ::= $(wildcard ebeast/vc/*.vue)
-ebeast/lint.appfiles    ::= $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d)
-ebeast/vc/scss.inputs	::= $(wildcard ebeast/vc/*.scss)
+ebeast/b/js.inputs	::= $(wildcard ebeast/b/*.js)
+ebeast/b/vue.inputs	::= $(wildcard ebeast/b/*.vue)
+ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
+ebeast/b/bundle.js.d   ::= $(wildcard ebeast/*.js ebeast/b/*.js)
+ebeast/b/bundle.vue.d  ::= $(wildcard ebeast/b/*.vue)
+ebeast/lint.appfiles    ::= $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d)
+ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
 app/copies		::= $(strip 	\
 	$>/app/main.js			\
@@ -86,7 +86,7 @@ $>/ebeast/lint.rules: $(ebeast/lint.appfiles) | $>/ebeast/npm.rules
 	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix $(ebeast/lint.appfiles)
 	@: # check for component pitfalls
-	$Q for f in $(ebeast/vc/vue.inputs) ; do \
+	$Q for f in $(ebeast/b/vue.inputs) ; do \
 	  $(ebeast/sed.uncommentjs) "$$f" | sed -e "s,^,$$f: ," \
 	  | grep --color=auto '\b__dirname\b' \
 	  && { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; exit 9 ; } ; \
@@ -123,7 +123,7 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map true
-$>/app/assets/utilities.js: ebeast/vc/utilities.js	| $>/ebeast/npm.rules
+$>/app/assets/utilities.js: ebeast/b/utilities.js	| $>/ebeast/npm.rules
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
 $>/app/assets/fa-sprites.svg:	 			| $>/app/assets/
@@ -164,12 +164,12 @@ $>/app/assets/tri-w.png: $>/app/assets/tri-n.png
 	$Q mv $@.tmp.png $@
 
 # == assets/components.js ==
-$>/app/assets/components.js: $(ebeast/vc/bundle.js.d) $(ebeast/vc/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
+$>/app/assets/components.js: $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
 	$(QGEN)
 	@: # set NODE_PATH, since browserify fails to search ./node_modules for a ../ entry point
 	$Q cd $>/ebeast/ \
 	  && NODE_PATH=node_modules node_modules/.bin/browserify --node --debug -t vueify \
-		-e ../$(build2srcdir)/ebeast/vc/bundle.js -o ../app/assets/components.js
+		-e ../$(build2srcdir)/ebeast/b/bundle.js -o ../app/assets/components.js
 
 # == installation ==
 ebeast/install: $>/ebeast/app.rules FORCE
@@ -190,11 +190,11 @@ ebeast/run: $>/ebeast/app.rules $>/doc/beast-manual.html
 #	LD_PRELOAD="$>/bse/libbse-$(VERSION_MAJOR).so"
 
 # == ebeast/vue-docs ==
-$>/ebeast/vue-docs.md: $(ebeast/vc/vue.inputs) ebeast/Makefile.mk docs/filt-docs2.py	| $>/ebeast/
+$>/ebeast/vue-docs.md: $(ebeast/b/vue.inputs) ebeast/Makefile.mk docs/filt-docs2.py	| $>/ebeast/
 	$(QGEN)
 	$Q echo -e "<!-- Vue Components -->\n\n"				> $@.tmp
 	@: # extract <docs/> blocks from vue files and feed them into pandoc
-	$Q for f in $(sort $(ebeast/vc/vue.inputs)) ; do \
+	$Q for f in $(sort $(ebeast/b/vue.inputs)) ; do \
 	    echo ""								>>$@.tmp ; \
 	    sed -n '/^<docs>\s*$$/{ :loop n; /^<\/docs>/q; p;  b loop }' <"$$f"	>>$@.tmp \
 	    || exit $$? ; \

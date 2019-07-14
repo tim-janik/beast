@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-HSCROLLBAR
+  # B-HSCROLLBAR
   Vue template to display a horizontal scrollbar.
   ## Props:
   *value*
@@ -10,7 +10,7 @@
 
 <template>
 
-  <div class="vc-hscrollbar" role="scrollbar" aria-orientation="horizontal"
+  <div class="b-hscrollbar" role="scrollbar" aria-orientation="horizontal"
        aria-valuemin="0" aria-valuemax="100" :aria-valuenow="(value * 100).toFixed (2)" >
     <div class="trough" @mousedown="click_drag" >
       <div ref="track" class="track" style="width: 100%" >
@@ -42,7 +42,7 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-hscrollbar {
+  .b-hscrollbar {
     .trough {
       display: flex;
       background-color: #404448;
@@ -72,7 +72,7 @@
 const clamp = (v, mi, ma) => v < mi ? mi : v > ma ? ma : v;
 
 module.exports = {
-  name: 'vc-hscrollbar',
+  name: 'b-hscrollbar',
   data_tmpl: {
     value_: 0,
     percentage_: 0,

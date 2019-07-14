@@ -48,15 +48,15 @@ $.fn.remove_hotkey = function (hotkey, callbacks) {
   hotkey_callbacks.remove (callbacks);
 };
 
-/** Install a *hotkey* handler that executes $.click() and adds the .vc-fakeactive CSS class.
+/** Install a *hotkey* handler that executes $.click() and adds the .b-fakeactive CSS class.
  */
 $.fn.click_hotkey = function (hotkey) {
   let self = this;
   $(document).add_hotkey (hotkey, function (/*event*/) {
-    self.addClass ('vc-fakeactive');
+    self.addClass ('b-fakeactive');
     Util.keyboard_click (self);
     setTimeout (function () {
-      self.removeClass ('vc-fakeactive');
+      self.removeClass ('b-fakeactive');
     }, 45);
   });
   return self;

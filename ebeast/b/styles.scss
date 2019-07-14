@@ -1,0 +1,86 @@
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+// == User Settings & Overrides ==
+@import '../variables.scss';
+
+// == Scss Helper Functions ==
+@import 'cssaux.scss';
+
+// == Variables ==
+// Only put *!default* definitions here, so `variables.scss` takes precedence.
+
+// theme basics
+$b-theme-font-family:		sans-serif !default;
+$b-theme-foreground: 		#ffffff !default;
+$b-theme-background: 		#505050 !default;
+$b-theme-border-radius:	3px !default;
+$b-panel-background-lg0:	lighten($b-theme-background, 1%) !default;
+$b-panel-background-lg1:	darken($b-theme-background, 1%) !default;
+$b-panel-background-lg:	linear-gradient(to bottom, $b-panel-background-lg0 0%, $b-panel-background-lg1 100%) !default;
+$b-panel-background-border:	darken($b-theme-background, 25%) !default;
+$b-panel-background-light:	lighten($b-theme-background, 9%) !default;
+$b-panel-background-dark:	darken($b-theme-background, 9%) !default;
+$b-toolbar-background:		#606060 !default;
+$b-toolbar-background-lg:	linear-gradient(to bottom, #666666 0%, #5a5a5a 100%) !default;
+$b-button-foreground:   	#dddddd !default;
+$b-button-light:   		#999999 !default;
+$b-button-lg:      		linear-gradient(to bottom, #777777 0%, #707070 45%, #606060 55%, #555555 100%) !default;
+$b-button-dark:    		#444444 !default;
+$b-button-radius:		$b-theme-border-radius !default;
+$b-button-border:   		#333333 !default;
+$b-button-hover:		fade(#ffffff, 10%) !default;
+$b-button-active:		fade(#000000, 20%) !default;
+$b-button-active-fg:		#bbbbbb !default;
+$b-button-active-lg:     	linear-gradient(to bottom, #606060 0%, #707070 50%, #606060 100%) !default;
+$b-button-active-border:	#555555 !default;
+$b-glow-control:		#0080ff !default;
+$b-switch-inactive:		#999999 !default;
+$b-switch-active:		#2080f0 !default;
+$b-switch-knob:		$b-button-foreground !default;
+$b-focus-outline:		1px solid $b-glow-control !default;	// suitable for rectangular outlines
+$b-focus-box-shadow:		0 0 0 1px $b-glow-control !default;	// suitable for rounded outlines
+$b-boxshadow-color:		fade(#000000, 30%) !default;
+$b-scrollbar-thickness:	7px !default;
+
+// b-track-list
+$b-track-list-row-height: 2em !default;
+
+// b-part-thumb
+$b-part-thumb-font: bold 0.75em $b-theme-font-family !default; // format: italic small-caps bold 12px serif
+$b-part-thumb-font-color: rgba(255, 255, 255, 0.7) !default;
+$b-part-thumb-note-color: rgba(255, 255, 255, 0.7) !default;
+$b-part-thumb-colors: #ff7b50, #f68403, #d6960e, #92ad19, #67b518, #22bb27, #21b873, #24b3b3, #11adeb, #799fff, #a094ff, #c287ff, #e473ff, #ff5ff5, #ff70b0 !default;
+
+// b-piano-roll
+$b-piano-roll-font:	     	bold 0.75em $b-theme-font-family !default;	// format: italic small-caps bold 12px serif
+$b-piano-roll-font-color:   	rgba(5, 5, 5, 0.7) !default;
+$b-piano-roll-light-row:    	#303030 !default;		// background row color for notes
+$b-piano-roll-dark-row:     	#272727 !default;		// background row color for notes
+$b-piano-roll-semitone12:   	#555555 !default;		// separator per octave
+$b-piano-roll-semitone6:    	#555555 !default;		// separator after 6 semitones
+$b-piano-roll-grid-main1:   	#555555 !default;		// separator, usually per measure
+$b-piano-roll-grid-sub1:    	#3b3b3b !default;		// separator, usually per quarter
+$b-piano-roll-white-base:   	#cccccc !default;		// base color for white piano key
+$b-piano-roll-white-glint:  	#eeeeee !default;		// highlight on white piano key
+$b-piano-roll-white-border: 	#111111 !default;		// border around white piano key
+$b-piano-roll-black-base:   	#181818 !default;		// base color for black piano key
+$b-piano-roll-black-glint:  	#3a3a3a !default;		// highlight on black piano key
+$b-piano-roll-black-shine:  	#666666 !default;		// reflection on black piano key
+$b-piano-roll-black-border: 	#222222 !default;		// border around black piano key
+$b-piano-roll-key-font:     	bold 9px $b-theme-font-family !default;   	// the '9px' part is dynamically resized
+$b-piano-roll-key-font-color:  #221111 !default;
+$b-piano-roll-note-font:      	normal 9px $b-theme-font-family !default; 	// the '9px' part is dynamically resized
+$b-piano-roll-note-font-color:	#88cc88 !default;
+$b-piano-roll-key-length:	88px !default;
+$b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size must fit into b-piano-roll-key-length
+
+// == Mixins ==
+@mixin b-buttonframe() 	{ border: 1px solid $b-button-border; }
+@mixin b-buttonshade() 	{ background-image: $b-button-lg;
+				  border-top: 1px solid $b-button-light; border-left: 1px solid $b-button-light;
+				  border-bottom: 1px solid $b-button-dark; border-right: 1px solid $b-button-dark; }
+@mixin b-buttonhover()		{ box-shadow: inset 500px 500px $b-button-hover; }
+@mixin b-buttonactive()	{ box-shadow: inset 500px 500px $b-button-active;
+				  background-image: $b-button-active-lg;
+				  border-color: $b-button-active-border; }
+@mixin b-popup-box-shadow()	{ box-shadow: 0 2px 8px $b-boxshadow-color; }

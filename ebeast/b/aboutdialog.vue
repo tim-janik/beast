@@ -1,8 +1,8 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-ABOUTDIALOG
-  A [vc-modaldialog] that displays version information about Beast.
+  # B-ABOUTDIALOG
+  A [b-modaldialog] that displays version information about Beast.
   ## Events:
   *close*
   : A *close* event is emitted once the "Close" button activated.
@@ -10,14 +10,14 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-aboutdialog .vc-modaldialog-container	{ max-width: 70em; }
-  .vc-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
-  .vc-aboutdialog th	{ text-align: right; padding-right: .5em; min-width: 15em; }
-  .vc-aboutdialog td	{ max-width: 50%; overflow-wrap: break-word; }
+  .b-aboutdialog .b-modaldialog-container	{ max-width: 70em; }
+  .b-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
+  .b-aboutdialog th	{ text-align: right; padding-right: .5em; min-width: 15em; }
+  .b-aboutdialog td	{ max-width: 50%; overflow-wrap: break-word; }
 </style>
 
 <template>
-  <vc-modaldialog class="vc-aboutdialog" @close="$emit ('close')">
+  <b-modaldialog class="b-aboutdialog" @close="$emit ('close')">
     <div slot="header">About BEAST</div>
     <slot></slot>
     <table>
@@ -26,7 +26,7 @@
 	<td>{{ p[1] }}</td>
       </tr>
     </table>
-  </vc-modaldialog>
+  </b-modaldialog>
 </template>
 
 <script>
@@ -54,7 +54,7 @@ function about_pairs() {
   ];
 }
 module.exports = {
-  name: 'vc-aboutdialog',
+  name: 'b-aboutdialog',
   data: function() { return { info_pairs: about_pairs() }; },
   methods: {
     dummy (method, e) {
