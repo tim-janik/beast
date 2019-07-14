@@ -1,7 +1,7 @@
 <!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
-  # VC-FED-TEXT
+  # B-FED-TEXT
   A field-editor for text input.
   ## Properties:
   *value*
@@ -15,18 +15,18 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-fed-text		{
+  .b-fed-text		{
     input		{
-      outline-width: 0; border: none; border-radius: $vc-button-radius;
+      outline-width: 0; border: none; border-radius: $b-button-radius;
       text-align: left; background-color: rgba(255,255,255,.3); color: #fff;
-      padding-left: $vc-button-radius; padding-right: $vc-button-radius;
-      &:focus		{ box-shadow: $vc-focus-box-shadow; }
+      padding-left: $b-button-radius; padding-right: $b-button-radius;
+      &:focus		{ box-shadow: $b-focus-box-shadow; }
     }
   }
 </style>
 
 <template>
-  <label class="vc-fed-text">
+  <label class="b-fed-text">
     <input ref="texttype" type="text" :readonly="readonly" :style="textstyle()" :placeholder="placeholder"
 	   :value="value" @input="emit_input_value ($event.target.value)" >
   </label>
@@ -34,7 +34,7 @@
 
 <script>
 module.exports = {
-  name: 'vc-fed-text',
+  name: 'b-fed-text',
   props: {
     value:	{ type: String, },
     readonly:	{ type: Boolean, default: false, },

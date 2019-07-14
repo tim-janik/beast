@@ -1,7 +1,7 @@
 <!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
-  # VC-FED-NUMBER
+  # B-FED-NUMBER
   A field-editor for integer or floating point number ranges.
   The input `value` will be constrained to take on an amount between `min` and `max` inclusively.
   ## Properties:
@@ -24,14 +24,14 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-fed-number        {
+  .b-fed-number        {
     input[type='number'] {
       text-align: right; background-color: rgba(255,255,255,.3); color: #fff;
-      outline-width: 0; border: none; border-radius: $vc-button-radius;
-      &:focus		{ box-shadow: $vc-focus-box-shadow; }
+      outline-width: 0; border: none; border-radius: $b-button-radius;
+      &:focus		{ box-shadow: $b-focus-box-shadow; }
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
-	margin-left: 0.25em; margin-right: $vc-button-radius; width: 0.75em; opacity: .5;
+	margin-left: 0.25em; margin-right: $b-button-radius; width: 0.75em; opacity: .5;
 	// -webkit-appearance: none; display: none;
       }
     }
@@ -43,7 +43,7 @@
 </style>
 
 <template>
-  <label class="vc-fed-number tabular-nums">
+  <label class="b-fed-number tabular-nums">
     <input ref="slidertype" v-if="withslider" type="range" onfocus="this.blur()" tabindex="-1"
 	   :min="fmin()" :max="fmax()" :step="slidersteps()" :disabled="readonly"
 	   :value="value" @input="emit_input_value ($event.target.value)" >
@@ -55,7 +55,7 @@
 
 <script>
 module.exports = {
-  name: 'vc-fed-number',
+  name: 'b-fed-number',
   // https://vuejs.org/v2/guide/components.html#Using-v-model-on-Components
   props: {
     value:	{ type: [ String, Number ], },

@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-BUTTON-BAR
+  # B-BUTTON-BAR
   A Vue container for tight packing of buttons.
   ## Slots:
   *slot*
@@ -10,26 +10,26 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-button-bar {
-      display: inline-flex; background-color: $vc-button-border;
-      border: 1px solid $vc-button-border;
-      border-radius: $vc-button-radius; }
-  .vc-button-bar .vc-button,
-  .vc-button-bar button			{ margin: 0 0 0 1px; }
-  .vc-button-bar .vc-button:first-of-type,
-  .vc-button-bar button:first-of-type	{ margin-left: 0; }
-  .vc-button-bar > .vc-button:first-of-type,
-  .vc-button-bar > button:first-of-type	{ border-top-left-radius: $vc-button-radius; border-bottom-left-radius: $vc-button-radius; }
-  .vc-button-bar > .vc-button:last-of-type,
-  .vc-button-bar > button:last-of-type	{ border-top-right-radius: $vc-button-radius; border-bottom-right-radius: $vc-button-radius; }
+  .b-button-bar {
+      display: inline-flex; background-color: $b-button-border;
+      border: 1px solid $b-button-border;
+      border-radius: $b-button-radius; }
+  .b-button-bar .b-button,
+  .b-button-bar button			{ margin: 0 0 0 1px; }
+  .b-button-bar .b-button:first-of-type,
+  .b-button-bar button:first-of-type	{ margin-left: 0; }
+  .b-button-bar > .b-button:first-of-type,
+  .b-button-bar > button:first-of-type	{ border-top-left-radius: $b-button-radius; border-bottom-left-radius: $b-button-radius; }
+  .b-button-bar > .b-button:last-of-type,
+  .b-button-bar > button:last-of-type	{ border-top-right-radius: $b-button-radius; border-bottom-right-radius: $b-button-radius; }
 </style>
 
 <template>
-  <span class="vc-button-bar" ><slot class="vc-slot"></slot></span>
+  <span class="b-button-bar" ><slot class="b-slot"></slot></span>
 </template>
 
 <script>
 module.exports = {
-  name: 'vc-button-bar',
+  name: 'b-button-bar',
 };
 </script>

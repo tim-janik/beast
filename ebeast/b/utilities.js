@@ -306,7 +306,7 @@ function compute_style_properties (el, obj) {
 exports.compute_style_properties = compute_style_properties;
 
 const modal_mouse_guard = function (ev) {
-  for (let shield of document._vc_modal_shields)
+  for (let shield of document._b_modal_shields)
     if (!ev.cancelBubble) {
       if (ev.target == shield) {
 	ev.preventDefault();
@@ -318,7 +318,7 @@ const modal_mouse_guard = function (ev) {
 
 const modal_keyboard_guard = function (ev) {
   const ESCAPE = 27;
-  for (let shield of document._vc_modal_shields)
+  for (let shield of document._b_modal_shields)
     if (!ev.cancelBubble) {
       if (event.keyCode == ESCAPE) {
 	ev.preventDefault();
@@ -365,14 +365,14 @@ function modal_shield (close_handler, preserve_element, opts = {}) {
   // prevent focus during modal shield
   const focus_guard = install_focus_guard (preserve_element);
   // keep a shield list and handle keyboard / mouse events on the shield
-  if (!(document._vc_modal_shields instanceof Array)) {
-    document._vc_modal_shields = [];
+  if (!(document._b_modal_shields instanceof Array)) {
+    document._b_modal_shields = [];
     document.addEventListener ('mousedown', modal_mouse_guard);
     document.addEventListener ('keydown', modal_keyboard_guard);
   }
   // install shield element on <body/>
   const shield = document.createElement ("div");
-  document._vc_modal_shields.unshift (shield);
+  document._b_modal_shields.unshift (shield);
   shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
 		 'background-color: rgba(0,0,0,0.60);';
   document.body.appendChild (shield);
@@ -416,7 +416,7 @@ function modal_shield (close_handler, preserve_element, opts = {}) {
       }
     if (shield.parentNode)
       shield.parentNode.removeChild (shield);
-    array_remove (document._vc_modal_shields, shield);
+    array_remove (document._b_modal_shields, shield);
     focus_guard.restore();
     if (close_handler && call_handler) {
       const close_handler_once = close_handler;
@@ -434,18 +434,18 @@ const prevent_focus = (array, node, preserve) => {
     return;
   if (node.tabIndex > -1)
     {
-      if (node._vc_focus_guard > 0)
-	node._vc_focus_guard += 1;
+      if (node._b_focus_guard > 0)
+	node._b_focus_guard += 1;
       else {
-	node._vc_focus_guard = 1;
-	node._vc_focus_guard_tabIndex = node.tabIndex;
+	node._b_focus_guard = 1;
+	node._b_focus_guard_tabIndex = node.tabIndex;
 	node.tabIndex = -1;
       }
       array.push (node);
     }
-  else if (node._vc_focus_guard > 0)
+  else if (node._b_focus_guard > 0)
     {
-      node._vc_focus_guard += 1;
+      node._b_focus_guard += 1;
       array.push (node);
     }
   if (node.firstChild)
@@ -456,12 +456,12 @@ const prevent_focus = (array, node, preserve) => {
 
 /** Restore `node`s focus ability when the last focus guard is destroyed */
 const restore_focus = (node) => {
-  if (node._vc_focus_guard > 0) {
-    node._vc_focus_guard -= 1;
-    if (node._vc_focus_guard == 0) {
-      const tabIndex = node._vc_focus_guard_tabIndex;
-      delete node._vc_focus_guard_tabIndex;
-      delete node._vc_focus_guard;
+  if (node._b_focus_guard > 0) {
+    node._b_focus_guard -= 1;
+    if (node._b_focus_guard == 0) {
+      const tabIndex = node._b_focus_guard_tabIndex;
+      delete node._b_focus_guard_tabIndex;
+      delete node._b_focus_guard;
       node.tabIndex = tabIndex;
     }
   }
@@ -491,7 +491,7 @@ function install_focus_guard (preserve_element) {
   // disable focusable elements outside of preserve_element
   prevent_focus (guard.elements, document, preserve_element);
   // remove focus if the current focus is a guarded element
-  if (document.activeElement && document.activeElement._vc_focus_guard > 0)
+  if (document.activeElement && document.activeElement._b_focus_guard > 0)
     document.activeElement.blur();
   return guard;
 }

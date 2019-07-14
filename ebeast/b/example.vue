@@ -1,7 +1,7 @@
 <!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
-  # VC-EXAMPLE
+  # B-EXAMPLE
   A collection of Vue documentation pointers and notes on idiomatic use.
   ## Attr:
   Attributes set on a component are by default transferred to its root element, see:
@@ -20,19 +20,19 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-example		{ /* component specific CSS */ }
-  .vc-example-slot	{ /* all classes must use component prefixes */ }
+  .b-example		{ /* component specific CSS */ }
+  .b-example-slot	{ /* all classes must use component prefixes */ }
 </style>
 
 <template>
-  <span class="vc-example">
-    <slot class="vc-example-slot"></slot>
+  <span class="b-example">
+    <slot class="b-example-slot"></slot>
   </span>
 </template>
 
 <script>
 module.exports = {
-  name: 'vc-example',
+  name: 'b-example',
   mixins: [ Util.vue_mixins.dom_updated, ],	// Always call the dom_updated() method
   props: { valuefromparent: String, },
   computed: {

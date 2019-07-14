@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-PROJECTSHELL
+  # B-PROJECTSHELL
   Shell for editing and display of a Bse.Project.
   ## Props:
   *project*
@@ -9,29 +9,29 @@
 </docs>
 
 <template>
-  <div class="vc-projectshell">
-    <div class="vc-projectshell-track-area">
+  <div class="b-projectshell">
+    <div class="b-projectshell-track-area">
       Project Shell:
-      <vc-playcontrols :project="project"> </vc-playcontrols>
-      <vc-track-list :song="song"></vc-track-list>
+      <b-playcontrols :project="project"> </b-playcontrols>
+      <b-track-list :song="song"></b-track-list>
     </div>
-    <div class="vc-projectshell-part-area" style="display: flex; overflow: hidden;" >
-      <vc-piano-roll :piano-part="piano_roll_part" ></vc-piano-roll>
+    <div class="b-projectshell-part-area" style="display: flex; overflow: hidden;" >
+      <b-piano-roll :piano-part="piano_roll_part" ></b-piano-roll>
     </div>
   </div>
 </template>
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-projectshell { }
-  .vc-projectshell-part-area {
-    background-color: $vc-button-border;
+  .b-projectshell { }
+  .b-projectshell-part-area {
+    background-color: $b-button-border;
     height: 350px; }
 </style>
 
 <script>
 module.exports = {
-  name: 'vc-projectshell',
+  name: 'b-projectshell',
   data_tmpl: {
     piano_roll_part: undefined,
     show_about_dialog: false,
@@ -66,7 +66,7 @@ module.exports = {
     this.load_project();
     // load_project() also forces an update with new Shell properties in place
   },
-  provide () { return { 'vc-projectshell': this }; },
+  provide () { return { 'b-projectshell': this }; },
   methods: {
     open_part_edit (part) {
       assert (part == undefined || part instanceof Bse.Part);

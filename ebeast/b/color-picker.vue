@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-COLOR-PICKER
+  # B-COLOR-PICKER
   Vue template to display a color picker popup.
   ## Props:
   *initial-color*
@@ -13,15 +13,15 @@
 
 <template>
 
-  <div class="vc-color-picker" style="position: relative; display: flex;" >
+  <div class="b-color-picker" style="position: relative; display: flex;" >
     <button :style="{ 'background-color': color, color: contrast }" @click="open_dropdown()" ><slot>⁜</slot></button>
-    <div v-if="visible_dropdown" ref="dropdown" class="vc-color-picker-dropdown"
+    <div v-if="visible_dropdown" ref="dropdown" class="b-color-picker-dropdown"
 	 style="display: flex; flex-direction: column; position: absolute; z-index: 91; top: 100%;
 		box-shadow: 3px 3px 16px 0px rgba(0,0,0,0.9);
 		background-color: #4e4e4e; color: #f1f1f1; font-size: 1rem; padding: 10px; " >
       <div style="display: flex; flex-direction: row;"
 	   v-for="(row, row_index) in color_rows" :key="'row-' + row_index" >
-	<div class="vc-color-picker-entry vc-data-tooltip"
+	<div class="b-color-picker-entry b-data-tooltip"
 	     v-for="(item, index) in row"
 	     @click="select (item[0])"
 	     :data-tooltip=" item[1] + '   ' + item[0] + '' "
@@ -35,32 +35,32 @@
 <style lang="scss">
   @import 'styles.scss';
 
-  .vc-color-picker {
+  .b-color-picker {
     * {
       flex-shrink: 0;
     }
     button {
       cursor: pointer;
     }
-    .vc-color-picker-dropdown {
+    .b-color-picker-dropdown {
     }
-    .vc-color-picker-entry {
+    .b-color-picker-entry {
       margin: 1px;
       width:  20px;
       height: 20px;
       border: 1px solid #777;
     }
 
-    .vc-data-tooltip {
+    .b-data-tooltip {
       position: relative;
       text-decoration: none;
     }
-    .vc-data-tooltip:before, .vc-data-tooltip:after {
+    .b-data-tooltip:before, .b-data-tooltip:after {
       position: absolute; bottom: 100%;
       visibility: hidden; opacity: 0; pointer-events: none;
       transition: all 0.2s ease-in-out 0.15s;
     }
-    .vc-data-tooltip:before {
+    .b-data-tooltip:before {
       left: 20%; padding: 5px 11px;
       box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.8) , 0px 0px 6px 1px rgba(255,255,255,0.3) ;
       color: #fef033; background: linear-gradient(#333, #2a2a2a);
@@ -69,11 +69,11 @@
       margin-left: -7px;
       margin-bottom: 9px;
     }
-    .vc-data-tooltip:after { /* tooltip bubble triangle */
+    .b-data-tooltip:after { /* tooltip bubble triangle */
       left: 50%; width: 0; height: 0; content: "";
       border-top: 9px solid #2a2a2a; border-right: 9px solid transparent;
     }
-    .vc-data-tooltip:hover:after, .vc-data-tooltip:hover:before {
+    .b-data-tooltip:hover:after, .b-data-tooltip:hover:before {
       visibility: visible;
       opacity: 1;
     }
@@ -83,7 +83,7 @@
 
 <script>
 module.exports = {
-  name: 'vc-color-picker',
+  name: 'b-color-picker',
   mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     'initial-color': { type: String, default: '#808080' },

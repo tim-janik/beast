@@ -1,7 +1,7 @@
 <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 
 <docs>
-  # VC-PIANO-ROLL
+  # B-PIANO-ROLL
   A Vue template to display a Bse.part as a piano roll.
   ## Props:
   *piano-part*
@@ -15,15 +15,15 @@
 
 <template>
 
-  <div class="vc-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
+  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
     <div style="display: flex; width: 100%; flex-shrink: 0;">
-      <div ref="piano-roll-buttons" class="vc-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
+      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
 	<button >I</button>
 	<button >m</button>
 	<button >q</button>
-	<vc-color-picker style="flex-shrink: 1" ></vc-color-picker>
+	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
       </div>
-      <vc-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></vc-hscrollbar>
+      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
     </div>
     <div ref="scrollcontainer" style="overflow-y: scroll" >
       <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
@@ -34,8 +34,8 @@
 		     width: '100%',
 		     'background-color': 'blue',
 		     }" >
-	  <canvas ref="piano-canvas" class="vc-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="vc-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
 	</div>
       </div>
     </div>
@@ -45,40 +45,40 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .vc-piano-roll {
+  .b-piano-roll {
     border: 1px solid red;
   }
-  .vc-piano-roll-buttons {
-    font: $vc-piano-roll-buttons-font;
+  .b-piano-roll-buttons {
+    font: $b-piano-roll-buttons-font;
   }
-  .vc-piano-roll canvas {
+  .b-piano-roll canvas {
     display: block;
     image-rendering: pixelated /*ff: crisp-edges*/;
-    --piano-roll-light-row:    		#{$vc-piano-roll-light-row};
-    --piano-roll-dark-row:     		#{$vc-piano-roll-dark-row};
-    --piano-roll-semitone12:   		#{$vc-piano-roll-semitone12};
-    --piano-roll-semitone6:    		#{$vc-piano-roll-semitone6};
-    --piano-roll-grid-main1:   		#{$vc-piano-roll-grid-main1};
-    --piano-roll-grid-sub1:    		#{$vc-piano-roll-grid-sub1};
-    --piano-roll-white-base:   		#{$vc-piano-roll-white-base};
-    --piano-roll-white-glint:  		#{$vc-piano-roll-white-glint};
-    --piano-roll-white-border: 		#{$vc-piano-roll-white-border};
-    --piano-roll-black-base:   		#{$vc-piano-roll-black-base};
-    --piano-roll-black-glint:  		#{$vc-piano-roll-black-glint};
-    --piano-roll-black-shine:  		#{$vc-piano-roll-black-shine};
-    --piano-roll-black-border: 		#{$vc-piano-roll-black-border};
-    --piano-roll-key-font:     		#{$vc-piano-roll-key-font};
-    --piano-roll-key-font-color: 	#{$vc-piano-roll-key-font-color};
-    --piano-roll-note-font:    		#{$vc-piano-roll-note-font};
-    --piano-roll-note-font-color:	#{$vc-piano-roll-note-font-color};
+    --piano-roll-light-row:    		#{$b-piano-roll-light-row};
+    --piano-roll-dark-row:     		#{$b-piano-roll-dark-row};
+    --piano-roll-semitone12:   		#{$b-piano-roll-semitone12};
+    --piano-roll-semitone6:    		#{$b-piano-roll-semitone6};
+    --piano-roll-grid-main1:   		#{$b-piano-roll-grid-main1};
+    --piano-roll-grid-sub1:    		#{$b-piano-roll-grid-sub1};
+    --piano-roll-white-base:   		#{$b-piano-roll-white-base};
+    --piano-roll-white-glint:  		#{$b-piano-roll-white-glint};
+    --piano-roll-white-border: 		#{$b-piano-roll-white-border};
+    --piano-roll-black-base:   		#{$b-piano-roll-black-base};
+    --piano-roll-black-glint:  		#{$b-piano-roll-black-glint};
+    --piano-roll-black-shine:  		#{$b-piano-roll-black-shine};
+    --piano-roll-black-border: 		#{$b-piano-roll-black-border};
+    --piano-roll-key-font:     		#{$b-piano-roll-key-font};
+    --piano-roll-key-font-color: 	#{$b-piano-roll-key-font-color};
+    --piano-roll-note-font:    		#{$b-piano-roll-note-font};
+    --piano-roll-note-font-color:	#{$b-piano-roll-note-font-color};
   }
-  .vc-piano-roll-piano {
-    --piano-roll-font: #{$vc-piano-roll-font};
-    --piano-roll-font-color: #{$vc-piano-roll-font-color};
-    --piano-roll-key-length: #{$vc-piano-roll-key-length};
-    width: $vc-piano-roll-key-length;
+  .b-piano-roll-piano {
+    --piano-roll-font: #{$b-piano-roll-font};
+    --piano-roll-font-color: #{$b-piano-roll-font-color};
+    --piano-roll-key-length: #{$b-piano-roll-key-length};
+    width: $b-piano-roll-key-length;
   }
-  .vc-piano-roll-notes {
+  .b-piano-roll-notes {
   }
 </style>
 
@@ -87,7 +87,7 @@ const floor = Math.floor, round = Math.round;
 const piano_roll_cssheight = 841;
 
 module.exports = {
-  name: 'vc-piano-roll',
+  name: 'b-piano-roll',
   mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
     'piano-part': [Bse.Part],
