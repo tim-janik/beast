@@ -20,6 +20,7 @@ const vue_components = [
   require ('./fed-object.vue'),
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
+  require ('./flex.vue'),
   require ('./hscrollbar.vue'),
   require ('./modaldialog.vue'),
   require ('./part-list.vue'),
