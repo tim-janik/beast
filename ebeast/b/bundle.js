@@ -22,6 +22,7 @@ const vue_components = [
   require ('./fed-text.vue'),
   require ('./flex.vue'),
   require ('./hflex.vue'),
+  require ('./vflex.vue'),
   require ('./hscrollbar.vue'),
   require ('./modaldialog.vue'),
   require ('./part-list.vue'),
