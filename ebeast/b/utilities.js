@@ -309,30 +309,7 @@ function compute_style_properties (el, obj) {
 }
 exports.compute_style_properties = compute_style_properties;
 
-const modal_mouse_guard = function (ev) {
-  for (let shield of document._b_modal_shields)
-    if (!ev.cancelBubble) {
-      if (ev.target == shield) {
-	ev.preventDefault();
-	ev.stopPropagation();
-	shield.destroy();
-      }
-    }
-};
-
-const modal_keyboard_guard = function (ev) {
-  const ESCAPE = 27;
-  for (let shield of document._b_modal_shields)
-    if (!ev.cancelBubble) {
-      if (event.keyCode == ESCAPE) {
-	ev.preventDefault();
-	ev.stopPropagation();
-	shield.destroy();
-      }
-    }
-};
-
-/// List all elements that can take focus and are descendants of `element` or the document.
+/** List all elements that can take focus and are descendants of `element` or the document. */
 function list_focusables (element)
 {
   if (!element)
@@ -363,6 +340,29 @@ function list_focusables (element)
   return array;
 }
 exports.list_focusables = list_focusables;
+
+const modal_mouse_guard = function (ev) {
+  for (let shield of document._b_modal_shields)
+    if (!ev.cancelBubble) {
+      if (ev.target == shield) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
+
+const modal_keyboard_guard = function (ev) {
+  const ESCAPE = 27; // FIXME
+  for (let shield of document._b_modal_shields)
+    if (!ev.cancelBubble) {
+      if (event.keyCode == ESCAPE) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	shield.destroy();
+      }
+    }
+};
 
 /** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
 function modal_shield (close_handler, preserve_element, opts = {}) {
