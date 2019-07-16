@@ -90,6 +90,19 @@ function clamp (x, min, max) {
 }
 exports.clamp = clamp;
 
+/** Create a Vue component provide() function that forwards selected properties. */
+function fwdprovide (injectname, keys) {
+  return function() {
+    const proxy = {};
+    for (let key of keys)
+      Object.defineProperty (proxy, key, { enumerable: true, get: () => this[key], });
+    const provide_defs = {};
+    provide_defs[injectname] = proxy;
+    return provide_defs;
+  };
+}
+exports.fwdprovide = fwdprovide;
+
 /** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
 exports.vue_mixins.data_tmpl = {
   beforeCreate: function () {
