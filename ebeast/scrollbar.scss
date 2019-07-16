@@ -15,11 +15,11 @@ $scrollbar-shadow-rgba:		rgba(0, 0, 0, 0.25);
 // == Scrollbars ==
 ::-webkit-scrollbar {
   height: $webkit-scrollbar-size; width: $webkit-scrollbar-size;
-  background: $theme-background;
+  background: $b-main-background;
   border-radius: 0; border: none;
 }
 ::-webkit-scrollbar-corner {
-  background: $theme-background;
+  background: $b-main-background;
 }
 
 // track
