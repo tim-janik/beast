@@ -48,6 +48,7 @@ app/generated 		::= $(strip	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
 	$>/app/assets/utilities.js	\
+	$>/app/assets/material-icons.css \
 )
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
@@ -126,6 +127,16 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 $>/app/assets/utilities.js: ebeast/b/utilities.js	| $>/ebeast/npm.rules
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
+$>/app/assets/material-icons.css:			| $>/app/assets/
+	$(QECHO) FETCH material-icons-190326.1.tar.xz
+	$Q cd $>/app/assets/ \
+	     $(call AND_DOWNLOAD_SHAURL, \
+		53eba258da6170f5aa3925579f1552ef7d7a06d5b762260efac5e26d5f95e721, \
+		  https://github.com/tim-janik/assets/releases/download/material-icons-190326.1/material-icons-190326.1.tar.xz)
+	$(QGEN)
+	$Q tar -C $>/app/assets/ -xf $>/app/assets/material-icons-190326.1.tar.xz
+	$Q mv $>/app/assets/material-icons/material-icons.woff2 $>/app/assets/material-icons/material-icons.css $>/app/assets/
+	$Q rm $>/app/assets/material-icons-190326.1.tar.xz && rm -r $>/app/assets/material-icons/
 $>/app/assets/fa-sprites.svg:	 			| $>/app/assets/
 	$(QECHO) FETCH fork-awesome-sprites-0.1.svg.xz
 	$Q cd $>/app/assets/ \
