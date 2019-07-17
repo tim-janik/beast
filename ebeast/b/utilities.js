@@ -356,75 +356,141 @@ function list_focusables (element)
 }
 exports.list_focusables = list_focusables;
 
-/** Installing a FocusCycler attempts to keep a `body` descendant focused at all times */
-class FocusCycler {
+/** Install a FocusGuard to allow only a restricted set of elements to get focus. */
+class FocusGuard {
   defaults() { return {
-    last: null,
-    timer: 0,
-    event_handler: undefined,
+    updown_focus: true,
+    updown_cycling: false,
+    focus_root_list: [],
+    last_focus: undefined,
   }; }
-  constructor() {
+  constructor () {
     Object.assign (this, this.defaults());
-    // avoid window loosing focus
-    const event_handler = this.handle_event.bind (this);
-    window.addEventListener ('focusin', event_handler, { passive: true });
-    window.addEventListener ('blur', event_handler, { passive: true });
-    this.event_handler = event_handler;
-    this.handle_event ({ type: 'blur' });
+    window.addEventListener ('focusin', this.focusin_handler.bind (this), true);
+    window.addEventListener ('keydown', this.keydown_handler.bind (this), true);
+    if (document.activeElement && document.activeElement != document.body)
+      this.last_focus = document.activeElement;
+    // Related: https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets
   }
-  destroy() {
-    if (this.timer)
-      {
-	clearTimeout (this.timer);
-	this.timer = 0;
-      }
-    if (this.event_handler)
-      {
-	const event_handler = this.event_handler;
-	this.event_handler = undefined;
-	window.removeEventListener ('blur', event_handler, { passive: true });
-	window.removeEventListener ('focusin', event_handler, { passive: true });
-      }
+  push_focus_root (element) {
+    const current_focus = document.activeElement && document.activeElement != document.body ? document.activeElement : undefined;
+    this.focus_root_list.push ([ element, current_focus]);
+    if (current_focus)
+      this.focus_changed (current_focus, false);
   }
-  handle_event (event) {
-    if (event.type == 'focusin')
-      this.last = event.target;
-    if (event.type == 'blur' && !this.timer)
-      this.timer = setTimeout (() => {
-	this.timer = 0;
-	this.check_focus();
-      }, 0);
+  remove_focus_root (element) {
+    if (this.last_focus && !this.last_focus.parentElement)
+      this.last_focus = undefined;	// cleanup to allow GC
+    for (let i = 0; i < this.focus_root_list.length; i++)
+      if (this.focus_root_list[i][0] === element)
+	{
+	  const saved_focus = this.focus_root_list[i][1];
+	  this.focus_root_list.splice (i, 1);
+	  if (saved_focus)
+	    saved_focus.focus(); // try restoring focus
+	  return true;
+	}
+    return false;
   }
-  check_focus () {
-    // re-focus if possible
-    if (!document.activeElement || document.activeElement == document.body)
+  focusin_handler (event) {
+    return this.focus_changed (event.target);
+  }
+  focus_changed (target, refocus = true) {
+    if (this.focus_root_list.length == 0 || !document.activeElement ||
+	document.activeElement == document.body)
+      return false; // not interfering
+    const focuslist = list_focusables (this.focus_root_list[0][0]);
+    const idx = focuslist.indexOf (target);
+    if (idx < 0) // invalid element gaining focus
       {
-	const focuslist = list_focusables();
-	if (focuslist.length)
+	document.activeElement.blur();
+	if (refocus && this.last_focus && focuslist.length)
 	  {
-	    const lastidx = this.last ? focuslist.indexOf (this.last) : -1;
+	    const lastidx = focuslist.indexOf (this.last_focus);
 	    let newidx = 0;
 	    if (lastidx >= 0 && lastidx < focuslist.length / 2)
 	      newidx = focuslist.length - 1;
 	    focuslist[newidx].focus();
 	  }
+	return true;
       }
+    else
+      this.last_focus = document.activeElement;
+    return false; // not interfering
+  }
+  keydown_handler (event) {
+    const up = event.keyCode == KeyCode.UP;
+    const down = event.keyCode == KeyCode.DOWN;
+    const home = event.keyCode == KeyCode.HOME;
+    const end = event.keyCode == KeyCode.END;
+    if (this.focus_root_list.length == 0 || !this.updown_focus ||
+	!(up || down || home || end))
+      return false; // not interfering
+    const root = this.focus_root_list[0][0];
+    const focuslist = list_focusables (root);
+    if (!focuslist)
+      return false; // not interfering
+    let idx = focuslist.indexOf (document.activeElement);
+    if (idx < 0 && (up || down))
+      { // re-focus last element if possible
+	idx = focuslist.indexOf (this.last_focus);
+	if (idx >= 0)
+	  {
+	    focuslist[idx].focus();
+	    return true;
+	  }
+      }
+    let next; // position to move new focus to
+    if (idx < 0)
+      next = (down || home) ? 0 : focuslist.length - 1;
+    else if (home || end)
+      next = home ? 0 : focuslist.length - 1;
+    else // up || down
+      {
+	next = idx + (up ? -1 : +1);
+	if (this.updown_cycling)
+	  {
+	    if (next < 0)
+	      next += focuslist.length;
+	    else if (next >= focuslist.length)
+	      next -= focuslist.length;
+	  }
+      }
+    if (next >= 0 && next < focuslist.length)
+      {
+	focuslist[next].focus();
+	return true;
+      }
+    return false;
   }
 }
+const the_focus_guard = new FocusGuard();
+
+/** Constrain focus to `element` and its descendants */
+function push_focus_root (element) {
+  the_focus_guard.push_focus_root (element);
+}
+exports.push_focus_root = push_focus_root;
+
+/** Remove an `element` previously installed via push_focus_root() */
+function remove_focus_root (element) {
+  the_focus_guard.remove_focus_root (element);
+}
+exports.remove_focus_root = remove_focus_root;
 
 /** Installing a modal shield prevents mouse and key events for all elements */
 class ModalShield {
   defaults() { return {
     close_handler: undefined,
-    focus_guard: undefined,
-    focus_cycler: undefined,
+    remove_focus_root: undefined,
     div: undefined,
   }; }
   constructor (close_handler, preserve_element, opts) {
     Object.assign (this, this.defaults());
     this.close_handler = close_handler;
     // prevent focus during modal shield
-    this.focus_guard = install_focus_guard (preserve_element);
+    exports.push_focus_root (preserve_element);
+    this.remove_focus_root = () => exports.remove_focus_root (preserve_element);
     // install shield element on <body/>
     const div = document.createElement ("DIV");
     div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
@@ -438,9 +504,6 @@ class ModalShield {
       document.addEventListener ('mousedown', ModalShield.modal_mouse_guard);
     }
     document._b_modal_shields.unshift (this);
-    if (opts['focuscycle'])
-      this.focus_cycler = new FocusCycler();
-    // FIXME: FocusCycler should be a global and not be duplicated for multiple modals
   }
   destroy (call_handler = false) {
     array_remove (document._b_modal_shields, this);
@@ -453,15 +516,9 @@ class ModalShield {
     if (this.div && this.div.parentNode)
       this.div.parentNode.removeChild (this.div);
     this.div = undefined;
-    if (this.focus_guard)
-      this.focus_guard.restore();
-    this.focus_guard = undefined;
-    if (this.focus_cycler)
-      {
-	const focus_cycler = this.focus_cycler;
-	this.focus_cycler = undefined;
-	focus_cycler.destroy();
-      }
+    if (this.remove_focus_root)
+      this.remove_focus_root();
+    this.remove_focus_root = undefined;
     if (this.close_handler)
       {
 	const close_handler_once = this.close_handler;
@@ -524,74 +581,6 @@ function swallow_event (type, timeout = 0) {
   setTimeout (() => document.removeEventListener ('contextmenu', preventandstop, true), timeout);
 }
 exports.swallow_event = swallow_event;
-
-/** Recursively prevent `node` from being focussed */
-const prevent_focus = (array, node, preserve) => {
-  if (node == preserve)
-    return;
-  if (node.tabIndex > -1)
-    {
-      if (node._b_focus_guard > 0)
-	node._b_focus_guard += 1;
-      else {
-	node._b_focus_guard = 1;
-	node._b_focus_guard_tabIndex = node.tabIndex;
-	node.tabIndex = -1;
-      }
-      array.push (node);
-    }
-  else if (node._b_focus_guard > 0)
-    {
-      node._b_focus_guard += 1;
-      array.push (node);
-    }
-  if (node.firstChild)
-    prevent_focus (array, node.firstChild, preserve);
-  if (node.nextSibling)
-    prevent_focus (array, node.nextSibling, preserve);
-};
-
-/** Restore `node`s focus ability when the last focus guard is destroyed */
-const restore_focus = (node) => {
-  if (node._b_focus_guard > 0) {
-    node._b_focus_guard -= 1;
-    if (node._b_focus_guard == 0) {
-      const tabIndex = node._b_focus_guard_tabIndex;
-      delete node._b_focus_guard_tabIndex;
-      delete node._b_focus_guard;
-      node.tabIndex = tabIndex;
-    }
-  }
-};
-
-/** Prevent all DOM elements from getting focus.
- * Preseve focus ability for `preserve_element` and its descendants.
- * Returns a `guard` object on which guard.restore() must be called to
- * restore the DOM elements.
- */
-function install_focus_guard (preserve_element) {
-  const guard = {
-    elements: [],
-    restore: () => {
-      if (!guard.elements)
-	return;
-      for (let node of guard.elements)
-	restore_focus (node);
-      guard.elements = undefined;
-      if (guard.last_focus)
-	guard.last_focus.focus();
-      guard.last_focus = undefined;
-    },
-  };
-  // save last focussed element
-  guard.last_focus = document.activeElement;
-  // disable focusable elements outside of preserve_element
-  prevent_focus (guard.elements, document, preserve_element);
-  // remove focus if the current focus is a guarded element
-  if (document.activeElement && document.activeElement._b_focus_guard > 0)
-    document.activeElement.blur();
-  return guard;
-}
 
 /** Determine position for a popup */
 function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
@@ -914,7 +903,7 @@ function in_keyboard_click()
 }
 exports.in_keyboard_click = in_keyboard_click;
 
-/// Trigger elemtn click via keyboard.
+/// Trigger element click via keyboard.
 function keyboard_click (element)
 {
   if (element)
@@ -942,8 +931,8 @@ function in_array (element, array)
 
 /// Export key codes
 const KeyCode = {
-  BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
-  PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46,
+  BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32, PAGEUP: 33, PAGEDOWN: 34,
+  END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46, SELECT: 93,
   F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117, F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
   F13: 124, F14: 125, F15: 126, F16: 127, F17: 128, F18: 129, F19: 130, F20: 131, F21: 132, F22: 133, F23: 134, F24: 135,
   BROWSERBACK: 166, BROWSERFORWARD: 167, PLUS: 187/*FIXME*/, MINUS: 189/*FIXME*/, PAUSE: 230, ALTGR: 255,
@@ -955,7 +944,7 @@ const navigation_keys = [
   KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
   KeyCode.TAB, KeyCode.SPACE, KeyCode.ENTER /*13*/, 10 /*LINEFEED*/,
   KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
-  93 /*CONTEXT_MENU*/, KeyCode.ESCAPE,
+  KeyCode.SELECT /*contextmenu*/, KeyCode.ESCAPE,
 ];
 
 /// Check if a key code is used of rnavigaiton (and non alphanumeric).
