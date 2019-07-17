@@ -112,6 +112,8 @@ exports.vue_mixins.data_tmpl = {
 					  typeof this.$options.data === 'function' ?
 					  this.$options.data.call (this) :
 					  this.$options.data);
+    if (this.$options.tmpl_data)
+      console.warn ("Object has `tmpl_data` member, did you mean `data_tmpl`?", this);
   },
 };
 
