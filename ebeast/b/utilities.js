@@ -479,9 +479,9 @@ class ModalShield {
 	if (event.keyCode == KeyCode.ESCAPE &&
 	    !event.cancelBubble)
 	  {
-	    shield.close();
 	    event.preventDefault();
 	    event.stopPropagation();
+	    shield.close();
 	  }
       }
   }
@@ -492,9 +492,15 @@ class ModalShield {
 	if (!event.cancelBubble &&
 	    event.target == shield.div)
 	  {
-	    shield.close();
 	    event.preventDefault();
 	    event.stopPropagation();
+	    shield.close();
+	    /* Browsers may emit two events 'mousedown' and 'contextmenu' for button3 clicks.
+	     * This may cause the shield's owning widget (e.g. a menu) to reappear, because
+	     * in this mousedown handler we can only prevent further mousedown handling.
+	     * So we set up a timer that swallows the next 'contextmenu' event.
+	     */
+	    swallow_event ('contextmenu', 0);
 	  }
       }
   }
@@ -505,6 +511,17 @@ function modal_shield (close_handler, preserve_element, opts = {}) {
   return new ModalShield (close_handler, preserve_element, opts);
 }
 exports.modal_shield = modal_shield;
+
+/** Use capturing to swallow any `type` events until `timeout` has passed */
+function swallow_event (type, timeout = 0) {
+  const preventandstop = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  document.addEventListener ('contextmenu', preventandstop, true);
+  setTimeout (() => document.removeEventListener ('contextmenu', preventandstop, true), timeout);
+}
+exports.swallow_event = swallow_event;
 
 /** Recursively prevent `node` from being focussed */
 const prevent_focus = (array, node, preserve) => {
