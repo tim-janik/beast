@@ -426,7 +426,7 @@ class ModalShield {
     // install shield element on <body/>
     const div = document.createElement ("DIV");
     div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		'background-color: rgba(0,0,0,0.60);';
+		'background:' + (opts['background'] || '#00000099');
     document.body.appendChild (div);
     this.div = div;
     // keep a shield list and handle keyboard / mouse events on the shield
