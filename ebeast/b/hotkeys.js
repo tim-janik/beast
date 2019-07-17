@@ -3,7 +3,6 @@
 
 // assert jQuery
 console.assert ($ !== undefined);
-const Util = require ('./utilities.js');
 
 // == Keys ==
 const KeyCode = {
@@ -54,7 +53,7 @@ $.fn.click_hotkey = function (hotkey) {
   let self = this;
   $(document).add_hotkey (hotkey, function (/*event*/) {
     self.addClass ('b-fakeactive');
-    Util.keyboard_click (self);
+    Util.keyboard_click (self.get (0));
     setTimeout (function () {
       self.removeClass ('b-fakeactive');
     }, 45);
@@ -90,7 +89,8 @@ $(document).keydown (function (event) {
 	return;
       }
     }
-    if (Util.match_key_event (event, 'Enter') && document.activeElement)
+    if (Util.match_key_event (event, 'Enter') &&
+	document.activeElement && document.activeElement != document.body)
       {
 	event.preventDefault();
 	Util.keyboard_click (document.activeElement);
