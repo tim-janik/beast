@@ -591,6 +591,35 @@ function install_focus_guard (preserve_element) {
   return guard;
 }
 
+/** Determine position for a popup */
+function popup_position (element, origin = undefined) {
+  const p = 1; // padding;
+  // Ignore window.innerWidth & window.innerHeight, these include space for scrollbars
+  // Viewport size, https://developer.mozilla.org/en-US/docs/Web/CSS/Viewport_concepts
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  // Scroll offset, needed to convert viewport relative to document relative
+  const sx = window.pageXOffset, sy = window.pageYOffset;
+  // Element area, relative to the viewport.
+  const r = element.getBoundingClientRect();
+  // Center element, but keep top left onscreen
+  if (!origin || !origin.getBoundingClientRect)
+    {
+      const vx = (vw - r.width) / 2, vy = (vh - r.height) / 2;
+      return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
+    }
+  // Position element relative to popup origin
+  const o = origin.getBoundingClientRect();
+  let vx = o.x, vy = o.y + o.height;	// left aligned, below origin
+  // Shift left if neccessary
+  if (vx + r.width + p > vw)
+    vx = vw - r.width - p;
+  // Shift up if neccessary
+  if (vy + r.height + p > vh)
+    vy = Math.min (vh - r.height - p, o.y);
+  return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
+}
+exports.popup_position = popup_position;
+
 /** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
 exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
   /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
