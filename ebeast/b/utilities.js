@@ -1,6 +1,10 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+if (window.__ebeast_b_utilities_js_initialized)
+  throw "utilities.js: error: duplicate initialisation";
+window.__ebeast_b_utilities_js_initialized = true;
+
 exports.vue_mixins = {};
 
 /// Loop over all properties in `source` and assign to `target*
