@@ -592,7 +592,7 @@ function install_focus_guard (preserve_element) {
 }
 
 /** Determine position for a popup */
-function popup_position (element, origin = undefined) {
+function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
   const p = 1; // padding;
   // Ignore window.innerWidth & window.innerHeight, these include space for scrollbars
   // Viewport size, https://developer.mozilla.org/en-US/docs/Web/CSS/Viewport_concepts
@@ -601,14 +601,28 @@ function popup_position (element, origin = undefined) {
   const sx = window.pageXOffset, sy = window.pageYOffset;
   // Element area, relative to the viewport.
   const r = element.getBoundingClientRect();
-  // Center element, but keep top left onscreen
-  if (!origin || !origin.getBoundingClientRect)
+  // Position element without an origin element
+  if (!opts.origin || !opts.origin.getBoundingClientRect)
     {
+      // Position element at document relative (opts.x, opts.y)
+      if (opts.x >= 0 && opts.x <= 999999 && opts.y >= 0 && opts.y <= 999999)
+	{
+	  let vx = Math.max (0, opts.x - sx); // document coord to viewport coord
+	  let vy = Math.max (0, opts.y - sy); // document coord to viewport coord
+	  // Shift left if neccessary
+	  if (vx + r.width + p > vw)
+	    vx = vw - r.width - p;
+	  // Shift up if neccessary
+	  if (vy + r.height + p > vh)
+	    vy = vh - r.height - p;
+	  return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
+	}
+      // Center element, but keep top left onscreen
       const vx = (vw - r.width) / 2, vy = (vh - r.height) / 2;
       return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
     }
   // Position element relative to popup origin
-  const o = origin.getBoundingClientRect();
+  const o = opts.origin.getBoundingClientRect();
   let vx = o.x, vy = o.y + o.height;	// left aligned, below origin
   // Shift left if neccessary
   if (vx + r.width + p > vw)
