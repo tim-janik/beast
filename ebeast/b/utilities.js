@@ -354,94 +354,155 @@ function list_focusables (element)
 }
 exports.list_focusables = list_focusables;
 
-const modal_mouse_guard = function (ev) {
-  for (let shield of document._b_modal_shields)
-    if (!ev.cancelBubble) {
-      if (ev.target == shield) {
-	ev.preventDefault();
-	ev.stopPropagation();
-	shield.destroy();
-      }
-    }
-};
-
-const modal_keyboard_guard = function (ev) {
-  const ESCAPE = 27; // FIXME
-  for (let shield of document._b_modal_shields)
-    if (!ev.cancelBubble) {
-      if (event.keyCode == ESCAPE) {
-	ev.preventDefault();
-	ev.stopPropagation();
-	shield.destroy();
-      }
-    }
-};
-
-/** Add a modal overlay to \<body/>, prevent DOM clicks and focus movements */
-function modal_shield (close_handler, preserve_element, opts = {}) {
-  // prevent focus during modal shield
-  const focus_guard = install_focus_guard (preserve_element);
-  // keep a shield list and handle keyboard / mouse events on the shield
-  if (!(document._b_modal_shields instanceof Array)) {
-    document._b_modal_shields = [];
-    document.addEventListener ('mousedown', modal_mouse_guard);
-    document.addEventListener ('keydown', modal_keyboard_guard);
+/** Installing a FocusCycler attempts to keep a `body` descendant focused at all times */
+class FocusCycler {
+  defaults() { return {
+    last: null,
+    timer: 0,
+    event_handler: undefined,
+  }; }
+  constructor() {
+    Object.assign (this, this.defaults());
+    // avoid window loosing focus
+    const event_handler = this.handle_event.bind (this);
+    window.addEventListener ('focusin', event_handler, { passive: true });
+    window.addEventListener ('blur', event_handler, { passive: true });
+    this.event_handler = event_handler;
+    this.handle_event ({ type: 'blur' });
   }
-  // install shield element on <body/>
-  const shield = document.createElement ("div");
-  document._b_modal_shields.unshift (shield);
-  shield.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		 'background-color: rgba(0,0,0,0.60);';
-  document.body.appendChild (shield);
-  // avoid window loosing focus
-  let refocus = { last: null, handler: null, timer: 0 };
-  if (opts['focuscycle'])
-    {
-      refocus.handler = (e) =>
-	{
-	  if (e.type == 'focusin')
-	    refocus.last = e.target;
-	  if (e.type == 'blur' && !refocus.timer)
-	    refocus.timer = setTimeout (() =>
-	      {
-		refocus.timer = 0;
-		// re-focus if possible
-		if (!document.activeElement || document.activeElement == document.body)
-		  {
-		    const fa = list_focusables();
-		    if (fa.length)
-		      {
-			const lastidx = refocus.last ? fa.indexOf (refocus.last) : -1;
-			let newidx = 0;
-			if (lastidx >= 0 && lastidx < fa.length / 2)
-			  newidx = fa.length - 1;
-			fa[newidx].focus();
-		      }
-		  }
-	      }, 0);
-	};
-      window.addEventListener ('focusin', refocus.handler, { passive: true });
-      window.addEventListener ('blur', refocus.handler, { passive: true });
-      refocus.handler ({ type: 'blur' });
-    }
-  // destroying the shield
-  shield.destroy = function (call_handler = true) {
-    if (refocus.handler)
+  destroy() {
+    if (this.timer)
       {
-	window.removeEventListener ('blur', refocus.handler, { passive: true });
-	window.removeEventListener ('focusin', refocus.handler, { passive: true });
+	clearTimeout (this.timer);
+	this.timer = 0;
       }
-    if (shield.parentNode)
-      shield.parentNode.removeChild (shield);
-    array_remove (document._b_modal_shields, shield);
-    focus_guard.restore();
-    if (close_handler && call_handler) {
-      const close_handler_once = close_handler;
-      close_handler = undefined; // guard against recursion
-      close_handler_once();
+    if (this.event_handler)
+      {
+	const event_handler = this.event_handler;
+	this.event_handler = undefined;
+	window.removeEventListener ('blur', event_handler, { passive: true });
+	window.removeEventListener ('focusin', event_handler, { passive: true });
+      }
+  }
+  handle_event (event) {
+    if (event.type == 'focusin')
+      this.last = event.target;
+    if (event.type == 'blur' && !this.timer)
+      this.timer = setTimeout (() => {
+	this.timer = 0;
+	this.check_focus();
+      }, 0);
+  }
+  check_focus () {
+    // re-focus if possible
+    if (!document.activeElement || document.activeElement == document.body)
+      {
+	const focuslist = list_focusables();
+	if (focuslist.length)
+	  {
+	    const lastidx = this.last ? focuslist.indexOf (this.last) : -1;
+	    let newidx = 0;
+	    if (lastidx >= 0 && lastidx < focuslist.length / 2)
+	      newidx = focuslist.length - 1;
+	    focuslist[newidx].focus();
+	  }
+      }
+  }
+}
+
+/** Installing a modal shield prevents mouse and key events for all elements */
+class ModalShield {
+  defaults() { return {
+    close_handler: undefined,
+    focus_guard: undefined,
+    focus_cycler: undefined,
+    div: undefined,
+  }; }
+  constructor (close_handler, preserve_element, opts) {
+    Object.assign (this, this.defaults());
+    this.close_handler = close_handler;
+    // prevent focus during modal shield
+    this.focus_guard = install_focus_guard (preserve_element);
+    // install shield element on <body/>
+    const div = document.createElement ("DIV");
+    div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
+		'background-color: rgba(0,0,0,0.60);';
+    document.body.appendChild (div);
+    this.div = div;
+    // keep a shield list and handle keyboard / mouse events on the shield
+    if (!(document._b_modal_shields instanceof Array)) {
+      document._b_modal_shields = [];
+      document.addEventListener ('keydown', ModalShield.modal_keyboard_guard);
+      document.addEventListener ('mousedown', ModalShield.modal_mouse_guard);
     }
-  };
-  return shield;
+    document._b_modal_shields.unshift (this);
+    if (opts['focuscycle'])
+      this.focus_cycler = new FocusCycler();
+    // FIXME: FocusCycler should be a global and not be duplicated for multiple modals
+  }
+  destroy (call_handler = false) {
+    array_remove (document._b_modal_shields, this);
+    if (document._b_modal_shields.length == 0)
+      {
+	document._b_modal_shields = undefined;
+	document.removeEventListener ('keydown', ModalShield.modal_keyboard_guard);
+	document.removeEventListener ('mousedown', ModalShield.modal_mouse_guard);
+      }
+    if (this.div && this.div.parentNode)
+      this.div.parentNode.removeChild (this.div);
+    this.div = undefined;
+    if (this.focus_guard)
+      this.focus_guard.restore();
+    this.focus_guard = undefined;
+    if (this.focus_cycler)
+      {
+	const focus_cycler = this.focus_cycler;
+	this.focus_cycler = undefined;
+	focus_cycler.destroy();
+      }
+    if (this.close_handler)
+      {
+	const close_handler_once = this.close_handler;
+	this.close_handler = undefined;		// guards against recursion
+	if (call_handler)
+	  close_handler_once();
+      }
+  }
+  close() {
+    if (this.close_handler)
+      this.close_handler();
+  }
+  static modal_keyboard_guard (event) {
+    if (document._b_modal_shields.length > 0)
+      {
+	const shield = document._b_modal_shields[0];
+	if (event.keyCode == KeyCode.ESCAPE &&
+	    !event.cancelBubble)
+	  {
+	    shield.close();
+	    event.preventDefault();
+	    event.stopPropagation();
+	  }
+      }
+  }
+  static modal_mouse_guard (event) {
+    if (document._b_modal_shields.length > 0)
+      {
+	const shield = document._b_modal_shields[0];
+	if (!event.cancelBubble &&
+	    event.target == shield.div)
+	  {
+	    shield.close();
+	    event.preventDefault();
+	    event.stopPropagation();
+	  }
+      }
+  }
+}
+
+/** Add a modal overlay to `body` to deflect DOM clicks and keyboard events */
+function modal_shield (close_handler, preserve_element, opts = {}) {
+  return new ModalShield (close_handler, preserve_element, opts);
 }
 exports.modal_shield = modal_shield;
 
