@@ -14,6 +14,7 @@ const vue_components = [
   require ('./button-bar.vue'),
   require ('./button.vue'),
   require ('./color-picker.vue'),
+  require ('./contextmenu.vue'),
   require ('./example.vue'),
   require ('./icon.vue'),
   require ('./fed-number.vue'),
