@@ -17,6 +17,7 @@ const vue_components = [
   require ('./contextmenu.vue'),
   require ('./example.vue'),
   require ('./icon.vue'),
+  require ('./menuitem.vue'),
   require ('./fed-number.vue'),
   require ('./fed-object.vue'),
   require ('./fed-switch.vue'),
