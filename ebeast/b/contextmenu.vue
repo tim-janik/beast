@@ -2,7 +2,7 @@
 
 <docs>
   # B-CONTEXTMENU
-  A modal popup that displays contextmenu choices.
+  A modal popup that displays contextmenu choices, see [B-MENUITEM](#b-menuitem).
   Using the `open()` method, the menu can be popped up from the parent component,
   and setting up an `onclick` handler can be used to handle menuitem actions. Example:
   ```html
@@ -36,7 +36,7 @@
     padding: 0.3em 0;
     background-color: $b-menu-background; border: 1px outset darken($b-menu-background, 20%);
     color: $b-menu-foreground;
-    [disabled]	{ color: $b-menu-disabled; }
+    [disabled], [disabled] * { pointer-events: none; }
     //* The template uses flex+start for layouting to scroll without vertical shrinking */
   }
 </style>
@@ -53,7 +53,11 @@
 module.exports = {
   name: 'b-contextmenu',
   props: [ 'origin', ],
-  data_tmpl: { resize_observer: undefined, resize_timer: 0, visible: false, doc_x: undefined, doc_y: undefined },
+  data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
+	       resize_observer: undefined, resize_timer: 0,
+	       showicons: true, showaccels: true, },
+  provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
+			    [ 'showicons', 'showaccels', 'clicked', 'close' ]),
   mounted () {
     this.update_shield();
     this.position_popup();
