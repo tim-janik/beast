@@ -25,15 +25,15 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .b-contextmenu-area {					    //* constraint area for context menu placement */
+  body div.b-contextmenu-area {				    //* constraint area for context menu placement */
     position: absolute; right: 0; bottom: 0;		    //* fixed bottom right */
     display: flex; flex-direction: column; align-items: flex-start;
   }
-  .b-contextmenu {
+  body .b-contextmenu-area .b-contextmenu {	//* since menus are often embedded, this needs high specificity */
     position: relative; max-width: 100%; max-height: 100%;  //* constrain to .b-contextmenu-area */
     overflow-y: auto; overflow-x: hidden;		    //* scroll if necessary */
     z-index: 999;					    //* stay atop modal shield */
-    padding: 0.3em 0;
+    padding: $b-menu-padding 0;
     background-color: $b-menu-background; border: 1px outset darken($b-menu-background, 20%);
     color: $b-menu-foreground;
     [disabled], [disabled] * { pointer-events: none; }
