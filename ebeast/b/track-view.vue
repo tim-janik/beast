@@ -10,24 +10,6 @@
   : The *Bse.Track* to display.
 </docs>
 
-<template>
-
-  <div class="b-track-view" >
-    <div class="b-track-view-control">
-      <span class="b-track-view-label">{{ track.get_name() }}</span>
-      <div class="b-track-view-meter">
-	<div class="b-track-view-lbg" ref="levelbg"></div>
-	<div class="b-track-view-cm0" ref="covermid0"></div>
-	<div class="b-track-view-ct0" ref="covertip0"></div>
-	<div class="b-track-view-lsp"></div>
-	<div class="b-track-view-cm1" ref="covermid1"></div>
-	<div class="b-track-view-ct1" ref="covertip1"></div>
-      </div>
-    </div>
-  </div>
-
-</template>
-
 <style lang="scss">
   @import 'styles.scss';
   $b-track-view-level-height: 3px;
@@ -75,6 +57,22 @@
     overflow: hidden; white-space: nowrap;
   }
 </style>
+
+<template>
+  <div class="b-track-view" >
+    <div class="b-track-view-control">
+      <span class="b-track-view-label">{{ track.get_name() }}</span>
+      <div class="b-track-view-meter">
+	<div class="b-track-view-lbg" ref="levelbg"></div>
+	<div class="b-track-view-cm0" ref="covermid0"></div>
+	<div class="b-track-view-ct0" ref="covertip0"></div>
+	<div class="b-track-view-lsp"></div>
+	<div class="b-track-view-cm1" ref="covermid1"></div>
+	<div class="b-track-view-ct1" ref="covertip1"></div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script>
 const mindb = -48.0; // -96.0;
