@@ -25,21 +25,24 @@
 
 <style lang="scss">
   @import 'styles.scss';
-  .b-menuitem {
+  body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap; flex-direction: row;
     align-items: baseline;      //* distribute extra cross-axis space */
     margin: 0; padding: 5px 1em; text-align: left;
     //* button-reset */
-    background: transparent; border: none; cursor: pointer; user-select: none; outline: none;
+    background: transparent; cursor: pointer; user-select: none; outline: none;
+    border: 1px solid transparent;
     color: $b-menu-foreground;
     &:not([disabled]) {
       .b-icon { color: $b-menu-fill; }
       &:focus {
 	background-color: $b-menu-focus-bg; color: $b-menu-focus-fg; outline: none;
+	border: 1px solid darken($b-menu-focus-bg, 50%);
 	.b-icon { color: $b-menu-focus-fg; }
       }
       &.active, &:active, &:focus.active, &:focus:active {
 	background-color: $b-menu-active-bg; color: $b-menu-active-fg; outline: none;
+	border: 1px solid darken($b-menu-active-bg, 50%);
 	.b-icon { color: $b-menu-active-fg; }
       }
     }
@@ -47,7 +50,7 @@
       color: $b-menu-disabled;
       .b-icon { color: $b-menu-disabled-fill; }
     }
-    & > .b-icon:first-child { margin-right: 0.75em; }
+    & > .b-icon:first-child { margin-right: $b-menu-spacing; }
   }
 </style>
 
