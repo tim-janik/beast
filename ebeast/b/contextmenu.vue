@@ -37,6 +37,7 @@
     padding: $b-menu-padding 0;
     background-color: $b-menu-background; border: 1px outset darken($b-menu-background, 20%);
     color: $b-menu-foreground;
+    box-shadow: $b-menu-box-shadow;
     [disabled], [disabled] * { pointer-events: none; }
     //* The template uses flex+start for layouting to scroll without vertical shrinking */
   }
