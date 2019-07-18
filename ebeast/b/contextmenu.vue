@@ -2,7 +2,8 @@
 
 <docs>
   # B-CONTEXTMENU
-  A modal popup that displays contextmenu choices, see [B-MENUITEM](#b-menuitem).
+  A modal popup that displays contextmenu choices, see [B-MENUITEM](#b-menuitem),
+  [B-MENUSEPARATOR](#b-menuseparator).
   Using the `open()` method, the menu can be popped up from the parent component,
   and setting up an `onclick` handler can be used to handle menuitem actions. Example:
   ```html
