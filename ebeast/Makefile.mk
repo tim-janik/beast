@@ -44,10 +44,11 @@ app/assets/tri-pngs	::= $(strip	\
 app/generated 		::= $(strip	\
 	$(app/assets/tri-pngs)		\
 	$>/app/assets/gradient-01.png	\
-	$>/app/assets/fa-sprites.svg	\
+	$>/app/assets/forkawesome-webfont.css	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
 	$>/app/assets/utilities.js	\
+	$>/app/assets/material-icons.css \
 )
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
@@ -126,15 +127,26 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 $>/app/assets/utilities.js: ebeast/b/utilities.js	| $>/ebeast/npm.rules
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
-$>/app/assets/fa-sprites.svg:	 			| $>/app/assets/
-	$(QECHO) FETCH fork-awesome-sprites-0.1.svg.xz
+$>/app/assets/material-icons.css:			| $>/app/assets/
+	$(QECHO) FETCH material-icons-190326.1.tar.xz
 	$Q cd $>/app/assets/ \
 	     $(call AND_DOWNLOAD_SHAURL, \
-		452e590d930ae0a46d1d300fb899c99fc95785d00395ed881ff49184aa7dcf3d, \
-		  https://github.com/tim-janik/Fork-Awesome/releases/download/fork-awesome-sprites-0.1/fork-awesome-sprites-0.1.svg.xz)
+		53eba258da6170f5aa3925579f1552ef7d7a06d5b762260efac5e26d5f95e721, \
+		  https://github.com/tim-janik/assets/releases/download/material-icons-190326.1/material-icons-190326.1.tar.xz)
 	$(QGEN)
-	$Q xz --decompress $>/app/assets/fork-awesome-sprites-0.1.svg.xz
-	$Q mv $>/app/assets/fork-awesome-sprites-0.1.svg $@
+	$Q tar -C $>/app/assets/ -xf $>/app/assets/material-icons-190326.1.tar.xz
+	$Q mv $>/app/assets/material-icons/material-icons.woff2 $>/app/assets/material-icons/material-icons.css $>/app/assets/
+	$Q rm $>/app/assets/material-icons-190326.1.tar.xz && rm -r $>/app/assets/material-icons/
+ebeast/fork-awesome-downloads ::= \
+  844517a2bc5430242cb857e56b6dccf002f469c4c1b295ed8d0b7211fb452f50 \
+    https://raw.githubusercontent.com/ForkAwesome/Fork-Awesome/b0605a81632452818bf19c8fa97469da1206b52b/fonts/forkawesome-webfont.woff2 \
+  630b0e84fa43579f7e97a26fd47d4b70cb5516ca7e6e73393597d12ca249a8ee \
+    https://raw.githubusercontent.com/ForkAwesome/Fork-Awesome/b0605a81632452818bf19c8fa97469da1206b52b/css/fork-awesome.css
+$>/app/assets/forkawesome-webfont.css:				| $>/app/assets/
+	$(QGEN)
+	$Q cd $(@D) $(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/fork-awesome-downloads))
+	$Q sed "/^ *src: *url/s,src: *url(.*);,src: url('forkawesome-webfont.woff2');," -i $>/app/assets/fork-awesome.css
+	$Q mv $>/app/assets/fork-awesome.css $@
 $>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
 	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
