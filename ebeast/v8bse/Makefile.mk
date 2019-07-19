@@ -59,13 +59,13 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	$Q rm -fr $@ $>/ebeast/v8bse/build/
 	@: # Due to 'cd $(@D)', paths are relative to $>/ebeast/v8bse/
 	$Q cd $(@D) \
-	  && sed -n '/^ \ "version":/s/.*"\([0-9.]\+\)".*/\1/p'				\
+	  && sed -n '/^ \ "version":/s/.*"\([0-9.]\+\(-[^"]*\)\?\)".*/\1/p'		\
 		    ../node_modules/electron/package.json > $(@F).tmpev			\
-	  && ELECTRON_VERSION=`grep '^[0-9.]\+$$' $(@F).tmpev` && rm $(@F).tmpev	\
+	  && ELECTRON_VERSION=`grep '^[0-9]\+\.[0-9.]\+' $(@F).tmpev` && rm $(@F).tmpev	\
 	  && CXX="$(CCACHE) $(CXX)"							\
 		HOME='../node_modules/node-gyp/cache/' MAKEFLAGS=''			\
 		../node_modules/.bin/node-gyp --target="$$ELECTRON_VERSION"		\
-		  rebuild --dist-url=https://atom.io/download/electron			\
+		  rebuild --dist-url=https://electronjs.org/headers			\
 		  $(if $(findstring 1, $(V)) , --verbose, --silent)
 	$Q ln -sv build/Release/v8bse.node $>/ebeast/v8bse/
 	@: # Note, we leave cleaning of ebeast/node_modules/node-gyp/cache/ to ../node_modules/ cleanups
