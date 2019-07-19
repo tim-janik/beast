@@ -114,6 +114,7 @@ function create_window ()
     backgroundColor: 			backgroundColor,
     autoHideMenuBar:			false,
     webPreferences: {
+      nodeIntegration:			true,
       devTools: 			HAVE_DEVELOPMENT_TOOLS,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
