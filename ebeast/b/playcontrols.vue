@@ -12,7 +12,6 @@
   @import 'styles.scss';
   .b-playcontrols {
     .b-button	{ padding: 5px; }
-    .b-icon	{ fill: $b-button-foreground; }
   }
 </style>
 
