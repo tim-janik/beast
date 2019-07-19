@@ -18,6 +18,7 @@ const vue_components = [
   require ('./example.vue'),
   require ('./icon.vue'),
   require ('./menuitem.vue'),
+  require ('./menurow.vue'),
   require ('./menuseparator.vue'),
   require ('./menutitle.vue'),
   require ('./fed-number.vue'),
