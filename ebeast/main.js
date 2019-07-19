@@ -126,7 +126,6 @@ function create_window ()
 	cursive:	'Script',	// 'Script',
 	fantasy:	'Impact',	// 'Impact',
       },
-      experimentalFeatures:		true,	// enable ResizeObserver
     },
     show: false, // avoid incremental load effect, see 'ready-to-show'
     darkTheme: true,
