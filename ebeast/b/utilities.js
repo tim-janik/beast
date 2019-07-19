@@ -103,6 +103,69 @@ function fwdprovide (injectname, keys) {
 }
 exports.fwdprovide = fwdprovide;
 
+/** The V-INLINEBLUR directive guides focus for inline editing.
+ * A Vue directive to notify and force blur on Enter or Escape.
+ * The directive value must evaluate to a callable function for notifications.
+ * For inputs that use `onchange` handlers, the edited value should be
+ * discarded if the `cancelled` property is true.
+ */
+Vue.directive ('inlineblur', {
+  bind (el, binding, vnode) {
+    if (binding.value && typeof binding.value !== 'function')
+      console.warn ('[Vue-v-inlineblur:] wrong type argument, function required:', binding.expression);
+    el.cancelled = false;
+  },
+  inserted (el, binding, vnode) {
+    assert (document.body.contains (el));
+    el.focus();
+    if (el == document.activeElement)
+      {
+	if (binding.value)
+	  {
+	    el._v_inlineblur_watch_blur = function (event) {
+	      binding.value.call (this, event);
+	    };
+	    el.addEventListener ('blur', el._v_inlineblur_watch_blur, true);
+	  }
+	const ignorekeys = 'ignorekeys' in binding.modifiers;
+	if (!ignorekeys)
+	  {
+	    el._v_inlineblur_watch_keydown = function (event) {
+	      const esc = Util.match_key_event (event, 'Escape');
+	      if (esc)
+		el.cancelled = true;
+	      if (esc || Util.match_key_event (event, 'Enter'))
+		el.blur();
+	    };
+	    el.addEventListener ('keydown', el._v_inlineblur_watch_keydown);
+	  }
+      }
+    else if (binding.value)
+      {
+	el.cancelled = true;
+	binding.value.call (this, new CustomEvent ('cancel', { detail: 'blur' }));
+      }
+  },
+  update (el, binding, vnode, componentUpdated) {
+    // console.log ("inlineblur", "update");
+  },
+  componentUpdated (el, binding, vnode, componentUpdated) {
+    // console.log ("inlineblur", "componentUpdated");
+  },
+  unbind (el, binding, vnode) {
+    if (el._v_inlineblur_watch_blur)
+      {
+	el.removeEventListener ('blur', el._v_inlineblur_watch_blur, true);
+	el._v_inlineblur_watch_blur = undefined;
+      }
+    if (el._v_inlineblur_watch_keydown)
+      {
+	el.removeEventListener ('keydown', el._v_inlineblur_watch_keydown);
+	el._v_inlineblur_watch_keydown = undefined;
+      }
+  }
+});
+
 /** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
 exports.vue_mixins.data_tmpl = {
   beforeCreate: function () {
@@ -367,7 +430,7 @@ class FocusGuard {
   constructor () {
     Object.assign (this, this.defaults());
     window.addEventListener ('focusin', this.focusin_handler.bind (this), true);
-    window.addEventListener ('keydown', this.keydown_handler.bind (this), true);
+    window.addEventListener ('keydown', this.keydown_handler.bind (this));
     if (document.activeElement && document.activeElement != document.body)
       this.last_focus = document.activeElement;
     // Related: https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets
