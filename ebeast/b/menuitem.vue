@@ -26,8 +26,7 @@
 <style lang="scss">
   @import 'styles.scss';
   body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
-    display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap; flex-direction: row;
-    align-items: baseline;      //* distribute extra cross-axis space */
+    display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
     margin: 0; padding: 5px 1em; text-align: left;
     //* button-reset */
     background: transparent; cursor: pointer; user-select: none; outline: none;
@@ -50,7 +49,16 @@
       color: $b-menu-disabled;
       .b-icon { color: $b-menu-disabled-fill; }
     }
-    & > .b-icon:first-child { margin-right: $b-menu-spacing; }
+    flex-direction: row; align-items: baseline;
+    & > .b-icon:first-child { margin: 0 $b-menu-spacing 0 0; }
+  }
+  body .b-menurow-turn button.b-menuitem {
+    flex-direction: column; align-items: center;
+    & > .b-icon:first-child { margin: 0 0 $b-menu-spacing 0; }
+  }
+  body .b-menurow-noturn button.b-menuitem {
+    .menulabel { min-width: 2em; } //* this aligns blocks of 2-digit numbers */
+    & > .b-icon:first-child { margin: 0 $b-menu-tightspace 0 0; }
   }
 </style>
 
