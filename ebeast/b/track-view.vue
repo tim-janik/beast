@@ -66,7 +66,7 @@
 </style>
 
 <template>
-  <div class="b-track-view" >
+  <div class="b-track-view" @contextmenu.prevent="$refs.cmenu.open" >
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >
@@ -83,6 +83,51 @@
 	<div class="b-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
+
+    <b-contextmenu ref="cmenu" @click="menuactivation" >
+      <b-menutitle> Track </b-menutitle>
+      <b-menuitem fa="plus-circle"      role="add-track" >      Add Track		</b-menuitem>
+      <b-menuitem fa="i-cursor"         role="rename-track" >   Rename Track		</b-menuitem>
+      <b-menuitem fa="toggle-down" disabled role="bounce-track"> Bounce Track		</b-menuitem>
+      <b-menuitem mi="visibility_off"   role="track-details"
+		  @click.prevent="menuedit ('track-details')" > Show / Hide Track Details </b-menuitem>
+      <b-menuseparator style="margin: 7px" />
+      <b-menurow>
+	<!-- <b-menuitem fa="clone"            role="clone-track" >    Dupl.			</b-menuitem>
+	<b-menuitem fa="times-circle"     role="delete-track" >   Delete		</b-menuitem> -->
+	<b-menuitem fa="scissors"         role="cut-track" >      Cut			</b-menuitem>
+	<b-menuitem fa="files-o"          role="copy-track" >     Copy			</b-menuitem>
+	<b-menuitem fa="clipboard"        role="paste-track" >    Paste			</b-menuitem>
+      </b-menurow>
+      <b-menuseparator style="margin: 7px" />
+      <b-menutitle> Playback </b-menutitle>
+      <b-menuitem uc="Ｍ"               role="mute-track" >     Mute Track		</b-menuitem>
+      <b-menuitem uc="Ｓ"               role="solo-track" >     Solo Track		</b-menuitem>
+      <b-menuseparator style="margin: 7px" />
+      <b-menutitle> MIDI Channel </b-menutitle>
+      <b-menurow noturn>
+	<b-menuitem uc=" " role="midi_1" >  1 </b-menuitem>
+	<b-menuitem uc=" " role="midi_2" >  2 </b-menuitem>
+	<b-menuitem uc=" " role="midi_3" >  3 </b-menuitem>
+	<b-menuitem uc=" " role="midi_4" >  4 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem uc=" " role="midi_5" >  5 </b-menuitem>
+	<b-menuitem uc=" " role="midi_6" >  6 </b-menuitem>
+	<b-menuitem uc=" " role="midi_7" >  7 </b-menuitem>
+	<b-menuitem mi="check" role="midi_8" >  8 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem uc=" " role="midi_9" >  9 </b-menuitem>
+	<b-menuitem uc=" " role="midi10" > 10 </b-menuitem>
+	<b-menuitem uc=" " role="midi11" > 11 </b-menuitem>
+	<b-menuitem uc=" " role="midi12" > 12 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem uc=" " role="midi13" > 13 </b-menuitem>
+	<b-menuitem uc=" " role="midi14" > 14 </b-menuitem>
+	<b-menuitem uc=" " role="midi15" > 15 </b-menuitem>
+	<b-menuitem uc=" " role="midi16" > 16 </b-menuitem>
+      </b-menurow>
+    </b-contextmenu>
+
   </div>
 </template>
 
@@ -129,6 +174,16 @@ module.exports = {
       this.track.off (this.notifyid_);
   },
   methods: {
+    menuactivation (role) {
+      console.log ("menuactivation:", role);
+      // close popup to remove focus guards
+      this.$refs.cmenu.close();
+      if (role == 'rename-track')
+	this.nameedit_ = 1;
+    },
+    menuedit (role) {
+      console.log ("menuedit", role, "(preventDefault)");
+    },
     update_levels: update_levels,
     async dom_updated() {
       if (this.track) {
