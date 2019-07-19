@@ -52,16 +52,28 @@
     border: 1px solid $b-button-border;
     border-radius: $b-button-radius; }
   .b-track-view-label {
-    display: inline-block; width: 7em;
-    text-overflow: ellipsis;
-    overflow: hidden; white-space: nowrap;
+    display: inline-flex; position: relative; width: 7em; overflow: hidden;
+    .b-track-view-label-el {
+      display: inline-block; width: 7em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; user-select: none;
+    }
+    input {
+      display: inline-block; z-index: 2; background-color: #000000; color: #fcfcfc;
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+      margin: 0; padding: 0; border: 0; outline: 0;
+      box-sizing: content-box; vertical-align: middle; line-height: 1; white-space: nowrap;
+    }
   }
 </style>
 
 <template>
   <div class="b-track-view" >
     <div class="b-track-view-control">
-      <span class="b-track-view-label">{{ trackname }}</span>
+      <span class="b-track-view-label"
+	    @dblclick="nameedit_++" >
+	<span class="b-track-view-label-el">{{ trackname }}</span>
+	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="trackname"
+	       type="text" @change="$event.target.cancelled || track.set_name ($event.target.value.trim())" />
+      </span>
       <div class="b-track-view-meter">
 	<div class="b-track-view-lbg" ref="levelbg"></div>
 	<div class="b-track-view-cm0" ref="covermid0"></div>
@@ -87,15 +99,34 @@ module.exports = {
   },
   data_tmpl: {
     trackname: "",
+    nameedit_: 0,
+    notifyid_: 0,
   },
   watch: {
-    track: { immediate: true, async handler (n, o) { this.trackname = await this.track.get_name(); } },
+    track: { immediate: true,
+	     async handler (newtrack, oldtrack) {
+	       if (this.notifyid_)
+		 oldtrack.off (this.notifyid_);
+	       this.notifyid_ = 0;
+	       this.trackname = "";
+	       if (this.track)
+		 {
+		   this.notifyid_ = await this.track.on ("notify:uname", async e => {
+		     this.trackname = await this.track.get_name();
+		   });
+		   this.trackname = await this.track.get_name();
+		 }
+	     } },
   },
   beforeDestroy() {
     if (this.remove_frame_handler) {
       this.remove_frame_handler();
       this.remove_frame_handler = undefined;
     }
+  },
+  destroyed() {
+    if (this.notifyid_)
+      this.track.off (this.notifyid_);
   },
   methods: {
     update_levels: update_levels,
