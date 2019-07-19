@@ -122,7 +122,7 @@ module.exports = {
 	  this.shield.destroy (false);
 	  this.shield = undefined;
 	}
-      if (contextmenu && !this.shield)
+      if (contextmenu && this.visible && !this.shield)
 	this.shield = Util.modal_shield (this.close, contextmenu, { focuscycle: true,
 								    background: '#00000000' });
     },
@@ -140,6 +140,10 @@ module.exports = {
     close () {
       if (!this.visible) return;
       this.visible = false;
+      // take down shield immediately, to remove focus guards
+      if (this.shield)
+	this.shield.destroy (false);
+      this.shield = undefined;
     },
     clicked (role) {
       this.$emit ('click', role);
