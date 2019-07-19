@@ -92,6 +92,7 @@ module.exports = {
 	  }
       if (!song)
 	song = await newproject.create_song ("Unnamed");
+      song.ensure_master_bus();
       // shut down old project
       if (this.project)
 	{
