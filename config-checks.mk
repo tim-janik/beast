@@ -183,7 +183,6 @@ config-calc-hash.dep = $$(if $$(filter $$(config-calc-hash), $(config-calc-hash)
 
 VERSION_M.M.M = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
 VERSION_LONG != ./version.sh -l
-VERSION_DATE != ./version.sh -d
 ifeq ('','$(VERSION_LONG)')
 $(error Failed to determine version through ./version.sh)
 endif
