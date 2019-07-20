@@ -18,11 +18,4 @@ version_buildid ()
   return static_bse_version_buildid;
 }
 
-// from platform.hh
-std::string
-version_date ()
-{
-  return static_bse_version_date;
-}
-
 } // Bse

@@ -77,7 +77,6 @@ std::string cpu_info              ();                   ///< Retrieve string ide
 std::string cpu_arch              ();                   ///< Retrieve string identifying the CPU architecture.
 std::string version               ();                   ///< Provide a string containing the BSE library version number.
 std::string version_buildid       (); /*weaksym.cc*/    ///< Provide a string containing the BSE library build.
-std::string version_date          (); /*weaksym.cc*/    ///< Provide a string containing the BSE version release date.
 
 // == Thread Status ==
 /// Acquire information about a task (process or thread) at runtime.

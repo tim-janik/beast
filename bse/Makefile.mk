@@ -458,9 +458,7 @@ $>/bse/buildid.cc: $(config-stamps) $(GITCOMMITDEPS)	| $>/bse/
 	$(QGEN)
 	$Q echo '// make $@'							> $@.tmp \
 	  && V="$(VERSION_LONG)" \
-	  && echo "static const char *static_bse_version_buildid = \"$$V\";"	>>$@.tmp \
-	  && V="$(VERSION_DATE)" \
-	  && echo "static const char *static_bse_version_date = \"$$V\";"	>>$@.tmp
+	  && echo "static const char *static_bse_version_buildid = \"$$V\";"	>>$@.tmp
 	$Q mv $@.tmp $@
 $>/bse/weaksym.o: $>/bse/buildid.cc
 # Avoid massive rebuilds when buildid.cc changes, so we avoid adding it to
