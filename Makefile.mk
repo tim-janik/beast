@@ -213,11 +213,13 @@ int main (int argc, char *argv[])
 endef
 
 # == dist ==
-distname    ::= beast-$(VERSION_LONG)
-disttarball ::= $>/$(distname).tar.xz
+# eval: distversion != ./version.sh -l
+distname     = beast-$(distversion)
+disttarball  = $>/$(distname).tar.xz
 dist_xz_opt  ?= -9e
 dist: $>/doc/README $>/ChangeLog FORCE
 	$(QECHO) MAKE $(disttarball)
+	@$(eval distversion != ./version.sh -l)
 	$Q DIFFLINES=`git diff HEAD | wc -l` \
 	  && { test 0 = $$DIFFLINES || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2 ; }
 	$Q git archive --format=tar --prefix=$(distname)/ HEAD		> $>/$(distname).tar
@@ -242,6 +244,7 @@ CLEANFILES += $(wildcard $>/beast-*.tar $>/beast-*.tar.xz)
 distcheck: distcheck_uniqdir ::= distcheck-beast-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:5]))")
 distcheck: dist
 	$(QGEN)
+	@$(eval distversion != ./version.sh -l)
 	$Q TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
 	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
 	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distname)" \
