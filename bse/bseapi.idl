@@ -1264,7 +1264,6 @@ interface Server : Container {
   String        get_custom_instrument_dir ();           ///< Retrieve user specific instruments directory.
   String        get_custom_effect_dir ();    ///< Retrieve user specific effects directory.
   String        get_version ();              ///< Retrieve BSE version.
-  String        get_version_buildid ();      ///< Retrieve BSE buildid.
   void          register_ladspa_plugins();   ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins asynchronously, DEPRECATED.
   void          register_core_plugins();     ///< Register core plugins asynchronously, DEPRECATED.
   void          load_assets();               ///< Register plugins and scripts immediately.

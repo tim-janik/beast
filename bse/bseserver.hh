@@ -102,7 +102,6 @@ public:
   virtual String        get_effect_path     () override;
   virtual String        get_demo_path       () override;
   virtual String        get_version         () override;
-  virtual String        get_version_buildid () override;
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
   virtual void   register_ladspa_plugins () override;
