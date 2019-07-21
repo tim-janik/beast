@@ -31,9 +31,12 @@ ebeast/lint.appfiles    ::= $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d)
 ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
 app/copies		::= $(strip 	\
-	$>/app/main.js			\
 	$>/app/menus.js			\
 	$>/app/window.html		\
+)
+app/sources		::= $(strip 	\
+	$>/app/main.js			\
+	$(app/copies)			\
 )
 app/assets/tri-pngs	::= $(strip	\
 	$>/app/assets/tri-n.png		\
@@ -92,7 +95,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/copies) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/sources) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
 	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
@@ -104,6 +107,16 @@ $>/ebeast/app.rules: $(app/copies) $(app/generated) $>/ebeast/lint.rules $>/ebea
 $(app/copies): $>/app/%: ebeast/%		| $>/app/
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
+
+# == $>/app/main.js ==
+$>/app/main.js: ebeast/main.js $(GITCOMMITDEPS)	| $>/app/
+	$(QGEN)
+	$Q sed < $<	> $@.tmp \
+		-e "1,10s|^ *//@EBEAST_GLOBALCONFIG@|  ${ebeast/globalconfig}|"
+	$Q mv $@.tmp $@
+ebeast/globalconfig =	revision: '$(shell ./version.sh -l)', \
+			revdate: '$(shell ./version.sh -d)', \
+			debug: $(if $(findstring debug, $(MODE)),true,false)
 
 # == $>/app/assets/ ==
 ebeast/inter-typeface-downloads ::= \

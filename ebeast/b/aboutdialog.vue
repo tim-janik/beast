@@ -35,7 +35,7 @@ function about_pairs() {
   const os = require ('os');
   return [
     [ 'Application:',	elap.getName() + ' ' + elap.getVersion() ],
-    [ 'Revision:',	Bse.server.get_version_buildid() + ' (' + Bse.server.get_version_date().split (' ')[0] + ')' ],
+    [ 'Revision:',	GLOBALCONFIG.revision + ' (' + GLOBALCONFIG.revdate.split (' ')[0] + ')' ],
     [ 'OS:',		process.platform + ' ' + process.arch + ' (' + os.release() + ')' ],
     [ 'Electron:',	process.versions.electron ],
     [ 'Chrome:',	process.versions.chrome ],

@@ -16,6 +16,7 @@ module.exports = {
     "_": false,
     "MAXINT": false,
     "MAXUINT": false,
+    "GLOBALCONFIG": false,
     "module": true /* allow mods */
   },
   "rules": {

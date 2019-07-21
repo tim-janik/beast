@@ -2,9 +2,9 @@
 const Electron = require ('electron');
 const ElectronDefaultApp = process.defaultApp !== undefined; // indicates unpackaged electron app
 const Eapp = Electron.app;
-
-// add development hooks
-const HAVE_DEVELOPMENT_TOOLS = true;
+const GLOBALCONFIG = { // entries are substituted by Makefile.mk (works only in file header)
+  //@EBEAST_GLOBALCONFIG@
+};
 
 // split command line options and return one at a time
 function pop_arg (args) {
@@ -115,7 +115,7 @@ function create_window ()
     autoHideMenuBar:			false,
     webPreferences: {
       nodeIntegration:			true,
-      devTools: 			HAVE_DEVELOPMENT_TOOLS,
+      devTools: 			GLOBALCONFIG.debug,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
       defaultMonospaceFontSize:		parseInt (defaultMonospaceFontSize),
@@ -132,8 +132,8 @@ function create_window ()
     darkTheme: true,
   };
   win = new Electron.BrowserWindow (options);
-  win.HAVE_DEVELOPMENT_TOOLS = HAVE_DEVELOPMENT_TOOLS;
-  win.bse_argv = project_files;
+  win.GLOBALCONFIG = GLOBALCONFIG;
+  win.GLOBALCONFIG.args = project_files;
   win.once ('ready-to-show', () => { win.show(); });
   win.loadURL ('file:///' + __dirname + '/window.html');
   // win.webContents.openDevTools();
