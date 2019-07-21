@@ -111,6 +111,14 @@
     const menus = require ('./menus.js');
     menus.setup_app_menu();
   }
+  // load args
+  for (let arg of Electron.getCurrentWindow().bse_argv)
+    {
+      if (Shell.load_project (arg) == Bse.Error.NONE)
+	;
+      else
+	console.error ('Failed to load:', arg);
+    }
   </script>
 
 </body>
