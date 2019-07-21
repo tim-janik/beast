@@ -59,11 +59,6 @@ include ebeast/v8bse/Makefile.mk
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
-ifeq ($(MODE),debug)
-ebeast/npm-install-debug = && $(NPM_INSTALL) electron-devtools-installer
-else
-ebeast/npm-install-debug =
-endif
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$(QECHO) MAKE $@
 	$Q rm -f -r $>/ebeast/node_modules/ $>/app/node_modules/
@@ -74,7 +69,6 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$Q cd $>/app/ \
 	  && $(NPM_INSTALL) --production \
 	  && rm -f package-lock.json \
-	    $(ebeast/npm-install-debug) \
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
 	$Q $(CP) -a $>/app/node_modules $>/app/package.json $>/ebeast/
 	$Q cd $>/ebeast/ \

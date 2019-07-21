@@ -63,6 +63,7 @@
   window.Vue = Vue;
   Vue.config.productionTip = false;
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
+  Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
   Vue.prototype._ = _;
   // load Vue components, bundled via b/bundle.js
   require ('./assets/components.js'); // adding './' avoids node_modules/-relative lookup
