@@ -78,7 +78,7 @@ $>/doc/%.html: %.md							| $>/doc/
 # == .revd.md (INTERMEDIATE) ==
 $>/doc/%.revd.md: docs/%.md						| $>/doc/
 	$Q V="$(VERSION_SHORT)" && D="$$(./version.sh -d)" \
-	  && sed "s/[@]BUILDID[@]/$$V/g ; s/[@]FILE_REVISION[@]/$${D%% *}/g" < $< > $@
+	  && sed "s/[@]BUILDVERSION[@]/$$V/g ; s/[@]FILE_REVISION[@]/$${D%% *}/g" < $< > $@
 
 # == man build rules ==
 %.1: %.1.revd.md							| $>/doc/

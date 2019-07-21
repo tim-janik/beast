@@ -1,4 +1,4 @@
-% BEAST(1) Beast-@BUILDID@ | Beast/Bse Manual
+% BEAST(1) Beast-@BUILDVERSION@ | Beast/Bse Manual
 %
 % @FILE_REVISION@
 
