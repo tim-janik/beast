@@ -155,6 +155,8 @@ function menu_command (menuitem)
 						save_same_filename = result[0];
 						check_all_menu_items();
 					      }
+					    else
+					      console.error ('Failed to load:', result[0]);
 					  }
 				      });
       break;
