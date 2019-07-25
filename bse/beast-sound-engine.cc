@@ -19,10 +19,36 @@ print_usage (bool help)
   Bse::printout ("  --version  Print program version\n");
 }
 
+static Bse::ServerH bse_server;
+
+// Configure websocket server
+struct CustomServerConfig : public websocketpp::config::asio {
+  static const size_t connection_read_buffer_size = 16384;
+};
+using ServerEndpoint = websocketpp::server<CustomServerConfig>;
+static ServerEndpoint websocket_server;
+
+static void
+ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
+{
+  const std::string &message = msg->get_payload();
+  // send message to BSE thread and block until its been handled
+  Aida::ScopedSemaphore sem;
+  auto handle_wsmsg = [&message, &con, &sem] () {
+    const std::string reply = "ECHO: " + message;
+    if (!reply.empty())
+      websocket_server.send (con, reply, websocketpp::frame::opcode::text);
+    sem.post();
+  };
+  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
+  sem.wait();
+}
+
 int
 main (int argc, char *argv[])
 {
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
+  bse_server = Bse::init_server_instance();
 
   // parse arguments
   bool seen_dashdash = false;
@@ -56,6 +82,22 @@ main (int argc, char *argv[])
       }
     else
       words.push_back (argv[i]);
+
+  const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
+
+  // setup websocket and run asio loop
+  websocket_server.set_message_handler (&ws_message);
+  websocket_server.init_asio();
+  websocket_server.clear_access_channels (websocketpp::log::alevel::all);
+  websocket_server.set_reuse_addr (true);
+  namespace IP = boost::asio::ip;
+  IP::tcp::endpoint endpoint_local = IP::tcp::endpoint (IP::address::from_string ("127.0.0.1"), BEAST_AUDIO_ENGINE_PORT);
+  websocket_server.listen (endpoint_local);
+  websocket_server.start_accept();
+
+  Bse::printout ("LISTEN: ws://localhost:%d/\n", BEAST_AUDIO_ENGINE_PORT);
+
+  websocket_server.run();
 
   return 0;
 }
