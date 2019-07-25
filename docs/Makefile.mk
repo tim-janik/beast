@@ -51,8 +51,8 @@ docs/manual-man-pages ::= $(strip	\
 )
 
 # == Documentation Date ==
-# shell command to produce 'Month 20YY' from VERSION_DATE
-docs/version_month ::= echo '$(VERSION_DATE)' | sed -r -e 's/^([2-9][0-9][0-9][0-9])-([0-9][0-9])-.*/m\2 \1/' \
+# shell command to produce 'Month 20YY' from version date
+docs/version_month ::= ./version.sh -d | sed -r -e 's/^([2-9][0-9][0-9][0-9])-([0-9][0-9])-.*/m\2 \1/' \
 			-e 's/m01/January/ ; s/m02/February/ ; s/m03/March/ ; s/m04/April/ ; s/m05/May/ ; s/m06/June/' \
 			-e 's/m07/July/ ; s/m08/August/ ; s/m09/September/ ; s/m10/October/ ; s/m11/November/ ; s/m12/December/'
 
@@ -77,8 +77,8 @@ $>/doc/%.html: %.md							| $>/doc/
 
 # == .revd.md (INTERMEDIATE) ==
 $>/doc/%.revd.md: docs/%.md						| $>/doc/
-	$Q V="$(VERSION_SHORT)" && D="$(VERSION_DATE)" \
-	  && sed "s/[@]BUILDID[@]/$$V/g ; s/[@]FILE_REVISION[@]/$${D%% *}/g" < $< > $@
+	$Q V="$(VERSION_SHORT)" && D="$$(./version.sh -d)" \
+	  && sed "s/[@]BUILDVERSION[@]/$$V/g ; s/[@]FILE_REVISION[@]/$${D%% *}/g" < $< > $@
 
 # == man build rules ==
 %.1: %.1.revd.md							| $>/doc/

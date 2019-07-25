@@ -35,9 +35,9 @@
   // provide global constants
   const MAXINT = 2147483647, MAXUINT = 4294967295;
   { MAXINT; MAXUINT; } // linter: not unused
-  const HAVE_DEVELOPMENT_TOOLS = Electron.getCurrentWindow().HAVE_DEVELOPMENT_TOOLS;
+  const GLOBALCONFIG = Object.freeze (Electron.getCurrentWindow().GLOBALCONFIG);
   // show DevTools on hotkey
-  if (HAVE_DEVELOPMENT_TOOLS)
+  if (GLOBALCONFIG.debug)
     document.addEventListener ("keydown", (event) => {
       const code = event.which || event.keyCode;
       if (event.shiftKey && event.ctrlKey && code == 73) // Shift+Ctrl+I
@@ -61,7 +61,7 @@
   const Vue = require ('vue/dist/vue.common.js');
   window.Vue = Vue;
   Vue.config.productionTip = false;
-  Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
+  Vue.config.silent = !GLOBALCONFIG.debug;
   Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
   Vue.prototype._ = _;
   // install utilities, some are needed by Vue components

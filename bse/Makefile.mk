@@ -453,19 +453,6 @@ $>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_lis
 	$Q misc/packres.py -s 'res/' $(res_resfiles_list:%=res/%) > $@.tmp
 	$Q mv $@.tmp $@
 
-# == buildid.cc ==
-$>/bse/buildid.cc: $(config-stamps) $(GITCOMMITDEPS)	| $>/bse/
-	$(QGEN)
-	$Q echo '// make $@'							> $@.tmp \
-	  && V="$(VERSION_LONG)" \
-	  && echo "static const char *static_bse_version_buildid = \"$$V\";"	>>$@.tmp \
-	  && V="$(VERSION_DATE)" \
-	  && echo "static const char *static_bse_version_date = \"$$V\";"	>>$@.tmp
-	$Q mv $@.tmp $@
-$>/bse/weaksym.o: $>/bse/buildid.cc
-# Avoid massive rebuilds when buildid.cc changes, so we avoid adding it to
-# bse/libbse.deps. Only bse/weaksym.cc actually includes buildid.cc.
-
 # == bse/sysconfig.h ==
 $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
 	$(QGEN)

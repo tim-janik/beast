@@ -8,21 +8,4 @@ namespace Bse {
 // https://stackoverflow.com/a/13100465
 __attribute__ ((__weak__)) const bool IntegrityCheck::enabled = false;
 
-
-#include "bse/buildid.cc"
-
-// from platform.hh
-std::string
-version_buildid ()
-{
-  return static_bse_version_buildid;
-}
-
-// from platform.hh
-std::string
-version_date ()
-{
-  return static_bse_version_date;
-}
-
 } // Bse

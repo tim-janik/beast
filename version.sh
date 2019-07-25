@@ -69,7 +69,7 @@ then
     fi
   fi
   # not a release
-  exit_with_version "$LAST_TAG-$UNOFFICIAL" "$BUILD_ID" "$COMMIT_DATE"
+  exit_with_version "$LAST_TAG" "$BUILD_ID" "$COMMIT_DATE"
 fi
 
 # Find 'tag:...' in 'git archive' substitution (see man gitattributes / export-subst)

@@ -126,7 +126,8 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "VERSION_MINOR ::= $$MINOR"			>>$@.tmp \
 	  && echo "VERSION_MICRO ::= $$MICRO"			>>$@.tmp \
 	  && echo "BSE_GETTEXT_DOMAIN ::=" \
-		"beast-$$MAJOR.$$MINOR.$$MICRO" >>$@.tmp
+		"beast-$$MAJOR.$$MINOR.$$MICRO"			>>$@.tmp \
+	  || { echo '$<: *** Failed to determine version through ./version.sh' ; false ; }
 	$Q GLIB_CFLAGS=$$($(PKG_CONFIG) --cflags $(GLIB_PACKAGES)) \
 	  && echo "GLIB_CFLAGS ::= $$GLIB_CFLAGS"		>>$@.tmp
 	$Q GLIB_LIBS=$$($(PKG_CONFIG) --libs $(GLIB_PACKAGES)) \
@@ -182,8 +183,3 @@ config-calc-hash.dep = $$(if $$(filter $$(config-calc-hash), $(config-calc-hash)
 # evaluate to 'FORCE' whenever $(config-calc-hash) changes.
 
 VERSION_M.M.M = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
-VERSION_LONG != ./version.sh -l
-VERSION_DATE != ./version.sh -d
-ifeq ('','$(VERSION_LONG)')
-$(error Failed to determine version through ./version.sh)
-endif

@@ -106,6 +106,7 @@ APPDIR  = $>/appdir/
 APPDIR2 = $>/appdir2/
 appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$(QGEN)
+	@$(eval distversion != ./version.sh -l)
 	$Q echo "  CHECK   " "for AppImage build with prefix=/usr"
 	$Q test '$(prefix)' = '/usr' || { echo "prefix=$(prefix)" >&2 ; false ; }
 	@: # AppDir installation
@@ -132,7 +133,7 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	@echo '  RUN     ' appimagetool ...
 	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
 	$Q rm -fr $(APPDIR) $(APPDIR2)
-	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage
+	$Q mv BEAST-x86_64.AppImage $>/misc/bin/beast-$(distversion)-x64.AppImage
 	$Q ls -l -h --color=auto $>/misc/bin/beast-*-x64.AppImage
 .PHONY: appimage
 
@@ -141,16 +142,17 @@ BINTRAY_KEEPS            = 52
 USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
 bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
+	@$(eval distversion != ./version.sh -l)
 	@: # upload beast-*-x64.AppImage if it exists
-	$Q test -x "$>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage" || exit 0 ; \
-		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(VERSION_LONG) $(USE_BINTRAY_API_KEY_FILE) \
-		  -d $>/misc/bin/beast-$(VERSION_LONG)-x64.AppImage
+	$Q test -x "$>/misc/bin/beast-$(distversion)-x64.AppImage" || exit 0 ; \
+		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(distversion) $(USE_BINTRAY_API_KEY_FILE) \
+		  -d $>/misc/bin/beast-$(distversion)-x64.AppImage
 	@: # upload tarballs of existing log directories
 	$Q for d in cppcheck scan-build clang-tidy hacks unused asan ; do \
 		(set -- $>/misc/$$d/*.* ; test -r "$$1") || continue ; \
-		tar cJf $>/misc/$$d-$(VERSION_LONG).tar.xz -C $>/misc/ $$d/ && \
-		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(VERSION_LONG) $(USE_BINTRAY_API_KEY_FILE) \
-		  $>/misc/$$d-$(VERSION_LONG).tar.xz || exit 1 ; \
+		tar cJf $>/misc/$$d-$(distversion).tar.xz -C $>/misc/ $$d/ && \
+		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(distversion) $(USE_BINTRAY_API_KEY_FILE) \
+		  $>/misc/$$d-$(distversion).tar.xz || exit 1 ; \
 	done
 .PHONY: bintray
 # Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
