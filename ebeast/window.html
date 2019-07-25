@@ -112,7 +112,7 @@
     menus.setup_app_menu();
   }
   // load args
-  for (let arg of Electron.getCurrentWindow().bse_argv)
+  for (let arg of GLOBALCONFIG.args)
     {
       if (Shell.load_project (arg) == Bse.Error.NONE)
 	;

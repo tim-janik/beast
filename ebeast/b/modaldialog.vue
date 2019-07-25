@@ -49,8 +49,8 @@
     min-width: 16em; padding: 0;
     background-color: $b-theme-background;
     border-radius: $b-theme-border-radius;
-    border-top: 3px solid $b-panel-background-light; border-left: 3px solid $b-panel-background-light;
-    border-bottom: 3px solid $b-panel-background-dark; border-right: 3px solid $b-panel-background-dark;
+    border-top: 3px solid $b-main-border-light; border-left: 3px solid $b-main-border-light;
+    border-bottom: 3px solid $b-main-border-dark; border-right: 3px solid $b-main-border-dark;
     @include b-popup-box-shadow;
     /* fix vscrolling: https://stackoverflow.com/a/33455342 */
     justify-content: space-between;

@@ -1,1 +1,24 @@
-$b-theme-font-family: 'Inter';
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+// == Font Basics ==
+$b-main-font-family: 'Inter';
+
+// == Basic Colors ==
+$b-main-foreground: 		#ffffff !default;
+$b-main-background: 		#303030 !default;
+$b-base-foreground: 		#f0f0f0 !default;
+$b-base-background: 		#202020 !default;
+$b-menu-foreground: 		#fcfcfc !default;
+$b-menu-fill:	 		darken($b-menu-foreground, 15%) !default;
+$b-menu-background: 		#333333 !default;
+$b-menu-disabled: 		#808080 !default;
+$b-menu-disabled-fill: 		darken($b-menu-disabled, 10%) !default;
+$b-menu-separator: 		#909090 !default;
+$b-menu-focus-bg: 		#dddddd !default;
+$b-menu-focus-fg: 		$b-menu-background !default;
+$b-menu-active-bg: 		$b-menu-foreground !default;
+$b-menu-active-fg: 		$b-menu-background !default;
+$b-menu-padding: 		0.3em;
+$b-menu-spacing: 		0.75em;	// icon spacing
+$b-menu-tightspace: 		0.3em;	// icon spacing when packed
+$b-menu-box-shadow: 		0 0 13px 1px #0005;

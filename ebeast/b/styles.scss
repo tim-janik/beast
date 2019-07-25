@@ -1,8 +1,5 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-// == User Settings & Overrides ==
-@import '../variables.scss';
-
 // == Scss Helper Functions ==
 @import 'cssaux.scss';
 
@@ -10,16 +7,12 @@
 // Only put *!default* definitions here, so `variables.scss` takes precedence.
 
 // theme basics
-$b-theme-font-family:		sans-serif !default;
-$b-theme-foreground: 		#ffffff !default;
-$b-theme-background: 		#505050 !default;
-$b-theme-border-radius:	3px !default;
-$b-panel-background-lg0:	lighten($b-theme-background, 1%) !default;
-$b-panel-background-lg1:	darken($b-theme-background, 1%) !default;
-$b-panel-background-lg:	linear-gradient(to bottom, $b-panel-background-lg0 0%, $b-panel-background-lg1 100%) !default;
-$b-panel-background-border:	darken($b-theme-background, 25%) !default;
-$b-panel-background-light:	lighten($b-theme-background, 9%) !default;
-$b-panel-background-dark:	darken($b-theme-background, 9%) !default;
+$b-theme-font-family:		$b-main-font-family;
+$b-theme-foreground: 		$b-main-foreground;
+$b-theme-background: 		$b-main-background;
+$b-theme-border-radius:		3px !default;
+$b-main-border-light:		lighten($b-base-background, 9%) !default;	// used for modal border
+$b-main-border-dark:		darken($b-base-background, 9%) !default;
 $b-toolbar-background:		#606060 !default;
 $b-toolbar-background-lg:	linear-gradient(to bottom, #666666 0%, #5a5a5a 100%) !default;
 $b-button-foreground:   	#dddddd !default;
