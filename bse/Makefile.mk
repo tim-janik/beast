@@ -496,8 +496,9 @@ int main (int argc, char *argv[]) {
 endef
 
 # == BeastSoundEngine ==
-$(bse/BeastSoundEngine.objects):	$(bse/libbse.deps)
-$(bse/BeastSoundEngine.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
+$(bse/BeastSoundEngine.objects): $(bse/libbse.deps)
+$(bse/BeastSoundEngine.objects): EXTRA_INCLUDES ::= -I$> -Iexternal/ $(GLIB_CFLAGS)
+$(bse/BeastSoundEngine.objects): EXTRA_FLAGS ::= -Wno-sign-promo
 $(call BUILD_PROGRAM, \
 	$(lib/BeastSoundEngine), \
 	$(bse/BeastSoundEngine.objects), \

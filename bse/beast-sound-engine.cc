@@ -1,6 +1,11 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/bse.hh>
 
+#include <websocketpp/config/asio_no_tls.hpp>
+#include <websocketpp/server.hpp>
+typedef websocketpp::server<websocketpp::config::asio> server;
+
+
 static void
 print_usage (bool help)
 {
