@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/bse.hh>
+#include <bse/platform.hh>
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
@@ -95,7 +96,11 @@ main (int argc, char *argv[])
   websocket_server.listen (endpoint_local);
   websocket_server.start_accept();
 
-  Bse::printout ("LISTEN: ws://localhost:%d/\n", BEAST_AUDIO_ENGINE_PORT);
+#undef B0 // pollution from termios.h
+  using namespace Bse::AnsiColors;
+  auto B1 = color (BOLD);
+  auto B0 = color (BOLD_OFF);
+  Bse::printout ("%sLISTEN:%s ws://localhost:%d/\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
 
   websocket_server.run();
 
