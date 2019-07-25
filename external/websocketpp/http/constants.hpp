@@ -291,9 +291,9 @@ namespace http {
           , m_body(body)
           , m_error_code(error_code) {}
 
-        ~exception() throw() {}
+        ~exception() noexcept {}
 
-        virtual const char* what() const throw() {
+        virtual const char* what() const noexcept {
             return m_msg.c_str();
         }
 

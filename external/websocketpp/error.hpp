@@ -258,13 +258,13 @@ public:
       : m_msg(ec.message()), m_code(ec)
     {}
 
-    ~exception() throw() {}
+    ~exception() noexcept {}
 
-    virtual char const * what() const throw() {
+    virtual char const * what() const noexcept {
         return m_msg.c_str();
     }
 
-    lib::error_code code() const throw() {
+    lib::error_code code() const noexcept {
         return m_code;
     }
 
