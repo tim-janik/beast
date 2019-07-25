@@ -29,8 +29,6 @@
 </style>
 
 <script>
-const Util = require ('./utilities.js');
-
 module.exports = {
   name: 'b-part-list',
   mixins: [ Util.vue_mixins.hyphen_props ],

@@ -48,7 +48,6 @@
     });
 
   window.BEASTDIR = __dirname + '/../'; // $prefix/beast-$VESION/app/../
-  const Util = require ('./assets/utilities.js');
   // pull in jQuery
   console.assert (window.jQuery === undefined);
   const $ = require ('jquery');
@@ -63,9 +62,15 @@
   window.Vue = Vue;
   Vue.config.productionTip = false;
   Vue.config.silent = !HAVE_DEVELOPMENT_TOOLS;
+  Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
   Vue.prototype._ = _;
+  // install utilities, some are needed by Vue components
+  const Util = require ('./assets/utilities.js');
   // load Vue components, bundled via b/bundle.js
   require ('./assets/components.js'); // adding './' avoids node_modules/-relative lookup
+  // enable simple logging everywhere
+  window.$log = console.log.bind (console);
+  Vue.prototype.$log = window.$log;
   </script>
 
 </head>
@@ -106,6 +111,14 @@
     const menus = require ('./menus.js');
     menus.setup_app_menu();
   }
+  // load args
+  for (let arg of Electron.getCurrentWindow().bse_argv)
+    {
+      if (Shell.load_project (arg) == Bse.Error.NONE)
+	;
+      else
+	console.error ('Failed to load:', arg);
+    }
   </script>
 
 </body>

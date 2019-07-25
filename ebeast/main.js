@@ -4,13 +4,7 @@ const ElectronDefaultApp = process.defaultApp !== undefined; // indicates unpack
 const Eapp = Electron.app;
 
 // add development hooks
-const HAVE_DEVELOPMENT_TOOLS = function() {
-  try {
-    const { default: installExtension, VUEJS_DEVTOOLS } = require ('electron-devtools-installer');
-    Eapp.on ('ready', () => { installExtension (VUEJS_DEVTOOLS); });
-    return true;
-  } catch (e) {	return false; }
-} ();
+const HAVE_DEVELOPMENT_TOOLS = true;
 
 // split command line options and return one at a time
 function pop_arg (args) {
@@ -120,6 +114,7 @@ function create_window ()
     backgroundColor: 			backgroundColor,
     autoHideMenuBar:			false,
     webPreferences: {
+      nodeIntegration:			true,
       devTools: 			HAVE_DEVELOPMENT_TOOLS,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
@@ -132,7 +127,6 @@ function create_window ()
 	cursive:	'Script',	// 'Script',
 	fantasy:	'Impact',	// 'Impact',
       },
-      experimentalFeatures:		true,	// enable ResizeObserver
     },
     show: false, // avoid incremental load effect, see 'ready-to-show'
     darkTheme: true,

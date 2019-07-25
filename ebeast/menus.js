@@ -103,12 +103,23 @@ function menu_command (menuitem)
       win.setMenu (null);
       win.loadURL ('file:///' + __dirname + '/../doc/beast-manual.html');
       win.webContents.on ('before-input-event', (event, input) => {
-	if (input.alt && input.code=="ArrowLeft" &&
-	    win.webContents.canGoBack())
-	  win.webContents.goBack();
-	if (input.alt && input.code=="ArrowRight" &&
-	    win.webContents.canGoForward())
-	  win.webContents.goForward();
+	if (input.type == 'keyUp' || input.type == 'keyDown')
+	  {
+	    if (input.alt && input.code == "ArrowLeft" &&
+		win.webContents.canGoBack())
+	      {
+		event.preventDefault();
+		if (input.type == 'keyDown')
+		  win.webContents.goBack();
+	      }
+	    if (input.alt && input.code == "ArrowRight" &&
+		win.webContents.canGoForward())
+	      {
+		event.preventDefault();
+		if (input.type == 'keyDown')
+		  win.webContents.goForward();
+	      }
+	  }
       });
       break; }
     case 'toggle-fulscreen':
@@ -144,6 +155,8 @@ function menu_command (menuitem)
 						save_same_filename = result[0];
 						check_all_menu_items();
 					      }
+					    else
+					      console.error ('Failed to load:', result[0]);
 					  }
 				      });
       break;

@@ -38,6 +38,8 @@ $>/ebeast/v8bse/%.cc: ebeast/v8bse/%.cc		| $>/ebeast/v8bse/
 # in $HOME, it requires the electron target version to pick V8 headers and it calls $(MAKE) internally,
 # so we need to unset MAKEFLAGS, to unconfuse the node-gyp invocation of MAKE wrg jobserver setups.
 # See also: /usr/include/nodejs/common.gypi https://electronjs.org/docs/tutorial/using-native-node-modules
+# Note, V8 deprecation warnings can get a little excessive without constantly updating v8pp,
+# so we disable those and leave fixing deprecations to v8pp upgrades.
 $>/ebeast/v8bse/v8bse.node: EXTRA_INCLUDES ::= -I$> -I$>/ebeast/v8bse -Iexternal/v8pp/ $(GLIB_CFLAGS)
 $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) $(lib/libbse.so) $>/ebeast/npm.rules
 	$(QECHO) 'SETUP' $>/ebeast/v8bse/binding.gyp
@@ -47,7 +49,8 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	$Q echo "  'sources':      [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.inputs)) ],"	>>$@.tmp
 	$Q echo "  'cflags!':      [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.notflags)) ],"	>>$@.tmp
 	$Q echo "  'cflags_cc!':   [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.notflags)) ],"	>>$@.tmp
-	$Q echo "  'cflags_cc':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.cxxflags)) ],"	>>$@.tmp
+	$Q echo "  'cflags_cc':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.cxxflags))"	>>$@.tmp
+	$Q echo "         '-UV8_DEPRECATION_WARNINGS', '-UV8_IMMINENT_DEPRECATION_WARNINGS' ],"	>>$@.tmp
 	$Q echo "  'include_dirs': [ $(patsubst %, '%'$(,), $(ebeast_v8bse/gyp.incdirs)) ],"	>>$@.tmp
 	$Q echo "  'libraries':    [ $(patsubst %, '%'$(,), $(ebeast/v8bse/gyp.libs))"		>>$@.tmp
 	$Q echo "           \"'-Wl,-rpath,"'$$$$'"ORIGIN/$(ebeast/v8bse/rpath..libbse)'\" ],"	>>$@.tmp
@@ -59,13 +62,13 @@ $>/ebeast/v8bse/v8bse.node: $>/ebeast/v8bse/v8bse.cc $(ebeast/v8bse/cc.sources) 
 	$Q rm -fr $@ $>/ebeast/v8bse/build/
 	@: # Due to 'cd $(@D)', paths are relative to $>/ebeast/v8bse/
 	$Q cd $(@D) \
-	  && sed -n '/^ \ "version":/s/.*"\([0-9.]\+\)".*/\1/p'				\
+	  && sed -n '/^ \ "version":/s/.*"\([0-9.]\+\(-[^"]*\)\?\)".*/\1/p'		\
 		    ../node_modules/electron/package.json > $(@F).tmpev			\
-	  && ELECTRON_VERSION=`grep '^[0-9.]\+$$' $(@F).tmpev` && rm $(@F).tmpev	\
+	  && ELECTRON_VERSION=`grep '^[0-9]\+\.[0-9.]\+' $(@F).tmpev` && rm $(@F).tmpev	\
 	  && CXX="$(CCACHE) $(CXX)"							\
 		HOME='../node_modules/node-gyp/cache/' MAKEFLAGS=''			\
 		../node_modules/.bin/node-gyp --target="$$ELECTRON_VERSION"		\
-		  rebuild --dist-url=https://atom.io/download/electron			\
+		  rebuild --dist-url=https://electronjs.org/headers			\
 		  $(if $(findstring 1, $(V)) , --verbose, --silent)
 	$Q ln -sv build/Release/v8bse.node $>/ebeast/v8bse/
 	@: # Note, we leave cleaning of ebeast/node_modules/node-gyp/cache/ to ../node_modules/ cleanups
