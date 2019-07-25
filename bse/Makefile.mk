@@ -502,7 +502,7 @@ $(call BUILD_PROGRAM, \
 	$(lib/BeastSoundEngine), \
 	$(bse/BeastSoundEngine.objects), \
 	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
+	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
 	../lib)
 
 # == bseprocidl rules ==
