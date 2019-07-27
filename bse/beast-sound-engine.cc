@@ -15,24 +15,25 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 static Bse::ServerH bse_server;
 static const bool verbose = false;
 
-static std::string
-handle_jsonipc (const std::string &message)
-{
-  static Jsonipc::IpcDispatcher jd;
-  if (verbose)
-    Bse::printerr ("REQUEST: %s\n", message);
-  const std::string reply = jd.dispatch_message (message);
-  if (verbose)
-    Bse::printerr ("REPLY:   %s\n", reply);
-  return reply;
-}
-
 // Configure websocket server
 struct CustomServerConfig : public websocketpp::config::asio {
   static const size_t connection_read_buffer_size = 16384;
 };
 using ServerEndpoint = websocketpp::server<CustomServerConfig>;
 static ServerEndpoint websocket_server;
+
+static std::string
+handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &hdl)
+{
+  static Jsonipc::IpcDispatcher jd;
+  const ptrdiff_t conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
+  if (verbose)
+    Bse::printerr ("%p: REQUEST: %s\n", conid, message);
+  const std::string reply = jd.dispatch_message (message);
+  if (verbose)
+    Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
+  return reply;
+}
 
 static std::string
 user_agent_nick (const std::string &useragent)
@@ -72,7 +73,7 @@ ws_open_connection (websocketpp::connection_hdl hdl)
   using namespace Bse::AnsiColors;
   auto B1 = color (BOLD);
   auto B0 = color (BOLD_OFF);
-  Bse::printout ("%sACCEPT:%s %s:%d/ %s\n", B1, B0, address.to_string().c_str(), rport, nick);
+  Bse::printout ("%p: %sACCEPT:%s %s:%d/ %s\n", ptrdiff_t (con.get()), B1, B0, address.to_string().c_str(), rport, nick);
   // Bse::printout ("User-Agent: %s\n", useragent);
   return true;
 }
@@ -84,7 +85,7 @@ ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
   // send message to BSE thread and block until its been handled
   Aida::ScopedSemaphore sem;
   auto handle_wsmsg = [&message, &con, &sem] () {
-    std::string reply = handle_jsonipc (message);
+    std::string reply = handle_jsonipc (message, con);
     if (!reply.empty())
       websocket_server.send (con, reply, websocketpp::frame::opcode::text);
     sem.post();
