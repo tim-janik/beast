@@ -1,11 +1,97 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
-#include <bse/bse.hh>
-#include <bse/platform.hh>
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 typedef websocketpp::server<websocketpp::config::asio> server;
 
+#include <jsonipc/jsonipc.hh>
+
+#include <bse/bse.hh>
+#include <bse/platform.hh>
+#include <bse/regex.hh>
+
+#undef B0 // pollution from termios.h
+
+static Bse::ServerH bse_server;
+static const bool verbose = false;
+
+static std::string
+handle_jsonipc (const std::string &message)
+{
+  static Jsonipc::IpcDispatcher jd;
+  if (verbose)
+    Bse::printerr ("REQUEST: %s\n", message);
+  const std::string reply = jd.dispatch_message (message);
+  if (verbose)
+    Bse::printerr ("REPLY:   %s\n", reply);
+  return reply;
+}
+
+// Configure websocket server
+struct CustomServerConfig : public websocketpp::config::asio {
+  static const size_t connection_read_buffer_size = 16384;
+};
+using ServerEndpoint = websocketpp::server<CustomServerConfig>;
+static ServerEndpoint websocket_server;
+
+static std::string
+user_agent_nick (const std::string &useragent)
+{
+  using namespace Bse;
+  std::string nick;
+  if      (Re::search (R"(\bFirefox/)", useragent))
+    nick += "Firefox";
+  else if (Re::search (R"(\bElectron/)", useragent))
+    nick += "Electron";
+  else if (Re::search (R"(\bChrome/)", useragent))
+    nick += "Chrome";
+  else if (Re::search (R"(\bSafari/)", useragent))
+    nick += "Safari";
+  else
+    nick += "Unknown";
+  return nick;
+}
+
+static bool
+ws_open_connection (websocketpp::connection_hdl hdl)
+{
+  ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
+  // https://github.com/zaphoyd/websocketpp/issues/694#issuecomment-454623641
+  const auto &socket = con->get_raw_socket();
+  const auto &address = socket.remote_endpoint().address();
+  const int rport = socket.remote_endpoint().port();
+  const websocketpp::http::parser::request &rq = con->get_request();
+  const websocketpp::http::parser::header_list &headermap = rq.get_headers();
+  std::string useragent;
+  for (auto it : headermap) // request headers
+    if (it.first == "User-Agent")
+      useragent = it.second;
+  std::string nick = user_agent_nick (useragent);
+  if (!nick.empty())
+    nick = "(" + nick + ")";
+  using namespace Bse::AnsiColors;
+  auto B1 = color (BOLD);
+  auto B0 = color (BOLD_OFF);
+  Bse::printout ("%sACCEPT:%s %s:%d/ %s\n", B1, B0, address.to_string().c_str(), rport, nick);
+  // Bse::printout ("User-Agent: %s\n", useragent);
+  return true;
+}
+
+static void
+ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
+{
+  const std::string &message = msg->get_payload();
+  // send message to BSE thread and block until its been handled
+  Aida::ScopedSemaphore sem;
+  auto handle_wsmsg = [&message, &con, &sem] () {
+    std::string reply = handle_jsonipc (message);
+    if (!reply.empty())
+      websocket_server.send (con, reply, websocketpp::frame::opcode::text);
+    sem.post();
+  };
+  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
+  sem.wait();
+}
 
 static void
 print_usage (bool help)
@@ -18,31 +104,6 @@ print_usage (bool help)
   Bse::printout ("Usage: beast-sound-engine [OPTIONS]\n");
   Bse::printout ("  --help     Print command line help\n");
   Bse::printout ("  --version  Print program version\n");
-}
-
-static Bse::ServerH bse_server;
-
-// Configure websocket server
-struct CustomServerConfig : public websocketpp::config::asio {
-  static const size_t connection_read_buffer_size = 16384;
-};
-using ServerEndpoint = websocketpp::server<CustomServerConfig>;
-static ServerEndpoint websocket_server;
-
-static void
-ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
-{
-  const std::string &message = msg->get_payload();
-  // send message to BSE thread and block until its been handled
-  Aida::ScopedSemaphore sem;
-  auto handle_wsmsg = [&message, &con, &sem] () {
-    const std::string reply = "ECHO: " + message;
-    if (!reply.empty())
-      websocket_server.send (con, reply, websocketpp::frame::opcode::text);
-    sem.post();
-  };
-  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
-  sem.wait();
 }
 
 int
@@ -87,6 +148,7 @@ main (int argc, char *argv[])
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
 
   // setup websocket and run asio loop
+  websocket_server.set_open_handler (&ws_open_connection);
   websocket_server.set_message_handler (&ws_message);
   websocket_server.init_asio();
   websocket_server.clear_access_channels (websocketpp::log::alevel::all);
@@ -96,7 +158,6 @@ main (int argc, char *argv[])
   websocket_server.listen (endpoint_local);
   websocket_server.start_accept();
 
-#undef B0 // pollution from termios.h
   using namespace Bse::AnsiColors;
   auto B1 = color (BOLD);
   auto B0 = color (BOLD_OFF);
