@@ -5,6 +5,12 @@
 namespace Bse {
 namespace Re {
 
+MatchObject
+search (const std::string &regex, const std::string &input)
+{
+  return MatchObject::create (std::regex_search (input, std::regex (regex)));
+}
+
 std::string
 sub (const std::string &regex, const std::string &subst, const std::string &input)
 {
