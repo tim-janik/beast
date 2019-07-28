@@ -185,3 +185,8 @@ main (int argc, char *argv[])
 
   return 0;
 }
+
+/* Dumb echo test:
+   var WebSocket = require ('ws'), c = 0; ws = new WebSocket("ws://localhost:27239/", 'auth123'); ws.onopen=e=>ws.send("Hello!");
+   ws.onmessage=e=>{if(++c % 1000 == 0) console.log(e.data, c); ws.send("YO"); }; setTimeout(e=>{ws.close();console.log(c/10);},10000);
+ */
