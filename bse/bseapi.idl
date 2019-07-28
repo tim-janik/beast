@@ -941,7 +941,9 @@ interface Track : ContextMerger {
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
 
-  // property bool muted;          ///< _("Mute this track by ignoring it in the sequencer.")
+  group _("Adjustments") {
+    bool muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);
+  };
   // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
   // property Wave wave;           ///< _("Wave to be used as instrument.")
   // property int32 midi_channel;  ///< _("Midi channel assigned to this track, 0 uses internal per-track channel.")

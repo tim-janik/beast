@@ -99,6 +99,8 @@ public:
   virtual SourceIfaceP get_output_source () override;
   virtual ItemSeq      outputs           () const override;
   virtual void         outputs           (const ItemSeq &newoutputs) override;
+  virtual bool         muted             () const override;
+  virtual void         muted             (bool val) override;
 };
 
 } // Bse
