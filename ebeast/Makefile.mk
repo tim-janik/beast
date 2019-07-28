@@ -20,6 +20,7 @@ ebeast/all: $>/ebeast/app.rules
 ebeast/js.inputs ::= $(strip 		\
 	ebeast/main.js			\
 	ebeast/menus.js			\
+	ebeast/utilities.js		\
 	ebeast/window.html		\
 )
 ebeast/b/js.inputs	::= $(wildcard ebeast/b/*.js)
@@ -32,6 +33,7 @@ ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
 app/copies		::= $(strip 	\
 	$>/app/menus.js			\
+	$>/app/utilities.js		\
 	$>/app/window.html		\
 )
 app/sources		::= $(strip 	\
@@ -50,7 +52,6 @@ app/generated 		::= $(strip	\
 	$>/app/assets/forkawesome-webfont.css	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
-	$>/app/assets/utilities.js	\
 	$>/app/assets/material-icons.css \
 )
 # provide node_modules/ for use in other makefiles
@@ -131,9 +132,6 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map true
-$>/app/assets/utilities.js: ebeast/b/utilities.js	| $>/ebeast/npm.rules
-	$(QECHO) COPY $@
-	$Q $(CP) -P $< $@
 $>/app/assets/material-icons.css:			| $>/app/assets/
 	$(QECHO) FETCH material-icons-190326.1.tar.xz
 	$Q cd $>/app/assets/ \
