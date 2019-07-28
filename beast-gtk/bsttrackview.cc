@@ -121,7 +121,6 @@ track_view_fill_value (BstItemView *iview,
   Bse::TrackH track = Bse::TrackH::__cast__ (item);
   switch (column)
     {
-      SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
@@ -133,8 +132,7 @@ track_view_fill_value (BstItemView *iview,
       g_value_set_boolean (value, !track.muted());
       break;
     case COL_VOICES:
-      bse_proxy_get (item.proxy_id(), "n_voices", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", track.n_voices()));
       break;
     case COL_SYNTH:
       snet = 0;
@@ -454,9 +452,10 @@ track_view_voice_edited (BstTrackView *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
 	  int i = strtol (text, NULL, 10);
 	  if (i > 0)
-	    bse_proxy_set (item, "n_voices", i, NULL);
+            track.n_voices (i);
 	}
     }
 }
