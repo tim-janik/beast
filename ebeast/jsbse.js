@@ -62,3 +62,24 @@ server['$promise'] = new Promise ((resolve, reject) =>
       }, err => reject (Error ('Jsonipc:' + err.code + ': ' + err.message)));
     };
   });
+
+// TODO: run BSE JS unit tests
+function ebeast_test_bse_basics() {
+  console.assert (Bse.server);
+  const proj = Bse.server.create_project ('ebeast_test_bse_basics-A');
+  console.assert (proj);
+  console.assert (proj.get_name() == 'ebeast_test_bse_basics-A');
+  console.assert (proj.get_prop ('uname') == 'ebeast_test_bse_basics-A');
+  proj.set_prop ('uname', 'ebeast_test_bse_basics-B2');
+  console.assert (proj.get_name() == 'ebeast_test_bse_basics-B2');
+  console.assert (proj.get_prop ('uname') == 'ebeast_test_bse_basics-B2');
+  let icon = proj.get_prop ('icon');
+  console.assert (icon && icon.width == 0 && icon.height == 0);
+  proj.set_prop ('icon', { width: 2, height: 2, pixels: [1, "", "3", 4] });
+  icon = proj.get_prop ('icon');
+  console.assert (icon && icon.width == 2 && icon.height == 2);
+  console.assert (JSON.stringify (icon.pixels) == JSON.stringify ([1, 0, 1, 4]));
+  console.log ("  COMPLETE  " + 'ebeast_test_bse_basics');
+}
+if (Bse.Project && Bse.Project.get_name) // FIXME: run unconditionally
+  ebeast_test_bse_basics();
