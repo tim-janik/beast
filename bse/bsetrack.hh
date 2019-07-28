@@ -103,6 +103,8 @@ public:
   virtual void         muted             (bool val) override;
   virtual int          midi_channel      () const override;
   virtual void         midi_channel      (int val) override;
+  virtual int          n_voices          () const override;
+  virtual void         n_voices          (int val) override;
 };
 
 } // Bse
