@@ -164,8 +164,7 @@ track_view_fill_value (BstItemView *iview,
       }
       break;
     case COL_MIDI_CHANNEL:
-      bse_proxy_get (item.proxy_id(), "midi-channel", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", track.midi_channel()));
       break;
     case COL_OUTPUTS:
       {
@@ -475,9 +474,10 @@ track_view_midi_channel_edited (BstTrackView *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
 	  int i = strtol (text, NULL, 10);
 	  if (i >= 0)
-	    bse_proxy_set (item, "midi-channel", i, NULL);
+	    track.midi_channel (i);
 	}
     }
 }
