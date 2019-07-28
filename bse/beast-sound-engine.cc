@@ -164,7 +164,7 @@ http_request (websocketpp::connection_hdl hdl)
       con->set_body ("<!DOCTYPE html>\n"
                      "<html><head><title>Beast-Sound-Engine</title></head><body>\n"
                      "<h1>Beast-Sound-Engine</h1>\n"
-                     "<a href='client.js'>client.js</a><br/>\n"
+                     "<a href='/app.html'>app.html</a><br/>\n"
                      "Resource: " + con->get_resource() + "<br/>\n"
                      "URI: " + con->get_uri()->str() + "<br/>\n"
                      "</body></html>\n");
@@ -302,7 +302,7 @@ main (int argc, char *argv[])
   using namespace Bse::AnsiColors;
   auto B1 = color (BOLD);
   auto B0 = color (BOLD_OFF);
-  Bse::printout ("%sLISTEN:%s http://localhost:%d/\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
+  Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
 
   websocket_server.run();
 
