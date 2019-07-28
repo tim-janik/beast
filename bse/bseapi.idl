@@ -881,6 +881,8 @@ interface Container : Source {
 
 /// Base interface type for Item managers.
 interface Super : Container {
+  String author  = String (_("Author"), _("Person changing or creating this object"), STANDARD);
+  String license = String (_("License"), _("Copyright license applying to this object"), STANDARD);
 };
 
 /// A list of Super type objects.
