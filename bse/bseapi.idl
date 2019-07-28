@@ -926,6 +926,8 @@ interface SubSynth : Source {
 };
 
 /// Interface for sequencing information and links to Part objects.
+Const MIDI_MAX_CHANNEL = 99;
+
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
@@ -942,11 +944,15 @@ interface Track : ContextMerger {
   Source       get_output_source ();
 
   group _("Adjustments") {
-    bool muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);
+    bool  muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);
+  };
+  group _("MIDI Instrument") {
+    int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this track, 0 uses internal per-track channel"),
+                                GUI STORAGE ":scale:skip-default:unprepared",
+                                0, MIDI_MAX_CHANNEL, 1, 0);
   };
   // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
   // property Wave wave;           ///< _("Wave to be used as instrument.")
-  // property int32 midi_channel;  ///< _("Midi channel assigned to this track, 0 uses internal per-track channel.")
   // property int32 n_voices;      ///< _("Maximum number of voices for simultaneous playback.")
   // property CSynth pnet;         ///< _("Synthesis network to be used as postprocessor.")
   ItemSeq outputs;      ///< _("Mixer busses used as output for this track.")
