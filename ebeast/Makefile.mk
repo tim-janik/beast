@@ -19,6 +19,7 @@ ebeast/all: $>/ebeast/app.rules
 # == sources ==
 ebeast/js.inputs ::= $(strip 		\
 	ebeast/app.html			\
+	$>/app/js_bseapi.js		\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 	ebeast/utilities.js		\
@@ -39,6 +40,7 @@ app/copies		::= $(strip 	\
 	$>/app/window.html		\
 )
 app/sources		::= $(strip 	\
+	$>/app/js_bseapi.js			\
 	$>/app/main.js			\
 	$(app/copies)			\
 )
@@ -120,6 +122,12 @@ $>/app/main.js: ebeast/main.js $(GITCOMMITDEPS)	| $>/app/
 ebeast/globalconfig =	revision: '$(shell ./version.sh -l)', \
 			revdate: '$(shell ./version.sh -d)', \
 			debug: $(if $(findstring debug, $(MODE)),true,false)
+
+# == $>/app/main.js ==
+$>/app/js_bseapi.js: $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/
+	$(QGEN)
+	$Q $(lib/BeastSoundEngine) --js-bseapi > $@.tmp
+	$Q mv $@.tmp $@
 
 # == $>/app/assets/ ==
 ebeast/inter-typeface-downloads ::= \
