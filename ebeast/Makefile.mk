@@ -19,6 +19,7 @@ ebeast/all: $>/ebeast/app.rules
 # == sources ==
 ebeast/js.inputs ::= $(strip 		\
 	ebeast/app.html			\
+	ebeast/jsbse.js			\
 	$>/app/js_bseapi.js		\
 	ebeast/main.js			\
 	ebeast/menus.js			\
@@ -35,6 +36,7 @@ ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
 app/copies		::= $(strip 	\
 	$>/app/app.html			\
+	$>/app/jsbse.js			\
 	$>/app/menus.js			\
 	$>/app/utilities.js		\
 	$>/app/window.html		\
