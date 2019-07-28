@@ -32,7 +32,6 @@ enum {
   PROP_SNET,
   PROP_WAVE,
   PROP_SOUND_FONT_PRESET,
-  PROP_N_VOICES,
   PROP_PNET,
   PROP_OUTPUTS
 };
@@ -560,10 +559,6 @@ bse_track_set_property (GObject      *object,
 	    }
 	}
       break;
-    case PROP_N_VOICES:
-      if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
-        self->max_voices = sfi_value_get_int (value);
-      break;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self))
 	{
@@ -627,9 +622,6 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_SOUND_FONT_PRESET:
       bse_value_set_object (value, self->sound_font_preset);
-      break;
-    case PROP_N_VOICES:
-      sfi_value_set_int (value, self->max_voices);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -1102,11 +1094,6 @@ bse_track_class_init (BseTrackClass *klass)
                                                      _("Sound font preset to be used as instrument"),
 						     BSE_TYPE_SOUND_FONT_PRESET,
 						     SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Synth Input"),
-			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
-					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
@@ -1169,6 +1156,25 @@ TrackImpl::midi_channel (int channel)
       self->midi_channel_SL = value > 0 ? value : self->channel_id;
       bse_track_update_midi_channel (self);
     }
+}
+
+int
+TrackImpl::n_voices() const
+{
+  BseTrack *self = const_cast<TrackImpl*> (this)->as<BseTrack*>();
+
+  return self->max_voices;
+}
+
+void
+TrackImpl::n_voices (int voices)
+{
+  BseTrack *self = as<BseTrack*>();
+
+  const bool post_prepared = self->postprocess && BSE_SOURCE_PREPARED (self->postprocess);
+  int value = n_voices();
+  if (APPLY_IDL_PROPERTY (value, voices) && !post_prepared)
+      self->max_voices = value;
 }
 
 SongTiming
