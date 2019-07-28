@@ -29,7 +29,6 @@
 
 enum {
   PROP_0,
-  PROP_MUTED,
   PROP_SNET,
   PROP_WAVE,
   PROP_SOUND_FONT_PRESET,
@@ -507,11 +506,6 @@ bse_track_set_property (GObject      *object,
   switch (param_id)
     {
       guint i;
-    case PROP_MUTED:
-      BSE_SEQUENCER_LOCK ();
-      self->muted_SL = sfi_value_get_bool (value);
-      BSE_SEQUENCER_UNLOCK ();
-      break;
     case PROP_SNET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self))
 	{
@@ -626,9 +620,6 @@ bse_track_get_property (GObject    *object,
     {
       BseIt3mSeq *iseq;
       SfiRing *ring;
-    case PROP_MUTED:
-      sfi_value_set_bool (value, self->muted_SL);
-      break;
     case PROP_SNET:
       bse_value_set_object (value, self->snet);
       break;
@@ -1108,10 +1099,6 @@ bse_track_class_init (BseTrackClass *klass)
 
   bse_source_class_inherit_channels (BSE_SOURCE_CLASS (klass));
 
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_MUTED,
-			      sfi_pspec_bool ("muted", _("Muted"), NULL,
-					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as instrument"),
@@ -1159,6 +1146,28 @@ TrackImpl::TrackImpl (BseObject *bobj) :
 
 TrackImpl::~TrackImpl ()
 {}
+
+bool
+TrackImpl::muted() const
+{
+  BseTrack *self = const_cast<TrackImpl*> (this)->as<BseTrack*>();
+
+  return self->muted_SL;
+}
+
+void
+TrackImpl::muted (bool muted)
+{
+  BseTrack *self = as<BseTrack*>();
+
+  bool value = self->muted_SL;
+  if (APPLY_IDL_PROPERTY (value, muted))
+    {
+      BSE_SEQUENCER_LOCK ();
+      self->muted_SL = value;
+      BSE_SEQUENCER_UNLOCK ();
+    }
+}
 
 SongTiming
 TrackImpl::get_timing (int tick)
