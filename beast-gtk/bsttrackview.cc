@@ -118,9 +118,9 @@ track_view_fill_value (BstItemView *iview,
   Bse::ItemH item = container.get_item (BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
   if (!item)
     return; // item is probably already destructed
+  Bse::TrackH track = Bse::TrackH::__cast__ (item);
   switch (column)
     {
-      gboolean vbool;
       SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
     case COL_SEQID:
@@ -130,8 +130,7 @@ track_view_fill_value (BstItemView *iview,
       g_value_set_string (value, item.get_name().c_str());
       break;
     case COL_MUTE:
-      bse_proxy_get (item.proxy_id(), "muted", &vbool, NULL);
-      g_value_set_boolean (value, !vbool);
+      g_value_set_boolean (value, !track.muted());
       break;
     case COL_VOICES:
       bse_proxy_get (item.proxy_id(), "n_voices", &vint, NULL);
@@ -436,11 +435,9 @@ track_view_mute_toggled (BstTrackView          *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
-	  gboolean muted;
-	  bse_proxy_get (item, "muted", &muted, NULL);
-	  bse_proxy_set (item, "muted", !muted, NULL);
-	  bse_proxy_get (item, "muted", &muted, NULL);
-	  gtk_cell_renderer_toggle_set_active (tcell, !muted);
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
+	  track.muted (!track.muted());
+	  gtk_cell_renderer_toggle_set_active (tcell, !track.muted());
 	}
     }
 }
