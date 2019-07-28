@@ -54,6 +54,23 @@ user_agent_nick (const std::string &useragent)
 }
 
 static bool
+ws_validate_connection (websocketpp::connection_hdl hdl)
+{
+  ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
+  // using subprotocol as auth string
+  const std::vector<std::string> &subprotocols = con->get_requested_subprotocols();
+  if (subprotocols.size() == 1)
+    {
+      if (subprotocols[0] == "auth123")
+        {
+          con->select_subprotocol (subprotocols[0]);
+          return true;
+        }
+    }
+  return false;
+}
+
+static void
 ws_open_connection (websocketpp::connection_hdl hdl)
 {
   ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
@@ -75,7 +92,6 @@ ws_open_connection (websocketpp::connection_hdl hdl)
   auto B0 = color (BOLD_OFF);
   Bse::printout ("%p: %sACCEPT:%s %s:%d/ %s\n", ptrdiff_t (con.get()), B1, B0, address.to_string().c_str(), rport, nick);
   // Bse::printout ("User-Agent: %s\n", useragent);
-  return true;
 }
 
 static void
@@ -149,6 +165,7 @@ main (int argc, char *argv[])
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
 
   // setup websocket and run asio loop
+  websocket_server.set_validate_handler (&ws_validate_connection);
   websocket_server.set_open_handler (&ws_open_connection);
   websocket_server.set_message_handler (&ws_message);
   websocket_server.init_asio();
