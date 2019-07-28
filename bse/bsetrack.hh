@@ -101,6 +101,8 @@ public:
   virtual void         outputs           (const ItemSeq &newoutputs) override;
   virtual bool         muted             () const override;
   virtual void         muted             (bool val) override;
+  virtual int          midi_channel      () const override;
+  virtual void         midi_channel      (int val) override;
 };
 
 } // Bse

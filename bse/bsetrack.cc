@@ -32,7 +32,6 @@ enum {
   PROP_SNET,
   PROP_WAVE,
   PROP_SOUND_FONT_PRESET,
-  PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
   PROP_PNET,
   PROP_OUTPUTS
@@ -505,7 +504,6 @@ bse_track_set_property (GObject      *object,
 
   switch (param_id)
     {
-      guint i;
     case PROP_SNET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self))
 	{
@@ -565,14 +563,6 @@ bse_track_set_property (GObject      *object,
     case PROP_N_VOICES:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         self->max_voices = sfi_value_get_int (value);
-      break;
-    case PROP_MIDI_CHANNEL:
-      i = sfi_value_get_int (value);
-      if (i != self->midi_channel_SL && !BSE_SOURCE_PREPARED (self))
-        {
-          self->midi_channel_SL = i > 0 ? i : self->channel_id;
-          bse_track_update_midi_channel (self);
-        }
       break;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self))
@@ -640,9 +630,6 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_N_VOICES:
       sfi_value_set_int (value, self->max_voices);
-      break;
-    case PROP_MIDI_CHANNEL:
-      sfi_value_set_int (value, self->midi_channel_SL <= BSE_MIDI_MAX_CHANNELS ? self->midi_channel_SL : 0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -1121,12 +1108,6 @@ bse_track_class_init (BseTrackClass *klass)
 					     16, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
-                              PROP_MIDI_CHANNEL,
-                              sfi_pspec_int ("midi_channel", _("MIDI Channel"),
-                                             _("Midi channel assigned to this track, 0 uses internal per-track channel"),
-                                             0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
@@ -1166,6 +1147,27 @@ TrackImpl::muted (bool muted)
       BSE_SEQUENCER_LOCK ();
       self->muted_SL = value;
       BSE_SEQUENCER_UNLOCK ();
+    }
+}
+
+int
+TrackImpl::midi_channel() const
+{
+  BseTrack *self = const_cast<TrackImpl*> (this)->as<BseTrack*>();
+
+  return self->midi_channel_SL <= BSE_MIDI_MAX_CHANNELS ? self->midi_channel_SL : 0;
+}
+
+void
+TrackImpl::midi_channel (int channel)
+{
+  BseTrack *self = as<BseTrack*>();
+
+  int value = midi_channel();
+  if (APPLY_IDL_PROPERTY (value, channel) && !BSE_SOURCE_PREPARED (self))
+    {
+      self->midi_channel_SL = value > 0 ? value : self->channel_id;
+      bse_track_update_midi_channel (self);
     }
 }
 
