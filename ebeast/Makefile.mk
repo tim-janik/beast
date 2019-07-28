@@ -18,6 +18,7 @@ ebeast/all: $>/ebeast/app.rules
 
 # == sources ==
 ebeast/js.inputs ::= $(strip 		\
+	ebeast/app.html			\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 	ebeast/utilities.js		\
@@ -32,6 +33,7 @@ ebeast/lint.appfiles    ::= $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d)
 ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
 app/copies		::= $(strip 	\
+	$>/app/app.html			\
 	$>/app/menus.js			\
 	$>/app/utilities.js		\
 	$>/app/window.html		\

@@ -1,0 +1,136 @@
+<!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<html><head>
+
+  <title>Beast - Music Synthesizer and Composer</title>
+
+  <link rel="modulepreload" href="./utilities.js">
+  <link rel="modulepreload" href="./jsbse.js">
+  <link rel="modulepreload" href="./assets/components.js">
+  <link rel="modulepreload" href="./node_modules/vue/dist/vue.esm.browser.js">
+  <link rel="stylesheet" href="assets/stylesheets.css">
+  <link rel="stylesheet" href="assets/material-icons.css">
+  <link rel="stylesheet" href="assets/forkawesome-webfont.css">
+
+  <script>
+  'use strict';
+  // provide global constants
+  const GLOBALCONFIG = { 'debug': true };
+  const MAXINT = 2147483647, MAXUINT = 4294967295;
+  </script>
+
+  <!-- async modules: https://v8.dev/features/modules -->
+  <script src="node_modules/jquery/dist/jquery.js" async></script>
+  <script type="module" src="./jsbse.js" async>
+  // TODO: const url = "" + window.location; const wsurl = url.replace (/^[^\/]*\/*([^\/]*).*/, "ws://$1");
+  </script>
+
+</head>
+<body>
+  <script>
+  if (false)
+    {
+      document.body.addEventListener('load', ev => console.log ('body.load'));
+      window.addEventListener('load', ev => console.log ('window.load'));
+      document.addEventListener('readystatechange', ev => console.log (`document: ${document.readyState}`));
+      document.addEventListener('DOMContentLoaded', ev => console.log (`document: DOMContentLoaded`));
+    }
+  </script>
+
+  <div id="body-load-status" style="margin: 1em">
+    <p>
+      Loading single page application...
+      <br />
+      <small class="load-status" style="white-space: pre-line">
+      </small>
+    </p>
+  </div>
+
+  <script type="module">
+  // Load modules asynchronously
+  const loadstatus = document.querySelector ("#body-load-status .load-status");
+  loadstatus.innerText += "Loading Javascript modules...\n";
+  // Bse
+  import * as Bse from './jsbse.js';
+  window.Bse = Bse;
+  loadstatus.innerText += "Loaded Bse...\n";
+  // Vue
+  import Vue from './node_modules/vue/dist/vue.esm.browser.js';
+  window.Vue = Vue;
+  loadstatus.innerText += "Loaded Vue.js...\n";
+  // Vue.config
+  Vue.config.productionTip = false;
+  Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
+  Vue.config.silent = !GLOBALCONFIG.debug;
+  Vue.config.performance = true;
+  // $log() and assert() shortcuts, inside and outside components
+  window.$log = console.log.bind (console);
+  window.assert = console.assert.bind (console);
+  Vue.prototype.$log = window.$log;
+  Vue.prototype.assert = window.assert;
+  // utilities.js
+  import * as Util from './utilities.js'; // depends on Vue
+  window.Util = Util;
+  for (let directivename in Util.vue_directives) // register all utility directives
+    Vue.directive (directivename, Util.vue_directives[directivename]);
+  loadstatus.innerText += "Loaded Util...\n";
+
+  // Start at onload and fetch remaining resources
+  async function onload_start_app() {
+    // onload
+    loadstatus.innerText += "Loaded Window...\n";
+    // jQuery
+    console.assert (window.$ !== undefined);
+    loadstatus.innerText += "Loaded jQuery...\n";
+    // Bse.server
+    await Bse.server['$promise'];
+    console.assert (Bse.server['$id'] > 0);
+    loadstatus.innerText += "Retrieved Bse.server...\n";
+    // _() - add translation indicator
+    window._ = txtstring => Bse.server.gettext (txtstring);
+    Vue.prototype._ = window._;
+    // Beast Web Components, bundled via b/bundle.js
+    await import ('./assets/components.js'); // depends on Vue
+    loadstatus.innerText += "Loaded Components...\n";
+    // Fonts - wait for fonts before Vue components are mounted and compute sizes
+    await document.fonts.ready;
+    loadstatus.innerText += "Loaded Fonts...\n";
+    // Shell will inject itself into all Vue components, make it global
+    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
+    // Mount Vue components, this creates b-projectshell as Vue.Shell
+    const vue_root = new Vue ({
+      el:   '#vue-mountpoint',
+      data: { Shell: { Shell_placeholder: true, // flag causing replacement later on
+		       show_about_dialog: false, show_preferences_dialog: false, }, },
+    });
+    assert (vue_root); // Vue.$root
+    loadstatus.innerText += "Mounted Vue...\n";
+    loadstatus.innerText += "(!) Skipped b-projectshell...\n";
+    // TODO: a new menu implementation is needed
+    if (!'future')
+      { // setup menubar
+	const menus = require ('./menus.js');
+	menus.setup_app_menu();
+      }
+    loadstatus.innerText += "(!) Skipped menus...\n";
+    // Load command line files
+    if (!'future')
+      for (let arg of GLOBALCONFIG.args)
+	{
+	  if (Shell.load_project (arg) == Bse.Error.NONE)
+	    ;
+	  else
+	    console.error ('Failed to load:', arg);
+	}
+    loadstatus.innerText += "(!) Skipped command line files...\n";
+  }
+  window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
+  </script>
+
+  <div id="vue-mountpoint">
+    <!-- FIXME: b-projectshell ref="Vue-prototype-Shell" ></b-projectshell -->
+    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
+    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
+  </div>
+
+</body>
+</html>
