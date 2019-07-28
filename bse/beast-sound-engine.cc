@@ -15,7 +15,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
-static const bool verbose = false;
+static bool verbose = false;
 
 // Configure websocket server
 struct CustomServerConfig : public websocketpp::config::asio {
@@ -122,6 +122,7 @@ print_usage (bool help)
   Bse::printout ("Usage: beast-sound-engine [OPTIONS]\n");
   Bse::printout ("  --help     Print command line help\n");
   Bse::printout ("  --version  Print program version\n");
+  Bse::printout ("  --verbose  Print requests and replies\n");
 }
 
 int
@@ -171,6 +172,10 @@ main (int argc, char *argv[])
           {
             print_usage (true);
             return 0;
+          }
+        else if (arg_name == "v" || arg_name == "verbose")
+          {
+            verbose = true;
           }
         else
           {
