@@ -112,6 +112,33 @@ ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
 }
 
 static void
+http_request (websocketpp::connection_hdl hdl)
+{
+  ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
+  con->append_header ("Content-Type", "text/html; charset=utf-8");
+  const auto &parts = Bse::string_split (con->get_resource(), "?");
+  if (parts[0] != "/")
+    {
+      con->set_status (websocketpp::http::status_code::not_found);
+      con->set_body ("<!DOCTYPE html>\n"
+                     "<html><head><title>404 Not Found</title></head><body>\n"
+                     "<h1>Not Found</h1>\n"
+                     "<p>The requested URL was not found: <tt>" + con->get_uri()->str() + "</tt></p>\n"
+                     "<hr><address>" "beast-sound-engine/" + Bse::version() + "</address>\n"
+                     "<hr></body></html>\n");
+      return;
+    }
+  con->set_body ("<!DOCTYPE html>\n"
+                 "<html><head><title>Beast-Sound-Engine</title></head><body>\n"
+                 "<h1>Beast-Sound-Engine</h1>\n"
+                 "<a href='client.js'>client.js</a><br/>\n"
+                 "Resource: " + con->get_resource() + "<br/>\n"
+                 "URI: " + con->get_uri()->str() + "<br/>\n"
+                 "</body></html>\n");
+  con->set_status (websocketpp::http::status_code::ok);
+}
+
+static void
 print_usage (bool help)
 {
   if (!help)
@@ -190,6 +217,8 @@ main (int argc, char *argv[])
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
 
   // setup websocket and run asio loop
+  websocket_server.set_user_agent ("beast-sound-engine/" + Bse::version());
+  websocket_server.set_http_handler (&http_request);
   websocket_server.set_validate_handler (&ws_validate_connection);
   websocket_server.set_open_handler (&ws_open_connection);
   websocket_server.set_message_handler (&ws_message);
@@ -204,7 +233,7 @@ main (int argc, char *argv[])
   using namespace Bse::AnsiColors;
   auto B1 = color (BOLD);
   auto B0 = color (BOLD_OFF);
-  Bse::printout ("%sLISTEN:%s ws://localhost:%d/\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
+  Bse::printout ("%sLISTEN:%s http://localhost:%d/\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
 
   websocket_server.run();
 
