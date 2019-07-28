@@ -6,13 +6,15 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 #include <jsonipc/jsonipc.hh>
 
-#include <bse/bse.hh>
 #include <bse/platform.hh>
 #include <bse/regex.hh>
+#include "bse/jsonbindings.cc"
+#include <bse/bse.hh>   // Bse::init_async
 
 #undef B0 // pollution from termios.h
 
 static Bse::ServerH bse_server;
+static Jsonipc::IpcDispatcher *dispatcher = NULL;
 static const bool verbose = false;
 
 // Configure websocket server
@@ -25,11 +27,10 @@ static ServerEndpoint websocket_server;
 static std::string
 handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &hdl)
 {
-  static Jsonipc::IpcDispatcher jd;
   const ptrdiff_t conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
   if (verbose)
     Bse::printerr ("%p: REQUEST: %s\n", conid, message);
-  const std::string reply = jd.dispatch_message (message);
+  const std::string reply = dispatcher->dispatch_message (message);
   if (verbose)
     Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
   return reply;
@@ -128,6 +129,25 @@ main (int argc, char *argv[])
 {
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
   bse_server = Bse::init_server_instance();
+
+  // Register BSE bindings
+  {
+    Aida::ScopedSemaphore sem;
+    auto handle_wsmsg = [&sem] () {
+      Bse::register_json_bindings();
+      sem.post();
+    };
+    bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
+    sem.wait();
+  }
+
+  // Setup Jsonipc dispatcher
+  dispatcher = new Jsonipc::IpcDispatcher();
+  dispatcher->add_method ("BeastSoundEngine/init_jsonipc",
+                          [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
+                            cbi.set_result (Jsonipc::to_json (Bse::ServerImpl::instance()).Move());
+                            return NULL;
+                          });
 
   // parse arguments
   bool seen_dashdash = false;
