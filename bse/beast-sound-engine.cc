@@ -10,6 +10,8 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 #include <bse/regex.hh>
 #include "bse/jsonbindings.cc"
 #include <bse/bse.hh>   // Bse::init_async
+#include <limits.h>
+#include <stdlib.h>
 
 #undef B0 // pollution from termios.h
 
@@ -111,31 +113,98 @@ ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
   sem.wait();
 }
 
+static std::string
+simplify_path (const std::string &path)
+{
+  using namespace Bse;
+  std::vector<std::string> dirs = Bse::string_split (path, "/");
+  for (ssize_t i = 0; i < dirs.size(); i++)
+    if (dirs[i].empty() || dirs[i] == ".")
+      dirs.erase (dirs.begin() + i--);
+    else if (dirs[i] == "..")
+      {
+        dirs.erase (dirs.begin() + i--);
+        if (i >= 0)
+          dirs.erase (dirs.begin() + i--);
+      }
+  return "/" + string_join ("/", dirs);
+}
+
+static std::string
+app_path (const std::string &path)
+{
+  using namespace Bse;
+  static const char *basepath = realpath ((runpath (RPath::INSTALLDIR) + "/app/").c_str(), NULL);
+  if (basepath)
+    {
+      static size_t baselen = strlen (basepath);
+      char *uripath = realpath ((basepath + std::string ("/") + path).c_str(), NULL);
+      if (uripath && strncmp (uripath, basepath, baselen) == 0 && uripath[baselen] == '/')
+        {
+          std::string dest = uripath;
+          free (uripath);
+          return dest;
+        }
+    }
+  return ""; // 404
+}
+
 static void
 http_request (websocketpp::connection_hdl hdl)
 {
+  using namespace Bse;
   ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
-  con->append_header ("Content-Type", "text/html; charset=utf-8");
+  const ptrdiff_t conid = ptrdiff_t (con.get());
   const auto &parts = Bse::string_split (con->get_resource(), "?");
-  if (parts[0] != "/")
+  std::string simplepath = simplify_path (parts[0]);
+  // root
+  if (simplepath == "/")
     {
-      con->set_status (websocketpp::http::status_code::not_found);
+      con->append_header ("Content-Type", "text/html; charset=utf-8");
       con->set_body ("<!DOCTYPE html>\n"
-                     "<html><head><title>404 Not Found</title></head><body>\n"
-                     "<h1>Not Found</h1>\n"
-                     "<p>The requested URL was not found: <tt>" + con->get_uri()->str() + "</tt></p>\n"
-                     "<hr><address>" "beast-sound-engine/" + Bse::version() + "</address>\n"
-                     "<hr></body></html>\n");
+                     "<html><head><title>Beast-Sound-Engine</title></head><body>\n"
+                     "<h1>Beast-Sound-Engine</h1>\n"
+                     "<a href='client.js'>client.js</a><br/>\n"
+                     "Resource: " + con->get_resource() + "<br/>\n"
+                     "URI: " + con->get_uri()->str() + "<br/>\n"
+                     "</body></html>\n");
+      con->set_status (websocketpp::http::status_code::ok);
+      if (verbose)
+        Bse::printerr ("%p: GET:     %s\n", conid, simplepath);
       return;
     }
+  // file
+  std::string filepath = app_path (simplepath);
+  if (Path::check (filepath, "drx"))
+    filepath = Path::join (filepath, "index.html");
+  if (Path::check (filepath, "fr"))
+    {
+      if (string_endswith (filepath, ".html"))
+        con->append_header ("Content-Type", "text/html; charset=utf-8");
+      else if (string_endswith (filepath, ".js") || string_endswith (filepath, ".mjs"))
+        con->append_header ("Content-Type", "application/javascript");
+      else if (string_endswith (filepath, ".css"))
+        con->append_header ("Content-Type", "text/css");
+      else
+        con->append_header ("Content-Type", "application/octet-stream");
+      Blob blob = Blob::from_file (filepath);
+      con->set_body (blob.string());
+      con->set_status (websocketpp::http::status_code::ok);
+      if (verbose)
+        Bse::printerr ("%p: FILE:    %s\n", conid, simplepath);
+      return;
+    }
+  // 404
+  con->append_header ("Content-Type", "text/html; charset=utf-8");
+  con->set_status (websocketpp::http::status_code::not_found);
   con->set_body ("<!DOCTYPE html>\n"
-                 "<html><head><title>Beast-Sound-Engine</title></head><body>\n"
-                 "<h1>Beast-Sound-Engine</h1>\n"
-                 "<a href='client.js'>client.js</a><br/>\n"
-                 "Resource: " + con->get_resource() + "<br/>\n"
-                 "URI: " + con->get_uri()->str() + "<br/>\n"
-                 "</body></html>\n");
-  con->set_status (websocketpp::http::status_code::ok);
+                 "<html><head><title>404 Not Found</title></head><body>\n"
+                 "<h1>Not Found</h1>\n"
+                 "<p>The requested URL was not found: <tt>" + con->get_uri()->str() + "</tt></p>\n"
+                 "<hr><address>" "beast-sound-engine/" + Bse::version() + "</address>\n"
+                 "<hr></body></html>\n");
+  if (verbose)
+    Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
 }
 
 static void
