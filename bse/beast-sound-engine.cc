@@ -228,14 +228,21 @@ main (int argc, char *argv[])
   bse_server = Bse::init_server_instance();
 
   // Register BSE bindings
+  const bool print_jsbse = argc >= 2 && std::string ("--js-bseapi") == argv[1];
   {
     Aida::ScopedSemaphore sem;
-    auto handle_wsmsg = [&sem] () {
+    auto handle_wsmsg = [print_jsbse,&sem] () {
+      if (!print_jsbse)
+        Jsonipc::ClassPrinter::disable();
       Bse::register_json_bindings();
+      if (print_jsbse)
+        Bse::printout ("%s\n", Jsonipc::ClassPrinter::string());
       sem.post();
     };
     bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
     sem.wait();
+    if (print_jsbse)
+      return 0;
   }
 
   // Setup Jsonipc dispatcher
