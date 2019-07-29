@@ -249,7 +249,9 @@ main (int argc, char *argv[])
   dispatcher = new Jsonipc::IpcDispatcher();
   dispatcher->add_method ("BeastSoundEngine/init_jsonipc",
                           [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
-                            cbi.set_result (Jsonipc::to_json (Bse::ServerImpl::instance()).Move());
+                            // TODO: bind Bse::ServerImpl, so far we only bind Bse::ServerIface
+                            Bse::ServerIface &server_iface = Bse::ServerImpl::instance();
+                            cbi.set_result (Jsonipc::to_json (server_iface).Move());
                             return NULL;
                           });
 
