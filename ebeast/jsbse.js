@@ -43,6 +43,7 @@ export * from './js_bseapi.js';
 // -------- Javascript BSE API (auto-generated) --------
 
 export const server = new Bse.Server (null);
+Object.defineProperty (server, '$promise', { writable: true });
 server['$promise'] = new Promise ((resolve, reject) =>
   {
     const ws = new WebSocket ("ws://localhost:27239/", 'auth123');
@@ -56,7 +57,7 @@ server['$promise'] = new Promise ((resolve, reject) =>
 	if (!Number.isInteger (server_id) || !(server_id > 0))
 	  throw Error ('Bse: failed to authenticate to BeastSoundEngine');
 	// TODO: check that the return value is { '$id': <int>, '$class': 'Bse.Server' }
-	server['$id'] = server_id;
+	Object.defineProperty (server, '$id', { value: server_id, configurable: true });
 	server['$promise'] = undefined;
 	resolve (server);
       }, err => reject (Error ('Jsonipc:' + err.code + ': ' + err.message)));
