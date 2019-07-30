@@ -251,7 +251,7 @@ main (int argc, char *argv[])
                           [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
                             // TODO: bind Bse::ServerImpl, so far we only bind Bse::ServerIface
                             Bse::ServerIface &server_iface = Bse::ServerImpl::instance();
-                            cbi.set_result (Jsonipc::to_json (server_iface).Move());
+                            cbi.set_result (Jsonipc::to_json (server_iface, cbi.allocator()).Move());
                             return NULL;
                           });
 
