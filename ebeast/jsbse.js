@@ -15,7 +15,7 @@ function $jsonipc (this_, methodname, args) {
     };
     const jsondata = JSON.stringify ({
       id: $jsonipc.counter,
-      this: this_['$id'],
+      this: { '$id': this_['$id'] },
       method: methodname,
       args: args,
     });
@@ -53,11 +53,11 @@ server['$promise'] = new Promise ((resolve, reject) =>
     ws.onopen = (event) => {
       $jsonipc.ws = ws;
       let p = $jsonipc ({ '$id': null }, 'BeastSoundEngine/init_jsonipc', []);
-      p.then (server_id => {
-	if (!Number.isInteger (server_id) || !(server_id > 0))
+      p.then (server_handle => {
+	if (!server_handle || !Number.isInteger (server_handle['$id']) || !(server_handle['$id'] > 0))
 	  throw Error ('Bse: failed to authenticate to BeastSoundEngine');
 	// TODO: check that the return value is { '$id': <int>, '$class': 'Bse.Server' }
-	Object.defineProperty (server, '$id', { value: server_id, configurable: true });
+	Object.defineProperty (server, '$id', { value: server_handle['$id'], configurable: true });
 	server['$promise'] = undefined;
 	resolve (server);
       }, err => reject (Error ('Jsonipc:' + err.code + ': ' + err.message)));
