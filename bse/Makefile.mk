@@ -353,6 +353,7 @@ bse/all: $(lib/libbse.so)
 
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine
+bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
 bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources))
 bse/all: $(lib/BeastSoundEngine)
@@ -495,8 +496,15 @@ int main (int argc, char *argv[]) {
 }
 endef
 
+# == bseapi_jsonipc.cc ==
+$>/bse/bseapi_jsonipc.cc: bse/bseapi.idl aidacc/JsonipcStub.py $(aidacc/aidacc)	| $>/bse/
+	$(QECHO) AIDACC $@
+	$Q $(aidacc/aidacc) -x aidacc/JsonipcStub.py $< -o $@.tmp -G strip-path=$(abspath $>)/
+	$Q rm -f $@ && chmod -w $@.tmp
+	$Q mv $@.tmp $@
+
 # == BeastSoundEngine ==
-$(bse/BeastSoundEngine.objects): $(bse/libbse.deps)
+$(bse/BeastSoundEngine.objects): $(bse/BeastSoundEngine.deps) $(bse/libbse.deps)
 $(bse/BeastSoundEngine.objects): EXTRA_INCLUDES ::= -I$> -Iexternal/ $(GLIB_CFLAGS)
 $(bse/BeastSoundEngine.objects): EXTRA_FLAGS ::= -Wno-sign-promo
 $(call BUILD_PROGRAM, \
