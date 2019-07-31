@@ -35,6 +35,8 @@ def identifier_name (joiner, type_name, member = None):
   return joiner.join (parts)
 def ident (name):
   return re.sub (r'[^a-z0-9_A-Z]+', '_', name)
+def enumstring (name):
+  return re.sub (r'[^a-z0-9A-Z]+', '-', name.lower())
 def get_cxxclass (tp):
   return identifier_name ('::', tp)
 def get_cxxiface (tp):
@@ -87,6 +89,16 @@ class Generator:
     # Main binding registration
     s += 'static void\n'
     s += '%s_jsonipc_stub ()\n{\n' % self.namespace
+    for tp in jip_enum_types:
+      # tp.storage == Decls.ENUM:
+      cxxclass, jsclass = get_cxxclass (tp), get_jsclass (tp)
+      s += '  Jsonipc::Enum<%s> jsonipc__%s ("%s");\n' % (cxxclass, ident (cxxclass), jsclass)
+      s += '  jsonipc__%s\n' % ident (cxxclass)
+      for opt in tp.options:
+        (evident, label, blurb, number) = opt
+        # s += '  %s.set_const ("%s", %s);\n' % (v8ppenum (tp), ident, identifier_name ('::', tp, ident))
+        s += '    .set (%s, "%s") // %s\n' % (identifier_name ('::', tp, evident), evident, enumstring (get_cxxclass (tp) + '-' + evident))
+      s += '  ;\n'
     for tp in jip_class_types:
       b = ''
       # Records
