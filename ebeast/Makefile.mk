@@ -20,7 +20,7 @@ ebeast/all: $>/ebeast/app.rules
 ebeast/js.inputs ::= $(strip 		\
 	ebeast/app.html			\
 	ebeast/jsbse.js			\
-	$>/app/js_bseapi.js		\
+	$>/app/bseapi_jsonipc.js	\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 	ebeast/utilities.js		\
@@ -42,7 +42,7 @@ app/copies		::= $(strip 	\
 	$>/app/window.html		\
 )
 app/sources		::= $(strip 	\
-	$>/app/js_bseapi.js			\
+	$>/app/bseapi_jsonipc.js	\
 	$>/app/main.js			\
 	$(app/copies)			\
 )
@@ -126,9 +126,11 @@ ebeast/globalconfig =	revision: '$(shell ./version.sh -l)', \
 			debug: $(if $(findstring debug, $(MODE)),true,false)
 
 # == $>/app/main.js ==
-$>/app/js_bseapi.js: $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/
+$>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/
 	$(QGEN)
-	$Q $(lib/BeastSoundEngine) --js-bseapi > $@.tmp
+	$Q cat jsonipc/head.js			> $@.tmp
+	$Q $(lib/BeastSoundEngine) --js-bseapi	>>$@.tmp
+	$Q rm -f $@ && chmod -w $@.tmp
 	$Q mv $@.tmp $@
 
 # == $>/app/assets/ ==
