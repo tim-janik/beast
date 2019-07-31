@@ -13,6 +13,45 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 #include <limits.h>
 #include <stdlib.h>
 
+// == Aida Workarounds ==
+// Manually convert between Aida Handle types (that Jsonipc cannot know about)
+// and shared_ptr to Iface types.
+// Bse::*Seq as std::vector
+template<typename Bse_Seq, typename Bse_IfaceP>
+struct ConvertSeq {
+  static Bse_Seq
+  from_json (const Jsonipc::JsonValue &jarray)
+  {
+    std::vector<Bse_IfaceP> pointers = Jsonipc::from_json<std::vector<Bse_IfaceP>> (jarray);
+    Bse_Seq seq;
+    seq.reserve (pointers.size());
+    for (auto &ptr : pointers)
+      seq.emplace_back (ptr->__handle__());
+    return seq;
+  }
+  static Jsonipc::JsonValue
+  to_json (const Bse_Seq &vec, Jsonipc::JsonAllocator &allocator)
+  {
+    std::vector<Bse_IfaceP> pointers;
+    pointers.reserve (vec.size());
+    for (auto &itemhandle : vec)
+      pointers.emplace_back (itemhandle.__iface__()->template as<Bse_IfaceP>());
+    return Jsonipc::to_json (pointers, allocator);
+  }
+};
+
+namespace Jsonipc {
+// Bse::ItemSeq as std::vector
+template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
+// Bse::PartSeq as std::vector
+template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::PartIfaceP> {};
+// Bse::SuperSeq as std::vector
+template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
+// Bse::WaveOscSeq as std::vector
+template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
+} // Jsonipc
+
+
 #include "bsebus.hh"
 #include "bsecontextmerger.hh"
 #include "bsecsynth.hh"
