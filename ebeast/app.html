@@ -36,14 +36,19 @@
     }
   </script>
 
-  <div id="body-load-status" style="margin: 1em">
-    <p>
-      Loading single page application...
-      <br />
-      <small class="load-status" style="white-space: pre-line">
-      </small>
-    </p>
-  </div>
+  <div id="vue-mountpoint">
+    <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
+    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
+    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
+
+    <div id="body-load-status" style="margin: 1em">
+      <p>
+	Loading single page application...
+	<br />
+	<small class="load-status" style="white-space: pre-line">
+	</small>
+      </p>
+    </div>
 
   <script type="module">
   // Load modules asynchronously
@@ -125,12 +130,6 @@
   }
   window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
   </script>
-
-  <div id="vue-mountpoint">
-    <!-- FIXME: b-projectshell ref="Vue-prototype-Shell" ></b-projectshell -->
-    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
-    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
-  </div>
 
 </body>
 </html>
