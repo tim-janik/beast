@@ -6,12 +6,34 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 #include <jsonipc/jsonipc.hh>
 
+#include <bse/bseenums.hh>      // enums API interfaces, etc
 #include <bse/platform.hh>
 #include <bse/regex.hh>
-#include "bse/jsonbindings.cc"
 #include <bse/bse.hh>   // Bse::init_async
 #include <limits.h>
 #include <stdlib.h>
+
+#include "bsebus.hh"
+#include "bsecontextmerger.hh"
+#include "bsecsynth.hh"
+#include "bseeditablesample.hh"
+#include "bsemidinotifier.hh"
+#include "bsemidisynth.hh"
+#include "bsepart.hh"
+#include "bsepcmwriter.hh"
+#include "bseproject.hh"
+#include "bseserver.hh"
+#include "bsesnet.hh"
+#include "bsesong.hh"
+#include "bsesong.hh"
+#include "bsesoundfont.hh"
+#include "bsesoundfontrepo.hh"
+#include "bsetrack.hh"
+#include "bsewave.hh"
+#include "bsewaveosc.hh"
+#include "bsewaverepo.hh"
+#include "monitor.hh"
+#include "bse/bseapi_jsonipc.cc"    // Bse_jsonipc_stub
 
 #undef B0 // pollution from termios.h
 
@@ -234,9 +256,14 @@ main (int argc, char *argv[])
     auto handle_wsmsg = [print_jsbse,&sem] () {
       if (!print_jsbse)
         Jsonipc::ClassPrinter::disable();
-      Bse::register_json_bindings();
+      Bse_jsonipc_stub();
       if (print_jsbse)
         Bse::printout ("%s\n", Jsonipc::ClassPrinter::string());
+      // fixups, we know Bse::Server is a singleton
+      Jsonipc::Class<Bse::ServerIface> jsonipc__Bse_ServerIface;
+      jsonipc__Bse_ServerIface.eternal();
+      Jsonipc::Class<Bse::ServerImpl> jsonipc__Bse_ServerImpl;
+      jsonipc__Bse_ServerImpl.eternal();
       sem.post();
     };
     bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
