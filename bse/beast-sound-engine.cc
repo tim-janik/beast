@@ -258,7 +258,7 @@ main (int argc, char *argv[])
         Jsonipc::ClassPrinter::disable();
       Bse_jsonipc_stub();
       if (print_jsbse)
-        Bse::printout ("%s\n", Jsonipc::ClassPrinter::string());
+        Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
       // fixups, we know Bse::Server is a singleton
       Jsonipc::Class<Bse::ServerIface> jsonipc__Bse_ServerIface;
       jsonipc__Bse_ServerIface.eternal();
