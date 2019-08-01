@@ -37,20 +37,11 @@ module.exports = {
     show_about_dialog: false,
     show_preferences_dialog: false,
     project: undefined,
+    song: undefined,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
     show_preferences_dialog: function (newval) { if (newval && this.show_about_dialog) this.show_about_dialog = false; },
-  },
-  computed: {
-    song: function () {
-      let s, supers = this.project.get_supers();
-      for (s of supers) {
-	if (s instanceof Bse.Song)
-	  return s;
-      }
-      return undefined;
-    },
   },
   created() {
     // delete `Shell` dummy on toplebel if present
@@ -75,41 +66,56 @@ module.exports = {
     status (...args) {
       console.log (...args);
     },
-    load_project (projectpath)
+    async load_project (projectpath)
     {
-      let newproject = Bse.server.create_project ('Untitled');
+      // always replace the existing project with a new one
+      let newproject = await Bse.server.create_project ('Untitled');
+      // load from disk if possible
       if (projectpath != undefined)
 	{
-	  const ret = newproject.restore_from_file (projectpath);
+	  const ret = await newproject.restore_from_file (projectpath);
 	  if (ret != Bse.Error.NONE)
 	    return ret;
-	  const path = require ('path');
-	  newproject.set_name (path.basename (projectpath));
+	  const basename = projectpath.replace (/.*\//, '');
+	  await newproject.set_name (basename);
 	}
+      // ensure project has a song
+      let song, supers = await newproject.get_supers();
+      for (let s of supers)
+	if (s instanceof Bse.Song)
+	  {
+	    song = s;
+	    break;
+	  }
+      if (!song)
+	song = await newproject.create_song ("Unnamed");
+      // shut down old project
       if (this.project)
 	{
-	  this.project.stop();
+	  // FIXME: this.title_off_();
 	  this.open_part_edit (undefined);
-	  this.title_off_();
+	  this.project.stop();
 	  Bse.server.destroy_project (this.project);
 	}
+      // reaplce project & song without await, to synchronously trigger Vue updates for both
       this.project = newproject;
-      const update_title = () => {
-	const name = this.project ? this.project.get_name_or_type() : undefined;
+      this.song = song;
+      const update_title = async () => {
+	const name = this.project ? await this.project.get_name_or_type() : undefined;
 	document.title = Util.format_title ('Beast', name);
       };
-      this.title_off_ = this.project.on ("notify:uname", update_title);
+      // FIXME: this.title_off_ = await this.project.on ("notify:uname", update_title);
       update_title();
       this.$forceUpdate();
       return Bse.Error.NONE;
     },
-    save_project (projectpath)
+    async save_project (projectpath)
     {
       let ret = Bse.Error.INTERNAL;
       if (this.project)
 	{
 	  const self_contained = true;
-	  ret = this.project.store (projectpath, self_contained);
+	  ret = await this.project.store (projectpath, self_contained);
 	  const Path = require ('path');
 	  if (ret != Bse.Error.NONE)
 	    Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
