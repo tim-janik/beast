@@ -74,7 +74,7 @@ template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bs
 #include "monitor.hh"
 #include "bse/bseapi_jsonipc.cc"    // Bse_jsonipc_stub
 
-#undef B0 // pollution from termios.h
+#undef B0 // undo pollution from termios.h
 
 static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
@@ -90,9 +90,12 @@ static ServerEndpoint websocket_server;
 static std::string
 handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &hdl)
 {
-  const ptrdiff_t conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
+  ptrdiff_t conid = 0;
   if (verbose)
-    Bse::printerr ("%p: REQUEST: %s\n", conid, message);
+    {
+      conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
+      Bse::printerr ("%p: REQUEST: %s\n", conid, message);
+    }
   const std::string reply = dispatcher->dispatch_message (message);
   if (verbose)
     Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
@@ -158,16 +161,20 @@ ws_open_connection (websocketpp::connection_hdl hdl)
   // Bse::printout ("User-Agent: %s\n", useragent);
 }
 
+static websocketpp::connection_hdl *bse_current_websocket_hdl = NULL;
+
 static void
-ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
+ws_message (websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
   const std::string &message = msg->get_payload();
   // send message to BSE thread and block until its been handled
   Aida::ScopedSemaphore sem;
-  auto handle_wsmsg = [&message, &con, &sem] () {
-    std::string reply = handle_jsonipc (message, con);
+  auto handle_wsmsg = [&message, &hdl, &sem] () {
+    bse_current_websocket_hdl = &hdl;
+    std::string reply = handle_jsonipc (message, hdl);
+    bse_current_websocket_hdl = NULL;
     if (!reply.empty())
-      websocket_server.send (con, reply, websocketpp::frame::opcode::text);
+      websocket_server.send (hdl, reply, websocketpp::frame::opcode::text);
     sem.post();
   };
   bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
@@ -268,6 +275,106 @@ http_request (websocketpp::connection_hdl hdl)
     Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
 }
 
+class EventHub {
+  static ssize_t new_id () { static ssize_t idgen = -1000000; return --idgen; }
+  struct EventHandler {
+    websocketpp::connection_hdl weak_hdl;       // connection weak_ptr
+    Bse::ObjectIfaceW           weak_obj;       // ObjectIface weak_ptr
+    Aida::IfaceEventConnection  event_con;      // internally weak_ptr
+    const ssize_t               handler_id = 0;
+    EventHandler (const EventHandler&) = delete;
+    EventHandler& operator= (const EventHandler&) = delete;
+    EventHandler (ssize_t handlerid, Bse::ObjectIfaceW obj, websocketpp::connection_hdl chdl) :
+      weak_hdl (chdl), weak_obj (obj), handler_id (handlerid)
+    {
+      BSE_ASSERT_RETURN (handler_id != 0);
+    }
+    ~EventHandler()
+    {
+      event_con.disconnect();
+    }
+    void
+    event (const Aida::Event &event)
+    {
+      Bse::ObjectIfaceP obj = weak_obj.lock();
+      ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl);
+      if (obj && con)
+        {
+          rapidjson::Document d (rapidjson::kObjectType);
+          auto &a = d.GetAllocator();
+          d.AddMember ("method", "Bse/EventHub/event", a);
+          Jsonipc::JsonValue jarray (rapidjson::kArrayType);
+          jarray.PushBack (Jsonipc::to_json<ssize_t> (handler_id, a).Move(), a);
+          jarray.PushBack (Jsonipc::to_json (event["type"].get<std::string>(), a).Move(), a); // FIXME: event binding
+          d.AddMember ("params", jarray, a); // move-semantics!
+          rapidjson::StringBuffer buffer;
+          rapidjson::Writer<rapidjson::StringBuffer> writer (buffer);
+          d.Accept (writer);
+          std::string message { buffer.GetString(), buffer.GetSize() };
+          websocket_server.send (weak_hdl, message, websocketpp::frame::opcode::text);
+          if (verbose)
+            {
+              const ptrdiff_t conid = ptrdiff_t (con.get());
+              Bse::printerr ("%p: NOTIFY:  %s\n", conid, message);
+            }
+        }
+    }
+  };
+  using HandlerMap = std::map<ssize_t, EventHandler>;
+  static HandlerMap& handlers() { static HandlerMap hmap; return hmap; }
+public:
+  static std::string*
+  connect (Jsonipc::JsonCallbackInfo &cbi)
+  {
+    if (cbi.n_args() == 2 && bse_current_websocket_hdl)
+      {
+        auto obj = Jsonipc::from_json<Bse::ObjectIfaceP> (cbi.ntharg (0));
+        auto eventname = Jsonipc::from_json<std::string> (cbi.ntharg (1));
+        if (obj && !eventname.empty())
+          {
+            websocketpp::connection_hdl chdl = *bse_current_websocket_hdl;
+            const ssize_t handler_id = new_id();
+            // handlers()[handler_id] = EventHandler (handler_id, obj, chdl);
+            auto pitb = handlers().emplace (std::piecewise_construct, std::forward_as_tuple (handler_id),
+                                            std::forward_as_tuple (handler_id, obj, chdl));
+            EventHandler *ehandler = &pitb.first->second;
+            ehandler->event_con = obj->__attach__ (eventname, [ehandler] (const Aida::Event &event) { ehandler->event (event); });
+            cbi.set_result (Jsonipc::to_json (handler_id, cbi.allocator()).Move());
+            return NULL;
+          }
+      }
+    return new std::string (cbi.invalid_params);
+  }
+  static std::string*
+  disconnect (Jsonipc::JsonCallbackInfo &cbi)
+  {
+    if (cbi.n_args() == 1)
+      {
+        const ssize_t handler_id = Jsonipc::from_json<ssize_t> (cbi.ntharg (0));
+        HandlerMap &hmap = handlers();
+        auto it = hmap.find (handler_id);
+        bool result = false;
+        if (it != hmap.end())
+          {
+            EventHandler &ehandler = it->second;
+            ehandler.event_con.disconnect();
+            hmap.erase (it);
+            result = true;
+          }
+        cbi.set_result (Jsonipc::to_json (result, cbi.allocator()).Move());
+        return NULL;
+      }
+    return new std::string (cbi.invalid_params);
+  }
+  /* TODO: delete all EventHandler entries on connection death
+   * TODO: clean up EventHandler entries on object deletion
+   * TODO: implement periodic GC sweep for event connections, instead of tracking all
+   * connection + object destructions. E.g. to simplify mattaers, check all weak_ptrs
+   * of all connections once every 257th or so connect() calls, to have an upper bound
+   * of leaky stale connections.
+   */
+};
+
 static void
 print_usage (bool help)
 {
@@ -319,11 +426,12 @@ main (int argc, char *argv[])
   dispatcher = new Jsonipc::IpcDispatcher();
   dispatcher->add_method ("$jsonipc.initialize",
                           [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
-                            // TODO: bind Bse::ServerImpl, so far we only bind Bse::ServerIface
                             Bse::ServerIface &server_iface = Bse::ServerImpl::instance();
                             cbi.set_result (Jsonipc::to_json (server_iface, cbi.allocator()).Move());
                             return NULL;
                           });
+  dispatcher->add_method ("Bse/EventHub/connect", &EventHub::connect);
+  dispatcher->add_method ("Bse/EventHub/disconnect", &EventHub::disconnect);
 
   // parse arguments
   bool seen_dashdash = false;
