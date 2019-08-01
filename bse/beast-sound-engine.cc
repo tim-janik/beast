@@ -285,8 +285,12 @@ print_usage (bool help)
 int
 main (int argc, char *argv[])
 {
+  Bse::this_thread_set_name ("BeastSoundEngineMain");
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
   bse_server = Bse::init_server_instance();
+
+  // Ensure Bse has everything properly loaded
+  bse_server.load_assets();
 
   // Register BSE bindings
   const bool print_jsbse = argc >= 2 && std::string ("--js-bseapi") == argv[1];
