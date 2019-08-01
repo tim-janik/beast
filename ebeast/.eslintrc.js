@@ -8,7 +8,7 @@ module.exports = {
   "globals": {
     "assert": false,
     "Electron": false,
-    "Mithril": false,
+    "$log": false,
     "Vue": false,
     "Bse": false,
     "Shell": false,
