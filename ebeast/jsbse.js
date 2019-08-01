@@ -6,6 +6,28 @@ import * as Bse from './bseapi_jsonipc.js';
 export * from './bseapi_jsonipc.js';
 // -------- Javascript BSE API (auto-generated) --------
 
+// == Object.on ==
+Bse.ObjectIface.prototype.on = async function (eventselector, callback) {
+  const connection_id = await Bse.$jsonipc.send ("Bse/EventHub/connect", [ this, eventselector ]);
+  if (connection_id)
+    {
+      Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection_id ], callback);
+      return connection_id;
+    }
+  return false;
+};
+
+// == Object.off ==
+Bse.ObjectIface.prototype.off = async function (connection_id) {
+  if (connection_id)
+    {
+      Bse.$jsonipc.unobserve ("Bse/EventHub/event", [ connection_id ]);
+      return await Bse.$jsonipc.send ("Bse/EventHub/disconnect", [ connection_id ]);
+    }
+  return false;
+};
+
+// Connect and fetch Bse.server on startup
 export const server = new Bse.Server (undefined);
 Object.defineProperty (server, '$promise', { writable: true });
 server['$promise'] = new Promise ((resolve, reject) => {
@@ -22,7 +44,6 @@ server['$promise'] = new Promise ((resolve, reject) => {
     },
     error => reject (error));
 });
-
 
 // TODO: run BSE JS unit tests
 function ebeast_test_bse_basics() {
