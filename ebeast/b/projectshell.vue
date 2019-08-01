@@ -38,6 +38,7 @@ module.exports = {
     show_preferences_dialog: false,
     project: undefined,
     song: undefined,
+    notifyid: 0,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -92,7 +93,7 @@ module.exports = {
       // shut down old project
       if (this.project)
 	{
-	  // FIXME: this.title_off_();
+	  this.project.off (this.notifyid);
 	  this.open_part_edit (undefined);
 	  this.project.stop();
 	  Bse.server.destroy_project (this.project);
@@ -104,7 +105,7 @@ module.exports = {
 	const name = this.project ? await this.project.get_name_or_type() : undefined;
 	document.title = Util.format_title ('Beast', name);
       };
-      // FIXME: this.title_off_ = await this.project.on ("notify:uname", update_title);
+      this.notifyid = await this.project.on ("notify:uname", update_title);
       update_title();
       this.$forceUpdate();
       return Bse.Error.NONE;
