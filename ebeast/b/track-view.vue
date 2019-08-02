@@ -61,7 +61,7 @@
 <template>
   <div class="b-track-view" >
     <div class="b-track-view-control">
-      <span class="b-track-view-label">{{ track.get_name() }}</span>
+      <span class="b-track-view-label">{{ trackname }}</span>
       <div class="b-track-view-meter">
 	<div class="b-track-view-lbg" ref="levelbg"></div>
 	<div class="b-track-view-cm0" ref="covermid0"></div>
@@ -86,7 +86,10 @@ module.exports = {
     'trackindex': { type: Number, },
   },
   data_tmpl: {
-    name: "Track-Label2",
+    trackname: "",
+  },
+  watch: {
+    track: { immediate: true, async handler (n, o) { this.trackname = await this.track.get_name(); } },
   },
   beforeDestroy() {
     if (this.remove_frame_handler) {
