@@ -870,7 +870,8 @@ let bse_server_shared_arrays = [];
 /// Retrieve shared memory arrays from BSE shared memory ids.
 export function array_fields_from_shm (shm_id, shm_offset) {
   if (bse_server_shared_arrays[shm_id] === undefined) {
-    const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
+    // FIXME: const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
+    const array_buffer = new ArrayBuffer (65536);
     console.assert (array_buffer.byteLength > 0);
     bse_server_shared_arrays[shm_id] = {
       'array_buffer':  array_buffer,
