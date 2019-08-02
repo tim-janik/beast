@@ -1141,6 +1141,9 @@ interface MidiSynth : SNet {
     int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this midi synthesizer"),
                                 STANDARD ":scale:skip-default:unprepared",
                                 1, MAX_MIDI_CHANNEL, 1, 1);
+    int32 n_voices     = Range (_("Max Voices"), _("Maximum number of voices for simultaneous playback"),
+                                STANDARD ":scale",
+                                1, 256, 1, 16);
   };
 };
 
