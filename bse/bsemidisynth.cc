@@ -18,7 +18,6 @@
 enum
 {
   PROP_0,
-  PROP_N_VOICES,
   PROP_SNET,
   PROP_PNET,
   PROP_VOLUME_f,
@@ -208,10 +207,6 @@ bse_midi_synth_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_N_VOICES:
-      if (!BSE_OBJECT_IS_LOCKED (self))
-	self->n_voices = sfi_value_get_int (value);
-      break;
     case PROP_VOLUME_f:
       self->volume_factor = sfi_value_get_real (value);
       g_object_set (self->output, /* no undo */
@@ -256,9 +251,6 @@ bse_midi_synth_get_property (GObject    *object,
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_N_VOICES:
-      sfi_value_set_int (value, self->n_voices);
       break;
     case PROP_VOLUME_f:
       sfi_value_set_real (value, self->volume_factor);
@@ -332,11 +324,6 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
   source_class->context_create = bse_midi_synth_context_create;
   source_class->context_dismiss = bse_midi_synth_context_dismiss;
 
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
-			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
-					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as MIDI instrument"),
@@ -472,6 +459,24 @@ MidiSynthImpl::midi_channel() const
   BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
 
   return self->midi_channel_id;
+}
+
+void
+MidiSynthImpl::n_voices (int voices)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = self->n_voices;
+  if (APPLY_IDL_PROPERTY (value, voices) && !BSE_OBJECT_IS_LOCKED (self))
+    self->n_voices = value;
+}
+
+int
+MidiSynthImpl::n_voices() const
+{
+  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
+
+  return self->n_voices;
 }
 
 } // Bse
