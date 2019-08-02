@@ -105,7 +105,7 @@ class Generator:
       if tp.storage == Decls.RECORD:
         cxxclass, jsclass = get_cxxclass (tp), get_jsclass (tp)
         s += '  Jsonipc::Class<%s> jsonipc__%s ("%s");\n' % (cxxclass, ident (cxxclass), jsclass)
-        b += '    .copyable()\n'
+        b += '    .serializable()\n'
         # fields
         for fname, ftp in tp.fields:
           b += '    .set ("%s", &%s::%s)\n' % (fname, cxxclass, fname)
