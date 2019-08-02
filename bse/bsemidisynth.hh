@@ -45,6 +45,8 @@ public:
   virtual void    volume_f       (double val) override;
   virtual double  volume_dB      () const override;
   virtual void    volume_dB      (double val) override;
+  virtual int     volume_perc    () const override;
+  virtual void    volume_perc    (int val) override;
 };
 
 } // Bse
