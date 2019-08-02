@@ -37,31 +37,31 @@ server['$promise'] = new Promise ((resolve, reject) => {
       if (result instanceof Bse.Server)
 	{
 	  Object.defineProperty (server, '$id', { value: result['$id'], configurable: true });
-	  resolve (Bse.server);
-	  return Bse.server;
+	  resolve (server);
+	  if (server == "unimplemented") // FIXME: run unit tests again
+	    ebeast_test_bse_basics();
+	  return server;
 	}
       throw Error ('Bse: failed to connect to BeastSoundEngine');
     },
     error => reject (error));
 });
 
-// TODO: run BSE JS unit tests
-function ebeast_test_bse_basics() {
-  console.assert (Bse.server);
-  const proj = Bse.server.create_project ('ebeast_test_bse_basics-A');
+// Define BSE JS unit tests
+async function ebeast_test_bse_basics() {
+  console.assert (server && server.$id > 0);
+  const proj = await server.create_project ('ebeast_test_bse_basics-A');
   console.assert (proj);
-  console.assert (proj.get_name() == 'ebeast_test_bse_basics-A');
-  console.assert (proj.get_prop ('uname') == 'ebeast_test_bse_basics-A');
-  proj.set_prop ('uname', 'ebeast_test_bse_basics-B2');
-  console.assert (proj.get_name() == 'ebeast_test_bse_basics-B2');
-  console.assert (proj.get_prop ('uname') == 'ebeast_test_bse_basics-B2');
-  let icon = proj.get_prop ('icon');
+  console.assert ('ebeast_test_bse_basics-A' == await proj.get_name());
+  console.assert ('ebeast_test_bse_basics-A' == await proj.get_prop ('uname'));
+  await proj.set_prop ('uname', 'ebeast_test_bse_basics-B2');
+  console.assert ('ebeast_test_bse_basics-B2' == await proj.get_name());
+  console.assert ('ebeast_test_bse_basics-B2' == await proj.get_prop ('uname'));
+  let icon = await proj.get_prop ('icon');
   console.assert (icon && icon.width == 0 && icon.height == 0);
-  proj.set_prop ('icon', { width: 2, height: 2, pixels: [1, "", "3", 4] });
-  icon = proj.get_prop ('icon');
+  await proj.set_prop ('icon', { width: 2, height: 2, pixels: [1, "", "3", 4] });
+  icon = await proj.get_prop ('icon');
   console.assert (icon && icon.width == 2 && icon.height == 2);
   console.assert (JSON.stringify (icon.pixels) == JSON.stringify ([1, 0, 1, 4]));
   console.log ("  COMPLETE  " + 'ebeast_test_bse_basics');
 }
-if (Bse.Project && Bse.Project.get_name) // FIXME: run unconditionally
-  ebeast_test_bse_basics();
