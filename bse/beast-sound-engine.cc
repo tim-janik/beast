@@ -49,6 +49,24 @@ template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::
 template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
 // Bse::WaveOscSeq as std::vector
 template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
+
+// Bse::PartHandle as Bse::PartIfaceP (in records)
+template<>
+struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
+  static Aida::RemoteMember<Bse::PartHandle>
+  from_json (const Jsonipc::JsonValue &jvalue)
+  {
+    Bse::PartIfaceP ptr = Jsonipc::from_json<Bse::PartIfaceP> (jvalue);
+    return ptr->__handle__();
+  }
+  static Jsonipc::JsonValue
+  to_json (const Aida::RemoteMember<Bse::PartHandle> &handle, Jsonipc::JsonAllocator &allocator)
+  {
+    Bse::PartIfaceP ptr = handle.__iface__()->template as<Bse::PartIfaceP>();
+    return Jsonipc::to_json (ptr, allocator);
+  }
+};
+
 } // Jsonipc
 
 
