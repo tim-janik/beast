@@ -1125,6 +1125,8 @@ interface MidiNotifier : Item {
 
 /// Interface for MIDI synthesis networks.
 Const MAX_MIDI_CHANNEL = 99;
+Const MIN_VOLUME_DB    = -144;
+Const MAX_VOLUME_DB    = 24;
 
 interface MidiSynth : SNet {
   group _("MIDI Instrument") {
@@ -1136,9 +1138,8 @@ interface MidiSynth : SNet {
                                 1, 256, 1, 16);
   };
   group _("Adjustments") {
-    float64 volume_f = Range (_("Master [float]"), _("Master volume as factor"),
-                              STORAGE,
-                              0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
+    float64 volume_f  = Range (_("Master [float]"), "", STORAGE, 0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
+    float64 volume_dB = Range (_("Master [dB]"), "", GUI ":dial", MIN_VOLUME_DB, MAX_VOLUME_DB, 0.1, 0);
   };
 };
 
