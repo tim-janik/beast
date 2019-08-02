@@ -1135,6 +1135,11 @@ interface MidiSynth : SNet {
                                 STANDARD ":scale",
                                 1, 256, 1, 16);
   };
+  group _("Adjustments") {
+    float64 volume_f = Range (_("Master [float]"), _("Master volume as factor"),
+                              STORAGE,
+                              0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
+  };
 };
 
 /// Enumeration describing the current activation and playback state of a project.

@@ -16,7 +16,7 @@
 struct BseMidiSynth : BseSNet {
   guint		 midi_channel_id;
   guint		 n_voices;
-  gfloat	 volume_factor;         /* 1-based factor */
+  double	 volume_factor;         /* 1-based factor */
   BseSNet       *snet;
   BseSNet       *pnet;
   BseSource	*voice_input;
@@ -33,14 +33,16 @@ namespace Bse {
 
 class MidiSynthImpl : public SNetImpl, public virtual MidiSynthIface {
 protected:
-  virtual     ~MidiSynthImpl  ();
-  virtual void post_init      () override;
+  virtual        ~MidiSynthImpl  ();
+  virtual void    post_init      () override;
 public:
-  explicit     MidiSynthImpl  (BseObject*);
-  virtual int  midi_channel      () const override;
-  virtual void midi_channel      (int val) override;
-  virtual int  n_voices          () const override;
-  virtual void n_voices          (int val) override;
+  explicit        MidiSynthImpl  (BseObject*);
+  virtual int     midi_channel   () const override;
+  virtual void    midi_channel   (int val) override;
+  virtual int     n_voices       () const override;
+  virtual void    n_voices       (int val) override;
+  virtual double  volume_f       () const override;
+  virtual void    volume_f       (double val) override;
 };
 
 } // Bse
