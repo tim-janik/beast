@@ -980,8 +980,21 @@ ServerImpl::instance()
 void
 ServerImpl::send_user_message (const UserMessage &umsg)
 {
+  std::string out;
+  out += Aida::enum_value_to_short_string (umsg.utype) + ": ";  // Severity classification for this message.
+  if (!umsg.title.empty())
+    out += umsg.title + " — ";                                  // Usually GUI window title.
   if (!umsg.text1.empty())
-    ; // FIXME: sig_user_message.emit (umsg);
+    out += umsg.text1 + "\n";                                   // Primary message to the user, should be limited to 80-100 chars.
+  if (!umsg.text2.empty())
+    out += "  " + umsg.text2 + "\n";                            // Explanatory (secondary) message no limitations recommended.
+  if (!umsg.text3.empty())
+    out += "  " + umsg.text3 + "\n";                            // Possibly (technical) details or machine error message.
+  if (!umsg.label.empty())
+    out += "  (" + umsg.label + ")\n";                          // Message class label, used to enable/disable this type of message.
+  if (out.empty() || out[out.size() -1] != '\n')
+    out += "\n";
+  Bse::printerr ("BSE:UserMessage:%s", out);
 }
 
 String
