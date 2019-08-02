@@ -324,7 +324,7 @@ class EventHub {
   static HandlerMap& handlers() { static HandlerMap hmap; return hmap; }
 public:
   static std::string*
-  connect (Jsonipc::JsonCallbackInfo &cbi)
+  connect (Jsonipc::CallbackInfo &cbi)
   {
     if (cbi.n_args() == 2 && bse_current_websocket_hdl)
       {
@@ -346,7 +346,7 @@ public:
     return new std::string (cbi.invalid_params);
   }
   static std::string*
-  disconnect (Jsonipc::JsonCallbackInfo &cbi)
+  disconnect (Jsonipc::CallbackInfo &cbi)
   {
     if (cbi.n_args() == 1)
       {
@@ -425,7 +425,7 @@ main (int argc, char *argv[])
   // Setup Jsonipc dispatcher
   dispatcher = new Jsonipc::IpcDispatcher();
   dispatcher->add_method ("$jsonipc.initialize",
-                          [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
+                          [] (Jsonipc::CallbackInfo &cbi) -> std::string* {
                             Bse::ServerIface &server_iface = Bse::ServerImpl::instance();
                             cbi.set_result (Jsonipc::to_json (server_iface, cbi.allocator()).Move());
                             return NULL;
