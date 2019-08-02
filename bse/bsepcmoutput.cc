@@ -35,6 +35,7 @@ static void	 bse_pcm_output_context_connect	(BseSource		*source,
 						 guint			 instance_id,
 						 BseTrans		*trans);
 static void	 bse_pcm_output_reset		(BseSource		*source);
+static void	 bse_pcm_output_update_modules  (BsePcmOutput           *self);
 
 
 /* --- variables --- */
@@ -135,16 +136,19 @@ bse_pcm_output_set_property (GObject      *object,
     {
     case PARAM_MVOLUME_f:
       self->volume_factor = sfi_value_get_real (value);
+      bse_pcm_output_update_modules (self);
       g_object_notify ((GObject*) self, "master_volume_dB");
       g_object_notify ((GObject*) self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_dB:
       self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
+      bse_pcm_output_update_modules (self);
       g_object_notify ((GObject*) self, "master_volume_f");
       g_object_notify ((GObject*) self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_PERC:
       self->volume_factor = sfi_value_get_int (value) / 100.0;
+      bse_pcm_output_update_modules (self);
       g_object_notify ((GObject*) self, "master_volume_f");
       g_object_notify ((GObject*) self, "master_volume_dB");
       break;
@@ -219,6 +223,33 @@ pcm_output_process (BseModule *module,
 }
 
 static void
+pcm_out_access (BseModule *module,      /* EngineThread */
+                gpointer   data)
+{
+  ModData *mdata = (ModData *) module->user_data;
+  ModData *cfg   = (ModData *) data;
+
+  *mdata = *cfg;
+}
+
+static void
+bse_pcm_output_update_modules (BsePcmOutput *self)
+{
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      ModData cfg;
+      cfg.volume     = self->volume_factor;
+      cfg.volume_set = cfg.volume != 1.0;
+
+      bse_source_access_modules (BSE_SOURCE (self),
+                                 pcm_out_access,
+                                 g_memdup (&cfg, sizeof (cfg)),
+                                 g_free,
+                                 NULL);
+    }
+}
+
+static void
 bse_pcm_output_context_create (BseSource *source,
 			       guint      context_handle,
 			       BseTrans  *trans)
@@ -235,8 +266,9 @@ bse_pcm_output_context_create (BseSource *source,
   };
   ModData *mdata = g_new0 (ModData, 1);
   BseModule *module = bse_module_new (&pcm_output_mclass, mdata);
+  BsePcmOutput *self = BSE_PCM_OUTPUT (source);
 
-  mdata->volume = 1.0;
+  mdata->volume = self->volume_factor;
   mdata->volume_set = mdata->volume != 1.0;
 
   /* commit module to engine */
