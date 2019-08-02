@@ -37,6 +37,8 @@ protected:
   virtual void post_init      () override;
 public:
   explicit     MidiSynthImpl  (BseObject*);
+  virtual int  midi_channel      () const override;
+  virtual void midi_channel      (int val) override;
 };
 
 } // Bse

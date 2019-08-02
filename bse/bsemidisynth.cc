@@ -18,7 +18,6 @@
 enum
 {
   PROP_0,
-  PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
   PROP_SNET,
   PROP_PNET,
@@ -42,7 +41,7 @@ static void         bse_midi_synth_get_property        (GObject           *msynt
 static void         bse_midi_synth_context_create      (BseSource         *source,
                                                         guint              context_handle,
                                                         BseTrans          *trans);
-static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
+static void         bse_midi_synth_update_midi_channel (BseMidiSynth      *self);
 
 
 /* --- variables --- */
@@ -89,7 +88,7 @@ bse_midi_synth_init (BseMidiSynth *self)
 }
 
 static void
-bse_misi_synth_update_midi_channel (BseMidiSynth      *self)
+bse_midi_synth_update_midi_channel (BseMidiSynth      *self)
 {
   if (self->voice_switch)
     {
@@ -209,13 +208,6 @@ bse_midi_synth_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_MIDI_CHANNEL:
-      if (!BSE_SOURCE_PREPARED (self))	/* midi channel is locked while prepared */
-        {
-          self->midi_channel_id = sfi_value_get_int (value);
-          bse_misi_synth_update_midi_channel (self);
-        }
-      break;
     case PROP_N_VOICES:
       if (!BSE_OBJECT_IS_LOCKED (self))
 	self->n_voices = sfi_value_get_int (value);
@@ -264,9 +256,6 @@ bse_midi_synth_get_property (GObject    *object,
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_MIDI_CHANNEL:
-      sfi_value_set_int (value, self->midi_channel_id);
       break;
     case PROP_N_VOICES:
       sfi_value_set_int (value, self->n_voices);
@@ -343,11 +332,6 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
   source_class->context_create = bse_midi_synth_context_create;
   source_class->context_dismiss = bse_midi_synth_context_dismiss;
 
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
-			      PROP_MIDI_CHANNEL,
-			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,
-					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
@@ -463,10 +447,31 @@ MidiSynthImpl::post_init()
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
                              self->sub_synth, 3);
 
-  bse_misi_synth_update_midi_channel (self);
+  bse_midi_synth_update_midi_channel (self);
 }
 
 MidiSynthImpl::~MidiSynthImpl ()
 {}
+
+void
+MidiSynthImpl::midi_channel (int channel)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = midi_channel();
+  if (APPLY_IDL_PROPERTY (value, channel) && !BSE_SOURCE_PREPARED (self))
+    {
+      self->midi_channel_id = value;
+      bse_midi_synth_update_midi_channel (self);
+    }
+}
+
+int
+MidiSynthImpl::midi_channel() const
+{
+  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
+
+  return self->midi_channel_id;
+}
 
 } // Bse
