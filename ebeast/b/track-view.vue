@@ -96,15 +96,15 @@ module.exports = {
   },
   methods: {
     update_levels: update_levels,
-    dom_updated() {
+    async dom_updated() {
       if (this.track) {
 	// setup level gradient based on mindb..maxdb
 	const levelbg = this.$refs['levelbg'];
 	levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
 	// request dB SPL updates
-	this.lmonitor = this.track.create_signal_monitor (0);
-	this.rmonitor = this.track.create_signal_monitor (1);
-	let pf = Bse.ProbeFeatures();
+	this.lmonitor = await this.track.create_signal_monitor (0);
+	this.rmonitor = await this.track.create_signal_monitor (1);
+	let pf = new Bse.ProbeFeatures();
 	pf.probe_energy = true;
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
