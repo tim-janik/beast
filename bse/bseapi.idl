@@ -1138,8 +1138,9 @@ interface MidiSynth : SNet {
                                 1, 256, 1, 16);
   };
   group _("Adjustments") {
-    float64 volume_f  = Range (_("Master [float]"), "", STORAGE, 0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
-    float64 volume_dB = Range (_("Master [dB]"), "", GUI ":dial", MIN_VOLUME_DB, MAX_VOLUME_DB, 0.1, 0);
+    float64 volume_f    = Range (_("Master [float]"), "", STORAGE, 0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
+    float64 volume_dB   = Range (_("Master [dB]"), "", GUI ":dial", MIN_VOLUME_DB, MAX_VOLUME_DB, 0.1, 0);
+    int32   volume_perc = Range (_("Master [%]"), "", GUI ":dial", 0, 1584 /* +24dB */, 1, 100);
   };
 };
 

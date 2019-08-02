@@ -20,7 +20,6 @@ enum
   PROP_0,
   PROP_SNET,
   PROP_PNET,
-  PROP_VOLUME_PERC,
 };
 
 /* --- prototypes --- */
@@ -162,7 +161,6 @@ bse_midi_synth_set_property (GObject      *object,
 			     GParamSpec   *pspec)
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (object);
-  auto impl = self->as<Bse::MidiSynthImpl*>();
   switch (param_id)
     {
     case PROP_SNET:
@@ -206,14 +204,6 @@ bse_midi_synth_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_VOLUME_PERC:
-      self->volume_factor = sfi_value_get_int (value) / 100.0;
-      g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
-                    NULL);
-      impl->notify ("volume_f");
-      impl->notify ("volume_dB");
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -234,9 +224,6 @@ bse_midi_synth_get_property (GObject    *object,
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_VOLUME_PERC:
-      sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -310,12 +297,6 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH,
                                                      SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_PERC,
-			      sfi_pspec_int ("volume_perc", _("Master [%]"), NULL,
-					     bse_db_to_factor (0) * 100,
-					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI ":dial"));
 }
 
 namespace Bse {
@@ -454,7 +435,7 @@ MidiSynthImpl::volume_f (double val)
                     "master_volume_f", self->volume_factor,
                     NULL);
       notify ("volume_dB");
-      g_object_notify ((GObject*) self, "volume_perc");
+      notify ("volume_perc");
     }
 }
 
@@ -479,7 +460,7 @@ MidiSynthImpl::volume_dB (double volume)
                     "master_volume_f", self->volume_factor,
                     NULL);
       notify ("volume_f");
-      g_object_notify ((GObject*) self, "volume_perc");
+      notify ("volume_perc");
     }
 }
 
@@ -489,6 +470,32 @@ MidiSynthImpl::volume_dB() const
   BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
 
   return bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB);
+}
+
+
+void
+MidiSynthImpl::volume_perc (int volume)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = volume_perc();
+  if (APPLY_IDL_PROPERTY (value, volume))
+    {
+      self->volume_factor = value / 100.0;
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", self->volume_factor,
+                    NULL);
+      notify ("volume_f");
+      notify ("volume_dB");
+    }
+}
+
+int
+MidiSynthImpl::volume_perc() const
+{
+  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
+
+  return self->volume_factor * 100.0 + 0.5;
 }
 
 }
