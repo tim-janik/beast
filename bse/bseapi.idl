@@ -1134,7 +1134,14 @@ interface MidiNotifier : Item {
 };
 
 /// Interface for MIDI synthesis networks.
+Const MAX_MIDI_CHANNEL = 99;
+
 interface MidiSynth : SNet {
+  group _("MIDI Instrument") {
+    int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this midi synthesizer"),
+                                STANDARD ":scale:skip-default:unprepared",
+                                1, MAX_MIDI_CHANNEL, 1, 1);
+  };
 };
 
 /// Enumeration describing the current activation and playback state of a project.
