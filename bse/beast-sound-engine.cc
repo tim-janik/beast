@@ -403,9 +403,9 @@ main (int argc, char *argv[])
   const bool print_jsbse = argc >= 2 && std::string ("--js-bseapi") == argv[1];
   {
     Aida::ScopedSemaphore sem;
-    auto handle_wsmsg = [print_jsbse,&sem] () {
-      if (!print_jsbse)
-        Jsonipc::ClassPrinter::disable();
+    auto handle_wsmsg = [print_jsbse, &sem] () {
+      if (print_jsbse)
+        Jsonipc::ClassPrinter::recording (true);
       Bse_jsonipc_stub();
       if (print_jsbse)
         Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
