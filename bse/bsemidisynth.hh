@@ -43,6 +43,8 @@ public:
   virtual void    n_voices       (int val) override;
   virtual double  volume_f       () const override;
   virtual void    volume_f       (double val) override;
+  virtual double  volume_dB      () const override;
+  virtual void    volume_dB      (double val) override;
 };
 
 } // Bse
