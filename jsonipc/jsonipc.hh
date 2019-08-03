@@ -1133,7 +1133,9 @@ public:
 template<typename T, typename Enable = void>
 struct IsWrappableClass;
 template<typename T>
-struct IsWrappableClass<T, REQUIRESv< std::is_class<T>::value && !IsSharedPtr<T>::value >> : std::true_type {};
+struct IsWrappableClass<T, REQUIRESv< std::is_class<T>::value &&
+                                      !IsSharedPtr<T>::value &&
+                                      !DerivesVector<T>::value >> : std::true_type {};
 template<>
 struct IsWrappableClass<std::string> : std::false_type {};
 template<typename T>
