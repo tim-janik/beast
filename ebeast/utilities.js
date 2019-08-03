@@ -1021,3 +1021,61 @@ export function match_key_event (event, keyname)
     return false;
   return true;
 }
+
+class UtilResizeObserver {
+  constructor (close_handler, preserve_element, opts) {
+    this.observers = new Map();	// { observer: { callback, elements:[] } }
+    this.have_ResizeObserver = window.ResizeObserver != undefined;
+    this.listening = false;
+  }
+  add_owner (owner, callback) {
+    if (!this.have_ResizeObserver && !this.listening)
+      {
+	window.addEventListener ('resize', () => this.resized());
+	this.listening = true;
+      }
+    let wrs = undefined;
+    if (window.ResizeObserver != undefined)
+      wrs = new window.ResizeObserver (() => callback());
+    const new_observer = {
+      callback: callback,
+      elements: [],
+      wrs: wrs,
+      observe (ele) {
+	if (this.wrs)
+	  this.wrs.observe (ele);
+	else
+	  this.elements.push (ele);
+      },
+      unobserve (ele) {
+	if (this.wrs)
+	  this.wrs.unobserve (ele);
+	else
+	  {
+	    const i = this.elements.indexOf (ele);
+	    if (i >= 0)
+	      this.elements.splice (i, 1);
+	  }
+      },
+      disconnect() {
+	if (this.wrs)
+	  this.wrs.disconnect();
+	else
+	  this.elements = [];
+      }
+    };
+    this.observers[owner] = new_observer;
+    return new_observer;
+  }
+  resized() {
+    for (let o in this.observers)
+      if (this.observers[o].elements.length)
+	this.observers[o].callback (o);
+  }
+}
+const utilresizeobserver = new UtilResizeObserver();
+
+/// Create a ResizeObserver object
+export function resize_observer (owner, callback) {
+  return utilresizeobserver.add_owner (owner, callback);
+}

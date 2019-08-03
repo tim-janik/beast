@@ -126,6 +126,8 @@ module.exports = {
     },
   },
   beforeDestroy() {
+    if (this.resize_observer)
+      this.resize_observer.disconnect();
     if (this.unwatch_render_canvas) {
       this.unwatch_render_canvas();
       this.unwatch_render_canvas = undefined;
@@ -137,7 +139,7 @@ module.exports = {
     render_notes: render_notes,
     dom_updated() {
       if (!this.resize_observer)
-	this.resize_observer = new window.ResizeObserver (entries => { this.$forceUpdate(); });
+	this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
       if (this.resizable_scrollarea != this.$refs.scrollarea) {
 	if (this.resizable_scrollarea)
 	  this.resize_observer.unobserve (this.resizable_scrollarea);
