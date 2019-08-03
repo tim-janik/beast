@@ -116,7 +116,17 @@ handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &h
     }
   const std::string reply = dispatcher->dispatch_message (message);
   if (verbose)
-    Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
+    {
+      const bool iserror = bool (Bse::Re::search (R"(^\{("id":[0-9]+,)?"error":)", reply));
+      if (iserror)
+        {
+          using namespace Bse::AnsiColors;
+          auto R1 = color (BOLD) + color (FG_RED), R0 = color (FG_DEFAULT) + color (BOLD_OFF);
+          Bse::printerr ("%p: %sREPLY:%s   %s\n", conid, R1, R0, reply);
+        }
+      else
+        Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
+    }
   return reply;
 }
 
