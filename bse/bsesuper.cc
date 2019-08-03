@@ -8,7 +8,6 @@
 enum
 {
   PARAM_0,
-  PARAM_COPYRIGHT,
   PARAM_CREATION_TIME,
   PARAM_MOD_TIME
 };
@@ -16,8 +15,6 @@ enum
 
 /* --- variables --- */
 static GTypeClass	*parent_class = NULL;
-static GQuark		 quark_author = 0;
-static GQuark		 quark_license = 0;
 static GSList		*bse_super_objects = NULL;
 
 
@@ -56,13 +53,6 @@ bse_super_set_property (GObject      *object,
   BseSuper *super = BSE_SUPER (object);
   switch (param_id)
     {
-    case PARAM_COPYRIGHT:
-      if (g_object_get_qdata ((GObject*) super, quark_license) == NULL)
-        g_object_set_qdata_full ((GObject*) super, quark_license,
-                                 g_strdup (g_value_get_string (value)),
-                                 g_free);
-      g_object_notify ((GObject*) super, "license");
-      break;
     case PARAM_MOD_TIME:
       super->mod_time = MAX (super->creation_time, sfi_value_get_time (value));
       break;
@@ -140,8 +130,6 @@ bse_super_class_init (BseSuperClass *klass)
   // BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
-  quark_author = g_quark_from_static_string ("author");
-  quark_license = g_quark_from_static_string ("license");
 
   gobject_class->set_property = bse_super_set_property;
   gobject_class->get_property = bse_super_get_property;
@@ -152,9 +140,6 @@ bse_super_class_init (BseSuperClass *klass)
   klass->modified = super_modified;
   klass->compat_finish = super_compat_finish;
 
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_COPYRIGHT,
-			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
 			      sfi_pspec_time ("creation_time", _("Creation Time"), NULL,
