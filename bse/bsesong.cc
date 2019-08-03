@@ -20,7 +20,6 @@
 enum
 {
   PROP_0,
-  PROP_PNET,
 };
 
 
@@ -109,11 +108,13 @@ bse_song_get_candidates (BseItem *item, uint param_id, Bse::PropertyCandidates &
   BseSong *self = BSE_SONG (item);
   switch (param_id)
     {
+#if 0
     case PROP_PNET:
       pc.label = _("Available Postprocessors");
       pc.tooltip = _("List of available synthesis networks to choose a postprocessor from");
       bse_item_gather_items_typed (item, pc.items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -137,6 +138,7 @@ bse_song_set_property (GObject      *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
+#if 0
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -158,6 +160,7 @@ bse_song_set_property (GObject      *object,
                           NULL);
         }
       break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -173,9 +176,11 @@ bse_song_get_property (GObject     *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
+#if 0
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -604,11 +609,6 @@ bse_song_class_init (BseSongClass *klass)
   super_class->compat_finish = bse_song_compat_finish;
 
   bse_song_timing_get_default (&timing);
-
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
-                              PROP_PNET,
-                              bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
-                                                     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
 
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);

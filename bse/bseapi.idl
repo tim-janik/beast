@@ -1023,8 +1023,11 @@ interface Song : SNet {
   void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
   // signal void   pointer_changed (int32 a);
   // group _("MIDI Instrument") {
-  // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
+  // CSynth  pnet          = ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
+  group _("MIDI Instrument") {
+    CSynth pnet = Object (_("Postprocessor"), _("Synthesis network to be used as postprocessor"), STANDARD ":unprepared");
+  };
   group _("Timing") {
     int32   tpqn          = Range (_("TPQN"), _("Number of ticks per quarter note"), STANDARD_RDONLY, 384, 384, 0, 384);
     int32   numerator     = Range (_("Numerator"), _("Measure numerator"), STANDARD, 1, 256, 1, 4);
