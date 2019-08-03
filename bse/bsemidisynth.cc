@@ -80,7 +80,6 @@ bse_midi_synth_init (BseMidiSynth *self)
   self->set_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
   self->midi_channel_id = 1;
   self->n_voices = 16;
-  self->volume_factor = bse_db_to_factor (0);
 }
 
 static void
@@ -429,10 +428,10 @@ MidiSynthImpl::volume_f (double val)
 {
   BseMidiSynth *self = as<BseMidiSynth*>();
 
-  if (APPLY_IDL_PROPERTY (self->volume_factor, val))
+  if (APPLY_IDL_PROPERTY (volume_factor_, val))
     {
       g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
+                    "master_volume_f", volume_factor_,
                     NULL);
       notify ("volume_dB");
       notify ("volume_perc");
@@ -442,9 +441,7 @@ MidiSynthImpl::volume_f (double val)
 double
 MidiSynthImpl::volume_f() const
 {
-  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
-
-  return self->volume_factor;
+  return volume_factor_;
 }
 
 void
@@ -455,9 +452,9 @@ MidiSynthImpl::volume_dB (double volume)
   double value = volume_dB();
   if (APPLY_IDL_PROPERTY (value, volume))
     {
-      self->volume_factor = bse_db_to_factor (value);
+      volume_factor_ = bse_db_to_factor (value);
       g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
+                    "master_volume_f", volume_factor_,
                     NULL);
       notify ("volume_f");
       notify ("volume_perc");
@@ -467,9 +464,7 @@ MidiSynthImpl::volume_dB (double volume)
 double
 MidiSynthImpl::volume_dB() const
 {
-  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
-
-  return bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB);
+  return bse_db_from_factor (volume_factor_, BSE_MIN_VOLUME_dB);
 }
 
 
@@ -481,9 +476,9 @@ MidiSynthImpl::volume_perc (int volume)
   int value = volume_perc();
   if (APPLY_IDL_PROPERTY (value, volume))
     {
-      self->volume_factor = value / 100.0;
+      volume_factor_ = value / 100.0;
       g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
+                    "master_volume_f", volume_factor_,
                     NULL);
       notify ("volume_f");
       notify ("volume_dB");
@@ -493,9 +488,7 @@ MidiSynthImpl::volume_perc (int volume)
 int
 MidiSynthImpl::volume_perc() const
 {
-  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
-
-  return self->volume_factor * 100.0 + 0.5;
+  return volume_factor_ * 100.0 + 0.5;
 }
 
 }
