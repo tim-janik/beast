@@ -16,10 +16,27 @@
   // provide global constants
   const GLOBALCONFIG = { 'debug': true };
   const MAXINT = 2147483647, MAXUINT = 4294967295;
+  window.GLOBALCONFIG = GLOBALCONFIG;
+  // When running inside Electron, provide 'Electron' globally. And to load
+  // browser scripts, hide the Electron nodeIntegration module temporarily
+  if (typeof module === 'object')
+    {
+      window.__module = module;
+      module = undefined;
+      window.Electron = require ('electron').remote;
+    }
+  </script>
+  <script src="node_modules/jquery/dist/jquery.js"></script>
+  <script>
+  // Restore the global 'module', now that scripts are laoded.
+  if (window.__module)
+    {
+      module = window.__module;
+      delete window.__module;
+    }
   </script>
 
   <!-- async modules: https://v8.dev/features/modules -->
-  <script src="node_modules/jquery/dist/jquery.js" async></script>
   <script type="module" src="./jsbse.js" async>
   // TODO: const url = "" + window.location; const wsurl = url.replace (/^[^\/]*\/*([^\/]*).*/, "ws://$1");
   </script>
@@ -36,19 +53,23 @@
     }
   </script>
 
+  <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
+				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
+    <p>
+      Loading single page application...
+      <br />
+      <small class="load-status" style="white-space: pre-line">
+      </small>
+    </p>
+  </div>
+
   <div id="vue-mountpoint">
+
     <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
     <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
     <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
 
-    <div id="body-load-status" style="margin: 1em">
-      <p>
-	Loading single page application...
-	<br />
-	<small class="load-status" style="white-space: pre-line">
-	</small>
-      </p>
-    </div>
+  </div>
 
   <script type="module">
   // Load modules asynchronously
@@ -72,6 +93,7 @@
   window.assert = console.assert.bind (console);
   Vue.prototype.$log = window.$log;
   Vue.prototype.assert = window.assert;
+  Vue.prototype.GLOBALCONFIG = GLOBALCONFIG;
   // utilities.js
   import * as Util from './utilities.js'; // depends on Vue
   window.Util = Util;
@@ -109,7 +131,6 @@
     });
     assert (vue_root); // Vue.$root
     loadstatus.innerText += "Mounted Vue...\n";
-    loadstatus.innerText += "(!) Skipped b-projectshell...\n";
     // TODO: a new menu implementation is needed
     if (!'future')
       { // setup menubar
@@ -127,6 +148,8 @@
 	    console.error ('Failed to load:', arg);
 	}
     loadstatus.innerText += "(!) Skipped command line files...\n";
+    const bodyloadstatus = document.querySelector ("#body-load-status");
+    setTimeout (() => bodyloadstatus.parentElement.removeChild (bodyloadstatus), 900);
   }
   window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
   </script>
