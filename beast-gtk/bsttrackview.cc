@@ -83,6 +83,7 @@ bst_track_view_finalize (GObject *object)
   G_OBJECT_CLASS (bst_track_view_parent_class)->finalize (object);
 
   delete_inplace (self->song);
+  delete_inplace (self->track_map);
 }
 
 GtkWidget*
@@ -526,6 +527,7 @@ static void
 bst_track_view_init (BstTrackView *self)
 {
   new_inplace (self->song);
+  new_inplace (self->track_map);
 
   BstItemView *iview = BST_ITEM_VIEW (self);
   GtkWidget *treehs, *trackgb, *vscroll;
@@ -726,16 +728,21 @@ track_view_listen_on (BstItemView *iview,
 		      SfiProxy     item)
 {
   BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->listen_on (iview, item);
+
+  BstTrackView *self = BST_TRACK_VIEW (iview);
+  Bse::TrackS &track = self->track_map[item];
+  track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
+  track.on ("notify:muted",        [item,iview] { track_property_changed (item, "muted", iview); });
+  track.on ("notify:n_voices",     [item,iview] { track_property_changed (item, "n_voices", iview); });
+  track.on ("notify:midi_channel", [item,iview] { track_property_changed (item, "midi_channel", iview); });
+
   bse_proxy_connect (item,
 		     "signal::changed", track_changed, iview,
 		     NULL);
   bse_proxy_connect (item,
                      /* COL_SEQID handled by GxkListWrapper */
                      /* COL_NAME handled by GxkListWrapper */
-                     "signal::property-notify::muted", track_property_changed, iview, /* COL_MUTE */
-                     "signal::property-notify::n-voices", track_property_changed, iview, /* COL_VOICES */
                      "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
-                     "signal::property-notify::midi-channel", track_property_changed, iview, /* COL_MIDI_CHANNEL */
                      "signal::property-notify::outputs", track_property_changed, iview, /* COL_OUTPUTS */
                      "signal::property-notify::pnet", track_property_changed, iview, /* COL_POST_SYNTH */
                      /* COL_BLURB handled by GxkListWrapper */
@@ -746,6 +753,8 @@ static void
 track_view_unlisten_on (BstItemView *iview,
 			SfiProxy     item)
 {
+  BstTrackView *self = BST_TRACK_VIEW (iview);
+  self->track_map.erase (item);
   bse_proxy_disconnect (item,
 			"any_signal", track_changed, iview,
 			"any_signal", track_property_changed, iview,

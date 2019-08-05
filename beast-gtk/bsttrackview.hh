@@ -20,11 +20,13 @@ typedef	struct	_BstTrackView	   BstTrackView;
 typedef	struct	_BstTrackViewClass BstTrackViewClass;
 struct _BstTrackView
 {
-  BstItemView	          parent_object;
-  Bse::SongS              song;
-  BstTrackRoll	         *troll;
-  BstTrackRollController *tctrl;
-  GtkWidget		 *repeat_toggle;
+  BstItemView                     parent_object;
+  Bse::SongS                      song;
+  std::map<SfiProxy, Bse::TrackS> track_map;
+
+  BstTrackRoll                   *troll;
+  BstTrackRollController         *tctrl;
+  GtkWidget                      *repeat_toggle;
 };
 struct _BstTrackViewClass
 {
