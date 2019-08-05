@@ -42,7 +42,7 @@ module.exports = {
   data_tmpl: { partname: "", allnotes: [] },
   watch: {
     part: { immediate: true, async handler (n, o) {
-      let allnotes = this.part.list_notes_crossing (0, MAXINT);
+      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
       let partname = this.part.get_name();
       this.allnotes = await allnotes;
       this.partname = await partname;
