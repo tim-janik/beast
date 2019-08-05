@@ -18,6 +18,8 @@
     <div class="b-projectshell-part-area" style="display: flex; overflow: hidden;" >
       <b-piano-roll :piano-part="piano_roll_part" ></b-piano-roll>
     </div>
+    <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
+    <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
   </div>
 </template>
 

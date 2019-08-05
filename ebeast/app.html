@@ -63,8 +63,6 @@
   <div id="vue-mountpoint">
 
     <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
-    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
-    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
 
   </div>
 
@@ -132,8 +130,7 @@
     // Mount Vue components, this creates b-projectshell as Vue.Shell
     const vue_root = new Vue ({
       el:   '#vue-mountpoint',
-      data: { Shell: { Shell_placeholder: true, // flag causing replacement later on
-		       show_about_dialog: false, show_preferences_dialog: false, }, },
+      data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
     });
     assert (vue_root); // Vue.$root
     loadstatus.innerText += "Mounted Vue...\n";
