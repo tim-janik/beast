@@ -18,34 +18,27 @@ ebeast/all: $>/ebeast/app.rules
 
 # == sources ==
 ebeast/js.inputs ::= $(strip 		\
-	ebeast/app.html			\
 	ebeast/jsbse.js			\
-	$>/app/bseapi_jsonipc.js	\
 	ebeast/main.js			\
 	ebeast/menus.js			\
 	ebeast/utilities.js		\
-	ebeast/window.html		\
 )
+ebeast/nolint.inputs ::= $(strip	\
+	ebeast/app.html			\
+) # eslint v5.16.0 fails to recognize import() expressions
+app/js.files		::= $(addprefix $>/app/, $(notdir $(ebeast/js.inputs) $(ebeast/nolint.inputs)))
 ebeast/b/js.inputs	::= $(wildcard ebeast/b/*.js)
 ebeast/b/vue.inputs	::= $(wildcard ebeast/b/*.vue)
 ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
 ebeast/b/bundle.js.d   ::= $(wildcard ebeast/*.js ebeast/b/*.js)
 ebeast/b/bundle.vue.d  ::= $(wildcard ebeast/b/*.vue)
-ebeast/lint.appfiles    ::= $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d)
-ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
-app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
-app/copies		::= $(strip 	\
-	$>/app/app.html			\
-	$>/app/jsbse.js			\
-	$>/app/menus.js			\
-	$>/app/utilities.js		\
-	$>/app/window.html		\
-)
-app/sources		::= $(strip 	\
+ebeast/lint.appfiles    ::= $(strip	\
+	$(ebeast/js.inputs)		\
+	$(ebeast/b/bundle.js.d)		\
+	$(ebeast/b/bundle.vue.d)	\
 	$>/app/bseapi_jsonipc.js	\
-	$>/app/main.js			\
-	$(app/copies)			\
 )
+ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
 app/assets/tri-pngs	::= $(strip	\
 	$>/app/assets/tri-n.png		\
 	$>/app/assets/tri-e.png		\
@@ -102,7 +95,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/sources) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
 	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
@@ -111,21 +104,21 @@ $>/ebeast/app.rules: $(app/sources) $(app/generated) $>/ebeast/lint.rules $>/ebe
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
-$(app/copies): $>/app/%: ebeast/%		| $>/app/
+$(app/js.copies): $>/app/%: ebeast/%		| $>/app/
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
 
-# == $>/app/main.js ==
-$>/app/main.js: ebeast/main.js $(GITCOMMITDEPS)	| $>/app/
+# == $(app/js.files) ==
+$(app/js.files): $>/app/%: ebeast/% $(GITCOMMITDEPS) ebeast/Makefile.mk	| $>/app/
 	$(QGEN)
 	$Q sed < $<	> $@.tmp \
-		-e "1,10s|^ *//@EBEAST_GLOBALCONFIG@|  ${ebeast/globalconfig}|"
+		-e "1,10s| /\*@EBEAST_CONFIG@\*/| ${ebeast/config}|"
 	$Q mv $@.tmp $@
-ebeast/globalconfig =	revision: '$(shell ./version.sh -l)', \
-			revdate: '$(shell ./version.sh -d)', \
-			debug: $(if $(findstring debug, $(MODE)),true,false)
+ebeast/config =	revision: '$(shell ./version.sh -l)', \
+		revdate: '$(shell ./version.sh -d)', \
+		debug: $(if $(findstring $(MODE), debug quick),true,false)
 
-# == $>/app/main.js ==
+# == $>/app/bseapi_jsonipc.js ==
 $>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/
 	$(QGEN)
 	$Q cat jsonipc/head.js			> $@.tmp

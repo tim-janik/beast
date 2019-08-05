@@ -14,9 +14,7 @@ module.exports = {
     "Shell": false,
     "Util": false,
     "_": false,
-    "MAXINT": false,
-    "MAXUINT": false,
-    "GLOBALCONFIG": false,
+    "CONFIG": false,
     "module": true /* allow mods */
   },
   "rules": {
@@ -29,7 +27,9 @@ module.exports = {
     "indent": [ "off", 2 ],
     "linebreak-style": [ "error", "unix" ],
     "no-mixed-spaces-and-tabs": [ "off" ],
+    'no-irregular-whitespace': 'off', /* ["error", { 'skipStrings': true, 'skipComments': true, 'skipTemplates': true, 'skipRegExps':true } ], */
     'no-useless-escape': 'off',
+    'no-inner-declarations': 'off',
     'vue/attributes-order': 'off',
     'vue/html-closing-bracket-newline': 'off',
     'vue/html-closing-bracket-spacing': 'off',
@@ -40,7 +40,6 @@ module.exports = {
     'vue/multiline-html-element-content-newline': 'off',
     'vue/no-multi-spaces': 'off',
     'vue/singleline-html-element-content-newline': 'off',
-    'no-irregular-whitespace': 'off', /* ["error", { 'skipStrings': true, 'skipComments': true, 'skipTemplates': true, 'skipRegExps':true } ], */
     "quotes": [ "off", "single" ]
   },
   "plugins": [ "html" ],
