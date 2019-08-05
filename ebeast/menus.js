@@ -26,7 +26,7 @@ const menubar_menuitems = [
 ];
 
 // assign global app menu
-function setup_app_menu()
+export function setup_app_menu()
 {
   function complete_menu_items (item)
   {
@@ -48,9 +48,8 @@ function setup_app_menu()
   Electron.Menu.setApplicationMenu (menubar_menu);
   check_all_menu_items();
 }
-module.exports.setup_app_menu = setup_app_menu;
 
-function check_all_menu_items()
+export function check_all_menu_items()
 {
   function check_menu_item (item) {
     if (item.items)
@@ -65,7 +64,6 @@ function check_all_menu_items()
   if (app_menu)
     check_menu_item (app_menu);
 }
-module.exports.check_all_menu_items = check_all_menu_items;
 
 let save_same_filename = undefined;
 let open_dialog_lastdir = undefined;
