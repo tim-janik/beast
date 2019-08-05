@@ -2,9 +2,10 @@
 const Electron = require ('electron');
 const ElectronDefaultApp = process.defaultApp !== undefined; // indicates unpackaged electron app
 const Eapp = Electron.app;
-const GLOBALCONFIG = { // entries are substituted by Makefile.mk (works only in file header)
-  //@EBEAST_GLOBALCONFIG@
+const CONFIG = { // entries are substituted by Makefile.mk (works only in file header)
+  /*@EBEAST_CONFIG@*/
 };
+Eapp.commandLine.appendSwitch ('disable-http-cache');
 
 // split command line options and return one at a time
 function pop_arg (args) {
@@ -115,7 +116,7 @@ function create_window ()
     autoHideMenuBar:			false,
     webPreferences: {
       nodeIntegration:			true,
-      devTools: 			GLOBALCONFIG.debug,
+      devTools:				CONFIG.debug,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
       defaultMonospaceFontSize:		parseInt (defaultMonospaceFontSize),
@@ -132,15 +133,12 @@ function create_window ()
     darkTheme: true,
   };
   win = new Electron.BrowserWindow (options);
-  win.GLOBALCONFIG = GLOBALCONFIG;
-  win.GLOBALCONFIG.args = project_files;
-  win.once ('ready-to-show', () => { win.show(); });
-  win.loadURL ('file:///' + __dirname + '/window.html');
-  // win.webContents.openDevTools();
   win.on ('closed', () => { win = null; });
-
-  win.webContents.on ('crashed', function () { Eapp.exit (-127); });
-
+  win.webContents.on ('crashed', function () { Eapp.exit (-128); });
+  win.CONFIG = CONFIG;
+  win.CONFIG.args = project_files;
+  win.once ('ready-to-show', () => { win.show(); });
+  win.loadURL ('http://localhost:27239/app.html');
 }
 Eapp.on ('ready', create_window); // create window once everything is loaded
 
