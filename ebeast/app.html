@@ -2,6 +2,11 @@
 <html><head>
 
   <title>Beast - Music Synthesizer and Composer</title>
+  <script>
+  'use strict';
+  const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
+  window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
+  </script>
 
   <link rel="modulepreload" href="./utilities.js">
   <link rel="modulepreload" href="./jsbse.js">
@@ -13,10 +18,6 @@
 
   <script>
   'use strict';
-  // provide global constants
-  const GLOBALCONFIG = { 'debug': true };
-  const MAXINT = 2147483647, MAXUINT = 4294967295;
-  window.GLOBALCONFIG = GLOBALCONFIG;
   // When running inside Electron, provide 'Electron' globally. And to load
   // browser scripts, hide the Electron nodeIntegration module temporarily
   if (typeof module === 'object')
@@ -33,6 +34,11 @@
     {
       module = window.__module;
       delete window.__module;
+      if (CONFIG.debug)	// show DevTools on hotkey
+	document.addEventListener ("keydown", (event) => {
+	  if (event.shiftKey && event.ctrlKey && event.keyCode == 73)	// Shift+Ctrl+I
+	    Electron.getCurrentWindow().toggleDevTools();
+	});
     }
   </script>
 
@@ -43,15 +49,6 @@
 
 </head>
 <body>
-  <script>
-  if (false)
-    {
-      document.body.addEventListener('load', ev => console.log ('body.load'));
-      window.addEventListener('load', ev => console.log ('window.load'));
-      document.addEventListener('readystatechange', ev => console.log (`document: ${document.readyState}`));
-      document.addEventListener('DOMContentLoaded', ev => console.log (`document: DOMContentLoaded`));
-    }
-  </script>
 
   <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
 				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
@@ -86,14 +83,14 @@
   // Vue.config
   Vue.config.productionTip = false;
   Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
-  Vue.config.silent = !GLOBALCONFIG.debug;
+  Vue.config.silent = !CONFIG.debug;
   Vue.config.performance = true;
   // $log() and assert() shortcuts, inside and outside components
   window.$log = console.log.bind (console);
   window.assert = console.assert.bind (console);
   Vue.prototype.$log = window.$log;
   Vue.prototype.assert = window.assert;
-  Vue.prototype.GLOBALCONFIG = GLOBALCONFIG;
+  Vue.prototype.CONFIG = CONFIG;
   // utilities.js
   import * as Util from './utilities.js'; // depends on Vue
   window.Util = Util;
@@ -113,7 +110,7 @@
     console.assert (Bse.server['$id'] > 0);
     loadstatus.innerText += "Retrieved Bse.server...\n";
     // _() - add translation indicator
-    window._ = txtstring => Bse.server.gettext (txtstring);
+    window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
     Vue.prototype._ = window._;
     // Beast Web Components, bundled via b/bundle.js
     await import ('./assets/components.js'); // depends on Vue
@@ -121,6 +118,15 @@
     // Fonts - wait for fonts before Vue components are mounted and compute sizes
     await document.fonts.ready;
     loadstatus.innerText += "Loaded Fonts...\n";
+    // Menu bar for Electron
+    if (window.Electron)
+      {
+	const menus = await import ('./menus.js');
+	menus.setup_app_menu();
+	loadstatus.innerText += "Loaded Menus...\n";
+      }
+    else
+      loadstatus.innerText += "Skipped Menus...\n";
     // Shell will inject itself into all Vue components, make it global
     Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
     // Mount Vue components, this creates b-projectshell as Vue.Shell
@@ -140,7 +146,7 @@
     loadstatus.innerText += "(!) Skipped menus...\n";
     // Load command line files
     if (!'future')
-      for (let arg of GLOBALCONFIG.args)
+      for (let arg of CONFIG.args)
 	{
 	  if (Shell.load_project (arg) == Bse.Error.NONE)
 	    ;
