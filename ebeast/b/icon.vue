@@ -26,7 +26,7 @@
     margin: 0; padding: 0; text-align: center;
     &.b-icon-dfl { height: 1em; width: 1em; }
     &.b-icon-fw	 { height: 1em; width: 1.28571429em; text-align: center; }
-    &.b-icon-lg	 { font-size: 1.33333333em; line-height: 0.75em; vertical-align: -15%; }
+    &.b-icon-lg	 { font-size: 1.33333333em; }
     &.material-icons.b-icon-dfl { font-size: 1em; }
   }
 </style>
