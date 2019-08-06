@@ -124,7 +124,7 @@ function menu_command (menuitem)
       BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
       break;
     case 'quit-app':
-      Electron.app.quit();
+      Electron.app.exit (0);
       return false;
     case 'new-project':
       save_same_filename = undefined;
