@@ -97,6 +97,8 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
 static bool verbose = false;
+static GPollFD embedding_pollfd = { -1, 0, 0 };
+static std::string authenticated_subprotocol = "auth123";
 
 // Configure websocket server
 struct CustomServerConfig : public websocketpp::config::asio {
@@ -154,9 +156,11 @@ ws_validate_connection (websocketpp::connection_hdl hdl)
   ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
   // using subprotocol as auth string
   const std::vector<std::string> &subprotocols = con->get_requested_subprotocols();
+  if (subprotocols.size() == 0 && authenticated_subprotocol.empty())
+    return true;
   if (subprotocols.size() == 1)
     {
-      if (subprotocols[0] == "auth123")
+      if (subprotocols[0] == authenticated_subprotocol)
         {
           con->select_subprotocol (subprotocols[0]);
           return true;
@@ -412,9 +416,10 @@ print_usage (bool help)
       return;
     }
   Bse::printout ("Usage: beast-sound-engine [OPTIONS]\n");
-  Bse::printout ("  --help     Print command line help\n");
-  Bse::printout ("  --version  Print program version\n");
-  Bse::printout ("  --verbose  Print requests and replies\n");
+  Bse::printout ("  --help       Print command line help\n");
+  Bse::printout ("  --version    Print program version\n");
+  Bse::printout ("  --verbose    Print requests and replies\n");
+  Bse::printout ("  --embed <fd> Parent process socket for embedding\n");
 }
 
 int
@@ -479,6 +484,8 @@ main (int argc, char *argv[])
             print_usage (false);
             return 0;
           }
+        else if (arg_name == "embed" && i + 1 < argc)
+          embedding_pollfd.fd = Bse::string_to_int (argv[++i]);
         else if (arg_name == "h" || arg_name == "help")
           {
             print_usage (true);
@@ -498,6 +505,36 @@ main (int argc, char *argv[])
     else
       words.push_back (argv[i]);
 
+  // add keep-alive-fd monitoring
+  if (embedding_pollfd.fd >= 0)
+    {
+      Aida::ScopedSemaphore sem;
+      auto handle_wsmsg = [&sem] () {
+        embedding_pollfd.events = G_IO_IN | G_IO_HUP; // G_IO_PRI | (G_IO_IN | G_IO_HUP) | (G_IO_OUT | G_IO_ERR);
+        GSource *source = g_source_simple (BSE_PRIORITY_NORMAL,
+                                           [] (void*, int *timeoutp) -> int { // pending
+                                             return embedding_pollfd.revents != 0;
+                                           },
+                                           [] (void*) { // dispatch,
+                                             if (embedding_pollfd.revents & G_IO_IN)
+                                               {
+                                                 static char b[512];
+                                                 ssize_t n = read (embedding_pollfd.fd, b, 512); // clear input
+                                                 (void) n;
+                                               }
+                                             if (embedding_pollfd.revents & G_IO_HUP)
+                                               _exit (0);
+                                           },
+                                           nullptr, // data,
+                                           nullptr, // destroy,
+                                           &embedding_pollfd, nullptr);
+        g_source_attach (source, bse_main_context);
+        sem.post();
+      };
+      bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
+      sem.wait();
+    }
+
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
 
   // setup websocket and run asio loop
@@ -510,14 +547,39 @@ main (int argc, char *argv[])
   websocket_server.clear_access_channels (websocketpp::log::alevel::all);
   websocket_server.set_reuse_addr (true);
   namespace IP = boost::asio::ip;
-  IP::tcp::endpoint endpoint_local = IP::tcp::endpoint (IP::address::from_string ("127.0.0.1"), BEAST_AUDIO_ENGINE_PORT);
+  size_t localhost_port = embedding_pollfd.fd >= 0 ? 0 : BEAST_AUDIO_ENGINE_PORT;
+  IP::tcp::endpoint endpoint_local = IP::tcp::endpoint (IP::address::from_string ("127.0.0.1"), localhost_port);
   websocket_server.listen (endpoint_local);
   websocket_server.start_accept();
+  if (localhost_port == 0)
+    {
+      websocketpp::lib::asio::error_code ec;
+      localhost_port = websocket_server.get_local_endpoint (ec).port();
+    }
+  if (embedding_pollfd.fd >= 0)
+    {
+      websocketpp::lib::asio::error_code ec;
+      std::string embed = Bse::string_format ("{ "
+                                              "\"url\": \"http://127.0.0.1:%d/app.html\", "
+                                              "\"subprotocol\": \"%s\" "
+                                              "}",
+                                              localhost_port,
+                                              authenticated_subprotocol);
+      ssize_t n;
+      do
+        n = write (embedding_pollfd.fd, embed.data(), embed.size());
+      while (n < 0 && errno == EINTR);
+      if (verbose)
+        Bse::printerr ("EMBED: %s\n", embed);
+    }
 
-  using namespace Bse::AnsiColors;
-  auto B1 = color (BOLD);
-  auto B0 = color (BOLD_OFF);
-  Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
+  if (embedding_pollfd.fd < 0)
+    {
+      using namespace Bse::AnsiColors;
+      auto B1 = color (BOLD);
+      auto B0 = color (BOLD_OFF);
+      Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, localhost_port);
+    }
 
   websocket_server.run();
 
