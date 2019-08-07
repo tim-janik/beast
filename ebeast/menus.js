@@ -25,9 +25,14 @@ const menubar_menuitems = [
   { label: _('&Help'), 			submenu: help_menuitems, },
 ];
 
+let save_same_filename = undefined;
+let open_dialog_lastdir = undefined;
+let save_dialog_lastdir = undefined;
+
 // assign global app menu
-export function setup_app_menu()
+export async function setup_app_menu()
 {
+  open_dialog_lastdir = await Bse.server.get_demo_path();
   function complete_menu_items (item)
   {
     if (Array.isArray (item))
@@ -64,10 +69,6 @@ export function check_all_menu_items()
   if (app_menu)
     check_menu_item (app_menu);
 }
-
-let save_same_filename = undefined;
-let open_dialog_lastdir = undefined;
-let save_dialog_lastdir = undefined;
 
 function menu_sentinel (menuitem)
 {
@@ -131,8 +132,6 @@ function menu_command (menuitem)
       Shell.load_project();
       break;
     case 'open-file':
-      if (!open_dialog_lastdir)
-	open_dialog_lastdir = Bse.server.get_demo_path();
       Electron.dialog.showOpenDialog (Electron.getCurrentWindow(),
 				      {
 					title: Util.format_title ('Beast', 'Select File To Open'),
@@ -143,12 +142,12 @@ function menu_command (menuitem)
 						   { name: 'Audio Files', extensions: [ 'bse', 'mid', 'wav', 'mp3', 'ogg' ] },
 						   { name: 'All Files', extensions: [ '*' ] }, ],
 				      },
-				      (result) => {
+				      async (result) => {
 					if (result && result.length == 1)
 					  {
 					    const Path = require ('path');
 					    open_dialog_lastdir = Path.dirname (result[0]);
-					    if (Shell.load_project (result[0]) == Bse.Error.NONE)
+					    if (await Shell.load_project (result[0]) == Bse.Error.NONE)
 					      {
 						save_same_filename = result[0];
 						check_all_menu_items();
