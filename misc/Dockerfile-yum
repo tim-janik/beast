@@ -15,7 +15,7 @@ RUN retry yum -y upgrade
 # electron needs libXss.so.1 and libgconf-2.so.4
 RUN retry yum -y install \
     findutils file bzip2 \
-    gcc-c++ git libtool gettext-devel perl-XML-Parser \
+    gcc-c++ git libtool gettext-devel perl-XML-Parser boost-devel \
     alsa-lib-devel flac-devel libgnomecanvas-devel libvorbis-devel libmad-devel \
     pandoc python3-pandocfilters doxygen graphviz \
     npm ImageMagick libXScrnSaver GConf2 \
@@ -23,9 +23,9 @@ RUN retry yum -y install \
 
 # Build stripped down fluidsynth version without drivers
 RUN mkdir -p /tmp/fluid/build && cd /tmp/fluid/ && \
-  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.4.tar.gz && \
-  tar xf v2.0.4.tar.gz && rm v2.0.4.tar.gz && cd build && \
-  cmake ../fluidsynth-2.0.4 \
+  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.5.tar.gz && \
+  tar xf v2.0.5.tar.gz && rm v2.0.5.tar.gz && cd build && \
+  cmake ../fluidsynth-2.0.5 \
 	-DCMAKE_INSTALL_PREFIX=/usr/ \
 	-Denable-libsndfile=1 \
 	-Denable-dbus=0 \
