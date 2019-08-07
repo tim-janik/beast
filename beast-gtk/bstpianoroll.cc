@@ -133,8 +133,8 @@ piano_roll_class_setup_skin (BstPianoRollClass *klass)
 static void
 bst_piano_roll_init (BstPianoRoll *self)
 {
-  new (&self->part) Bse::PartH();
-  new (&self->plinks) Bse::PartLinkSeq();
+  new_inplace (self->part);
+  new_inplace (self->plinks);
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
@@ -191,9 +191,8 @@ bst_piano_roll_finalize (GObject *object)
   bst_ascii_pixbuf_unref ();
 
   G_OBJECT_CLASS (bst_piano_roll_parent_class)->finalize (object);
-  using namespace Bse;
-  self->part.~PartH();
-  self->plinks.~PartLinkSeq();
+  delete_inplace (self->part);
+  delete_inplace (self->plinks);
 }
 
 static void
@@ -1171,8 +1170,7 @@ piano_roll_links_changed (BstPianoRoll *self)
 static void
 piano_roll_range_changed (BstPianoRoll *self)
 {
-  guint max_ticks;
-  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
+  guint max_ticks = self->part.last_tick();
   bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, MAX (max_ticks, 1), self->hzoom);
 }
 
@@ -1226,9 +1224,9 @@ bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
   self->part = part;
   if (self->part)
     {
+      self->part.on ("notify:last_tick", [self]() { piano_roll_range_changed (self); });
       bse_proxy_connect (self->part.proxy_id(),
 			 "swapped_signal::release", piano_roll_release_proxy, self,
-                         "swapped_signal::property-notify::last-tick", piano_roll_range_changed, self,
                          "swapped_signal::links-changed", piano_roll_links_changed, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);

@@ -81,7 +81,7 @@ pattern_view_class_setup_skin (BstPatternViewClass *klass)
 static void
 bst_pattern_view_init (BstPatternView *self)
 {
-  new (&self->part) Bse::PartH();
+  new_inplace (self->part);
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   self->row_height = 1;
@@ -144,8 +144,7 @@ bst_pattern_view_finalize (GObject *object)
   bst_pattern_view_destroy_columns (self);
 
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->finalize (object);
-  using namespace Bse;
-  self->part.~PartH();
+  delete_inplace (self->part);
 }
 
 static void
@@ -170,8 +169,7 @@ pattern_view_release_proxy (BstPatternView *self)
 static void
 pattern_view_range_changed (BstPatternView *self)
 {
-  guint max_ticks;
-  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
+  guint max_ticks = self->part.last_tick();
   bst_pattern_view_vsetup (self, 384, 4, MAX (max_ticks, 1), self->vticks);
 }
 
@@ -191,9 +189,9 @@ bst_pattern_view_set_part (BstPatternView *self, Bse::PartH part)
   self->part = part;
   if (self->part)
     {
+      self->part.on ("notify:last_tick", [self]() { pattern_view_range_changed (self); });
       bse_proxy_connect (self->part.proxy_id(),
                          "swapped_signal::release", pattern_view_release_proxy, self,
-                         "swapped_signal::property-notify::last-tick", pattern_view_range_changed, self,
                          "swapped_signal::range-changed", pattern_view_update, self,
                          NULL);
       pattern_view_range_changed (self);
