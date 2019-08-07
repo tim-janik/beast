@@ -39,7 +39,7 @@ struct _BstPianoRoll
 {
   GxkScrollCanvas parent_instance;
 
-  Bse::PartH     part;
+  Bse::PartS     part;
   SfiProxy	 song;
   Bse::PartLinkSeq plinks;
   gint		 min_note;
