@@ -1,96 +1,21 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+// Build time configuration, substituted in Javascript file headers by Makefile.mk
+const CONFIG = {
+  /*@EBEAST_CONFIG@*/
+};
+let win;
+let bse_proc; // assigned spawn.child
+let verbose = false;
+
+// Load Electron module for BrowserWindow, etc
 const Electron = require ('electron');
 const ElectronDefaultApp = process.defaultApp !== undefined; // indicates unpackaged electron app
 const Eapp = Electron.app;
-const CONFIG = { // entries are substituted by Makefile.mk (works only in file header)
-  /*@EBEAST_CONFIG@*/
-};
+// Avoid stale sources and storing non-network resources in users home
 Eapp.commandLine.appendSwitch ('disable-http-cache');
 
-// split command line options and return one at a time
-function pop_arg (args) {
-  if (!args.length)
-    return undefined;
-  let a = args.shift();
-  if (args.__nonoption__) {		// yield saved option argument
-    args.__nonoption__--;
-    return a;
-  }
-  if (args.skip_defaultapp) {		// finding defaultApp has precedence
-    if (/^[^-]/.test (a)) {
-      args.skip_defaultapp = false;	// consume process.defaultApp
-      return pop_arg (args);
-    }
-  }
-  if (args.seen_separator)		// yield only non-options after '--'
-    return a;
-  if (/^-[^-]+/.test (a)) {		// pop single letter option
-    const rest = a.slice (2);
-    if (/^=/.test (rest)) {		// save single letter option argument
-      args.unshift (rest.slice (1));
-      args.__nonoption__ = 1;
-    } else if (rest)
-      args.unshift ('-' + rest);	// save adjunct single letter options
-    return '-' + a[1];
-  } else if (/^--[^-]+/.test (a)) {	// pop long option
-    const eq = a.indexOf ('=');
-    if (eq > 0) {
-      args.unshift (a.slice (eq + 1));	// save long option argument
-      args.__nonoption__ = 1;
-      return a.slice (0, eq);
-    }
-    return a;
-  } else if (/^--$/.test (a)) {		// stop option parsing
-    args.seen_separator = true;
-    return pop_arg (args);
-  }
-  return a;
-}
-
-function print_help () {
-  const lines = [
-    `Usage: ${Eapp.getName()} [OPTIONS] [projectfiles...]`,
-    `Options:`,
-    `--help        Print command line option help`,
-    `--version     Print version information`,
-  ];
-  console.log (lines.join ('\n'));
-}
-
-// parse command line arguments
-const project_files = [];
-(function () {
-  let args = process.argv.slice (1);
-  args.skip_defaultapp = ElectronDefaultApp;
-  while (args.length) {
-    const arg = pop_arg (args);
-    if (args.seen_separator) {
-      project_files.push (arg);
-      continue;
-    }
-    switch (arg) {
-    case '--help':
-      print_help();
-      Eapp.exit (0);
-      break;
-    case '--version':
-      console.log (Eapp.getName() + ' ' + Eapp.getVersion());
-      Eapp.exit (0);
-      break;
-    default:
-      if (/^-/.test (arg)) {
-	console.log ('Unknown option: ' + arg);
-	print_help();
-	Eapp.exit (129);
-      }
-      project_files.push (arg);
-      break;
-    }
-  }
-}) ();
-
 // create the main ebeast window
-var win;
 function create_window ()
 {
   const FS = require ('fs');
@@ -132,15 +57,155 @@ function create_window ()
     show: false, // avoid incremental load effect, see 'ready-to-show'
     darkTheme: true,
   };
-  win = new Electron.BrowserWindow (options);
-  win.on ('closed', () => { win = null; });
+  let win = new Electron.BrowserWindow (options);
   win.webContents.on ('crashed', function () { Eapp.exit (-128); });
-  win.CONFIG = CONFIG;
-  win.CONFIG.args = project_files;
-  win.once ('ready-to-show', () => { win.show(); });
-  win.loadURL ('http://localhost:27239/app.html');
+  win.MAINCONFIG = { args: project_files };
+  return win;
 }
-Eapp.on ('ready', create_window); // create window once everything is loaded
 
-// quit when all windows are closed.
-Eapp.on ('window-all-closed', Eapp.quit);
+// Start BeastSoundEngine in private mode
+function create_beast_sound_engine (datacb, errorcb) {
+  const { spawn } = require ('child_process');
+  let args = [ '--embed', '3' ];
+  if (verbose)
+    args.push ('--verbose');
+  let bse_proc = spawn (__dirname + '/../lib/BeastSoundEngine', args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
+  bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
+  if (errorcb)
+    {
+      bse_proc.stdio[3].once ('end', () => errorcb());
+      bse_proc.stdio[3].once ('error', (err) => errorcb());
+    }
+  return bse_proc;
+}
+
+// split command line options and return one at a time
+function pop_arg (args) {
+  if (!args.length)
+    return undefined;
+  let a = args.shift();
+  if (args.__nonoption__) {		// yield saved option argument
+    args.__nonoption__--;
+    return a;
+  }
+  if (args.skip_defaultapp) {		// finding defaultApp has precedence
+    if (/^[^-]/.test (a)) {
+      args.skip_defaultapp = false;	// consume process.defaultApp
+      return pop_arg (args);
+    }
+  }
+  if (args.seen_separator)		// yield only non-options after '--'
+    return a;
+  if (/^-[^-]+/.test (a)) {		// pop single letter option
+    const rest = a.slice (2);
+    if (/^=/.test (rest)) {		// save single letter option argument
+      args.unshift (rest.slice (1));
+      args.__nonoption__ = 1;
+    } else if (rest)
+      args.unshift ('-' + rest);	// save adjunct single letter options
+    return '-' + a[1];
+  } else if (/^--[^-]+/.test (a)) {	// pop long option
+    const eq = a.indexOf ('=');
+    if (eq > 0) {
+      args.unshift (a.slice (eq + 1));	// save long option argument
+      args.__nonoption__ = 1;
+      return a.slice (0, eq);
+    }
+    return a;
+  } else if (/^--$/.test (a)) {		// stop option parsing
+    args.seen_separator = true;
+    return pop_arg (args);
+  }
+  return a;
+}
+
+// Print help/usage
+function print_help () {
+  const lines = [
+    `Usage: ${Eapp.getName()} [OPTIONS] [projectfiles...]`,
+    `Options:`,
+    `--help        Print command line option help`,
+    `--version     Print version information`,
+  ];
+  console.log (lines.join ('\n'));
+}
+
+// parse command line arguments
+const project_files = [];
+{
+  let args = process.argv.slice (1);
+  args.skip_defaultapp = ElectronDefaultApp;
+  while (args.length) {
+    const arg = pop_arg (args);
+    if (args.seen_separator) {
+      project_files.push (arg);
+      continue;
+    }
+    switch (arg) {
+      case '--help':
+	print_help();
+	main_exit (0);
+	break;
+      case '--version':
+	console.log (Eapp.getName() + ' ' + Eapp.getVersion());
+	main_exit (0);
+	break;
+      case '--verbose':
+	verbose = true;
+	break;
+      default:
+	if (/^-/.test (arg)) {
+	  console.err ('Unknown option: ' + arg);
+	  print_help();
+	  main_exit (5);
+	}
+	project_files.push (arg);
+	break;
+    }
+  }
+}
+
+// Start BeastSoundEngine and BrowserWindow
+async function startup_components() {
+  // configure BrowserWindow with BeastSoundEngine embedding info
+  win = create_window();
+  win.on ('closed', () => win = null);
+  let win_ready = new Promise (resolve => win.once ('ready-to-show', () => resolve ()));
+  let embedding_info = new Promise (resolve => bse_proc = create_beast_sound_engine (msg => resolve (msg), () => main_exit (3)));
+  const auth = JSON.parse (await embedding_info); // yields JSON: { "url": "ws://127.0.0.1:<PORT>", "subprotocol": "<STRING>" }
+  if (!auth.url || !auth.subprotocol)
+    main_exit (2);
+  win.MAINCONFIG.subprotocols = auth.subprotocol;
+  win.loadURL (auth.url);
+  await win_ready;
+  win.show();
+}
+Eapp.once ('ready', startup_components); // create BeastSoundEngine and BrowserWindow once everything is loaded
+
+// End process and main_exit all dependent processes
+function main_exit (exitcode) {
+  if (main_exit.shuttingdown)
+    return;
+  main_exit.shuttingdown = true;
+  if (win)
+    {
+      win.destroy();
+      win = null;
+    }
+  if (bse_proc)
+    bse_proc.kill();
+  Eapp.exit (exitcode ? exitcode : 0);
+}
+
+// Valid exit
+Eapp.once ('window-all-closed', () => {
+  win = null; // this *may* be emitted before win.closed
+  main_exit (0);
+});
+
+// Invalid exit conditions
+process.on ('uncaughtException', function (err) {
+  console.error (process.argv[0] + ": uncaughtException (" + (new Date).toUTCString() + '):');
+  console.error (err);
+  main_exit (7);
+});
