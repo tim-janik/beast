@@ -118,15 +118,6 @@
     // Fonts - wait for fonts before Vue components are mounted and compute sizes
     await document.fonts.ready;
     loadstatus.innerText += "Loaded Fonts...\n";
-    // Menu bar for Electron
-    if (window.Electron)
-      {
-	const menus = await import ('./menus.js');
-	await menus.setup_app_menu();
-	loadstatus.innerText += "Loaded Menus...\n";
-      }
-    else
-      loadstatus.innerText += "Skipped Menus...\n";
     // Shell will inject itself into all Vue components, make it global
     Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
     // Mount Vue components, this creates b-projectshell as Vue.Shell
@@ -136,22 +127,22 @@
     });
     assert (vue_root); // Vue.$root
     loadstatus.innerText += "Mounted Vue...\n";
-    // TODO: a new menu implementation is needed
-    if (!'future')
-      { // setup menubar
-	const menus = require ('./menus.js');
-	menus.setup_app_menu();
+    // Menu bar for Electron
+    if (window.Electron)
+      {
+	const menus = await import ('./menus.js');
+	await menus.setup_app_menu();
+	loadstatus.innerText += "Loaded Menus...\n";
       }
-    loadstatus.innerText += "(!) Skipped menus...\n";
+    else
+      loadstatus.innerText += "Skipped Menus...\n";
     // Load command line files
-    if (!'future')
-      for (let arg of CONFIG.args)
-	{
-	  if (Shell.load_project (arg) == Bse.Error.NONE)
-	    ;
-	  else
-	    console.error ('Failed to load:', arg);
-	}
+    for (let arg of window.MAINCONFIG.args)
+      {
+	const error = await Shell.load_project (arg);
+	if (error != Bse.Error.NONE)
+	  console.error ('Failed to load:', arg + ":", error);
+      }
     loadstatus.innerText += "(!) Skipped command line files...\n";
     const bodyloadstatus = document.querySelector ("#body-load-status");
     setTimeout (() => bodyloadstatus.parentElement.removeChild (bodyloadstatus), 900);
