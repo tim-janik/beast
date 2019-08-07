@@ -25,6 +25,7 @@
       window.__module = module;
       module = undefined;
       window.Electron = require ('electron').remote;
+      window.MAINCONFIG = Electron.getCurrentWindow().MAINCONFIG;
     }
   </script>
   <script src="node_modules/jquery/dist/jquery.js"></script>
@@ -104,6 +105,7 @@
     console.assert (window.$ !== undefined);
     loadstatus.innerText += "Loaded jQuery...\n";
     // Bse.server
+    loadstatus.innerText += "Connecting to Bse.server...\n";
     await Bse.server['$promise'];
     console.assert (Bse.server['$id'] > 0);
     loadstatus.innerText += "Retrieved Bse.server...\n";
