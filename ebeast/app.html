@@ -122,7 +122,7 @@
     if (window.Electron)
       {
 	const menus = await import ('./menus.js');
-	menus.setup_app_menu();
+	await menus.setup_app_menu();
 	loadstatus.innerText += "Loaded Menus...\n";
       }
     else
