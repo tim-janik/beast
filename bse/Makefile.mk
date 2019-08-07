@@ -351,6 +351,12 @@ bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 bse/all: $(lib/libbse.so)
 
+# == BeastSoundEngine defs ==
+lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine
+bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
+bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources))
+bse/all: $(lib/BeastSoundEngine)
+
 # == bseprocidl defs ==
 bse/bseprocidl			::= $>/bse/bseprocidl
 bse/bseprocidl.sources		::= bse/bseprocidl.cc
@@ -488,6 +494,17 @@ int main (int argc, char *argv[]) {
   return 0;
 }
 endef
+
+# == BeastSoundEngine ==
+$(bse/BeastSoundEngine.objects): $(bse/libbse.deps)
+$(bse/BeastSoundEngine.objects): EXTRA_INCLUDES ::= -I$> -Iexternal/ $(GLIB_CFLAGS)
+$(bse/BeastSoundEngine.objects): EXTRA_FLAGS ::= -Wno-sign-promo
+$(call BUILD_PROGRAM, \
+	$(lib/BeastSoundEngine), \
+	$(bse/BeastSoundEngine.objects), \
+	$(lib/libbse.so), \
+	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
+	../lib)
 
 # == bseprocidl rules ==
 $(bse/bseprocidl.objects):	$(bse/libbse.deps)
