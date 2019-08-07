@@ -1067,13 +1067,14 @@ bse_song_ensure_orphans_track_noundo (BseSong *self)
   for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
       BseTrack *track = (BseTrack*) ring->data;
-      gboolean muted = FALSE;
-      g_object_get (track, "muted", &muted, NULL);
+      TrackImpl *trackimpl = track->as<TrackImpl*>();
+      bool muted = trackimpl->muted();
       if (muted && g_object_get_data ((GObject*) track, "BseSong-orphan-track") == bse_song_ensure_orphans_track_noundo) /* detect orphan-parts track */
         return track;
     }
   BseTrack *child = (BseTrack*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_TRACK, orphans_track_name(), NULL);
-  g_object_set (child, "muted", TRUE, NULL); /* no undo */
+  TrackImpl *trackimpl = child->as<TrackImpl*>();
+  trackimpl->muted (true);
   g_object_set_data ((GObject*) child, "BseSong-orphan-track", (void*) bse_song_ensure_orphans_track_noundo); /* mark orphan-parts track */
   return child;
 }
