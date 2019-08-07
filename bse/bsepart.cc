@@ -23,7 +23,6 @@ enum
 {
   PROP_0,
   PROP_N_CHANNELS,
-  PROP_LAST_TICK,
 };
 
 
@@ -112,11 +111,6 @@ bse_part_class_init (BsePartClass *klass)
 			      sfi_pspec_int ("n_channels", "Channels", NULL,
 					     1, 1, BSE_PART_MAX_CHANNELS, 4,
 					     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Limits",
-			      PROP_LAST_TICK,
-			      sfi_pspec_int ("last_tick", "Last Tick", NULL,
-					     0, 0, BSE_PART_MAX_TICK, 384,
-					     SFI_PARAM_GUI_READABLE));
 
   signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
 						      G_TYPE_NONE, 4,
@@ -172,9 +166,6 @@ bse_part_set_property (GObject        *object,
       while (self->n_channels > n)
         bse_part_note_channel_destroy (&self->channels[--self->n_channels]);
       break;
-    case PROP_LAST_TICK:
-      assert_return_unreached ();
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -192,9 +183,6 @@ bse_part_get_property (GObject	  *object,
     {
     case PROP_N_CHANNELS:
       g_value_set_int (value, self->n_channels);
-      break;
-    case PROP_LAST_TICK:
-      g_value_set_int (value, self->last_tick_SL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -338,7 +326,8 @@ part_update_last_tick (BsePart *self)
   BSE_SEQUENCER_LOCK ();
   self->last_tick_SL = last_tick;
   BSE_SEQUENCER_UNLOCK ();
-  g_object_notify ((GObject*) self, "last-tick");
+  auto impl = self->as<Bse::PartImpl*>();
+  impl->notify ("last_tick");
   bse_part_links_changed (self);
 }
 
@@ -2088,6 +2077,20 @@ PartImpl::PartImpl (BseObject *bobj) :
 
 PartImpl::~PartImpl ()
 {}
+
+int
+PartImpl::last_tick() const
+{
+  BsePart *self = const_cast<PartImpl*> (this)->as<BsePart*>();
+
+  return self->last_tick_SL;
+}
+
+void
+PartImpl::last_tick (int tick)
+{
+  assert_return_unreached ();
+}
 
 PartNoteSeq
 PartImpl::list_notes_crossing (int tick, int duration)
