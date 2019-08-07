@@ -218,8 +218,8 @@ distname     = beast-$(distversion)
 disttarball  = $>/$(distname).tar.xz
 dist_xz_opt  ?= -9e
 dist: $>/doc/README $>/ChangeLog FORCE
-	$(QECHO) MAKE $(disttarball)
 	@$(eval distversion != ./version.sh -l)
+	$(QECHO) MAKE $(disttarball)
 	$Q DIFFLINES=`git diff HEAD | wc -l` \
 	  && { test 0 = $$DIFFLINES || echo -e "#\n# $@: WARNING: working tree unclean\n#" >&2 ; }
 	$Q git archive --format=tar --prefix=$(distname)/ HEAD		> $>/$(distname).tar

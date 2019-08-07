@@ -18,26 +18,27 @@ ebeast/all: $>/ebeast/app.rules
 
 # == sources ==
 ebeast/js.inputs ::= $(strip 		\
+	ebeast/jsbse.js			\
 	ebeast/main.js			\
 	ebeast/menus.js			\
-	ebeast/window.html		\
+	ebeast/utilities.js		\
 )
+ebeast/nolint.inputs ::= $(strip	\
+	ebeast/app.html			\
+) # eslint v5.16.0 fails to recognize import() expressions
+app/js.files		::= $(addprefix $>/app/, $(notdir $(ebeast/js.inputs) $(ebeast/nolint.inputs)))
 ebeast/b/js.inputs	::= $(wildcard ebeast/b/*.js)
 ebeast/b/vue.inputs	::= $(wildcard ebeast/b/*.vue)
 ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
 ebeast/b/bundle.js.d   ::= $(wildcard ebeast/*.js ebeast/b/*.js)
 ebeast/b/bundle.vue.d  ::= $(wildcard ebeast/b/*.vue)
-ebeast/lint.appfiles    ::= $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d)
+ebeast/lint.appfiles    ::= $(strip	\
+	$(ebeast/js.inputs)		\
+	$(ebeast/b/bundle.js.d)		\
+	$(ebeast/b/bundle.vue.d)	\
+	$>/app/bseapi_jsonipc.js	\
+)
 ebeast/b/scss.inputs	::= $(wildcard ebeast/b/*.scss)
-app/files.js		::= $(addprefix $>/app/,    $(notdir $(ebeast/js.inputs)))
-app/copies		::= $(strip 	\
-	$>/app/menus.js			\
-	$>/app/window.html		\
-)
-app/sources		::= $(strip 	\
-	$>/app/main.js			\
-	$(app/copies)			\
-)
 app/assets/tri-pngs	::= $(strip	\
 	$>/app/assets/tri-n.png		\
 	$>/app/assets/tri-e.png		\
@@ -50,7 +51,6 @@ app/generated 		::= $(strip	\
 	$>/app/assets/forkawesome-webfont.css	\
 	$>/app/assets/stylesheets.css	\
 	$>/app/assets/components.js	\
-	$>/app/assets/utilities.js	\
 	$>/app/assets/material-icons.css \
 )
 # provide node_modules/ for use in other makefiles
@@ -95,7 +95,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/sources) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
 	$(QECHO) MAKE $@
 	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
@@ -104,19 +104,27 @@ $>/ebeast/app.rules: $(app/sources) $(app/generated) $>/ebeast/lint.rules $>/ebe
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
-$(app/copies): $>/app/%: ebeast/%		| $>/app/
+$(app/js.copies): $>/app/%: ebeast/%		| $>/app/
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
 
-# == $>/app/main.js ==
-$>/app/main.js: ebeast/main.js $(GITCOMMITDEPS)	| $>/app/
+# == $(app/js.files) ==
+$(app/js.files): $>/app/%: ebeast/% $(GITCOMMITDEPS) ebeast/Makefile.mk	| $>/app/
 	$(QGEN)
 	$Q sed < $<	> $@.tmp \
-		-e "1,10s|^ *//@EBEAST_GLOBALCONFIG@|  ${ebeast/globalconfig}|"
+		-e "1,10s| /\*@EBEAST_CONFIG@\*/| ${ebeast/config}|"
 	$Q mv $@.tmp $@
-ebeast/globalconfig =	revision: '$(shell ./version.sh -l)', \
-			revdate: '$(shell ./version.sh -d)', \
-			debug: $(if $(findstring debug, $(MODE)),true,false)
+ebeast/config =	revision: '$(shell ./version.sh -l)', \
+		revdate: '$(shell ./version.sh -d)', \
+		debug: $(if $(findstring $(MODE), debug quick),true,false)
+
+# == $>/app/bseapi_jsonipc.js ==
+$>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/
+	$(QGEN)
+	$Q cat jsonipc/head.js			> $@.tmp
+	$Q $(lib/BeastSoundEngine) --js-bseapi	>>$@.tmp
+	$Q rm -f $@ && chmod -w $@.tmp
+	$Q mv $@.tmp $@
 
 # == $>/app/assets/ ==
 ebeast/inter-typeface-downloads ::= \
@@ -131,9 +139,6 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map true
-$>/app/assets/utilities.js: ebeast/b/utilities.js	| $>/ebeast/npm.rules
-	$(QECHO) COPY $@
-	$Q $(CP) -P $< $@
 $>/app/assets/material-icons.css:			| $>/app/assets/
 	$(QECHO) FETCH material-icons-190326.1.tar.xz
 	$Q cd $>/app/assets/ \

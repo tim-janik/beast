@@ -1,30 +1,25 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
-if (window.__ebeast_b_utilities_js_initialized)
-  throw "utilities.js: error: duplicate initialisation";
-window.__ebeast_b_utilities_js_initialized = true;
-
-exports.vue_mixins = {};
+export const vue_mixins = {};
+export const vue_directives = {};
 
 /// Loop over all properties in `source` and assign to `target*
-function assign_forin (target, source) {
+export function assign_forin (target, source) {
   for (let p in source)
     target[p] = source[p];
   return target;
 }
-exports.assign_forin = assign_forin;
 
 /// Loop over all elements of `source` and assign to `target*
-function assign_forof (target, source) {
+export function assign_forof (target, source) {
   for (let e of source)
     target[e] = source[e];
   return target;
 }
-exports.assign_forof = assign_forof;
 
 /// Yield a wrapper that delays calling `callback` until `delay` miliseconds have passed since the last wrapper call.
-function debounce (delay, callback) {
+export function debounce (delay, callback) {
   if (!(callback instanceof Function))
     throw new TypeError ('argument `callback` must be of type Function');
   let ctimer, cthis, cargs, creturn; // closure variables
@@ -48,10 +43,9 @@ function debounce (delay, callback) {
   }
   return cwrapper;
 }
-exports.debounce = debounce;
 
 /** Remove element `item` from `array` */
-function array_remove (array, item) {
+export function array_remove (array, item) {
   for (let i = 0; i < array.length; i++)
     if (item === array[i]) {
       array.splice (i, 1);
@@ -59,10 +53,9 @@ function array_remove (array, item) {
     }
   return array;
 }
-exports.array_remove = array_remove;
 
 /// Generate map by splittoing the key=value pairs in `kvarray`
-function map_from_kvpairs (kvarray) {
+export function map_from_kvpairs (kvarray) {
   let o = {};
   for (let kv of kvarray) {
     const key = kv.split ('=', 1)[0];
@@ -71,10 +64,9 @@ function map_from_kvpairs (kvarray) {
   }
   return o;
 }
-exports.map_from_kvpairs = map_from_kvpairs;
 
 /** Generate integers [0..`bound`[ if one arg is given or [`bound`..`end`[ by incrementing `step`. */
-function* range (bound, end, step = 1) {
+export function* range (bound, end, step = 1) {
   if (end === undefined) {
     end = bound;
     bound = 0;
@@ -82,16 +74,14 @@ function* range (bound, end, step = 1) {
   for (; bound < end; bound += step)
     yield bound;
 }
-exports.range = range;
 
 /** Return @a x clamped into @a min and @a max. */
-function clamp (x, min, max) {
+export function clamp (x, min, max) {
   return x < min ? min : x > max ? max : x;
 }
-exports.clamp = clamp;
 
 /** Create a Vue component provide() function that forwards selected properties. */
-function fwdprovide (injectname, keys) {
+export function fwdprovide (injectname, keys) {
   return function() {
     const proxy = {};
     for (let key of keys)
@@ -101,7 +91,6 @@ function fwdprovide (injectname, keys) {
     return provide_defs;
   };
 }
-exports.fwdprovide = fwdprovide;
 
 /** The V-INLINEBLUR directive guides focus for inline editing.
  * A Vue directive to notify and force blur on Enter or Escape.
@@ -109,7 +98,7 @@ exports.fwdprovide = fwdprovide;
  * For inputs that use `onchange` handlers, the edited value should be
  * discarded if the `cancelled` property is true.
  */
-Vue.directive ('inlineblur', {
+vue_directives['inlineblur'] = {
   bind (el, binding, vnode) {
     if (binding.value && typeof binding.value !== 'function')
       console.warn ('[Vue-v-inlineblur:] wrong type argument, function required:', binding.expression);
@@ -164,10 +153,10 @@ Vue.directive ('inlineblur', {
 	el._v_inlineblur_watch_keydown = undefined;
       }
   }
-});
+};
 
 /** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
-exports.vue_mixins.data_tmpl = {
+vue_mixins.data_tmpl = {
   beforeCreate: function () {
     // Automatically create `data` (via cloning) from `data_tmpl`
     if (this.$options.data_tmpl)
@@ -181,7 +170,7 @@ exports.vue_mixins.data_tmpl = {
 };
 
 /** Vue mixin to create a kebab-case ('two-words') getter proxy for camelCase ('twoWords') props */
-exports.vue_mixins.hyphen_props = {
+vue_mixins.hyphen_props = {
   beforeCreate: function () {
     for (let cc in this.$options.props) {
       const hyphenated = hyphenate (cc);
@@ -199,11 +188,10 @@ exports.vue_mixins.hyphen_props = {
 };
 
 /** Generate a kebab-case ('two-words') identifier from a camelCase ('twoWords') identifier */
-function hyphenate (string) {
+export function hyphenate (string) {
   const uppercase_boundary =  /\B([A-Z])/g;
   return string.replace (uppercase_boundary, '-$1').toLowerCase();
 }
-exports.hyphenate = hyphenate;
 
 /** Vue mixin to provide a `dom_updated` hook.
  * This mixin is a bit of a sledge hammer, usually it's better to have something
@@ -211,7 +199,7 @@ exports.hyphenate = hyphenate;
  * to update automatically.
  * A dom_updated() method is only really needed to operate on initialized $refs[].
  */
-exports.vue_mixins.dom_updated = {
+vue_mixins.dom_updated = {
   mounted: function () { this.dom_updated(); },
   updated: function () { this.dom_updated(); },
 };
@@ -221,7 +209,7 @@ exports.vue_mixins.dom_updated = {
  * with a getter (and possibly setter) are turned into Vue `computed`
  * properties, methods are carried over as `methods` on the Vue() instance.
  */
-exports.VueifyObject = function (object = {}, vue_options = {}) {
+export function VueifyObject (object = {}, vue_options = {}) {
   let voptions = Object.assign ({}, vue_options);
   voptions.methods = vue_options.methods || {};
   voptions.computed = vue_options.computed || {};
@@ -238,10 +226,10 @@ exports.VueifyObject = function (object = {}, vue_options = {}) {
       }
   }
   return new Vue (voptions);
-};
+}
 
 /** Copy PropertyDescriptors from source to target, optionally binding handlers against closure. */
-exports.clone_descriptors = (target, source, closure) => {
+export const clone_descriptors = (target, source, closure) => {
   // See also: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign completeAssign()
   const descriptors = Object.getOwnPropertyNames (source).reduce ((descriptors, pname) => {
     const pd = Object.getOwnPropertyDescriptor (source, pname);
@@ -267,7 +255,7 @@ exports.clone_descriptors = (target, source, closure) => {
 };
 
 /** Produce hash code from a String, using an FNV-1a variant. */
-exports.fnv1a_hash = (str) => {
+export function fnv1a_hash (str) {
   let hash = 0x811c9dc5;
   for (let i = 0; i < str.length; ++i) {
     // Note, charCodeAt can return values > 255
@@ -275,10 +263,10 @@ exports.fnv1a_hash = (str) => {
     hash = next >>> 0; // % 4294967296, i.e. treat as 32 bit unsigned
   }
   return hash;
-};
+}
 
 /** Split a string when encountering a comma, while preserving quoted or parenthesized segments. */
-exports.split_comma = (str) => {
+export function split_comma (str) {
   let result = [], item = '', sdepth = 0, ddepth = 0, pdepth = 0, kdepth = 0, cdepth = 0, bslash = 0;
   for (let i = 0; i < str.length; i++) {
     const c = str[i];
@@ -303,10 +291,10 @@ exports.split_comma = (str) => {
   if (item)
     result.push (item);
   return result;
-};
+}
 
 /** Parse hexadecimal CSS color with 3 or 6 digits into [ R, G, B ]. */
-function parse_hex_color (colorstr) {
+export function parse_hex_color (colorstr) {
   if (colorstr.substr (0, 1) == '#') {
     let hex = colorstr.substr (1);
     if (hex.length == 3)
@@ -317,41 +305,36 @@ function parse_hex_color (colorstr) {
   }
   return undefined;
 }
-exports.parse_hex_color = parse_hex_color;
 
 /** Parse hexadecimal CSS color into luminosity. */
 // https://en.wikipedia.org/wiki/Relative_luminance
-function parse_hex_luminosity (colorstr) {
+export function parse_hex_luminosity (colorstr) {
   const rgb = parse_hex_color (colorstr);
   return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
 }
-exports.parse_hex_luminosity = parse_hex_luminosity;
 
 /** Parse hexadecimal CSS color into brightness. */
 // https://www.w3.org/TR/AERT/#color-contrast
-function parse_hex_brightness (colorstr) {
+export function parse_hex_brightness (colorstr) {
   const rgb = parse_hex_color (colorstr);
   return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
 }
-exports.parse_hex_brightness = parse_hex_brightness;
 
 /** Parse hexadecimal CSS color into perception corrected grey. */
 // http://alienryderflex.com/hsp.html
-function parse_hex_pgrey (colorstr) {
+export function parse_hex_pgrey (colorstr) {
   const rgb = parse_hex_color (colorstr);
   return Math.sqrt (0.299 * rgb[0] * rgb[0] + 0.587 * rgb[1] * rgb[1] + 0.114 * rgb[2] * rgb[2]);
 }
-exports.parse_hex_pgrey = parse_hex_pgrey;
 
 /** Parse hexadecimal CSS color into average grey. */
-function parse_hex_average (colorstr) {
+export function parse_hex_average (colorstr) {
   const rgb = parse_hex_color (colorstr);
   return 0.3333 * rgb[0] + 0.3333 * rgb[1] + 0.3333 * rgb[2];
 }
-exports.parse_hex_average = parse_hex_average;
 
 /** Parse CSS colors (via invisible DOM element) and yield an array of rgba tuples. */
-function parse_colors (colorstr) {
+export function parse_colors (colorstr) {
   let result = [];
   if (!parse_colors.span) {
     parse_colors.span = document.createElement ('span');
@@ -372,10 +355,9 @@ function parse_colors (colorstr) {
   }
   return result;
 }
-exports.parse_colors = parse_colors;
 
 /** Retrieve a new object with the properties of `obj` resolved against the style of `el` */
-function compute_style_properties (el, obj) {
+export function compute_style_properties (el, obj) {
   const style = getComputedStyle (el);
   let props = {};
   for (let key in obj) {
@@ -385,10 +367,9 @@ function compute_style_properties (el, obj) {
   }
   return props;
 }
-exports.compute_style_properties = compute_style_properties;
 
 /** List all elements that can take focus and are descendants of `element` or the document. */
-function list_focusables (element)
+export function list_focusables (element)
 {
   if (!element)
     element = document.body;
@@ -417,7 +398,6 @@ function list_focusables (element)
   });
   return array;
 }
-exports.list_focusables = list_focusables;
 
 /** Install a FocusGuard to allow only a restricted set of elements to get focus. */
 class FocusGuard {
@@ -530,16 +510,14 @@ class FocusGuard {
 const the_focus_guard = new FocusGuard();
 
 /** Constrain focus to `element` and its descendants */
-function push_focus_root (element) {
+export function push_focus_root (element) {
   the_focus_guard.push_focus_root (element);
 }
-exports.push_focus_root = push_focus_root;
 
 /** Remove an `element` previously installed via push_focus_root() */
-function remove_focus_root (element) {
+export function remove_focus_root (element) {
   the_focus_guard.remove_focus_root (element);
 }
-exports.remove_focus_root = remove_focus_root;
 
 /** Installing a modal shield prevents mouse and key events for all elements */
 class ModalShield {
@@ -552,8 +530,8 @@ class ModalShield {
     Object.assign (this, this.defaults());
     this.close_handler = close_handler;
     // prevent focus during modal shield
-    exports.push_focus_root (preserve_element);
-    this.remove_focus_root = () => exports.remove_focus_root (preserve_element);
+    push_focus_root (preserve_element);
+    this.remove_focus_root = () => remove_focus_root (preserve_element);
     // install shield element on <body/>
     const div = document.createElement ("DIV");
     div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
@@ -629,13 +607,12 @@ class ModalShield {
 }
 
 /** Add a modal overlay to `body` to deflect DOM clicks and keyboard events */
-function modal_shield (close_handler, preserve_element, opts = {}) {
+export function modal_shield (close_handler, preserve_element, opts = {}) {
   return new ModalShield (close_handler, preserve_element, opts);
 }
-exports.modal_shield = modal_shield;
 
 /** Use capturing to swallow any `type` events until `timeout` has passed */
-function swallow_event (type, timeout = 0) {
+export function swallow_event (type, timeout = 0) {
   const preventandstop = function (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -643,10 +620,9 @@ function swallow_event (type, timeout = 0) {
   document.addEventListener ('contextmenu', preventandstop, true);
   setTimeout (() => document.removeEventListener ('contextmenu', preventandstop, true), timeout);
 }
-exports.swallow_event = swallow_event;
 
 /** Determine position for a popup */
-function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
+export function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
   const p = 1; // padding;
   // Ignore window.innerWidth & window.innerHeight, these include space for scrollbars
   // Viewport size, https://developer.mozilla.org/en-US/docs/Web/CSS/Viewport_concepts
@@ -686,10 +662,9 @@ function popup_position (element, opts = { origin: undefined, x: undefined, y: u
     vy = Math.min (vh - r.height - p, o.y);
   return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
 }
-exports.popup_position = popup_position;
 
 /** Resize canvas display size (CSS size) and resize backing store to match hardware pixels */
-exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = false) {
+export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) {
   /* Here we fixate the canvas display size at (csswidth,cssheight) and then setup the
    * backing store to match the hardware screen pixel size.
    * Note, just assigning canvas.width *without* assigning canvas.style.width may lead to
@@ -715,26 +690,26 @@ exports.resize_canvas = function (canvas, csswidth, cssheight, fill_style = fals
     return true;
   }
   return false;
-};
+}
 
 /** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
-exports.dash_xto = (ctx, x, y, w, d) => {
+export function dash_xto (ctx, x, y, w, d) {
   for (let i = 0, p = x; p < x + w; p = p + d[i++ % d.length]) {
     if (i % 2)
       ctx.lineTo (p, y);
     else
       ctx.moveTo (p, y);
   }
-};
+}
 
 /** Draw a horizontal rect `(x,y,width,height)` with pixel gaps of width `stipple` */
-exports.hstippleRect = function (ctx, x, y, width, height, stipple) {
+export function hstippleRect (ctx, x, y, width, height, stipple) {
   for (let s = x; s + stipple < x + width; s += 2 * stipple)
     ctx.fillRect (s, y, stipple, height);
-};
+}
 
 /** Fill and stroke a canvas rectangle with rounded corners. */
-exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = true) => {
+export function roundRect (ctx, x, y, width, height, radius, fill = true, stroke = true) {
   if (typeof radius === 'number')
     radius = [ radius, radius, radius, radius ];
   else if (typeof radius === 'object' && radius.length == 4)
@@ -756,25 +731,23 @@ exports.roundRect = (ctx, x, y, width, height, radius, fill = true, stroke = tru
     ctx.fill();
   if (stroke)
     ctx.stroke();
-};
+}
 
 /** Add color stops from `stoparray` to `grad`, `stoparray` is an array: [(offset,color)...] */
-function gradient_apply_stops (grad, stoparray) {
+export function gradient_apply_stops (grad, stoparray) {
   for (const g of stoparray)
     grad.addColorStop (g[0], g[1]);
 }
-exports.gradient_apply_stops = gradient_apply_stops;
 
 /** Create a new linear gradient at (x1,y1,x2,y2) with color stops `stoparray` */
-function linear_gradient_from (ctx, stoparray, x1, y1, x2, y2) {
+export function linear_gradient_from (ctx, stoparray, x1, y1, x2, y2) {
   const grad = ctx.createLinearGradient (x1, y1, x2, y2);
   gradient_apply_stops (grad, stoparray);
   return grad;
 }
-exports.linear_gradient_from = linear_gradient_from;
 
 /** Measure ink span of a canvas text string or an array */
-function canvas_ink_vspan (font_style, textish = 'gM') {
+export function canvas_ink_vspan (font_style, textish = 'gM') {
   let canvas, ctx, cwidth = 64, cheight = 64;
   function measure_vspan (text) {
     const cache_key = font_style + ':' + text;
@@ -821,10 +794,9 @@ function canvas_ink_vspan (font_style, textish = 'gM') {
   return Array.isArray (textish) ? textish.map (txt => measure_vspan (txt)) : measure_vspan (textish);
 }
 canvas_ink_vspan.cache = [];
-exports.canvas_ink_vspan = canvas_ink_vspan;
 
 /** Retrieve the 'C-1' .. 'G8' label for midi note numbers */
-function midi_label (numish) {
+export function midi_label (numish) {
   function one_label (num) {
     const letter = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
     const oct = Math.floor (num / letter.length) - 1;
@@ -833,7 +805,6 @@ function midi_label (numish) {
   }
   return Array.isArray (numish) ? numish.map (n => one_label (n)) : one_label (numish);
 }
-exports.midi_label = midi_label;
 
 let frame_handler_id = 0x200000,
     frame_handler_active = false,
@@ -879,7 +850,7 @@ function remove_frame_handler (handler_id) {
 }
 
 /// Install a permanent redraw handler, to run as long as the DSP engine is active.
-function add_frame_handler (handlerfunc) {
+export function add_frame_handler (handlerfunc) {
   if (frame_handler_array === undefined) { // must initialize
     frame_handler_active = Boolean (Bse.server.engine_active());
     frame_handler_array = [];
@@ -893,14 +864,14 @@ function add_frame_handler (handlerfunc) {
   reinstall_frame_handler();
   return function() { remove_frame_handler (handler_id); };
 }
-exports.add_frame_handler = add_frame_handler;
 
 let bse_server_shared_arrays = [];
 
 /// Retrieve shared memory arrays from BSE shared memory ids.
-function array_fields_from_shm (shm_id, shm_offset) {
+export function array_fields_from_shm (shm_id, shm_offset) {
   if (bse_server_shared_arrays[shm_id] === undefined) {
-    const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
+    // FIXME: const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
+    const array_buffer = new ArrayBuffer (65536);
     console.assert (array_buffer.byteLength > 0);
     bse_server_shared_arrays[shm_id] = {
       'array_buffer':  array_buffer,
@@ -916,31 +887,27 @@ function array_fields_from_shm (shm_id, shm_offset) {
   afields.float64_offset = shm_offset / afields.float64_array.BYTES_PER_ELEMENT; // 8
   return afields;
 }
-exports.array_fields_from_shm = array_fields_from_shm;
 
 /// Access int32 subarray within arrays returned from array_fields_from_shm().
-function array_fields_i32 (afields, byte_offset) {
+export function array_fields_i32 (afields, byte_offset) {
   console.assert ((byte_offset & 0x3) == 0); // 4 - 1
   return afields.int32_array.subarray (afields.int32_offset + byte_offset / afields.int32_array.BYTES_PER_ELEMENT);
 }
-exports.array_fields_i32 = array_fields_i32;
 
 /// Access float32 subarray within arrays returned from array_fields_from_shm().
-function array_fields_f32 (afields, byte_offset) {
+export function array_fields_f32 (afields, byte_offset) {
   console.assert ((byte_offset & 0x3) == 0); // 4 - 1
   return afields.float32_array.subarray (afields.float32_offset + byte_offset / afields.float32_array.BYTES_PER_ELEMENT);
 }
-exports.array_fields_f32 = array_fields_f32;
 
 /// Access float64 subarray within arrays returned from array_fields_from_shm().
-function array_fields_f64 (afields, byte_offset) {
+export function array_fields_f64 (afields, byte_offset) {
   console.assert ((byte_offset & 0x7) == 0); // 8 - 1
   return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
 }
-exports.array_fields_f64 = array_fields_f64;
 
 // Format window titles
-function format_title (prgname, entity = undefined, infos = undefined, extras = undefined) {
+export function format_title (prgname, entity = undefined, infos = undefined, extras = undefined) {
   let title = prgname;
   if (entity)
     {
@@ -955,19 +922,17 @@ function format_title (prgname, entity = undefined, infos = undefined, extras = 
     }
   return title;
 }
-exports.format_title = format_title;
 
 let keyboard_click_state = { inclick: 0 };
 
 /// Check if the current click event originates from keyboard activation.
-function in_keyboard_click()
+export function in_keyboard_click()
 {
   return keyboard_click_state.inclick > 0;
 }
-exports.in_keyboard_click = in_keyboard_click;
 
 /// Trigger element click via keyboard.
-function keyboard_click (element)
+export function keyboard_click (element)
 {
   if (element)
     {
@@ -984,7 +949,6 @@ function keyboard_click (element)
     }
   return false;
 }
-exports.keyboard_click = keyboard_click;
 
 /// Check if an element can be found in a given array.
 function in_array (element, array)
@@ -993,7 +957,7 @@ function in_array (element, array)
 }
 
 /// Export key codes
-const KeyCode = {
+export const KeyCode = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32, PAGEUP: 33, PAGEDOWN: 34,
   END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46, SELECT: 93,
   F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117, F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
@@ -1001,7 +965,6 @@ const KeyCode = {
   BROWSERBACK: 166, BROWSERFORWARD: 167, PLUS: 187/*FIXME*/, MINUS: 189/*FIXME*/, PAUSE: 230, ALTGR: 255,
   VOLUMEMUTE: 173, VOLUMEDOWN: 174, VOLUMEUP: 175, MEDIANEXTTRACK: 176, MEDIAPREVIOUSTRACK: 177, MEDIASTOP: 178, MEDIAPLAYPAUSE: 179,
 };
-Object.assign (exports, KeyCode);
 
 const navigation_keys = [
   KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
@@ -1011,14 +974,13 @@ const navigation_keys = [
 ];
 
 /// Check if a key code is used of rnavigaiton (and non alphanumeric).
-function is_navigation_key_code (keycode)
+export function is_navigation_key_code (keycode)
 {
   return in_array (keycode, navigation_keys);
 }
-exports.is_navigation_key_code = is_navigation_key_code;
 
 /// Match an event's key code, considering modifiers.
-function match_key_event (event, keyname)
+export function match_key_event (event, keyname)
 {
   // SEE: http://unixpapa.com/js/key.html & https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/Gecko_keypress_event
   // split_hotkey (hotkey)
@@ -1059,4 +1021,61 @@ function match_key_event (event, keyname)
     return false;
   return true;
 }
-exports.match_key_event = match_key_event;
+
+class UtilResizeObserver {
+  constructor (close_handler, preserve_element, opts) {
+    this.observers = new Map();	// { observer: { callback, elements:[] } }
+    this.have_ResizeObserver = window.ResizeObserver != undefined;
+    this.listening = false;
+  }
+  add_owner (owner, callback) {
+    if (!this.have_ResizeObserver && !this.listening)
+      {
+	window.addEventListener ('resize', () => this.resized());
+	this.listening = true;
+      }
+    let wrs = undefined;
+    if (window.ResizeObserver != undefined)
+      wrs = new window.ResizeObserver (() => callback());
+    const new_observer = {
+      callback: callback,
+      elements: [],
+      wrs: wrs,
+      observe (ele) {
+	if (this.wrs)
+	  this.wrs.observe (ele);
+	else
+	  this.elements.push (ele);
+      },
+      unobserve (ele) {
+	if (this.wrs)
+	  this.wrs.unobserve (ele);
+	else
+	  {
+	    const i = this.elements.indexOf (ele);
+	    if (i >= 0)
+	      this.elements.splice (i, 1);
+	  }
+      },
+      disconnect() {
+	if (this.wrs)
+	  this.wrs.disconnect();
+	else
+	  this.elements = [];
+      }
+    };
+    this.observers[owner] = new_observer;
+    return new_observer;
+  }
+  resized() {
+    for (let o in this.observers)
+      if (this.observers[o].elements.length)
+	this.observers[o].callback (o);
+  }
+}
+const utilresizeobserver = new UtilResizeObserver();
+
+/// Create a ResizeObserver object
+export function resize_observer (owner, callback) {
+  return utilresizeobserver.add_owner (owner, callback);
+}

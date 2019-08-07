@@ -13,14 +13,14 @@
   <div class="b-track-list" >
     <div class="b-track-list-tracks" >
       <b-track-view class="b-track-list-row"
-		     v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
-		     :song="song" :track="item" :trackindex="tindex"></b-track-view>
+		     v-for="(pair, tindex) in tracks" :key="pair[1]"
+		     :song="song" :track="pair[0]" :trackindex="tindex"></b-track-view>
       <div class="b-track-scrollbar-spacer"></div>
     </div>
     <div class="b-track-list-parts" >
       <b-part-list class="b-track-list-row"
-		    v-for="(item, tindex) in list_tracks()" :key="item.unique_id()"
-		    :track="item" :trackindex="tindex"></b-part-list>
+		    v-for="(pair, tindex) in tracks" :key="pair[1]"
+		    :track="pair[0]" :trackindex="tindex"></b-part-list>
     </div>
   </div>
 
@@ -58,11 +58,19 @@ module.exports = {
   props: {
     song: { type: Bse.Song }
   },
+  watch: {
+    song: async function (newval) { this.tracks = await this.list_tracks(); },
+  },
+  data_tmpl: {
+    tracks: [],	// [[track,uniqid], ...]
+  },
   methods:  {
-    list_tracks () {
+    async list_tracks () {
       if (!this.song) return [];
-      let items = this.song.list_children();
+      let items = await this.song.list_children();
       let tracks = items.filter (item => item instanceof Bse.Track);
+      tracks = tracks.map (async item => [item, await item.unique_id()]);
+      tracks = await Promise.all (tracks);
       return tracks;
     },
     bclick (method, e) {

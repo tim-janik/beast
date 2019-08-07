@@ -126,6 +126,8 @@ module.exports = {
     },
   },
   beforeDestroy() {
+    if (this.resize_observer)
+      this.resize_observer.disconnect();
     if (this.unwatch_render_canvas) {
       this.unwatch_render_canvas();
       this.unwatch_render_canvas = undefined;
@@ -137,7 +139,7 @@ module.exports = {
     render_notes: render_notes,
     dom_updated() {
       if (!this.resize_observer)
-	this.resize_observer = new window.ResizeObserver (entries => { this.$forceUpdate(); });
+	this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
       if (this.resizable_scrollarea != this.$refs.scrollarea) {
 	if (this.resizable_scrollarea)
 	  this.resize_observer.unobserve (this.resizable_scrollarea);
@@ -418,7 +420,7 @@ function render_notes (canvas, cstyle, layout) {
     ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
     ctx.fillStyle = note_font_color;
     // draw notes
-    const pnotes = part.list_notes_crossing (0, MAXINT);
+    const pnotes = part.list_notes_crossing (0, CONFIG.MAXINT);
     const tickscale = layout.beat_pixels / 384;
     for (const note of pnotes) {
       const oct = floor (note.note / 12), key = note.note - oct * 12;

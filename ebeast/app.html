@@ -1,0 +1,154 @@
+<!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<html><head>
+
+  <title>Beast - Music Synthesizer and Composer</title>
+  <script>
+  'use strict';
+  const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
+  window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
+  </script>
+
+  <link rel="modulepreload" href="./utilities.js">
+  <link rel="modulepreload" href="./jsbse.js">
+  <link rel="modulepreload" href="./assets/components.js">
+  <link rel="modulepreload" href="./node_modules/vue/dist/vue.esm.browser.js">
+  <link rel="stylesheet" href="assets/stylesheets.css">
+  <link rel="stylesheet" href="assets/material-icons.css">
+  <link rel="stylesheet" href="assets/forkawesome-webfont.css">
+
+  <script>
+  'use strict';
+  // When running inside Electron, provide 'Electron' globally. And to load
+  // browser scripts, hide the Electron nodeIntegration module temporarily
+  if (typeof module === 'object')
+    {
+      window.__module = module;
+      module = undefined;
+      window.Electron = require ('electron').remote;
+      window.MAINCONFIG = Electron.getCurrentWindow().MAINCONFIG;
+    }
+  </script>
+  <script src="node_modules/jquery/dist/jquery.js"></script>
+  <script>
+  // Restore the global 'module', now that scripts are laoded.
+  if (window.__module)
+    {
+      module = window.__module;
+      delete window.__module;
+      if (CONFIG.debug)	// show DevTools on hotkey
+	document.addEventListener ("keydown", (event) => {
+	  if (event.shiftKey && event.ctrlKey && event.keyCode == 73)	// Shift+Ctrl+I
+	    Electron.getCurrentWindow().toggleDevTools();
+	});
+    }
+  </script>
+
+  <!-- async modules: https://v8.dev/features/modules -->
+  <script type="module" src="./jsbse.js" async>
+  // TODO: const url = "" + window.location; const wsurl = url.replace (/^[^\/]*\/*([^\/]*).*/, "ws://$1");
+  </script>
+
+</head>
+<body>
+
+  <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
+				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
+    <p>
+      Loading single page application...
+      <br />
+      <small class="load-status" style="white-space: pre-line">
+      </small>
+    </p>
+  </div>
+
+  <div id="vue-mountpoint">
+
+    <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
+
+  </div>
+
+  <script type="module">
+  // Load modules asynchronously
+  const loadstatus = document.querySelector ("#body-load-status .load-status");
+  loadstatus.innerText += "Loading Javascript modules...\n";
+  // Bse
+  import * as Bse from './jsbse.js';
+  window.Bse = Bse;
+  loadstatus.innerText += "Loaded Bse...\n";
+  // Vue
+  import Vue from './node_modules/vue/dist/vue.esm.browser.js';
+  window.Vue = Vue;
+  loadstatus.innerText += "Loaded Vue.js...\n";
+  // Vue.config
+  Vue.config.productionTip = false;
+  Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
+  Vue.config.silent = !CONFIG.debug;
+  Vue.config.performance = true;
+  // $log() and assert() shortcuts, inside and outside components
+  window.$log = console.log.bind (console);
+  window.assert = console.assert.bind (console);
+  Vue.prototype.$log = window.$log;
+  Vue.prototype.assert = window.assert;
+  Vue.prototype.CONFIG = CONFIG;
+  // utilities.js
+  import * as Util from './utilities.js'; // depends on Vue
+  window.Util = Util;
+  for (let directivename in Util.vue_directives) // register all utility directives
+    Vue.directive (directivename, Util.vue_directives[directivename]);
+  loadstatus.innerText += "Loaded Util...\n";
+
+  // Start at onload and fetch remaining resources
+  async function onload_start_app() {
+    // onload
+    loadstatus.innerText += "Loaded Window...\n";
+    // jQuery
+    console.assert (window.$ !== undefined);
+    loadstatus.innerText += "Loaded jQuery...\n";
+    // Bse.server
+    loadstatus.innerText += "Connecting to Bse.server...\n";
+    await Bse.server['$promise'];
+    console.assert (Bse.server['$id'] > 0);
+    loadstatus.innerText += "Retrieved Bse.server...\n";
+    // _() - add translation indicator
+    window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
+    Vue.prototype._ = window._;
+    // Beast Web Components, bundled via b/bundle.js
+    await import ('./assets/components.js'); // depends on Vue
+    loadstatus.innerText += "Loaded Components...\n";
+    // Fonts - wait for fonts before Vue components are mounted and compute sizes
+    await document.fonts.ready;
+    loadstatus.innerText += "Loaded Fonts...\n";
+    // Shell will inject itself into all Vue components, make it global
+    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
+    // Mount Vue components, this creates b-projectshell as Vue.Shell
+    const vue_root = new Vue ({
+      el:   '#vue-mountpoint',
+      data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
+    });
+    assert (vue_root); // Vue.$root
+    loadstatus.innerText += "Mounted Vue...\n";
+    // Menu bar for Electron
+    if (window.Electron)
+      {
+	const menus = await import ('./menus.js');
+	await menus.setup_app_menu();
+	loadstatus.innerText += "Loaded Menus...\n";
+      }
+    else
+      loadstatus.innerText += "Skipped Menus...\n";
+    // Load command line files
+    for (let arg of window.MAINCONFIG.args)
+      {
+	const error = await Shell.load_project (arg);
+	if (error != Bse.Error.NONE)
+	  console.error ('Failed to load:', arg + ":", error);
+      }
+    loadstatus.innerText += "(!) Skipped command line files...\n";
+    const bodyloadstatus = document.querySelector ("#body-load-status");
+    setTimeout (() => bodyloadstatus.parentElement.removeChild (bodyloadstatus), 900);
+  }
+  window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
+  </script>
+
+</body>
+</html>

@@ -34,10 +34,19 @@ module.exports = {
   name: 'b-part-thumb',
   mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
   props: {
-    'part': { type: Bse.Part, },
-    'tick': { type: Number, },
-    'index': { type: Number, },
-    'trackindex': { type: Number, },
+    part: { type: Bse.Part, },
+    tick: { type: Number, },
+    index: { type: Number, },
+    trackindex: { type: Number, },
+  },
+  data_tmpl: { partname: "", allnotes: [] },
+  watch: {
+    part: { immediate: true, async handler (n, o) {
+      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
+      let partname = this.part.get_name();
+      this.allnotes = await allnotes;
+      this.partname = await partname;
+    } },
   },
   computed: {
     tickscale: function() { return 10 / 384.0; }, // FIXME
@@ -74,18 +83,17 @@ module.exports = {
 function render_canvas () {
   // canvas setup
   const canvas = this.$refs['canvas'], ctx = canvas.getContext ('2d');
-  const style = getComputedStyle (canvas), part = this.part;
+  const style = getComputedStyle (canvas);
   const width = canvas.clientWidth, height = canvas.clientHeight;
   canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
-  const part_name = part.get_name();
   // color setup
   const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
   let cindex;
   cindex = this.trackindex;			// - color per track
   cindex = (cindex + 1013904223) * 1664557;	//   LCG randomization step
   cindex = this.index;				// - color per part
-  cindex = Util.fnv1a_hash (part_name);		// - color from part name
+  cindex = Util.fnv1a_hash (this.partname);	// - color from part name
   const bgcol = colors[(cindex >>> 0) % colors.length];
   // paint part background
   ctx.fillStyle = bgcol;
@@ -95,10 +103,10 @@ function render_canvas () {
   ctx.fillStyle = style.getPropertyValue ('--part-thumb-font-color');
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText (part_name, 1.5, .5);
+  ctx.fillText (this.partname, 1.5, .5);
   // paint notes
   ctx.fillStyle = style.getPropertyValue ('--part-thumb-note-color');
-  const pnotes = part.list_notes_crossing (0, MAXINT);
+  const pnotes = this.allnotes; // await part.list_notes_crossing (0, MAXINT);
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   const tickscale = this.tickscale;

@@ -12,8 +12,12 @@
   @import 'styles.scss';
   .b-aboutdialog .b-modaldialog-container	{ max-width: 70em; }
   .b-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
-  .b-aboutdialog th	{ text-align: right; padding-right: .5em; min-width: 15em; }
-  .b-aboutdialog td	{ max-width: 50%; overflow-wrap: break-word; }
+  .b-aboutdialog th	{
+    text-align: right; vertical-align: top;
+    padding-right: .5em; min-width: 15em; }
+  .b-aboutdialog td	{
+    max-width: 50%; overflow-wrap: break-word;
+    display: inline-block; white-space: pre; }
 </style>
 
 <template>
@@ -30,35 +34,43 @@
 </template>
 
 <script>
-function about_pairs() {
-  const elap = Electron.app;
-  const os = require ('os');
-  return [
-    [ 'Application:',	elap.getName() + ' ' + elap.getVersion() ],
-    [ 'Revision:',	GLOBALCONFIG.revision + ' (' + GLOBALCONFIG.revdate.split (' ')[0] + ')' ],
-    [ 'OS:',		process.platform + ' ' + process.arch + ' (' + os.release() + ')' ],
-    [ 'Electron:',	process.versions.electron ],
-    [ 'Chrome:',	process.versions.chrome ],
-    [ 'V8:',		process.versions.v8 ],
-    [ 'Node.js:',	process.versions.node ],
-    [ 'Vorbis:',	Bse.server.get_vorbis_version() ],
-    [ 'Libuv:',		process.versions.uv ],
-    [ 'Vuejs:',		Vue.version ],
-    [ 'jQuery:',	jQuery.fn.jquery ],
-    [ 'User Agent:',	navigator.userAgent ],
-    [ 'Executable:',	elap.getPath ('exe') ],
-    [ 'Working Dir:',	process.cwd() ],
-    [ 'Desktop Dir:',	elap.getPath ('desktop') ],
-    [ 'Config Path:',	elap.getPath ('userData') ],
-    [ 'Music Path:',	elap.getPath ('music') ],
+async function about_pairs() {
+  const user_agent = navigator.userAgent.replace (/([)0-9]) ([A-Z])/gi, '$1\n$2');
+  let array = [
+    [ 'Beast:',			CONFIG.revision + ' (' + CONFIG.revdate.split (' ')[0] + ')' ],
+    [ 'BSE:',			await Bse.server.get_version() ],
+    [ 'Vorbis:',		await Bse.server.get_vorbis_version() ],
+    [ 'Vuejs:',			Vue.version ],
+    [ 'jQuery:',		jQuery.fn.jquery ],
+    [ 'User Agent:',		user_agent ],
   ];
+  if (window.Electron)
+    {
+      const Eapp = Electron.app;
+      const os = require ('os');
+      const parray = [
+	[ 'Executable:',	Eapp.getPath ('exe') ],
+	[ 'Revision:',		Eapp.getName() + ' ' + Eapp.getVersion() ],
+	[ 'OS:',		process.platform + ' ' + process.arch + ' (' + os.release() + ')' ],
+	[ 'Electron:',		process.versions.electron ],
+	[ 'Chrome:',		process.versions.chrome ],
+	[ 'Node.js:',		process.versions.node ],
+	[ 'Libuv:',		process.versions.uv ],
+	[ 'V8:',		process.versions.v8 ],
+	[ 'Working Dir:',	process.cwd() ],
+	[ 'Desktop Dir:',	Eapp.getPath ('desktop') ],
+	[ 'Config Path:',	Eapp.getPath ('userData') ],
+	[ 'Music Path:',	Eapp.getPath ('music') ],
+      ];
+      array = Array.prototype.concat (array, parray);
+    }
+  return array;
 }
 module.exports = {
   name: 'b-aboutdialog',
-  data: function() { return { info_pairs: about_pairs() }; },
-  methods: {
-    dummy (method, e) {
-    },
+  data_tmpl: { info_pairs: [] },
+  async created() {
+    this.info_pairs = await about_pairs();
   },
 };
 </script>

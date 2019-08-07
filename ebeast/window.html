@@ -78,8 +78,6 @@
 
   <div id="vue-mountpoint">
     <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
-    <b-aboutdialog v-if="Shell.show_about_dialog" @close="Shell.show_about_dialog = false"></b-aboutdialog>
-    <b-preferencesdialog v-if="Shell.show_preferences_dialog" @close="Shell.show_preferences_dialog = false"></b-preferencesdialog>
   </div>
 
   <script>
@@ -88,8 +86,6 @@
     Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
     // App.Shell placeholder until the Shell VueComponent is created
     const shell_placeholder = {
-      show_about_dialog: false,
-      show_preferences_dialog: false,
       Shell_placeholder: true		// flag causing replacement later on
     };
     // Create Vue root instance, which immediately creates Shell

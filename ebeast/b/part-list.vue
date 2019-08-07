@@ -13,7 +13,7 @@
 <template>
 
   <div class="b-part-list" >
-    <b-part-thumb v-for="(tp, pindex) in track.list_parts()" :key="tp.part.unique_id() + '-' + tp.tick"
+    <b-part-thumb v-for="(tp, pindex) in parts" :key="tp.unique_id + '-' + tp.tick"
 		   :part="tp.part" :tick="tp.tick" :trackindex="trackindex" :index="pindex" ></b-part-thumb>
   </div>
 
@@ -31,11 +31,22 @@
 <script>
 module.exports = {
   name: 'b-part-list',
-  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
   },
+  watch: {
+    track: { immediate: true, async handler (n, o) {
+      let parts = await this.track.list_parts();
+      parts = parts.map (async tpd => { tpd.unique_id = await tpd.part.unique_id(); return tpd; });
+      parts = await Promise.all (parts);
+      this.parts = parts;
+    } },
+  },
+  data_tmpl: {
+    parts: [],	// [{tick,part,duration,unique_id}, ...]
+  },
+  mixins: [ Util.vue_mixins.hyphen_props ],
 };
 
 </script>

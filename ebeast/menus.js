@@ -25,9 +25,14 @@ const menubar_menuitems = [
   { label: _('&Help'), 			submenu: help_menuitems, },
 ];
 
+let save_same_filename = undefined;
+let open_dialog_lastdir = undefined;
+let save_dialog_lastdir = undefined;
+
 // assign global app menu
-function setup_app_menu()
+export async function setup_app_menu()
 {
+  open_dialog_lastdir = await Bse.server.get_demo_path();
   function complete_menu_items (item)
   {
     if (Array.isArray (item))
@@ -48,9 +53,8 @@ function setup_app_menu()
   Electron.Menu.setApplicationMenu (menubar_menu);
   check_all_menu_items();
 }
-module.exports.setup_app_menu = setup_app_menu;
 
-function check_all_menu_items()
+export function check_all_menu_items()
 {
   function check_menu_item (item) {
     if (item.items)
@@ -65,11 +69,6 @@ function check_all_menu_items()
   if (app_menu)
     check_menu_item (app_menu);
 }
-module.exports.check_all_menu_items = check_all_menu_items;
-
-let save_same_filename = undefined;
-let open_dialog_lastdir = undefined;
-let save_dialog_lastdir = undefined;
 
 function menu_sentinel (menuitem)
 {
@@ -126,15 +125,13 @@ function menu_command (menuitem)
       BrowserWindow.setFullScreen (!BrowserWindow.isFullScreen());
       break;
     case 'quit-app':
-      Electron.app.quit();
+      Electron.app.exit (0);
       return false;
     case 'new-project':
       save_same_filename = undefined;
       Shell.load_project();
       break;
     case 'open-file':
-      if (!open_dialog_lastdir)
-	open_dialog_lastdir = Bse.server.get_demo_path();
       Electron.dialog.showOpenDialog (Electron.getCurrentWindow(),
 				      {
 					title: Util.format_title ('Beast', 'Select File To Open'),
@@ -145,12 +142,12 @@ function menu_command (menuitem)
 						   { name: 'Audio Files', extensions: [ 'bse', 'mid', 'wav', 'mp3', 'ogg' ] },
 						   { name: 'All Files', extensions: [ '*' ] }, ],
 				      },
-				      (result) => {
+				      async (result) => {
 					if (result && result.length == 1)
 					  {
 					    const Path = require ('path');
 					    open_dialog_lastdir = Path.dirname (result[0]);
-					    if (Shell.load_project (result[0]) == Bse.Error.NONE)
+					    if (await Shell.load_project (result[0]) == Bse.Error.NONE)
 					      {
 						save_same_filename = result[0];
 						check_all_menu_items();

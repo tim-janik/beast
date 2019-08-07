@@ -61,7 +61,7 @@
 <template>
   <div class="b-track-view" >
     <div class="b-track-view-control">
-      <span class="b-track-view-label">{{ track.get_name() }}</span>
+      <span class="b-track-view-label">{{ trackname }}</span>
       <div class="b-track-view-meter">
 	<div class="b-track-view-lbg" ref="levelbg"></div>
 	<div class="b-track-view-cm0" ref="covermid0"></div>
@@ -86,7 +86,10 @@ module.exports = {
     'trackindex': { type: Number, },
   },
   data_tmpl: {
-    name: "Track-Label2",
+    trackname: "",
+  },
+  watch: {
+    track: { immediate: true, async handler (n, o) { this.trackname = await this.track.get_name(); } },
   },
   beforeDestroy() {
     if (this.remove_frame_handler) {
@@ -96,15 +99,15 @@ module.exports = {
   },
   methods: {
     update_levels: update_levels,
-    dom_updated() {
+    async dom_updated() {
       if (this.track) {
 	// setup level gradient based on mindb..maxdb
 	const levelbg = this.$refs['levelbg'];
 	levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
 	// request dB SPL updates
-	this.lmonitor = this.track.create_signal_monitor (0);
-	this.rmonitor = this.track.create_signal_monitor (1);
-	let pf = Bse.ProbeFeatures();
+	this.lmonitor = await this.track.create_signal_monitor (0);
+	this.rmonitor = await this.track.create_signal_monitor (1);
+	let pf = new Bse.ProbeFeatures();
 	pf.probe_energy = true;
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);

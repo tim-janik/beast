@@ -6,18 +6,100 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 #include <jsonipc/jsonipc.hh>
 
+#include <bse/bseenums.hh>      // enums API interfaces, etc
 #include <bse/platform.hh>
+#include <bse/randomhash.hh>
 #include <bse/regex.hh>
-#include "bse/jsonbindings.cc"
 #include <bse/bse.hh>   // Bse::init_async
 #include <limits.h>
 #include <stdlib.h>
 
-#undef B0 // pollution from termios.h
+// == Aida Workarounds ==
+// Manually convert between Aida Handle types (that Jsonipc cannot know about)
+// and shared_ptr to Iface types.
+// Bse::*Seq as std::vector
+template<typename Bse_Seq, typename Bse_IfaceP>
+struct ConvertSeq {
+  static Bse_Seq
+  from_json (const Jsonipc::JsonValue &jarray)
+  {
+    std::vector<Bse_IfaceP> pointers = Jsonipc::from_json<std::vector<Bse_IfaceP>> (jarray);
+    Bse_Seq seq;
+    seq.reserve (pointers.size());
+    for (auto &ptr : pointers)
+      seq.emplace_back (ptr->__handle__());
+    return seq;
+  }
+  static Jsonipc::JsonValue
+  to_json (const Bse_Seq &vec, Jsonipc::JsonAllocator &allocator)
+  {
+    std::vector<Bse_IfaceP> pointers;
+    pointers.reserve (vec.size());
+    for (auto &itemhandle : vec)
+      pointers.emplace_back (itemhandle.__iface__()->template as<Bse_IfaceP>());
+    return Jsonipc::to_json (pointers, allocator);
+  }
+};
+
+namespace Jsonipc {
+// Bse::ItemSeq as std::vector
+template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
+// Bse::PartSeq as std::vector
+template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::PartIfaceP> {};
+// Bse::SuperSeq as std::vector
+template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
+// Bse::WaveOscSeq as std::vector
+template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
+
+// Bse::PartHandle as Bse::PartIfaceP (in records)
+template<>
+struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
+  static Aida::RemoteMember<Bse::PartHandle>
+  from_json (const Jsonipc::JsonValue &jvalue)
+  {
+    Bse::PartIfaceP ptr = Jsonipc::from_json<Bse::PartIfaceP> (jvalue);
+    return ptr->__handle__();
+  }
+  static Jsonipc::JsonValue
+  to_json (const Aida::RemoteMember<Bse::PartHandle> &handle, Jsonipc::JsonAllocator &allocator)
+  {
+    Bse::PartIfaceP ptr = handle.__iface__()->template as<Bse::PartIfaceP>();
+    return Jsonipc::to_json (ptr, allocator);
+  }
+};
+
+} // Jsonipc
+
+
+#include "bsebus.hh"
+#include "bsecontextmerger.hh"
+#include "bsecsynth.hh"
+#include "bseeditablesample.hh"
+#include "bsemidinotifier.hh"
+#include "bsemidisynth.hh"
+#include "bsepart.hh"
+#include "bsepcmwriter.hh"
+#include "bseproject.hh"
+#include "bseserver.hh"
+#include "bsesnet.hh"
+#include "bsesong.hh"
+#include "bsesong.hh"
+#include "bsesoundfont.hh"
+#include "bsesoundfontrepo.hh"
+#include "bsetrack.hh"
+#include "bsewave.hh"
+#include "bsewaveosc.hh"
+#include "bsewaverepo.hh"
+#include "monitor.hh"
+#include "bse/bseapi_jsonipc.cc"    // Bse_jsonipc_stub
+
+#undef B0 // undo pollution from termios.h
 
 static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
 static bool verbose = false;
+static GPollFD embedding_pollfd = { -1, 0, 0 };
+static std::string authenticated_subprotocol = "auth123";
 
 // Configure websocket server
 struct CustomServerConfig : public websocketpp::config::asio {
@@ -29,12 +111,25 @@ static ServerEndpoint websocket_server;
 static std::string
 handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &hdl)
 {
-  const ptrdiff_t conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
+  ptrdiff_t conid = 0;
   if (verbose)
-    Bse::printerr ("%p: REQUEST: %s\n", conid, message);
+    {
+      conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
+      Bse::printerr ("%p: REQUEST: %s\n", conid, message);
+    }
   const std::string reply = dispatcher->dispatch_message (message);
   if (verbose)
-    Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
+    {
+      const bool iserror = bool (Bse::Re::search (R"(^\{("id":[0-9]+,)?"error":)", reply));
+      if (iserror)
+        {
+          using namespace Bse::AnsiColors;
+          auto R1 = color (BOLD) + color (FG_RED), R0 = color (FG_DEFAULT) + color (BOLD_OFF);
+          Bse::printerr ("%p: %sREPLY:%s   %s\n", conid, R1, R0, reply);
+        }
+      else
+        Bse::printerr ("%p: REPLY:   %s\n", conid, reply);
+    }
   return reply;
 }
 
@@ -62,9 +157,11 @@ ws_validate_connection (websocketpp::connection_hdl hdl)
   ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
   // using subprotocol as auth string
   const std::vector<std::string> &subprotocols = con->get_requested_subprotocols();
+  if (subprotocols.size() == 0 && authenticated_subprotocol.empty())
+    return true;
   if (subprotocols.size() == 1)
     {
-      if (subprotocols[0] == "auth123")
+      if (subprotocols[0] == authenticated_subprotocol)
         {
           con->select_subprotocol (subprotocols[0]);
           return true;
@@ -97,16 +194,20 @@ ws_open_connection (websocketpp::connection_hdl hdl)
   // Bse::printout ("User-Agent: %s\n", useragent);
 }
 
+static websocketpp::connection_hdl *bse_current_websocket_hdl = NULL;
+
 static void
-ws_message (websocketpp::connection_hdl con, server::message_ptr msg)
+ws_message (websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
   const std::string &message = msg->get_payload();
   // send message to BSE thread and block until its been handled
   Aida::ScopedSemaphore sem;
-  auto handle_wsmsg = [&message, &con, &sem] () {
-    std::string reply = handle_jsonipc (message, con);
+  auto handle_wsmsg = [&message, &hdl, &sem] () {
+    bse_current_websocket_hdl = &hdl;
+    std::string reply = handle_jsonipc (message, hdl);
+    bse_current_websocket_hdl = NULL;
     if (!reply.empty())
-      websocket_server.send (con, reply, websocketpp::frame::opcode::text);
+      websocket_server.send (hdl, reply, websocketpp::frame::opcode::text);
     sem.post();
   };
   bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
@@ -207,6 +308,122 @@ http_request (websocketpp::connection_hdl hdl)
     Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
 }
 
+class EventHub {
+  static ssize_t new_id () { static ssize_t idgen = -1000000; return --idgen; }
+  struct EventHandler {
+    websocketpp::connection_hdl weak_hdl;       // connection weak_ptr
+    Bse::ObjectIfaceW           weak_obj;       // ObjectIface weak_ptr
+    Aida::IfaceEventConnection  event_con;      // internally weak_ptr
+    const ssize_t               handler_id = 0;
+    EventHandler (const EventHandler&) = delete;
+    EventHandler& operator= (const EventHandler&) = delete;
+    EventHandler (ssize_t handlerid, Bse::ObjectIfaceW obj, websocketpp::connection_hdl chdl) :
+      weak_hdl (chdl), weak_obj (obj), handler_id (handlerid)
+    {
+      BSE_ASSERT_RETURN (handler_id != 0);
+    }
+    ~EventHandler()
+    {
+      event_con.disconnect();
+    }
+    void
+    event (const Aida::Event &event)
+    {
+      Bse::ObjectIfaceP obj = weak_obj.lock();
+      ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl);
+      if (obj && con)
+        {
+          rapidjson::Document d (rapidjson::kObjectType);
+          auto &a = d.GetAllocator();
+          d.AddMember ("method", "Bse/EventHub/event", a);
+          Jsonipc::JsonValue jarray (rapidjson::kArrayType);
+          jarray.PushBack (Jsonipc::to_json<ssize_t> (handler_id, a).Move(), a);
+          jarray.PushBack (Jsonipc::to_json (event["type"].get<std::string>(), a).Move(), a); // FIXME: event binding
+          d.AddMember ("params", jarray, a); // move-semantics!
+          rapidjson::StringBuffer buffer;
+          rapidjson::Writer<rapidjson::StringBuffer> writer (buffer);
+          d.Accept (writer);
+          std::string message { buffer.GetString(), buffer.GetSize() };
+          websocket_server.send (weak_hdl, message, websocketpp::frame::opcode::text);
+          if (verbose)
+            {
+              const ptrdiff_t conid = ptrdiff_t (con.get());
+              Bse::printerr ("%p: NOTIFY:  %s\n", conid, message);
+            }
+        }
+    }
+  };
+  using HandlerMap = std::map<ssize_t, EventHandler>;
+  static HandlerMap& handlers() { static HandlerMap hmap; return hmap; }
+public:
+  static std::string*
+  connect (Jsonipc::CallbackInfo &cbi)
+  {
+    if (cbi.n_args() == 2 && bse_current_websocket_hdl)
+      {
+        auto obj = Jsonipc::from_json<Bse::ObjectIfaceP> (cbi.ntharg (0));
+        auto eventname = Jsonipc::from_json<std::string> (cbi.ntharg (1));
+        if (obj && !eventname.empty())
+          {
+            websocketpp::connection_hdl chdl = *bse_current_websocket_hdl;
+            const ssize_t handler_id = new_id();
+            // handlers()[handler_id] = EventHandler (handler_id, obj, chdl);
+            auto pitb = handlers().emplace (std::piecewise_construct, std::forward_as_tuple (handler_id),
+                                            std::forward_as_tuple (handler_id, obj, chdl));
+            EventHandler *ehandler = &pitb.first->second;
+            ehandler->event_con = obj->__attach__ (eventname, [ehandler] (const Aida::Event &event) { ehandler->event (event); });
+            cbi.set_result (Jsonipc::to_json (handler_id, cbi.allocator()).Move());
+            return NULL;
+          }
+      }
+    return new std::string (cbi.invalid_params);
+  }
+  static std::string*
+  disconnect (Jsonipc::CallbackInfo &cbi)
+  {
+    if (cbi.n_args() == 1)
+      {
+        const ssize_t handler_id = Jsonipc::from_json<ssize_t> (cbi.ntharg (0));
+        HandlerMap &hmap = handlers();
+        auto it = hmap.find (handler_id);
+        bool result = false;
+        if (it != hmap.end())
+          {
+            EventHandler &ehandler = it->second;
+            ehandler.event_con.disconnect();
+            hmap.erase (it);
+            result = true;
+          }
+        cbi.set_result (Jsonipc::to_json (result, cbi.allocator()).Move());
+        return NULL;
+      }
+    return new std::string (cbi.invalid_params);
+  }
+  /* TODO: delete all EventHandler entries on connection death
+   * TODO: clean up EventHandler entries on object deletion
+   * TODO: implement periodic GC sweep for event connections, instead of tracking all
+   * connection + object destructions. E.g. to simplify mattaers, check all weak_ptrs
+   * of all connections once every 257th or so connect() calls, to have an upper bound
+   * of leaky stale connections.
+   */
+};
+
+static void
+randomize_subprotocol()
+{
+  const char *const c64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "0123456789" "_-";
+  /* We use subprotocol randomization as authentication, so:
+   * a) Authentication happens *before* messages interpretation, so an
+   *    unauthenticated sender cannot cause crahses via e.g. rapidjson exceptions.
+   * b) To serve as working authentication measure, the subprotocol random string
+   *    must be cryptographically-secure.
+   */
+  Bse::KeccakCryptoRng csprng;
+  authenticated_subprotocol = "auth.";
+  for (size_t i = 0; i < 43; ++i)                               // 43 * 6 bit >= 256 bit
+    authenticated_subprotocol += c64[csprng.random() % 64];     // each step adds 6 bits
+}
+
 static void
 print_usage (bool help)
 {
@@ -216,27 +433,39 @@ print_usage (bool help)
       return;
     }
   Bse::printout ("Usage: beast-sound-engine [OPTIONS]\n");
-  Bse::printout ("  --help     Print command line help\n");
-  Bse::printout ("  --version  Print program version\n");
-  Bse::printout ("  --verbose  Print requests and replies\n");
+  Bse::printout ("  --help       Print command line help\n");
+  Bse::printout ("  --version    Print program version\n");
+  Bse::printout ("  --verbose    Print requests and replies\n");
+  Bse::printout ("  --embed <fd> Parent process socket for embedding\n");
 }
 
 int
 main (int argc, char *argv[])
 {
+  Bse::this_thread_set_name ("BeastSoundEngineMain");
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
   bse_server = Bse::init_server_instance();
+
+  randomize_subprotocol();
+
+  // Ensure Bse has everything properly loaded
+  bse_server.load_assets();
 
   // Register BSE bindings
   const bool print_jsbse = argc >= 2 && std::string ("--js-bseapi") == argv[1];
   {
     Aida::ScopedSemaphore sem;
-    auto handle_wsmsg = [print_jsbse,&sem] () {
-      if (!print_jsbse)
-        Jsonipc::ClassPrinter::disable();
-      Bse::register_json_bindings();
+    auto handle_wsmsg = [print_jsbse, &sem] () {
       if (print_jsbse)
-        Bse::printout ("%s\n", Jsonipc::ClassPrinter::string());
+        Jsonipc::ClassPrinter::recording (true);
+      Bse_jsonipc_stub();
+      if (print_jsbse)
+        Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
+      // fixups, we know Bse::Server is a singleton
+      Jsonipc::Class<Bse::ServerIface> jsonipc__Bse_ServerIface;
+      jsonipc__Bse_ServerIface.eternal();
+      Jsonipc::Class<Bse::ServerImpl> jsonipc__Bse_ServerImpl;
+      jsonipc__Bse_ServerImpl.eternal();
       sem.post();
     };
     bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
@@ -248,12 +477,13 @@ main (int argc, char *argv[])
   // Setup Jsonipc dispatcher
   dispatcher = new Jsonipc::IpcDispatcher();
   dispatcher->add_method ("$jsonipc.initialize",
-                          [] (Jsonipc::JsonCallbackInfo &cbi) -> std::string* {
-                            // TODO: bind Bse::ServerImpl, so far we only bind Bse::ServerIface
+                          [] (Jsonipc::CallbackInfo &cbi) -> std::string* {
                             Bse::ServerIface &server_iface = Bse::ServerImpl::instance();
                             cbi.set_result (Jsonipc::to_json (server_iface, cbi.allocator()).Move());
                             return NULL;
                           });
+  dispatcher->add_method ("Bse/EventHub/connect", &EventHub::connect);
+  dispatcher->add_method ("Bse/EventHub/disconnect", &EventHub::disconnect);
 
   // parse arguments
   bool seen_dashdash = false;
@@ -273,6 +503,8 @@ main (int argc, char *argv[])
             print_usage (false);
             return 0;
           }
+        else if (arg_name == "embed" && i + 1 < argc)
+          embedding_pollfd.fd = Bse::string_to_int (argv[++i]);
         else if (arg_name == "h" || arg_name == "help")
           {
             print_usage (true);
@@ -292,6 +524,36 @@ main (int argc, char *argv[])
     else
       words.push_back (argv[i]);
 
+  // add keep-alive-fd monitoring
+  if (embedding_pollfd.fd >= 0)
+    {
+      Aida::ScopedSemaphore sem;
+      auto handle_wsmsg = [&sem] () {
+        embedding_pollfd.events = G_IO_IN | G_IO_HUP; // G_IO_PRI | (G_IO_IN | G_IO_HUP) | (G_IO_OUT | G_IO_ERR);
+        GSource *source = g_source_simple (BSE_PRIORITY_NORMAL,
+                                           [] (void*, int *timeoutp) -> int { // pending
+                                             return embedding_pollfd.revents != 0;
+                                           },
+                                           [] (void*) { // dispatch,
+                                             if (embedding_pollfd.revents & G_IO_IN)
+                                               {
+                                                 static char b[512];
+                                                 ssize_t n = read (embedding_pollfd.fd, b, 512); // clear input
+                                                 (void) n;
+                                               }
+                                             if (embedding_pollfd.revents & G_IO_HUP)
+                                               _exit (0);
+                                           },
+                                           nullptr, // data,
+                                           nullptr, // destroy,
+                                           &embedding_pollfd, nullptr);
+        g_source_attach (source, bse_main_context);
+        sem.post();
+      };
+      bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
+      sem.wait();
+    }
+
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768
 
   // setup websocket and run asio loop
@@ -304,14 +566,39 @@ main (int argc, char *argv[])
   websocket_server.clear_access_channels (websocketpp::log::alevel::all);
   websocket_server.set_reuse_addr (true);
   namespace IP = boost::asio::ip;
-  IP::tcp::endpoint endpoint_local = IP::tcp::endpoint (IP::address::from_string ("127.0.0.1"), BEAST_AUDIO_ENGINE_PORT);
+  size_t localhost_port = embedding_pollfd.fd >= 0 ? 0 : BEAST_AUDIO_ENGINE_PORT;
+  IP::tcp::endpoint endpoint_local = IP::tcp::endpoint (IP::address::from_string ("127.0.0.1"), localhost_port);
   websocket_server.listen (endpoint_local);
   websocket_server.start_accept();
+  if (localhost_port == 0)
+    {
+      websocketpp::lib::asio::error_code ec;
+      localhost_port = websocket_server.get_local_endpoint (ec).port();
+    }
+  if (embedding_pollfd.fd >= 0)
+    {
+      websocketpp::lib::asio::error_code ec;
+      std::string embed = Bse::string_format ("{ "
+                                              "\"url\": \"http://127.0.0.1:%d/app.html\", "
+                                              "\"subprotocol\": \"%s\" "
+                                              "}",
+                                              localhost_port,
+                                              authenticated_subprotocol);
+      ssize_t n;
+      do
+        n = write (embedding_pollfd.fd, embed.data(), embed.size());
+      while (n < 0 && errno == EINTR);
+      if (verbose)
+        Bse::printerr ("EMBED: %s\n", embed);
+    }
 
-  using namespace Bse::AnsiColors;
-  auto B1 = color (BOLD);
-  auto B0 = color (BOLD_OFF);
-  Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, BEAST_AUDIO_ENGINE_PORT);
+  if (embedding_pollfd.fd < 0)
+    {
+      using namespace Bse::AnsiColors;
+      auto B1 = color (BOLD);
+      auto B0 = color (BOLD_OFF);
+      Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, localhost_port);
+    }
 
   websocket_server.run();
 
