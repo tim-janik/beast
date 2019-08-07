@@ -18,14 +18,6 @@
 #define peek_or_return          bse_storage_scanner_peek_or_return
 
 
-/* --- properties --- */
-enum
-{
-  PROP_0,
-  PROP_N_CHANNELS,
-};
-
-
 /* --- prototypes --- */
 static void	    bse_part_class_init		(BsePartClass	*klass);
 static void	    bse_part_init		(BsePart	*self);
@@ -106,12 +98,6 @@ bse_part_class_init (BsePartClass *klass)
   quark_insert_control = g_quark_from_static_string ("insert-control");
   quark_insert_controls = g_quark_from_static_string ("insert-controls");
 
-  bse_object_class_add_param (object_class, "Limits",
-			      PROP_N_CHANNELS,
-			      sfi_pspec_int ("n_channels", "Channels", NULL,
-					     1, 1, BSE_PART_MAX_CHANNELS, 4,
-					     SFI_PARAM_STANDARD));
-
   signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
 						      G_TYPE_NONE, 4,
 						      G_TYPE_INT, G_TYPE_INT,
@@ -146,7 +132,8 @@ part_add_channel (BsePart *self,
   guint i = self->n_channels++;
   self->channels = g_renew (BsePartNoteChannel, self->channels, self->n_channels);
   bse_part_note_channel_init (&self->channels[i]);
-  g_object_notify ((GObject*) self, "n_channels");
+  auto impl = self->as<Bse::PartImpl*>();
+  impl->notify ("n_channels");
 }
 
 static void
@@ -158,14 +145,6 @@ bse_part_set_property (GObject        *object,
   BsePart *self = BSE_PART (object);
   switch (param_id)
     {
-      guint n;
-    case PROP_N_CHANNELS:
-      n = g_value_get_int (value);
-      while (self->n_channels < n)
-        part_add_channel (self, FALSE);
-      while (self->n_channels > n)
-        bse_part_note_channel_destroy (&self->channels[--self->n_channels]);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -181,9 +160,6 @@ bse_part_get_property (GObject	  *object,
   BsePart *self = BSE_PART (object);
   switch (param_id)
     {
-    case PROP_N_CHANNELS:
-      g_value_set_int (value, self->n_channels);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -777,7 +753,10 @@ bse_part_insert_note (BsePart *self,
   if (use_any_channel)
     channel = 0;
   else if (channel >= self->n_channels)
-    g_object_set (self, "n_channels", channel + 1, NULL);
+    {
+      auto impl = self->as<Bse::PartImpl*>();
+      impl->n_channels (channel + 1);
+    }
 
   if (!(BSE_NOTE_IS_VALID (note) &&
 	BSE_FINE_TUNE_IS_VALID (fine_tune) &&
@@ -2094,6 +2073,30 @@ void
 PartImpl::last_tick (int tick)
 {
   assert_return_unreached ();
+}
+
+int
+PartImpl::n_channels() const
+{
+  BsePart *self = const_cast<PartImpl*> (this)->as<BsePart*>();
+
+  return self->n_channels;
+}
+
+void
+PartImpl::n_channels (int channels)
+{
+  BsePart *self = as<BsePart*>();
+
+  int value = self->n_channels;
+  if (APPLY_IDL_PROPERTY (value, channels))
+    {
+      uint n = value;
+      while (self->n_channels < n)
+        part_add_channel (self, FALSE);
+      while (self->n_channels > n)
+        bse_part_note_channel_destroy (&self->channels[--self->n_channels]);
+    }
 }
 
 PartNoteSeq

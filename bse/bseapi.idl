@@ -771,7 +771,8 @@ interface Part : Item {
   // signal void    links_changed             ();
   // property int32 n_channels;
   group "Limits" {
-    int32 last_tick = Range ("Last Tick", "", ":r:G", 0, MAXINT31, 384, 0);
+    int32 last_tick  = Range ("Last Tick", "", ":r:G", 0, MAXINT31, 384, 0);
+    int32 n_channels = Range ("Channels", "", STANDARD, 1, 1024, 4, 1);
   };
 };
 
