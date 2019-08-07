@@ -8,6 +8,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 #include <bse/bseenums.hh>      // enums API interfaces, etc
 #include <bse/platform.hh>
+#include <bse/randomhash.hh>
 #include <bse/regex.hh>
 #include <bse/bse.hh>   // Bse::init_async
 #include <limits.h>
@@ -408,6 +409,22 @@ public:
 };
 
 static void
+randomize_subprotocol()
+{
+  const char *const c64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "0123456789" "_-";
+  /* We use subprotocol randomization as authentication, so:
+   * a) Authentication happens *before* messages interpretation, so an
+   *    unauthenticated sender cannot cause crahses via e.g. rapidjson exceptions.
+   * b) To serve as working authentication measure, the subprotocol random string
+   *    must be cryptographically-secure.
+   */
+  Bse::KeccakCryptoRng csprng;
+  authenticated_subprotocol = "auth.";
+  for (size_t i = 0; i < 43; ++i)                               // 43 * 6 bit >= 256 bit
+    authenticated_subprotocol += c64[csprng.random() % 64];     // each step adds 6 bits
+}
+
+static void
 print_usage (bool help)
 {
   if (!help)
@@ -428,6 +445,8 @@ main (int argc, char *argv[])
   Bse::this_thread_set_name ("BeastSoundEngineMain");
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
   bse_server = Bse::init_server_instance();
+
+  randomize_subprotocol();
 
   // Ensure Bse has everything properly loaded
   bse_server.load_assets();
