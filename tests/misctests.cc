@@ -4,6 +4,14 @@
 #include <bse/testing.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
+#include "jsonipc/testjsonipc.cc" // test_jsonipc
+
+static void
+test_jsonipc_functions()
+{
+  test_jsonipc();
+}
+TEST_ADD (test_jsonipc_functions);
 
 using namespace Bse;
 

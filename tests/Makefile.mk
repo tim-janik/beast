@@ -42,7 +42,7 @@ include tests/audio/Makefile.mk
 
 # == suite1 rules ==
 $(tests/suite1.objects):	$(bse/libbse.deps) | $>/tests/
-$(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> -I$>/tests $(GLIB_CFLAGS)
+$(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> -Iexternal -I$>/tests $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
 	$(tests/suite1), \
 	$(tests/suite1.objects), \
