@@ -31,7 +31,10 @@ Bse.ObjectIface.prototype.off = async function (connection_id) {
 export const server = new Bse.Server (undefined);
 Object.defineProperty (server, '$promise', { writable: true });
 server['$promise'] = new Promise ((resolve, reject) => {
-  const promise = Bse.$jsonipc.open ("ws://localhost:27239/", 'auth123');
+  const hostport = window.location.href.replace (/.*:\/\/([^\/]+).*/, '$1');
+  const ws_url = 'ws://' + hostport;
+  const subprotocols = window.MAINCONFIG && window.MAINCONFIG.subprotocols;
+  const promise = Bse.$jsonipc.open (ws_url, subprotocols);
   promise.then (
     result => {
       if (result instanceof Bse.Server)
