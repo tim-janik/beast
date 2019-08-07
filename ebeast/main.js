@@ -58,8 +58,12 @@ function create_window ()
     darkTheme: true,
   };
   let win = new Electron.BrowserWindow (options);
-  win.webContents.on ('crashed', function () { Eapp.exit (-128); });
   win.MAINCONFIG = { args: project_files };
+  win.webContents.once ('crashed', e => {
+    seen_crashed = true;
+    if (seen_will_quit && seen_crashed)
+      Eapp.exit (143); // will-quit + crashed is caused by SIGHUP or SIGTERM
+  });
   return win;
 }
 
@@ -208,4 +212,18 @@ process.on ('uncaughtException', function (err) {
   console.error (process.argv[0] + ": uncaughtException (" + (new Date).toUTCString() + '):');
   console.error (err);
   main_exit (7);
+});
+
+/* Note, Electron hijacks SIGINT, SIGHUP, SIGTERM to trigger app.quit()
+ * which has a 0 exit status. We simply don't use quit() and force a
+ * non-0 status if it's used. See also:
+ * https://github.com/electron/electron/issues/19650
+ * https://github.com/electron/electron/issues/5273
+ */
+let seen_crashed = false, seen_will_quit = false;
+Electron.app.once ('will-quit', e => {
+  seen_will_quit = true;
+  if (seen_will_quit && seen_crashed)
+    Eapp.exit (143);    // will-quit + crashed is caused by SIGHUP or SIGTERM
+  Eapp.exit (130);	// assume SIGINT
 });
