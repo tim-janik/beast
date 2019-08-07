@@ -17,6 +17,7 @@
 #include "bsesoundfontrepo.hh"
 #include "bsesoundfontpreset.hh"
 #include "bsesoundfont.hh"
+#include "bsepart.hh"
 #include "bsecxxplugin.hh"
 #include "bse/internal.hh"
 #include <string.h>
@@ -887,7 +888,8 @@ bse_track_get_last_tick (BseTrack *self)
     {
       BseItem *item = BSE_ITEM (self);
       Bse::SongTiming timing;
-      g_object_get (part, "last-tick", &last_tick, NULL);
+      auto partimpl = part->as<Bse::PartImpl*>();
+      last_tick = partimpl->last_tick();
       if (BSE_IS_SONG (item->parent))
         bse_song_get_timing (BSE_SONG (item->parent), offset, &timing);
       else

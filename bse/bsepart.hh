@@ -269,6 +269,8 @@ protected:
   virtual               ~PartImpl               ();
 public:
   explicit               PartImpl               (BseObject*);
+  virtual int            last_tick              () const override;
+  virtual void           last_tick              (int val) override;
   virtual PartNoteSeq    list_notes_crossing    (int tick, int duration) override;
   virtual PartNoteSeq    list_notes_within      (int channel, int tick, int duration) override;
   virtual PartNoteSeq    list_selected_notes    () override;
