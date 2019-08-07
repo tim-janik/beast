@@ -8,6 +8,7 @@
 #include "bsesnet.hh"
 #include "bsemidireceiver.hh"
 #include "gslcommon.hh"
+#include "bseblockutils.hh"
 #include "bse/internal.hh"
 #include <string.h>
 
@@ -314,15 +315,15 @@ sound_font_osc_process (BseModule *module,
   SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
 
   guint values_remaining = n_values;
-  guint64 now_tick_stamp = bse_module_tick_stamp (module); //Bse::TickStamp::current();
+  guint64 now_tick_stamp = bse_module_tick_stamp (module);
   fluid_synth_t *fluid_synth = flmod->fluid_synth;
-  float *channel_values_left[1];
-  float *channel_values_right[1];
-  float null_fx[BSE_STREAM_MAX_VALUES];
-  float *channel_fx_null[2] = { null_fx, null_fx };
+  float *channel_values[2];
 
-  channel_values_left[0] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
-  channel_values_right[0] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
+  channel_values[0] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_LEFT_OUT);
+  channel_values[1] = BSE_MODULE_OBUFFER (module, BSE_SOUND_FONT_OSC_OCHANNEL_RIGHT_OUT);
+
+  Bse::Block::fill (values_remaining, channel_values[0], 0.0);
+  Bse::Block::fill (values_remaining, channel_values[1], 0.0);
 
   while (values_remaining)
     {
@@ -366,15 +367,16 @@ sound_font_osc_process (BseModule *module,
       else						     /* future event tick stamp: process audio until then */
 	{
 	  gint64 values_todo = MIN (values_remaining, event_tick_stamp - now_tick_stamp);
-	  fluid_synth_nwrite_float (fluid_synth, values_todo,
-				    channel_values_left, channel_values_right,
-				    channel_fx_null, channel_fx_null);
+          fluid_synth_process (fluid_synth, values_todo,
+                               0, nullptr, /* no effects */
+                               2, channel_values);
+
 	  values_remaining -= values_todo;
 	  now_tick_stamp += values_todo;
 
 	  /* increment fluid synth output buffer pointers */
-          channel_values_left[0] += values_todo;
-          channel_values_right[0] += values_todo;
+          channel_values[0] += values_todo;
+          channel_values[1] += values_todo;
 	}
     }
   if (flmod->config.update_preset != flmod->last_update_preset)
