@@ -14,6 +14,10 @@ cache:
     # We use $PIPELINE to carry cache context along job pipelines (workflows)
     # https://docs.travis-ci.com/user/caching/
 
+before_script: |
+  test  "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" -o \
+        -z "$BINTRAY_API_KEY" || echo "$BINTRAY_API_KEY" > .bintray_api_key
+
 # Job pipelines
 jobs:
   include:
@@ -26,10 +30,7 @@ jobs:
       before_install: |
         travis_retry git fetch --unshallow --tags
       script: |
-        misc/cibuild.sh gcc release all appimage check && {
-          echo "$BINTRAY_API_KEY" > .bintray_api_key &&
-          test "$TRAVIS_BRANCH^$TRAVIS_PULL_REQUEST" != "master^false" ||
-          misc/cibuild.sh bintray ; }
+        misc/cibuild.sh gcc release all appimage check bintray
 
     # == 'Linting' Pipeline ==
     # Generate all possible source code linting reports,
@@ -54,7 +55,6 @@ jobs:
         mv ~/cache/$TRAVIS_BUILD_NUMBER/beast ~/ && cd ~/beast/
       script: |
         misc/cibuild.sh clang-tidy &&
-        echo "$BINTRAY_API_KEY" > .bintray_api_key &&
         misc/cibuild.sh listunused listhacks bintray
       before_cache: |
         rm -rf ~/cache/
@@ -76,8 +76,6 @@ jobs:
       env: PIPELINE=asan
       before_install: |
         travis_retry git fetch --unshallow --tags
-      before_script: |
-        echo "$BINTRAY_API_KEY" > .bintray_api_key
       script: |
         misc/ciwitness.sh out/asan/build.log asan all check bintray
 
@@ -88,8 +86,6 @@ jobs:
       env: PIPELINE=ubsan
       before_install: |
         travis_retry git fetch --unshallow --tags
-      before_script: |
-        echo "$BINTRAY_API_KEY" > .bintray_api_key
       script: |
         misc/ciwitness.sh out/ubsan/build.log ubsan all check bintray
 

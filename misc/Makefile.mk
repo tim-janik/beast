@@ -138,24 +138,24 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 .PHONY: appimage
 
 # == bintray ==
-BINTRAY_KEEPS            = 52
-USE_BINTRAY_API_KEY_FILE = $(shell test -z "$$BINTRAY_API_KEY" && echo " -b .bintray_api_key")
+BINTRAY_KEEPS   = 52
+BINTRAY_KEYARGS = --skip -b .bintray_api_key
 bintray:		# upload $>/misc/ contents to bintray
 	@echo '  UPLOAD  ' 'https://bintray.com/beast-team/'
 	@$(eval distversion != ./version.sh -l)
 	@: # upload beast-*-x64.AppImage if it exists
 	$Q test -x "$>/beast-$(distversion)-x64.AppImage" || exit 0 ; \
-		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(distversion) $(USE_BINTRAY_API_KEY_FILE) \
+		misc/bintray.sh beast-team/testing/Beast-AppImage -k $(BINTRAY_KEEPS) -g -v $(distversion) $(BINTRAY_KEYARGS) \
 		  -d $>/beast-$(distversion)-x64.AppImage
 	@: # upload tarballs of existing log directories
 	$Q for d in cppcheck scan-build clang-tidy hacks unused asan ; do \
 		(set -- $>/misc/$$d/*.* ; test -r "$$1") || continue ; \
 		tar cJf $>/misc/$$d-$(distversion).tar.xz -C $>/misc/ $$d/ && \
-		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(distversion) $(USE_BINTRAY_API_KEY_FILE) \
+		misc/bintray.sh beast-team/testing/Reports -k $(BINTRAY_KEEPS) -g -v $(distversion) $(BINTRAY_KEYARGS) \
 		  $>/misc/$$d-$(distversion).tar.xz || exit 1 ; \
 	done
 .PHONY: bintray
-# Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(USE_BINTRAY_API_KEY_FILE)
+# Kill old versions: misc/bintray.sh beast-team/testing/Repository -k 0 $(BINTRAY_KEYARGS)
 
 # == release-news ==
 release-news:
