@@ -185,6 +185,8 @@ bst_file_store_destroy (GtkTreeModel *model)
 struct ProxyStore {
   GxkListWrapper *self = NULL;
   int (*row_from_proxy) (ProxyStore *ps, SfiProxy proxy) = NULL;
+  /* scoped handles for notification */
+  std::map<SfiProxy, Bse::ItemS> item_s_map;
   /* child list specific */
   struct {
     SfiUPool  *ipool = NULL;
@@ -211,8 +213,10 @@ proxy_store_item_listen_on (ProxyStore *ps,
 {
   int row = ps->row_from_proxy (ps, item);
   assert_return (row >= 0, row);
+  Bse::ItemS &item_s = ps->item_s_map[item];
+  item_s = Bse::ItemS::__cast__ (bse_server.from_proxy (item));
+  item_s.on ("notify:seqid", [item,ps] { proxy_store_item_property_notify (item, "seqid", ps); });
   bse_proxy_connect (item,
-                     "signal::property-notify::seqid", proxy_store_item_property_notify, ps,
                      "signal::property-notify::uname", proxy_store_item_property_notify, ps,
                      "signal::property-notify::blurb", proxy_store_item_property_notify, ps,
                      NULL);
@@ -225,6 +229,7 @@ proxy_store_item_unlisten_on (ProxyStore *ps,
                               SfiProxy    item,
                               gint        row)
 {
+  ps->item_s_map.erase (item); // disconnect
   bse_proxy_disconnect (item,
                         "any_signal", proxy_store_item_property_notify, ps,
                         NULL);
