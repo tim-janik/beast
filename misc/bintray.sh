@@ -10,6 +10,7 @@ DNLADD= KEEP= BINTRAY_PATH= DISTFILE= PUBLISH_VERSION=
 BINTRAY_API_KEY_FILE=
 BINTRAY_API_KEY="${BINTRAY_API_KEY:-}"
 BINTRAY_VERSION="${BINTRAY_VERSION:-$(date -I)}"
+REQUIRE_KEY=true
 while test $# -ne 0 ; do
   case "$1" in
     -b)			shift ; BINTRAY_API_KEY_FILE="$1" ;;
@@ -20,6 +21,7 @@ while test $# -ne 0 ; do
     -k)			shift ; KEEP="$1" ;;
     -v)			shift ; BINTRAY_VERSION="$1" ;
 			PUBLISH_VERSION=true ;;
+    --skip)		REQUIRE_KEY=false ;;
     -h)                 echo "Usage: $SCRIPTNAME [-d] [-g] [-v VERSION] [-k N] owner/repo/package [DISTFILE]"
 			echo "Prune old versions if -k is given, create VERSION for owner/repo/package,"
 			echo "upload DISTFILE and publish VERSION at bintray.com."
@@ -28,6 +30,7 @@ while test $# -ne 0 ; do
 			echo "  -g                    publish Git TAG and VERSION"
 			echo "  -h                    help message"
 			echo "  -k <N>                keep the highest N versions and prune the rest"
+			echo "  --skip                exit gracefully if API key is missing"
 			echo "  -v <VERSION>          publish version for owner/repo/package"
 			echo '  $BINTRAY_API_KEY      authentication token for the bintray REST API'
 			echo '  $BINTRAY_TAG          VCS tag (unless -g is given)'
@@ -54,7 +57,11 @@ test -z "$DISTFILE" || echo "  INFO    " "$BINTRAY_USER / $BINTRAY_REPO / $BINTR
 
 # == BINTRAY_API_KEY ==
 test -z "$BINTRAY_API_KEY_FILE" ||
-  BINTRAY_API_KEY="$(cat "$BINTRAY_API_KEY_FILE")"
+  BINTRAY_API_KEY="$(cat "$BINTRAY_API_KEY_FILE" 2>/dev/null || :)"
+$REQUIRE_KEY || test -n "$BINTRAY_API_KEY" || {
+    echo "Skipping Bintray upload due to missing authorization token" >&2
+    exit 0
+  }
 test -n "$BINTRAY_API_KEY" ||
   die "missing Bintray authorization token"
 CURL="curl -f -HAccept:application/json -u$BINTRAY_USER:$BINTRAY_API_KEY"
