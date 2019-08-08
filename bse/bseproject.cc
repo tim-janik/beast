@@ -38,25 +38,11 @@ typedef struct {
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
 
-enum {
-  PARAM_0,
-  PARAM_DIRTY
-};
-
-
 /* --- prototypes --- */
 static void	bse_project_class_init		(BseProjectClass	*klass);
 static void	bse_project_class_finalize	(BseProjectClass	*klass);
 static void	bse_project_init		(BseProject		*project,
 						 gpointer		 rclass);
-static void     bse_project_set_property        (GObject                *object,
-                                                 guint                   param_id,
-                                                 const GValue           *value,
-                                                 GParamSpec             *pspec);
-static void     bse_project_get_property        (GObject                *object,
-                                                 guint                   param_id,
-                                                 GValue                 *value,
-                                                 GParamSpec             *pspec);
 static void	bse_project_finalize		(GObject		*object);
 static void	bse_project_release_children	(BseContainer		*container);
 static void	bse_project_dispose		(GObject		*object);
@@ -109,7 +95,6 @@ static void
 bse_project_class_init (BseProjectClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
@@ -117,8 +102,6 @@ bse_project_class_init (BseProjectClass *klass)
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   quark_storage_trap = g_quark_from_static_string ("bse-project-storage-trap");
 
-  gobject_class->set_property = bse_project_set_property;
-  gobject_class->get_property = bse_project_get_property;
   gobject_class->dispose = bse_project_dispose;
   gobject_class->finalize = bse_project_finalize;
 
@@ -132,11 +115,6 @@ bse_project_class_init (BseProjectClass *klass)
   container_class->check_restore = project_check_restore;
   container_class->retrieve_child = bse_project_retrieve_child;
   container_class->release_children = bse_project_release_children;
-
-  bse_object_class_add_param (object_class, "State",
-                              PARAM_DIRTY,
-                              sfi_pspec_bool ("dirty", NULL, "Whether project needs saving",
-                                              FALSE, "r"));
 }
 
 static void
@@ -149,7 +127,8 @@ undo_notify (BseProject     *project,
              BseUndoStack   *ustack,
              gboolean        step_added)
 {
-  g_object_notify ((GObject*) project, "dirty");
+  auto impl = project->as<Bse::ProjectImpl*>();
+  impl->notify ("dirty");
   if (step_added && !project->in_redo)
     {
       bse_undo_stack_force_dirty (project->undo_stack);
@@ -162,7 +141,8 @@ redo_notify (BseProject     *project,
              BseUndoStack   *ustack,
              gboolean        step_added)
 {
-  g_object_notify ((GObject*) project, "dirty");
+  auto impl = project->as<Bse::ProjectImpl*>();
+  impl->notify ("dirty");
 }
 
 static void
@@ -179,43 +159,6 @@ bse_project_init (BseProject *self,
   self->deactivate_usecs = 3 * 1000000;
   self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
   bse_midi_receiver_enter_farm (self->midi_receiver);
-}
-
-static void
-bse_project_set_property (GObject                *object,
-                          guint                   param_id,
-                          const GValue           *value,
-                          GParamSpec             *pspec)
-{
-  BseProject *self = BSE_PROJECT (object);
-
-  switch (param_id)
-    {
-    case PARAM_DIRTY:
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_project_get_property (GObject                *object,
-                          guint                   param_id,
-                          GValue                 *value,
-                          GParamSpec             *pspec)
-{
-  BseProject *self = BSE_PROJECT (object);
-
-  switch (param_id)
-    {
-    case PARAM_DIRTY:
-      sfi_value_set_bool (value, bse_undo_stack_dirty (self->undo_stack));
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
 }
 
 static void
@@ -276,7 +219,8 @@ bse_project_clear_undo (BseProject *self)
     {
       bse_undo_stack_clear (self->undo_stack);
       bse_undo_stack_clear (self->redo_stack);
-      g_object_notify ((GObject*) self, "dirty");
+      auto impl = self->as<Bse::ProjectImpl*>();
+      impl->notify ("dirty");
     }
 }
 
@@ -286,7 +230,8 @@ bse_project_clean_dirty (BseProject *self)
   assert_return (BSE_IS_PROJECT (self));
   bse_undo_stack_clean_dirty (self->undo_stack);
   bse_undo_stack_clean_dirty (self->redo_stack);
-  g_object_notify ((GObject*) self, "dirty");
+  auto impl = self->as<Bse::ProjectImpl*>();
+  impl->notify ("dirty");
 }
 
 static void
@@ -969,6 +914,20 @@ ProjectImpl::post_init()
 ProjectImpl::~ProjectImpl ()
 {}
 
+bool
+ProjectImpl::dirty() const
+{
+  BseProject *self = const_cast<ProjectImpl*> (this)->as<BseProject*>();
+
+  return bse_undo_stack_dirty (self->undo_stack);
+}
+
+void
+ProjectImpl::dirty (bool val)
+{
+  assert_return_unreached(); // readonly property
+}
+
 void
 ProjectImpl::change_name (const String &name)
 {
@@ -1141,10 +1100,7 @@ ProjectImpl::clean_dirty ()
 bool
 ProjectImpl::is_dirty ()
 {
-  BseProject *self = as<BseProject*>();
-  gboolean dirty = false;
-  g_object_get (self, "dirty", &dirty, NULL);
-  return dirty;
+  return dirty();
 }
 
 void

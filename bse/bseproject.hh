@@ -75,6 +75,8 @@ protected:
   virtual                   ~ProjectImpl         ();
 public:
   explicit                   ProjectImpl         (BseObject*);
+  virtual bool               dirty               () const override;
+  virtual void               dirty               (bool val) override;
   virtual void               change_name         (const String &name) override;
   virtual Error              play                () override;
   virtual Error              activate            () override;

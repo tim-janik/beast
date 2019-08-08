@@ -1182,7 +1182,9 @@ interface Project : Container {
   /// The references to other objects (e.g. samples) can be stored
   /// by reference (self_contained=false) or embedded in the output
   /// file (self_contained=true).
-
+  group "State" {
+    bool dirty = Bool ("Dirty", "Whether project needs saving", "r", false);
+  };
 };
 
 /// Interface for writing PCM wave data.
