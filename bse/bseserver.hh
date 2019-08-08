@@ -20,7 +20,6 @@ struct BseServer : BseContainer {
   gchar		  *wave_file;
   double           wave_seconds;
   guint		   dev_use_count;
-  guint            log_messages : 1;
   guint            pcm_input_checked : 1;
   BsePcmDevice    *pcm_device;
   BseModule       *pcm_imodule;
@@ -83,6 +82,7 @@ namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   int32              tc_ = 0;
+  bool               log_messages_ = true;
 protected:
   virtual            ~ServerImpl            ();
 public:
@@ -90,6 +90,8 @@ public:
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
   explicit                 ServerImpl       (BseObject*);
+  virtual bool             log_messages     () const override;
+  virtual void             log_messages     (bool val) override;
   virtual bool             engine_active    () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   (int64 id) override;
