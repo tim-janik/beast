@@ -163,6 +163,8 @@ public:
   virtual String        get_name_or_type () override;
   virtual bool          internal         () override;
   virtual PropertyCandidates get_property_candidates (const String &property_name) override;
+  virtual int           seqid            () const override;
+  virtual void          seqid            (int val) override;
   /// Save the value of @a property_name onto the undo stack.
   void               push_property_undo  (const String &property_name);
   /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
