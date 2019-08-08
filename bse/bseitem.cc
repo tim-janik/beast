@@ -11,12 +11,6 @@
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 
-enum {
-  PROP_0,
-  PROP_SEQID,
-};
-
-
 /* --- prototypes --- */
 static void             bse_item_class_init_base        (BseItemClass           *klass);
 static void             bse_item_class_finalize_base    (BseItemClass           *klass);
@@ -104,11 +98,6 @@ bse_item_class_init (BseItemClass *klass)
   klass->get_seqid = bse_item_do_get_seqid;
   klass->get_undo = bse_item_default_get_undo;
   klass->needs_storage = bse_item_real_needs_storage;
-
-  bse_object_class_add_param (object_class, NULL,
-                              PROP_SEQID,
-                              sfi_pspec_int ("seqid", "Sequential ID", NULL,
-                                             0, 0, SFI_MAXINT, 1, "r"));
 }
 
 static void
@@ -138,12 +127,8 @@ bse_item_get_property_internal (GObject                *object,
                                 GValue                 *value,
                                 GParamSpec             *pspec)
 {
-  BseItem *self = BSE_ITEM (object);
   switch (param_id)
     {
-    case PROP_SEQID:
-      sfi_value_set_int (value, bse_item_get_seqid (self));
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -468,7 +453,8 @@ idle_handler_seqid_changed (void *data)
   while (item_seqid_changed_queue)
     {
       BseItem *item = (BseItem*) g_slist_pop_head (&item_seqid_changed_queue);
-      g_object_notify (G_OBJECT (item), "seqid");
+      auto impl = item->as<Bse::ItemImpl*>();
+      impl->notify ("seqid");
     }
 
   BSE_THREADS_LEAVE ();
@@ -1270,6 +1256,20 @@ ItemImpl::get_property_candidates (const String &property_name)
   if (bse_item_get_candidates (self, property_name, pc))
     return pc;
   return PropertyCandidates();
+}
+
+int
+ItemImpl::seqid() const
+{
+  BseItem *self = const_cast<ItemImpl*> (this)->as<BseItem*>();
+
+  return bse_item_get_seqid (self);
+}
+
+void
+ItemImpl::seqid (int val)
+{
+  assert_return_unreached(); // readonly property
 }
 
 bool
