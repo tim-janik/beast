@@ -31,7 +31,7 @@ struct _BstPartDialog
   BstEventRollController *ectrl;
   BstPatternView         *pview;
   BstPatternController   *pvctrl;
-  Bse::ProjectH           project;
+  Bse::ProjectS           project;
 };
 struct _BstPartDialogClass
 {

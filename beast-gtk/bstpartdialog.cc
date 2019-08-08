@@ -99,7 +99,7 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  new (&self->project) Bse::ProjectH();
+  new_inplace (self->project);
   GtkRange *srange;
   GtkObject *adjustment;
   GtkAdjustment *adj;
@@ -244,8 +244,7 @@ bst_part_dialog_finalize (GObject *object)
   bst_event_roll_controller_unref (self->ectrl);
 
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
-  using namespace Bse;
-  self->project.~ProjectH();
+  delete_inplace (self->project);
 }
 
 void
@@ -254,12 +253,7 @@ bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
   assert_return (BST_IS_PART_DIALOG (self));
 
   if (self->project)
-    {
-      bse_proxy_disconnect (self->project.proxy_id(),
-                            "any_signal", gxk_widget_update_actions_downwards, self,
-                            NULL);
-      self->project = Bse::ProjectH();
-    }
+    self->project = nullptr; // disconnect
 
   Bse::ProjectH project = part ? part.get_project() : Bse::ProjectH();
   if (project)
@@ -272,9 +266,7 @@ bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
       if (self->eroll)
         bst_event_roll_set_part (self->eroll, part);
       self->project = project;
-      bse_proxy_connect (self->project.proxy_id(),
-                         "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
-                         NULL);
+      self->project.on ("notify:dirty", [self] () { gxk_widget_update_actions_downwards (self); });
     }
 
   gxk_widget_update_actions_downwards (self);
