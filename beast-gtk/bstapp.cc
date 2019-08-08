@@ -174,6 +174,13 @@ bst_app_unregister (BstApp *app)
 {
   bst_app_class->apps = g_slist_remove (bst_app_class->apps, app);
 }
+static GxkParam*
+param_server_wave_file()
+{
+  const Bse::StringSeq kvlist = bse_server.find_prop ("wave_file");
+  GParamSpec *cxxpspec = Bse::pspec_from_key_value_list ("wave_file", kvlist);
+  return bst_param_new_property (cxxpspec, bse_server);
+}
 static void
 bst_app_init (BstApp *self)
 {
@@ -244,7 +251,7 @@ bst_app_init (BstApp *self)
 
   /* setup WAVE file entry */
   // gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
-  self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
+  self->wave_file = param_server_wave_file();
   if (0) // FIXME
     gxk_radget_add (self->box, "export-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
   else
