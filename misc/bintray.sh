@@ -59,7 +59,7 @@ test -z "$DISTFILE" || echo "  INFO    " "$BINTRAY_USER / $BINTRAY_REPO / $BINTR
 test -z "$BINTRAY_API_KEY_FILE" ||
   BINTRAY_API_KEY="$(cat "$BINTRAY_API_KEY_FILE" 2>/dev/null || :)"
 $REQUIRE_KEY || test -n "$BINTRAY_API_KEY" || {
-    echo "Skipping Bintray upload due to missing authorization token" >&2
+    echo "$SCRIPTNAME: Skipping Bintray upload due to missing authorization token" >&2
     exit 0
   }
 test -n "$BINTRAY_API_KEY" ||
