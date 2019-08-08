@@ -92,6 +92,8 @@ public:
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;
+  virtual String           wave_file        () const override;
+  virtual void             wave_file        (const String& val) override;
   virtual bool             engine_active    () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   (int64 id) override;

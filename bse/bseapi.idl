@@ -1284,6 +1284,9 @@ interface Server : Container {
   group "Misc" {
     bool   log_messages = Bool ("Log Messages", "Log messages through the log system", GUI, true);
   };
+  group "PCM Recording" {
+    String wave_file    = String (_("WAVE File"), _("Name of the WAVE file used for recording BSE sound output"), GUI ":filename");
+  };
   /// Describe a note, providing information about its octave, semitone, frequency, etc.
   NoteDescription note_describe (MusicalTuning musical_tuning, int32 note, int32 fine_tune);
   // Describe a note, given its frequency.
