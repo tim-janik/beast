@@ -84,7 +84,6 @@ struct BseSource : BseItem {
   BseSourceInput       *inputs;	/* [n_ichannels] */
   GSList	       *outputs;
   GBSearchArray        *contexts; /* bsearch array of type BseSourceContext */
-  SfiReal		pos_x, pos_y;
   BseSourceProbes      *probes;
   void           set_flag    (BseSourceFlags f)   { change_flags (uint16_t (f), true); }
   void           unset_flag  (BseSourceFlags f)   { change_flags (uint16_t (f), false); }
@@ -285,9 +284,15 @@ class SourceImpl : public ItemImpl, public virtual SourceIface {
   friend void ::bse_source_prepare             (BseSource*);
   friend class SignalMonitorImpl;
 protected:
+  double               pos_x_ = 0;
+  double               pos_y_ = 0;
   virtual             ~SourceImpl              ();
 public:
   explicit             SourceImpl              (BseObject*);
+  void                 pos_x                   (double x) override;
+  double               pos_x                   () const override;
+  void                 pos_y                   (double y) override;
+  double               pos_y                   () const override;
   bool                 prepared                () const;
   virtual SourceIfaceP ichannel_get_osource    (int input_channel, int input_joint) override;
   virtual void         clear_inputs            () override;

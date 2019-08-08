@@ -16,8 +16,6 @@
 /* --- typedefs & enums --- */
 enum {
   PROP_0,
-  PROP_POS_X,
-  PROP_POS_Y,
 };
 typedef struct
 {
@@ -61,8 +59,6 @@ bse_source_init (BseSource      *source,
   source->inputs = g_new0 (BseSourceInput, BSE_SOURCE_N_ICHANNELS (source));
   source->outputs = NULL;
   source->contexts = NULL;
-  source->pos_x = 0;
-  source->pos_y = 0;
   source->probes = NULL;
 }
 
@@ -84,15 +80,8 @@ bse_source_set_property (GObject      *object,
 			 const GValue *value,
 			 GParamSpec   *pspec)
 {
-  BseSource *source = BSE_SOURCE (object);
   switch (param_id)
     {
-    case PROP_POS_X:
-      source->pos_x = sfi_value_get_real (value);
-      break;
-    case PROP_POS_Y:
-      source->pos_y = sfi_value_get_real (value);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -105,15 +94,8 @@ bse_source_get_property (GObject    *object,
 			 GValue     *value,
 			 GParamSpec *pspec)
 {
-  BseSource *source = BSE_SOURCE (object);
   switch (param_id)
     {
-    case PROP_POS_X:
-      sfi_value_set_real (value, source->pos_x);
-      break;
-    case PROP_POS_Y:
-      sfi_value_set_real (value, source->pos_y);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -2037,17 +2019,6 @@ bse_source_class_init (BseSourceClass *klass)
   klass->add_input = bse_source_real_add_input;
   klass->remove_input = bse_source_real_remove_input;
 
-  bse_object_class_add_param (object_class, "Position",
-			      PROP_POS_X,
-			      sfi_pspec_real ("pos_x", "Position X", NULL,
-					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default:f:"));
-  bse_object_class_add_param (object_class, "Position",
-			      PROP_POS_Y,
-			      sfi_pspec_real ("pos_y", "Position Y", NULL,
-					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default:f:"));
-
   signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
 }
 
@@ -2085,6 +2056,30 @@ SourceImpl::SourceImpl (BseObject *bobj) :
 SourceImpl::~SourceImpl ()
 {
   cmon_delete();        // delete cmons_ and cmon_block_
+}
+
+double
+SourceImpl::pos_x() const
+{
+  return pos_x_;
+}
+
+void
+SourceImpl::pos_x (double x)
+{
+  APPLY_IDL_PROPERTY (pos_x_, x);
+}
+
+double
+SourceImpl::pos_y() const
+{
+  return pos_y_;
+}
+
+void
+SourceImpl::pos_y (double y)
+{
+  APPLY_IDL_PROPERTY (pos_y_, y);
 }
 
 bool
@@ -2350,16 +2345,15 @@ void
 SourceImpl::set_pos (double x_pos, double y_pos)
 {
   BseSource *self = as<BseSource*>();
+  auto impl = self->as<Bse::SourceImpl*>();
   const double epsilon = 1e-5;
 
-  if (fabs (x_pos - self->pos_x) > epsilon ||
-      fabs (y_pos - self->pos_y) > epsilon)
+  if (fabs (x_pos - impl->pos_x()) > epsilon ||
+      fabs (y_pos - impl->pos_y()) > epsilon)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "set-xy-pos");
-      bse_item_set (self,
-                    "pos_x", x_pos,
-                    "pos_y", y_pos,
-                    NULL);
+      impl->pos_x (x_pos);
+      impl->pos_y (y_pos);
       bse_item_undo_close (ustack);
     }
 }
