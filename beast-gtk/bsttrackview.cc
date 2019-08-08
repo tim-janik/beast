@@ -83,6 +83,7 @@ bst_track_view_finalize (GObject *object)
   G_OBJECT_CLASS (bst_track_view_parent_class)->finalize (object);
 
   delete_inplace (self->song);
+  delete_inplace (self->track_map);
 }
 
 GtkWidget*
@@ -118,10 +119,9 @@ track_view_fill_value (BstItemView *iview,
   Bse::ItemH item = container.get_item (BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
   if (!item)
     return; // item is probably already destructed
+  Bse::TrackH track = Bse::TrackH::__cast__ (item);
   switch (column)
     {
-      gboolean vbool;
-      SfiInt vint;
       SfiProxy snet, wave, sound_font_preset;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
@@ -130,12 +130,10 @@ track_view_fill_value (BstItemView *iview,
       g_value_set_string (value, item.get_name().c_str());
       break;
     case COL_MUTE:
-      bse_proxy_get (item.proxy_id(), "muted", &vbool, NULL);
-      g_value_set_boolean (value, !vbool);
+      g_value_set_boolean (value, !track.muted());
       break;
     case COL_VOICES:
-      bse_proxy_get (item.proxy_id(), "n_voices", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", track.n_voices()));
       break;
     case COL_SYNTH:
       snet = 0;
@@ -165,8 +163,7 @@ track_view_fill_value (BstItemView *iview,
       }
       break;
     case COL_MIDI_CHANNEL:
-      bse_proxy_get (item.proxy_id(), "midi-channel", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", track.midi_channel()));
       break;
     case COL_OUTPUTS:
       {
@@ -436,11 +433,9 @@ track_view_mute_toggled (BstTrackView          *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
-	  gboolean muted;
-	  bse_proxy_get (item, "muted", &muted, NULL);
-	  bse_proxy_set (item, "muted", !muted, NULL);
-	  bse_proxy_get (item, "muted", &muted, NULL);
-	  gtk_cell_renderer_toggle_set_active (tcell, !muted);
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
+	  track.muted (!track.muted());
+	  gtk_cell_renderer_toggle_set_active (tcell, !track.muted());
 	}
     }
 }
@@ -458,9 +453,10 @@ track_view_voice_edited (BstTrackView *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
 	  int i = strtol (text, NULL, 10);
 	  if (i > 0)
-	    bse_proxy_set (item, "n_voices", i, NULL);
+            track.n_voices (i);
 	}
     }
 }
@@ -478,9 +474,10 @@ track_view_midi_channel_edited (BstTrackView *self,
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
       if (item)
 	{
+	  Bse::TrackH track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
 	  int i = strtol (text, NULL, 10);
 	  if (i >= 0)
-	    bse_proxy_set (item, "midi-channel", i, NULL);
+	    track.midi_channel (i);
 	}
     }
 }
@@ -530,6 +527,7 @@ static void
 bst_track_view_init (BstTrackView *self)
 {
   new_inplace (self->song);
+  new_inplace (self->track_map);
 
   BstItemView *iview = BST_ITEM_VIEW (self);
   GtkWidget *treehs, *trackgb, *vscroll;
@@ -730,16 +728,21 @@ track_view_listen_on (BstItemView *iview,
 		      SfiProxy     item)
 {
   BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->listen_on (iview, item);
+
+  BstTrackView *self = BST_TRACK_VIEW (iview);
+  Bse::TrackS &track = self->track_map[item];
+  track = Bse::TrackH::__cast__ (bse_server.from_proxy (item));
+  track.on ("notify:muted",        [item,iview] { track_property_changed (item, "muted", iview); });
+  track.on ("notify:n_voices",     [item,iview] { track_property_changed (item, "n_voices", iview); });
+  track.on ("notify:midi_channel", [item,iview] { track_property_changed (item, "midi_channel", iview); });
+
   bse_proxy_connect (item,
 		     "signal::changed", track_changed, iview,
 		     NULL);
   bse_proxy_connect (item,
                      /* COL_SEQID handled by GxkListWrapper */
                      /* COL_NAME handled by GxkListWrapper */
-                     "signal::property-notify::muted", track_property_changed, iview, /* COL_MUTE */
-                     "signal::property-notify::n-voices", track_property_changed, iview, /* COL_VOICES */
                      "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
-                     "signal::property-notify::midi-channel", track_property_changed, iview, /* COL_MIDI_CHANNEL */
                      "signal::property-notify::outputs", track_property_changed, iview, /* COL_OUTPUTS */
                      "signal::property-notify::pnet", track_property_changed, iview, /* COL_POST_SYNTH */
                      /* COL_BLURB handled by GxkListWrapper */
@@ -750,6 +753,8 @@ static void
 track_view_unlisten_on (BstItemView *iview,
 			SfiProxy     item)
 {
+  BstTrackView *self = BST_TRACK_VIEW (iview);
+  self->track_map.erase (item);
   bse_proxy_disconnect (item,
 			"any_signal", track_changed, iview,
 			"any_signal", track_property_changed, iview,
