@@ -57,9 +57,6 @@ app/generated 		::= $(strip	\
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
 NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
 
-# == subdirs ==
-include ebeast/v8bse/Makefile.mk
-
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
@@ -95,9 +92,8 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules $>/ebeast/v8bse/v8bse.node
+$>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules
 	$(QECHO) MAKE $@
-	$Q $(CP) -L $>/ebeast/v8bse/v8bse.node $>/app/assets/
 	$Q rm -f -r $>/electron/ \
 	  && $(CP) -a $>/ebeast/node_modules/electron/dist/ $>/electron/ \
 	  && rm -fr $>/electron/resources/default_app.asar \
