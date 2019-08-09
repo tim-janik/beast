@@ -697,7 +697,8 @@ interface Item : Object {
   bool    internal          (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
   bool    editable_property (String property); ///< Test whether a property is editable according to object state and property options.
   PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
-  // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
+
+  int32   seqid = Range ("Sequential ID", "", "r", 0, MAXINT31, 1, 0);
 };
 
 /// Part specific note event representation.
