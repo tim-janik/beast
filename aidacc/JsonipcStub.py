@@ -99,6 +99,8 @@ class Generator:
         # s += '  %s.set_const ("%s", %s);\n' % (v8ppenum (tp), ident, identifier_name ('::', tp, ident))
         s += '    .set (%s, "%s") // %s\n' % (identifier_name ('::', tp, evident), evident, enumstring (get_cxxclass (tp) + '-' + evident))
       s += '  ;\n'
+    if jip_class_types:
+      s += '  Jsonipc::Class<Aida::ImplicitBase> jsonipc__Aida_ImplicitBase ("AidaImplicitBase");\n'
     for tp in jip_class_types:
       b = ''
       # Records
@@ -118,6 +120,8 @@ class Generator:
         # inherit
         for tb in bases (tp):
           b += '    .inherit<%s> ("%sIface")\n' % (get_cxxiface (tb), get_jsclass (tb))
+        if not tp.prerequisites: # no bases
+          b += '    .inherit<Aida::ImplicitBase> ("AidaImplicitBase")\n'
         # properties
         for fname, ftp in tp.fields:
           b += '    .set ("%s", ' % fname
