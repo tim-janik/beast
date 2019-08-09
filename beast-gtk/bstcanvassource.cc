@@ -110,11 +110,8 @@ idle_move_item (gpointer data)
   GDK_THREADS_ENTER ();
   if (self->source && item->canvas)
     {
-      SfiReal x, y;
-      bse_proxy_get (self->source.proxy_id(),
-                     "pos-x", &x,
-                     "pos-y", &y,
-                     NULL);
+      SfiReal x = self->source.pos_x();
+      SfiReal y = self->source.pos_y();;
       x *= BST_CANVAS_SOURCE_PIXEL_SCALE;
       y *= -BST_CANVAS_SOURCE_PIXEL_SCALE;
       gnome_canvas_item_w2i (item, &x, &y);
@@ -235,11 +232,11 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   if (csource->source)
     csource->source.use();
   csource->source.on ("notify:uname", [csource] () { source_name_changed (csource); });
+  csource->source.on ("notify:pos_x", [csource] () { source_pos_changed (csource); });
+  csource->source.on ("notify:pos_y", [csource] () { source_pos_changed (csource); });
   bse_proxy_connect (csource->source.proxy_id(),
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
-		     "swapped_signal::property-notify::pos-x", source_pos_changed, csource,
-		     "swapped_signal::property-notify::pos-y", source_pos_changed, csource,
 		     "swapped_signal::icon-changed", source_icon_changed, csource,
 		     NULL);
 

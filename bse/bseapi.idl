@@ -844,8 +844,10 @@ interface Source : Item {
   Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
   Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
   // signal void io_changed ();
-  // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
-  // float64 pos_y = Range ("Position Y", "", STANDARD ":scale");
+  group "Position" {
+    float64 pos_x = Range ("Position X", "", STORAGE ":skip-default:f:", -MAXFLOAT64, MAXFLOAT64, 10, 0);
+    float64 pos_y = Range ("Position Y", "", STORAGE ":skip-default:f:", -MAXFLOAT64, MAXFLOAT64, 10, 0);
+  };
   /** Set the x and y position of a module.
    * In contrast to setting the position through ordinary object property
    * setters, this function will not update the module position if the passed
