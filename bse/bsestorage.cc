@@ -723,6 +723,8 @@ scanner_parse_paren_rest (GScanner *scanner, std::string *result)
    */
   if (result && expected_token == G_TOKEN_NONE)
     {
+      // capturing GScanner's input only works for unbuffered memory-reads
+      assert_return (scanner->input_fd < 0, G_TOKEN_ERROR); // assert non-file IO
       assert_return (text1 > text0 && text1[-1] == ')', G_TOKEN_ERROR);
       *result = Bse::string_strip (String (text0, text1 - text0 - 1));
     }
