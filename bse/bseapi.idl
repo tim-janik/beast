@@ -1134,7 +1134,24 @@ interface MidiNotifier : Item {
 };
 
 /// Interface for MIDI synthesis networks.
+Const MAX_MIDI_CHANNEL = 99;
+Const MIN_VOLUME_DB    = -144;
+Const MAX_VOLUME_DB    = 24;
+
 interface MidiSynth : SNet {
+  group _("MIDI Instrument") {
+    int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this midi synthesizer"),
+                                STANDARD ":scale:skip-default:unprepared",
+                                1, MAX_MIDI_CHANNEL, 1, 1);
+    int32 n_voices     = Range (_("Max Voices"), _("Maximum number of voices for simultaneous playback"),
+                                STANDARD ":scale",
+                                1, 256, 1, 16);
+  };
+  group _("Adjustments") {
+    float64 volume_f    = Range (_("Master [float]"), "", STORAGE, 0, 15.8489319246111 /* +24dB */, 0.1, 1.0);
+    float64 volume_dB   = Range (_("Master [dB]"), "", GUI ":dial", MIN_VOLUME_DB, MAX_VOLUME_DB, 0.1, 0);
+    int32   volume_perc = Range (_("Master [%]"), "", GUI ":dial", 0, 1584 /* +24dB */, 1, 100);
+  };
 };
 
 /// Enumeration describing the current activation and playback state of a project.

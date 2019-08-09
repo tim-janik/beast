@@ -18,13 +18,8 @@
 enum
 {
   PROP_0,
-  PROP_MIDI_CHANNEL,
-  PROP_N_VOICES,
   PROP_SNET,
   PROP_PNET,
-  PROP_VOLUME_f,
-  PROP_VOLUME_dB,
-  PROP_VOLUME_PERC,
 };
 
 /* --- prototypes --- */
@@ -42,7 +37,7 @@ static void         bse_midi_synth_get_property        (GObject           *msynt
 static void         bse_midi_synth_context_create      (BseSource         *source,
                                                         guint              context_handle,
                                                         BseTrans          *trans);
-static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
+static void         bse_midi_synth_update_midi_channel (BseMidiSynth      *self);
 
 
 /* --- variables --- */
@@ -85,11 +80,10 @@ bse_midi_synth_init (BseMidiSynth *self)
   self->set_flag (BSE_SUPER_FLAG_NEEDS_CONTEXT);
   self->midi_channel_id = 1;
   self->n_voices = 16;
-  self->volume_factor = bse_db_to_factor (0);
 }
 
 static void
-bse_misi_synth_update_midi_channel (BseMidiSynth      *self)
+bse_midi_synth_update_midi_channel (BseMidiSynth      *self)
 {
   if (self->voice_switch)
     {
@@ -209,41 +203,6 @@ bse_midi_synth_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_MIDI_CHANNEL:
-      if (!BSE_SOURCE_PREPARED (self))	/* midi channel is locked while prepared */
-        {
-          self->midi_channel_id = sfi_value_get_int (value);
-          bse_misi_synth_update_midi_channel (self);
-        }
-      break;
-    case PROP_N_VOICES:
-      if (!BSE_OBJECT_IS_LOCKED (self))
-	self->n_voices = sfi_value_get_int (value);
-      break;
-    case PROP_VOLUME_f:
-      self->volume_factor = sfi_value_get_real (value);
-      g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
-                    NULL);
-      g_object_notify ((GObject*) self, "volume_dB");
-      g_object_notify ((GObject*) self, "volume_perc");
-      break;
-    case PROP_VOLUME_dB:
-      self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
-      g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
-                    NULL);
-      g_object_notify ((GObject*) self, "volume_f");
-      g_object_notify ((GObject*) self, "volume_perc");
-      break;
-    case PROP_VOLUME_PERC:
-      self->volume_factor = sfi_value_get_int (value) / 100.0;
-      g_object_set (self->output, /* no undo */
-                    "master_volume_f", self->volume_factor,
-                    NULL);
-      g_object_notify ((GObject*) self, "volume_f");
-      g_object_notify ((GObject*) self, "volume_dB");
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -264,21 +223,6 @@ bse_midi_synth_get_property (GObject    *object,
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
-      break;
-    case PROP_MIDI_CHANNEL:
-      sfi_value_set_int (value, self->midi_channel_id);
-      break;
-    case PROP_N_VOICES:
-      sfi_value_set_int (value, self->n_voices);
-      break;
-    case PROP_VOLUME_f:
-      sfi_value_set_real (value, self->volume_factor);
-      break;
-    case PROP_VOLUME_dB:
-      sfi_value_set_real (value, bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
-      break;
-    case PROP_VOLUME_PERC:
-      sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -344,16 +288,6 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
   source_class->context_dismiss = bse_midi_synth_context_dismiss;
 
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
-			      PROP_MIDI_CHANNEL,
-			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,
-					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
-			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
-					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as MIDI instrument"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
@@ -362,25 +296,6 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH,
                                                      SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_f,
-			      sfi_pspec_real ("volume_f", _("Master [float]"), NULL,
-					      bse_db_to_factor (0),
-					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
-					      SFI_PARAM_STORAGE));
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_dB,
-			      sfi_pspec_real ("volume_dB", _("Master [dB]"), NULL,
-					      0,
-					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      0.1,
-					      SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_PERC,
-			      sfi_pspec_int ("volume_perc", _("Master [%]"), NULL,
-					     bse_db_to_factor (0) * 100,
-					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI ":dial"));
 }
 
 namespace Bse {
@@ -463,10 +378,117 @@ MidiSynthImpl::post_init()
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
                              self->sub_synth, 3);
 
-  bse_misi_synth_update_midi_channel (self);
+  bse_midi_synth_update_midi_channel (self);
 }
 
 MidiSynthImpl::~MidiSynthImpl ()
 {}
 
-} // Bse
+void
+MidiSynthImpl::midi_channel (int channel)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = midi_channel();
+  if (APPLY_IDL_PROPERTY (value, channel) && !BSE_SOURCE_PREPARED (self))
+    {
+      self->midi_channel_id = value;
+      bse_midi_synth_update_midi_channel (self);
+    }
+}
+
+int
+MidiSynthImpl::midi_channel() const
+{
+  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
+
+  return self->midi_channel_id;
+}
+
+void
+MidiSynthImpl::n_voices (int voices)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = self->n_voices;
+  if (APPLY_IDL_PROPERTY (value, voices) && !BSE_OBJECT_IS_LOCKED (self))
+    self->n_voices = value;
+}
+
+int
+MidiSynthImpl::n_voices() const
+{
+  BseMidiSynth *self = const_cast<MidiSynthImpl*> (this)->as<BseMidiSynth*>();
+
+  return self->n_voices;
+}
+
+void
+MidiSynthImpl::volume_f (double val)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  if (APPLY_IDL_PROPERTY (volume_factor_, val))
+    {
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", volume_factor_,
+                    NULL);
+      notify ("volume_dB");
+      notify ("volume_perc");
+    }
+}
+
+double
+MidiSynthImpl::volume_f() const
+{
+  return volume_factor_;
+}
+
+void
+MidiSynthImpl::volume_dB (double volume)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  double value = volume_dB();
+  if (APPLY_IDL_PROPERTY (value, volume))
+    {
+      volume_factor_ = bse_db_to_factor (value);
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", volume_factor_,
+                    NULL);
+      notify ("volume_f");
+      notify ("volume_perc");
+    }
+}
+
+double
+MidiSynthImpl::volume_dB() const
+{
+  return bse_db_from_factor (volume_factor_, BSE_MIN_VOLUME_dB);
+}
+
+
+void
+MidiSynthImpl::volume_perc (int volume)
+{
+  BseMidiSynth *self = as<BseMidiSynth*>();
+
+  int value = volume_perc();
+  if (APPLY_IDL_PROPERTY (value, volume))
+    {
+      volume_factor_ = value / 100.0;
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", volume_factor_,
+                    NULL);
+      notify ("volume_f");
+      notify ("volume_dB");
+    }
+}
+
+int
+MidiSynthImpl::volume_perc() const
+{
+  return volume_factor_ * 100.0 + 0.5;
+}
+
+}
