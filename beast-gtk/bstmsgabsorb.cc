@@ -301,21 +301,17 @@ bst_msg_absorb_config_parse (const gchar *file_name)
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   gchar *absname = sfi_path_get_filename (file_name, NULL);
-  gint fd = open (absname, O_RDONLY, 0);
-  if (fd < 0)
+  SfiRStore *rstore = sfi_rstore_new_open (absname);
+  if (!rstore)
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
               Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
     }
-
-  SfiRStore *rstore = sfi_rstore_new ();
-  sfi_rstore_input_fd (rstore, fd, absname);
   Bse::Error error = Bse::Error::NONE;
   if (sfi_rstore_parse_all (rstore, NULL, msg_absorb_config_try_statement, absname) > 0)
     error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
-  close (fd);
   g_free (absname);
   return error;
 }

@@ -237,7 +237,7 @@ public:
       return false;
     T rvalue = cvalue;
     const StringVector kvlist = find_prop (propname);
-    if (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
+    if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value)
       {
         if (!constrain_idl_property (rvalue, kvlist))
           return false;
