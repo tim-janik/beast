@@ -24,14 +24,6 @@
 
 using namespace Bse;
 
-/* --- parameters --- */
-enum
-{
-  PROP_0,
-  PROP_WAVE_FILE,
-  PROP_LOG_MESSAGES
-};
-
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
@@ -110,15 +102,6 @@ bse_server_class_init (BseServerClass *klass)
   container_class->forall_items = bse_server_forall_items;
   container_class->release_children = bse_server_release_children;
 
-  bse_object_class_add_param (object_class, "PCM Recording",
-			      PROP_WAVE_FILE,
-			      sfi_pspec_string ("wave_file", _("WAVE File"),
-                                                _("Name of the WAVE file used for recording BSE sound output"),
-						NULL, SFI_PARAM_GUI ":filename"));
-  bse_object_class_add_param (object_class, "Misc",
-			      PROP_LOG_MESSAGES,
-			      sfi_pspec_bool ("log-messages", "Log Messages", "Log messages through the log system", TRUE, SFI_PARAM_GUI));
-
   signal_registration = bse_object_class_add_signal (object_class, "registration",
 						     G_TYPE_NONE, 3,
 						     BSE_TYPE_REGISTRATION_TYPE,
@@ -135,7 +118,6 @@ bse_server_init (BseServer *self)
   self->engine_source = NULL;
   self->projects = NULL;
   self->dev_use_count = 0;
-  self->log_messages = TRUE;
   self->pcm_device = NULL;
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
@@ -171,12 +153,6 @@ bse_server_set_property (GObject      *object,
   BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
-    case PROP_WAVE_FILE:
-      bse_server_start_recording (self, g_value_get_string (value), 0);
-      break;
-    case PROP_LOG_MESSAGES:
-      self->log_messages = sfi_value_get_bool (value);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -192,12 +168,6 @@ bse_server_get_property (GObject    *object,
   BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
-    case PROP_WAVE_FILE:
-      g_value_set_string (value, self->wave_file);
-      break;
-    case PROP_LOG_MESSAGES:
-      sfi_value_set_bool (value, self->log_messages);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -319,7 +289,8 @@ bse_server_stop_recording (BseServer *self)
   self->wave_seconds = 0;
   g_free (self->wave_file);
   self->wave_file = NULL;
-  g_object_notify ((GObject*) self, "wave-file");
+  auto impl = self->as<Bse::ServerImpl*>();
+  impl->notify ("wave_file");
 }
 
 void
@@ -334,7 +305,8 @@ bse_server_start_recording (BseServer      *self,
       g_free (self->wave_file);
       self->wave_file = NULL;
     }
-  g_object_notify ((GObject*) self, "wave-file");
+  auto impl = self->as<Bse::ServerImpl*>();
+  impl->notify ("wave_file");
 }
 
 void
@@ -947,6 +919,34 @@ ServerImpl::ServerImpl (BseObject *bobj) :
 
 ServerImpl::~ServerImpl ()
 {}
+
+bool
+ServerImpl::log_messages() const
+{
+  return log_messages_;
+}
+
+void
+ServerImpl::log_messages (bool val)
+{
+  APPLY_IDL_PROPERTY (log_messages_, val);
+}
+
+String
+ServerImpl::wave_file() const
+{
+  BseServer *self = const_cast<ServerImpl*> (this)->as<BseServer*>();
+
+  return self->wave_file ? self->wave_file : "";
+}
+
+void
+ServerImpl::wave_file (const String& filename)
+{
+  BseServer *self = as<BseServer*>();
+
+  bse_server_start_recording (self, filename.c_str(), 0);
+}
 
 void
 ServerImpl::enginechange (bool active)
