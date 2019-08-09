@@ -137,13 +137,22 @@ struct ConvertAny {
   static void
   instance_from_json_object (Aida::Any &any, const Jsonipc::JsonValue &v)
   {
-    // FIXME: Aida::INSTANCE from_json
+    Aida::ImplicitBaseP basep = Jsonipc::Convert<Aida::ImplicitBaseP>::from_json (v);
+    if (!basep)
+      return;
+    // FIXME: remove special casing of base object types once RemoteHandle is gone
+    Bse::ObjectIfaceP objectp = std::dynamic_pointer_cast<Bse::ObjectIface> (basep);
+    if (objectp)
+      any.set (objectp);
+    Bse::SignalMonitorIfaceP signalmonitorp = std::dynamic_pointer_cast<Bse::SignalMonitorIface> (basep);
+    if (signalmonitorp)
+      any.set (signalmonitorp);
   }
   static Jsonipc::JsonValue
   instance_to_json_object (const Aida::Any &any, Jsonipc::JsonAllocator &allocator)
   {
-    // FIXME: Aida::INSTANCE to_json
-    return Jsonipc::JsonValue();
+    Aida::ImplicitBaseP basep = any.get<Aida::ImplicitBaseP> ();
+    return Jsonipc::Convert<Aida::ImplicitBaseP>::to_json (basep, allocator);
   }
 };
 
