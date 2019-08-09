@@ -216,22 +216,16 @@ rc_file_try_statement (gpointer   context_data,
 Bse::Error
 bst_rc_parse (const gchar *file_name)
 {
-  SfiRStore *rstore;
   Bse::Error error = Bse::Error::NONE;
-  gint fd;
 
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
-  fd = open (file_name, O_RDONLY, 0);
-  if (fd < 0)
+  SfiRStore *rstore = sfi_rstore_new_open (file_name);
+  if (!rstore)
     return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
 	    Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
-
-  rstore = sfi_rstore_new ();
-  sfi_rstore_input_fd (rstore, fd, file_name);
   if (sfi_rstore_parse_all (rstore, NULL, rc_file_try_statement, NULL) > 0)
     error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
-  close (fd);
   return error;
 }
