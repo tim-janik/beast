@@ -282,9 +282,6 @@ bst_app_destroy (GtkObject *object)
       if (self->pcontrols)
         bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), Bse::ProjectH());
       self->project.deactivate();
-      bse_proxy_disconnect (self->project.proxy_id(),
-                            "any_signal", gxk_widget_update_actions, self,
-                            NULL);
       bse_server.destroy_project (self->project);
       self->project = Bse::ProjectH(); // NULL
     }
@@ -310,9 +307,6 @@ bst_app_finalize (GObject *object)
 
   if (self->project)
     {
-      bse_proxy_disconnect (self->project.proxy_id(),
-                            "any_signal", gxk_widget_update_actions, self,
-                            NULL);
       self->project = NULL;
     }
   if (self->ppages)
@@ -338,10 +332,8 @@ bst_app_new (Bse::ProjectH project)
   self->project = project;
   self->project.on ("treechange", [self] () { bst_app_reload_pages (self); });
   self->project.on ("statechanged", [self] () { gxk_widget_update_actions (self); });
+  self->project.on ("notify:dirty", [self] () { gxk_widget_update_actions (self); });
 
-  bse_proxy_connect (self->project.proxy_id(),
-                     "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
-                     NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project.proxy_id(), "%s");
   if (self->pcontrols)
     bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), self->project);
