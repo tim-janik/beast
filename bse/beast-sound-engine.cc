@@ -457,7 +457,7 @@ class EventHub {
           d.AddMember ("method", "Bse/EventHub/event", a);
           Jsonipc::JsonValue jarray (rapidjson::kArrayType);
           jarray.PushBack (Jsonipc::to_json<ssize_t> (handler_id, a).Move(), a);
-          jarray.PushBack (Jsonipc::to_json (event["type"].get<std::string>(), a).Move(), a); // FIXME: event binding
+          jarray.PushBack (ConvertAny::record_to_json_object (event.fields(), a).Move(), a);
           d.AddMember ("params", jarray, a); // move-semantics!
           rapidjson::StringBuffer buffer;
           rapidjson::Writer<rapidjson::StringBuffer> writer (buffer);
