@@ -16,14 +16,6 @@ static void             bse_item_class_init_base        (BseItemClass           
 static void             bse_item_class_finalize_base    (BseItemClass           *klass);
 static void             bse_item_class_init             (BseItemClass           *klass);
 static void             bse_item_init                   (BseItem                *item);
-static void             bse_item_set_property_internal  (GObject                *object,
-                                                         uint                    param_id,
-                                                         const GValue           *value,
-                                                         GParamSpec             *pspec);
-static void             bse_item_get_property_internal  (GObject                *object,
-                                                         uint                    param_id,
-                                                         GValue                 *value,
-                                                         GParamSpec             *pspec);
 static void             bse_item_update_state           (BseItem                *self);
 static gboolean         bse_item_real_needs_storage     (BseItem                *self,
                                                          BseStorage             *storage);
@@ -87,8 +79,6 @@ bse_item_class_init (BseItemClass *klass)
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
-  gobject_class->get_property = bse_item_get_property_internal;
-  gobject_class->set_property = bse_item_set_property_internal;
   gobject_class->dispose = bse_item_do_dispose;
   gobject_class->finalize = bse_item_do_finalize;
 
@@ -104,35 +94,6 @@ static void
 bse_item_init (BseItem *item)
 {
   item->parent = NULL;
-}
-
-static void
-bse_item_set_property_internal (GObject                *object,
-                                uint                    param_id,
-                                const GValue           *value,
-                                GParamSpec             *pspec)
-{
-  // BseItem *self = BSE_ITEM (object);
-  switch (param_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_item_get_property_internal (GObject                *object,
-                                uint                    param_id,
-                                GValue                 *value,
-                                GParamSpec             *pspec)
-{
-  switch (param_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-      break;
-    }
 }
 
 static void
