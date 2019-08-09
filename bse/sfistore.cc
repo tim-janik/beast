@@ -366,37 +366,16 @@ sfi_rstore_new (void)
 SfiRStore*
 sfi_rstore_new_open (const gchar *fname)
 {
-  SfiRStore *rstore = NULL;
-  if (fname)
-    {
-      gint fd = open (fname, O_RDONLY);
-      if (fd >= 0)
-        {
-          struct stat st = { 0, };
-          if (fstat (fd, &st) < 0 ||
-              S_ISDIR (st.st_mode))
-            {
-              close (fd);
-              fd = -1;
-              errno = EISDIR;
-            }
-          if (fd >= 0 &&
-              (S_ISBLK (st.st_mode) ||
-               S_ISLNK (st.st_mode)))
-            {
-              close (fd);
-              fd = -1;
-              errno = ENXIO;
-            }
-        }
-      if (fd >= 0)
-        {
-          rstore = sfi_rstore_new ();
-          rstore->close_fd = fd;
-          sfi_rstore_input_fd (rstore, fd, fname);
-        }
-    }
-  /* preserve errno for NULL */
+  size_t length = 0;
+  char *text = Bse::Path::memread (fname, &length);
+  if (!text || length < 1)
+    return NULL; // pass errno
+  SfiRStore *rstore = sfi_rstore_new ();
+  rstore->fname = g_strdup (fname);
+  rstore->scanner->input_name = rstore->fname;
+  rstore->scanner->parse_errors = 0;
+  rstore->memfree_ = text;
+  g_scanner_input_text (rstore->scanner, text, length);
   return rstore;
 }
 
@@ -408,23 +387,10 @@ sfi_rstore_destroy (SfiRStore *rstore)
   if (rstore->close_fd >= 0)
     close (rstore->close_fd);
   g_scanner_destroy (rstore->scanner);
+  if (rstore->memfree_)
+    Bse::Path::memfree (rstore->memfree_);
   g_free (rstore->fname);
   g_free (rstore);
-}
-
-void
-sfi_rstore_input_fd (SfiRStore   *rstore,
-		     gint         fd,
-		     const gchar *fname)
-{
-  assert_return (rstore != NULL);
-  assert_return (fd >= 0);
-
-  g_free (rstore->fname);
-  rstore->fname = g_strdup (fname ? fname : "<anon-fd>");
-  rstore->scanner->input_name = rstore->fname;
-  rstore->scanner->parse_errors = 0;
-  g_scanner_input_file (rstore->scanner, fd);
 }
 
 void
