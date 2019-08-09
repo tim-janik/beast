@@ -41,6 +41,113 @@ struct ConvertSeq {
   }
 };
 
+/// Convert between Aida::Any and Jsonipc::JsonValue
+struct ConvertAny {
+  static Aida::Any
+  from_json (const Jsonipc::JsonValue &v, const Aida::Any &fallback = Aida::Any())
+  {
+    Aida::Any any;
+    switch (v.GetType())
+      {
+      case rapidjson::kNullType:
+        return fallback;
+      case rapidjson::kFalseType:
+        any.set<bool> (false);
+        break;
+      case rapidjson::kTrueType:
+        any.set<bool> (true);
+        break;
+      case rapidjson::kStringType:
+        any.set<std::string> (Jsonipc::from_json<std::string> (v));
+        break;
+      case rapidjson::kNumberType:
+        if      (v.IsInt())     any.set<int32_t> (v.GetInt());
+        else if (v.IsUint())    any.set<int64_t> (v.GetUint());
+        else if (v.IsInt64())   any.set<int64_t> (v.GetInt64());
+        else                    any.set<double>  (v.GetDouble());
+      case rapidjson::kArrayType:
+        sequence_from_json_array (any, v);
+        break;
+      case rapidjson::kObjectType:
+        record_from_json_object (any, v);
+        break;
+    };
+    return any;
+  }
+  static Jsonipc::JsonValue
+  to_json (const Aida::Any &any, Jsonipc::JsonAllocator &allocator)
+  {
+    using namespace Jsonipc;
+    switch (int (any.kind()))
+      {
+      case Aida::BOOL:          return JsonValue (any.get<bool>());
+      case Aida::INT32:         return JsonValue (any.get<int32_t>());
+      case Aida::INT64:         return JsonValue (any.get<int64_t>());
+      case Aida::FLOAT64:       return JsonValue (any.get<double>());
+      case Aida::ENUM:          return Jsonipc::to_json (any.get<std::string>(), allocator);
+      case Aida::STRING:        return Jsonipc::to_json (any.get<std::string>(), allocator);
+      case Aida::SEQUENCE:      return sequence_to_json_array (any.get<const Aida::AnySeq&>(), allocator);
+      case Aida::RECORD:        return record_to_json_object (any.get<const Aida::AnyRec&>(), allocator);
+      case Aida::INSTANCE:      return instance_to_json_object (any, allocator);
+      }
+    return JsonValue(); // null
+  }
+  static void
+  sequence_from_json_array (Aida::Any &any, const Jsonipc::JsonValue &v)
+  {
+    const size_t l = v.Size();
+    Aida::AnySeq s;
+    for (size_t i = 0; i < l; ++i)
+      s.push_back (ConvertAny::from_json (v[i]));
+    any.set (s);
+  }
+  static Jsonipc::JsonValue
+  sequence_to_json_array (const Aida::AnySeq &seq, Jsonipc::JsonAllocator &allocator)
+  {
+    const size_t l = seq.size();
+    Jsonipc::JsonValue jarray (rapidjson::kArrayType);
+    jarray.Reserve (l, allocator);
+    for (size_t i = 0; i < l; ++i)
+      jarray.PushBack (ConvertAny::to_json (seq[i], allocator).Move(), allocator);
+    return jarray;
+  }
+  static void
+  record_from_json_object (Aida::Any &any, const Jsonipc::JsonValue &v)
+  {
+    Aida::AnyRec r;
+    for (const auto &field : v.GetObject())
+      {
+        const std::string key = field.name.GetString();
+        if (key == "$class" || key == "$id")    // actually Aida::INSTANCE
+          return instance_from_json_object (any, v);
+        r[key] = ConvertAny::from_json (field.value);
+      }
+    any.set (r);
+  }
+  static Jsonipc::JsonValue
+  record_to_json_object (const Aida::AnyRec &r, Jsonipc::JsonAllocator &allocator)
+  {
+    Jsonipc::JsonValue jobject (rapidjson::kObjectType);
+    jobject.MemberReserve (r.size(), allocator);
+    for (auto const &field : r)
+      jobject.AddMember (Jsonipc::JsonValue (field.name.c_str(), allocator),
+                         ConvertAny::to_json (field, allocator).Move(), allocator);
+    return jobject;
+  }
+  static void
+  instance_from_json_object (Aida::Any &any, const Jsonipc::JsonValue &v)
+  {
+    // FIXME: Aida::INSTANCE from_json
+  }
+  static Jsonipc::JsonValue
+  instance_to_json_object (const Aida::Any &any, Jsonipc::JsonAllocator &allocator)
+  {
+    // FIXME: Aida::INSTANCE to_json
+    return Jsonipc::JsonValue();
+  }
+};
+
+
 namespace Jsonipc {
 // Bse::ItemSeq as std::vector
 template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
@@ -50,6 +157,9 @@ template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::
 template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
 // Bse::WaveOscSeq as std::vector
 template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
+
+// Aida::Any
+template<>      struct Convert<Aida::Any> : ConvertAny {};
 
 // Bse::PartHandle as Bse::PartIfaceP (in records)
 template<>
