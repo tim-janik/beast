@@ -77,7 +77,7 @@ module.exports = {
   name: 'b-menuitem',
   props: [ 'role', 'disabled', 'fa', 'mi', 'uc' ],
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { 'showicons': true, 'showaccels': true, }, },
+			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
   },
   methods: {
     clicked (event) {
@@ -93,6 +93,8 @@ module.exports = {
       event.preventDefault(); // avoid submit, etc
     },
     isdisabled() {
+      if (this.role && 'boolean' == typeof this.menudata.checkedroles[this.role])
+	return !this.menudata.checkedroles[this.role];
       if (this.disabled == "" || !!this.disabled ||
 	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])
 	return true;
