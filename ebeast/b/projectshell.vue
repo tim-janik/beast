@@ -92,6 +92,19 @@ module.exports = {
 	  }
       if (!song)
 	song = await newproject.create_song ("Unnamed");
+      song.ensure_master_bus();
+      let track;
+      for (let t of await song.list_children())
+	if (t instanceof Bse.Track)
+	  {
+	    track = t;
+	    break;
+	  }
+      if (!track)
+	{
+	  const track = await song.create_track ('Master');
+	  track.ensure_output();
+	}
       // shut down old project
       if (this.project)
 	{

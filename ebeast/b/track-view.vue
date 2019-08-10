@@ -52,16 +52,28 @@
     border: 1px solid $b-button-border;
     border-radius: $b-button-radius; }
   .b-track-view-label {
-    display: inline-block; width: 7em;
-    text-overflow: ellipsis;
-    overflow: hidden; white-space: nowrap;
+    display: inline-flex; position: relative; width: 7em; overflow: hidden;
+    .b-track-view-label-el {
+      display: inline-block; width: 7em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; user-select: none;
+    }
+    input {
+      display: inline-block; z-index: 2; background-color: #000000; color: #fcfcfc;
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+      margin: 0; padding: 0; border: 0; outline: 0;
+      box-sizing: content-box; vertical-align: middle; line-height: 1; white-space: nowrap;
+    }
   }
 </style>
 
 <template>
-  <div class="b-track-view" >
+  <div class="b-track-view" @contextmenu.prevent="menuopen" >
     <div class="b-track-view-control">
-      <span class="b-track-view-label">{{ trackname }}</span>
+      <span class="b-track-view-label"
+	    @dblclick="nameedit_++" >
+	<span class="b-track-view-label-el">{{ trackname }}</span>
+	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="trackname"
+	       type="text" @change="$event.target.cancelled || track.set_name ($event.target.value.trim())" />
+      </span>
       <div class="b-track-view-meter">
 	<div class="b-track-view-lbg" ref="levelbg"></div>
 	<div class="b-track-view-cm0" ref="covermid0"></div>
@@ -71,6 +83,52 @@
 	<div class="b-track-view-ct1" ref="covertip1"></div>
       </div>
     </div>
+
+    <b-contextmenu ref="cmenu" @click="menuactivation" >
+      <b-menutitle> Track </b-menutitle>
+      <b-menuitem fa="plus-circle"      role="add-track" >      Add Track		</b-menuitem>
+      <b-menuitem fa="i-cursor"         role="rename-track" >   Rename Track		</b-menuitem>
+      <b-menuitem fa="toggle-down" disabled role="bounce-track"> Bounce Track		</b-menuitem>
+      <b-menuitem mi="visibility_off"   role="track-details"
+		  @click.prevent="menuedit ('track-details')" > Show / Hide Track Details </b-menuitem>
+      <b-menuseparator style="margin: 7px" />
+      <b-menurow>
+	<!-- <b-menuitem fa="clone"            role="clone-track" >    Dupl.			</b-menuitem>
+	<b-menuitem fa="times-circle"     role="delete-track" >   Delete		</b-menuitem> -->
+	<b-menuitem fa="scissors"         role="cut-track" >      Cut			</b-menuitem>
+	<b-menuitem fa="files-o"          role="copy-track" >     Copy			</b-menuitem>
+	<b-menuitem fa="clipboard"        role="paste-track" >    Paste			</b-menuitem>
+      </b-menurow>
+      <b-menuseparator style="margin: 7px" />
+      <b-menutitle> Playback </b-menutitle>
+      <b-menuitem uc="Ｍ"               role="mute-track" >     Mute Track		</b-menuitem>
+      <b-menuitem uc="Ｓ"               role="solo-track" >     Solo Track		</b-menuitem>
+      <b-menuseparator style="margin: 7px" />
+      <b-menutitle> MIDI Channel </b-menutitle>
+      <b-menuitem role="mc-0"    :uc="mc ==  0 ?c:n" > Internal Channel </b-menuitem>
+      <b-menurow noturn>
+	<b-menuitem role="mc-1"  :uc="mc ==  1 ?c:n" >  1 </b-menuitem>
+	<b-menuitem role="mc-2"  :uc="mc ==  2 ?c:n" >  2 </b-menuitem>
+	<b-menuitem role="mc-3"  :uc="mc ==  3 ?c:n" >  3 </b-menuitem>
+	<b-menuitem role="mc-4"  :uc="mc ==  4 ?c:n" >  4 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem role="mc-5"  :uc="mc ==  5 ?c:n" >  5 </b-menuitem>
+	<b-menuitem role="mc-6"  :uc="mc ==  6 ?c:n" >  6 </b-menuitem>
+	<b-menuitem role="mc-7"  :uc="mc ==  7 ?c:n" >  7 </b-menuitem>
+	<b-menuitem role="mc-8"  :uc="mc ==  8 ?c:n" >  8 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem role="mc-9"  :uc="mc ==  9 ?c:n" >  9 </b-menuitem>
+	<b-menuitem role="mc-10" :uc="mc == 10 ?c:n" > 10 </b-menuitem>
+	<b-menuitem role="mc-11" :uc="mc == 11 ?c:n" > 11 </b-menuitem>
+	<b-menuitem role="mc-12" :uc="mc == 12 ?c:n" > 12 </b-menuitem>
+      </b-menurow> <b-menurow noturn>
+	<b-menuitem role="mc-13" :uc="mc == 13 ?c:n" > 13 </b-menuitem>
+	<b-menuitem role="mc-14" :uc="mc == 14 ?c:n" > 14 </b-menuitem>
+	<b-menuitem role="mc-15" :uc="mc == 15 ?c:n" > 15 </b-menuitem>
+	<b-menuitem role="mc-16" :uc="mc == 16 ?c:n" > 16 </b-menuitem>
+      </b-menurow>
+    </b-contextmenu>
+
   </div>
 </template>
 
@@ -87,9 +145,28 @@ module.exports = {
   },
   data_tmpl: {
     trackname: "",
+    mc: -1, c: '√', n: ' ',
+    nameedit_: 0,
+    notifyid_: 0,
   },
   watch: {
-    track: { immediate: true, async handler (n, o) { this.trackname = await this.track.get_name(); } },
+    track: { immediate: true,
+	     async handler (newtrack, oldtrack) {
+	       if (this.notifyid_)
+		 oldtrack.off (this.notifyid_);
+	       this.notifyid_ = 0;
+	       this.trackname = "";
+	       this.mc = -1;
+	       if (this.track)
+		 {
+		   this.notifyid_ = await this.track.on ("notify", async e => {
+		     this.trackname = await this.track.get_name();
+		     this.mc = await this.track.midi_channel;
+		   });
+		   this.trackname = await this.track.get_name();
+		   this.mc = await this.track.midi_channel;
+		 }
+	     } },
   },
   beforeDestroy() {
     if (this.remove_frame_handler) {
@@ -97,7 +174,38 @@ module.exports = {
       this.remove_frame_handler = undefined;
     }
   },
+  destroyed() {
+    if (this.notifyid_)
+      this.track.off (this.notifyid_);
+  },
   methods: {
+    menuactivation (role) {
+      console.log ("menuactivation:", role);
+      // close popup to remove focus guards
+      this.$refs.cmenu.close();
+      if (role == 'rename-track')
+	this.nameedit_ = 1;
+      if (role.startsWith ('mc-'))
+	{
+	  const ch = parseInt (role.substr (3));
+	  this.track.midi_channel = ch;
+	}
+    },
+    menuedit (role) {
+      console.log ("menuedit", role, "(preventDefault)");
+    },
+    menuopen (event) {
+      this.$refs.cmenu.open (event, this.menucheck.bind (this));
+    },
+    menucheck (role, component) {
+      switch (role)
+      {
+	case 'rename-track': return true;
+      }
+      if (role.startsWith ('mc-'))
+	return true;
+      return false;
+    },
     update_levels: update_levels,
     async dom_updated() {
       if (this.track) {
