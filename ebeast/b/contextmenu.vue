@@ -56,10 +56,10 @@ module.exports = {
   name: 'b-contextmenu',
   props: [ 'origin', ],
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
-	       resize_observer: undefined, resize_timer: 0,
-	       showicons: true, showaccels: true, },
+	       resize_observer: undefined, resize_timer: 0, checkedroles: {},
+	       showicons: true, showaccels: true, checker: undefined, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'showicons', 'showaccels', 'clicked', 'close' ]),
+			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
   mounted () {
     this.update_shield();
     this.position_popup();
@@ -70,6 +70,7 @@ module.exports = {
 	  this.position_popup();
 	}, 1);
     });
+    this.checkitems();
   },
   beforeUpdate () {
     this.update_shield();
@@ -87,6 +88,7 @@ module.exports = {
 	 * we would need to observe the origin's size *and* viewport position.
 	 */
       }
+    this.checkitems();
   },
   beforeDestroy () {
     this.resize_observer.disconnect();
@@ -100,6 +102,27 @@ module.exports = {
     this.shield = undefined;
   },
   methods: {
+    checkitems() {
+      if (!this.checker)
+	return;
+      const checkrecursive = component => {
+	if (component.$options.propsData && component.$options.propsData.role)
+	  {
+	    let result = this.checker (component.$options.propsData.role, component);
+	    if ('boolean' !== typeof result)
+	      result = undefined;
+	    if (result != this.checkedroles[component.$options.propsData.role])
+	      {
+		this.checkedroles[component.$options.propsData.role] = result;
+		component.$forceUpdate();
+	      }
+	  }
+	for (let child of component.$children)
+	  checkrecursive (child);
+      };
+      if (this.$refs['b-contextmenu'])
+	checkrecursive (this.$refs['b-contextmenu']);
+    },
     position_popup() {
       let area_el = this.$refs['b-contextmenu-area'];
       if (area_el && area_el.getBoundingClientRect) // ignore comments
@@ -126,7 +149,7 @@ module.exports = {
 	this.shield = Util.modal_shield (this.close, contextmenu, { focuscycle: true,
 								    background: '#00000000' });
     },
-    open (event) {
+    open (event, checker) {
       if (this.visible) return;
       if (event && event.pageX && event.pageY)
 	{
@@ -135,6 +158,7 @@ module.exports = {
 	}
       else
 	this.doc_x = this.doc_y = undefined;
+      this.checker = checker;
       this.visible = true;
     },
     close () {
