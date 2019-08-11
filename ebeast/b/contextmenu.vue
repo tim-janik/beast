@@ -63,7 +63,7 @@ module.exports = {
   mounted () {
     this.update_shield();
     this.position_popup();
-    this.resize_observer = new ResizeObserver (entries => {
+    this.resize_observer = Util.resize_observer (this, ev => {
       if (!this.resize_timer)
 	this.resize_timer = setTimeout (() => {
 	  this.resize_timer = 0;
@@ -92,7 +92,6 @@ module.exports = {
   },
   beforeDestroy () {
     this.resize_observer.disconnect();
-    leaked_observers.push (this.resize_observer); /* workaround */
     this.resize_observer = undefined;
     if (this.resize_timer)
       clearTimeout (this.resize_timer);
@@ -175,5 +174,4 @@ module.exports = {
     },
   },
 };
-const leaked_observers = []; // FIXME: electron-3.1.12 crashes after ResizeObserver destruction
 </script>
