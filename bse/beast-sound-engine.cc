@@ -218,7 +218,7 @@ static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
 static bool verbose = false;
 static GPollFD embedding_pollfd = { -1, 0, 0 };
-static std::string authenticated_subprotocol = "auth123";
+static std::string authenticated_subprotocol = "";
 
 // Configure websocket server
 struct CustomServerConfig : public websocketpp::config::asio {
@@ -694,29 +694,25 @@ main (int argc, char *argv[])
       websocketpp::lib::asio::error_code ec;
       localhost_port = websocket_server.get_local_endpoint (ec).port();
     }
+  using namespace Bse::AnsiColors;
+  auto B1 = color (BOLD);
+  auto B0 = color (BOLD_OFF);
+  std::string fullurl = Bse::string_format ("http://127.0.0.1:%d/app.html", localhost_port);
   if (embedding_pollfd.fd >= 0)
     {
       websocketpp::lib::asio::error_code ec;
-      std::string embed = Bse::string_format ("{ "
-                                              "\"url\": \"http://127.0.0.1:%d/app.html\", "
-                                              "\"subprotocol\": \"%s\" "
-                                              "}",
-                                              localhost_port,
-                                              authenticated_subprotocol);
+      fullurl += Bse::string_format ("?subprotocol=%s", authenticated_subprotocol);
+      std::string embed = "{ \"url\": \"" + fullurl + "\" }";
       ssize_t n;
       do
         n = write (embedding_pollfd.fd, embed.data(), embed.size());
       while (n < 0 && errno == EINTR);
-      if (verbose)
-        Bse::printerr ("EMBED: %s\n", embed);
+      Bse::printerr ("%sEMBED:%s  %s\n", B1, B0, embed);
     }
 
   if (embedding_pollfd.fd < 0)
     {
-      using namespace Bse::AnsiColors;
-      auto B1 = color (BOLD);
-      auto B0 = color (BOLD_OFF);
-      Bse::printout ("%sLISTEN:%s http://localhost:%d/app.html\n", B1, B0, localhost_port);
+      Bse::printout ("%sLISTEN:%s %s\n", B1, B0, fullurl);
     }
 
   websocket_server.run();

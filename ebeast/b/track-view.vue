@@ -61,6 +61,8 @@
       position: absolute; left: 0; right: 0; top: 0; bottom: 0;
       margin: 0; padding: 0; border: 0; outline: 0;
       box-sizing: content-box; vertical-align: middle; line-height: 1; white-space: nowrap;
+      letter-spacing: inherit;
+      height: 100% /* needed by Firefox */
     }
   }
 </style>

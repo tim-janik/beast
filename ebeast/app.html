@@ -6,6 +6,7 @@
   'use strict';
   const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
   window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
+  window.MAINCONFIG = { args: [] }; // default for non-Electron connections
   </script>
 
   <link rel="modulepreload" href="./utilities.js">
@@ -50,6 +51,12 @@
 
 </head>
 <body>
+
+  <script>
+  // Helper for browser specific CSS
+  document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
+  document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
+  </script>
 
   <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
 				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
