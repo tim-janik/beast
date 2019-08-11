@@ -161,10 +161,10 @@ module.exports = {
 		 {
 		   this.notifyid_ = await this.track.on ("notify", async e => {
 		     this.trackname = await this.track.get_name();
-		     this.mc = await this.track.midi_channel;
+		     this.mc = await this.track.midi_channel();
 		   });
 		   this.trackname = await this.track.get_name();
-		   this.mc = await this.track.midi_channel;
+		   this.mc = await this.track.midi_channel();
 		 }
 	     } },
   },
@@ -188,7 +188,7 @@ module.exports = {
       if (role.startsWith ('mc-'))
 	{
 	  const ch = parseInt (role.substr (3));
-	  this.track.midi_channel = ch;
+	  this.track.midi_channel (ch);
 	}
     },
     menuedit (role) {
