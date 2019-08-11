@@ -6,6 +6,7 @@
   'use strict';
   const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
   window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
+  window.MAINCONFIG = { args: [] }; // default for non-Electron connections
   </script>
 
   <link rel="modulepreload" href="./utilities.js">
