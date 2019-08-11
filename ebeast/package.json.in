@@ -9,7 +9,7 @@
   },
   "babel": {
     "presets": [
-      ["env", { "targets": { "chrome": "61" } } ]
+      ["env", { "targets": { "chrome": "66" } } ]
     ]
   },
   "devDependencies": {
