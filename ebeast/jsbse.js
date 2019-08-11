@@ -33,8 +33,8 @@ Object.defineProperty (server, '$promise', { writable: true });
 server['$promise'] = new Promise ((resolve, reject) => {
   const hostport = window.location.href.replace (/.*:\/\/([^\/]+).*/, '$1');
   const ws_url = 'ws://' + hostport;
-  const subprotocols = window.MAINCONFIG && window.MAINCONFIG.subprotocols;
-  const promise = Bse.$jsonipc.open (ws_url, subprotocols);
+  const url = new URL (window.location);
+  const promise = Bse.$jsonipc.open (ws_url, url.searchParams.get ('subprotocol'));
   promise.then (
     result => {
       if (result instanceof Bse.Server)
