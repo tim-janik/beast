@@ -540,13 +540,20 @@ struct ClassPrinter {
     if (what == "get")
       {
         advance_state (2);              // force class open
+        out_ += string_format ("  async %s (v) { return await (arguments.length > 0 ? $jsonipc.send ('set/%s', [this, await v]) : $jsonipc.send ('get/%s', [this])); }\n",
+                               name.c_str(), name.c_str(), name.c_str());
+#if 0   // async property get
         out_ += string_format ("  get %s ()  { return $jsonipc.send ('get/%s', [this]); }\n",
                                name.c_str(), name.c_str());
+#endif
       }
     if (what == "set")
       {
+        advance_state (2);              // force class open
+#if 0   // async property set
         out_ += string_format ("  set %s (v) { (async () => $jsonipc.send ('set/%s', [this, await v])) (); }\n",
                                name.c_str(), name.c_str());
+#endif
       }
     if (what == "attribute")
       serializable_attributes.push_back (name);
