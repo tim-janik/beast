@@ -4,8 +4,8 @@
   "description": "Beast - Music Synthesizer and Composer",
   "main": "main.js",
   "dependencies": {
-    "jquery": "^3.3.1",
-    "vue": "^2.6.8"
+    "jquery": "^3.4.1",
+    "vue": "^2.6.10"
   },
   "babel": {
     "presets": [
@@ -19,10 +19,9 @@
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "electron": "^3.1.12",
-    "eslint": "^5.15.1",
-    "eslint-plugin-html": "^5.0.3",
-    "eslint-plugin-vue": "^5.2.2",
-    "node-gyp": "^3.8.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-html": "^5.0.5",
+    "eslint-plugin-vue": "^5.2.3",
     "node-sass": "^4.11.0",
     "vueify": "^9.4.1"
   },
