@@ -174,6 +174,7 @@ async function startup_components() {
   // configure BrowserWindow with BeastSoundEngine embedding info
   win = create_window();
   win.on ('closed', () => win = null);
+  // TODO: when this BrowserWindow is close, also force closing of the beast-manual or other related (child) windows
   let win_ready = new Promise (resolve => win.once ('ready-to-show', () => resolve ()));
   let embedding_info = new Promise (resolve => bse_proc = create_beast_sound_engine (msg => resolve (msg), () => main_exit (3)));
   const auth = JSON.parse (await embedding_info); // yields JSON: { "url": "ws://127.0.0.1:<PORT>", "subprotocol": "<STRING>" }
