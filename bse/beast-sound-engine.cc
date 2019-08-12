@@ -399,12 +399,22 @@ http_request (websocketpp::connection_hdl hdl)
     filepath = Path::join (filepath, "index.html");
   if (Path::check (filepath, "fr"))
     {
-      if (string_endswith (filepath, ".html"))
+      if (string_endswith (filepath, ".html") || string_endswith (filepath, ".htm"))
         con->append_header ("Content-Type", "text/html; charset=utf-8");
       else if (string_endswith (filepath, ".js") || string_endswith (filepath, ".mjs"))
         con->append_header ("Content-Type", "application/javascript");
       else if (string_endswith (filepath, ".css"))
         con->append_header ("Content-Type", "text/css");
+      else if (string_endswith (filepath, ".ico"))
+        con->append_header ("Content-Type", "image/x-icon");
+      else if (string_endswith (filepath, ".gif"))
+        con->append_header ("Content-Type", "image/gif");
+      else if (string_endswith (filepath, ".svg"))
+        con->append_header ("Content-Type", "image/svg+xml");
+      else if (string_endswith (filepath, ".png"))
+        con->append_header ("Content-Type", "image/png");
+      else if (string_endswith (filepath, ".jpg"))
+        con->append_header ("Content-Type", "image/jpeg");
       else
         con->append_header ("Content-Type", "application/octet-stream");
       Blob blob = Blob::from_file (filepath);
