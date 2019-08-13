@@ -61,7 +61,8 @@ NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
 $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$(QECHO) MAKE $@
-	$Q rm -f -r $>/ebeast/node_modules/ $>/app/node_modules/
+	$Q rm -f -r $>/ebeast/node_modules/ $>/app/node_modules/ $>/app/doc
+	$Q ln -s ../doc $>/app/doc
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
