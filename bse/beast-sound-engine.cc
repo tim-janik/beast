@@ -354,17 +354,18 @@ static std::string
 app_path (const std::string &path)
 {
   using namespace Bse;
-  static const char *basepath = realpath ((runpath (RPath::INSTALLDIR) + "/app/").c_str(), NULL);
-  if (basepath)
+  static const char *apppath = realpath ((runpath (RPath::INSTALLDIR) + "/app/").c_str(), NULL);
+  static size_t apppath_length = strlen (apppath ? apppath : "");
+  static const char *docpath = realpath ((runpath (RPath::INSTALLDIR) + "/doc/").c_str(), NULL);
+  static size_t docpath_length = strlen (docpath ? docpath : "");
+  if (apppath && docpath)
     {
-      static size_t baselen = strlen (basepath);
-      char *uripath = realpath ((basepath + std::string ("/") + path).c_str(), NULL);
-      if (uripath && strncmp (uripath, basepath, baselen) == 0 && uripath[baselen] == '/')
-        {
-          std::string dest = uripath;
-          free (uripath);
-          return dest;
-        }
+      char *uripath = realpath ((apppath + std::string ("/") + path).c_str(), NULL);
+      std::string dest = uripath ? uripath : "";
+      free (uripath);
+      if ((dest.compare (0, apppath_length, apppath) == 0 && dest[apppath_length] == '/') ||
+          (dest.compare (0, docpath_length, docpath) == 0 && dest[docpath_length] == '/'))
+        return dest;
     }
   return ""; // 404
 }
@@ -395,7 +396,7 @@ http_request (websocketpp::connection_hdl hdl)
     }
   // file
   std::string filepath = app_path (simplepath);
-  if (Path::check (filepath, "drx"))
+  if (!filepath.empty() && Path::check (filepath, "drx"))
     filepath = Path::join (filepath, "index.html");
   if (Path::check (filepath, "fr"))
     {
