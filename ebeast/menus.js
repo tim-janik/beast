@@ -50,7 +50,7 @@ export async function setup_app_menu()
   }
   complete_menu_items (menubar_menuitems);
   const menubar_menu = Electron.Menu.buildFromTemplate (menubar_menuitems);
-  Electron.Menu.setApplicationMenu (menubar_menu);
+  Electron.getCurrentWindow().setMenu (menubar_menu);
   check_all_menu_items();
 }
 
